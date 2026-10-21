@@ -449,7 +449,7 @@ test('rangos CSV: arrastrar, contexto por teclado, cortar y pegar con revisión 
  const from=page.getByRole('gridcell',{name:'Fila 1, A',exact:true}),to=page.getByRole('gridcell',{name:'Fila 2, B',exact:true});await expect(from).toBeVisible()
  const a=await from.boundingBox(),b=await to.boundingBox();await page.mouse.move(a!.x+10,a!.y+10);await page.mouse.down();await page.mouse.move(b!.x+10,b!.y+10,{steps:5});await page.mouse.up()
  await expect(page.locator('.csv-cell[aria-selected="true"]')).toHaveCount(4)
- await from.focus();await page.keyboard.press('Shift+F10');const menu=page.getByRole('menu',{name:'Acciones del rango',exact:true});await expect(menu).toBeVisible();await page.keyboard.press('End');await expect(menu.getByRole('menuitem',{name:'Reemplazar en el rango…',exact:true})).toBeFocused();await page.keyboard.press('Escape');await expect(menu).not.toBeVisible()
+ await from.focus();await page.keyboard.press('Shift+F10');const menu=page.getByRole('menu',{name:'Acciones del rango',exact:true});await expect(menu).toBeVisible();await page.keyboard.press('End');await expect(menu.getByRole('menuitem').last()).toBeFocused();await page.keyboard.press('Escape');await expect(menu).not.toBeVisible()
  await page.keyboard.press('ControlOrMeta+X');const cut=page.getByRole('dialog',{name:'Cortar rango',exact:true});await expect(cut.getByRole('status')).toContainText('4 de 4');await cut.getByRole('button',{name:'Aplicar cambio'}).click();await expect(cut).not.toBeVisible()
  expect(await app.evaluate(({clipboard})=>clipboard.readText())).toBe('001\tuno\n002\tdos\n')
  let rows=await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:910}),doc.id);expect(rows.rows[0].cells).toEqual(['','','x'])

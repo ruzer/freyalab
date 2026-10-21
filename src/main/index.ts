@@ -6,7 +6,7 @@ import { SqlService } from './sql-service'
 import appIcon from '../../build/icon.png?asset'
 import { Documents } from './documents'
 import { exportDocument } from './export'
-import type { Kind,TableEdit,TableOptions,TableExport,TableQuery,ExportRequest,TableRange,TableRangeEdit } from '../shared/types'
+import type { Kind,TableEdit,TableOptions,TableExport,TableQuery,ExportRequest,TableRange,TableRangeEdit,TableTransformEdit } from '../shared/types'
 const here=dirname(fileURLToPath(import.meta.url))
 if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FREYALAB_USER_DATA))
 let window:BrowserWindow|undefined,docs:Documents,analytics:SqlService,quitting=false
@@ -16,7 +16,8 @@ const filter=z.object({column:col,op:z.enum(['contains','equals','notEquals','st
 const query=z.object({conditions:z.array(filter).max(20).optional(),filterMode:z.enum(['all','any']).optional(),order:z.array(z.object({column:col,descending:z.boolean(),numeric:z.boolean()})).max(20).optional(),search:z.string().max(10000).optional(),filters:z.record(z.string(),z.string().max(10000)).optional(),sort:z.object({column:col,descending:z.boolean(),numeric:z.boolean()}).optional(),offset:z.number().int().nonnegative(),limit:z.number().int().min(1).max(1000),requestId:z.number().int().nonnegative()})
 const range=z.object({top:z.number().int().nonnegative(),bottom:z.number().int().nonnegative(),left:col,right:col,query,revision:z.number().int().nonnegative()})
 const rangeEdit=z.object({type:z.literal('range'),range,operation:z.enum(['fill','clear','trim','upper','lower','replace','paste']),value:z.string().max(1024*1024).optional(),find:z.string().max(10000).optional(),values:z.array(z.array(z.string().max(1024*1024)).max(100000)).max(100000).optional()})
-const edits=z.discriminatedUnion('type',[rangeEdit,
+const structureEdit=z.object({type:z.literal('structure'),operation:z.enum(['split','combine','deduplicate','normalize','headers']),columns:z.array(col).min(1).max(200),revision:z.number().int().nonnegative(),requestId:z.uuid(),separator:z.string().max(64).optional(),name:z.string().max(10000).optional()})
+const edits=z.discriminatedUnion('type',[rangeEdit,structureEdit,
  z.object({type:z.literal('cell'),rowId:z.string().max(100),column:col,value:z.string().max(1024*1024)}),
  z.object({type:z.literal('paste'),rowId:z.string().max(100),column:col,values:z.array(z.array(z.string().max(1024*1024)).max(100000)).max(100000),view:z.object({query,revision:z.number().int().nonnegative()}).optional()}),
  z.object({type:z.literal('duplicateRows'),ids:rows.min(1)}),z.object({type:z.literal('duplicateColumn'),index:col}),
@@ -42,6 +43,7 @@ async function handle(operation:string,args:unknown[]){
  case'reload':return docs.reload(id.parse(a))
  case'copyTable':{docs.get(id.parse(a));const options=tableExport.parse(b),format=z.enum(['tsv','markdown']).parse(c),output=await docs.table.call<string>(format==='markdown'?'markdown':'clipboard',a,options);if(Buffer.byteLength(output,'utf8')>8*1024*1024)throw new Error('La copia supera 8 MiB. Reduce la selección o expórtala.');await clipboard.writeText(output);return}
  case'pasteTable':{docs.get(id.parse(a));const selected=range.parse(b);await docs.table.call('rangePreview',a,{type:'range',range:selected,operation:'clear'});const content=await clipboard.readText();if(Buffer.byteLength(content,'utf8')>8*1024*1024)throw new Error('El portapapeles supera 8 MiB. Pega un bloque menor.');return content}
+ case'transformPreview':docs.get(id.parse(a));return docs.table.call('transformPreview',a,structureEdit.parse(b) as TableTransformEdit)
  case'rangePreview':docs.get(id.parse(a));return docs.table.call('rangePreview',a,rangeEdit.parse(b) as TableRangeEdit)
  case'rangeClipboard':docs.get(id.parse(a));return docs.table.call('rangeClipboard',a,range.parse(b) as TableRange)
  case'page':docs.get(id.parse(a));return docs.table.call('page',a,query.parse(b) as TableQuery)

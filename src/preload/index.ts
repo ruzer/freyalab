@@ -7,6 +7,7 @@ const api:FreyaAPI={
  tableCopy:(id,options,format)=>invoke('copyTable',id,options,format),tablePaste:(id,range)=>invoke('pasteTable',id,range),
  sqlRun:request=>invoke('sqlRun',request),sqlPage:(requestId,offset)=>invoke('sqlPage',requestId,offset),sqlCancel:requestId=>invoke('sqlCancel',requestId),
  analyzeColumn:(id,request)=>invoke('analyzeColumn',id,request),cancelAnalysis:(id,requestId)=>invoke('cancelAnalysis',id,requestId),
+ transformPreview:(id,edit)=>invoke('transformPreview',id,edit),
  rangePreview:(id,edit)=>invoke('rangePreview',id,edit),rangeClipboard:(id,range)=>invoke('rangeClipboard',id,range),
  tablePage:(id,query)=>invoke('page',id,query),tableEdit:(id,edit)=>invoke('edit',id,edit),tableOptions:(id,options)=>invoke('options',id,options),undo:(id,redo)=>invoke('undo',id,redo),stats:(id,rows,columns)=>invoke('stats',id,rows,columns),tableMarkdown:(id,options)=>invoke('markdown',id,options),
  export:(id,request)=>invoke('export',id,request),image:(id,src)=>invoke('image',id,src),openLink:url=>invoke('link',url),

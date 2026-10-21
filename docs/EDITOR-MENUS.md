@@ -123,3 +123,8 @@ No hay acceso SQL a archivos arbitrarios, red ni extensiones. Si la app se inici
 ## Gráficos CSV
 
 La entrega de desarrollo añade **Gráficos** junto a Análisis/Estadísticas. Incluye histogramas, barras, líneas, dispersión, mapa de calor y cajas con selectores, tabla accesible y exportación. Consulta [métodos, alcance y límites](CHARTS.md); no se presenta como función publicada en alpha.1.
+
+
+## Transformar el documento CSV
+
+**Operaciones → Transformar documento…**, menú contextual del rango o Ctrl/⌘ + Mayús + T desde la tabla. Divide/combina columnas conservando originales, elimina duplicados por claves compuestas y normaliza Unicode/encabezados. [Alcance completo, vista previa, cancelación, límites y deshacer](TRANSFORMS.md). Entrega de desarrollo; no función publicada en alpha.1.
