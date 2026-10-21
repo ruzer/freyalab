@@ -33,3 +33,7 @@ La implementación se presentó en commits temáticos dentro de PR #1 y se cerr�
 ## Mejoras posteriores a alpha.1
 
 Barra Markdown con formato e inserciones asistidas y menú CSV con limpieza y duplicación. La [guía de edición](EDITOR-MENUS.md) describe alcance, deshacer y límites; la [evidencia local](evidence/editor-menus-2026-10-20.md) separa las comprobaciones de esta entrega de los binarios ya publicados. Mover filas/columnas y transponer quedan para entregas posteriores.
+
+## Revisión integral de la experiencia de edición
+
+La [auditoría funcional y el roadmap](EDITOR-UX-AUDIT.md) separan funciones existentes, brechas, riesgos estáticos y el fallo reproducido del alcance de exportación CSV. Primera corrección en revisión: exportaciones completas/filtradas conservan todas las columnas; solo la selección explícita limita columnas. No se añaden dependencias ni se migra el editor visual. La entrega requiere PR y no se fusiona automáticamente.

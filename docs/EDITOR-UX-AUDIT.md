@@ -206,3 +206,13 @@ Estimación relativa, no calendario: **S** cambio local con contrato existente; 
 Modificar solo `CsvTable.exportOptions` y sus pruebas/caller documental: «Documento completo» exporta todos los valores en orden original, ignorando búsqueda/filtros/selección; «Filas filtradas» aplica búsqueda/filtros/orden y conserva todas las columnas; «Selección» conserva la limitación explícita de filas/columnas. No cambiar la semántica interna del motor para clientes que soliciten columnas explícitas.
 
 Validación: reproducir el fallo por UI, añadir regresión con campo multilínea, comillas, ceros iniciales, filtros/orden activos y una columna marcada; verificar CSV y TSV fuera de la app, selección explícita, dirty y archivo original. Ejecutar `check`, unitarias, E2E/build y CI del PR. Preparar PR sin fusionarlo; no generar instaladores ni actualizar alpha.1 en esta entrega.
+
+## 10. Resultado de la primera iteración
+
+Implementación en `codex/editor-ux-audit`, pendiente de revisión e integración. Se modifica únicamente la preparación de opciones en `CsvTable.exportOptions`: filas/columnas marcadas solo se envían para `scope=selection`. El motor, contratos, parser, datos originales, dependencias e instaladores no cambian.
+
+Prueba de regresión por la interfaz: filtro global y orden numérico activos, una columna y una fila marcadas, modificación sin guardar, comillas escapadas, campo multilínea CRLF y ceros iniciales. Se comprueban seis exportaciones: completo/filtrado/selección en CSV y TSV. La prueba falló antes de la corrección por columnas omitidas y pasó después. El archivo original y el indicador de cambios pendientes se mantienen.
+
+Validación local (macOS 27.0.1 arm64; Node.js 24.22.0): `npm run check` sin errores/advertencias; `npm test` con 32 pruebas satisfactorias; `npm run test:e2e` con 21 satisfactorias, incluida construcción mediante `npm run build`; `git diff --check` sin incidencias. La CI del PR debe informar por separado los resultados de Ubuntu, Windows y ambas arquitecturas de macOS. Los controles locales no acreditan esos entornos.
+
+F01 queda corregido en esta rama. Los demás hallazgos, el modo visual y el catálogo ampliado siguen pendientes; esta iteración no los presenta como implementados ni verificados. No se fusiona automáticamente y no se publica una versión descargable.
