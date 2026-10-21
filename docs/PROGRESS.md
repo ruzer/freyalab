@@ -36,7 +36,7 @@ Barra Markdown con formato e inserciones asistidas y menú CSV con limpieza y du
 
 ## Evolución CSV: propuesta y primera iteración
 
-La [auditoría CSV y roadmap](CSV-ADVANCED-ROADMAP.md) compara Modern CSV, bibliotecas y fases, sin ampliar implícitamente la alfa. La rama `codex/csv-column-statistics` añade un panel de consulta por columna; ver [evidencia y límites](evidence/csv-statistics-2026-10-20.md). Pendiente de revisión/integración; no modifica los binarios publicados. PR #6 y #7 se mantienen separados y abiertos.
+La [auditoría CSV y roadmap](CSV-ADVANCED-ROADMAP.md) compara Modern CSV, bibliotecas y fases, sin ampliar implícitamente la alfa. La rama `codex/csv-column-statistics` añade un panel de consulta por columna; ver [evidencia y límites](evidence/csv-statistics-2026-10-20.md). Pendiente de revisión/integración; no modifica los binarios publicados. El PR #7 ya se integró en main; el PR #6 sigue abierto.
 
 
 La rama de evolución CSV incorpora la auditoría histórica y las correcciones de alcance de exportación y pegado de los PR #6/#7, junto con el panel del PR #8. No fusiona esos PR ni modifica los binarios publicados.
@@ -52,3 +52,9 @@ La entrega se apila sobre el PR #8 e incorpora los commits de corrección de #6/
 La rama `codex/csv-range-editing`, apilada sobre el PR #9, añade selección rectangular por ratón/teclado, navegación virtual, menú contextual y acciones compartidas para copiar/cortar/pegar/rellenar/vaciar/limpiar/reemplazar. Los cambios pasan por vista previa y mantienen un único historial y recuperación. El portapapeles se gestiona mediante operaciones nativas validadas; se retiró la copia redundante de filas seleccionadas en el renderer.
 
 Ver [guía](EDITOR-MENUS.md), [evidencia](evidence/csv-range-2026-10-21.md) y [objetivo completo A–D](ANALYTICS-DELIVERY.md). No se amplían los límites de archivos ni se declaran implementados DuckDB/ECharts o el análisis restante. Requiere revisión; sin fusión ni publicación automáticas.
+
+## Actualización de la rama de estadísticas
+
+La rama del PR #8 incorpora `main` tras integrar el PR #7. El conflicto de pruebas se resuelve conservando los cuatro flujos de estadísticas y el flujo de pegado por vista, junto con todos los casos previos. No se fusiona ningún PR con esta actualización; se validan tipos, motor y aplicación sobre la combinación resultante.
+
+La rama del PR #9 incorpora esta base actualizada. Conserva íntegros los filtros, rangos y portapapeles nativo del PR #10, integrado en esa rama; las correcciones del #7 ya estaban presentes. Los archivos de producto y pruebas quedan idénticos al commit `b0b0a094d939efa9763e722723f54a517e563b3b`; se comprueba su nueva ascendencia sin retirar funcionalidades. Los PR #6/#8/#9 permanecen abiertos.
