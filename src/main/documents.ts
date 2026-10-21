@@ -11,6 +11,7 @@ interface RecordDoc { info:DocumentInfo; hash?:string; text:string; undo:string[
 const extensions:Record<string,Kind>={'.md':'markdown','.markdown':'markdown','.txt':'text','.mmd':'mermaid','.mermaid':'mermaid','.csv':'csv','.tsv':'csv'}
 export class Documents {
  records=new Map<string,RecordDoc>(); roots=new Set<string>(); grants=new Set<string>(); table=new TableClient()
+ private fileSearch=0
  private recoveryTasks=new Map<string,Promise<void>>()
  private recoveryDir=join(app.getPath('userData'),'recovery')
  constructor(private emit:(e:AppEvent)=>void){}
@@ -53,6 +54,12 @@ export class Documents {
   r.hash=r.info.readonly?undefined:await digest(r.info.path);r.undo=[];r.redo=[];clearTimeout(r.timer);await this.discardRecovery(id);return this.info(id)
  }
  async tree(path:string):Promise<TreeEntry[]>{if(!await this.allowed(path))throw new Error('Carpeta no autorizada.');const entries=await readdir(path,{withFileTypes:true});return entries.filter(e=>!e.name.startsWith('.')&&e.name!=='node_modules'&&!e.isSymbolicLink()&&(e.isDirectory()||extensions[extname(e.name).toLowerCase()])).sort((a,b)=>Number(b.isDirectory())-Number(a.isDirectory())||a.name.localeCompare(b.name)).map(e=>({name:e.name,path:join(path,e.name),directory:e.isDirectory()}))}
+ async findFiles(root:string,query:string){
+  if(!await this.allowed(root))throw new Error('Carpeta no autorizada.')
+  const token=++this.fileSearch,needle=query.toLocaleLowerCase(),queue=[root],entries:TreeEntry[]=[];let visited=0
+  while(queue.length&&visited<1000&&entries.length<200){if(token!==this.fileSearch)throw new Error('Búsqueda cancelada.');const directory=queue.shift()!;visited++;let children:TreeEntry[];try{children=await this.tree(directory)}catch{continue}for(const entry of children){if(entry.directory)queue.push(entry.path);else if(entry.name.toLocaleLowerCase().includes(needle)){entries.push(entry);if(entries.length===200)break}}}
+  return{entries,limited:queue.length>0||entries.length===200}
+ }
  async allowed(path:string){for(const root of this.roots)if(await contained(root,path).catch(()=>false))return true;return this.grants.has(resolve(path))||process.env.FREYALAB_TEST==='1'}
  async recents():Promise<string[]>{try{return JSON.parse(await readFile(join(app.getPath('userData'),'recents.json'),'utf8'))}catch{return[]}}
  private async addRecent(path:string){const list=[path,...(await this.recents()).filter(p=>p!==path)].slice(0,15);await mkdir(app.getPath('userData'),{recursive:true});await atomicWrite(join(app.getPath('userData'),'recents.json'),JSON.stringify(list))}

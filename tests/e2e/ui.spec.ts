@@ -84,3 +84,22 @@ test('interfaz Mermaid: renderizar y exportar SVG válido',async()=>{
  const files=await readdir(join(directory,'exports'));expect(await readFile(join(directory,'exports',files.find(name=>name.endsWith('.svg'))!),'utf8')).toMatch(/Recibir[\s\S]*archivo/)
  await page.screenshot({path:test.info().outputPath('mermaid-1440x900.png')})
 })
+
+
+test('formato Markdown: negritas y cursivas sin ocultar el explorador',async()=>{
+ await page.getByRole('button',{name:'＋ Nuevo ▾',exact:true}).click()
+ await page.getByRole('button',{name:'▤ Documento Markdown',exact:true}).click()
+ await replaceEditor('Freya')
+ await page.keyboard.press('ControlOrMeta+A')
+ await page.keyboard.press('ControlOrMeta+B')
+ await expect(page.locator('.cm-content')).toHaveText('**Freya**')
+ await expect(page.locator('.markdown-body strong')).toHaveText('Freya')
+ await expect(page.getByLabel('Buscar archivo',{exact:true})).toBeVisible()
+ await page.keyboard.press('ControlOrMeta+B')
+ await expect(page.locator('.cm-content')).toHaveText('Freya')
+ await page.keyboard.press('ControlOrMeta+I')
+ await expect(page.locator('.cm-content')).toHaveText('*Freya*')
+ await expect(page.locator('.markdown-body em')).toHaveText('Freya')
+ await page.keyboard.press('ControlOrMeta+I')
+ await expect(page.locator('.cm-content')).toHaveText('Freya')
+})

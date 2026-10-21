@@ -9,7 +9,7 @@ Este registro separa código escrito de comprobaciones y publicación. Las casil
 | 3. Markdown y PDF | Implementada | PDF multipágina y recorrido UI satisfactorios | Integración y capturas |
 | 4. CSV/TSV | Implementada hasta límites de alfa | Pruebas de motor e integración satisfactorias | 14 pruebas de motor; muestra de 1 GiB no editable |
 | 5. Diagramas y exportaciones | Implementada | SVG, PNG completo, HTML y CSV satisfactorios | Integración; exportación no reemplaza documentos abiertos |
-| 6. Fidelidad y robustez | Implementada, revisión continua | 23 unitarias; 12 E2E locales; falta CI final | evidence/ |
+| 6. Fidelidad y robustez | Implementada, revisión continua | 23 unitarias; 12 E2E locales y 2 nuevos casos dirigidos; falta CI final | evidence/ |
 | 7. Alfa pública | Candidato local construido | DMG arm64 copiado y ejecutado; otras plataformas pendientes | Gate de publicación abierto |
 
 Las primeras seis entregas se presentan como siete commits temáticos dentro de PR #1 para revisar la aplicación integrada. No se afirma que cada commit intermedio compile por separado.
@@ -27,3 +27,7 @@ Las primeras seis entregas se presentan como siete commits temáticos dentro de 
 - [ ] Prerelease publicada con límites y advertencias de alfa.
 
 No hay una publicación completada mientras estos gates no tengan evidencia.
+
+## Cierre de navegación y formato
+
+La búsqueda del explorador recorre subcarpetas cerradas, excluye archivos ocultos y dependencias, limita el recorrido a 1.000 carpetas y 200 resultados e identifica resultados parciales. Negritas y cursivas usan los atajos del editor sin ocultar el explorador. Los dos nuevos E2E pasaron con Node 24; comprobación de tipos y construcción satisfactorias. La CI repetirá la suite sobre el commit que integra estos cambios.

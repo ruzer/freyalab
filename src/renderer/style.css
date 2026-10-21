@@ -6,3 +6,5 @@
 .external-banner{display:flex;align-items:center;gap:8px}.external-banner span{flex:1}.external-banner button{font-size:10px;padding:4px 7px}
 
 .macos .toolbar{padding-left:84px;-webkit-app-region:drag}.macos .toolbar button,.macos .toolbar input,.macos .toolbar select,.macos .toolbar .dropdown{-webkit-app-region:no-drag}
+
+.file-search-status{padding:9px 12px;color:var(--muted);font-size:10px;line-height:1.6}.file-search-result{display:flex;flex-direction:column;align-items:flex-start;gap:4px;width:100%;padding:8px 12px;background:transparent;border:0;border-radius:0;text-align:left;overflow:hidden}.file-search-result span,.file-search-result small{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.file-search-result small{color:var(--muted);font-size:9px}

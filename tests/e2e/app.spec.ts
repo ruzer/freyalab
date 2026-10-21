@@ -210,3 +210,13 @@ test('PNG usa el tamaño completo del SVG a escala 2x sin recorte al viewport', 
   expect(png.readUInt32BE(16)).toBe(3200)
   expect(png.readUInt32BE(20)).toBe(200)
 })
+
+test('buscar archivos recorre carpetas cerradas y excluye ocultos y dependencias',async()=>{
+ await mkdir(join(directory,'sub','nested'),{recursive:true});await mkdir(join(directory,'node_modules'),{recursive:true})
+ await writeFile(join(directory,'sub','nested','objetivo.md'),'# Dentro')
+ await writeFile(join(directory,'node_modules','objetivo.md'),'# Dependencia')
+ await writeFile(join(directory,'.objetivo.md'),'# Oculto')
+ await app.evaluate((_,path)=>{process.env.FREYALAB_TEST_FOLDER=path},directory)
+ const results=await page.evaluate(async()=>{const root=await window.freya.folder();return window.freya.findFiles(root!,'objetivo')})
+ expect(results.entries.map(e=>e.path)).toEqual([join(directory,'sub','nested','objetivo.md')]);expect(results.limited).toBe(false)
+})

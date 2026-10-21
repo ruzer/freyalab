@@ -13,7 +13,7 @@ export interface ExportRequest { format:'pdf'|'html'|'svg'|'png'|'csv'|'tsv'; ht
 export interface RecoveryEntry { id:string; name:string; savedAt:string }
 export interface AppEvent { type:'opened'|'changed'|'external'|'error'; document?:DocumentInfo; id?:string; message?:string }
 export interface FreyaAPI {
- open():Promise<DocumentInfo[]>; openPaths(paths:string[]):Promise<DocumentInfo[]>; newDocument(kind:Kind):Promise<DocumentInfo>; folder():Promise<string|null>; tree(path:string):Promise<TreeEntry[]>;
+ open():Promise<DocumentInfo[]>; openPaths(paths:string[]):Promise<DocumentInfo[]>; newDocument(kind:Kind):Promise<DocumentInfo>; folder():Promise<string|null>; tree(path:string):Promise<TreeEntry[]>; findFiles(root:string,query:string):Promise<{entries:TreeEntry[];limited:boolean}>;
  update(id:string,text:string):Promise<DocumentInfo>; save(id:string,as?:boolean):Promise<DocumentInfo|null>; close(id:string):Promise<boolean>; reload(id:string):Promise<DocumentInfo>; documents():Promise<DocumentInfo[]>;
  tablePage(id:string,query:TableQuery):Promise<TablePage>; tableEdit(id:string,edit:TableEdit):Promise<DocumentInfo>; tableOptions(id:string,options:TableOptions):Promise<DocumentInfo>;
  undo(id:string,redo?:boolean):Promise<DocumentInfo>; stats(id:string,rows:string[],columns:number[]):Promise<TableStats>; tableMarkdown(id:string,options:TableExport):Promise<string>;

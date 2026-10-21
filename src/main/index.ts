@@ -25,8 +25,9 @@ async function handle(operation:string,args:unknown[]){
  case'open':{const result=await dialog.showOpenDialog(window!,{properties:['openFile','multiSelections'],filters:[{name:'Documentos',extensions:['md','markdown','txt','mmd','mermaid','csv','tsv']}]});for(const p of result.filePaths)docs.grants.add(resolve(p));return result.canceled?[]:openPaths(result.filePaths)}
  case'openPaths':return openPaths(z.array(path).max(100).parse(a))
  case'new':return docs.create(z.enum(['markdown','text','mermaid','csv']).parse(a) as Kind)
- case'folder':{const result=await dialog.showOpenDialog(window!,{properties:['openDirectory']});if(result.canceled)return null;docs.roots.add(result.filePaths[0]);return result.filePaths[0]}
+ case'folder':{if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_FOLDER){const folder=resolve(process.env.FREYALAB_TEST_FOLDER);docs.roots.add(folder);return folder}const result=await dialog.showOpenDialog(window!,{properties:['openDirectory']});if(result.canceled)return null;docs.roots.add(result.filePaths[0]);return result.filePaths[0]}
  case'tree':return docs.tree(path.parse(a))
+ case'findFiles':return docs.findFiles(path.parse(a),z.string().min(1).max(500).parse(b))
  case'documents':return[...docs.records.keys()].map(key=>docs.info(key))
  case'update':return docs.update(id.parse(a),text.parse(b))
  case'save':return docs.save(id.parse(a),z.boolean().optional().parse(b))
