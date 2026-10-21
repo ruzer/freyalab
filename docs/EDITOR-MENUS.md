@@ -26,6 +26,14 @@ Cambiar mayúsculas/minúsculas usa las reglas Unicode del motor JavaScript, ind
 
 Las muestras de archivos grandes siguen siendo de solo lectura. Se mantienen los límites de edición y del historial; un cambio que excede el presupuesto de deshacer se rechaza antes de aplicarse.
 
+## Estadísticas por columna
+
+El botón **Estadísticas** del CSV abre un panel de consulta. Elige **Todas las columnas** o **Columnas marcadas** y pulsa **Analizar**. Incluye todas las filas del documento, también las ocultas por búsqueda/filtros, y excluye encabezados. En archivos parciales, el panel indica **Solo muestra**: no son estadísticas globales.
+
+Cada columna se identifica por número y nombre. Muestra celdas, vacíos, únicos, numéricos, suma, media, mínimo y máximo. Vacíos incluye espacios o campos ausentes; únicos distingue el texto exacto e incluye la cadena vacía. Los valores numéricos admiten punto decimal y notación exponencial; los enteros fuera del rango seguro de Number se excluyen del cálculo, conservándose como texto. Las agregaciones son aproximadas, no aritmética decimal exacta. Analizar no modifica datos, estado de guardado ni historial, e incluye cambios pendientes.
+
+Un cambio del documento descarta resultados antiguos. El alcance y las columnas se fijan al iniciar; cambiar la selección requiere volver a analizar. **Cancelar análisis** descarta resultados y evita iniciar más columnas; la columna en curso puede terminar en segundo plano. Escape cierra el panel y devuelve foco al botón. El límite inicial es de 100 columnas por consulta, con rechazo explícito si se supera. Mediana, desviación, frecuencias, pivot y SQL siguen pendientes.
+
 ## Siguientes entregas propuestas
 
 Mover filas/columnas y transponer tablas o selecciones se mantienen pendientes. No se presenta esta entrega como equivalente a todas las operaciones de Modern CSV. Referencia funcional: [Modern CSV](https://www.moderncsv.com/).

@@ -3,11 +3,12 @@
  import {createVirtualizer} from '@tanstack/svelte-virtual'
  import {get} from 'svelte/store'
  import {untrack} from 'svelte'
+ import CsvStatistics from './CsvStatistics.svelte'
  import {parse} from 'csv-parse/browser/esm/sync'
  import {stringify} from 'csv-stringify/browser/esm/sync'
  import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding} from '../../shared/types'
  let {doc,onchange,onerror,onstatus}:{doc:DocumentInfo;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void}=$props()
- let interpreting=$state(false)
+ let interpreting=$state(false),showStatistics=$state(false),statisticsButton=$state<HTMLButtonElement>()
  const locked=$derived(doc.readonly||interpreting)
  let search=$state(''),filters=$state<Record<string,string>>({}),sort=$state<TableQuery['sort']>(),page=$state<TablePage>({rows:[],total:0,matched:0,revision:0,requestId:0,sample:false}),busy=$state(false),showFilters=$state(false),showReplace=$state(false)
  let selectedRows=$state<string[]>([]),selectedColumns=$state<number[]>([]),selectionStats=$state<TableStats|null>(null)
@@ -47,6 +48,7 @@
   {#if search||Object.values(filters).some(Boolean)||sort}<button onclick={()=>{search='';filters={};sort=undefined}}>Quitar filtros y orden</button>{/if}
   <label class="check-label"><input type="checkbox" bind:checked={numeric} onchange={()=>{if(sort)sort={...sort,numeric}}}/>Orden numérico</label>
   <button onclick={()=>showReplace=!showReplace}>Reemplazar</button>
+  <button bind:this={statisticsButton} aria-expanded={showStatistics} onclick={()=>showStatistics=!showStatistics}>Estadísticas</button>
   <span class="spacer"></span><span class="muted">{busy?'Procesando…':`${page.matched.toLocaleString()} de ${page.total.toLocaleString()} filas`}</span>
  </div>
  {#if doc.warning||doc.readonly}<div class="warning-banner">{doc.warning??'Solo lectura'}{#if page.sample} Los filtros y recuentos describen únicamente la muestra.{/if}</div>{/if}
@@ -64,6 +66,7 @@
   <span class="muted">{selectedRows.length?`Limpieza: ${selectedRows.length} filas × ${selectedColumns.length||doc.headers?.length||0} columnas · sin encabezados`:'Selecciona filas por su número; Ctrl/⌘ o Mayús añade más. Marca columnas para limitar la operación.'}</span>
  </div>
  <div class="csv-options"><label>Codificación <select value={doc.encoding} disabled={doc.dirty||interpreting} onchange={e=>void options({encoding:e.currentTarget.value as Encoding})}><option value="utf8">UTF-8</option><option value="utf16le">UTF-16 LE</option><option value="win1252">Windows-1252</option></select></label><label>Separador <select value={doc.delimiter} disabled={doc.dirty||interpreting} onchange={e=>void options({delimiter:e.currentTarget.value})}><option value=",">Coma</option><option value=";">Punto y coma</option><option value={'\t'}>Tabulación</option><option value="|">Barra vertical</option></select></label><label class="check-label"><input type="checkbox" bind:checked={header} disabled={doc.dirty||interpreting} onchange={()=>void options({header})}/>Primera fila como encabezado</label><span class="spacer"></span><button disabled={locked} onclick={()=>void edit({type:'insertRow',afterId:selectedRows.at(-1)})}>+ Fila</button><button disabled={locked} onclick={()=>void edit({type:'insertColumn',index:doc.headers?.length??0,name:`Columna ${(doc.headers?.length??0)+1}`})}>+ Columna</button><button disabled={locked||!selectedRows.length} onclick={()=>void edit({type:'deleteRows',ids:selectedRows})}>Eliminar filas</button><button disabled={locked||selectedColumns.length!==1} onclick={()=>void edit({type:'deleteColumn',index:selectedColumns[0]})}>Eliminar columna</button></div>
+ {#if showStatistics}<CsvStatistics {doc} columns={selectedColumns} onerror={onerror} onclose={()=>{showStatistics=false;statisticsButton?.focus()}}/>{/if}
  <div class="csv-scroll" bind:this={scrollElement} role="grid" aria-label="Tabla de datos" aria-rowcount={page.matched+1} aria-colcount={(doc.headers?.length??0)+1} tabindex="0" onkeydown={event=>{if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='c'&&selectedRows.length&&(event.target as HTMLElement).tagName!=='INPUT'){event.preventDefault();void copyCells()}if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='z'){event.preventDefault();void undoEdit(event.shiftKey)}}}>
   <div class="virtual-table" style:height={`${$rowsVirtual.getTotalSize()}px`} style:width={`${Math.max($columnsVirtual.getTotalSize(),scrollElement?.clientWidth??0)}px`}>
    <div class="csv-header" role="row" style:height={showFilters?'76px':'40px'}>

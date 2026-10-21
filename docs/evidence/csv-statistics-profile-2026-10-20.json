@@ -1,0 +1,513 @@
+{
+  "baseCommit": "1ef4665bc22f359de08b32310cd34a6c818af165",
+  "dirty": true,
+  "hashes": {
+    "out/main/index.js": "90aff6cbc35352554d24ac37a418d5417e17466dc998b9b64b74d592cd0cff8d",
+    "out/main/table-worker.js": "655cabd07821417221a223a77ec8de2cef824e8510ea8e636aeb2aea76e6d341"
+  },
+  "cpu": "Apple M2 Max",
+  "memoryBytes": 34359738368,
+  "platform": "darwin",
+  "arch": "arm64",
+  "os": "27.0.0",
+  "node": "v24.22.0",
+  "measuredAt": "2026-10-21T05:39:01.940Z",
+  "results": [
+    {
+      "requestedRows": 100,
+      "columns": 4,
+      "bytes": 2533,
+      "mode": "full",
+      "loadedRows": 100,
+      "startupMs": 532.7335419999999,
+      "openMs": 186.40000000596046,
+      "filterMs": 2.9000000059604645,
+      "sortMs": 3.4000000059604645,
+      "statsMs": 1.4000000059604645,
+      "matched": 50,
+      "statsCells": 100,
+      "heartbeatSamples": 19,
+      "heartbeatP95Ms": 188.90000000596046,
+      "heartbeatMaxMs": 188.90000000596046,
+      "metrics": [
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.525747,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82760,
+          "type": "Browser",
+          "creationTime": 1792561132274.863,
+          "memory": {
+            "workingSetSize": 192128,
+            "peakWorkingSetSize": 192128
+          },
+          "sandboxed": false
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.260613,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82761,
+          "type": "GPU",
+          "creationTime": 1792561132508.372,
+          "serviceName": "GPU",
+          "memory": {
+            "workingSetSize": 94624,
+            "peakWorkingSetSize": 94640
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.085127,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82762,
+          "type": "Utility",
+          "creationTime": 1792561132510.478,
+          "serviceName": "network.mojom.NetworkService",
+          "name": "Network Service",
+          "memory": {
+            "workingSetSize": 48000,
+            "peakWorkingSetSize": 48000
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.387711,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82763,
+          "type": "Tab",
+          "creationTime": 1792561132648.402,
+          "memory": {
+            "workingSetSize": 186272,
+            "peakWorkingSetSize": 186272
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.124242,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82766,
+          "type": "Utility",
+          "creationTime": 1792561132801.866,
+          "serviceName": "node.mojom.NodeService",
+          "name": "FreyaLab CSV",
+          "memory": {
+            "workingSetSize": 76256,
+            "peakWorkingSetSize": 76256
+          },
+          "sandboxed": false
+        }
+      ]
+    },
+    {
+      "requestedRows": 3000,
+      "columns": 4,
+      "bytes": 74808,
+      "mode": "full",
+      "loadedRows": 3000,
+      "startupMs": 509.9771249999999,
+      "openMs": 192,
+      "filterMs": 2.300000011920929,
+      "sortMs": 6.199999988079071,
+      "statsMs": 1.699999988079071,
+      "matched": 1500,
+      "statsCells": 3000,
+      "heartbeatSamples": 19,
+      "heartbeatP95Ms": 193.2999999821186,
+      "heartbeatMaxMs": 193.2999999821186,
+      "metrics": [
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.528148,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82770,
+          "type": "Browser",
+          "creationTime": 1792561133488.767,
+          "memory": {
+            "workingSetSize": 192448,
+            "peakWorkingSetSize": 192448
+          },
+          "sandboxed": false
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.255851,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82773,
+          "type": "GPU",
+          "creationTime": 1792561133711.697,
+          "serviceName": "GPU",
+          "memory": {
+            "workingSetSize": 94368,
+            "peakWorkingSetSize": 94384
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.08656,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82774,
+          "type": "Utility",
+          "creationTime": 1792561133713.018,
+          "serviceName": "network.mojom.NetworkService",
+          "name": "Network Service",
+          "memory": {
+            "workingSetSize": 47984,
+            "peakWorkingSetSize": 47984
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.38464,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82775,
+          "type": "Tab",
+          "creationTime": 1792561133849.095,
+          "memory": {
+            "workingSetSize": 186640,
+            "peakWorkingSetSize": 186640
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.164727,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82778,
+          "type": "Utility",
+          "creationTime": 1792561134002.528,
+          "serviceName": "node.mojom.NodeService",
+          "name": "FreyaLab CSV",
+          "memory": {
+            "workingSetSize": 86512,
+            "peakWorkingSetSize": 86512
+          },
+          "sandboxed": false
+        }
+      ]
+    },
+    {
+      "requestedRows": 100000,
+      "columns": 4,
+      "bytes": 2492905,
+      "mode": "full",
+      "loadedRows": 100000,
+      "startupMs": 484.4085420000001,
+      "openMs": 370.30000001192093,
+      "filterMs": 11.400000005960464,
+      "sortMs": 186.40000000596046,
+      "statsMs": 19.69999998807907,
+      "matched": 50000,
+      "statsCells": 100000,
+      "heartbeatSamples": 28,
+      "heartbeatP95Ms": 31.5,
+      "heartbeatMaxMs": 192.7999999821186,
+      "metrics": [
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.535867,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82780,
+          "type": "Browser",
+          "creationTime": 1792561134717.015,
+          "memory": {
+            "workingSetSize": 197792,
+            "peakWorkingSetSize": 197792
+          },
+          "sandboxed": false
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.282966,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82781,
+          "type": "GPU",
+          "creationTime": 1792561134942.422,
+          "serviceName": "GPU",
+          "memory": {
+            "workingSetSize": 98000,
+            "peakWorkingSetSize": 98032
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.089155,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82782,
+          "type": "Utility",
+          "creationTime": 1792561134944.054,
+          "serviceName": "network.mojom.NetworkService",
+          "name": "Network Service",
+          "memory": {
+            "workingSetSize": 48304,
+            "peakWorkingSetSize": 48304
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.409583,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82783,
+          "type": "Tab",
+          "creationTime": 1792561135057.353,
+          "memory": {
+            "workingSetSize": 190032,
+            "peakWorkingSetSize": 190032
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.849565,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82786,
+          "type": "Utility",
+          "creationTime": 1792561135207.838,
+          "serviceName": "node.mojom.NodeService",
+          "name": "FreyaLab CSV",
+          "memory": {
+            "workingSetSize": 150400,
+            "peakWorkingSetSize": 150400
+          },
+          "sandboxed": false
+        }
+      ]
+    },
+    {
+      "requestedRows": 1000000,
+      "columns": 4,
+      "bytes": 24928915,
+      "mode": "sample",
+      "loadedRows": 200,
+      "startupMs": 475.5374590000001,
+      "openMs": 998.2999999821186,
+      "filterMs": 1.7000000178813934,
+      "sortMs": 2.5999999940395355,
+      "statsMs": 1.199999988079071,
+      "matched": 100,
+      "statsCells": 200,
+      "heartbeatSamples": 51,
+      "heartbeatP95Ms": 26.19999998807907,
+      "heartbeatMaxMs": 191.69999998807907,
+      "metrics": [
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.542608,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82790,
+          "type": "Browser",
+          "creationTime": 1792561136294.771,
+          "memory": {
+            "workingSetSize": 217616,
+            "peakWorkingSetSize": 217616
+          },
+          "sandboxed": false
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.269382,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82791,
+          "type": "GPU",
+          "creationTime": 1792561136511.94,
+          "serviceName": "GPU",
+          "memory": {
+            "workingSetSize": 94848,
+            "peakWorkingSetSize": 94880
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.085513,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82792,
+          "type": "Utility",
+          "creationTime": 1792561136514.021,
+          "serviceName": "network.mojom.NetworkService",
+          "name": "Network Service",
+          "memory": {
+            "workingSetSize": 48320,
+            "peakWorkingSetSize": 48320
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.397666,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82793,
+          "type": "Tab",
+          "creationTime": 1792561136627.006,
+          "memory": {
+            "workingSetSize": 187056,
+            "peakWorkingSetSize": 187056
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 1.224421,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82796,
+          "type": "Utility",
+          "creationTime": 1792561136796,
+          "serviceName": "node.mojom.NodeService",
+          "name": "FreyaLab CSV",
+          "memory": {
+            "workingSetSize": 264720,
+            "peakWorkingSetSize": 270272
+          },
+          "sandboxed": false
+        }
+      ]
+    },
+    {
+      "requestedRows": 1000000,
+      "columns": 1,
+      "bytes": 8000008,
+      "mode": "full",
+      "loadedRows": 1000000,
+      "startupMs": 482.6775830000006,
+      "openMs": 932.3000000119209,
+      "filterMs": 82.30000001192093,
+      "sortMs": 1266,
+      "statsMs": 283.69999998807907,
+      "matched": 12691,
+      "statsCells": 1000000,
+      "heartbeatSamples": 114,
+      "heartbeatP95Ms": 26.099999994039536,
+      "heartbeatMaxMs": 191.90000000596046,
+      "metrics": [
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.544251,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82798,
+          "type": "Browser",
+          "creationTime": 1792561138354.575,
+          "memory": {
+            "workingSetSize": 208144,
+            "peakWorkingSetSize": 208144
+          },
+          "sandboxed": false
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.26937,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82799,
+          "type": "GPU",
+          "creationTime": 1792561138578.155,
+          "serviceName": "GPU",
+          "memory": {
+            "workingSetSize": 90368,
+            "peakWorkingSetSize": 95088
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.087991,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82800,
+          "type": "Utility",
+          "creationTime": 1792561138580.101,
+          "serviceName": "network.mojom.NetworkService",
+          "name": "Network Service",
+          "memory": {
+            "workingSetSize": 48352,
+            "peakWorkingSetSize": 48352
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 0.400491,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82801,
+          "type": "Tab",
+          "creationTime": 1792561138694.426,
+          "memory": {
+            "workingSetSize": 203696,
+            "peakWorkingSetSize": 203872
+          },
+          "sandboxed": true
+        },
+        {
+          "cpu": {
+            "cumulativeCPUUsage": 2.843102,
+            "percentCPUUsage": 0,
+            "idleWakeupsPerSecond": 0
+          },
+          "pid": 82804,
+          "type": "Utility",
+          "creationTime": 1792561138849.437,
+          "serviceName": "node.mojom.NodeService",
+          "name": "FreyaLab CSV",
+          "memory": {
+            "workingSetSize": 421808,
+            "peakWorkingSetSize": 421808
+          },
+          "sandboxed": false
+        }
+      ]
+    }
+  ],
+  "note": "Una observación por caso, no garantía. Filtrado y ordenación medidos por API; heartbeat del renderer, no latencia de entrada. Memoria capturada al terminar, no pico. Muestra no representa análisis global."
+}
