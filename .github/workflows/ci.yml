@@ -14,7 +14,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-2025, macos-15, macos-15-intel]
+        include:
+          - os: ubuntu-24.04
+            executable: release/linux-unpacked/freyalab
+          - os: windows-2025
+            executable: release/win-unpacked/FreyaLab.exe
+          - os: macos-15
+            executable: release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab
+          - os: macos-15-intel
+            executable: release/mac/FreyaLab.app/Contents/MacOS/FreyaLab
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     steps:
@@ -24,6 +32,12 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: Prepare Electron sandbox helper (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          node -e "require('electron')"
+          sudo chown root:root node_modules/electron/dist/chrome-sandbox
+          sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
       - run: npm run check
       - run: npm test
       - run: npm run licenses
@@ -34,6 +48,23 @@ jobs:
       - name: E2E macOS and Windows
         if: runner.os != 'Linux'
         run: npm run test:e2e
+      - name: Package application directory
+        run: npx electron-builder --dir
+      - name: Prepare packaged sandbox helper (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo chown root:root release/linux-unpacked/chrome-sandbox
+          sudo chmod 4755 release/linux-unpacked/chrome-sandbox
+      - name: SQL in packaged application (Linux)
+        if: runner.os == 'Linux'
+        env:
+          FREYALAB_EXECUTABLE: ${{ github.workspace }}/${{ matrix.executable }}
+        run: xvfb-run -a npx playwright test tests/e2e/sql.spec.ts --output=packaged-test-results
+      - name: SQL in packaged application (macOS and Windows)
+        if: runner.os != 'Linux'
+        env:
+          FREYALAB_EXECUTABLE: ${{ github.workspace }}/${{ matrix.executable }}
+        run: npx playwright test tests/e2e/sql.spec.ts --output=packaged-test-results
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -41,4 +72,5 @@ jobs:
           path: |
             playwright-report/
             test-results/
+            packaged-test-results/
           if-no-files-found: warn

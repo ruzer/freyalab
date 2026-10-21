@@ -1,0 +1,2 @@
+export const quoteIdentifier=(text:string)=>'"'+text.replace(/"/g,'""')+'"'
+export function sqlColumns(headers:string[]){const used=new Set<string>();return headers.map((original,index)=>{const base=original.trim()?original.slice(0,128):`Columna ${index+1}`;let name=base,suffix=2;while(used.has(name.toLowerCase()))name=`${base}_${suffix++}`;used.add(name.toLowerCase());return{index,name,original}})}

@@ -1,0 +1,297 @@
+{
+  "recordedAt": "2026-10-21T18:07:40.765Z",
+  "platform": "darwin",
+  "arch": "arm64",
+  "os": "27.0.0",
+  "cpu": "Apple M2 Max",
+  "logicalCpus": 12,
+  "totalMemoryBytes": 34359738368,
+  "node": "24.22.0",
+  "electron": "44.9.2",
+  "measurements": [
+    {
+      "rows": 100,
+      "columns": 4,
+      "bytes": 2316,
+      "editorRows": 100,
+      "editorReadonly": false,
+      "version": "v1.5.4",
+      "openMs": 169.65983399999823,
+      "analysisMs": 600.2338329999984,
+      "responsiveness": {
+        "intervalMs": 20,
+        "samples": 30,
+        "maxGapMs": 21.099999994039536
+      },
+      "memory": {
+        "sampleIntervalMs": 50,
+        "peakSumWorkingSetKiB": 1012672,
+        "processesAtPeak": [
+          {
+            "pid": 53019,
+            "type": "Browser",
+            "memory": {
+              "workingSetSize": 217792,
+              "peakWorkingSetSize": 223456
+            }
+          },
+          {
+            "pid": 53027,
+            "type": "GPU",
+            "memory": {
+              "workingSetSize": 95856,
+              "peakWorkingSetSize": 95904
+            }
+          },
+          {
+            "pid": 53028,
+            "type": "Utility",
+            "name": "Network Service",
+            "memory": {
+              "workingSetSize": 48768,
+              "peakWorkingSetSize": 48768
+            }
+          },
+          {
+            "pid": 53029,
+            "type": "Tab",
+            "memory": {
+              "workingSetSize": 182816,
+              "peakWorkingSetSize": 182816
+            }
+          },
+          {
+            "pid": 53031,
+            "type": "Utility",
+            "name": "FreyaLab CSV",
+            "memory": {
+              "workingSetSize": 102976,
+              "peakWorkingSetSize": 103056
+            }
+          },
+          {
+            "pid": 53070,
+            "type": "Tab",
+            "memory": {
+              "workingSetSize": 364464,
+              "peakWorkingSetSize": 364464
+            }
+          }
+        ]
+      }
+    },
+    {
+      "rows": 3000,
+      "columns": 4,
+      "bytes": 68726,
+      "editorRows": 3000,
+      "editorReadonly": false,
+      "version": "v1.5.4",
+      "openMs": 31.979749999998603,
+      "analysisMs": 677.3112499999988,
+      "responsiveness": {
+        "intervalMs": 20,
+        "samples": 33,
+        "maxGapMs": 21.30000001192093
+      },
+      "memory": {
+        "sampleIntervalMs": 50,
+        "peakSumWorkingSetKiB": 1049920,
+        "processesAtPeak": [
+          {
+            "pid": 53019,
+            "type": "Browser",
+            "memory": {
+              "workingSetSize": 224192,
+              "peakWorkingSetSize": 229376
+            }
+          },
+          {
+            "pid": 53027,
+            "type": "GPU",
+            "memory": {
+              "workingSetSize": 97904,
+              "peakWorkingSetSize": 97968
+            }
+          },
+          {
+            "pid": 53028,
+            "type": "Utility",
+            "name": "Network Service",
+            "memory": {
+              "workingSetSize": 48784,
+              "peakWorkingSetSize": 48784
+            }
+          },
+          {
+            "pid": 53029,
+            "type": "Tab",
+            "memory": {
+              "workingSetSize": 186896,
+              "peakWorkingSetSize": 186896
+            }
+          },
+          {
+            "pid": 53031,
+            "type": "Utility",
+            "name": "FreyaLab CSV",
+            "memory": {
+              "workingSetSize": 113904,
+              "peakWorkingSetSize": 113904
+            }
+          },
+          {
+            "pid": 53101,
+            "type": "Tab",
+            "memory": {
+              "workingSetSize": 378240,
+              "peakWorkingSetSize": 378240
+            }
+          }
+        ]
+      }
+    },
+    {
+      "rows": 100000,
+      "columns": 4,
+      "bytes": 2290026,
+      "editorRows": 100000,
+      "editorReadonly": false,
+      "version": "v1.5.4",
+      "openMs": 165.11045800000284,
+      "analysisMs": 951.9387500000012,
+      "responsiveness": {
+        "intervalMs": 20,
+        "samples": 47,
+        "maxGapMs": 21.399999976158142
+      },
+      "memory": {
+        "sampleIntervalMs": 50,
+        "peakSumWorkingSetKiB": 1203344,
+        "processesAtPeak": [
+          {
+            "pid": 53019,
+            "type": "Browser",
+            "memory": {
+              "workingSetSize": 243232,
+              "peakWorkingSetSize": 243280
+            }
+          },
+          {
+            "pid": 53027,
+            "type": "GPU",
+            "memory": {
+              "workingSetSize": 98528,
+              "peakWorkingSetSize": 98576
+            }
+          },
+          {
+            "pid": 53028,
+            "type": "Utility",
+            "name": "Network Service",
+            "memory": {
+              "workingSetSize": 48800,
+              "peakWorkingSetSize": 48800
+            }
+          },
+          {
+            "pid": 53029,
+            "type": "Tab",
+            "memory": {
+              "workingSetSize": 193472,
+              "peakWorkingSetSize": 193472
+            }
+          },
+          {
+            "pid": 53031,
+            "type": "Utility",
+            "name": "FreyaLab CSV",
+            "memory": {
+              "workingSetSize": 222304,
+              "peakWorkingSetSize": 222304
+            }
+          },
+          {
+            "pid": 53111,
+            "type": "Tab",
+            "memory": {
+              "workingSetSize": 397008,
+              "peakWorkingSetSize": 397008
+            }
+          }
+        ]
+      }
+    },
+    {
+      "rows": 1000000,
+      "columns": 4,
+      "bytes": 22900026,
+      "editorRows": 200,
+      "editorReadonly": true,
+      "version": "v1.5.4",
+      "openMs": 589.3940000000002,
+      "analysisMs": 5605.4215,
+      "responsiveness": {
+        "intervalMs": 20,
+        "samples": 280,
+        "maxGapMs": 21.599999994039536
+      },
+      "memory": {
+        "sampleIntervalMs": 50,
+        "peakSumWorkingSetKiB": 1368224,
+        "processesAtPeak": [
+          {
+            "pid": 53019,
+            "type": "Browser",
+            "memory": {
+              "workingSetSize": 226144,
+              "peakWorkingSetSize": 261008
+            }
+          },
+          {
+            "pid": 53027,
+            "type": "GPU",
+            "memory": {
+              "workingSetSize": 80256,
+              "peakWorkingSetSize": 98976
+            }
+          },
+          {
+            "pid": 53028,
+            "type": "Utility",
+            "name": "Network Service",
+            "memory": {
+              "workingSetSize": 42272,
+              "peakWorkingSetSize": 48800
+            }
+          },
+          {
+            "pid": 53029,
+            "type": "Tab",
+            "memory": {
+              "workingSetSize": 154976,
+              "peakWorkingSetSize": 196976
+            }
+          },
+          {
+            "pid": 53031,
+            "type": "Utility",
+            "name": "FreyaLab CSV",
+            "memory": {
+              "workingSetSize": 351376,
+              "peakWorkingSetSize": 351376
+            }
+          },
+          {
+            "pid": 53112,
+            "type": "Tab",
+            "memory": {
+              "workingSetSize": 513200,
+              "peakWorkingSetSize": 513200
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

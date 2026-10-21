@@ -2,12 +2,13 @@ import { app, BrowserWindow, dialog, ipcMain, shell, clipboard } from 'electron'
 import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve, relative, isAbsolute, extname } from 'node:path'
 import { z } from 'zod'
+import { SqlService } from './sql-service'
 import { Documents } from './documents'
 import { exportDocument } from './export'
 import type { Kind,TableEdit,TableOptions,TableExport,TableQuery,ExportRequest,TableRange,TableRangeEdit } from '../shared/types'
 const here=dirname(fileURLToPath(import.meta.url))
 if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FREYALAB_USER_DATA))
-let window:BrowserWindow|undefined,docs:Documents,quitting=false
+let window:BrowserWindow|undefined,docs:Documents,analytics:SqlService,quitting=false
 const waiting:string[]=[]
 const id=z.uuid(),path=z.string().min(1).max(32768), text=z.string().max(20*1024*1024),col=z.number().int().min(0).max(100000), rows=z.array(z.string().max(100)).max(2000000)
 const filter=z.object({column:col,op:z.enum(['contains','equals','notEquals','starts','ends','empty','notEmpty','greater','greaterEqual','less','lessEqual','dateBefore','dateOn','dateAfter','regex']),value:z.string().max(10000).optional(),caseSensitive:z.boolean().optional()})
@@ -46,6 +47,9 @@ async function handle(operation:string,args:unknown[]){
  case'edit':return docs.tableEdit(id.parse(a),edits.parse(b) as TableEdit)
  case'options':return docs.tableOptions(id.parse(a),z.object({encoding:z.enum(['utf8','utf16le','win1252']).optional(),delimiter:z.enum([',',';','\t','|']).optional(),header:z.boolean().optional()}).parse(b) as TableOptions)
  case'undo':return docs.undo(id.parse(a),z.boolean().optional().parse(b))
+ case'sqlRun':return analytics.run(z.object({requestId:z.uuid(),sources:z.array(z.object({id,revision:z.number().int().nonnegative()})).min(1).max(4),sql:z.string().trim().min(1).max(100000)}).parse(a))
+ case'sqlPage':return analytics.page(id.parse(a),z.number().int().min(0).max(9999).parse(b))
+ case'sqlCancel':return analytics.cancel(id.parse(a))
  case'analyzeColumn':docs.get(id.parse(a));return docs.table.call('analyzeColumn',a,z.object({column:col,otherColumn:col.optional(),query:query.optional(),revision:z.number().int().nonnegative(),requestId:z.uuid(),frequencyOffset:z.number().int().min(0).max(2000000),duplicatesOnly:z.boolean(),bins:z.number().int().min(1).max(30)}).parse(b))
  case'cancelAnalysis':docs.get(id.parse(a));return docs.table.call('cancelAnalysis',a,z.uuid().parse(b))
  case'stats':docs.get(id.parse(a));return docs.table.call('stats',a,rows.nullable().parse(b),z.array(col).max(100000).parse(c))
@@ -66,6 +70,7 @@ app.on('second-instance',(_event,argv)=>{window?.show();window?.focus();const pa
 app.whenReady().then(async()=>{
  app.setName('FreyaLab')
  docs=new Documents(event=>window?.webContents.send('freya:event',event))
+ analytics=new SqlService(docs,progress=>window?.webContents.send('freya:event',{type:'analysis',progress}))
  ipcMain.handle('freya',async(event,operation,...args)=>{assertSender(event);try{return await handle(z.string().max(100).parse(operation),args)}catch(e){throw new Error(e instanceof z.ZodError?'Datos de operación no válidos.':(e as Error).message)}})
  ipcMain.on('freya:drop',(event,paths)=>{assertSender(event);for(const p of z.array(path).max(100).parse(paths))docs.grants.add(resolve(p))})
  window=new BrowserWindow({width:1440,height:900,minWidth:900,minHeight:600,title:'FreyaLab',backgroundColor:'#18181b',titleBarStyle:process.platform==='darwin'?'hiddenInset':'default',webPreferences:{preload:join(here,'../preload/index.cjs'),sandbox:true,contextIsolation:true,nodeIntegration:false}})
@@ -76,7 +81,7 @@ app.whenReady().then(async()=>{
   if(details.url.startsWith('data:')||details.url.startsWith('devtools:')){callback({cancel:false});return}
   try{const asset=relative(resolve(here,'../renderer'),fileURLToPath(details.url));callback({cancel:asset.startsWith('..')||isAbsolute(asset)})}catch{callback({cancel:true})}
  })
- window.on('close',event=>{if(quitting)return;event.preventDefault();void(async()=>{for(const key of [...docs.records.keys()])if(!await docs.close(key))return;quitting=true;await docs.shutdown();window?.destroy();app.quit()})().catch(e=>dialog.showErrorBox('No se pudo cerrar',e.message))})
+ window.on('close',event=>{if(quitting)return;event.preventDefault();void(async()=>{for(const key of [...docs.records.keys()])if(!await docs.close(key))return;quitting=true;analytics.stop();await docs.shutdown();window?.destroy();app.quit()})().catch(e=>dialog.showErrorBox('No se pudo cerrar',e.message))})
  const url=process.env.ELECTRON_RENDERER_URL;if(url)await window.loadURL(url);else await window.loadFile(join(here,'../renderer/index.html'))
  const initial=process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_OPEN?JSON.parse(process.env.FREYALAB_TEST_OPEN):process.argv.slice(1).filter(p=>/\.(md|markdown|csv|tsv|mmd|mermaid|txt)$/i.test(p))
  for(const p of [...waiting,...initial]){docs.grants.add(resolve(p));await openPaths([p]).catch(e=>window?.webContents.send('freya:event',{type:'error',message:e.message}))}

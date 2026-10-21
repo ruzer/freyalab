@@ -33,7 +33,8 @@
       "out/**/*",
       "package.json",
       "THIRD_PARTY_NOTICES.txt",
-      "LICENSE"
+      "LICENSE",
+      "!node_modules/@duckdb/duckdb-wasm/**"
     ],
     "asar": true,
     "npmRebuild": false,
@@ -82,11 +83,13 @@
     "@codemirror/search": "6.7.2",
     "@codemirror/state": "6.7.6",
     "@codemirror/view": "6.43.15",
+    "@duckdb/duckdb-wasm": "1.33.1-dev57.0",
     "@fontsource/inter": "5.3.0",
     "@fontsource/jetbrains-mono": "5.3.0",
     "@lezer/highlight": "1.2.5",
     "@tanstack/svelte-table": "9.3.1",
     "@tanstack/svelte-virtual": "3.13.47",
+    "apache-arrow": "17.0.0",
     "chokidar": "6.0.0",
     "csv-parse": "7.0.3",
     "csv-stringify": "6.9.0",

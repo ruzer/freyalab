@@ -21,7 +21,7 @@ test.beforeEach(async () => {
 
 async function launch() {
   const { ELECTRON_RUN_AS_NODE: _unused, ...cleanEnv } = process.env
-  app = await electron.launch({
+  app = await electron.launch({chromiumSandbox:true,
     executablePath: process.env.FREYALAB_EXECUTABLE || electronPath as unknown as string,
     args: process.env.FREYALAB_EXECUTABLE ? [] : [resolve('out/main/index.js')],
     env: { ...cleanEnv as Record<string, string>, FREYALAB_TEST: '1', FREYALAB_USER_DATA: join(directory, 'profile'), FREYALAB_TEST_EXPORT_DIR: join(directory, 'exports'), FREYALAB_TEST_SAVE_DIR: join(directory, 'saved') },

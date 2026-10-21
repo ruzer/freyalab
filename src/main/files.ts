@@ -1,7 +1,8 @@
 import { createHash, randomUUID } from 'node:crypto'
-import { open, readFile, rename, unlink, stat, chmod, realpath } from 'node:fs/promises'
+import { open, rename, unlink, stat, chmod, realpath } from 'node:fs/promises'
+import { createReadStream } from 'node:fs'
 import { dirname, basename, join, relative, isAbsolute } from 'node:path'
-export async function digest(path:string):Promise<string> { return createHash('sha256').update(await readFile(path)).digest('hex') }
+export async function digest(path:string):Promise<string> { const hash=createHash('sha256');for await(const chunk of createReadStream(path))hash.update(chunk);return hash.digest('hex') }
 export async function contained(root:string,path:string):Promise<boolean> {
  const r=relative(await realpath(root),await realpath(path)); return r===''||(!r.startsWith('..')&&!isAbsolute(r))
 }

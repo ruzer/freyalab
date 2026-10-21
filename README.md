@@ -46,6 +46,8 @@ La barra Markdown reproduce los accesos del render: negrita, cursiva, código en
 
 El menú **Operaciones** de CSV añade limpieza de espacios, mayúsculas/minúsculas y duplicación de filas o columnas. Las transformaciones tienen selección explícita y deshacer. Consulta [cómo usar los menús](docs/EDITOR-MENUS.md). Estas novedades todavía no forman parte de las descargas de `v0.1.0-alpha.1`.
 
+El panel **Análisis** añade consultas SQL locales y asistentes para agrupaciones, tablas dinámicas y cruces entre CSV abiertos. Usa DuckDB-Wasm aislado; conserva cambios pendientes y distingue el análisis completo de la muestra editable. Consulta [límites y comprobaciones](docs/evidence/duckdb-wasm-2026-10-21.md). Tampoco forma parte de los binarios alpha.1.
+
 ## Descargas y compatibilidad
 
 Las descargas se publican como **prereleases** en [GitHub Releases](https://github.com/ruzer/freyalab/releases) únicamente después de los controles documentados. Si no hay prerelease, todavía no existe una alfa publicada.

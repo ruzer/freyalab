@@ -27,3 +27,14 @@ Las recuperaciones se escriben tras dos segundos de inactividad. Una copia base 
 ## Recursos y privacidad
 
 Bibliotecas, fuentes y estilos se empaquetan localmente. Los enlaces se abren por acción explícita en el navegador del sistema. Los recursos externos de documentos están bloqueados por defecto. No hay analítica, cuenta o servidor obligatorio.
+
+
+## Análisis posterior a alpha.1
+
+`SqlService` coordina una consulta a la vez. El proceso tabular produce lotes Arrow UTF-8 del documento y su revisión; para una muestra relee el original autorizado por streaming y comprueba huellas, metadatos y encabezados. La huella compartida usa streaming para evitar otra copia completa en memoria. No se sustituye el documento editable ni su recuperación.
+
+DuckDB-Wasm reside en un Web Worker de una ventana oculta con sandbox de Chromium, sin Node/preload, sin permisos, navegación ni conexiones externas. Sus recursos se sirven mediante un protocolo/sesión propios desde los archivos empaquetados. CSP admite WebAssembly y no `unsafe-eval`; Arrow IPC se construye en el proceso tabular para evitar generar código en el navegador. El paquete incluye solo la variante EH y su worker; Arrow sigue disponible para el proceso de datos.
+
+La configuración de DuckDB bloquea acceso externo, extensiones automáticas/comunitarias/no firmadas y cambios de configuración. Cada consulta pasa por el parser/prepared statement del motor (una sentencia), se usa como relación dentro de una transacción READ ONLY y devuelve hasta 10 001 filas para detectar truncamiento. DDL/SET/INSTALL/LOAD no se ejecutan como relación. El aislamiento no depende solo de identificar verbos SQL.
+
+Main valida entradas/salida, limita fuentes/celdas/resultado y conserva como máximo 10 000 filas/8 MiB. La interfaz recibe páginas de 100; destruir la ventana cancela cómputo, con tiempo máximo de dos minutos. Un resultado pertenece a revisiones concretas; se invalida si cambian. El límite de memoria de DuckDB no es una cuota de RAM de todo Electron. [Contrato de uso y límites](EDITOR-MENUS.md#análisis-sql-agrupaciones-tablas-dinámicas-y-cruces).
