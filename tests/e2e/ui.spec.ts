@@ -33,6 +33,7 @@ test('interfaz: crear, editar, visualizar, guardar y exportar Markdown en ambos 
  for(const theme of ['dark','light']){
   await page.getByLabel('Tema',{exact:true}).selectOption(theme)
   await expect(page.locator('.markdown-body .mermaid-render svg')).toBeVisible()
+  await expect(page.locator('.render-progress')).toHaveCount(0)
   await page.screenshot({path:test.info().outputPath(`markdown-${theme}-1440x900.png`)})
  }
  await page.getByRole('button',{name:'⇧ Exportar ▾',exact:true}).click()

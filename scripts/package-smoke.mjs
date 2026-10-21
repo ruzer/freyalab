@@ -27,14 +27,15 @@ try {
       const mount = join(temp, 'mount')
       await mkdir(mount, { recursive: true })
       run('hdiutil', ['attach', '-readonly', '-nobrowse', '-mountpoint', mount, join(release, name)])
+      let install
       try {
         const app = (await readdir(mount)).find(value => value.endsWith('.app'))
         if (!app) throw new Error('DMG contains no application')
-        const install = join(temp, 'installed', app)
-        await cp(join(mount, app), install, { recursive: true })
-        smoke(join(install, 'Contents', 'MacOS', 'FreyaLab'))
-        results.push({ artifact: name, extractionOrInstallation: 'passed: mounted read-only and copied application', packagedExecution: 'passed', userGatekeeperTest: 'pending manual check; no commercial signature/notarization' })
+        install = join(temp, 'installed', app)
+        await cp(join(mount, app), install, { recursive: true, verbatimSymlinks: true })
       } finally { run('hdiutil', ['detach', mount]) }
+      smoke(join(install, 'Contents', 'MacOS', 'FreyaLab'))
+      results.push({ artifact: name, extractionOrInstallation: 'passed: copied application with preserved symlinks; source DMG detached before launch', packagedExecution: 'passed', userGatekeeperTest: 'pending manual check; no commercial signature/notarization' })
     }
   } else if (process.platform === 'win32') {
     const installers = files.filter(name => name.endsWith('.exe') && !name.toLowerCase().includes('uninstall'))

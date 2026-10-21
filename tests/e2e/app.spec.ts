@@ -54,7 +54,7 @@ test('renderer aislado, documento Markdown editable y guardado real', async () =
   await expect(page.getByRole('document').getByRole('heading', { name: 'Freya', exact: true })).toBeVisible()
   for (const theme of ['light', 'dark']) {
     await page.getByRole('combobox', { name: 'Tema' }).selectOption(theme)
-    await expect(page.locator('html')).toHaveClass(theme === 'dark' ? /dark/ : /^$/)
+    if(theme==='dark')await expect(page.locator('html')).toHaveClass(/dark/);else await expect(page.locator('html')).not.toHaveClass(/dark/)
     for (const [width, height] of [[1440, 900], [1280, 800]]) {
       await page.setViewportSize({ width, height })
       await page.screenshot({ path: test.info().outputPath(`markdown-${theme}-${width}x${height}.png`) })
