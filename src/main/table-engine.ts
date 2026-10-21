@@ -182,7 +182,7 @@ export class TableEngine {
     let groups=0;for(let end=remove.length-1;end>=0;){let start=end;while(start>0&&remove[start-1]===remove[start]-1)start--;const index=remove[start],rows=s.rows.slice(index,remove[end]+1).map(copyRow);add({type:'rows',index,remove:rows.length,rows:[]},{type:'rows',index,remove:0,rows});end=start-1;if(++groups%512===0)await progress(s.rows.length)}
     preview.deletedRows=preview.affected=remove.length
    }else{
-    const insertAt=columns.at(-1)!+1,result:string[][]=[[]]
+    const insertAt=0,result:string[][]=[[]]
     const capacity=(width:number)=>{if(s.headers.length+width>200)throw new Error('El resultado supera 200 columnas.');if(s.rows.length*(s.headers.length+width)>TABLE_LIMITS.cells)throw new Error('Las columnas resultantes superan dos millones de celdas.')}
     capacity(1)
     for(let i=0;i<s.rows.length;i++){
@@ -195,7 +195,7 @@ export class TableEngine {
      sample(i,columns[0],JSON.stringify(values),edit.operation==='split'?JSON.stringify(parts):parts[0]);if(i%512===0)await progress(i+1)
     }
     const lengths=s.rows.map(row=>row.cells.length),prefix=[...(s.headers[columns[0]]||'Columna')].slice(0,128).join('')
-    for(let c=0;c<result.length;c++){const index=insertAt+c,name=edit.operation==='split'?`${prefix}_${c+1}`:edit.name||'Combinada';add({type:'column',index,remove:false,name,cells:result[c]},{type:'column',index,remove:true,name:'',cells:[],headerWidth:s.headerWidth,lengths:[...lengths]});for(let i=0;i<lengths.length;i++)lengths[i]=Math.max(lengths[i],index)+1;await progress(s.rows.length)}
+    for(let c=0;c<result.length;c++){const index=insertAt+c,name=edit.operation==='split'?`${prefix}_${c+1}`:edit.name||'Combinada';add({type:'column',index,remove:false,name,cells:result[c],headerWidth:s.header?s.headerWidth+c+1:0},{type:'column',index,remove:true,name:'',cells:[],headerWidth:s.headerWidth,lengths:[...lengths]});for(let i=0;i<lengths.length;i++)lengths[i]=Math.max(lengths[i],index)+1;await progress(s.rows.length)}
     preview.addedColumns=result.length;preview.affected=s.rows.length;preview.cells=result.length*s.rows.length
    }
    const headers=[...s.headers];for(const m of forward){if(m.type==='header')headers[m.column]=m.value;else if(m.type==='column'&&!m.remove)headers.splice(m.index,0,m.name)}record(headers)

@@ -17,15 +17,15 @@ it('divide texto literal sin quitar originales; conserva ceros, saltos, huecos y
  const source='ID,Partes,Final\r\n001,"a;;b\r\nc;",x\r\n002\r\n003,"dice ""hola"";0007",z\r\n';await open(source)
  const request=await edit('split',[1],{separator:';'}),before=await engine.snapshot('a'),preview=await engine.transformPreview('a',request)
  expect(preview).toMatchObject({rows:3,affected:3,addedColumns:4,deletedRows:0});expect(await engine.snapshot('a')).toEqual(before)
- await engine.edit('a',request);expect((await engine.info('a')).headers).toEqual(['ID','Partes','Partes_1','Partes_2','Partes_3','Partes_4','Final'])
- expect(await cells()).toEqual([['001','a;;b\r\nc;','a','','b\r\nc','','x'],['002','','','','',''],['003','dice "hola";0007','dice "hola"','0007','','','z']])
+ await engine.edit('a',request);expect((await engine.info('a')).headers).toEqual(['Partes_1','Partes_2','Partes_3','Partes_4','ID','Partes','Final'])
+ expect(await cells()).toEqual([['a','','b\r\nc','','001','a;;b\r\nc;','x'],['','','','','002'],['dice "hola"','0007','','','003','dice "hola";0007','z']])
  await engine.restore('b',JSON.parse(JSON.stringify(await engine.snapshot('a'))));await engine.undo('b');expect((await engine.serialize('b')).toString()).toBe(source)
  await engine.undo('a');expect((await engine.serialize('a')).toString()).toBe(source);await engine.undo('a',true);expect((await engine.info('a')).headers).toHaveLength(7)
 })
 it('combina según el orden original y añade una columna sin convertir identificadores o fechas',async()=>{
  const source='ID,Fecha,Nota\n00123,2026-10-21,"á\nñ"\n9007199254740993,,\n';await open(source)
  const request=await edit('combine',[2,0],{separator:' | ',name:'Resumen'});await engine.edit('a',request)
- expect(await cells()).toEqual([['00123','2026-10-21','á\nñ','00123 | á\nñ'],['9007199254740993','','','9007199254740993 | ']])
+ expect(await cells()).toEqual([['00123 | á\nñ','00123','2026-10-21','á\nñ'],['9007199254740993 | ','9007199254740993','','']])
  await engine.undo('a');expect((await engine.serialize('a')).toString()).toBe(source)
 })
 it('deduplica por claves compuestas exactas y conserva primera fila, vacíos frente a ausentes y filas originales',async()=>{
@@ -71,5 +71,17 @@ it('rechaza registros resultantes demasiado grandes y mantiene los límites de e
 })
 
 it('genera encabezados derivados sin cortar caracteres Unicode y vuelve a abrir el resultado',async()=>{
- const header='a'.repeat(127)+'😀';await open(header+'\na;b\n');await engine.edit('a',await edit('split',[0],{separator:';'}));const saved=await engine.serialize('a'),path=join(folder,'result.csv');await writeFile(path,saved);await engine.open('b',path);expect((await engine.info('b')).headers).toEqual([header,header+'_1',header+'_2']);expect((await engine.page('b',query)).rows[0].cells).toEqual(['a;b','a','b'])
+ const header='a'.repeat(127)+'😀';await open(header+'\na;b\n');await engine.edit('a',await edit('split',[0],{separator:';'}));const saved=await engine.serialize('a'),path=join(folder,'result.csv');await writeFile(path,saved);await engine.open('b',path);expect((await engine.info('b')).headers).toEqual([header+'_1',header+'_2',header]);expect((await engine.page('b',query)).rows[0].cells).toEqual(['a','b','a;b'])
+})
+
+it('antepone columnas derivadas sin materializar campos originales o encabezados ausentes',async()=>{
+ const source='ID\n001,a;b,x\n002\n003,,z\n';await open(source)
+ for(const operation of ['split','combine'] as const){
+  const request=await edit(operation,operation==='split'?[1]:[0,2],{separator:';'});await engine.edit('a',request)
+  const rows=await cells(),width=operation==='split'?2:1
+  expect(rows[1].slice(width)).toEqual(['002']);expect(rows[1]).toHaveLength(width+1)
+  const saved=(await engine.serialize('a')).toString();expect(saved.split('\n')[0]).toBe(operation==='split'?'Columna_1,Columna_2,ID':'Combinada,ID')
+  const resultPath=join(folder,'irregular.csv');await writeFile(resultPath,saved);await engine.open('b',resultPath);expect((await engine.page('b',query)).rows[1].cells.slice(width)).toEqual(['002'])
+  await engine.undo('a');expect((await engine.serialize('a')).toString()).toBe(source)
+ }
 })

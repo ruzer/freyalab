@@ -40,7 +40,7 @@ test('transformación conserva recuperación, un paso de deshacer y guardado en 
  const {doc,path}=await open();const updated=await page.evaluate(async doc=>window.freya.tableEdit(doc.id,{type:'structure',operation:'combine',columns:[0,1],separator:' | ',name:'Combinada',revision:doc.revision,requestId:crypto.randomUUID()}),doc)
  await expect.poll(async()=>await page.evaluate(()=>window.freya.recoveries()),{timeout:10000}).not.toEqual([])
  const recovered=await page.evaluate(async()=>{const [entry]=await window.freya.recoveries();return window.freya.recover(entry.id)})
- expect(recovered.headers).toEqual(['ID','Partes','Combinada','Nota']);await page.evaluate(id=>window.freya.undo(id),recovered.id)
+ expect(recovered.headers).toEqual(['Combinada','ID','Partes','Nota']);await page.evaluate(id=>window.freya.undo(id),recovered.id)
  const copy=await page.evaluate(id=>window.freya.export(id,{format:'csv',table:{scope:'all'}}),recovered.id);expect(await readFile(copy!,'utf8')).toBe(original);expect(await readFile(path,'utf8')).toBe(original)
  await page.evaluate(id=>window.freya.save(id),updated.id);expect(await readFile(path,'utf8')).toContain('001 | a;0007');expect(await readFile(path,'utf8')).toContain('\r\n')
 })
