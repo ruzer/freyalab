@@ -30,6 +30,29 @@ Al exportar, **Documento completo** incluye todas las filas y columnas en el ord
 
 Las muestras de archivos grandes siguen siendo de solo lectura. Se mantienen los límites de edición y del historial; un cambio que excede el presupuesto de deshacer se rechaza antes de aplicarse.
 
+## Rangos de celdas CSV
+
+Pulsa una celda y arrastra para seleccionar un rectángulo. Mayús + clic extiende desde la primera celda; Mayús + flechas permite hacerlo por teclado. Las flechas mueven el foco; Inicio/Fin van al extremo de la fila, Ctrl/⌘ + Inicio/Fin al extremo de la tabla, y Re Pág/Av Pág desplazan una pantalla. Ctrl/⌘ + A selecciona la tabla de la vista actual. La selección puede cruzar páginas virtualizadas sin cargar todo el documento en la ventana. Al arrastrar junto al borde se desplaza la tabla.
+
+El pie indica filas, columnas y número de celdas. **Rango** y clic derecho ofrecen las mismas acciones. Mayús + F10 abre el menú desde el teclado; flechas, Inicio/Fin y Escape permiten recorrerlo y cerrarlo. La selección rectangular y la selección de filas son alcances distintos; elegir una fila o una columna termina el rectángulo. Las columnas marcadas para estadísticas se conservan al seleccionar/editar celdas, pero no restringen las operaciones del rectángulo.
+
+| Acción | Acceso y comportamiento |
+|---|---|
+| Copiar | Ctrl/⌘ + C; TSV textual en el orden visible, sin encabezados |
+| Cortar | Ctrl/⌘ + X; vista previa y confirmación; primero copia, después vacía; si falla la copia no modifica datos |
+| Pegar | Ctrl/⌘ + V o menú; vista previa. Desde una sola celda, el bloque se extiende a la derecha/abajo dentro de la vista; en un rectángulo mayor, las dimensiones deben coincidir exactamente |
+| Rellenar | Ctrl/⌘ + Intro o menú; introduce texto, incluso con saltos de línea, para todas las celdas |
+| Vaciar | Supr/Retroceso o menú; conserva filas/columnas y vacía solo el rectángulo |
+| Limpiar / reemplazar | Quitar espacios, mayúsculas, minúsculas o reemplazo literal, con vista previa sobre el rango |
+
+La vista previa muestra el recuento completo de cambios y hasta ocho ejemplos, abreviados a 256 caracteres; no aplica cambios. Cambiar los valores exige una vista previa nueva. Cancelar o Escape cierra sin modificar el documento. El cálculo ya iniciado puede terminar en segundo plano; sus resultados se descartan. Aplicar usa un solo paso de deshacer/rehacer y la recuperación CSV existente. No modifica el archivo guardado hasta pulsar Guardar. Después de aplicar o cambiar la revisión/consulta se elimina el rectángulo para evitar reutilizar coordenadas de otra vista.
+
+Filtrar u ordenar no cambia el orden físico. El rango congela la consulta y la revisión de la vista; el motor resuelve sus filas antes de editar. Una revisión obsoleta, bloque irregular, dimensiones excedidas, valor mayor de 1 MiB o cambio superior a 20 MiB de historial se rechaza íntegramente. No añade filas/columnas al pegar automáticamente. Ceros iniciales, identificadores largos, Unicode, comillas y campos multilínea siguen siendo texto. No se evalúan fórmulas ni se alteran mediante apóstrofos automáticos.
+
+**Copiar como Markdown** usa el rectángulo activo con encabezados. **Exportar → Selección** conserva sus columnas y orden visible en CSV/TSV; Documento completo y Filas filtradas mantienen sus alcances anteriores. Copiar filas marcadas sin rectángulo usa el orden original del documento. El portapapeles nativo admite hasta 8 MiB por copia/pegado; para más datos, exporta. Las muestras siguen siendo de solo lectura y no permiten exportar/copiar selecciones como si fueran archivos completos.
+
+Esta entrega admite un rectángulo continuo a la vez. Las estadísticas por columna conservan su alcance explícito; no se convierten automáticamente en estadísticas del rectángulo. La paleta de comandos, rangos discontinuos y las transformaciones de dividir/combinar/mover quedan pendientes.
+
 ## Consulta avanzada CSV
 
 **Consulta avanzada** abre un formulario de condiciones y criterios de orden. Añadir o cambiar campos no modifica la vista hasta pulsar **Aplicar consulta**. **Cancelar** o Escape descartan el borrador y devuelven el foco. Hay hasta 20 condiciones y 20 criterios; el panel se desplaza y los botones de aplicar/cancelar permanecen visibles.

@@ -8,16 +8,21 @@ export interface TableFilter {column:number;op:FilterOperator;value?:string;case
 export interface TableQuery {conditions?:TableFilter[];filterMode?:'all'|'any';order?:TableSort[]; search?:string; filters?:Record<string,string>; sort?:{column:number; descending:boolean; numeric:boolean}; offset:number; limit:number; requestId:number }
 export interface TableRow { id:string; cells:string[] }
 export interface TablePage { rows:TableRow[]; total:number; matched:number; revision:number; requestId:number; sample:boolean }
-export type TableEdit = {type:'cell'; rowId:string; column:number; value:string} | {type:'paste';rowId:string;column:number;values:string[][];view?:{query:TableQuery;revision:number}} | {type:'insertRow';afterId?:string} | {type:'deleteRows';ids:string[]} | {type:'duplicateRows';ids:string[]} | {type:'duplicateColumn';index:number} | {type:'insertColumn';index:number;name:string} | {type:'deleteColumn';index:number} | {type:'header';index:number;name:string} | {type:'replace';find:string;replacement:string;column?:number} | {type:'transform';operation:'trim'|'upper'|'lower';rowIds:string[];columns:number[]}
+export interface TableRange {top:number;bottom:number;left:number;right:number;query:TableQuery;revision:number}
+export interface TableRangeEdit {type:'range';range:TableRange;operation:'fill'|'clear'|'trim'|'upper'|'lower'|'replace'|'paste';value?:string;find?:string;values?:string[][]}
+export interface TableRangePreview {cells:number;changed:number;revision:number;samples:{row:number;column:number;before:string;after:string}[]}
+export type TableEdit = TableRangeEdit | {type:'cell'; rowId:string; column:number; value:string} | {type:'paste';rowId:string;column:number;values:string[][];view?:{query:TableQuery;revision:number}} | {type:'insertRow';afterId?:string} | {type:'deleteRows';ids:string[]} | {type:'duplicateRows';ids:string[]} | {type:'duplicateColumn';index:number} | {type:'insertColumn';index:number;name:string} | {type:'deleteColumn';index:number} | {type:'header';index:number;name:string} | {type:'replace';find:string;replacement:string;column?:number} | {type:'transform';operation:'trim'|'upper'|'lower';rowIds:string[];columns:number[]}
 export interface TableStats { cells:number; empty:number; unique:number; numeric:number; sum:number|null; min:number|null; max:number|null; average:number|null }
 export interface TableOptions { encoding?:Encoding; delimiter?:string; header?:boolean }
-export interface TableExport { scope:'all'|'filtered'|'selection'; query?:TableQuery; rowIds?:string[]; columns?:number[]; delimiter?:string }
+export interface TableExport { range?:TableRange; scope:'all'|'filtered'|'selection'; query?:TableQuery; rowIds?:string[]; columns?:number[]; delimiter?:string }
 export interface ExportRequest { format:'pdf'|'html'|'svg'|'png'|'csv'|'tsv'; html?:string; svg?:string; table?:TableExport }
 export interface RecoveryEntry { id:string; name:string; savedAt:string }
 export interface AppEvent { type:'opened'|'changed'|'external'|'error'; document?:DocumentInfo; id?:string; message?:string }
 export interface FreyaAPI {
  open():Promise<DocumentInfo[]>; openPaths(paths:string[]):Promise<DocumentInfo[]>; newDocument(kind:Kind):Promise<DocumentInfo>; folder():Promise<string|null>; tree(path:string):Promise<TreeEntry[]>; findFiles(root:string,query:string):Promise<{entries:TreeEntry[];limited:boolean}>;
  update(id:string,text:string):Promise<DocumentInfo>; save(id:string,as?:boolean):Promise<DocumentInfo|null>; close(id:string):Promise<boolean>; reload(id:string):Promise<DocumentInfo>; documents():Promise<DocumentInfo[]>;
+ tableCopy(id:string,options:TableExport,format:'tsv'|'markdown'):Promise<void>; tablePaste(id:string,range:TableRange):Promise<string>;
+ rangePreview(id:string,edit:TableRangeEdit):Promise<TableRangePreview>; rangeClipboard(id:string,range:TableRange):Promise<string>;
  tablePage(id:string,query:TableQuery):Promise<TablePage>; tableEdit(id:string,edit:TableEdit):Promise<DocumentInfo>; tableOptions(id:string,options:TableOptions):Promise<DocumentInfo>;
  undo(id:string,redo?:boolean):Promise<DocumentInfo>; stats(id:string,rows:string[]|null,columns:number[]):Promise<TableStats>; tableMarkdown(id:string,options:TableExport):Promise<string>;
  export(id:string,request:ExportRequest):Promise<string|null>; image(id:string,src:string):Promise<string|null>; openLink(url:string):Promise<void>;

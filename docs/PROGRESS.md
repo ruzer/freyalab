@@ -46,3 +46,9 @@ La rama de evolución CSV incorpora la auditoría histórica y las correcciones 
 `codex/csv-advanced-editing` añade condiciones Y/O (texto, vacíos, números exactos, fechas ISO, regex RE2) y orden por múltiples columnas, con formulario y errores que conservan la última vista válida. Reutiliza el motor de vista para exportación y pegado. [Guía](EDITOR-MENUS.md), [pruebas/medición](evidence/csv-query-2026-10-21.md) y [seguimiento completo A–D](ANALYTICS-DELIVERY.md).
 
 La entrega se apila sobre el PR #8 e incorpora los commits de corrección de #6/#7; ninguno se fusiona automáticamente. Local: check sin errores/advertencias, 41 unitarias, 28 E2E y licencias verificadas. El objetivo sigue activo: faltan rangos/edición masiva contextual, análisis restante, DuckDB y los seis gráficos ECharts. La alfa publicada conserva sus binarios y límites.
+
+## Rangos y edición masiva CSV
+
+La rama `codex/csv-range-editing`, apilada sobre el PR #9, añade selección rectangular por ratón/teclado, navegación virtual, menú contextual y acciones compartidas para copiar/cortar/pegar/rellenar/vaciar/limpiar/reemplazar. Los cambios pasan por vista previa y mantienen un único historial y recuperación. El portapapeles se gestiona mediante operaciones nativas validadas; se retiró la copia redundante de filas seleccionadas en el renderer.
+
+Ver [guía](EDITOR-MENUS.md), [evidencia](evidence/csv-range-2026-10-21.md) y [objetivo completo A–D](ANALYTICS-DELIVERY.md). No se amplían los límites de archivos ni se declaran implementados DuckDB/ECharts o el análisis restante. Requiere revisión; sin fusión ni publicación automáticas.

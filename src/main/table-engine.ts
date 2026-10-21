@@ -7,7 +7,7 @@ import { parse as parseSync } from 'csv-parse/sync'
 import { stringify } from 'csv-stringify/sync'
 import iconv from 'iconv-lite'
 import {compileTableQuery} from './table-query'
-import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableRow, TableStats } from '../shared/types'
+import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview } from '../shared/types'
 
 export const TABLE_LIMITS = { bytes: 50 * 1024 * 1024, cells: 2_000_000, record: 1024 * 1024, sampleBytes: 8 * 1024 * 1024, sampleRows: 200 }
 interface Metadata { encoding: Encoding; delimiter: string; eol: string; bom: boolean; header: boolean; finalEol: boolean; headerWidth: number }
@@ -103,13 +103,56 @@ export class TableEngine {
   ensure();this.views.set(id,{key,indices});return indices
  }
  async page(id:string,query:TableQuery):Promise<TablePage>{if(!Number.isInteger(query.offset)||query.offset<0||!Number.isInteger(query.limit)||query.limit<1||query.limit>1000)throw new Error('Página no válida.');const s=this.get(id),revision=s.revision;const indices=await this.indices(id,query);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('Consulta cancelada porque cambió la tabla.');return{rows:indices.slice(query.offset,query.offset+query.limit).map(i=>copyRow(s.rows[i])),total:s.rows.length,matched:indices.length,revision:s.revision,requestId:query.requestId,sample:s.readonly}}
- private apply(s:State,mutations:Mutation[]){const indexed=mutations.length>16?new Map(s.rows.map(row=>[row.id,row])):undefined;for(const mutation of mutations){switch(mutation.type){case'cell':{const row=indexed?.get(mutation.id)??s.rows.find(row=>row.id===mutation.id);if(!row)throw new Error('Fila no encontrada.');row.cells[mutation.column]=mutation.value;if(mutation.length!==undefined)row.cells.length=mutation.length;break}case'header':s.headers[mutation.column]=mutation.value;s.headerWidth=mutation.headerWidth??Math.max(s.headerWidth,mutation.column+1);break;case'rows':s.rows.splice(mutation.index,mutation.remove,...mutation.rows.map(copyRow));break;case'column':if(mutation.remove){s.headers.splice(mutation.index,1);s.rows.forEach((row,i)=>{row.cells.splice(mutation.index,1);if(mutation.lengths)row.cells.length=mutation.lengths[i]})}else{s.headers.splice(mutation.index,0,mutation.name);s.rows.forEach((row,i)=>{while(row.cells.length<mutation.index)row.cells.push('');row.cells.splice(mutation.index,0,mutation.cells[i]??'');if(mutation.lengths)row.cells.length=mutation.lengths[i]})}s.headerWidth=mutation.headerWidth??s.headers.length;break}}}
+ private async rangeRows(id:string,range:TableRange){
+  const s=this.get(id),revision=s.revision
+  if(range.revision!==revision)throw new Error('La tabla cambió desde que se seleccionó el rango. Vuelve a seleccionarlo.')
+  const {top,bottom,left,right}=range
+  if(![top,bottom,left,right].every(Number.isSafeInteger)||top<0||bottom<top||left<0||right<left||right>=s.headers.length)throw new Error('Rango no válido.')
+  const indices=await this.indices(id,range.query)
+  if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la consulta del rango.')
+  if(bottom>=indices.length)throw new Error('El rango excede las filas de la vista.')
+  return{state:s,indices:indices.slice(top,bottom+1),columns:Array.from({length:right-left+1},(_,i)=>i+left)}
+ }
+ private async rangeChanges(id:string,edit:TableRangeEdit,apply:(row:TableRow,column:number,value:string)=>void):Promise<TableRangePreview>{
+  this.editable(id)
+  let range=edit.range
+  const values=edit.values
+  if(edit.operation==='paste'){
+   if(!values?.length||!values[0].length||values.some(row=>row.length!==values[0].length))throw new Error('El bloque para pegar debe ser rectangular y no estar vacío.')
+   if(range.top===range.bottom&&range.left===range.right)range={...range,bottom:range.top+values.length-1,right:range.left+values[0].length-1}
+   else if(values.length!==range.bottom-range.top+1||values[0].length!==range.right-range.left+1)throw new Error('El bloque no coincide con las dimensiones del rango seleccionado.')
+  }
+  if(edit.operation==='replace'&&!edit.find)throw new Error('Introduce el texto que quieres reemplazar.')
+  if(['fill','replace'].includes(edit.operation)&&typeof edit.value!=='string')throw new Error('Introduce un valor de texto.')
+  const {state:s,indices,columns}=await this.rangeRows(id,range),revision=s.revision
+  const result:TableRangePreview={cells:indices.length*columns.length,changed:0,revision,samples:[]}
+  for(let i=0;i<indices.length;i++){
+   const row=s.rows[indices[i]]
+   for(const column of columns){
+    const before=row.cells[column]??'';let after:string
+    switch(edit.operation){case'fill':after=edit.value!;break;case'clear':after='';break;case'trim':after=before.trim();break;case'upper':after=before.toUpperCase();break;case'lower':after=before.toLowerCase();break;case'replace':after=before.split(edit.find!).join(edit.value!);break;case'paste':after=values![i][column-range.left];break;default:throw new Error('Operación de rango no válida.')}
+    if(typeof after!=='string'||Buffer.byteLength(after,'utf8')>TABLE_LIMITS.record)throw new Error('El valor supera el límite de 1 MiB.')
+    if(after!==before){result.changed++;if(result.samples.length<8)result.samples.push({row:range.top+i,column,before:before.slice(0,256),after:after.slice(0,256)});apply(row,column,after)}
+   }
+   if(i%2048===0){await yieldTurn();if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la operación del rango.')}
+  }
+  return result
+ }
+ async rangePreview(id:string,edit:TableRangeEdit){return this.rangeChanges(id,edit,()=>{})}
+ async rangeClipboard(id:string,range:TableRange){return this.clipboard(id,{scope:'selection',range})}
+ async clipboard(id:string,options:TableExport){
+  const {rows}=await this.selected(id,options),parts:string[]=[];let bytes=0
+  for(const row of rows){const part=stringify([row],{delimiter:'\t',record_delimiter:'\n'});bytes+=Buffer.byteLength(part,'utf8');if(bytes>8*1024*1024)throw new Error('La copia supera 8 MiB. Reduce el rango o exporta la selección.');parts.push(part)}
+  return parts.join('')
+ }
+ private apply(s:State,mutations:Mutation[]){const indexed=mutations.length>16?new Map(s.rows.map(row=>[row.id,row])):undefined;for(const mutation of mutations){switch(mutation.type){case'cell':{const row=indexed?.get(mutation.id)??s.rows.find(row=>row.id===mutation.id);if(!row)throw new Error('Fila no encontrada.');while(row.cells.length<mutation.column)row.cells.push('');row.cells[mutation.column]=mutation.value;if(mutation.length!==undefined)row.cells.length=mutation.length;break}case'header':s.headers[mutation.column]=mutation.value;s.headerWidth=mutation.headerWidth??Math.max(s.headerWidth,mutation.column+1);break;case'rows':s.rows.splice(mutation.index,mutation.remove,...mutation.rows.map(copyRow));break;case'column':if(mutation.remove){s.headers.splice(mutation.index,1);s.rows.forEach((row,i)=>{row.cells.splice(mutation.index,1);if(mutation.lengths)row.cells.length=mutation.lengths[i]})}else{s.headers.splice(mutation.index,0,mutation.name);s.rows.forEach((row,i)=>{while(row.cells.length<mutation.index)row.cells.push('');row.cells.splice(mutation.index,0,mutation.cells[i]??'');if(mutation.lengths)row.cells.length=mutation.lengths[i]})}s.headerWidth=mutation.headerWidth??s.headers.length;break}}}
  async edit(id:string,edit:TableEdit){const s=this.editable(id);const revision=s.revision;const forward:Mutation[]=[],backward:Mutation[]=[]
   const add=(a:Mutation,b:Mutation)=>{forward.push(a);backward.push(b)}
   const rowIndex=(rowId:string)=>{const i=s.rows.findIndex(row=>row.id===rowId);if(i<0)throw new Error('Fila no encontrada.');return i}
   const column=(index:number,insert=false)=>{if(!Number.isInteger(index)||index<0||index>s.headers.length-(insert?0:1))throw new Error('Columna no válida.')}
   const value=(text:string)=>{if(typeof text!=='string'||Buffer.byteLength(text,'utf8')>TABLE_LIMITS.record)throw new Error('El valor supera el límite de 1 MiB.');return text}
   switch(edit.type){
+   case'range':{await this.rangeChanges(id,edit,(row,column,value)=>add({type:'cell',id:row.id,column,value},{type:'cell',id:row.id,column,value:row.cells[column]??'',length:row.cells.length}));break}
    case'cell':{column(edit.column);const row=s.rows[rowIndex(edit.rowId)];value(edit.value);if((row.cells[edit.column]??'')===edit.value)return this.info(id);add({type:'cell',id:row.id,column:edit.column,value:edit.value},{type:'cell',id:row.id,column:edit.column,value:row.cells[edit.column]??'',length:row.cells.length});break}
    case'paste':{
     column(edit.column)
@@ -166,7 +209,7 @@ export class TableEngine {
   const before=s.token,after=++this.serial;const change={forward,backward:backward.reverse(),before,after,bytes:0};change.bytes=Buffer.byteLength(JSON.stringify(change),'utf8');if(change.bytes>20*1024*1024)throw new Error('El cambio supera el presupuesto de deshacer de 20 MiB. Reduce el número de celdas modificadas.');this.apply(s,forward);s.token=after;s.revision++;s.history.push(change);let budget=s.history.reduce((sum,item)=>sum+item.bytes,0);while(budget>20*1024*1024&&s.history.length>1)budget-=s.history.shift()!.bytes;s.future=[];return this.info(id)
  }
  async undo(id:string,redo=false){const s=this.editable(id);const source=redo?s.future:s.history,target=redo?s.history:s.future;const change=source.pop();if(change){this.apply(s,redo?change.forward:change.backward);s.token=redo?change.after:change.before;s.revision++;target.push(change)}return this.info(id)}
- private async selected(id:string,options:TableExport){const s=this.get(id),revision=s.revision;if(s.readonly)throw new Error('La muestra no permite exportar el archivo ni selecciones.');let indices:number[];if(options.scope==='filtered')indices=await this.indices(id,options.query??{offset:0,limit:500,requestId:0});else if(options.scope==='selection'){const ids=new Set(options.rowIds??[]);indices=s.rows.flatMap((row,i)=>ids.has(row.id)?[i]:[])}else indices=s.rows.map((_,i)=>i);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.');const columns=options.columns??s.headers.map((_,i)=>i);if(columns.some(i=>!Number.isInteger(i)||i<0||i>=s.headers.length))throw new Error('Selección de columnas no válida.');return{rows:indices.map(i=>columns.map(col=>s.rows[i].cells[col]??'')),headers:columns.map(col=>s.headers[col])}}
+ private async selected(id:string,options:TableExport){const s=this.get(id),revision=s.revision;if(s.readonly)throw new Error('La muestra no permite exportar el archivo ni selecciones.');let indices:number[];if(options.scope==='selection'&&options.range){const selected=await this.rangeRows(id,options.range);return{rows:selected.indices.map(i=>selected.columns.map(col=>s.rows[i].cells[col]??'')),headers:selected.columns.map(col=>s.headers[col])}}if(options.scope==='filtered')indices=await this.indices(id,options.query??{offset:0,limit:500,requestId:0});else if(options.scope==='selection'){const ids=new Set(options.rowIds??[]);indices=s.rows.flatMap((row,i)=>ids.has(row.id)?[i]:[])}else indices=s.rows.map((_,i)=>i);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.');const columns=options.columns??s.headers.map((_,i)=>i);if(columns.some(i=>!Number.isInteger(i)||i<0||i>=s.headers.length))throw new Error('Selección de columnas no válida.');return{rows:indices.map(i=>columns.map(col=>s.rows[i].cells[col]??'')),headers:columns.map(col=>s.headers[col])}}
  async stats(id:string,rowIds:string[]|null,columns:number[]):Promise<TableStats>{const s=this.get(id),revision=s.revision;if(columns.some(col=>!Number.isInteger(col)||col<0||col>=s.headers.length))throw new Error('Columna no válida.');const ids=rowIds===null?null:new Set(rowIds),values:string[]=[];for(let i=0;i<s.rows.length;i++){const row=s.rows[i];if(ids===null||ids.has(row.id))for(const col of columns){values.push(row.cells[col]??'')}if(i%2048===0){await yieldTurn();if(this.states.get(id)!==s||s.revision!==revision)throw new Error('Las estadísticas se cancelaron porque cambió la tabla.')}}const nums=values.map(numeric).filter((n):n is number=>n!==null&&(!Number.isInteger(n)||Number.isSafeInteger(n)));let sum=0,min=Infinity,max=-Infinity;for(const n of nums){sum+=n;min=Math.min(min,n);max=Math.max(max,n)}return{cells:values.length,empty:values.filter(v=>!v.trim()).length,unique:new Set(values).size,numeric:nums.length,sum:nums.length&&Number.isFinite(sum)?sum:null,min:nums.length?min:null,max:nums.length?max:null,average:nums.length&&Number.isFinite(sum)?sum/nums.length:null}}
  async markdown(id:string,options:TableExport){const {rows,headers}=await this.selected(id,options);const escape=(v:string)=>v.replace(/\\/g,'\\\\').replace(/\|/g,'\\|').replace(/\r\n|\r|\n/g,'<br>');return[headers,headers.map(()=>'---'),...rows].map(row=>'| '+row.map(escape).join(' | ')+' |').join('\n')}
  async serialize(id:string,options?:TableExport):Promise<Buffer>{const s=this.editable(id),revision=s.revision;let records:string[][];if(options){const selection=await this.selected(id,options);records=s.header?[selection.headers,...selection.rows]:selection.rows}else records=s.header?[s.headers.slice(0,s.headerWidth),...s.rows.map(row=>row.cells)]:s.rows.map(row=>row.cells)
