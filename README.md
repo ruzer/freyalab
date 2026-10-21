@@ -40,6 +40,12 @@ El delimitador, codificación, BOM y saltos de línea se conservan al guardar cu
 
 La alfa no incluye importación Office/PDF, MarkItDown, OCR, edición de páginas PDF, multimedia, SQL ni análisis integral de archivos de GB. La interfaz y el proceso de datos se comunican por páginas para poder ampliar después el motor.
 
+## Novedades en desarrollo después de alpha.1
+
+La barra Markdown reproduce los accesos del render: negrita, cursiva, código en línea, tareas, tablas y Mermaid. El menú **Insertar** añade encabezados, listas, citas, enlaces y bloques de código. Inserta ejemplos editables con vista previa; no necesitas escribir la sintaxis desde cero.
+
+El menú **Operaciones** de CSV añade limpieza de espacios, mayúsculas/minúsculas y duplicación de filas o columnas. Las transformaciones tienen selección explícita y deshacer. Consulta [cómo usar los menús](docs/EDITOR-MENUS.md). Estas novedades todavía no forman parte de las descargas de `v0.1.0-alpha.1`.
+
 ## Descargas y compatibilidad
 
 Las descargas se publican como **prereleases** en [GitHub Releases](https://github.com/ruzer/freyalab/releases) únicamente después de los controles documentados. Si no hay prerelease, todavía no existe una alfa publicada.

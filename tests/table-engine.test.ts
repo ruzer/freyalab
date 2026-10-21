@@ -13,8 +13,57 @@ describe('motor CSV',()=>{
  it('conserva identificadores, multilinea, comillas y valores al editar con una vista ordenada',async()=>{const path=await fixture('Código;Nombre;Valor\r\n000124;"Ana\r\nMaría";10\r\n000002;"Dice ""hola""";2\r\n');const info=await engine.open('a',path);expect(info.delimiter).toBe(';');const view=await engine.page('a',{...query,sort:{column:2,numeric:true,descending:false}});expect(view.rows[0].cells).toEqual(['000002','Dice "hola"','2']);await engine.edit('a',{type:'cell',rowId:view.rows[0].id,column:1,value:'Editado'});const out=(await engine.serialize('a')).toString('utf8');expect(out.indexOf('000124')).toBeLessThan(out.indexOf('000002'));expect(out).toContain('"Ana\r\nMaría"');expect(out).toContain('000002;Editado;2');expect((await readFile(path)).toString()).toContain('Dice');await engine.undo('a');expect((await engine.page('a',query)).rows[1].cells[1]).toBe('Dice "hola"');expect((await engine.info('a')).dirty).toBe(false);await engine.undo('a',true);expect((await engine.info('a')).dirty).toBe(true)})
  it('combina búsqueda y filtros sin cambiar el documento y distingue exportación filtrada',async()=>{await engine.open('a',await fixture('Código,Categoría,Valor\n001,Azul,1\n002,azul,3\n003,Rojo,4\n'));const q={...query,search:'azul',filters:{'2':'3'}};expect((await engine.page('a',q)).rows[0].cells[0]).toBe('002');const out=(await engine.serialize('a',{scope:'filtered',query:q})).toString();expect(out).toContain('002');expect(out).not.toContain('001');expect((await engine.info('a')).dirty).toBe(false);expect((await engine.markdown('a',{scope:'selection',rowIds:['1'],columns:[0,1]}))).toContain('| 001 | Azul |')})
  it('edita filas, columnas, pegado, reemplazos y recupera sin depender del archivo fuente',async()=>{const path=await fixture('A,B\nx,2\ny,3\n');await engine.open('a',path);await engine.edit('a',{type:'insertRow',afterId:'1'});let rows=(await engine.page('a',query)).rows;await engine.edit('a',{type:'paste',rowId:rows[1].id,column:0,values:[['z','5']]});await engine.edit('a',{type:'insertColumn',index:1,name:'Extra'});await engine.edit('a',{type:'replace',find:'z',replacement:'nuevo'});await engine.edit('a',{type:'header',index:0,name:'Clave'});await engine.edit('a',{type:'deleteRows',ids:['1']});await engine.undo('a');await engine.edit('a',{type:'deleteColumn',index:1});await engine.undo('a');const snap=await engine.snapshot('a');await rm(path);await engine.restore('b',JSON.parse(JSON.stringify(snap)));expect((await engine.page('b',query)).rows[1].cells).toEqual(['nuevo','','5']);expect((await engine.info('b')).headers).toEqual(['Clave','Extra','B']);expect((await engine.info('b')).dirty).toBe(true)})
+ it('limpia solo la selección por ID, conserva ceros y filas irregulares y deshace en un paso',async()=>{
+  const source='Código,Nombre,Nota\r\n0001,  Árbol  , Intacto \r\n0002,  Otro  \r\n0003,"  Varias\r\nlíneas  ", Final \r\n'
+  await engine.open('a',await fixture(source))
+  const sorted=await engine.page('a',{...query,sort:{column:0,numeric:false,descending:true}})
+  const selected=[sorted.rows[0].id,sorted.rows[1].id]
+  await engine.edit('a',{type:'transform',operation:'trim',rowIds:selected,columns:[1,2]})
+  const rows=(await engine.page('a',query)).rows
+  expect(rows.map(row=>row.cells)).toEqual([['0001','  Árbol  ',' Intacto '],['0002','Otro'],['0003','Varias\r\nlíneas','Final']])
+  await engine.undo('a');expect((await engine.serialize('a')).toString()).toBe(source)
+  await engine.undo('a',true);expect((await engine.page('a',query)).rows[2].cells[1]).toBe('Varias\r\nlíneas')
+  const snapshot=await engine.snapshot('a');await engine.restore('b',snapshot);await engine.undo('b');expect((await engine.serialize('b')).toString()).toBe(source)
+ })
+ it('transforma texto Unicode sin tocar encabezados y rechaza selecciones inválidas sin cambios parciales',async()=>{
+  await engine.open('a',await fixture('Nombre,Código\nÁrbol ß,0001\nIntacto,0002\n'))
+  await expect(engine.edit('a',{type:'transform',operation:'trim',rowIds:['1','ausente'],columns:[0]})).rejects.toThrow('Fila no encontrada')
+  await expect(engine.edit('a',{type:'transform',operation:'upper',rowIds:['1'],columns:[0,2]})).rejects.toThrow('Columna no válida')
+  expect((await engine.info('a')).dirty).toBe(false)
+  await engine.edit('a',{type:'transform',operation:'upper',rowIds:['1'],columns:[0]})
+  expect((await engine.page('a',query)).rows.map(row=>row.cells)).toEqual([['ÁRBOL SS','0001'],['Intacto','0002']])
+  expect((await engine.info('a')).headers).toEqual(['Nombre','Código'])
+  await engine.edit('a',{type:'transform',operation:'lower',rowIds:['1'],columns:[0]})
+  expect((await engine.page('a',query)).rows[0].cells[0]).toBe('árbol ss')
+  await engine.undo('a');expect((await engine.page('a',query)).rows[0].cells[0]).toBe('ÁRBOL SS')
+  await engine.undo('a');expect((await engine.info('a')).dirty).toBe(false)
+  await engine.edit('a',{type:'transform',operation:'trim',rowIds:['1'],columns:[0]});expect((await engine.info('a')).dirty).toBe(false)
+ })
+ it('duplica filas por ID en orden original, con identificadores nuevos e historial recuperable',async()=>{
+  const source='Código,Nombre\n0001,\"Ana\nMaría\"\n0002,Fin\n'
+  await engine.open('a',await fixture(source))
+  await engine.edit('a',{type:'duplicateRows',ids:['2','1','2']})
+  const rows=(await engine.page('a',query)).rows
+  expect(rows.map(row=>row.cells)).toEqual([['0001','Ana\nMaría'],['0001','Ana\nMaría'],['0002','Fin'],['0002','Fin']])
+  expect(new Set(rows.map(row=>row.id)).size).toBe(4);expect(rows[0].id).toBe('1');expect(rows[2].id).toBe('2')
+  await engine.undo('a');expect((await engine.serialize('a')).toString()).toBe(source)
+  await engine.undo('a',true);expect((await engine.page('a',query)).rows).toEqual(rows)
+  const snapshot=await engine.snapshot('a');await engine.restore('b',snapshot);await engine.undo('b');expect((await engine.serialize('b')).toString()).toBe(source)
+  await expect(engine.edit('a',{type:'duplicateRows',ids:['1','ausente']})).rejects.toThrow('Fila no encontrada')
+  expect((await engine.page('a',query)).rows).toEqual(rows)
+ })
+ it('duplica columnas sin convertir valores y restaura filas irregulares al deshacer',async()=>{
+  const source='Código,Nombre\n0001,Ana\n0002\n'
+  await engine.open('a',await fixture(source))
+  await engine.edit('a',{type:'duplicateColumn',index:0})
+  expect((await engine.info('a')).headers).toEqual(['Código','Código (copia)','Nombre'])
+  expect((await engine.page('a',query)).rows.map(row=>row.cells)).toEqual([['0001','0001','Ana'],['0002','0002']])
+  await engine.undo('a');expect((await engine.serialize('a')).toString()).toBe(source)
+  await engine.undo('a',true);expect((await engine.page('a',query)).rows[1].cells).toEqual(['0002','0002'])
+  await expect(engine.edit('a',{type:'duplicateColumn',index:3})).rejects.toThrow('Columna no válida')
+ })
  it('preserva UTF16 y BOM y rechaza caracteres no representables en Windows1252',async()=>{await engine.open('a',await fixture('Clave,Nombre\r\n001,Árbol\r\n','utf16le'));const out=await engine.serialize('a');expect(out.subarray(0,2)).toEqual(Buffer.from([255,254]));expect(iconv.decode(out,'utf16le')).toContain('Árbol');await engine.open('b',await fixture('Clave,Nombre\n001,Árbol\n','win1252'),{encoding:'win1252'});await engine.edit('b',{type:'cell',rowId:'1',column:1,value:'🐕'});await expect(engine.serialize('b')).rejects.toThrow('no representa')})
- it('muestra limitada no inventa registros incompletos ni permite guardar',async()=>{const path=join(folder,'big.csv');const handle=await open(path,'w');await handle.write('A,B\n001,normal\n002,"'+ 'x'.repeat(1024));await handle.truncate(TABLE_LIMITS.bytes+1);await handle.close();const info=await engine.open('a',path);expect(info.readonly).toBe(true);expect(info.warning).toContain('Muestra limitada');const page=await engine.page('a',query);expect(page.sample).toBe(true);expect(page.rows).toEqual([{id:'1',cells:['001','normal']}]);await expect(engine.edit('a',{type:'cell',rowId:'1',column:0,value:'2'})).rejects.toThrow('solo lectura');await expect(engine.serialize('a')).rejects.toThrow('muestra')})
+ it('muestra limitada no inventa registros incompletos ni permite guardar',async()=>{const path=join(folder,'big.csv');const handle=await open(path,'w');await handle.write('A,B\n001,normal\n002,"'+ 'x'.repeat(1024));await handle.truncate(TABLE_LIMITS.bytes+1);await handle.close();const info=await engine.open('a',path);expect(info.readonly).toBe(true);expect(info.warning).toContain('Muestra limitada');const page=await engine.page('a',query);expect(page.sample).toBe(true);expect(page.rows).toEqual([{id:'1',cells:['001','normal']}]);await expect(engine.edit('a',{type:'cell',rowId:'1',column:0,value:'2'})).rejects.toThrow('solo lectura');await expect(engine.edit('a',{type:'transform',operation:'upper',rowIds:['1'],columns:[0]})).rejects.toThrow('solo lectura');await expect(engine.serialize('a')).rejects.toThrow('muestra')})
  it('calcula estadísticas sin transformar las celdas ni tratar vacíos como cero',async()=>{await engine.open('a',await fixture('Clave,Valor\n001,2\n002,\n003,-1.5\n004,no\n'));expect(await engine.stats('a',['1','2','3','4'],[1])).toEqual({cells:4,empty:1,unique:4,numeric:2,sum:0.5,min:-1.5,max:2,average:0.25});await engine.markSaved('a');expect((await engine.info('a')).dirty).toBe(false)})
  it('detecta delimitadores sin contar separadores dentro de encabezados entrecomillados',async()=>{await engine.open('a',await fixture('Código;"Nombre, apellidos, alias";Valor\n001;Ana;2\n'));expect((await engine.info('a')).delimiter).toBe(';');expect((await engine.page('a',query)).rows[0].cells).toEqual(['001','Ana','2'])})
  it('omite encabezados cuando se indica y permite nombres duplicados',async()=>{await engine.open('a',await fixture('001,x\n002,y\n'),{header:false});expect((await engine.page('a',query)).rows[0].cells[0]).toBe('001');expect((await engine.serialize('a')).toString()).toBe('001,x\n002,y\n');await engine.open('b',await fixture('A,A\n1,2\n'));expect((await engine.info('b')).headers).toEqual(['A','A'])})

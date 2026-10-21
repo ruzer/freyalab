@@ -71,7 +71,20 @@
     {#key active.id}
      {#if active.kind==='csv'}<CsvTable bind:this={csv} doc={active} onchange={doc=>merge(doc)} onerror={error} onstatus={value=>status=value}/>
      {:else}
-      <div class="document-tools"><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div><span class="spacer"></span><button class="text-button" onclick={()=>editor?.search()}>⌕ Buscar</button>{#if active.kind==='markdown'}<button class="text-button" class:active={outline} onclick={()=>outline=!outline}>☷ Índice</button>{/if}</div>
+      <div class="document-tools"><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div>{#if active.kind==='markdown'&&mode!=='preview'}<div class="markdown-toolbar" role="group" aria-label="Formato Markdown">
+       <button disabled={active.readonly} title="Negrita (Ctrl/⌘ B)" aria-label="Negrita" onclick={()=>editor?.format('bold')}><b>B</b></button>
+       <button disabled={active.readonly} title="Cursiva (Ctrl/⌘ I)" aria-label="Cursiva" onclick={()=>editor?.format('italic')}><i>I</i></button>
+       <button disabled={active.readonly} title="Código en línea" aria-label="Código en línea" onclick={()=>editor?.format('inline')}>&lt;/&gt;</button>
+       <span class="separator"></span>
+       <button disabled={active.readonly} title="Insertar lista de tareas" onclick={()=>editor?.format('task')}>☑ Tarea</button>
+       <button disabled={active.readonly} title="Insertar tabla Markdown" onclick={()=>editor?.format('table')}>⊞ Tabla</button>
+       <button disabled={active.readonly} class="mermaid-insert" title="Insertar diagrama de ejemplo" onclick={()=>editor?.format('mermaid')}>◇ Mermaid</button>
+       <details class="insert-menu"><summary aria-label="Más opciones de Markdown">Insertar ▾</summary><div class="dropdown">
+        {#each [{action:'heading',label:'Encabezado'},{action:'list',label:'Lista con viñetas'},{action:'quote',label:'Cita'},{action:'link',label:'Enlace'},{action:'code',label:'Bloque de código'}] as item}
+         <button disabled={active.readonly} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');editor?.format(item.action as 'heading'|'list'|'quote'|'link'|'code')}}>{item.label}</button>
+        {/each}
+       </div></details>
+      </div>{/if}<span class="spacer"></span><button class="text-button" onclick={()=>editor?.search()}>⌕ Buscar</button>{#if active.kind==='markdown'}<button class="text-button" class:active={outline} onclick={()=>outline=!outline}>☷ Índice</button>{/if}</div>
       {#if active.warning}<div class="warning-banner">{active.warning}</div>{/if}
       <div class="document-panes">
        <div class:hidden={mode==='preview'&&active.kind!=='text'} class="editor-pane" style:width={mode==='split'&&active.kind!=='text'?`${split}%`:'100%'}><div class="pane-caption">{active.kind==='mermaid'?'DEFINICIÓN MERMAID':active.kind==='text'?'TEXTO':'MARKDOWN'}{#if active.readonly}<span>Solo lectura</span>{/if}</div><Editor bind:this={editor} text={active.text??''} readonly={active.readonly} kind={active.kind} onchange={text=>updateText(active!.id,text)} onscroll={ratio=>preview?.scrollRatio(ratio)}/></div>
