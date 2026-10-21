@@ -352,3 +352,64 @@ test('exportación CSV: completo y filtrado conservan columnas; selección limit
  expect(await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id)?.dirty,doc.id)).toBe(true)
  await expect(page.getByRole('gridcell',{name:'Fila 1, Nombre',exact:true})).toHaveText('Beatriz')
 })
+
+
+test('consulta CSV: formulario, orden múltiple exacto, exportación y pegado por vista',async()=>{
+ const path=join(directory,'consulta.csv')
+ const source='Código,Grupo,Valor,Fecha,Nota\n001,Z,9007199254740993,2026-01-02,Árbol\n002,A,9007199254740992,2026-01-03,\n003,A,1.00000000000000001,2026-01-01,Inicio\n004,A,1.00000000000000002,2026-01-01,Fin\n005,A,1.00000000000000001,2026-01-01,Otro\n'
+ await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
+ await page.getByRole('button',{name:'Consulta avanzada',exact:true}).click()
+ const panel=page.getByRole('region',{name:'Consulta avanzada',exact:true})
+ await expect(panel.getByRole('heading',{name:'Consulta avanzada'})).toBeFocused()
+ for(const [i,column,op,value] of [[1,'1','equals','A'],[2,'4','notEmpty',''],[3,'3','dateOn','2026-01-01']] as const){
+  await panel.getByRole('button',{name:'Añadir condición',exact:true}).click()
+  await page.getByLabel(`Columna de condición ${i}`,{exact:true}).selectOption(column)
+  await page.getByLabel(`Operador de condición ${i}`,{exact:true}).selectOption(op)
+  if(value)await page.getByLabel(`Valor de condición ${i}`,{exact:true}).fill(value)
+ }
+ for(const [i,column] of [[1,'3'],[2,'2']] as const){await panel.getByRole('button',{name:'Añadir orden',exact:true}).click();await page.getByLabel(`Columna de orden ${i}`,{exact:true}).selectOption(column)}
+ await page.getByLabel('Orden numérico 2',{exact:true}).check()
+ for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect(panel.getByRole('button',{name:'Aplicar consulta',exact:true})).toBeInViewport();await page.screenshot({path:test.info().outputPath(`csv-query-tools-${theme}-1440x900.png`)})}
+ await page.setViewportSize({width:1280,height:800});await expect(panel.getByRole('button',{name:'Aplicar consulta',exact:true})).toBeInViewport();await page.screenshot({path:test.info().outputPath('csv-query-tools-dark-1280x800.png')})
+ await panel.getByRole('button',{name:'Aplicar consulta',exact:true}).click()
+ await expect(page.locator('.csv-toolbar')).toContainText('3 de 5 filas')
+ for(const [i,id] of ['003','005','004'].entries())await expect(page.getByRole('gridcell',{name:`Fila ${i+1}, Código`,exact:true})).toHaveText(id)
+ const cell=page.getByRole('gridcell',{name:'Fila 1, Nota',exact:true})
+ await cell.evaluate(element=>{const data=new DataTransfer();data.setData('text/plain','Primero\nSegundo');element.dispatchEvent(new ClipboardEvent('paste',{clipboardData:data,bubbles:true,cancelable:true}))})
+ await expect(cell).toHaveText('Primero')
+ await expect(page.getByRole('gridcell',{name:'Fila 2, Nota',exact:true})).toHaveText('Segundo')
+ await page.getByRole('button',{name:'⇧ Exportar ▾',exact:true}).click();await page.locator('.export-dropdown select').selectOption('filtered');await page.getByRole('button',{name:'CSV',exact:true}).click()
+ await expect(page.locator('.toast')).toContainText('Exportado:')
+ const exported=parseCSV(await readFile(join(directory,'exports','consulta.csv'),'utf8')) as string[][]
+ expect(exported.slice(1).map(row=>row[0])).toEqual(['003','005','004'])
+ expect(exported[1][4]).toBe('Primero');expect(exported[2][4]).toBe('Segundo')
+ expect(await readFile(path,'utf8')).toBe(source)
+ const rows=await page.evaluate(async id=>(await window.freya.tablePage(id,{offset:0,limit:10,requestId:999})).rows,doc.id)
+ expect(rows.map(row=>row.cells[4])).toEqual(['Árbol','','Primero','Fin','Segundo'])
+ await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(cell).toHaveText('Inicio')
+})
+
+test('consulta CSV: condiciones O, errores visibles, limpiar y ordenar con Mayús',async()=>{
+ const path=join(directory,'operadores.csv'),source='ID,Grupo,Valor\n001,Z,1\n002,A,9007199254740993\n003,A,9007199254740992\n'
+ await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
+ await page.getByRole('button',{name:'Consulta avanzada',exact:true}).click()
+ const panel=page.getByRole('region',{name:'Consulta avanzada',exact:true})
+ await page.getByLabel('Combinar condiciones',{exact:true}).selectOption('any')
+ for(const [i,value] of [[1,'001'],[2,'003']] as const){await panel.getByRole('button',{name:'Añadir condición',exact:true}).click();await page.getByLabel(`Operador de condición ${i}`,{exact:true}).selectOption('equals');await page.getByLabel(`Valor de condición ${i}`,{exact:true}).fill(value)}
+ await panel.getByRole('button',{name:'Aplicar consulta',exact:true}).click();await expect(page.locator('.csv-toolbar')).toContainText('2 de 3 filas')
+ await page.getByRole('button',{name:'Consulta avanzada',exact:true}).click()
+ await page.getByLabel('Operador de condición 1',{exact:true}).selectOption('regex');await page.getByLabel('Valor de condición 1',{exact:true}).fill('(')
+ await panel.getByRole('button',{name:'Aplicar consulta',exact:true}).click()
+ await expect(page.getByRole('alert')).toContainText('Consulta no aplicada')
+ await expect(page.getByRole('alert')).toContainText('Expresión regular no válida')
+ await expect(page.getByRole('gridcell',{name:'Fila 2, ID',exact:true})).toHaveText('003')
+ await page.getByRole('gridcell',{name:'Fila 1, ID',exact:true}).dblclick();await expect(page.getByLabel('Editar celda',{exact:true})).toHaveCount(0)
+ await page.getByRole('button',{name:'Reintentar consulta',exact:true}).click();await expect(page.getByRole('alert')).toContainText('Expresión regular no válida')
+ await page.getByRole('button',{name:'Quitar filtros y orden',exact:true}).click()
+ await expect(page.getByRole('alert')).toHaveCount(0);await expect(page.locator('.csv-toolbar')).toContainText('3 de 3 filas')
+ await page.getByRole('button',{name:'Grupo',exact:true}).click();await page.getByRole('button',{name:'Valor',exact:true}).click({modifiers:['Shift']})
+ await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('003')
+ await expect(page.getByRole('gridcell',{name:'Fila 2, ID',exact:true})).toHaveText('002')
+ expect((await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),doc.id))?.dirty).toBe(false)
+ expect(await readFile(path,'utf8')).toBe(source)
+})

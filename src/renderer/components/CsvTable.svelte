@@ -4,13 +4,16 @@
  import {get} from 'svelte/store'
  import {untrack} from 'svelte'
  import CsvStatistics from './CsvStatistics.svelte'
+ import CsvQueryTools from './CsvQueryTools.svelte'
  import {parse} from 'csv-parse/browser/esm/sync'
  import {stringify} from 'csv-stringify/browser/esm/sync'
- import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding} from '../../shared/types'
+ import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort} from '../../shared/types'
  let {doc,onchange,onerror,onstatus}:{doc:DocumentInfo;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void}=$props()
  let interpreting=$state(false),showStatistics=$state(false),statisticsButton=$state<HTMLButtonElement>()
- const locked=$derived(doc.readonly||interpreting)
+ let conditions=$state<TableFilter[]>([]),order=$state<TableSort[]>([]),filterMode=$state<'all'|'any'>('all'),showQuery=$state(false),queryError=$state(''),queryButton=$state<HTMLButtonElement>()
+ const locked=$derived(doc.readonly||interpreting||!!queryError)
  let search=$state(''),filters=$state<Record<string,string>>({}),sort=$state<TableQuery['sort']>(),page=$state<TablePage>({rows:[],total:0,matched:0,revision:0,requestId:0,sample:false}),busy=$state(false),showFilters=$state(false),showReplace=$state(false)
+ const activeOrder=$derived(order.length?order:sort?[sort]:[])
  let selectedRows=$state<string[]>([]),selectedColumns=$state<number[]>([]),selectionStats=$state<TableStats|null>(null)
  let replaceFind=$state(''),replaceWith=$state(''),header=$state(true),numeric=$state(false)
  let scrollElement=$state<HTMLDivElement>(),pageOffset=$state(0),requestId=0
@@ -24,16 +27,18 @@
  const renderedRows=$derived(page.rows.map(row=>rowMap.get(row.id)!).filter(Boolean))
  $effect(()=>{const count=page.matched,padding=showFilters?76:40,columns=doc.headers?.length??0;get(rowsVirtual).setOptions({count,paddingStart:padding});get(columnsVirtual).setOptions({count:columns})})
  let pageQuery:TableQuery={offset:0,limit:200,requestId:0}
- function query(offset=0):TableQuery{return{search,filters:$state.snapshot(filters),sort:sort?$state.snapshot(sort):undefined,offset,limit:200,requestId}}
- async function load(offset=0){const q={...query(offset),requestId:++requestId};busy=true;try{const result=await window.freya.tablePage(doc.id,q);if(result.requestId!==requestId)return;pageOffset=offset;page=result;pageQuery=q;for(const row of result.rows)if(selectedRecords.has(row.id))selectedRecords.set(row.id,row.cells);onstatus(`${result.matched.toLocaleString()} de ${result.total.toLocaleString()} filas${result.sample?' · muestra':''}`)}catch(error){if(q.requestId===requestId)onerror(String(error))}finally{if(q.requestId===requestId)busy=false}}
- $effect(()=>{const signature=JSON.stringify([doc.id,doc.revision,search,filters,sort]);void signature;untrack(()=>{selectedRows=[];selectionStats=null;selectedRecords.clear();scrollElement?.scrollTo({top:0})});const timer=setTimeout(()=>void load(0),150);return()=>clearTimeout(timer)})
+ function query(offset=0):TableQuery{return{search,conditions:$state.snapshot(conditions),filterMode,order:order.length?$state.snapshot(order):undefined,filters:$state.snapshot(filters),sort:sort?$state.snapshot(sort):undefined,offset,limit:200,requestId}}
+ async function load(offset=0){const q={...query(offset),requestId:++requestId};busy=true;try{const result=await window.freya.tablePage(doc.id,q);if(result.requestId!==requestId)return;queryError='';pageOffset=offset;page=result;pageQuery=q;for(const row of result.rows)if(selectedRecords.has(row.id))selectedRecords.set(row.id,row.cells);onstatus(`${result.matched.toLocaleString()} de ${result.total.toLocaleString()} filas${result.sample?' · muestra':''}`)}catch(error){if(q.requestId===requestId){queryError=String(error).replace(/^.*Error: /,'');onerror(queryError)}}finally{if(q.requestId===requestId)busy=false}}
+ $effect(()=>{const signature=JSON.stringify([doc.id,doc.revision,search,filters,sort,conditions,filterMode,order]);void signature;untrack(()=>{selectedRows=[];selectionStats=null;selectedRecords.clear();scrollElement?.scrollTo({top:0})});const timer=setTimeout(()=>void load(0),150);return()=>clearTimeout(timer)})
  $effect(()=>{const items=$rowsVirtual.getVirtualItems(),first=items[0]?.index??0,last=items.at(-1)?.index??0;if(items.length&&!busy&&(first<pageOffset||last>=pageOffset+page.rows.length))untrack(()=>void load(Math.floor(first/100)*100))})
- function update(updated:DocumentInfo){if(updated.headers?.length!==doc.headers?.length){filters={};sort=undefined;selectedColumns=[]}onchange(updated)}
+ function update(updated:DocumentInfo){if(updated.headers?.length!==doc.headers?.length){filters={};sort=undefined;conditions=[];order=[];showQuery=false;selectedColumns=[]}onchange(updated)}
  async function edit(change:TableEdit){if(locked)return;try{update(await window.freya.tableEdit(doc.id,$state.snapshot(change)));editing=null;await load(pageOffset);await stats()}catch(error){onerror(String(error))}}
  async function stats(){if(!selectedRows.length){selectionStats=null;return}try{selectionStats=await window.freya.stats(doc.id,$state.snapshot(selectedRows),selectedColumns.length?$state.snapshot(selectedColumns):(doc.headers??[]).map((_,i)=>i))}catch(error){onerror(String(error))}}
  function selectRow(id:string,add:boolean){if(!add)selectedRecords.clear();const row=page.rows.find(value=>value.id===id);if(row)selectedRecords.set(id,row.cells);selectedRows=add?(selectedRows.includes(id)?selectedRows.filter(x=>x!==id):[...selectedRows,id]):[id];void stats()}
  function selectColumn(index:number){selectedColumns=selectedColumns.includes(index)?selectedColumns.filter(x=>x!==index):[...selectedColumns,index];void stats()}
- function sortBy(column:number){sort=sort?.column===column?{column,descending:!sort.descending,numeric}:{column,descending:false,numeric};}
+ function sortBy(column:number,append=false){const current=activeOrder.find(item=>item.column===column),next={column,descending:current?!current.descending:false,numeric};if(append){order=current?activeOrder.map(item=>item.column===column?next:item):[...activeOrder,next];sort=undefined}else{sort=next;order=[]}}
+ function applyQuery(next:TableFilter[],sorts:TableSort[],mode:'all'|'any'){conditions=next;order=sorts;filterMode=mode;sort=undefined;showQuery=false;queryButton?.focus()}
+
  function setFilter(column:number,value:string){filters={...filters,[column]:value}}
  async function copyMarkdown(){try{const text=await window.freya.tableMarkdown(doc.id,{scope:selectedRows.length?'selection':'filtered',rowIds:$state.snapshot(selectedRows),columns:selectedColumns.length?$state.snapshot(selectedColumns):undefined,query:query()});await navigator.clipboard.writeText(text);onstatus('Tabla Markdown copiada')}catch(error){onerror(String(error))}}
  async function paste(event:ClipboardEvent,rowId:string,column:number){if(locked)return;const value=event.clipboardData?.getData('text/plain');if(value===undefined)return;if((event.target as HTMLElement).tagName==='INPUT'&&!value.includes('\t')&&!value.includes('\n'))return;event.preventDefault();try{const lines=parse(value,{delimiter:'\t',relax_column_count:true,skip_empty_lines:false}) as string[][];await edit({type:'paste',rowId,column,values:lines,view:{query:pageQuery,revision:page.revision}})}catch(error){onerror(String(error))}}
@@ -48,12 +53,15 @@
  <div class="csv-toolbar">
   <div class="search-field"><span>⌕</span><input aria-label="Buscar en tabla" placeholder="Buscar en la tabla…" bind:value={search}/>{#if search}<button onclick={()=>search=''} aria-label="Borrar búsqueda">×</button>{/if}</div>
   <button class:active={showFilters} onclick={()=>showFilters=!showFilters}>☷ Filtros {Object.values(filters).filter(Boolean).length||''}</button>
-  {#if search||Object.values(filters).some(Boolean)||sort}<button onclick={()=>{search='';filters={};sort=undefined}}>Quitar filtros y orden</button>{/if}
+  {#if search||Object.values(filters).some(Boolean)||sort||order.length||conditions.length}<button onclick={()=>{search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}}>Quitar filtros y orden</button>{/if}
   <label class="check-label"><input type="checkbox" bind:checked={numeric} onchange={()=>{if(sort)sort={...sort,numeric}}}/>Orden numérico</label>
   <button onclick={()=>showReplace=!showReplace}>Reemplazar</button>
+  <button bind:this={queryButton} class:active={conditions.length>0||order.length>0} aria-expanded={showQuery} onclick={()=>showQuery=!showQuery}>Consulta avanzada</button>
   <button bind:this={statisticsButton} aria-expanded={showStatistics} onclick={()=>showStatistics=!showStatistics}>Estadísticas</button>
   <span class="spacer"></span><span class="muted">{busy?'Procesando…':`${page.matched.toLocaleString()} de ${page.total.toLocaleString()} filas`}</span>
  </div>
+ {#if showQuery}<CsvQueryTools headers={doc.headers??[]} initialConditions={conditions} initialOrder={activeOrder} initialMode={filterMode} onapply={applyQuery} onclose={()=>{showQuery=false;queryButton?.focus()}}/>{/if}
+ {#if queryError}<div class="warning-banner" role="alert">Consulta no aplicada. Se conserva la última vista válida. {queryError} Corrige o limpia la consulta para editar. <button disabled={busy} onclick={()=>void load(0)}>Reintentar consulta</button></div>{/if}
  {#if doc.warning||doc.readonly}<div class="warning-banner">{doc.warning??'Solo lectura'}{#if page.sample} Los filtros y recuentos describen únicamente la muestra.{/if}</div>{/if}
  {#if showReplace}<form class="csv-toolbar" onsubmit={event=>{event.preventDefault();void edit({type:'replace',find:replaceFind,replacement:replaceWith,column:selectedColumns.length===1?selectedColumns[0]:undefined})}}><input aria-label="Buscar valor para reemplazar" placeholder="Buscar valor" bind:value={replaceFind}/><input aria-label="Nuevo valor" placeholder="Reemplazar por" bind:value={replaceWith}/><span class="muted">{selectedColumns.length===1?'Columna seleccionada':'Todas las columnas'}</span><button disabled={locked||!replaceFind} type="submit">Reemplazar coincidencias</button></form>{/if}
  <div class="csv-operations">
@@ -75,8 +83,8 @@
    <div class="csv-header" role="row" style:height={showFilters?'76px':'40px'}>
     <div class="row-number corner">#</div>
     {#each $columnsVirtual.getVirtualItems() as col (col.key)}
-     <div class="column-header" role="columnheader" aria-sort={sort?.column===col.index?(sort.descending?'descending':'ascending'):'none'} style:left={`${col.start}px`} style:width={`${col.size}px`}>
-      {#if editingHeader?.index===col.index}<input class="column-filter" aria-label="Nombre del encabezado" bind:value={editingHeader.value} use:focus onblur={()=>{if(editingHeader){void edit({type:'header',index:col.index,name:editingHeader.value});editingHeader=null}}} onkeydown={event=>{if(event.key==='Enter')event.currentTarget.blur();else if(event.key==='Escape')editingHeader=null}}/>{:else}<div class="column-title"><input class="column-select" type="checkbox" aria-label={`Seleccionar columna ${doc.headers?.[col.index]}`} checked={selectedColumns.includes(col.index)} onchange={()=>selectColumn(col.index)}/><button class="sort-button" title="Ordenar columna" onclick={()=>sortBy(col.index)}>{doc.headers?.[col.index]||`Columna ${col.index+1}`} {sort?.column===col.index?(sort.descending?'↓':'↑'):''}</button><button class="header-edit" title="Editar encabezado" aria-label={`Editar encabezado ${col.index+1}`} disabled={locked} onclick={()=>editingHeader={index:col.index,value:doc.headers?.[col.index]??''}}>✎</button></div>{/if}
+     <div class="column-header" role="columnheader" aria-sort={activeOrder.find(item=>item.column===col.index)?.descending===true?'descending':activeOrder.some(item=>item.column===col.index)?'ascending':'none'} style:left={`${col.start}px`} style:width={`${col.size}px`}>
+      {#if editingHeader?.index===col.index}<input class="column-filter" aria-label="Nombre del encabezado" bind:value={editingHeader.value} use:focus onblur={()=>{if(editingHeader){void edit({type:'header',index:col.index,name:editingHeader.value});editingHeader=null}}} onkeydown={event=>{if(event.key==='Enter')event.currentTarget.blur();else if(event.key==='Escape')editingHeader=null}}/>{:else}<div class="column-title"><input class="column-select" type="checkbox" aria-label={`Seleccionar columna ${doc.headers?.[col.index]}`} checked={selectedColumns.includes(col.index)} onchange={()=>selectColumn(col.index)}/><button class="sort-button" title="Ordenar columna" onclick={event=>sortBy(col.index,event.shiftKey)}>{doc.headers?.[col.index]||`Columna ${col.index+1}`} {activeOrder.some(item=>item.column===col.index)?(activeOrder.find(item=>item.column===col.index)?.descending?'↓':'↑'):''}</button><button class="header-edit" title="Editar encabezado" aria-label={`Editar encabezado ${col.index+1}`} disabled={locked} onclick={()=>editingHeader={index:col.index,value:doc.headers?.[col.index]??''}}>✎</button></div>{/if}
       {#if showFilters}<input class="column-filter" aria-label={`Filtrar ${doc.headers?.[col.index]}`} placeholder="Contiene…" value={filters[col.index]??''} oninput={e=>setFilter(col.index,e.currentTarget.value)}/>{/if}
      </div>
     {/each}
@@ -86,7 +94,7 @@
     {#if row}<div class="csv-row" class:selected={selectedRows.includes(row.id)} role="row" style:transform={`translateY(${virtualRow.start}px)`} style:height={`${virtualRow.size}px`}>
      <button class="row-number" aria-label={`Seleccionar fila ${virtualRow.index+1}`} onclick={event=>selectRow(row.id,event.metaKey||event.ctrlKey||event.shiftKey)}>{virtualRow.index+1}</button>
      {#each $columnsVirtual.getVirtualItems() as col (col.key)}
-      <div class="csv-cell" class:column-selected={selectedColumns.includes(col.index)} role="gridcell" tabindex="0" aria-label={`Fila ${virtualRow.index+1}, ${doc.headers?.[col.index]}`} style:left={`${col.start}px`} style:width={`${col.size}px`} ondblclick={()=>{if(!locked)editing={rowId:row.id,column:col.index,value:row.cells[col.index]??''}}} onkeydown={event=>{if(!doc.readonly&&(event.key==='Enter'||event.key==='F2')){event.preventDefault();editing={rowId:row.id,column:col.index,value:row.cells[col.index]??''}}}} onpaste={event=>void paste(event,row.id,col.index)}>
+      <div class="csv-cell" class:column-selected={selectedColumns.includes(col.index)} role="gridcell" tabindex="0" aria-label={`Fila ${virtualRow.index+1}, ${doc.headers?.[col.index]}`} style:left={`${col.start}px`} style:width={`${col.size}px`} ondblclick={()=>{if(!locked)editing={rowId:row.id,column:col.index,value:row.cells[col.index]??''}}} onkeydown={event=>{if(!locked&&(event.key==='Enter'||event.key==='F2')){event.preventDefault();editing={rowId:row.id,column:col.index,value:row.cells[col.index]??''}}}} onpaste={event=>void paste(event,row.id,col.index)}>
        {#if editing?.rowId===row.id&&editing?.column===col.index}<input class="cell-input" aria-label="Editar celda" bind:value={editing.value} use:focus onblur={()=>{if(editing)void edit({type:'cell',rowId:row.id,column:col.index,value:editing.value})}} onkeydown={event=>{if(event.key==='Enter'&&editing){event.preventDefault();event.currentTarget.blur()}else if(event.key==='Escape'){editing=null}}}/>{:else}<span title={row.cells[col.index]??''}>{row.cells[col.index]??''}</span>{/if}
       </div>
      {/each}

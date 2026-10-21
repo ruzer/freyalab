@@ -6,6 +6,7 @@ import { parse } from 'csv-parse'
 import { parse as parseSync } from 'csv-parse/sync'
 import { stringify } from 'csv-stringify/sync'
 import iconv from 'iconv-lite'
+import {compileTableQuery} from './table-query'
 import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableRow, TableStats } from '../shared/types'
 
 export const TABLE_LIMITS = { bytes: 50 * 1024 * 1024, cells: 2_000_000, record: 1024 * 1024, sampleBytes: 8 * 1024 * 1024, sampleRows: 200 }
@@ -88,12 +89,13 @@ export class TableEngine {
  private async indices(id: string, query: TableQuery): Promise<number[]> {
   const s=this.get(id); const revision=s.revision; const ticket=++this.serial; this.queries.set(id,ticket)
   const search=(query.search??'').toLocaleLowerCase(); const filters=Object.entries(query.filters??{}).filter(([,value])=>value).map(([column,value])=>[Number(column),value.toLocaleLowerCase()] as const)
-  const key=JSON.stringify([revision,search,filters,query.sort]); const cached=this.views.get(id);if(cached?.key===key)return cached.indices
+  const compiled=compileTableQuery(query,s.headers.length)
+  const key=JSON.stringify([revision,search,filters,query.sort,query.order,query.conditions,query.filterMode]); const cached=this.views.get(id);if(cached?.key===key)return cached.indices
   const indices:number[]=[]
   const ensure=()=>{if(this.queries.get(id)!==ticket || this.states.get(id)!==s || s.revision!==revision) throw new Error('Consulta cancelada por una solicitud más reciente.')}
-  for(let i=0;i<s.rows.length;i++){const row=s.rows[i]; if((!search||row.cells.some(value=>value.toLocaleLowerCase().includes(search)))&&filters.every(([column,value])=>(row.cells[column]??'').toLocaleLowerCase().includes(value)))indices.push(i); if(i%2048===0){await yieldTurn();ensure()} }
-  if(query.sort){const {column,descending,numeric:asNumber}=query.sort; const direction=descending?-1:1
-   const compare=(a:number,b:number)=>{const x=s.rows[a].cells[column]??'',y=s.rows[b].cells[column]??''; if(asNumber){const nx=numeric(x),ny=numeric(y); if(nx===null||ny===null) return nx===ny ? a-b : nx===null ? 1:-1; return direction*(nx-ny)||a-b} return direction*x.localeCompare(y)||a-b}
+  for(let i=0;i<s.rows.length;i++){const row=s.rows[i]; if((!search||row.cells.some(value=>value.toLocaleLowerCase().includes(search)))&&filters.every(([column,value])=>(row.cells[column]??'').toLocaleLowerCase().includes(value))&&compiled.matches(row.cells))indices.push(i); if(i%2048===0){await yieldTurn();ensure()} }
+  if(compiled.ordered){
+   const compare=(a:number,b:number)=>compiled.compare(s.rows[a].cells,s.rows[b].cells)||a-b
    // Bottom-up merge sort yields between blocks so cancel messages remain actionable.
    let work=indices, scratch=new Array<number>(indices.length)
    for(let width=1;width<indices.length;width*=2){for(let left=0;left<indices.length;left+=2*width){let a=left,b=Math.min(left+width,indices.length),endA=b,endB=Math.min(left+2*width,indices.length),out=left; while(a<endA||b<endB){scratch[out++]=b>=endB||(a<endA&&compare(work[a],work[b])<=0)?work[a++]:work[b++]; if(out%8192===0){await yieldTurn();ensure()}}} [work,scratch]=[scratch,work];await yieldTurn();ensure()} this.views.set(id,{key,indices:work});return work

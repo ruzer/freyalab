@@ -2,7 +2,10 @@ export type Kind = 'markdown' | 'text' | 'mermaid' | 'csv'
 export type Encoding = 'utf8' | 'utf16le' | 'win1252'
 export interface DocumentInfo { id:string; name:string; path:string|null; kind:Kind; text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:Encoding; delimiter:string; headers?:string[]; rowCount?:number }
 export interface TreeEntry { name:string; path:string; directory:boolean }
-export interface TableQuery { search?:string; filters?:Record<string,string>; sort?:{column:number; descending:boolean; numeric:boolean}; offset:number; limit:number; requestId:number }
+export interface TableSort {column:number;descending:boolean;numeric:boolean}
+export type FilterOperator='contains'|'equals'|'notEquals'|'starts'|'ends'|'empty'|'notEmpty'|'greater'|'greaterEqual'|'less'|'lessEqual'|'dateBefore'|'dateOn'|'dateAfter'|'regex'
+export interface TableFilter {column:number;op:FilterOperator;value?:string;caseSensitive?:boolean}
+export interface TableQuery {conditions?:TableFilter[];filterMode?:'all'|'any';order?:TableSort[]; search?:string; filters?:Record<string,string>; sort?:{column:number; descending:boolean; numeric:boolean}; offset:number; limit:number; requestId:number }
 export interface TableRow { id:string; cells:string[] }
 export interface TablePage { rows:TableRow[]; total:number; matched:number; revision:number; requestId:number; sample:boolean }
 export type TableEdit = {type:'cell'; rowId:string; column:number; value:string} | {type:'paste';rowId:string;column:number;values:string[][];view?:{query:TableQuery;revision:number}} | {type:'insertRow';afterId?:string} | {type:'deleteRows';ids:string[]} | {type:'duplicateRows';ids:string[]} | {type:'duplicateColumn';index:number} | {type:'insertColumn';index:number;name:string} | {type:'deleteColumn';index:number} | {type:'header';index:number;name:string} | {type:'replace';find:string;replacement:string;column?:number} | {type:'transform';operation:'trim'|'upper'|'lower';rowIds:string[];columns:number[]}

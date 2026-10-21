@@ -30,6 +30,24 @@ Al exportar, **Documento completo** incluye todas las filas y columnas en el ord
 
 Las muestras de archivos grandes siguen siendo de solo lectura. Se mantienen los límites de edición y del historial; un cambio que excede el presupuesto de deshacer se rechaza antes de aplicarse.
 
+## Consulta avanzada CSV
+
+**Consulta avanzada** abre un formulario de condiciones y criterios de orden. Añadir o cambiar campos no modifica la vista hasta pulsar **Aplicar consulta**. **Cancelar** o Escape descartan el borrador y devuelven el foco. Hay hasta 20 condiciones y 20 criterios; el panel se desplaza y los botones de aplicar/cancelar permanecen visibles.
+
+- Texto: contiene, es igual, no es igual, empieza por y termina en. Por defecto no distingue mayúsculas; cada condición puede activarlo. La igualdad no quita espacios automáticamente.
+- Vacíos: cadena vacía, espacios o campo ausente. «No está vacío» es su inverso.
+- Números: mayor, mayor o igual, menor y menor o igual; usa punto decimal y admite exponentes. Compara con `decimal.js` conservando todos los dígitos, sin convertir el contenido ni perder ceros iniciales. Las celdas no numéricas no coinciden.
+- Fechas: anterior, igual y posterior; solo AAAA-MM-DD válidas. No se adivina si `01/02/2026` es enero o febrero. Las fechas de celda con formato distinto no coinciden.
+- Expresiones regulares: RE2 mediante `re2js`, sin referencias hacia atrás ni lookaround. Máximo 256 caracteres de patrón, 1,000 instrucciones compiladas y 65,536 caracteres por campo evaluado; exceder un límite rechaza la consulta, sin devolver silenciosamente un resultado incompleto.
+
+Elige **Todas (Y)** o **Cualquier (O)** para combinar condiciones. La búsqueda global y los filtros de encabezado siguen aplicándose mediante Y. **Quitar filtros y orden** borra ambas búsquedas, condiciones y ordenaciones.
+
+En **Orden por prioridad**, cada criterio elige columna, dirección y orden textual o **Numérico exacto**. Los no numéricos van al final en ambas direcciones. Los empates conservan el orden original del documento. También puedes usar Mayús + clic en un encabezado para añadir un criterio; un clic normal vuelve al orden de una sola columna. La casilla de la barra **Orden numérico** controla el orden simple y los criterios que añadas desde encabezados; en el formulario puedes elegir el tipo de cada criterio.
+
+Ordenar y filtrar solo cambian la vista. Guardar conserva el orden original; exportar **Filas filtradas** respeta todos los criterios de orden. Pegado y selección mantienen la identidad de las filas mostradas, sin cambiar las ocultas. Cambiar la estructura de columnas, incluso al deshacer, restablece la consulta para no aplicarla sobre otra columna por accidente.
+
+Una consulta inválida muestra un mensaje y conserva la última vista válida. La edición queda bloqueada hasta corregir/limpiar la consulta y cargar un resultado válido; **Reintentar consulta** permite repetirla. No se pierde el documento ni su historial. Las reglas no se guardan dentro del CSV. Las muestras siguen identificadas como parciales.
+
 ## Estadísticas por columna
 
 El botón **Estadísticas** del CSV abre un panel de consulta. Elige **Todas las columnas** o **Columnas marcadas** y pulsa **Analizar**. Incluye todas las filas del documento, también las ocultas por búsqueda/filtros, y excluye encabezados. En archivos parciales, el panel indica **Solo muestra**: no son estadísticas globales.

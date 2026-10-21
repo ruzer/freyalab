@@ -40,3 +40,9 @@ La [auditoría CSV y roadmap](CSV-ADVANCED-ROADMAP.md) compara Modern CSV, bibli
 
 
 La rama de evolución CSV incorpora la auditoría histórica y las correcciones de alcance de exportación y pegado de los PR #6/#7, junto con el panel del PR #8. No fusiona esos PR ni modifica los binarios publicados.
+
+## Consulta avanzada y objetivo analítico
+
+`codex/csv-advanced-editing` añade condiciones Y/O (texto, vacíos, números exactos, fechas ISO, regex RE2) y orden por múltiples columnas, con formulario y errores que conservan la última vista válida. Reutiliza el motor de vista para exportación y pegado. [Guía](EDITOR-MENUS.md), [pruebas/medición](evidence/csv-query-2026-10-21.md) y [seguimiento completo A–D](ANALYTICS-DELIVERY.md).
+
+La entrega se apila sobre el PR #8 e incorpora los commits de corrección de #6/#7; ninguno se fusiona automáticamente. Local: check sin errores/advertencias, 41 unitarias, 28 E2E y licencias verificadas. El objetivo sigue activo: faltan rangos/edición masiva contextual, análisis restante, DuckDB y los seis gráficos ECharts. La alfa publicada conserva sus binarios y límites.
