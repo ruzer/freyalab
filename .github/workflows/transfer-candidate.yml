@@ -1,0 +1,38 @@
+name: Transfer verified alpha draft
+on:
+  push:
+    branches: [codex/freyalab-transfer]
+permissions:
+  actions: read
+  contents: write
+jobs:
+  transfer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 39529581811
+          github-token: ${{ github.token }}
+          path: candidate
+      - name: Verify release gates and transfer exact binaries to existing draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: 7851ee284d3bc6a068cbeffc6088af8e5a3cf46a
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(gh api repos/$GITHUB_REPOSITORY/git/ref/heads/main --jq .object.sha)" = "$EXPECTED_SHA"
+          test "$(gh api repos/$GITHUB_REPOSITORY/commits/v0.1.0-alpha.1 --jq .sha)" = "$EXPECTED_SHA"
+          test "$(gh api repos/$GITHUB_REPOSITORY/releases/419062243 --jq .draft)" = true
+          for run in 39529554737 39529581811; do
+            gh api repos/$GITHUB_REPOSITORY/actions/runs/$run | jq -e --arg sha "$EXPECTED_SHA" '.head_sha == $sha and .conclusion == "success"'
+          done
+          for report in candidate/*/release/candidate.json; do
+            test "$(jq -r .commit "$report")" = "$EXPECTED_SHA"
+            folder=$(dirname "$report")
+            (cd "$folder" && sha256sum -c SHA256SUMS.txt)
+            for file in "$folder"/FreyaLab-*; do
+              gh release upload v0.1.0-alpha.1 "$file" --repo "$GITHUB_REPOSITORY" --clobber
+            done
+          done
