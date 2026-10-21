@@ -29,3 +29,7 @@ La implementación se presentó en commits temáticos dentro de PR #1 y se cerr�
 - [x] Prerelease publicada con límites y advertencias.
 
 [Ver evidencia y entornos reales](evidence/release-v0.1.0-alpha.1.md). Siguen pendientes las comprobaciones manuales de Gatekeeper/SmartScreen e integración del escritorio, y una aprobación visual manual en todos los sistemas. La alfa no tiene firma comercial ni notarización. Los archivos de GB siguen siendo muestras limitadas; no hay edición ni análisis integral de ellos.
+
+## Mejoras posteriores a alpha.1
+
+Barra Markdown con formato e inserciones asistidas y menú CSV con limpieza y duplicación. La [guía de edición](EDITOR-MENUS.md) describe alcance, deshacer y límites; la [evidencia local](evidence/editor-menus-2026-10-20.md) separa las comprobaciones de esta entrega de los binarios ya publicados. Mover filas/columnas y transponer quedan para entregas posteriores.

@@ -14,6 +14,8 @@ const query=z.object({search:z.string().max(10000).optional(),filters:z.record(z
 const edits=z.discriminatedUnion('type',[
  z.object({type:z.literal('cell'),rowId:z.string().max(100),column:col,value:z.string().max(1024*1024)}),
  z.object({type:z.literal('paste'),rowId:z.string().max(100),column:col,values:z.array(z.array(z.string().max(1024*1024)).max(100000)).max(100000)}),
+ z.object({type:z.literal('duplicateRows'),ids:rows.min(1)}),z.object({type:z.literal('duplicateColumn'),index:col}),
+ z.object({type:z.literal('transform'),operation:z.enum(['trim','upper','lower']),rowIds:rows.min(1),columns:z.array(col).min(1).max(100000)}),
  z.object({type:z.literal('insertRow'),afterId:z.string().max(100).optional()}),z.object({type:z.literal('deleteRows'),ids:rows}),
  z.object({type:z.literal('insertColumn'),index:col,name:z.string().max(10000)}),z.object({type:z.literal('deleteColumn'),index:col}),z.object({type:z.literal('header'),index:col,name:z.string().max(10000)}),z.object({type:z.literal('replace'),find:z.string().min(1).max(10000),replacement:z.string().max(1024*1024),column:col.optional()})])
 const tableExport=z.object({scope:z.enum(['all','filtered','selection']),query:query.optional(),rowIds:rows.optional(),columns:z.array(col).optional(),delimiter:z.enum([',',';','\t','|']).optional()})
