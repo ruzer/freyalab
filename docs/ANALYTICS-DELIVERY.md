@@ -1,6 +1,6 @@
 # Evolución analítica de FreyaLab — seguimiento del objetivo
 
-Estado al 21 de octubre de 2026. Este documento mantiene el objetivo completo A–D; una entrega parcial no lo cierra. Complementa la [auditoría y roadmap CSV](CSV-ADVANCED-ROADMAP.md), sin repetirlos. «Implementado en rama» significa código y pruebas de desarrollo, pendiente de revisión e integración; no capacidad del instalador alpha.1.
+Estado al 21 de octubre de 2026. Las entregas A/B de los PR #11/#12 ya están en `main`; el PR #6 se cerró como resuelto, con su corrección y auditoría preservadas. Este documento mantiene el objetivo completo A–D; una entrega parcial no lo cierra. Complementa la [auditoría y roadmap CSV](CSV-ADVANCED-ROADMAP.md), sin repetirlos. «Implementado en rama» significa código y pruebas de desarrollo, pendiente de revisión e integración; no capacidad del instalador alpha.1.
 
 ## A. Edición avanzada
 
@@ -32,17 +32,19 @@ Los resultados incluyen revisión, alcance documento/vista filtrada y marca de m
 
 Las estadísticas siguen siendo aproximadas. Los enteros fuera del rango seguro se excluyen; las celdas se conservan como texto. Las frecuencias sí comparan el texto completo exacto, sin mezclar dos valores cuya vista previa coincida. Las cifras de la [medición sintética](evidence/csv-column-profile-2026-10-21.json) no amplían los límites generales del editor ni prueban un conjunto arbitrario de un millón de filas.
 
-## C. DuckDB — integración pendiente
+## C. DuckDB — implementación de desarrollo
 
-| Requisito | Aceptación necesaria |
-|---|---|
-| Consultas SQL | [Prototipo local en Electron ARM comprobado](evidence/duckdb-probe-2026-10-21.md); faltan otras plataformas, aislamiento y empaquetado antes de añadir el motor al producto. Consultas de solo lectura, sin extensiones, red ni acceso arbitrario a disco; cancelación y límites de memoria/resultados |
-| Agrupaciones | Asistente visual y SQL sobre el mismo conjunto/revisión; texto original para ID/fechas y tipos numéricos elegidos explícitamente |
-| Tablas dinámicas | Filas/columnas/medidas y agregación configurables, resultados paginados, sin modificar el CSV |
-| Cruces entre archivos | Solo documentos autorizados, claves y tipo de unión explícitos, duplicados/faltantes visibles; nombres de tabla/columna citados de forma segura |
-| Conjuntos grandes | Análisis completo de al menos el caso sintético de un millón × cuatro columnas, además de muestras editoriales. Medir lectura, memoria, consulta, cancelación y resultados; no ampliar silenciosamente el editor de 50 MiB/dos millones de celdas |
+`codex/csv-duckdb-analysis` integra DuckDB-Wasm en sandbox, sin sustituir el editor. [Guía](EDITOR-MENUS.md#análisis-sql-agrupaciones-tablas-dinámicas-y-cruces), [evidencia y límites](evidence/duckdb-wasm-2026-10-21.md). No requiere Homebrew ni servidores; no pertenece a los binarios alpha.1.
 
-La instalación de DuckDB en este Mac no es una dependencia distribuible. Deben comprobarse integración y empaquetado en macOS ARM/Intel, Windows x64 y Linux x64. Deben incluirse cambios pendientes del editor en una proyección consistente; leer solo el archivo guardado produciría resultados obsoletos. Esta evolución es posterior a la alfa y no cambia sus compromisos.
+| Requisito | Estado en rama | Pendiente / aceptación |
+|---|---|---|
+| SQL | Una consulta relacional de solo lectura, recursos locales, aislamiento de Chromium, configuración bloqueada y validación IPC; cancelación destruye el proceso | CI y ejecución empaquetada en cuatro entornos antes de integrar; instalación manual pendiente |
+| Agrupaciones | Asistente contar/sumar/promediar, tipos decimales explícitos; SQL visible sobre la misma revisión y cambios pendientes | Más dimensiones/medidas y exportación del resultado |
+| Tablas dinámicas | Asistente filas/categorías/medida, hasta 20 categorías explícitas, contar/sumar/promediar | Categorías dinámicas y múltiples medidas no forman parte de esta entrega |
+| Cruces | Hasta cuatro fuentes abiertas; asistente LEFT/INNER con claves textuales exactas y aviso de duplicados | Herramientas visuales adicionales de diagnóstico; no se cruzan rutas arbitrarias |
+| Conjuntos grandes | Fuentes completas de 100/3 000/100 000/1 000 000 filas × cuatro columnas medidas en Electron macOS ARM; muestra del editor independiente | Límites: 256 MiB por fuente, dos millones de filas/200 columnas, ocho millones de celdas en conjunto. No análisis integral de GB |
+
+La variante fijada es `@duckdb/duckdb-wasm` **1.33.1-dev57.0** (prerelease MIT), motor observado **v1.5.4**, y Arrow 17.0.0 (Apache-2.0). El prototipo nativo anterior queda como evidencia histórica, sin dependencia nativa incorporada. La configuración limita el gestor de memoria a 384 MB, no toda la RAM del proceso. Resultado máximo: 10 000 filas/200 columnas/8 MiB, paginado y rotulado si se limita. Datos originales, guardado y recuperación no se alteran.
 
 ## D. Apache ECharts — pendiente completo
 
@@ -59,11 +61,11 @@ Reutilizar ECharts con importaciones modulares y agregados del motor, sin un seg
 
 ## Orden de las siguientes entregas
 
-1. Cerrar revisión de consulta avanzada y correcciones de exportación/pegado, sin fusionar automáticamente.
+1. Consulta avanzada, rangos y exploración integrados mediante #11/#12 por el usuario; #6 cerrado como resuelto. No fusionar automáticamente las siguientes entregas.
 2. Revisar [rangos y edición masiva](evidence/csv-range-2026-10-21.md), implementados sobre el motor existente; completar transformaciones y cancelación. El riesgo principal sigue siendo aplicar cambios sobre otro alcance.
 3. Revisar la exploración de columnas, frecuencias, duplicados, descriptivas y Pearson; completar exportación de informes, alcance por rango y localización de filas. Reutilizar el proceso de datos y paneles, sin mutaciones.
-4. Prototipo de DuckDB aislado; integración solo después de demostrar seguridad, cancelación y compatibilidad. Complejidad alta; no sustituir el editor ni usar instalaciones del equipo del desarrollador como requisito del usuario.
-5. Agrupaciones, pivots y cruces visuales sobre ese motor. Complejidad alta; conservar texto y cambios pendientes.
+4. Revisar DuckDB-Wasm aislado y sus comprobaciones multiplataforma. Complejidad alta; preservar el editor y sus límites. La integración nativa se descartó para esta entrega por aislamiento.
+5. Asistentes de agrupación, pivot y cruce incluidos en la rama SQL; revisar categorías, conversiones explícitas y cambios pendientes antes de integrar.
 6. Los seis gráficos ECharts, gradualmente, con tablas accesibles y exportación. Complejidad media/alta; cantidades/resultados contrastados con fixtures.
 7. Medir y comprobar los flujos completos, paquetes e instalación antes de publicar otra versión.
 
@@ -71,6 +73,6 @@ Cada entrega requiere pruebas específicas más regresión apropiada, PR revisab
 
 ## Referencias técnicas
 
-- [DuckDB Node Neo](https://duckdb.org/docs/current/clients/node_neo/overview) y [seguridad de DuckDB](https://duckdb.org/docs/current/operations_manual/securing_duckdb/overview): candidatos por verificar dentro de la aplicación.
+- [DuckDB-Wasm](https://github.com/duckdb/duckdb-wasm) y [seguridad de DuckDB](https://duckdb.org/docs/current/operations_manual/securing_duckdb/overview): variante WASM incorporada en la rama de análisis, con aislamiento adicional de Chromium.
 - [Importaciones de ECharts](https://echarts.apache.org/handbook/en/basics/import/): integración modular prevista, aún no implementada.
 - [Modern CSV](https://www.moderncsv.com/documentation/): referencia funcional; su interfaz y código no se copian.

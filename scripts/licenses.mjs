@@ -14,8 +14,9 @@ for (const [location, entry] of Object.entries(lock.packages).sort(([a], [b]) =>
   const texts = []
   for (const name of names) {
     const file = join(directory, name)
-    if ((await stat(file)).isFile()) texts.push(`${name}\n${(await readFile(file, 'utf8')).replace(/\r\n/g, '\n')}`)
+    if ((await stat(file)).isFile()) texts.push(`${name}\n${(await readFile(file, 'utf8')).replace(/\r\n/g, '\n').replace(/[ \t]+$/gm, '')}`)
   }
+  if (pkg.name === '@duckdb/duckdb-wasm' && !texts.length) texts.push(`LICENSE (upstream ef8a4f8912b6e7f62bc0cc490145ebd391b79e1f)\n${await readFile(join(root, 'docs/licenses/duckdb-wasm-MIT.txt'), 'utf8')}`)
   let license = typeof pkg.license === 'string' ? pkg.license : JSON.stringify(pkg.license ?? pkg.licenses ?? null)
   if (license === 'null' && texts.some(text => /MIT License|The MIT License/i.test(text))) license = 'MIT (from bundled license text)'
   if (!texts.length && license === 'MIT') texts.push(`The npm package declares MIT but contains no standalone license file. Author metadata: ${JSON.stringify(pkg.author ?? pkg.contributors ?? 'not declared')}. Standard license text follows; upstream source is listed above.\n\n${mitText}`)
