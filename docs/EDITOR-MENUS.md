@@ -118,3 +118,8 @@ Límites iniciales: hasta cuatro fuentes; 256 MiB físicos y de texto decodifica
 Cancelar o cerrar destruye el proceso de consulta; el límite de tiempo es de dos minutos. Una edición/cambio de fuentes invalida los resultados; hay que volver a ejecutar. El borrador SQL y las fuentes elegidas se conservan durante la sesión al cerrar/reabrir el panel, sin guardarse como archivo. Una fuente cerrada exige revisar la selección; no se sustituye por otro archivo.
 
 No hay acceso SQL a archivos arbitrarios, red ni extensiones. Si la app se inicia con `--no-sandbox`, SQL se rechaza; no desactives las protecciones para usarlo. DuckDB se ejecuta en WebAssembly en una ventana Chromium aislada, sin Node ni el puente de FreyaLab. Se limita su gestor de memoria a 384 MB; esto **no** limita la RAM total de Electron. No hay análisis de GB ni exportación del resultado SQL en esta entrega. [Arquitectura, mediciones y comprobaciones](evidence/duckdb-wasm-2026-10-21.md).
+
+
+## Gráficos CSV
+
+La entrega de desarrollo añade **Gráficos** junto a Análisis/Estadísticas. Incluye histogramas, barras, líneas, dispersión, mapa de calor y cajas con selectores, tabla accesible y exportación. Consulta [métodos, alcance y límites](CHARTS.md); no se presenta como función publicada en alpha.1.

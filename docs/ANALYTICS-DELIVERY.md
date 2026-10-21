@@ -46,18 +46,20 @@ Las estadísticas siguen siendo aproximadas. Los enteros fuera del rango seguro 
 
 La variante fijada es `@duckdb/duckdb-wasm` **1.33.1-dev57.0** (prerelease MIT), motor observado **v1.5.4**, y Arrow 17.0.0 (Apache-2.0). El prototipo nativo anterior queda como evidencia histórica, sin dependencia nativa incorporada. La configuración limita el gestor de memoria a 384 MB, no toda la RAM del proceso. Resultado máximo: 10 000 filas/200 columnas/8 MiB, paginado y rotulado si se limita. Datos originales, guardado y recuperación no se alteran.
 
-## D. Apache ECharts — pendiente completo
+## D. Apache ECharts — implementación de desarrollo
 
-| Gráfico | Datos y aceptación mínima |
+`codex/csv-echarts` incorpora los seis tipos mediante ECharts 6.1.0 (Apache-2.0), con consultas agregadas en DuckDB y carga diferida del dibujo. [Uso, métodos y límites](CHARTS.md). Datos fuente, guardado y recuperación no se alteran. No pertenece al instalador alpha.1 publicado.
+
+| Gráfico | Estado y aceptación |
 |---|---|
-| Histograma | Intervalos numéricos y recuentos visibles y reproducibles |
-| Barras | Categorías y agregación elegidas; etiquetas/tabla alternativa |
-| Líneas | Eje y orden explícitos, sin inferir fechas ni conectar faltantes silenciosamente |
-| Dispersión | Pares numéricos, observaciones omitidas y límite de puntos documentados |
-| Mapa de calor | Matriz y escala legibles; faltantes diferenciados de cero |
-| Cajas | Cuartiles, bigotes y valores atípicos con método documentado y fixture conocido |
+| Histograma | Intervalos iguales, constantes, vacíos y recuentos completos contrastados con fixture; diez intervalos sobre un millón de filas medidos |
+| Barras | Categoría y contar/sumar/promediar explícitos; orden por resultado y categoría; tabla alternativa |
+| Líneas | Ejes numéricos y orden X explícitos, empates por fila; Y ausentes generan huecos; no infiere fechas |
+| Dispersión | Pares de la misma fila, exclusiones visibles; hasta 2 000 puntos, límite rotulado |
+| Mapa de calor | Conteos por dos categorías; no imputa combinaciones ausentes como cero; escala y tabla |
+| Cajas | Cuartiles tipo 7 y bigotes 1,5 × RIC; cuenta todos los atípicos y dibuja hasta 20 por categoría, con método visible |
 
-Reutilizar ECharts con importaciones modulares y agregados del motor, sin un segundo modelo de edición. Cada gráfico requiere interacción por teclado, temas claro/oscuro, tamaño adaptable, resumen accesible, exportación y prueba de datos reales. Etiquetas/tooltips no deben interpretar HTML del CSV. No se ha añadido ECharts todavía.
+Incluye teclado mediante controles/tabla alternativa, temas, tamaño adaptable y exportación SVG/PNG/PDF a través del exportador existente. Cada exportación identifica vistas parciales. El guardián de muestras existente mantiene deshabilitada la exportación de imágenes desde documentos que el editor abre como muestra; sus gráficos sí usan la fuente completa. Lectores de pantalla e instalación manual fuera de macOS ARM siguen pendientes. La CI vuelve a comprobar los gráficos desde los paquetes de los cuatro entornos; consultar evidencia del commit y PR antes de declarar compatibilidad.
 
 ## Orden de las siguientes entregas
 
@@ -66,7 +68,7 @@ Reutilizar ECharts con importaciones modulares y agregados del motor, sin un seg
 3. Revisar la exploración de columnas, frecuencias, duplicados, descriptivas y Pearson; completar exportación de informes, alcance por rango y localización de filas. Reutilizar el proceso de datos y paneles, sin mutaciones.
 4. Revisar DuckDB-Wasm aislado y sus comprobaciones multiplataforma. Complejidad alta; preservar el editor y sus límites. La integración nativa se descartó para esta entrega por aislamiento.
 5. Asistentes de agrupación, pivot y cruce incluidos en la rama SQL; revisar categorías, conversiones explícitas y cambios pendientes antes de integrar.
-6. Los seis gráficos ECharts, gradualmente, con tablas accesibles y exportación. Complejidad media/alta; cantidades/resultados contrastados con fixtures.
+6. Revisar los seis gráficos ECharts de `codex/csv-echarts`, sus tablas accesibles, exportaciones y pruebas sobre fuentes completas. Completar la exportación de imágenes desde documentos abiertos como muestra sin debilitar el guardián de originales.
 7. Medir y comprobar los flujos completos, paquetes e instalación antes de publicar otra versión.
 
 Cada entrega requiere pruebas específicas más regresión apropiada, PR revisable y evidencia del mismo commit. Compilar, ejecutar con Electron, ejecutar un paquete e instalar son comprobaciones distintas. El objetivo A–D permanece abierto hasta cubrir todos sus requisitos; no se declara equivalente a Modern CSV por añadir un panel.
@@ -74,5 +76,5 @@ Cada entrega requiere pruebas específicas más regresión apropiada, PR revisab
 ## Referencias técnicas
 
 - [DuckDB-Wasm](https://github.com/duckdb/duckdb-wasm) y [seguridad de DuckDB](https://duckdb.org/docs/current/operations_manual/securing_duckdb/overview): variante WASM incorporada en la rama de análisis, con aislamiento adicional de Chromium.
-- [Importaciones de ECharts](https://echarts.apache.org/handbook/en/basics/import/): integración modular prevista, aún no implementada.
+- [Importaciones de ECharts](https://echarts.apache.org/handbook/en/basics/import/): integración modular con carga diferida en la rama de gráficos.
 - [Modern CSV](https://www.moderncsv.com/documentation/): referencia funcional; su interfaz y código no se copian.
