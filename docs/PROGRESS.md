@@ -64,3 +64,12 @@ La rama del PR #9 incorpora esta base actualizada. Conserva íntegros los filtro
 El PR #8 se integró en `main` (`f50cc38`), antes de que el PR #9 se integrara en su rama (`fe87213`). El PR #10 ya estaba integrado en la rama del #9. Por ello, filtros avanzados, rangos y la corrección de exportación del #6 aún requieren este PR hacia `main`: `codex/csv-integrate-advanced`. Se conserva la unión completa sin cambios en archivos de producto, pruebas, dependencias ni scripts respecto de `b0b0a09`.
 
 La CI de ese árbol de producto pasó en los cuatro sistemas (ejecución 39618359610; 47 pruebas unitarias y 33 E2E). Esa evidencia previa no sustituye la CI de este PR ni la del commit que resulte en `main`. Al preparar la integración, GitHub todavía no mostraba ejecución para `f50cc38`; no se considera validado ese commit por inferencia. El PR #6 sigue abierto y con conflictos, aunque su corrección está incluida aquí. No se fusiona ni cierra automáticamente ningún PR y no se publica una nueva versión.
+
+
+## Exploración CSV de solo lectura
+
+`codex/csv-column-exploration` reutiliza el proceso tabular y `simple-statistics` 7.12.1 (ISC) para completar descriptivas por columna, frecuencias paginadas, calidad/faltantes, repeticiones, intervalos y Pearson entre columnas. Alcance documento/vista y revisión visibles; cancelación entre bloques, respuestas antiguas descartadas y valores originales preservados. Se integra mediante divulgación progresiva en Estadísticas, manteniendo el panel básico.
+
+Comprobado en desarrollo macOS ARM: check sin errores/advertencias, 53 unitarias, 35 E2E, build y avisos de 302 instalaciones de dependencias de producción. [Evidencia y límites](evidence/csv-column-exploration-2026-10-21.md). La medición de un millón de filas es de una columna con 1 000 valores distintos; no demuestra el caso de cuatro columnas del objetivo C ni elimina los límites de la alfa.
+
+El PR #11 reúne las mejoras de #9/#10 y la corrección de #6 hacia `main`; su CI 39623569460 pasó en los cuatro sistemas. Eso no prueba una futura fusión o instalación. Esta exploración se presenta en un PR separado hacia `main`, para evitar otra fusión en una rama intermedia. No se fusionan PR ni se publica una versión automáticamente. El objetivo A–D sigue abierto: transformaciones restantes, informes/alcances adicionales, DuckDB y ECharts pendientes.

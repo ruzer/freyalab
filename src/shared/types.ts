@@ -13,6 +13,14 @@ export interface TableRangeEdit {type:'range';range:TableRange;operation:'fill'|
 export interface TableRangePreview {cells:number;changed:number;revision:number;samples:{row:number;column:number;before:string;after:string}[]}
 export type TableEdit = TableRangeEdit | {type:'cell'; rowId:string; column:number; value:string} | {type:'paste';rowId:string;column:number;values:string[][];view?:{query:TableQuery;revision:number}} | {type:'insertRow';afterId?:string} | {type:'deleteRows';ids:string[]} | {type:'duplicateRows';ids:string[]} | {type:'duplicateColumn';index:number} | {type:'insertColumn';index:number;name:string} | {type:'deleteColumn';index:number} | {type:'header';index:number;name:string} | {type:'replace';find:string;replacement:string;column?:number} | {type:'transform';operation:'trim'|'upper'|'lower';rowIds:string[];columns:number[]}
 export interface TableStats { cells:number; empty:number; unique:number; numeric:number; sum:number|null; min:number|null; max:number|null; average:number|null }
+export interface ColumnAnalysisRequest {column:number;otherColumn?:number;query?:TableQuery;revision:number;requestId:string;frequencyOffset:number;duplicatesOnly:boolean;bins:number}
+export interface ColumnAnalysis {
+ revision:number;sample:boolean;filtered:boolean;column:number;cells:number;empty:number;missing:number;whitespace:number;numeric:number;excluded:number;leadingZeros:number;unique:number;duplicateGroups:number;duplicateRows:number;extraDuplicates:number;minLength:number;maxLength:number;
+ sum:number|null;average:number|null;min:number|null;max:number|null;median:number|null;deviation:number|null;sampleDeviation:number|null;
+ frequencies:{value:string;truncated:boolean;count:number;firstRow:number;rowId:string}[];frequencyTotal:number;frequencyOffset:number;
+ missingRows:{row:number;rowId:string}[];histogram:{lower:number;upper:number;count:number}[];
+ correlation?:{column:number;pairs:number;omitted:number;value:number|null};warnings:string[]
+}
 export interface TableOptions { encoding?:Encoding; delimiter?:string; header?:boolean }
 export interface TableExport { range?:TableRange; scope:'all'|'filtered'|'selection'; query?:TableQuery; rowIds?:string[]; columns?:number[]; delimiter?:string }
 export interface ExportRequest { format:'pdf'|'html'|'svg'|'png'|'csv'|'tsv'; html?:string; svg?:string; table?:TableExport }
@@ -24,6 +32,7 @@ export interface FreyaAPI {
  tableCopy(id:string,options:TableExport,format:'tsv'|'markdown'):Promise<void>; tablePaste(id:string,range:TableRange):Promise<string>;
  rangePreview(id:string,edit:TableRangeEdit):Promise<TableRangePreview>; rangeClipboard(id:string,range:TableRange):Promise<string>;
  tablePage(id:string,query:TableQuery):Promise<TablePage>; tableEdit(id:string,edit:TableEdit):Promise<DocumentInfo>; tableOptions(id:string,options:TableOptions):Promise<DocumentInfo>;
+ analyzeColumn(id:string,request:ColumnAnalysisRequest):Promise<ColumnAnalysis>; cancelAnalysis(id:string,requestId:string):Promise<void>;
  undo(id:string,redo?:boolean):Promise<DocumentInfo>; stats(id:string,rows:string[]|null,columns:number[]):Promise<TableStats>; tableMarkdown(id:string,options:TableExport):Promise<string>;
  export(id:string,request:ExportRequest):Promise<string|null>; image(id:string,src:string):Promise<string|null>; openLink(url:string):Promise<void>;
  recents():Promise<string[]>; recoveries():Promise<RecoveryEntry[]>; recover(id:string):Promise<DocumentInfo>; discardRecovery(id:string):Promise<void>;

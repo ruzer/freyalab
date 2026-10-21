@@ -1,0 +1,166 @@
+{
+  "recordedAt": "2026-10-21T15:23:43.107Z",
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "27.0.0",
+    "cpu": "Apple M2 Max",
+    "logicalCpus": 12,
+    "ramBytes": 34359738368,
+    "node": "v24.22.0",
+    "electron": "44.9.2",
+    "simpleStatistics": "7.12.1"
+  },
+  "notes": [
+    "Synthetic one-column data, repeated values; not a promise for arbitrary one-million-row tables.",
+    "End-to-end IPC times on a shared development machine, one run per size; not p95 or a startup benchmark.",
+    "Memory recorded after closing each document; working set is not peak memory and garbage collection is not forced.",
+    "Renderer timer gap uses 20 ms intervals; not a universal latency guarantee."
+  ],
+  "cases": [
+    {
+      "rows": 100,
+      "columns": 1,
+      "sample": false,
+      "openMs": 116.90000000596046,
+      "analysisMs": 3.300000011920929,
+      "rendererMaxTimerGapMs": 3.300000011920929,
+      "rendererTimerTicks": 0,
+      "unique": 100,
+      "median": 49.5,
+      "documentDirty": false,
+      "memoryAfterClosingDocument": [
+        {
+          "type": "Browser",
+          "workingSetKiB": 190992
+        },
+        {
+          "type": "GPU",
+          "workingSetKiB": 93408
+        },
+        {
+          "type": "Utility",
+          "name": "Network Service",
+          "workingSetKiB": 48016
+        },
+        {
+          "type": "Tab",
+          "workingSetKiB": 179136
+        },
+        {
+          "type": "Utility",
+          "name": "FreyaLab CSV",
+          "workingSetKiB": 76480
+        }
+      ]
+    },
+    {
+      "rows": 3000,
+      "columns": 1,
+      "sample": false,
+      "openMs": 21.099999994039536,
+      "analysisMs": 3.7000000178813934,
+      "rendererMaxTimerGapMs": 3.7000000178813934,
+      "rendererTimerTicks": 0,
+      "unique": 1000,
+      "median": 499.5,
+      "documentDirty": false,
+      "memoryAfterClosingDocument": [
+        {
+          "type": "Browser",
+          "workingSetKiB": 191648
+        },
+        {
+          "type": "GPU",
+          "workingSetKiB": 94656
+        },
+        {
+          "type": "Utility",
+          "name": "Network Service",
+          "workingSetKiB": 48016
+        },
+        {
+          "type": "Tab",
+          "workingSetKiB": 180112
+        },
+        {
+          "type": "Utility",
+          "name": "FreyaLab CSV",
+          "workingSetKiB": 87424
+        }
+      ]
+    },
+    {
+      "rows": 100000,
+      "columns": 1,
+      "sample": false,
+      "openMs": 75.7000000178814,
+      "analysisMs": 23.69999998807907,
+      "rendererMaxTimerGapMs": 21.5,
+      "rendererTimerTicks": 1,
+      "unique": 1000,
+      "median": 499.5,
+      "documentDirty": false,
+      "memoryAfterClosingDocument": [
+        {
+          "type": "Browser",
+          "workingSetKiB": 193328
+        },
+        {
+          "type": "GPU",
+          "workingSetKiB": 95216
+        },
+        {
+          "type": "Utility",
+          "name": "Network Service",
+          "workingSetKiB": 48016
+        },
+        {
+          "type": "Tab",
+          "workingSetKiB": 181056
+        },
+        {
+          "type": "Utility",
+          "name": "FreyaLab CSV",
+          "workingSetKiB": 127552
+        }
+      ]
+    },
+    {
+      "rows": 1000000,
+      "columns": 1,
+      "sample": false,
+      "openMs": 517.0999999940395,
+      "analysisMs": 192,
+      "rendererMaxTimerGapMs": 21.30000001192093,
+      "rendererTimerTicks": 9,
+      "unique": 1000,
+      "median": 499.5,
+      "documentDirty": false,
+      "memoryAfterClosingDocument": [
+        {
+          "type": "Browser",
+          "workingSetKiB": 196448
+        },
+        {
+          "type": "GPU",
+          "workingSetKiB": 95744
+        },
+        {
+          "type": "Utility",
+          "name": "Network Service",
+          "workingSetKiB": 48384
+        },
+        {
+          "type": "Tab",
+          "workingSetKiB": 183392
+        },
+        {
+          "type": "Utility",
+          "name": "FreyaLab CSV",
+          "workingSetKiB": 353568
+        }
+      ]
+    }
+  ]
+}

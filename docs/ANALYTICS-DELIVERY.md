@@ -16,17 +16,21 @@ Estado al 21 de octubre de 2026. Este documento mantiene el objetivo completo A�
 
 ## B. Estadísticas y exploración
 
-| Requisito | Estado verificable | Pendiente / aceptación |
-|---|---|---|
-| Estadísticas descriptivas | Panel de todas/columnas marcadas del PR #8: conteo, vacíos, únicos, numéricos, suma, media, mínimo y máximo | Mediana y desviación con definición explícita de población/muestra; valores no numéricos excluidos de forma visible |
-| Distribuciones | Pendiente | Agrupación numérica reproducible, límites/intervalos y alcance explícitos |
-| Frecuencias | Pendiente | Tabla de frecuencias exactas, total y límites de resultados; exportación sin alterar el documento |
-| Valores faltantes | Conteo de vacíos por columna | Exploración/localización de filas y definición de vacío distinta de cero |
-| Duplicados | Conteo de únicos existente, sin identificación de duplicados | Claves configurables, grupos y filas identificadas, sin eliminación automática |
-| Correlaciones | Pendiente | Columnas numéricas explícitas, observaciones emparejadas, faltantes y columnas constantes controlados; prueba con resultados conocidos |
-| Análisis de columnas | Panel básico con índices para encabezados duplicados | Perfil de tipos propuestos, longitud, ejemplos y calidad; no convertir celdas automáticamente |
+La rama `codex/csv-column-exploration` añade una exploración de solo lectura dentro del panel existente. [Uso](EDITOR-MENUS.md) y [evidencia](evidence/csv-column-exploration-2026-10-21.md). Reutiliza `simple-statistics` 7.12.1 (ISC) en el proceso tabular; no incorpora otro motor de edición.
 
-Las estadísticas numéricas actuales son aproximadas. Comparación/orden numérico exactos de esta entrega no convierten las agregaciones anteriores en aritmética exacta. Los resultados deben incluir revisión del documento y alcance completo/filtrado/selección/muestra; nunca atribuir a todo el archivo un cálculo de muestra.
+| Requisito | Estado verificable en rama | Pendiente / aceptación |
+|---|---|---|
+| Estadísticas descriptivas | Conteos, suma, media, mediana, mínimo, máximo, desviación poblacional (n) y muestral (n−1) | Selección de celdas como alcance del nuevo panel; informe exportable. Cálculos aproximados, exclusiones visibles |
+| Distribuciones | Tabla de intervalos de igual amplitud, de 1 a 30, con extremos y recuentos | Gráfico ECharts en D; otros criterios de agrupación no implementados |
+| Frecuencias | Conteos exactos de texto, porcentajes y primera fila original; páginas de 50 | Exportación del resultado. Límite explícito de 100 000 valores distintos; vistas previas de 256 unidades UTF-16 marcadas |
+| Valores faltantes | Vacíos, espacios y campos ausentes diferenciados; primeras 20 filas originales identificadas | Navegación completa y acción para localizar cada fila; no se interpreta cero como vacío |
+| Duplicados | Grupos por valor exacto de una columna, filas participantes y repeticiones adicionales; filtro de frecuencias repetidas | Claves compuestas y eliminación asistida, con vista previa/deshacer, en A |
+| Correlaciones | Pearson entre dos columnas explícitas, pares de la misma fila y omisiones visibles; constantes o menos de dos pares sin coeficiente | Matriz de varias columnas y otros métodos no implementados |
+| Análisis de columnas | Perfil numérico/textual, longitudes, ceros iniciales y calidad; encabezados duplicados identificados por índice | No se convierten tipos ni se realizan inferencias automáticas destructivas |
+
+Los resultados incluyen revisión, alcance documento/vista filtrada y marca de muestra. Los cambios de datos, filtros u opciones invalidan los resultados; desplazar o recargar visualmente la tabla no los borra. Cancelar interrumpe la recogida entre bloques y descarta respuestas antiguas. Los cálculos síncronos de la biblioteca terminan antes de descartar su resultado.
+
+Las estadísticas siguen siendo aproximadas. Los enteros fuera del rango seguro se excluyen; las celdas se conservan como texto. Las frecuencias sí comparan el texto completo exacto, sin mezclar dos valores cuya vista previa coincida. Las cifras de la [medición sintética](evidence/csv-column-profile-2026-10-21.json) no amplían los límites generales del editor ni prueban un conjunto arbitrario de un millón de filas.
 
 ## C. DuckDB — integración pendiente
 
@@ -57,7 +61,7 @@ Reutilizar ECharts con importaciones modulares y agregados del motor, sin un seg
 
 1. Cerrar revisión de consulta avanzada y correcciones de exportación/pegado, sin fusionar automáticamente.
 2. Revisar [rangos y edición masiva](evidence/csv-range-2026-10-21.md), implementados sobre el motor existente; completar transformaciones y cancelación. El riesgo principal sigue siendo aplicar cambios sobre otro alcance.
-3. Perfil de columnas, frecuencias, duplicados y descriptivas restantes; después correlaciones. Reutilizar el proceso de datos y paneles. Complejidad media; alcance/revisión visibles y ninguna mutación.
+3. Revisar la exploración de columnas, frecuencias, duplicados, descriptivas y Pearson; completar exportación de informes, alcance por rango y localización de filas. Reutilizar el proceso de datos y paneles, sin mutaciones.
 4. Prototipo de DuckDB aislado; integración solo después de demostrar seguridad, cancelación y compatibilidad. Complejidad alta; no sustituir el editor ni usar instalaciones del equipo del desarrollador como requisito del usuario.
 5. Agrupaciones, pivots y cruces visuales sobre ese motor. Complejidad alta; conservar texto y cambios pendientes.
 6. Los seis gráficos ECharts, gradualmente, con tablas accesibles y exportación. Complejidad media/alta; cantidades/resultados contrastados con fixtures.
