@@ -57,4 +57,10 @@ Ver [guía](EDITOR-MENUS.md), [evidencia](evidence/csv-range-2026-10-21.md) y [o
 
 La rama del PR #8 incorpora `main` tras integrar el PR #7. El conflicto de pruebas se resuelve conservando los cuatro flujos de estadísticas y el flujo de pegado por vista, junto con todos los casos previos. No se fusiona ningún PR con esta actualización; se validan tipos, motor y aplicación sobre la combinación resultante.
 
-La rama del PR #9 incorpora esta base actualizada. Conserva íntegros los filtros, rangos y portapapeles nativo del PR #10, integrado en esa rama; las correcciones del #7 ya estaban presentes. Los archivos de producto y pruebas quedan idénticos al commit `b0b0a094d939efa9763e722723f54a517e563b3b`; se comprueba su nueva ascendencia sin retirar funcionalidades. Los PR #6/#8/#9 permanecen abiertos.
+La rama del PR #9 incorpora esta base actualizada. Conserva íntegros los filtros, rangos y portapapeles nativo del PR #10, integrado en esa rama; las correcciones del #7 ya estaban presentes. Los archivos de producto y pruebas quedan idénticos al commit `b0b0a094d939efa9763e722723f54a517e563b3b`; se comprueba su nueva ascendencia sin retirar funcionalidades. Estado histórico previo a las fusiones del 21 de octubre; ver la integración siguiente.
+
+## Integración de filtros y rangos tras las fusiones
+
+El PR #8 se integró en `main` (`f50cc38`), antes de que el PR #9 se integrara en su rama (`fe87213`). El PR #10 ya estaba integrado en la rama del #9. Por ello, filtros avanzados, rangos y la corrección de exportación del #6 aún requieren este PR hacia `main`: `codex/csv-integrate-advanced`. Se conserva la unión completa sin cambios en archivos de producto, pruebas, dependencias ni scripts respecto de `b0b0a09`.
+
+La CI de ese árbol de producto pasó en los cuatro sistemas (ejecución 39618359610; 47 pruebas unitarias y 33 E2E). Esa evidencia previa no sustituye la CI de este PR ni la del commit que resulte en `main`. Al preparar la integración, GitHub todavía no mostraba ejecución para `f50cc38`; no se considera validado ese commit por inferencia. El PR #6 sigue abierto y con conflictos, aunque su corrección está incluida aquí. No se fusiona ni cierra automáticamente ningún PR y no se publica una nueva versión.
