@@ -287,6 +287,7 @@ test('estadísticas CSV: límite explícito y encabezados duplicados por índice
  expect(await panel.locator('tbody tr').first().locator('th,td').allTextContents()).toEqual(['2. A','1','0','1','1','2','2','2','2'])
 })
 
+
 test('CSV: pegar sigue filtros y orden, conserva filas ocultas y se deshace en un paso',async()=>{
  const path=join(directory,'pegado.csv')
  const source='Código,Grupo,Nota\r\n001,visible,Antes A\r\n002,oculto,Intacto\r\n003,visible,Antes C\r\n'
@@ -318,4 +319,179 @@ test('CSV: pegar sigue filtros y orden, conserva filas ocultas y se deshace en u
  await page.getByRole('button',{name:'Guardar',exact:true}).click()
  await expect(page.locator('.statusbar')).toContainText('Guardado')
  expect(parseCSV(await readFile(path,'utf8'))).toEqual([['Código','Grupo','Nota'],...expected])
+})
+
+
+test('exportación CSV: completo y filtrado conservan columnas; selección limita explícitamente',async()=>{
+ const path=join(directory,'alcance.csv')
+ const source='Código,Nombre,Valor,Nota\r\n00123,"Ana, María",20,"Grupo\r\nLínea ""2"""\r\n00002,Bea,3,Grupo\r\n00003,Celia,11,Otro\r\n'
+ await writeFile(path,source)
+ const [doc]=await page.evaluate(async path=>window.freya.openPaths([path]),path)
+ await page.getByLabel('Buscar en tabla',{exact:true}).fill('Grupo')
+ await expect(page.locator('.csv-toolbar')).toContainText('2 de 3 filas')
+ await page.getByLabel('Orden numérico',{exact:true}).check()
+ await page.getByRole('button',{name:'Valor',exact:true}).click()
+ await expect(page.getByRole('gridcell',{name:'Fila 1, Código',exact:true})).toHaveText('00002')
+ await page.getByRole('gridcell',{name:'Fila 1, Nombre',exact:true}).dblclick()
+ await page.getByLabel('Editar celda',{exact:true}).fill('Beatriz');await page.getByLabel('Editar celda',{exact:true}).press('Enter')
+ await expect(page.getByRole('gridcell',{name:'Fila 1, Nombre',exact:true})).toHaveText('Beatriz')
+ await page.getByLabel('Seleccionar columna Nombre',{exact:true}).check()
+ await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click()
+ const all=parseCSV(source) as string[][];all[2][1]='Beatriz'
+ for(const scope of ['all','filtered','selection'])for(const format of ['csv','tsv']){
+  const close=page.getByRole('button',{name:'Cerrar aviso',exact:true});if(await close.isVisible())await close.click()
+  await page.getByRole('button',{name:'⇧ Exportar ▾',exact:true}).click()
+  await page.locator('.export-dropdown select').selectOption(scope)
+  await page.getByRole('button',{name:format.toUpperCase(),exact:true}).click()
+  await expect(page.locator('.toast')).toContainText('Exportado:')
+  const output=await readFile(join(directory,'exports',`alcance.${format}`),'utf8')
+  const expected=scope==='all'?all:scope==='filtered'?[all[0],all[2],all[1]]:[['Nombre'],['Beatriz']]
+  expect(parseCSV(output,{delimiter:format==='tsv'?'\t':','})).toEqual(expected)
+ }
+ expect(await readFile(path,'utf8')).toBe(source)
+ expect(await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id)?.dirty,doc.id)).toBe(true)
+ await expect(page.getByRole('gridcell',{name:'Fila 1, Nombre',exact:true})).toHaveText('Beatriz')
+})
+
+
+test('consulta CSV: formulario, orden múltiple exacto, exportación y pegado por vista',async()=>{
+ const path=join(directory,'consulta.csv')
+ const source='Código,Grupo,Valor,Fecha,Nota\n001,Z,9007199254740993,2026-01-02,Árbol\n002,A,9007199254740992,2026-01-03,\n003,A,1.00000000000000001,2026-01-01,Inicio\n004,A,1.00000000000000002,2026-01-01,Fin\n005,A,1.00000000000000001,2026-01-01,Otro\n'
+ await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
+ await page.getByRole('button',{name:'Consulta avanzada',exact:true}).click()
+ const panel=page.getByRole('region',{name:'Consulta avanzada',exact:true})
+ await expect(panel.getByRole('heading',{name:'Consulta avanzada'})).toBeFocused()
+ for(const [i,column,op,value] of [[1,'1','equals','A'],[2,'4','notEmpty',''],[3,'3','dateOn','2026-01-01']] as const){
+  await panel.getByRole('button',{name:'Añadir condición',exact:true}).click()
+  await page.getByLabel(`Columna de condición ${i}`,{exact:true}).selectOption(column)
+  await page.getByLabel(`Operador de condición ${i}`,{exact:true}).selectOption(op)
+  if(value)await page.getByLabel(`Valor de condición ${i}`,{exact:true}).fill(value)
+ }
+ for(const [i,column] of [[1,'3'],[2,'2']] as const){await panel.getByRole('button',{name:'Añadir orden',exact:true}).click();await page.getByLabel(`Columna de orden ${i}`,{exact:true}).selectOption(column)}
+ await page.getByLabel('Orden numérico 2',{exact:true}).check()
+ for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect(panel.getByRole('button',{name:'Aplicar consulta',exact:true})).toBeInViewport();await page.screenshot({path:test.info().outputPath(`csv-query-tools-${theme}-1440x900.png`)})}
+ await page.setViewportSize({width:1280,height:800});await expect(panel.getByRole('button',{name:'Aplicar consulta',exact:true})).toBeInViewport();await page.screenshot({path:test.info().outputPath('csv-query-tools-dark-1280x800.png')})
+ await panel.getByRole('button',{name:'Aplicar consulta',exact:true}).click()
+ await expect(page.locator('.csv-toolbar')).toContainText('3 de 5 filas')
+ for(const [i,id] of ['003','005','004'].entries())await expect(page.getByRole('gridcell',{name:`Fila ${i+1}, Código`,exact:true})).toHaveText(id)
+ const cell=page.getByRole('gridcell',{name:'Fila 1, Nota',exact:true})
+ await cell.evaluate(element=>{const data=new DataTransfer();data.setData('text/plain','Primero\nSegundo');element.dispatchEvent(new ClipboardEvent('paste',{clipboardData:data,bubbles:true,cancelable:true}))})
+ await expect(cell).toHaveText('Primero')
+ await expect(page.getByRole('gridcell',{name:'Fila 2, Nota',exact:true})).toHaveText('Segundo')
+ await page.getByRole('button',{name:'⇧ Exportar ▾',exact:true}).click();await page.locator('.export-dropdown select').selectOption('filtered');await page.getByRole('button',{name:'CSV',exact:true}).click()
+ await expect(page.locator('.toast')).toContainText('Exportado:')
+ const exported=parseCSV(await readFile(join(directory,'exports','consulta.csv'),'utf8')) as string[][]
+ expect(exported.slice(1).map(row=>row[0])).toEqual(['003','005','004'])
+ expect(exported[1][4]).toBe('Primero');expect(exported[2][4]).toBe('Segundo')
+ expect(await readFile(path,'utf8')).toBe(source)
+ const rows=await page.evaluate(async id=>(await window.freya.tablePage(id,{offset:0,limit:10,requestId:999})).rows,doc.id)
+ expect(rows.map(row=>row.cells[4])).toEqual(['Árbol','','Primero','Fin','Segundo'])
+ await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(cell).toHaveText('Inicio')
+})
+
+test('consulta CSV: condiciones O, errores visibles, limpiar y ordenar con Mayús',async()=>{
+ const path=join(directory,'operadores.csv'),source='ID,Grupo,Valor\n001,Z,1\n002,A,9007199254740993\n003,A,9007199254740992\n'
+ await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
+ await page.getByRole('button',{name:'Consulta avanzada',exact:true}).click()
+ const panel=page.getByRole('region',{name:'Consulta avanzada',exact:true})
+ await page.getByLabel('Combinar condiciones',{exact:true}).selectOption('any')
+ for(const [i,value] of [[1,'001'],[2,'003']] as const){await panel.getByRole('button',{name:'Añadir condición',exact:true}).click();await page.getByLabel(`Operador de condición ${i}`,{exact:true}).selectOption('equals');await page.getByLabel(`Valor de condición ${i}`,{exact:true}).fill(value)}
+ await panel.getByRole('button',{name:'Aplicar consulta',exact:true}).click();await expect(page.locator('.csv-toolbar')).toContainText('2 de 3 filas')
+ await page.getByRole('button',{name:'Consulta avanzada',exact:true}).click()
+ await page.getByLabel('Operador de condición 1',{exact:true}).selectOption('regex');await page.getByLabel('Valor de condición 1',{exact:true}).fill('(')
+ await panel.getByRole('button',{name:'Aplicar consulta',exact:true}).click()
+ await expect(page.getByRole('alert')).toContainText('Consulta no aplicada')
+ await expect(page.getByRole('alert')).toContainText('Expresión regular no válida')
+ await expect(page.getByRole('gridcell',{name:'Fila 2, ID',exact:true})).toHaveText('003')
+ await page.getByRole('gridcell',{name:'Fila 1, ID',exact:true}).dblclick();await expect(page.getByLabel('Editar celda',{exact:true})).toHaveCount(0)
+ await page.getByRole('button',{name:'Reintentar consulta',exact:true}).click();await expect(page.getByRole('alert')).toContainText('Expresión regular no válida')
+ await page.getByRole('button',{name:'Quitar filtros y orden',exact:true}).click()
+ await expect(page.getByRole('alert')).toHaveCount(0);await expect(page.locator('.csv-toolbar')).toContainText('3 de 3 filas')
+ await page.getByRole('button',{name:'Grupo',exact:true}).click();await page.getByRole('button',{name:'Valor',exact:true}).click({modifiers:['Shift']})
+ await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('003')
+ await expect(page.getByRole('gridcell',{name:'Fila 2, ID',exact:true})).toHaveText('002')
+ expect((await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),doc.id))?.dirty).toBe(false)
+ expect(await readFile(path,'utf8')).toBe(source)
+})
+
+test('rangos CSV: selección por teclado, vista previa, filas ocultas, deshacer y exportar',async()=>{
+ const path=join(directory,'rangos.csv'),source='ID,Grupo,Nota,Valor\n001,A,  uno  ,1\n002,B,intacto,2\n003,A,  tres  ,3\n004,A,  cuatro  ,4\n'
+ await writeFile(path,source)
+ const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
+ await page.getByLabel('Tema',{exact:true}).selectOption('light');await page.getByRole('button',{name:'☷ Filtros'}).click();await page.getByRole('textbox',{name:'Filtrar Grupo',exact:true}).fill('A')
+ await expect(page.locator('.csv-row')).toHaveCount(3)
+ await page.getByRole('button',{name:'ID',exact:true}).click();await page.getByRole('button',{name:'ID ↑',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('004')
+ const cell=page.getByRole('gridcell',{name:'Fila 1, Nota',exact:true});await cell.click();await page.keyboard.press('Shift+ArrowDown');await page.keyboard.press('Shift+ArrowRight')
+ await expect(page.locator('.csv-cell[aria-selected="true"]')).toHaveCount(4)
+ await page.keyboard.press('ControlOrMeta+Enter')
+ const dialog=page.getByRole('dialog',{name:'Rellenar rango',exact:true});await expect(dialog).toBeVisible();await dialog.getByRole('textbox',{name:'Valor del rango'}).fill('00077');await dialog.getByRole('button',{name:'Vista previa',exact:true}).click()
+ await expect(dialog.getByRole('status')).toContainText('4 de 4')
+ expect((await page.evaluate(id=>window.freya.documents().then(d=>d.find(x=>x.id===id)),doc.id))!.dirty).toBe(false)
+ await expect(dialog.getByRole('button',{name:'Aplicar cambio'})).toBeInViewport();await page.screenshot({path:test.info().outputPath('csv-range-light-1440x900.png')});await dialog.getByRole('button',{name:'Cancelar',exact:true}).click();await expect(dialog).not.toBeVisible();await page.getByLabel('Tema',{exact:true}).selectOption('dark');await page.getByRole('gridcell',{name:'Fila 2, Valor',exact:true}).focus()
+ await page.keyboard.press('ControlOrMeta+Enter');await expect(dialog).toBeVisible();await dialog.getByRole('textbox',{name:'Valor del rango'}).fill('00077');await dialog.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(dialog.getByRole('status')).toContainText('4 de 4');
+ await expect(dialog.getByRole('button',{name:'Aplicar cambio'})).toBeInViewport();await page.screenshot({path:test.info().outputPath('csv-range-dark-1440x900.png')})
+ await page.setViewportSize({width:1280,height:800});await expect(dialog.getByRole('button',{name:'Aplicar cambio'})).toBeInViewport();await page.screenshot({path:test.info().outputPath('csv-range-dark-1280x800.png')});await page.setViewportSize({width:1440,height:900});
+ await dialog.getByRole('button',{name:'Aplicar cambio'}).click();await expect(dialog).not.toBeVisible()
+ const rows=await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:900}),doc.id)
+ expect(rows.rows.map(row=>row.cells)).toEqual([['001','A','  uno  ','1'],['002','B','intacto','2'],['003','A','00077','00077'],['004','A','00077','00077']])
+ expect(await readFile(path,'utf8')).toBe(source)
+ await page.getByRole('gridcell',{name:'Fila 1, Nota',exact:true}).click();await page.keyboard.press('Shift+ArrowDown');await page.keyboard.press('Shift+ArrowRight');await page.keyboard.press('ControlOrMeta+C')
+ await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toBe('00077\t00077\n00077\t00077\n')
+ await page.getByRole('button',{name:'Copiar como Markdown',exact:true}).click();await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toContain('| Nota | Valor |')
+ await page.getByRole('button',{name:'⇧ Exportar ▾',exact:true}).click();await page.locator('.export-dropdown select').selectOption('selection');await page.getByRole('button',{name:'CSV',exact:true}).click()
+ await expect(page.locator('.toast')).toContainText('Exportado:');const files=await readdir(join(directory,'exports'));expect(files).toHaveLength(1);expect(await readFile(join(directory,'exports',files[0]),'utf8')).toBe('Nota,Valor\n00077,00077\n00077,00077\n')
+ await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 1, Nota',exact:true})).toContainText('cuatro')
+ expect((await page.evaluate(id=>window.freya.documents().then(d=>d.find(x=>x.id===id)),doc.id))!.dirty).toBe(false)
+})
+test('rangos CSV: arrastrar, contexto por teclado, cortar y pegar con revisión previa',async()=>{
+ const path=join(directory,'portapapeles.csv');await writeFile(path,'A,B,C\n001,uno,x\n002,dos,y\n003,tres,z\n')
+ const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
+ const from=page.getByRole('gridcell',{name:'Fila 1, A',exact:true}),to=page.getByRole('gridcell',{name:'Fila 2, B',exact:true});await expect(from).toBeVisible()
+ const a=await from.boundingBox(),b=await to.boundingBox();await page.mouse.move(a!.x+10,a!.y+10);await page.mouse.down();await page.mouse.move(b!.x+10,b!.y+10,{steps:5});await page.mouse.up()
+ await expect(page.locator('.csv-cell[aria-selected="true"]')).toHaveCount(4)
+ await from.focus();await page.keyboard.press('Shift+F10');const menu=page.getByRole('menu',{name:'Acciones del rango',exact:true});await expect(menu).toBeVisible();await page.keyboard.press('End');await expect(menu.getByRole('menuitem',{name:'Reemplazar en el rango…',exact:true})).toBeFocused();await page.keyboard.press('Escape');await expect(menu).not.toBeVisible()
+ await page.keyboard.press('ControlOrMeta+X');const cut=page.getByRole('dialog',{name:'Cortar rango',exact:true});await expect(cut.getByRole('status')).toContainText('4 de 4');await cut.getByRole('button',{name:'Aplicar cambio'}).click();await expect(cut).not.toBeVisible()
+ expect(await app.evaluate(({clipboard})=>clipboard.readText())).toBe('001\tuno\n002\tdos\n')
+ let rows=await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:910}),doc.id);expect(rows.rows[0].cells).toEqual(['','','x'])
+ await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(from).toHaveText('001');await from.click()
+ await app.evaluate(({clipboard})=>clipboard.writeText('0007\tLínea 1\n0008\tÁrbol'));await from.click({button:'right'});await page.getByRole('menuitem',{name:'Pegar en rango…',exact:true}).click()
+ const paste=page.getByRole('dialog',{name:'Pegar bloque en el rango',exact:true});await expect(paste.getByRole('status')).toContainText('4 de 4');await paste.getByRole('button',{name:'Aplicar cambio'}).click();await expect(paste).not.toBeVisible()
+ rows=await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:911}),doc.id);expect(rows.rows[0].cells).toEqual(['0007','Línea 1','x']);expect(rows.rows[1].cells).toEqual(['0008','Árbol','y']);expect(rows.rows[2].cells).toEqual(['003','tres','z'])
+ const rejected=await page.evaluate(async id=>{try{await window.freya.rangeClipboard(id,{top:-1,bottom:0,left:0,right:0,revision:0,query:{offset:0,limit:10,requestId:912}});return false}catch{return true}},doc.id);expect(rejected).toBe(true)
+})
+test('rangos CSV: teclado atraviesa páginas virtuales y una revisión nueva invalida la selección',async()=>{
+ const path=join(directory,'paginado.csv');await writeFile(path,'ID,Valor\n'+Array.from({length:500},(_,i)=>String(i).padStart(5,'0')+',x').join('\n')+'\n')
+ const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await page.getByRole('gridcell',{name:'Fila 1, Valor',exact:true}).click();await page.keyboard.press('ControlOrMeta+Shift+End')
+ await expect(page.getByRole('gridcell',{name:'Fila 500, Valor',exact:true})).toBeFocused();await expect(page.locator('.selection-bar')).toContainText('500 celdas')
+ await page.keyboard.press('ControlOrMeta+C');await expect.poll(async()=>(await app.evaluate(({clipboard})=>clipboard.readText())).split('\n').length).toBe(501)
+ await page.keyboard.press('ControlOrMeta+Enter');const dialog=page.getByRole('dialog',{name:'Rellenar rango',exact:true});await dialog.getByRole('textbox',{name:'Valor del rango'}).fill('nuevo');await dialog.getByRole('button',{name:'Vista previa'}).click();await expect(dialog.getByRole('status')).toContainText('500 de 500')
+ await page.evaluate(async id=>{await window.freya.tableEdit(id,{type:'cell',rowId:'1',column:1,value:'externo'})},doc.id)
+ await dialog.getByRole('button',{name:'Aplicar cambio'}).click();await expect(page.locator('.toast')).toContainText('cambió')
+ const rows=await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:920}),doc.id);expect(rows.rows[0].cells[1]).toBe('externo');expect(rows.rows[1].cells[1]).toBe('x')
+ await dialog.getByRole('button',{name:'Cancelar'}).click()
+})
+
+test('rangos CSV: si falla el portapapeles, cortar no vacía ni modifica el documento',async()=>{
+ const path=join(directory,'copia-fallida.csv'),source='ID,Nota\n001,conservar\n';await writeFile(path,source)
+ const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await page.getByRole('gridcell',{name:'Fila 1, Nota',exact:true}).click();await page.keyboard.press('ControlOrMeta+X')
+ const dialog=page.getByRole('dialog',{name:'Cortar rango',exact:true});await expect(dialog.getByRole('status')).toContainText('1 de 1')
+ await app.evaluate(({clipboard})=>{clipboard.writeText=async()=>{throw new Error('Portapapeles no disponible')}})
+ await dialog.getByRole('button',{name:'Aplicar cambio'}).click();await expect(dialog.getByRole('status')).toContainText('El cambio no se aplicó')
+ const docs=await page.evaluate(()=>window.freya.documents());expect(docs.find(value=>value.id===doc.id)!.dirty).toBe(false);expect(await readFile(path,'utf8')).toBe(source)
+ expect((await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:930}),doc.id)).rows[0].cells).toEqual(['001','conservar'])
+})
+
+test('rangos CSV: arrastre desplaza el borde y conserva el rango al cargar otra página',async()=>{
+ const path=join(directory,'arrastre.csv');await writeFile(path,'ID,Valor\n'+Array.from({length:500},(_,i)=>String(i).padStart(5,'0')+',v'+i).join('\n')+'\n')
+ await page.evaluate(path=>window.freya.openPaths([path]),path)
+ const from=page.getByRole('gridcell',{name:'Fila 1, Valor',exact:true});await expect(from).toBeVisible();const start=await from.boundingBox(),grid=await page.locator('.csv-scroll').boundingBox()
+ await page.mouse.move(start!.x+10,start!.y+10);await page.mouse.down();await page.mouse.move(start!.x+10,grid!.y+grid!.height-4)
+ await expect.poll(()=>page.locator('.csv-scroll').evaluate(node=>node.scrollTop)).toBeGreaterThan(80)
+ await page.mouse.wheel(0,8000)
+ await expect.poll(async()=>Number(await page.locator('.csv-cell[data-column="1"]').first().getAttribute('data-row'))).toBeGreaterThan(200)
+ await expect.poll(()=>page.locator('.csv-cell[aria-selected="true"]').count()).toBeGreaterThan(2)
+ await page.mouse.up()
+ await page.getByLabel('Acciones del rango',{exact:true}).click();await page.getByRole('button',{name:'Copiar rango',exact:true}).click()
+ await expect.poll(async()=>(await app.evaluate(({clipboard})=>clipboard.readText())).split('\n').length).toBeGreaterThan(200)
+ const lines=(await app.evaluate(({clipboard})=>clipboard.readText())).trimEnd().split('\n');expect(lines[0]).toBe('v0');expect(lines.at(-1)).toBe('v'+(lines.length-1))
 })
