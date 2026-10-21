@@ -32,6 +32,12 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: Prepare Electron sandbox helper (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          node -e "require('electron')"
+          sudo chown root:root node_modules/electron/dist/chrome-sandbox
+          sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
       - run: npm run check
       - run: npm test
       - run: npm run licenses
@@ -44,6 +50,11 @@ jobs:
         run: npm run test:e2e
       - name: Package application directory
         run: npx electron-builder --dir
+      - name: Prepare packaged sandbox helper (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo chown root:root release/linux-unpacked/chrome-sandbox
+          sudo chmod 4755 release/linux-unpacked/chrome-sandbox
       - name: SQL in packaged application (Linux)
         if: runner.os == 'Linux'
         env:
