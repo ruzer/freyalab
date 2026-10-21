@@ -250,8 +250,8 @@ test('reinterpretar CSV rechaza ediciones simultáneas y conserva todas las fila
  expect(result.rejected).toBe(true);expect(result.page.total).toBe(3);expect(result.page.rows[0].cells).toEqual(['Nombre','Valor']);expect(await readFile(file,'utf8')).not.toContain('NO')
 })
 
-test('PDF desde Markdown real conserva imagen local, fórmula y diagrama en varias páginas',async()=>{
- const file=join(directory,'completo.md');await writeFile(join(directory,'freya.png'),await readFile(resolve('build/icon.png')))
+test('PDF desde Markdown real conserva imagen local grande, fórmula y diagrama en varias páginas',async()=>{
+ const file=join(directory,'completo.md'),image=await readFile(resolve('docs/design/freya-icon-original.png'));expect(image.byteLength).toBeGreaterThan(1024*1024);await writeFile(join(directory,'freya.png'),image)
  await writeFile(file,'# Documento completo\n\n![Freya](freya.png)\n\nFórmula $x^2$.\n\n```mermaid\nflowchart LR\n A[Recibir] --> B[Revisar]\n```\n\n'+Array.from({length:100},(_,i)=>`Párrafo ${i+1}: contenido para comprobar el paginado.\n\n`).join('')+'## Última hoja\n')
  await page.evaluate(path=>window.freya.openPaths([path]),file)
  await expect(page.locator('.markdown-body .katex')).toHaveCount(1);await expect(page.locator('.markdown-body .mermaid-render svg')).toBeVisible({timeout:40_000});await expect(page.locator('.markdown-body img')).toHaveAttribute('src',/^data:image\/png/)
