@@ -6,13 +6,13 @@ Estado al 21 de octubre de 2026. Este documento mantiene el objetivo completo A�
 
 | Requisito | Estado verificable | Pendiente / aceptación |
 |---|---|---|
-| Selección de rangos | Selección de filas individuales y columnas, sin rectángulos | Rango por ratón y teclado, también entre páginas virtualizadas; identidad estable al filtrar/ordenar |
-| Edición masiva | Pegar bloques tabulares por la vista; limpieza sobre filas/columnas marcadas | Rellenar/cortar/borrar un rango como una operación; vista previa y rechazo íntegro ante límites |
+| Selección de rangos | Implementado en `codex/csv-range-editing`: un rectángulo por ratón/teclado, navegación virtual y alcance por consulta/revisión | Probar rendimiento con rangos más amplios y accesibilidad con lector de pantalla; rangos discontinuos no implementados |
+| Edición masiva | Rellenar/vaciar/cortar/pegar rangos, vista previa, confirmación y un paso de deshacer; rechazos íntegros | Cancelación del cálculo en curso y mediciones amplias pendientes; cerrar la vista previa descarta resultados |
 | Filtros avanzados | Implementado en `codex/csv-advanced-editing`: Y/O, texto, vacíos, números exactos, fechas ISO y RE2 | Ver [guía](EDITOR-MENUS.md) y [evidencia](evidence/csv-query-2026-10-21.md); consultas inválidas no habilitan edición sobre una vista antigua |
 | Ordenamiento múltiple | Implementado en la misma rama; tipos explícitos por criterio, empates estables | Es orden de vista; guardar mantiene orden original. No hay reordenación permanente asistida |
-| Transformaciones | Quitar espacios, mayúsculas/minúsculas, duplicación de filas/columnas con deshacer | Vista previa, dividir/combinar, normalizar, eliminar duplicados, mover filas/columnas; progreso y cancelación según coste |
-| Buscar/reemplazar | Búsqueda global, filtros por encabezado y reemplazo literal existente | Resaltado, alcance de rango y vista previa del reemplazo masivo |
-| Herramientas contextuales | Barra y menú Operaciones específicos de CSV | Menú de clic derecho, atajos de operaciones y paleta reutilizando las mismas acciones |
+| Transformaciones | Limpieza y reemplazo con vista previa por rango; duplicación de filas/columnas existente | Dividir/combinar, normalizar, eliminar duplicados, mover filas/columnas; progreso y cancelación según coste |
+| Buscar/reemplazar | Búsqueda global, filtros, reemplazo literal global/columna y por rango con vista previa | Resaltado de coincidencias y búsqueda avanzada contextual pendientes |
+| Herramientas contextuales | Menú de clic derecho/rango y atajos comparten acciones; barra Operaciones existente | Paleta y operaciones estructurales contextuales pendientes |
 
 ## B. Estadísticas y exploración
 
@@ -56,7 +56,7 @@ Reutilizar ECharts con importaciones modulares y agregados del motor, sin un seg
 ## Orden de las siguientes entregas
 
 1. Cerrar revisión de consulta avanzada y correcciones de exportación/pegado, sin fusionar automáticamente.
-2. Rangos y edición masiva: extender selección y acciones del motor existente; probar vistas ordenadas/filtradas, deshacer y recuperación. Complejidad media/alta, riesgo principal: aplicar cambios sobre filas ocultas.
+2. Revisar [rangos y edición masiva](evidence/csv-range-2026-10-21.md), implementados sobre el motor existente; completar transformaciones y cancelación. El riesgo principal sigue siendo aplicar cambios sobre otro alcance.
 3. Perfil de columnas, frecuencias, duplicados y descriptivas restantes; después correlaciones. Reutilizar el proceso de datos y paneles. Complejidad media; alcance/revisión visibles y ninguna mutación.
 4. Prototipo de DuckDB aislado; integración solo después de demostrar seguridad, cancelación y compatibilidad. Complejidad alta; no sustituir el editor ni usar instalaciones del equipo del desarrollador como requisito del usuario.
 5. Agrupaciones, pivots y cruces visuales sobre ese motor. Complejidad alta; conservar texto y cambios pendientes.
