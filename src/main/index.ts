@@ -39,7 +39,7 @@ async function handle(operation:string,args:unknown[]){
  case'edit':return docs.tableEdit(id.parse(a),edits.parse(b) as TableEdit)
  case'options':return docs.tableOptions(id.parse(a),z.object({encoding:z.enum(['utf8','utf16le','win1252']).optional(),delimiter:z.enum([',',';','\t','|']).optional(),header:z.boolean().optional()}).parse(b) as TableOptions)
  case'undo':return docs.undo(id.parse(a),z.boolean().optional().parse(b))
- case'stats':docs.get(id.parse(a));return docs.table.call('stats',a,rows.parse(b),z.array(col).max(100000).parse(c))
+ case'stats':docs.get(id.parse(a));return docs.table.call('stats',a,rows.nullable().parse(b),z.array(col).max(100000).parse(c))
  case'markdown':docs.get(id.parse(a));return docs.table.call('markdown',a,tableExport.parse(b) as TableExport)
  case'export':return exportDocument(docs,id.parse(a),z.object({format:z.enum(['pdf','html','svg','png','csv','tsv']),html:text.optional(),svg:text.optional(),table:tableExport.optional()}).parse(b) as ExportRequest)
  case'image':return docs.image(id.parse(a),z.string().max(16*1024*1024).parse(b))

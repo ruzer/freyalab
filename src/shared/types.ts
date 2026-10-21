@@ -16,7 +16,7 @@ export interface FreyaAPI {
  open():Promise<DocumentInfo[]>; openPaths(paths:string[]):Promise<DocumentInfo[]>; newDocument(kind:Kind):Promise<DocumentInfo>; folder():Promise<string|null>; tree(path:string):Promise<TreeEntry[]>; findFiles(root:string,query:string):Promise<{entries:TreeEntry[];limited:boolean}>;
  update(id:string,text:string):Promise<DocumentInfo>; save(id:string,as?:boolean):Promise<DocumentInfo|null>; close(id:string):Promise<boolean>; reload(id:string):Promise<DocumentInfo>; documents():Promise<DocumentInfo[]>;
  tablePage(id:string,query:TableQuery):Promise<TablePage>; tableEdit(id:string,edit:TableEdit):Promise<DocumentInfo>; tableOptions(id:string,options:TableOptions):Promise<DocumentInfo>;
- undo(id:string,redo?:boolean):Promise<DocumentInfo>; stats(id:string,rows:string[],columns:number[]):Promise<TableStats>; tableMarkdown(id:string,options:TableExport):Promise<string>;
+ undo(id:string,redo?:boolean):Promise<DocumentInfo>; stats(id:string,rows:string[]|null,columns:number[]):Promise<TableStats>; tableMarkdown(id:string,options:TableExport):Promise<string>;
  export(id:string,request:ExportRequest):Promise<string|null>; image(id:string,src:string):Promise<string|null>; openLink(url:string):Promise<void>;
  recents():Promise<string[]>; recoveries():Promise<RecoveryEntry[]>; recover(id:string):Promise<DocumentInfo>; discardRecovery(id:string):Promise<void>;
  onEvent(callback:(event:AppEvent)=>void):()=>void; droppedPaths(files:File[]):string[]

@@ -33,3 +33,11 @@ La implementación se presentó en commits temáticos dentro de PR #1 y se cerr�
 ## Mejoras posteriores a alpha.1
 
 Barra Markdown con formato e inserciones asistidas y menú CSV con limpieza y duplicación. La [guía de edición](EDITOR-MENUS.md) describe alcance, deshacer y límites; la [evidencia local](evidence/editor-menus-2026-10-20.md) separa las comprobaciones de esta entrega de los binarios ya publicados. Mover filas/columnas y transponer quedan para entregas posteriores.
+
+## Evolución CSV: propuesta y primera iteración
+
+La [auditoría CSV y roadmap](CSV-ADVANCED-ROADMAP.md) compara Modern CSV, bibliotecas y fases, sin ampliar implícitamente la alfa. La rama `codex/csv-column-statistics` añade un panel de consulta por columna; ver [evidencia y límites](evidence/csv-statistics-2026-10-20.md). Pendiente de revisión/integración; no modifica los binarios publicados. El PR #7 ya se integró en main; el PR #6 sigue abierto.
+
+## Actualización de la rama de estadísticas
+
+La rama del PR #8 incorpora `main` tras integrar el PR #7. El conflicto de pruebas se resuelve conservando los cuatro flujos de estadísticas y el flujo de pegado por vista, junto con todos los casos previos. No se fusiona ningún PR con esta actualización; se validan tipos, motor y aplicación sobre la combinación resultante.

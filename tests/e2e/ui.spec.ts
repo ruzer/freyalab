@@ -1,6 +1,6 @@
 import { test, expect, _electron as electron, type ElectronApplication, type Page } from '@playwright/test'
 import electronPath from 'electron'
-import { mkdtemp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, readdir, rm, writeFile, truncate } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import {parse as parseCSV} from 'csv-parse/sync'
@@ -199,6 +199,93 @@ test('operaciones CSV: duplicar filas y columnas conserva valores y permite desh
  expect(await readFile(path,'utf8')).toBe('Código,Nombre,Estado\n0001,Ana,Pendiente\n0001,Ana,Pendiente\n0002,Fin,Listo\n')
 })
 
+
+test('estadísticas CSV: columnas, alcance completo, datos pendientes, temas y teclado',async()=>{
+ const path=join(directory,'estadisticas.csv')
+ const source='Código,Valor,Nota\r\n00123,2,"Texto ""citado""\r\nmultilínea"\r\n9007199254740993,,=1+1\r\n00002,4,Árbol\r\n'
+ await writeFile(path,source)
+ const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
+ await expect(page.getByRole('gridcell',{name:'Fila 1, Código',exact:true})).toHaveText('00123')
+ const before=await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),doc.id)
+ await page.getByLabel('Buscar en tabla',{exact:true}).fill('00123')
+ await expect(page.locator('.csv-toolbar')).toContainText('1 de 3 filas')
+ await page.getByLabel('Seleccionar columna Valor',{exact:true}).check()
+ await page.getByRole('button',{name:'Estadísticas',exact:true}).click()
+ const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true})
+ await expect(panel.getByRole('heading')).toBeFocused()
+ await expect(panel).toContainText('incluye las filas ocultas')
+ await page.getByLabel('Columnas para estadísticas',{exact:true}).selectOption('selected')
+ await panel.getByRole('button',{name:'Analizar',exact:true}).click()
+ await expect(panel.getByRole('status')).toHaveText('Análisis completo.')
+ await expect(panel.locator('tbody tr')).toHaveCount(1)
+ expect(await panel.locator('tbody tr').first().locator('th,td').allTextContents()).toEqual(['2. Valor','3','1','3','2','6','3','2','4'])
+ expect(await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),doc.id)).toEqual(before)
+ expect(await readFile(path,'utf8')).toBe(source)
+ const cell=page.getByRole('gridcell',{name:'Fila 1, Valor',exact:true})
+ await cell.dblclick();await page.getByLabel('Editar celda',{exact:true}).fill('10');await page.getByLabel('Editar celda',{exact:true}).press('Enter')
+ await expect(panel.getByRole('status')).toContainText('Los datos cambiaron')
+ await expect(panel.locator('tbody tr')).toHaveCount(0)
+ await panel.getByRole('button',{name:'Analizar',exact:true}).click()
+ await expect(panel.getByRole('status')).toHaveText('Análisis completo.')
+ expect(await panel.locator('tbody tr').first().locator('th,td').allTextContents()).toEqual(['2. Valor','3','1','3','2','14','7','4','10'])
+ await page.getByLabel('Columnas para estadísticas',{exact:true}).selectOption('all')
+ await panel.getByRole('button',{name:'Analizar',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Análisis completo.')
+ await expect(panel.locator('tbody tr')).toHaveCount(3)
+ for(const theme of ['dark','light']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.screenshot({path:test.info().outputPath(`csv-statistics-${theme}-1440x900.png`)})}
+ await page.setViewportSize({width:1280,height:800});await page.screenshot({path:test.info().outputPath('csv-statistics-light-1280x800.png')})
+ await page.getByLabel('Columnas para estadísticas',{exact:true}).focus();await page.keyboard.press('Escape')
+ await expect(panel).toHaveCount(0);await expect(page.getByRole('button',{name:'Estadísticas',exact:true})).toBeFocused()
+ await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(cell).toHaveText('2')
+ expect(await readFile(path,'utf8')).toBe(source)
+})
+
+test('estadísticas CSV: cancelar descarta respuestas tardías y permite volver a analizar',async()=>{
+ const path=join(directory,'cancelar.csv');await writeFile(path,'A,B\n1,2\n3,4\n')
+ await page.evaluate(path=>window.freya.openPaths([path]),path)
+ await page.getByRole('button',{name:'Estadísticas',exact:true}).click()
+ const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true})
+ await panel.evaluate(async element=>{
+  element.querySelector<HTMLFormElement>('form')!.requestSubmit()
+  await Promise.resolve()
+  const cancel=[...element.querySelectorAll('button')].find(button=>button.textContent==='Cancelar análisis')
+  if(!cancel)throw new Error('No apareció el control de cancelación')
+  cancel.click()
+ })
+ await expect(panel.getByRole('status')).toHaveText('Análisis cancelado.')
+ await expect(panel.locator('tbody tr')).toHaveCount(0)
+ await panel.getByRole('button',{name:'Analizar',exact:true}).click()
+ await expect(panel.getByRole('status')).toHaveText('Análisis completo.')
+ expect(await panel.locator('tbody tr').allTextContents()).toEqual(['1. A20224213','2. B20226324'])
+ expect(await readFile(path,'utf8')).toBe('A,B\n1,2\n3,4\n')
+})
+
+test('estadísticas CSV: muestra rotulada e IPC inválido rechazado',async()=>{
+ const path=join(directory,'muestra.csv');await writeFile(path,'A,B\n'+'001,2\n'.repeat(250));await truncate(path,50*1024*1024+1)
+ const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
+ expect(doc.readonly).toBe(true)
+ await page.getByRole('button',{name:'Estadísticas',exact:true}).click()
+ const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true})
+ await expect(panel).toContainText('Solo muestra: los recuentos no describen el archivo completo.')
+ await panel.getByRole('button',{name:'Analizar',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Análisis completo.')
+ expect(await panel.locator('tbody tr').nth(1).locator('th,td').allTextContents()).toEqual(['2. B','200','0','1','200','400','2','2','2'])
+ const rejected=await page.evaluate(async id=>{try{await Reflect.apply(window.freya.stats,window.freya,[id,'all',[0]]);return false}catch{return true}},doc.id)
+ expect(rejected).toBe(true)
+})
+
+
+test('estadísticas CSV: límite explícito y encabezados duplicados por índice',async()=>{
+ const path=join(directory,'ancho.csv');await writeFile(path,Array(101).fill('A').join(',')+'\n'+Array.from({length:101},(_,i)=>i===0?'00123':String(i+1)).join(',')+'\n')
+ await page.evaluate(path=>window.freya.openPaths([path]),path)
+ await page.getByRole('button',{name:'Estadísticas',exact:true}).click()
+ const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true})
+ await panel.getByRole('button',{name:'Analizar',exact:true}).click()
+ await expect(page.locator('.toast')).toContainText('hasta 100 columnas')
+ await expect(panel.locator('tbody tr')).toHaveCount(0)
+ await page.getByLabel('Seleccionar columna A',{exact:true}).nth(1).check()
+ await page.getByLabel('Columnas para estadísticas',{exact:true}).selectOption('selected')
+ await panel.getByRole('button',{name:'Analizar',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Análisis completo.')
+ expect(await panel.locator('tbody tr').first().locator('th,td').allTextContents()).toEqual(['2. A','1','0','1','1','2','2','2','2'])
+})
 
 test('CSV: pegar sigue filtros y orden, conserva filas ocultas y se deshace en un paso',async()=>{
  const path=join(directory,'pegado.csv')
