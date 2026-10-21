@@ -320,3 +320,35 @@ test('CSV: pegar sigue filtros y orden, conserva filas ocultas y se deshace en u
  await expect(page.locator('.statusbar')).toContainText('Guardado')
  expect(parseCSV(await readFile(path,'utf8'))).toEqual([['Código','Grupo','Nota'],...expected])
 })
+
+
+test('exportación CSV: completo y filtrado conservan columnas; selección limita explícitamente',async()=>{
+ const path=join(directory,'alcance.csv')
+ const source='Código,Nombre,Valor,Nota\r\n00123,"Ana, María",20,"Grupo\r\nLínea ""2"""\r\n00002,Bea,3,Grupo\r\n00003,Celia,11,Otro\r\n'
+ await writeFile(path,source)
+ const [doc]=await page.evaluate(async path=>window.freya.openPaths([path]),path)
+ await page.getByLabel('Buscar en tabla',{exact:true}).fill('Grupo')
+ await expect(page.locator('.csv-toolbar')).toContainText('2 de 3 filas')
+ await page.getByLabel('Orden numérico',{exact:true}).check()
+ await page.getByRole('button',{name:'Valor',exact:true}).click()
+ await expect(page.getByRole('gridcell',{name:'Fila 1, Código',exact:true})).toHaveText('00002')
+ await page.getByRole('gridcell',{name:'Fila 1, Nombre',exact:true}).dblclick()
+ await page.getByLabel('Editar celda',{exact:true}).fill('Beatriz');await page.getByLabel('Editar celda',{exact:true}).press('Enter')
+ await expect(page.getByRole('gridcell',{name:'Fila 1, Nombre',exact:true})).toHaveText('Beatriz')
+ await page.getByLabel('Seleccionar columna Nombre',{exact:true}).check()
+ await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click()
+ const all=parseCSV(source) as string[][];all[2][1]='Beatriz'
+ for(const scope of ['all','filtered','selection'])for(const format of ['csv','tsv']){
+  const close=page.getByRole('button',{name:'Cerrar aviso',exact:true});if(await close.isVisible())await close.click()
+  await page.getByRole('button',{name:'⇧ Exportar ▾',exact:true}).click()
+  await page.locator('.export-dropdown select').selectOption(scope)
+  await page.getByRole('button',{name:format.toUpperCase(),exact:true}).click()
+  await expect(page.locator('.toast')).toContainText('Exportado:')
+  const output=await readFile(join(directory,'exports',`alcance.${format}`),'utf8')
+  const expected=scope==='all'?all:scope==='filtered'?[all[0],all[2],all[1]]:[['Nombre'],['Beatriz']]
+  expect(parseCSV(output,{delimiter:format==='tsv'?'\t':','})).toEqual(expected)
+ }
+ expect(await readFile(path,'utf8')).toBe(source)
+ expect(await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id)?.dirty,doc.id)).toBe(true)
+ await expect(page.getByRole('gridcell',{name:'Fila 1, Nombre',exact:true})).toHaveText('Beatriz')
+})

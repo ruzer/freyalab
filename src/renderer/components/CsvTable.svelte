@@ -39,7 +39,9 @@
  async function paste(event:ClipboardEvent,rowId:string,column:number){if(locked)return;const value=event.clipboardData?.getData('text/plain');if(value===undefined)return;if((event.target as HTMLElement).tagName==='INPUT'&&!value.includes('\t')&&!value.includes('\n'))return;event.preventDefault();try{const lines=parse(value,{delimiter:'\t',relax_column_count:true,skip_empty_lines:false}) as string[][];await edit({type:'paste',rowId,column,values:lines,view:{query:pageQuery,revision:page.revision}})}catch(error){onerror(String(error))}}
  async function copyCells(){try{const columns=selectedColumns.length?selectedColumns:(doc.headers??[]).map((_,i)=>i);const values=selectedRows.map(id=>columns.map(index=>selectedRecords.get(id)?.[index]??''));await navigator.clipboard.writeText(stringify(values,{delimiter:'\t',record_delimiter:'\n'}));onstatus('Selección copiada')}catch(error){onerror(String(error))}}
  async function options(change:{encoding?:Encoding;delimiter?:string;header?:boolean}){if(interpreting)return;interpreting=true;editing=null;editingHeader=null;try{onchange(await window.freya.tableOptions(doc.id,change));await load(0)}catch(error){onerror(String(error))}finally{interpreting=false}}
- export function exportOptions(scope:'all'|'filtered'|'selection'='all'):TableExport{return{scope,query:query(),rowIds:$state.snapshot(selectedRows),columns:selectedColumns.length?$state.snapshot(selectedColumns):undefined}}
+ export function exportOptions(scope:'all'|'filtered'|'selection'='all'):TableExport{
+  return{scope,query:query(),rowIds:scope==='selection'?$state.snapshot(selectedRows):undefined,columns:scope==='selection'&&selectedColumns.length?$state.snapshot(selectedColumns):undefined}
+ }
  export async function undoEdit(redo=false){try{update(await window.freya.undo(doc.id,redo));await load(pageOffset)}catch(error){onerror(String(error))}}
 </script>
 <div class="csv-workspace">

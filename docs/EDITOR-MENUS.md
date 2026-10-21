@@ -26,6 +26,8 @@ Cambiar mayúsculas/minúsculas usa las reglas Unicode del motor JavaScript, ind
 
 Al pegar un bloque tabular, sus filas siguen el orden de la vista mostrada, también con búsqueda, filtros y ordenación. Las filas ocultas no se modifican y el orden original del documento se conserva. El bloque debe caber en las filas visibles de la vista y en las columnas existentes; si no cabe o la tabla cambió desde que se mostró, se rechaza completo, sin cambios parciales. El pegado se deshace en un paso y se incluye en la recuperación local.
 
+Al exportar, **Documento completo** incluye todas las filas y columnas en el orden original, aunque haya búsqueda, filtros, orden o columnas marcadas. **Filas filtradas** exporta todas las columnas de las filas que coinciden, en el orden mostrado. Solo **Selección** limita la exportación a las filas y columnas marcadas; sin columnas marcadas incluye todas las columnas de esas filas. Exportar no guarda ni descarta los cambios pendientes.
+
 Las muestras de archivos grandes siguen siendo de solo lectura. Se mantienen los límites de edición y del historial; un cambio que excede el presupuesto de deshacer se rechaza antes de aplicarse.
 
 ## Estadísticas por columna

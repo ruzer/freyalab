@@ -37,3 +37,6 @@ Barra Markdown con formato e inserciones asistidas y menú CSV con limpieza y du
 ## Evolución CSV: propuesta y primera iteración
 
 La [auditoría CSV y roadmap](CSV-ADVANCED-ROADMAP.md) compara Modern CSV, bibliotecas y fases, sin ampliar implícitamente la alfa. La rama `codex/csv-column-statistics` añade un panel de consulta por columna; ver [evidencia y límites](evidence/csv-statistics-2026-10-20.md). Pendiente de revisión/integración; no modifica los binarios publicados. PR #6 y #7 se mantienen separados y abiertos.
+
+
+La rama de evolución CSV incorpora la auditoría histórica y las correcciones de alcance de exportación y pegado de los PR #6/#7, junto con el panel del PR #8. No fusiona esos PR ni modifica los binarios publicados.
