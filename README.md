@@ -2,7 +2,7 @@
 
 Editor local de documentos, tablas y diagramas para macOS, Windows y Linux. Para Freya.
 
-**Estado:** primera alfa en construcción. La presencia de una función en el plan no acredita que esté implementada o verificada. Consulta [el progreso](docs/PROGRESS.md) y [la evidencia](docs/evidence/README.md) antes de distribuirla.
+**Estado:** [v0.1.0-alpha.1 — alfa pública](https://github.com/ruzer/freyalab/releases/tag/v0.1.0-alpha.1). Incluye paquetes para macOS, Windows y Linux. Consulta [la evidencia de publicación](docs/evidence/release-v0.1.0-alpha.1.md) para distinguir las comprobaciones automatizadas y las pruebas manuales pendientes.
 
 FreyaLab reúne un editor Markdown con vista previa, diagramas Mermaid y una tabla editable CSV/TSV. Abre un archivo individual o una carpeta, trabaja en pestañas y guarda o exporta sin comandos. El contenido se procesa localmente; no requiere cuenta ni incorpora telemetría.
 

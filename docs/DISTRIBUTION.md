@@ -22,7 +22,7 @@ El workflow CI construye y prueba la app. El workflow de candidatos produce arte
 
 1. Integrar todos los cambios y verificar el SHA exacto de `main`.
 2. Ejecutar **Release candidate** para ese SHA. Descargar los artefactos y las evidencias de sus jobs.
-3. Completar `docs/evidence/RELEASE-CHECKLIST.md` con URLs, SHA, resultados, advertencias y limitaciones. Ejecutar las comprobaciones manuales de usuario donde las pruebas CI no cubran firma/cuarentena o integración del escritorio.
+3. Completar `docs/evidence/RELEASE-CHECKLIST.md` con URLs, SHA, resultados, advertencias y limitaciones. Registrar por separado las comprobaciones manuales de usuario, firma/cuarentena e integración del escritorio que se realizaron y las que siguen pendientes. En esta alfa sin firma se documentan esas advertencias sin atribuirles un resultado manual satisfactorio.
 4. Si falta un gate, mantener el candidato sin publicar. No reemplazar el gate por un build local de otra revisión.
 5. Crear etiqueta `v0.1.0-alpha.1` apuntando al SHA comprobado. Crear una prerelease inicialmente en borrador, adjuntar los artefactos exactos y sus SHA-256.
 6. Revisar la correspondencia entre etiqueta, commit, evidencia y archivos. Publicar la prerelease únicamente después del cierre del checklist.

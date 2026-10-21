@@ -9,3 +9,8 @@ Cada evidencia debe identificar commit, plataforma, arquitectura, versiones, com
 Observación local inicial: [20 de octubre de 2026](local-2026-10-20.md). No sustituye la verificación del commit final ni las comprobaciones multiplataforma.
 
 Integración local más reciente: [12 E2E con Node 24](integration-node24-2026-10-20.md). Los gates de CI y distribución se registran por separado.
+
+## Alfa publicada
+
+- [v0.1.0-alpha.1: gates, entornos y límites](release-v0.1.0-alpha.1.md).
+- [Checklist y SHA-256](RELEASE-CHECKLIST.md).
