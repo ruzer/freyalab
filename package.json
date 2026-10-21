@@ -1,0 +1,132 @@
+{
+  "name": "freyalab",
+  "version": "0.1.0-alpha.1",
+  "description": "Editor local de documentos, tablas y diagramas. Para Freya.",
+  "main": "./out/main/index.js",
+  "type": "module",
+  "license": "MIT",
+  "author": "ruzer",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ruzer/freyalab.git"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "electron-vite dev",
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json --noEmit",
+    "test": "vitest run",
+    "test:e2e": "npm run build && playwright test",
+    "build": "electron-vite build",
+    "dist": "npm run build && electron-builder",
+    "licenses": "node scripts/licenses.mjs"
+  },
+  "build": {
+    "appId": "io.github.ruzer.freyalab",
+    "productName": "FreyaLab",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "out/**/*",
+      "package.json",
+      "THIRD_PARTY_NOTICES.txt"
+    ],
+    "asar": true,
+    "npmRebuild": false,
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "minimumSystemVersion": "14.0",
+      "identity": null
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Utility",
+      "maintainer": "ruzer <ruzer@users.noreply.github.com>"
+    },
+    "fileAssociations": [
+      {
+        "ext": [
+          "md",
+          "markdown",
+          "mmd",
+          "mermaid",
+          "csv",
+          "tsv",
+          "txt"
+        ],
+        "name": "Documento FreyaLab",
+        "role": "Editor"
+      }
+    ],
+    "icon": "build/icon.png",
+    "artifactName": "FreyaLab-${version}-${os}-${arch}.${ext}"
+  },
+  "dependencies": {
+    "@codemirror/commands": "6.11.1",
+    "@codemirror/lang-markdown": "6.5.2",
+    "@codemirror/language": "6.13.1",
+    "@codemirror/search": "6.7.2",
+    "@codemirror/state": "6.7.6",
+    "@codemirror/view": "6.43.15",
+    "@fontsource/inter": "5.3.0",
+    "@fontsource/jetbrains-mono": "5.3.0",
+    "@lezer/highlight": "1.2.5",
+    "@tanstack/svelte-table": "9.3.1",
+    "@tanstack/svelte-virtual": "3.13.47",
+    "chokidar": "6.0.0",
+    "csv-parse": "7.0.3",
+    "csv-stringify": "6.9.0",
+    "dompurify": "3.4.17",
+    "iconv-lite": "0.7.3",
+    "katex": "0.19.0",
+    "mermaid": "12.2.0",
+    "rehype-highlight": "7.0.2",
+    "rehype-katex": "7.0.1",
+    "rehype-sanitize": "6.0.0",
+    "rehype-stringify": "10.0.1",
+    "remark-gfm": "4.0.1",
+    "remark-math": "6.0.0",
+    "remark-parse": "11.0.0",
+    "remark-rehype": "11.1.2",
+    "sanitize-html": "2.18.1",
+    "svelte": "5.57.2",
+    "unified": "11.0.5",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "26.6.5",
+    "@types/sanitize-html": "2.16.2",
+    "electron": "44.9.2",
+    "electron-builder": "26.15.3",
+    "electron-vite": "6.0.0",
+    "pdfjs-dist": "6.4.299",
+    "svelte-check": "4.7.7",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3",
+    "vitest": "5.0.5"
+  },
+  "overrides": {
+    "rehype-katex": {
+      "katex": "$katex"
+    },
+    "micromark-extension-math": {
+      "katex": "$katex"
+    }
+  }
+}
