@@ -28,11 +28,11 @@ Estado al 21 de octubre de 2026. Este documento mantiene el objetivo completo A�
 
 Las estadísticas numéricas actuales son aproximadas. Comparación/orden numérico exactos de esta entrega no convierten las agregaciones anteriores en aritmética exacta. Los resultados deben incluir revisión del documento y alcance completo/filtrado/selección/muestra; nunca atribuir a todo el archivo un cálculo de muestra.
 
-## C. DuckDB — pendiente completo
+## C. DuckDB — integración pendiente
 
 | Requisito | Aceptación necesaria |
 |---|---|
-| Consultas SQL | Prototipo de compatibilidad real en Electron antes de añadir el motor al producto. Consultas de solo lectura, sin extensiones, red ni acceso arbitrario a disco; cancelación y límites de memoria/resultados |
+| Consultas SQL | [Prototipo local en Electron ARM comprobado](evidence/duckdb-probe-2026-10-21.md); faltan otras plataformas, aislamiento y empaquetado antes de añadir el motor al producto. Consultas de solo lectura, sin extensiones, red ni acceso arbitrario a disco; cancelación y límites de memoria/resultados |
 | Agrupaciones | Asistente visual y SQL sobre el mismo conjunto/revisión; texto original para ID/fechas y tipos numéricos elegidos explícitamente |
 | Tablas dinámicas | Filas/columnas/medidas y agregación configurables, resultados paginados, sin modificar el CSV |
 | Cruces entre archivos | Solo documentos autorizados, claves y tipo de unión explícitos, duplicados/faltantes visibles; nombres de tabla/columna citados de forma segura |
