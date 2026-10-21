@@ -14,7 +14,7 @@ for (const [location, entry] of Object.entries(lock.packages).sort(([a], [b]) =>
   const texts = []
   for (const name of names) {
     const file = join(directory, name)
-    if ((await stat(file)).isFile()) texts.push(`${name}\n${await readFile(file, 'utf8')}`)
+    if ((await stat(file)).isFile()) texts.push(`${name}\n${(await readFile(file, 'utf8')).replace(/\r\n/g, '\n')}`)
   }
   let license = typeof pkg.license === 'string' ? pkg.license : JSON.stringify(pkg.license ?? pkg.licenses ?? null)
   if (license === 'null' && texts.some(text => /MIT License|The MIT License/i.test(text))) license = 'MIT (from bundled license text)'

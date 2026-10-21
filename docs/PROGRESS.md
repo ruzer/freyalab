@@ -38,6 +38,29 @@ Barra Markdown con formato e inserciones asistidas y menú CSV con limpieza y du
 
 La [auditoría CSV y roadmap](CSV-ADVANCED-ROADMAP.md) compara Modern CSV, bibliotecas y fases, sin ampliar implícitamente la alfa. La rama `codex/csv-column-statistics` añade un panel de consulta por columna; ver [evidencia y límites](evidence/csv-statistics-2026-10-20.md). Pendiente de revisión/integración; no modifica los binarios publicados. El PR #7 ya se integró en main; el PR #6 sigue abierto.
 
+
+La rama de evolución CSV incorpora la auditoría histórica y las correcciones de alcance de exportación y pegado de los PR #6/#7, junto con el panel del PR #8. No fusiona esos PR ni modifica los binarios publicados.
+
+## Consulta avanzada y objetivo analítico
+
+`codex/csv-advanced-editing` añade condiciones Y/O (texto, vacíos, números exactos, fechas ISO, regex RE2) y orden por múltiples columnas, con formulario y errores que conservan la última vista válida. Reutiliza el motor de vista para exportación y pegado. [Guía](EDITOR-MENUS.md), [pruebas/medición](evidence/csv-query-2026-10-21.md) y [seguimiento completo A–D](ANALYTICS-DELIVERY.md).
+
+La entrega se apila sobre el PR #8 e incorpora los commits de corrección de #6/#7; ninguno se fusiona automáticamente. Local: check sin errores/advertencias, 41 unitarias, 28 E2E y licencias verificadas. El objetivo sigue activo: faltan rangos/edición masiva contextual, análisis restante, DuckDB y los seis gráficos ECharts. La alfa publicada conserva sus binarios y límites.
+
+## Rangos y edición masiva CSV
+
+La rama `codex/csv-range-editing`, apilada sobre el PR #9, añade selección rectangular por ratón/teclado, navegación virtual, menú contextual y acciones compartidas para copiar/cortar/pegar/rellenar/vaciar/limpiar/reemplazar. Los cambios pasan por vista previa y mantienen un único historial y recuperación. El portapapeles se gestiona mediante operaciones nativas validadas; se retiró la copia redundante de filas seleccionadas en el renderer.
+
+Ver [guía](EDITOR-MENUS.md), [evidencia](evidence/csv-range-2026-10-21.md) y [objetivo completo A–D](ANALYTICS-DELIVERY.md). No se amplían los límites de archivos ni se declaran implementados DuckDB/ECharts o el análisis restante. Requiere revisión; sin fusión ni publicación automáticas.
+
 ## Actualización de la rama de estadísticas
 
 La rama del PR #8 incorpora `main` tras integrar el PR #7. El conflicto de pruebas se resuelve conservando los cuatro flujos de estadísticas y el flujo de pegado por vista, junto con todos los casos previos. No se fusiona ningún PR con esta actualización; se validan tipos, motor y aplicación sobre la combinación resultante.
+
+La rama del PR #9 incorpora esta base actualizada. Conserva íntegros los filtros, rangos y portapapeles nativo del PR #10, integrado en esa rama; las correcciones del #7 ya estaban presentes. Los archivos de producto y pruebas quedan idénticos al commit `b0b0a094d939efa9763e722723f54a517e563b3b`; se comprueba su nueva ascendencia sin retirar funcionalidades. Estado histórico previo a las fusiones del 21 de octubre; ver la integración siguiente.
+
+## Integración de filtros y rangos tras las fusiones
+
+El PR #8 se integró en `main` (`f50cc38`), antes de que el PR #9 se integrara en su rama (`fe87213`). El PR #10 ya estaba integrado en la rama del #9. Por ello, filtros avanzados, rangos y la corrección de exportación del #6 aún requieren este PR hacia `main`: `codex/csv-integrate-advanced`. Se conserva la unión completa sin cambios en archivos de producto, pruebas, dependencias ni scripts respecto de `b0b0a09`.
+
+La CI de ese árbol de producto pasó en los cuatro sistemas (ejecución 39618359610; 47 pruebas unitarias y 33 E2E). Esa evidencia previa no sustituye la CI de este PR ni la del commit que resulte en `main`. Al preparar la integración, GitHub todavía no mostraba ejecución para `f50cc38`; no se considera validado ese commit por inferencia. El PR #6 sigue abierto y con conflictos, aunque su corrección está incluida aquí. No se fusiona ni cierra automáticamente ningún PR y no se publica una nueva versión.

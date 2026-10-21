@@ -1,24 +1,27 @@
-import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, shell, clipboard } from 'electron'
 import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve, relative, isAbsolute, extname } from 'node:path'
 import { z } from 'zod'
 import { Documents } from './documents'
 import { exportDocument } from './export'
-import type { Kind,TableEdit,TableOptions,TableExport,TableQuery,ExportRequest } from '../shared/types'
+import type { Kind,TableEdit,TableOptions,TableExport,TableQuery,ExportRequest,TableRange,TableRangeEdit } from '../shared/types'
 const here=dirname(fileURLToPath(import.meta.url))
 if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FREYALAB_USER_DATA))
 let window:BrowserWindow|undefined,docs:Documents,quitting=false
 const waiting:string[]=[]
 const id=z.uuid(),path=z.string().min(1).max(32768), text=z.string().max(20*1024*1024),col=z.number().int().min(0).max(100000), rows=z.array(z.string().max(100)).max(2000000)
-const query=z.object({search:z.string().max(10000).optional(),filters:z.record(z.string(),z.string().max(10000)).optional(),sort:z.object({column:col,descending:z.boolean(),numeric:z.boolean()}).optional(),offset:z.number().int().nonnegative(),limit:z.number().int().min(1).max(1000),requestId:z.number().int().nonnegative()})
-const edits=z.discriminatedUnion('type',[
+const filter=z.object({column:col,op:z.enum(['contains','equals','notEquals','starts','ends','empty','notEmpty','greater','greaterEqual','less','lessEqual','dateBefore','dateOn','dateAfter','regex']),value:z.string().max(10000).optional(),caseSensitive:z.boolean().optional()})
+const query=z.object({conditions:z.array(filter).max(20).optional(),filterMode:z.enum(['all','any']).optional(),order:z.array(z.object({column:col,descending:z.boolean(),numeric:z.boolean()})).max(20).optional(),search:z.string().max(10000).optional(),filters:z.record(z.string(),z.string().max(10000)).optional(),sort:z.object({column:col,descending:z.boolean(),numeric:z.boolean()}).optional(),offset:z.number().int().nonnegative(),limit:z.number().int().min(1).max(1000),requestId:z.number().int().nonnegative()})
+const range=z.object({top:z.number().int().nonnegative(),bottom:z.number().int().nonnegative(),left:col,right:col,query,revision:z.number().int().nonnegative()})
+const rangeEdit=z.object({type:z.literal('range'),range,operation:z.enum(['fill','clear','trim','upper','lower','replace','paste']),value:z.string().max(1024*1024).optional(),find:z.string().max(10000).optional(),values:z.array(z.array(z.string().max(1024*1024)).max(100000)).max(100000).optional()})
+const edits=z.discriminatedUnion('type',[rangeEdit,
  z.object({type:z.literal('cell'),rowId:z.string().max(100),column:col,value:z.string().max(1024*1024)}),
  z.object({type:z.literal('paste'),rowId:z.string().max(100),column:col,values:z.array(z.array(z.string().max(1024*1024)).max(100000)).max(100000),view:z.object({query,revision:z.number().int().nonnegative()}).optional()}),
  z.object({type:z.literal('duplicateRows'),ids:rows.min(1)}),z.object({type:z.literal('duplicateColumn'),index:col}),
  z.object({type:z.literal('transform'),operation:z.enum(['trim','upper','lower']),rowIds:rows.min(1),columns:z.array(col).min(1).max(100000)}),
  z.object({type:z.literal('insertRow'),afterId:z.string().max(100).optional()}),z.object({type:z.literal('deleteRows'),ids:rows}),
  z.object({type:z.literal('insertColumn'),index:col,name:z.string().max(10000)}),z.object({type:z.literal('deleteColumn'),index:col}),z.object({type:z.literal('header'),index:col,name:z.string().max(10000)}),z.object({type:z.literal('replace'),find:z.string().min(1).max(10000),replacement:z.string().max(1024*1024),column:col.optional()})])
-const tableExport=z.object({scope:z.enum(['all','filtered','selection']),query:query.optional(),rowIds:rows.optional(),columns:z.array(col).optional(),delimiter:z.enum([',',';','\t','|']).optional()})
+const tableExport=z.object({range:range.optional(),scope:z.enum(['all','filtered','selection']),query:query.optional(),rowIds:rows.optional(),columns:z.array(col).optional(),delimiter:z.enum([',',';','\t','|']).optional()})
 async function openPaths(paths:string[]){const result=[];for(const p of paths){if(!await docs.allowed(p))throw new Error('Abre el archivo desde el selector o arrástralo a la ventana.');const document=await docs.open(p);result.push(document);window?.webContents.send('freya:event',{type:'opened',document})}return result}
 function assertSender(event:Electron.IpcMainInvokeEvent|Electron.IpcMainEvent){if(!window||event.sender!==window.webContents||event.senderFrame!==window.webContents.mainFrame)throw new Error('Origen no autorizado.')}
 async function handle(operation:string,args:unknown[]){
@@ -35,6 +38,10 @@ async function handle(operation:string,args:unknown[]){
  case'save':return docs.save(id.parse(a),z.boolean().optional().parse(b))
  case'close':return docs.close(id.parse(a))
  case'reload':return docs.reload(id.parse(a))
+ case'copyTable':{docs.get(id.parse(a));const options=tableExport.parse(b),format=z.enum(['tsv','markdown']).parse(c),output=await docs.table.call<string>(format==='markdown'?'markdown':'clipboard',a,options);if(Buffer.byteLength(output,'utf8')>8*1024*1024)throw new Error('La copia supera 8 MiB. Reduce la selección o expórtala.');await clipboard.writeText(output);return}
+ case'pasteTable':{docs.get(id.parse(a));const selected=range.parse(b);await docs.table.call('rangePreview',a,{type:'range',range:selected,operation:'clear'});const content=await clipboard.readText();if(Buffer.byteLength(content,'utf8')>8*1024*1024)throw new Error('El portapapeles supera 8 MiB. Pega un bloque menor.');return content}
+ case'rangePreview':docs.get(id.parse(a));return docs.table.call('rangePreview',a,rangeEdit.parse(b) as TableRangeEdit)
+ case'rangeClipboard':docs.get(id.parse(a));return docs.table.call('rangeClipboard',a,range.parse(b) as TableRange)
  case'page':docs.get(id.parse(a));return docs.table.call('page',a,query.parse(b) as TableQuery)
  case'edit':return docs.tableEdit(id.parse(a),edits.parse(b) as TableEdit)
  case'options':return docs.tableOptions(id.parse(a),z.object({encoding:z.enum(['utf8','utf16le','win1252']).optional(),delimiter:z.enum([',',';','\t','|']).optional(),header:z.boolean().optional()}).parse(b) as TableOptions)

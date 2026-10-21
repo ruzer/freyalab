@@ -1,0 +1,73 @@
+{
+  "client": "1.5.6-r.2",
+  "duckdb": "v1.5.6",
+  "versions": {
+    "node": "24.22.0",
+    "acorn": "8.18.0",
+    "ada": "4.0.0",
+    "amaro": "1.1.11",
+    "ares": "1.34.8",
+    "brotli": "1.2.0",
+    "cldr": "48.0",
+    "icu": "78.2",
+    "llhttp": "9.4.3",
+    "merve": "1.2.2",
+    "modules": "149",
+    "napi": "10",
+    "nbytes": "0.1.4",
+    "ncrypto": "0.0.1",
+    "nghttp2": "1.70.0",
+    "nghttp3": "",
+    "ngtcp2": "",
+    "openssl": "0.0.0",
+    "simdjson": "4.6.11",
+    "simdutf": "7.7.0",
+    "sqlite": "3.53.4",
+    "tz": "2026d",
+    "undici": "7.29.1",
+    "unicode": "17.0",
+    "uv": "1.52.1",
+    "uvwasi": "0.0.23",
+    "v8": "15.2.124.43-electron.0",
+    "zlib": "1.3.2.1-motley",
+    "zstd": "1.6.0",
+    "electron": "44.9.2",
+    "chrome": "152.0.7977.167"
+  },
+  "platform": "darwin",
+  "arch": "arm64",
+  "checks": [
+    "identificadores VARCHAR exactos",
+    "agrupación decimal",
+    "join entre tablas",
+    "pivot con columnas explícitas",
+    "parser detecta varias sentencias",
+    "tipo de sentencia del parser nativo",
+    "rechazado: lectura local",
+    "rechazado: lectura remota",
+    "rechazado: exportación arbitraria",
+    "rechazado: instalar extensión",
+    "rechazado: cargar extensión",
+    "rechazado: reactivar disco",
+    "rechazado: cambiar límite de memoria",
+    "rechazado: mutación en transacción de solo lectura",
+    "canary intacto y ningún CSV creado",
+    "consulta costosa interrumpida",
+    "conexión utilizable tras interrupción"
+  ],
+  "pivot": [
+    [
+      "13.00",
+      "20.00"
+    ]
+  ],
+  "interruptMs": 54,
+  "success": true,
+  "measuredAt": "2026-10-21",
+  "scope": "Prototipo temporal fuera del producto. Electron utility process local, sin paquete/instalador ni aislamiento de privilegios del SO.",
+  "sourcesSha256": {
+    "worker.cjs": "26d5e16241ec4bf03bf489ba3bdb11f9b04851ef8a425e1c962fd1f6085c9314",
+    "main.cjs": "8fc655711e06eec23fe51c74967708fcc1390e41ad2bcdc1d80b3cfa1f7ce8df",
+    "package-lock.json": "51ec070903cfb3beffdac277106b14a5d8686904d9efc37bb32d0cd1b351df11"
+  }
+}
