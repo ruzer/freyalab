@@ -8,6 +8,7 @@
  const operations={split:'Dividir una columna',combine:'Combinar columnas',deduplicate:'Eliminar filas duplicadas',normalize:'Componer texto Unicode (NFC)',headers:'Normalizar encabezados'} as const
  const selectedSeparator=$derived(separator==='custom'?custom:separator)
  function cancel(){const id=active;active=undefined;busy=false;if(id)void window.freya.cancelAnalysis(doc.id,id).catch(()=>{})}
+ function cancelPreparation(){if(applying&&active){message='Solicitando cancelación. Si el cambio ya se aplicó, se podrá deshacer.';void window.freya.cancelAnalysis(doc.id,active).catch(error=>onerror(String(error)));return}cancel();preview=null;prepared=null;message='Preparación cancelada. Revisa una nueva vista previa para aplicar.'}
  function invalidate(){cancel();preview=null;prepared=null;message='Opciones o datos actualizados. Pulsa Vista previa.'}
  $effect(()=>{void operation;void columns;void separator;void custom;void name;void doc.revision;if(!applying)invalidate()})
  onDestroy(cancel)
@@ -41,7 +42,7 @@
   </fieldset>
  </form>
  <p role="status">{message}</p>
- {#if busy}<div class="progress"><progress aria-label="Preparación de transformación"></progress><span>{processed.toLocaleString()} elementos revisados</span><button onclick={()=>{cancel();preview=null;prepared=null;message='Preparación cancelada. Revisa una nueva vista previa para aplicar.'}}>Cancelar preparación</button></div>{/if}
+ {#if busy}<div class="progress"><progress aria-label="Preparación de transformación"></progress><span>{processed.toLocaleString()} elementos revisados</span><button onclick={cancelPreparation}>Cancelar preparación</button></div>{/if}
  {#if preview}<dl>{#each [['Filas originales',preview.rows],['Filas afectadas',preview.affected],['Celdas escritas',preview.cells],['Columnas añadidas',preview.addedColumns],['Filas por eliminar',preview.deletedRows],['Encabezados renombrados',preview.changedHeaders]] as [label,value]}<div><dt>{label}</dt><dd>{Number(value).toLocaleString()}</dd></div>{/each}</dl>
   {#if preview.samples.length}<div class="preview-scroll"><table><caption>Hasta ocho ejemplos, textos abreviados a 256 caracteres. Filas en orden original, sin encabezado.</caption><thead><tr><th>Posición original</th><th>Antes</th><th>Después</th></tr></thead><tbody>{#each preview.samples as sample}<tr><th>{sample.row===null?'Encabezado':`Fila ${sample.row+1}`} / columna {sample.column+1}</th><td><pre>{sample.before}</pre></td><td><pre>{sample.after}</pre></td></tr>{/each}</tbody></table></div>{/if}
  {/if}

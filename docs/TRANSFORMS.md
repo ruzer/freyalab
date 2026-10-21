@@ -20,7 +20,7 @@ Los nombres generados al dividir conservan caracteres Unicode completos y usan h
 
 ## Integridad, progreso y recuperación
 
-La preparación ocurre en el proceso de datos. Emite progreso y cede el control entre bloques. **Cancelar preparación** interrumpe antes de aplicar; no modifica datos ni crea un paso de historial. El cambio final es atómico respecto a otras operaciones y no se interrumpe a mitad; después se puede deshacer en un solo paso. Cerrar el diálogo cancela su preparación activa. Un cambio de opciones invalida la vista previa; revisiones antiguas se rechazan. Un cambio externo bloquea este diálogo hasta revisar/recargar el documento.
+La preparación ocurre en el proceso de datos. Emite progreso y cede el control entre bloques. **Cancelar preparación** interrumpe antes de aplicar; no modifica datos ni crea un paso de historial. El cambio final es atómico respecto a otras operaciones y no se interrumpe a mitad; después se puede deshacer en un solo paso. Cerrar el diálogo cancela su preparación activa. Si se pide cancelar durante la aplicación, se espera la respuesta real: un cambio ya confirmado se informa como aplicado y se puede deshacer. Un cambio de opciones invalida la vista previa; revisiones antiguas se rechazan. Un cambio externo bloquea este diálogo hasta revisar/recargar el documento.
 
 Aplicar vuelve a preparar y validar con la misma revisión y opciones; no confía en los ejemplos del renderer. Si hay otro guardado/edición pendiente, rechaza la transformación con un mensaje para reintentar después, evitando dejarla en una cola cuya cancelación ya no llegue a tiempo.
 
