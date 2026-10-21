@@ -82,3 +82,19 @@ Un cambio del documento descarta resultados antiguos. El alcance y las columnas 
 ## Siguientes entregas propuestas
 
 Mover filas/columnas y transponer tablas o selecciones se mantienen pendientes. No se presenta esta entrega como equivalente a todas las operaciones de Modern CSV. Referencia funcional: [Modern CSV](https://www.moderncsv.com/).
+
+
+## Explorar columnas CSV
+
+Abre **Estadísticas → Explorar una columna: frecuencias, calidad y distribución**. Elige columna y alcance (documento completo o vista filtrada) y pulsa **Explorar columna**. Los encabezados repetidos se distinguen por número. «Volver a estadísticas generales» recupera el panel anterior; cerrar/cambiar de documento cancela la exploración.
+
+- **Perfil:** conteos, calidad, ceros iniciales, longitudes, suma/media/mediana/extremos y desviación poblacional (divisor n) o muestral (n−1, requiere al menos dos números).
+- **Frecuencias:** 50 valores por página, recuento, porcentaje sobre las filas analizadas y primera fila original sin encabezado. Los empates mantienen orden de primera aparición original. «Solo valores repetidos» limita la lista, sin cambiar los totales del perfil. Un grupo repetido tiene más de una fila; «repeticiones adicionales» excluye una fila de cada grupo.
+- **Distribución:** intervalos numéricos de igual amplitud; incluye el límite inferior y excluye el superior, salvo el último, que incluye el máximo. Una columna constante tiene un intervalo. Cambiar el número de intervalos exige volver a explorar.
+- **Correlación:** elige la segunda columna y vuelve a explorar. Pearson usa pares numéricos de la misma fila; muestra cuántos se excluyeron. Menos de dos pares, columnas constantes o resultados no representables muestran «—» con explicación.
+
+Las operaciones no cambian celdas, filtros, orden, historial ni archivo. Los datos pendientes de guardar sí se incluyen. Cambiar datos/filtros/opciones borra el resultado anterior; el desplazamiento de la tabla lo conserva. Una muestra siempre se identifica, incluso al elegir todo su contenido.
+
+Límites: 100 000 valores distintos por exploración; superar ese límite devuelve un error completo y pide filtrar, sin presentar resultados parciales como totales. Las frecuencias comparan el texto completo exacto y distinguen mayúsculas, espacios y ceros. Las vistas previas de valores largos muestran solo las primeras 256 unidades UTF-16, indicadas explícitamente. Vacíos incluye campos vacíos, ausentes o solo espacios; cero no es vacío. La lista de faltantes muestra hasta 20 números de fila original. Las longitudes se miden en unidades UTF-16 del texto sin recortar.
+
+Los cálculos numéricos son aproximados, con punto decimal. Se excluyen texto, fechas y enteros fuera del rango numérico seguro; el perfil muestra las exclusiones y posibles ceros iniciales. Nada se convierte al guardar. Cancelar detiene la recogida entre bloques y descarta resultados tardíos; los cálculos matemáticos síncronos terminan antes de descartarse. No se han añadido SQL, tablas dinámicas ni gráficos en esta entrega. Exportar estos análisis como informe y explorar claves compuestas quedan pendientes.

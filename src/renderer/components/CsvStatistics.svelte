@@ -1,7 +1,9 @@
 <script lang="ts">
  import {onDestroy,onMount} from 'svelte'
- import type {DocumentInfo,TableStats} from '../../shared/types'
- let {doc,columns,onclose,onerror}:{doc:DocumentInfo;columns:number[];onclose:()=>void;onerror:(message:string)=>void}=$props()
+ import CsvColumnAnalysis from './CsvColumnAnalysis.svelte'
+ import type {DocumentInfo,TableStats,TableQuery} from '../../shared/types'
+ let {doc,columns,query,queryValid,onclose,onerror}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;onclose:()=>void;onerror:(message:string)=>void}=$props()
+ let exploring=$state(false)
  let scope=$state('all'),busy=$state(false),results=$state<(TableStats&{index:number;name:string})[]>([])
  let message=$state('Elige columnas y pulsa Analizar.'),revision=$state(-1),total=$state(0),analyzedScope=$state(''),heading:HTMLHeadingElement
  let request=0
@@ -32,6 +34,7 @@
 <svelte:window onkeydown={event=>{if(event.key==='Escape'&&event.target instanceof HTMLElement&&event.target.closest('.statistics-panel')){event.preventDefault();event.stopPropagation();onclose()}}}/>
 <section class="statistics-panel" aria-labelledby="csv-statistics-title">
  <div class="statistics-heading"><h3 id="csv-statistics-title" tabindex="-1" bind:this={heading}>Estadísticas por columna</h3><button aria-label="Cerrar estadísticas" onclick={onclose}>×</button></div>
+ {#if !exploring}
  <p>{doc.readonly?'Solo muestra: los recuentos no describen el archivo completo.':'Documento completo: incluye las filas ocultas por búsqueda o filtros; excluye encabezados.'}</p>
  <form onsubmit={event=>{event.preventDefault();void analyze()}}>
   <label>Columnas <select aria-label="Columnas para estadísticas" bind:value={scope} disabled={busy}><option value="all">Todas las columnas</option><option value="selected" disabled={!columns.length}>Columnas marcadas</option></select></label>
@@ -44,7 +47,9 @@
   <thead><tr>{#each ['Columna','Celdas','Vacíos','Únicos','Numéricos','Suma','Media','Mínimo','Máximo'] as title}<th scope="col">{title}</th>{/each}</tr></thead>
   <tbody>{#each results as result (result.index)}<tr><th scope="row">{result.index+1}. {result.name}</th>{#each [result.cells,result.empty,result.unique,result.numeric,result.sum,result.average,result.min,result.max] as value}<td>{number(value)}</td>{/each}</tr>{/each}</tbody>
  </table></div>{/if}
- <p class="statistics-note">Solo consulta. Vacíos incluye espacios o campos ausentes; únicos distingue el texto exacto e incluye vacíos. Los cálculos usan punto decimal y son aproximados. Los enteros fuera del rango numérico seguro se excluyen del cálculo para evitar redondear identificadores grandes. Los valores del archivo se conservan. Cancelar descarta resultados y evita iniciar la siguiente columna.</p>
+ {/if}
+ <details bind:open={exploring}><summary>{exploring?'Volver a estadísticas generales':'Explorar una columna: frecuencias, calidad y distribución'}</summary>{#if exploring}<CsvColumnAnalysis {doc} {query} {queryValid} {onerror}/>{/if}</details>
+ {#if !exploring}<p class="statistics-note">Solo consulta. Vacíos incluye espacios o campos ausentes; únicos distingue el texto exacto e incluye vacíos. Los cálculos usan punto decimal y son aproximados. Los enteros fuera del rango numérico seguro se excluyen del cálculo para evitar redondear identificadores grandes. Los valores del archivo se conservan. Cancelar descarta resultados y evita iniciar la siguiente columna.</p>{/if}
 </section>
 <style>
  .statistics-panel{border-bottom:1px solid var(--border);background:var(--panel);padding:10px 12px;font-size:11px;max-height:310px;overflow:auto;flex-shrink:0}

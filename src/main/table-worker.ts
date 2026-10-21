@@ -1,6 +1,6 @@
 import { TableEngine } from './table-engine'
 const engine = new TableEngine()
-const allowed = new Set(['open','create','info','rangePreview','rangeClipboard','clipboard','page','edit','undo','stats','markdown','serialize','snapshot','restore','markSaved','close','checkpoint'])
+const allowed = new Set(['open','create','info','rangePreview','rangeClipboard','clipboard','page','edit','undo','stats','analyzeColumn','cancelAnalysis','markdown','serialize','snapshot','restore','markSaved','close','checkpoint'])
 const port = process.parentPort
 if (!port) throw new Error('El motor tabular necesita un proceso de datos Electron.')
 port.on('message', async ({data}: {data:{requestId:number;method:string;args:unknown[]}}) => {

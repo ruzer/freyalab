@@ -7,6 +7,8 @@ import { parse as parseSync } from 'csv-parse/sync'
 import { stringify } from 'csv-stringify/sync'
 import iconv from 'iconv-lite'
 import {compileTableQuery} from './table-query'
+import {analyzeColumn,numeric} from './table-analysis'
+import type {ColumnAnalysisRequest,ColumnAnalysis} from '../shared/types'
 import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview } from '../shared/types'
 
 export const TABLE_LIMITS = { bytes: 50 * 1024 * 1024, cells: 2_000_000, record: 1024 * 1024, sampleBytes: 8 * 1024 * 1024, sampleRows: 200 }
@@ -15,8 +17,6 @@ interface State extends Metadata { rows: TableRow[]; headers: string[]; readonly
 type Mutation = { type: 'cell'; id: string; column: number; value: string; length?:number } | { type: 'header'; column: number; value: string; headerWidth?:number } | { type: 'rows'; index: number; remove: number; rows: TableRow[] } | { type: 'column'; index: number; remove: boolean; name: string; cells: string[]; headerWidth?:number; lengths?:number[] }
 interface Change { forward: Mutation[]; backward: Mutation[]; before: number; after: number; bytes:number }
 class LimitError extends Error {}
-const numberPattern = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/
-function numeric(value: string): number | null { const v = value.trim(); const n = Number(v); return v && numberPattern.test(v) && Number.isFinite(n) ? n : null }
 function validDelimiter(value: string) { if (![',', ';', '\t', '|'].includes(value)) throw new Error('Delimitador no válido.'); return value }
 function detectEncoding(bytes: Buffer): Encoding {
  if(bytes[0]===0xff&&bytes[1]===0xfe)return 'utf16le'
@@ -48,6 +48,7 @@ export class TableEngine {
  private queries = new Map<string, number>()
  private openings = new Map<string, number>()
  private views = new Map<string,{key:string;indices:number[]}>()
+ private analyses = new Map<string,string>()
  private serial = 0
  private get(id: string): State { const s = this.states.get(id); if (!s) throw new Error('La tabla ya no está abierta.'); return s }
  private editable(id: string): State { const s = this.get(id); if (s.readonly) throw new Error('La muestra es de solo lectura.'); return s }
@@ -210,6 +211,16 @@ export class TableEngine {
  }
  async undo(id:string,redo=false){const s=this.editable(id);const source=redo?s.future:s.history,target=redo?s.history:s.future;const change=source.pop();if(change){this.apply(s,redo?change.forward:change.backward);s.token=redo?change.after:change.before;s.revision++;target.push(change)}return this.info(id)}
  private async selected(id:string,options:TableExport){const s=this.get(id),revision=s.revision;if(s.readonly)throw new Error('La muestra no permite exportar el archivo ni selecciones.');let indices:number[];if(options.scope==='selection'&&options.range){const selected=await this.rangeRows(id,options.range);return{rows:selected.indices.map(i=>selected.columns.map(col=>s.rows[i].cells[col]??'')),headers:selected.columns.map(col=>s.headers[col])}}if(options.scope==='filtered')indices=await this.indices(id,options.query??{offset:0,limit:500,requestId:0});else if(options.scope==='selection'){const ids=new Set(options.rowIds??[]);indices=s.rows.flatMap((row,i)=>ids.has(row.id)?[i]:[])}else indices=s.rows.map((_,i)=>i);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.');const columns=options.columns??s.headers.map((_,i)=>i);if(columns.some(i=>!Number.isInteger(i)||i<0||i>=s.headers.length))throw new Error('Selección de columnas no válida.');return{rows:indices.map(i=>columns.map(col=>s.rows[i].cells[col]??'')),headers:columns.map(col=>s.headers[col])}}
+ async analyzeColumn(id:string,request:ColumnAnalysisRequest):Promise<ColumnAnalysis>{
+  const s=this.get(id);if(request.revision!==s.revision)throw new Error('La tabla cambió. Vuelve a analizar.')
+  for(const column of [request.column,...request.otherColumn===undefined?[]:[request.otherColumn]])if(!Number.isInteger(column)||column<0||column>=s.headers.length)throw new Error('Columna no válida.')
+  if(!Number.isInteger(request.frequencyOffset)||request.frequencyOffset<0||!Number.isInteger(request.bins)||request.bins<1||request.bins>30)throw new Error('Opciones de análisis no válidas.')
+  this.analyses.set(id,request.requestId)
+  const ensure=()=>{if(this.analyses.get(id)!==request.requestId||this.states.get(id)!==s||request.revision!==s.revision)throw new Error('Análisis cancelado: la tabla cambió o se recibió otra solicitud.')}
+  try{const indices=request.query?await this.indices(id,request.query):undefined;ensure();const result=await analyzeColumn(s.rows,indices,request,ensure);ensure();return{...result,revision:s.revision,sample:s.readonly,filtered:!!request.query,column:request.column}}
+  finally{if(this.analyses.get(id)===request.requestId)this.analyses.delete(id)}
+ }
+ async cancelAnalysis(id:string,requestId:string){if(this.analyses.get(id)===requestId)this.analyses.delete(id)}
  async stats(id:string,rowIds:string[]|null,columns:number[]):Promise<TableStats>{const s=this.get(id),revision=s.revision;if(columns.some(col=>!Number.isInteger(col)||col<0||col>=s.headers.length))throw new Error('Columna no válida.');const ids=rowIds===null?null:new Set(rowIds),values:string[]=[];for(let i=0;i<s.rows.length;i++){const row=s.rows[i];if(ids===null||ids.has(row.id))for(const col of columns){values.push(row.cells[col]??'')}if(i%2048===0){await yieldTurn();if(this.states.get(id)!==s||s.revision!==revision)throw new Error('Las estadísticas se cancelaron porque cambió la tabla.')}}const nums=values.map(numeric).filter((n):n is number=>n!==null&&(!Number.isInteger(n)||Number.isSafeInteger(n)));let sum=0,min=Infinity,max=-Infinity;for(const n of nums){sum+=n;min=Math.min(min,n);max=Math.max(max,n)}return{cells:values.length,empty:values.filter(v=>!v.trim()).length,unique:new Set(values).size,numeric:nums.length,sum:nums.length&&Number.isFinite(sum)?sum:null,min:nums.length?min:null,max:nums.length?max:null,average:nums.length&&Number.isFinite(sum)?sum/nums.length:null}}
  async markdown(id:string,options:TableExport){const {rows,headers}=await this.selected(id,options);const escape=(v:string)=>v.replace(/\\/g,'\\\\').replace(/\|/g,'\\|').replace(/\r\n|\r|\n/g,'<br>');return[headers,headers.map(()=>'---'),...rows].map(row=>'| '+row.map(escape).join(' | ')+' |').join('\n')}
  async serialize(id:string,options?:TableExport):Promise<Buffer>{const s=this.editable(id),revision=s.revision;let records:string[][];if(options){const selection=await this.selected(id,options);records=s.header?[selection.headers,...selection.rows]:selection.rows}else records=s.header?[s.headers.slice(0,s.headerWidth),...s.rows.map(row=>row.cells)]:s.rows.map(row=>row.cells)
@@ -221,5 +232,5 @@ export class TableEngine {
  async markSaved(id:string,expectedRevision?:number){const s=this.get(id);if(expectedRevision===undefined||s.revision===expectedRevision)s.savedToken=s.token;return this.info(id)}
  async snapshot(id:string){const s=this.get(id);return structuredClone({version:1,state:s})}
  async restore(id:string,snapshot:unknown){const data=snapshot as {version?:number;state?:State};if(data.version!==1||!data.state||!Array.isArray(data.state.rows)||!Array.isArray(data.state.headers))throw new Error('Formato de recuperación no compatible.');const s=structuredClone(data.state);if(s.rows.length*s.headers.length>TABLE_LIMITS.cells||s.rows.some(row=>typeof row.id!=='string'||!Array.isArray(row.cells)||row.cells.some(v=>typeof v!=='string')))throw new Error('Recuperación CSV no válida.');s.savedToken=-1;s.readonly=false;s.warning=undefined;this.serial=Math.max(this.serial,s.token,s.nextId);this.openings.set(id,++this.serial);this.queries.delete(id);this.views.delete(id);s.revision=Math.max(s.revision,this.states.get(id)?.revision??-1)+1;this.states.set(id,s);return this.info(id)}
- async close(id:string){this.states.delete(id);this.queries.delete(id);this.views.delete(id);this.openings.delete(id)}
+ async close(id:string){this.analyses.delete(id);this.states.delete(id);this.queries.delete(id);this.views.delete(id);this.openings.delete(id)}
 }
