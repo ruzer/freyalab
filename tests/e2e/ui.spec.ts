@@ -3,6 +3,7 @@ import electronPath from 'electron'
 import { mkdtemp, mkdir, readFile, readdir, rm, writeFile, truncate } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
+import {parse as parseCSV} from 'csv-parse/sync'
 let app:ElectronApplication,page:Page,directory:string
 
 test.beforeEach(async()=>{
@@ -284,4 +285,37 @@ test('estadísticas CSV: límite explícito y encabezados duplicados por índice
  await page.getByLabel('Columnas para estadísticas',{exact:true}).selectOption('selected')
  await panel.getByRole('button',{name:'Analizar',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Análisis completo.')
  expect(await panel.locator('tbody tr').first().locator('th,td').allTextContents()).toEqual(['2. A','1','0','1','1','2','2','2','2'])
+})
+
+test('CSV: pegar sigue filtros y orden, conserva filas ocultas y se deshace en un paso',async()=>{
+ const path=join(directory,'pegado.csv')
+ const source='Código,Grupo,Nota\r\n001,visible,Antes A\r\n002,oculto,Intacto\r\n003,visible,Antes C\r\n'
+ await writeFile(path,source)
+ const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
+ await expect(page.getByRole('gridcell',{name:'Fila 1, Código',exact:true})).toHaveText('001')
+ await page.getByLabel('Buscar en tabla',{exact:true}).fill('visible')
+ await page.getByRole('button',{name:'☷ Filtros',exact:true}).click()
+ await page.getByLabel('Filtrar Grupo',{exact:true}).fill('visible')
+ await expect(page.locator('.csv-toolbar')).toContainText('2 de 3 filas')
+ await page.getByRole('button',{name:'Código',exact:true}).click()
+ await expect(page.getByRole('columnheader').filter({has:page.getByLabel('Seleccionar columna Código',{exact:true})})).toHaveAttribute('aria-sort','ascending')
+ await page.getByRole('button',{name:'Código ↑',exact:true}).click()
+ await expect(page.getByRole('gridcell',{name:'Fila 1, Código',exact:true})).toHaveText('003')
+ const cell=page.getByRole('gridcell',{name:'Fila 1, Nota',exact:true})
+ const clipboard='00077\n"Texto ""citado""\r\nmultilínea"'
+ await cell.evaluate((element,text)=>{const data=new DataTransfer();data.setData('text/plain',text);element.dispatchEvent(new ClipboardEvent('paste',{clipboardData:data,bubbles:true,cancelable:true}))},clipboard)
+ await expect(cell).toHaveText('00077')
+ await expect(page.getByRole('gridcell',{name:'Fila 2, Nota',exact:true})).toHaveText('Texto "citado"\r\nmultilínea')
+ const expected=[['001','visible','Texto "citado"\r\nmultilínea'],['002','oculto','Intacto'],['003','visible','00077']]
+ await expect.poll(()=>page.evaluate(async id=>(await window.freya.tablePage(id,{offset:0,limit:10,requestId:901})).rows.map(row=>row.cells),doc.id)).toEqual(expected)
+ await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(cell).toHaveText('Antes C')
+ await page.getByRole('button',{name:'Rehacer',exact:true}).click();await expect(cell).toHaveText('00077')
+ await cell.evaluate(element=>{const data=new DataTransfer();data.setData('text/plain','a\nb\nc');element.dispatchEvent(new ClipboardEvent('paste',{clipboardData:data,bubbles:true,cancelable:true}))})
+ await expect(page.locator('.toast')).toContainText('excede las filas de esta vista')
+ await expect(cell).toHaveText('00077')
+ const invalid=await page.evaluate(async id=>{try{await window.freya.tableEdit(id,{type:'paste',rowId:'1',column:2,values:[['NO']],view:{query:{offset:0,limit:10,requestId:902},revision:-1}});return false}catch{return true}},doc.id)
+ expect(invalid).toBe(true)
+ await page.getByRole('button',{name:'Guardar',exact:true}).click()
+ await expect(page.locator('.statusbar')).toContainText('Guardado')
+ expect(parseCSV(await readFile(path,'utf8'))).toEqual([['Código','Grupo','Nota'],...expected])
 })

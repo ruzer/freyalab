@@ -13,6 +13,46 @@ describe('motor CSV',()=>{
  it('conserva identificadores, multilinea, comillas y valores al editar con una vista ordenada',async()=>{const path=await fixture('Código;Nombre;Valor\r\n000124;"Ana\r\nMaría";10\r\n000002;"Dice ""hola""";2\r\n');const info=await engine.open('a',path);expect(info.delimiter).toBe(';');const view=await engine.page('a',{...query,sort:{column:2,numeric:true,descending:false}});expect(view.rows[0].cells).toEqual(['000002','Dice "hola"','2']);await engine.edit('a',{type:'cell',rowId:view.rows[0].id,column:1,value:'Editado'});const out=(await engine.serialize('a')).toString('utf8');expect(out.indexOf('000124')).toBeLessThan(out.indexOf('000002'));expect(out).toContain('"Ana\r\nMaría"');expect(out).toContain('000002;Editado;2');expect((await readFile(path)).toString()).toContain('Dice');await engine.undo('a');expect((await engine.page('a',query)).rows[1].cells[1]).toBe('Dice "hola"');expect((await engine.info('a')).dirty).toBe(false);await engine.undo('a',true);expect((await engine.info('a')).dirty).toBe(true)})
  it('combina búsqueda y filtros sin cambiar el documento y distingue exportación filtrada',async()=>{await engine.open('a',await fixture('Código,Categoría,Valor\n001,Azul,1\n002,azul,3\n003,Rojo,4\n'));const q={...query,search:'azul',filters:{'2':'3'}};expect((await engine.page('a',q)).rows[0].cells[0]).toBe('002');const out=(await engine.serialize('a',{scope:'filtered',query:q})).toString();expect(out).toContain('002');expect(out).not.toContain('001');expect((await engine.info('a')).dirty).toBe(false);expect((await engine.markdown('a',{scope:'selection',rowIds:['1'],columns:[0,1]}))).toContain('| 001 | Azul |')})
  it('edita filas, columnas, pegado, reemplazos y recupera sin depender del archivo fuente',async()=>{const path=await fixture('A,B\nx,2\ny,3\n');await engine.open('a',path);await engine.edit('a',{type:'insertRow',afterId:'1'});let rows=(await engine.page('a',query)).rows;await engine.edit('a',{type:'paste',rowId:rows[1].id,column:0,values:[['z','5']]});await engine.edit('a',{type:'insertColumn',index:1,name:'Extra'});await engine.edit('a',{type:'replace',find:'z',replacement:'nuevo'});await engine.edit('a',{type:'header',index:0,name:'Clave'});await engine.edit('a',{type:'deleteRows',ids:['1']});await engine.undo('a');await engine.edit('a',{type:'deleteColumn',index:1});await engine.undo('a');const snap=await engine.snapshot('a');await rm(path);await engine.restore('b',JSON.parse(JSON.stringify(snap)));expect((await engine.page('b',query)).rows[1].cells).toEqual(['nuevo','','5']);expect((await engine.info('b')).headers).toEqual(['Clave','Extra','B']);expect((await engine.info('b')).dirty).toBe(true)})
+ it('pega en el orden visible sin tocar filas ocultas y conserva deshacer y recuperación',async()=>{
+  const source='Código,Grupo,Nota\r\n001,visible,Antes A\r\n002,oculto,Intacto\r\n003,visible,Antes C\r\n'
+  await engine.open('a',await fixture(source))
+  const viewQuery={...query,search:'visible',filters:{'1':'visible'},sort:{column:0,numeric:false,descending:true}}
+  const page=await engine.page('a',viewQuery)
+  await engine.edit('a',{type:'paste',rowId:page.rows[0].id,column:2,values:[['00077'],['Texto "citado"\r\nmultilínea']],view:{query:viewQuery,revision:page.revision}})
+  expect((await engine.page('a',query)).rows.map(row=>row.cells)).toEqual([['001','visible','Texto "citado"\r\nmultilínea'],['002','oculto','Intacto'],['003','visible','00077']])
+  await engine.undo('a');expect((await engine.serialize('a')).toString()).toBe(source)
+  await engine.undo('a',true)
+  const snapshot=await engine.snapshot('a');await engine.restore('b',snapshot);await engine.undo('b');expect((await engine.serialize('b')).toString()).toBe(source)
+ })
+ it('pega más allá de la página sin enviar al visor el documento completo',async()=>{
+  await engine.open('a',await fixture('Código,Grupo,Nota\n'+Array.from({length:450},(_,i)=>`${String(i).padStart(5,'0')},${i%2?'oculto':'visible'},antes`).join('\n')+'\n'))
+  const viewQuery={...query,limit:1,filters:{'1':'visible'}}
+  const page=await engine.page('a',viewQuery)
+  await engine.edit('a',{type:'paste',rowId:page.rows[0].id,column:2,values:Array.from({length:210},(_,i)=>[String(i)]),view:{query:viewQuery,revision:page.revision}})
+  const rows=(await engine.page('a',{...query,limit:500})).rows
+  expect(rows.every((row,i)=>row.cells[2]===(i%2===0&&i<420?String(i/2):'antes'))).toBe(true)
+ })
+ it('rechaza pegados fuera de la vista y revisiones antiguas sin cambios parciales',async()=>{
+  const source='Código,Grupo,Nota\n001,visible,A\n002,oculto,B\n003,visible,C\n'
+  await engine.open('a',await fixture(source))
+  const viewQuery={...query,filters:{'1':'visible'}},page=await engine.page('a',viewQuery),view={query:viewQuery,revision:page.revision}
+  await expect(engine.edit('a',{type:'paste',rowId:'1',column:2,values:[['a'],['b'],['c']],view})).rejects.toThrow('vista')
+  await expect(engine.edit('a',{type:'paste',rowId:'2',column:2,values:[['a']],view})).rejects.toThrow('vista')
+  await expect(engine.edit('a',{type:'paste',rowId:'1',column:2,values:[['a','b']],view})).rejects.toThrow('excede')
+  expect((await engine.serialize('a')).toString()).toBe(source);expect((await engine.info('a')).dirty).toBe(false)
+  await engine.edit('a',{type:'cell',rowId:'3',column:2,value:'Posterior'})
+  await expect(engine.edit('a',{type:'paste',rowId:'1',column:2,values:[['a']],view})).rejects.toThrow('cambió')
+  expect((await engine.page('a',query)).rows.map(row=>row.cells[2])).toEqual(['A','B','Posterior'])
+ })
+ it('cancela un pegado si cambia la tabla durante su preparación',async()=>{
+  const source='A\noriginal\n'
+  await engine.open('a',await fixture(source))
+  const pending=engine.edit('a',{type:'paste',rowId:'1',column:0,values:[['NO']]})
+  await engine.edit('a',{type:'cell',rowId:'1',column:0,value:'Posterior'})
+  await expect(pending).rejects.toThrow('cambió')
+  expect((await engine.page('a',query)).rows[0].cells).toEqual(['Posterior'])
+  await engine.undo('a');expect((await engine.serialize('a')).toString()).toBe(source)
+ })
  it('limpia solo la selección por ID, conserva ceros y filas irregulares y deshace en un paso',async()=>{
   const source='Código,Nombre,Nota\r\n0001,  Árbol  , Intacto \r\n0002,  Otro  \r\n0003,"  Varias\r\nlíneas  ", Final \r\n'
   await engine.open('a',await fixture(source))

@@ -13,7 +13,7 @@ const id=z.uuid(),path=z.string().min(1).max(32768), text=z.string().max(20*1024
 const query=z.object({search:z.string().max(10000).optional(),filters:z.record(z.string(),z.string().max(10000)).optional(),sort:z.object({column:col,descending:z.boolean(),numeric:z.boolean()}).optional(),offset:z.number().int().nonnegative(),limit:z.number().int().min(1).max(1000),requestId:z.number().int().nonnegative()})
 const edits=z.discriminatedUnion('type',[
  z.object({type:z.literal('cell'),rowId:z.string().max(100),column:col,value:z.string().max(1024*1024)}),
- z.object({type:z.literal('paste'),rowId:z.string().max(100),column:col,values:z.array(z.array(z.string().max(1024*1024)).max(100000)).max(100000)}),
+ z.object({type:z.literal('paste'),rowId:z.string().max(100),column:col,values:z.array(z.array(z.string().max(1024*1024)).max(100000)).max(100000),view:z.object({query,revision:z.number().int().nonnegative()}).optional()}),
  z.object({type:z.literal('duplicateRows'),ids:rows.min(1)}),z.object({type:z.literal('duplicateColumn'),index:col}),
  z.object({type:z.literal('transform'),operation:z.enum(['trim','upper','lower']),rowIds:rows.min(1),columns:z.array(col).min(1).max(100000)}),
  z.object({type:z.literal('insertRow'),afterId:z.string().max(100).optional()}),z.object({type:z.literal('deleteRows'),ids:rows}),
