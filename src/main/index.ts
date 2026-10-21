@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve, relative, isAbsolute, extname } from 'node:path'
 import { z } from 'zod'
 import { SqlService } from './sql-service'
+import appIcon from '../../build/icon.png?asset'
 import { Documents } from './documents'
 import { exportDocument } from './export'
 import type { Kind,TableEdit,TableOptions,TableExport,TableQuery,ExportRequest,TableRange,TableRangeEdit } from '../shared/types'
@@ -73,7 +74,7 @@ app.whenReady().then(async()=>{
  analytics=new SqlService(docs,progress=>window?.webContents.send('freya:event',{type:'analysis',progress}))
  ipcMain.handle('freya',async(event,operation,...args)=>{assertSender(event);try{return await handle(z.string().max(100).parse(operation),args)}catch(e){throw new Error(e instanceof z.ZodError?'Datos de operación no válidos.':(e as Error).message)}})
  ipcMain.on('freya:drop',(event,paths)=>{assertSender(event);for(const p of z.array(path).max(100).parse(paths))docs.grants.add(resolve(p))})
- window=new BrowserWindow({width:1440,height:900,minWidth:900,minHeight:600,title:'FreyaLab',backgroundColor:'#18181b',titleBarStyle:process.platform==='darwin'?'hiddenInset':'default',webPreferences:{preload:join(here,'../preload/index.cjs'),sandbox:true,contextIsolation:true,nodeIntegration:false}})
+ window=new BrowserWindow({icon:appIcon,width:1440,height:900,minWidth:900,minHeight:600,title:'FreyaLab',backgroundColor:'#18181b',titleBarStyle:process.platform==='darwin'?'hiddenInset':'default',webPreferences:{preload:join(here,'../preload/index.cjs'),sandbox:true,contextIsolation:true,nodeIntegration:false}})
  window.webContents.setWindowOpenHandler(()=>({action:'deny'}))
  window.webContents.on('will-navigate',(event)=>event.preventDefault())
  window.webContents.session.setPermissionRequestHandler((_wc,_permission,callback)=>callback(false))
