@@ -1,21 +1,29 @@
 <script lang="ts">
  import {onMount,onDestroy,untrack} from 'svelte'
- import type {DocumentInfo,TableTransformEdit,TableTransformPreview} from '../../shared/types'
- let {doc,initialColumns,onapply,onclose,onerror}:{doc:DocumentInfo;initialColumns:number[];onapply:(edit:TableTransformEdit)=>Promise<string|null>;onclose:()=>void;onerror:(message:string)=>void}=$props()
+ import type {DocumentInfo,TableTransformEdit,TableTransformPreview,TableQuery,TableRange} from '../../shared/types'
+ let {doc,initialColumns,initialRows,initialRange,viewQuery,onapply,onclose,onerror}:{doc:DocumentInfo;initialColumns:number[];initialRows:string[];initialRange:TableRange|null;viewQuery:TableQuery;onapply:(edit:TableTransformEdit)=>Promise<string|null>;onclose:()=>void;onerror:(message:string)=>void}=$props()
  let operation=$state<TableTransformEdit['operation']>('split'),columns=$state<number[]>(untrack(()=>initialColumns.length?[...initialColumns]:[0])),separator=$state(';'),custom=$state(''),name=$state('Combinada')
  let preview=$state<TableTransformPreview|null>(null),prepared=$state<TableTransformEdit|null>(null),busy=$state(false),processed=$state(0),message=$state('Elige la operación y revisa su vista previa.'),external=$state(false),dialog:HTMLDialogElement
+ const markedRows=untrack(()=>[...initialRows]),markedRange=untrack(()=>initialRange?structuredClone($state.snapshot(initialRange)):null)
+ const hasSelection=markedRows.length>0||!!markedRange
+ let rowScope=$state(hasSelection?'selection':'range'),from=$state(1),to=$state(1),destination=$state(1)
+ const viewKey=$derived(JSON.stringify([viewQuery.search,viewQuery.filters,viewQuery.sort,viewQuery.order,viewQuery.conditions,viewQuery.filterMode]))
+ const ordering=$derived(['moveRows','moveColumns','commitOrder'].includes(operation))
  let active:string|undefined,applying=false
- const operations={split:'Dividir una columna',combine:'Combinar columnas',deduplicate:'Eliminar filas duplicadas',normalize:'Componer texto Unicode (NFC)',headers:'Normalizar encabezados'} as const
+ const operations={split:'Dividir una columna',combine:'Combinar columnas',deduplicate:'Eliminar filas duplicadas',normalize:'Componer texto Unicode (NFC)',headers:'Normalizar encabezados',moveRows:'Mover filas',moveColumns:'Mover columnas',commitOrder:'Fijar orden de la vista en el documento'} as const
  const selectedSeparator=$derived(separator==='custom'?custom:separator)
  function cancel(){const id=active;active=undefined;busy=false;if(id)void window.freya.cancelAnalysis(doc.id,id).catch(()=>{})}
  function cancelPreparation(){if(applying&&active){message='Solicitando cancelación. Si el cambio ya se aplicó, se podrá deshacer.';void window.freya.cancelAnalysis(doc.id,active).catch(error=>onerror(String(error)));return}cancel();preview=null;prepared=null;message='Preparación cancelada. Revisa una nueva vista previa para aplicar.'}
  function invalidate(){cancel();preview=null;prepared=null;message='Opciones o datos actualizados. Pulsa Vista previa.'}
- $effect(()=>{void operation;void columns;void separator;void custom;void name;void doc.revision;if(!applying)invalidate()})
+ $effect(()=>{void operation;void columns;void separator;void custom;void name;void doc.revision;void rowScope;void from;void to;void destination;void viewKey;if(!applying)invalidate()})
  onDestroy(cancel)
  onMount(()=>{dialog.showModal();return window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress&&event.progress.requestId===active){processed=event.progress.rows;message=event.progress.phase}else if(event.type==='external'&&event.id===doc.id){invalidate();external=true;message='El archivo cambió en disco. Cierra este diálogo y revisa o recarga el documento antes de transformar.'}})})
  async function inspect(){
   if(busy||external)return;cancel();preview=null;prepared=null;processed=0;busy=true
-  const request:TableTransformEdit={type:'structure',operation,columns:operation==='headers'?[0]:[...columns],revision:doc.revision,requestId:crypto.randomUUID(),separator:selectedSeparator,name}
+  const request:TableTransformEdit={type:'structure',operation,columns:operation==='headers'?[0]:operation==='moveRows'||operation==='commitOrder'?[]:[...columns],revision:doc.revision,requestId:crypto.randomUUID(),separator:selectedSeparator,name}
+  if(operation==='moveRows'){request.destination=destination-1;if(rowScope==='selection'){if(markedRows.length)request.rowIds=[...markedRows];else request.range=markedRange??undefined}else request.range={top:from-1,bottom:to-1,left:0,right:0,revision:doc.revision,query:{offset:0,limit:200,requestId:0}}}
+  if(operation==='moveColumns')request.destination=destination-1
+  if(operation==='commitOrder')request.query=$state.snapshot(viewQuery)
   active=request.requestId;message='Preparando vista previa…'
   try{const result=await window.freya.transformPreview(doc.id,request);if(active===request.requestId){preview=result;prepared=request;message='Vista previa lista. El documento sigue intacto.'}}catch(error){if(active===request.requestId){message=String(error).replace(/^.*Error: /,'');onerror(message)}}finally{if(active===request.requestId){active=undefined;busy=false}}
  }
@@ -24,27 +32,32 @@
   const edit={...$state.snapshot(prepared),requestId:crypto.randomUUID()};active=edit.requestId;applying=true;busy=true;processed=0;message='Preparando el cambio…'
   try{const error=await onapply(edit);if(active!==edit.requestId)return;if(error===null)onclose();else{preview=null;prepared=null;message='No se aplicó el cambio. '+error}}finally{applying=false;if(active===edit.requestId){active=undefined;busy=false}}
  }
- const changes=$derived(!!preview&&(preview.cells>0||preview.addedColumns>0||preview.deletedRows>0||preview.changedHeaders>0))
+ const changes=$derived(!!preview&&(preview.cells>0||preview.addedColumns>0||preview.deletedRows>0||preview.changedHeaders>0||preview.movedRows>0||preview.movedColumns>0))
 </script>
 <dialog bind:this={dialog} aria-labelledby="csv-transform-title" oncancel={event=>{event.preventDefault();onclose()}}>
  <h3 id="csv-transform-title">Transformar documento CSV</h3>
- <p class="notice"><strong>Documento completo:</strong> incluye filas ocultas por búsqueda o filtros; excluye encabezados salvo que elijas normalizarlos. No usa el rango de filas seleccionado. Un paso de deshacer.</p>
+ {#if ordering}<p class="notice"><strong>Cambiar orden del documento:</strong> se conserva el contenido; Guardar persistirá el nuevo orden. Después de aplicar se muestra el documento completo sin filtros ni orden de vista. Un paso de deshacer.</p>{:else}<p class="notice"><strong>Documento completo:</strong> incluye filas ocultas por búsqueda o filtros; excluye encabezados salvo que elijas normalizarlos. No usa el rango de filas seleccionado. Un paso de deshacer.</p>{/if}
  <form onsubmit={event=>{event.preventDefault();void inspect()}}>
   <fieldset disabled={busy||external}><legend class="sr-only">Opciones de transformación</legend>
    <label>Operación <select aria-label="Transformación CSV" bind:value={operation}>{#each Object.entries(operations) as [value,title]}<option value={value}>{title}</option>{/each}</select></label>
-   {#if operation!=='headers'}<label>Columnas <select multiple size="5" aria-label="Columnas para transformar" bind:value={columns}>{#each doc.headers??[] as header,index}<option value={index}>{index+1}. {header||`Columna ${index+1}`}</option>{/each}</select></label><p>Ctrl/⌘ y Mayús permiten marcar varias columnas. Dividir necesita una; combinar conserva el orden original de las columnas.</p>{/if}
+   {#if !['headers','moveRows','commitOrder'].includes(operation)}<label>Columnas <select multiple size="5" aria-label="Columnas para transformar" bind:value={columns}>{#each doc.headers??[] as header,index}<option value={index}>{index+1}. {header||`Columna ${index+1}`}</option>{/each}</select></label><p>Ctrl/⌘ y Mayús permiten marcar varias columnas. Dividir necesita una; combinar y mover mantienen el orden relativo original de las columnas marcadas.</p>{/if}
+   {#if operation==='moveRows'}<label>Filas para mover <select aria-label="Filas para mover" bind:value={rowScope}><option value="selection" disabled={!hasSelection}>Selección de la tabla</option><option value="range">Intervalo del documento original</option></select></label>
+    {#if rowScope==='selection'}<p>{markedRows.length?`${markedRows.length} filas marcadas en la tabla`:`Filas ${(markedRange?.top??0)+1}–${(markedRange?.bottom??0)+1} de la vista seleccionada`}. Se conserva su orden relativo original.</p>{:else}<label>Desde <input aria-label="Primera fila original" type="number" min="1" max={doc.rowCount??0} bind:value={from}/></label><label>Hasta <input aria-label="Última fila original" type="number" min="1" max={doc.rowCount??0} bind:value={to}/></label>{/if}
+   {/if}
+   {#if operation==='moveRows'||operation==='moveColumns'}<label>Insertar antes de {operation==='moveRows'?'la fila original':'la columna original'} <input aria-label="Posición original de destino" type="number" min="1" max={(operation==='moveRows'?(doc.rowCount??0):(doc.headers?.length??0))+1} bind:value={destination}/></label><button type="button" onclick={()=>destination=(operation==='moveRows'?(doc.rowCount??0):(doc.headers?.length??0))+1}>Colocar al final</button><p>El destino usa posiciones originales, sin filtros ni orden de vista. No debe formar parte de la selección. Mover columnas incluye todas las filas y sus encabezados; se rechaza si convertiría campos ausentes en vacíos.</p>{/if}
+   {#if operation==='commitOrder'}<p>Convierte la ordenación actual de la vista en el orden físico del documento. Requiere ordenar primero y quitar toda búsqueda o filtro; no elimina filas ni cambia sus valores. Los empates conservan su orden relativo.</p>{/if}
    {#if operation==='split'||operation==='combine'}<label>Separador <select aria-label="Separador de transformación" bind:value={separator}><option value=";">Punto y coma</option><option value=",">Coma</option><option value="|">Barra vertical</option><option value={'\t'}>Tabulación</option><option value=" ">Espacio</option><option value="custom">Texto personalizado</option></select></label>{#if separator==='custom'}<label>Texto literal <input aria-label="Separador literal" maxlength="64" bind:value={custom}/></label>{/if}<p>Se interpreta como texto literal, sin reglas de comillas ni expresiones regulares. Las columnas originales se conservan; las resultantes se añaden al principio para conservar también campos originales ausentes. Máximo 32 columnas nuevas al dividir.</p>{/if}
    {#if operation==='combine'}<label>Nombre de la columna nueva <input aria-label="Nombre de columna combinada" maxlength="10000" bind:value={name}/></label>{/if}
    {#if operation==='deduplicate'}<p>Compara el texto exacto de las columnas marcadas y conserva la primera fila en el orden original. Vacío y campo ausente son diferentes. Elimina las filas repetidas completas, incluidas sus otras celdas.</p>{/if}
    {#if operation==='normalize'}<p>Compone caracteres Unicode equivalentes (NFC). Conserva espacios, mayúsculas, acentos e identificadores. No convierte números ni fechas.</p>{/if}
    {#if operation==='headers'}<p>Todos los encabezados: compone Unicode, quita espacios de los extremos, sustituye espacios internos por guiones bajos y pasa a minúsculas. Genera nombres para vacíos y añade sufijos para evitar duplicados. No cambia celdas de datos.</p>{/if}
-   <button type="submit" disabled={operation!=='headers'&&!columns.length||operation==='split'&&columns.length!==1}>Vista previa</button>
+   <button type="submit" disabled={!['headers','moveRows','commitOrder'].includes(operation)&&!columns.length||operation==='split'&&columns.length!==1||operation==='moveRows'&&!doc.rowCount}>Vista previa</button>
   </fieldset>
  </form>
  <p role="status">{message}</p>
  {#if busy}<div class="progress"><progress aria-label="Preparación de transformación"></progress><span>{processed.toLocaleString()} elementos revisados</span><button onclick={cancelPreparation}>Cancelar preparación</button></div>{/if}
- {#if preview}<dl>{#each [['Filas originales',preview.rows],['Filas afectadas',preview.affected],['Celdas escritas',preview.cells],['Columnas añadidas',preview.addedColumns],['Filas por eliminar',preview.deletedRows],['Encabezados renombrados',preview.changedHeaders]] as [label,value]}<div><dt>{label}</dt><dd>{Number(value).toLocaleString()}</dd></div>{/each}</dl>
-  {#if preview.samples.length}<div class="preview-scroll"><table><caption>Hasta ocho ejemplos, textos abreviados a 256 caracteres. Filas en orden original, sin encabezado.</caption><thead><tr><th>Posición original</th><th>Antes</th><th>Después</th></tr></thead><tbody>{#each preview.samples as sample}<tr><th>{sample.row===null?'Encabezado':`Fila ${sample.row+1}`} / columna {sample.column+1}</th><td><pre>{sample.before}</pre></td><td><pre>{sample.after}</pre></td></tr>{/each}</tbody></table></div>{/if}
+ {#if preview}<dl>{#each (ordering?[['Filas originales',preview.rows],['Filas afectadas',preview.affected],['Filas que cambian de posición',preview.movedRows],['Columnas que cambian de posición',preview.movedColumns]]:[['Filas originales',preview.rows],['Filas afectadas',preview.affected],['Celdas escritas',preview.cells],['Columnas añadidas',preview.addedColumns],['Filas por eliminar',preview.deletedRows],['Encabezados renombrados',preview.changedHeaders]]) as [label,value]}<div><dt>{label}</dt><dd>{Number(value).toLocaleString()}</dd></div>{/each}</dl>
+  {#if preview.samples.length}<div class="preview-scroll"><table><caption>Hasta ocho ejemplos, textos abreviados a 256 caracteres. Posiciones originales, sin contar la fila de encabezados.</caption><thead><tr><th>Posición original</th><th>Antes</th><th>Después</th></tr></thead><tbody>{#each preview.samples as sample}<tr><th>{sample.row===null?'Encabezado':`Fila ${sample.row+1}`}{#if sample.column!==null} / columna {sample.column+1}{/if}</th><td><pre>{sample.before}</pre></td><td><pre>{sample.after}</pre></td></tr>{/each}</tbody></table></div>{/if}
  {/if}
  <p>La preparación se puede cancelar; el cambio final se aplica completo y se puede deshacer. Los límites de edición, codificación y recuperación siguen vigentes; presupuesto de deshacer de 20 MiB.</p>
  <div class="actions"><button class="primary" disabled={busy||external||!changes} onclick={()=>void apply()}>Aplicar transformación</button><button onclick={onclose}>Cerrar</button></div>

@@ -51,7 +51,7 @@ Filtrar u ordenar no cambia el orden físico. El rango congela la consulta y la 
 
 **Copiar como Markdown** usa el rectángulo activo con encabezados. **Exportar → Selección** conserva sus columnas y orden visible en CSV/TSV; Documento completo y Filas filtradas mantienen sus alcances anteriores. Copiar filas marcadas sin rectángulo usa el orden original del documento. El portapapeles nativo admite hasta 8 MiB por copia/pegado; para más datos, exporta. Las muestras siguen siendo de solo lectura y no permiten exportar/copiar selecciones como si fueran archivos completos.
 
-Esta entrega admite un rectángulo continuo a la vez. Las estadísticas por columna conservan su alcance explícito; no se convierten automáticamente en estadísticas del rectángulo. La paleta de comandos, rangos discontinuos y las transformaciones de dividir/combinar/mover quedan pendientes.
+Esta entrega admite un rectángulo continuo a la vez. Las estadísticas por columna conservan su alcance explícito; no se convierten automáticamente en estadísticas del rectángulo. La paleta de comandos, rangos discontinuos y la ampliación de alcance de transformaciones quedan pendientes; dividir/combinar/mover se ofrecen en el diálogo Transformar documento, con los alcances documentados.
 
 ## Consulta avanzada CSV
 
@@ -127,4 +127,4 @@ La entrega de desarrollo añade **Gráficos** junto a Análisis/Estadísticas. I
 
 ## Transformar el documento CSV
 
-**Operaciones → Transformar documento…**, menú contextual del rango o Ctrl/⌘ + Mayús + T desde la tabla. Divide/combina columnas conservando originales, elimina duplicados por claves compuestas y normaliza Unicode/encabezados. [Alcance completo, vista previa, cancelación, límites y deshacer](TRANSFORMS.md). Entrega de desarrollo; no función publicada en alpha.1.
+**Operaciones → Transformar documento…**, menú contextual del rango o Ctrl/⌘ + Mayús + T desde la tabla. Divide/combina columnas conservando originales, elimina duplicados por claves compuestas, normaliza Unicode/encabezados, mueve filas/columnas y fija el orden de la vista en el documento. Los movimientos usan destinos originales; tras aplicar limpian filtros/orden de vista. Guardar sigue siendo independiente. [Alcance completo, vista previa, cancelación, límites y deshacer](TRANSFORMS.md). Entrega de desarrollo; no función publicada en alpha.1.
