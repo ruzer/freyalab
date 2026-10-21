@@ -32,7 +32,8 @@
     "files": [
       "out/**/*",
       "package.json",
-      "THIRD_PARTY_NOTICES.txt"
+      "THIRD_PARTY_NOTICES.txt",
+      "LICENSE"
     ],
     "asar": true,
     "npmRebuild": false,
