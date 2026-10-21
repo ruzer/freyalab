@@ -10,7 +10,7 @@ test.beforeEach(async()=>{
  directory=await mkdtemp(join(tmpdir(),'freyalab-ui-'))
  await mkdir(join(directory,'exports'));await mkdir(join(directory,'saved'))
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
- app=await electron.launch({executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(directory,'profile'),FREYALAB_TEST_EXPORT_DIR:join(directory,'exports'),FREYALAB_TEST_SAVE_DIR:join(directory,'saved')},timeout:60_000})
+ app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(directory,'profile'),FREYALAB_TEST_EXPORT_DIR:join(directory,'exports'),FREYALAB_TEST_SAVE_DIR:join(directory,'saved')},timeout:60_000})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya)
  await page.setViewportSize({width:1440,height:900})
 })

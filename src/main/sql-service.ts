@@ -1,4 +1,4 @@
-import {BrowserWindow,session,net,protocol} from 'electron'
+import {app,BrowserWindow,session,net,protocol} from 'electron'
 import {z} from 'zod'
 import {randomUUID} from 'node:crypto'
 import {resolve,relative,isAbsolute} from 'node:path'
@@ -23,6 +23,7 @@ export class SqlService {
  cancel(requestId:string){const job=this.job;if(job?.id!==requestId)return;this.job=undefined;job.abort();const owner=job.window;job.window=undefined;owner?.destroy()}
  stop(){if(this.job)this.cancel(this.job.id)}
  async run(request:SqlRequest):Promise<SqlResult>{
+  if(app.commandLine.hasSwitch('no-sandbox'))throw new Error('El análisis SQL requiere el aislamiento de Chromium. Inicia FreyaLab sin la opción --no-sandbox.')
   for(const source of request.sources){const record=this.docs.get(source.id);if(record.info.kind!=='csv'||record.info.revision!==source.revision)throw new Error('Una fuente no es CSV o cambió de revisión.')}
   this.stop();let rejectCancel:(error:Error)=>void=()=>{}
   const cancelled=new Promise<never>((_,reject)=>rejectCancel=reject),job:Job={id:request.requestId,sources:[],abort:()=>rejectCancel(new Error('Análisis cancelado.')),disk:new Map()};this.job=job
