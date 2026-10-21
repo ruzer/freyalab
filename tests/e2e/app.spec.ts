@@ -2,6 +2,8 @@ import { test, expect, _electron as electron, type ElectronApplication, type Pag
 import electronPath from 'electron'
 import { mkdtemp, mkdir, readFile, readdir, rm, writeFile, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
+import { once } from 'node:events'
+import { execFileSync } from 'node:child_process'
 import { join, resolve } from 'node:path'
 import type { FreyaAPI } from '../../src/shared/types'
 
@@ -146,7 +148,14 @@ test('recupera cambios tras caída como documento nuevo sin sobrescribir el orig
   }, source)
   await expect.poll(() => page.evaluate(() => window.freya.recoveries()), { timeout: 15_000 }).not.toHaveLength(0)
   const recoveredId = await page.evaluate(async () => (await window.freya.recoveries())[0].id)
-  app.process().kill('SIGKILL')
+  await test.step('Simular caída del árbol de Electron', async () => {
+    const child = app.process()
+    const exited = once(child, 'exit', { signal: AbortSignal.timeout(10_000) })
+    // Playwright inicia Electron mediante cmd.exe en Windows; matar solo el shell deja la app viva.
+    if (process.platform === 'win32') execFileSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { timeout: 10_000, stdio: 'pipe' })
+    else child.kill('SIGKILL')
+    await exited
+  })
   await app.close().catch(() => {})
   await launch()
   const recovered = await page.evaluate(id => window.freya.recover(id), recoveredId)
@@ -219,4 +228,24 @@ test('buscar archivos recorre carpetas cerradas y excluye ocultos y dependencias
  await app.evaluate((_,path)=>{process.env.FREYALAB_TEST_FOLDER=path},directory)
  const results=await page.evaluate(async()=>{const root=await window.freya.folder();return window.freya.findFiles(root!,'objetivo')})
  expect(results.entries.map(e=>e.path)).toEqual([join(directory,'sub','nested','objetivo.md')]);expect(results.limited).toBe(false)
+})
+
+test('guardar como protege otro documento abierto',async()=>{
+ const source=join(directory,'primero.md'),target=join(directory,'segundo.md');await writeFile(source,'original uno');await writeFile(target,'original dos')
+ const [first]=await page.evaluate(paths=>window.freya.openPaths(paths),[source,target])
+ await page.evaluate(id=>window.freya.update(id,'edición propia'),first.id)
+ await app.evaluate((_,path)=>{process.env.FREYALAB_TEST_SAVE_PATH=path},target)
+ await expect(page.evaluate(id=>window.freya.save(id,true),first.id)).rejects.toThrow('otro documento abierto')
+ expect(await readFile(target,'utf8')).toBe('original dos');expect(await readFile(source,'utf8')).toBe('original uno')
+})
+
+test('reinterpretar CSV rechaza ediciones simultáneas y conserva todas las filas',async()=>{
+ const file=join(directory,'opciones.csv');await writeFile(file,'Nombre,Valor\nFreya,01\nOtra,02\n')
+ const result=await page.evaluate(async path=>{
+  const [doc]=await window.freya.openPaths([path]);const original=await window.freya.tablePage(doc.id,{offset:0,limit:20,requestId:1})
+  const options=window.freya.tableOptions(doc.id,{header:false})
+  let rejected=false;try{await window.freya.tableEdit(doc.id,{type:'cell',rowId:original.rows[0].id,column:0,value:'NO'})}catch(error){rejected=String(error).includes('recarga')}
+  await options;const page=await window.freya.tablePage(doc.id,{offset:0,limit:20,requestId:2});await window.freya.save(doc.id);return{rejected,page}
+ },file)
+ expect(result.rejected).toBe(true);expect(result.page.total).toBe(3);expect(result.page.rows[0].cells).toEqual(['Nombre','Valor']);expect(await readFile(file,'utf8')).not.toContain('NO')
 })
