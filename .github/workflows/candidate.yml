@@ -1,0 +1,73 @@
+name: Release candidate
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Full SHA of the main commit to verify and package
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  package:
+    name: Package ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: macos-arm64, os: macos-15, arch: arm64 }
+          - { name: macos-x64, os: macos-15-intel, arch: x64 }
+          - { name: windows-x64, os: windows-2025, arch: x64 }
+          - { name: ubuntu-x64, os: ubuntu-24.04, arch: x64 }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit }}
+          fetch-depth: 0
+      - name: Require exact current main commit
+        shell: bash
+        env:
+          REQUESTED_SHA: ${{ inputs.commit }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$REQUESTED_SHA"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "$REQUESTED_SHA"
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: npm run licenses
+      - name: Package without publishing
+        run: npm run dist -- --${{ matrix.arch }} --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Check packaged application and installation
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = Linux ]; then
+            xvfb-run -a node scripts/package-smoke.mjs
+          else
+            node scripts/package-smoke.mjs
+          fi
+      - name: Record commit and checksums
+        shell: bash
+        run: node scripts/checksums.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: candidate-${{ matrix.name }}-${{ inputs.commit }}
+          path: |
+            release/*.dmg
+            release/*.exe
+            release/*.AppImage
+            release/*.deb
+            release/SHA256SUMS.txt
+            release/candidate.json
+            test-results/
+            playwright-report/
+          if-no-files-found: error
