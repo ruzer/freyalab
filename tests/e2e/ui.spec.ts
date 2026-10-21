@@ -163,6 +163,8 @@ test('operaciones CSV: alcance explícito, fila filtrada, ceros iniciales, desha
  await page.getByRole('button',{name:'Rehacer',exact:true}).click()
  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click()
  await page.getByLabel('Operaciones CSV',{exact:true}).click()
+ // La selección nueva debe sobrevivir a una actualización pendiente de la tabla.
+ await page.waitForTimeout(300)
  await page.getByRole('button',{name:'Convertir a mayúsculas',exact:true}).click()
  await expect(page.getByRole('gridcell',{name:'Fila 1, Nombre',exact:true})).toHaveText('ÁRBOL')
  await page.getByRole('button',{name:'Guardar',exact:true}).click()

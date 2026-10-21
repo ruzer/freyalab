@@ -7,6 +7,7 @@ Cambio posterior a v0.1.0-alpha.1. No se modifican su etiqueta ni sus descargas.
 - Barra del render conservada: negrita, cursiva, código en línea, tareas, tabla y Mermaid; menú con encabezado, lista, cita, enlace y bloque de código.
 - Inserción sobre selección, recuperación del foco, actualización de vista previa y deshacer por acción. Bloques de código con delimitadores adaptados cuando el contenido contiene acentos graves.
 - Limpieza CSV por filas identificadas y columnas explícitas: espacios exteriores, mayúsculas y minúsculas; no altera otras filas, encabezados ni celdas ausentes.
+- Selección estable después de rehacer: el reinicio de selección ocurre al cambiar la vista o revisión, antes de la recarga diferida; una recarga pendiente no borra una selección posterior.
 - Duplicación de filas/columna, identificadores nuevos de fila, deshacer/rehacer y recuperación del historial. Los filtros por columna y el orden se reinician cuando cambia el número de columnas.
 - Validación de operaciones en Main, sin ampliar el acceso a archivos del renderer. Muestras de solo lectura protegidas por el motor.
 - Reutilización del historial tabular; acumulación y reversión al final para evitar desplazamientos repetidos al preparar cambios masivos. Sin dependencias nuevas.
