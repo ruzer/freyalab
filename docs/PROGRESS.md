@@ -1,37 +1,31 @@
 # Estado de implementación
 
-Este registro separa código escrito de comprobaciones y publicación. Las casillas solo se marcan con evidencia concreta enlazada al commit o ejecución correspondiente.
+[FreyaLab v0.1.0-alpha.1 publicada](https://github.com/ruzer/freyalab/releases/tag/v0.1.0-alpha.1).
 
-| Entrega | Implementación | Verificación | Evidencia |
-|---|---|---|---|
-| 1. Repositorio y base visual | Implementada | Local satisfactoria; CI en revisión | [PR #1](https://github.com/ruzer/freyalab/pull/1), capturas en evidence/screenshots |
-| 2. Archivos y recuperación | Implementada | E2E local y paquete macOS arm64 satisfactorios | [Integración](evidence/integration-node24-2026-10-20.md) |
-| 3. Markdown y PDF | Implementada | PDF multipágina y recorrido UI satisfactorios | Integración y capturas |
-| 4. CSV/TSV | Implementada hasta límites de alfa | Pruebas de motor e integración satisfactorias | 14 pruebas de motor; muestra de 1 GiB no editable |
-| 5. Diagramas y exportaciones | Implementada | SVG, PNG completo, HTML y CSV satisfactorios | Integración; exportación no reemplaza documentos abiertos |
-| 6. Fidelidad y robustez | Implementada, revisión continua | 28 unitarias; 12 E2E iniciales y nuevos casos dirigidos satisfactorios; falta CI final | evidence/ |
-| 7. Alfa pública | Candidato local construido | DMG arm64 copiado y ejecutado; otras plataformas pendientes | Gate de publicación abierto |
+Código de la versión: `7851ee284d3bc6a068cbeffc6088af8e5a3cf46a`. La documentación posterior puede avanzar sin cambiar los binarios ni esa etiqueta.
 
-Las primeras seis entregas se presentan como siete commits temáticos dentro de PR #1 para revisar la aplicación integrada. No se afirma que cada commit intermedio compile por separado.
+| Entrega | Resultado comprobado |
+|---|---|
+| 1. Repositorio y base visual | Repositorio público MIT; diseño conservado como referencia y recursos locales incluidos |
+| 2. Archivos y recuperación | Apertura, edición, guardado, conflicto externo, protección entre pestañas y recuperación tras caída |
+| 3. Markdown y PDF | Fórmulas, Mermaid e imagen local; PDF multipágina con imagen incrustada y texto del diagrama |
+| 4. CSV/TSV | Motor independiente, virtualización, filtros, edición, valores textuales y límites; muestras grandes de solo lectura |
+| 5. Diagramas y exportaciones | SVG, PNG, PDF, HTML autónomo y CSV/TSV; exportar conserva cambios pendientes |
+| 6. Fidelidad y robustez | Capturas, rendimiento y revisión de integridad; 28 unitarias y 17 E2E en cuatro entornos de CI |
+| 7. Alfa pública | Cinco binarios construidos, ejecutados e instalados/extraídos; hashes comprobados y prerelease pública |
 
-## Gate de alfa
+La implementación se presentó en commits temáticos dentro de PR #1 y se cerró con PR #2 para licencias y PDF. No se afirma que cada commit intermedio compile por separado. PR #3 fue una operación temporal de transferencia, cerrada sin integrarse.
 
-- [ ] Código integrado en `main` con revisión.
-- [ ] CI obligatoria satisfactoria sobre el SHA de publicación.
-- [ ] Comprobaciones funcionales y de seguridad.
-- [ ] Capturas visuales y rendimiento documentados.
-- [ ] Paquetes construidos y ejecutados por plataforma/arquitectura.
-- [ ] Instalación probada de cada formato publicado.
-- [ ] Licencias y avisos incluidos.
-- [ ] Checksums de los archivos finales.
-- [ ] Prerelease publicada con límites y advertencias de alfa.
+## Gates de esta publicación
 
-No hay una publicación completada mientras estos gates no tengan evidencia.
+- [x] Código integrado en main con revisión.
+- [x] CI satisfactoria sobre el SHA de publicación.
+- [x] Comprobaciones funcionales y de seguridad.
+- [x] Capturas y rendimiento documentados.
+- [x] Cinco formatos construidos y ejecutados.
+- [x] Instalación o extracción comprobada según formato.
+- [x] Licencias y avisos incluidos.
+- [x] SHA-256 locales y remotos contrastados.
+- [x] Prerelease publicada con límites y advertencias.
 
-## Cierre de navegación y formato
-
-La búsqueda del explorador recorre subcarpetas cerradas, excluye archivos ocultos y dependencias, limita el recorrido a 1.000 carpetas y 200 resultados e identifica resultados parciales. Negritas y cursivas usan los atajos del editor sin ocultar el explorador. Los dos nuevos E2E pasaron con Node 24; comprobación de tipos y construcción satisfactorias. La CI repetirá la suite sobre el commit que integra estos cambios.
-
-## Revisión antes de distribuir
-
-La revisión adversarial detectó y se corrigieron carreras de guardado, edición durante reinterpretación y caché CSV tras reapertura. El proceso principal serializa mutaciones por documento, bloquea ediciones durante recarga y rechaza guardar sobre otra pestaña abierta. Las muestras grandes no se leen completas para calcular hashes. Hay regresiones dirigidas para estos casos. En Windows se corrigió la simulación de caída del test para terminar también el proceso hijo de su shell; falta confirmar ese cambio en CI Windows.
+[Ver evidencia y entornos reales](evidence/release-v0.1.0-alpha.1.md). Siguen pendientes las comprobaciones manuales de Gatekeeper/SmartScreen e integración del escritorio, y una aprobación visual manual en todos los sistemas. La alfa no tiene firma comercial ni notarización. Los archivos de GB siguen siendo muestras limitadas; no hay edición ni análisis integral de ellos.
