@@ -109,7 +109,21 @@ export class TableEngine {
   const value=(text:string)=>{if(typeof text!=='string'||Buffer.byteLength(text,'utf8')>TABLE_LIMITS.record)throw new Error('El valor supera el límite de 1 MiB.');return text}
   switch(edit.type){
    case'cell':{column(edit.column);const row=s.rows[rowIndex(edit.rowId)];value(edit.value);if((row.cells[edit.column]??'')===edit.value)return this.info(id);add({type:'cell',id:row.id,column:edit.column,value:edit.value},{type:'cell',id:row.id,column:edit.column,value:row.cells[edit.column]??'',length:row.cells.length});break}
-   case'paste':{column(edit.column);const start=rowIndex(edit.rowId);if(!edit.values.length)return this.info(id);const width=Math.max(...edit.values.map(row=>row.length));if(edit.column+width>s.headers.length||start+edit.values.length>s.rows.length)throw new Error('El pegado excede la tabla. Añade antes las filas o columnas necesarias.');edit.values.forEach((cells,offset)=>cells.forEach((text,col)=>{const row=s.rows[start+offset];value(text);add({type:'cell',id:row.id,column:edit.column+col,value:text},{type:'cell',id:row.id,column:edit.column+col,value:row.cells[edit.column+col]??'',length:row.cells.length})}));break}
+   case'paste':{
+    column(edit.column)
+    if(edit.view&&edit.view.revision!==revision)throw new Error('La tabla cambió desde que se mostró esta vista. Espera a que se actualice y vuelve a pegar.')
+    const original=rowIndex(edit.rowId),indices=edit.view?await this.indices(id,edit.view.query):undefined
+    const start=indices?indices.indexOf(original):original
+    if(start<0)throw new Error('La fila ya no pertenece a la vista. Actualiza la tabla antes de pegar.')
+    if(start+edit.values.length>(indices?.length??s.rows.length))throw new Error('El pegado excede las filas de esta vista. Reduce el bloque o añade filas antes de pegar.')
+    for(const [offset,cells] of edit.values.entries()){
+     if(edit.column+cells.length>s.headers.length)throw new Error('El pegado excede las columnas de la tabla. Añade antes las columnas necesarias.')
+     const row=s.rows[indices?indices[start+offset]:start+offset]
+     cells.forEach((text,col)=>{value(text);add({type:'cell',id:row.id,column:edit.column+col,value:text},{type:'cell',id:row.id,column:edit.column+col,value:row.cells[edit.column+col]??'',length:row.cells.length})})
+     if(offset%2048===0)await yieldTurn()
+    }
+    break
+   }
    case'insertRow':{if((s.rows.length+1)*s.headers.length>TABLE_LIMITS.cells)throw new Error('La edición supera dos millones de celdas.');const index=edit.afterId?rowIndex(edit.afterId)+1:s.rows.length;const row={id:String(s.nextId++),cells:s.headers.map(()=>'')};add({type:'rows',index,remove:0,rows:[row]},{type:'rows',index,remove:1,rows:[]});break}
    case'duplicateRows':{
     const ids=new Set(edit.ids),indexes=s.rows.flatMap((row,index)=>ids.has(row.id)?[index]:[]).reverse()
