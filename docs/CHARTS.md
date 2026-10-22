@@ -8,7 +8,7 @@ El panel reutiliza DuckDB-Wasm y el puente de análisis existentes; no incorpora
 
 - Elige **Documento completo** (incluye cambios pendientes y filas ocultas por filtros) o **Vista filtrada actual** (búsqueda/filtros combinados sobre todas las coincidencias, no solo la página visible). El orden se elige en el gráfico; no se hereda el de la tabla. Una muestra solo permite analizar el archivo completo desde disco; su vista filtrada se rechaza, sin presentar una muestra como total.
 - Se mantienen los límites del análisis: 256 MiB por fuente, dos millones de filas, 200 columnas y ocho millones de celdas. No promete archivos de GB.
-- Las agregaciones se calculan antes de limitar los elementos dibujados. Barras/cajas: primeras 100 categorías; mapa: primeros 400 pares; líneas/dispersión: primeros 2 000 puntos. No es muestreo aleatorio. La vista parcial se identifica tanto en el panel como dentro de SVG/PNG/PDF. Histograma: de 1 a 30 intervalos.
+- Las agregaciones se calculan antes de limitar los elementos dibujados. Barras: primeras 100 categorías o combinaciones categoría/serie; cajas: primeras 100 categorías; mapa: primeros 400 pares; líneas/dispersión: primeros 2 000 puntos. No es muestreo aleatorio. La vista parcial se identifica tanto en el panel como dentro de SVG/PNG/PDF. Histograma: de 1 a 30 intervalos.
 - El motor transfiere solamente el resultado acotado, paginado de 100 en 100, a la interfaz. La tabla alternativa muestra páginas de 50; tiene todos los elementos dibujados y valores originales de categoría, incluso si las etiquetas del eje se abrevian.
 - Números aproximados con punto decimal y exponente opcional. Se excluyen vacíos, texto no numérico, infinitos y magnitudes superiores a 9 007 199 254 740 991. Las conversiones afectan exclusivamente al análisis. Por ejemplo `0005` puede ser una medida numérica si el usuario elige esa columna; su contenido CSV sigue siendo `0005`. Los identificadores grandes permanecen como texto en el editor.
 - Las categorías se agrupan por texto completo exacto; vacío y campo ausente son distintos. Su índice en el eje evita confundir categorías con etiquetas visualmente parecidas.
@@ -50,6 +50,20 @@ Referencias: [importaciones modulares ECharts](https://echarts.apache.org/handbo
 
 El título y los ejes explican, por ejemplo, **Suma de Total MXN por Ciudad**. El alcance aparece tanto en pantalla como en las imágenes exportadas. El modo avanzado conserva la consulta reproducible; no es necesario usarlo para crear gráficos. Si no hay valores numéricos utilizables, se pide cambiar de columna o contar filas/valores únicos. No se modifica el archivo original ni su historial.
 
-Consulta [evidencia de DW-01](evidence/visual-chart-builder-2026-10-22.md) y el [objetivo actualizado DW-01 a DW-10](WORKSPACE-EVOLUTION.md). Series, fechas, filtros propios, persistencia, exportación tabular agregada y sugerencias locales son entregas posteriores; esta mejora no las declara terminadas.
+Consulta [evidencia de DW-01](evidence/visual-chart-builder-2026-10-22.md) y el [objetivo actualizado DW-01 a DW-10](WORKSPACE-EVOLUTION.md). Las series categóricas llegan en DW-02a, descritas abajo. Fechas, filtros propios, persistencia, exportación tabular agregada y sugerencias locales siguen siendo entregas posteriores.
 
 Al cambiar una medida ya elegida, se restablece Texto/identificador y conteo: el tipo no se hereda a otra columna. Si cambia la lista de encabezados, el constructor se reinicia y cancela su cálculo anterior. No intenta reutilizar una configuración por índice sobre otras columnas.
+
+
+## DW-02a — separar por color
+
+En Barras, Líneas o Dispersión, **Separar por color** permite elegir una columna categórica o dejar **Sin series**. Por ejemplo: «Suma de Total por Ciudad, separado por Producto». Se usa texto exacto; `001`, `1`, un identificador largo, vacío y ausente siguen siendo categorías distintas. Los números del CSV no se modifican.
+
+- Barras: cada combinación categoría/serie tiene su propio cálculo (los siete cálculos existentes). Las combinaciones sin observaciones quedan sin barra, sin imputar cero. Con series, el orden se elige por categoría textual A–Z/Z–A; dentro de cada categoría, series en orden textual. Sin series se conserva el orden por resultado.
+- Líneas y dispersión: una serie por categoría, sin agrupar ni agregar observaciones. X numérica y orden de la fuente para empates; los huecos de Y en líneas se conservan. No son todavía series temporales.
+- Máximo ocho categorías de serie en la fuente analizada, contando vacío y ausente. Si se supera, se rechaza el gráfico con ayuda para elegir otra columna o limitar la vista filtrada. No se eligen automáticamente ocho ni se descartan las demás.
+- Los límites totales de dibujo se conservan: 100 pares en barras y 2 000 observaciones en líneas/dispersión, no por serie. El panel informa cuántas series aparecen respecto al total. Un gráfico parcial puede dejar series sin representar: mantiene el aviso parcial y todos los agregados se calculan antes del límite.
+- La leyenda nativa de ECharts muestra/oculta series. «Series visibles · controles de teclado» ofrece casillas sincronizadas. Ocultar un color solo cambia el dibujo; no filtra la fuente, no recalcula totales y no elimina filas de la tabla accesible. La imagen exportada incluye un aviso cuando hay series ocultas.
+- Cambiar opciones, encabezados, datos o filtros del alcance filtrado invalida el resultado y restablece la visibilidad. Cambiar de tema conserva la visibilidad actual; cambiar a un tipo que no admite series elimina esa elección.
+
+Reutiliza la [leyenda](https://apache.github.io/echarts-handbook/en/concepts/legend/) y los [eventos](https://apache.github.io/echarts-handbook/en/concepts/event/) de ECharts. Sin dependencias, IPC ni motores adicionales. [Evidencia de DW-02a](evidence/chart-category-series-2026-10-22.md).
