@@ -48,3 +48,22 @@ test('transformación conserva recuperación, un paso de deshacer y guardado en 
  const copy=await page.evaluate(id=>window.freya.export(id,{format:'csv',table:{scope:'all'}}),recovered.id);expect(await readFile(copy!,'utf8')).toBe(original);expect(await readFile(path,'utf8')).toBe(original)
  await page.evaluate(id=>window.freya.save(id),updated.id);expect(await readFile(path,'utf8')).toContain('001 | a;0007');expect(await readFile(path,'utf8')).toContain('\r\n')
 })
+
+test('transformaciones: el menú abre durante la paginación, con ratón y teclado, sin cambiar el rango ni los datos',async()=>{
+ const source='ID,N\n'+Array.from({length:300},(_,i)=>`${String(i).padStart(5,'0')},9007199254740993`).join('\n')+'\n',{doc,path}=await open(source),before=await page.evaluate(()=>window.freya.documents()),grid=page.getByRole('grid',{name:'Tabla de datos',exact:true}),cell=page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})
+ for(const keyboard of [false,true]){
+  await expect(cell).toBeVisible();await expect(page.locator('.csv-toolbar')).toContainText('300 de 300 filas');await cell.click()
+  if(keyboard)await cell.press('Shift+F10');else await cell.click({button:'right'})
+  const menu=page.getByRole('menu',{name:'Acciones del rango',exact:true});await expect(menu).toBeVisible()
+  // El observador activa la acción en la misma entrega del DOM que marca la carga, antes de la respuesta IPC.
+  const state=await grid.evaluate((element,keyboard)=>new Promise<{disabled:boolean;loading:boolean;otherDisabled:boolean}>((resolve,reject)=>{
+   const toolbar=document.querySelector('.csv-toolbar')!,menu=document.querySelector('.range-context')!,button=[...menu.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent==='Transformar documento…')!
+   const timeout=setTimeout(()=>{observer.disconnect();reject(new Error('No se observó la carga de otra página.'))},10000)
+   const observer=new MutationObserver(()=>{if(!toolbar.textContent?.includes('Procesando…'))return;observer.disconnect();clearTimeout(timeout);const result={disabled:button.disabled,loading:true,otherDisabled:[...menu.querySelectorAll<HTMLButtonElement>('button')].filter(item=>item!==button).every(item=>item.disabled)};if(!keyboard)button.click();resolve(result)})
+   observer.observe(toolbar,{childList:true,subtree:true,characterData:true});element.scrollTop=element.scrollHeight
+  }),keyboard)
+  expect(state).toEqual({disabled:false,loading:true,otherDisabled:true});if(keyboard){await expect(menu.getByRole('menuitem',{name:'Transformar documento…',exact:true})).toBeFocused();await page.screenshot({path:test.info().outputPath('csv-context-transform-keyboard.png')});await page.keyboard.press('Enter')}const panel=page.getByRole('dialog',{name:'Transformar documento CSV',exact:true});await expect(panel).toBeVisible();await expect(menu).toHaveCount(0);await expect(panel.getByLabel('Columnas para transformar',{exact:true})).toHaveValues(['0'])
+  await page.keyboard.press('Escape');await expect(cell).toBeFocused();await expect(page.getByRole('status').filter({hasText:'Rango: filas 1–1, columnas 1–1'})).toBeVisible()
+ }
+ expect((await page.evaluate(()=>window.freya.documents())).find(d=>d.id===doc.id)).toEqual(before[0]);expect(await page.evaluate(()=>window.freya.recoveries())).toEqual([]);expect(await readFile(path,'utf8')).toBe(source)
+})
