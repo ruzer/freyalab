@@ -1,12 +1,13 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
-import {mkdtemp,writeFile,readFile,mkdir,rm} from 'node:fs/promises'
+import {mkdtemp,writeFile,readFile,mkdir,rm,readdir,stat} from 'node:fs/promises'
 import {tmpdir,cpus,totalmem,release} from 'node:os'
 import {join,resolve} from 'node:path'
 import {createServer,type Server} from 'node:http'
+import {createHash} from 'node:crypto'
 import type {DocumentInfo} from '../../src/shared/types'
 let app:ElectronApplication,page:Page,folder:string,server:Server|undefined
-test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-sql-e2e-'));await mkdir(join(folder,'saved'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_SAVE_DIR:join(folder,'saved')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
+test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-sql-e2e-'));await mkdir(join(folder,'saved'));await mkdir(join(folder,'exports'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_SAVE_DIR:join(folder,'saved'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});if(server)await new Promise<void>(resolve=>server!.close(()=>resolve()));server=undefined;await rm(folder,{recursive:true,force:true})})
 async function open(name:string,text:string){const path=join(folder,name);await writeFile(path,text);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);return{doc,path}}
 async function query(doc:DocumentInfo,sql:string){return page.evaluate(({doc,sql})=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id:doc.id,revision:doc.revision}],sql}),{doc,sql})}
@@ -71,4 +72,46 @@ test('SQL: mide fuentes completas hasta un millón por cuatro columnas y disting
   measurements.push({rows:count,columns:4,bytes:Buffer.byteLength(text),editorRows:doc.rowCount,editorReadonly:doc.readonly,version:result.version,openMs,analysisMs,responsiveness,memory});await page.evaluate(id=>window.freya.close(id),doc.id)
  }
  await writeFile(test.info().outputPath('duckdb-profile.json'),JSON.stringify({recordedAt:new Date().toISOString(),platform:process.platform,arch:process.arch,os:release(),cpu:cpus()[0]?.model,logicalCpus:cpus().length,totalMemoryBytes:totalmem(),node:process.versions.node,electron:await app.evaluate(()=>process.versions.electron),measurements},null,2)+'\n')
+})
+
+async function runSQLPanel(sql:string){
+ await page.getByRole('button',{name:'Análisis',exact:true}).click();const panel=page.getByRole('region',{name:'Análisis SQL y asistentes',exact:true}),editor=panel.getByRole('textbox',{name:'Consulta SQL',exact:true})
+ await editor.focus();await page.keyboard.press('ControlOrMeta+A');await page.keyboard.insertText(sql);await panel.getByRole('button',{name:'Ejecutar consulta',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Consulta completa',{timeout:30000});return panel
+}
+async function sqlMarkdownReport(panel:import('@playwright/test').Locator){
+ await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')?.text,{timeout:30000}).toContain('# Informe de resultado SQL');return(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')!
+}
+
+test('informe SQL reúne todas las páginas, preserva cambios y valores, se recupera, guarda y exporta',async()=>{
+ test.setTimeout(120000)
+ const hostile='<img src="https://evil.test/x"> | $x$ [clic](https://evil.test/) `cod`',source='ID,Texto,Optional\n'+Array.from({length:130},(_,i)=>`${String(i).padStart(5,'0')},"${(i===129?hostile:i===1?'fila 1\nsegunda línea':'fila '+i).replaceAll('"','""')}"`).join('\n')+'\n',{doc,path}=await open('informe.csv',source)
+ await page.getByRole('gridcell',{name:'Fila 1, Texto',exact:true}).dblclick();await page.getByLabel('Editar celda',{exact:true}).fill('Pendiente á');await page.getByLabel('Editar celda',{exact:true}).press('Enter');await expect(page.locator('.dirty-badge')).toBeVisible();const before=await page.evaluate(()=>window.freya.documents()),edited=before.find(value=>value.id===doc.id)!
+ const sql=`SELECT *, 'NULL' AS "N", '' AS "Vacio", 9007199254740993::BIGINT AS "Largo" FROM datos ORDER BY "ID";`,panel=await runSQLPanel(sql)
+ await panel.getByRole('button',{name:'Página siguiente SQL',exact:true}).click();await expect(panel.locator('.actions').last()).toContainText('101–130 de 130');for(const [theme,width,height] of [['light',1440,900],['dark',1280,800]] as const){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.setViewportSize({width,height});await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).scrollIntoViewIfNeeded();await page.screenshot({path:test.info().outputPath(`sql-report-tools-${theme}-${width}x${height}.png`)})}
+ const output=await sqlMarkdownReport(panel);expect(output.text).toContain(sql);expect(output.text).toContain(`| 130 | ${edited.revision} |`);expect(output.text).toContain('"00000"');expect(output.text).toContain('"00129"');expect(output.text).toContain('"9007199254740993"');expect(output.text).toContain('Pendiente á');expect(output.text).toContain('fila 1\\nsegunda línea');expect(output.text).toContain('| `NULL` | ` "NULL" ` | ` "" ` |');expect(output.text).not.toContain('RESULTADO PARCIAL');expect(output.dirty).toBe(true)
+ const preview=page.locator('.markdown-body');await expect(preview.locator('table').last().locator('tbody tr')).toHaveCount(130);await expect(preview.locator('a,img,.katex')).toHaveCount(0);await expect(preview).toContainText(JSON.stringify(hostile));await page.screenshot({path:test.info().outputPath('sql-report-preview.png')})
+ expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toEqual(before.find(value=>value.id===doc.id));expect(await readFile(path,'utf8')).toBe(source)
+ await expect.poll(async()=>{try{return JSON.parse(await readFile(join(folder,'profile','recovery',output.id+'.json'),'utf8')).snapshot.text}catch{return ''}}).toBe(output.text)
+ for(const format of ['HTML autónomo','Documento PDF']){await page.getByRole('button',{name:'⇧ Exportar ▾',exact:true}).click();await page.getByRole('button',{name:format,exact:true}).click();await expect(page.locator('.toast')).toContainText(format==='Documento PDF'?'.pdf':'.html',{timeout:30000})}
+ const files=await readdir(join(folder,'exports')),html=await readFile(join(folder,'exports',files.find(name=>name.endsWith('.html'))!),'utf8');expect(html).toContain('00129');expect(html).not.toContain('<img');const {getDocument}=await import('pdfjs-dist/legacy/build/pdf.mjs'),task=getDocument({data:new Uint8Array(await readFile(join(folder,'exports',files.find(name=>name.endsWith('.pdf'))!))),useSystemFonts:true});try{const pdf=await task.promise;expect(pdf.numPages).toBeGreaterThan(1);const text=[];for(let i=1;i<=pdf.numPages;i++)text.push((await(await pdf.getPage(i)).getTextContent()).items.map(value=>'str'in value?value.str:'').join(' '));expect(text.join('').replace(/\s/g,'')).toContain('00129')}finally{await task.destroy()}
+ await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect(page.locator('.toast')).toContainText('Archivo guardado');const saved=(await page.evaluate(()=>window.freya.documents())).find(value=>value.id===output.id)!;expect(saved.dirty).toBe(false);expect(await readFile(saved.path!,'utf8')).toBe(output.text);expect(await readFile(path,'utf8')).toBe(source)
+})
+
+test('informe SQL rotula las 10 000 filas conservadas y rechaza resultados cancelados o de otra revisión',async()=>{
+ test.setTimeout(120000)
+ const source='ID\n00123\n',{doc,path}=await open('parcial.csv',source),panel=await runSQLPanel('SELECT i AS fila FROM range(10100) t(i) ORDER BY i')
+ await expect(panel).toContainText('Vista parcial del resultado');const output=await sqlMarkdownReport(panel);expect(output.text).toContain('RESULTADO PARCIAL');expect(output.text).toContain('Filas conservadas | 10000');expect(output.text).toContain('"9999"');expect(output.text).not.toContain('"10000"')
+ await page.getByRole('tab',{name:/parcial.csv/}).click();const next=await runSQLPanel('SELECT * FROM datos')
+ await next.evaluate(element=>{const observer=new MutationObserver(()=>{const button=[...element.querySelectorAll('button')].find(button=>button.textContent==='Cancelar informe');if(button){observer.disconnect();button.click();Reflect.set(window,'sqlReportCancelled',true)}});observer.observe(element,{childList:true,subtree:true,characterData:true})})
+ await next.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();await page.waitForFunction(()=>Reflect.get(window,'sqlReportCancelled'));await expect(next.getByRole('button',{name:'Abrir informe Markdown',exact:true})).toHaveCount(0);expect((await page.evaluate(()=>window.freya.documents())).filter(value=>value.kind==='markdown')).toHaveLength(1)
+ await next.getByRole('button',{name:'Ejecutar consulta',exact:true}).click();await expect(next.getByRole('status')).toContainText('Consulta completa',{timeout:30000});await page.evaluate(id=>window.freya.tableEdit(id,{type:'cell',rowId:'1',column:0,value:'00042'}),doc.id);await next.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();await expect(next.getByRole('status')).toContainText('cambió');expect((await page.evaluate(()=>window.freya.documents())).filter(value=>value.kind==='markdown')).toHaveLength(1);expect(await readFile(path,'utf8')).toBe(source)
+})
+
+test('informe SQL desde un CSV mayor de 50 MiB identifica la fuente completa sin habilitar guardar su muestra',async()=>{
+ test.setTimeout(120000)
+ const source='ID,N,Nota\n'+Array.from({length:2400},(_,i)=>`${String(i).padStart(5,'0')},${i},${'x'.repeat(23000)}`).join('\n')+'\n',{doc,path}=await open('fuente-completa.csv',source),before=await stat(path),hash=createHash('sha256').update(source).digest('hex')
+ expect(before.size).toBeGreaterThan(50*1024*1024);expect(doc.readonly).toBe(true);expect(doc.rowCount).toBe(200)
+ const panel=await runSQLPanel('SELECT COUNT(*) AS Filas, SUM(CAST("N" AS BIGINT)) AS Total FROM datos'),output=await sqlMarkdownReport(panel)
+ expect(output.text).toContain('Archivo completo desde disco; el editor solo muestra una muestra');expect(output.text).toContain('| 2400 |');expect(output.text).toContain('"2400"');expect(output.text).toContain('"2878800"');expect(output.text).not.toContain('RESULTADO PARCIAL');expect(output.text).not.toContain('MUESTRA LIMITADA')
+ await page.getByRole('tab',{name:/fuente-completa.csv/}).click();await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled();await expect(page.getByRole('button',{name:'⇧ Exportar ▾',exact:true})).toBeDisabled();expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toEqual(doc);expect((await stat(path)).mtimeMs).toBe(before.mtimeMs);expect(createHash('sha256').update(await readFile(path)).digest('hex')).toBe(hash)
 })

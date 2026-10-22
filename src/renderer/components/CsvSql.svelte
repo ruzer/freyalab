@@ -2,24 +2,40 @@
 <script lang="ts">
  import {onMount,onDestroy} from 'svelte'
  import Editor from './Editor.svelte'
+ import {sqlReport} from '../lib/sql-report'
  import {sqlColumns} from '../../shared/sql-helpers'
  import {assistedSQL,type SqlAssist} from '../../shared/sql-assist'
  import type {DocumentInfo,SqlResult} from '../../shared/types'
- let {doc,onclose,onerror}:{doc:DocumentInfo;onclose:()=>void;onerror:(message:string)=>void}=$props()
+ let {doc,onclose,onerror,onreport}:{doc:DocumentInfo;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
  let sql=$state('SELECT * FROM datos;'),choices=$state<DocumentInfo[]>([]),extra=$state<string[]>([]),busy=$state(false),result=$state<SqlResult|null>(null),choicesReady=$state(false),message=$state('Elige un asistente o escribe SQL. Preparar una consulta no la ejecuta.'),transferred=$state(0)
  let assist=$state<SqlAssist>({mode:'group',group:0,measure:0,category:1,values:'',aggregate:'count',scale:2,leftKey:0,rightKey:0,leftJoin:true,otherTable:2}),showAssist=$state(false)
+ let reporting=$state(false)
  let active:string|undefined
  const sources=$derived([doc,...extra.map(id=>choices.find(choice=>choice.id===id)).filter((value):value is DocumentInfo=>!!value)])
  const signature=$derived(JSON.stringify([doc.revision,sql,sources.map(source=>[source.id,source.revision])]))
  const missing=$derived(extra.some(id=>!choices.some(choice=>choice.id===id)))
  const tooWide=$derived(sources.some(source=>(source.headers?.length??0)>200))
  const other=$derived(sources[assist.otherTable-1])
- function cancel(){const previous=active;active=undefined;busy=false;result=null;if(previous)void window.freya.sqlCancel(previous).catch(()=>{})}
+ function cancel(){const previous=active;active=undefined;busy=false;reporting=false;result=null;if(previous)void window.freya.sqlCancel(previous).catch(()=>{})}
  $effect(()=>{void signature;cancel();message='Consulta o fuentes actualizadas. Pulsa Ejecutar consulta.'})
  onMount(()=>{const draft=drafts.get(doc.id);if(draft){sql=draft.sql;extra=draft.sources;}void window.freya.documents().then(documents=>{choices=documents.filter(value=>value.kind==='csv');choicesReady=true});return window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress&&event.progress.requestId===active){message=event.progress.phase;transferred=event.progress.rows}else if(event.id&&event.type==='external'&&sources.some(source=>source.id===event.id)){cancel();message='Una fuente cambió en disco. Vuelve a ejecutar la consulta.'}else if(event.document&&sources.some(source=>source.id===event.document!.id)&&event.type==='changed'){cancel();void window.freya.documents().then(documents=>{choices=documents.filter(value=>value.kind==='csv');choicesReady=true})}})})
  onDestroy(()=>{drafts.set(doc.id,{sql,sources:[...extra]});cancel()})
  async function run(){if(busy||!sql.trim())return;if(missing||tooWide){message=missing?'Una fuente seleccionada ya no está abierta. Revisa los archivos antes de ejecutar.':'Una fuente supera 200 columnas.';return}cancel();const requestId=crypto.randomUUID();active=requestId;busy=true;transferred=0;message='Preparando análisis…';try{const data=await window.freya.sqlRun({requestId,sources:sources.map(source=>({id:source.id,revision:source.revision})),sql});if(active!==requestId)return;result=data;message='Consulta completa. Los documentos no se han modificado.'}catch(error){if(active===requestId){message='No se pudo ejecutar: '+String(error).replace(/^.*Error: /,'');onerror(message)}}finally{if(active===requestId)busy=false}}
  async function page(offset:number){const id=active;if(!id)return;busy=true;try{const data=await window.freya.sqlPage(id,offset);if(active===id)result=data}catch(error){if(active===id){cancel();message=String(error)}}finally{if(active===id)busy=false}}
+ async function report(){
+  const id=active,data=result;if(!id||!data||busy)return
+  busy=true;reporting=true;message='Preparando informe de todas las filas conservadas…'
+  try{
+   const rows:SqlResult['rows']=[]
+   for(let offset=0;offset<Math.max(1,data.returnedRows);offset+=100){
+    const part=await window.freya.sqlPage(id,offset);if(active!==id)return
+    rows.push(...part.rows);message=`Preparando informe: ${rows.length.toLocaleString()} de ${data.returnedRows.toLocaleString()} filas.`
+   }
+   if(active!==id)return
+   await onreport(sqlReport({...$state.snapshot(data),rows,offset:0},sql))
+  }catch(error){if(active===id){message='No se pudo crear el informe: '+String(error).replace(/^.*Error: /,'');onerror(message)}}
+  finally{if(active===id){busy=false;reporting=false}}
+ }
  function prepare(){try{sql=assistedSQL(doc.headers??[],other?.headers??[],assist)}catch(error){onerror((error as Error).message)}}
  function choose(id:string,checked:boolean){extra=checked?[...extra,id]:extra.filter(value=>value!==id)}
 </script>
@@ -40,8 +56,8 @@
   {/if}<button onclick={prepare}>Preparar consulta</button>
  </fieldset>{/if}
  <div class="sql-editor"><Editor text={sql} label="Consulta SQL" kind="sql" readonly={busy} onchange={value=>sql=value}/></div>
- <div class="actions"><button class="primary" disabled={busy||!sql.trim()||missing||tooWide} onclick={()=>void run()}>Ejecutar consulta</button>{#if busy}<button onclick={()=>{cancel();message='Análisis cancelado.'}}>Cancelar consulta</button><progress aria-label="Análisis en curso"></progress><span>{transferred.toLocaleString()} filas transferidas</span>{/if}<span>Ctrl/⌘ + Enter</span></div><p role="status">{message}</p>
- {#if result}<p class="scope">DuckDB {result.version} · {result.sources.map(source=>`${source.name}: ${source.rows.toLocaleString()} filas completas${source.fromDisk?' desde disco':`, revisión ${source.revision}`}`).join(' · ')} · {result.returnedRows.toLocaleString()} filas de resultado conservadas.</p>
+ <div class="actions"><button class="primary" disabled={busy||!sql.trim()||missing||tooWide} onclick={()=>void run()}>Ejecutar consulta</button>{#if busy}<button onclick={()=>{cancel();message='Análisis cancelado.'}}>{reporting?'Cancelar informe':'Cancelar consulta'}</button><progress aria-label="Análisis en curso"></progress><span>{transferred.toLocaleString()} filas transferidas</span>{/if}<span>Ctrl/⌘ + Enter</span></div><p role="status">{message}</p>
+ {#if result}<button disabled={busy} onclick={report}>Abrir informe Markdown</button><p class="scope">DuckDB {result.version} · {result.sources.map(source=>`${source.name}: ${source.rows.toLocaleString()} filas completas${source.fromDisk?' desde disco':`, revisión ${source.revision}`}`).join(' · ')} · {result.returnedRows.toLocaleString()} filas de resultado conservadas.</p>
   {#if result.limited}<p class="warning">Vista parcial del resultado: se conservaron las primeras 10 000 filas. La consulta analizó las fuentes completas. Añade filtros o agregaciones para reducir el resultado.</p>{/if}
   <div class="sql-results" role="region" aria-label="Resultado SQL"><table><thead><tr>{#each result.columns as column}<th title={column.type}>{column.name}<small>{column.type}</small></th>{/each}</tr></thead><tbody>{#each result.rows as row}<tr>{#each row as value}<td class:missing={value===null}>{value===null?'NULL':value}</td>{/each}</tr>{/each}</tbody></table></div>
   <div class="actions"><button disabled={busy||result.offset===0} onclick={()=>void page(Math.max(0,result!.offset-100))}>Página anterior SQL</button><span>{result.returnedRows?result.offset+1:0}–{Math.min(result.offset+100,result.returnedRows)} de {result.returnedRows.toLocaleString()}{result.limited?' conservadas':''}</span><button disabled={busy||result.offset+100>=result.returnedRows} onclick={()=>void page(result!.offset+100)}>Página siguiente SQL</button></div>

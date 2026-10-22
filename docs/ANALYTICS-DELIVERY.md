@@ -39,7 +39,7 @@ Las estadísticas siguen siendo aproximadas. Los enteros fuera del rango seguro 
 | Requisito | Estado en rama | Pendiente / aceptación |
 |---|---|---|
 | SQL | Una consulta relacional de solo lectura, recursos locales, aislamiento de Chromium, configuración bloqueada y validación IPC; cancelación destruye el proceso | CI y pruebas del paquete de #13 verificadas en los cuatro entornos; copia de desarrollo comprobada en macOS ARM. Instalación manual fuera de ese equipo pendiente |
-| Agrupaciones | Asistente contar/sumar/promediar, tipos decimales explícitos; SQL visible sobre la misma revisión y cambios pendientes | Más dimensiones/medidas y exportación del resultado |
+| Agrupaciones | Asistente contar/sumar/promediar, tipos decimales explícitos; SQL visible sobre la misma revisión y cambios pendientes | Más dimensiones/medidas; informe completo de las filas conservadas en `codex/sql-markdown-reports`, editable y exportable a PDF/HTML. CSV/JSON directo pendiente |
 | Tablas dinámicas | Asistente filas/categorías/medida, hasta 20 categorías explícitas, contar/sumar/promediar | Categorías dinámicas y múltiples medidas no forman parte de esta entrega |
 | Cruces | Hasta cuatro fuentes abiertas; asistente LEFT/INNER con claves textuales exactas y aviso de duplicados | Herramientas visuales adicionales de diagnóstico; no se cruzan rutas arbitrarias |
 | Conjuntos grandes | Fuentes completas de 100/3 000/100 000/1 000 000 filas × cuatro columnas medidas en Electron macOS ARM; muestra del editor independiente | Límites: 256 MiB por fuente, dos millones de filas/200 columnas, ocho millones de celdas en conjunto. No análisis integral de GB |
@@ -81,6 +81,10 @@ Cada entrega requiere pruebas específicas más regresión apropiada, PR revisab
 
 ## Informes de análisis — entrega de desarrollo
 
-`codex/csv-statistics-reports` abre los resultados completados como documentos Markdown normales, sin motor, dependencia o API de disco nueva. Comparte etiquetas con los paneles, conserva procedencia/revisión/alcance y marca muestras y páginas de frecuencias parciales. Reutiliza recuperación, guardado, PDF y HTML. No incluye exportación de resultados SQL ni navegación a filas faltantes. [Uso y límites](EDITOR-MENUS.md#informes-de-estadísticas-en-markdown).
+`codex/csv-statistics-reports` abre los resultados completados como documentos Markdown normales, sin motor, dependencia o API de disco nueva. Comparte etiquetas con los paneles, conserva procedencia/revisión/alcance y marca muestras y páginas de frecuencias parciales. Reutiliza recuperación, guardado, PDF y HTML. La navegación a filas faltantes sigue pendiente. `codex/sql-markdown-reports` añade informes SQL sobre todas las filas conservadas y con procedencia, tipos y marcas de parcialidad; reutiliza el mismo flujo de documentos. [Uso y límites](EDITOR-MENUS.md#informes-de-estadísticas-en-markdown).
 
 Validación de esta entrega: [evidencia local](evidence/csv-statistics-reports-2026-10-21.md); consultar el PR para el paquete y la CI de su commit. La generación del informe, su ejecución empaquetada, la copia instalada y las comprobaciones de CI son evidencias distintas; no sustituye una prueba manual de instalación en Windows/Linux/Intel.
+
+## Informes SQL — entrega de desarrollo
+
+`codex/sql-markdown-reports` reúne las páginas del resultado mediante el contrato existente, valida las fuentes entre páginas y abre una instantánea Markdown con consulta, fuentes, tipos, nulos y valores textuales preservados. No hay dependencias, IPC o formato de recuperación nuevos. La preparación se puede cancelar; resultados limitados se rotulan dentro del informe. [Uso y límites](EDITOR-MENUS.md#informes-de-resultados-sql-en-markdown). Evidencia y estado de CI/instalación se registran en el PR del mismo commit; esta entrega no cierra A–D.
