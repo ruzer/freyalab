@@ -20,12 +20,13 @@
  let search=$state(''),filters=$state<Record<string,string>>({}),sort=$state<TableQuery['sort']>(),page=$state<TablePage>({rows:[],total:0,matched:0,revision:0,requestId:0,sample:false}),busy=$state(false),showFilters=$state(false),showReplace=$state(false)
  const activeOrder=$derived(order.length?order:sort?[sort]:[])
  let selectedRows=$state<string[]>([]),selectedColumns=$state<number[]>([]),selectionStats=$state<TableStats|null>(null)
+ let searchInput=$state<HTMLInputElement>(),replaceInput=$state<HTMLInputElement>()
  let replaceFind=$state(''),replaceWith=$state(''),header=$state(true),numeric=$state(false)
  let scrollElement=$state<HTMLDivElement>(),pageOffset=$state(0),requestId=0
  let editing=$state<{rowId:string;column:number;value:string}|null>(null),editingHeader=$state<{index:number;value:string}|null>(null)
  type Cell={row:number;column:number}
  let selection=$state<{anchor:Cell;end:Cell;query:TableQuery;revision:number}|null>(null),dragging=$state(false),pendingCell=$state<Cell|null>(null)
- let rangeDialog=$state<{edit:TableRangeEdit;cut?:boolean}|null>(null),context=$state<{x:number;y:number}|null>(null)
+ let rangeDialog=$state<{edit:TableRangeEdit;cut?:boolean;documentScope?:boolean}|null>(null),context=$state<{x:number;y:number}|null>(null)
  let contextMenu=$state<HTMLDivElement>()
  let dragPoint={x:0,y:0}
  const cellRange=$derived<TableRange|null>(selection?{top:Math.min(selection.anchor.row,selection.end.row),bottom:Math.max(selection.anchor.row,selection.end.row),left:Math.min(selection.anchor.column,selection.end.column),right:Math.max(selection.anchor.column,selection.end.column),query:selection.query,revision:selection.revision}:null)
@@ -57,7 +58,7 @@
  function closeTransform(){showTransform=false;if(selection)focusCell(selection.end.row,selection.end.column,true);else document.querySelector<HTMLElement>('[aria-label="Operaciones CSV"]')?.focus()}
  function preparePaste(text:string){if(!cellRange||locked)return;try{rangeDialog={edit:{type:'range',range:$state.snapshot(cellRange),operation:'paste',values:parse(text,{delimiter:'\t',relax_column_count:true,skip_empty_lines:false}) as string[][]}}}catch(error){onerror(String(error))}}
  async function applyRange(change:TableRangeEdit,cancelled:()=>boolean){try{if(rangeDialog?.cut)await window.freya.tableCopy(doc.id,{scope:'selection',range:change.range},'tsv');if(cancelled())return 'Preparación del rango cancelada.';return await edit(change)}catch(error){const message=String(error).replace(/^.*Error: /,'');onerror(message);return message}}
- function closeRangeDialog(){rangeDialog=null;if(selection)focusCell(selection.end.row,selection.end.column,true)}
+ function closeRangeDialog(){const documentScope=rangeDialog?.documentScope;rangeDialog=null;if(documentScope)void tick().then(()=>replaceInput?.focus());else if(selection)focusCell(selection.end.row,selection.end.column,true)}
  function gridKey(event:KeyboardEvent){
   const target=event.target as HTMLElement,command=event.metaKey||event.ctrlKey
   if(target.tagName==='INPUT'||target.tagName==='TEXTAREA')return
@@ -81,11 +82,23 @@
  const rowMap=$derived(new Map(table.getRowModel().rows.map(row=>[row.original.id,row.original])))
  const renderedRows=$derived(page.rows.map(row=>rowMap.get(row.id)!).filter(Boolean))
  $effect(()=>{const count=page.matched,padding=showFilters?76:40,columns=doc.headers?.length??0;get(rowsVirtual).setOptions({count,paddingStart:padding});get(columnsVirtual).setOptions({count:columns})})
- let pageQuery:TableQuery={offset:0,limit:200,requestId:0}
+ let pageQuery=$state<TableQuery>({offset:0,limit:200,requestId:0})
+ const appliedSearch=$derived((pageQuery.search??'').toLocaleLowerCase())
  function query(offset=0):TableQuery{return{search,conditions:$state.snapshot(conditions),filterMode,order:order.length?$state.snapshot(order):undefined,filters:$state.snapshot(filters),sort:sort?$state.snapshot(sort):undefined,offset,limit:200,requestId}}
  async function load(offset=0){const q={...query(offset),requestId:++requestId};busy=true;try{const result=await window.freya.tablePage(doc.id,q);if(result.requestId!==requestId)return;queryError='';pageOffset=offset;page=result;pageQuery=q;onstatus(`${result.matched.toLocaleString()} de ${result.total.toLocaleString()} filas${result.sample?' · muestra':''}`)}catch(error){if(q.requestId===requestId){queryError=String(error).replace(/^.*Error: /,'');onerror(queryError)}}finally{if(q.requestId===requestId)busy=false}}
  $effect(()=>{const signature=JSON.stringify([doc.id,doc.revision,search,filters,sort,conditions,filterMode,order]);void signature;untrack(()=>{selectedRows=[];selectionStats=null;selection=null;context=null;rangeDialog=null;pendingCell=null;dragging=false;scrollElement?.scrollTo({top:0})});const timer=setTimeout(()=>void load(0),150);return()=>clearTimeout(timer)})
  $effect(()=>{const items=$rowsVirtual.getVirtualItems(),first=items[0]?.index??0,last=items.at(-1)?.index??0;if(items.length&&!busy&&(first<pageOffset||last>=pageOffset+page.rows.length))untrack(()=>void load(Math.floor(first/100)*100))})
+ async function focusReplace(){pendingCell=null;showReplace=true;if(!replaceFind)replaceFind=search;await tick();replaceInput?.focus();replaceInput?.select()}
+ function searchKey(event:KeyboardEvent){
+  const target=event.target
+  if(!(target instanceof HTMLElement)||event.defaultPrevented||!(event.metaKey||event.ctrlKey)||event.altKey||event.key.toLowerCase()!=='f'||!target.closest('.csv-workspace')||target.closest('.cm-editor'))return
+  event.preventDefault();pendingCell=null;if(event.shiftKey)void focusReplace();else{searchInput?.focus();searchInput?.select()}
+ }
+ function prepareReplacement(){
+  if(locked||busy||!replaceFind||!doc.rowCount||!doc.headers?.length)return
+  const left=selectedColumns.length===1?selectedColumns[0]:0,right=selectedColumns.length===1?left:doc.headers.length-1
+  rangeDialog={documentScope:true,edit:{type:'range',operation:'replace',find:replaceFind,value:replaceWith,range:{top:0,bottom:doc.rowCount-1,left,right,revision:doc.revision,query:{offset:0,limit:200,requestId:0}}}}
+ }
  function update(updated:DocumentInfo){if(updated.headers?.length!==doc.headers?.length){filters={};sort=undefined;conditions=[];order=[];showQuery=false;selectedColumns=[]}onchange(updated)}
  async function edit(change:TableEdit){if(locked)return 'La vista no permite editar.';try{update(await window.freya.tableEdit(doc.id,$state.snapshot(change)));editing=null;await load(pageOffset);await stats();return null}catch(error){const message=String(error).replace(/^.*Error: /,'');onerror(message);return message}}
  async function stats(){if(!selectedRows.length){selectionStats=null;return}try{selectionStats=await window.freya.stats(doc.id,$state.snapshot(selectedRows),selectedColumns.length?$state.snapshot(selectedColumns):(doc.headers??[]).map((_,i)=>i))}catch(error){onerror(String(error))}}
@@ -104,18 +117,18 @@
  }
  export async function undoEdit(redo=false){try{update(await window.freya.undo(doc.id,redo));await load(pageOffset)}catch(error){onerror(String(error))}}
 </script>
-<svelte:window onblur={()=>dragging=false} onpointerup={()=>dragging=false} onpointercancel={()=>dragging=false} onkeydown={event=>{if(event.key==='Tab')pendingCell=null}} onpointermove={event=>{dragPoint={x:event.clientX,y:event.clientY}}} onpointerdown={event=>{pendingCell=null;if(context&&!(event.target as HTMLElement).closest('.range-context'))context=null}}/>
+<svelte:window onblur={()=>dragging=false} onpointerup={()=>dragging=false} onpointercancel={()=>dragging=false} onkeydown={event=>{if(event.key==='Tab')pendingCell=null;searchKey(event)}} onpointermove={event=>{dragPoint={x:event.clientX,y:event.clientY}}} onpointerdown={event=>{pendingCell=null;if(context&&!(event.target as HTMLElement).closest('.range-context'))context=null}}/>
 {#snippet rangeButtons(menu=false)}{#each rangeActions as [action,label]}<button role={menu?'menuitem':undefined} disabled={locked||!cellRange||busy&&action!=='transformations'} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void rangeAction(action)}}>{label}</button>{/each}{/snippet}
 {#if showTransform}<CsvTransform {doc} initialRows={selectedRows} initialRange={cellRange} viewQuery={query()} initialColumns={selectedColumns.length?selectedColumns:cellRange?Array.from({length:cellRange.right-cellRange.left+1},(_,i)=>cellRange.left+i):[]} onapply={applyTransform} onclose={closeTransform} {onerror}/>{/if}
-{#if rangeDialog}<CsvRangePreview id={doc.id} initial={rangeDialog.edit} cut={rangeDialog.cut} onapply={applyRange} onclose={closeRangeDialog} {onerror}/>{/if}
+{#if rangeDialog}<CsvRangePreview id={doc.id} initial={rangeDialog.edit} cut={rangeDialog.cut} documentScope={rangeDialog.documentScope} onapply={applyRange} onclose={closeRangeDialog} {onerror}/>{/if}
 {#if context}<div bind:this={contextMenu} class="range-context" role="menu" aria-label="Acciones del rango" tabindex="-1" style:left={`${context.x}px`} style:top={`${context.y}px`} onkeydown={event=>{const buttons=Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')),index=buttons.indexOf(document.activeElement as HTMLButtonElement);if(event.key==='Escape'){event.preventDefault();closeContext()}else if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();buttons[event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(event.key==='ArrowDown'?1:buttons.length-1))%buttons.length]?.focus()}else if(event.key==='Tab')context=null}}>{@render rangeButtons(true)}</div>{/if}
 <div class="csv-workspace">
  <div class="csv-toolbar">
-  <div class="search-field"><span>⌕</span><input aria-label="Buscar en tabla" placeholder="Buscar en la tabla…" bind:value={search}/>{#if search}<button onclick={()=>search=''} aria-label="Borrar búsqueda">×</button>{/if}</div>
+  <div class="search-field"><span>⌕</span><input bind:this={searchInput} aria-label="Buscar en tabla" title="Buscar en tabla · Ctrl/⌘ + F · no distingue mayúsculas" placeholder="Buscar en la tabla…" bind:value={search}/>{#if search}<button onclick={()=>search=''} aria-label="Borrar búsqueda">×</button>{/if}</div>
   <button class:active={showFilters} onclick={()=>showFilters=!showFilters}>☷ Filtros {Object.values(filters).filter(Boolean).length||''}</button>
   {#if search||Object.values(filters).some(Boolean)||sort||order.length||conditions.length}<button onclick={()=>{search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}}>Quitar filtros y orden</button>{/if}
   <label class="check-label"><input type="checkbox" bind:checked={numeric} onchange={()=>{if(sort)sort={...sort,numeric}}}/>Orden numérico</label>
-  <button onclick={()=>showReplace=!showReplace}>Reemplazar</button>
+  <button aria-expanded={showReplace} title="Reemplazar · Ctrl/⌘ + Mayús + F" onclick={()=>{if(showReplace)showReplace=false;else void focusReplace()}}>Reemplazar</button>
   <button bind:this={queryButton} class:active={conditions.length>0||order.length>0} aria-expanded={showQuery} onclick={()=>showQuery=!showQuery}>Consulta avanzada</button>
   <button bind:this={sqlButton} aria-expanded={showSql} onclick={()=>{showSql=!showSql;showStatistics=false;showQuery=false;showCharts=false}}>Análisis</button>
   <button bind:this={statisticsButton} aria-expanded={showStatistics} onclick={()=>{showStatistics=!showStatistics;showSql=false;showCharts=false}}>Estadísticas</button>
@@ -125,7 +138,7 @@
  {#if showQuery}<CsvQueryTools headers={doc.headers??[]} initialConditions={conditions} initialOrder={activeOrder} initialMode={filterMode} onapply={applyQuery} onclose={()=>{showQuery=false;queryButton?.focus()}}/>{/if}
  {#if queryError}<div class="warning-banner" role="alert">Consulta no aplicada. Se conserva la última vista válida. {queryError} Corrige o limpia la consulta para editar. <button disabled={busy} onclick={()=>void load(0)}>Reintentar consulta</button></div>{/if}
  {#if doc.warning||doc.readonly}<div class="warning-banner">{doc.warning??'Solo lectura'}{#if page.sample} Los filtros y recuentos describen únicamente la muestra.{/if}</div>{/if}
- {#if showReplace}<form class="csv-toolbar" onsubmit={event=>{event.preventDefault();void edit({type:'replace',find:replaceFind,replacement:replaceWith,column:selectedColumns.length===1?selectedColumns[0]:undefined})}}><input aria-label="Buscar valor para reemplazar" placeholder="Buscar valor" bind:value={replaceFind}/><input aria-label="Nuevo valor" placeholder="Reemplazar por" bind:value={replaceWith}/><span class="muted">{selectedColumns.length===1?'Columna seleccionada':'Todas las columnas'}</span><button disabled={locked||!replaceFind} type="submit">Reemplazar coincidencias</button></form>{/if}
+ {#if showReplace}<form class="csv-toolbar" onsubmit={event=>{event.preventDefault();prepareReplacement()}}><input bind:this={replaceInput} aria-label="Buscar valor para reemplazar" placeholder="Buscar valor" bind:value={replaceFind}/><input aria-label="Nuevo valor" placeholder="Reemplazar por" bind:value={replaceWith}/><span class="muted">{selectedColumns.length===1?'Columna marcada':'Todas las columnas'} · documento completo, incluye filas ocultas · literal, distingue mayúsculas</span><button disabled={locked||busy||!replaceFind||!doc.rowCount||!doc.headers?.length} type="submit">Vista previa del reemplazo</button></form>{/if}
  <div class="csv-operations">
   <details class="insert-menu"><summary aria-label="Operaciones CSV">Operaciones ▾</summary><div class="dropdown">
    <button disabled={locked||(doc.headers?.length??0)>200} title="Documento completo · Ctrl/⌘ + Mayús + T · hasta 200 columnas" onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');openTransform()}}>Transformar documento…</button>
@@ -159,8 +172,10 @@
     {#if row}<div class="csv-row" class:selected={selectedRows.includes(row.id)} role="row" aria-rowindex={virtualRow.index+2} style:transform={`translateY(${virtualRow.start}px)`} style:height={`${virtualRow.size}px`}>
      <button class="row-number" aria-label={`Seleccionar fila ${virtualRow.index+1}`} onclick={event=>selectRow(row.id,event.metaKey||event.ctrlKey||event.shiftKey)}>{virtualRow.index+1}</button>
      {#each $columnsVirtual.getVirtualItems() as col (col.key)}
+      {@const value=row.cells[col.index]??''}
+      {@const matches=!!appliedSearch&&value.toLocaleLowerCase().includes(appliedSearch)}
       <div class="csv-cell" class:range-selected={inside(virtualRow.index,col.index)} aria-selected={inside(virtualRow.index,col.index)} data-row={virtualRow.index} data-column={col.index} onpointerdown={event=>beginSelection(event,virtualRow.index,col.index)} onpointerenter={()=>{if(dragging&&selection)selection={...selection,end:{row:virtualRow.index,column:col.index}}}} oncontextmenu={event=>{event.preventDefault();if(!inside(virtualRow.index,col.index))selectCell(virtualRow.index,col.index);openContext(event.clientX,event.clientY)}} class:column-selected={selectedColumns.includes(col.index)} role="gridcell" aria-colindex={col.index+2} tabindex="0" aria-label={`Fila ${virtualRow.index+1}, ${doc.headers?.[col.index]}`} style:left={`${col.start}px`} style:width={`${col.size}px`} ondblclick={()=>{if(!locked)editing={rowId:row.id,column:col.index,value:row.cells[col.index]??''}}} onkeydown={event=>{if(!locked&&!event.metaKey&&!event.ctrlKey&&(event.key==='Enter'||event.key==='F2')){event.preventDefault();editing={rowId:row.id,column:col.index,value:row.cells[col.index]??''}}}} onpaste={event=>void paste(event,row.id,col.index)}>
-       {#if editing?.rowId===row.id&&editing?.column===col.index}<input class="cell-input" aria-label="Editar celda" bind:value={editing.value} use:focus onblur={()=>{if(editing)void edit({type:'cell',rowId:row.id,column:col.index,value:editing.value})}} onkeydown={event=>{if(event.key==='Enter'&&editing){event.preventDefault();event.currentTarget.blur()}else if(event.key==='Escape'){editing=null}}}/>{:else}<span title={row.cells[col.index]??''}>{row.cells[col.index]??''}</span>{/if}
+       {#if editing?.rowId===row.id&&editing?.column===col.index}<input class="cell-input" aria-label="Editar celda" bind:value={editing.value} use:focus onblur={()=>{if(editing)void edit({type:'cell',rowId:row.id,column:col.index,value:editing.value})}} onkeydown={event=>{if(event.key==='Enter'&&editing){event.preventDefault();event.currentTarget.blur()}else if(event.key==='Escape'){editing=null}}}/>{:else}<span title={value}>{#if matches}<mark>{value}</mark>{:else}{value}{/if}</span>{/if}
       </div>
      {/each}
     </div>{/if}
