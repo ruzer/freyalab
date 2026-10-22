@@ -1,0 +1,474 @@
+[
+  {
+    "mode": "graphic",
+    "n": 3000,
+    "poc": {
+      "mode": "graphic",
+      "n": 3000,
+      "totals": [
+        {
+          "City": "Oaxaca",
+          "Total": 6000
+        },
+        {
+          "City": "Puebla",
+          "Total": 7500
+        }
+      ],
+      "chart": {
+        "config": {
+          "defaultAggregated": true,
+          "geoms": [
+            "bar"
+          ],
+          "coordSystem": "generic",
+          "limit": -1
+        },
+        "encodings": {
+          "dimensions": [
+            {
+              "fid": "City",
+              "name": "City",
+              "basename": "City",
+              "semanticType": "nominal",
+              "analyticType": "dimension"
+            },
+            {
+              "fid": "Code",
+              "name": "Code",
+              "basename": "Code",
+              "semanticType": "nominal",
+              "analyticType": "dimension"
+            },
+            {
+              "fid": "gw_mea_key_fid",
+              "name": "Measure names",
+              "analyticType": "dimension",
+              "semanticType": "nominal"
+            }
+          ],
+          "measures": [
+            {
+              "fid": "Sales",
+              "name": "Sales",
+              "basename": "Sales",
+              "analyticType": "measure",
+              "semanticType": "quantitative",
+              "aggName": "sum"
+            },
+            {
+              "fid": "gw_count_fid",
+              "name": "Row count",
+              "analyticType": "measure",
+              "semanticType": "quantitative",
+              "aggName": "sum",
+              "computed": true,
+              "expression": {
+                "op": "one",
+                "params": [],
+                "as": "gw_count_fid"
+              }
+            },
+            {
+              "fid": "gw_mea_val_fid",
+              "name": "Measure values",
+              "analyticType": "measure",
+              "semanticType": "quantitative",
+              "aggName": "sum"
+            }
+          ],
+          "rows": [
+            {
+              "fid": "Sales",
+              "name": "Sales",
+              "basename": "Sales",
+              "analyticType": "measure",
+              "semanticType": "quantitative",
+              "aggName": "sum"
+            }
+          ],
+          "columns": [
+            {
+              "fid": "City",
+              "name": "City",
+              "basename": "City",
+              "semanticType": "nominal",
+              "analyticType": "dimension"
+            }
+          ],
+          "color": [],
+          "opacity": [],
+          "size": [],
+          "shape": [],
+          "radius": [],
+          "theta": [],
+          "longitude": [],
+          "latitude": [],
+          "geoId": [],
+          "details": [],
+          "filters": [],
+          "text": []
+        },
+        "layout": {
+          "showActions": false,
+          "showTableSummary": false,
+          "stack": "stack",
+          "interactiveScale": false,
+          "zeroScale": true,
+          "size": {
+            "mode": "auto",
+            "width": 320,
+            "height": 200
+          },
+          "format": {},
+          "geoKey": "name",
+          "resolve": {
+            "x": false,
+            "y": false,
+            "color": false,
+            "opacity": false,
+            "shape": false,
+            "size": false
+          },
+          "renderer": "vega-lite"
+        },
+        "visId": "gw_wg2C",
+        "name": "Chart",
+        "$schema": "https://graphic-walker.kanaries.net/chartinfo.json"
+      },
+      "readyMs": 236.09999999403954
+    },
+    "text": "graphic: Ready",
+    "svgs": 0,
+    "canvases": 0,
+    "memory": [
+      {
+        "type": "Browser",
+        "workingSetKiB": 175152
+      },
+      {
+        "type": "GPU",
+        "workingSetKiB": 94416
+      },
+      {
+        "type": "Utility",
+        "workingSetKiB": 53104
+      },
+      {
+        "type": "Tab",
+        "workingSetKiB": 220144
+      }
+    ],
+    "errors": []
+  },
+  {
+    "mode": "graphic",
+    "n": 100000,
+    "poc": {
+      "mode": "graphic",
+      "n": 100000,
+      "totals": [
+        {
+          "City": "Oaxaca",
+          "Total": 200000
+        },
+        {
+          "City": "Puebla",
+          "Total": 250000
+        }
+      ],
+      "chart": {
+        "config": {
+          "defaultAggregated": true,
+          "geoms": [
+            "bar"
+          ],
+          "coordSystem": "generic",
+          "limit": -1
+        },
+        "encodings": {
+          "dimensions": [
+            {
+              "fid": "City",
+              "name": "City",
+              "basename": "City",
+              "semanticType": "nominal",
+              "analyticType": "dimension"
+            },
+            {
+              "fid": "Code",
+              "name": "Code",
+              "basename": "Code",
+              "semanticType": "nominal",
+              "analyticType": "dimension"
+            },
+            {
+              "fid": "gw_mea_key_fid",
+              "name": "Measure names",
+              "analyticType": "dimension",
+              "semanticType": "nominal"
+            }
+          ],
+          "measures": [
+            {
+              "fid": "Sales",
+              "name": "Sales",
+              "basename": "Sales",
+              "analyticType": "measure",
+              "semanticType": "quantitative",
+              "aggName": "sum"
+            },
+            {
+              "fid": "gw_count_fid",
+              "name": "Row count",
+              "analyticType": "measure",
+              "semanticType": "quantitative",
+              "aggName": "sum",
+              "computed": true,
+              "expression": {
+                "op": "one",
+                "params": [],
+                "as": "gw_count_fid"
+              }
+            },
+            {
+              "fid": "gw_mea_val_fid",
+              "name": "Measure values",
+              "analyticType": "measure",
+              "semanticType": "quantitative",
+              "aggName": "sum"
+            }
+          ],
+          "rows": [
+            {
+              "fid": "Sales",
+              "name": "Sales",
+              "basename": "Sales",
+              "analyticType": "measure",
+              "semanticType": "quantitative",
+              "aggName": "sum"
+            }
+          ],
+          "columns": [
+            {
+              "fid": "City",
+              "name": "City",
+              "basename": "City",
+              "semanticType": "nominal",
+              "analyticType": "dimension"
+            }
+          ],
+          "color": [],
+          "opacity": [],
+          "size": [],
+          "shape": [],
+          "radius": [],
+          "theta": [],
+          "longitude": [],
+          "latitude": [],
+          "geoId": [],
+          "details": [],
+          "filters": [],
+          "text": []
+        },
+        "layout": {
+          "showActions": false,
+          "showTableSummary": false,
+          "stack": "stack",
+          "interactiveScale": false,
+          "zeroScale": true,
+          "size": {
+            "mode": "auto",
+            "width": 320,
+            "height": 200
+          },
+          "format": {},
+          "geoKey": "name",
+          "resolve": {
+            "x": false,
+            "y": false,
+            "color": false,
+            "opacity": false,
+            "shape": false,
+            "size": false
+          },
+          "renderer": "vega-lite"
+        },
+        "visId": "gw_R2-r",
+        "name": "Chart",
+        "$schema": "https://graphic-walker.kanaries.net/chartinfo.json"
+      },
+      "readyMs": 254
+    },
+    "text": "graphic: Ready",
+    "svgs": 0,
+    "canvases": 0,
+    "memory": [
+      {
+        "type": "Browser",
+        "workingSetKiB": 174944
+      },
+      {
+        "type": "GPU",
+        "workingSetKiB": 89024
+      },
+      {
+        "type": "Utility",
+        "workingSetKiB": 53200
+      },
+      {
+        "type": "Tab",
+        "workingSetKiB": 249392
+      }
+    ],
+    "errors": []
+  },
+  {
+    "mode": "perspective",
+    "n": 3000,
+    "poc": {
+      "mode": "perspective",
+      "n": 3000,
+      "totals": [
+        {
+          "__ROW_PATH__": [],
+          "Sales": 13500
+        },
+        {
+          "__ROW_PATH__": [
+            "Oaxaca"
+          ],
+          "Sales": 6000
+        },
+        {
+          "__ROW_PATH__": [
+            "Puebla"
+          ],
+          "Sales": 7500
+        }
+      ],
+      "config": {
+        "settings": true,
+        "version": "5.6.0",
+        "columns_config": {},
+        "plugin": "Y Bar",
+        "plugin_config": {},
+        "table": "VWoJxVnQSmgMhsscDxWNY",
+        "theme": "Pro Light",
+        "title": null,
+        "group_by": [
+          "City"
+        ],
+        "split_by": [],
+        "sort": [],
+        "filter": [],
+        "group_rollup_mode": "flat",
+        "split_rollup_mode": "flat",
+        "expressions": {},
+        "columns": [
+          "Sales"
+        ],
+        "aggregates": {
+          "Sales": "sum"
+        }
+      },
+      "readyMs": 295.2999999821186
+    },
+    "text": "perspective: Ready",
+    "svgs": 0,
+    "canvases": 0,
+    "memory": [
+      {
+        "type": "Browser",
+        "workingSetKiB": 176048
+      },
+      {
+        "type": "GPU",
+        "workingSetKiB": 93664
+      },
+      {
+        "type": "Utility",
+        "workingSetKiB": 53856
+      },
+      {
+        "type": "Tab",
+        "workingSetKiB": 315600
+      }
+    ],
+    "errors": []
+  },
+  {
+    "mode": "perspective",
+    "n": 100000,
+    "poc": {
+      "mode": "perspective",
+      "n": 100000,
+      "totals": [
+        {
+          "__ROW_PATH__": [],
+          "Sales": 450000
+        },
+        {
+          "__ROW_PATH__": [
+            "Oaxaca"
+          ],
+          "Sales": 200000
+        },
+        {
+          "__ROW_PATH__": [
+            "Puebla"
+          ],
+          "Sales": 250000
+        }
+      ],
+      "config": {
+        "settings": true,
+        "version": "5.6.0",
+        "columns_config": {},
+        "plugin": "Y Bar",
+        "plugin_config": {},
+        "table": "KplZIpqPgrViKkcRooGaa",
+        "theme": "Pro Light",
+        "title": null,
+        "group_by": [
+          "City"
+        ],
+        "split_by": [],
+        "sort": [],
+        "filter": [],
+        "group_rollup_mode": "flat",
+        "split_rollup_mode": "flat",
+        "expressions": {},
+        "columns": [
+          "Sales"
+        ],
+        "aggregates": {
+          "Sales": "sum"
+        }
+      },
+      "readyMs": 441
+    },
+    "text": "perspective: Ready",
+    "svgs": 0,
+    "canvases": 0,
+    "memory": [
+      {
+        "type": "Browser",
+        "workingSetKiB": 175680
+      },
+      {
+        "type": "GPU",
+        "workingSetKiB": 93840
+      },
+      {
+        "type": "Utility",
+        "workingSetKiB": 53472
+      },
+      {
+        "type": "Tab",
+        "workingSetKiB": 416672
+      }
+    ],
+    "errors": []
+  }
+]

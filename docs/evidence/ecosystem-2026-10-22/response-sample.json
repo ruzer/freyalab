@@ -1,0 +1,93 @@
+{
+  "tanstack": {
+    "sample_issues_365": 20,
+    "answered_maintainer": 7,
+    "median_hours_answered_only": 53.54472222222222,
+    "sample_first_issue_created": "2026-06-26T08:40:39Z",
+    "sample_last_issue_created": "2026-10-08T03:40:36Z"
+  },
+  "tabulator": {
+    "sample_issues_365": 20,
+    "answered_maintainer": 2,
+    "median_hours_answered_only": 132.3076388888889,
+    "sample_first_issue_created": "2026-06-22T11:13:46Z",
+    "sample_last_issue_created": "2026-10-21T01:29:47Z"
+  },
+  "aggrid": {
+    "sample_issues_365": 20,
+    "answered_maintainer": 0,
+    "median_hours_answered_only": null,
+    "sample_first_issue_created": "2026-08-18T12:17:18Z",
+    "sample_last_issue_created": "2026-10-20T20:32:25Z"
+  },
+  "duckdb": {
+    "sample_issues_365": 20,
+    "answered_maintainer": 0,
+    "median_hours_answered_only": null,
+    "sample_first_issue_created": "2026-10-22T01:26:06Z",
+    "sample_last_issue_created": "2026-10-22T16:41:18Z"
+  },
+  "arquero": {
+    "sample_issues_365": 2,
+    "answered_maintainer": 0,
+    "median_hours_answered_only": null,
+    "sample_first_issue_created": "2026-03-31T13:55:25Z",
+    "sample_last_issue_created": "2026-10-06T17:40:15Z"
+  },
+  "polars": {
+    "sample_issues_365": 20,
+    "answered_maintainer": 20,
+    "median_hours_answered_only": 4.121666666666666,
+    "sample_first_issue_created": "2026-10-22T12:36:39Z",
+    "sample_last_issue_created": "2026-10-22T14:41:36Z"
+  },
+  "openrefine": {
+    "sample_issues_365": 20,
+    "answered_maintainer": 5,
+    "median_hours_answered_only": 26.79,
+    "sample_first_issue_created": "2026-07-21T23:27:14Z",
+    "sample_last_issue_created": "2026-10-22T12:33:16Z"
+  },
+  "echarts": {
+    "sample_issues_365": 20,
+    "answered_maintainer": 4,
+    "median_hours_answered_only": 6.038333333333334,
+    "sample_first_issue_created": "2026-08-17T09:28:06Z",
+    "sample_last_issue_created": "2026-10-19T10:19:10Z"
+  },
+  "graphic": {
+    "sample_issues_365": 7,
+    "answered_maintainer": 1,
+    "median_hours_answered_only": 55.681666666666665,
+    "sample_first_issue_created": "2025-12-06T12:04:55Z",
+    "sample_last_issue_created": "2026-03-27T06:39:18Z"
+  },
+  "perspective": {
+    "sample_issues_365": 20,
+    "answered_maintainer": 4,
+    "median_hours_answered_only": 132.43722222222223,
+    "sample_first_issue_created": "2026-06-17T22:35:40Z",
+    "sample_last_issue_created": "2026-10-20T07:40:22Z"
+  },
+  "vegalite": {
+    "sample_issues_365": 20,
+    "answered_maintainer": 5,
+    "median_hours_answered_only": 27.6625,
+    "sample_first_issue_created": "2026-02-20T08:02:26Z",
+    "sample_last_issue_created": "2026-10-13T16:31:40Z"
+  },
+  "simplestats": {
+    "sample_issues_365": 6,
+    "answered_maintainer": 2,
+    "median_hours_answered_only": 12.236527777777777,
+    "sample_first_issue_created": "2026-06-01T21:25:03Z",
+    "sample_last_issue_created": "2026-09-15T00:01:30Z"
+  },
+  "jstat": {
+    "sample_issues_365": 2,
+    "answered_maintainer": 0,
+    "median_hours_answered_only": null,
+    "sample_first_issue_created": "2026-03-31T09:00:37Z",
+    "sample_last_issue_created": "2026-09-23T16:35:25Z"
+  }
+}

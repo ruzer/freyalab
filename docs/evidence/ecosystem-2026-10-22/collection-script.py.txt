@@ -1,0 +1,58 @@
+import json,subprocess,datetime,time,pathlib,urllib.request,urllib.parse,statistics
+OUT=pathlib.Path('/private/tmp/freyalab-ecosystem/docs/evidence/ecosystem-2026-10-22');OUT.mkdir(parents=True,exist_ok=True)
+projects=[('tanstack','TanStack/table','@tanstack/svelte-table'),('tabulator','olifolkerd/tabulator','tabulator-tables'),('aggrid','ag-grid/ag-grid','ag-grid-community'),('duckdb','duckdb/duckdb','@duckdb/duckdb-wasm'),('arquero','uwdata/arquero','arquero'),('polars','pola-rs/polars',None),('openrefine','OpenRefine/OpenRefine',None),('echarts','apache/echarts','echarts'),('graphic','Kanaries/graphic-walker','@kanaries/graphic-walker'),('perspective','perspective-dev/perspective','@perspective-dev/viewer'),('vegalite','vega/vega-lite','vega-lite'),('simplestats','simple-statistics/simple-statistics','simple-statistics'),('jstat','jstat/jstat','jstat')]
+end=datetime.datetime(2026,10,22,17,5,39,tzinfo=datetime.timezone.utc);iso=lambda d:d.isoformat().replace('+00:00','Z');since365=iso(end-datetime.timedelta(days=365));since90=iso(end-datetime.timedelta(days=90));until=iso(end)
+def gh(endpoint=None,query=None):
+ args=['gh','api',endpoint] if endpoint else ['gh','api','graphql','--input','-']
+ data=None if endpoint else json.dumps({'query':query})
+ r=subprocess.run(args,input=data,text=True,capture_output=True,timeout=90)
+ if r.returncode: raise RuntimeError(r.stderr[:350])
+ result=json.loads(r.stdout)
+ if isinstance(result,dict) and result.get('errors'):raise RuntimeError(str(result['errors'])[:350])
+ return result
+metadata={}; failures={}
+for key,repo,pkg in projects:
+ try:
+  owner,name=repo.split('/')
+  q='''query {repository(owner:%s,name:%s){nameWithOwner url description stargazerCount forkCount isArchived isDisabled pushedAt updatedAt licenseInfo{spdxId} defaultBranchRef{name target{... on Commit{oid committedDate h90:history(since:%s,until:%s){totalCount} h365:history(since:%s,until:%s,first:100){totalCount pageInfo{hasNextPage endCursor} nodes{oid committedDate author{name user{login}}}}}}} releases(first:20){nodes{tagName publishedAt isPrerelease isDraft url}} openIssues:issues(states:OPEN){totalCount} closedIssues:issues(states:CLOSED){totalCount} openPR:pullRequests(states:OPEN){totalCount} closedPR:pullRequests(states:CLOSED){totalCount} mergedPR:pullRequests(states:MERGED){totalCount} issues(first:20,orderBy:{field:CREATED_AT,direction:DESC}){nodes{number url createdAt closedAt author{login} comments(first:20){nodes{createdAt author{login} authorAssociation}}}} pullRequests(first:10,orderBy:{field:UPDATED_AT,direction:DESC}){nodes{number state createdAt updatedAt mergedAt url}}}}'''%(json.dumps(owner),json.dumps(name),json.dumps(since90),json.dumps(until),json.dumps(since365),json.dumps(until))
+  metadata[key]=gh(query=q)['data']['repository'];metadata[key]['package']=pkg
+  (OUT/'github.json').write_text(json.dumps(metadata,ensure_ascii=False,indent=2))
+  print('metadata',key,flush=True)
+ except Exception as e:failures[key]=str(e);print('ERROR',key,str(e),flush=True)
+# Fetch the whole default-branch history in the fixed 365-day window, not just top contributors.
+active={};cursors={};commits={}
+for key,r in metadata.items():
+ h=r['defaultBranchRef']['target']['h365'];commits[key]=h['nodes'];
+ if h['pageInfo']['hasNextPage']:cursors[key]=h['pageInfo']['endCursor']
+rounds=0
+while cursors and rounds<200:
+ parts=[]
+ for key,cursor in cursors.items():
+  owner,name=next(repo for k,repo,_ in projects if k==key).split('/')
+  parts.append('%s:repository(owner:%s,name:%s){defaultBranchRef{target{... on Commit{history(since:%s,until:%s,first:100,after:%s){pageInfo{hasNextPage endCursor} nodes{oid committedDate author{name user{login}}}}}}}}'%(key,json.dumps(owner),json.dumps(name),json.dumps(since365),json.dumps(until),json.dumps(cursor)))
+ try:
+  batch=gh(query='query {'+' '.join(parts)+'}')['data'];nextc={}
+  for key,r in batch.items():
+   h=r['defaultBranchRef']['target']['history'];commits[key].extend(h['nodes'])
+   if h['pageInfo']['hasNextPage']:nextc[key]=h['pageInfo']['endCursor']
+  cursors=nextc;rounds+=1
+  if rounds%10==0:print('history pages',rounds,'remaining repositories',len(cursors),flush=True)
+ except Exception as e:failures['history']=str(e);break
+for key,items in commits.items():
+ def identities(days):
+  start=iso(end-datetime.timedelta(days=days));rows=[x for x in items if x['committedDate']>=start];logins={x['author']['user']['login'] for x in rows if x['author'].get('user')};unlinked={x['author']['name'] for x in rows if not x['author'].get('user')};weeks={x['committedDate'][:10][:7] for x in rows};return {'commits_observed':len(rows),'linked_github_accounts':len(logins),'linked_humans':len([x for x in logins if not x.endswith('[bot]') and not x.endswith('-bot')]),'unlinked_author_names':len(unlinked),'accounts':sorted(logins),'active_months':len(weeks)}
+ active[key]={'history_complete':key not in cursors,'days90':identities(90),'days365':identities(365)}
+(OUT/'active-authors.json').write_text(json.dumps(active,ensure_ascii=False,indent=2))
+# Public npm registry metadata: version, publication date and unpacked size are different from bundle/installer size.
+packages={};advisories={}
+for key,repo,pkg in projects:
+ if not pkg:continue
+ try:
+  url='https://registry.npmjs.org/'+urllib.parse.quote(pkg,safe='@');data=json.load(urllib.request.urlopen(url,timeout=60));tag=data.get('dist-tags',{}).get('latest');v=data['versions'][tag]
+  packages[key]={'name':pkg,'dist_tags':data.get('dist-tags'), 'latest':tag,'published_at':data.get('time',{}).get(tag),'latest_is_prerelease':'-' in tag,'license':v.get('license'),'dist':v.get('dist'),'dependencies':v.get('dependencies',{}),'peerDependencies':v.get('peerDependencies',{}),'engines':v.get('engines')}
+  if '-' in tag:
+   stable=[(k,data.get('time',{}).get(k,'')) for k in data['versions'] if '-' not in k];stable.sort(key=lambda x:x[1]);packages[key]['latest_stable_by_publish']=stable[-1] if stable else None
+  advisories[key]=gh('advisories?ecosystem=npm&affects='+urllib.parse.quote(pkg,safe='')+'&per_page=100')
+  print('registry/security',key,flush=True)
+ except Exception as e:failures['registry_'+key]=str(e)
+(OUT/'npm.json').write_text(json.dumps(packages,ensure_ascii=False,indent=2));(OUT/'advisories.json').write_text(json.dumps(advisories,ensure_ascii=False,indent=2));(OUT/'collection.json').write_text(json.dumps({'consulted_at_utc':iso(datetime.datetime.now(datetime.timezone.utc)),'window_end':until,'since90':since90,'since365':since365,'method':'GitHub GraphQL default branch history; all pages, linked author accounts, primary author only. Bots listed separately by login heuristic. Recent-20 issue response sample; open unanswered censored. npm registry and public reviewed GHSA npm advisory lookup.','history_paging_rounds':rounds,'failures':failures},ensure_ascii=False,indent=2));print('DONE',failures,flush=True)

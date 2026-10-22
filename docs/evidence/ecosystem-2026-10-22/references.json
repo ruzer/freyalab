@@ -1,0 +1,45 @@
+{
+  "consulted_date_client": "2026-10-22",
+  "sources": [
+    {
+      "url": "https://docs.github.com/en/graphql/reference/objects#commithistoryconnection",
+      "use": "Commit history and totalCount semantics; primary author account definition is local to this assessment"
+    },
+    {
+      "url": "https://docs.github.com/en/rest/repos/repos#list-repository-contributors",
+      "use": "Cached historical contributors and anonymous authors"
+    },
+    {
+      "url": "https://docs.github.com/en/rest/security-advisories/global-advisories",
+      "use": "Public advisory lookup; not a complete security scan"
+    },
+    {
+      "url": "https://www.ag-grid.com/javascript-data-grid/community-vs-enterprise/",
+      "use": "Free versus commercial feature boundaries, page version 36.2.0"
+    },
+    {
+      "url": "https://www.tabulator.info/docs/6.x/",
+      "use": "Features, modules and version discrepancy relative to registry"
+    },
+    {
+      "url": "https://tanstack.com/table/latest/docs/overview",
+      "use": "Headless tables and integration responsibilities"
+    },
+    {
+      "url": "https://github.com/Kanaries/graphic-walker/blob/main/computation.md",
+      "use": "Computation adapter protocol; no direct ECharts reuse"
+    },
+    {
+      "url": "https://github.com/perspective-dev/perspective",
+      "use": "Custom Element, plugin renderer and query engine; DuckDBHandler also inspected in installed 5.6.0 types/source"
+    },
+    {
+      "url": "https://echarts.apache.org/handbook/en/concepts/dataset/",
+      "use": "Mapping fields to encodings, existing ECharts renderer"
+    },
+    {
+      "url": "https://vega.github.io/vega-lite/",
+      "use": "Declarative grammar, not complete user-facing BI builder"
+    }
+  ]
+}

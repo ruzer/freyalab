@@ -1,0 +1,67 @@
+{
+  "tanstack": {
+    "source": "https://api.github.com/repos/TanStack/table/contributors?per_page=1&anon=true",
+    "method": "REST contributors with anonymous authors; per_page=1 and last pagination link. GitHub contributor statistics cache may lag.",
+    "count": 503
+  },
+  "tabulator": {
+    "source": "https://api.github.com/repos/tabulator-tables/tabulator/contributors?per_page=1&anon=true",
+    "method": "REST contributors with anonymous authors; per_page=1 and last pagination link. GitHub contributor statistics cache may lag.",
+    "count": 142
+  },
+  "aggrid": {
+    "source": "https://api.github.com/repos/ag-grid/ag-grid/contributors?per_page=1&anon=true",
+    "method": "REST contributors with anonymous authors; per_page=1 and last pagination link. GitHub contributor statistics cache may lag.",
+    "count": 208
+  },
+  "duckdb": {
+    "source": "https://api.github.com/repos/duckdb/duckdb/contributors?per_page=1&anon=true",
+    "method": "REST contributors with anonymous authors; per_page=1 and last pagination link. GitHub contributor statistics cache may lag.",
+    "count": 957
+  },
+  "arquero": {
+    "source": "https://api.github.com/repos/uwdata/arquero/contributors?per_page=1&anon=true",
+    "method": "REST contributors with anonymous authors; per_page=1 and last pagination link. GitHub contributor statistics cache may lag.",
+    "count": 22
+  },
+  "polars": {
+    "source": "https://api.github.com/repos/pola-rs/polars/contributors?per_page=1&anon=true",
+    "method": "REST contributors with anonymous authors; per_page=1 and last pagination link. GitHub contributor statistics cache may lag.",
+    "count": 783
+  },
+  "openrefine": {
+    "source": "https://api.github.com/repos/OpenRefine/OpenRefine/contributors?per_page=1&anon=true",
+    "method": "REST contributors with anonymous authors; per_page=1 and last pagination link. GitHub contributor statistics cache may lag.",
+    "count": 428
+  },
+  "echarts": {
+    "source": "https://api.github.com/repos/apache/echarts/contributors?per_page=1&anon=true",
+    "method": "REST contributors with anonymous authors; per_page=1 and last pagination link. GitHub contributor statistics cache may lag.",
+    "count": 337
+  },
+  "graphic": {
+    "source": "https://api.github.com/repos/Kanaries/graphic-walker/contributors?per_page=1&anon=true",
+    "method": "REST contributors with anonymous authors; per_page=1 and last pagination link. GitHub contributor statistics cache may lag.",
+    "count": 23
+  },
+  "perspective": {
+    "source": "https://api.github.com/repos/perspective-dev/perspective/contributors?per_page=1&anon=true",
+    "method": "REST contributors with anonymous authors; per_page=1 and last pagination link. GitHub contributor statistics cache may lag.",
+    "count": 104
+  },
+  "vegalite": {
+    "source": "https://api.github.com/repos/vega/vega-lite/contributors?per_page=1&anon=true",
+    "method": "REST contributors with anonymous authors; per_page=1 and last pagination link. GitHub contributor statistics cache may lag.",
+    "count": 228
+  },
+  "simplestats": {
+    "source": "https://api.github.com/repos/simple-statistics/simple-statistics/contributors?per_page=1&anon=true",
+    "method": "REST contributors with anonymous authors; per_page=1 and last pagination link. GitHub contributor statistics cache may lag.",
+    "count": 67
+  },
+  "jstat": {
+    "source": "https://api.github.com/repos/jstat/jstat/contributors?per_page=1&anon=true",
+    "method": "REST contributors with anonymous authors; per_page=1 and last pagination link. GitHub contributor statistics cache may lag.",
+    "count": 66
+  }
+}

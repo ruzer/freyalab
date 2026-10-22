@@ -1,0 +1,39 @@
+import json,pathlib,re,decimal
+r=pathlib.Path('/private/tmp/freyalab-ecosystem');p=r/'docs/evidence/ecosystem-2026-10-22';load=lambda name:json.loads((p/name).read_text())
+files=list(p.rglob('*.json'))
+for file in files:json.loads(file.read_text())
+g=load('github.json');assert len(g)==13
+for key,row in g.items():
+ assert row['defaultBranchRef']['target']['h90']['totalCount']<=row['defaultBranchRef']['target']['h365']['totalCount']
+ assert row['url'].startswith('https://github.com/')
+a=load('effective-active-authors.json')
+for key,activity in a.items():
+ if activity['history_complete']:assert activity['days365']['commits_observed']==g[key]['defaultBranchRef']['target']['h365']['totalCount'],key
+ assert activity['days90']['linked_github_accounts']<=activity['days365']['linked_github_accounts']
+results=load('prototype-results.json');assert len(results)==4
+for trial in results:
+ assert not trial.get('error') and not trial['errors'];assert trial['poc']['n'] in [3000,100000]
+ expected={'Oaxaca':trial['n']*2,'Puebla':trial['n']*2.5}
+ actual={x['City']:x['Total'] for x in trial['poc']['totals']} if trial['mode']=='graphic' else {x['__ROW_PATH__'][0]:x['Sales'] for x in trial['poc']['totals'] if x['__ROW_PATH__']}
+ assert actual==expected
+v=load('integrity-results.json')[0];assert not v.get('error') and not v['errors'];v=v['poc'];assert v['originalUnchanged']
+assert v['autoRows'][0]['Code']=='1' and v['autoRows'][2]['Code']=='2147483647'
+assert v['explicitRows'][0]['Code']=='001' and v['explicitRows'][2]['Code']=='9007199254740993'
+assert v['explicitRows'][0]['Empty']=='' and v['explicitRows'][2]['Empty'] is None
+assert v['graphic']==v['fixture']
+for trial in v['samples']:assert trial['originalUnchanged']
+s=load('scoring.json');D=decimal.Decimal;assert sum(s['weights'])==100
+for o in s['options'].values():
+ total=sum(D(str(x))*D(str(w)) for x,w in zip(o['scores'],s['weights']))/D(5)
+ assert abs(total-D(str(o['base'])))<D('.000001')
+ assert o['performance_range']==[o['base']-2,o['base']+2]
+for scenario in s['sensitivity'].values():
+ for key,total in scenario['scores'].items():
+  expected=sum(D(str(x))*D(str(w)) for x,w in zip(s['options'][key]['scores'],scenario['weights']))/sum(D(str(w)) for w in scenario['weights'])*D(20)
+  assert abs(expected-D(str(total)))<D('.000001')
+assert load('baseline-npm-audit.json')['metadata']['vulnerabilities']['total']==0
+assert load('prototype-npm-audit.json')['metadata']['vulnerabilities']['high']==18
+for md in [r/'docs/OPEN-SOURCE-ECOSYSTEM.md',p/'README.md',r/'README.md']:
+ for link in re.findall(r'\]\(([^)]+)\)',md.read_text()):
+  if not link.startswith(('http:','https:','#','mailto:')):assert (md.parent/link.split('#')[0]).exists(),(md,link)
+print('PASS: 13 repositorios; JSON; ventanas; cálculos independientes; integridad; puntuaciones/sensibilidad; avisos; enlaces locales.')

@@ -1,0 +1,10 @@
+import { _electron as electron } from '/Users/ruzer/Proyectos/FreyaLab/node_modules/@playwright/test/index.mjs';
+import {writeFile} from 'node:fs/promises';
+const results=[];
+for(const mode of ['graphic','perspective'])for(const n of [3000,100000]){
+ const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;
+ const app=await electron.launch({executablePath:'/Users/ruzer/Proyectos/FreyaLab/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron',args:['/private/tmp/freyalab-visual-poc/electron.cjs'],env:{...env,POC_MODE:mode,POC_N:String(n)},chromiumSandbox:true,timeout:30000});
+ try{const page=await app.firstWindow();const errors=[];page.on('pageerror',e=>errors.push(String(e)));await page.waitForFunction(()=>window.poc,{timeout:60000});await page.getByText('City',{exact:true}).first().waitFor({timeout:20000});await page.waitForTimeout(1500);const state=await page.evaluate(()=>({poc:window.poc,text:document.body.innerText.slice(0,700),svgs:document.querySelectorAll('svg').length,canvases:document.querySelectorAll('canvas').length}));const memory=await app.evaluate(({app})=>app.getAppMetrics().map(m=>({type:m.type,workingSetKiB:m.memory.workingSetSize})));await page.screenshot({path:`/private/tmp/freyalab-visual-poc/${mode}-${n}.png`});results.push({mode,n,...state,memory,errors});}catch(error){results.push({mode,n,error:String(error)})}finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{})}
+ await writeFile('/private/tmp/freyalab-visual-poc/results.json',JSON.stringify(results,null,2));
+}
+console.log(JSON.stringify(results,null,2));

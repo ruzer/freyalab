@@ -1,0 +1,21 @@
+{
+  "platform": "darwin",
+  "arch": "arm64",
+  "cpu": "Apple M2 Max",
+  "memory_bytes": 34359738368,
+  "electron": "44.9.2",
+  "node": "24.22.1",
+  "svelte": "5.57.2",
+  "vite": "8.3.4",
+  "react": "19.3.1",
+  "react_dom": "19.3.1",
+  "graphic_walker": "0.5.3",
+  "perspective": "5.6.0",
+  "baseline_commit": "bf5e670b455ccfb3e25d60b0fc0750239df582cb",
+  "baseline_main_ci": {
+    "run": 39793117174,
+    "conclusion": "success",
+    "scope": "Context only. Not the evaluation branch CI or prototype validation."
+  },
+  "measurement_notes": "Single run per case; preparation-to-ready timing, not cold app startup or first-paint latency. Observed sum working set, not peak/exclusive library memory. Processing trial uses a separate fixture measurement after modules initialized."
+}

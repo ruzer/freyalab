@@ -1,0 +1,14 @@
+{
+  "recorded_at_utc": "2026-10-22T18:49:12.121585+00:00",
+  "status": "passed",
+  "checks": [
+    "13 repository metadata snapshots",
+    "complete 90/365 default-branch author histories, DuckDB retry archived with SHA-256",
+    "independent group sums at 3000 and 100000 rows",
+    "explicit schema preserves identifiers, empty versus missing; automatic schema failure reproduced",
+    "exact weighted scores and 18 sensitivity scenarios recomputed with Decimal",
+    "all JSON parseable and local Markdown targets exist",
+    "baseline and prototype audit counts verified"
+  ],
+  "scope": "Evidence and documentation validation. No architecture, dependency or installer changes in this branch. No claim of complete alternative-widget integration or human usability testing."
+}
