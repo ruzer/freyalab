@@ -50,7 +50,7 @@ Referencias: [importaciones modulares ECharts](https://echarts.apache.org/handbo
 
 El título y los ejes explican, por ejemplo, **Suma de Total MXN por Ciudad**. El alcance aparece tanto en pantalla como en las imágenes exportadas. El modo avanzado conserva la consulta reproducible; no es necesario usarlo para crear gráficos. Si no hay valores numéricos utilizables, se pide cambiar de columna o contar filas/valores únicos. No se modifica el archivo original ni su historial.
 
-Consulta [evidencia de DW-01](evidence/visual-chart-builder-2026-10-22.md) y el [objetivo actualizado DW-01 a DW-10](WORKSPACE-EVOLUTION.md). Las series categóricas llegan en DW-02a, descritas abajo. La agrupación temporal llega en DW-02b, descrita abajo. Filtros propios, persistencia, exportación tabular agregada y sugerencias locales siguen pendientes.
+Consulta [evidencia de DW-01](evidence/visual-chart-builder-2026-10-22.md) y el [objetivo actualizado DW-01 a DW-10](WORKSPACE-EVOLUTION.md). Las series categóricas llegan en DW-02a, descritas abajo. La agrupación temporal llega en DW-02b, descrita abajo. Los filtros propios llegan en DW-02c, descritos abajo. Persistencia, exportación tabular agregada y sugerencias locales siguen pendientes.
 
 Al cambiar una medida ya elegida, se restablece Texto/identificador y conteo: el tipo no se hereda a otra columna. Si cambia la lista de encabezados, el constructor se reinicia y cancela su cálculo anterior. No intenta reutilizar una configuración por índice sobre otras columnas.
 
@@ -83,3 +83,20 @@ En **Barras** o **Líneas**, elige **Agrupar fechas → Día / Mes / Año**, la 
 - La ausencia de fechas válidas tiene un mensaje propio y no habilita exportar un gráfico vacío como resultado correcto. Fechas descartadas aparecen también en la descripción accesible y SVG/PNG/PDF.
 
 Sin nuevas dependencias, motor ni cambios del guardado/recuperación. Reutiliza las [funciones de fecha de DuckDB](https://duckdb.org/docs/current/sql/functions/date) y el renderer ECharts existente. [Evidencia de DW-02b](evidence/chart-time-groups-2026-10-22.md).
+
+
+## DW-02c — filtros propios del gráfico
+
+**Filtros del gráfico** abre el mismo editor de condiciones de la tabla, sin los controles de orden. Elige columna, operador y valor; combina mediante **Todas (Y)** o **Cualquier (O)** y pulsa **Aplicar filtros del gráfico**. Texto, números, fechas y regex conservan la semántica y los límites del motor tabular existente. No necesitas SQL. **Quitar filtros del gráfico** elimina solo este grupo.
+
+- El alcance se elige primero: documento completo o vista filtrada de la tabla. Después se aplica el grupo propio, antes del cálculo/agrupación en DuckDB. Si ambos grupos usan O, el resultado es `(grupo de tabla) Y (grupo de gráfico)`, sin mezclar todas las condiciones en un solo O.
+- No modifica búsqueda, filtros, orden, selección, historial ni archivo original de la tabla. Los recuentos del gráfico corresponden a las coincidencias de su fuente, no al total original.
+- Abrir/editar un borrador no altera un gráfico válido; Cancelar o Escape lo descarta. Aplicar/quitar filtros invalida el resultado y requiere generar de nuevo. Escape cierra solo el editor activo y devuelve foco al botón de filtros; otro Escape desde el gráfico conserva el comportamiento de cerrar el panel.
+- Los nombres accesibles del editor reutilizado son únicos por instancia. La tabla puede tener abierta su consulta avanzada sin que el editor del gráfico la cierre o confunda encabezados.
+- El panel muestra cantidad/modo de condiciones y un detalle legible de las reglas. SVG/PNG/PDF y la descripción accesible incluyen el alcance y la cantidad/modo de filtros propios. El informe SQL conserva las condiciones adicionales estructuradas/descritas cuando su fuente las tiene.
+- Un CSV abierto como muestra permite aplicar filtros propios sobre **el archivo original completo leído desde disco**, dentro del presupuesto vigente. Esto no filtra solamente las 200 filas de la muestra ni habilita guardarla/exportarla como CSV completo. La vista filtrada de la tabla de muestra sigue rechazada.
+- El filtrado reutiliza `compileTableQuery` en el proceso tabular antes de enviar coincidencias por Arrow. DuckDB sigue haciendo agregaciones/estadísticas; no hay otro motor ni SQL construido con los valores del formulario.
+- Toda fila leída se valida y cuenta para los límites antes de descartarla: estructura, 1 MiB por registro, 256 MiB decodificados, dos millones de filas y ocho millones de celdas por fuente. Filtrar todo no permite eludir límites ni ocultar registros malformados. El recorrido cede el control para cancelar aunque no haya coincidencias.
+- Máximo veinte condiciones propias, además del grupo existente de tabla. Comparaciones numéricas explícitas usan el decimal del motor tabular; texto sigue siendo texto (por ejemplo `001` y `1`). Fechas de filtro ISO y expresiones RE2 con los límites existentes. Errores no vuelven silenciosamente al documento sin filtros.
+
+Los filtros son de filas de origen, no condiciones sobre un agregado ya calculado. Todavía no se guardan configuraciones al cerrar el panel/cambiar de archivo (DW-03); un cambio de encabezados reinicia el constructor para evitar aplicar índices a otras columnas. [Evidencia de DW-02c](evidence/chart-local-filters-2026-10-22.md).

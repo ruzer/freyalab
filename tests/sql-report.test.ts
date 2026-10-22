@@ -23,3 +23,9 @@ describe('informes de resultados SQL',()=>{
   expect(text).toContain('``````sql');expect(html).not.toMatch(/<(img|a|script|iframe|svg)\b/);expect(html).not.toContain('class="katex');expect(html).toContain('&#x3C;img');expect(html).toContain('\\r\\n\\u0000');expect(html.match(/<thead>/g)).toHaveLength(4);expect(html.match(/<th>/g)).toHaveLength(12)
  })
 })
+
+it('documenta los filtros adicionales y su alcance con textos escapados, sin modificar el resultado',async()=>{
+ const where={filterMode:'any' as const,conditions:[{column:0,op:'equals' as const,value:'00123',caseSensitive:true},{column:0,op:'contains' as const,value:'<img src=x> | [clic](https://evil.test/)'}]},data={...result,sources:[{...result.sources[0],fromDisk:true,filtered:true,columns:[{name:'ID',original:'ID',index:0}],where}]},before=structuredClone(data)
+ const text=sqlReport(data,'SELECT * FROM datos'),{html}=await markdownHTML(text)
+ expect(text).toContain('Filtros del análisis');expect(text).toContain('no son el total original');expect(text).toContain('Cualquier condición (O)');expect(text).toContain('00123');expect(text).toContain('distingue mayúsculas');expect(sqlReport({...data,sources:[{...data.sources[0],where:{filterMode:'all',conditions:[{column:0,op:'greater',value:'1',caseSensitive:true}]}}]},'SELECT * FROM datos')).not.toContain('distingue mayúsculas');expect(html).not.toMatch(/<(img|a|script)\b/);expect(data).toEqual(before)
+})
