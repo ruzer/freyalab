@@ -76,3 +76,24 @@ it('series de líneas y dispersión conservan ejes numéricos, huecos y orden si
  const scatter=chartOption({...data,rows:data.rows.filter(row=>row[1]!==null)},{...options,kind:'scatter',series:2},colors)
  expect(scatter.series).toMatchObject([{type:'scatter',data:[[1,5]]},{type:'scatter',data:[[1,7],[3,9]]}])
 })
+
+it('agrupa fechas con unidades permitidas y limita el calendario antes de materializar huecos',()=>{
+ const settings={...options,kind:'line' as const,x:0,y:1,aggregate:'sum' as const,time:'month' as const}
+ const sql=chartSQL(['Fecha','Total'],settings)
+ expect(sql).toContain("date_trunc('month',dx)");expect(sql).toContain('TRY_CAST(TRIM(x) AS DATE)');expect(sql).toContain('range(LEAST(size,2001))');expect(sql).toContain('lo + i');expect(sql).not.toContain('generate_series');expect(sql).toContain('stats.invalid_dates')
+ expect(chartSQL(['Fecha','Total','Tipo'],{...settings,series:2})).toContain('series_values AS (SELECT DISTINCT series FROM base LIMIT 9)')
+ expect(chartSQL(['Fecha','Total'],{...settings,descending:true})).toContain('hi - i')
+ for(const time of ['month); DROP TABLE datos','toString'] as never[])expect(()=>chartSQL(['Fecha','Total'],{...settings,time})).toThrow('temporal válida')
+ expect(()=>chartSQL(['Fecha','Total'],{...settings,kind:'scatter'})).toThrow('no admite agrupación temporal')
+ expect(()=>chartSQL(['Fecha','Total'],{...settings,measureType:'text'})).toThrow('medida numérica')
+ expect(chartSQL(['Fecha'],{...settings,aggregate:'count',measureType:'text',y:-1})).toContain('NULL AS y')
+ const columns=['total','usable','points','present','x','value','series','series_count','invalid_dates']
+ const data=chartData('line',columns,[['5','3','3','1','2026-01','10','A','1','2'],['5','3','3','1','2026-02',null,'A','1','2'],['5','3','3','1','2026-03','20','A','1','2']])
+ expect(data).toMatchObject({invalidDates:2,seriesCount:1,columns:['x','value','series']})
+ const plot=chartOption(data,{...settings,series:2},colors,['Fecha','Total','Tipo'])
+ expect(plot.title).toMatchObject({text:'Suma de Total por mes de Fecha, separado por Tipo',subtext:expect.stringContaining('Fechas no válidas/vacías/ausentes: 2')})
+ expect(plot.xAxis).toMatchObject({type:'category',name:'Mes de Fecha',data:['2026-01','2026-02','2026-03']});expect(plot.series).toMatchObject([{type:'line',connectNulls:false,data:[10,null,20]}])
+ const solo=chartOption({...data,columns:['x','value'],rows:data.rows.map(row=>row.slice(0,2))},settings,colors,['Fecha','Total'])
+ expect(solo.series).toMatchObject([{type:'line',connectNulls:false,data:[10,null,20]}])
+ expect(()=>chartData('line',columns,[['5','3','3','1','2026-01','10','A','1','3']])).toThrow('Recuento de fechas')
+})
