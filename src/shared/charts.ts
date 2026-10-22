@@ -1,7 +1,8 @@
 import {quoteIdentifier,sqlColumns} from './sql-helpers'
 export const chartKinds={histogram:'Histograma',bar:'Barras',line:'Líneas',scatter:'Dispersión',heatmap:'Mapa de calor',box:'Diagrama de caja'} as const
 export type ChartKind=keyof typeof chartKinds
-export interface ChartOptions {kind:ChartKind;x:number;y:number;bins:number;aggregate:'count'|'sum'|'average';descending:boolean}
+export const chartAggregates={count:'Conteo de filas',distinct:'Valores únicos',sum:'Suma',average:'Promedio',min:'Mínimo',max:'Máximo',median:'Mediana'} as const
+export interface ChartOptions {kind:ChartKind;x:number;y:number;bins:number;aggregate:keyof typeof chartAggregates;descending:boolean;measureType:'text'|'number'}
 export const chartLimit=(kind:ChartKind)=>kind==='line'||kind==='scatter'?2000:kind==='heatmap'?400:100
 
 // Each query aggregates the full source in DuckDB; only bounded plot rows reach the UI.
@@ -9,8 +10,10 @@ export function chartSQL(headers:string[],options:ChartOptions){
  const names=sqlColumns(headers),column=(index:number)=>{if(!Number.isInteger(index)||!names[index])throw new Error('Elige una columna válida.');return quoteIdentifier(names[index].name)}
  if(!Object.hasOwn(chartKinds,options.kind))throw new Error('Elige un tipo de gráfico válido.')
  if(!Number.isInteger(options.bins)||options.bins<1||options.bins>30)throw new Error('Elige entre 1 y 30 intervalos.')
- if(!['count','sum','average'].includes(options.aggregate))throw new Error('Elige una agregación válida.')
- const x=column(options.x),y=column(options.y),direction=options.descending?'DESC':'ASC'
+ if(!Object.hasOwn(chartAggregates,options.aggregate))throw new Error('Elige una agregación válida.')
+ if(!['text','number'].includes(options.measureType))throw new Error('Elige texto o número para la medida.')
+ if(options.kind==='bar'&&!['count','distinct'].includes(options.aggregate)&&options.measureType!=='number')throw new Error('Este cálculo necesita una medida numérica. Elige Número de forma explícita.')
+ const x=column(options.x),y=options.kind==='bar'&&options.aggregate==='count'?'NULL':column(options.y),direction=options.descending?'DESC':'ASC'
  const number=(name:string)=>`CASE WHEN regexp_full_match(TRIM(${name}), '[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?') AND ABS(TRY_CAST(${name} AS DOUBLE)) <= 9007199254740991 THEN TRY_CAST(${name} AS DOUBLE) END`
  let cte=`raw AS (SELECT row_number() OVER () AS fila, ${x} AS x, ${y} AS y FROM datos), base AS (SELECT *, ${number('x')} AS nx, ${number('y')} AS ny FROM raw)`
  let points:string,usable:string,order='p.x ASC NULLS FIRST',extra=''
@@ -21,8 +24,9 @@ export function chartSQL(headers:string[],options:ChartOptions){
   extra=', p.upper'
  }else if(options.kind==='bar'||options.kind==='heatmap'){
   const aggregate=options.kind==='heatmap'?'count':options.aggregate
-  usable=aggregate==='count'?'TRUE':'ny IS NOT NULL'
-  points=`SELECT x${options.kind==='heatmap'?', y':''}, ${aggregate==='count'?'COUNT(*)':aggregate==='sum'?'SUM(ny)':'AVG(ny)'} AS value FROM base GROUP BY x${options.kind==='heatmap'?', y':''}`
+  usable=aggregate==='count'?'TRUE':aggregate==='distinct'?'y IS NOT NULL':'ny IS NOT NULL'
+  const operation={count:'COUNT(*)',distinct:'COUNT(DISTINCT y)',sum:'SUM(ny)',average:'AVG(ny)',min:'MIN(ny)',max:'MAX(ny)',median:'MEDIAN(ny)'}[aggregate]
+  points=`SELECT x${options.kind==='heatmap'?', y':''}, ${operation} AS value FROM base GROUP BY x${options.kind==='heatmap'?', y':''}`
   order=options.kind==='heatmap'?'p.x ASC NULLS FIRST, p.y ASC NULLS FIRST':`p.value ${direction} NULLS LAST, p.x ASC NULLS FIRST`
   if(options.kind==='heatmap')extra=', p.y'
  }else if(options.kind==='line'||options.kind==='scatter'){
@@ -37,6 +41,15 @@ export function chartSQL(headers:string[],options:ChartOptions){
   extra=', p.q1, p.q3, p.low, p.high, p.outliers, p.count, p.atypical'
  }
  return `WITH ${cte}, points AS (${points}), stats AS (SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE ${usable}) AS usable FROM base) SELECT stats.total, stats.usable, (SELECT COUNT(*) FROM points) AS points, p.present, p.x, p.value${extra} FROM stats LEFT JOIN (SELECT *, 1 AS present FROM points) p ON TRUE ORDER BY ${order} LIMIT ${chartLimit(options.kind)+1};`
+}
+
+export function chartLabels(headers:string[],options:ChartOptions){
+ const x=headers[options.x]||`Columna ${options.x+1}`,y=options.y<0?'una columna':headers[options.y]||`Columna ${options.y+1}`
+ if(options.kind==='histogram')return{x:`Intervalos de ${y}`,y:'Frecuencia (filas)',summary:`Distribución de ${y}`}
+ if(options.kind==='bar'){const value=options.aggregate==='count'?'Conteo de filas':`${chartAggregates[options.aggregate]} de ${y}`;return{x,y:value,summary:`${value} por ${x}`}}
+ if(options.kind==='heatmap')return{x,y,summary:`Conteo de filas por ${x} y ${y}`}
+ if(options.kind==='box')return{x,y,summary:`Distribución de ${y} por ${x}`}
+ return{x,y,summary:`${y} según ${x}`}
 }
 
 export interface ChartData {total:number;usable:number;points:number;limited:boolean;rows:(string|null)[][];columns:string[]}

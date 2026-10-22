@@ -15,6 +15,7 @@ describe('informes de resultados SQL',()=>{
   const text=sqlReport({...result,limited:true,sources:[{...result.sources[0],fromDisk:true}]},'SELECT * FROM datos')
   expect(text).toContain('RESULTADO PARCIAL');expect(text).toContain('primeras 10 000');expect(text).toContain('Archivo completo desde disco; el editor solo muestra una muestra');expect(text).not.toContain('MUESTRA LIMITADA')
   expect(sqlReport({...result,rows:[],returnedRows:0},'SELECT * FROM datos WHERE false')).toContain('Sin filas de resultado.')
+  expect(sqlReport({...result,sources:[{...result.sources[0],filtered:true}]},'SELECT * FROM datos')).toContain('Vista filtrada del documento en memoria')
  })
  it('preserva encabezados duplicados y textos hostiles sin generar HTML, enlaces, fórmulas ni columnas falsas',async()=>{
   const hostile='<img src="https://evil.test/x"> | $x$ [clic](https://evil.test/) ```\r\n\u0000',data={...result,columns:[{name:hostile,type:'VARCHAR'},{name:hostile,type:'VARCHAR'}],rows:[[hostile,null]],returnedRows:1},sql="SELECT '```\\n<img src=evil>\\n`````' AS x;"

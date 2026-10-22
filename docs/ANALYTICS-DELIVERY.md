@@ -1,4 +1,6 @@
-# Evolución analítica de FreyaLab — seguimiento del objetivo
+# Evolución analítica de FreyaLab — seguimiento histórico A–D
+
+El objetivo general fue actualizado el 22 de octubre de 2026: [roadmap activo DW-01 a DW-10](WORKSPACE-EVOLUTION.md). Este documento conserva la cobertura y evidencia previas; no se borran funcionalidades ni pendientes. DW-01 se trabaja en `codex/visual-chart-builder`; su evidencia se registra por separado.
 
 Estado al 21 de octubre de 2026. Las entregas A/B de los PR #11/#12 ya están en `main`; el PR #6 se cerró como resuelto, con su corrección y auditoría preservadas. El PR #13 llegó a `main`; #14 y #15 se fusionaron en sus ramas base y sus cambios se incluyen en `codex/csv-transformations` para un PR dirigido a `main`. Este documento mantiene el objetivo completo A–D; una entrega parcial no lo cierra. Complementa la [auditoría y roadmap CSV](CSV-ADVANCED-ROADMAP.md), sin repetirlos. «Implementado en rama» significa código y pruebas de desarrollo, pendiente de revisión e integración; no capacidad del instalador alpha.1.
 

@@ -50,7 +50,7 @@ async function handle(operation:string,args:unknown[]){
  case'edit':return docs.tableEdit(id.parse(a),edits.parse(b) as TableEdit)
  case'options':return docs.tableOptions(id.parse(a),z.object({encoding:z.enum(['utf8','utf16le','win1252']).optional(),delimiter:z.enum([',',';','\t','|']).optional(),header:z.boolean().optional()}).parse(b) as TableOptions)
  case'undo':return docs.undo(id.parse(a),z.boolean().optional().parse(b))
- case'sqlRun':return analytics.run(z.object({requestId:z.uuid(),sources:z.array(z.object({id,revision:z.number().int().nonnegative()})).min(1).max(4),sql:z.string().trim().min(1).max(100000)}).parse(a))
+ case'sqlRun':return analytics.run(z.object({requestId:z.uuid(),sources:z.array(z.object({id,revision:z.number().int().nonnegative(),query:query.optional()})).min(1).max(4),sql:z.string().trim().min(1).max(100000)}).parse(a))
  case'sqlPage':return analytics.page(id.parse(a),z.number().int().min(0).max(9999).parse(b))
  case'sqlCancel':return analytics.cancel(id.parse(a))
  case'analyzeColumn':docs.get(id.parse(a));return docs.table.call('analyzeColumn',a,z.object({column:col,otherColumn:col.optional(),query:query.optional(),revision:z.number().int().nonnegative(),requestId:z.uuid(),frequencyOffset:z.number().int().min(0).max(2000000),duplicatesOnly:z.boolean(),bins:z.number().int().min(1).max(30)}).parse(b))

@@ -11,3 +11,7 @@ El objetivo solo se considera terminado cuando el código está integrado, las c
 Markdown/texto/Mermaid editables hasta 10 MiB. CSV/TSV editables hasta 50 MiB, dos millones de celdas y registros de hasta 1 MiB. Archivos tabulares mayores: únicamente muestra de hasta 200 registros completos y 8 MiB leídos. Los límites se comunican en la interfaz; nunca se presenta una muestra como el archivo íntegro.
 
 No incluye MarkItDown, OCR, herramientas PDF, multimedia, SQL, otros lenguajes de diagramación ni edición integral de archivos de GB.
+
+## Evolución posterior a la alfa
+
+El objetivo actualizado de desarrollo y sus fases DW-01 a DW-10 están en [WORKSPACE-EVOLUTION.md](WORKSPACE-EVOLUTION.md). Mantiene el alcance y evidencia de la alfa publicados; completar una fase no cierra el objetivo general ni autoriza una nueva release.

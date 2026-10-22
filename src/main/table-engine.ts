@@ -318,11 +318,13 @@ export class TableEngine {
  }
  async undo(id:string,redo=false){const s=this.editable(id);const source=redo?s.future:s.history,target=redo?s.history:s.future;const change=source.at(-1);if(change){this.apply(s,redo?change.forward:change.backward);source.pop();s.token=redo?change.after:change.before;s.revision++;target.push(change)}return this.info(id)}
  private async selected(id:string,options:TableExport){const s=this.get(id),revision=s.revision;if(s.readonly)throw new Error('La muestra no permite exportar el archivo ni selecciones.');let indices:number[];if(options.scope==='selection'&&options.range){const selected=await this.rangeRows(id,options.range);return{rows:selected.indices.map(i=>selected.columns.map(col=>s.rows[i].cells[col]??'')),headers:selected.columns.map(col=>s.headers[col])}}if(options.scope==='filtered')indices=await this.indices(id,options.query??{offset:0,limit:500,requestId:0});else if(options.scope==='selection'){const ids=new Set(options.rowIds??[]);indices=s.rows.flatMap((row,i)=>ids.has(row.id)?[i]:[])}else indices=s.rows.map((_,i)=>i);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.');const columns=options.columns??s.headers.map((_,i)=>i);if(columns.some(i=>!Number.isInteger(i)||i<0||i>=s.headers.length))throw new Error('Selección de columnas no válida.');return{rows:indices.map(i=>columns.map(col=>s.rows[i].cells[col]??'')),headers:columns.map(col=>s.headers[col])}}
- async analysisStart(id:string,ticket:string,revision:number,path:string|null){
+ async analysisStart(id:string,ticket:string,revision:number,path:string|null,query?:TableQuery){
   const s=this.get(id);if(s.revision!==revision)throw new Error('La tabla cambió. Vuelve a analizar.');if(s.headers.length>ANALYSIS_LIMITS.columns)throw new Error('El análisis admite hasta 200 columnas por fuente.')
   if(s.readonly&&!path)throw new Error('La muestra necesita su archivo original para el análisis completo.')
+  if(s.readonly&&query)throw new Error('La vista filtrada de una muestra no representa el archivo completo. Elige documento completo.')
   const ensure=()=>{const active=this.streams.get(ticket);if(!active||this.states.get(id)!==s||s.revision!==revision)throw new Error('Transferencia cancelada: cambió la fuente o la solicitud.')}
-  const records=s.readonly?fileRecords(path!,s,ensure):(function*(){for(const row of s.rows)yield row.cells})()
+  const indices=()=>this.indices(id,{...query!,order:[],sort:undefined},ensure)
+  const records=s.readonly?fileRecords(path!,s,ensure):(async function*(){for(const index of query?await indices():s.rows.keys()){ensure();yield s.rows[index].cells}})()
   this.streams.set(ticket,{id,iterator:arrowBatches(records,s.headers.length,ensure)})
   return{headers:[...s.headers],revision:s.revision,readonly:s.readonly}
  }
