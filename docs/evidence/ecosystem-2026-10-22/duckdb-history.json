@@ -1,0 +1,476 @@
+{
+  "raw_archive": "duckdb-history.json.gz",
+  "raw_sha256": "8f9ffe7428a7b4d314a105ca78eea3aa319da136f5649d3d07bd97dd09edc682",
+  "repositories": {
+    "duckdb": {
+      "complete": true,
+      "pages": 266,
+      "commits": 26501,
+      "metadata": {
+        "url": "https://github.com/duckdb/duckdb",
+        "stargazerCount": 42396,
+        "forkCount": 3989,
+        "isArchived": false,
+        "licenseInfo": {
+          "spdxId": "MIT"
+        },
+        "defaultBranchRef": {
+          "name": "main",
+          "target": {
+            "oid": "3ee06a9c7064b6178d57554e2a7b03357043246e",
+            "history": {
+              "totalCount": 26501,
+              "pageInfo": {
+                "hasNextPage": false,
+                "endCursor": "3ee06a9c7064b6178d57554e2a7b03357043246e 26500"
+              },
+              "nodes": [
+                {
+                  "oid": "9a901244628b10988d92fcbeff78ba4b6e47b372",
+                  "committedDate": "2025-10-22T19:42:42Z",
+                  "author": {
+                    "user": null
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "releases": {
+          "nodes": [
+            {
+              "tagName": "v2.0.0",
+              "publishedAt": "2026-10-21T12:49:12Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v2.0.0"
+            },
+            {
+              "tagName": "v1.5.6",
+              "publishedAt": "2026-09-28T13:35:11Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.6"
+            },
+            {
+              "tagName": "v1.5.5",
+              "publishedAt": "2026-07-22T10:51:50Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.5"
+            },
+            {
+              "tagName": "v1.5.4",
+              "publishedAt": "2026-06-17T10:45:53Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.4"
+            },
+            {
+              "tagName": "v1.4.5",
+              "publishedAt": "2026-06-17T10:42:38Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v1.4.5"
+            },
+            {
+              "tagName": "v1.5.3",
+              "publishedAt": "2026-05-20T11:50:43Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.3"
+            },
+            {
+              "tagName": "v1.5.2",
+              "publishedAt": "2026-04-13T10:46:51Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.2"
+            },
+            {
+              "tagName": "v1.5.1",
+              "publishedAt": "2026-03-23T12:10:58Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.1"
+            },
+            {
+              "tagName": "v1.5.0",
+              "publishedAt": "2026-03-09T12:40:59Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.0"
+            },
+            {
+              "tagName": "v1.4.4",
+              "publishedAt": "2026-01-26T12:08:09Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v1.4.4"
+            },
+            {
+              "tagName": "v1.4.3",
+              "publishedAt": "2025-12-09T10:20:40Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v1.4.3"
+            },
+            {
+              "tagName": "v1.4.2",
+              "publishedAt": "2025-11-12T13:04:29Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v1.4.2"
+            },
+            {
+              "tagName": "v1.4.1",
+              "publishedAt": "2025-10-07T10:29:57Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v1.4.1"
+            },
+            {
+              "tagName": "v1.4.0",
+              "publishedAt": "2025-09-16T10:17:31Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v1.4.0"
+            },
+            {
+              "tagName": "v1.3.2",
+              "publishedAt": "2025-07-08T10:39:09Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb/releases/tag/v1.3.2"
+            }
+          ]
+        },
+        "openIssues": {
+          "totalCount": 572
+        },
+        "closedIssues": {
+          "totalCount": 7410
+        },
+        "openPR": {
+          "totalCount": 370
+        }
+      }
+    },
+    "duckdb-wasm": {
+      "complete": true,
+      "pages": 2,
+      "commits": 129,
+      "metadata": {
+        "url": "https://github.com/duckdb/duckdb-wasm",
+        "stargazerCount": 2146,
+        "forkCount": 236,
+        "isArchived": false,
+        "licenseInfo": {
+          "spdxId": "MIT"
+        },
+        "defaultBranchRef": {
+          "name": "main",
+          "target": {
+            "oid": "1f85a503e0c25f0c0980f205915de328c923f476",
+            "history": {
+              "totalCount": 129,
+              "pageInfo": {
+                "hasNextPage": false,
+                "endCursor": "1f85a503e0c25f0c0980f205915de328c923f476 128"
+              },
+              "nodes": [
+                {
+                  "oid": "9efa2587cb091334aeb0e2b9ce4d762f516a5c86",
+                  "committedDate": "2025-12-22T11:52:15Z",
+                  "author": {
+                    "user": {
+                      "login": "dependabot[bot]"
+                    }
+                  }
+                },
+                {
+                  "oid": "ec1f56125210e8093bf20461854597675e90f5d0",
+                  "committedDate": "2025-12-22T11:52:03Z",
+                  "author": {
+                    "user": {
+                      "login": "dependabot[bot]"
+                    }
+                  }
+                },
+                {
+                  "oid": "bb8fa2e247b09b9e6f07f924808567a7174aadf9",
+                  "committedDate": "2025-12-22T11:51:42Z",
+                  "author": {
+                    "user": {
+                      "login": "dependabot[bot]"
+                    }
+                  }
+                },
+                {
+                  "oid": "86436300422461e24ef70f4994555f2b523d0b8f",
+                  "committedDate": "2025-12-22T11:51:24Z",
+                  "author": {
+                    "user": {
+                      "login": "dependabot[bot]"
+                    }
+                  }
+                },
+                {
+                  "oid": "fa229d00196a6345fa8160941cc1c38ec5460405",
+                  "committedDate": "2025-12-17T10:12:41Z",
+                  "author": {
+                    "user": {
+                      "login": "gregnr"
+                    }
+                  }
+                },
+                {
+                  "oid": "86baaf89f36794931f59461428b40b96a345e0c0",
+                  "committedDate": "2025-12-17T10:12:41Z",
+                  "author": {
+                    "user": {
+                      "login": "gregnr"
+                    }
+                  }
+                },
+                {
+                  "oid": "56eda939d9e62c41244b4e67f86442a9e785f448",
+                  "committedDate": "2025-12-17T10:12:41Z",
+                  "author": {
+                    "user": {
+                      "login": "gregnr"
+                    }
+                  }
+                },
+                {
+                  "oid": "32cdb59c5d4b0d43aeb9a85448774589da620f09",
+                  "committedDate": "2025-12-16T13:14:46Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "fa1d47b38ed0821cecab0bdc331c48abd0f2cc65",
+                  "committedDate": "2025-12-16T11:30:58Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "a20b8290e79e37a7b914e62621aa412d69ba95fc",
+                  "committedDate": "2025-12-16T10:37:39Z",
+                  "author": {
+                    "user": {
+                      "login": "dependabot[bot]"
+                    }
+                  }
+                },
+                {
+                  "oid": "170166b1cd371ca1fe4198313b5af5fac56d9956",
+                  "committedDate": "2025-12-16T10:36:04Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "cf9eca168a4714fe70f0ce380a836e653c520b27",
+                  "committedDate": "2025-12-16T10:29:59Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "3e3ba8a6dd80b6c593561bb0bbc3d1f2bf11ea2b",
+                  "committedDate": "2025-12-16T10:23:25Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "7757387bd511e2be5f468af9fa52b764c6322289",
+                  "committedDate": "2025-12-16T10:21:28Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "42996c220463df6f2a86181423ec180a4f3a2dd2",
+                  "committedDate": "2025-12-16T09:31:42Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "c0beaa30f5d56beb9e7b5ff2ef475a54713775ec",
+                  "committedDate": "2025-12-09T20:09:05Z",
+                  "author": {
+                    "user": null
+                  }
+                },
+                {
+                  "oid": "e57c2eb6c9cd9125f78f070f2bb3fcd88d52ba30",
+                  "committedDate": "2025-12-09T10:28:33Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "e04ade0c80afed37cd504a59603c09d802a682e4",
+                  "committedDate": "2025-12-09T10:28:33Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "71df06f2f901dbd8c29a72e3b577a8b0e5ccc7bf",
+                  "committedDate": "2025-12-09T10:28:33Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "269b8d1d47886bff2257ff81856300192e39207e",
+                  "committedDate": "2025-11-12T16:32:08Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "0e374faaa1fbd5a5b39f5cc6e2d9b1e583ce5a9a",
+                  "committedDate": "2025-11-12T16:29:44Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "05777e7867c3d6a7c479749ff21a2624f80a1c25",
+                  "committedDate": "2025-11-12T12:52:01Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "1680d92ec1d364c0da23241a25647544a953c5a8",
+                  "committedDate": "2025-11-11T17:24:03Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "56833ea34ddc1579a45e924a7a3c5caaa9dc7b3a",
+                  "committedDate": "2025-11-11T16:38:38Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "04dcfc21b6f39cff6aaefcc4289e4cd5fb98594b",
+                  "committedDate": "2025-11-11T16:37:58Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "0994ed9995155135c81a3440e5270bd61c7650da",
+                  "committedDate": "2025-11-11T10:42:55Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "ae20f77f9f78b739bcd0f3f047005c2043bfe15c",
+                  "committedDate": "2025-11-10T10:27:20Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "9f79f71a75d017564ebe38eea85a2e34dc35282e",
+                  "committedDate": "2025-11-10T10:26:56Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                },
+                {
+                  "oid": "9345998c481075976b9adffd0dbb6792843de3e4",
+                  "committedDate": "2025-11-05T12:45:26Z",
+                  "author": {
+                    "user": {
+                      "login": "carlopi"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "releases": {
+          "nodes": [
+            {
+              "tagName": "v1.33.0",
+              "publishedAt": "2025-12-16T12:23:58Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb-wasm/releases/tag/v1.33.0"
+            },
+            {
+              "tagName": "v1.32.0",
+              "publishedAt": "2025-12-16T10:42:32Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb-wasm/releases/tag/v1.32.0"
+            },
+            {
+              "tagName": "v1.31.0",
+              "publishedAt": "2025-09-26T13:58:14Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb-wasm/releases/tag/v1.31.0"
+            },
+            {
+              "tagName": "v1.30.0",
+              "publishedAt": "2025-09-09T08:36:18Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb-wasm/releases/tag/v1.30.0"
+            },
+            {
+              "tagName": "v1.29.0",
+              "publishedAt": "2024-10-07T13:19:49Z",
+              "isPrerelease": false,
+              "url": "https://github.com/duckdb/duckdb-wasm/releases/tag/v1.29.0"
+            }
+          ]
+        },
+        "openIssues": {
+          "totalCount": 170
+        },
+        "closedIssues": {
+          "totalCount": 185
+        },
+        "openPR": {
+          "totalCount": 34
+        }
+      }
+    }
+  }
+}

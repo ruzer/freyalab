@@ -1,0 +1,2 @@
+const {app,BrowserWindow,session}=require('electron');
+app.whenReady().then(()=>{session.defaultSession.webRequest.onBeforeRequest((details,callback)=>callback({cancel:!details.url.startsWith('http://127.0.0.1:5197/')&&!details.url.startsWith('blob:')}));const w=new BrowserWindow({width:1440,height:900,webPreferences:{sandbox:true,contextIsolation:true,nodeIntegration:false}});w.loadURL('http://127.0.0.1:5197/?mode='+process.env.POC_MODE+'&n='+(process.env.POC_N||3000))})

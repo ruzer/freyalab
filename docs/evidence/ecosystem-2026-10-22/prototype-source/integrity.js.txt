@@ -1,0 +1,13 @@
+export async function runIntegrity(){
+ const [{getComputation},{default:perspective},server,client]=await Promise.all([import('@kanaries/graphic-walker'),import('@perspective-dev/client'),import('@perspective-dev/server/dist/wasm/perspective-server.wasm?url'),import('@perspective-dev/client/dist/wasm/perspective-js.wasm?url')]);await Promise.all([perspective.init_server(fetch(server.default)),perspective.init_client(fetch(client.default))]);const worker=await perspective.worker();const samples=[];
+ for(const n of [3000,100000]){
+  const rows=Array.from({length:n},(_,i)=>({City:i%2?'Puebla':'Oaxaca',Sales:i%10,Code:String(i).padStart(6,'0')})),before=JSON.stringify(rows);
+  let start=performance.now();const graphic=await getComputation(rows)({workflow:[{type:'view',query:[{op:'aggregate',groupBy:['City'],measures:[{field:'Sales',agg:'sum',asFieldKey:'Total'}]}]}]});const graphicProcessingMs=performance.now()-start;
+  start=performance.now();const table=await worker.table(rows);const perspectiveLoadMs=performance.now()-start;start=performance.now();const view=await table.view({group_by:['City'],columns:['Sales'],aggregates:{Sales:'sum'}}),totals=await view.to_json();const perspectiveProcessingMs=performance.now()-start;await view.delete();await table.delete();samples.push({n,graphicProcessingMs,perspectiveLoadMs,perspectiveProcessingMs,graphic,totals,originalUnchanged:before===JSON.stringify(rows)});
+ }
+ const fixture=[{Code:'001',Text:'línea 1\nlínea 2',Empty:''},{Code:'1',Text:'Dice "hola"',Empty:''},{Code:'9007199254740993',Text:'😀'},{Code:'',Text:'<img src=x>'},{Text:'ausente'}];const original=JSON.stringify(fixture),automatic=await worker.table(fixture),schema=await automatic.schema(),autoView=await automatic.view(),autoRows=await autoView.to_json();
+ const explicit=await worker.table({Code:'string',Text:'string',Empty:'string'});await explicit.update(fixture);const explicitView=await explicit.view(),explicitRows=await explicitView.to_json();
+ const graphic=await getComputation(fixture)({workflow:[{type:'view',query:[{op:'raw',fields:['Code','Text','Empty']}]}]});
+ const result={samples,fixture,autoSchema:schema,autoRows,explicitRows,graphic,originalUnchanged:original===JSON.stringify(fixture)};
+ await Promise.all([autoView.delete(),explicitView.delete()]);await Promise.all([automatic.delete(),explicit.delete()]);return result;
+}

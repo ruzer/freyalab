@@ -1,0 +1,16 @@
+import json,subprocess,re,pathlib,datetime
+out=pathlib.Path('/private/tmp/freyalab-ecosystem/docs/evidence/ecosystem-2026-10-22');meta=json.load(open(out/'github.json'));results={}
+for key,r in meta.items():
+ repo=r['nameWithOwner'];p=subprocess.run(['gh','api','--include','repos/'+repo+'/contributors?per_page=1&anon=true'],capture_output=True,text=True,timeout=60)
+ text=p.stdout;match=re.search(r'[?&]page=(\d+)>; rel="last"',text);result={'source':'https://api.github.com/repos/'+repo+'/contributors?per_page=1&anon=true','method':'REST contributors with anonymous authors; per_page=1 and last pagination link. GitHub contributor statistics cache may lag.','count':int(match.group(1)) if match else None}
+ if p.returncode:result['error']=p.stderr[:200]
+ elif not match:
+  try:result['count']=len(json.loads(text[text.index('\n\n')+2:]))
+  except:result['error']='No parsable pagination header'
+ results[key]=result
+ (out/'contributors-total.json').write_text(json.dumps(results,ensure_ascii=False,indent=2))
+ print(key,result.get('count'),flush=True)
+# Security of non-npm engines is not covered by the npm advisory list.
+for key,repo in [('duckdb','duckdb/duckdb'),('polars','pola-rs/polars'),('openrefine','OpenRefine/OpenRefine')]:
+ p=subprocess.run(['gh','api','repos/'+repo+'/security-advisories?per_page=100'],capture_output=True,text=True,timeout=60)
+ (out/(key+'-repository-advisories.json')).write_text(p.stdout if p.returncode==0 else json.dumps({'unavailable':p.stderr[:300]}))

@@ -1,0 +1,464 @@
+{
+  "tanstack": [],
+  "tabulator": [],
+  "aggrid": [
+    {
+      "ghsa_id": "GHSA-328p-362g-r48j",
+      "cve_id": "CVE-2024-39001",
+      "url": "https://api.github.com/advisories/GHSA-328p-362g-r48j",
+      "html_url": "https://github.com/advisories/GHSA-328p-362g-r48j",
+      "summary": "ag-grid packages vulnerable to Prototype Pollution",
+      "description": "ag-grid-enterprise v31.3.2 was discovered to contain a prototype pollution via the component _ModuleSupport.jsonApply. This vulnerability allows attackers to execute arbitrary code or cause a Denial of Service (DoS) via injecting arbitrary properties.",
+      "type": "reviewed",
+      "severity": "medium",
+      "repository_advisory_url": null,
+      "source_code_location": "https://github.com/ag-grid/ag-grid",
+      "identifiers": [
+        {
+          "value": "GHSA-328p-362g-r48j",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2024-39001",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-39001",
+        "https://gist.github.com/mestrtee/18e8c27f3a6376e7cf082cfe1ca766fa",
+        "https://gist.github.com/mestrtee/c1590660750744f25e86ba1bf240844b",
+        "https://gist.github.com/mestrtee/f8037d492dab0d77bca719e05d31c08b",
+        "https://github.com/ag-grid/ag-grid/issues/8261",
+        "https://github.com/ag-grid/ag-grid/commit/78fb47f6c996f22c0b7184afb29620ab8c240522",
+        "https://www.ag-grid.com/changelog/?fixVersion=32.0.1",
+        "https://github.com/ag-grid/ag-grid/commit/ff731699453f2632d4852b3a3c34b479c406068c",
+        "https://www.ag-grid.com/changelog/?fixVersion=31.3.4",
+        "https://github.com/advisories/GHSA-328p-362g-r48j"
+      ],
+      "published_at": "2024-07-01T15:32:20Z",
+      "updated_at": "2024-08-26T13:51:20Z",
+      "github_reviewed_at": "2024-07-12T14:00:45Z",
+      "nvd_published_at": "2024-07-01T13:15:05Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "@ag-grid-enterprise/charts"
+          },
+          "vulnerable_version_range": "= 32.0.0",
+          "first_patched_version": "32.0.1",
+          "vulnerable_functions": []
+        },
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "ag-grid-community"
+          },
+          "vulnerable_version_range": "= 32.0.0",
+          "first_patched_version": "32.0.1",
+          "vulnerable_functions": []
+        },
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "ag-grid-enterprise"
+          },
+          "vulnerable_version_range": "= 32.0.0",
+          "first_patched_version": "32.0.1",
+          "vulnerable_functions": []
+        },
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "@ag-grid-enterprise/charts"
+          },
+          "vulnerable_version_range": "< 31.3.4",
+          "first_patched_version": "31.3.4",
+          "vulnerable_functions": []
+        },
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "ag-grid-community"
+          },
+          "vulnerable_version_range": "< 31.3.4",
+          "first_patched_version": "31.3.4",
+          "vulnerable_functions": []
+        },
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "ag-grid-enterprise"
+          },
+          "vulnerable_version_range": "< 31.3.4",
+          "first_patched_version": "31.3.4",
+          "vulnerable_functions": []
+        }
+      ],
+      "cvss_severities": {
+        "cvss_v3": {
+          "vector_string": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+          "score": 6.3
+        },
+        "cvss_v4": {
+          "vector_string": "CVSS:4.0/AV:N/AC:L/AT:N/PR:L/UI:N/VC:L/VI:L/VA:L/SC:N/SI:N/SA:N",
+          "score": 5.3
+        }
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-1321",
+          "name": "Improperly Controlled Modification of Object Prototype Attributes ('Prototype Pollution')"
+        }
+      ],
+      "credits": [
+        {
+          "user": {
+            "login": "kiril-matev",
+            "id": 60937283,
+            "node_id": "MDQ6VXNlcjYwOTM3Mjgz",
+            "avatar_url": "https://avatars.githubusercontent.com/u/60937283?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/kiril-matev",
+            "html_url": "https://github.com/kiril-matev",
+            "followers_url": "https://api.github.com/users/kiril-matev/followers",
+            "following_url": "https://api.github.com/users/kiril-matev/following{/other_user}",
+            "gists_url": "https://api.github.com/users/kiril-matev/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/kiril-matev/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/kiril-matev/subscriptions",
+            "organizations_url": "https://api.github.com/users/kiril-matev/orgs",
+            "repos_url": "https://api.github.com/users/kiril-matev/repos",
+            "events_url": "https://api.github.com/users/kiril-matev/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/kiril-matev/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "type": "analyst"
+        },
+        {
+          "user": {
+            "login": "AgidensKevinG",
+            "id": 165291403,
+            "node_id": "U_kgDOCdoliw",
+            "avatar_url": "https://avatars.githubusercontent.com/u/165291403?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/AgidensKevinG",
+            "html_url": "https://github.com/AgidensKevinG",
+            "followers_url": "https://api.github.com/users/AgidensKevinG/followers",
+            "following_url": "https://api.github.com/users/AgidensKevinG/following{/other_user}",
+            "gists_url": "https://api.github.com/users/AgidensKevinG/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/AgidensKevinG/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/AgidensKevinG/subscriptions",
+            "organizations_url": "https://api.github.com/users/AgidensKevinG/orgs",
+            "repos_url": "https://api.github.com/users/AgidensKevinG/repos",
+            "events_url": "https://api.github.com/users/AgidensKevinG/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/AgidensKevinG/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "type": "analyst"
+        }
+      ],
+      "comments": 0,
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+        "score": 6.3
+      },
+      "epss": {
+        "percentage": 0.00827,
+        "percentile": 0.56555
+      }
+    },
+    {
+      "ghsa_id": "GHSA-876p-c77m-x2hc",
+      "cve_id": "CVE-2024-38996",
+      "url": "https://api.github.com/advisories/GHSA-876p-c77m-x2hc",
+      "html_url": "https://github.com/advisories/GHSA-876p-c77m-x2hc",
+      "summary": "Prototype pollution in ag-grid-community via the _.mergeDeep function",
+      "description": "ag-grid-community v31.3.2 and ag-grid-enterprise v31.3.2 were discovered to contain a prototype pollution via the _.mergeDeep function. This vulnerability allows attackers to execute arbitrary code or cause a Denial of Service (DoS) via injecting arbitrary properties. Prior versions were also found to be affected.",
+      "type": "reviewed",
+      "severity": "high",
+      "repository_advisory_url": null,
+      "source_code_location": "https://github.com/ag-grid/ag-grid",
+      "identifiers": [
+        {
+          "value": "GHSA-876p-c77m-x2hc",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2024-38996",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        "https://nvd.nist.gov/vuln/detail/CVE-2024-38996",
+        "https://gist.github.com/mestrtee/18e8c27f3a6376e7cf082cfe1ca766fa",
+        "https://gist.github.com/mestrtee/c1590660750744f25e86ba1bf240844b",
+        "https://gist.github.com/mestrtee/f8037d492dab0d77bca719e05d31c08b",
+        "https://github.com/ag-grid/ag-grid/pull/8290",
+        "https://github.com/advisories/GHSA-876p-c77m-x2hc"
+      ],
+      "published_at": "2024-07-01T15:32:17Z",
+      "updated_at": "2024-09-04T16:39:11Z",
+      "github_reviewed_at": "2024-07-01T22:34:03Z",
+      "nvd_published_at": "2024-07-01T13:15:05Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "ag-grid-enterprise"
+          },
+          "vulnerable_version_range": "< 31.3.4",
+          "first_patched_version": "31.3.4",
+          "vulnerable_functions": []
+        },
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "ag-grid-community"
+          },
+          "vulnerable_version_range": "< 31.3.4",
+          "first_patched_version": "31.3.4",
+          "vulnerable_functions": []
+        }
+      ],
+      "cvss_severities": {
+        "cvss_v3": {
+          "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+          "score": 9.8
+        },
+        "cvss_v4": {
+          "vector_string": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:P",
+          "score": 8.9
+        }
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-1321",
+          "name": "Improperly Controlled Modification of Object Prototype Attributes ('Prototype Pollution')"
+        }
+      ],
+      "credits": [
+        {
+          "user": {
+            "login": "kiril-matev",
+            "id": 60937283,
+            "node_id": "MDQ6VXNlcjYwOTM3Mjgz",
+            "avatar_url": "https://avatars.githubusercontent.com/u/60937283?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/kiril-matev",
+            "html_url": "https://github.com/kiril-matev",
+            "followers_url": "https://api.github.com/users/kiril-matev/followers",
+            "following_url": "https://api.github.com/users/kiril-matev/following{/other_user}",
+            "gists_url": "https://api.github.com/users/kiril-matev/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/kiril-matev/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/kiril-matev/subscriptions",
+            "organizations_url": "https://api.github.com/users/kiril-matev/orgs",
+            "repos_url": "https://api.github.com/users/kiril-matev/repos",
+            "events_url": "https://api.github.com/users/kiril-matev/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/kiril-matev/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "type": "analyst"
+        }
+      ],
+      "comments": 0,
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+        "score": 9.8
+      },
+      "epss": {
+        "percentage": 0.01158,
+        "percentile": 0.66524
+      }
+    }
+  ],
+  "duckdb": [
+    {
+      "ghsa_id": "GHSA-w62p-hx95-gf2c",
+      "cve_id": "CVE-2025-59037",
+      "url": "https://api.github.com/advisories/GHSA-w62p-hx95-gf2c",
+      "html_url": "https://github.com/advisories/GHSA-w62p-hx95-gf2c",
+      "summary": "DuckDB NPM packages 1.3.3 and 1.29.2 briefly compromised with malware",
+      "description": "The DuckDB distribution for [Node.js](http://node.js/) on [npm](https://www.npmjs.com/) was compromised with malware (along with [several other packages](https://www.aikido.dev/blog/npm-debug-and-chalk-packages-compromised)). An attacker published new versions of four of duckdb’s packages that included **malicious code to interfere with cryptocoin transactions**. The following packages and versions are affected:\n\n- `@duckdb/node-api@1.3.3`\n- `@duckdb/node-bindings@1.3.3`\n- `duckdb@1.3.3`\n- `@duckdb/duckdb-wasm@1.29.2`\n\n> Note: The current release version of DuckDB is 1.3.2, with 1.4.0 expected to be released on Sept 10th, 2025 (tomorrow as of this writing). We do not plan to ever release a “legit” DuckDB 1.3.3. Users should double-check that they are not accidentally updating to those affected versions. \n\n\nWe have ourselves noticed this *within four hours* of it happening. Here’s our response:\n\n- As an immediate response, we have **deprecated** the specific versions. \n- We have reached out to npm support to **delete the affected versions**. They were so kind to do so.\n- We have also **re-released** the node packages with higher version numbers (1.3.4/1.30.0) as a further safeguard so the latest version of the package points to a safe version\n\nWe apologize for this issue. We are reviewing our internal processes to ensure the safety of future releases.\n\n### Postmortem ###\n\nOn September 8th (Monday), the DuckDB maintainers received the following message from \"...@npmjs.help\":\n\n<img width=\"1134\" height=\"614\" alt=\"Screenshot 2025-09-09 at 11 07 09\" src=\"https://github.com/user-attachments/assets/0ce24798-1f5a-40b0-ac50-49035d99862b\" />\n\nOne of the maintainers read through this text and found it somewhat reasonable. He followed the link (now defunct) to a website hosted under the domain `npmjs.help`. This website contained a **pixel-perfect copy** of the [npmjs.com](http://npmjs.com/) website. He logged in using the `duckdb_admin` user and password, followed by 2FA. Again, the user profile, settings etc. were a perfect copy of the [npmjs.com](http://npmjs.com/) website including all user data. As requested by the email, he then re-set the 2FA setup. \n\nIn the background, the copycat website forwarded all actions to the actual npm website, so the 2FA was actually updated there, too. But they also added a new API token, which they then used to publish the malicious package versions. In hindsight, the fact that his browser did not auto-complete the login should have been a red flag. It's painful to spell out, but **we fell for a classic phishing attack**.\n\nWe again apologize for this mishap. We are reviewing our internal processes to ensure the safety of future releases. It is fortunate that we noticed this within a few hours of it happening. The DuckDBLabs team was able to set up a call at 7AM to perform an immediate response. Fortunately we were not locked out of our NPM account, which also easily could have happened. We were able to rotate passwords, tokens and API keys immediately.",
+      "type": "reviewed",
+      "severity": "high",
+      "repository_advisory_url": "https://api.github.com/repos/duckdb/duckdb-node/security-advisories/GHSA-w62p-hx95-gf2c",
+      "source_code_location": "https://github.com/duckdb/duckdb-node",
+      "identifiers": [
+        {
+          "value": "GHSA-w62p-hx95-gf2c",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2025-59037",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        "https://github.com/duckdb/duckdb-node/security/advisories/GHSA-w62p-hx95-gf2c",
+        "https://github.com/duckdb/duckdb-node/releases/tag/v1.3.4",
+        "https://nvd.nist.gov/vuln/detail/CVE-2025-59037",
+        "https://www.aikido.dev/blog/npm-debug-and-chalk-packages-compromised",
+        "https://github.com/advisories/GHSA-w62p-hx95-gf2c"
+      ],
+      "published_at": "2025-09-09T14:39:14Z",
+      "updated_at": "2025-09-10T21:08:59Z",
+      "github_reviewed_at": "2025-09-09T14:39:14Z",
+      "nvd_published_at": "2025-09-09T21:15:39Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "duckdb"
+          },
+          "vulnerable_version_range": "= 1.3.3",
+          "first_patched_version": "1.3.4",
+          "vulnerable_functions": []
+        },
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "@duckdb/node-api"
+          },
+          "vulnerable_version_range": "= 1.3.3",
+          "first_patched_version": "1.3.4-alpha.27",
+          "vulnerable_functions": []
+        },
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "@duckdb/node-bindings"
+          },
+          "vulnerable_version_range": "= 1.3.3",
+          "first_patched_version": "1.3.4-alpha.27",
+          "vulnerable_functions": []
+        },
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "@duckdb/duckdb-wasm"
+          },
+          "vulnerable_version_range": "= 1.29.2",
+          "first_patched_version": "1.30.0",
+          "vulnerable_functions": []
+        }
+      ],
+      "cvss_severities": {
+        "cvss_v3": {
+          "vector_string": null,
+          "score": 0.0
+        },
+        "cvss_v4": {
+          "vector_string": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:A/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X",
+          "score": 8.6
+        }
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-506",
+          "name": "Embedded Malicious Code"
+        }
+      ],
+      "credits": [],
+      "comments": 1,
+      "cvss": {
+        "vector_string": null,
+        "score": null
+      },
+      "epss": {
+        "percentage": 0.00372,
+        "percentile": 0.29535
+      }
+    }
+  ],
+  "arquero": [],
+  "echarts": [
+    {
+      "ghsa_id": "GHSA-fgmj-fm8m-jvvx",
+      "cve_id": "CVE-2026-45249",
+      "url": "https://api.github.com/advisories/GHSA-fgmj-fm8m-jvvx",
+      "html_url": "https://github.com/advisories/GHSA-fgmj-fm8m-jvvx",
+      "summary": "Apache ECharts has a cross-site scripting (XSS) vulnerability",
+      "description": "A cross-site scripting (XSS) vulnerability exists in Apache ECharts in the Lines series tooltip rendering logic.\n\nThis issue affects Apache ECharts: from before 6.1.0.\n\nIn versions prior to 6.1.0, if both Lines series and tooltip are used, and no user-specified tooltip.formatter is provided, and series.data[i].name is specified, raw HTML string series.data[i].name can be rendered through innerHTML sink into tooltip content. Although tooltip is allowed to accept user-provided raw HTML via a custom tooltip.formatter, the built-in tooltip formatters conventionally perform HTML escaping automatically. This case breaks that convention and may unexpectedly lead to script execution when tooltips are displayed.\n\n\nUsers are recommended to upgrade to version 6.1.0 if using the Lines series in this way, which fixes the issue.",
+      "type": "reviewed",
+      "severity": "medium",
+      "repository_advisory_url": null,
+      "source_code_location": "https://github.com/apache/echarts",
+      "identifiers": [
+        {
+          "value": "GHSA-fgmj-fm8m-jvvx",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2026-45249",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-45249",
+        "https://github.com/apache/echarts/pull/21608",
+        "https://echarts.apache.org/en/option.html#series-lines",
+        "https://echarts.apache.org/handbook/en/best-practices/security/#passing_raw_html_safely",
+        "https://lists.apache.org/thread/1g6xk7gd9vg1c6zyqqt2lnko10zomc3o",
+        "http://www.openwall.com/lists/oss-security/2026/05/23/4",
+        "https://github.com/apache/echarts/commit/1e39b00eedda0e4a0b048e099c0e13ce7149d90f",
+        "https://github.com/advisories/GHSA-fgmj-fm8m-jvvx"
+      ],
+      "published_at": "2026-05-26T13:30:40Z",
+      "updated_at": "2026-06-30T16:55:26Z",
+      "github_reviewed_at": "2026-06-30T16:55:25Z",
+      "nvd_published_at": "2026-05-25T08:16:24Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "echarts"
+          },
+          "vulnerable_version_range": "< 6.1.0",
+          "first_patched_version": "6.1.0",
+          "vulnerable_functions": []
+        }
+      ],
+      "cvss_severities": {
+        "cvss_v3": {
+          "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+          "score": 6.1
+        },
+        "cvss_v4": {
+          "vector_string": null,
+          "score": 0.0
+        }
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-79",
+          "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+        }
+      ],
+      "credits": [],
+      "comments": 0,
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+        "score": 6.1
+      },
+      "epss": {
+        "percentage": 0.00928,
+        "percentile": 0.59686
+      }
+    }
+  ],
+  "graphic": [],
+  "perspective": [],
+  "vegalite": [],
+  "simplestats": [],
+  "jstat": []
+}

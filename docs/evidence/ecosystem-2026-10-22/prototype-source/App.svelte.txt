@@ -1,0 +1,25 @@
+<script>
+ import {onMount} from 'svelte'
+ import React from 'react'
+ import {createRoot} from 'react-dom/client'
+ let host, status=$state('Loading'), mode=new URLSearchParams(location.search).get('mode')??'graphic'
+ onMount(()=>{void run()})
+ async function run(){
+  const start=performance.now(), n=Number(new URLSearchParams(location.search).get('n')??3000)
+  const rows=Array.from({length:n},(_,i)=>({City:i%2?'Puebla':'Oaxaca',Sales:i%10,Code:String(i).padStart(6,'0')}))
+  try{
+   if(mode==='integrity'){window.poc=await (await import('./integrity.js')).runIntegrity();status='Ready';return}
+   if(mode==='graphic'){
+    const {GraphicWalker,getComputation,normalize}=await import('@kanaries/graphic-walker')
+    const fields=[{fid:'City',name:'City',semanticType:'nominal',analyticType:'dimension'},{fid:'Sales',name:'Sales',semanticType:'quantitative',analyticType:'measure'},{fid:'Code',name:'Code',semanticType:'nominal',analyticType:'dimension'}]
+    const chart=normalize({mark:'bar',x:'City',y:'sum(Sales)'},fields);const totals=await getComputation(rows)({workflow:[{type:'view',query:[{op:'aggregate',groupBy:['City'],measures:[{field:'Sales',agg:'sum',asFieldKey:'Total'}]}]}]});const root=createRoot(host);root.render(React.createElement(GraphicWalker,{data:rows,fields,chart:[chart],i18nLang:'en-US'}));window.poc={mode,n,totals,chart}
+   }else{
+    const [{default:perspective},{default:viewer},server,client]=await Promise.all([import('@perspective-dev/client'),import('@perspective-dev/viewer'),import('@perspective-dev/server/dist/wasm/perspective-server.wasm?url'),import('@perspective-dev/viewer/dist/wasm/perspective-viewer.wasm?url'),import('@perspective-dev/viewer-datagrid'),import('@perspective-dev/viewer-charts'),import('@perspective-dev/viewer/dist/css/themes.css')])
+    await Promise.all([perspective.init_server(fetch(server.default)),viewer.init_client(fetch(client.default))])
+    const worker=await perspective.worker(),table=await worker.table(rows),element=document.createElement('perspective-viewer');element.style.cssText='height:650px;width:100%;display:block';host.append(element);await element.load(table);await element.restore({plugin:'Y Bar',group_by:['City'],columns:['Sales'],aggregates:{Sales:'sum'},settings:true});const view=await table.view({group_by:['City'],columns:['Sales'],aggregates:{Sales:'sum'}});const totals=await view.to_json();const config=await element.save();await element.restore(config);window.poc={mode,n,totals,config}
+   }
+   status='Ready';window.poc.readyMs=performance.now()-start
+  }catch(error){status=String(error);window.poc={error:String(error)}}
+ }
+</script>
+<p role="status">{mode}: {status}</p><div bind:this={host}></div>

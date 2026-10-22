@@ -1,0 +1,208 @@
+[
+  {
+    "mode": "integrity",
+    "n": 5,
+    "poc": {
+      "samples": [
+        {
+          "n": 3000,
+          "graphicProcessingMs": 14.099999994039536,
+          "perspectiveLoadMs": 20.200000017881393,
+          "perspectiveProcessingMs": 19,
+          "graphic": [
+            {
+              "City": "Oaxaca",
+              "Total": 6000
+            },
+            {
+              "City": "Puebla",
+              "Total": 7500
+            }
+          ],
+          "totals": [
+            {
+              "__ROW_PATH__": [],
+              "Sales": 13500
+            },
+            {
+              "__ROW_PATH__": [
+                "Oaxaca"
+              ],
+              "Sales": 6000
+            },
+            {
+              "__ROW_PATH__": [
+                "Puebla"
+              ],
+              "Sales": 7500
+            }
+          ],
+          "originalUnchanged": true
+        },
+        {
+          "n": 100000,
+          "graphicProcessingMs": 58.099999994039536,
+          "perspectiveLoadMs": 59.19999998807907,
+          "perspectiveProcessingMs": 53.099999994039536,
+          "graphic": [
+            {
+              "City": "Oaxaca",
+              "Total": 200000
+            },
+            {
+              "City": "Puebla",
+              "Total": 250000
+            }
+          ],
+          "totals": [
+            {
+              "__ROW_PATH__": [],
+              "Sales": 450000
+            },
+            {
+              "__ROW_PATH__": [
+                "Oaxaca"
+              ],
+              "Sales": 200000
+            },
+            {
+              "__ROW_PATH__": [
+                "Puebla"
+              ],
+              "Sales": 250000
+            }
+          ],
+          "originalUnchanged": true
+        }
+      ],
+      "fixture": [
+        {
+          "Code": "001",
+          "Text": "línea 1\nlínea 2",
+          "Empty": ""
+        },
+        {
+          "Code": "1",
+          "Text": "Dice \"hola\"",
+          "Empty": ""
+        },
+        {
+          "Code": "9007199254740993",
+          "Text": "😀"
+        },
+        {
+          "Code": "",
+          "Text": "<img src=x>"
+        },
+        {
+          "Text": "ausente"
+        }
+      ],
+      "autoSchema": {
+        "Empty": "string",
+        "Code": "string",
+        "Text": "string"
+      },
+      "autoRows": [
+        {
+          "Code": "1",
+          "Text": "línea 1\nlínea 2",
+          "Empty": ""
+        },
+        {
+          "Code": "1",
+          "Text": "Dice \"hola\"",
+          "Empty": ""
+        },
+        {
+          "Code": "2147483647",
+          "Text": "😀",
+          "Empty": null
+        },
+        {
+          "Code": "",
+          "Text": "<img src=x>",
+          "Empty": null
+        },
+        {
+          "Code": null,
+          "Text": "ausente",
+          "Empty": null
+        }
+      ],
+      "explicitRows": [
+        {
+          "Code": "001",
+          "Text": "línea 1\nlínea 2",
+          "Empty": ""
+        },
+        {
+          "Code": "1",
+          "Text": "Dice \"hola\"",
+          "Empty": ""
+        },
+        {
+          "Code": "9007199254740993",
+          "Text": "😀",
+          "Empty": null
+        },
+        {
+          "Code": "",
+          "Text": "<img src=x>",
+          "Empty": null
+        },
+        {
+          "Code": null,
+          "Text": "ausente",
+          "Empty": null
+        }
+      ],
+      "graphic": [
+        {
+          "Code": "001",
+          "Text": "línea 1\nlínea 2",
+          "Empty": ""
+        },
+        {
+          "Code": "1",
+          "Text": "Dice \"hola\"",
+          "Empty": ""
+        },
+        {
+          "Code": "9007199254740993",
+          "Text": "😀"
+        },
+        {
+          "Code": "",
+          "Text": "<img src=x>"
+        },
+        {
+          "Text": "ausente"
+        }
+      ],
+      "originalUnchanged": true
+    },
+    "text": "integrity: Ready",
+    "svgs": 0,
+    "canvases": 0,
+    "memory": [
+      {
+        "type": "Browser",
+        "workingSetKiB": 167952
+      },
+      {
+        "type": "GPU",
+        "workingSetKiB": 77936
+      },
+      {
+        "type": "Utility",
+        "workingSetKiB": 53296
+      },
+      {
+        "type": "Tab",
+        "workingSetKiB": 394976
+      }
+    ],
+    "errors": []
+  }
+]

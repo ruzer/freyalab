@@ -1,0 +1,475 @@
+{
+  "tanstack": {
+    "name": "@tanstack/svelte-table",
+    "dist_tags": {
+      "alpha": "9.0.0-alpha.54",
+      "beta": "9.0.0-beta.80",
+      "latest": "9.3.1"
+    },
+    "latest": "9.3.1",
+    "published_at": "2026-10-12T16:50:02.901Z",
+    "latest_is_prerelease": false,
+    "license": "MIT",
+    "dist": {
+      "shasum": "87778a69ed2442e6fe5b450046c1c44a7af1af86",
+      "tarball": "https://registry.npmjs.org/@tanstack/svelte-table/-/svelte-table-9.3.1.tgz",
+      "fileCount": 44,
+      "integrity": "sha512-4GenQN3ymVTJvsoRTzK64IlponjX17Db9FL2A+07kjdZBvHqhZiOFspsRqwN4QBmI1+yycnBH5k9w73z8ocUrg==",
+      "signatures": [
+        {
+          "sig": "MEYCIQDwi7Ch7B6qx2hM2Q4wj1lA6G/vZVXRo+SzzxxXOKWUEwIhAMqwpI2yAMUxSeVRChK3nyx1Zek9vWAH5pxJd20k4Pe2",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sig": "MEUCIQDSXGtsuiTnT736xwlo5VMOjAgDV/AD67WZPuV0itVCuwIgS00gQJrXlnava3T/m6rSizBKEp81ZyP6GD7E8x11Eoo="
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/@tanstack%2fsvelte-table@9.3.1",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 96329
+    },
+    "dependencies": {
+      "@tanstack/table-core": "9.3.1",
+      "@tanstack/svelte-store": "^0.12.2"
+    },
+    "peerDependencies": {
+      "svelte": "^5.0.0"
+    },
+    "engines": {
+      "node": ">=20"
+    }
+  },
+  "tabulator": {
+    "name": "tabulator-tables",
+    "dist_tags": {
+      "alpha": "5.0.0-alpha.0",
+      "latest": "6.7.1"
+    },
+    "latest": "6.7.1",
+    "published_at": "2026-10-22T16:58:45.000Z",
+    "latest_is_prerelease": false,
+    "license": "MIT",
+    "dist": {
+      "shasum": "7c961734f82c10fd5d50df7da0904e2ac03c7907",
+      "tarball": "https://registry.npmjs.org/tabulator-tables/-/tabulator-tables-6.7.1.tgz",
+      "fileCount": 283,
+      "integrity": "sha512-6CMy17XdemQaIdg1BOqD5K6nzF2xoD47eRNiBYJBK+QrLWji7sgukyPjKXYrjRdWLwbGENdUsiAYJrNS3XeUfw==",
+      "signatures": [
+        {
+          "sig": "MEUCICwKp2HT5+Y+YfW7zFvKpzDaCefDe/ewUhZheEg7MxzBAiEAtBWdnTj+fTohoH4f+M4IgGceGpe7P66coOCgpnqsIlc=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sig": "MEUCIFwzIowpO3vJU04T293XkGPJ9m35du//u49YXU0SfB4gAiEAsG/iWMG6UsQVdqENFI6iyPTZ5xfOOondoSqtRgph1Qo="
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/tabulator-tables@6.7.1",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 29922643
+    },
+    "dependencies": {},
+    "peerDependencies": {},
+    "engines": null
+  },
+  "aggrid": {
+    "name": "ag-grid-community",
+    "dist_tags": {
+      "v32-lts": "32.3.9",
+      "latest": "36.2.0"
+    },
+    "latest": "36.2.0",
+    "published_at": "2026-09-16T08:00:00.051Z",
+    "latest_is_prerelease": false,
+    "license": "MIT",
+    "dist": {
+      "shasum": "4c42c9648226e0f180f813d376dab08f97b4eceb",
+      "tarball": "https://registry.npmjs.org/ag-grid-community/-/ag-grid-community-36.2.0.tgz",
+      "fileCount": 680,
+      "integrity": "sha512-tK0Toj7t0fV/OMLPnDc0xlYKAqDbnCT3iJodYSn2TJ541caU8jPdYwWhMdW+AP2+pUNwFiJVgc04eJNfvBPsWw==",
+      "signatures": [
+        {
+          "sig": "MEUCIQDaajE0R7kPYOfcmeyY8szTKdf6PrfPDRldFPLbOxbVKgIgdNzpemxT5M+rcWpDjw4l2sWOXXvfnF4m7gvnQv4z0jo=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sig": "MEQCIGCFWUd0QXMcvAQxcp+jCyQ7Y+KPtfEtk0NE3uhsJ8GlAiBDfEhoM7lDJPytYM9bluPASsvZkHzJ5aaLF2lAUFl8fA=="
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/ag-grid-community@36.2.0",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 21636306
+    },
+    "dependencies": {
+      "ag-stack": "36.2.0",
+      "ag-charts-types": "14.2.0"
+    },
+    "peerDependencies": {},
+    "engines": null
+  },
+  "duckdb": {
+    "name": "@duckdb/duckdb-wasm",
+    "dist_tags": {
+      "latest": "1.33.1-dev57.0",
+      "next": "1.33.1-dev110.0"
+    },
+    "latest": "1.33.1-dev57.0",
+    "published_at": "2026-06-22T05:45:39.386Z",
+    "latest_is_prerelease": true,
+    "license": "MIT",
+    "dist": {
+      "shasum": "31b1d9fc0830dfaac4f70ed3b3dbcb30e271446a",
+      "tarball": "https://registry.npmjs.org/@duckdb/duckdb-wasm/-/duckdb-wasm-1.33.1-dev57.0.tgz",
+      "fileCount": 85,
+      "integrity": "sha512-ndn5l2EHq1PEMvCg8G6lRV0vjhSUcbqdM/niNBTTqH4/PyyUUVKbge0uUyCnj27b9SF/CiqBwDsgKLTqBvaxdw==",
+      "signatures": [
+        {
+          "sig": "MEUCIQCLBBF8KTNdhDUvflSgejnduyO/E+ni0vSW6Qh8qPV0owIgKL54y1q8+iKJvbZhJbGX4Ev/UW/hZBkAj/e0scdijMU=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/@duckdb%2fduckdb-wasm@1.33.1-dev57.0",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 149377663
+    },
+    "dependencies": {
+      "qs": "^6.14.1",
+      "apache-arrow": "^17.0.0"
+    },
+    "peerDependencies": {},
+    "engines": null,
+    "latest_stable_by_publish": [
+      "1.32.0",
+      "2025-12-16T11:18:50.133Z"
+    ]
+  },
+  "arquero": {
+    "name": "arquero",
+    "dist_tags": {
+      "latest": "8.0.3"
+    },
+    "latest": "8.0.3",
+    "published_at": "2025-05-29T22:24:12.076Z",
+    "latest_is_prerelease": false,
+    "license": "BSD-3-Clause",
+    "dist": {
+      "integrity": "sha512-7YQwe/GPVBUiahaPwEwgvu6VHyuhX0Ut61JZlIJYsAobOH5unLBwTmh43BobhX/N4dW1sb8WyKlQ8GjFq2whzQ==",
+      "shasum": "ac72842df9143cbb3b9d215792344d3c6b14cef6",
+      "tarball": "https://registry.npmjs.org/arquero/-/arquero-8.0.3.tgz",
+      "fileCount": 360,
+      "unpackedSize": 2727604,
+      "signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sig": "MEUCIQCy6YrljLZY4ayZ/Le3fIsv+Ks6ixSaU/bO10mZaepKVwIgfI+NfVg8uTEGe2e4GD+tXoL/VqIdykwL5aXTM/+3+F8="
+        }
+      ]
+    },
+    "dependencies": {
+      "@uwdata/flechette": "^2.0.0",
+      "acorn": "^8.14.1"
+    },
+    "peerDependencies": {},
+    "engines": null
+  },
+  "echarts": {
+    "name": "echarts",
+    "dist_tags": {
+      "alpha": "5.0.0-alpha.2",
+      "beta": "6.0.0-beta.1",
+      "latest": "6.1.0",
+      "rc": "6.1.0-rc.2"
+    },
+    "latest": "6.1.0",
+    "published_at": "2026-05-19T17:52:11.076Z",
+    "latest_is_prerelease": false,
+    "license": "Apache-2.0",
+    "dist": {
+      "integrity": "sha512-q0yaFPggC9FUdsWH4blavRWFmxdrIodbkoKNAjJudAI6CA9gNPxHtV2RcZNEepZVlk4yvBYkOkbk6HIVpIyHZA==",
+      "shasum": "ae0f68590f5ebbd728d900907c27acde7c5456d1",
+      "tarball": "https://registry.npmjs.org/echarts/-/echarts-6.1.0.tgz",
+      "fileCount": 1347,
+      "unpackedSize": 60297703,
+      "signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sig": "MEUCIQClkjyWPam4Oc7iOmoM2dEGH/WElm1p7G8bfZ5h/3QA8QIgD95Mn15yKiWJAINbzPvrHIRi3TBOj3xjaAnIom6ZdEo="
+        }
+      ]
+    },
+    "dependencies": {
+      "tslib": "2.3.0",
+      "zrender": "6.1.0"
+    },
+    "peerDependencies": {},
+    "engines": null
+  },
+  "graphic": {
+    "name": "@kanaries/graphic-walker",
+    "dist_tags": {
+      "pre": "0.4.84",
+      "latest": "0.5.3"
+    },
+    "latest": "0.5.3",
+    "published_at": "2026-10-01T16:45:19.922Z",
+    "latest_is_prerelease": false,
+    "license": "Apache-2.0",
+    "dist": {
+      "shasum": "421759fa5706ae1d3ae77be155c9ddfdbdb144c2",
+      "tarball": "https://registry.npmjs.org/@kanaries/graphic-walker/-/graphic-walker-0.5.3.tgz",
+      "fileCount": 1065,
+      "integrity": "sha512-g4j/2klCQsRviTLIAAqz0PYd+fp9D3/Ivb+XuVlM4lPspGtRTtYxqcb1+BsDJ0ncBVRJKhdx3omlR8Ern4D9/w==",
+      "signatures": [
+        {
+          "sig": "MEUCICxZWu+3UjGAb+T9WmtULdOQNGWGaUcvwWhVLhi1WsSFAiEAvLDkC7502bx79NNpAtMwV3SiH3BNDl8YQlv4nyVtNq0=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sig": "MEQCIA9oGN5ccQyIULVJXSX0CTtBN3HgkhNTxjGzWv1y2u79AiBOzd2XlvHt6C0Rix6qwJlKbRhZNMIejGR0XaJVqCHZKQ=="
+        }
+      ],
+      "unpackedSize": 40675228
+    },
+    "dependencies": {
+      "clsx": "^2.1.0",
+      "cmdk": "^1.1.1",
+      "mobx": "^6.3.3",
+      "rxjs": "^7.3.0",
+      "vega": "^5.22.1",
+      "immer": "^9.0.15",
+      "rbush": "^3.0.1",
+      "nanoid": "^4.0.2",
+      "ts-xor": "^1.3.0",
+      "i18next": "^21.9.1",
+      "leaflet": "^1.9.4",
+      "ts-jest": "^29.1.1",
+      "d3-scale": "^4.0.2",
+      "d3-format": "^3.1.0",
+      "immutable": "^5.1.1",
+      "lodash-es": "^4.17.15",
+      "vega-lite": "^5.6.0",
+      "vega-embed": "^6.21.0",
+      "@types/jest": "^29.5.3",
+      "canvas-size": "^1.2.6",
+      "color-space": "2.0.1",
+      "react-color": "^2.19.3",
+      "tailwindcss": "^3.2.4",
+      "autoprefixer": "^10.3.5",
+      "color-string": "^1.9.1",
+      "re-resizable": "^6.11.2",
+      "react-shadow": "^20.6.0",
+      "react-i18next": "^11.18.6",
+      "react-leaflet": "^5.0.0",
+      "@types/geojson": "^7946.0.10",
+      "d3-time-format": "^4.1.0",
+      "react-dropzone": "^14.2.3",
+      "tailwind-merge": "^2.2.1",
+      "mobx-react-lite": "^4.1.1",
+      "topojson-client": "^3.1.0",
+      "@heroicons/react": "^2.2.0",
+      "pgsql-ast-parser": "^11.1.0",
+      "@headlessui/react": "2.2.10",
+      "styled-components": "^6.1.19",
+      "@observablehq/plot": "^0.6.16",
+      "@tailwindcss/forms": "^0.5.4",
+      "tailwindcss-animate": "^1.0.7",
+      "vega-webgl-renderer": "^1.0.0-beta.2",
+      "@radix-ui/react-slot": "^1.2.3",
+      "@radix-ui/react-tabs": "^1.1.13",
+      "react-error-boundary": "^4.0.11",
+      "@radix-ui/react-icons": "^1.3.2",
+      "@radix-ui/react-label": "^2.1.7",
+      "react-resize-detector": "^12.3.0",
+      "@radix-ui/react-dialog": "^1.1.15",
+      "@radix-ui/react-select": "^2.2.6",
+      "@radix-ui/react-slider": "^1.3.6",
+      "@radix-ui/react-switch": "^1.2.6",
+      "@radix-ui/react-toggle": "^1.1.10",
+      "@types/topojson-client": "^3.1.1",
+      "react-resizable-panels": "^4.12.1",
+      "@radix-ui/react-popover": "^1.1.15",
+      "@radix-ui/react-tooltip": "^1.2.8",
+      "@tanstack/react-virtual": "^3.13.12",
+      "@radix-ui/react-checkbox": "^1.3.3",
+      "class-variance-authority": "^0.7.0",
+      "@kanaries/web-data-loader": "^0.1.7",
+      "@radix-ui/react-separator": "^1.1.7",
+      "@radix-ui/react-hover-card": "^1.1.15",
+      "@types/react-beautiful-dnd": "^13.1.2",
+      "@radix-ui/react-collapsible": "^1.1.12",
+      "@radix-ui/react-radio-group": "^1.3.8",
+      "@radix-ui/react-context-menu": "^2.2.16",
+      "@kanaries/react-beautiful-dnd": "0.2.1",
+      "@radix-ui/react-dropdown-menu": "^2.1.16",
+      "i18next-browser-languagedetector": "^6.1.5"
+    },
+    "peerDependencies": {
+      "react": ">=19.0.0",
+      "react-dom": ">=19.0.0"
+    },
+    "engines": null
+  },
+  "perspective": {
+    "name": "@perspective-dev/viewer",
+    "dist_tags": {
+      "latest": "5.6.0"
+    },
+    "latest": "5.6.0",
+    "published_at": "2026-10-14T01:21:25.228Z",
+    "latest_is_prerelease": false,
+    "license": "Apache-2.0",
+    "dist": {
+      "shasum": "f7ecf72c22eb798995810f0d0135d3a82f9039e8",
+      "tarball": "https://registry.npmjs.org/@perspective-dev/viewer/-/viewer-5.6.0.tgz",
+      "fileCount": 592,
+      "integrity": "sha512-NgHCPMaC8SzAdFUMc1Icpdxnite6to0dB3XjCA+Ob0u+N3YsWmLwG/tZ0tk0biim1xZFIWoGJbxomQlsBUYCZg==",
+      "signatures": [
+        {
+          "sig": "MEUCIBJ9eOEPeXG5VysUxHrUTDRjjyuLYLgJ/uVNdkaSjbaNAiEA9gg69+z6mni2DyqtcBRODcvcRfMUa0RcdMIkILPz0+Y=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sig": "MEQCIGDh7tcFW6wmXO5yvh2wtRo4eALpWS4z3wVs4rSS4D37AiBCTLkszYwEs7ki+iXPxeojaFet95PkbwD/sAkqAkJplA=="
+        }
+      ],
+      "unpackedSize": 8128210
+    },
+    "dependencies": {
+      "regular-layout": "=0.6.1",
+      "@perspective-dev/client": "^5.6.0",
+      "pro_self_extracting_wasm": "0.0.9"
+    },
+    "peerDependencies": {},
+    "engines": null
+  },
+  "vegalite": {
+    "name": "vega-lite",
+    "dist_tags": {
+      "pre": "2.0.0-beta.1",
+      "canary": "5.7.0--canary.8145.0eb1af7.0",
+      "next": "5.7.0-next.0",
+      "latest": "6.5.0"
+    },
+    "latest": "6.5.0",
+    "published_at": "2026-10-08T14:30:35.728Z",
+    "latest_is_prerelease": false,
+    "license": "BSD-3-Clause",
+    "dist": {
+      "shasum": "8f43425ab09de895bbfa66928c6b797d5c4cdcd1",
+      "tarball": "https://registry.npmjs.org/vega-lite/-/vega-lite-6.5.0.tgz",
+      "fileCount": 578,
+      "integrity": "sha512-fMXF6s0MrIg0UTWnLIfeFtgSLzVhyzSKobzGrh5rhS+mL6FOYFG3m7ouJ4U23gj65EK+gl9FIIT5w7wLNaAzkA==",
+      "signatures": [
+        {
+          "sig": "MEYCIQDxN2O2s9mOqQr/bSYX3bkZ/+uZw5HjVt2McdFlm7snrwIhAL2HLC8KLFmhDq7yQjCjPb3RsDwlyUkhOcX9nwAqr5+g",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sig": "MEYCIQCQphunrGVQQAiLrmHVYZu8yM0yshSAsK9TUafiozQpxwIhALMc6EDwAbDViUAH9iFereKhn7X3q0XPPmqJ9CSZXuuN"
+        }
+      ],
+      "unpackedSize": 5940557
+    },
+    "dependencies": {
+      "tslib": "~2.8.1",
+      "yargs": "~18.2.0",
+      "vega-util": "~2.1.3",
+      "vega-expression": "~6.2.2",
+      "vega-event-selector": "~4.0.0",
+      "json-stringify-pretty-compact": "~4.0.0"
+    },
+    "peerDependencies": {
+      "vega": "^6.4.0"
+    },
+    "engines": {
+      "node": ">=22"
+    }
+  },
+  "simplestats": {
+    "name": "simple-statistics",
+    "dist_tags": {
+      "testing": "7.0.9-alpha.0",
+      "latest": "7.12.1"
+    },
+    "latest": "7.12.1",
+    "published_at": "2026-09-27T15:35:23.712Z",
+    "latest_is_prerelease": false,
+    "license": "ISC",
+    "dist": {
+      "shasum": "ce172e8eb20117e080aa0596334aa1866c3860bd",
+      "tarball": "https://registry.npmjs.org/simple-statistics/-/simple-statistics-7.12.1.tgz",
+      "fileCount": 209,
+      "integrity": "sha512-LYRvHhZceO9MTzDw6ptt3PBoOHuiTqNU5Ew5MLjjcLwuzgfATMf1oMFdgDW7elVDGwZvi98pGoUoFhwuXTHTRA==",
+      "signatures": [
+        {
+          "sig": "MEYCIQDGjUDGKFKsmClzuBW75WPGITXDMAOvfXifgeQmFS8DjQIhAPjw0mHdqPtckMGOj7vE0D14ckq62MHPwXMCF44S5x2G",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sig": "MEUCICEHJ89AC19PVgePFMiMAzppfi/B6bRMssn5jYZkOVV6AiEA71XR2vnrmRmLlxKZ87148IVsqJ2R3u91LqIH1ZeAoow="
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/simple-statistics@7.12.1",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 1353266
+    },
+    "dependencies": {},
+    "peerDependencies": {},
+    "engines": {
+      "node": "*"
+    }
+  },
+  "jstat": {
+    "name": "jstat",
+    "dist_tags": {
+      "latest": "1.9.6"
+    },
+    "latest": "1.9.6",
+    "published_at": "2022-11-21T19:18:27.530Z",
+    "latest_is_prerelease": false,
+    "license": null,
+    "dist": {
+      "integrity": "sha512-rPBkJbK2TnA8pzs93QcDDPlKcrtZWuuCo2dVR0TFLOJSxhqfWOVCSp8aV3/oSbn+4uY4yw1URtLpHQedtmXfug==",
+      "shasum": "60e801b0d4c26e37aab0f375d1859fe9d60e10c0",
+      "tarball": "https://registry.npmjs.org/jstat/-/jstat-1.9.6.tgz",
+      "fileCount": 152,
+      "unpackedSize": 706085,
+      "signatures": [
+        {
+          "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+          "sig": "MEUCIEdUUBYSnmJjfCDUR9jLDDlTw8BQUoAwMj8xsoCqNbh+AiEAz4jZCQ9siTN5m7iGSLSTf83F5ZApF9vZiiotyAQh8Gg="
+        }
+      ],
+      "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v4.10.10\r\nComment: https://openpgpjs.org\r\n\r\nwsFzBAEBCAAGBQJje88DACEJED1NWxICdlZqFiEECWMYAoorWMhJKdjhPU1b\r\nEgJ2VmoAkA/9HR4gXhvPPYxR2prg9R+tQysH/B/+C59/Ow5Z7EZUGjFF/BWA\r\nPtATE5Yuag6JKcVM9BF7o3C18UkhzyJizxFcH+LhmnADY9ETUud6UzhnReEg\r\nLM3nRqQpLikyumK3E0caeE5orHUOYIWxeUc48ZHyy1jnff3NqMYirQO+L4LD\r\ngFASwTmw2Q2KPyN7M+r+XWCUwVk81Z8itkHzA1b8NClQ8MC2jX9ZaGoQkces\r\nQegBlnmkHOuYnJS0DmyhHh3lo/JSJ8J1BEMCM5gBnOj7Aat2Bwbn8ssAvE32\r\nZSz+O0QNURaH0w1yeQ8xodyNcYHAy45OdcqEPO1cVJ8vQ0V6u9TTjUczAi6b\r\nZeJqI4u7Fw+tELd1bQDyNWBIk/9cDJuj/km+gtU1XkA5KhUmUWCiSXn7u8Px\r\nAjzcivxdKepjqb87tToZadpqZWLFBMpA0el10E2N//z9QVaCROridCpldxmm\r\nKyppi91Jeu2IADWnA0jzoyjNhTr67s0tCtf0axMtgOTSUgaNHFtUzKKWY/Zq\r\nbNUK5WNlklTlsWRAk862s0AWymYb+M5luwThZdImjPFrQBMRqcZ7EEV01Cu5\r\nSaLo2lTX6cxS9WKqpMOgA68knxx08cJZDVBksx5sEG101JvqxpUdGM9Nzf4/\r\nZqibbJwsWlBkJjYbwy/yKSd9VidT5Gz2lBM=\r\n=wxqy\r\n-----END PGP SIGNATURE-----\r\n"
+    },
+    "dependencies": {},
+    "peerDependencies": {},
+    "engines": null
+  }
+}

@@ -1,0 +1,27 @@
+import json,pathlib,subprocess,time
+out=pathlib.Path('/private/tmp/freyalab-ecosystem/docs/evidence/ecosystem-2026-10-22');window=json.load(open(out/'collection.json'));since=window['since365'];until=window['window_end']
+def query(q):
+ for attempt in range(3):
+  
+  try:r=subprocess.run(['gh','api','graphql','--input','-'],input=json.dumps({'query':q}),capture_output=True,text=True,timeout=35)
+  except subprocess.TimeoutExpired:
+   if attempt==2:raise
+   continue
+  if r.returncode==0:
+   data=json.loads(r.stdout)
+   if not data.get('errors'):return data['data']['repository']
+  if attempt==2:raise RuntimeError(r.stderr[:250])
+  time.sleep(1)
+result=json.loads((out/'duckdb-history.json').read_text()) if (out/'duckdb-history.json').exists() else {}
+for name in ['duckdb','duckdb-wasm']:
+ 
+ if result.get(name,{}).get('complete'):continue
+ old=result.get(name);cursor=old['metadata']['defaultBranchRef']['target']['history']['pageInfo']['endCursor'] if old else None;items=old['history'] if old else [];pages=old['pages'] if old else 0
+ while True:
+  after=',after:'+json.dumps(cursor) if cursor else ''
+  h=query('query{repository(owner:"duckdb",name:'+json.dumps(name)+'){url stargazerCount forkCount isArchived licenseInfo{spdxId} defaultBranchRef{name target{... on Commit{oid history(since:'+json.dumps(since)+',until:'+json.dumps(until)+',first:100'+after+'){totalCount pageInfo{hasNextPage endCursor} nodes{oid committedDate author{user{login}}}}}}} releases(first:15){nodes{tagName publishedAt isPrerelease url}} openIssues:issues(states:OPEN){totalCount} closedIssues:issues(states:CLOSED){totalCount} openPR:pullRequests(states:OPEN){totalCount}}}')
+  hist=h['defaultBranchRef']['target']['history'];items.extend(hist['nodes']);pages+=1;cursor=hist['pageInfo']['endCursor']
+  result[name]={'metadata':h,'history':items,'complete':not hist['pageInfo']['hasNextPage'],'pages':pages};(out/'duckdb-history.json').write_text(json.dumps(result,ensure_ascii=False,indent=2))
+  if pages%25==0:print(name,pages,len(items),flush=True)
+  if not hist['pageInfo']['hasNextPage']:break
+ print('DONE',name,len(items),flush=True)

@@ -1,0 +1,23 @@
+{
+  "name": "freyalab-visual-poc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@kanaries/graphic-walker": "0.5.3",
+    "@perspective-dev/client": "5.6.0",
+    "@perspective-dev/server": "5.6.0",
+    "@perspective-dev/viewer": "5.6.0",
+    "@perspective-dev/viewer-charts": "5.6.0",
+    "@perspective-dev/viewer-datagrid": "5.6.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  }
+}
