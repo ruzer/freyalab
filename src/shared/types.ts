@@ -1,3 +1,4 @@
+import type {ChartConfiguration,ChartPreset} from './chart-presets'
 export type Kind = 'markdown' | 'text' | 'mermaid' | 'csv'
 export type Encoding = 'utf8' | 'utf16le' | 'win1252'
 export interface DocumentInfo { id:string; name:string; path:string|null; kind:Kind; text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:Encoding; delimiter:string; headers?:string[]; rowCount?:number }
@@ -42,6 +43,7 @@ export interface FreyaAPI {
  transformPreview(id:string,edit:TableTransformEdit):Promise<TableTransformPreview>;
  rangePreview(id:string,edit:TableRangeEdit):Promise<TableRangePreview>; rangeClipboard(id:string,range:TableRange):Promise<string>;
  tablePage(id:string,query:TableQuery):Promise<TablePage>; tableEdit(id:string,edit:TableEdit):Promise<DocumentInfo>; tableOptions(id:string,options:TableOptions):Promise<DocumentInfo>;
+ chartPresets():Promise<ChartPreset[]>;saveChartPreset(id:string,input:{name:string;configuration:ChartConfiguration}):Promise<ChartPreset>;deleteChartPreset(id:string):Promise<void>;
  sqlRun(request:SqlRequest):Promise<SqlResult>;sqlPage(requestId:string,offset:number):Promise<SqlResult>;sqlCancel(requestId:string):Promise<void>;
  analyzeColumn(id:string,request:ColumnAnalysisRequest):Promise<ColumnAnalysis>; cancelAnalysis(id:string,requestId:string):Promise<void>;
  undo(id:string,redo?:boolean):Promise<DocumentInfo>; stats(id:string,rows:string[]|null,columns:number[],options?:TableStatsOptions):Promise<TableStats>; tableMarkdown(id:string,options:TableExport):Promise<string>;
