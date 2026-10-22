@@ -277,7 +277,7 @@ export class TableEngine {
     }
     break
    }
-   case'insertRow':{if((s.rows.length+1)*s.headers.length>TABLE_LIMITS.cells)throw new Error('La edición supera dos millones de celdas.');const index=edit.afterId?rowIndex(edit.afterId)+1:s.rows.length;const row={id:String(s.nextId++),cells:s.headers.map(()=>'')};add({type:'rows',index,remove:0,rows:[row]},{type:'rows',index,remove:1,rows:[]});break}
+   case'insertRow':{if(edit.beforeId!==undefined&&edit.afterId!==undefined)throw new Error('Elige antes o después de una fila, no ambos.');if((s.rows.length+1)*s.headers.length>TABLE_LIMITS.cells)throw new Error('La edición supera dos millones de celdas.');const index=edit.beforeId!==undefined?rowIndex(edit.beforeId):edit.afterId?rowIndex(edit.afterId)+1:s.rows.length;const row={id:String(s.nextId++),cells:s.headers.map(()=>'')};add({type:'rows',index,remove:0,rows:[row]},{type:'rows',index,remove:1,rows:[]});break}
    case'duplicateRows':{
     const ids=new Set(edit.ids),indexes=s.rows.flatMap((row,index)=>ids.has(row.id)?[index]:[]).reverse()
     if(indexes.length!==ids.size)throw new Error('Fila no encontrada.')

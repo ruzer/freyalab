@@ -169,3 +169,19 @@ describe('motor CSV',()=>{
  it('invalida vistas al restaurar y crear con un identificador existente',async()=>{await engine.open('a',await fixture('A\n1\n2\n3\n'));await engine.page('a',query);await engine.create('b');await engine.edit('b',{type:'insertRow'});const snapshot=await engine.snapshot('b');await engine.restore('a',snapshot);expect((await engine.page('a',query)).rows).toHaveLength(1);await engine.create('a');expect((await engine.page('a',query)).rows).toEqual([])})
  it('descarta consultas previas y permite cancelar una ordenación sin bloquear el proceso',async()=>{await engine.open('a',await fixture('A\n'+Array.from({length:20000},(_,i)=>String(20000-i)).join('\n')+'\n'));const first=engine.page('a',{...query,sort:{column:0,numeric:true,descending:false}});const second=engine.page('a',{...query,requestId:2,search:'19999'});await expect(first).rejects.toThrow('cancelada');expect((await second).rows[0].cells[0]).toBe('19999')})
 })
+
+describe('inserción por identidad estable',()=>{
+ it('inserta antes/después en el documento aunque la vista esté filtrada y ordenada, con recuperación y deshacer',async()=>{
+  const source='ID,Grupo,N\r\n00123,v,30\r\n9007199254740993,h,10\r\n00003,v,20\r\n',path=await fixture(source);await engine.open('a',path)
+  const view=await engine.page('a',{...query,search:'v',sort:{column:2,numeric:true,descending:false}});expect(view.rows[0].id).toBe('3')
+  await engine.edit('a',{type:'insertRow',beforeId:view.rows[0].id});expect((await engine.page('a',query)).rows.map(row=>row.cells)).toEqual([['00123','v','30'],['9007199254740993','h','10'],['','',''],['00003','v','20']])
+  const snapshot=await engine.snapshot('a');await engine.restore('b',snapshot);await engine.undo('b');expect((await engine.serialize('b')).toString()).toBe(source)
+  await engine.undo('a');expect((await engine.serialize('a')).toString()).toBe(source);await engine.edit('a',{type:'insertRow',afterId:'3'});expect((await engine.page('a',query)).rows.at(-1)?.cells).toEqual(['','','']);await engine.undo('a');expect((await engine.serialize('a')).toString()).toBe(source)
+  await engine.edit('a',{type:'insertRow',beforeId:'1'});expect((await engine.page('a',query)).rows[0].cells).toEqual(['','','']);await engine.undo('a');expect((await engine.serialize('a')).toString()).toBe(source);expect(await readFile(path,'utf8')).toBe(source)
+ })
+ it('rechaza referencias ambiguas, vacías o inexistentes antes de cambiar datos o historial',async()=>{
+  const source='ID\n00123\n';await engine.open('a',await fixture(source));const before=await engine.info('a')
+  for(const change of [{type:'insertRow' as const,beforeId:'1',afterId:'1'},{type:'insertRow' as const,beforeId:''},{type:'insertRow' as const,beforeId:'no existe'}])await expect(engine.edit('a',change)).rejects.toThrow()
+  expect(await engine.info('a')).toEqual(before);expect((await engine.serialize('a')).toString()).toBe(source)
+ })
+})

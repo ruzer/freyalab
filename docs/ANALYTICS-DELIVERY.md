@@ -12,7 +12,7 @@ Estado al 21 de octubre de 2026. Las entregas A/B de los PR #11/#12 ya están en
 | Ordenamiento múltiple | Implementado en la misma rama; tipos explícitos por criterio, empates estables | Es orden de vista; guardar mantiene orden original. `codex/csv-ordering` añade fijación explícita sin filtros, con vista previa y un paso de deshacer |
 | Transformaciones | Limpieza/reemplazo por rango existentes; `codex/csv-transformations` añade dividir/combinar conservando originales, NFC, encabezados únicos y eliminación de duplicados por clave compuesta. Vista previa, progreso, cancelación y un paso de deshacer; [guía](TRANSFORMS.md) | `codex/csv-ordering` añade mover filas/columnas y fijar orden; ampliar alcance de las cinco operaciones iniciales más allá del documento completo |
 | Buscar/reemplazar | Búsqueda global y filtros; `codex/csv-search-preview` añade resaltado por celda, atajos y vista previa al reemplazo general con alcance explícito. Rango conserva su propio alcance y vista previa | Marcas solo para la búsqueda global aceptada; filtros/condiciones avanzadas no se resaltan. Paleta en `codex/csv-command-palette`; navegación de coincidencias pendiente |
-| Herramientas contextuales | Menú de clic derecho/rango, barra Operaciones y atajos existentes; `codex/csv-command-palette` añade paleta buscable y registro compartido de acciones/bloqueos con botones y rangos | Accesos estructurales adicionales de clic derecho y lector de pantalla pendientes |
+| Herramientas contextuales | Menú de clic derecho/rango, barra Operaciones y atajos existentes; `codex/csv-command-palette` añade paleta buscable y registro compartido de acciones/bloqueos con botones y rangos | `codex/csv-structural-context` añade menús de filas/columnas, inserciones relativas y orden de vista compartidos con la paleta; lector de pantalla pendiente |
 
 ## B. Estadísticas y exploración
 
@@ -96,3 +96,7 @@ Validación de esta entrega: [evidencia local](evidence/csv-statistics-reports-2
 ## Paleta de comandos — entrega de desarrollo
 
 `codex/csv-command-palette` añade un diálogo nativo buscable por palabras sin acentos y usa un registro compartido de acciones y disponibilidad. Integra funciones existentes de edición, consulta y análisis; no cambia el motor, formatos, IPC ni dependencias. Preserva selección, permisos de muestras, vistas previas y deshacer. [Uso y límites](EDITOR-MENUS.md#paleta-de-comandos-csv). La evidencia de la CI y copia instalada corresponde al commit indicado en su PR; A–D permanece activo.
+
+## Menús estructurales — entrega de desarrollo
+
+`codex/csv-structural-context` amplía el menú existente a números de fila y encabezados, con teclado, marcas múltiples, restauración de foco y acciones del registro compartido. Inserciones arriba/abajo siguen la identidad de la fila en el documento, no su posición filtrada/ordenada; izquierda/derecha usa el índice actual de columna. La operación insertRow admite beforeId como alternativa excluyente de afterId, validada en IPC y motor, reutilizando las mismas acciones de historial y recuperación. No hay dependencias ni formato nuevo. [Uso y límites](EDITOR-MENUS.md#menús-contextuales-de-filas-y-columnas). El objetivo A–D sigue activo.
