@@ -3,6 +3,7 @@
  import {createVirtualizer} from '@tanstack/svelte-virtual'
  import {get} from 'svelte/store'
  import {untrack,tick} from 'svelte'
+ import CsvCommands,{type CsvCommand} from './CsvCommands.svelte'
  import CsvRangePreview from './CsvRangePreview.svelte'
  import CsvTransform from './CsvTransform.svelte'
  import CsvSql from './CsvSql.svelte'
@@ -11,6 +12,7 @@
  import {parse} from 'csv-parse/browser/esm/sync'
  import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit} from '../../shared/types'
  let {doc,onchange,onerror,onstatus,onreport}:{doc:DocumentInfo;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
+ let showCommands=$state(false),commandsButton=$state<HTMLButtonElement>(),commandReturn:HTMLElement|null=null
  let showTransform=$state(false)
  let showCharts=$state(false),chartsButton=$state<HTMLButtonElement>()
  let showSql=$state(false),sqlButton=$state<HTMLButtonElement>()
@@ -31,6 +33,34 @@
  let dragPoint={x:0,y:0}
  const cellRange=$derived<TableRange|null>(selection?{top:Math.min(selection.anchor.row,selection.end.row),bottom:Math.max(selection.anchor.row,selection.end.row),left:Math.min(selection.anchor.column,selection.end.column),right:Math.max(selection.anchor.column,selection.end.column),query:selection.query,revision:selection.revision}:null)
  const rangeActions=[['copy','Copiar rango'],['cut','Cortar rango…'],['paste','Pegar en rango…'],['fill','Rellenar rango…'],['clear','Vaciar rango…'],['trim','Quitar espacios del rango…'],['upper','Mayúsculas en el rango…'],['lower','Minúsculas en el rango…'],['replace','Reemplazar en el rango…'],['transformations','Transformar documento…']] as const
+ const commands=$derived<CsvCommand[]>([
+  {id:'search',label:'Buscar en tabla',detail:'Filtra filas · Ctrl/⌘ + F',disabled:false,run:()=>{searchInput?.focus();searchInput?.select()}},
+  {id:'replaceDocument',label:'Reemplazar en documento…',detail:'Documento completo, incluidas filas ocultas · vista previa · Ctrl/⌘ + Mayús + F',disabled:false,run:focusReplace},
+  {id:'filters',label:'Filtros por columna',detail:'Mostrar u ocultar filtros de texto en encabezados',disabled:false,run:()=>showFilters=!showFilters},
+  {id:'query',label:'Consulta avanzada',detail:'Filtrar por texto, número, fecha o regex; ordenar varias columnas · solo vista',disabled:false,run:()=>showQuery=!showQuery},
+  {id:'clearQuery',label:'Quitar filtros y orden',detail:'Restaura la vista de todas las filas; no cambia el documento',disabled:!search&&!Object.values(filters).some(Boolean)&&!sort&&!order.length&&!conditions.length,run:()=>{search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}},
+  {id:'sql',label:'Análisis SQL y asistentes',detail:'Mostrar u ocultar agrupaciones, tablas dinámicas (pivot) y cruces de archivos con DuckDB',disabled:false,run:()=>{showSql=!showSql;showStatistics=false;showQuery=false;showCharts=false}},
+  {id:'statistics',label:'Estadísticas y exploración',detail:'Mostrar u ocultar perfiles, frecuencias, valores faltantes, duplicados y correlación',disabled:false,run:()=>{showStatistics=!showStatistics;showSql=false;showCharts=false}},
+  {id:'charts',label:'Gráficos',detail:'Mostrar u ocultar histogramas, barras, líneas, dispersión, mapas de calor y cajas',disabled:false,run:()=>{showCharts=!showCharts;showSql=false;showStatistics=false;showQuery=false}},
+  {id:'transformations',label:'Transformar documento…',detail:'Asistente para dividir/combinar columnas, normalizar, eliminar duplicados, mover filas/columnas y fijar orden · vista previa · Ctrl/⌘ + Mayús + T',disabled:locked||(doc.headers?.length??0)>200,run:openTransform},
+  {id:'insertRow',label:'Añadir fila',detail:'Después de la última fila marcada por número; sin marcas, al final del documento',disabled:locked,run:()=>edit({type:'insertRow',afterId:selectedRows.at(-1)})},
+  {id:'insertColumn',label:'Añadir columna',detail:'Al final del documento',disabled:locked,run:()=>edit({type:'insertColumn',index:doc.headers?.length??0,name:`Columna ${(doc.headers?.length??0)+1}`})},
+  {id:'duplicateRows',label:'Duplicar filas seleccionadas',detail:'Necesita filas marcadas por su número; conserva las originales',disabled:locked||!selectedRows.length,run:()=>edit({type:'duplicateRows',ids:selectedRows})},
+  {id:'duplicateColumn',label:'Duplicar columna seleccionada',detail:'Necesita una columna marcada; restablece filtros y orden al cambiar columnas',disabled:locked||selectedColumns.length!==1,run:()=>edit({type:'duplicateColumn',index:selectedColumns[0]})},
+  {id:'deleteRows',label:'Eliminar filas seleccionadas',detail:'Necesita filas marcadas por su número · un paso de deshacer',disabled:locked||!selectedRows.length,run:()=>edit({type:'deleteRows',ids:selectedRows})},
+  {id:'deleteColumn',label:'Eliminar columna seleccionada',detail:'Necesita una columna marcada · un paso de deshacer',disabled:locked||selectedColumns.length!==1,run:()=>edit({type:'deleteColumn',index:selectedColumns[0]})},
+  ...([['trim','Quitar espacios al inicio y final'],['upper','Convertir a mayúsculas'],['lower','Convertir a minúsculas']] as const).map(([operation,label])=>({id:'rows-'+operation,label,detail:'Filas marcadas por número; columnas marcadas o todas',disabled:locked||!selectedRows.length,run:()=>edit({type:'transform',operation,rowIds:selectedRows,columns:selectedColumns.length?selectedColumns:(doc.headers??[]).map((_,i)=>i)})})),
+  {id:'undo',label:'Deshacer edición CSV',detail:'Un paso del historial compartido · Ctrl/⌘ + Z en la tabla',disabled:locked,run:()=>undoEdit()},
+  {id:'redo',label:'Rehacer edición CSV',detail:'Un paso del historial compartido · Ctrl/⌘ + Mayús + Z en la tabla',disabled:locked,run:()=>undoEdit(true)},
+  {id:'copyMarkdown',label:'Copiar como Markdown',detail:'Rango, filas marcadas o vista filtrada, según la selección',disabled:locked||busy,run:copyMarkdown},
+  ...rangeActions.filter(([action])=>action!=='transformations').map(([action,label])=>({id:action,label,detail:'Necesita un rango de celdas seleccionado en la vista',disabled:locked||!cellRange||busy,run:()=>rangeAction(action)}))
+ ])
+ const rangeCommands=$derived(rangeActions.map(([action])=>commands.find(command=>command.id===action)!))
+ function openCommands(){if(showTransform||rangeDialog)return;commandReturn=document.activeElement instanceof HTMLElement?document.activeElement:null;pendingCell=null;context=null;dragging=false;showCommands=true}
+ async function closeCommands(){showCommands=false;await tick();if(commandReturn?.isConnected)commandReturn.focus();else commandsButton?.focus()}
+ function commandDisabled(id:string){return commands.find(command=>command.id===id)?.disabled??true}
+ async function runCommand(id:string){const command=commands.find(command=>command.id===id);if(!command||command.disabled)return;context=null;pendingCell=null;try{await command.run()}catch(error){onerror(String(error))}}
+ async function chooseCommand(id:string){const command=commands.find(command=>command.id===id);if(!command||command.disabled)return;await closeCommands();await runCommand(id)}
  function inside(row:number,column:number){return !!cellRange&&row>=cellRange.top&&row<=cellRange.bottom&&column>=cellRange.left&&column<=cellRange.right}
  function selectCell(row:number,column:number,extend=false){
   if(queryError||page.revision!==doc.revision)return
@@ -45,10 +75,9 @@
  // Una acción enfocada que se deshabilita durante la carga puede devolver el foco al documento.
  $effect(()=>{void busy;const menu=contextMenu;if(context&&menu&&(!menu.contains(document.activeElement)||document.activeElement?.matches(':disabled')))(menu.querySelector<HTMLButtonElement>('button:not(:disabled)')??menu).focus()})
  function closeContext(){context=null;if(selection)focusCell(selection.end.row,selection.end.column,true)}
- // Abrir el asistente no depende de la página; las acciones sobre el rango esperan a que termine de cargar.
  async function rangeAction(action:string){
-  context=null;pendingCell=null;if(!cellRange||locked)return
-  try{if(action==='transformations'){openTransform();return}if(busy)return;if(action==='copy'){await window.freya.tableCopy(doc.id,{scope:'selection',range:$state.snapshot(cellRange)},'tsv');onstatus('Rango copiado');return}
+  context=null;pendingCell=null;if(!cellRange||locked||busy)return
+  try{if(action==='copy'){await window.freya.tableCopy(doc.id,{scope:'selection',range:$state.snapshot(cellRange)},'tsv');onstatus('Rango copiado');return}
    if(action==='paste'){preparePaste(await window.freya.tablePaste(doc.id,$state.snapshot(cellRange)));return}
    rangeDialog={edit:{type:'range',range:$state.snapshot(cellRange),operation:(action==='cut'?'clear':action) as TableRangeEdit['operation'],value:'',find:''},cut:action==='cut'}
   }catch(error){onerror(action==='paste'?'No se pudo leer el portapapeles. Usa Ctrl/⌘ + V sobre la tabla.':String(error))}
@@ -62,8 +91,8 @@
  function gridKey(event:KeyboardEvent){
   const target=event.target as HTMLElement,command=event.metaKey||event.ctrlKey
   if(target.tagName==='INPUT'||target.tagName==='TEXTAREA')return
-  if(command&&event.shiftKey&&event.key.toLowerCase()==='t'){event.preventDefault();if(!locked)openTransform();return}
-  if(command&&event.key.toLowerCase()==='z'){event.preventDefault();void undoEdit(event.shiftKey);return}
+  if(command&&event.shiftKey&&event.key.toLowerCase()==='t'){event.preventDefault();void runCommand('transformations');return}
+  if(command&&event.key.toLowerCase()==='z'){event.preventDefault();void runCommand(event.shiftKey?'redo':'undo');return}
   if(command&&event.key.toLowerCase()==='c'&&(cellRange||selectedRows.length)){event.preventDefault();void(cellRange?rangeAction('copy'):copyCells());return}
   if(command&&event.key.toLowerCase()==='x'&&cellRange){event.preventDefault();void rangeAction('cut');return}
   if(command&&event.key.toLowerCase()==='a'&&page.matched){event.preventDefault();selectCell(0,0);selectCell(page.matched-1,(doc.headers?.length??1)-1,true);return}
@@ -91,8 +120,8 @@
  async function focusReplace(){pendingCell=null;showReplace=true;if(!replaceFind)replaceFind=search;await tick();replaceInput?.focus();replaceInput?.select()}
  function searchKey(event:KeyboardEvent){
   const target=event.target
-  if(!(target instanceof HTMLElement)||event.defaultPrevented||!(event.metaKey||event.ctrlKey)||event.altKey||event.key.toLowerCase()!=='f'||!target.closest('.csv-workspace')||target.closest('.cm-editor'))return
-  event.preventDefault();pendingCell=null;if(event.shiftKey)void focusReplace();else{searchInput?.focus();searchInput?.select()}
+  if(!(target instanceof HTMLElement)||event.defaultPrevented||!(event.metaKey||event.ctrlKey)||event.altKey||!['f','k'].includes(event.key.toLowerCase())||!target.closest('.csv-workspace')||target.closest('.cm-editor'))return
+  event.preventDefault();pendingCell=null;if(event.key.toLowerCase()==='k')openCommands();else void runCommand(event.shiftKey?'replaceDocument':'search')
  }
  function prepareReplacement(){
   if(locked||busy||!replaceFind||!doc.rowCount||!doc.headers?.length)return
@@ -118,21 +147,22 @@
  export async function undoEdit(redo=false){try{update(await window.freya.undo(doc.id,redo));await load(pageOffset)}catch(error){onerror(String(error))}}
 </script>
 <svelte:window onblur={()=>dragging=false} onpointerup={()=>dragging=false} onpointercancel={()=>dragging=false} onkeydown={event=>{if(event.key==='Tab')pendingCell=null;searchKey(event)}} onpointermove={event=>{dragPoint={x:event.clientX,y:event.clientY}}} onpointerdown={event=>{pendingCell=null;if(context&&!(event.target as HTMLElement).closest('.range-context'))context=null}}/>
-{#snippet rangeButtons(menu=false)}{#each rangeActions as [action,label]}<button role={menu?'menuitem':undefined} disabled={locked||!cellRange||busy&&action!=='transformations'} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void rangeAction(action)}}>{label}</button>{/each}{/snippet}
+{#snippet rangeButtons(menu=false)}{#each rangeCommands as command}<button role={menu?'menuitem':undefined} disabled={command.disabled||!cellRange} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand(command.id)}}>{command.label}</button>{/each}{/snippet}
+{#if showCommands}<CsvCommands {commands} context={doc.readonly?'Muestra de solo lectura: edición y copia tabular bloqueadas.':interpreting?'Interpretando el archivo; edición bloqueada.':queryError?'Consulta no válida: corrige o quita los filtros antes de editar.':busy?'Cargando página; las acciones del rango esperan.':cellRange?`Rango: filas ${cellRange.top+1}–${cellRange.bottom+1}, columnas ${cellRange.left+1}–${cellRange.right+1}.`:`${selectedRows.length} filas marcadas por número · ${selectedColumns.length} columnas marcadas.`} onexecute={id=>void chooseCommand(id)} onclose={()=>void closeCommands()}/>{/if}
 {#if showTransform}<CsvTransform {doc} initialRows={selectedRows} initialRange={cellRange} viewQuery={query()} initialColumns={selectedColumns.length?selectedColumns:cellRange?Array.from({length:cellRange.right-cellRange.left+1},(_,i)=>cellRange.left+i):[]} onapply={applyTransform} onclose={closeTransform} {onerror}/>{/if}
 {#if rangeDialog}<CsvRangePreview id={doc.id} initial={rangeDialog.edit} cut={rangeDialog.cut} documentScope={rangeDialog.documentScope} onapply={applyRange} onclose={closeRangeDialog} {onerror}/>{/if}
 {#if context}<div bind:this={contextMenu} class="range-context" role="menu" aria-label="Acciones del rango" tabindex="-1" style:left={`${context.x}px`} style:top={`${context.y}px`} onkeydown={event=>{const buttons=Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')),index=buttons.indexOf(document.activeElement as HTMLButtonElement);if(event.key==='Escape'){event.preventDefault();closeContext()}else if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();buttons[event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(event.key==='ArrowDown'?1:buttons.length-1))%buttons.length]?.focus()}else if(event.key==='Tab')context=null}}>{@render rangeButtons(true)}</div>{/if}
 <div class="csv-workspace">
  <div class="csv-toolbar">
   <div class="search-field"><span>⌕</span><input bind:this={searchInput} aria-label="Buscar en tabla" title="Buscar en tabla · Ctrl/⌘ + F · no distingue mayúsculas" placeholder="Buscar en la tabla…" bind:value={search}/>{#if search}<button onclick={()=>search=''} aria-label="Borrar búsqueda">×</button>{/if}</div>
-  <button class:active={showFilters} onclick={()=>showFilters=!showFilters}>☷ Filtros {Object.values(filters).filter(Boolean).length||''}</button>
-  {#if search||Object.values(filters).some(Boolean)||sort||order.length||conditions.length}<button onclick={()=>{search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}}>Quitar filtros y orden</button>{/if}
+  <button class:active={showFilters} onclick={()=>void runCommand('filters')}>☷ Filtros {Object.values(filters).filter(Boolean).length||''}</button>
+  {#if search||Object.values(filters).some(Boolean)||sort||order.length||conditions.length}<button onclick={()=>void runCommand('clearQuery')}>Quitar filtros y orden</button>{/if}
   <label class="check-label"><input type="checkbox" bind:checked={numeric} onchange={()=>{if(sort)sort={...sort,numeric}}}/>Orden numérico</label>
-  <button aria-expanded={showReplace} title="Reemplazar · Ctrl/⌘ + Mayús + F" onclick={()=>{if(showReplace)showReplace=false;else void focusReplace()}}>Reemplazar</button>
-  <button bind:this={queryButton} class:active={conditions.length>0||order.length>0} aria-expanded={showQuery} onclick={()=>showQuery=!showQuery}>Consulta avanzada</button>
-  <button bind:this={sqlButton} aria-expanded={showSql} onclick={()=>{showSql=!showSql;showStatistics=false;showQuery=false;showCharts=false}}>Análisis</button>
-  <button bind:this={statisticsButton} aria-expanded={showStatistics} onclick={()=>{showStatistics=!showStatistics;showSql=false;showCharts=false}}>Estadísticas</button>
-  <button bind:this={chartsButton} aria-expanded={showCharts} onclick={()=>{showCharts=!showCharts;showSql=false;showStatistics=false;showQuery=false}}>Gráficos</button>
+  <button aria-expanded={showReplace} title="Reemplazar · Ctrl/⌘ + Mayús + F" onclick={()=>{if(showReplace)showReplace=false;else void runCommand('replaceDocument')}}>Reemplazar</button>
+  <button bind:this={queryButton} class:active={conditions.length>0||order.length>0} aria-expanded={showQuery} onclick={()=>void runCommand('query')}>Consulta avanzada</button>
+  <button bind:this={sqlButton} aria-expanded={showSql} onclick={()=>void runCommand('sql')}>Análisis</button>
+  <button bind:this={statisticsButton} aria-expanded={showStatistics} onclick={()=>void runCommand('statistics')}>Estadísticas</button>
+  <button bind:this={chartsButton} aria-expanded={showCharts} onclick={()=>void runCommand('charts')}>Gráficos</button>
   <span class="spacer"></span><span class="muted">{busy?'Procesando…':`${page.matched.toLocaleString()} de ${page.total.toLocaleString()} filas`}</span>
  </div>
  {#if showQuery}<CsvQueryTools headers={doc.headers??[]} initialConditions={conditions} initialOrder={activeOrder} initialMode={filterMode} onapply={applyQuery} onclose={()=>{showQuery=false;queryButton?.focus()}}/>{/if}
@@ -141,18 +171,19 @@
  {#if showReplace}<form class="csv-toolbar" onsubmit={event=>{event.preventDefault();prepareReplacement()}}><input bind:this={replaceInput} aria-label="Buscar valor para reemplazar" placeholder="Buscar valor" bind:value={replaceFind}/><input aria-label="Nuevo valor" placeholder="Reemplazar por" bind:value={replaceWith}/><span class="muted">{selectedColumns.length===1?'Columna marcada':'Todas las columnas'} · documento completo, incluye filas ocultas · literal, distingue mayúsculas</span><button disabled={locked||busy||!replaceFind||!doc.rowCount||!doc.headers?.length} type="submit">Vista previa del reemplazo</button></form>{/if}
  <div class="csv-operations">
   <details class="insert-menu"><summary aria-label="Operaciones CSV">Operaciones ▾</summary><div class="dropdown">
-   <button disabled={locked||(doc.headers?.length??0)>200} title="Documento completo · Ctrl/⌘ + Mayús + T · hasta 200 columnas" onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');openTransform()}}>Transformar documento…</button>
+   <button disabled={commandDisabled('transformations')} title="Documento completo · Ctrl/⌘ + Mayús + T · hasta 200 columnas" onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand('transformations')}}>Transformar documento…</button>
    <span class="dropdown-label">Filas y columnas</span>
-   <button disabled={locked||!selectedRows.length} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void edit({type:'duplicateRows',ids:selectedRows})}}>Duplicar filas seleccionadas</button>
-   <button disabled={locked||selectedColumns.length!==1} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void edit({type:'duplicateColumn',index:selectedColumns[0]})}} title="Al cambiar columnas se restablecen filtros y orden">Duplicar columna seleccionada</button>
+   <button disabled={commandDisabled('duplicateRows')} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand('duplicateRows')}}>Duplicar filas seleccionadas</button>
+   <button disabled={commandDisabled('duplicateColumn')} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand('duplicateColumn')}} title="Al cambiar columnas se restablecen filtros y orden">Duplicar columna seleccionada</button>
    <span class="dropdown-label">Limpiar selección</span>
    {#each [{operation:'trim',label:'Quitar espacios al inicio y final'},{operation:'upper',label:'Convertir a mayúsculas'},{operation:'lower',label:'Convertir a minúsculas'}] as item}
-    <button disabled={locked||!selectedRows.length} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void edit({type:'transform',operation:item.operation as 'trim'|'upper'|'lower',rowIds:selectedRows,columns:selectedColumns.length?selectedColumns:(doc.headers??[]).map((_,i)=>i)})}}>{item.label}</button>
+    <button disabled={commandDisabled('rows-'+item.operation)} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand('rows-'+item.operation)}}>{item.label}</button>
    {/each}
   </div></details>
+  <button bind:this={commandsButton} title="Comandos CSV · Ctrl/⌘ + K" onclick={openCommands}>Comandos</button>
   <span class="muted">{selectedRows.length?`Limpieza: ${selectedRows.length} filas × ${selectedColumns.length||doc.headers?.length||0} columnas · sin encabezados`:'Selecciona filas por su número; Ctrl/⌘ o Mayús añade más. Marca columnas para limitar la operación.'}</span>
  </div>
- <div class="csv-options"><label>Codificación <select value={doc.encoding} disabled={doc.dirty||interpreting} onchange={e=>void options({encoding:e.currentTarget.value as Encoding})}><option value="utf8">UTF-8</option><option value="utf16le">UTF-16 LE</option><option value="win1252">Windows-1252</option></select></label><label>Separador <select value={doc.delimiter} disabled={doc.dirty||interpreting} onchange={e=>void options({delimiter:e.currentTarget.value})}><option value=",">Coma</option><option value=";">Punto y coma</option><option value={'\t'}>Tabulación</option><option value="|">Barra vertical</option></select></label><label class="check-label"><input type="checkbox" bind:checked={header} disabled={doc.dirty||interpreting} onchange={()=>void options({header})}/>Primera fila como encabezado</label><span class="spacer"></span><button disabled={locked} onclick={()=>void edit({type:'insertRow',afterId:selectedRows.at(-1)})}>+ Fila</button><button disabled={locked} onclick={()=>void edit({type:'insertColumn',index:doc.headers?.length??0,name:`Columna ${(doc.headers?.length??0)+1}`})}>+ Columna</button><button disabled={locked||!selectedRows.length} onclick={()=>void edit({type:'deleteRows',ids:selectedRows})}>Eliminar filas</button><button disabled={locked||selectedColumns.length!==1} onclick={()=>void edit({type:'deleteColumn',index:selectedColumns[0]})}>Eliminar columna</button></div>
+ <div class="csv-options"><label>Codificación <select value={doc.encoding} disabled={doc.dirty||interpreting} onchange={e=>void options({encoding:e.currentTarget.value as Encoding})}><option value="utf8">UTF-8</option><option value="utf16le">UTF-16 LE</option><option value="win1252">Windows-1252</option></select></label><label>Separador <select value={doc.delimiter} disabled={doc.dirty||interpreting} onchange={e=>void options({delimiter:e.currentTarget.value})}><option value=",">Coma</option><option value=";">Punto y coma</option><option value={'\t'}>Tabulación</option><option value="|">Barra vertical</option></select></label><label class="check-label"><input type="checkbox" bind:checked={header} disabled={doc.dirty||interpreting} onchange={()=>void options({header})}/>Primera fila como encabezado</label><span class="spacer"></span><button disabled={commandDisabled('insertRow')} onclick={()=>void runCommand('insertRow')}>+ Fila</button><button disabled={commandDisabled('insertColumn')} onclick={()=>void runCommand('insertColumn')}>+ Columna</button><button disabled={commandDisabled('deleteRows')} onclick={()=>void runCommand('deleteRows')}>Eliminar filas</button><button disabled={commandDisabled('deleteColumn')} onclick={()=>void runCommand('deleteColumn')}>Eliminar columna</button></div>
  {#if showCharts}{#await import('./CsvCharts.svelte')}<p role="status">Preparando gráficos…</p>{:then module}<module.default {doc} {onerror} onclose={()=>{showCharts=false;chartsButton?.focus()}}/>{:catch}<p role="alert">No se pudo cargar el panel de gráficos. Cierra el panel y vuelve a intentarlo.</p>{/await}{/if}
  {#if showSql}<CsvSql {doc} {onerror} {onreport} onclose={()=>{showSql=false;sqlButton?.focus()}}/>{/if}
  {#if showStatistics}<CsvStatistics {doc} range={cellRange} query={query()} queryValid={!queryError} columns={selectedColumns} onerror={onerror} {onreport} onclose={()=>{showStatistics=false;statisticsButton?.focus()}}/>{/if}
@@ -181,9 +212,9 @@
     </div>{/if}
    {/each}
   </div>
-  {#if !page.matched&&!busy}<div class="table-empty">No hay filas que coincidan. <button onclick={()=>void edit({type:'insertRow'})} disabled={locked}>Añadir fila</button></div>{/if}
+  {#if !page.matched&&!busy}<div class="table-empty">No hay filas que coincidan. <button onclick={()=>void runCommand('insertRow')} disabled={commandDisabled('insertRow')}>Añadir fila</button></div>{/if}
  </div>
- <div class="selection-bar">{#if cellRange}<span role="status">Rango: filas {cellRange.top+1}–{cellRange.bottom+1}, columnas {cellRange.left+1}–{cellRange.right+1} · {((cellRange.bottom-cellRange.top+1)*(cellRange.right-cellRange.left+1)).toLocaleString()} celdas</span><details class="insert-menu"><summary aria-label="Acciones del rango">Rango ▾</summary><div class="dropdown">{@render rangeButtons()}</div></details>{:else}<span>{selectedRows.length?`${selectedRows.length} filas seleccionadas`:'Selecciona filas para consultar estadísticas'}</span>{/if}{#if selectionStats}<span>Vacíos: {selectionStats.empty} · Únicos: {selectionStats.unique}</span>{#if selectionStats.numeric}<span>Suma: {selectionStats.sum?.toLocaleString()} · Media: {selectionStats.average?.toLocaleString()} · Mín: {selectionStats.min?.toLocaleString()} · Máx: {selectionStats.max?.toLocaleString()}</span>{/if}{/if}<span class="spacer"></span><button onclick={copyMarkdown}>Copiar como Markdown</button></div>
+ <div class="selection-bar">{#if cellRange}<span role="status">Rango: filas {cellRange.top+1}–{cellRange.bottom+1}, columnas {cellRange.left+1}–{cellRange.right+1} · {((cellRange.bottom-cellRange.top+1)*(cellRange.right-cellRange.left+1)).toLocaleString()} celdas</span><details class="insert-menu"><summary aria-label="Acciones del rango">Rango ▾</summary><div class="dropdown">{@render rangeButtons()}</div></details>{:else}<span>{selectedRows.length?`${selectedRows.length} filas seleccionadas`:'Selecciona filas para consultar estadísticas'}</span>{/if}{#if selectionStats}<span>Vacíos: {selectionStats.empty} · Únicos: {selectionStats.unique}</span>{#if selectionStats.numeric}<span>Suma: {selectionStats.sum?.toLocaleString()} · Media: {selectionStats.average?.toLocaleString()} · Mín: {selectionStats.min?.toLocaleString()} · Máx: {selectionStats.max?.toLocaleString()}</span>{/if}{/if}<span class="spacer"></span><button disabled={commandDisabled('copyMarkdown')} onclick={()=>void runCommand('copyMarkdown')}>Copiar como Markdown</button></div>
 </div>
 <script lang="ts" module>
  function focus(node:HTMLInputElement){node.focus();node.select()}
