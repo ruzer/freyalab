@@ -357,7 +357,7 @@ test('exportación CSV: completo y filtrado conservan columnas; selección limit
 test('consulta CSV: formulario, orden múltiple exacto, exportación y pegado por vista',async()=>{
  const path=join(directory,'consulta.csv')
  const source='Código,Grupo,Valor,Fecha,Nota\n001,Z,9007199254740993,2026-01-02,Árbol\n002,A,9007199254740992,2026-01-03,\n003,A,1.00000000000000001,2026-01-01,Inicio\n004,A,1.00000000000000002,2026-01-01,Fin\n005,A,1.00000000000000001,2026-01-01,Otro\n'
- await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
+ await writeFile(path,source);await page.evaluate(path=>window.freya.openPaths([path]),path)
  await page.getByRole('button',{name:'Consulta avanzada',exact:true}).click()
  const panel=page.getByRole('region',{name:'Consulta avanzada',exact:true})
  await expect(panel.getByRole('heading',{name:'Consulta avanzada'})).toBeFocused()
@@ -384,9 +384,10 @@ test('consulta CSV: formulario, orden múltiple exacto, exportación y pegado po
  expect(exported.slice(1).map(row=>row[0])).toEqual(['003','005','004'])
  expect(exported[1][4]).toBe('Primero');expect(exported[2][4]).toBe('Segundo')
  expect(await readFile(path,'utf8')).toBe(source)
- const rows=await page.evaluate(async id=>(await window.freya.tablePage(id,{offset:0,limit:10,requestId:999})).rows,doc.id)
- expect(rows.map(row=>row.cells[4])).toEqual(['Árbol','','Primero','Fin','Segundo'])
- await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(cell).toHaveText('Inicio')
+ await page.getByRole('button',{name:'Quitar filtros y orden',exact:true}).click()
+ await expect(page.locator('.csv-toolbar')).toContainText('5 de 5 filas')
+ for(const [index,note] of ['Árbol','','Primero','Fin','Segundo'].entries())await expect(page.getByRole('gridcell',{name:`Fila ${index+1}, Nota`,exact:true})).toHaveText(note)
+ await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 3, Nota',exact:true})).toHaveText('Inicio')
 })
 
 test('consulta CSV: condiciones O, errores visibles, limpiar y ordenar con Mayús',async()=>{

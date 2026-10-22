@@ -29,6 +29,7 @@
  async function openFolder(){await action(async()=>{const path=await window.freya.folder();if(path){folderPath=path;entries=await window.freya.tree(path);sidebar=true}})}
  async function create(kind:Kind){newMenu=false;await action(async()=>merge(await window.freya.newDocument(kind),true))}
  function updateText(id:string,text:string){documents=documents.map(d=>d.id===id?{...d,text,dirty:true}:d);const previous=pending.get(id)??Promise.resolve();const task=previous.catch(()=>{}).then(()=>window.freya.update(id,text)).then(doc=>{const current=documents.find(d=>d.id===id);if(current?.text===text)merge(doc)}).catch(e=>{error(String(e));throw e});pending.set(id,task);void task.catch(()=>{}).finally(()=>{if(pending.get(id)===task)pending.delete(id)})}
+ async function openStatisticsReport(text:string){await action(async()=>{if(new TextEncoder().encode(text).byteLength>10*1024*1024)throw new Error('El informe supera el límite de edición de 10 MiB. Reduce el alcance del análisis.');const doc=await window.freya.newDocument('markdown');merge(doc,true);updateText(doc.id,text);await pending.get(doc.id)})}
  async function save(as=false){if(!active)return;const id=active.id;await action(async()=>{await pending.get(id);const doc=await window.freya.save(id,as);if(doc){merge(doc);external=external.filter(value=>value!==id);notify('Archivo guardado')}})}
  async function reload(id:string){await action(async()=>{merge(await window.freya.reload(id));external=external.filter(value=>value!==id)})}
  async function close(id:string){await action(async()=>{await pending.get(id);if(await window.freya.close(id)){const index=documents.findIndex(d=>d.id===id);documents=documents.filter(d=>d.id!==id);if(activeId===id)activeId=documents[Math.max(0,index-1)]?.id??''}})}
@@ -70,7 +71,7 @@
    {#if active}
     {#if external.includes(active.id)}<div class="warning-banner external-banner"><span>Este archivo cambió fuera de FreyaLab.</span><button onclick={()=>reload(active!.id)}>Recargar</button><button onclick={()=>save(true)}>Guardar copia</button><button onclick={()=>external=external.filter(value=>value!==active!.id)}>Conservar mi edición</button></div>{/if}
     {#key active.id}
-     {#if active.kind==='csv'}<CsvTable bind:this={csv} doc={active} onchange={doc=>merge(doc)} onerror={error} onstatus={value=>status=value}/>
+     {#if active.kind==='csv'}<CsvTable bind:this={csv} doc={active} onchange={doc=>merge(doc)} onerror={error} onstatus={value=>status=value} onreport={openStatisticsReport}/>
      {:else}
       <div class="document-tools"><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div>{#if active.kind==='markdown'&&mode!=='preview'}<div class="markdown-toolbar" role="group" aria-label="Formato Markdown">
        <button disabled={active.readonly} title="Negrita (Ctrl/⌘ B)" aria-label="Negrita" onclick={()=>editor?.format('bold')}><b>B</b></button>

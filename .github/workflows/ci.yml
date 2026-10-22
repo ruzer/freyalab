@@ -59,12 +59,12 @@ jobs:
         if: runner.os == 'Linux'
         env:
           FREYALAB_EXECUTABLE: ${{ github.workspace }}/${{ matrix.executable }}
-        run: xvfb-run -a npx playwright test tests/e2e/sql.spec.ts tests/e2e/charts.spec.ts tests/e2e/structure.spec.ts tests/e2e/ordering.spec.ts tests/e2e/range-cancellation.spec.ts tests/e2e/selection-statistics.spec.ts --output=packaged-test-results
+        run: xvfb-run -a npx playwright test tests/e2e/sql.spec.ts tests/e2e/charts.spec.ts tests/e2e/structure.spec.ts tests/e2e/ordering.spec.ts tests/e2e/range-cancellation.spec.ts tests/e2e/selection-statistics.spec.ts tests/e2e/statistics-reports.spec.ts --output=packaged-test-results
       - name: CSV analysis and transforms in packaged application (macOS and Windows)
         if: runner.os != 'Linux'
         env:
           FREYALAB_EXECUTABLE: ${{ github.workspace }}/${{ matrix.executable }}
-        run: npx playwright test tests/e2e/sql.spec.ts tests/e2e/charts.spec.ts tests/e2e/structure.spec.ts tests/e2e/ordering.spec.ts tests/e2e/range-cancellation.spec.ts tests/e2e/selection-statistics.spec.ts --output=packaged-test-results
+        run: npx playwright test tests/e2e/sql.spec.ts tests/e2e/charts.spec.ts tests/e2e/structure.spec.ts tests/e2e/ordering.spec.ts tests/e2e/range-cancellation.spec.ts tests/e2e/selection-statistics.spec.ts tests/e2e/statistics-reports.spec.ts --output=packaged-test-results
       - uses: actions/upload-artifact@v4
         if: always()
         with:
