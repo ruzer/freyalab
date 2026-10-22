@@ -12,13 +12,13 @@ async function fillDialog(){await page.getByRole('grid',{name:'Tabla de datos'})
 async function clickAndCancel(button:ReturnType<Page['getByRole']>){await button.evaluate(button=>{(button as HTMLButtonElement).click();queueMicrotask(()=>{const cancel=[...document.querySelectorAll<HTMLButtonElement>('dialog button')].find(button=>button.textContent==='Cancelar preparación');if(!cancel)throw new Error('Falta el control de cancelación');cancel.click()})})}
 
 test('rangos: los controles cancelan vista previa y aplicación, permiten reintentar y conservan originales',async()=>{
- const source='ID,Nota\r\n'+'00123, a \r\n'.repeat(50000),{doc,path}=await open(source),before=await page.evaluate(()=>window.freya.documents()),panel=await fillDialog()
+ const source='ID,Nota\r\n'+'00123, a \r\n'.repeat(50000),{path}=await open(source),before=await page.evaluate(()=>window.freya.documents()),panel=await fillDialog()
  await clickAndCancel(panel.getByRole('button',{name:'Vista previa',exact:true}));await expect(panel.getByRole('status')).toContainText('Preparación cancelada');await expect(panel.getByRole('button',{name:'Aplicar cambio',exact:true})).toBeDisabled();expect(await page.evaluate(()=>window.freya.documents())).toEqual(before)
  await panel.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(panel.getByRole('status')).toContainText(/100[,.]000 de 100[,.]000/)
  await clickAndCancel(panel.getByRole('button',{name:'Aplicar cambio',exact:true}));await expect(panel.getByRole('status')).toContainText('El cambio no se aplicó');await expect(panel.getByRole('status')).toContainText('cancelada');expect(await page.evaluate(()=>window.freya.documents())).toEqual(before);expect(await page.evaluate(()=>window.freya.recoveries())).toEqual([])
  await panel.getByRole('button',{name:'Cancelar',exact:true}).click()
  for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);const next=await fillDialog();await next.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(next.getByRole('status')).toContainText(/100[,.]000 de 100[,.]000/);for(const [width,height] of [[1440,900],[1280,800]]){await page.setViewportSize({width,height});await page.screenshot({path:test.info().outputPath(`csv-range-cancel-${theme}-${width}x${height}.png`)})}await page.keyboard.press('Escape');await expect(next).toHaveCount(0)}
- expect((await page.evaluate(({id,query})=>window.freya.tablePage(id,query),{id:doc.id,query})).rows[0].cells).toEqual(['00123',' a ']);expect(await readFile(path,'utf8')).toBe(source)
+ await page.getByRole('grid',{name:'Tabla de datos'}).evaluate(element=>element.scrollTop=0);await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00123');await expect(page.getByRole('gridcell',{name:'Fila 1, Nota',exact:true}).locator('span')).toHaveJSProperty('textContent',' a ');expect(await readFile(path,'utf8')).toBe(source)
 })
 
 test('rangos: cancelar trabajo iniciado, rechazar edición en cola y validar requestId no cambia datos ni recuperación',async()=>{
