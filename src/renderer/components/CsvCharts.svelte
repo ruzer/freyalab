@@ -40,8 +40,8 @@
   finally{if(active===requestId){active=undefined;busy=false;void window.freya.sqlCancel(requestId).catch(()=>{})}}
  }
  async function exportChart(format:'svg'|'png'|'pdf'){
-  if(!data||!chart||doc.readonly)return;exporting=true;message='Exportando gráfico…'
-  try{const svg=chart.renderToSVGString();const path=await window.freya.export(doc.id,{format,svg});message=path?`Gráfico exportado: ${path}`:'Exportación cancelada.'}catch(error){message=String(error);onerror(message)}finally{exporting=false}
+  if(!data||!source||!chart||busy||exporting)return;exporting=true;message='Exportando gráfico…'
+  try{const svg=chart.renderToSVGString();const path=await window.freya.exportGraphic(doc.id,{format,svg,revision:source.revision});message=path?`Gráfico exportado: ${path}`:'Exportación cancelada.'}catch(error){message=String(error);onerror(message)}finally{exporting=false}
  }
  const headings:Record<string,string>={x:'Eje X / categoría',value:'Valor / mediana',upper:'Límite superior',fila:'Fila original',y:'Categoría Y',q1:'Cuartil 1',q3:'Cuartil 3',low:'Bigote inferior',high:'Bigote superior',outliers:'Atípicos totales',count:'Numéricos',atypical:'Primeros atípicos (máx. 20)'}
 </script>
@@ -70,8 +70,8 @@
  <div class="plot-scroll" role="region" aria-label="Área desplazable del gráfico" tabindex="0"><div class="plot" style:width={`${zoom*100}%`} bind:this={element}></div></div>
  {#if data}
   {#if !data.rows.length}<p>No hay valores utilizables para este gráfico.</p>{/if}
-  <div class="actions"><button onclick={()=>zoom=Math.max(1,zoom-0.5)} disabled={zoom<=1}>Reducir gráfico</button><button onclick={()=>zoom=Math.min(4,zoom+0.5)} disabled={zoom>=4}>Ampliar gráfico</button><button onclick={()=>zoom=1}>Ajustar gráfico</button>{#each ['svg','png','pdf'] as format}<button disabled={busy||exporting||doc.readonly} onclick={()=>void exportChart(format as 'svg'|'png'|'pdf')}>Exportar gráfico {format.toUpperCase()}</button>{/each}</div>
-  {#if doc.readonly}<p>La exportación de imágenes desde una fuente que el editor abre como muestra no está disponible en esta entrega.</p>{/if}
+  <div class="actions"><button onclick={()=>zoom=Math.max(1,zoom-0.5)} disabled={zoom<=1}>Reducir gráfico</button><button onclick={()=>zoom=Math.min(4,zoom+0.5)} disabled={zoom>=4}>Ampliar gráfico</button><button onclick={()=>zoom=1}>Ajustar gráfico</button>{#each ['svg','png','pdf'] as format}<button disabled={busy||exporting} onclick={()=>void exportChart(format as 'svg'|'png'|'pdf')}>Exportar gráfico {format.toUpperCase()}</button>{/each}</div>
+  {#if doc.readonly}<p>La tabla sigue siendo una muestra de solo lectura. Se exporta una instantánea del gráfico calculado sobre la fuente completa; no el CSV ni sus cambios.</p>{/if}
   <details><summary>Datos del gráfico: tabla accesible</summary><div class="table-scroll"><table><caption>{chartKinds[options.kind]} · valores usados para dibujar; páginas de 50</caption><thead><tr>{#each data.columns as name}<th scope="col">{headings[name]??name}</th>{/each}</tr></thead><tbody>{#each data.rows.slice(tablePage*50,(tablePage+1)*50) as row}<tr>{#each row as value}<td>{value===null?'—':value===''?'(vacío)':value}</td>{/each}</tr>{/each}</tbody></table></div><div class="actions"><button disabled={tablePage===0} onclick={()=>tablePage--}>Datos anteriores</button><span>Página {tablePage+1} de {Math.max(1,Math.ceil(data.rows.length/50))}</span><button disabled={(tablePage+1)*50>=data.rows.length} onclick={()=>tablePage++}>Datos siguientes</button></div></details>
  {/if}
  <details><summary>Consulta y precisión del gráfico</summary><p>Números aproximados con punto decimal; se omiten vacíos, valores inválidos y magnitudes mayores que 9 007 199 254 740 991. Las categorías siguen siendo texto exacto; etiquetas largas se abrevian visualmente. No conviertas identificadores a medidas. El CSV conserva su contenido. Los resultados se invalidan al cambiar datos u opciones.</p><pre>{sql}</pre></details>

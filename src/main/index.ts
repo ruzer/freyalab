@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { SqlService } from './sql-service'
 import appIcon from '../../build/icon.png?asset'
 import { Documents } from './documents'
-import { exportDocument } from './export'
+import { exportDocument,exportGraphic } from './export'
 import type { Kind,TableEdit,TableOptions,TableExport,TableQuery,ExportRequest,TableRange,TableRangeEdit,TableTransformEdit } from '../shared/types'
 const here=dirname(fileURLToPath(import.meta.url))
 if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FREYALAB_USER_DATA))
@@ -57,6 +57,7 @@ async function handle(operation:string,args:unknown[]){
  case'cancelAnalysis':docs.get(id.parse(a));return docs.table.call('cancelAnalysis',a,z.uuid().parse(b))
  case'stats':docs.get(id.parse(a));return docs.table.call('stats',a,rows.nullable().parse(b),z.array(col).max(100000).parse(c),z.object({requestId:z.uuid(),revision:z.number().int().nonnegative(),range:range.optional()}).optional().parse(d))
  case'markdown':docs.get(id.parse(a));return docs.table.call('markdown',a,tableExport.parse(b) as TableExport)
+ case'exportGraphic':return exportGraphic(docs,id.parse(a),z.object({format:z.enum(['svg','png','pdf']),svg:text.min(1),revision:z.number().int().nonnegative()}).strict().parse(b))
  case'export':return exportDocument(docs,id.parse(a),z.object({format:z.enum(['pdf','html','svg','png','csv','tsv']),html:text.optional(),svg:text.optional(),table:tableExport.optional()}).parse(b) as ExportRequest)
  case'image':return docs.image(id.parse(a),z.string().max(16*1024*1024).parse(b))
  case'link':{const url=z.url().parse(a);if(!['https:','http:'].includes(new URL(url).protocol))throw new Error('Solo se permiten enlaces web.');await shell.openExternal(url);return}
