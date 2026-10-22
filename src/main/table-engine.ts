@@ -9,9 +9,9 @@ import { stringify } from 'csv-stringify/sync'
 import iconv from 'iconv-lite'
 import {ANALYSIS_LIMITS,arrowBatches,fileRecords,validateUtf8} from './analysis-source'
 import {compileTableQuery} from './table-query'
-import {analyzeColumn,numeric} from './table-analysis'
+import {analyzeColumn,numeric,descriptive} from './table-analysis'
 import type {ColumnAnalysisRequest,ColumnAnalysis,TableTransformEdit,TableTransformPreview,SqlProgress} from '../shared/types'
-import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview } from '../shared/types'
+import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview,TableStatsOptions } from '../shared/types'
 
 export const TABLE_LIMITS = { bytes: 50 * 1024 * 1024, cells: 2_000_000, record: 1024 * 1024, sampleBytes: 8 * 1024 * 1024, sampleRows: 200 }
 interface Metadata { encoding: Encoding; delimiter: string; eol: string; bom: boolean; header: boolean; finalEol: boolean; headerWidth: number }
@@ -338,7 +338,41 @@ export class TableEngine {
   finally{if(this.analyses.get(id)===request.requestId)this.analyses.delete(id)}
  }
  async cancelAnalysis(id:string,requestId:string){if(this.analyses.get(id)===requestId)this.analyses.delete(id)}
- async stats(id:string,rowIds:string[]|null,columns:number[]):Promise<TableStats>{const s=this.get(id),revision=s.revision;if(columns.some(col=>!Number.isInteger(col)||col<0||col>=s.headers.length))throw new Error('Columna no válida.');const ids=rowIds===null?null:new Set(rowIds),values:string[]=[];for(let i=0;i<s.rows.length;i++){const row=s.rows[i];if(ids===null||ids.has(row.id))for(const col of columns){values.push(row.cells[col]??'')}if(i%2048===0){await yieldTurn();if(this.states.get(id)!==s||s.revision!==revision)throw new Error('Las estadísticas se cancelaron porque cambió la tabla.')}}const nums=values.map(numeric).filter((n):n is number=>n!==null&&(!Number.isInteger(n)||Number.isSafeInteger(n)));let sum=0,min=Infinity,max=-Infinity;for(const n of nums){sum+=n;min=Math.min(min,n);max=Math.max(max,n)}return{cells:values.length,empty:values.filter(v=>!v.trim()).length,unique:new Set(values).size,numeric:nums.length,sum:nums.length&&Number.isFinite(sum)?sum:null,min:nums.length?min:null,max:nums.length?max:null,average:nums.length&&Number.isFinite(sum)?sum/nums.length:null}}
+ async stats(id:string,rowIds:string[]|null,columns:number[],options?:TableStatsOptions):Promise<TableStats>{
+  const s=this.get(id),revision=s.revision,requestId=options?.requestId
+  if(options&&options.revision!==revision)throw new Error('La tabla cambió. Vuelve a analizar.')
+  if(columns.some(col=>!Number.isInteger(col)||col<0||col>=s.headers.length))throw new Error('Columna no válida.')
+  if(options?.range&&rowIds!==null)throw new Error('Elige filas marcadas o un rango, sin combinar ambos alcances.')
+  // Footer queries keep working without replacing the panel's cancelable request.
+  if(requestId)this.analyses.set(id,requestId)
+  const ensure=()=>{if(this.states.get(id)!==s||s.revision!==revision||requestId&&this.analyses.get(id)!==requestId)throw new Error('Las estadísticas se cancelaron porque cambió la tabla o la solicitud.')}
+  const progress=async(rows:number)=>{if(requestId)this.progress({requestId,phase:'Calculando estadísticas',rows});await yieldTurn();ensure()}
+  try{
+   await progress(0)
+   const bounds=options?.range,range=bounds?await this.rangeRows(id,bounds,ensure):undefined
+   const selected=[...new Set(range&&!columns.length?range.columns:columns)]
+   if(bounds&&selected.some(col=>col<bounds.left||col>bounds.right))throw new Error('La columna no pertenece al rango seleccionado.')
+   const ids=rowIds===null?null:new Set(rowIds),unique=new Set<string>(),nums:number[]=[]
+   const limitMessage='El resumen supera dos millones de celdas. Reduce el rango, las filas o las columnas.'
+   if((range?.indices.length??(ids===null?s.rows.length:0))*selected.length>TABLE_LIMITS.cells)throw new Error(limitMessage)
+   let cells=0,empty=0,missing=0,whitespace=0
+   for(let i=0;i<(range?.indices.length??s.rows.length);i++){
+    const row=s.rows[range?range.indices[i]:i]
+    if(ids===null||ids.has(row.id))for(const col of selected){
+     if(++cells>TABLE_LIMITS.cells)throw new Error(limitMessage)
+     const value=row.cells[col]??'',number=numeric(value);unique.add(value)
+     if(!value.trim()){empty++;if(value.length)whitespace++}if(col>=row.cells.length)missing++
+     if(number!==null&&(!Number.isInteger(number)||Number.isSafeInteger(number)))nums.push(number)
+     if(cells%512===0)await progress(i+1)
+    }
+    if(i%2048===0){await yieldTurn();ensure()}
+   }
+   await progress(range?.indices.length??s.rows.length)
+   const result={...descriptive(nums),cells,empty,missing,whitespace,unique:unique.size,numeric:nums.length,excluded:cells-empty-nums.length,revision,sample:s.readonly}
+   await yieldTurn();ensure();return result
+  }finally{if(requestId&&this.analyses.get(id)===requestId)this.analyses.delete(id)}
+ }
+
  async markdown(id:string,options:TableExport){const {rows,headers}=await this.selected(id,options);const escape=(v:string)=>v.replace(/\\/g,'\\\\').replace(/\|/g,'\\|').replace(/\r\n|\r|\n/g,'<br>');return[headers,headers.map(()=>'---'),...rows].map(row=>'| '+row.map(escape).join(' | ')+' |').join('\n')}
  async serialize(id:string,options?:TableExport):Promise<Buffer>{const s=this.editable(id),revision=s.revision;let records:string[][];if(options){const selection=await this.selected(id,options);records=s.header?[selection.headers,...selection.rows]:selection.rows}else records=s.header?[s.headers.slice(0,s.headerWidth),...s.rows.map(row=>row.cells)]:s.rows.map(row=>row.cells)
   if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.');

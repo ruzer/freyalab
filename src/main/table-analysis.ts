@@ -7,6 +7,8 @@ export function numeric(value:string):number|null{const v=value.trim(),n=Number(
 function safeNumber(value:string){const n=numeric(value);return n!==null&&(!Number.isInteger(n)||Number.isSafeInteger(n))?n:null}
 const finite=(value:number)=>Number.isFinite(value)?value:null
 
+export function descriptive(values:number[]){return values.length?{sum:finite(sum(values)),average:finite(mean(values)),min:min(values),max:max(values),median:finite(median(values)),deviation:finite(standardDeviation(values)),sampleDeviation:values.length>1?finite(sampleStandardDeviation(values)):null}:{sum:null,average:null,min:null,max:null,median:null,deviation:null,sampleDeviation:null}}
+
 export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,request:ColumnAnalysisRequest,ensure:()=>void):Promise<Omit<ColumnAnalysis,'revision'|'sample'|'filtered'|'column'>>{
  const cells=indices?.length??rows.length,values:number[]=[],x:number[]=[],y:number[]=[],missingRows:ColumnAnalysis['missingRows']=[]
  // shortcut: hasta 100 000 claves exactas en memoria; usar el motor analítico antes de ampliar la cardinalidad.
@@ -29,7 +31,7 @@ export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,r
  let duplicateGroups=0,duplicateRows=0
  for(const entry of counts.values())if(entry.count>1){duplicateGroups++;duplicateRows+=entry.count}
  const warnings:string[]=[],histogram:ColumnAnalysis['histogram']=[]
- const statistics=values.length?{sum:finite(sum(values)),average:finite(mean(values)),min:min(values),max:max(values),median:finite(median(values)),deviation:finite(standardDeviation(values)),sampleDeviation:values.length>1?finite(sampleStandardDeviation(values)):null}:{sum:null,average:null,min:null,max:null,median:null,deviation:null,sampleDeviation:null}
+ const statistics=descriptive(values)
  if(values.length){
   const lower=statistics.min!,upper=statistics.max!
   const breaks=lower===upper?[lower,upper]:equalIntervalBreaks(values,request.bins)

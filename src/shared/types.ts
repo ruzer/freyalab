@@ -14,7 +14,8 @@ export interface TableRangePreview {cells:number;changed:number;revision:number;
 export interface TableTransformEdit {type:'structure';operation:'split'|'combine'|'deduplicate'|'normalize'|'headers'|'moveRows'|'moveColumns'|'commitOrder';columns:number[];revision:number;requestId:string;separator?:string;name?:string;rowIds?:string[];range?:TableRange;destination?:number;query?:TableQuery}
 export interface TableTransformPreview {revision:number;rows:number;affected:number;cells:number;addedColumns:number;deletedRows:number;changedHeaders:number;movedRows:number;movedColumns:number;samples:{row:number|null;column:number|null;before:string;after:string}[]}
 export type TableEdit = TableRangeEdit | TableTransformEdit | {type:'cell'; rowId:string; column:number; value:string} | {type:'paste';rowId:string;column:number;values:string[][];view?:{query:TableQuery;revision:number}} | {type:'insertRow';afterId?:string} | {type:'deleteRows';ids:string[]} | {type:'duplicateRows';ids:string[]} | {type:'duplicateColumn';index:number} | {type:'insertColumn';index:number;name:string} | {type:'deleteColumn';index:number} | {type:'header';index:number;name:string} | {type:'replace';find:string;replacement:string;column?:number} | {type:'transform';operation:'trim'|'upper'|'lower';rowIds:string[];columns:number[]}
-export interface TableStats { cells:number; empty:number; unique:number; numeric:number; sum:number|null; min:number|null; max:number|null; average:number|null }
+export interface TableStatsOptions {requestId:string;revision:number;range?:TableRange}
+export interface TableStats { revision:number;sample:boolean;missing:number;whitespace:number;excluded:number;median:number|null;deviation:number|null;sampleDeviation:number|null;cells:number; empty:number; unique:number; numeric:number; sum:number|null; min:number|null; max:number|null; average:number|null }
 export interface ColumnAnalysisRequest {column:number;otherColumn?:number;query?:TableQuery;revision:number;requestId:string;frequencyOffset:number;duplicatesOnly:boolean;bins:number}
 export interface ColumnAnalysis {
  revision:number;sample:boolean;filtered:boolean;column:number;cells:number;empty:number;missing:number;whitespace:number;numeric:number;excluded:number;leadingZeros:number;unique:number;duplicateGroups:number;duplicateRows:number;extraDuplicates:number;minLength:number;maxLength:number;
@@ -41,7 +42,7 @@ export interface FreyaAPI {
  tablePage(id:string,query:TableQuery):Promise<TablePage>; tableEdit(id:string,edit:TableEdit):Promise<DocumentInfo>; tableOptions(id:string,options:TableOptions):Promise<DocumentInfo>;
  sqlRun(request:SqlRequest):Promise<SqlResult>;sqlPage(requestId:string,offset:number):Promise<SqlResult>;sqlCancel(requestId:string):Promise<void>;
  analyzeColumn(id:string,request:ColumnAnalysisRequest):Promise<ColumnAnalysis>; cancelAnalysis(id:string,requestId:string):Promise<void>;
- undo(id:string,redo?:boolean):Promise<DocumentInfo>; stats(id:string,rows:string[]|null,columns:number[]):Promise<TableStats>; tableMarkdown(id:string,options:TableExport):Promise<string>;
+ undo(id:string,redo?:boolean):Promise<DocumentInfo>; stats(id:string,rows:string[]|null,columns:number[],options?:TableStatsOptions):Promise<TableStats>; tableMarkdown(id:string,options:TableExport):Promise<string>;
  export(id:string,request:ExportRequest):Promise<string|null>; image(id:string,src:string):Promise<string|null>; openLink(url:string):Promise<void>;
  recents():Promise<string[]>; recoveries():Promise<RecoveryEntry[]>; recover(id:string):Promise<DocumentInfo>; discardRecovery(id:string):Promise<void>;
  onEvent(callback:(event:AppEvent)=>void):()=>void; droppedPaths(files:File[]):string[]
