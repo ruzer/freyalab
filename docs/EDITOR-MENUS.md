@@ -39,13 +39,13 @@ El pie indica filas, columnas y número de celdas. **Rango** y clic derecho ofre
 | Acción | Acceso y comportamiento |
 |---|---|
 | Copiar | Ctrl/⌘ + C; TSV textual en el orden visible, sin encabezados |
-| Cortar | Ctrl/⌘ + X; vista previa y confirmación; primero copia, después vacía; si falla la copia no modifica datos |
+| Cortar | Ctrl/⌘ + X; vista previa y confirmación; primero copia, después vacía; si falla la copia o se cancela antes del borrado no modifica datos |
 | Pegar | Ctrl/⌘ + V o menú; vista previa. Desde una sola celda, el bloque se extiende a la derecha/abajo dentro de la vista; en un rectángulo mayor, las dimensiones deben coincidir exactamente |
 | Rellenar | Ctrl/⌘ + Intro o menú; introduce texto, incluso con saltos de línea, para todas las celdas |
 | Vaciar | Supr/Retroceso o menú; conserva filas/columnas y vacía solo el rectángulo |
 | Limpiar / reemplazar | Quitar espacios, mayúsculas, minúsculas o reemplazo literal, con vista previa sobre el rango |
 
-La vista previa muestra el recuento completo de cambios y hasta ocho ejemplos, abreviados a 256 caracteres; no aplica cambios. Cambiar los valores exige una vista previa nueva. Cancelar o Escape cierra sin modificar el documento. El cálculo ya iniciado puede terminar en segundo plano; sus resultados se descartan. Aplicar usa un solo paso de deshacer/rehacer y la recuperación CSV existente. No modifica el archivo guardado hasta pulsar Guardar. Después de aplicar o cambiar la revisión/consulta se elimina el rectángulo para evitar reutilizar coordenadas de otra vista.
+La vista previa muestra el recuento completo de cambios y hasta ocho ejemplos, abreviados a 256 caracteres; no aplica cambios. Cambiar los valores exige una vista previa nueva. **Cancelar preparación** interrumpe el cálculo en el proceso de datos y permite volver a preparar. Cancelar/Escape durante una vista previa la cierra y cancela su trabajo. Durante la aplicación solicita cancelación y espera el resultado real antes de cerrar: el cambio final es completo y, si ya se confirmó, se puede deshacer. En Cortar, cancelar mientras se copia impide el borrado posterior; la copia al portapapeles ya iniciada puede terminar. Si falla la copia, no se borra nada. Aplicar usa un solo paso de deshacer/rehacer y la recuperación CSV existente. No modifica el archivo guardado hasta pulsar Guardar. Después de aplicar o cambiar la revisión/consulta se elimina el rectángulo para evitar reutilizar coordenadas de otra vista.
 
 Filtrar u ordenar no cambia el orden físico. El rango congela la consulta y la revisión de la vista; el motor resuelve sus filas antes de editar. Una revisión obsoleta, bloque irregular, dimensiones excedidas, valor mayor de 1 MiB o cambio superior a 20 MiB de historial se rechaza íntegramente. No añade filas/columnas al pegar automáticamente. Ceros iniciales, identificadores largos, Unicode, comillas y campos multilínea siguen siendo texto. No se evalúan fórmulas ni se alteran mediante apóstrofos automáticos.
 

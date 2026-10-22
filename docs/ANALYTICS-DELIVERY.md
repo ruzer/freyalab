@@ -7,7 +7,7 @@ Estado al 21 de octubre de 2026. Las entregas A/B de los PR #11/#12 ya están en
 | Requisito | Estado verificable | Pendiente / aceptación |
 |---|---|---|
 | Selección de rangos | Implementado en `codex/csv-range-editing`: un rectángulo por ratón/teclado, navegación virtual y alcance por consulta/revisión | Probar rendimiento con rangos más amplios y accesibilidad con lector de pantalla; rangos discontinuos no implementados |
-| Edición masiva | Rellenar/vaciar/cortar/pegar rangos, vista previa, confirmación y un paso de deshacer; rechazos íntegros | Cancelación del cálculo en curso y mediciones amplias pendientes; cerrar la vista previa descarta resultados |
+| Edición masiva | Rellenar/vaciar/cortar/pegar rangos, vista previa, confirmación y un paso de deshacer; rechazos íntegros | `codex/csv-range-cancellation` añade preparación cancelable, progreso y cierre con confirmación del resultado; corta solo después de una copia correcta y no cancelada. Mediciones amplias y lector de pantalla pendientes |
 | Filtros avanzados | Implementado en `codex/csv-advanced-editing`: Y/O, texto, vacíos, números exactos, fechas ISO y RE2 | Ver [guía](EDITOR-MENUS.md) y [evidencia](evidence/csv-query-2026-10-21.md); consultas inválidas no habilitan edición sobre una vista antigua |
 | Ordenamiento múltiple | Implementado en la misma rama; tipos explícitos por criterio, empates estables | Es orden de vista; guardar mantiene orden original. `codex/csv-ordering` añade fijación explícita sin filtros, con vista previa y un paso de deshacer |
 | Transformaciones | Limpieza/reemplazo por rango existentes; `codex/csv-transformations` añade dividir/combinar conservando originales, NFC, encabezados únicos y eliminación de duplicados por clave compuesta. Vista previa, progreso, cancelación y un paso de deshacer; [guía](TRANSFORMS.md) | `codex/csv-ordering` añade mover filas/columnas y fijar orden; ampliar alcance de las cinco operaciones iniciales más allá del documento completo |
@@ -64,7 +64,7 @@ Incluye teclado mediante controles/tabla alternativa, temas, tamaño adaptable y
 ## Orden de las siguientes entregas
 
 1. Consulta avanzada, rangos y exploración integrados mediante #11/#12 por el usuario; #6 cerrado como resuelto. No fusionar automáticamente las siguientes entregas.
-2. Revisar [rangos y edición masiva](evidence/csv-range-2026-10-21.md) y las [cinco transformaciones nuevas](TRANSFORMS.md), con preparación cancelable e historial existente; verificar movimientos/fijación de orden en `codex/csv-ordering` y completar cancelación de rangos. El riesgo principal sigue siendo aplicar cambios sobre otro alcance.
+2. Revisar [rangos y edición masiva](evidence/csv-range-2026-10-21.md) y las [cinco transformaciones nuevas](TRANSFORMS.md), con preparación cancelable e historial existente; verificar movimientos/fijación de orden en `codex/csv-ordering` y cancelación de rangos en `codex/csv-range-cancellation`. El riesgo principal sigue siendo aplicar cambios sobre otro alcance.
 3. Revisar la exploración de columnas, frecuencias, duplicados, descriptivas y Pearson; completar exportación de informes, alcance por rango y localización de filas. Reutilizar el proceso de datos y paneles, sin mutaciones.
 4. Revisar DuckDB-Wasm aislado y sus comprobaciones multiplataforma. Complejidad alta; preservar el editor y sus límites. La integración nativa se descartó para esta entrega por aislamiento.
 5. Asistentes de agrupación, pivot y cruce incluidos en la rama SQL; revisar categorías, conversiones explícitas y cambios pendientes antes de integrar.

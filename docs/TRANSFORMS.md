@@ -41,4 +41,4 @@ Límites de esta herramienta: documento editable de hasta 50 MiB/dos millones de
 - `tests/e2e/structure.spec.ts`: cinco flujos visuales, documento completo con filtro activo, menú/contexto/atajo, foco, temas, cancelación real mediante IPC, revisión obsoleta, validación del puente, recuperación y guardado real.
 - La CI ejecuta la regresión completa y vuelve a ejecutar SQL, gráficos, transformaciones y orden desde los paquetes macOS ARM/Intel, Windows y Ubuntu. Compilar/empaquetar no equivale a probar manualmente un instalador.
 
-Queda para otras iteraciones ampliar el alcance de las cinco transformaciones iniciales y la cancelación de edición masiva por rango. No se declara completado el objetivo A–D por esta entrega.
+Queda para otras iteraciones ampliar el alcance de las cinco transformaciones iniciales. La cancelación de edición masiva por rango se añade en `codex/csv-range-cancellation`, usando el mismo canal de preparación. No se declara completado el objetivo A–D por esta entrega.

@@ -9,7 +9,7 @@ export interface TableQuery {conditions?:TableFilter[];filterMode?:'all'|'any';o
 export interface TableRow { id:string; cells:string[] }
 export interface TablePage { rows:TableRow[]; total:number; matched:number; revision:number; requestId:number; sample:boolean }
 export interface TableRange {top:number;bottom:number;left:number;right:number;query:TableQuery;revision:number}
-export interface TableRangeEdit {type:'range';range:TableRange;operation:'fill'|'clear'|'trim'|'upper'|'lower'|'replace'|'paste';value?:string;find?:string;values?:string[][]}
+export interface TableRangeEdit {type:'range';requestId?:string;range:TableRange;operation:'fill'|'clear'|'trim'|'upper'|'lower'|'replace'|'paste';value?:string;find?:string;values?:string[][]}
 export interface TableRangePreview {cells:number;changed:number;revision:number;samples:{row:number;column:number;before:string;after:string}[]}
 export interface TableTransformEdit {type:'structure';operation:'split'|'combine'|'deduplicate'|'normalize'|'headers'|'moveRows'|'moveColumns'|'commitOrder';columns:number[];revision:number;requestId:string;separator?:string;name?:string;rowIds?:string[];range?:TableRange;destination?:number;query?:TableQuery}
 export interface TableTransformPreview {revision:number;rows:number;affected:number;cells:number;addedColumns:number;deletedRows:number;changedHeaders:number;movedRows:number;movedColumns:number;samples:{row:number|null;column:number|null;before:string;after:string}[]}
