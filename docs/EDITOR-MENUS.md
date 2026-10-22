@@ -51,7 +51,7 @@ Filtrar u ordenar no cambia el orden físico. El rango congela la consulta y la 
 
 **Copiar como Markdown** usa el rectángulo activo con encabezados. **Exportar → Selección** conserva sus columnas y orden visible en CSV/TSV; Documento completo y Filas filtradas mantienen sus alcances anteriores. Copiar filas marcadas sin rectángulo usa el orden original del documento. El portapapeles nativo admite hasta 8 MiB por copia/pegado; para más datos, exporta. Las muestras siguen siendo de solo lectura y no permiten exportar/copiar selecciones como si fueran archivos completos.
 
-Esta entrega admite un rectángulo continuo a la vez. Las estadísticas por columna conservan su alcance explícito; no se convierten automáticamente en estadísticas del rectángulo. La paleta de comandos, rangos discontinuos y la ampliación de alcance de transformaciones quedan pendientes; dividir/combinar/mover se ofrecen en el diálogo Transformar documento, con los alcances documentados.
+Esta entrega admite un rectángulo continuo a la vez. Las estadísticas por columna conservan su alcance explícito; no se convierten automáticamente en estadísticas del rectángulo. La paleta de comandos se describe abajo; rangos discontinuos y la ampliación de alcance de transformaciones quedan pendientes; dividir/combinar/mover se ofrecen en el diálogo Transformar documento, con los alcances documentados.
 
 ## Consulta avanzada CSV
 
@@ -169,3 +169,15 @@ Durante la preparación se muestra el recuento de filas y se puede **Cancelar in
 **Vista previa del reemplazo** abre el diálogo compartido de rangos: calcula cuántas celdas cambiarán y hasta ocho ejemplos, abreviados a 256 caracteres. Solo **Aplicar cambio** modifica datos; Cancelar/Escape conserva el documento y devuelve el foco al formulario. Editar Buscar/Reemplazar dentro del diálogo invalida la preparación y pide una nueva vista previa. El cambio completo se deshace en un paso y usa la recuperación existente. Guardar sigue siendo independiente.
 
 Para reemplazar únicamente dentro de la vista o de una selección, usa **Rango → Reemplazar en el rango…**, cuyo alcance se mantiene separado. Las muestras permanecen de solo lectura. Estos atajos no interceptan los editores CodeMirror de SQL, Markdown o Mermaid ni los diálogos; cada editor conserva su búsqueda propia. Los textos encontrados se muestran como texto, sin interpretar HTML, enlaces ni fórmulas CSV. No hay motor nuevo, IPC ni cambios de formato/guardado.
+
+## Paleta de comandos CSV
+
+**Comandos**, junto a Operaciones, o **Ctrl/⌘ + K** desde el espacio CSV abre un diálogo de búsqueda. Escribe palabras sin necesidad de acentos: busca en nombre y descripción (por ejemplo, «mayusculas rango», «mover filas», «tabla dinamica» o «filtrar fecha»). Los editores CodeMirror y los diálogos conservan sus propios atajos.
+
+Incluye búsqueda/reemplazo, filtros/orden de vista, análisis SQL/asistentes, estadísticas/exploración, gráficos, el asistente Transformar, filas/columnas, limpieza de filas marcadas, rangos, copiar Markdown y deshacer/rehacer. Los comandos de análisis abren o cierran los paneles existentes. Transformar abre el asistente: la operación específica se elige dentro y conserva su vista previa. No añade motores ni funciones distintas de las ofrecidas por los botones.
+
+**↑/↓** recorre los comandos habilitados; Home/End recorre extremos cuando un comando tiene el foco. Enter en el buscador ejecuta el primer resultado habilitado; desde un botón ejecuta ese comando. Tab usa el recorrido nativo del diálogo. Escape o × cierra y devuelve el foco al control de origen, o a Comandos si el origen ya no existe. Buscar sin resultados o con todos deshabilitados no ejecuta nada.
+
+La selección se conserva al abrir/buscar/cerrar la paleta. Las operaciones de filas necesitan marcas por número; las de columna necesitan exactamente una columna marcada cuando lo indica el comando; las de rango necesitan un rectángulo. La paleta muestra el contexto actual y mantiene visibles las acciones deshabilitadas con su descripción. Las muestras bloquean edición y copia tabular, como el motor; Análisis/Estadísticas/Gráficos conservan sus propios alcances. Cargar otra página deshabilita temporalmente las acciones del rango y devuelve el foco al buscador si el comando enfocado deja de estar disponible; Transformar no depende de esa carga.
+
+Paleta, botones, menú del rango y atajos usan el mismo registro/funciones, permisos contextuales, vista previa, historial y recuperación. Abrir o buscar comandos no modifica documentos. No se añaden accesos a archivos, IPC, dependencias, comandos CLI ni publicación de versión.

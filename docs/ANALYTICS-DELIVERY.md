@@ -11,8 +11,8 @@ Estado al 21 de octubre de 2026. Las entregas A/B de los PR #11/#12 ya están en
 | Filtros avanzados | Implementado en `codex/csv-advanced-editing`: Y/O, texto, vacíos, números exactos, fechas ISO y RE2 | Ver [guía](EDITOR-MENUS.md) y [evidencia](evidence/csv-query-2026-10-21.md); consultas inválidas no habilitan edición sobre una vista antigua |
 | Ordenamiento múltiple | Implementado en la misma rama; tipos explícitos por criterio, empates estables | Es orden de vista; guardar mantiene orden original. `codex/csv-ordering` añade fijación explícita sin filtros, con vista previa y un paso de deshacer |
 | Transformaciones | Limpieza/reemplazo por rango existentes; `codex/csv-transformations` añade dividir/combinar conservando originales, NFC, encabezados únicos y eliminación de duplicados por clave compuesta. Vista previa, progreso, cancelación y un paso de deshacer; [guía](TRANSFORMS.md) | `codex/csv-ordering` añade mover filas/columnas y fijar orden; ampliar alcance de las cinco operaciones iniciales más allá del documento completo |
-| Buscar/reemplazar | Búsqueda global y filtros; `codex/csv-search-preview` añade resaltado por celda, atajos y vista previa al reemplazo general con alcance explícito. Rango conserva su propio alcance y vista previa | Marcas solo para la búsqueda global aceptada; filtros/condiciones avanzadas no se resaltan. Paleta y navegación de coincidencias pendientes |
-| Herramientas contextuales | Menú de clic derecho/rango y atajos comparten acciones; barra Operaciones existente | Paleta y operaciones estructurales contextuales pendientes |
+| Buscar/reemplazar | Búsqueda global y filtros; `codex/csv-search-preview` añade resaltado por celda, atajos y vista previa al reemplazo general con alcance explícito. Rango conserva su propio alcance y vista previa | Marcas solo para la búsqueda global aceptada; filtros/condiciones avanzadas no se resaltan. Paleta en `codex/csv-command-palette`; navegación de coincidencias pendiente |
+| Herramientas contextuales | Menú de clic derecho/rango, barra Operaciones y atajos existentes; `codex/csv-command-palette` añade paleta buscable y registro compartido de acciones/bloqueos con botones y rangos | Accesos estructurales adicionales de clic derecho y lector de pantalla pendientes |
 
 ## B. Estadísticas y exploración
 
@@ -92,3 +92,7 @@ Validación de esta entrega: [evidencia local](evidence/csv-statistics-reports-2
 ## Búsqueda y reemplazo con vista previa — entrega de desarrollo
 
 `codex/csv-search-preview` añade marcas semánticas seguras por celda en la búsqueda global aceptada y atajos que respetan CodeMirror. El reemplazo general reutiliza el diálogo y motor de rangos, con alcance completo (incluye filas ocultas), columnas explícitas, vista previa, cancelación y un paso de deshacer. No añade dependencias ni API. [Uso y límites](EDITOR-MENUS.md#buscar-y-reemplazar-en-csv). La CI y el paquete se verifican para el mismo commit; esta entrega no cierra el objetivo A–D.
+
+## Paleta de comandos — entrega de desarrollo
+
+`codex/csv-command-palette` añade un diálogo nativo buscable por palabras sin acentos y usa un registro compartido de acciones y disponibilidad. Integra funciones existentes de edición, consulta y análisis; no cambia el motor, formatos, IPC ni dependencias. Preserva selección, permisos de muestras, vistas previas y deshacer. [Uso y límites](EDITOR-MENUS.md#paleta-de-comandos-csv). La evidencia de la CI y copia instalada corresponde al commit indicado en su PR; A–D permanece activo.
