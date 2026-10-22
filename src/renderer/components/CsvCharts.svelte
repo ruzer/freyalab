@@ -1,5 +1,5 @@
 <script lang="ts">
- import {onMount,onDestroy} from 'svelte'
+ import {onMount,onDestroy,untrack} from 'svelte'
  import {init,use,type ECharts} from 'echarts/core'
  import {BarChart,LineChart,ScatterChart,HeatmapChart,BoxplotChart} from 'echarts/charts'
  import {GridComponent,TooltipComponent,VisualMapComponent,AriaComponent,TitleComponent,LegendComponent} from 'echarts/components'
@@ -24,27 +24,28 @@
  const aggregated=$derived(options.kind==='bar'||(options.kind==='line'&&temporal))
  const axes=$derived(chartLabels(doc.headers??[],options))
  let data=$state<ChartData|null>(null),source=$state<SqlResult['sources'][number]|null>(null),busy=$state(false),message=$state('Elige las columnas y pulsa Generar gráfico.'),tablePage=$state(0),ready=$state(false),zoom=$state(1),exporting=$state(false)
+ let resultFormat=$state<'csv'|'json'|'md'>('json'),protectFormulas=$state(true),cancellingExport=$state(false),exportJob=$state<string>()
  let hiddenSeries=$state<string[]>([])
  const series=$derived(data?chartSeries(data):[])
  let element:HTMLDivElement,chart:ECharts|undefined,active:string|undefined
  const signature=$derived(JSON.stringify([doc.id,doc.revision,options,scope,where,scope==='filtered'?viewSignature:scope==='saved'?savedView:null]))
  const tooWide=$derived((doc.headers?.length??0)>200)
  const sql=$derived.by(()=>{try{return chartSQL(doc.headers??[],options)}catch{return ''}})
- function cancel(){const previous=active;active=undefined;busy=false;data=null;source=null;tablePage=0;hiddenSeries=[];if(previous)void window.freya.sqlCancel(previous).catch(()=>{})}
- $effect(()=>{void signature;cancel();message='Opciones o datos actualizados. Pulsa Generar gráfico.'})
+ function cancel(){const previous=active;active=undefined;busy=false;data=null;source=null;tablePage=0;hiddenSeries=[];if(previous)void window.freya.sqlCancel(previous).catch(()=>{});if(exportJob){void window.freya.sqlCancel(exportJob).catch(()=>{});exportJob=undefined;exporting=false;cancellingExport=false}}
+ $effect(()=>{void signature;untrack(cancel);message='Opciones o datos actualizados. Pulsa Generar gráfico.'})
  onDestroy(cancel)
  onMount(()=>{
   chart=init(element,undefined,{renderer:'svg'});ready=true
   chart.on('legendselectchanged',event=>{const {selected}=event as {selected:Record<string,boolean>};hiddenSeries=Object.keys(selected).filter(name=>!selected[name])})
   const resize=new ResizeObserver(()=>chart?.resize());resize.observe(element)
   const theme=new MutationObserver(()=>draw());theme.observe(document.documentElement,{attributes:true,attributeFilter:['class']})
-  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress&&event.progress.requestId===active)message=event.progress.phase;else if(event.id===doc.id&&event.type==='external'){cancel();message='El archivo cambió en disco. Genera de nuevo el gráfico.'}})
+  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress&&(event.progress.requestId===active||event.progress.requestId===exportJob))message=event.progress.phase;else if(event.id===doc.id&&event.type==='external'){cancel();message='El archivo cambió en disco. Genera de nuevo el gráfico.'}})
   return()=>{resize.disconnect();theme.disconnect();unsubscribe();chart?.dispose();chart=undefined}
  })
  function draw(){if(!chart||!data)return;try{const css=getComputedStyle(element);chart.setOption(chartOption(data,$state.snapshot(options),{text:css.getPropertyValue('--text').trim(),background:css.getPropertyValue('--panel').trim(),accent:css.getPropertyValue('--accent').trim()},doc.headers,scopeLabel,hiddenSeries),{notMerge:true})}catch(error){chart.clear();data=null;message=String(error);onerror(message)}}
  $effect(()=>{if(ready){if(data)draw();else chart?.clear()}})
  async function generate(){
-  if(busy||!sql||tooWide||unavailable)return;cancel();const requestId=crypto.randomUUID();active=requestId;busy=true;message='Preparando gráfico…'
+  if(busy||exporting||!sql||tooWide||unavailable)return;cancel();const requestId=crypto.randomUUID();active=requestId;busy=true;message='Preparando gráfico…'
   try{
    const first=await window.freya.sqlRun({requestId,sources:[{id:doc.id,revision:doc.revision,...scope!=='all'?{query:$state.snapshot(analysisQuery)}:{},...where.conditions.length?{where:$state.snapshot(where)}:{}}],sql})
    if(active!==requestId)return
@@ -62,6 +63,16 @@
   if(!data||!source||!chart||busy||exporting)return;exporting=true;message='Exportando gráfico…'
   try{const svg=chart.renderToSVGString();const path=await window.freya.exportGraphic(doc.id,{format,svg,revision:source.revision});message=path?`Gráfico exportado: ${path}`:'Exportación cancelada.'}catch(error){message=String(error);onerror(message)}finally{exporting=false}
  }
+ async function exportResults(){
+  if(!data||!source||busy||exporting)return
+  const requestId=crypto.randomUUID();exportJob=requestId;exporting=true;cancellingExport=false;message='Preparando resultados completos del gráfico…'
+  try{
+   const path=await window.freya.exportChartResult(doc.id,{requestId,revision:source.revision,format:resultFormat,protectFormulas,configuration:{headers:[...(doc.headers??[])],options:$state.snapshot(options),where:$state.snapshot(where),...scope!=='all'?{view:chartView($state.snapshot(analysisQuery))}:{}}})
+   if(exportJob===requestId)message=path?`Resultados exportados: ${path}${resultFormat==='csv'?' y su contexto JSON.':''}`:'Exportación cancelada.'
+  }catch(error){if(exportJob===requestId){message=cancellingExport?'Exportación cancelada.':String(error).replace(/^.*Error: /,'');if(!cancellingExport)onerror(message)}}
+  finally{if(exportJob===requestId){exportJob=undefined;exporting=false;cancellingExport=false}}
+ }
+ function cancelResults(){if(!exportJob||cancellingExport)return;cancellingExport=true;message='Cancelando exportación…';void window.freya.sqlCancel(exportJob).catch(error=>onerror(String(error)))}
  const headings:Record<string,string>={x:'Eje X / categoría',value:'Valor / mediana',upper:'Límite superior',fila:'Fila de la fuente analizada',y:'Categoría Y',q1:'Cuartil 1',q3:'Cuartil 3',low:'Bigote inferior',high:'Bigote superior',series:'Serie (texto exacto)',outliers:'Atípicos totales',count:'Numéricos',atypical:'Primeros atípicos (máx. 20)'}
 </script>
 <svelte:window onkeydown={event=>{if(event.key==='Escape'&&event.target instanceof HTMLElement&&event.target.closest('.charts-panel')&&!event.target.closest('.query-tools')){event.preventDefault();onclose()}}}/>
@@ -111,7 +122,12 @@
   {#if !data.rows.length}<p>No hay filas para el alcance elegido.</p>{/if}
   {#if series.length}<details><summary>Series visibles · controles de teclado</summary><div class="actions">{#each series as group}<label><input type="checkbox" checked={!hiddenSeries.includes(group.name)} onchange={()=>hiddenSeries=hiddenSeries.includes(group.name)?hiddenSeries.filter(name=>name!==group.name):[...hiddenSeries,group.name]}/>{group.name}</label>{/each}</div></details>{/if}
   <div class="actions"><button onclick={()=>zoom=Math.max(1,zoom-0.5)} disabled={zoom<=1}>Reducir gráfico</button><button onclick={()=>zoom=Math.min(4,zoom+0.5)} disabled={zoom>=4}>Ampliar gráfico</button><button onclick={()=>zoom=1}>Ajustar gráfico</button>{#each ['svg','png','pdf'] as format}<button disabled={busy||exporting} onclick={()=>void exportChart(format as 'svg'|'png'|'pdf')}>Exportar gráfico {format.toUpperCase()}</button>{/each}</div>
-  {#if doc.readonly}<p>La tabla sigue siendo una muestra de solo lectura. Se exporta una instantánea del gráfico calculado sobre la fuente completa; no el CSV ni sus cambios.</p>{/if}
+  <details><summary>Exportar resultados del análisis</summary>
+   <p>Vuelve a consultar la fuente y los filtros elegidos, con los cambios pendientes de esta revisión. Exporta hasta 10 000 elementos, aunque el dibujo muestre menos. El archivo indica si el resultado es parcial. Incluye todas las series, también las ocultas en la leyenda; no exporta ni modifica el CSV original.</p>
+   <div class="actions"><label>Formato de resultados <select aria-label="Formato de resultados del gráfico" bind:value={resultFormat} disabled={busy||exporting}><option value="json">JSON · datos exactos y contexto</option><option value="csv">CSV + JSON de contexto</option><option value="md">Markdown · informe</option></select></label><button disabled={busy||exporting} onclick={()=>void exportResults()}>Exportar resultados</button>{#if exportJob}<button disabled={cancellingExport} onclick={cancelResults}>Cancelar exportación de resultados</button><progress aria-label="Exportación de resultados"></progress>{/if}</div>
+   {#if resultFormat==='csv'}<label><input type="checkbox" bind:checked={protectFormulas} disabled={busy||exporting}/>Proteger fórmulas para hojas de cálculo</label><p>CSV y su archivo .contexto.json requieren nombres nuevos. La protección añade un apóstrofo a posibles fórmulas solo en el CSV exportado; el JSON conserva sus valores exactos y distingue nulos de vacíos. Ambos se guardan juntos. No se escriben sobre archivos existentes.</p>{/if}
+  </details>
+  {#if doc.readonly}<p>La tabla sigue siendo una muestra de solo lectura. Los botones de imagen exportan una instantánea del dibujo. Los resultados se consultan sobre la fuente completa desde disco, dentro de los límites de análisis; no se habilita guardar ni exportar el CSV original de la muestra.</p>{/if}
   <details><summary>Datos del gráfico: tabla accesible</summary><div class="table-scroll"><table><caption>{chartKinds[options.kind]} · valores usados para dibujar; páginas de 50</caption><thead><tr>{#each data.columns as name}<th scope="col">{headings[name]??name}</th>{/each}</tr></thead><tbody>{#each data.rows.slice(tablePage*50,(tablePage+1)*50) as row}<tr>{#each row as value}<td>{value===null?'—':value===''?'(vacío)':value}</td>{/each}</tr>{/each}</tbody></table></div><div class="actions"><button disabled={tablePage===0} onclick={()=>tablePage--}>Datos anteriores</button><span>Página {tablePage+1} de {Math.max(1,Math.ceil(data.rows.length/50))}</span><button disabled={(tablePage+1)*50>=data.rows.length} onclick={()=>tablePage++}>Datos siguientes</button></div></details>
  {/if}
  <details><summary>Consulta y precisión del gráfico</summary><p>Límites de análisis: 256 MiB por fuente, dos millones de filas, 200 columnas y ocho millones de celdas. Números aproximados con punto decimal; se omiten vacíos, valores inválidos y magnitudes mayores que 9 007 199 254 740 991. Las categorías siguen siendo texto exacto; etiquetas largas se abrevian visualmente. No conviertas identificadores a medidas. El CSV conserva su contenido. Los resultados se invalidan al cambiar datos u opciones.</p><pre>{sql}</pre></details>
