@@ -8,7 +8,7 @@ Entrega de desarrollo en `codex/csv-statistics-reports`, sobre las entregas de t
 - Cuatro flujos nuevos: resumen con CSV pendiente, PDF/HTML, edición/recuperación persistida/guardado; rango con consulta capturada e invalidación; las cuatro vistas del explorador con paginación y valores abreviados; informe de muestra sin habilitar escritura/exportación del CSV parcial.
 - Seis pruebas unitarias nuevas contrastan etiquetas compartidas, precisión, procedencia, filtros sin paginación, muestras, frecuencias parciales, perfil, intervalos, correlación indefinida y representación literal de contenido hostil mediante el renderizador existente.
 - Capturas revisadas: herramientas en claro 1440×900 y oscuro 1280×800; informe en vista dividida. El icono elegido de Freya permanece en la interfaz y el recurso de distribución.
-- Pruebas iniciales detectaron autoenlaces de GFM: los textos ahora usan cadenas JSON en tramos de código con delimitadores adaptados a su contenido. Las pruebas de recuperación esperan una copia posterior a la última edición y consultan el documento completo, porque CodeMirror virtualiza las líneas fuera de pantalla.
+- Pruebas iniciales detectaron autoenlaces de GFM: los textos ahora usan cadenas JSON en tramos de código con delimitadores adaptados a su contenido. La CI detectó una carrera en la prueba de recuperación: un cambio de fecha podía corresponder a una copia anterior todavía en escritura. La prueba comprueba ahora el contenido persistido exacto antes del cierre, y consulta el documento completo porque CodeMirror virtualiza las líneas fuera de pantalla. No se cambió el motor de recuperación.
 
 ## Integridad y arquitectura
 
