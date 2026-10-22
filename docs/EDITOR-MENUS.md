@@ -73,15 +73,26 @@ Una consulta inválida muestra un mensaje y conserva la última vista válida. L
 
 ## Estadísticas por columna
 
-El botón **Estadísticas** del CSV abre un panel de consulta. Elige **Todas las columnas** o **Columnas marcadas** y pulsa **Analizar**. Incluye todas las filas del documento, también las ocultas por búsqueda/filtros, y excluye encabezados. En archivos parciales, el panel indica **Solo muestra**: no son estadísticas globales.
+El botón **Estadísticas** del CSV abre un panel de consulta con cuatro alcances:
 
-Cada columna se identifica por número y nombre. Muestra celdas, vacíos, únicos, numéricos, suma, media, mínimo y máximo. Vacíos incluye espacios o campos ausentes; únicos distingue el texto exacto e incluye la cadena vacía. Los valores numéricos admiten punto decimal y notación exponencial; los enteros fuera del rango seguro de Number se excluyen del cálculo, conservándose como texto. Las agregaciones son aproximadas, no aritmética decimal exacta. Analizar no modifica datos, estado de guardado ni historial, e incluye cambios pendientes.
+- **Todas las columnas:** todas las filas del documento, incluidas las ocultas por búsqueda/filtros; excluye encabezados.
+- **Columnas marcadas:** las columnas elegidas con sus casillas y todas las filas del documento.
+- **Celdas del rango:** un único resumen del rectángulo seleccionado en la vista capturada, respetando sus filtros y orden. No incluye filas ocultas.
+- **Rango por columnas:** un resumen independiente por cada columna de ese rectángulo, con las mismas filas capturadas.
 
-Un cambio del documento descarta resultados antiguos. El alcance y las columnas se fijan al iniciar; cambiar la selección requiere volver a analizar. **Cancelar análisis** descarta resultados y evita iniciar más columnas; la columna en curso puede terminar en segundo plano. Escape cierra el panel y devuelve foco al botón. El límite inicial es de 100 columnas por consulta, con rechazo explícito si se supera. Mediana, desviación y frecuencias están disponibles en la exploración descrita abajo; pivot y SQL se abren en el panel Análisis.
+En archivos parciales, el panel y cada resultado indican **Solo muestra / muestra limitada**: no son estadísticas globales. La selección de filas y columnas se fija al iniciar; la revisión y el alcance aparecen en el resultado. Cambiar la selección usada o editar datos descarta resultados y exige analizar de nuevo. Desplazar la grilla o cambiar el tema conserva un resultado válido. Si se pierde el rango o la vista queda inválida, Analizar se deshabilita sin ampliar silenciosamente el alcance.
+
+Muestra celdas, vacíos, únicos, numéricos, suma, media, extremos, mediana, desviaciones poblacional (n) y muestral (n−1), ausentes, solo espacios y excluidos. La desviación muestral requiere dos números; para una columna constante la poblacional es cero. **—** indica datos insuficientes o no representables. La ayuda «Cómo interpretar los resultados» mantiene las aclaraciones fuera de la barra. La primera columna permanece visible al desplazar horizontalmente el resumen; el espacio del resultado del rango permanece estable para editar celdas con doble clic.
+
+Vacíos incluye campos ausentes o con espacios; únicos compara texto exacto y agrupa un campo ausente con la cadena vacía, como el resumen anterior. Ausentes y Solo espacios son subconjuntos de Vacíos. Excluidos cuenta textos no numéricos y enteros fuera del rango numérico seguro. Los valores admiten punto decimal/notación exponencial; se conservan como texto y no se redondean identificadores grandes dentro del CSV. Los cálculos son aproximados, compartidos con el perfil de columna; no aritmética decimal exacta. Analizar incluye datos pendientes y no cambia datos, guardado, recuperación ni historial.
+
+**Cancelar análisis** interrumpe la recogida entre bloques, descarta resultados y evita iniciar la siguiente columna. Los cálculos síncronos de la biblioteca pueden terminar antes de descartarse. Escape cierra y devuelve el foco al botón. Las consultas antiguas del pie siguen funcionando y no cancelan la petición del panel.
+
+Límites: 100 resultados por consulta visual; Celdas del rango puede resumir más de 100 columnas en un solo resultado. Cada resumen admite hasta dos millones de celdas lógicas, incluidos campos ausentes: superar el límite se rechaza sin devolver totales parciales. El resumen no incorpora el límite de 100 000 valores distintos del explorador de frecuencias. Se mantienen los límites del editor y de sus muestras. Pivot y SQL se abren en Análisis.
 
 ## Siguientes entregas propuestas
 
-Mover filas/columnas y transponer tablas o selecciones se mantienen pendientes. No se presenta esta entrega como equivalente a todas las operaciones de Modern CSV. Referencia funcional: [Modern CSV](https://www.moderncsv.com/).
+Mover filas/columnas está incluido en la entrega de orden. Transponer tablas o selecciones y exportar informes de estadísticas permanecen pendientes. No se presenta esta entrega como equivalente a todas las operaciones de Modern CSV. Referencia funcional: [Modern CSV](https://www.moderncsv.com/).
 
 
 ## Explorar columnas CSV

@@ -20,7 +20,7 @@ La rama `codex/csv-column-exploration` añade una exploración de solo lectura d
 
 | Requisito | Estado verificable en rama | Pendiente / aceptación |
 |---|---|---|
-| Estadísticas descriptivas | Conteos, suma, media, mediana, mínimo, máximo, desviación poblacional (n) y muestral (n−1) | Selección de celdas como alcance del nuevo panel; informe exportable. Cálculos aproximados, exclusiones visibles |
+| Estadísticas descriptivas | Conteos, suma, media, mediana, mínimo, máximo, desviación poblacional (n) y muestral (n−1) | `codex/csv-selection-statistics` añade resumen de celdas y por columnas de un rango capturado, mediana/desviaciones en el panel, campos ausentes y cancelación real. Informe exportable pendiente; cálculos aproximados y exclusiones visibles |
 | Distribuciones | Tabla de intervalos de igual amplitud, de 1 a 30, con extremos y recuentos | Gráfico ECharts en D; otros criterios de agrupación no implementados |
 | Frecuencias | Conteos exactos de texto, porcentajes y primera fila original; páginas de 50 | Exportación del resultado. Límite explícito de 100 000 valores distintos; vistas previas de 256 unidades UTF-16 marcadas |
 | Valores faltantes | Vacíos, espacios y campos ausentes diferenciados; primeras 20 filas originales identificadas | Navegación completa y acción para localizar cada fila; no se interpreta cero como vacío |
@@ -65,7 +65,7 @@ Incluye teclado mediante controles/tabla alternativa, temas, tamaño adaptable y
 
 1. Consulta avanzada, rangos y exploración integrados mediante #11/#12 por el usuario; #6 cerrado como resuelto. No fusionar automáticamente las siguientes entregas.
 2. Revisar [rangos y edición masiva](evidence/csv-range-2026-10-21.md) y las [cinco transformaciones nuevas](TRANSFORMS.md), con preparación cancelable e historial existente; verificar movimientos/fijación de orden en `codex/csv-ordering` y cancelación de rangos en `codex/csv-range-cancellation`. El riesgo principal sigue siendo aplicar cambios sobre otro alcance.
-3. Revisar la exploración de columnas, frecuencias, duplicados, descriptivas y Pearson; completar exportación de informes, alcance por rango y localización de filas. Reutilizar el proceso de datos y paneles, sin mutaciones.
+3. Revisar la exploración de columnas, frecuencias, duplicados, descriptivas y Pearson; verificar el alcance por rango de `codex/csv-selection-statistics` y completar exportación de informes y localización de filas. Reutilizar el proceso de datos y paneles, sin mutaciones.
 4. Revisar DuckDB-Wasm aislado y sus comprobaciones multiplataforma. Complejidad alta; preservar el editor y sus límites. La integración nativa se descartó para esta entrega por aislamiento.
 5. Asistentes de agrupación, pivot y cruce incluidos en la rama SQL; revisar categorías, conversiones explícitas y cambios pendientes antes de integrar.
 6. Revisar los seis gráficos ECharts de `codex/csv-echarts`, sus tablas accesibles, exportaciones y pruebas sobre fuentes completas. Completar la exportación de imágenes desde documentos abiertos como muestra sin debilitar el guardián de originales.

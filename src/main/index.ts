@@ -28,7 +28,7 @@ const tableExport=z.object({range:range.optional(),scope:z.enum(['all','filtered
 async function openPaths(paths:string[]){const result=[];for(const p of paths){if(!await docs.allowed(p))throw new Error('Abre el archivo desde el selector o arrástralo a la ventana.');const document=await docs.open(p);result.push(document);window?.webContents.send('freya:event',{type:'opened',document})}return result}
 function assertSender(event:Electron.IpcMainInvokeEvent|Electron.IpcMainEvent){if(!window||event.sender!==window.webContents||event.senderFrame!==window.webContents.mainFrame)throw new Error('Origen no autorizado.')}
 async function handle(operation:string,args:unknown[]){
- const [a,b,c]=args
+ const [a,b,c,d]=args
  switch(operation){
  case'open':{const result=await dialog.showOpenDialog(window!,{properties:['openFile','multiSelections'],filters:[{name:'Documentos',extensions:['md','markdown','txt','mmd','mermaid','csv','tsv']}]});for(const p of result.filePaths)docs.grants.add(resolve(p));return result.canceled?[]:openPaths(result.filePaths)}
  case'openPaths':return openPaths(z.array(path).max(100).parse(a))
@@ -55,7 +55,7 @@ async function handle(operation:string,args:unknown[]){
  case'sqlCancel':return analytics.cancel(id.parse(a))
  case'analyzeColumn':docs.get(id.parse(a));return docs.table.call('analyzeColumn',a,z.object({column:col,otherColumn:col.optional(),query:query.optional(),revision:z.number().int().nonnegative(),requestId:z.uuid(),frequencyOffset:z.number().int().min(0).max(2000000),duplicatesOnly:z.boolean(),bins:z.number().int().min(1).max(30)}).parse(b))
  case'cancelAnalysis':docs.get(id.parse(a));return docs.table.call('cancelAnalysis',a,z.uuid().parse(b))
- case'stats':docs.get(id.parse(a));return docs.table.call('stats',a,rows.nullable().parse(b),z.array(col).max(100000).parse(c))
+ case'stats':docs.get(id.parse(a));return docs.table.call('stats',a,rows.nullable().parse(b),z.array(col).max(100000).parse(c),z.object({requestId:z.uuid(),revision:z.number().int().nonnegative(),range:range.optional()}).optional().parse(d))
  case'markdown':docs.get(id.parse(a));return docs.table.call('markdown',a,tableExport.parse(b) as TableExport)
  case'export':return exportDocument(docs,id.parse(a),z.object({format:z.enum(['pdf','html','svg','png','csv','tsv']),html:text.optional(),svg:text.optional(),table:tableExport.optional()}).parse(b) as ExportRequest)
  case'image':return docs.image(id.parse(a),z.string().max(16*1024*1024).parse(b))
