@@ -1,6 +1,6 @@
 # Evolución analítica de FreyaLab — seguimiento del objetivo
 
-Estado al 21 de octubre de 2026. Las entregas A/B de los PR #11/#12 ya están en `main`; el PR #6 se cerró como resuelto, con su corrección y auditoría preservadas. Este documento mantiene el objetivo completo A–D; una entrega parcial no lo cierra. Complementa la [auditoría y roadmap CSV](CSV-ADVANCED-ROADMAP.md), sin repetirlos. «Implementado en rama» significa código y pruebas de desarrollo, pendiente de revisión e integración; no capacidad del instalador alpha.1.
+Estado al 21 de octubre de 2026. Las entregas A/B de los PR #11/#12 ya están en `main`; el PR #6 se cerró como resuelto, con su corrección y auditoría preservadas. El PR #13 llegó a `main`; #14 y #15 se fusionaron en sus ramas base y sus cambios se incluyen en `codex/csv-transformations` para un PR dirigido a `main`. Este documento mantiene el objetivo completo A–D; una entrega parcial no lo cierra. Complementa la [auditoría y roadmap CSV](CSV-ADVANCED-ROADMAP.md), sin repetirlos. «Implementado en rama» significa código y pruebas de desarrollo, pendiente de revisión e integración; no capacidad del instalador alpha.1.
 
 ## A. Edición avanzada
 
@@ -10,7 +10,7 @@ Estado al 21 de octubre de 2026. Las entregas A/B de los PR #11/#12 ya están en
 | Edición masiva | Rellenar/vaciar/cortar/pegar rangos, vista previa, confirmación y un paso de deshacer; rechazos íntegros | Cancelación del cálculo en curso y mediciones amplias pendientes; cerrar la vista previa descarta resultados |
 | Filtros avanzados | Implementado en `codex/csv-advanced-editing`: Y/O, texto, vacíos, números exactos, fechas ISO y RE2 | Ver [guía](EDITOR-MENUS.md) y [evidencia](evidence/csv-query-2026-10-21.md); consultas inválidas no habilitan edición sobre una vista antigua |
 | Ordenamiento múltiple | Implementado en la misma rama; tipos explícitos por criterio, empates estables | Es orden de vista; guardar mantiene orden original. No hay reordenación permanente asistida |
-| Transformaciones | Limpieza y reemplazo con vista previa por rango; duplicación de filas/columnas existente | Dividir/combinar, normalizar, eliminar duplicados, mover filas/columnas; progreso y cancelación según coste |
+| Transformaciones | Limpieza/reemplazo por rango existentes; `codex/csv-transformations` añade dividir/combinar conservando originales, NFC, encabezados únicos y eliminación de duplicados por clave compuesta. Vista previa, progreso, cancelación y un paso de deshacer; [guía](TRANSFORMS.md) | Mover filas/columnas y reordenación permanente; ampliar alcance de las cinco operaciones nuevas más allá del documento completo |
 | Buscar/reemplazar | Búsqueda global, filtros, reemplazo literal global/columna y por rango con vista previa | Resaltado de coincidencias y búsqueda avanzada contextual pendientes |
 | Herramientas contextuales | Menú de clic derecho/rango y atajos comparten acciones; barra Operaciones existente | Paleta y operaciones estructurales contextuales pendientes |
 
@@ -24,7 +24,7 @@ La rama `codex/csv-column-exploration` añade una exploración de solo lectura d
 | Distribuciones | Tabla de intervalos de igual amplitud, de 1 a 30, con extremos y recuentos | Gráfico ECharts en D; otros criterios de agrupación no implementados |
 | Frecuencias | Conteos exactos de texto, porcentajes y primera fila original; páginas de 50 | Exportación del resultado. Límite explícito de 100 000 valores distintos; vistas previas de 256 unidades UTF-16 marcadas |
 | Valores faltantes | Vacíos, espacios y campos ausentes diferenciados; primeras 20 filas originales identificadas | Navegación completa y acción para localizar cada fila; no se interpreta cero como vacío |
-| Duplicados | Grupos por valor exacto de una columna, filas participantes y repeticiones adicionales; filtro de frecuencias repetidas | Claves compuestas y eliminación asistida, con vista previa/deshacer, en A |
+| Duplicados | Grupos por valor exacto de una columna, filas participantes y repeticiones adicionales; filtro de frecuencias repetidas | Claves compuestas para análisis de frecuencias todavía pendientes; eliminación asistida por clave compuesta con vista previa/deshacer en A (`codex/csv-transformations`) |
 | Correlaciones | Pearson entre dos columnas explícitas, pares de la misma fila y omisiones visibles; constantes o menos de dos pares sin coeficiente | Matriz de varias columnas y otros métodos no implementados |
 | Análisis de columnas | Perfil numérico/textual, longitudes, ceros iniciales y calidad; encabezados duplicados identificados por índice | No se convierten tipos ni se realizan inferencias automáticas destructivas |
 
@@ -38,7 +38,7 @@ Las estadísticas siguen siendo aproximadas. Los enteros fuera del rango seguro 
 
 | Requisito | Estado en rama | Pendiente / aceptación |
 |---|---|---|
-| SQL | Una consulta relacional de solo lectura, recursos locales, aislamiento de Chromium, configuración bloqueada y validación IPC; cancelación destruye el proceso | CI y ejecución empaquetada en cuatro entornos antes de integrar; instalación manual pendiente |
+| SQL | Una consulta relacional de solo lectura, recursos locales, aislamiento de Chromium, configuración bloqueada y validación IPC; cancelación destruye el proceso | CI y pruebas del paquete de #13 verificadas en los cuatro entornos; copia de desarrollo comprobada en macOS ARM. Instalación manual fuera de ese equipo pendiente |
 | Agrupaciones | Asistente contar/sumar/promediar, tipos decimales explícitos; SQL visible sobre la misma revisión y cambios pendientes | Más dimensiones/medidas y exportación del resultado |
 | Tablas dinámicas | Asistente filas/categorías/medida, hasta 20 categorías explícitas, contar/sumar/promediar | Categorías dinámicas y múltiples medidas no forman parte de esta entrega |
 | Cruces | Hasta cuatro fuentes abiertas; asistente LEFT/INNER con claves textuales exactas y aviso de duplicados | Herramientas visuales adicionales de diagnóstico; no se cruzan rutas arbitrarias |
@@ -46,27 +46,29 @@ Las estadísticas siguen siendo aproximadas. Los enteros fuera del rango seguro 
 
 La variante fijada es `@duckdb/duckdb-wasm` **1.33.1-dev57.0** (prerelease MIT), motor observado **v1.5.4**, y Arrow 17.0.0 (Apache-2.0). El prototipo nativo anterior queda como evidencia histórica, sin dependencia nativa incorporada. La configuración limita el gestor de memoria a 384 MB, no toda la RAM del proceso. Resultado máximo: 10 000 filas/200 columnas/8 MiB, paginado y rotulado si se limita. Datos originales, guardado y recuperación no se alteran.
 
-## D. Apache ECharts — pendiente completo
+## D. Apache ECharts — implementación de desarrollo
 
-| Gráfico | Datos y aceptación mínima |
+`codex/csv-echarts` incorpora los seis tipos (PR #15, fusionado en su rama base; promoción a `main` incluida en la entrega de transformaciones) mediante ECharts 6.1.0 (Apache-2.0), con consultas agregadas en DuckDB y carga diferida del dibujo. [Uso, métodos y límites](CHARTS.md). Datos fuente, guardado y recuperación no se alteran. No pertenece al instalador alpha.1 publicado.
+
+| Gráfico | Estado y aceptación |
 |---|---|
-| Histograma | Intervalos numéricos y recuentos visibles y reproducibles |
-| Barras | Categorías y agregación elegidas; etiquetas/tabla alternativa |
-| Líneas | Eje y orden explícitos, sin inferir fechas ni conectar faltantes silenciosamente |
-| Dispersión | Pares numéricos, observaciones omitidas y límite de puntos documentados |
-| Mapa de calor | Matriz y escala legibles; faltantes diferenciados de cero |
-| Cajas | Cuartiles, bigotes y valores atípicos con método documentado y fixture conocido |
+| Histograma | Intervalos iguales, constantes, vacíos y recuentos completos contrastados con fixture; diez intervalos sobre un millón de filas medidos |
+| Barras | Categoría y contar/sumar/promediar explícitos; orden por resultado y categoría; tabla alternativa |
+| Líneas | Ejes numéricos y orden X explícitos, empates por fila; Y ausentes generan huecos; no infiere fechas |
+| Dispersión | Pares de la misma fila, exclusiones visibles; hasta 2 000 puntos, límite rotulado |
+| Mapa de calor | Conteos por dos categorías; no imputa combinaciones ausentes como cero; escala y tabla |
+| Cajas | Cuartiles tipo 7 y bigotes 1,5 × RIC; cuenta todos los atípicos y dibuja hasta 20 por categoría, con método visible |
 
-Reutilizar ECharts con importaciones modulares y agregados del motor, sin un segundo modelo de edición. Cada gráfico requiere interacción por teclado, temas claro/oscuro, tamaño adaptable, resumen accesible, exportación y prueba de datos reales. Etiquetas/tooltips no deben interpretar HTML del CSV. No se ha añadido ECharts todavía.
+Incluye teclado mediante controles/tabla alternativa, temas, tamaño adaptable y exportación SVG/PNG/PDF a través del exportador existente. Cada exportación identifica vistas parciales. El guardián de muestras existente mantiene deshabilitada la exportación de imágenes desde documentos que el editor abre como muestra; sus gráficos sí usan la fuente completa. Lectores de pantalla e instalación manual fuera de macOS ARM siguen pendientes. La CI vuelve a comprobar los gráficos desde los paquetes de los cuatro entornos; consultar evidencia del commit y PR antes de declarar compatibilidad.
 
 ## Orden de las siguientes entregas
 
 1. Consulta avanzada, rangos y exploración integrados mediante #11/#12 por el usuario; #6 cerrado como resuelto. No fusionar automáticamente las siguientes entregas.
-2. Revisar [rangos y edición masiva](evidence/csv-range-2026-10-21.md), implementados sobre el motor existente; completar transformaciones y cancelación. El riesgo principal sigue siendo aplicar cambios sobre otro alcance.
+2. Revisar [rangos y edición masiva](evidence/csv-range-2026-10-21.md) y las [cinco transformaciones nuevas](TRANSFORMS.md), con preparación cancelable e historial existente; completar movimientos y cancelación de rangos. El riesgo principal sigue siendo aplicar cambios sobre otro alcance.
 3. Revisar la exploración de columnas, frecuencias, duplicados, descriptivas y Pearson; completar exportación de informes, alcance por rango y localización de filas. Reutilizar el proceso de datos y paneles, sin mutaciones.
 4. Revisar DuckDB-Wasm aislado y sus comprobaciones multiplataforma. Complejidad alta; preservar el editor y sus límites. La integración nativa se descartó para esta entrega por aislamiento.
 5. Asistentes de agrupación, pivot y cruce incluidos en la rama SQL; revisar categorías, conversiones explícitas y cambios pendientes antes de integrar.
-6. Los seis gráficos ECharts, gradualmente, con tablas accesibles y exportación. Complejidad media/alta; cantidades/resultados contrastados con fixtures.
+6. Revisar los seis gráficos ECharts de `codex/csv-echarts`, sus tablas accesibles, exportaciones y pruebas sobre fuentes completas. Completar la exportación de imágenes desde documentos abiertos como muestra sin debilitar el guardián de originales.
 7. Medir y comprobar los flujos completos, paquetes e instalación antes de publicar otra versión.
 
 Cada entrega requiere pruebas específicas más regresión apropiada, PR revisable y evidencia del mismo commit. Compilar, ejecutar con Electron, ejecutar un paquete e instalar son comprobaciones distintas. El objetivo A–D permanece abierto hasta cubrir todos sus requisitos; no se declara equivalente a Modern CSV por añadir un panel.
@@ -74,5 +76,5 @@ Cada entrega requiere pruebas específicas más regresión apropiada, PR revisab
 ## Referencias técnicas
 
 - [DuckDB-Wasm](https://github.com/duckdb/duckdb-wasm) y [seguridad de DuckDB](https://duckdb.org/docs/current/operations_manual/securing_duckdb/overview): variante WASM incorporada en la rama de análisis, con aislamiento adicional de Chromium.
-- [Importaciones de ECharts](https://echarts.apache.org/handbook/en/basics/import/): integración modular prevista, aún no implementada.
+- [Importaciones de ECharts](https://echarts.apache.org/handbook/en/basics/import/): integración modular con carga diferida en la rama de gráficos.
 - [Modern CSV](https://www.moderncsv.com/documentation/): referencia funcional; su interfaz y código no se copian.

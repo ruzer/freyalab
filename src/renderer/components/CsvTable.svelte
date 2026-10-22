@@ -4,12 +4,15 @@
  import {get} from 'svelte/store'
  import {untrack,tick} from 'svelte'
  import CsvRangePreview from './CsvRangePreview.svelte'
+ import CsvTransform from './CsvTransform.svelte'
  import CsvSql from './CsvSql.svelte'
  import CsvStatistics from './CsvStatistics.svelte'
  import CsvQueryTools from './CsvQueryTools.svelte'
  import {parse} from 'csv-parse/browser/esm/sync'
  import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit} from '../../shared/types'
  let {doc,onchange,onerror,onstatus}:{doc:DocumentInfo;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void}=$props()
+ let showTransform=$state(false)
+ let showCharts=$state(false),chartsButton=$state<HTMLButtonElement>()
  let showSql=$state(false),sqlButton=$state<HTMLButtonElement>()
  let interpreting=$state(false),showStatistics=$state(false),statisticsButton=$state<HTMLButtonElement>()
  let conditions=$state<TableFilter[]>([]),order=$state<TableSort[]>([]),filterMode=$state<'all'|'any'>('all'),showQuery=$state(false),queryError=$state(''),queryButton=$state<HTMLButtonElement>()
@@ -25,7 +28,7 @@
  let rangeDialog=$state<{edit:TableRangeEdit;cut?:boolean}|null>(null),context=$state<{x:number;y:number}|null>(null)
  let dragPoint={x:0,y:0}
  const cellRange=$derived<TableRange|null>(selection?{top:Math.min(selection.anchor.row,selection.end.row),bottom:Math.max(selection.anchor.row,selection.end.row),left:Math.min(selection.anchor.column,selection.end.column),right:Math.max(selection.anchor.column,selection.end.column),query:selection.query,revision:selection.revision}:null)
- const rangeActions=[['copy','Copiar rango'],['cut','Cortar rango…'],['paste','Pegar en rango…'],['fill','Rellenar rango…'],['clear','Vaciar rango…'],['trim','Quitar espacios del rango…'],['upper','Mayúsculas en el rango…'],['lower','Minúsculas en el rango…'],['replace','Reemplazar en el rango…']] as const
+ const rangeActions=[['copy','Copiar rango'],['cut','Cortar rango…'],['paste','Pegar en rango…'],['fill','Rellenar rango…'],['clear','Vaciar rango…'],['trim','Quitar espacios del rango…'],['upper','Mayúsculas en el rango…'],['lower','Minúsculas en el rango…'],['replace','Reemplazar en el rango…'],['transformations','Transformar documento…']] as const
  function inside(row:number,column:number){return !!cellRange&&row>=cellRange.top&&row<=cellRange.bottom&&column>=cellRange.left&&column<=cellRange.right}
  function selectCell(row:number,column:number,extend=false){
   if(queryError||page.revision!==doc.revision)return
@@ -40,17 +43,21 @@
  function closeContext(){context=null;if(selection)focusCell(selection.end.row,selection.end.column,true)}
  async function rangeAction(action:string){
   context=null;pendingCell=null;if(!cellRange||locked||busy)return
-  try{if(action==='copy'){await window.freya.tableCopy(doc.id,{scope:'selection',range:$state.snapshot(cellRange)},'tsv');onstatus('Rango copiado');return}
+  try{if(action==='transformations'){openTransform();return}if(action==='copy'){await window.freya.tableCopy(doc.id,{scope:'selection',range:$state.snapshot(cellRange)},'tsv');onstatus('Rango copiado');return}
    if(action==='paste'){preparePaste(await window.freya.tablePaste(doc.id,$state.snapshot(cellRange)));return}
    rangeDialog={edit:{type:'range',range:$state.snapshot(cellRange),operation:(action==='cut'?'clear':action) as TableRangeEdit['operation'],value:'',find:''},cut:action==='cut'}
   }catch(error){onerror(action==='paste'?'No se pudo leer el portapapeles. Usa Ctrl/⌘ + V sobre la tabla.':String(error))}
  }
+ function openTransform(){if(locked)return;if((doc.headers?.length??0)>200){onerror('Estas transformaciones admiten hasta 200 columnas por documento.');return}context=null;pendingCell=null;showTransform=true}
+ async function applyTransform(change:import('../../shared/types').TableTransformEdit){const error=await edit(change);if(error===null){selection=null;selectedRows=[];selectedColumns=[];selectionStats=null;await load(0);scrollElement?.scrollTo({top:0,left:0})}return error}
+ function closeTransform(){showTransform=false;if(selection)focusCell(selection.end.row,selection.end.column,true);else document.querySelector<HTMLElement>('[aria-label="Operaciones CSV"]')?.focus()}
  function preparePaste(text:string){if(!cellRange||locked)return;try{rangeDialog={edit:{type:'range',range:$state.snapshot(cellRange),operation:'paste',values:parse(text,{delimiter:'\t',relax_column_count:true,skip_empty_lines:false}) as string[][]}}}catch(error){onerror(String(error))}}
  async function applyRange(change:TableRangeEdit){try{if(rangeDialog?.cut)await window.freya.tableCopy(doc.id,{scope:'selection',range:change.range},'tsv');return await edit(change)}catch(error){const message=String(error).replace(/^.*Error: /,'');onerror(message);return message}}
  function closeRangeDialog(){rangeDialog=null;if(selection)focusCell(selection.end.row,selection.end.column,true)}
  function gridKey(event:KeyboardEvent){
   const target=event.target as HTMLElement,command=event.metaKey||event.ctrlKey
   if(target.tagName==='INPUT'||target.tagName==='TEXTAREA')return
+  if(command&&event.shiftKey&&event.key.toLowerCase()==='t'){event.preventDefault();if(!locked)openTransform();return}
   if(command&&event.key.toLowerCase()==='z'){event.preventDefault();void undoEdit(event.shiftKey);return}
   if(command&&event.key.toLowerCase()==='c'&&(cellRange||selectedRows.length)){event.preventDefault();void(cellRange?rangeAction('copy'):copyCells());return}
   if(command&&event.key.toLowerCase()==='x'&&cellRange){event.preventDefault();void rangeAction('cut');return}
@@ -95,6 +102,7 @@
 </script>
 <svelte:window onblur={()=>dragging=false} onpointerup={()=>dragging=false} onpointercancel={()=>dragging=false} onkeydown={event=>{if(event.key==='Tab')pendingCell=null}} onpointermove={event=>{dragPoint={x:event.clientX,y:event.clientY}}} onpointerdown={event=>{pendingCell=null;if(context&&!(event.target as HTMLElement).closest('.range-context'))context=null}}/>
 {#snippet rangeButtons(menu=false)}{#each rangeActions as [action,label]}<button role={menu?'menuitem':undefined} disabled={locked||busy||!cellRange} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void rangeAction(action)}}>{label}</button>{/each}{/snippet}
+{#if showTransform}<CsvTransform {doc} initialColumns={selectedColumns.length?selectedColumns:cellRange?Array.from({length:cellRange.right-cellRange.left+1},(_,i)=>cellRange.left+i):[]} onapply={applyTransform} onclose={closeTransform} {onerror}/>{/if}
 {#if rangeDialog}<CsvRangePreview id={doc.id} initial={rangeDialog.edit} cut={rangeDialog.cut} onapply={applyRange} onclose={closeRangeDialog} {onerror}/>{/if}
 {#if context}<div class="range-context" role="menu" aria-label="Acciones del rango" tabindex="-1" style:left={`${context.x}px`} style:top={`${context.y}px`} onkeydown={event=>{const buttons=Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')),index=buttons.indexOf(document.activeElement as HTMLButtonElement);if(event.key==='Escape'){event.preventDefault();closeContext()}else if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();buttons[event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(event.key==='ArrowDown'?1:buttons.length-1))%buttons.length]?.focus()}else if(event.key==='Tab')context=null}}>{@render rangeButtons(true)}</div>{/if}
 <div class="csv-workspace">
@@ -105,8 +113,9 @@
   <label class="check-label"><input type="checkbox" bind:checked={numeric} onchange={()=>{if(sort)sort={...sort,numeric}}}/>Orden numérico</label>
   <button onclick={()=>showReplace=!showReplace}>Reemplazar</button>
   <button bind:this={queryButton} class:active={conditions.length>0||order.length>0} aria-expanded={showQuery} onclick={()=>showQuery=!showQuery}>Consulta avanzada</button>
-  <button bind:this={sqlButton} aria-expanded={showSql} onclick={()=>{showSql=!showSql;showStatistics=false;showQuery=false}}>Análisis</button>
-  <button bind:this={statisticsButton} aria-expanded={showStatistics} onclick={()=>{showStatistics=!showStatistics;showSql=false}}>Estadísticas</button>
+  <button bind:this={sqlButton} aria-expanded={showSql} onclick={()=>{showSql=!showSql;showStatistics=false;showQuery=false;showCharts=false}}>Análisis</button>
+  <button bind:this={statisticsButton} aria-expanded={showStatistics} onclick={()=>{showStatistics=!showStatistics;showSql=false;showCharts=false}}>Estadísticas</button>
+  <button bind:this={chartsButton} aria-expanded={showCharts} onclick={()=>{showCharts=!showCharts;showSql=false;showStatistics=false;showQuery=false}}>Gráficos</button>
   <span class="spacer"></span><span class="muted">{busy?'Procesando…':`${page.matched.toLocaleString()} de ${page.total.toLocaleString()} filas`}</span>
  </div>
  {#if showQuery}<CsvQueryTools headers={doc.headers??[]} initialConditions={conditions} initialOrder={activeOrder} initialMode={filterMode} onapply={applyQuery} onclose={()=>{showQuery=false;queryButton?.focus()}}/>{/if}
@@ -115,6 +124,7 @@
  {#if showReplace}<form class="csv-toolbar" onsubmit={event=>{event.preventDefault();void edit({type:'replace',find:replaceFind,replacement:replaceWith,column:selectedColumns.length===1?selectedColumns[0]:undefined})}}><input aria-label="Buscar valor para reemplazar" placeholder="Buscar valor" bind:value={replaceFind}/><input aria-label="Nuevo valor" placeholder="Reemplazar por" bind:value={replaceWith}/><span class="muted">{selectedColumns.length===1?'Columna seleccionada':'Todas las columnas'}</span><button disabled={locked||!replaceFind} type="submit">Reemplazar coincidencias</button></form>{/if}
  <div class="csv-operations">
   <details class="insert-menu"><summary aria-label="Operaciones CSV">Operaciones ▾</summary><div class="dropdown">
+   <button disabled={locked||(doc.headers?.length??0)>200} title="Documento completo · Ctrl/⌘ + Mayús + T · hasta 200 columnas" onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');openTransform()}}>Transformar documento…</button>
    <span class="dropdown-label">Filas y columnas</span>
    <button disabled={locked||!selectedRows.length} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void edit({type:'duplicateRows',ids:selectedRows})}}>Duplicar filas seleccionadas</button>
    <button disabled={locked||selectedColumns.length!==1} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void edit({type:'duplicateColumn',index:selectedColumns[0]})}} title="Al cambiar columnas se restablecen filtros y orden">Duplicar columna seleccionada</button>
@@ -126,6 +136,7 @@
   <span class="muted">{selectedRows.length?`Limpieza: ${selectedRows.length} filas × ${selectedColumns.length||doc.headers?.length||0} columnas · sin encabezados`:'Selecciona filas por su número; Ctrl/⌘ o Mayús añade más. Marca columnas para limitar la operación.'}</span>
  </div>
  <div class="csv-options"><label>Codificación <select value={doc.encoding} disabled={doc.dirty||interpreting} onchange={e=>void options({encoding:e.currentTarget.value as Encoding})}><option value="utf8">UTF-8</option><option value="utf16le">UTF-16 LE</option><option value="win1252">Windows-1252</option></select></label><label>Separador <select value={doc.delimiter} disabled={doc.dirty||interpreting} onchange={e=>void options({delimiter:e.currentTarget.value})}><option value=",">Coma</option><option value=";">Punto y coma</option><option value={'\t'}>Tabulación</option><option value="|">Barra vertical</option></select></label><label class="check-label"><input type="checkbox" bind:checked={header} disabled={doc.dirty||interpreting} onchange={()=>void options({header})}/>Primera fila como encabezado</label><span class="spacer"></span><button disabled={locked} onclick={()=>void edit({type:'insertRow',afterId:selectedRows.at(-1)})}>+ Fila</button><button disabled={locked} onclick={()=>void edit({type:'insertColumn',index:doc.headers?.length??0,name:`Columna ${(doc.headers?.length??0)+1}`})}>+ Columna</button><button disabled={locked||!selectedRows.length} onclick={()=>void edit({type:'deleteRows',ids:selectedRows})}>Eliminar filas</button><button disabled={locked||selectedColumns.length!==1} onclick={()=>void edit({type:'deleteColumn',index:selectedColumns[0]})}>Eliminar columna</button></div>
+ {#if showCharts}{#await import('./CsvCharts.svelte')}<p role="status">Preparando gráficos…</p>{:then module}<module.default {doc} {onerror} onclose={()=>{showCharts=false;chartsButton?.focus()}}/>{:catch}<p role="alert">No se pudo cargar el panel de gráficos. Cierra el panel y vuelve a intentarlo.</p>{/await}{/if}
  {#if showSql}<CsvSql {doc} {onerror} onclose={()=>{showSql=false;sqlButton?.focus()}}/>{/if}
  {#if showStatistics}<CsvStatistics {doc} query={query()} queryValid={!queryError} columns={selectedColumns} onerror={onerror} onclose={()=>{showStatistics=false;statisticsButton?.focus()}}/>{/if}
  <div class="csv-scroll" bind:this={scrollElement} role="grid" aria-label="Tabla de datos" aria-rowcount={page.matched+1} aria-colcount={(doc.headers?.length??0)+1} tabindex="0" aria-multiselectable="true" onkeydown={gridKey}>
