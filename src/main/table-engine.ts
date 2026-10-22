@@ -15,7 +15,7 @@ import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQu
 export const TABLE_LIMITS = { bytes: 50 * 1024 * 1024, cells: 2_000_000, record: 1024 * 1024, sampleBytes: 8 * 1024 * 1024, sampleRows: 200 }
 interface Metadata { encoding: Encoding; delimiter: string; eol: string; bom: boolean; header: boolean; finalEol: boolean; headerWidth: number }
 interface State extends Metadata { rows: TableRow[]; headers: string[]; readonly: boolean; warning?: string; revision: number; nextId: number; token: number; savedToken: number; history: Change[]; future: Change[] }
-type Mutation = { type: 'cell'; id: string; column: number; value: string; length?:number } | { type: 'header'; column: number; value: string; headerWidth?:number } | { type: 'rows'; index: number; remove: number; rows: TableRow[] } | { type: 'column'; index: number; remove: boolean; name: string; cells: string[]; headerWidth?:number; lengths?:number[] }
+type Mutation = {type:'rowOrder'|'columnOrder';order:number[]} | { type: 'cell'; id: string; column: number; value: string; length?:number } | { type: 'header'; column: number; value: string; headerWidth?:number } | { type: 'rows'; index: number; remove: number; rows: TableRow[] } | { type: 'column'; index: number; remove: boolean; name: string; cells: string[]; headerWidth?:number; lengths?:number[] }
 interface Change { forward: Mutation[]; backward: Mutation[]; before: number; after: number; bytes:number }
 class LimitError extends Error {}
 function validDelimiter(value: string) { if (![',', ';', '\t', '|'].includes(value)) throw new Error('Delimitador no válido.'); return value }
@@ -42,6 +42,8 @@ async function prefix(path: string, max: number): Promise<Buffer> {
 }
 async function endsWithEol(path:string,bytes:number,encoding:Encoding){const handle=await openFile(path,'r');try{const tail=Buffer.alloc(Math.min(bytes,4));await handle.read(tail,0,tail.length,Math.max(0,bytes-tail.length));return /[\r\n]$/.test(iconv.decode(tail,encoding))}finally{await handle.close()}}
 function copyRow(row: TableRow): TableRow { return { id: row.id, cells: [...row.cells] } }
+function permutation(order:number[],size:number){if(!Array.isArray(order)||order.length!==size||new Set(order).size!==size||order.some(index=>!Number.isSafeInteger(index)||index<0||index>=size))throw new Error('La secuencia de posiciones no es válida.');return order}
+function preservesMissing(order:number[],length:number){for(let i=0;i<length;i++)if(order[i]>=length)return false;return true}
 function recordBytes(record:string[],encoding:Encoding,delimiter:string){return record.reduce((total,field)=>total+(encoding==='utf8'?Buffer.byteLength(field,'utf8'):field.length*(encoding==='utf16le'?2:1))+delimiter.length,0)}
 
 export class TableEngine {
@@ -90,13 +92,13 @@ export class TableEngine {
   s.revision=(this.states.get(id)?.revision??-1)+1;this.views.delete(id);this.queries.delete(id);this.states.set(id,s); return this.info(id)
  }
  async info(id: string) { const s=this.get(id); return {headers:[...s.headers],rowCount:s.rows.length,readonly:s.readonly,warning:s.warning,encoding:s.encoding,delimiter:s.delimiter,revision:s.revision,dirty:s.token!==s.savedToken} }
- private async indices(id: string, query: TableQuery): Promise<number[]> {
-  const s=this.get(id); const revision=s.revision; const ticket=++this.serial; this.queries.set(id,ticket)
+ private async indices(id: string, query: TableQuery,guard?:()=>void): Promise<number[]> {
+  const s=this.get(id); const revision=s.revision; const ticket=++this.serial; if(!guard)this.queries.set(id,ticket)
   const search=(query.search??'').toLocaleLowerCase(); const filters=Object.entries(query.filters??{}).filter(([,value])=>value).map(([column,value])=>[Number(column),value.toLocaleLowerCase()] as const)
   const compiled=compileTableQuery(query,s.headers.length)
-  const key=JSON.stringify([revision,search,filters,query.sort,query.order,query.conditions,query.filterMode]); const cached=this.views.get(id);if(cached?.key===key)return cached.indices
+  const key=JSON.stringify([revision,search,filters,query.sort,query.order,query.conditions,query.filterMode]); const cached=this.views.get(id);if(cached?.key===key){guard?.();return cached.indices}
   const indices:number[]=[]
-  const ensure=()=>{if(this.queries.get(id)!==ticket || this.states.get(id)!==s || s.revision!==revision) throw new Error('Consulta cancelada por una solicitud más reciente.')}
+  const ensure=()=>{guard?.();if((!guard&&this.queries.get(id)!==ticket) || this.states.get(id)!==s || s.revision!==revision) throw new Error('Consulta cancelada por una solicitud más reciente.')}
   for(let i=0;i<s.rows.length;i++){const row=s.rows[i]; if((!search||row.cells.some(value=>value.toLocaleLowerCase().includes(search)))&&filters.every(([column,value])=>(row.cells[column]??'').toLocaleLowerCase().includes(value))&&compiled.matches(row.cells))indices.push(i); if(i%2048===0){await yieldTurn();ensure()} }
   if(compiled.ordered){
    const compare=(a:number,b:number)=>compiled.compare(s.rows[a].cells,s.rows[b].cells)||a-b
@@ -107,12 +109,12 @@ export class TableEngine {
   ensure();this.views.set(id,{key,indices});return indices
  }
  async page(id:string,query:TableQuery):Promise<TablePage>{if(!Number.isInteger(query.offset)||query.offset<0||!Number.isInteger(query.limit)||query.limit<1||query.limit>1000)throw new Error('Página no válida.');const s=this.get(id),revision=s.revision;const indices=await this.indices(id,query);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('Consulta cancelada porque cambió la tabla.');return{rows:indices.slice(query.offset,query.offset+query.limit).map(i=>copyRow(s.rows[i])),total:s.rows.length,matched:indices.length,revision:s.revision,requestId:query.requestId,sample:s.readonly}}
- private async rangeRows(id:string,range:TableRange){
+ private async rangeRows(id:string,range:TableRange,guard?:()=>void){
   const s=this.get(id),revision=s.revision
   if(range.revision!==revision)throw new Error('La tabla cambió desde que se seleccionó el rango. Vuelve a seleccionarlo.')
   const {top,bottom,left,right}=range
   if(![top,bottom,left,right].every(Number.isSafeInteger)||top<0||bottom<top||left<0||right<left||right>=s.headers.length)throw new Error('Rango no válido.')
-  const indices=await this.indices(id,range.query)
+  const indices=await this.indices(id,range.query,guard)
   if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la consulta del rango.')
   if(bottom>=indices.length)throw new Error('El rango excede las filas de la vista.')
   return{state:s,indices:indices.slice(top,bottom+1),columns:Array.from({length:right-left+1},(_,i)=>i+left)}
@@ -153,9 +155,9 @@ export class TableEngine {
   const s=this.editable(id),revision=s.revision
   if(edit.revision!==revision)throw new Error('La tabla cambió desde la vista previa. Vuelve a prepararla.')
   if(s.headers.length>200)throw new Error('Estas transformaciones admiten hasta 200 columnas por documento.')
-  if(!['split','combine','deduplicate','normalize','headers'].includes(edit.operation))throw new Error('Transformación no válida.')
+  if(!['split','combine','deduplicate','normalize','headers','moveRows','moveColumns','commitOrder'].includes(edit.operation))throw new Error('Transformación no válida.')
   const columns=[...new Set(edit.columns)].sort((a,b)=>a-b)
-  if(!columns.length||columns.some(index=>!Number.isInteger(index)||index<0||index>=s.headers.length))throw new Error('Selecciona columnas válidas.')
+  if(!columns.length&&!['moveRows','commitOrder'].includes(edit.operation)||columns.some(index=>!Number.isInteger(index)||index<0||index>=s.headers.length))throw new Error('Selecciona columnas válidas.')
   if(edit.operation==='split'&&columns.length!==1)throw new Error('Selecciona una sola columna para dividir.')
   if(['split','combine'].includes(edit.operation)&&(typeof edit.separator!=='string'||edit.separator.length>64||edit.operation==='split'&&!edit.separator))throw new Error('El separador literal debe tener entre 1 y 64 caracteres para dividir; puede estar vacío al combinar.')
   if(edit.name!==undefined&&(typeof edit.name!=='string'||edit.name.length>10000))throw new Error('El nombre de columna supera el límite.')
@@ -163,15 +165,46 @@ export class TableEngine {
   this.analyses.set(id,edit.requestId)
   const ensure=()=>{if(this.analyses.get(id)!==edit.requestId||this.states.get(id)!==s||s.revision!==revision)throw new Error('Transformación cancelada: cambió la tabla o la solicitud.')}
   const progress=async(rows:number)=>{this.progress({requestId:edit.requestId,phase:'Preparando transformación',rows});await yieldTurn();ensure()}
-  const forward:Mutation[]=[],backward:Mutation[]=[],preview:TableTransformPreview={revision,rows:s.rows.length,affected:0,cells:0,addedColumns:0,deletedRows:0,changedHeaders:0,samples:[]}
+  const forward:Mutation[]=[],backward:Mutation[]=[],preview:TableTransformPreview={revision,rows:s.rows.length,affected:0,cells:0,addedColumns:0,deletedRows:0,changedHeaders:0,movedRows:0,movedColumns:0,samples:[]}
   let bytes=0
   const add=(a:Mutation,b:Mutation)=>{bytes+=Buffer.byteLength(JSON.stringify(a),'utf8')+Buffer.byteLength(JSON.stringify(b),'utf8')+2;if(bytes>20*1024*1024-1024)throw new Error('El cambio supera el presupuesto de deshacer de 20 MiB. Reduce la transformación.');forward.push(a);backward.push(b)}
-  const sample=(row:number|null,column:number,before:string,after:string)=>{if(preview.samples.length<8)preview.samples.push({row,column,before:before.slice(0,256),after:after.slice(0,256)})}
+  const sample=(row:number|null,column:number|null,before:string,after:string)=>{if(preview.samples.length<8)preview.samples.push({row,column,before:before.slice(0,256),after:after.slice(0,256)})}
   const field=(value:string)=>{if(Buffer.byteLength(value,'utf8')>TABLE_LIMITS.record)throw new Error('Una celda resultante supera 1 MiB.');return value}
   const record=(cells:string[])=>{if(recordBytes(cells,s.encoding,s.delimiter)>TABLE_LIMITS.record)throw new Error('Un registro resultante supera 1 MiB. No se ha modificado el documento.')}
   try{
    await progress(0)
-   if(edit.operation==='normalize'){
+   if(['moveRows','moveColumns','commitOrder'].includes(edit.operation)){
+    const rowOrder=edit.operation!=='moveColumns',size=rowOrder?s.rows.length:s.headers.length
+    let order:number[]
+    if(edit.operation==='commitOrder'){
+     const q=edit.query
+     if(!q||!compileTableQuery(q,s.headers.length).ordered)throw new Error('Ordena primero la vista para fijar su orden.')
+     if(q.search||q.conditions?.length||Object.values(q.filters??{}).some(Boolean))throw new Error('Quita la búsqueda y todos los filtros antes de fijar el orden del documento.')
+     order=await this.indices(id,q,ensure);ensure()
+    }else{
+     let positions:number[]=[];const ids=new Set(edit.rowIds??[])
+     if(rowOrder&&edit.range)positions=(await this.rangeRows(id,edit.range,ensure)).indices
+     else if(rowOrder){for(let i=0;i<s.rows.length;i++){if(ids.has(s.rows[i].id))positions.push(i);if(i%512===0)await progress(i+1)}if(positions.length!==ids.size)throw new Error('Una fila seleccionada ya no existe.')}
+     else positions.push(...columns)
+     if(!positions.length)throw new Error('Selecciona filas o columnas para mover.')
+     if(rowOrder&&edit.range&&edit.rowIds?.length)throw new Error('Elige un rango o filas marcadas, sin combinar ambos modos.')
+     const destination=edit.destination??-1,selected=new Set(positions)
+     if(!Number.isSafeInteger(destination)||destination<0||destination>size)throw new Error('Elige una posición de destino válida.')
+     if(selected.has(destination))throw new Error('El destino pertenece a la selección. Elige otra posición o el final.')
+     const before:number[]=[],moved:number[]=[],after:number[]=[]
+     for(let i=0;i<size;i++){(selected.has(i)?moved:i<destination?before:after).push(i);if(i%512===0)await progress(i+1)}
+     order=before.concat(moved,after)
+    }
+    permutation(order,size)
+    const inverse=new Array<number>(size);let moved=0
+    for(let i=0;i<size;i++){inverse[order[i]]=i;if(order[i]!==i){moved++;sample(rowOrder?order[i]:null,rowOrder?null:order[i],`Posición ${order[i]+1}`,`Posición ${i+1}`)}if(i%512===0)await progress(i+1)}
+    if(!rowOrder){
+     if(!preservesMissing(order,s.headerWidth))throw new Error('Este movimiento convertiría encabezados ausentes en vacíos. Elige otro destino.')
+     for(let i=0;i<s.rows.length;i++){if(!preservesMissing(order,s.rows[i].cells.length))throw new Error(`Este movimiento convertiría campos ausentes en vacíos en la fila original ${i+1}. Elige otro destino.`);if(i%512===0)await progress(i+1)}
+    }
+    if(moved)add({type:rowOrder?'rowOrder':'columnOrder',order},{type:rowOrder?'rowOrder':'columnOrder',order:inverse})
+    if(rowOrder){preview.movedRows=moved;preview.affected=moved}else{preview.movedColumns=moved;preview.affected=moved?s.rows.length:0}
+   }else if(edit.operation==='normalize'){
     for(let i=0;i<s.rows.length;i++){let changed=false;const row=s.rows[i],next=[...row.cells];for(const col of columns){if(col>=row.cells.length)continue;const before=row.cells[col],after=field(before.normalize('NFC'));if(after!==before){add({type:'cell',id:row.id,column:col,value:after},{type:'cell',id:row.id,column:col,value:before});sample(i,col,before,after);next[col]=after;preview.cells++;changed=true}}if(changed){record(next);preview.affected++}if(i%512===0)await progress(i+1)}
    }else if(edit.operation==='headers'){
     const used=new Set<string>()
@@ -210,7 +243,7 @@ export class TableEngine {
   const rowChanges=mutations.filter((m):m is Extract<Mutation,{type:'rows'}>=>m.type==='rows')
   if(rowChanges.length===mutations.length&&mutations.length>1&&rowChanges.every((m,i)=>m.remove>0&&!m.rows.length&&(i===0||m.index<rowChanges[i-1].index))){const ranges=[...rowChanges].reverse(),rows:TableRow[]=[];let cursor=0;for(const m of ranges){while(cursor<m.index)rows.push(s.rows[cursor++]);cursor+=m.remove}while(cursor<s.rows.length)rows.push(s.rows[cursor++]);s.rows=rows;return}
   if(rowChanges.length===mutations.length&&(mutations.length>1||rowChanges[0]?.rows.length>1024)&&rowChanges.every((m,i)=>m.remove===0&&(i===0||m.index>=rowChanges[i-1].index))){const rows:TableRow[]=[];let cursor=0,inserted=0;for(const m of rowChanges){const at=m.index-inserted;while(cursor<at)rows.push(s.rows[cursor++]);for(const row of m.rows)rows.push(copyRow(row));inserted+=m.rows.length}while(cursor<s.rows.length)rows.push(s.rows[cursor++]);s.rows=rows;return}
-  const indexed=mutations.length>16?new Map(s.rows.map(row=>[row.id,row])):undefined;for(const mutation of mutations){switch(mutation.type){case'cell':{const row=indexed?.get(mutation.id)??s.rows.find(row=>row.id===mutation.id);if(!row)throw new Error('Fila no encontrada.');while(row.cells.length<mutation.column)row.cells.push('');row.cells[mutation.column]=mutation.value;if(mutation.length!==undefined)row.cells.length=mutation.length;break}case'header':s.headers[mutation.column]=mutation.value;s.headerWidth=mutation.headerWidth??Math.max(s.headerWidth,mutation.column+1);break;case'rows':s.rows.splice(mutation.index,mutation.remove,...mutation.rows.map(copyRow));break;case'column':if(mutation.remove){s.headers.splice(mutation.index,1);s.rows.forEach((row,i)=>{row.cells.splice(mutation.index,1);if(mutation.lengths)row.cells.length=mutation.lengths[i]})}else{s.headers.splice(mutation.index,0,mutation.name);s.rows.forEach((row,i)=>{while(row.cells.length<mutation.index)row.cells.push('');row.cells.splice(mutation.index,0,mutation.cells[i]??'');if(mutation.lengths)row.cells.length=mutation.lengths[i]})}s.headerWidth=mutation.headerWidth??s.headers.length;break}}}
+  const indexed=mutations.length>16?new Map(s.rows.map(row=>[row.id,row])):undefined;for(const mutation of mutations){switch(mutation.type){case'rowOrder':{const order=permutation(mutation.order,s.rows.length);s.rows=order.map(index=>s.rows[index]);break}case'columnOrder':{const order=permutation(mutation.order,s.headers.length);if(!preservesMissing(order,s.headerWidth)||s.rows.some(row=>!preservesMissing(order,row.cells.length)))throw new Error('El orden no conserva los campos o encabezados ausentes.');const headers=order.map(index=>s.headers[index]),rows=s.rows.map(row=>({id:row.id,cells:order.slice(0,row.cells.length).map(index=>row.cells[index])}));s.headers=headers;s.rows=rows;break}case'cell':{const row=indexed?.get(mutation.id)??s.rows.find(row=>row.id===mutation.id);if(!row)throw new Error('Fila no encontrada.');while(row.cells.length<mutation.column)row.cells.push('');row.cells[mutation.column]=mutation.value;if(mutation.length!==undefined)row.cells.length=mutation.length;break}case'header':s.headers[mutation.column]=mutation.value;s.headerWidth=mutation.headerWidth??Math.max(s.headerWidth,mutation.column+1);break;case'rows':s.rows.splice(mutation.index,mutation.remove,...mutation.rows.map(copyRow));break;case'column':if(mutation.remove){s.headers.splice(mutation.index,1);s.rows.forEach((row,i)=>{row.cells.splice(mutation.index,1);if(mutation.lengths)row.cells.length=mutation.lengths[i]})}else{s.headers.splice(mutation.index,0,mutation.name);s.rows.forEach((row,i)=>{while(row.cells.length<mutation.index)row.cells.push('');row.cells.splice(mutation.index,0,mutation.cells[i]??'');if(mutation.lengths)row.cells.length=mutation.lengths[i]})}s.headerWidth=mutation.headerWidth??s.headers.length;break}}}
  async edit(id:string,edit:TableEdit){const s=this.editable(id);const revision=s.revision;let forward:Mutation[]=[],backward:Mutation[]=[]
   const add=(a:Mutation,b:Mutation)=>{forward.push(a);backward.push(b)}
   const rowIndex=(rowId:string)=>{const i=s.rows.findIndex(row=>row.id===rowId);if(i<0)throw new Error('Fila no encontrada.');return i}
@@ -274,7 +307,7 @@ export class TableEngine {
   if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la operación. Vuelve a intentarlo.')
   const before=s.token,after=++this.serial;const change={forward,backward:backward.reverse(),before,after,bytes:0};change.bytes=Buffer.byteLength(JSON.stringify(change),'utf8');if(change.bytes>20*1024*1024)throw new Error('El cambio supera el presupuesto de deshacer de 20 MiB. Reduce el número de celdas modificadas.');this.apply(s,forward);s.token=after;s.revision++;s.history.push(change);let budget=s.history.reduce((sum,item)=>sum+item.bytes,0);while(budget>20*1024*1024&&s.history.length>1)budget-=s.history.shift()!.bytes;s.future=[];return this.info(id)
  }
- async undo(id:string,redo=false){const s=this.editable(id);const source=redo?s.future:s.history,target=redo?s.history:s.future;const change=source.pop();if(change){this.apply(s,redo?change.forward:change.backward);s.token=redo?change.after:change.before;s.revision++;target.push(change)}return this.info(id)}
+ async undo(id:string,redo=false){const s=this.editable(id);const source=redo?s.future:s.history,target=redo?s.history:s.future;const change=source.at(-1);if(change){this.apply(s,redo?change.forward:change.backward);source.pop();s.token=redo?change.after:change.before;s.revision++;target.push(change)}return this.info(id)}
  private async selected(id:string,options:TableExport){const s=this.get(id),revision=s.revision;if(s.readonly)throw new Error('La muestra no permite exportar el archivo ni selecciones.');let indices:number[];if(options.scope==='selection'&&options.range){const selected=await this.rangeRows(id,options.range);return{rows:selected.indices.map(i=>selected.columns.map(col=>s.rows[i].cells[col]??'')),headers:selected.columns.map(col=>s.headers[col])}}if(options.scope==='filtered')indices=await this.indices(id,options.query??{offset:0,limit:500,requestId:0});else if(options.scope==='selection'){const ids=new Set(options.rowIds??[]);indices=s.rows.flatMap((row,i)=>ids.has(row.id)?[i]:[])}else indices=s.rows.map((_,i)=>i);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.');const columns=options.columns??s.headers.map((_,i)=>i);if(columns.some(i=>!Number.isInteger(i)||i<0||i>=s.headers.length))throw new Error('Selección de columnas no válida.');return{rows:indices.map(i=>columns.map(col=>s.rows[i].cells[col]??'')),headers:columns.map(col=>s.headers[col])}}
  async analysisStart(id:string,ticket:string,revision:number,path:string|null){
   const s=this.get(id);if(s.revision!==revision)throw new Error('La tabla cambió. Vuelve a analizar.');if(s.headers.length>ANALYSIS_LIMITS.columns)throw new Error('El análisis admite hasta 200 columnas por fuente.')
@@ -305,7 +338,16 @@ export class TableEngine {
   const result=iconv.encode(text,s.encoding,{addBOM:s.bom});if(iconv.decode(result,s.encoding)!==text)throw new Error('La codificación seleccionada no representa todos los caracteres. Guarda una copia en UTF-8.');return result
  }
  async markSaved(id:string,expectedRevision?:number){const s=this.get(id);if(expectedRevision===undefined||s.revision===expectedRevision)s.savedToken=s.token;return this.info(id)}
- async snapshot(id:string){const s=this.get(id);return structuredClone({version:1,state:s})}
- async restore(id:string,snapshot:unknown){const data=snapshot as {version?:number;state?:State};if(data.version!==1||!data.state||!Array.isArray(data.state.rows)||!Array.isArray(data.state.headers))throw new Error('Formato de recuperación no compatible.');const s=structuredClone(data.state);if(s.rows.length*s.headers.length>TABLE_LIMITS.cells||s.rows.some(row=>typeof row.id!=='string'||!Array.isArray(row.cells)||row.cells.some(v=>typeof v!=='string')))throw new Error('Recuperación CSV no válida.');s.savedToken=-1;s.readonly=false;s.warning=undefined;this.serial=Math.max(this.serial,s.token,s.nextId);this.openings.set(id,++this.serial);this.queries.delete(id);this.views.delete(id);s.revision=Math.max(s.revision,this.states.get(id)?.revision??-1)+1;this.states.set(id,s);return this.info(id)}
+ async snapshot(id:string){const s=this.get(id);return structuredClone({version:2,state:s})}
+ async restore(id:string,snapshot:unknown){
+  const data=snapshot as {version?:number;state?:State}
+  if(![1,2].includes(data?.version??0)||!data.state||!Array.isArray(data.state.rows)||!Array.isArray(data.state.headers))throw new Error('Formato de recuperación no compatible. El archivo se conserva.')
+  const s=structuredClone(data.state),allowed=new Set(['cell','header','rows','column',...data.version===2?['rowOrder','columnOrder']:[]])
+  if(s.readonly||!s.headers.length||s.headers.some(header=>typeof header!=='string')||s.rows.some(row=>!row||typeof row.id!=='string'||!Array.isArray(row.cells)||row.cells.length>s.headers.length||row.cells.some(v=>typeof v!=='string'))||(s.header?s.headerWidth:0)+s.rows.reduce((n,row)=>n+row.cells.length,0)>TABLE_LIMITS.cells||s.rows.length>TABLE_LIMITS.cells||new Set(s.rows.map(row=>row.id)).size!==s.rows.length)throw new Error('Recuperación CSV no válida. El archivo se conserva.')
+  if(!Number.isSafeInteger(s.headerWidth)||s.headerWidth<0||s.headerWidth>s.headers.length||![s.nextId,s.token,s.revision].every(Number.isSafeInteger)||s.nextId<1||s.token<0||s.revision<0||!['utf8','utf16le','win1252'].includes(s.encoding)||!['\n','\r\n','\r'].includes(s.eol)||![s.bom,s.header,s.finalEol].every(value=>typeof value==='boolean'))throw new Error('Metadatos de recuperación no válidos. El archivo se conserva.')
+  validDelimiter(s.delimiter)
+  if(!Array.isArray(s.history)||!Array.isArray(s.future)||[...s.history,...s.future].some(change=>!change||!Array.isArray(change.forward)||!Array.isArray(change.backward)||[...change.forward,...change.backward].some(mutation=>!mutation||!allowed.has(mutation.type))))throw new Error('Historial de recuperación no compatible. El archivo se conserva.')
+  s.savedToken=-1;s.readonly=false;s.warning=undefined;this.serial=Math.max(this.serial,s.token,s.nextId);this.openings.set(id,++this.serial);this.queries.delete(id);this.views.delete(id);s.revision=Math.max(s.revision,this.states.get(id)?.revision??-1)+1;this.states.set(id,s);return this.info(id)
+ }
  async close(id:string){for(const [ticket,source] of this.streams)if(source.id===id)await this.analysisClose(ticket);this.analyses.delete(id);this.states.delete(id);this.queries.delete(id);this.views.delete(id);this.openings.delete(id)}
 }

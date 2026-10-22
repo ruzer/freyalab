@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "info": {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "name": "legacy.csv",
+    "path": null,
+    "kind": "csv",
+    "dirty": true,
+    "readonly": false,
+    "revision": 1,
+    "encoding": "utf8",
+    "delimiter": ",",
+    "headers": [
+      "ID",
+      "Nota"
+    ],
+    "rowCount": 2
+  },
+  "savedAt": "2026-10-21T00:00:00.000Z",
+  "snapshot": {
+    "version": 1,
+    "state": {
+      "encoding": "utf8",
+      "delimiter": ",",
+      "eol": "\r\n",
+      "bom": false,
+      "header": true,
+      "finalEol": true,
+      "headerWidth": 2,
+      "rows": [
+        {
+          "id": "1",
+          "cells": [
+            "00123",
+            "Cambio pendiente"
+          ]
+        },
+        {
+          "id": "2",
+          "cells": [
+            "0007",
+            "café"
+          ]
+        }
+      ],
+      "headers": [
+        "ID",
+        "Nota"
+      ],
+      "readonly": false,
+      "revision": 1,
+      "nextId": 3,
+      "token": 2,
+      "savedToken": 0,
+      "history": [
+        {
+          "forward": [
+            {
+              "type": "cell",
+              "id": "1",
+              "column": 1,
+              "value": "Cambio pendiente"
+            }
+          ],
+          "backward": [
+            {
+              "type": "cell",
+              "id": "1",
+              "column": 1,
+              "value": "original",
+              "length": 2
+            }
+          ],
+          "before": 0,
+          "after": 2,
+          "bytes": 186
+        }
+      ],
+      "future": []
+    }
+  }
+}
