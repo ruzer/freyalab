@@ -11,7 +11,7 @@ Estado al 21 de octubre de 2026. Las entregas A/B de los PR #11/#12 ya están en
 | Filtros avanzados | Implementado en `codex/csv-advanced-editing`: Y/O, texto, vacíos, números exactos, fechas ISO y RE2 | Ver [guía](EDITOR-MENUS.md) y [evidencia](evidence/csv-query-2026-10-21.md); consultas inválidas no habilitan edición sobre una vista antigua |
 | Ordenamiento múltiple | Implementado en la misma rama; tipos explícitos por criterio, empates estables | Es orden de vista; guardar mantiene orden original. `codex/csv-ordering` añade fijación explícita sin filtros, con vista previa y un paso de deshacer |
 | Transformaciones | Limpieza/reemplazo por rango existentes; `codex/csv-transformations` añade dividir/combinar conservando originales, NFC, encabezados únicos y eliminación de duplicados por clave compuesta. Vista previa, progreso, cancelación y un paso de deshacer; [guía](TRANSFORMS.md) | `codex/csv-ordering` añade mover filas/columnas y fijar orden; ampliar alcance de las cinco operaciones iniciales más allá del documento completo |
-| Buscar/reemplazar | Búsqueda global, filtros, reemplazo literal global/columna y por rango con vista previa | Resaltado de coincidencias y búsqueda avanzada contextual pendientes |
+| Buscar/reemplazar | Búsqueda global y filtros; `codex/csv-search-preview` añade resaltado por celda, atajos y vista previa al reemplazo general con alcance explícito. Rango conserva su propio alcance y vista previa | Marcas solo para la búsqueda global aceptada; filtros/condiciones avanzadas no se resaltan. Paleta y navegación de coincidencias pendientes |
 | Herramientas contextuales | Menú de clic derecho/rango y atajos comparten acciones; barra Operaciones existente | Paleta y operaciones estructurales contextuales pendientes |
 
 ## B. Estadísticas y exploración
@@ -88,3 +88,7 @@ Validación de esta entrega: [evidencia local](evidence/csv-statistics-reports-2
 ## Informes SQL — entrega de desarrollo
 
 `codex/sql-markdown-reports` reúne las páginas del resultado mediante el contrato existente, valida las fuentes entre páginas y abre una instantánea Markdown con consulta, fuentes, tipos, nulos y valores textuales preservados. No hay dependencias, IPC o formato de recuperación nuevos. La preparación se puede cancelar; resultados limitados se rotulan dentro del informe. [Uso y límites](EDITOR-MENUS.md#informes-de-resultados-sql-en-markdown). Evidencia y estado de CI/instalación se registran en el PR del mismo commit; esta entrega no cierra A–D.
+
+## Búsqueda y reemplazo con vista previa — entrega de desarrollo
+
+`codex/csv-search-preview` añade marcas semánticas seguras por celda en la búsqueda global aceptada y atajos que respetan CodeMirror. El reemplazo general reutiliza el diálogo y motor de rangos, con alcance completo (incluye filas ocultas), columnas explícitas, vista previa, cancelación y un paso de deshacer. No añade dependencias ni API. [Uso y límites](EDITOR-MENUS.md#buscar-y-reemplazar-en-csv). La CI y el paquete se verifican para el mismo commit; esta entrega no cierra el objetivo A–D.
