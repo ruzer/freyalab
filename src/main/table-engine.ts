@@ -1,4 +1,5 @@
 import { createReadStream } from 'node:fs'
+import {randomUUID} from 'node:crypto'
 import { Transform } from 'node:stream'
 import { open as openFile, stat } from 'node:fs/promises'
 import { setImmediate as yieldTurn } from 'node:timers/promises'
@@ -120,7 +121,7 @@ export class TableEngine {
   return{state:s,indices:indices.slice(top,bottom+1),columns:Array.from({length:right-left+1},(_,i)=>i+left)}
  }
  private async rangeChanges(id:string,edit:TableRangeEdit,apply:(row:TableRow,column:number,value:string)=>void):Promise<TableRangePreview>{
-  this.editable(id)
+  const s=this.editable(id),revision=s.revision,requestId=edit.requestId??randomUUID()
   let range=edit.range
   const values=edit.values
   if(edit.operation==='paste'){
@@ -130,20 +131,28 @@ export class TableEngine {
   }
   if(edit.operation==='replace'&&!edit.find)throw new Error('Introduce el texto que quieres reemplazar.')
   if(['fill','replace'].includes(edit.operation)&&typeof edit.value!=='string')throw new Error('Introduce un valor de texto.')
-  const {state:s,indices,columns}=await this.rangeRows(id,range),revision=s.revision
-  const result:TableRangePreview={cells:indices.length*columns.length,changed:0,revision,samples:[]}
-  for(let i=0;i<indices.length;i++){
-   const row=s.rows[indices[i]]
-   for(const column of columns){
-    const before=row.cells[column]??'';let after:string
-    switch(edit.operation){case'fill':after=edit.value!;break;case'clear':after='';break;case'trim':after=before.trim();break;case'upper':after=before.toUpperCase();break;case'lower':after=before.toLowerCase();break;case'replace':after=before.split(edit.find!).join(edit.value!);break;case'paste':after=values![i][column-range.left];break;default:throw new Error('Operación de rango no válida.')}
-    if(typeof after!=='string'||Buffer.byteLength(after,'utf8')>TABLE_LIMITS.record)throw new Error('El valor supera el límite de 1 MiB.')
-    if(after!==before){result.changed++;if(result.samples.length<8)result.samples.push({row:range.top+i,column,before:before.slice(0,256),after:after.slice(0,256)});apply(row,column,after)}
+  this.analyses.set(id,requestId)
+  const ensure=()=>{if(this.analyses.get(id)!==requestId||this.states.get(id)!==s||s.revision!==revision)throw new Error('Preparación del rango cancelada: cambió la tabla o la solicitud.')}
+  const progress=async(rows:number)=>{this.progress({requestId,phase:'Preparando rango',rows});await yieldTurn();ensure()}
+  try{
+   await progress(0)
+   const {indices,columns}=await this.rangeRows(id,range,ensure)
+   const result:TableRangePreview={cells:indices.length*columns.length,changed:0,revision,samples:[]}
+   let processed=0
+   for(let i=0;i<indices.length;i++){
+    const row=s.rows[indices[i]]
+    for(const column of columns){
+     const before=row.cells[column]??'';let after:string
+     switch(edit.operation){case'fill':after=edit.value!;break;case'clear':after='';break;case'trim':after=before.trim();break;case'upper':after=before.toUpperCase();break;case'lower':after=before.toLowerCase();break;case'replace':after=before.split(edit.find!).join(edit.value!);break;case'paste':after=values![i][column-range.left];break;default:throw new Error('Operación de rango no válida.')}
+     if(typeof after!=='string'||Buffer.byteLength(after,'utf8')>TABLE_LIMITS.record)throw new Error('El valor supera el límite de 1 MiB.')
+     if(after!==before){result.changed++;if(result.samples.length<8)result.samples.push({row:range.top+i,column,before:before.slice(0,256),after:after.slice(0,256)});apply(row,column,after)}
+     if(++processed%512===0)await progress(i+1)
+    }
    }
-   if(i%2048===0){await yieldTurn();if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la operación del rango.')}
-  }
-  return result
+   ensure();return result
+  }finally{if(this.analyses.get(id)===requestId)this.analyses.delete(id)}
  }
+
  async rangePreview(id:string,edit:TableRangeEdit){return this.rangeChanges(id,edit,()=>{})}
  async rangeClipboard(id:string,range:TableRange){return this.clipboard(id,{scope:'selection',range})}
  async clipboard(id:string,options:TableExport){
