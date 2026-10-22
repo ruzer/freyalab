@@ -92,7 +92,7 @@ Límites: 100 resultados por consulta visual; Celdas del rango puede resumir má
 
 ## Siguientes entregas propuestas
 
-Mover filas/columnas está incluido en la entrega de orden. Transponer tablas o selecciones y exportar informes de estadísticas permanecen pendientes. No se presenta esta entrega como equivalente a todas las operaciones de Modern CSV. Referencia funcional: [Modern CSV](https://www.moderncsv.com/).
+Mover filas/columnas está incluido en la entrega de orden. Transponer tablas o selecciones permanece pendiente; los informes de estadísticas se abren como Markdown editable. No se presenta esta entrega como equivalente a todas las operaciones de Modern CSV. Referencia funcional: [Modern CSV](https://www.moderncsv.com/).
 
 
 ## Explorar columnas CSV
@@ -108,7 +108,7 @@ Las operaciones no cambian celdas, filtros, orden, historial ni archivo. Los dat
 
 Límites: 100 000 valores distintos por exploración; superar ese límite devuelve un error completo y pide filtrar, sin presentar resultados parciales como totales. Las frecuencias comparan el texto completo exacto y distinguen mayúsculas, espacios y ceros. Las vistas previas de valores largos muestran solo las primeras 256 unidades UTF-16, indicadas explícitamente. Vacíos incluye campos vacíos, ausentes o solo espacios; cero no es vacío. La lista de faltantes muestra hasta 20 números de fila original. Las longitudes se miden en unidades UTF-16 del texto sin recortar.
 
-Los cálculos numéricos son aproximados, con punto decimal. Se excluyen texto, fechas y enteros fuera del rango numérico seguro; el perfil muestra las exclusiones y posibles ceros iniciales. Nada se convierte al guardar. Cancelar detiene la recogida entre bloques y descarta resultados tardíos; los cálculos matemáticos síncronos terminan antes de descartarse. Esta exploración no añade gráficos; SQL y tablas dinámicas tienen un panel independiente descrito abajo. Exportar estos análisis como informe y explorar claves compuestas quedan pendientes.
+Los cálculos numéricos son aproximados, con punto decimal. Se excluyen texto, fechas y enteros fuera del rango numérico seguro; el perfil muestra las exclusiones y posibles ceros iniciales. Nada se convierte al guardar. Cancelar detiene la recogida entre bloques y descarta resultados tardíos; los cálculos matemáticos síncronos terminan antes de descartarse. Esta exploración no añade gráficos; SQL y tablas dinámicas tienen un panel independiente descrito abajo. Los informes de estos análisis se abren como Markdown editable; explorar frecuencias por claves compuestas queda pendiente.
 
 
 ## Análisis SQL, agrupaciones, tablas dinámicas y cruces
@@ -139,3 +139,13 @@ La entrega de desarrollo añade **Gráficos** junto a Análisis/Estadísticas. I
 ## Transformar el documento CSV
 
 **Operaciones → Transformar documento…**, menú contextual del rango o Ctrl/⌘ + Mayús + T desde la tabla. Divide/combina columnas conservando originales, elimina duplicados por claves compuestas, normaliza Unicode/encabezados, mueve filas/columnas y fija el orden de la vista en el documento. Los movimientos usan destinos originales; tras aplicar limpian filtros/orden de vista. Guardar sigue siendo independiente. [Alcance completo, vista previa, cancelación, límites y deshacer](TRANSFORMS.md). Entrega de desarrollo; no función publicada en alpha.1.
+
+## Informes de estadísticas en Markdown
+
+Después de completar **Analizar** o **Explorar columna**, **Abrir informe Markdown** crea una pestaña editable y sin guardar. Reutiliza el guardado, la recuperación local y las exportaciones PDF/HTML de documentos; no guarda, ordena ni transforma el CSV. En estadísticas generales incluye todos los resultados completados; en el explorador incluye la vista actual (perfil, frecuencias, distribución o Pearson). Una consulta incompleta, cancelada o invalidada no permite crear el informe.
+
+Cada informe conserva el nombre de archivo (sin ruta privada), revisión de la sesión, alcance, fecha UTC y presencia de cambios sin guardar al iniciar. Para rangos/vistas filtradas guarda también búsqueda, condiciones y orden capturados, sin los controles de paginación. Es una fotografía estática: los cambios posteriores no recalculan el documento. Las cifras se escriben sin el redondeo visual del panel, aunque los cálculos siguen siendo aproximados.
+
+**Frecuencias** incluye únicamente la página cargada (hasta 50 valores). Advierte **VISTA PARCIAL** si faltan páginas o se abreviaron textos; identifica los valores recortados a 256 unidades UTF-16, su longitud mostrada y primera fila original. Una lista completa se refiere solo al alcance analizado. Los ejemplos de filas con vacíos se limitan a los primeros 20. Los textos se representan como cadenas JSON en código literal para preservar controles, comillas, ceros iniciales y evitar enlaces automáticos o HTML activo.
+
+Los informes de muestras llevan **MUESTRA LIMITADA** y pueden guardarse/exportarse como documentos independientes. Esto no habilita guardar/exportar el CSV parcial ni atribuye resultados al archivo completo. El límite del editor Markdown es 10 MiB; un informe mayor pide reducir el alcance antes de crear la pestaña. Los cambios del informe deben guardarse con un nombre propio; no se escribe sobre el CSV.

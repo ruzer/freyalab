@@ -1,22 +1,26 @@
 <script lang="ts">
+ import {PROFILE_FIELDS,columnReport,type ColumnReportContext} from '../lib/statistics-report'
  import {onDestroy} from 'svelte'
  import type {DocumentInfo,TableQuery,ColumnAnalysis,ColumnAnalysisRequest} from '../../shared/types'
- let {doc,query,queryValid,onerror}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;onerror:(message:string)=>void}=$props()
+ let {doc,query,queryValid,onerror,onreport}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
  let column=$state(0),otherColumn=$state(-1),scope=$state('all'),duplicatesOnly=$state(false),bins=$state(10)
  let result=$state<ColumnAnalysis|null>(null),busy=$state(false),message=$state('Elige una columna. El análisis no modifica los datos.'),page=$state<'profile'|'frequencies'|'distribution'|'correlation'>('profile')
+ let reportContext=$state<ColumnReportContext|null>(null),reporting=$state(false)
  let active:string|null=null
  const queryKey=$derived(JSON.stringify([query.search,query.filters,query.sort,query.order,query.conditions,query.filterMode]))
- function cancel(){if(active){void window.freya.cancelAnalysis(doc.id,active).catch(()=>{});active=null}busy=false;result=null}
+ function cancel(){if(active){void window.freya.cancelAnalysis(doc.id,active).catch(()=>{});active=null}busy=false;result=null;reportContext=null}
  onDestroy(cancel)
  $effect(()=>{void doc.id;void doc.revision;void queryKey;void queryValid;cancel();message='Los datos o la vista cambiaron. Pulsa Explorar columna para actualizar.'})
  $effect(()=>{void column;void otherColumn;void scope;void duplicatesOnly;void bins;cancel();message='Opciones actualizadas. Pulsa Explorar columna.'})
  async function analyze(offset=0){
   cancel();const request:ColumnAnalysisRequest={column,otherColumn:otherColumn<0?undefined:otherColumn,query:scope==='view'?$state.snapshot(query):undefined,revision:doc.revision,requestId:crypto.randomUUID(),frequencyOffset:offset,duplicatesOnly,bins}
+  const context:ColumnReportContext={source:doc.name,revision:doc.revision,sample:doc.readonly,dirty:doc.dirty,scope:doc.readonly?request.query?'Vista filtrada de la muestra':'Muestra completa':request.query?'Vista filtrada':'Documento completo',analyzedAt:new Date().toISOString(),query:request.query,columnName:doc.headers?.[column]??'',otherColumnName:doc.headers?.[otherColumn],duplicatesOnly}
   active=request.requestId;busy=true;message='Analizando columna…'
-  try{const data=await window.freya.analyzeColumn(doc.id,request);if(active!==request.requestId)return;result=data;message='Exploración completa.'}
+  try{const data=await window.freya.analyzeColumn(doc.id,request);if(active!==request.requestId)return;result=data;reportContext={...context,sample:data.sample};message='Exploración completa.'}
   catch(error){if(active===request.requestId){message=String(error).replace(/^.*Error: /,'');onerror(message)}}
   finally{if(active===request.requestId){active=null;busy=false}}
  }
+ async function report(){if(!result||!reportContext||busy||reporting||doc.revision!==result.revision)return;reporting=true;try{await onreport(columnReport($state.snapshot(reportContext),$state.snapshot(result),page))}catch(error){onerror(String(error))}finally{reporting=false}}
  const number=(value:number|null)=>value===null?'—':value.toLocaleString(undefined,{maximumSignificantDigits:12})
  const columnName=(index:number)=>`${index+1}. ${doc.headers?.[index]||`Columna ${index+1}`}`
  const tabs=[['profile','Perfil'],['frequencies','Frecuencias'],['distribution','Distribución'],['correlation','Correlación']] as const
@@ -27,6 +31,7 @@
   <label>Filas <select aria-label="Filas para explorar" bind:value={scope} disabled={busy}><option value="all">{doc.readonly?'Muestra completa':'Documento completo'}</option><option value="view">{doc.readonly?'Vista de la muestra':'Vista filtrada'}</option></select></label>
   <button type="submit" disabled={busy||!queryValid||!Number.isInteger(bins)||bins<1||bins>30}>Explorar columna</button>
   {#if busy}<button type="button" onclick={()=>{cancel();message='Exploración cancelada.'}}>Cancelar exploración</button>{/if}
+  <button type="button" title="Abrir como documento editable la vista actual; en frecuencias incluye solo la página cargada" disabled={!result||!reportContext||busy||reporting||doc.revision!==result.revision||page==='correlation'&&!result.correlation} onclick={report}>Abrir informe Markdown</button>
  </form>
  <p role="status">{message}</p>
  {#if doc.readonly}<p class="notice">Solo muestra: todos los resultados describen hasta 200 registros; no el archivo completo.</p>{/if}
@@ -37,7 +42,7 @@
  {#if result}
   <p class="scope">{columnName(result.column)} · {result.sample?'Muestra limitada':result.filtered?'Vista filtrada':'Documento completo'} · {number(result.cells)} filas · revisión {result.revision}</p>
   {#if page==='profile'}
-   <dl aria-label="Perfil de columna">{#each [['Filas',result.cells],['Vacíos',result.empty],['Campos ausentes',result.missing],['Solo espacios',result.whitespace],['Valores distintos exactos',result.unique],['Grupos repetidos',result.duplicateGroups],['Filas en grupos repetidos',result.duplicateRows],['Repeticiones adicionales',result.extraDuplicates],['Numéricos utilizables',result.numeric],['No numéricos o fuera del rango seguro',result.excluded],['Con ceros iniciales',result.leadingZeros],['Longitud mínima',result.minLength],['Longitud máxima',result.maxLength],['Suma',result.sum],['Media',result.average],['Mediana',result.median],['Mínimo',result.min],['Máximo',result.max],['Desviación poblacional (n)',result.deviation],['Desviación muestral (n−1)',result.sampleDeviation]] as [label,value]}<div><dt>{label}</dt><dd>{number(value as number|null)}</dd></div>{/each}</dl>
+   <dl aria-label="Perfil de columna">{#each PROFILE_FIELDS as [key,label]}<div><dt>{label}</dt><dd>{number(result[key])}</dd></div>{/each}</dl>
    {#if result.missingRows.length}<p>Primeras filas originales con vacíos (máximo 20; sin encabezado): {result.missingRows.map(item=>item.row).join(', ')}.</p>{/if}
   {:else if page==='frequencies'}
    <p>Valores de texto exactos, ordenados por frecuencia; empates por primera fila original. Las vistas previas largas se indican; no se agrupan por el texto recortado.</p>

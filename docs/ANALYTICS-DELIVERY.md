@@ -22,7 +22,7 @@ La rama `codex/csv-column-exploration` añade una exploración de solo lectura d
 |---|---|---|
 | Estadísticas descriptivas | Conteos, suma, media, mediana, mínimo, máximo, desviación poblacional (n) y muestral (n−1) | `codex/csv-selection-statistics` añade resumen de celdas y por columnas de un rango capturado, mediana/desviaciones en el panel, campos ausentes y cancelación real. Informe exportable pendiente; cálculos aproximados y exclusiones visibles |
 | Distribuciones | Tabla de intervalos de igual amplitud, de 1 a 30, con extremos y recuentos | Gráfico ECharts en D; otros criterios de agrupación no implementados |
-| Frecuencias | Conteos exactos de texto, porcentajes y primera fila original; páginas de 50 | Exportación del resultado. Límite explícito de 100 000 valores distintos; vistas previas de 256 unidades UTF-16 marcadas |
+| Frecuencias | Conteos exactos de texto, porcentajes y primera fila original; páginas de 50 | Informe Markdown de la página cargada con aviso de parcialidad. Límite explícito de 100 000 valores distintos; vistas previas de 256 unidades UTF-16 marcadas |
 | Valores faltantes | Vacíos, espacios y campos ausentes diferenciados; primeras 20 filas originales identificadas | Navegación completa y acción para localizar cada fila; no se interpreta cero como vacío |
 | Duplicados | Grupos por valor exacto de una columna, filas participantes y repeticiones adicionales; filtro de frecuencias repetidas | Claves compuestas para análisis de frecuencias todavía pendientes; eliminación asistida por clave compuesta con vista previa/deshacer en A (`codex/csv-transformations`) |
 | Correlaciones | Pearson entre dos columnas explícitas, pares de la misma fila y omisiones visibles; constantes o menos de dos pares sin coeficiente | Matriz de varias columnas y otros métodos no implementados |
@@ -65,7 +65,7 @@ Incluye teclado mediante controles/tabla alternativa, temas, tamaño adaptable y
 
 1. Consulta avanzada, rangos y exploración integrados mediante #11/#12 por el usuario; #6 cerrado como resuelto. No fusionar automáticamente las siguientes entregas.
 2. Revisar [rangos y edición masiva](evidence/csv-range-2026-10-21.md) y las [cinco transformaciones nuevas](TRANSFORMS.md), con preparación cancelable e historial existente; verificar movimientos/fijación de orden en `codex/csv-ordering` y cancelación de rangos en `codex/csv-range-cancellation`. El riesgo principal sigue siendo aplicar cambios sobre otro alcance.
-3. Revisar la exploración de columnas, frecuencias, duplicados, descriptivas y Pearson; verificar el alcance por rango de `codex/csv-selection-statistics` y completar exportación de informes y localización de filas. Reutilizar el proceso de datos y paneles, sin mutaciones.
+3. Revisar la exploración de columnas, frecuencias, duplicados, descriptivas y Pearson; revisar el alcance por rango de `codex/csv-selection-statistics` y los informes Markdown de `codex/csv-statistics-reports`; completar localización de filas. Reutilizar el proceso de datos y paneles, sin mutaciones.
 4. Revisar DuckDB-Wasm aislado y sus comprobaciones multiplataforma. Complejidad alta; preservar el editor y sus límites. La integración nativa se descartó para esta entrega por aislamiento.
 5. Asistentes de agrupación, pivot y cruce incluidos en la rama SQL; revisar categorías, conversiones explícitas y cambios pendientes antes de integrar.
 6. Revisar los seis gráficos ECharts de `codex/csv-echarts`, sus tablas accesibles, exportaciones y pruebas sobre fuentes completas. Completar la exportación de imágenes desde documentos abiertos como muestra sin debilitar el guardián de originales.
@@ -78,3 +78,9 @@ Cada entrega requiere pruebas específicas más regresión apropiada, PR revisab
 - [DuckDB-Wasm](https://github.com/duckdb/duckdb-wasm) y [seguridad de DuckDB](https://duckdb.org/docs/current/operations_manual/securing_duckdb/overview): variante WASM incorporada en la rama de análisis, con aislamiento adicional de Chromium.
 - [Importaciones de ECharts](https://echarts.apache.org/handbook/en/basics/import/): integración modular con carga diferida en la rama de gráficos.
 - [Modern CSV](https://www.moderncsv.com/documentation/): referencia funcional; su interfaz y código no se copian.
+
+## Informes de análisis — entrega de desarrollo
+
+`codex/csv-statistics-reports` abre los resultados completados como documentos Markdown normales, sin motor, dependencia o API de disco nueva. Comparte etiquetas con los paneles, conserva procedencia/revisión/alcance y marca muestras y páginas de frecuencias parciales. Reutiliza recuperación, guardado, PDF y HTML. No incluye exportación de resultados SQL ni navegación a filas faltantes. [Uso y límites](EDITOR-MENUS.md#informes-de-estadísticas-en-markdown).
+
+Validación de esta entrega: [evidencia local](evidence/csv-statistics-reports-2026-10-21.md); consultar el PR para el paquete y la CI de su commit. La generación del informe, su ejecución empaquetada, la copia instalada y las comprobaciones de CI son evidencias distintas; no sustituye una prueba manual de instalación en Windows/Linux/Intel.
