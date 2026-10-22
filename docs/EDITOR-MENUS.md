@@ -128,7 +128,7 @@ Límites iniciales: hasta cuatro fuentes; 256 MiB físicos y de texto decodifica
 
 Cancelar o cerrar destruye el proceso de consulta; el límite de tiempo es de dos minutos. Una edición/cambio de fuentes invalida los resultados; hay que volver a ejecutar. El borrador SQL y las fuentes elegidas se conservan durante la sesión al cerrar/reabrir el panel, sin guardarse como archivo. Una fuente cerrada exige revisar la selección; no se sustituye por otro archivo.
 
-No hay acceso SQL a archivos arbitrarios, red ni extensiones. Si la app se inicia con `--no-sandbox`, SQL se rechaza; no desactives las protecciones para usarlo. DuckDB se ejecuta en WebAssembly en una ventana Chromium aislada, sin Node ni el puente de FreyaLab. Se limita su gestor de memoria a 384 MB; esto **no** limita la RAM total de Electron. No hay análisis de GB ni exportación del resultado SQL en esta entrega. [Arquitectura, mediciones y comprobaciones](evidence/duckdb-wasm-2026-10-21.md).
+No hay acceso SQL a archivos arbitrarios, red ni extensiones. Si la app se inicia con `--no-sandbox`, SQL se rechaza; no desactives las protecciones para usarlo. DuckDB se ejecuta en WebAssembly en una ventana Chromium aislada, sin Node ni el puente de FreyaLab. Se limita su gestor de memoria a 384 MB; esto **no** limita la RAM total de Electron. No hay análisis de GB. Los resultados SQL pueden abrirse como informes Markdown editables, descritos abajo; exportación directa CSV/JSON del resultado pendiente. [Arquitectura, mediciones y comprobaciones](evidence/duckdb-wasm-2026-10-21.md).
 
 
 ## Gráficos CSV
@@ -149,3 +149,13 @@ Cada informe conserva el nombre de archivo (sin ruta privada), revisión de la s
 **Frecuencias** incluye únicamente la página cargada (hasta 50 valores). Advierte **VISTA PARCIAL** si faltan páginas o se abreviaron textos; identifica los valores recortados a 256 unidades UTF-16, su longitud mostrada y primera fila original. Una lista completa se refiere solo al alcance analizado. Los ejemplos de filas con vacíos se limitan a los primeros 20. Los textos se representan como cadenas JSON en código literal para preservar controles, comillas, ceros iniciales y evitar enlaces automáticos o HTML activo.
 
 Los informes de muestras llevan **MUESTRA LIMITADA** y pueden guardarse/exportarse como documentos independientes. Esto no habilita guardar/exportar el CSV parcial ni atribuye resultados al archivo completo. El límite del editor Markdown es 10 MiB; un informe mayor pide reducir el alcance antes de crear la pestaña. Los cambios del informe deben guardarse con un nombre propio; no se escribe sobre el CSV.
+
+## Informes de resultados SQL en Markdown
+
+Después de **Ejecutar consulta**, **Abrir informe Markdown** reúne todas las páginas conservadas del resultado (no solo la página visible) y crea un documento independiente sin guardar. Incluye consulta ejecutada, fecha UTC de finalización, versión DuckDB, fuentes por nombre/revisión/filas/origen y tipos de columnas. Reutiliza edición, recuperación, Guardar y exportaciones HTML/PDF de Markdown. No escribe sobre el CSV ni ejecuta de nuevo la consulta.
+
+Los resultados limitados llevan **RESULTADO PARCIAL** dentro del documento: incluye las primeras 10 000 filas conservadas, no todas las filas que la consulta podría devolver. Una fuente que se abrió como muestra puede analizarse completa; el informe distingue ese origen desde disco de un resultado SQL limitado. Un resultado sin filas se documenta expresamente.
+
+NULL sin comillas representa un nulo SQL. Los otros valores aparecen entre comillas y con escapes JSON: `""` es texto vacío y `"NULL"` es texto. Se conservan orden, encabezados repetidos por posición, ceros iniciales, identificadores largos, Unicode y campos multilínea. Los datos se muestran literalmente, sin activar enlaces, imágenes, fórmulas ni HTML presentes en celdas o encabezados.
+
+Durante la preparación se muestra el recuento de filas y se puede **Cancelar informe**; cerrar el panel también descarta la preparación. Cada página valida que las fuentes sigan abiertas y con la misma revisión, y comprueba tamaño/fecha de las fuentes leídas desde disco. Si el resultado ya no existe o una fuente cambia, se pide repetir el análisis y no se crea un documento parcial. La generación final del texto es síncrona y acotada por el resultado SQL; cancelar interrumpe entre páginas. El límite de edición Markdown sigue siendo 10 MiB: un informe mayor pide reducir la consulta antes de crear una pestaña. No se amplían los límites de DuckDB ni del editor CSV.
