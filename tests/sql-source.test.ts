@@ -26,6 +26,7 @@ it('cancela entre bloques por revisión, cierre o cancelación explícita y rech
 })
 it('lee íntegra una fuente de un millón por cuatro columnas que el editor limita a muestra',async()=>{
  const block=Array.from({length:1000},(_,i)=>`${String(i).padStart(5,'0')},Ciudad ${i%10},${i%100},nota`).join('\n')+'\n';await writeFile(path,'Código,Ciudad,Valor,Nota\n'+block.repeat(1000));const info=await engine.open('a',path);expect(info.readonly).toBe(true);expect(info.rowCount).toBe(200)
+ await expect(engine.analysisStart('a','partial-filter',info.revision,path,{offset:0,limit:1,requestId:1,search:'Ciudad'})).rejects.toThrow('muestra no representa')
  await engine.analysisStart('a','large',info.revision,path);let count=0;while(true){const chunk=await engine.analysisNext('large');if(chunk.done)break;const table=tableFromIPC(chunk.data);count+=chunk.rows;expect(table.numCols).toBe(4);expect(table.getChildAt(0)!.get(0)).toBe('00000')}
  expect(count).toBe(1000000);expect((await engine.info('a')).readonly).toBe(true);expect((await engine.info('a')).dirty).toBe(false)
 },60000)
@@ -53,4 +54,18 @@ it('conserva codificación, BOM, delimitador y campos multilínea al releer el a
   expect(result).toEqual([['001','Dice "sí"\r\nCanción',''],['9007199254740993','=1+1','']])
  }
  await writeFile(path,Buffer.from([0x41,0x0a,0xff]));await expect((async()=>{for await(const _ of fileRecords(path,{encoding:'utf8',delimiter:',',header:true,headerWidth:1,headers:['A']},()=>{})){}})()).rejects.toThrow('UTF-8')
+})
+it('transfiere la vista filtrada completa sin paginar ni ordenar el documento, preservando ausentes y ceros',async()=>{
+ const original='Código,Grupo,Nota\n001,A,\n002,B,no\n9007199254740993,A\n';await source(original);const before=await engine.snapshot('a')
+ await engine.analysisStart('a','filtered',0,path,{offset:1,limit:1,requestId:3,conditions:[{column:1,op:'equals',value:'A'}],order:[{column:0,numeric:false,descending:true}]})
+ expect(await rows('filtered')).toEqual([['001','A',''],['9007199254740993','A',null]])
+ expect(await engine.snapshot('a')).toEqual(before);expect((await engine.serialize('a')).toString()).toBe(original)
+ await engine.analysisStart('a','empty',0,path,{offset:0,limit:1,requestId:4,search:'sin resultados'});expect(await rows('empty')).toEqual([])
+ await engine.analysisStart('a','invalid',0,path,{offset:0,limit:1,requestId:5,conditions:[{column:999,op:'equals',value:'A'}]});await expect(rows('invalid')).rejects.toThrow('Columna')
+})
+it('cancela la preparación de la vista filtrada sin cambiar el historial ni el documento',async()=>{
+ const original='ID,Grupo\n'+Array.from({length:5000},(_,i)=>`${String(i).padStart(5,'0')},A`).join('\n')+'\n';await source(original);const before=await engine.snapshot('a')
+ await engine.analysisStart('a','cancel-filtered',0,path,{offset:0,limit:1,requestId:1,search:'A'})
+ const rejected=expect(engine.analysisNext('cancel-filtered')).rejects.toThrow('cancelada');await engine.analysisClose('cancel-filtered');await rejected
+ expect(await engine.snapshot('a')).toEqual(before);expect((await engine.serialize('a')).toString()).toBe(original)
 })

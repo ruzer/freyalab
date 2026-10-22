@@ -1,12 +1,12 @@
 # Gráficos del editor CSV
 
-Entrega de desarrollo sobre los PR #13/#14; no es una función publicada en alpha.1. Abre un CSV y pulsa **Gráficos**. Elige un tipo, columnas y opciones; pulsa **Generar gráfico**. No necesitas escribir SQL. La consulta reproducible está en «Consulta y precisión del gráfico».
+Entrega de desarrollo sobre los PR #13/#14; no es una función publicada en alpha.1. Abre un CSV y pulsa **Gráficos**. El panel empieza con **Barras → Conteo de filas**. Elige **Agrupar por** para la categoría del eje X y pulsa **Generar gráfico**. Para calcular sobre una columna, elige el cálculo y **Valor**, indicando **Número para calcular** cuando corresponda. No necesitas escribir SQL. La consulta reproducible está en «Consulta y precisión del gráfico».
 
 El panel reutiliza DuckDB-Wasm y el puente de análisis existentes; no incorpora otro modelo de edición ni permisos de archivos. Apache ECharts **6.1.0**, Apache-2.0, dibuja con SVG y carga al abrir el panel mediante importación diferida. Se registran solo las series/componentes utilizados, con avisos en `THIRD_PARTY_NOTICES.txt`.
 
 ## Datos, alcance y límites
 
-- Analiza **toda la fuente** y los cambios pendientes del documento editable. Los filtros/orden de la tabla no se aplican a los gráficos; el panel lo indica. Una fuente abierta como muestra se vuelve a leer completa desde disco con las comprobaciones del motor SQL.
+- Elige **Documento completo** (incluye cambios pendientes y filas ocultas por filtros) o **Vista filtrada actual** (búsqueda/filtros combinados sobre todas las coincidencias, no solo la página visible). El orden se elige en el gráfico; no se hereda el de la tabla. Una muestra solo permite analizar el archivo completo desde disco; su vista filtrada se rechaza, sin presentar una muestra como total.
 - Se mantienen los límites del análisis: 256 MiB por fuente, dos millones de filas, 200 columnas y ocho millones de celdas. No promete archivos de GB.
 - Las agregaciones se calculan antes de limitar los elementos dibujados. Barras/cajas: primeras 100 categorías; mapa: primeros 400 pares; líneas/dispersión: primeros 2 000 puntos. No es muestreo aleatorio. La vista parcial se identifica tanto en el panel como dentro de SVG/PNG/PDF. Histograma: de 1 a 30 intervalos.
 - El motor transfiere solamente el resultado acotado, paginado de 100 en 100, a la interfaz. La tabla alternativa muestra páginas de 50; tiene todos los elementos dibujados y valores originales de categoría, incluso si las etiquetas del eje se abrevian.
@@ -18,8 +18,8 @@ El panel reutiliza DuckDB-Wasm y el puente de análisis existentes; no incorpora
 | Tipo | Cálculo y orden |
 |---|---|
 | Histograma | Intervalos de igual amplitud `[desde, hasta)`, último cerrado; recuentos incluyen todos los numéricos utilizables. Una constante produce un intervalo. |
-| Barras | Categoría elegida; contar filas, suma o promedio. Orden explícito ascendente/descendente por resultado, empate por categoría. Las categorías sin medida utilizable conservan NULL; no se inventa un cero. |
-| Líneas | X e Y explícitamente numéricas, orden X ascendente/descendente y fila original en empates. X inválidas se omiten; Y inválidas dejan un hueco (`connectNulls: false`). No infiere fechas ni intervalos regulares. |
+| Barras | Categoría elegida; conteo de filas, valores únicos, suma, promedio, mínimo, máximo o mediana. Texto/identificador solo admite los dos primeros; los demás requieren una medida declarada numérica. Valores únicos incluye cadena vacía y excluye campos ausentes. Orden explícito ascendente/descendente por resultado, empate por categoría. Las categorías sin medida utilizable conservan NULL; no se inventa un cero. |
+| Líneas | X e Y explícitamente numéricas, orden X ascendente/descendente y orden relativo de la fuente analizada en empates. X inválidas se omiten; Y inválidas dejan un hueco (`connectNulls: false`). No infiere fechas ni intervalos regulares. |
 | Dispersión | Pares numéricos de la misma fila; orden X y fila original, con recuentos de exclusión y límite de puntos explícitos. |
 | Mapa de calor | Conteo de cada par de categorías exactas. Las combinaciones ausentes quedan sin celda; no se imputan ceros. Escala visible y tabla alternativa. |
 | Caja | Por categoría: cuartiles `quantile_cont` (Hyndman–Fan tipo 7); bigotes hasta observaciones dentro de 1,5 × RIC; conteo exacto de atípicos. Dibuja hasta los primeros 20 atípicos por categoría, orden numérico, y lo informa. |
@@ -32,7 +32,7 @@ Los selectores, botones de tamaño, exportación y tabla alternativa admiten tec
 
 La exportación guarda una instantánea del dibujo mostrado; no vuelve a leer el CSV ni recalcula el análisis. Si la revisión de la sesión cambia mientras se elige el destino o se genera el archivo, se rechaza la exportación y se pide generar de nuevo el gráfico.
 
-Cambiar columnas/opciones o editar el documento invalida el resultado. Un cambio externo en disco también lo invalida. Cancelar destruye el proceso SQL y descarta respuestas antiguas; cerrar el panel cancela su solicitud y libera el dibujo y observadores. Se conserva el límite de dos minutos y las protecciones de DuckDB: sin red/disco mediante SQL, extensiones ni configuración modificable. Los atípicos usan funciones del núcleo; no se habilita la extensión JSON.
+Cambiar columnas/opciones, editar el documento o cambiar los filtros de un gráfico de vista filtrada invalida el resultado. Desplazar/paginar visualmente la tabla no invalida por sí solo sus datos. Un cambio externo en disco también lo invalida. Cancelar destruye el proceso SQL y descarta respuestas antiguas; cerrar el panel cancela su solicitud y libera el dibujo y observadores. Se conserva el límite de dos minutos y las protecciones de DuckDB: sin red/disco mediante SQL, extensiones ni configuración modificable. Los atípicos usan funciones del núcleo; no se habilita la extensión JSON.
 
 Las etiquetas del archivo no se insertan como HTML. ECharts usa SVG y tooltips de texto (`richText`); la tabla usa texto escapado de Svelte. Las imágenes exportadas pasan por el saneador SVG y ventana aislada existentes.
 
@@ -45,3 +45,11 @@ Las etiquetas del archivo no se insertan como HTML. ECharts usa SVG y tooltips d
 - La CI ejecuta la suite y después vuelve a ejecutar SQL/gráficos desde la app empaquetada en macOS ARM/Intel, Windows y Ubuntu. No equivale a probar instaladores manualmente.
 
 Referencias: [importaciones modulares ECharts](https://echarts.apache.org/handbook/en/basics/import/), [accesibilidad ECharts](https://echarts.apache.org/handbook/en/best-practices/aria/), [cuantiles DuckDB](https://duckdb.org/docs/stable/sql/functions/aggregates.html#quantile_contx-pos).
+
+## DW-01 y evolución
+
+El título y los ejes explican, por ejemplo, **Suma de Total MXN por Ciudad**. El alcance aparece tanto en pantalla como en las imágenes exportadas. El modo avanzado conserva la consulta reproducible; no es necesario usarlo para crear gráficos. Si no hay valores numéricos utilizables, se pide cambiar de columna o contar filas/valores únicos. No se modifica el archivo original ni su historial.
+
+Consulta [evidencia de DW-01](evidence/visual-chart-builder-2026-10-22.md) y el [objetivo actualizado DW-01 a DW-10](WORKSPACE-EVOLUTION.md). Series, fechas, filtros propios, persistencia, exportación tabular agregada y sugerencias locales son entregas posteriores; esta mejora no las declara terminadas.
+
+Al cambiar una medida ya elegida, se restablece Texto/identificador y conteo: el tipo no se hereda a otra columna. Si cambia la lista de encabezados, el constructor se reinicia y cancela su cálculo anterior. No intenta reutilizar una configuración por índice sobre otras columnas.

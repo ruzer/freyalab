@@ -1,0 +1,12 @@
+{
+  "recordedAt": "2026-10-22T19:47:34.226Z",
+  "platform": "darwin",
+  "arch": "arm64",
+  "electron": "44.9.2",
+  "cpu": "Apple M2 Max",
+  "rows": 1000000,
+  "bins": 10,
+  "durationMs": 5572.362042000001,
+  "maxRendererGapMs": 22.5,
+  "sourceBytes": 21900021
+}

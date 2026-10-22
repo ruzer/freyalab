@@ -133,7 +133,7 @@ No hay acceso SQL a archivos arbitrarios, red ni extensiones. Si la app se inici
 
 ## Gráficos CSV
 
-La entrega de desarrollo añade **Gráficos** junto a Análisis/Estadísticas. Incluye histogramas, barras, líneas, dispersión, mapa de calor y cajas con selectores, tabla accesible y exportación. Consulta [métodos, alcance y límites](CHARTS.md); no se presenta como función publicada en alpha.1.
+La entrega de desarrollo añade **Gráficos** junto a Análisis/Estadísticas. Incluye histogramas, barras, líneas, dispersión, mapa de calor y cajas con selectores, tabla accesible y exportación. DW-01 añade nombres reales en ejes, elección de cálculo y documento completo/vista filtrada, con ayuda y tratamiento numérico explícito; empieza contando sin convertir códigos. Consulta [métodos, alcance y límites](CHARTS.md); no se presenta como función publicada en alpha.1.
 
 
 ## Transformar el documento CSV

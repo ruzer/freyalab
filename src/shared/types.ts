@@ -24,8 +24,8 @@ export interface ColumnAnalysis {
  missingRows:{row:number;rowId:string}[];histogram:{lower:number;upper:number;count:number}[];
  correlation?:{column:number;pairs:number;omitted:number;value:number|null};warnings:string[]
 }
-export interface SqlRequest {requestId:string;sources:{id:string;revision:number}[];sql:string}
-export interface SqlSource {id:string;name:string;revision:number;table:string;columns:{name:string;original:string;index:number}[];rows:number;fromDisk:boolean}
+export interface SqlRequest {requestId:string;sources:{id:string;revision:number;query?:TableQuery}[];sql:string}
+export interface SqlSource {id:string;name:string;revision:number;table:string;columns:{name:string;original:string;index:number}[];rows:number;fromDisk:boolean;filtered?:boolean}
 export interface SqlResult {requestId:string;sources:SqlSource[];version:string;columns:{name:string;type:string}[];rows:(string|null)[][];returnedRows:number;limited:boolean;offset:number;completedAt:string}
 export interface SqlProgress {requestId:string;phase:string;rows:number}
 export interface TableOptions { encoding?:Encoding; delimiter?:string; header?:boolean }
