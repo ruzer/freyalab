@@ -16,7 +16,7 @@ Los cambios conservan vistas previas, revisión, historial y recuperación del m
 - Cuatro casos nuevos de Electron: buscar sin acentos y ejecutar desde teclado sobre un rango, cancelar sin modificar y aplicar/deshacer con valores originales; acciones estructurales habilitadas por marcas de fila/columna y restauración de foco, consulta avanzada y búsqueda vacía; muestra con edición/copia bloqueadas y análisis disponible, claro/oscuro; paginación observada con MutationObserver, copia de rango deshabilitada, Transformar disponible y foco dentro del diálogo.
 - La prueba de Escape desde el buscador falló inicialmente; el diálogo ahora atiende Escape explícitamente antes de la acción nativa del campo de búsqueda. Las cuatro regresiones pasan, incluido cierre desde el buscador y retorno de foco.
 - Los originales CSV se comparan después de comandos/undo; permanecen sin guardar ni modificar. La fixture de muestra se amplía por truncado para forzar solo lectura, sin presentarla como evidencia de análisis completo de un CSV válido.
-- Capturas del diálogo revisadas en claro 1440×900 y oscuro 1280×800. La regresión completa conserva además los recorridos previos de botones, clic derecho, rangos, transformaciones, guardado y recuperación.
+- Capturas finales del diálogo revisadas en claro 1440×900 y oscuro 1280×800. Se ajustó el salto de línea de las descripciones largas; una aserción de scrollWidth/clientWidth comprueba que la lista no desborde horizontalmente en ambos temas. La regresión completa conserva además los recorridos previos de botones, clic derecho, rangos, transformaciones, guardado y recuperación.
 
 ## Límites
 
