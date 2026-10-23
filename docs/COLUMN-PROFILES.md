@@ -1,6 +1,28 @@
-# Comprender columnas — DW-04a y DW-04b
+# Comprender columnas — DW-04a, DW-04b y DW-04c
 
-## Vista general de columnas — DW-04b vigente
+## Varianza y percentiles — DW-04c
+
+Estado: `codex/descriptive-percentiles`, basada en el [PR #37](https://github.com/ruzer/freyalab/pull/37). La verificación local está documentada en [evidencia DW-04c](evidence/descriptive-percentiles-2026-10-22.md); no acredita integración, CI ni distribución.
+
+El helper compartido [`descriptive`](../src/main/table-analysis.ts) añade **varianza poblacional**, **varianza muestral** y **P10/P25/P75/P90**. Lo utilizan las estadísticas de columnas, celdas de un rango, rango por columnas y el perfil individual; se mantienen las reglas existentes de selección, vista capturada, exclusión y muestra. No incorpora parser, motor, dependencia ni canal IPC nuevos.
+
+La presentación es progresiva:
+
+- En estadísticas generales, la casilla **Varianza y percentiles** muestra seis columnas adicionales. Cambiarla solo modifica lo visible: no inicia otra consulta ni recalcula los resultados.
+- En el perfil individual, **Varianza y percentiles** despliega una explicación y las seis medidas mediante controles nativos accesibles por teclado.
+- Los informes Markdown generales y de perfil incluyen siempre las seis medidas, aunque la casilla o sección estuviera oculta. Mantienen procedencia, revisión, filtros, cambios pendientes y advertencia de muestra. Los informes de frecuencias, distribución, correlación y panorama compacto conservan su alcance anterior.
+
+### Definiciones y valores no disponibles
+
+La varianza describe la dispersión respecto a la media en **unidades al cuadrado**. La poblacional divide entre `n` valores numéricos utilizables; la muestral divide entre `n−1` y necesita al menos dos. Las desviaciones correspondientes son sus raíces cuadradas.
+
+Los percentiles reutilizan `quantile` de **Simple Statistics 7.12.1**, versión fijada en las dependencias. Se comprobó el método en la fuente instalada `node_modules/simple-statistics/src/quantile.js` y `quantile_sorted.js`: **interpolación lineal tipo 7**, posición `(n−1)×p` en valores ordenados, con índices desde cero y `p` entre 0 y 1. **P50 es la mediana** y se obtiene con la misma operación. No se presupone este método a partir de la documentación web que todavía describe 7.8.7; para esta entrega prevalece el código de la versión instalada y fijada.
+
+Sin números utilizables, las seis medidas son `null` y se muestran como **—**, no como cero. Con un único número, la varianza poblacional es cero, la muestral no está disponible y los percentiles toman ese valor. Los resultados que exceden el rango representable también se muestran como no disponibles. Los cálculos usan punto flotante aproximado; la interfaz presenta hasta 12 cifras significativas y el informe conserva la representación numérica del resultado, sin prometer aritmética decimal exacta.
+
+Vacíos, textos no numéricos y enteros fuera del rango numérico seguro mantienen su exclusión anterior. La sugerencia de identificador no redefine los cálculos manuales: los valores utilizables se incluyen según sus reglas existentes. Ninguna de estas medidas convierte ni reescribe identificadores, ceros iniciales u otros valores en el CSV; tampoco cambia su orden o historial. Los resultados de una muestra siguen describiendo solo esa muestra.
+
+## Vista general de columnas — antecedente conservado DW-04b
 
 Desde **Estadísticas → Comprender todas las columnas → Explorar columnas**, se obtiene una lista compacta de perfiles sin cambiar el CSV. La exploración se inicia mediante botón o teclado; abrir el archivo o el panel no ejecuta el análisis automáticamente. Reutiliza la exploración individual existente, una columna cada vez.
 
@@ -66,4 +88,6 @@ La misma pasada de `table-analysis.ts` recoge la evidencia, en el proceso tabula
 
 **Registro histórico al cerrar DW-04a:** faltaban una vista conjunta de columnas, completar moda/varianza/percentiles y medir el coste de exploración conjunta.
 
-**Actualización DW-04b:** la vista conjunta bajo demanda y su informe son el alcance de esta entrega. DW-04 sigue abierto para moda, varianza, percentiles y las comprobaciones de coste y cobertura que falten; no se declara terminada por disponer de esta lista. DW-05, recomendaciones modificables de análisis, sigue pendiente: no se generan ni configuran gráficos automáticamente. Validación con estudiantes/profesionales y lectores de pantalla sigue pendiente.
+**Registro histórico DW-04b:** añadió la vista conjunta bajo demanda y su informe; varianza, percentiles y moda seguían pendientes entonces.
+
+**Actualización DW-04c:** varianzas y P10/P25/P75/P90 están implementados en esta rama mediante el helper compartido, con presentación progresiva e informes completos. **DW-04 sigue abierto:** faltan moda y las comprobaciones de coste/cobertura que no estén acreditadas. No se presenta una moda escalar que oculte empates. **DW-05**, recomendaciones modificables de análisis, sigue pendiente: esta entrega no genera ni configura gráficos automáticamente. Validación con estudiantes/profesionales y lectores de pantalla sigue pendiente.

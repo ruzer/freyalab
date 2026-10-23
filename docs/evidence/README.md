@@ -16,3 +16,5 @@ Desarrollo DW-04b: [vista general de columnas](csv-column-overview-2026-10-22.md
 
 - [v0.1.0-alpha.1: gates, entornos y límites](release-v0.1.0-alpha.1.md).
 - [Checklist y SHA-256](RELEASE-CHECKLIST.md).
+
+DW-04c: [varianza y percentiles](descriptive-percentiles-2026-10-22.md), con controles progresivos, métodos compartidos e informes completos.

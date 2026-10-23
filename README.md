@@ -50,6 +50,8 @@ El panel **Análisis** añade consultas SQL locales y asistentes para agrupacion
 
 En **Estadísticas → Comprender todas las columnas** puedes explorar tipos probables y calidad, buscar columnas y abrir un informe Markdown del alcance completo solicitado. Se conservan los valores originales y se identifican las muestras y columnas no disponibles. Consulta [uso y límites](docs/COLUMN-PROFILES.md). Es una función de desarrollo, pendiente de integración y distribución.
 
+Las estadísticas y el perfil incluyen **Varianza y percentiles** como opciones avanzadas: varianza poblacional/muestral y P10/P25/P75/P90. Los informes Markdown conservan las medidas aunque se oculten en pantalla. Consulta [definiciones y límites](docs/COLUMN-PROFILES.md).
+
 La [evaluación del ecosistema open source](docs/OPEN-SOURCE-ECOSYSTEM.md) documenta alternativas para tablas, análisis y gráficos, con métricas, pruebas aisladas y límites. Es una evaluación técnica; no incorpora dependencias ni cambia las funciones publicadas.
 
 ## Descargas y compatibilidad

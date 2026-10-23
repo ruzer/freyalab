@@ -1,5 +1,5 @@
 import {setImmediate as yieldTurn} from 'node:timers/promises'
-import {sum,mean,min,max,median,standardDeviation,sampleStandardDeviation,sampleCorrelation,equalIntervalBreaks} from 'simple-statistics'
+import {sum,mean,min,max,quantile,variance,sampleVariance,standardDeviation,sampleCorrelation,equalIntervalBreaks} from 'simple-statistics'
 import {date as isoDate} from './table-query'
 import type {ColumnAnalysis,ColumnAnalysisRequest,TableRow} from '../shared/types'
 
@@ -8,7 +8,13 @@ export function numeric(value:string):number|null{const v=value.trim(),n=Number(
 function safeNumber(value:string){const n=numeric(value);return n!==null&&(!Number.isInteger(n)||Number.isSafeInteger(n))?n:null}
 const finite=(value:number)=>Number.isFinite(value)?value:null
 
-export function descriptive(values:number[]){return values.length?{sum:finite(sum(values)),average:finite(mean(values)),min:min(values),max:max(values),median:finite(median(values)),deviation:finite(standardDeviation(values)),sampleDeviation:values.length>1?finite(sampleStandardDeviation(values)):null}:{sum:null,average:null,min:null,max:null,median:null,deviation:null,sampleDeviation:null}}
+export function descriptive(values:number[]){
+ if(!values.length)return{sum:null,average:null,min:null,max:null,median:null,deviation:null,sampleDeviation:null,variance:null,sampleVariance:null,percentile10:null,percentile25:null,percentile75:null,percentile90:null}
+ const populationVariance=finite(variance(values)),samplingVariance=values.length>1?finite(sampleVariance(values)):null
+ const [percentile10,percentile25,median,percentile75,percentile90]=quantile(values,[.1,.25,.5,.75,.9]).map(finite)
+ return{sum:finite(sum(values)),average:finite(mean(values)),min:min(values),max:max(values),median,variance:populationVariance,sampleVariance:samplingVariance,percentile10,percentile25,percentile75,percentile90,
+  deviation:populationVariance===null?null:finite(Math.sqrt(populationVariance)),sampleDeviation:samplingVariance===null?null:finite(Math.sqrt(samplingVariance))}
+}
 
 export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,request:ColumnAnalysisRequest,ensure:()=>void,header:string):Promise<Omit<ColumnAnalysis,'revision'|'sample'|'filtered'|'column'>>{
  const cells=indices?.length??rows.length,values:number[]=[],x:number[]=[],y:number[]=[],missingRows:ColumnAnalysis['missingRows']=[]
@@ -51,7 +57,7 @@ export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,r
    for(let i=0;i<breaks.length-1;i++)histogram.push({lower:breaks[i],upper:breaks[i+1],count:0})
    for(let i=0;i<values.length;i++){const n=values[i];let bin=0;while(bin<histogram.length-1&&n>=histogram[bin].upper)bin++;histogram[bin].count++;if(i%8192===0){await yieldTurn();ensure()}}
   }else warnings.push('No se pueden representar intervalos distintos con esta precisión numérica.')
-  if(statistics.sum===null||statistics.average===null||statistics.median===null||statistics.deviation===null||values.length>1&&statistics.sampleDeviation===null)warnings.push('Algunos resultados exceden la precisión numérica y se muestran como no disponibles.')
+  if(statistics.sum===null||statistics.average===null||statistics.median===null||statistics.deviation===null||statistics.percentile10===null||statistics.percentile25===null||statistics.percentile75===null||statistics.percentile90===null||values.length>1&&statistics.sampleDeviation===null)warnings.push('Algunos resultados exceden la precisión numérica y se muestran como no disponibles.')
  }
  let correlation:ColumnAnalysis['correlation']
  if(request.otherColumn!==undefined){
