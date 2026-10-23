@@ -170,8 +170,8 @@ Ventana desacoplada, IPC nuevo, modelo de vista en `main`, caché o reutilizaci�
 |---|---|---|
 | R1 | `CsvTable.svelte` es un archivo denso y central; el cambio de columna a fila toca mucho marcado y CSS | F2a mueve solo el contenedor, sin tocar la lógica; revisar los PR abiertos antes de empezar |
 | R2 | Pruebas E2E que asumen el apilado o la visibilidad de paneles cerrados | Inventariar antes (`rg` de `charts-panel`, `Gráficos del CSV`, `Análisis SQL`) y cambiar lo mínimo; no debilitar aserciones |
-| R3 | ECharts oculto no se redibuja al mostrarse | `chart.resize()` al activar la pestaña; prueba de gráfico tras cambiar de pestaña |
-| R4 | La tabla virtualizada no recalcula columnas al cambiar su ancho | Comprobar que reacciona al `ResizeObserver` del contenedor (criterio F2a.2) |
+| R3 | ECharts oculto no se redibuja al mostrarse | `CsvCharts` ya observa su contenedor con un `ResizeObserver` (`:41`) que llama a `chart.resize()`; comprobar con una prueba de gráfico tras cambiar de pestaña |
+| R4 | La tabla virtualizada no recalcula columnas al cambiar su ancho | TanStack Virtual observa el tamaño del contenedor (`CsvTable.svelte:126`–`:127`, ancho estimado de columna 180 px, de ahí las 3 columnas con ~605 px); comprobarlo en F2a (criterio 2) |
 | R5 | Pestañas montadas y ocultas mantienen memoria y solicitudes vivas | Máximo tres paneles; la cola de F1 serializa; se desmontan al cerrar el dock |
 | R6 | Umbrales 520 / 600 derivados de una sola configuración de columnas | Anotarlos como derivados; revisar tras F2a con tablas reales |
 | R7 | `localStorage` puede fallar o estar vacío | Lectura con `try/catch` y valores por defecto; la interfaz funciona sin él |
