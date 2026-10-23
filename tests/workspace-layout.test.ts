@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest'
-import {DOCK_MIN,DOCK_MAX,TABLE_MIN,NARROW_AREA,defaultLayout,parseLayout,serializeLayout,dockRange,nextWidth,isNarrow,dockMode} from '../src/renderer/lib/workspace-layout'
+import {DOCK_MIN,DOCK_MAX,TABLE_MIN,NARROW_AREA,defaultLayout,parseLayout,serializeLayout,dockRange,nextWidth,isNarrow,dockMode,restoreVisible} from '../src/renderer/lib/workspace-layout'
 
 const stored=(dock:unknown,version:unknown=1)=>JSON.stringify({version,dock})
 const good={visible:true,width:600,tab:'sql'} as const
@@ -76,5 +76,23 @@ describe('modo del panel: acoplado, ampliado u oculto',()=>{
   expect(dockMode({visible:true,expanded:true,area:1920})).toBe('expanded')
   expect(dockMode({visible:true,expanded:false,area:1119})).toBe('expanded')
   expect(dockMode({visible:true,expanded:false,area:1920})).toBe('docked') // misma intención, otro espacio
+ })
+})
+
+describe('arranque con el panel restaurado',()=>{
+ it('un panel guardado como abierto arranca abierto si el área de trabajo lo admite',()=>{
+  expect(restoreVisible(true,1199)).toBe(true)
+  expect(restoreVisible(true,1120)).toBe(true)
+  expect(restoreVisible(true,1920)).toBe(true)
+ })
+ it('arranca cerrado si la ventana es estrecha: abrirlo ampliado ocultaría la tabla al abrir el archivo',()=>{
+  expect(restoreVisible(true,1119)).toBe(false)
+  expect(restoreVisible(true,1039)).toBe(false)
+  expect(restoreVisible(true,659)).toBe(false)
+ })
+ it('uno guardado como cerrado sigue cerrado, y sin medir el área se respeta lo guardado',()=>{
+  expect(restoreVisible(false,1920)).toBe(false)
+  expect(restoreVisible(false,659)).toBe(false)
+  expect(restoreVisible(true,0)).toBe(true)
  })
 })

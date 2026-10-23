@@ -200,6 +200,15 @@ F2c se implementó en `codex/dock-expanded` (apilada sobre F2b). Precisiones res
 7. **Dos comandos nuevos** en la paleta («Ampliar panel de análisis», «Acoplar panel de análisis») con su estado deshabilitado cuando no tienen sentido; sin atajos nuevos.
 8. **El umbral de 1120 px se mide sobre el área de trabajo** (`.csv-body`), que depende del explorador: con el explorador por defecto, una ventana de 1366 px da 1125 px (acoplado, justo) y una de 1280 px da 1039 px (ampliado).
 
+## 9e. Arranque con el panel restaurado y la ventana estrecha
+
+Decisión posterior a F2c (la persona respondió «sí»): **si el panel se restaura abierto al arrancar y el área de trabajo mide menos de 1120 px, arranca cerrado en lugar de ampliado.** Abrirlo ampliado ocultaría la tabla del archivo que se acaba de abrir, justo lo que la persona espera ver.
+
+- **Se decide una vez, al medir el área de la primera tabla**, y no toca lo guardado: en una ventana ancha el mismo perfil lo restaura abierto. Después, estrechar o ensanchar la ventana no lo cierra ni lo abre solo (estrechar lo amplía, como en F2c).
+- **El panel no se monta hasta medir el área**, de modo que uno que va a empezar cerrado nunca llega a montarse.
+- **Cualquier acción de la persona** (abrir, cerrar, cambiar de pestaña, mover el divisor) zanja la decisión de arranque.
+- Sin aviso: el botón de la barra queda con `aria-expanded="false"` y la persona lo abre cuando quiera (con la ventana estrecha se abre ampliado, con su aviso).
+
 ## 10. Riesgos
 
 | # | Riesgo | Mitigación |

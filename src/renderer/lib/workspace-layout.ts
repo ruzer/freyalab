@@ -11,6 +11,8 @@ export const isNarrow=(area:number)=>area>0&&area<NARROW_AREA
 export type DockMode='hidden'|'docked'|'expanded'
 // La persona decide (abierto, ampliado); el modo efectivo sale de eso y del espacio, así que ensanchar la ventana devuelve el panel junto a la tabla.
 export const dockMode=({visible,expanded,area}:{visible:boolean;expanded:boolean;area:number}):DockMode=>!visible?'hidden':expanded||isNarrow(area)?'expanded':'docked'
+// Un panel guardado como abierto se restaura al arrancar solo si el área de trabajo admite acoplarlo: en una ventana estrecha se abriría ampliado y ocultaría la tabla del archivo que se acaba de abrir.
+export const restoreVisible=(stored:boolean,area:number)=>stored&&!isNarrow(area)
 export const defaultLayout=():Layout=>({version:1,dock:{visible:false,width:DOCK_MIN,tab:'resumen'}})
 const isObject=(value:unknown):value is Record<string,unknown>=>typeof value==='object'&&value!==null&&!Array.isArray(value)
 export function parseLayout(raw:string|null):Layout{

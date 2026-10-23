@@ -6,11 +6,11 @@ import {join,resolve} from 'node:path'
 
 let app:ElectronApplication|undefined,page:Page,folder:string,file:string
 const KEY='freya-workspace'
-async function launch(){
+async function launch(open=true){
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
- app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_SAVE_DIR:join(folder,'saved'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports'),FREYALAB_TEST_OPEN:JSON.stringify([file])},timeout:60000})
+ app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_SAVE_DIR:join(folder,'saved'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports'),...open?{FREYALAB_TEST_OPEN:JSON.stringify([file])}:{}},timeout:60000})
  // La ventana de arranque puede ser estrecha (en la CI lo es): un panel restaurado se abriría ampliado y ocultaría la tabla, así que cada prueba fija su tamaño antes de esperar la tabla.
- page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await expect(page.locator('.csv-body')).toBeAttached()
+ page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);if(open)await expect(page.locator('.csv-body')).toBeAttached()
 }
 async function quit(){if(!app)return;await app.evaluate(async({session,app})=>{await session.defaultSession.flushStorageData();app.exit(0)}).catch(()=>{});await app.close().catch(()=>{});app=undefined}
 test.beforeEach(async()=>{
@@ -61,7 +61,7 @@ test('la vista ampliada no se guarda: tras reiniciar el panel vuelve acoplado',a
  await launch();await page.setViewportSize({width:1920,height:1080});await openDock('Análisis')
  await page.getByRole('button',{name:'Ampliar',exact:true}).click();await expect(grid()).toBeHidden()
  expect(JSON.parse((await page.evaluate(key=>localStorage.getItem(key),KEY))!)).toEqual({version:1,dock:{visible:true,width:520,tab:'sql'}})
- await quit();await launch();await page.setViewportSize({width:1920,height:1080})
+ await quit();await launch(false);await page.setViewportSize({width:1920,height:1080});await page.evaluate(path=>window.freya.openPaths([path]),file) // el tamaño primero: un panel restaurado arranca cerrado si la ventana es estrecha
  await expect(tools()).toBeVisible();await expect(grid()).toBeVisible();await expect(separator()).toBeVisible();await expect(back()).toHaveCount(0)
  await expect(page.getByRole('button',{name:'Ampliar',exact:true})).toBeVisible()
 })
