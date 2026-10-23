@@ -1,8 +1,8 @@
 # Comprender columnas — DW-04a, DW-04b y DW-04c
 
-## Varianza y percentiles — DW-04c en implementación
+## Varianza y percentiles — DW-04c
 
-Estado: `codex/descriptive-percentiles`, basada en el [PR #37](https://github.com/ruzer/freyalab/pull/37). Las comprobaciones de esta entrega están en curso; este estado de implementación no acredita aún sus resultados finales, integración ni distribución.
+Estado: `codex/descriptive-percentiles`, basada en el [PR #37](https://github.com/ruzer/freyalab/pull/37). La verificación local está documentada en [evidencia DW-04c](evidence/descriptive-percentiles-2026-10-22.md); no acredita integración, CI ni distribución.
 
 El helper compartido [`descriptive`](../src/main/table-analysis.ts) añade **varianza poblacional**, **varianza muestral** y **P10/P25/P75/P90**. Lo utilizan las estadísticas de columnas, celdas de un rango, rango por columnas y el perfil individual; se mantienen las reglas existentes de selección, vista capturada, exclusión y muestra. No incorpora parser, motor, dependencia ni canal IPC nuevos.
 
@@ -90,4 +90,4 @@ La misma pasada de `table-analysis.ts` recoge la evidencia, en el proceso tabula
 
 **Registro histórico DW-04b:** añadió la vista conjunta bajo demanda y su informe; varianza, percentiles y moda seguían pendientes entonces.
 
-**Actualización DW-04c:** varianzas y P10/P25/P75/P90 están en implementación mediante el helper compartido, con presentación progresiva e informes completos. **DW-04 sigue abierto:** faltan moda y las comprobaciones de coste/cobertura que no estén acreditadas. No se presenta una moda escalar que oculte empates. **DW-05**, recomendaciones modificables de análisis, sigue pendiente: esta entrega no genera ni configura gráficos automáticamente. Validación con estudiantes/profesionales y lectores de pantalla sigue pendiente.
+**Actualización DW-04c:** varianzas y P10/P25/P75/P90 están implementados en esta rama mediante el helper compartido, con presentación progresiva e informes completos. **DW-04 sigue abierto:** faltan moda y las comprobaciones de coste/cobertura que no estén acreditadas. No se presenta una moda escalar que oculte empates. **DW-05**, recomendaciones modificables de análisis, sigue pendiente: esta entrega no genera ni configura gráficos automáticamente. Validación con estudiantes/profesionales y lectores de pantalla sigue pendiente.
