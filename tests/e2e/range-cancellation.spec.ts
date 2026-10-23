@@ -46,3 +46,18 @@ test('rangos: cancelar o cerrar durante copiar impide el borrado; espera la resp
   expect((await page.evaluate(({id,query})=>window.freya.tablePage(id,query),{id:doc.id,query})).rows.map(row=>row.cells)).toEqual([['00123','á\r\nñ'],['9007199254740993','conservar']]);expect(await app.evaluate(({clipboard})=>clipboard.readText())).toContain('9007199254740993');expect(await readFile(path,'utf8')).toBe(source);expect(await page.evaluate(()=>window.freya.recoveries())).toEqual([])
  }
 })
+
+test('rangos: restaurar el foco una vez permite desplazar la tabla sin recuperarlo después',async()=>{
+ const source='ID,Nota\n'+'00123, a \n'.repeat(300),{path}=await open(source),before=await page.evaluate(()=>window.freya.documents()),panel=await fillDialog()
+ await page.keyboard.press('Escape');await expect(panel).toHaveCount(0)
+ await expect(page.getByRole('gridcell',{name:'Fila 300, Nota',exact:true})).toBeFocused()
+ const grid=page.getByRole('grid',{name:'Tabla de datos'})
+ const requested=await grid.evaluate(async element=>{
+  (element as HTMLElement).focus({preventScroll:true});element.scrollTop-=128
+  const top=element.scrollTop
+  await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())))
+  return top
+ })
+ await expect(grid).toBeFocused();await expect(grid).toHaveJSProperty('scrollTop',requested)
+ expect(await page.evaluate(()=>window.freya.documents())).toEqual(before);expect(await readFile(path,'utf8')).toBe(source)
+})
