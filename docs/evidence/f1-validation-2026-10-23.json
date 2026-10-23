@@ -1,0 +1,98 @@
+{
+ "V1": {
+  "solicitudes": 6,
+  "totalMs": 5338,
+  "msPorSolicitud": 890,
+  "maxVentanas": 2,
+  "motoresCreados": 6
+ },
+ "V2": {
+  "esperaronMientrasCorriaLaLarga": true,
+  "avisosEnCola": 2,
+  "largaCancelada": true,
+  "msDesdeCancelarHastaTerminarLasSiguientes": 1099
+ },
+ "V3": {
+  "trabajos": 12,
+  "posicionDeLaExportacion": 4,
+  "ultimaPosicion": 12,
+  "orden": [
+   "inicial",
+   "SQL0",
+   "GRÁFICO0",
+   "EXPORTACIÓN",
+   "SQL1",
+   "GRÁFICO1",
+   "SQL2",
+   "GRÁFICO2",
+   "SQL3",
+   "GRÁFICO3",
+   "SQL4",
+   "GRÁFICO4"
+  ]
+ },
+ "V4": {
+  "motoresCreados": 3,
+  "canceladasEnCola": 2,
+  "canceladaActiva": 1,
+  "ventanasAlFinal": 1
+ },
+ "V5": {
+  "salidaMs": 161,
+  "procesosVivosTrasCerrar": 0,
+  "trabajosPendientesAlCerrar": 5
+ },
+ "V7": {
+  "heapBaseMiB": 9.1,
+  "heapConTresResultadosMiB": 125.2,
+  "heapTrasCancelarMiB": 11.1,
+  "heapConUnResultadoHuerfanoMiB": 49.2,
+  "heapTrasCerrarElDocumentoMiB": 11.3
+ },
+ "V7b": {
+  "heapPorCicloMiB": [
+   10.9,
+   11.1,
+   11.1,
+   11.2,
+   11.5,
+   11.2,
+   11.3,
+   11.3,
+   11.3,
+   11.3,
+   11.3,
+   11.3
+  ],
+  "procesosPorCiclo": [
+   5,
+   5,
+   5,
+   5,
+   5,
+   5,
+   5,
+   5,
+   5,
+   5,
+   5,
+   5
+  ]
+ },
+ "V8": {
+  "esperandoConDocumentoCerrado": "Error invoking remote method 'freya': Error: Análisis cancelado.",
+  "siguienteSolicitud": "ok",
+  "trasEditarElHuecoQuedaLibre": true
+ },
+ "V6": {
+  "paginasLeidasConLaColaActiva": 50,
+  "idsEnOrden": true,
+  "trasEditar": "Error invoking remote method 'freya': Error: Una fuente cambió. Ejecuta de nuevo el análisis.",
+  "trasCancelar": "Error invoking remote method 'freya': Error: El resultado ya no está disponible. Ejecuta de nuevo la consulta.",
+  "trasCerrarElDocumento": "Error invoking remote method 'freya': Error: El resultado ya no está disponible. Ejecuta de nuevo la consulta."
+ },
+ "V9": {
+  "msHastaElTiempoLimite": 120591,
+  "siguiente": "ok"
+ }
+}
