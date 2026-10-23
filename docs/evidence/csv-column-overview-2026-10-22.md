@@ -57,3 +57,9 @@ Paquete de desarrollo **0.1.0-dev.20261022.4e0a454**, generado con `electron-bui
 - Copia instalada ejecutada mediante Playwright con otro perfil temporal: **1 prueba correcta, 4,1 s**. Comprueba tipos/recuentos, teclado/temas, vista filtrada, informe íntegro y fuente intacta. Registro `/private/tmp/freyalab-dw04b-installed-smoke.log`.
 
 Esto acredita ejecución del paquete y de la app copiada en este Mac. No acredita descarga con cuarentena/Gatekeeper, instalación manual DMG, Intel/Windows/Linux ni estado verde de CI.
+
+## Ajuste del fixture de límite de configuraciones
+
+La CI de `fe583fa` (run `39883746215`) detectó en Windows un timeout de 5 s en `tests/chart-presets.test.ts`: 50 guardados sincronizados sucesivos, con 180/181 pruebas unitarias correctas. Se sustituyó esa preparación repetitiva por una biblioteca válida de 49 entradas y se comprueban **49→50→51** mediante un guardado real, lectura desde otra instancia y rechazo sin alterar los bytes del archivo. Se mantienen todas las aserciones de identidad/encabezados y los otros tests de guardado, concurrencia y fallo de escritura. No se amplían timeouts ni se cambia el producto.
+
+Prueba dirigida: 7 correctas (359 ms de suite local). Suite unitaria completa: 181 correctas. La CI del nuevo commit debe confirmar Windows; el fallo anterior no se declara resuelto remotamente por pasar en este Mac. Este ajuste solo afecta tests/evidencia: no requiere reemplazar la app instalada del commit `4e0a454`.

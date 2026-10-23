@@ -1,6 +1,7 @@
 import {it,expect,afterEach,vi} from 'vitest'
 import {mkdtemp,readFile,writeFile,rm,stat} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
+import {randomUUID} from 'node:crypto'
 import {join} from 'node:path'
 import * as files from '../src/main/files'
 import {ChartPresets} from '../src/main/chart-presets'
@@ -43,8 +44,11 @@ it('preserva bibliotecas dañadas, versiones futuras y tamaños excesivos sin so
  }
 })
 it('limita la biblioteca y preserva encabezados repetidos sin remapear columnas',async()=>{
- const {library}=await fixture();for(let i=0;i<50;i++)await library.save({name:String(i),configuration},configuration.headers)
- await expect(library.save({name:'51',configuration},configuration.headers)).rejects.toThrow('50 configuraciones');expect(await library.list()).toHaveLength(50)
+ const {path,library}=await fixture(),seed=await library.save({name:'Inicial',configuration},configuration.headers)
+ // Probar 49→50→51 evita convertir el límite en una medición de 50 guardados sincronizados.
+ const existing=Array.from({length:49},(_,i)=>({...seed,id:randomUUID(),name:String(i)}));await writeFile(path,JSON.stringify({version:1,presets:existing}))
+ const last=await library.save({name:'49',configuration},configuration.headers),expected=[...existing,last];expect(await new ChartPresets(path).list()).toEqual(expected)
+ const before=await readFile(path,'utf8');await expect(library.save({name:'51',configuration},configuration.headers)).rejects.toThrow('50 configuraciones');expect(await library.list()).toEqual(expected);expect(await readFile(path,'utf8')).toBe(before)
  expect(matchingChartHeaders(['A','A'],['A','A'])).toBe(true);expect(ambiguousChartHeaders(['A','A'])).toBe(true);expect(ambiguousChartHeaders(['A',' '])).toBe(true);expect(ambiguousChartHeaders(['A','B'])).toBe(false)
  expect(matchingChartHeaders(['A','B'],['B','A'])).toBe(false);expect(matchingChartHeaders(['A','B'],['A'])).toBe(false)
 })
