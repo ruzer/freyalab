@@ -19,7 +19,9 @@ export type TableEdit = TableRangeEdit | TableTransformEdit | {type:'cell'; rowI
 export interface TableStatsOptions {requestId:string;revision:number;range?:TableRange}
 export interface TableStats { revision:number;sample:boolean;missing:number;whitespace:number;excluded:number;median:number|null;deviation:number|null;sampleDeviation:number|null;cells:number; empty:number; unique:number; numeric:number; sum:number|null; min:number|null; max:number|null; average:number|null }
 export interface ColumnAnalysisRequest {column:number;otherColumn?:number;query?:TableQuery;revision:number;requestId:string;frequencyOffset:number;duplicatesOnly:boolean;bins:number}
+export interface ColumnProfile {kind:'empty'|'identifier'|'number'|'date'|'category'|'text'|'mixed';dates:number;invalidDates:number;unsafeIntegers:number;identifierZeros:number;headerHint:boolean;distinctNonEmpty:number}
 export interface ColumnAnalysis {
+ profile:ColumnProfile;
  revision:number;sample:boolean;filtered:boolean;column:number;cells:number;empty:number;missing:number;whitespace:number;numeric:number;excluded:number;leadingZeros:number;unique:number;duplicateGroups:number;duplicateRows:number;extraDuplicates:number;minLength:number;maxLength:number;
  sum:number|null;average:number|null;min:number|null;max:number|null;median:number|null;deviation:number|null;sampleDeviation:number|null;
  frequencies:{value:string;truncated:boolean;count:number;firstRow:number;rowId:string}[];frequencyTotal:number;frequencyOffset:number;

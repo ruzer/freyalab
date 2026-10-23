@@ -4,6 +4,7 @@ import { mkdtemp, mkdir, readFile, readdir, rm, writeFile, truncate } from 'node
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import {parse as parseCSV} from 'csv-parse/sync'
+import {stringify as stringifyCSV} from 'csv-stringify/sync'
 let app:ElectronApplication,page:Page,directory:string
 
 test.beforeEach(async()=>{
@@ -543,4 +544,22 @@ test('exploración CSV: paginación, cancelación, muestra e IPC inválido',asyn
  const sample=join(directory,'muestra-exploracion.csv');await writeFile(sample,'Valor\n'+'2\n'.repeat(250));await truncate(sample,50*1024*1024+1);await page.evaluate(path=>window.freya.openPaths([path]),sample)
  await page.getByRole('button',{name:'Estadísticas',exact:true}).click();await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click()
  await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer).toContainText('Muestra limitada · 200 filas');await expect(explorer).toContainText('no el archivo completo')
+})
+
+
+test('perfil CSV: tipos probables, calidad y teclado sin modificar los datos',async()=>{
+ const headers=['id_cliente','Importe','Fecha','Grupo','Mixta','','Grupo','Fechas sospechosas','Opcional'],rows=[
+  ['00123','10.5','2024-02-29','Oaxaca','1','alfa','2026-10-22','2026-02-30'],
+  ['9007199254740993','20','2026-10-22','Puebla','nota','beta','2025-12-31','0000-01-01',''],
+  ['00003','-2.5','0001-01-01','Oaxaca','2026-10-22','alfa','2024-02-29','01/02/2026','  '],
+  ['00004','1e2','9999-12-31','Oaxaca','','beta','2024-01-01','2026-10-22T00:00:00Z','ñ']
+ ],source='\uFEFF'+stringifyCSV([headers,...rows],{record_delimiter:'\r\n'}),path=join(directory,'tipos.csv');await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path),before=(await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)
+ await page.getByRole('button',{name:'Estadísticas',exact:true}).click();await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click();const explorer=page.getByRole('region',{name:'Exploración de columna',exact:true}),summary=explorer.getByRole('region',{name:'Interpretación de columna',exact:true})
+ for(const [column,label] of [['0','Posible identificador'],['1','Numérico'],['2','Fecha ISO'],['3','Categórico'],['4','Mixto o con valores incompatibles'],['5','Categórico'],['6','Fecha ISO'],['7','Mixto o con valores incompatibles'],['8','Texto']]){
+  await explorer.getByLabel('Columna para explorar',{exact:true}).selectOption(column);const action=explorer.getByRole('button',{name:'Explorar columna',exact:true});await action.focus();await action.press('Enter');await expect(explorer.getByRole('status')).toHaveText('Exploración completa.');await expect(summary).toContainText('Tipo probable: '+label)
+ }
+ await expect(summary).toContainText('Con contenido: 1 · Campos ausentes: 1 · Campos vacíos exactos: 1 · Solo espacios: 1')
+ for(const [theme,width,height] of [['light',1440,900],['dark',1280,800]] as const){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.setViewportSize({width,height});await summary.scrollIntoViewIfNeeded();await page.screenshot({animations:'disabled',path:test.info().outputPath(`dw04a-column-type-${theme}-${width}x${height}.png`)})}
+ expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toEqual(before);expect(await readFile(path,'utf8')).toBe(source)
+ await explorer.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(value=>value.kind==='markdown')?.text).toContain('Tipo probable: **Texto**');const report=(await page.evaluate(()=>window.freya.documents())).find(value=>value.kind==='markdown')!;expect(report.text).toContain('| Campos ausentes | 1 |');expect(report.text).toContain('| Campos vacíos exactos | 1 |');expect(report.text).toContain('| Solo espacios | 1 |');expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toEqual(before);expect(await readFile(path,'utf8')).toBe(source)
 })

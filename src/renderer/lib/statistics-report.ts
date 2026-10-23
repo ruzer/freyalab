@@ -1,3 +1,4 @@
+import {columnSummary} from '../../shared/column-profile'
 import type {TableStats,TableQuery,ColumnAnalysis} from '../../shared/types'
 
 export const STATISTICS_FIELDS=[['cells','Celdas'],['empty','Vacíos'],['unique','Únicos'],['numeric','Numéricos'],['sum','Suma'],['average','Media'],['min','Mínimo'],['max','Máximo'],['median','Mediana'],['deviation','Desv. poblacional (n)'],['sampleDeviation','Desv. muestral (n−1)'],['missing','Ausentes'],['whitespace','Solo espacios'],['excluded','Excluidos']] as const
@@ -33,6 +34,8 @@ export function columnReport(context:ColumnReportContext,result:ColumnAnalysis,v
  const titles={profile:'Perfil de columna',frequencies:'Frecuencias de columna',distribution:'Distribución de columna',correlation:'Correlación de Pearson'}
  let text=preamble(context,titles[view])+`Columna ${result.column+1}: ${literal(context.columnName)}\n\n`
  if(view==='profile'){
+  const summary=columnSummary(result)
+  text+=`Tipo probable: **${summary.label}**\n\n${summary.reason}\n\nSugerencia sobre el alcance analizado; no convierte celdas ni cambia los cálculos manuales.\n\n`+table([['Calidad','Filas'],['---','---'],...summary.quality.map(([label,value])=>[label,String(value)])])
   text+=table([['Medida','Valor'],['---','---'],...PROFILE_FIELDS.map(([key,label])=>[label,number(result[key])])])
   if(result.missingRows.length)text+='Primeras filas originales con vacíos (máximo 20; sin encabezado, lista de ejemplos): '+result.missingRows.map(item=>item.row).join(', ')+'.\n\n'
  }else if(view==='frequencies'){
