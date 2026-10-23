@@ -175,6 +175,18 @@ F2a se implementó en `codex/analysis-dock` (PR #48, con su evidencia). Cuatro d
 
 Además, la tabla tiene un mínimo de 240 px (una columna de 180 más la numeración de 52) para que, en las ventanas más estrechas, ceda antes el panel (hasta 360 px) que la tabla.
 
+## 9c. Notas de implementación de F2b
+
+F2b se implementó en `codex/dock-resize-persist` (apilada sobre F2a). Desvíos y precisiones respecto a este diseño:
+
+1. **Inicio va al mínimo y Fin al máximo** (§4). El texto decía «Inicio/Fin llevan al máximo/mínimo», que es ambiguo; se sigue la semántica de los controles deslizantes de WAI-ARIA (Inicio = `aria-valuemin`).
+2. **El ancho guardado es una preferencia; el ancho mostrado se ajusta al espacio disponible** (§6). Un ancho guardado en un monitor grande no desborda en uno pequeño, y no se reescribe hasta que la persona actúa.
+3. **El nombre accesible del divisor es «Ancho del panel»**, no «…del panel de análisis», para no coincidir con la etiqueta del propio panel en las búsquedas por etiqueta.
+4. **Estadísticas solo lleva el foco a su encabezado si la persona abrió el panel** (nueva propiedad opcional `autofocus`, por defecto `true`): un panel restaurado al abrir otro documento o al reiniciar no roba el foco.
+5. **`visible` se restaura** (decisión pendiente de §6, resuelta con la propuesta del diseño): el panel abierto pasa de un documento a otro y se recupera tras reiniciar; cerrarlo también se recuerda.
+6. **Valores nuevos:** ancho máximo absoluto de 3000 px al leer (solo una cota de seguridad ante valores corruptos) y zona de agarre del divisor de 6 px.
+7. **Lectura tolerante:** las claves ajenas del valor guardado se ignoran y no se reescriben; cualquier error de tipo, versión o pestaña devuelve los valores por defecto sin avisos.
+
 ## 10. Riesgos
 
 | # | Riesgo | Mitigación |
