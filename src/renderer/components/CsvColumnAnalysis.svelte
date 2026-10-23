@@ -1,5 +1,5 @@
 <script lang="ts">
- import {PROFILE_FIELDS,columnReport,type ColumnReportContext} from '../lib/statistics-report'
+ import {PROFILE_FIELDS,NUMERIC_DETAIL_FIELDS,NUMERIC_DETAIL_HELP,columnReport,type ColumnReportContext} from '../lib/statistics-report'
  import {onDestroy} from 'svelte'
  import {columnSummary} from '../../shared/column-profile'
  import type {DocumentInfo,TableQuery,ColumnAnalysis,ColumnAnalysisRequest} from '../../shared/types'
@@ -46,6 +46,7 @@
   {#if page==='profile'}
    {#if summary}<section class="interpretation" aria-label="Interpretación de columna"><p><strong>Tipo probable: {summary.label}</strong></p><p>{summary.reason}</p><p class="quality">{#each summary.quality as [label,value],index}{index?' · ':''}{label}: <strong>{number(value)}</strong>{/each}</p><small>Sugerencia sobre el alcance analizado. No convierte celdas ni cambia los cálculos manuales; las fechas ambiguas no se interpretan.</small></section>{/if}
    <dl aria-label="Perfil de columna">{#each PROFILE_FIELDS as [key,label]}<div><dt>{label}</dt><dd>{number(result[key])}</dd></div>{/each}</dl>
+   <details><summary>Varianza y percentiles</summary><p>{NUMERIC_DETAIL_HELP}</p><dl aria-label="Varianza y percentiles">{#each NUMERIC_DETAIL_FIELDS as [key,label]}<div><dt>{label}</dt><dd>{number(result[key])}</dd></div>{/each}</dl></details>
    {#if result.missingRows.length}<p>Primeras filas originales con vacíos (máximo 20; sin encabezado): {result.missingRows.map(item=>item.row).join(', ')}.</p>{/if}
   {:else if page==='frequencies'}
    <p>Valores de texto exactos, ordenados por frecuencia; empates por primera fila original. Las vistas previas largas se indican; no se agrupan por el texto recortado.</p>

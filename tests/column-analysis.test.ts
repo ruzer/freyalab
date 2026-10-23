@@ -17,6 +17,7 @@ it('descriptivas conocidas, intervalos y Pearson sin mutación ni pérdida de id
  const source='Valor,Doble,Clave\r\n'+[2,4,4,4,5,5,7,9].map((n,i)=>`${n},${n*2},${i===0?'9007199254740993':String(i).padStart(5,'0')}`).join('\r\n')+'\r\n'
  await open(source);const snapshot=await engine.snapshot('a'),result=await engine.analyzeColumn('a',request({otherColumn:1}))
  expect(result).toMatchObject({cells:8,empty:0,numeric:8,unique:5,duplicateGroups:2,duplicateRows:5,extraDuplicates:3,sum:40,average:5,median:4.5,min:2,max:9,deviation:2,sample:false,filtered:false,revision:0})
+ expect(result.variance).toBe(4);expect(result.sampleVariance).toBeCloseTo(32/7,12);expect(result.percentile10).toBeCloseTo(3.4,12);expect(result.percentile25).toBe(4);expect(result.percentile75).toBe(5.5);expect(result.percentile90).toBeCloseTo(7.6,12)
  expect(result.sampleDeviation).toBeCloseTo(Math.sqrt(32/7));expect(result.correlation).toMatchObject({column:1,pairs:8,omitted:0});expect(result.correlation!.value).toBeCloseTo(1)
  expect(result.histogram).toEqual([{lower:2,upper:3.75,count:1},{lower:3.75,upper:5.5,count:5},{lower:5.5,upper:7.25,count:1},{lower:7.25,upper:9,count:1}])
  expect(result.frequencies.slice(0,2)).toEqual([{value:'4',count:3,firstRow:2,rowId:'2',truncated:false},{value:'5',count:2,firstRow:5,rowId:'5',truncated:false}])
@@ -26,9 +27,10 @@ it('descriptivas conocidas, intervalos y Pearson sin mutación ni pérdida de id
 
 it('distingue vacíos, campos ausentes, espacios y texto exacto con vistas filtradas',async()=>{
  await open('Grupo,Valor,Par\nvisible,0,0\noculto,9,18\nvisible,,2\nvisible,"  ",3\nvisible\nvisible,no,4\nvisible,2,4\n')
- const query={offset:0,limit:1,requestId:1,filters:{'0':'visible'},order:[{column:1,descending:true,numeric:true}]}
+ const before=await engine.snapshot('a'),query={offset:0,limit:1,requestId:1,filters:{'0':'visible'},order:[{column:1,descending:true,numeric:true}]}
  const result=await engine.analyzeColumn('a',request({column:1,otherColumn:2,query}))
  expect(result).toMatchObject({cells:6,empty:3,missing:1,whitespace:1,numeric:2,excluded:1,sum:2,median:1,filtered:true,duplicateGroups:1,duplicateRows:2})
+ expect(result).toMatchObject({variance:1,sampleVariance:2,percentile10:.2,percentile25:.5,percentile75:1.5,percentile90:1.8});expect(await engine.snapshot('a')).toEqual(before)
  expect(result.correlation).toMatchObject({column:2,pairs:2,omitted:4});expect(result.correlation!.value).toBeCloseTo(1)
  expect(result.missingRows.map(item=>item.row).sort()).toEqual([3,4,5]);expect(result.frequencies.find(item=>item.value==='')).toMatchObject({count:2,firstRow:3})
  const all=await engine.analyzeColumn('a',request({column:1}));expect(all.cells).toBe(7);expect(all.sum).toBe(11)
@@ -45,11 +47,11 @@ it('acota frecuencias y vistas previas sin mezclar valores distintos; solo repet
 })
 
 it('maneja tablas vacías, constantes, muestras, fórmulas y números no representables',async()=>{
- await open('A,B\n');const empty=await engine.analyzeColumn('a',request({otherColumn:1}));expect(empty.median).toBeNull();expect(empty.histogram).toEqual([]);expect(empty.correlation?.value).toBeNull()
- await open('A,B\n1,4\n1,4\n');const constant=await engine.analyzeColumn('a',request({revision:1,otherColumn:1}));expect(constant.histogram).toEqual([{lower:1,upper:1,count:2}]);expect(constant.deviation).toBe(0);expect(constant.correlation?.value).toBeNull()
- await open('A\n=SUM(A1)\n9007199254740993\n1e309\n0.00000000001\n');const unusual=await engine.analyzeColumn('a',request({revision:2}));expect(unusual.numeric).toBe(1);expect(unusual.excluded).toBe(3);expect(unusual.frequencies[0].value).toBe('=SUM(A1)')
+ await open('A,B\n');const empty=await engine.analyzeColumn('a',request({otherColumn:1}));expect(empty.median).toBeNull();expect(empty.histogram).toEqual([]);expect(empty.correlation?.value).toBeNull();expect(empty).toMatchObject({variance:null,sampleVariance:null,percentile10:null,percentile25:null,percentile75:null,percentile90:null})
+ await open('A,B\n1,4\n1,4\n');const constant=await engine.analyzeColumn('a',request({revision:1,otherColumn:1}));expect(constant.histogram).toEqual([{lower:1,upper:1,count:2}]);expect(constant.deviation).toBe(0);expect(constant.correlation?.value).toBeNull();expect(constant).toMatchObject({variance:0,sampleVariance:0,percentile10:1,percentile25:1,percentile75:1,percentile90:1})
+ await open('A\n=SUM(A1)\n9007199254740993\n1e309\n0.00000000001\n');const unusual=await engine.analyzeColumn('a',request({revision:2}));expect(unusual.numeric).toBe(1);expect(unusual.excluded).toBe(3);expect(unusual.frequencies[0].value).toBe('=SUM(A1)');expect(unusual).toMatchObject({variance:0,sampleVariance:null,percentile10:1e-11,percentile25:1e-11,percentile75:1e-11,percentile90:1e-11})
  await writeFile(path,'A\n'+'2\n'.repeat(250));await truncate(path,TABLE_LIMITS.bytes+1);await engine.open('a',path)
- const sample=await engine.analyzeColumn('a',request({revision:3}));expect(sample.sample).toBe(true);expect(sample.cells).toBe(200);expect(sample.sum).toBe(400);expect(sample.profile.kind).toBe('number')
+ const sample=await engine.analyzeColumn('a',request({revision:3}));expect(sample.sample).toBe(true);expect(sample.cells).toBe(200);expect(sample.sum).toBe(400);expect(sample.profile.kind).toBe('number');expect(sample).toMatchObject({variance:0,sampleVariance:0,percentile10:2,percentile25:2,percentile75:2,percentile90:2})
 })
 
 it('cancela trabajo entre bloques, descarta revisiones antiguas y permite otra solicitud',async()=>{
