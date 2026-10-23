@@ -177,7 +177,7 @@ Además, la tabla tiene un mínimo de 240 px (una columna de 180 más la numerac
 
 ## 9c. Notas de implementación de F2b
 
-F2b se implementó en `codex/dock-resize-persist` (apilada sobre F2a). Desvíos y precisiones respecto a este diseño:
+F2b se implementó en `codex/dock-resize-persist` (PR #49, apilada sobre F2a). Desvíos y precisiones respecto a este diseño:
 
 1. **Inicio va al mínimo y Fin al máximo** (§4). El texto decía «Inicio/Fin llevan al máximo/mínimo», que es ambiguo; se sigue la semántica de los controles deslizantes de WAI-ARIA (Inicio = `aria-valuemin`).
 2. **El ancho guardado es una preferencia; el ancho mostrado se ajusta al espacio disponible** (§6). Un ancho guardado en un monitor grande no desborda en uno pequeño, y no se reescribe hasta que la persona actúa.
