@@ -23,8 +23,11 @@ for (const [location, entry] of Object.entries(lock.packages).sort(([a], [b]) =>
   if (!license || license === 'null' || !texts.length) missing.push(`${pkg.name}@${pkg.version}: ${license || 'undeclared'}${texts.length ? '' : ' (license text missing)'}`)
   sections.push(`\n${'='.repeat(78)}\n${pkg.name}@${pkg.version}\nLicense: ${license}\nSource: ${typeof pkg.repository === 'string' ? pkg.repository : pkg.repository?.url ?? pkg.homepage ?? ''}\n\n${texts.join('\n\n')}`)
 }
+const packages = sections.length - 1
+// Iconos copiados como arte SVG (src/renderer/lib/icons.ts); no son una dependencia, así que no salen del lockfile.
+sections.push(`\n${'='.repeat(78)}\nLucide icons (SVG artwork copied into src/renderer/lib/icons.ts)\nLicense: ISC; icons derived from Feather: MIT\nSource: https://github.com/lucide-icons/lucide (lucide-static@1.61.0)\n\n${(await readFile(join(root, 'docs/licenses/lucide-ISC-MIT.txt'), 'utf8')).replace(/\r\n/g, '\n').replace(/[ \t]+$/gm, '')}`)
 await writeFile(join(root, 'THIRD_PARTY_NOTICES.txt'), sections.join('\n'), 'utf8')
-console.log(`Wrote notices for ${sections.length - 1} production package installations.`)
+console.log(`Wrote notices for ${packages} production package installations and the bundled Lucide icons.`)
 if (missing.length) {
   console.error(`Manual license review required:\n${missing.join('\n')}`)
   process.exitCode = 1
