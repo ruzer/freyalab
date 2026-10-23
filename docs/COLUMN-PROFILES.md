@@ -1,4 +1,27 @@
-# Comprender una columna — DW-04a
+# Comprender columnas — DW-04a y DW-04b
+
+## Vista general de columnas — DW-04b vigente
+
+Desde **Estadísticas → Comprender todas las columnas → Explorar columnas**, se obtiene una lista compacta de perfiles sin cambiar el CSV. La exploración se inicia mediante botón o teclado; abrir el archivo o el panel no ejecuta el análisis automáticamente. Reutiliza la exploración individual existente, una columna cada vez.
+
+Antes de empezar se eligen dos alcances independientes:
+
+- **Columnas:** todas o las marcadas en la tabla al iniciar. La identidad incluye la posición original, incluso con encabezados duplicados o vacíos.
+- **Filas:** documento completo o vista filtrada. Cuando el editor está en modo muestra, las opciones son **Muestra completa** y **Vista filtrada de la muestra**: describen únicamente los registros cargados, nunca el archivo completo.
+
+Cada fila presenta el nombre y posición, tipo probable, contenido, ausentes, vacíos exactos, solo espacios, distintos exactos y repeticiones adicionales. El tipo es un control desplegable con su explicación, accesible por teclado. **Explorar detalle** abre el perfil individual de esa posición y conserva el alcance de filas elegido; no depende de que el nombre sea único. La búsqueda por nombre o posición y las páginas de **50 columnas** solo cambian la lista visible, no los cálculos.
+
+El estado muestra revisión, filas por columna, alcance y progreso. Los resultados que aparecen durante el recorrido son provisionales. **Abrir informe de columnas Markdown** queda disponible al terminar y recoge todas las columnas solicitadas, aunque se esté mostrando otra página o una búsqueda de nombres. Conserva fuente, revisión, cambios pendientes, fecha y filtros capturados. Si una columna supera el límite de cardinalidad se marca **No disponible** y se continúa con las demás; el informe declara **cobertura parcial** y no inventa ceros para sus recuentos.
+
+### Presupuesto y cancelación
+
+Se admiten hasta **2 000 columnas solicitadas**, **dos millones de posiciones de celdas** (filas del alcance × columnas solicitadas, incluidos campos ausentes) y **100 000 valores distintos por columna**. El límite de posiciones se comprueba antes de recorrer las columnas; para reducirlo se pueden marcar menos columnas o elegir una vista filtrada. Tras dos minutos, un temporizador de la interfaz abandona la exploración y solicita cancelación; no es un límite duro del motor ni garantiza que todo trabajo haya terminado en ese plazo. Son presupuestos de esta exploración, no una ampliación de la edición CSV ni del análisis SQL.
+
+**Cancelar exploración de columnas** descarta la vista provisional y solicita detener la exploración activa. También se invalida al cambiar documento/revisión, alcance, vista semántica o columnas marcadas cuando se usa esa selección, y al cerrar el panel. Una respuesta antigua no repuebla la lista ni habilita su informe. La cancelación es cooperativa entre bloques: la comprobación inicial mediante `tablePage` no es cancelable y los cálculos síncronos en curso terminan antes de descartarse. Los errores de revisión, cancelación o presupuesto invalidan la exploración; solo el exceso de valores distintos de una columna se conserva como fallo parcial.
+
+No se añaden IPC, backend, parser, dependencia ni datasets. El documento textual y su historial permanecen bajo el motor CSV existente; esta lista no crea extractos persistentes ni modifica la política de muestras.
+
+## Perfil individual — antecedente conservado DW-04a
 
 Desde **Estadísticas → Explorar una columna → Explorar columna**, FreyaLab presenta un tipo probable, su explicación y un resumen de calidad antes de las medidas existentes. La exploración se solicita con un botón o teclado; no recorre automáticamente todas las columnas al abrir un archivo.
 
@@ -39,4 +62,8 @@ La misma pasada de `table-analysis.ts` recoge la evidencia, en el proceso tabula
 
 `columnSummary` comparte los rótulos, explicaciones y calidad entre interfaz e informe Markdown. Las estadísticas, frecuencias, distribución y Pearson existentes continúan disponibles. Las sugerencias no modifican qué valores se incluyen en esos cálculos manuales.
 
-DW-04 sigue abierto: falta una vista conjunta de columnas, completar moda/varianza/percentiles y medir el coste de exploración conjunta. DW-05 añadirá recomendaciones modificables de análisis; no se presenta aquí como implementado. Validación con estudiantes/profesionales y lectores de pantalla sigue pendiente.
+## Progreso y pendientes
+
+**Registro histórico al cerrar DW-04a:** faltaban una vista conjunta de columnas, completar moda/varianza/percentiles y medir el coste de exploración conjunta.
+
+**Actualización DW-04b:** la vista conjunta bajo demanda y su informe son el alcance de esta entrega. DW-04 sigue abierto para moda, varianza, percentiles y las comprobaciones de coste y cobertura que falten; no se declara terminada por disponer de esta lista. DW-05, recomendaciones modificables de análisis, sigue pendiente: no se generan ni configuran gráficos automáticamente. Validación con estudiantes/profesionales y lectores de pantalla sigue pendiente.

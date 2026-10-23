@@ -1,0 +1,45 @@
+# DW-04b — vista general de columnas
+
+Rama `codex/column-overview`, basada en `codex/focus-restoration` (`2aef4c0c756657caa0f6548403d3755e17f742cd`, PR #36), que depende de DW-04a (#35). Implementación en `379c06e07796c2aef38d867eb42922fee92cdf87`, con fixtures/documentación completados en esta rama. El PR #34 de extractos sigue independiente; esta entrega no adopta su arquitectura. Objetivo DW-01–DW-10 abierto; sin fusión ni publicación automática.
+
+## Resultado
+
+**Estadísticas → Comprender todas las columnas** permite explorar todas o las columnas marcadas, sobre documento completo o vista filtrada. Tipo probable con explicación accesible, calidad disjunta, distintos exactos, repeticiones, búsqueda por nombre/posición, páginas de 50 y acceso al detalle con posición y alcance. El informe Markdown incluye todas las columnas solicitadas, no solo la página o búsqueda visible. [Uso, presupuestos y semántica](../COLUMN-PROFILES.md).
+
+Reutiliza `analyzeColumn`, `columnSummary`, procedencia y saneamiento de informes; ningún IPC, parser, backend o dependencia nuevo. Solo conserva resúmenes compactos, sin retener frecuencias, histogramas o ejemplos de cada columna. El CSV y su historial no cambian al analizar.
+
+Hasta 2 000 columnas y dos millones de posiciones lógicas por solicitud. Una columna con más de 100 000 valores distintos queda no disponible, con cobertura parcial explícita; no se sustituyen sus cifras por ceros. Revisión/cancelación/error de motor aborta el conjunto. El temporizador UI de dos minutos solicita abandono/cancelación; no es un límite duro de CPU. El preflight puede concluir en segundo plano, pero sus respuestas se descartan.
+
+## Pruebas locales sobre el árbol final
+
+macOS ARM64, Apple M2 Max, 32 GiB, Node 24.22.1, Electron 44.9.2, un worker nativo, fixtures sintéticos.
+
+- `npm run check`: **0 errores, 0 advertencias**.
+- `npm test`: **181 correctas**, 19 archivos. Siete nuevas verifican informe de 51 columnas, identidad por posición, calidad disjunta, cobertura parcial sin ceros ficticios, procedencia/muestra/filtros, contenido hostil e inmutabilidad.
+- Dirigidas de la nueva interfaz: **6 correctas, 7,8 s**, sin reintentos.
+- `npm run test:e2e`: **103 correctas, 3,9 min**, sin reintentos, incluido `npm run build`. Conserva apertura, guardado, recuperación, aislamiento, exportaciones, cálculos, gráficos y la regresión independiente del foco.
+- Casos nuevos: tipos y recuentos exactos; explicación mediante teclado; alcance filtrado; informe completo aunque se busque una columna; 62 columnas con encabezados duplicados y página reiniciada al reducir selección; detalle por posición; cancelación durante preflight; rechazo de revisión obsoleta y de solicitud reemplazada; cardinalidad alta limitada a su columna; muestras rotuladas durante resultados provisionales; límites de 2 000 columnas y dos millones de posiciones; documento, BOM/CRLF y cambios pendientes preservados.
+
+Los primeros intentos del fixture de concurrencia intentaban reemplazar funciones del puente aislado; se sustituyeron por solicitudes reales y observación del DOM. El fixture de revisión se corrigió para aceptar los mensajes legítimos del motor e intercambiar metadatos con la interfaz tras una edición directa por API; ninguna aserción de integridad se eliminó. Los resultados anteriores fallidos no se presentan como defectos del cálculo ni como pruebas satisfactorias.
+
+Registros locales: `/private/tmp/freyalab-dw04b-check-final.log`, `/private/tmp/freyalab-dw04b-unit-final.log`, `/private/tmp/freyalab-dw04b-targeted-final2.log`, `/private/tmp/freyalab-dw04b-e2e-final.log`.
+
+Capturas inspeccionadas: [claro 1440×900](dw04b-overview-light-1440x900.png), [oscuro 1280×800](dw04b-overview-dark-1280x800.png). Permiten revisar contraste, distribución y foco; no sustituyen pruebas con lector de pantalla ni participantes.
+
+## Medición acotada
+
+[JSON de la suite completa](dw04b-column-overview-profile.json). Una ejecución por tamaño, una columna y 1 000 valores distintos repetidos; equipo compartido con otros procesos. Medida desde la acción de abrir y desde pulsar explorar hasta completar; no arranque frío de la app.
+
+| Filas completas | Apertura (ms) | Exploración (ms) | Mayor separación observada del heartbeat UI (ms) |
+|---|---:|---:|---:|
+| 3 000 | 158,9 | 70,1 | 22,1 |
+| 100 000 | 92,8 | 110,1 | 21,6 |
+| 1 000 000 | 502,7 | 820,1 | 29,9 |
+
+El heartbeat se solicita cada 20 ms; para 3 000 filas solo hay tres observaciones. No demuestra p95, consumo/pico de memoria, latencia universal inferior a 200 ms ni rendimiento equivalente en tablas anchas, textos largos o cardinalidad extrema. Un millón de filas con varias columnas puede superar el límite de edición; no se amplían límites.
+
+## Gates y pendientes
+
+El paquete, copia instalada y CI del commit exacto se registran después por separado. Ningún resultado local acredita Windows/Linux/Intel, instalación manual, firma/notarización o usabilidad validada. La cancelación manual durante una columna y el temporizador de dos minutos con respuesta tardía no tienen un nuevo caso dirigido aquí; sí se comprueban cancelación de preflight, reemplazo de la solicitud activa y rechazo de revisiones.
+
+DW-04 sigue abierto para moda, varianza, percentiles y cobertura/coste pendientes. DW-05 (sugerencias modificables de análisis) no está implementado en esta entrega. No hay persistencia de bases, proyectos obligatorios ni migración a Python.
