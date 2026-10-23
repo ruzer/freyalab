@@ -187,6 +187,19 @@ F2b se implementó en `codex/dock-resize-persist` (PR #49, apilada sobre F2a). D
 6. **Valores nuevos:** ancho máximo absoluto de 3000 px al leer (solo una cota de seguridad ante valores corruptos) y zona de agarre del divisor de 6 px.
 7. **Lectura tolerante:** las claves ajenas del valor guardado se ignoran y no se reescriben; cualquier error de tipo, versión o pestaña devuelve los valores por defecto sin avisos.
 
+## 9d. Notas de implementación de F2c
+
+F2c se implementó en `codex/dock-expanded` (apilada sobre F2b). Precisiones respecto a este diseño:
+
+1. **Con la ventana estrecha «Volver a la tabla» cierra el panel** (§5): no hay sitio para acoplarlo, así que volver a la tabla es cerrarlo y devolver el foco a su botón de la barra. El botón Ampliar/Acoplar no se muestra en ese caso.
+2. **Escape en la vista ampliada voluntaria acopla el panel antes de que lo cierre el propio panel** (captura en el contenedor); un segundo Escape cierra. Con la ventana estrecha Escape cierra como siempre.
+3. **Cerrar el panel restablece la vista ampliada:** al reabrirlo vuelve acoplado. `expanded` solo vive en la sesión.
+4. **La tabla sigue montada** con ancho cero y `visibility: hidden` mientras el panel está ampliado; conserva búsqueda, filtros, selección y posición de desplazamiento (comprobado por prueba). Una tira lateral con el botón «Volver a la tabla» ocupa su lugar.
+5. **Foco:** «Ampliar» deja el foco en su botón (que pasa a decir «Acoplar»); «Volver a la tabla» lo lleva a la tabla.
+6. **El aviso de ventana estrecha es un párrafo, no una región `status`**, para no duplicar anuncios; los cambios de modo se anuncian en una región `status` oculta común («Panel de análisis ampliado», «Panel de análisis acoplado», «Vuelves a la tabla»).
+7. **Dos comandos nuevos** en la paleta («Ampliar panel de análisis», «Acoplar panel de análisis») con su estado deshabilitado cuando no tienen sentido; sin atajos nuevos.
+8. **El umbral de 1120 px se mide sobre el área de trabajo** (`.csv-body`), que depende del explorador: con el explorador por defecto, una ventana de 1366 px da 1125 px (acoplado, justo) y una de 1280 px da 1039 px (ampliado).
+
 ## 10. Riesgos
 
 | # | Riesgo | Mitigación |
