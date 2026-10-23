@@ -2,6 +2,7 @@
  export interface CsvCommand {id:string;label:string;detail:string;disabled:boolean;run:()=>unknown}
 </script>
 <script lang="ts">
+ import Icon from './Icon.svelte'
  import {onMount} from 'svelte'
  let {commands,context,onexecute,onclose}:{commands:CsvCommand[];context:string;onexecute:(id:string)=>void;onclose:()=>void}=$props()
  let search=$state(''),dialog:HTMLDialogElement
@@ -19,7 +20,7 @@
  }
 </script>
 <dialog bind:this={dialog} aria-labelledby="csv-commands-title" oncancel={event=>{event.preventDefault();onclose()}} onkeydown={keydown}>
- <div class="heading"><h3 id="csv-commands-title">Comandos CSV</h3><button aria-label="Cerrar comandos CSV" onclick={onclose}>×</button></div>
+ <div class="heading"><h3 id="csv-commands-title">Comandos CSV</h3><button aria-label="Cerrar comandos CSV" onclick={onclose}><Icon name="x" size={14}/></button></div>
  <p>{context}</p>
  <label>Buscar herramienta<input type="search" aria-label="Buscar comando CSV" placeholder="Buscar, reemplazar, filtrar, duplicar…" bind:value={search}/></label>
  <p role="status">{matches.length} comandos encontrados. Las acciones deshabilitadas necesitan otro contexto.</p>

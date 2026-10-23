@@ -1,5 +1,6 @@
 <script module lang="ts">const drafts=new Map<string,{sql:string;sources:string[]}>()</script>
 <script lang="ts">
+ import Icon from './Icon.svelte'
  import {onMount,onDestroy} from 'svelte'
  import Editor from './Editor.svelte'
  import {sqlReport} from '../lib/sql-report'
@@ -41,7 +42,7 @@
 </script>
 <svelte:window onkeydown={event=>{if(!(event.target instanceof HTMLElement)||!event.target.closest('.sql-panel'))return;if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();if(!busy&&sql.trim())void run()}else if(event.key==='Escape'){event.preventDefault();onclose()}}}/>
 <section class="sql-panel" aria-label="Análisis SQL y asistentes">
- <div class="heading"><h3>Análisis local con DuckDB</h3><button aria-label="Cerrar análisis SQL" onclick={onclose}>×</button></div>
+ <div class="heading"><h3>Análisis local con DuckDB</h3><button aria-label="Cerrar análisis SQL" onclick={onclose}><Icon name="x" size={14}/></button></div>
  <p>Solo lectura. Consulta todos los registros, incluidos los cambios pendientes; los filtros y la búsqueda de la tabla no limitan SQL. Para una muestra, lee el archivo original completo desde disco. Hasta 4 fuentes, 256 MiB por archivo y 8 millones de celdas en total; máximo 2 millones de filas y 200 columnas por fuente; no cambia los límites de edición.</p>
  <details><summary>Archivos y nombres para SQL</summary><p><strong>datos</strong>: {doc.name} · {doc.readonly?'archivo completo en disco':`documento en memoria, revisión ${doc.revision}`}</p><div class="sources">{#each choices.filter(value=>value.id!==doc.id) as choice}<label><input type="checkbox" checked={extra.includes(choice.id)} disabled={busy||extra.length>=3&&!extra.includes(choice.id)} onchange={event=>choose(choice.id,event.currentTarget.checked)}/>{choice.name}{choice.dirty?' · cambios pendientes':''}</label>{/each}</div>{#each sources as source,index}<p>{index===0?'datos':`tabla_${index+1}`}: {sqlColumns((source.headers??[]).slice(0,200)).map(column=>`${column.name}${column.name!==column.original?` (encabezado ${column.index+1})`:''}`).join(' · ')}</p>{/each}</details>
  <button disabled={tooWide} aria-expanded={showAssist} onclick={()=>showAssist=!showAssist}>Asistentes: agrupar, pivotar y cruzar</button>

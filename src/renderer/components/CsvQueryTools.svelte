@@ -1,4 +1,5 @@
 <script lang="ts">
+ import Icon from './Icon.svelte'
  import {onMount,untrack} from 'svelte'
  import {filterOperators} from '../../shared/table-conditions'
  import type {TableFilter,TableSort} from '../../shared/types'
@@ -10,7 +11,7 @@
 </script>
 <svelte:window onkeydown={event=>{if(event.key==='Escape'&&event.target instanceof HTMLElement&&region?.contains(event.target)){event.preventDefault();event.stopPropagation();onclose()}}}/>
 <section bind:this={region} class="query-tools" aria-labelledby={titleId}>
- <div class="heading"><h3 id={titleId} tabindex="-1" bind:this={title}>{label}</h3><button type="button" aria-label={filtersOnly?'Cerrar filtros del gráfico':'Cerrar consulta avanzada'} onclick={onclose}>×</button></div>
+ <div class="heading"><h3 id={titleId} tabindex="-1" bind:this={title}>{label}</h3><button type="button" aria-label={filtersOnly?'Cerrar filtros del gráfico':'Cerrar consulta avanzada'} onclick={onclose}><Icon name="x" size={14}/></button></div>
  <form onsubmit={event=>{event.preventDefault();onapply($state.snapshot(conditions),$state.snapshot(order),mode)}}>
   <div class="query-body">
   <label>Coincidir <select aria-label="Combinar condiciones" bind:value={mode}><option value="all">Todas las condiciones (Y)</option><option value="any">Cualquier condición (O)</option></select></label>
@@ -19,7 +20,7 @@
    <select aria-label={`Operador de condición ${index+1}`} bind:value={rule.op}>{#each filterOperators as [value,label]}<option {value}>{label}</option>{/each}</select>
    {#if !['empty','notEmpty'].includes(rule.op)}<input aria-label={`Valor de condición ${index+1}`} bind:value={rule.value} required placeholder={rule.op.startsWith('date')?'AAAA-MM-DD':'Valor'} type={rule.op.startsWith('date')?'date':'text'}/>{/if}
    {#if ['contains','equals','notEquals','starts','ends','regex'].includes(rule.op)}<label><input type="checkbox" bind:checked={rule.caseSensitive}/>Distinguir mayúsculas</label>{/if}
-   <button type="button" aria-label={`Quitar condición ${index+1}`} onclick={()=>conditions=conditions.filter((_,i)=>i!==index)}>×</button>
+   <button type="button" aria-label={`Quitar condición ${index+1}`} onclick={()=>conditions=conditions.filter((_,i)=>i!==index)}><Icon name="x" size={14}/></button>
   </div>{/each}
   <button type="button" disabled={conditions.length>=20||!headers.length} onclick={()=>conditions=[...conditions,{column:0,op:'contains',value:''}]}>Añadir condición</button>
   {#if !filtersOnly}<h4>Orden por prioridad</h4>
@@ -27,7 +28,7 @@
    <span>{index+1}.</span><select aria-label={`Columna de orden ${index+1}`} bind:value={item.column}>{#each headers as name,column}<option value={column}>{column+1}. {name||'Sin encabezado'}</option>{/each}</select>
    <select aria-label={`Dirección de orden ${index+1}`} bind:value={item.descending}><option value={false}>Ascendente</option><option value={true}>Descendente</option></select>
    <label><input type="checkbox" aria-label={`Orden numérico ${index+1}`} bind:checked={item.numeric}/>Numérico exacto</label>
-   <button type="button" aria-label={`Quitar orden ${index+1}`} onclick={()=>order=order.filter((_,i)=>i!==index)}>×</button>
+   <button type="button" aria-label={`Quitar orden ${index+1}`} onclick={()=>order=order.filter((_,i)=>i!==index)}><Icon name="x" size={14}/></button>
   </div>{/each}
   <button type="button" disabled={order.length>=20||!headers.length} onclick={()=>order=[...order,{column:0,descending:false,numeric:false}]}>Añadir orden</button>{/if}
   {#if filtersOnly}<p>Solo limita el análisis del gráfico; no cambia la tabla ni el CSV. Las condiciones se combinan mediante Y u O dentro de este grupo y se aplican después del alcance elegido y antes del cálculo. Fechas ISO AAAA-MM-DD; números con punto decimal y expresiones RE2.</p>{:else}<p>Solo cambia la vista. Guardar conserva el orden del documento. Mayús + clic en un encabezado añade un criterio. Fechas ISO AAAA-MM-DD; los campos con otra fecha no coinciden. La búsqueda global y los filtros de encabezado se combinan con esta consulta mediante Y.</p>{/if}
