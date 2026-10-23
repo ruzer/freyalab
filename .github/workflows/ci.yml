@@ -40,6 +40,8 @@ jobs:
           sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
       - run: npm run check
       - run: npm test
+      - name: Large-file editor experiments (correctness on small hostile fixtures)
+        run: node --test experiments/large-file-editor/tests
       - run: npm run licenses
       - run: npm run build
       - name: E2E Linux
