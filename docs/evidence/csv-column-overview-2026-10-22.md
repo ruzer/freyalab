@@ -12,6 +12,8 @@ Hasta 2 000 columnas y dos millones de posiciones lógicas por solicitud. Una co
 
 ## Pruebas locales sobre el árbol final
 
+Commit probado y empaquetado: `4e0a454bbfb92414e36eb391bc59773f47afaaee`. La actualización posterior de este documento solo añade evidencia de paquete/instalación, sin cambios de producto o tests.
+
 macOS ARM64, Apple M2 Max, 32 GiB, Node 24.22.1, Electron 44.9.2, un worker nativo, fixtures sintéticos.
 
 - `npm run check`: **0 errores, 0 advertencias**.
@@ -40,6 +42,18 @@ El heartbeat se solicita cada 20 ms; para 3 000 filas solo hay tres observacione
 
 ## Gates y pendientes
 
-El paquete, copia instalada y CI del commit exacto se registran después por separado. Ningún resultado local acredita Windows/Linux/Intel, instalación manual, firma/notarización o usabilidad validada. La cancelación manual durante una columna y el temporizador de dos minutos con respuesta tardía no tienen un nuevo caso dirigido aquí; sí se comprueban cancelación de preflight, reemplazo de la solicitud activa y rechazo de revisiones.
+El paquete y la copia instalada se registran debajo; la CI del commit final sigue pendiente al preparar este registro. Ningún resultado local acredita Windows/Linux/Intel, instalación manual, firma/notarización o usabilidad validada. La cancelación manual durante una columna y el temporizador de dos minutos con respuesta tardía no tienen un nuevo caso dirigido aquí; sí se comprueban cancelación de preflight, reemplazo de la solicitud activa y rechazo de revisiones.
 
 DW-04 sigue abierto para moda, varianza, percentiles y cobertura/coste pendientes. DW-05 (sugerencias modificables de análisis) no está implementado en esta entrega. No hay persistencia de bases, proyectos obligatorios ni migración a Python.
+
+## Paquete y copia instalada — macOS ARM64
+
+Paquete de desarrollo **0.1.0-dev.20261022.4e0a454**, generado con `electron-builder --mac --arm64 --dir --publish never` y metadatos de versión explícitos, sin modificar `package.json` ni el lockfile. No es un instalador DMG ni una publicación. Firma comercial y notarización ausentes.
+
+- Paquete real: **14 pruebas E2E correctas, 29,4 s**, sin reintentos: seis de panorámica, cuatro de cancelación/foco de rangos y cuatro de exportación de resultados de gráficos, incluidas lectura completa y cancelación real de DuckDB. Perfil temporal aislado. Registro `/private/tmp/freyalab-dw04b-packaged-e2e.log`.
+- Se comprobó que FreyaLab no estuviera abierta, se preparó la nueva app y se conservaron los archivos anteriores antes del reemplazo. No se cerraron aplicaciones del usuario ni se modificaron sus preferencias/documentos.
+- Copia actualizada: `/Applications/FreyaLab.app`. Respaldo anterior: `/private/tmp/freyalab-before-column-overview-ollpdpic/FreyaLab.app`. Los respaldos en una carpeta temporal no son almacenamiento permanente.
+- Se verificó igualdad SHA-256 de ASAR, icono, ejecutable e Info.plist entre paquete y copia instalada. ASAR: `aec243a466f99f49901225d1102dc4d846593a3094e08076d28de2b9a4cdf668`. Icono de Freya: `98a9bfaaeb9a2b98a681601c17b1c294f660c728c89fd53c0e96645a8e1e9f9a`. Metadatos locales: `/private/tmp/freyalab-dw04b-installed.json`.
+- Copia instalada ejecutada mediante Playwright con otro perfil temporal: **1 prueba correcta, 4,1 s**. Comprueba tipos/recuentos, teclado/temas, vista filtrada, informe íntegro y fuente intacta. Registro `/private/tmp/freyalab-dw04b-installed-smoke.log`.
+
+Esto acredita ejecución del paquete y de la app copiada en este Mac. No acredita descarga con cuarentena/Gatekeeper, instalación manual DMG, Intel/Windows/Linux ni estado verde de CI.
