@@ -3,8 +3,8 @@
  import {onDestroy} from 'svelte'
  import {columnSummary} from '../../shared/column-profile'
  import type {DocumentInfo,TableQuery,ColumnAnalysis,ColumnAnalysisRequest} from '../../shared/types'
- let {doc,query,queryValid,onerror,onreport}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
- let column=$state(0),otherColumn=$state(-1),scope=$state('all'),duplicatesOnly=$state(false),bins=$state(10)
+ let {doc,query,queryValid,onerror,onreport,column=$bindable(0),scope=$bindable('all')}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;column?:number;scope?:'all'|'view';onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
+ let otherColumn=$state(-1),duplicatesOnly=$state(false),bins=$state(10)
  let result=$state<ColumnAnalysis|null>(null),busy=$state(false),message=$state('Elige una columna. El análisis no modifica los datos.'),page=$state<'profile'|'frequencies'|'distribution'|'correlation'>('profile')
  let reportContext=$state<ColumnReportContext|null>(null),reporting=$state(false)
  let active:string|null=null
