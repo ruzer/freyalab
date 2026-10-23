@@ -1,0 +1,2 @@
+<!doctype html><meta charset="utf-8"><title>Spike — panel</title><body><h1 id="title">Panel</h1><p id="state" role="status">cargando</p><pre id="view"></pre>
+<script>window.__events=[];panel.onEvent(e=>{__events.push(e);if(e.type==='state'){document.getElementById('state').textContent=e.state+(e.docName?' · '+e.docName:'')}if(e.type==='view')document.getElementById('view').textContent=JSON.stringify(e.view)})</script>

@@ -1,0 +1,144 @@
+{
+ "S1": {
+  "A": "Error invoking remote method 'freya': Error: Análisis cancelado.",
+  "B": "completada",
+  "ventanasBase": 1,
+  "ventanasConUnaConsulta": 2,
+  "msHastaTerminarB": 888
+ },
+ "S2": {
+  "antes": "disponible",
+  "despuesDeOtraConsulta": "Error invoking remote method 'freya': Error: El resultado ya no está disponible. Ejecuta de nuevo la consulta."
+ },
+ "S3": {
+  "graficoLuegoExportar": {
+   "grafico": "Error invoking remote method 'freya': Error: Análisis cancelado.",
+   "exportacion": "completada"
+  },
+  "exportarLuegoGrafico": {
+   "exportacion": "Error invoking remote method 'freya': Error: Análisis cancelado.",
+   "grafico": "completada"
+  },
+  "archivosExportados": 1
+ },
+ "S4": {
+  "consultaNueva": "completada"
+ },
+ "M1": {
+  "msPorConsulta": {
+   "filas240": [
+    559,
+    558,
+    555
+   ],
+   "filas100000": [
+    875,
+    875,
+    879
+   ]
+  },
+  "memoriaMiBAntes": 886,
+  "picoMiB": 1282,
+  "memoriaMiBDespues": 891,
+  "procesosRendererMaximos": 2,
+  "ventanasMaximas": 2,
+  "ventanasDespues": 1
+ },
+ "M2": {
+  "anchosDelPanel": {
+   "320": {
+    "desborda": false,
+    "anchoDelGrafico": 289,
+    "desplazaElGrafico": true
+   },
+   "360": {
+    "desborda": false,
+    "anchoDelGrafico": 329,
+    "desplazaElGrafico": true
+   },
+   "400": {
+    "desborda": false,
+    "anchoDelGrafico": 369,
+    "desplazaElGrafico": true
+   },
+   "440": {
+    "desborda": false,
+    "anchoDelGrafico": 409,
+    "desplazaElGrafico": true
+   },
+   "480": {
+    "desborda": false,
+    "anchoDelGrafico": 449,
+    "desplazaElGrafico": true
+   },
+   "520": {
+    "desborda": false,
+    "anchoDelGrafico": 489,
+    "desplazaElGrafico": false
+   },
+   "560": {
+    "desborda": false,
+    "anchoDelGrafico": 529,
+    "desplazaElGrafico": false
+   }
+  },
+  "msParaGenerarGrafico240Filas": [
+   852,
+   854,
+   856,
+   858,
+   866
+  ]
+ },
+ "M3": {
+  "columnasTotales": 9,
+  "ventanas": {
+   "1920x1080": {
+    "anchoDeLaTabla": 1679,
+    "columnasConDock0": 9,
+    "columnasConDock360": 7,
+    "columnasConDock480": 6,
+    "columnasConDock520": 6,
+    "columnasConDock560": 5
+   },
+   "1440x900": {
+    "anchoDeLaTabla": 1199,
+    "columnasConDock0": 6,
+    "columnasConDock360": 4,
+    "columnasConDock480": 3,
+    "columnasConDock520": 3,
+    "columnasConDock560": 3
+   },
+   "1366x768": {
+    "anchoDeLaTabla": 1125,
+    "columnasConDock0": 5,
+    "columnasConDock360": 3,
+    "columnasConDock480": 3,
+    "columnasConDock520": 3,
+    "columnasConDock560": 2
+   },
+   "1280x720": {
+    "anchoDeLaTabla": 1039,
+    "columnasConDock0": 5,
+    "columnasConDock360": 3,
+    "columnasConDock480": 2,
+    "columnasConDock520": 2,
+    "columnasConDock560": 2
+   }
+  },
+  "grafico520": {
+   "svgAncho": 1166,
+   "svgAlto": 340,
+   "alturaDelPanel": 540,
+   "alturaDeControles": 502
+  }
+ },
+ "M4": {
+  "deltaMiBPorVentana": [
+   165,
+   15,
+   168
+  ],
+  "ventanasDespues": 1
+ }
+}

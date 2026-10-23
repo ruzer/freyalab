@@ -1,4 +1,5 @@
 <script lang="ts">
+ import Icon from './Icon.svelte'
  import {onMount,onDestroy,untrack} from 'svelte'
  import {init,use,type ECharts} from 'echarts/core'
  import {BarChart,LineChart,ScatterChart,HeatmapChart,BoxplotChart} from 'echarts/charts'
@@ -77,7 +78,7 @@
 </script>
 <svelte:window onkeydown={event=>{if(event.key==='Escape'&&event.target instanceof HTMLElement&&event.target.closest('.charts-panel')&&!event.target.closest('.query-tools')){event.preventDefault();onclose()}}}/>
 <section class="charts-panel" aria-label="Gráficos del CSV">
- <header><h3>Explorar con gráficos</h3><button aria-label="Cerrar gráficos" onclick={onclose}>×</button></header>
+ <header><h3>Explorar con gráficos</h3><button aria-label="Cerrar gráficos" onclick={onclose}><Icon name="x" size={14}/></button></header>
  <p>Fuente: {doc.name}. Los gráficos no modifican el CSV. Elige qué comparar y qué datos incluir.</p>
  <form onsubmit={event=>{event.preventDefault();void generate()}}>
   <fieldset disabled={busy||exporting}><legend class="sr-only">Opciones del gráfico</legend>

@@ -1,4 +1,5 @@
 <script lang="ts">
+ import Icon from './Icon.svelte'
  import {onDestroy,onMount,tick} from 'svelte'
  import {STATISTICS_FIELDS,NUMERIC_DETAIL_FIELDS,NUMERIC_DETAIL_HELP,statisticsReport,type ReportContext,type StatisticsRow} from '../lib/statistics-report'
  import CsvColumnAnalysis from './CsvColumnAnalysis.svelte'
@@ -47,7 +48,7 @@
 </script>
 <svelte:window onkeydown={event=>{if(event.key==='Escape'&&event.target instanceof HTMLElement&&event.target.closest('.statistics-panel')){event.preventDefault();event.stopPropagation();onclose()}}}/>
 <section class="statistics-panel" aria-labelledby="csv-statistics-title">
- <div class="statistics-heading"><h3 id="csv-statistics-title" tabindex="-1" bind:this={heading}>Estadísticas por columna</h3><button aria-label="Cerrar estadísticas" onclick={onclose}>×</button></div>
+ <div class="statistics-heading"><h3 id="csv-statistics-title" tabindex="-1" bind:this={heading}>Estadísticas por columna</h3><button aria-label="Cerrar estadísticas" onclick={onclose}><Icon name="x" size={14}/></button></div>
  {#if !exploring&&!overviewing}
  <p>{doc.readonly?'Solo muestra: los recuentos no describen el archivo completo.':usingRange?'Solo el rango de la vista seleccionada; excluye filas ocultas y encabezados.':'Documento completo: incluye las filas ocultas por búsqueda o filtros; excluye encabezados.'}</p>
  <form onsubmit={event=>{event.preventDefault();void analyze()}}>
