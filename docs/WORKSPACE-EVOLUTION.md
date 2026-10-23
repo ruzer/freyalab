@@ -44,6 +44,10 @@ Los ceros iniciales, enteros fuera del rango seguro y nombres indicativos de có
 
 La primera implementación debe incluir fixtures de identificadores largos, ceros iniciales, texto numérico, fechas inválidas, encabezados duplicados, columnas mixtas y muestras; sugerencias modificables mediante clics y teclado. No se declara implementada en DW-01.
 
+## Propuesta de bases analíticas por versión
+
+La [evaluación de extractos](ANALYSIS-DATASETS.md) contrasta tres consultas actuales con una base congelada reutilizada. Incluye prueba aislada, integridad y mediciones de 3 000/100 000 filas; no cambia arquitectura ni dependencias. La captura experimental pierde en el caso de 100 000 filas. Una adopción requiere demostrar una transferencia interna eficiente, cancelación y versionado; proyectos persistentes y migración a Python siguen sin implementarse ni aprobarse por esta evaluación.
+
 ## Requisitos transversales
 
 - Modelo canónico textual; distinguir ausente/vacío y conservar filas irregulares, Unicode, multilinea, BOM, codificación, delimitador y orden. Solo las ediciones explícitas cambian el documento, con preview/deshacer cuando corresponde.
