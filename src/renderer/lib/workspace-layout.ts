@@ -5,6 +5,12 @@ export interface Layout{version:1;dock:{visible:boolean;width:number;tab:DockTab
 // 520 px: ancho con el que un gráfico no se desplaza en horizontal. 600 px: tabla con ~3 columnas (180 px cada una más la numeración).
 export const DOCK_MIN=520,TABLE_MIN=600,DOCK_MAX=3000,STEP=16,BIG_STEP=64
 const tabs:DockTab[]=['resumen','graficos','sql']
+// Por debajo de este ancho del área de trabajo no caben juntos el panel y la tabla: el panel se abre ampliado.
+export const NARROW_AREA=DOCK_MIN+TABLE_MIN
+export const isNarrow=(area:number)=>area>0&&area<NARROW_AREA
+export type DockMode='hidden'|'docked'|'expanded'
+// La persona decide (abierto, ampliado); el modo efectivo sale de eso y del espacio, así que ensanchar la ventana devuelve el panel junto a la tabla.
+export const dockMode=({visible,expanded,area}:{visible:boolean;expanded:boolean;area:number}):DockMode=>!visible?'hidden':expanded||isNarrow(area)?'expanded':'docked'
 export const defaultLayout=():Layout=>({version:1,dock:{visible:false,width:DOCK_MIN,tab:'resumen'}})
 const isObject=(value:unknown):value is Record<string,unknown>=>typeof value==='object'&&value!==null&&!Array.isArray(value)
 export function parseLayout(raw:string|null):Layout{

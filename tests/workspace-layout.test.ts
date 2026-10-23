@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest'
-import {DOCK_MIN,DOCK_MAX,TABLE_MIN,defaultLayout,parseLayout,serializeLayout,dockRange,nextWidth} from '../src/renderer/lib/workspace-layout'
+import {DOCK_MIN,DOCK_MAX,TABLE_MIN,NARROW_AREA,defaultLayout,parseLayout,serializeLayout,dockRange,nextWidth,isNarrow,dockMode} from '../src/renderer/lib/workspace-layout'
 
 const stored=(dock:unknown,version:unknown=1)=>JSON.stringify({version,dock})
 const good={visible:true,width:600,tab:'sql'} as const
@@ -54,4 +54,27 @@ describe('rango y pasos del divisor',()=>{
  })
  it('otras teclas no cambian nada',()=>{expect(nextWidth(700,'a',false,1679)).toBeNull();expect(nextWidth(700,'ArrowUp',false,1679)).toBeNull()})
  it('un ancho guardado mayor que el sitio disponible se recorta al rango',()=>{expect(nextWidth(2000,'ArrowRight',false,1199)).toBe(599-16)})
+})
+
+describe('modo del panel: acoplado, ampliado u oculto',()=>{
+ it('por debajo de 520 + 600 px no hay sitio para acoplarlo junto a la tabla',()=>{
+  expect(NARROW_AREA).toBe(DOCK_MIN+TABLE_MIN)
+  expect([1119,1039,659].map(isNarrow)).toEqual([true,true,true])
+  expect([1120,1125,1199,1920].map(isNarrow)).toEqual([false,false,false,false])
+  expect(isNarrow(0)).toBe(false) // sin medir todavía
+ })
+ it('oculto si no está abierto, aunque la ventana sea estrecha',()=>{
+  expect(dockMode({visible:false,expanded:false,area:1920})).toBe('hidden')
+  expect(dockMode({visible:false,expanded:true,area:900})).toBe('hidden')
+ })
+ it('acoplado cuando cabe y la persona no lo amplió',()=>{
+  expect(dockMode({visible:true,expanded:false,area:1199})).toBe('docked')
+  expect(dockMode({visible:true,expanded:false,area:1125})).toBe('docked')
+  expect(dockMode({visible:true,expanded:false,area:0})).toBe('docked')
+ })
+ it('ampliado si la persona lo pide o si no cabe; al ensanchar vuelve a acoplarse',()=>{
+  expect(dockMode({visible:true,expanded:true,area:1920})).toBe('expanded')
+  expect(dockMode({visible:true,expanded:false,area:1119})).toBe('expanded')
+  expect(dockMode({visible:true,expanded:false,area:1920})).toBe('docked') // misma intención, otro espacio
+ })
 })
