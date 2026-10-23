@@ -2,6 +2,9 @@ import { app, BrowserWindow, dialog, ipcMain, shell, clipboard } from 'electron'
 import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve, relative, isAbsolute, extname } from 'node:path'
 import { z } from 'zod'
+import {col,query,conditionGroup} from './query-schema'
+import {ChartPresets,chartConfiguration} from './chart-presets'
+import {exportChartResult} from './chart-result-export'
 import { SqlService } from './sql-service'
 import appIcon from '../../build/icon.png?asset'
 import { Documents } from './documents'
@@ -9,11 +12,9 @@ import { exportDocument,exportGraphic } from './export'
 import type { Kind,TableEdit,TableOptions,TableExport,TableQuery,ExportRequest,TableRange,TableRangeEdit,TableTransformEdit } from '../shared/types'
 const here=dirname(fileURLToPath(import.meta.url))
 if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FREYALAB_USER_DATA))
-let window:BrowserWindow|undefined,docs:Documents,analytics:SqlService,quitting=false
+let window:BrowserWindow|undefined,docs:Documents,analytics:SqlService,presets:ChartPresets,quitting=false
 const waiting:string[]=[]
-const id=z.uuid(),path=z.string().min(1).max(32768), text=z.string().max(20*1024*1024),col=z.number().int().min(0).max(100000), rows=z.array(z.string().max(100)).max(2000000)
-const filter=z.object({column:col,op:z.enum(['contains','equals','notEquals','starts','ends','empty','notEmpty','greater','greaterEqual','less','lessEqual','dateBefore','dateOn','dateAfter','regex']),value:z.string().max(10000).optional(),caseSensitive:z.boolean().optional()})
-const query=z.object({conditions:z.array(filter).max(20).optional(),filterMode:z.enum(['all','any']).optional(),order:z.array(z.object({column:col,descending:z.boolean(),numeric:z.boolean()})).max(20).optional(),search:z.string().max(10000).optional(),filters:z.record(z.string(),z.string().max(10000)).optional(),sort:z.object({column:col,descending:z.boolean(),numeric:z.boolean()}).optional(),offset:z.number().int().nonnegative(),limit:z.number().int().min(1).max(1000),requestId:z.number().int().nonnegative()})
+const id=z.uuid(),path=z.string().min(1).max(32768), text=z.string().max(20*1024*1024), rows=z.array(z.string().max(100)).max(2000000)
 const range=z.object({top:z.number().int().nonnegative(),bottom:z.number().int().nonnegative(),left:col,right:col,query,revision:z.number().int().nonnegative()})
 const rangeEdit=z.object({type:z.literal('range'),requestId:z.uuid().optional(),range,operation:z.enum(['fill','clear','trim','upper','lower','replace','paste']),value:z.string().max(1024*1024).optional(),find:z.string().max(10000).optional(),values:z.array(z.array(z.string().max(1024*1024)).max(100000)).max(100000).optional()})
 const structureEdit=z.object({type:z.literal('structure'),operation:z.enum(['split','combine','deduplicate','normalize','headers','moveRows','moveColumns','commitOrder']),columns:z.array(col).max(200),revision:z.number().int().nonnegative(),requestId:z.uuid(),separator:z.string().max(64).optional(),name:z.string().max(10000).optional(),rowIds:rows.optional(),range:range.optional(),destination:z.number().int().nonnegative().optional(),query:query.optional()})
@@ -50,13 +51,17 @@ async function handle(operation:string,args:unknown[]){
  case'edit':return docs.tableEdit(id.parse(a),edits.parse(b) as TableEdit)
  case'options':return docs.tableOptions(id.parse(a),z.object({encoding:z.enum(['utf8','utf16le','win1252']).optional(),delimiter:z.enum([',',';','\t','|']).optional(),header:z.boolean().optional()}).parse(b) as TableOptions)
  case'undo':return docs.undo(id.parse(a),z.boolean().optional().parse(b))
- case'sqlRun':return analytics.run(z.object({requestId:z.uuid(),sources:z.array(z.object({id,revision:z.number().int().nonnegative(),query:query.optional()})).min(1).max(4),sql:z.string().trim().min(1).max(100000)}).parse(a))
+ case'chartPresets':return presets.list()
+ case'saveChartPreset':{const document=docs.info(id.parse(a));if(document.kind!=='csv')throw new Error('Abre un CSV para guardar el gráfico.');return presets.save(b,document.headers??[])}
+ case'deleteChartPreset':return presets.delete(id.parse(a))
+ case'sqlRun':return analytics.run(z.object({requestId:z.uuid(),sources:z.array(z.object({id,revision:z.number().int().nonnegative(),query:query.optional(),where:conditionGroup.optional()})).min(1).max(4),sql:z.string().trim().min(1).max(100000)}).parse(a))
  case'sqlPage':return analytics.page(id.parse(a),z.number().int().min(0).max(9999).parse(b))
  case'sqlCancel':return analytics.cancel(id.parse(a))
  case'analyzeColumn':docs.get(id.parse(a));return docs.table.call('analyzeColumn',a,z.object({column:col,otherColumn:col.optional(),query:query.optional(),revision:z.number().int().nonnegative(),requestId:z.uuid(),frequencyOffset:z.number().int().min(0).max(2000000),duplicatesOnly:z.boolean(),bins:z.number().int().min(1).max(30)}).parse(b))
  case'cancelAnalysis':docs.get(id.parse(a));return docs.table.call('cancelAnalysis',a,z.uuid().parse(b))
  case'stats':docs.get(id.parse(a));return docs.table.call('stats',a,rows.nullable().parse(b),z.array(col).max(100000).parse(c),z.object({requestId:z.uuid(),revision:z.number().int().nonnegative(),range:range.optional()}).optional().parse(d))
  case'markdown':docs.get(id.parse(a));return docs.table.call('markdown',a,tableExport.parse(b) as TableExport)
+ case'exportChartResult':return exportChartResult(docs,analytics,id.parse(a),z.object({requestId:id,revision:z.number().int().nonnegative(),configuration:chartConfiguration,format:z.enum(['csv','json','md']),protectFormulas:z.boolean()}).strict().parse(b))
  case'exportGraphic':return exportGraphic(docs,id.parse(a),z.object({format:z.enum(['svg','png','pdf']),svg:text.min(1),revision:z.number().int().nonnegative()}).strict().parse(b))
  case'export':return exportDocument(docs,id.parse(a),z.object({format:z.enum(['pdf','html','svg','png','csv','tsv']),html:text.optional(),svg:text.optional(),table:tableExport.optional()}).parse(b) as ExportRequest)
  case'image':return docs.image(id.parse(a),z.string().max(16*1024*1024).parse(b))
@@ -74,6 +79,7 @@ app.on('second-instance',(_event,argv)=>{window?.show();window?.focus();const pa
 app.whenReady().then(async()=>{
  app.setName('FreyaLab')
  docs=new Documents(event=>window?.webContents.send('freya:event',event))
+ presets=new ChartPresets(join(app.getPath('userData'),'chart-presets.json'))
  analytics=new SqlService(docs,progress=>window?.webContents.send('freya:event',{type:'analysis',progress}))
  ipcMain.handle('freya',async(event,operation,...args)=>{assertSender(event);try{return await handle(z.string().max(100).parse(operation),args)}catch(e){throw new Error(e instanceof z.ZodError?'Datos de operación no válidos.':(e as Error).message)}})
  ipcMain.on('freya:drop',(event,paths)=>{assertSender(event);for(const p of z.array(path).max(100).parse(paths))docs.grants.add(resolve(p))})

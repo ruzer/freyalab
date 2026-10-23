@@ -1,5 +1,6 @@
 import {createReadStream} from 'node:fs'
 import {stat} from 'node:fs/promises'
+import {setImmediate as yieldTurn} from 'node:timers/promises'
 import {createHash} from 'node:crypto'
 import {Transform} from 'node:stream'
 import {parse} from 'csv-parse'
@@ -24,7 +25,7 @@ export async function* fileRecords(path:string,format:{encoding:Encoding;delimit
  }finally{input.unpipe(tap);tap.unpipe(validator);validator.unpipe(decoder);decoder.unpipe(parser);input.destroy();tap.destroy();validator.destroy();decoder.end();parser.destroy()}
 }
 
-export async function* arrowBatches(records:Iterable<string[]>|AsyncIterable<string[]>,width:number,ensure:()=>void){
+export async function* arrowBatches(records:Iterable<string[]>|AsyncIterable<string[]>,width:number,ensure:()=>void,matches?:(row:string[])=>boolean){
  if(width<1||width>ANALYSIS_LIMITS.columns)throw new Error('El análisis admite entre 1 y 200 columnas por fuente.')
  let batch:string[][]=[],bytes=0,rows=0,totalBytes=0
  const encode=()=>Buffer.from(tableToIPC(new Table(Object.fromEntries(Array.from({length:width},(_,col)=>[`c${col+1}`,vectorFromArray(batch.map(row=>row[col]??null),new Utf8())]))),'stream'))
@@ -32,6 +33,8 @@ export async function* arrowBatches(records:Iterable<string[]>|AsyncIterable<str
   ensure();rows++;if(row.length>width)throw new Error('Una fila tiene más columnas que la muestra. Recarga el archivo con una estructura consistente.')
   if(rows>ANALYSIS_LIMITS.rows||rows*width>ANALYSIS_LIMITS.cells)throw new Error('El análisis supera dos millones de filas u ocho millones de celdas por fuente.')
   const size=row.reduce((total,value)=>total+Buffer.byteLength(value,'utf8'),0);totalBytes+=size;if(totalBytes>ANALYSIS_LIMITS.bytes)throw new Error('La fuente supera 256 MiB de texto decodificado.');if(size>1024*1024)throw new Error('Un registro supera 1 MiB.')
+  if(matches&&rows%2048===0){await yieldTurn();ensure()}
+  if(matches&&!matches(row))continue
   if(batch.length&&(batch.length>=ANALYSIS_LIMITS.batchRows||bytes+size>ANALYSIS_LIMITS.batchBytes)){ensure();yield {data:encode(),rows:batch.length};batch=[];bytes=0}
   batch.push(row);bytes+=size
  }

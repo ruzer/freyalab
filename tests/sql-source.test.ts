@@ -29,6 +29,7 @@ it('lee íntegra una fuente de un millón por cuatro columnas que el editor limi
  await expect(engine.analysisStart('a','partial-filter',info.revision,path,{offset:0,limit:1,requestId:1,search:'Ciudad'})).rejects.toThrow('muestra no representa')
  await engine.analysisStart('a','large',info.revision,path);let count=0;while(true){const chunk=await engine.analysisNext('large');if(chunk.done)break;const table=tableFromIPC(chunk.data);count+=chunk.rows;expect(table.numCols).toBe(4);expect(table.getChildAt(0)!.get(0)).toBe('00000')}
  expect(count).toBe(1000000);expect((await engine.info('a')).readonly).toBe(true);expect((await engine.info('a')).dirty).toBe(false)
+ await engine.analysisStart('a','where-full-disk',info.revision,path,undefined,{filterMode:'all',conditions:[{column:1,op:'equals',value:'Ciudad 9'}]});let matching=0;while(true){const chunk=await engine.analysisNext('where-full-disk');if(chunk.done)break;matching+=chunk.rows;const table=tableFromIPC(chunk.data);expect(table.getChildAt(1)!.get(0)).toBe('Ciudad 9')}expect(matching).toBe(100000)
 },60000)
 it('no presenta una lectura parcial como completa ante estructura irregular o cambios externos',async()=>{
  const {arrowBatches,fileRecords}=await import('../src/main/analysis-source');await writeFile(path,'A\nx\ny,z\n')
@@ -68,4 +69,26 @@ it('cancela la preparación de la vista filtrada sin cambiar el historial ni el 
  await engine.analysisStart('a','cancel-filtered',0,path,{offset:0,limit:1,requestId:1,search:'A'})
  const rejected=expect(engine.analysisNext('cancel-filtered')).rejects.toThrow('cancelada');await engine.analysisClose('cancel-filtered');await rejected
  expect(await engine.snapshot('a')).toEqual(before);expect((await engine.serialize('a')).toString()).toBe(original)
+})
+
+it('combina vista O con filtros propios O mediante Y, sin modificar orden ni valores del documento',async()=>{
+ const original='ID,Grupo,Total,Nota\r\n001,A,10,\r\n002,B,30,texto\r\n9007199254740993,A,40\r\n004,C,50,texto\r\n005,A,5,texto\r\n';await source(original);const before=await engine.snapshot('a')
+ const query={offset:100,limit:1,requestId:1,filterMode:'any' as const,conditions:[{column:1,op:'equals' as const,value:'A'},{column:1,op:'equals' as const,value:'B'}],order:[{column:0,numeric:false,descending:true}]}
+ const where={filterMode:'any' as const,conditions:[{column:2,op:'greater' as const,value:'20'},{column:3,op:'empty' as const}]}
+ await engine.analysisStart('a','both',0,path,query,where);expect(await rows('both')).toEqual([['001','A','10',''],['002','B','30','texto'],['9007199254740993','A','40',null]])
+ await engine.analysisStart('a','own-only',0,path,undefined,where);expect((await rows('own-only')).map(row=>row[0])).toEqual(['001','002','9007199254740993','004'])
+ await expect(engine.analysisStart('a','bad-where',0,path,undefined,{filterMode:'all',conditions:[{column:99,op:'equals',value:'x'}]})).rejects.toThrow('Columna')
+ await expect(engine.analysisStart('a','bad-regex',0,path,undefined,{filterMode:'all',conditions:[{column:0,op:'regex',value:'('}]})).rejects.toThrow('regular')
+ expect(await engine.snapshot('a')).toEqual(before);expect((await engine.serialize('a')).toString()).toBe(original)
+})
+
+it('los filtros no ocultan estructuras inválidas ni el límite de lectura y ceden el control aunque no coincida nada',async()=>{
+ const {arrowBatches,ANALYSIS_LIMITS}=await import('../src/main/analysis-source')
+ const consume=async(records:Iterable<string[]>|AsyncIterable<string[]>,width:number)=>{for await(const _ of arrowBatches(records,width,()=>{},()=>false)){}}
+ await expect(consume([['x','extra']],1)).rejects.toThrow('más columnas')
+ await expect(consume([['x'.repeat(1024*1024+1)]],1)).rejects.toThrow('1 MiB')
+ const previous=ANALYSIS_LIMITS.rows;try{ANALYSIS_LIMITS.rows=2;await expect(consume([['1'],['2'],['3']],1)).rejects.toThrow('dos millones')}finally{ANALYSIS_LIMITS.rows=previous}
+ await source('ID\n'+'001\n'.repeat(10000));await engine.analysisStart('a','all-rejected',0,path,undefined,{filterMode:'all',conditions:[{column:0,op:'equals',value:'sin coincidencias'}]})
+ const cancel=setImmediate(()=>void engine.analysisClose('all-rejected'));try{await expect(engine.analysisNext('all-rejected')).rejects.toThrow('cancelada')}finally{clearImmediate(cancel)}
+ expect((await engine.info('a')).dirty).toBe(false)
 })

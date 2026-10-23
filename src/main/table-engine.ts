@@ -11,7 +11,7 @@ import {ANALYSIS_LIMITS,arrowBatches,fileRecords,validateUtf8} from './analysis-
 import {compileTableQuery} from './table-query'
 import {analyzeColumn,numeric,descriptive} from './table-analysis'
 import type {ColumnAnalysisRequest,ColumnAnalysis,TableTransformEdit,TableTransformPreview,SqlProgress} from '../shared/types'
-import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview,TableStatsOptions } from '../shared/types'
+import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableConditionGroup, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview,TableStatsOptions } from '../shared/types'
 
 export const TABLE_LIMITS = { bytes: 50 * 1024 * 1024, cells: 2_000_000, record: 1024 * 1024, sampleBytes: 8 * 1024 * 1024, sampleRows: 200 }
 interface Metadata { encoding: Encoding; delimiter: string; eol: string; bom: boolean; header: boolean; finalEol: boolean; headerWidth: number }
@@ -318,14 +318,15 @@ export class TableEngine {
  }
  async undo(id:string,redo=false){const s=this.editable(id);const source=redo?s.future:s.history,target=redo?s.history:s.future;const change=source.at(-1);if(change){this.apply(s,redo?change.forward:change.backward);source.pop();s.token=redo?change.after:change.before;s.revision++;target.push(change)}return this.info(id)}
  private async selected(id:string,options:TableExport){const s=this.get(id),revision=s.revision;if(s.readonly)throw new Error('La muestra no permite exportar el archivo ni selecciones.');let indices:number[];if(options.scope==='selection'&&options.range){const selected=await this.rangeRows(id,options.range);return{rows:selected.indices.map(i=>selected.columns.map(col=>s.rows[i].cells[col]??'')),headers:selected.columns.map(col=>s.headers[col])}}if(options.scope==='filtered')indices=await this.indices(id,options.query??{offset:0,limit:500,requestId:0});else if(options.scope==='selection'){const ids=new Set(options.rowIds??[]);indices=s.rows.flatMap((row,i)=>ids.has(row.id)?[i]:[])}else indices=s.rows.map((_,i)=>i);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.');const columns=options.columns??s.headers.map((_,i)=>i);if(columns.some(i=>!Number.isInteger(i)||i<0||i>=s.headers.length))throw new Error('Selección de columnas no válida.');return{rows:indices.map(i=>columns.map(col=>s.rows[i].cells[col]??'')),headers:columns.map(col=>s.headers[col])}}
- async analysisStart(id:string,ticket:string,revision:number,path:string|null,query?:TableQuery){
+ async analysisStart(id:string,ticket:string,revision:number,path:string|null,query?:TableQuery,where?:TableConditionGroup){
   const s=this.get(id);if(s.revision!==revision)throw new Error('La tabla cambió. Vuelve a analizar.');if(s.headers.length>ANALYSIS_LIMITS.columns)throw new Error('El análisis admite hasta 200 columnas por fuente.')
   if(s.readonly&&!path)throw new Error('La muestra necesita su archivo original para el análisis completo.')
   if(s.readonly&&query)throw new Error('La vista filtrada de una muestra no representa el archivo completo. Elige documento completo.')
   const ensure=()=>{const active=this.streams.get(ticket);if(!active||this.states.get(id)!==s||s.revision!==revision)throw new Error('Transferencia cancelada: cambió la fuente o la solicitud.')}
+  const filter=where?.conditions.length?compileTableQuery({...where,offset:0,limit:1,requestId:0},s.headers.length).matches:undefined
   const indices=()=>this.indices(id,{...query!,order:[],sort:undefined},ensure)
   const records=s.readonly?fileRecords(path!,s,ensure):(async function*(){for(const index of query?await indices():s.rows.keys()){ensure();yield s.rows[index].cells}})()
-  this.streams.set(ticket,{id,iterator:arrowBatches(records,s.headers.length,ensure)})
+  this.streams.set(ticket,{id,iterator:arrowBatches(records,s.headers.length,ensure,filter)})
   return{headers:[...s.headers],revision:s.revision,readonly:s.readonly}
  }
  async analysisNext(ticket:string){const active=this.streams.get(ticket);if(!active)throw new Error('La transferencia ya no está disponible.');try{const chunk=await active.iterator.next();if(chunk.done){this.streams.delete(ticket);return{done:true as const,rows:0}}return{done:false as const,...chunk.value}}catch(error){this.streams.delete(ticket);throw error}}
@@ -336,7 +337,7 @@ export class TableEngine {
   if(!Number.isInteger(request.frequencyOffset)||request.frequencyOffset<0||!Number.isInteger(request.bins)||request.bins<1||request.bins>30)throw new Error('Opciones de análisis no válidas.')
   this.analyses.set(id,request.requestId)
   const ensure=()=>{if(this.analyses.get(id)!==request.requestId||this.states.get(id)!==s||request.revision!==s.revision)throw new Error('Análisis cancelado: la tabla cambió o se recibió otra solicitud.')}
-  try{const indices=request.query?await this.indices(id,request.query):undefined;ensure();const result=await analyzeColumn(s.rows,indices,request,ensure);ensure();return{...result,revision:s.revision,sample:s.readonly,filtered:!!request.query,column:request.column}}
+  try{const indices=request.query?await this.indices(id,request.query,ensure):undefined;ensure();const result=await analyzeColumn(s.rows,indices,request,ensure,s.headers[request.column]);ensure();return{...result,revision:s.revision,sample:s.readonly,filtered:!!request.query,column:request.column}}
   finally{if(this.analyses.get(id)===request.requestId)this.analyses.delete(id)}
  }
  async cancelAnalysis(id:string,requestId:string){if(this.analyses.get(id)===requestId)this.analyses.delete(id)}

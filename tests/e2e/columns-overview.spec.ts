@@ -1,0 +1,97 @@
+import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
+import electronPath from 'electron'
+import {mkdtemp,mkdir,writeFile,readFile,rm,truncate,stat} from 'node:fs/promises'
+import {join,resolve} from 'node:path'
+import {tmpdir,cpus,release,totalmem} from 'node:os'
+import {stringify} from 'csv-stringify/sync'
+let app:ElectronApplication,page:Page,folder:string
+const source='\uFEFFID,Ciudad,Total,Fecha,Opcional\r\n00123,Oaxaca,10,2024-02-29,\r\n9007199254740993,Puebla,20,2026-10-22\r\n00003,Oaxaca,30,2026-02-30,"  "\r\n00004,Oaxaca,40,2026-10-22,ñ\r\n'
+test.beforeEach(async()=>{
+ folder=await mkdtemp(join(tmpdir(),'freya-overview-'));await mkdir(join(folder,'saved'));await mkdir(join(folder,'exports'))
+ const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
+ app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_SAVE_DIR:join(folder,'saved'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000})
+ page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
+})
+test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+async function open(text=source){const path=join(folder,'datos.csv');await writeFile(path,text);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('grid',{name:'Tabla de datos'})).toBeVisible();return{doc,path}}
+async function overview(){await page.getByRole('button',{name:'Estadísticas',exact:true}).click();await page.getByText('Comprender todas las columnas',{exact:true}).click();return page.getByRole('region',{name:'Vista general de columnas',exact:true})}
+async function explore(panel:Locator){await panel.getByRole('button',{name:'Explorar columnas',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Exploración de columnas completa.',{timeout:90000})}
+async function report(panel:Locator){await panel.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true}).click();await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')?.text).toContain('# Vista general de columnas CSV');return(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')!}
+
+test('panorámica: tipos, calidad, alcance, explicación por teclado, informe y documento intacto',async()=>{
+ const {doc,path}=await open(),before=await page.evaluate(()=>window.freya.documents()),panel=await overview();await explore(panel)
+ const rows=panel.locator('tbody tr');await expect(rows).toHaveCount(5);await expect(rows.nth(0)).toContainText('Posible identificador');await expect(rows.nth(1)).toContainText('Categórico');await expect(rows.nth(2)).toContainText('Numérico');await expect(rows.nth(3)).toContainText('Mixto')
+ expect((await rows.nth(4).locator('th,td').allTextContents()).slice(2,6)).toEqual(['1','1','1','1'])
+ const explanation=rows.nth(0).locator('summary');await explanation.focus();await explanation.press('Enter');await expect(rows.nth(0)).toContainText('ceros iniciales');await expect(rows.nth(0).locator('details')).toHaveAttribute('open','')
+ for(const [theme,width,height] of [['light',1440,900],['dark',1280,800]] as const){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.setViewportSize({width,height});await panel.scrollIntoViewIfNeeded();await page.screenshot({animations:'disabled',path:test.info().outputPath(`dw04b-overview-${theme}-${width}x${height}.png`)})}
+ await page.getByLabel('Buscar en tabla',{exact:true}).fill('Oaxaca');await expect(page.locator('.csv-toolbar')).toContainText('3 de 4 filas');await expect(rows).toHaveCount(5);await panel.getByLabel('Alcance de la vista general',{exact:true}).selectOption('view');await explore(panel);await expect(panel.locator('.scope')).toContainText('Vista filtrada');await expect(panel.locator('.scope')).toContainText('3 filas por columna')
+ await panel.getByLabel('Buscar nombres de columnas',{exact:true}).fill('Total');await expect(rows).toHaveCount(1);const output=await report(panel);expect(output.text).toContain('Columnas solicitadas: 5. Analizadas: 5. No disponibles: 0.');expect(output.text).toContain('"search": "Oaxaca"');expect(output.text).toContain('"1. ID"');expect(output.text).toContain('"5. Opcional"');expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toEqual(before[0]);expect(await readFile(path,'utf8')).toBe(source)
+})
+
+test('panorámica: páginas, nombres duplicados, columnas marcadas y detalle conservan el alcance',async()=>{
+ const headers=Array.from({length:62},(_,i)=>i===60||i===61?'Duplicada':'C'+i),text=stringify([headers,headers.map((_,i)=>String(i))]),{path}=await open(text),panel=await overview();await explore(panel);const rows=panel.locator('tbody tr');await expect(rows).toHaveCount(50);await panel.getByRole('button',{name:'Columnas siguientes',exact:true}).click();await expect(rows).toHaveCount(12);await expect(rows.nth(10)).toContainText('61. Duplicada');await expect(rows.nth(11)).toContainText('62. Duplicada')
+ await page.getByLabel('Seleccionar columna C0',{exact:true}).check();await page.getByLabel('Seleccionar columna C1',{exact:true}).check();await panel.getByLabel('Columnas para explorar',{exact:true}).selectOption('selected');await explore(panel);await expect(rows).toHaveCount(2);await expect(rows.first()).toContainText('1. C0');await expect(panel.locator('.pagination')).toContainText('1–2 de 2');await expect(panel.getByRole('button',{name:'Columnas anteriores',exact:true})).toBeDisabled()
+ await panel.getByLabel('Alcance de la vista general',{exact:true}).selectOption('view');await explore(panel);await panel.getByRole('button',{name:'Elegir columna 2 para explorar',exact:true}).click();const detail=page.getByRole('region',{name:'Exploración de columna',exact:true});await expect(detail.getByLabel('Columna para explorar',{exact:true})).toHaveValue('1');await expect(detail.getByLabel('Filas para explorar',{exact:true})).toHaveValue('view');await expect(page.getByRole('heading',{name:'Estadísticas por columna',exact:true})).toBeFocused();await detail.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(detail.getByRole('status')).toHaveText('Exploración completa.');expect(await readFile(path,'utf8')).toBe(text)
+})
+
+test('panorámica: cancelar o cambiar revisión descarta respuestas tardías y no continúa columnas',async()=>{
+ const {doc,path}=await open(),panel=await overview()
+ await panel.evaluate(element=>{element.querySelector<HTMLFormElement>('form')!.requestSubmit();queueMicrotask(()=>{Reflect.set(window,'overviewCancelledPhase',element.querySelector('[role=status]')?.textContent);const button=[...element.querySelectorAll('button')].find(button=>button.textContent==='Cancelar exploración de columnas');if(!button)throw new Error('Sin cancelación durante el análisis');button.click()})})
+ expect(await page.evaluate(()=>Reflect.get(window,'overviewCancelledPhase'))).toBe('Explorando columna 1 de 5…');await expect(panel.getByRole('status')).toHaveText('Exploración de columnas cancelada.');await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:1,requestId:999}),doc.id);await expect(panel.locator('tbody tr')).toHaveCount(0);await expect(panel.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true})).toBeDisabled()
+ await panel.evaluate((element,id)=>{element.querySelector<HTMLFormElement>('form')!.requestSubmit();queueMicrotask(()=>Reflect.set(window,'overviewPendingEdit',window.freya.tableEdit(id,{type:'cell',rowId:'1',column:2,value:'99'})))},doc.id)
+ await page.evaluate(async()=>await Reflect.get(window,'overviewPendingEdit'));await expect(panel.getByRole('status')).toHaveText(/^(Datos o alcance actualizados\. Pulsa Explorar columnas\.|La tabla cambió\. Vuelve a analizar\.|Los datos cambiaron\. Vuelve a explorar\.|Análisis cancelado: la tabla cambió o se recibió otra solicitud\.)$/);await expect(panel.locator('tbody tr')).toHaveCount(0);await expect(panel.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true})).toBeDisabled();expect(await readFile(path,'utf8')).toBe(source)
+ // La edición directa prueba el rechazo del motor; reabrir sincroniza sus metadatos con la interfaz.
+ await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(panel.getByRole('status')).toContainText('Datos o alcance actualizados');await explore(panel);await expect(panel.locator('tbody tr')).toHaveCount(5);const current=(await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)!;expect(current.revision).toBeGreaterThan(doc.revision);expect((await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:1,requestId:1000}),doc.id)).rows[0].cells[2]).toBe('99')
+})
+
+test('panorámica: una solicitud reemplazada con igual revisión aborta; una cardinalidad alta solo limita esa columna',async()=>{
+ test.setTimeout(120000)
+ const text='Valor\n'+'2\n'.repeat(1000000),{doc,path}=await open(text),panel=await overview()
+ await panel.evaluate((element,doc)=>{const observer=new MutationObserver(()=>{if(!element.querySelector('[role=status]')?.textContent?.startsWith('Explorando columna 1 de'))return;observer.disconnect();void window.freya.analyzeColumn(doc.id,{column:0,revision:doc.revision,requestId:crypto.randomUUID(),frequencyOffset:0,duplicatesOnly:false,bins:10}).then(()=>Reflect.set(window,'overviewReplacementSettled',true),error=>{Reflect.set(window,'overviewReplacementError',String(error));Reflect.set(window,'overviewReplacementSettled',true)})});observer.observe(element,{subtree:true,childList:true,characterData:true})},doc)
+ await panel.getByRole('button',{name:'Explorar columnas',exact:true}).click();await page.waitForFunction(()=>Reflect.get(window,'overviewReplacementSettled'));expect(await page.evaluate(()=>Reflect.get(window,'overviewReplacementError'))).toBeUndefined()
+ await expect(panel.getByRole('status')).toContainText('cancelado');await expect(panel.locator('tbody tr')).toHaveCount(0);await expect(panel.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true})).toBeDisabled();expect(await readFile(path,'utf8')).toBe(text)
+ const file=join(folder,'cardinalidad.csv'),large='Inicio,ID,Final\n'+Array.from({length:100001},(_,i)=>`2,${i},texto`).join('\n')+'\n';await writeFile(file,large);await page.evaluate(path=>window.freya.openPaths([path]),file);const next=await overview();await next.getByRole('button',{name:'Explorar columnas',exact:true}).click();await expect(next.getByRole('status')).toHaveText('Exploración terminada: 2 columnas analizadas; 1 no disponibles.',{timeout:90000});await expect(next.locator('tbody tr')).toHaveCount(3);await expect(next.locator('tbody tr').nth(1)).toContainText('No disponible');await expect(next.locator('.scope')).toContainText('cobertura parcial');const output=await report(next);expect(output.text).toContain('COBERTURA PARCIAL');expect(output.text).toContain('Columnas solicitadas: 3. Analizadas: 2. No disponibles: 1.');expect(await readFile(file,'utf8')).toBe(large)
+})
+
+test('panorámica: muestra etiquetada incluso durante el cálculo y presupuesto sin totales inventados',async()=>{
+ const path=join(folder,'muestra.csv');await writeFile(path,'ID,Valor\n'+'00123,2\n'.repeat(250));await truncate(path,50*1024*1024+1);const before=await stat(path),[doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);expect(doc.readonly).toBe(true);const panel=await overview()
+ await panel.evaluate(element=>{const observer=new MutationObserver(()=>{if(element.querySelectorAll('tbody tr').length!==1||!element.querySelector('[role=status]')?.textContent?.startsWith('Explorando columna'))return;Reflect.set(window,'overviewProvisionalSampleScope',element.querySelector('.scope')?.textContent);observer.disconnect()});observer.observe(element,{subtree:true,childList:true,characterData:true})})
+ await explore(panel);const provisional=await page.evaluate(()=>Reflect.get(window,'overviewProvisionalSampleScope'));expect(provisional).toContain('Muestra completa');expect(provisional).not.toContain('Documento completo');expect(provisional).toContain('resultados provisionales');const output=await report(panel);expect(output.text).toContain('MUESTRA LIMITADA');expect((await stat(path)).size).toBe(before.size);expect((await stat(path)).mtimeMs).toBe(before.mtimeMs)
+ const many=join(folder,'muchas-columnas.csv'),manyText=Array.from({length:2001},(_,i)=>'C'+i).join(',')+'\n1\n';await writeFile(many,manyText);await page.evaluate(path=>window.freya.openPaths([path]),many);const capped=await overview();await capped.getByRole('button',{name:'Explorar columnas',exact:true}).click();await expect(capped.getByRole('status')).toContainText('hasta 2 000 columnas');await expect(capped.locator('tbody tr')).toHaveCount(0);expect(await readFile(many,'utf8')).toBe(manyText)
+ const wide=join(folder,'ancho.csv');await writeFile(wide,Array.from({length:2000},(_,i)=>'C'+i).join(',')+'\n'+'1\n'.repeat(1001));await page.evaluate(path=>window.freya.openPaths([path]),wide);const limited=await overview();await limited.getByRole('button',{name:'Explorar columnas',exact:true}).click();await expect(limited.getByRole('status')).toContainText('dos millones de posiciones');await expect(limited.locator('tbody tr')).toHaveCount(0);await expect(limited.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true})).toBeDisabled()
+})
+
+test('panorámica: mide 3 000, 100 000 y un millón de filas completas con una columna',async()=>{
+ test.setTimeout(120000);const measurements:unknown[]=[]
+ for(const count of [3000,100000,1000000]){
+  const text='Valor\n'+(Array.from({length:1000},(_,i)=>String(i)).join('\n')+'\n').repeat(count/1000),begin=performance.now(),{doc,path}=await open(text),openMs=performance.now()-begin;expect(doc.readonly).toBe(false)
+  const panel=await overview();await page.evaluate(()=>{let previous=performance.now();const state={gaps:[] as number[],timer:0};state.timer=window.setInterval(()=>{const now=performance.now();state.gaps.push(now-previous);previous=now},20);Reflect.set(window,'overviewTiming',state)})
+  const started=performance.now();await explore(panel);const exploreMs=performance.now()-started,heartbeat=await page.evaluate(()=>{const state=Reflect.get(window,'overviewTiming');clearInterval(state.timer);return{intervalMs:20,samples:state.gaps.length,maxGapMs:Math.max(0,...state.gaps)}});await expect(panel.locator('.scope')).toContainText(count.toLocaleString()+' filas por columna');expect((await panel.locator('tbody tr th,tbody tr td').allTextContents()).slice(2,8)).toEqual([count.toLocaleString(),'0','0','0',(1000).toLocaleString(),(count-1000).toLocaleString()]);expect(await readFile(path,'utf8')).toBe(text);expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)?.dirty).toBe(false)
+  measurements.push({rows:count,columns:1,bytes:Buffer.byteLength(text),openMs,exploreMs,heartbeat});await page.evaluate(id=>window.freya.close(id),doc.id)
+ }
+ await writeFile(test.info().outputPath('column-overview-profile.json'),JSON.stringify({recordedAt:new Date().toISOString(),platform:process.platform,arch:process.arch,os:release(),cpu:cpus()[0]?.model,logicalCpus:cpus().length,totalMemoryBytes:totalmem(),node:process.versions.node,electron:await app.evaluate(()=>process.versions.electron),measurements},null,2)+'\n')
+})
+
+test('panorámica: abrir un millón de filas y explorar inmediatamente no compite con la carga inicial de la grilla',async()=>{
+ test.setTimeout(120000)
+ const text='Valor\n'+'2\n'.repeat(1000000),path=join(folder,'apertura-fria.csv');await writeFile(path,text)
+ const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);expect(doc.readonly).toBe(false)
+ const panel=await overview();await explore(panel)
+ await expect(panel.locator('.scope')).toContainText((1000000).toLocaleString()+' filas por columna');expect((await panel.locator('tbody tr th,tbody tr td').allTextContents()).slice(2,8)).toEqual([(1000000).toLocaleString(),'0','0','0','1',(999999).toLocaleString()])
+ expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)?.dirty).toBe(false);expect(await readFile(path,'utf8')).toBe(text)
+})
+
+test('panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance',async()=>{
+ const text='Grupo,Valor\n'+'visible,2\noculto,9\n'.repeat(10000),{path}=await open(text),panel=await overview(),button=panel.getByRole('button',{name:'Explorar columnas',exact:true})
+ await panel.getByLabel('Alcance de la vista general',{exact:true}).selectOption('view');await expect(button).toBeEnabled()
+ const blocked=await page.getByLabel('Buscar en tabla',{exact:true}).evaluate(async input=>{
+  (input as HTMLInputElement).value='visible';input.dispatchEvent(new Event('input',{bubbles:true}));await Promise.resolve()
+  const panel=document.querySelector<HTMLElement>('[aria-label="Vista general de columnas"]')!,button=panel.querySelector<HTMLButtonElement>('button[type="submit"]')!,blocked=button.disabled
+  panel.querySelector<HTMLFormElement>('form')!.requestSubmit();await Promise.resolve();return blocked
+ })
+ expect(blocked).toBe(true);await expect(panel.locator('tbody tr')).toHaveCount(0)
+ await panel.evaluate(element=>{const observer=new MutationObserver(()=>{if(!element.querySelector('[role=status]')?.textContent?.startsWith('Explorando columna 1 de'))return;observer.disconnect();const grid=document.querySelector('[aria-label="Tabla de datos"]')!;grid.scrollTop=grid.scrollHeight;Reflect.set(window,'overviewSameScopePaged',true)});observer.observe(element,{subtree:true,childList:true,characterData:true})})
+ await explore(panel);expect(await page.evaluate(()=>Reflect.get(window,'overviewSameScopePaged'))).toBe(true)
+ await expect(page.getByRole('gridcell',{name:'Fila 10000, Grupo',exact:true})).toHaveText('visible');await expect(panel.locator('.scope')).toContainText((10000).toLocaleString()+' filas por columna');await expect(panel.locator('tbody tr')).toHaveCount(2)
+ expect((await panel.locator('tbody tr').nth(1).locator('th,td').allTextContents()).slice(2,8)).toEqual([(10000).toLocaleString(),'0','0','0','1',(9999).toLocaleString()]);expect(await readFile(path,'utf8')).toBe(text)
+})

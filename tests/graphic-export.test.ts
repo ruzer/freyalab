@@ -2,6 +2,7 @@ import {beforeEach,afterEach,it,expect,vi} from 'vitest'
 import {mkdtemp,writeFile,readFile,rm,access} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join} from 'node:path'
+import * as files from '../src/main/files'
 import {randomUUID} from 'node:crypto'
 const state=vi.hoisted(()=>({folder:'',destination:'',cancelled:false,onDialog:()=>{},onPrint:()=>{},destroy:vi.fn(),table:vi.fn(),saveDialog:vi.fn()}))
 vi.mock('electron',()=>({app:{getPath:()=>state.folder},dialog:{showSaveDialog:async()=>{state.saveDialog();state.onDialog();return{canceled:state.cancelled,filePath:state.destination}}},BrowserWindow:class{
@@ -11,7 +12,7 @@ vi.mock('electron',()=>({app:{getPath:()=>state.folder},dialog:{showSaveDialog:a
 }}))
 vi.mock('../src/main/table-client',()=>({TableClient:class{call=state.table;stop(){}}}))
 import {Documents} from '../src/main/documents'
-import {exportDocument,exportGraphic} from '../src/main/export'
+import {exportDocument,exportGraphic,exportResult} from '../src/main/export'
 let docs:Documents,id:string,source:string
 const svg='<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><script>alert(1)</script><text onclick="alert(1)">00123</text><use href="https://invalid.test/x"/></svg>'
 beforeEach(async()=>{
@@ -42,4 +43,33 @@ it('cancelar el destino no escribe archivos ni cambia el documento',async()=>{
 })
 it('una imagen de la revisión editable actual no guarda ni descarta cambios pendientes',async()=>{
  Object.assign(docs.get(id).info,{readonly:false,dirty:true,revision:4});const before=docs.info(id);await exportGraphic(docs,id,{format:'svg',svg,revision:4});expect(docs.info(id)).toEqual(before);expect(docs.info(id).dirty).toBe(true);expect(state.table).not.toHaveBeenCalled();expect(await readFile(source,'utf8')).toBe('N\n00123\n')
+})
+
+it('resultados: CSV y JSON requieren nombres nuevos y no serializan la fuente de muestra',async()=>{
+ state.destination=join(state.folder,'result.csv');const before=docs.info(id)
+ expect(await exportResult(docs,id,{format:'csv',content:'X,Y\r\n00123,5\r\n',context:'{"rows":[["00123","5"]]}'},async()=>{})).toBe(state.destination)
+ expect(await readFile(state.destination,'utf8')).toBe('X,Y\r\n00123,5\r\n');expect(JSON.parse(await readFile(state.destination+'.contexto.json','utf8'))).toEqual({rows:[['00123','5']]});expect(docs.info(id)).toEqual(before);expect(state.table).not.toHaveBeenCalled()
+ await expect(exportResult(docs,id,{format:'csv',content:'nuevo',context:'{}'},async()=>{})).rejects.toThrow('nombres nuevos');expect(await readFile(state.destination,'utf8')).toContain('00123')
+})
+it('resultados: contexto existente, destinos abiertos, extensión incorrecta y cancelación no alteran archivos',async()=>{
+ state.destination=source;await expect(exportResult(docs,id,{format:'csv',content:'x',context:'{}'},async()=>{})).rejects.toThrow('ruta distinta')
+ state.destination=join(state.folder,'result.csv');await writeFile(state.destination+'.contexto.json','conservar');await expect(exportResult(docs,id,{format:'csv',content:'x',context:'{}'},async()=>{})).rejects.toThrow('nombres nuevos');await expect(access(state.destination)).rejects.toThrow();expect(await readFile(state.destination+'.contexto.json','utf8')).toBe('conservar')
+ state.destination=join(state.folder,'wrong.txt');await expect(exportResult(docs,id,{format:'json',content:'{}'},async()=>{})).rejects.toThrow('terminar en .json');state.cancelled=true;expect(await exportResult(docs,id,{format:'json',content:'{}'},async()=>{})).toBeNull()
+})
+it('resultados: un error de disco en el segundo archivo revierte solamente los archivos de esta exportación',async()=>{
+ state.destination=join(state.folder,'result.csv');const originalWrite=files.atomicWrite,write=vi.spyOn(files,'atomicWrite').mockImplementation(async(path,...args)=>{if(path===state.destination)throw new Error('Disco lleno');await originalWrite(path,...args)})
+ try{await expect(exportResult(docs,id,{format:'csv',content:'X\n1\n',context:'{}'},async()=>{})).rejects.toThrow('Disco lleno');await expect(access(state.destination)).rejects.toThrow();await expect(access(state.destination+'.contexto.json')).rejects.toThrow();expect(await readFile(source,'utf8')).toBe('N\n00123\n')}finally{write.mockRestore()}
+})
+it('resultados: cancelar o cambiar revisión después del contexto limpia ambos destinos nuevos',async()=>{
+ state.destination=join(state.folder,'result.csv');let validations=0
+ await expect(exportResult(docs,id,{format:'csv',content:'X\n1\n',context:'{}'},async()=>{if(++validations===3)throw new Error('Análisis cancelado.')})).rejects.toThrow('cancelado');await expect(access(state.destination)).rejects.toThrow();await expect(access(state.destination+'.contexto.json')).rejects.toThrow()
+})
+it('resultados: no borra cambios externos durante una reversión y explica la entrega incompleta',async()=>{
+ state.destination=join(state.folder,'result.csv');let validations=0
+ await expect(exportResult(docs,id,{format:'csv',content:'X\n1\n',context:'{}'},async()=>{if(++validations===3){await writeFile(state.destination+'.contexto.json','cambio externo');throw new Error('Cancelar')}})).rejects.toThrow('se conservaron');expect(await readFile(state.destination+'.contexto.json','utf8')).toBe('cambio externo');await expect(access(state.destination)).rejects.toThrow()
+})
+it('resultados: limita tamaño antes del selector y revalida antes de escribir JSON o Markdown',async()=>{
+ state.destination=join(state.folder,'result.json');await expect(exportResult(docs,id,{format:'json',content:'x'.repeat(20*1024*1024+1)},async()=>{})).rejects.toThrow('20 MiB');expect(state.saveDialog).not.toHaveBeenCalled()
+ await expect(exportResult(docs,id,{format:'json',content:'{}'},async()=>{throw new Error('Fuente cambió')})).rejects.toThrow('Fuente cambió');await expect(access(state.destination)).rejects.toThrow()
+ state.destination=join(state.folder,'result.md');expect(await exportResult(docs,id,{format:'md',content:'# Resultado'},async()=>{})).toBe(state.destination);expect(await readFile(state.destination,'utf8')).toBe('# Resultado')
 })
