@@ -40,7 +40,7 @@ async function handle(operation:string,args:unknown[]){
  case'documents':return[...docs.records.keys()].map(key=>docs.info(key))
  case'update':return docs.update(id.parse(a),text.parse(b))
  case'save':return docs.save(id.parse(a),z.boolean().optional().parse(b))
- case'close':return docs.close(id.parse(a))
+ case'close':{const key=id.parse(a),closed=await docs.close(key);if(closed)analytics.forget(key);return closed}
  case'reload':return docs.reload(id.parse(a))
  case'copyTable':{docs.get(id.parse(a));const options=tableExport.parse(b),format=z.enum(['tsv','markdown']).parse(c),output=await docs.table.call<string>(format==='markdown'?'markdown':'clipboard',a,options);if(Buffer.byteLength(output,'utf8')>8*1024*1024)throw new Error('La copia supera 8 MiB. Reduce la selección o expórtala.');await clipboard.writeText(output);return}
  case'pasteTable':{docs.get(id.parse(a));const selected=range.parse(b);await docs.table.call('rangePreview',a,{type:'range',range:selected,operation:'clear'});const content=await clipboard.readText();if(Buffer.byteLength(content,'utf8')>8*1024*1024)throw new Error('El portapapeles supera 8 MiB. Pega un bloque menor.');return content}

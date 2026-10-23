@@ -7,32 +7,42 @@ import {stat} from 'node:fs/promises'
 import {sqlColumns} from '../shared/sql-helpers'
 import type {SqlRequest,SqlSource,SqlResult,SqlProgress} from '../shared/types'
 import type {Documents} from './documents'
+import {JobQueue,type Priority} from './job-queue'
 
 const origin='freyalab-analysis://engine',scheme='freyalab-analysis'
 protocol.registerSchemesAsPrivileged([{scheme,privileges:{standard:true,secure:true,supportFetchAPI:true}}])
-interface Job {id:string;sources:SqlSource[];window?:BrowserWindow;abort:()=>void;result?:SqlResult;error?:string;disk:Map<string,{size:number;mtimeMs:number}>}
+interface Job {id:string;documents:string[];sources:SqlSource[];window?:BrowserWindow;timer?:NodeJS.Timeout;used:number;result?:SqlResult;error?:string;disk:Map<string,{size:number;mtimeMs:number}>}
+// Resultados terminados que se conservan para paginarlos: el panel SQL, el gráfico y la exportación pueden tener uno cada uno.
+// Peor caso del esquema (10 000 filas × 200 columnas): unos 62 MiB de memoria por resultado, ver docs/evidence/sql-job-queue-2026-10-23.md.
+const retained=3
 export class SqlService {
- private job?:Job
+ private jobs=new Map<string,Job>()
+ private queue:JobQueue
+ private tick=0
  constructor(private docs:Documents,private progress:(event:SqlProgress)=>void){
+  this.queue=new JobQueue(1,requestId=>progress({requestId,phase:'En cola: hay otro análisis en curso',rows:0}))
   const isolated=session.fromPartition('freyalab-analysis'),root=fileURLToPath(new URL('../renderer',import.meta.url))
   isolated.protocol.handle(scheme,request=>{try{const url=new URL(request.url),target=resolve(root,'.'+decodeURIComponent(url.pathname)),path=relative(root,target);if(url.hostname!=='engine'||path.startsWith('..')||isAbsolute(path))return new Response('No autorizado',{status:403});const dev=process.env.ELECTRON_RENDERER_URL;return net.fetch(dev?new URL(url.pathname,dev).href:pathToFileURL(target).href)}catch{return new Response('Ruta no válida',{status:400})}})
   isolated.webRequest.onBeforeRequest((details,callback)=>callback({cancel:!details.url.startsWith(origin+'/')}))
   isolated.setPermissionRequestHandler((_window,_permission,callback)=>callback(false));isolated.setPermissionCheckHandler(()=>false)
  }
- private check(job:Job){if(this.job!==job)throw new Error('Análisis cancelado.');for(const source of job.sources)if(this.docs.get(source.id).info.revision!==source.revision)throw new Error('Una fuente cambió. Ejecuta de nuevo el análisis.')}
- cancel(requestId:string){const job=this.job;if(job?.id!==requestId)return;this.job=undefined;job.abort();const owner=job.window;job.window=undefined;owner?.destroy()}
- stop(){if(this.job)this.cancel(this.job.id)}
- async run(request:SqlRequest):Promise<SqlResult>{
+ private check(job:Job){if(this.jobs.get(job.id)!==job)throw new Error('Análisis cancelado.');for(const source of job.sources)if(this.docs.get(source.id).info.revision!==source.revision)throw new Error('Una fuente cambió. Ejecuta de nuevo el análisis.')}
+ cancel(requestId:string){if(!this.jobs.delete(requestId))return;this.queue.cancel(requestId)}
+ stop(){this.jobs.clear();this.queue.clear()}
+ // Al cerrar un documento se cancelan sus solicitudes (en cola, en curso o terminadas) y se suelta lo que retenían.
+ forget(documentId:string){for(const job of [...this.jobs.values()])if(job.documents.includes(documentId))this.cancel(job.id)}
+ // Se descartan los menos usados (por orden de uso, no de llegada: un trabajo que acaba de terminar nunca es el más antiguo).
+ private trim(){const finished=[...this.jobs.values()].filter(job=>job.result).sort((a,b)=>a.used-b.used);for(const old of finished.slice(0,Math.max(0,finished.length-retained)))this.jobs.delete(old.id)}
+ async run(request:SqlRequest,priority:Priority='interactive'):Promise<SqlResult>{
   if(app.commandLine.hasSwitch('no-sandbox'))throw new Error('El análisis SQL requiere el aislamiento de Chromium. Inicia FreyaLab sin la opción --no-sandbox.')
   for(const source of request.sources){const record=this.docs.get(source.id);if(record.info.kind!=='csv'||record.info.revision!==source.revision)throw new Error('Una fuente no es CSV o cambió de revisión.')}
-  this.stop();let rejectCancel:(error:Error)=>void=()=>{}
-  const cancelled=new Promise<never>((_,reject)=>rejectCancel=reject),job:Job={id:request.requestId,sources:[],abort:()=>rejectCancel(new Error('Análisis cancelado.')),disk:new Map()};this.job=job
-  const timeout=setTimeout(()=>{job.error='El análisis superó dos minutos. Reduce las fuentes o la consulta.';this.cancel(job.id)},120000)
-  try{return await Promise.race([this.execute(job,request),cancelled])}
-  catch(error){if(this.job===job)this.job=undefined;throw new Error(job.error??(error as Error).message)}
-  finally{clearTimeout(timeout);const owner=job.window;job.window=undefined;owner?.destroy()}
+  this.cancel(request.requestId);const job:Job={id:request.requestId,documents:request.sources.map(source=>source.id),sources:[],used:0,disk:new Map()};this.jobs.set(job.id,job)
+  const start=()=>{job.timer=setTimeout(()=>{job.error='El análisis superó dos minutos. Reduce las fuentes o la consulta.';this.cancel(job.id)},120000);return this.execute(job,request)}
+  const dispose=()=>{clearTimeout(job.timer);const owner=job.window;job.window=undefined;owner?.destroy()}
+  try{await this.queue.run(job.id,priority,start,dispose);job.used=++this.tick;this.trim();return await this.page(job.id,0)}
+  catch(error){if(this.jobs.get(job.id)===job)this.jobs.delete(job.id);throw new Error(job.error??(error as Error).message)}
  }
- private async execute(job:Job,request:SqlRequest){
+ private async execute(job:Job,request:SqlRequest):Promise<void>{
   const owner=new BrowserWindow({show:false,webPreferences:{sandbox:true,contextIsolation:true,nodeIntegration:false,partition:'freyalab-analysis',backgroundThrottling:false}});job.window=owner
   owner.webContents.setWindowOpenHandler(()=>({action:'deny'}));owner.webContents.on('will-navigate',event=>event.preventDefault())
   owner.webContents.on('render-process-gone',()=>{if(job.window!==owner)return;job.error='El motor de análisis se cerró. Los documentos siguen intactos.';this.cancel(job.id)})
@@ -55,10 +65,10 @@ export class SqlService {
   this.check(job);const version=await call<string>('seal');this.progress({requestId:job.id,phase:'Ejecutando consulta de solo lectura',rows:job.sources.reduce((n,s)=>n+s.rows,0)})
   const output=z.object({columns:z.array(z.object({name:z.string().max(100000),type:z.string().max(1000)})).min(1).max(200),rows:z.array(z.array(z.string().max(8*1024*1024).nullable()).max(200)).max(10000),limited:z.boolean()}).parse(await call('query',request.sql));if(output.rows.some(row=>row.length!==output.columns.length)||output.rows.reduce((n,row)=>n+row.reduce((m,v)=>m+(v===null?0:Buffer.byteLength(v,'utf8')),0),0)>8*1024*1024)throw new Error('El motor devolvió un resultado no válido o demasiado grande.');this.check(job)
   job.result={requestId:job.id,sources:job.sources,version,columns:output.columns,rows:output.rows,returnedRows:output.rows.length,limited:output.limited,offset:0,completedAt:new Date().toISOString()}
-  return this.page(job.id,0)
  }
  async page(requestId:string,offset:number):Promise<SqlResult>{
-  const job=this.job;if(!job||job.id!==requestId||!job.result)throw new Error('El resultado ya no está disponible. Ejecuta de nuevo la consulta.');this.check(job)
+  const job=this.jobs.get(requestId);if(!job?.result)throw new Error('El resultado ya no está disponible. Ejecuta de nuevo la consulta.');this.check(job)
+  job.used=++this.tick
   for(const [id,expected] of job.disk){const path=this.docs.get(id).info.path;if(!path)throw new Error('La fuente ya no existe.');const current=await stat(path);if(current.size!==expected.size||current.mtimeMs!==expected.mtimeMs)throw new Error('El archivo cambió en disco. Ejecuta de nuevo el análisis.')}
   return{...job.result,offset,rows:job.result.rows.slice(offset,offset+100)}
  }
