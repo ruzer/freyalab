@@ -33,6 +33,7 @@ Cada script usa un perfil, una carpeta de exportación y copias temporales de lo
 | `22-flowF`, `23-flowF2` | F. Mermaid | Diagrama nuevo, error, zoom, exportación SVG/PNG/PDF |
 | `24-menu` | Ventana | Menú nativo y tamaño mínimo |
 | `27-responsive` | Resoluciones | Cromo, filas visibles y desbordes en ocho tamaños |
+| `37-chart-vs-table` | Gráficos frente a tabla | Filas de tabla visibles con cada panel abierto en seis tamaños |
 | `34-overlap` | Ventana mínima | Solape entre botones y altura visible de la tabla con cada panel abierto |
 | `28-a11y` | Accesibilidad | Contraste, tamaños de texto y de objetivos (medición automática aproximada) |
 | `29-big` | Límites | Muestra de un CSV de ~57 MiB |

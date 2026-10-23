@@ -213,7 +213,20 @@ La ventana tiene mínimo de 900×600 **[R]** `24-menu`. Medido con un CSV abiert
 | 1024×768 | 281 px | 37 % | 12 |
 | 900×600 | 304 px | 51 % | 6 |
 
-No hay desborde horizontal de página en ningún tamaño. Con un panel abierto la situación empeora **[R]** `34-overlap` (E18): en 900×600 con `Estadísticas` abierto la tabla queda en 20 px; con `Análisis` o `Gráficos` queda en **0 px** y los botones `Estadísticas` (49×20 px) y `Gráficos` (19×20 px) se solapan con `Comandos`, y el texto de ayuda con la fila `Codificación` **[V]**. Sin panel, 900×600 se ve limpio y sin solapes (E17). El explorador ocupa 240 px por defecto (27 % a 900 px).
+No hay desborde horizontal de página en ningún tamaño. Con un panel abierto la situación empeora **[R]** `34-overlap` (E18): en 900×600 con `Estadísticas` abierto la tabla queda en 20 px; con `Análisis` o `Gráficos` queda en **0 px** y los botones `Estadísticas` (49×20 px) y `Gráficos` (19×20 px) se solapan con `Comandos`, y el texto de ayuda con la fila `Codificación` **[V]**. Sin panel, 900×600 se ve limpio y sin solapes (E17).
+
+**La tabla desaparece al abrir Gráficos [R]** `37-chart-vs-table` (medido sobre `main` `e866b22`, ya integrado). El panel de gráficos reserva su altura **desde que se abre**, antes de generar nada (el lienzo vacío ya ocupa el sitio), y empuja la tabla hacia abajo. Filas completamente visibles y alto útil de la tabla (cabecera incluida); el criterio de conteo difiere del de la tabla anterior, así que solo son comparables entre sí:
+
+| Ventana | Sin panel | `Estadísticas` abierto | `Gráficos` abierto (con o sin gráfico generado) |
+|---|---|---|---|
+| 1920×1080 (alto útil 949) | 21 filas · 710 px | 15 filas · 529 px | 3 filas · 141 px |
+| 1440×900 | 19 filas · 661 px | 13 filas · 480 px | **2 filas · 121 px** |
+| 1366×768 | 15 filas · 529 px | 9 filas · 348 px | **0 filas · 68 px** |
+| 1280×800 | 16 filas · 561 px | 10 filas · 380 px | **1 fila · 81 px** |
+| 1280×720 | 13 filas · 481 px | 8 filas · 300 px | **0 filas · 49 px** |
+| 900×600 | 7 filas · 271 px | 0 filas · 54 px | **0 filas · 0 px** |
+
+Es decir: con Gráficos abierto, la tabla pasa de 19 a 2 filas en 1440×900 y a ninguna en 1366×768 y 1280×720. Se confirma que **no se puede ver la tabla mientras se configura o se mira un gráfico**; sirve de base para el panel acoplado de §12.1 (UX-03, UX-04). El explorador ocupa 240 px por defecto (27 % a 900 px).
 
 **Claro y oscuro.** Ambos son coherentes y legibles (E13 y E14); el oscuro supera mejor el contraste (§3.6). En el dibujo del gráfico hay un píxel blanco en la esquina de cruce de dos barras de desplazamiento en oscuro **[V]** E14.
 
@@ -496,7 +509,7 @@ Base analítica por revisión (DuckDB-Wasm, solo lectura; una por versión)
 |---|---|---|---|---|
 | UX-01 | P0 | Nueve PR «fusionados» no están en `main`; el #34 vive aparte | git/gh | repo |
 | UX-02 | P1 | Una imagen ausente impide dibujar **todos** los diagramas y bloquea exportar a HTML/PDF, con error técnico y ruta | [R] `21` + [C] | `main` |
-| UX-03 | P1 | El gráfico queda parcialmente oculto y los controles no se ven con el resultado | [R] `14` | `main`, medido en pila |
+| UX-03 | P1 | El gráfico queda parcialmente oculto, los controles no se ven con el resultado y el panel empuja la tabla (2 filas visibles en 1440×900, 0 en 1366×768) | [R] `14`, `37` | `main` |
 | UX-04 | P1 | La tabla CSV acumula 4–5 franjas de controles; 214 px antes de la primera fila | [R] `27` | `main` |
 | UX-06 | P1 | Crear un gráfico sencillo requiere 7 interacciones y conceptos de modelado; X por defecto = primera columna; lienzo vacío | [R] `13`–`16` | `main` |
 | UX-07 | P1 | Línea con fecha sin agrupar falla con un mensaje engañoso | [R] `16` | pila (agrupar) |
@@ -724,7 +737,7 @@ Esfuerzo: **S** < 1 día · **M** 2–4 días · **L** 1–2 semanas. Impacto: a
 |---|---|---|---|---|---|---|
 | Proceso | Nueve PR fusionados fuera de `main` | §1.2, git/gh | PR único de integración y política de bases | Alto | S | **P0** |
 | Markdown | Una imagen ausente rompe diagramas y exportación | `21-md-image`, E22 | Aislar el error por imagen | Alto | S | **P1** |
-| Gráficos | Gráfico recortado; controles y resultado no se ven juntos | `14`, E12–E13 | Desplazar al gráfico; texto breve | Alto | S | **P1** |
+| Gráficos | Gráfico recortado; controles y resultado no se ven juntos; la tabla queda en 2 filas | `14`, `37`, E12–E13 | Desplazar al gráfico; texto breve; panel acoplado | Alto | S (corto) / L (acoplado) | **P1** |
 | CSV | 4–5 franjas de controles | `27`, E02, E26 | Fila única + panel acoplado | Alto | L | **P1** |
 | Gráficos | 7 interacciones; X = primera columna; lienzo vacío | `13`–`16`, E11 | Sugeridos y vista en vivo | Alto | M–L | **P1** |
 | Gráficos | Línea con fecha falla con mensaje engañoso | `16-six`, E15 | Agrupar por defecto o mensaje claro | Medio | S | **P1** |
@@ -777,14 +790,14 @@ Cada ficha: **Problema · Evidencia · Usuario afectado · Solución · Benefici
 - *Aceptación:* nueva E2E (falla primero): documento con imagen ausente y dos diagramas ⇒ 2 SVG en la vista previa, texto «Imagen no disponible: logo.png», exportación HTML produce archivo y menciona la imagen; ningún mensaje contiene `Error invoking remote method` ni una ruta absoluta.
 
 **UX-03 (P1) El gráfico debe verse completo y junto a sus controles**
-- *Problema:* el panel desplazable deja ver el 33–61 % del gráfico tras «Generar» y las cinco líneas de texto lo empujan.
-- *Evidencia:* `14-flowD2`: 112/340 px a 1280×800; 207/340 a 1440×900; E12, E13.
+- *Problema:* el panel desplazable deja ver el 33–61 % del gráfico tras «Generar» y las cinco líneas de texto lo empujan; además, desde que se abre reserva su altura y deja la tabla en 2 filas visibles en 1440×900 (19 sin panel) y en 0 en 1366×768 y 1280×720.
+- *Evidencia:* `14-flowD2`: 112/340 px a 1280×800; 207/340 a 1440×900; E12, E13. `37-chart-vs-table`: filas de tabla visibles con el panel abierto (tabla de §3.4).
 - *Usuario:* todos.
 - *Solución a corto plazo:* tras generar, desplazar el gráfico a la vista; condensar el texto a una línea con «¿Qué significa?» desplegable. A medio plazo, panel acoplado (12.1).
 - *Beneficio:* se ven las etiquetas del eje X sin buscarlas.
 - *Complejidad:* S (corto plazo), L (acoplado). *Riesgo:* bajo.
 - *Dependencias:* panel acoplado depende de UX-04.
-- *Aceptación:* en 1280×800 el gráfico se ve entero (≥ 340 px) tras «Generar» sin desplazar a mano; medido con la misma geometría de `14-flowD2`.
+- *Aceptación:* en 1280×800 el gráfico se ve entero (≥ 340 px) tras «Generar» sin desplazar a mano (misma geometría de `14-flowD2`); con el panel de gráficos abierto la tabla conserva ≥ 8 filas visibles en 1440×900 (panel acoplado o plegable; medido con `37-chart-vs-table`).
 
 **UX-04 (P1) Reducir las franjas de la tabla CSV**
 - *Problema:* 214 px de controles antes de la primera fila (24–51 % de la altura).
