@@ -24,7 +24,7 @@ jobs:
           - os: macos-15-intel
             executable: release/mac/FreyaLab.app/Contents/MacOS/FreyaLab
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
