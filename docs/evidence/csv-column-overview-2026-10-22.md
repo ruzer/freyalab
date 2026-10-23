@@ -63,3 +63,7 @@ Esto acredita ejecución del paquete y de la app copiada en este Mac. No acredit
 La CI de `fe583fa` (run `39883746215`) detectó en Windows un timeout de 5 s en `tests/chart-presets.test.ts`: 50 guardados sincronizados sucesivos, con 180/181 pruebas unitarias correctas. Se sustituyó esa preparación repetitiva por una biblioteca válida de 49 entradas y se comprueban **49→50→51** mediante un guardado real, lectura desde otra instancia y rechazo sin alterar los bytes del archivo. Se mantienen todas las aserciones de identidad/encabezados y los otros tests de guardado, concurrencia y fallo de escritura. No se amplían timeouts ni se cambia el producto.
 
 Prueba dirigida: 7 correctas (359 ms de suite local). Suite unitaria completa: 181 correctas. La CI del nuevo commit debe confirmar Windows; el fallo anterior no se declara resuelto remotamente por pasar en este Mac. Este ajuste solo afecta tests/evidencia: no requiere reemplazar la app instalada del commit `4e0a454`.
+
+## Corrección posterior: aislamiento de consultas
+
+El preflight por `tablePage` y su cancelación descritos arriba corresponden a la implementación inicial. Se sustituyeron por metadatos existentes y se separó la cancelación del análisis de la paginación. Evidencia de la corrección en [csv-overview-query-isolation-2026-10-22.md](csv-overview-query-isolation-2026-10-22.md).

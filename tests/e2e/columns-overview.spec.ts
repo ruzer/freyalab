@@ -24,7 +24,7 @@ test('panorámica: tipos, calidad, alcance, explicación por teclado, informe y 
  expect((await rows.nth(4).locator('th,td').allTextContents()).slice(2,6)).toEqual(['1','1','1','1'])
  const explanation=rows.nth(0).locator('summary');await explanation.focus();await explanation.press('Enter');await expect(rows.nth(0)).toContainText('ceros iniciales');await expect(rows.nth(0).locator('details')).toHaveAttribute('open','')
  for(const [theme,width,height] of [['light',1440,900],['dark',1280,800]] as const){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.setViewportSize({width,height});await panel.scrollIntoViewIfNeeded();await page.screenshot({animations:'disabled',path:test.info().outputPath(`dw04b-overview-${theme}-${width}x${height}.png`)})}
- await page.getByLabel('Buscar en tabla',{exact:true}).fill('Oaxaca');await expect(page.locator('.csv-toolbar')).toContainText('3 de 4 filas');await expect(rows).toHaveCount(0);await panel.getByLabel('Alcance de la vista general',{exact:true}).selectOption('view');await explore(panel);await expect(panel.locator('.scope')).toContainText('Vista filtrada');await expect(panel.locator('.scope')).toContainText('3 filas por columna')
+ await page.getByLabel('Buscar en tabla',{exact:true}).fill('Oaxaca');await expect(page.locator('.csv-toolbar')).toContainText('3 de 4 filas');await expect(rows).toHaveCount(5);await panel.getByLabel('Alcance de la vista general',{exact:true}).selectOption('view');await explore(panel);await expect(panel.locator('.scope')).toContainText('Vista filtrada');await expect(panel.locator('.scope')).toContainText('3 filas por columna')
  await panel.getByLabel('Buscar nombres de columnas',{exact:true}).fill('Total');await expect(rows).toHaveCount(1);const output=await report(panel);expect(output.text).toContain('Columnas solicitadas: 5. Analizadas: 5. No disponibles: 0.');expect(output.text).toContain('"search": "Oaxaca"');expect(output.text).toContain('"1. ID"');expect(output.text).toContain('"5. Opcional"');expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toEqual(before[0]);expect(await readFile(path,'utf8')).toBe(source)
 })
 
@@ -34,12 +34,12 @@ test('panorámica: páginas, nombres duplicados, columnas marcadas y detalle con
  await panel.getByLabel('Alcance de la vista general',{exact:true}).selectOption('view');await explore(panel);await panel.getByRole('button',{name:'Elegir columna 2 para explorar',exact:true}).click();const detail=page.getByRole('region',{name:'Exploración de columna',exact:true});await expect(detail.getByLabel('Columna para explorar',{exact:true})).toHaveValue('1');await expect(detail.getByLabel('Filas para explorar',{exact:true})).toHaveValue('view');await expect(page.getByRole('heading',{name:'Estadísticas por columna',exact:true})).toBeFocused();await detail.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(detail.getByRole('status')).toHaveText('Exploración completa.');expect(await readFile(path,'utf8')).toBe(text)
 })
 
-test('panorámica: cancelar preflight o cambiar revisión descarta respuestas tardías y no continúa columnas',async()=>{
+test('panorámica: cancelar o cambiar revisión descarta respuestas tardías y no continúa columnas',async()=>{
  const {doc,path}=await open(),panel=await overview()
- await panel.evaluate(element=>{element.querySelector<HTMLFormElement>('form')!.requestSubmit();queueMicrotask(()=>{Reflect.set(window,'overviewCancelledPhase',element.querySelector('[role=status]')?.textContent);const button=[...element.querySelectorAll('button')].find(button=>button.textContent==='Cancelar exploración de columnas');if(!button)throw new Error('Sin cancelación durante preflight');button.click()})})
- expect(await page.evaluate(()=>Reflect.get(window,'overviewCancelledPhase'))).toBe('Comprobando filas del alcance…');await expect(panel.getByRole('status')).toHaveText('Exploración de columnas cancelada.');await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:1,requestId:999}),doc.id);await expect(panel.locator('tbody tr')).toHaveCount(0);await expect(panel.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true})).toBeDisabled()
+ await panel.evaluate(element=>{element.querySelector<HTMLFormElement>('form')!.requestSubmit();queueMicrotask(()=>{Reflect.set(window,'overviewCancelledPhase',element.querySelector('[role=status]')?.textContent);const button=[...element.querySelectorAll('button')].find(button=>button.textContent==='Cancelar exploración de columnas');if(!button)throw new Error('Sin cancelación durante el análisis');button.click()})})
+ expect(await page.evaluate(()=>Reflect.get(window,'overviewCancelledPhase'))).toBe('Explorando columna 1 de 5…');await expect(panel.getByRole('status')).toHaveText('Exploración de columnas cancelada.');await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:1,requestId:999}),doc.id);await expect(panel.locator('tbody tr')).toHaveCount(0);await expect(panel.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true})).toBeDisabled()
  await panel.evaluate((element,id)=>{element.querySelector<HTMLFormElement>('form')!.requestSubmit();queueMicrotask(()=>Reflect.set(window,'overviewPendingEdit',window.freya.tableEdit(id,{type:'cell',rowId:'1',column:2,value:'99'})))},doc.id)
- await page.evaluate(async()=>await Reflect.get(window,'overviewPendingEdit'));await expect(panel.getByRole('status')).toHaveText(/^(Datos o alcance actualizados\. Pulsa Explorar columnas\.|La tabla cambió\. Vuelve a analizar\.|Los datos cambiaron\. Vuelve a explorar\.)$/);await expect(panel.locator('tbody tr')).toHaveCount(0);await expect(panel.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true})).toBeDisabled();expect(await readFile(path,'utf8')).toBe(source)
+ await page.evaluate(async()=>await Reflect.get(window,'overviewPendingEdit'));await expect(panel.getByRole('status')).toHaveText(/^(Datos o alcance actualizados\. Pulsa Explorar columnas\.|La tabla cambió\. Vuelve a analizar\.|Los datos cambiaron\. Vuelve a explorar\.|Análisis cancelado: la tabla cambió o se recibió otra solicitud\.)$/);await expect(panel.locator('tbody tr')).toHaveCount(0);await expect(panel.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true})).toBeDisabled();expect(await readFile(path,'utf8')).toBe(source)
  // La edición directa prueba el rechazo del motor; reabrir sincroniza sus metadatos con la interfaz.
  await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(panel.getByRole('status')).toContainText('Datos o alcance actualizados');await explore(panel);await expect(panel.locator('tbody tr')).toHaveCount(5);const current=(await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)!;expect(current.revision).toBeGreaterThan(doc.revision);expect((await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:1,requestId:1000}),doc.id)).rows[0].cells[2]).toBe('99')
 })
@@ -70,4 +70,28 @@ test('panorámica: mide 3 000, 100 000 y un millón de filas completas con una c
   measurements.push({rows:count,columns:1,bytes:Buffer.byteLength(text),openMs,exploreMs,heartbeat});await page.evaluate(id=>window.freya.close(id),doc.id)
  }
  await writeFile(test.info().outputPath('column-overview-profile.json'),JSON.stringify({recordedAt:new Date().toISOString(),platform:process.platform,arch:process.arch,os:release(),cpu:cpus()[0]?.model,logicalCpus:cpus().length,totalMemoryBytes:totalmem(),node:process.versions.node,electron:await app.evaluate(()=>process.versions.electron),measurements},null,2)+'\n')
+})
+
+test('panorámica: abrir un millón de filas y explorar inmediatamente no compite con la carga inicial de la grilla',async()=>{
+ test.setTimeout(120000)
+ const text='Valor\n'+'2\n'.repeat(1000000),path=join(folder,'apertura-fria.csv');await writeFile(path,text)
+ const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);expect(doc.readonly).toBe(false)
+ const panel=await overview();await explore(panel)
+ await expect(panel.locator('.scope')).toContainText((1000000).toLocaleString()+' filas por columna');expect((await panel.locator('tbody tr th,tbody tr td').allTextContents()).slice(2,8)).toEqual([(1000000).toLocaleString(),'0','0','0','1',(999999).toLocaleString()])
+ expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)?.dirty).toBe(false);expect(await readFile(path,'utf8')).toBe(text)
+})
+
+test('panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance',async()=>{
+ const text='Grupo,Valor\n'+'visible,2\noculto,9\n'.repeat(10000),{path}=await open(text),panel=await overview(),button=panel.getByRole('button',{name:'Explorar columnas',exact:true})
+ await panel.getByLabel('Alcance de la vista general',{exact:true}).selectOption('view');await expect(button).toBeEnabled()
+ const blocked=await page.getByLabel('Buscar en tabla',{exact:true}).evaluate(async input=>{
+  (input as HTMLInputElement).value='visible';input.dispatchEvent(new Event('input',{bubbles:true}));await Promise.resolve()
+  const panel=document.querySelector<HTMLElement>('[aria-label="Vista general de columnas"]')!,button=panel.querySelector<HTMLButtonElement>('button[type="submit"]')!,blocked=button.disabled
+  panel.querySelector<HTMLFormElement>('form')!.requestSubmit();await Promise.resolve();return blocked
+ })
+ expect(blocked).toBe(true);await expect(panel.locator('tbody tr')).toHaveCount(0)
+ await panel.evaluate(element=>{const observer=new MutationObserver(()=>{if(!element.querySelector('[role=status]')?.textContent?.startsWith('Explorando columna 1 de'))return;observer.disconnect();const grid=document.querySelector('[aria-label="Tabla de datos"]')!;grid.scrollTop=grid.scrollHeight;Reflect.set(window,'overviewSameScopePaged',true)});observer.observe(element,{subtree:true,childList:true,characterData:true})})
+ await explore(panel);expect(await page.evaluate(()=>Reflect.get(window,'overviewSameScopePaged'))).toBe(true)
+ await expect(page.getByRole('gridcell',{name:'Fila 10000, Grupo',exact:true})).toHaveText('visible');await expect(panel.locator('.scope')).toContainText((10000).toLocaleString()+' filas por columna');await expect(panel.locator('tbody tr')).toHaveCount(2)
+ expect((await panel.locator('tbody tr').nth(1).locator('th,td').allTextContents()).slice(2,8)).toEqual([(10000).toLocaleString(),'0','0','0','1',(9999).toLocaleString()]);expect(await readFile(path,'utf8')).toBe(text)
 })

@@ -2,21 +2,24 @@
  import {onDestroy} from 'svelte'
  import {columnSummary} from '../../shared/column-profile'
  import {columnOverviewReport,type ReportContext} from '../lib/statistics-report'
- import type {DocumentInfo,TableQuery,ColumnOverviewRow} from '../../shared/types'
- let {doc,columns,query,queryValid,onerror,onreport,oninspect}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;oninspect:(column:number,scope:'all'|'view')=>void}=$props()
+ import type {DocumentInfo,TableQuery,ColumnOverviewRow,TableViewMeta} from '../../shared/types'
+ let {doc,columns,query,queryValid,viewMeta,onerror,onreport,oninspect}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;oninspect:(column:number,scope:'all'|'view')=>void}=$props()
  let scope=$state<'all'|'view'>('all'),selection=$state('all'),busy=$state(false),reporting=$state(false),results=$state<ColumnOverviewRow[]>([])
  let message=$state('Pulsa Explorar columnas para comprender este archivo.'),total=$state(0),rowCount=$state(0),search=$state(''),offset=$state(0),context=$state<ReportContext|null>(null)
  let serial=0,active:{id:string;requestId:string}|null=null,timer:ReturnType<typeof setTimeout>|undefined
- const queryKey=$derived(JSON.stringify([query.search,query.filters,query.sort,query.order,query.conditions,query.filterMode]))
+ const viewKey=(query:TableQuery)=>JSON.stringify([query.search,query.filters,query.sort,query.order,query.conditions,query.filterMode])
+ const viewReady=$derived(queryValid&&viewMeta.requestId>0&&viewMeta.revision===doc.revision&&viewMeta.sample===doc.readonly&&viewKey(query)===viewKey(viewMeta.query))
+ const scopeKey=$derived(scope==='view'?JSON.stringify([scope,viewKey(query),viewReady]):scope)
+ const scopeReady=$derived(scope==='all'?doc.rowCount!==undefined&&Number.isSafeInteger(doc.rowCount)&&doc.rowCount>=0:viewReady)
  const selectionKey=$derived(selection==='selected'?JSON.stringify(columns):'all')
  const visible=$derived(results.filter(row=>`${row.column+1}. ${row.name}`.toLocaleLowerCase().includes(search.toLocaleLowerCase())))
  const failed=$derived(results.filter(row=>'error'in row).length)
  function cancel(){serial++;clearTimeout(timer);if(active)void window.freya.cancelAnalysis(active.id,active.requestId).catch(()=>{});active=null;busy=false;results=[];context=null;offset=0}
  onDestroy(cancel)
- $effect(()=>{void doc.id;void doc.revision;void queryKey;void queryValid;void scope;void selectionKey;cancel();message='Datos o alcance actualizados. Pulsa Explorar columnas.'})
+ $effect(()=>{void doc.id;void doc.revision;void scopeKey;void selectionKey;cancel();message='Datos o alcance actualizados. Pulsa Explorar columnas.'})
  $effect(()=>{void search;offset=0})
  async function explore(){
-  if(!queryValid){onerror('Espera una vista válida antes de explorar.');return}
+  if(!scopeReady){onerror('Espera a que se cargue el alcance elegido antes de explorar.');return}
   cancel();const ticket=serial,id=doc.id,revision=doc.revision,headers=[...doc.headers??[]],capturedScope=scope,capturedQuery=scope==='view'?$state.snapshot(query):undefined
   const selected=selection==='all'?headers.map((_,index)=>index):[...new Set($state.snapshot(columns))].sort((a,b)=>a-b)
   if(!selected.length){message='Marca al menos una columna en la tabla.';return}
@@ -24,19 +27,18 @@
   total=selected.length;rowCount=0;busy=true;message='Comprobando filas del alcance…'
   timer=setTimeout(()=>{if(ticket===serial){cancel();message='La exploración superó dos minutos. Reduce las columnas o filtra las filas y vuelve a intentarlo.'}},120000)
   try{
-   const meta=await window.freya.tablePage(id,{...capturedQuery,offset:0,limit:1,requestId:ticket})
-   if(ticket!==serial)return
-   if(meta.revision!==revision||doc.id!==id||doc.revision!==revision)throw new Error('Los datos cambiaron. Vuelve a explorar.')
-   if(meta.matched*selected.length>2_000_000)throw new Error('El alcance supera dos millones de posiciones de celdas. Marca menos columnas o elige una vista filtrada.')
-   rowCount=meta.matched
-   const captured:ReportContext={source:doc.name,revision,sample:meta.sample,dirty:doc.dirty,scope:`${meta.sample?capturedQuery?'Vista filtrada de la muestra':'Muestra completa':capturedQuery?'Vista filtrada':'Documento completo'} · ${selection==='all'?'Todas las columnas':'Columnas marcadas al iniciar'}`,analyzedAt:new Date().toISOString(),query:capturedQuery}
+   const matched=capturedQuery?viewMeta.matched:doc.rowCount,capturedSample=doc.readonly
+   if(matched===undefined||!Number.isSafeInteger(matched)||matched<0)throw new Error('El alcance no tiene un recuento válido. Vuelve a abrir el archivo.')
+   if(matched*selected.length>2_000_000)throw new Error('El alcance supera dos millones de posiciones de celdas. Marca menos columnas o elige una vista filtrada.')
+   rowCount=matched
+   const captured:ReportContext={source:doc.name,revision,sample:capturedSample,dirty:doc.dirty,scope:`${capturedSample?capturedQuery?'Vista filtrada de la muestra':'Muestra completa':capturedQuery?'Vista filtrada':'Documento completo'} · ${selection==='all'?'Todas las columnas':'Columnas marcadas al iniciar'}`,analyzedAt:new Date().toISOString(),query:capturedQuery}
    context=captured
    for(const column of selected){
     const requestId=crypto.randomUUID();active={id,requestId};message=`Explorando columna ${results.length+1} de ${total}…`
     try{
      const data=await window.freya.analyzeColumn(id,{column,query:capturedQuery,revision,requestId,frequencyOffset:0,duplicatesOnly:false,bins:10})
      if(ticket!==serial)return
-     if(data.revision!==revision||doc.id!==id||doc.revision!==revision||data.cells!==rowCount||data.sample!==meta.sample)throw new Error('Los datos cambiaron. Vuelve a explorar.')
+     if(data.revision!==revision||doc.id!==id||doc.revision!==revision||data.cells!==rowCount||data.sample!==capturedSample)throw new Error('Los datos cambiaron. Vuelve a explorar.')
      const {profile,cells,empty,missing,whitespace,numeric,unique,extraDuplicates,sample,filtered}=data
      results=[...results,{column,name:headers[column],result:{profile,cells,empty,missing,whitespace,numeric,unique,extraDuplicates,revision,sample,filtered}}]
     }catch(error){
@@ -61,7 +63,7 @@
  <form onsubmit={event=>{event.preventDefault();void explore()}}>
   <label>Columnas <select aria-label="Columnas para explorar" bind:value={selection} disabled={busy}><option value="all">Todas las columnas</option><option value="selected" disabled={!columns.length}>Columnas marcadas</option></select></label>
   <label>Filas <select aria-label="Alcance de la vista general" bind:value={scope} disabled={busy}><option value="all">{doc.readonly?'Muestra completa':'Documento completo'}</option><option value="view">{doc.readonly?'Vista filtrada de la muestra':'Vista filtrada'}</option></select></label>
-  <button type="submit" disabled={busy||!queryValid}>Explorar columnas</button>
+  <button type="submit" disabled={busy||!scopeReady}>Explorar columnas</button>
   {#if busy}<button type="button" onclick={()=>{cancel();message='Exploración de columnas cancelada.'}}>Cancelar exploración de columnas</button><progress aria-label="Progreso de exploración de columnas" value={results.length} max={total}></progress>{/if}
   <button type="button" disabled={!context||busy||reporting||doc.revision!==context.revision} onclick={report}>Abrir informe de columnas Markdown</button>
  </form>
