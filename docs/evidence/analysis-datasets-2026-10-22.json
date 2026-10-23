@@ -1,0 +1,860 @@
+{
+  "recordedAt": "2026-10-23T00:01:51.936Z",
+  "productionCommit": "d70472e2874ef174e623dc55e75b497e6ce84e0f",
+  "platform": "darwin",
+  "arch": "arm64",
+  "os": "27.0.0",
+  "cpu": "Apple M2 Max",
+  "logicalCpus": 12,
+  "totalMemoryBytes": 34359738368,
+  "node": "24.22.1",
+  "electron": "44.9.2",
+  "method": {
+    "repetitions": 2,
+    "order": [
+      "baseline-frozen",
+      "frozen-baseline"
+    ],
+    "queries": 3,
+    "memory": "25 ms observations of summed Electron working sets; shared pages may be counted twice; host process separately observed before/after; not exclusive RSS or guaranteed peak",
+    "querySQL": [
+      "WITH preparada AS (SELECT * FROM datos WHERE \"Ciudad\" = 'Oaxaca' AND TRY_CAST(\"Total\" AS DECIMAL(38,2)) >= 50) SELECT COUNT(*) AS filas,SUM(CAST(\"Total\" AS DECIMAL(38,2))) AS total,COUNT(DISTINCT \"Código\") AS distintos,COUNT(*) FILTER(WHERE \"Opcional\" IS NULL) AS ausentes,COUNT(*) FILTER(WHERE \"Opcional\" = '') AS vacios FROM preparada",
+      "WITH preparada AS (SELECT * FROM datos WHERE \"Ciudad\" = 'Oaxaca' AND TRY_CAST(\"Total\" AS DECIMAL(38,2)) >= 50) SELECT \"Ciudad\",SUM(CAST(\"Total\" AS DECIMAL(38,2))) AS total FROM preparada GROUP BY \"Ciudad\" ORDER BY \"Ciudad\"",
+      "WITH preparada AS (SELECT * FROM datos WHERE \"Ciudad\" = 'Puebla' AND TRY_CAST(\"Total\" AS DECIMAL(38,2)) >= 50) SELECT \"Ciudad\",SUM(CAST(\"Total\" AS DECIMAL(38,2))) AS total FROM preparada GROUP BY \"Ciudad\" ORDER BY \"Ciudad\""
+    ]
+  },
+  "measurements": [
+    {
+      "rows": 3000,
+      "bytes": 116001,
+      "openMs": 144.753875,
+      "repetition": 0,
+      "variant": "baseline",
+      "times": [
+        {
+          "query": 0,
+          "ms": 573.8999999761581,
+          "events": [
+            {
+              "ms": 16.899999976158142,
+              "phase": "Preparando motor local",
+              "rows": 0
+            },
+            {
+              "ms": 541.8999999761581,
+              "phase": "Ejecutando consulta de solo lectura",
+              "rows": 3000
+            }
+          ]
+        },
+        {
+          "query": 1,
+          "ms": 524.9000000059605,
+          "events": [
+            {
+              "ms": 9.100000023841858,
+              "phase": "Preparando motor local",
+              "rows": 0
+            },
+            {
+              "ms": 488,
+              "phase": "Ejecutando consulta de solo lectura",
+              "rows": 3000
+            }
+          ]
+        },
+        {
+          "query": 2,
+          "ms": 535.5999999940395,
+          "events": [
+            {
+              "ms": 8.5,
+              "phase": "Preparando motor local",
+              "rows": 0
+            },
+            {
+              "ms": 499,
+              "phase": "Ejecutando consulta de solo lectura",
+              "rows": 3000
+            }
+          ]
+        }
+      ],
+      "totalMs": 1654.848625,
+      "memory": {
+        "intervalMs": 25,
+        "samples": 62,
+        "maxObservedSumWorkingSetKiB": 1033120,
+        "maxObservedEngineWorkingSetKiB": 382944
+      },
+      "hostBefore": {
+        "rss": 195526656,
+        "heapTotal": 134660096,
+        "heapUsed": 68486512,
+        "external": 4461239,
+        "arrayBuffers": 357874
+      },
+      "hostAfter": {
+        "rss": 196018176,
+        "heapTotal": 136232960,
+        "heapUsed": 74072008,
+        "external": 4601907,
+        "arrayBuffers": 498502
+      }
+    },
+    {
+      "rows": 3000,
+      "bytes": 116001,
+      "openMs": 144.753875,
+      "repetition": 0,
+      "variant": "frozen",
+      "setup": {
+        "id": 5,
+        "bootMs": 455.69000000000005,
+        "captureMs": 120.63404199999968,
+        "importMs": 65.28645900000038,
+        "setupMs": 642.8530000000001,
+        "revision": 0,
+        "rowHash": "9e2be96091e81d21aa591c7c87bd69327e0d509526bae4cd878ec1885308d421",
+        "batches": 3,
+        "rows": 3000,
+        "arrowBytes": 161048,
+        "version": "v1.5.4"
+      },
+      "times": [
+        {
+          "query": 0,
+          "ms": 31.10733399999981
+        },
+        {
+          "query": 1,
+          "ms": 15.485000000000127
+        },
+        {
+          "query": 2,
+          "ms": 7.510958000000301
+        }
+      ],
+      "totalMs": 697.040583,
+      "memory": {
+        "intervalMs": 25,
+        "samples": 27,
+        "maxObservedSumWorkingSetKiB": 1048320,
+        "maxObservedEngineWorkingSetKiB": 383472
+      },
+      "hostBefore": {
+        "rss": 196034560,
+        "heapTotal": 136232960,
+        "heapUsed": 76075248,
+        "external": 4718559,
+        "arrayBuffers": 615154
+      },
+      "hostAfter": {
+        "rss": 241811456,
+        "heapTotal": 214630400,
+        "heapUsed": 96073832,
+        "external": 5478087,
+        "arrayBuffers": 1374682
+      }
+    },
+    {
+      "rows": 3000,
+      "bytes": 116001,
+      "openMs": 144.753875,
+      "repetition": 1,
+      "variant": "frozen",
+      "setup": {
+        "id": 6,
+        "bootMs": 445.2626660000001,
+        "captureMs": 106.68783299999996,
+        "importMs": 55.40587500000038,
+        "setupMs": 608.3492080000001,
+        "revision": 0,
+        "rowHash": "9e2be96091e81d21aa591c7c87bd69327e0d509526bae4cd878ec1885308d421",
+        "batches": 3,
+        "rows": 3000,
+        "arrowBytes": 161048,
+        "version": "v1.5.4"
+      },
+      "times": [
+        {
+          "query": 0,
+          "ms": 31.18179199999986
+        },
+        {
+          "query": 1,
+          "ms": 15.993917000000238
+        },
+        {
+          "query": 2,
+          "ms": 7.561666999999943
+        }
+      ],
+      "totalMs": 663.0935839999997,
+      "memory": {
+        "intervalMs": 25,
+        "samples": 25,
+        "maxObservedSumWorkingSetKiB": 1060496,
+        "maxObservedEngineWorkingSetKiB": 382688
+      },
+      "hostBefore": {
+        "rss": 241876992,
+        "heapTotal": 214630400,
+        "heapUsed": 98422376,
+        "external": 5594968,
+        "arrayBuffers": 1491563
+      },
+      "hostAfter": {
+        "rss": 308543488,
+        "heapTotal": 221184000,
+        "heapUsed": 134045832,
+        "external": 5719470,
+        "arrayBuffers": 1616065
+      }
+    },
+    {
+      "rows": 3000,
+      "bytes": 116001,
+      "openMs": 144.753875,
+      "repetition": 1,
+      "variant": "baseline",
+      "times": [
+        {
+          "query": 0,
+          "ms": 517.5,
+          "events": [
+            {
+              "ms": 8.599999994039536,
+              "phase": "Preparando motor local",
+              "rows": 0
+            },
+            {
+              "ms": 485.7000000178814,
+              "phase": "Ejecutando consulta de solo lectura",
+              "rows": 3000
+            }
+          ]
+        },
+        {
+          "query": 1,
+          "ms": 542.5999999940395,
+          "events": [
+            {
+              "ms": 9.299999982118607,
+              "phase": "Preparando motor local",
+              "rows": 0
+            },
+            {
+              "ms": 505.59999999403954,
+              "phase": "Ejecutando consulta de solo lectura",
+              "rows": 3000
+            }
+          ]
+        },
+        {
+          "query": 2,
+          "ms": 538,
+          "events": [
+            {
+              "ms": 8.700000017881393,
+              "phase": "Preparando motor local",
+              "rows": 0
+            },
+            {
+              "ms": 500.5,
+              "phase": "Ejecutando consulta de solo lectura",
+              "rows": 3000
+            }
+          ]
+        }
+      ],
+      "totalMs": 1617.2892500000003,
+      "memory": {
+        "intervalMs": 25,
+        "samples": 60,
+        "maxObservedSumWorkingSetKiB": 1072544,
+        "maxObservedEngineWorkingSetKiB": 381680
+      },
+      "hostBefore": {
+        "rss": 308609024,
+        "heapTotal": 221184000,
+        "heapUsed": 136383848,
+        "external": 5836029,
+        "arrayBuffers": 1732624
+      },
+      "hostAfter": {
+        "rss": 310460416,
+        "heapTotal": 223526912,
+        "heapUsed": 96665632,
+        "external": 4998201,
+        "arrayBuffers": 894796
+      }
+    },
+    {
+      "rows": 100000,
+      "bytes": 3890811,
+      "openMs": 336.9271669999998,
+      "repetition": 0,
+      "variant": "baseline",
+      "times": [
+        {
+          "query": 0,
+          "ms": 1163.6000000238419,
+          "events": [
+            {
+              "ms": 10.300000011920929,
+              "phase": "Preparando motor local",
+              "rows": 0
+            },
+            {
+              "ms": 536.3000000119209,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 10000
+            },
+            {
+              "ms": 590.2000000178814,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 20000
+            },
+            {
+              "ms": 640.1000000238419,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 30000
+            },
+            {
+              "ms": 692.4000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 40000
+            },
+            {
+              "ms": 740.8000000119209,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 50000
+            },
+            {
+              "ms": 791.4000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 60000
+            },
+            {
+              "ms": 837.4000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 70000
+            },
+            {
+              "ms": 884.9000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 80000
+            },
+            {
+              "ms": 931.8000000119209,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 90000
+            },
+            {
+              "ms": 979.4000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 100000
+            },
+            {
+              "ms": 980.2000000178814,
+              "phase": "Ejecutando consulta de solo lectura",
+              "rows": 100000
+            }
+          ]
+        },
+        {
+          "query": 1,
+          "ms": 1179.0999999940395,
+          "events": [
+            {
+              "ms": 9.200000017881393,
+              "phase": "Preparando motor local",
+              "rows": 0
+            },
+            {
+              "ms": 547,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 10000
+            },
+            {
+              "ms": 598.8000000119209,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 20000
+            },
+            {
+              "ms": 646.7000000178814,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 30000
+            },
+            {
+              "ms": 697.8000000119209,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 40000
+            },
+            {
+              "ms": 747.5,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 50000
+            },
+            {
+              "ms": 797.5,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 60000
+            },
+            {
+              "ms": 844.0999999940395,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 70000
+            },
+            {
+              "ms": 891.5,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 80000
+            },
+            {
+              "ms": 940.7000000178814,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 90000
+            },
+            {
+              "ms": 989.5,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 100000
+            },
+            {
+              "ms": 990.3000000119209,
+              "phase": "Ejecutando consulta de solo lectura",
+              "rows": 100000
+            }
+          ]
+        },
+        {
+          "query": 2,
+          "ms": 1147.5,
+          "events": [
+            {
+              "ms": 9.200000017881393,
+              "phase": "Preparando motor local",
+              "rows": 0
+            },
+            {
+              "ms": 518.9000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 10000
+            },
+            {
+              "ms": 566.4000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 20000
+            },
+            {
+              "ms": 616.7000000178814,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 30000
+            },
+            {
+              "ms": 664.9000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 40000
+            },
+            {
+              "ms": 719.8000000119209,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 50000
+            },
+            {
+              "ms": 766.5999999940395,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 60000
+            },
+            {
+              "ms": 815.9000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 70000
+            },
+            {
+              "ms": 863.2000000178814,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 80000
+            },
+            {
+              "ms": 913.2000000178814,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 90000
+            },
+            {
+              "ms": 960.3000000119209,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 100000
+            },
+            {
+              "ms": 961.0999999940395,
+              "phase": "Ejecutando consulta de solo lectura",
+              "rows": 100000
+            }
+          ]
+        }
+      ],
+      "totalMs": 3508.791792,
+      "memory": {
+        "intervalMs": 25,
+        "samples": 130,
+        "maxObservedSumWorkingSetKiB": 1294448,
+        "maxObservedEngineWorkingSetKiB": 448224
+      },
+      "hostBefore": {
+        "rss": 386990080,
+        "heapTotal": 263077888,
+        "heapUsed": 116234728,
+        "external": 8412751,
+        "arrayBuffers": 4309346
+      },
+      "hostAfter": {
+        "rss": 387039232,
+        "heapTotal": 263077888,
+        "heapUsed": 125792008,
+        "external": 8557363,
+        "arrayBuffers": 4453958
+      }
+    },
+    {
+      "rows": 100000,
+      "bytes": 3890811,
+      "openMs": 336.9271669999998,
+      "repetition": 0,
+      "variant": "frozen",
+      "setup": {
+        "id": 13,
+        "bootMs": 454.5856249999997,
+        "captureMs": 3136.6175839999996,
+        "importMs": 756.3845829999991,
+        "setupMs": 4372.378625000001,
+        "revision": 0,
+        "rowHash": "31b93408e9ec2c343f4d79fe4c0c57fcabcba5d156a2559ea7f9465f26bfc55a",
+        "batches": 100,
+        "rows": 100000,
+        "arrowBytes": 5393560,
+        "version": "v1.5.4"
+      },
+      "times": [
+        {
+          "query": 0,
+          "ms": 185.00220900000022
+        },
+        {
+          "query": 1,
+          "ms": 166.0220420000005
+        },
+        {
+          "query": 2,
+          "ms": 153.62233399999968
+        }
+      ],
+      "totalMs": 4877.037709,
+      "memory": {
+        "intervalMs": 25,
+        "samples": 182,
+        "maxObservedSumWorkingSetKiB": 1357360,
+        "maxObservedEngineWorkingSetKiB": 453152
+      },
+      "hostBefore": {
+        "rss": 390955008,
+        "heapTotal": 263077888,
+        "heapUsed": 127767176,
+        "external": 12448827,
+        "arrayBuffers": 8345422
+      },
+      "hostAfter": {
+        "rss": 575619072,
+        "heapTotal": 419676160,
+        "heapUsed": 299831992,
+        "external": 14692971,
+        "arrayBuffers": 10589566
+      }
+    },
+    {
+      "rows": 100000,
+      "bytes": 3890811,
+      "openMs": 336.9271669999998,
+      "repetition": 1,
+      "variant": "frozen",
+      "setup": {
+        "id": 14,
+        "bootMs": 472.42854199999783,
+        "captureMs": 3130.1443329999984,
+        "importMs": 744.2114999999976,
+        "setupMs": 4372.036666,
+        "revision": 0,
+        "rowHash": "31b93408e9ec2c343f4d79fe4c0c57fcabcba5d156a2559ea7f9465f26bfc55a",
+        "batches": 100,
+        "rows": 100000,
+        "arrowBytes": 5393560,
+        "version": "v1.5.4"
+      },
+      "times": [
+        {
+          "query": 0,
+          "ms": 186.60133300000234
+        },
+        {
+          "query": 1,
+          "ms": 165.51654100000087
+        },
+        {
+          "query": 2,
+          "ms": 155.12929099999747
+        }
+      ],
+      "totalMs": 4879.292959,
+      "memory": {
+        "intervalMs": 25,
+        "samples": 182,
+        "maxObservedSumWorkingSetKiB": 1385712,
+        "maxObservedEngineWorkingSetKiB": 447984
+      },
+      "hostBefore": {
+        "rss": 575700992,
+        "heapTotal": 419676160,
+        "heapUsed": 302174240,
+        "external": 18584672,
+        "arrayBuffers": 14481267
+      },
+      "hostAfter": {
+        "rss": 662257664,
+        "heapTotal": 453345280,
+        "heapUsed": 207164440,
+        "external": 12100174,
+        "arrayBuffers": 7996769
+      }
+    },
+    {
+      "rows": 100000,
+      "bytes": 3890811,
+      "openMs": 336.9271669999998,
+      "repetition": 1,
+      "variant": "baseline",
+      "times": [
+        {
+          "query": 0,
+          "ms": 1174.800000011921,
+          "events": [
+            {
+              "ms": 9.099999994039536,
+              "phase": "Preparando motor local",
+              "rows": 0
+            },
+            {
+              "ms": 523.0999999940395,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 10000
+            },
+            {
+              "ms": 577,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 20000
+            },
+            {
+              "ms": 628.5,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 30000
+            },
+            {
+              "ms": 687.1999999880791,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 40000
+            },
+            {
+              "ms": 736.5,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 50000
+            },
+            {
+              "ms": 783.6999999880791,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 60000
+            },
+            {
+              "ms": 829.8000000119209,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 70000
+            },
+            {
+              "ms": 882.9000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 80000
+            },
+            {
+              "ms": 934.5,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 90000
+            },
+            {
+              "ms": 987.0999999940395,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 100000
+            },
+            {
+              "ms": 987.9000000059605,
+              "phase": "Ejecutando consulta de solo lectura",
+              "rows": 100000
+            }
+          ]
+        },
+        {
+          "query": 1,
+          "ms": 1141.9000000059605,
+          "events": [
+            {
+              "ms": 9,
+              "phase": "Preparando motor local",
+              "rows": 0
+            },
+            {
+              "ms": 517.9000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 10000
+            },
+            {
+              "ms": 570.6999999880791,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 20000
+            },
+            {
+              "ms": 617.5999999940395,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 30000
+            },
+            {
+              "ms": 664.6999999880791,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 40000
+            },
+            {
+              "ms": 716.5999999940395,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 50000
+            },
+            {
+              "ms": 763,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 60000
+            },
+            {
+              "ms": 811.5,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 70000
+            },
+            {
+              "ms": 856.9000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 80000
+            },
+            {
+              "ms": 906.2999999821186,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 90000
+            },
+            {
+              "ms": 952.4000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 100000
+            },
+            {
+              "ms": 953.2999999821186,
+              "phase": "Ejecutando consulta de solo lectura",
+              "rows": 100000
+            }
+          ]
+        },
+        {
+          "query": 2,
+          "ms": 1169.7000000178814,
+          "events": [
+            {
+              "ms": 8.300000011920929,
+              "phase": "Preparando motor local",
+              "rows": 0
+            },
+            {
+              "ms": 538.4000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 10000
+            },
+            {
+              "ms": 587,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 20000
+            },
+            {
+              "ms": 636.1000000238419,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 30000
+            },
+            {
+              "ms": 686.8000000119209,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 40000
+            },
+            {
+              "ms": 738.4000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 50000
+            },
+            {
+              "ms": 785.5,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 60000
+            },
+            {
+              "ms": 834.1000000238419,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 70000
+            },
+            {
+              "ms": 880.1000000238419,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 80000
+            },
+            {
+              "ms": 926.8000000119209,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 90000
+            },
+            {
+              "ms": 979.4000000059605,
+              "phase": "Leyendo ventas-100000.csv",
+              "rows": 100000
+            },
+            {
+              "ms": 980.3000000119209,
+              "phase": "Ejecutando consulta de solo lectura",
+              "rows": 100000
+            }
+          ]
+        }
+      ],
+      "totalMs": 3505.8003750000025,
+      "memory": {
+        "intervalMs": 25,
+        "samples": 130,
+        "maxObservedSumWorkingSetKiB": 1428432,
+        "maxObservedEngineWorkingSetKiB": 448624
+      },
+      "hostBefore": {
+        "rss": 662274048,
+        "heapTotal": 453345280,
+        "heapUsed": 209497160,
+        "external": 15991877,
+        "arrayBuffers": 11888472
+      },
+      "hostAfter": {
+        "rss": 662306816,
+        "heapTotal": 453345280,
+        "heapUsed": 218831304,
+        "external": 16136401,
+        "arrayBuffers": 12032996
+      }
+    }
+  ]
+}
