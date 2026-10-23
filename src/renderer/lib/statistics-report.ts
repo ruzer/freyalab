@@ -6,13 +6,9 @@ export interface ReportContext {source:string;revision:number;sample:boolean;dir
 export interface ColumnReportContext extends ReportContext {columnName:string;otherColumnName?:string;duplicatesOnly:boolean}
 export type StatisticsRow=TableStats&{index:number;name:string}
 export type ColumnReportView='profile'|'frequencies'|'distribution'|'correlation'
-// Un tramo de código evita enlaces automáticos de GFM; JSON distingue controles, vacíos y barras.
-export const literal=(text:string)=>{
- const json=JSON.stringify(text),fence='`'.repeat((json.match(/`+/g)??[]).reduce((n,run)=>Math.max(n,run.length+1),1))
- return fence+' '+json.replace(/\|/g,'\\|')+' '+fence
-}
+import {literal,table} from '../../shared/markdown-table'
+export {literal,table} from '../../shared/markdown-table'
 const number=(value:number|null)=>value===null?'—':String(value)
-export const table=(rows:string[][])=>rows.map(row=>'| '+row.join(' | ')+' |').join('\n')+'\n\n'
 function preamble(context:ReportContext,title:string){
  return `# ${title}\n\n${context.sample?'> **MUESTRA LIMITADA:** los resultados no describen el archivo completo.\n\n':''}Informe estático del análisis completado. No modifica el CSV; abrirlo no vuelve a calcular los resultados.\n\n`+
  table([['Procedencia','Valor'],['---','---'],['Archivo',literal(context.source)],['Revisión de la sesión',String(context.revision)],['Alcance',literal(context.scope)],['Cambios sin guardar al iniciar',context.dirty?'Sí':'No'],['Análisis iniciado (UTC)',literal(context.analyzedAt)]])

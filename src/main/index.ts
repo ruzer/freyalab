@@ -3,7 +3,8 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve, relative, isAbsolute, extname } from 'node:path'
 import { z } from 'zod'
 import {col,query,conditionGroup} from './query-schema'
-import {ChartPresets} from './chart-presets'
+import {ChartPresets,chartConfiguration} from './chart-presets'
+import {exportChartResult} from './chart-result-export'
 import { SqlService } from './sql-service'
 import appIcon from '../../build/icon.png?asset'
 import { Documents } from './documents'
@@ -60,6 +61,7 @@ async function handle(operation:string,args:unknown[]){
  case'cancelAnalysis':docs.get(id.parse(a));return docs.table.call('cancelAnalysis',a,z.uuid().parse(b))
  case'stats':docs.get(id.parse(a));return docs.table.call('stats',a,rows.nullable().parse(b),z.array(col).max(100000).parse(c),z.object({requestId:z.uuid(),revision:z.number().int().nonnegative(),range:range.optional()}).optional().parse(d))
  case'markdown':docs.get(id.parse(a));return docs.table.call('markdown',a,tableExport.parse(b) as TableExport)
+ case'exportChartResult':return exportChartResult(docs,analytics,id.parse(a),z.object({requestId:id,revision:z.number().int().nonnegative(),configuration:chartConfiguration,format:z.enum(['csv','json','md']),protectFormulas:z.boolean()}).strict().parse(b))
  case'exportGraphic':return exportGraphic(docs,id.parse(a),z.object({format:z.enum(['svg','png','pdf']),svg:text.min(1),revision:z.number().int().nonnegative()}).strict().parse(b))
  case'export':return exportDocument(docs,id.parse(a),z.object({format:z.enum(['pdf','html','svg','png','csv','tsv']),html:text.optional(),svg:text.optional(),table:tableExport.optional()}).parse(b) as ExportRequest)
  case'image':return docs.image(id.parse(a),z.string().max(16*1024*1024).parse(b))

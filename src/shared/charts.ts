@@ -8,7 +8,8 @@ export const chartSeriesLimit=8
 export const chartLimit=(kind:ChartKind)=>kind==='line'||kind==='scatter'?2000:kind==='heatmap'?400:100
 
 // Each query aggregates the full source in DuckDB; only bounded plot rows reach the UI.
-export function chartSQL(headers:string[],options:ChartOptions){
+export function chartSQL(headers:string[],options:ChartOptions,limit=chartLimit(options.kind)){
+ if(!Number.isInteger(limit)||limit<1||limit>10000)throw new Error('El límite del resultado debe estar entre 1 y 10 000.')
  const names=sqlColumns(headers),column=(index:number)=>{if(!Number.isInteger(index)||!names[index])throw new Error('Elige una columna válida.');return quoteIdentifier(names[index].name)}
  if(!Object.hasOwn(chartKinds,options.kind))throw new Error('Elige un tipo de gráfico válido.')
  if(!Number.isInteger(options.bins)||options.bins<1||options.bins>30)throw new Error('Elige entre 1 y 30 intervalos.')
@@ -30,7 +31,7 @@ export function chartSQL(headers:string[],options:ChartOptions){
  const operation={count:'COUNT(*)',distinct:'COUNT(DISTINCT y)',sum:'SUM(ny)',average:'AVG(ny)',min:'MIN(ny)',max:'MAX(ny)',median:'MEDIAN(ny)'}[aggregate]
  const measureUsable=aggregate==='count'?'TRUE':aggregate==='distinct'?'y IS NOT NULL':'ny IS NOT NULL'
  if(time!=='none'){
-  const format={day:'%Y-%m-%d',month:'%Y-%m',year:'%Y'}[time],limit=chartLimit(options.kind)
+  const format={day:'%Y-%m-%d',month:'%Y-%m',year:'%Y'}[time]
   cte+=`, dated AS (SELECT *, CASE WHEN regexp_full_match(TRIM(x), '[0-9]{4}-[0-9]{2}-[0-9]{2}') AND TRIM(x)>='0001-01-01' AND TRIM(x)<='9999-12-31' THEN TRY_CAST(TRIM(x) AS DATE) END AS dx FROM base), observed AS (SELECT CAST(date_trunc('${time}',dx) AS DATE) AS period${series?', series':''}, ${operation} AS value FROM dated WHERE dx IS NOT NULL GROUP BY period${series?', series':''}), stats AS (SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE dx IS NOT NULL AND ${measureUsable}) AS usable, COUNT(*) FILTER (WHERE dx IS NULL) AS invalid_dates FROM dated)`
   let points=`SELECT strftime(period,'${format}') AS x, value${series?', series':''} FROM observed`,count='(SELECT COUNT(*) FROM points)'
   if(options.kind==='line'){
@@ -62,7 +63,7 @@ export function chartSQL(headers:string[],options:ChartOptions){
   points=`SELECT q.x, q.q1, q.median AS value, q.q3, MIN(b.ny) FILTER (WHERE b.ny>=q.q1-1.5*(q.q3-q.q1)) AS low, MAX(b.ny) FILTER (WHERE b.ny<=q.q3+1.5*(q.q3-q.q1)) AS high, COUNT(*) FILTER (WHERE ${outside}) AS outliers, COUNT(*) AS count, CAST(list_slice(LIST(b.ny ORDER BY b.ny) FILTER (WHERE ${outside}),1,20) AS VARCHAR) AS atypical FROM quartiles q JOIN base b ON b.x IS NOT DISTINCT FROM q.x WHERE b.ny IS NOT NULL GROUP BY q.x,q.q1,q.median,q.q3`
   extra=', p.q1, p.q3, p.low, p.high, p.outliers, p.count, p.atypical'
  }
- return `WITH ${cte}, points AS (${points}), stats AS (SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE ${usable}) AS usable FROM base) SELECT stats.total, stats.usable, (SELECT COUNT(*) FROM points) AS points, p.present, p.x, p.value${extra}${series?', p.series, (SELECT COUNT(*) FROM (SELECT DISTINCT series FROM base)) AS series_count':''} FROM stats LEFT JOIN (SELECT *, 1 AS present FROM points) p ON TRUE ORDER BY ${order} LIMIT ${chartLimit(options.kind)+1};`
+ return `WITH ${cte}, points AS (${points}), stats AS (SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE ${usable}) AS usable FROM base) SELECT stats.total, stats.usable, (SELECT COUNT(*) FROM points) AS points, p.present, p.x, p.value${extra}${series?', p.series, (SELECT COUNT(*) FROM (SELECT DISTINCT series FROM base)) AS series_count':''} FROM stats LEFT JOIN (SELECT *, 1 AS present FROM points) p ON TRUE ORDER BY ${order} LIMIT ${limit+1};`
 }
 
 export function chartLabels(headers:string[],options:ChartOptions){
@@ -77,10 +78,11 @@ export function chartLabels(headers:string[],options:ChartOptions){
 }
 
 export interface ChartData {total:number;usable:number;points:number;limited:boolean;rows:(string|null)[][];columns:string[];seriesCount?:number;invalidDates?:number}
-export function chartData(kind:ChartKind,columns:string[],rows:(string|null)[][]):ChartData{
+export function chartData(kind:ChartKind,columns:string[],rows:(string|null)[][],limit=chartLimit(kind)):ChartData{
+ if(!Number.isInteger(limit)||limit<1||limit>10000)throw new Error('Límite de gráfico no válido.')
  if(!rows.length||columns.slice(0,6).join(',')!=='total,usable,points,present,x,value')throw new Error('El motor no devolvió datos de gráfico válidos.')
  const count=(value:string|null)=>{const n=Number(value);if(value===null||!Number.isSafeInteger(n)||n<0)throw new Error('Recuento no válido.');return n}
- const total=count(rows[0][0]),usable=count(rows[0][1]),points=count(rows[0][2]),limit=chartLimit(kind)
+ const total=count(rows[0][0]),usable=count(rows[0][1]),points=count(rows[0][2])
  const seriesIndex=columns.indexOf('series_count'),dateIndex=columns.indexOf('invalid_dates'),seriesCount=seriesIndex<0?undefined:count(rows[0][seriesIndex]),invalidDates=dateIndex<0?undefined:count(rows[0][dateIndex])
  if(invalidDates!==undefined&&(invalidDates>total||usable>total-invalidDates))throw new Error('Recuento de fechas no válido.')
  const visible=columns.flatMap((name,i)=>i>=4&&!['series_count','invalid_dates'].includes(name)?[i]:[])

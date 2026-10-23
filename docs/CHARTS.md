@@ -116,3 +116,22 @@ Abre **Configuraciones guardadas**, escribe un nombre y pulsa **Guardar configur
 - Escrituras serializadas mediante el guardado atómico existente, con comprobación de hash al reemplazar. Esquema versionado, validación de opciones/columnas/condiciones y tres operaciones limitadas del puente; no se exponen rutas de archivos. Una biblioteca dañada, ilegible o de versión futura produce un mensaje y se conserva sin sobrescribir.
 
 La exportación de resultados agregados CSV/JSON/Markdown es la siguiente subentrega DW-03b; SVG/PNG/PDF siguen disponibles. No hay nuevas dependencias ni cambios del modelo textual, historial o recuperación de CSV.
+
+
+## DW-03b — exportar resultados con procedencia
+
+Después de generar un gráfico, abre **Exportar resultados del análisis**, elige JSON, CSV + JSON de contexto o Markdown, y pulsa **Exportar resultados**. No necesitas escribir SQL. Estos archivos contienen los resultados del análisis; los botones SVG/PNG/PDF siguen guardando la imagen.
+
+La exportación vuelve a consultar la misma revisión y configuración sobre la fuente elegida, incluyendo los cambios pendientes. Usa DuckDB y los mismos cálculos del gráfico, con un límite independiente de **10 000 elementos** y 8 MiB de resultados del motor. Por ejemplo, un dibujo limitado a 100 categorías puede exportar sus 150 categorías completas. Una línea temporal expande como máximo 10 001 periodos candidatos, conserva huecos y devuelve un máximo de 10 000 elementos. No se materializan calendarios de millones de días.
+
+- Incluye todas las series, aunque estén ocultas en la leyenda. Mantiene orden, agrupación temporal y filtros de tabla/propios; la captura de filtros no cambia la tabla.
+- Identifica fuente, revisión, cambios pendientes al iniciar, memoria o archivo completo desde disco, configuración, fecha UTC, versión DuckDB, filas utilizables/analizadas y total de elementos. Un resultado truncado se marca parcial con recuentos exactos. La muestra del editor no se convierte en archivo editable; Guardar y exportar el CSV original siguen bloqueados.
+- **JSON** conserva filas como arrays de strings o null, con columnas indexadas y etiquetas comprensibles. No convierte ceros iniciales, identificadores ni cifras entregadas por DuckDB a números de JavaScript. Vacío y null permanecen distintos; no usa nombres duplicados como claves de objetos.
+- **Markdown** incluye procedencia, alcance, filtros y una tabla con valores entre comillas/escapes JSON; `NULL` sin comillas representa nulo SQL. Usa los mismos helpers seguros de los informes existentes.
+- **CSV** usa csv-stringify, UTF-8, coma y CRLF; los textos están entrecomillados. Se acompaña de `<nombre>.csv.contexto.json`, con las filas originales exactas, metadatos y SHA-256 del CSV. La distinción nulo/vacío está preservada en JSON; los consumidores CSV pueden interpretar los campos vacíos de otra manera.
+- **Proteger fórmulas para hojas de cálculo**, activado por defecto, usa la opción existente de csv-stringify. Añade apóstrofo a entradas que empiezan por caracteres como `=`, `+`, `-`, `@` o controles; también puede afectar cifras negativas representadas como texto. Solo afecta al CSV de salida; el JSON conserva el resultado original. Puede desactivarse explícitamente. No promete que una hoja de cálculo externa conserve tipos o ceros iniciales al importar.
+- CSV y contexto requieren **dos nombres nuevos**: no reemplazan archivos existentes. Si hay colisión, elige otro nombre. Se reservan con creación exclusiva y se escriben con atomicWrite. Un error o cancelación revierte los bytes creados por esa operación; no elimina cambios externos y avisa si quedaron archivos que requieren revisión.
+- La pareja no es una transacción atómica ante caída del proceso: pueden quedar archivos nuevos incompletos. No se afectan originales; el hash del contexto permite verificar el CSV. Conserva ambos archivos tras una exportación correcta.
+- Los archivos serializados tienen un máximo de 20 MiB cada uno; un informe mayor se rechaza antes de elegir destino. Los destinos de documentos abiertos, enlaces simbólicos y extensiones incorrectas se rechazan. Cambios de fuente, cerrar el panel o **Cancelar exportación de resultados** cancelan el trabajo. No se presentan respuestas antiguas como una exportación actual.
+
+No incorpora librerías, motores ni comandos nuevos. Configuraciones guardadas, guardado/recuperación y el modelo textual siguen siendo independientes del análisis. Los demás objetivos DW-04–DW-10 permanecen abiertos.
