@@ -1,3 +1,4 @@
+import {describeConditions} from '../../shared/table-conditions'
 import type {SqlResult} from '../../shared/types'
 import {literal,table} from './statistics-report'
 
@@ -9,6 +10,7 @@ export function sqlReport(result:SqlResult,sql:string){
   'Instantánea del análisis completado. Abrir, editar o exportar este informe no recalcula la consulta ni modifica las fuentes CSV. El alcance de cada fuente se indica abajo; el análisis no cambia el archivo original.\n\n'+
   table([['Análisis','Valor'],['---','---'],['Finalizado (UTC)',literal(result.completedAt)],['DuckDB',literal(result.version)],['Filas conservadas',String(result.returnedRows)]])+
   '## Fuentes\n\n'+table([['Tabla SQL','Archivo','Filas analizadas','Revisión','Origen'],['---','---','---','---','---'],...result.sources.map(source=>[literal(source.table),literal(source.name),String(source.rows),String(source.revision),source.fromDisk?'Archivo completo desde disco; el editor solo muestra una muestra':source.filtered?'Vista filtrada del documento en memoria; incluye cambios pendientes':'Documento en memoria; incluye cambios pendientes'])])+
+  (result.sources.some(source=>source.where)?'## Filtros del análisis\n\nLas filas analizadas corresponden a las coincidencias, tras leer la fuente elegida; no son el total original.\n\n'+table([['Fuente','Condiciones adicionales'],['---','---'],...result.sources.filter(source=>source.where).map(source=>[literal(source.name),literal(describeConditions(source.columns.map(column=>column.original),source.where!))])]):'')+
   '## Consulta ejecutada\n\n'+fence+'sql\n'+sql+'\n'+fence+'\n\n'+
   '## Columnas del resultado\n\n'+table([['Posición','Nombre','Tipo DuckDB'],['---','---','---'],...result.columns.map((column,index)=>[String(index+1),literal(column.name),literal(column.type)])])+
   '## Resultado\n\n'+(result.rows.length?table([result.columns.map(column=>literal(column.name)),result.columns.map(()=>'---'),...result.rows.map(row=>row.map(value=>value===null?'`NULL`':literal(value)))]):'Sin filas de resultado.\n\n')+

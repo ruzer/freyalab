@@ -5,12 +5,15 @@
  import {GridComponent,TooltipComponent,VisualMapComponent,AriaComponent,TitleComponent,LegendComponent} from 'echarts/components'
  import {SVGRenderer} from 'echarts/renderers'
  import {chartKinds,chartAggregates,chartTimeGroups,chartLabels,chartSQL,chartData,chartLimit,type ChartOptions,type ChartData} from '../../shared/charts'
+ import CsvQueryTools from './CsvQueryTools.svelte'
+ import {describeConditions} from '../../shared/table-conditions'
  import {chartOption,chartSeries} from '../chart-option'
- import type {DocumentInfo,SqlResult,TableQuery} from '../../shared/types'
+ import type {DocumentInfo,SqlResult,TableQuery,TableConditionGroup} from '../../shared/types'
  use([BarChart,LineChart,ScatterChart,HeatmapChart,BoxplotChart,GridComponent,TooltipComponent,VisualMapComponent,AriaComponent,TitleComponent,LegendComponent,SVGRenderer])
  let {doc,query,queryValid,onclose,onerror}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;onclose:()=>void;onerror:(message:string)=>void}=$props()
  let scope=$state<'all'|'filtered'>('all')
- const scopeLabel=$derived(scope==='all'?'Documento completo':'Vista filtrada actual')
+ let where=$state<TableConditionGroup>({conditions:[],filterMode:'all'}),showFilters=$state(false),filtersButton=$state<HTMLButtonElement>()
+ const scopeLabel=$derived((scope==='all'?'Documento completo':'Vista filtrada actual')+(where.conditions.length?` · Filtros del gráfico: ${where.conditions.length} (${where.filterMode==='all'?'Y':'O'})`:''))
  const viewSignature=$derived(JSON.stringify([query.search,query.filters,query.conditions,query.filterMode]))
  const unavailable=$derived(scope==='filtered'&&(!queryValid||doc.readonly))
  let options=$state<ChartOptions>({kind:'bar',x:0,y:-1,bins:10,aggregate:'count',descending:false,measureType:'text',series:-1,time:'none'})
@@ -21,7 +24,7 @@
  let hiddenSeries=$state<string[]>([])
  const series=$derived(data?chartSeries(data):[])
  let element:HTMLDivElement,chart:ECharts|undefined,active:string|undefined
- const signature=$derived(JSON.stringify([doc.id,doc.revision,options,scope,scope==='filtered'?viewSignature:null]))
+ const signature=$derived(JSON.stringify([doc.id,doc.revision,options,scope,where,scope==='filtered'?viewSignature:null]))
  const tooWide=$derived((doc.headers?.length??0)>200)
  const sql=$derived.by(()=>{try{return chartSQL(doc.headers??[],options)}catch{return ''}})
  function cancel(){const previous=active;active=undefined;busy=false;data=null;source=null;tablePage=0;hiddenSeries=[];if(previous)void window.freya.sqlCancel(previous).catch(()=>{})}
@@ -40,7 +43,7 @@
  async function generate(){
   if(busy||!sql||tooWide||unavailable)return;cancel();const requestId=crypto.randomUUID();active=requestId;busy=true;message='Preparando gráfico…'
   try{
-   const first=await window.freya.sqlRun({requestId,sources:[{id:doc.id,revision:doc.revision,...scope==='filtered'?{query:$state.snapshot(query)}:{}}],sql})
+   const first=await window.freya.sqlRun({requestId,sources:[{id:doc.id,revision:doc.revision,...scope==='filtered'?{query:$state.snapshot(query)}:{},...where.conditions.length?{where:$state.snapshot(where)}:{}}],sql})
    if(active!==requestId)return
    if(first.limited||first.returnedRows>chartLimit(options.kind)+1)throw new Error('El resultado excedió el límite del gráfico.')
    const rows=[...first.rows]
@@ -58,7 +61,7 @@
  }
  const headings:Record<string,string>={x:'Eje X / categoría',value:'Valor / mediana',upper:'Límite superior',fila:'Fila de la fuente analizada',y:'Categoría Y',q1:'Cuartil 1',q3:'Cuartil 3',low:'Bigote inferior',high:'Bigote superior',series:'Serie (texto exacto)',outliers:'Atípicos totales',count:'Numéricos',atypical:'Primeros atípicos (máx. 20)'}
 </script>
-<svelte:window onkeydown={event=>{if(event.key==='Escape'&&event.target instanceof HTMLElement&&event.target.closest('.charts-panel')){event.preventDefault();onclose()}}}/>
+<svelte:window onkeydown={event=>{if(event.key==='Escape'&&event.target instanceof HTMLElement&&event.target.closest('.charts-panel')&&!event.target.closest('.query-tools')){event.preventDefault();onclose()}}}/>
 <section class="charts-panel" aria-label="Gráficos del CSV">
  <header><h3>Explorar con gráficos</h3><button aria-label="Cerrar gráficos" onclick={onclose}>×</button></header>
  <p>Fuente: {doc.name}. Los gráficos no modifican el CSV. Elige qué comparar y qué datos incluir.</p>
@@ -76,10 +79,14 @@
    {/if}
    {#if ['bar','line','scatter'].includes(options.kind)}<label>Separar por color <select aria-label="Series del gráfico" bind:value={options.series}><option value={-1}>Sin series</option>{#each doc.headers??[] as header,index}<option value={index}>{index+1}. {header}</option>{/each}</select></label>{/if}
    {#if ['bar','line','scatter'].includes(options.kind)}<label>Orden <select aria-label="Orden del gráfico" bind:value={options.descending}><option value={false}>{temporal?'Más antiguo primero':options.kind==='bar'?(options.series!==undefined&&options.series>=0?'Categoría A–Z':'Menor valor primero'):'Menor X primero'}</option><option value={true}>{temporal?'Más reciente primero':options.kind==='bar'?(options.series!==undefined&&options.series>=0?'Categoría Z–A':'Mayor valor primero'):'Mayor X primero'}</option></select></label>{/if}
+   <button type="button" aria-label="Filtros del gráfico" aria-expanded={showFilters} bind:this={filtersButton} onclick={()=>showFilters=!showFilters}>Filtros del gráfico{where.conditions.length?` (${where.conditions.length})`:''}</button>
+   {#if where.conditions.length}<button type="button" onclick={()=>{where={conditions:[],filterMode:'all'};showFilters=false;filtersButton?.focus()}}>Quitar filtros del gráfico</button>{/if}
    <button class="primary" type="submit" disabled={!sql||tooWide||unavailable}>Generar gráfico</button>
   </fieldset>
   {#if busy}<button type="button" onclick={()=>{cancel();message='Gráfico cancelado.'}}>Cancelar gráfico</button><progress aria-label="Generación del gráfico"></progress>{/if}
  </form>
+ {#if showFilters}<CsvQueryTools filtersOnly headers={doc.headers??[]} initialConditions={where.conditions} initialOrder={[]} initialMode={where.filterMode} onapply={(conditions,_order,filterMode)=>{where={conditions,filterMode};showFilters=false;filtersButton?.focus()}} onclose={()=>{showFilters=false;filtersButton?.focus()}}/>{/if}
+ {#if where.conditions.length}<details><summary>Filtros aplicados al gráfico</summary><pre>{describeConditions(doc.headers??[],where)}</pre><p>Los recuentos y el dibujo corresponden solo a las filas que cumplen estas condiciones dentro del alcance elegido.</p></details>{/if}
  <p class="help">{aggregated?(options.aggregate==='count'?'Agrupar por reúne las filas que tienen el mismo texto. El conteo indica cuántas hay en cada grupo.':'Elige el valor que quieres resumir. Para sumar o promediar, indica que es numérico; los identificadores deben seguir como texto.'):options.kind==='histogram'?'Elige una columna numérica: X mostrará sus intervalos e Y cuántas filas caen en cada uno.':options.kind==='heatmap'?'Elige dos categorías: cada celda indica cuántas filas tienen esa combinación.':'Elige las columnas que quieres comparar. Las variables numéricas se calculan con punto decimal.'}</p>
  <p>{scope==='filtered'?'Usa la búsqueda y los filtros actuales de la tabla, sobre todas las filas coincidentes; no solo la página visible. El orden del gráfico se elige aquí.':doc.readonly?'Analiza el archivo completo desde disco; la tabla del editor sigue siendo una muestra de solo lectura.':'Incluye todas las filas y los cambios pendientes, aunque la tabla tenga filtros activos.'}</p>
  <p class="scope" aria-label="Configuración del gráfico">{axes.summary} · {scopeLabel}. Eje X: {axes.x}. Eje Y: {axes.y}.</p>
@@ -90,7 +97,7 @@
  {#if options.series!==undefined&&options.series>=0}<p>Un color por categoría de la columna elegida, hasta 8 series. Ocultar un color no filtra los datos ni recalcula los totales. Ausente y vacío se mantienen separados; las combinaciones sin observaciones no se rellenan con cero.</p>{/if}
  {#if temporal}<p>Fechas AAAA-MM-DD de 0001 a 9999, sin hora ni zona horaria; se ignoran espacios exteriores. Se cuentan las fechas no válidas, vacías o ausentes. {options.kind==='line'?'Cada intervalo del calendario conserva un hueco si no tiene observaciones; no se inventan ceros. Los elementos cuentan periodos por serie.':'Solo se muestran periodos con observaciones.'}</p>{/if}
  <p role="status">{message}</p>
- {#if data&&source}<p class="scope">{source.name} · {source.filtered?'Vista filtrada actual':'Documento completo'} · {source.fromDisk?'Fuente completa desde disco':`Revisión ${source.revision}, cambios pendientes incluidos`} · {data.total.toLocaleString()} filas · {data.usable.toLocaleString()} utilizables · {(data.total-data.usable).toLocaleString()} omitidas del cálculo · {data.rows.length} de {data.points.toLocaleString()} elementos{#if data.invalidDates!==undefined} · Fechas no válidas/vacías/ausentes: {data.invalidDates}{/if}{#if data.seriesCount!==undefined} · Series representadas: {series.length} de {data.seriesCount}{/if}.</p>{/if}
+ {#if data&&source}<p class="scope">{source.name} · {scopeLabel} · {source.fromDisk?'Fuente completa desde disco':`Revisión ${source.revision}, cambios pendientes incluidos`} · {data.total.toLocaleString()} filas · {data.usable.toLocaleString()} utilizables · {(data.total-data.usable).toLocaleString()} omitidas del cálculo · {data.rows.length} de {data.points.toLocaleString()} elementos{#if data.invalidDates!==undefined} · Fechas no válidas/vacías/ausentes: {data.invalidDates}{/if}{#if data.seriesCount!==undefined} · Series representadas: {series.length} de {data.seriesCount}{/if}.</p>{/if}
  {#if data?.limited}<p class="notice">Gráfico parcial: se muestran los primeros {chartLimit(options.kind)} elementos en el orden indicado. Las agregaciones usan toda la fuente. No es una muestra aleatoria.</p>{/if}
  {#if options.kind==='line'&&!temporal}<p>Líneas ordenadas por X numérica y después por fila de la fuente analizada para empates. No infiere fechas. Las Y vacías o inválidas dejan huecos; X inválidas se omiten.</p>{:else if options.kind==='box'}<p>Cuartiles interpolados (Hyndman–Fan tipo 7), bigotes hasta el dato dentro de 1,5 × RIC. Se cuentan todos los atípicos; se dibujan los primeros 20 por categoría en orden numérico.</p>{:else if options.kind==='heatmap'}<p>Conteo por par de categorías exactas. Una posición sin celda significa combinación sin observaciones, no un cero imputado.</p>{:else if options.kind==='histogram'}<p>Intervalos de igual amplitud [desde, hasta), con máximo incluido en el último. Una columna constante usa un intervalo.</p>{/if}
  <!-- svelte-ignore a11y_no_noninteractive_tabindex (La región ampliada debe admitir desplazamiento con teclado.) -->
