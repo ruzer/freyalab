@@ -132,3 +132,50 @@ test('ayuda y selección de valores impiden cálculos incompatibles y explican c
  await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await page.getByRole('button',{name:'Editar encabezado 2',exact:true}).click();await page.getByRole('textbox',{name:'Nombre del encabezado',exact:true}).fill('Valor renombrado');await page.getByRole('textbox',{name:'Nombre del encabezado',exact:true}).press('Enter');await expect(panel.getByLabel('Tipo de medida del gráfico')).toHaveValue('text');await expect(panel.getByLabel('Resumen del gráfico')).toHaveValue('count');await expect(panel.locator('.plot svg path')).toHaveCount(0);await page.getByRole('button',{name:'Deshacer',exact:true}).click()
  await panel.getByRole('button',{name:'Generar gráfico',exact:true}).focus();await page.keyboard.press('Escape');await expect(page.getByRole('button',{name:'Gráficos',exact:true})).toBeFocused();expect(await readFile(path)).toEqual(before)
 })
+
+test('series por categoría: siete cálculos por combinación, líneas y puntos con valores exactos',async()=>{
+ const {doc,path}=await open(),before=await page.evaluate(()=>window.freya.documents())
+ const expected={count:[['A','U',3],['A','V',2],['B','U',2],['B','V',2],['C','U',1]],distinct:[['A','U',3],['A','V',2],['B','U',2],['B','V',2],['C','U',1]],sum:[['A','U',104],['A','V',6],['B','U',5],['B','V',7],['C','U',5]],average:[['A','U',104/3],['A','V',3],['B','U',5],['B','V',7],['C','U',5]],min:[['A','U',1],['A','V',2],['B','U',5],['B','V',7],['C','U',5]],max:[['A','U',100],['A','V',4],['B','U',5],['B','V',7],['C','U',5]],median:[['A','U',3],['A','V',3],['B','U',5],['B','V',7],['C','U',5]]}
+ for(const aggregate of Object.keys(expected) as (keyof typeof expected)[]){const data=await query(doc,{...options,kind:'bar',aggregate,series:3});expect(data.seriesCount).toBe(2);expect(data.rows).toHaveLength(5);for(const [x,series,value] of expected[aggregate]){const row=data.rows.find(row=>row[0]===x&&row[2]===series)!;expect(row).toBeDefined();expect(Number(row[1])).toBeCloseTo(Number(value),10)}}
+ const line=await query(doc,{...options,kind:'line',x:1,series:3});expect(line.rows.filter(row=>row[3]==='V')).toEqual([['2.0','2.0','2','V'],['4.0','4.0','4','V'],['6.0',null,'6','V']]);expect(line.rows.find(row=>row[2]==='8')).toEqual(['8.0',null,'8','U'])
+ const scatter=await query(doc,{...options,kind:'scatter',x:1,series:3});expect(scatter.rows).toHaveLength(7);expect(scatter.rows.every(row=>row[1]!==null)).toBe(true)
+ const missing=await open('Ciudad,N,Serie\r\nOaxaca,1,001\r\nOaxaca,2,1\r\nOaxaca,3,\r\nOaxaca,4\r\nOaxaca,5,9007199254740993\r\n','series-ids.csv')
+ const exact=await query(missing.doc,{...options,kind:'bar',y:1,aggregate:'sum',series:2});expect(exact.seriesCount).toBe(5);expect(exact.rows).toEqual([['Oaxaca','4.0',null],['Oaxaca','3.0',''],['Oaxaca','1.0','001'],['Oaxaca','2.0','1'],['Oaxaca','5.0','9007199254740993']])
+ expect(await readFile(path,'utf8')).toBe(original);expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)).toEqual(before.find(item=>item.id===doc.id))
+})
+
+test('series visuales: leyenda y teclado sincronizados, filtros, exportación y límite comprensible',async()=>{
+ const {doc,path}=await open();await page.getByRole('button',{name:'Gráficos',exact:true}).click();const panel=page.getByRole('region',{name:'Gráficos del CSV',exact:true})
+ await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum');await panel.getByLabel('Columna Y del gráfico').selectOption('2');await panel.getByLabel('Series del gráfico').selectOption('3');await panel.getByRole('button',{name:'Generar gráfico',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Gráfico listo',{timeout:30000});await expect(panel.getByLabel('Configuración del gráfico')).toContainText('Suma de Y por Grupo, separado por Z');await expect(panel.locator('.scope').last()).toContainText('Series representadas: 2 de 2')
+ for(const [theme,width,height] of [['light',1440,900],['dark',1280,800]] as const){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.setViewportSize({width,height});await panel.locator('.plot').scrollIntoViewIfNeeded();await page.screenshot({path:test.info().outputPath(`series-${theme}-${width}.png`)})}
+ await page.getByLabel('Tema',{exact:true}).selectOption('light');await page.setViewportSize({width:1440,height:900})
+ await panel.getByText('Datos del gráfico: tabla accesible',{exact:true}).click();await expect(panel.locator('tbody tr')).toHaveCount(5)
+ await panel.getByText('Series visibles · controles de teclado',{exact:true}).click();const first=panel.getByRole('checkbox',{name:'1. U',exact:true});await expect(first).toBeChecked();await first.focus();await page.keyboard.press('Space');await expect(first).not.toBeChecked();await expect(panel.locator('.plot')).toContainText('1 serie oculta');await expect(panel.locator('tbody tr')).toHaveCount(5)
+ await panel.getByRole('button',{name:'Exportar gráfico SVG',exact:true}).click();await expect(panel.getByRole('status')).toContainText('plots.svg');const svg=await readFile(join(folder,'exports','plots.svg'),'utf8');expect(svg).toContain('separado por Z');expect(svg).toContain('serie oculta');expect(svg).not.toContain('<script')
+ const legend=panel.locator('.plot svg text').filter({hasText:/^1\. U$/});await legend.click();await expect(first).toBeChecked();await expect(panel.locator('.plot')).not.toContainText('serie oculta')
+ await page.getByRole('button',{name:/☷ Filtros/}).click();await page.getByLabel('Filtrar Z',{exact:true}).fill('U');await panel.getByLabel('Alcance del gráfico').selectOption('filtered');await panel.getByRole('button',{name:'Generar gráfico',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Gráfico listo',{timeout:30000});await expect(panel.locator('.scope').last()).toContainText('Series representadas: 1 de 1');await expect(panel.locator('tbody tr')).toHaveCount(3)
+ for(const kind of ['line','scatter']){await panel.getByLabel('Tipo de gráfico').selectOption(kind);await panel.getByLabel('Columna X del gráfico').selectOption('1');await panel.getByRole('button',{name:'Generar gráfico',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Gráfico listo',{timeout:30000});await expect(panel.locator('.plot svg')).toBeVisible();expect(await panel.locator('.plot svg path').count()).toBeGreaterThan(0)}
+ await panel.getByLabel('Tipo de gráfico').selectOption('histogram');await expect(panel.getByLabel('Series del gráfico')).toHaveCount(0);await panel.getByLabel('Tipo de gráfico').selectOption('bar');await expect(panel.getByLabel('Series del gráfico')).toHaveValue('-1')
+ expect(await readFile(path,'utf8')).toBe(original);expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)).toMatchObject({dirty:false,revision:0})
+ const wide=await open('X,N,Serie\n'+Array.from({length:9},(_,i)=>`A,${i},S${i}`).join('\n'),'nine-series.csv');await page.getByRole('button',{name:'Gráficos',exact:true}).click();await panel.getByLabel('Series del gráfico').selectOption('2');await panel.getByRole('button',{name:'Generar gráfico',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Hay 9 series');await expect(panel.getByRole('button',{name:'Exportar gráfico SVG',exact:true})).toHaveCount(0)
+ expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===wide.doc.id)).toMatchObject({dirty:false,revision:0})
+})
+
+test('series: 3 000 y 100 000 registros conservan sumas por combinación y respuesta de la interfaz',async()=>{
+ test.setTimeout(120000)
+ const measurements:Record<string,unknown>[]=[]
+ for(const size of [3000,100000]){
+  const expected=new Map<string,number>(),records=Array.from({length:size},(_,i)=>{const city=`Ciudad ${i%5}`,series=`Tipo ${i%4}`,value=i%1000,key=`${city}|${series}`;expected.set(key,(expected.get(key)??0)+value);return`${String(i).padStart(10,'0')},${city},${value},${series}`}),content='ID,Ciudad,Total,Tipo\r\n'+records.join('\r\n')+'\r\n'
+  const opening=performance.now(),{doc,path}=await open(content,`series-${size}.csv`),openMs=performance.now()-opening
+  expect(doc).toMatchObject({rowCount:size,readonly:false,dirty:false})
+  await page.evaluate(()=>{let previous=performance.now();const state={maxGapMs:0,timer:0};state.timer=window.setInterval(()=>{const now=performance.now();state.maxGapMs=Math.max(state.maxGapMs,now-previous);previous=now},20);Reflect.set(window,'seriesTiming',state)})
+  const start=performance.now(),result=await query(doc,{...options,kind:'bar',x:1,y:2,aggregate:'sum',series:3}),queryMs=performance.now()-start
+  const maxRendererGapMs=await page.evaluate(()=>{const state=Reflect.get(window,'seriesTiming');clearInterval(state.timer);return state.maxGapMs})
+  expect(result).toMatchObject({total:size,usable:size,points:20,seriesCount:4,limited:false});expect(result.rows).toHaveLength(20)
+  for(const row of result.rows)expect(Number(row[1])).toBe(expected.get(`${row[0]}|${row[2]}`))
+  expect(await readFile(path,'utf8')).toBe(content);expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)).toMatchObject({revision:0,dirty:false})
+  measurements.push({rows:size,sourceBytes:(await stat(path)).size,openMs,queryMs,maxRendererGapMs})
+ }
+ const machine=await app.evaluate(()=>({platform:process.platform,arch:process.arch,electron:process.versions.electron}))
+ await writeFile(test.info().outputPath('series-performance.json'),JSON.stringify({recordedAt:new Date().toISOString(),...machine,cpu:(await import('node:os')).cpus()[0]?.model,measurements},null,2)+'\n')
+})
