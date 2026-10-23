@@ -71,7 +71,7 @@ test('tras reiniciar con el mismo perfil se restauran visibilidad, pestaña y an
  await expect(separator()).toHaveAttribute('aria-valuenow','600')
  expect(JSON.parse((await stored())!)).toEqual({version:1,dock:{visible:true,width:600,tab:'sql'}})
  await quit()
- await launch(files);await expect(page.getByRole('grid')).toBeVisible();await page.setViewportSize({width:1920,height:1080})
+ await launch(files);await page.setViewportSize({width:1920,height:1080});await expect(page.getByRole('grid')).toBeVisible() // el tamaño primero: con la ventana de arranque estrecha, el panel restaurado se abriría ampliado
  await expect(page.getByRole('tablist',{name:'Herramientas de análisis'})).toBeVisible()
  await expect(page.getByRole('tab',{name:'SQL',exact:true})).toHaveAttribute('aria-selected','true');await expect(page.getByLabel('Análisis SQL y asistentes')).toBeVisible()
  await expect(separator()).toHaveAttribute('aria-valuenow','600');expect(Math.abs(await dockWidth()-600)).toBeLessThanOrEqual(1)

@@ -27,6 +27,8 @@ const visibleColumns=()=>page.evaluate(()=>{
  const grid=document.querySelector('[role=grid]')!,box=grid.getBoundingClientRect()
  return [...grid.querySelectorAll('[role=columnheader]')].filter(header=>{const r=header.getBoundingClientRect();return r.left>=box.left-1&&r.right<=box.right+1}).length
 })
+// Espera a que el reparto de la tabla se asiente (en una ejecución lenta la primera lectura puede ser anterior al último ajuste).
+const stableRows=async()=>{let last=-1,same=0;for(let i=0;i<50&&same<3;i++){const now=await visibleRows();same=now===last?same+1:0;last=now;await page.waitForTimeout(100)}return last}
 const tools=()=>page.getByRole('tablist',{name:'Herramientas de análisis'})
 const panels=[
  {button:'Gráficos',ready:()=>page.getByLabel('Gráficos del CSV')},
@@ -39,7 +41,7 @@ test('con un panel de análisis abierto la tabla conserva las filas que tenía s
  for(const [width,height] of [[1440,900],[1366,768]] as const){
   await page.setViewportSize({width,height})
   await expect.poll(visibleRows,{message:`sin panel ${width}×${height}`}).toBeGreaterThan(5)
-  const without=await visibleRows()
+  const without=await stableRows()
   for(const panel of panels){
    await page.getByRole('button',{name:panel.button,exact:true}).click();await expect(panel.ready()).toBeVisible()
    await expect.poll(visibleRows,{message:`${panel.button} abierto en ${width}×${height} (sin panel: ${without} filas)`}).toBe(without)
