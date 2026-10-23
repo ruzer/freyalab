@@ -1,6 +1,6 @@
 <script lang="ts">
  import Icon from './Icon.svelte'
- import {onMount,onDestroy,untrack} from 'svelte'
+ import {onMount,onDestroy,untrack,tick} from 'svelte'
  import {init,use,type ECharts} from 'echarts/core'
  import {BarChart,LineChart,ScatterChart,HeatmapChart,BoxplotChart} from 'echarts/charts'
  import {GridComponent,TooltipComponent,VisualMapComponent,AriaComponent,TitleComponent,LegendComponent} from 'echarts/components'
@@ -56,7 +56,7 @@
    const result=chartData(options.kind,first.columns.map(c=>c.name),rows)
    if(temporal&&result.total>0&&result.points===0)throw new Error('No hay fechas válidas en la columna elegida. Usa AAAA-MM-DD, de 0001 a 9999, sin hora ni zona horaria.')
    if(result.total>0&&result.usable===0&&options.kind!=='heatmap'&&!(aggregated&&['count','distinct'].includes(options.aggregate)))throw new Error('No hay valores numéricos utilizables en las columnas elegidas. Elige otra columna o cuenta filas o valores únicos.')
-   data=result;source=first.sources[0];message='Gráfico listo. El archivo no se ha modificado.';zoom=1
+   data=result;source=first.sources[0];message='Gráfico listo. El archivo no se ha modificado.';zoom=1;void tick().then(()=>element?.parentElement?.scrollIntoView({block:'nearest'})) // en el panel lateral, el resultado queda a la vista sin desplazarse a mano
   }catch(error){if(active===requestId){data=null;message=String(error).replace(/^.*Error: /,'');onerror(message)}}
   finally{if(active===requestId){active=undefined;busy=false;void window.freya.sqlCancel(requestId).catch(()=>{})}}
  }
