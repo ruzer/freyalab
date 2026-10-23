@@ -1,0 +1,101 @@
+{
+  "queue": {
+    "ok": true,
+    "scenarios": [
+      "prioridad",
+      "concurrencia 1 y 2",
+      "cancelar en cola y en ejecución",
+      "compartir/caché/invalidar",
+      "tiempo límite"
+    ]
+  },
+  "window": {
+    "openToReadyMs": 181,
+    "workingSetDeltaMiBFirstPanel": 108,
+    "roundtripMsFirstRun": 95,
+    "roundtripMsMedianSimulatedEngine": 96
+  },
+  "noLastWins": {
+    "sequence": "A en curso, B llega después",
+    "aCompleted": true,
+    "bCompleted": true,
+    "cancelled": 0,
+    "maxEngines": 1
+  },
+  "priority": {
+    "order": [
+      "interactive",
+      "interactive",
+      "export",
+      "background"
+    ]
+  },
+  "cancel": {
+    "queuedNeverStarted": true,
+    "runningDestroysEngine": true,
+    "foreignCancelRejected": "E_OWNER",
+    "requestIdReuseRejected": "E_SCHEMA",
+    "cancelToNextStartMs": 25,
+    "residualEngines": 0
+  },
+  "sharing": {
+    "engineRunsForThreeIdenticalRequests": 1,
+    "cacheHits": 1,
+    "cancelOneSubscriberKeepsJob": true
+  },
+  "ipc": {
+    "exposedOperations": [
+      "cancel",
+      "close",
+      "getView",
+      "hello",
+      "reattach",
+      "run"
+    ],
+    "rejected": {
+      "otraVentana": "E_WINDOW",
+      "otroDocumento": "E_DOC",
+      "operacionDesconocida": "E_SCHEMA",
+      "campoExtra": "E_SCHEMA",
+      "versionDistinta": "E_SCHEMA",
+      "propiedadExtraEnSobre": "E_SCHEMA",
+      "columnaFueraDeRango": "E_SCHEMA",
+      "costeAbsurdo": "E_SCHEMA",
+      "tipoDeConsultaLibre": "E_SCHEMA",
+      "sobreRevisionAntigua": "E_STALE",
+      "sinSolicitud": "E_SCHEMA",
+      "mensajeBasura": "E_SCHEMA"
+    }
+  },
+  "lifecycle": {
+    "closeSecondaryOnly": true,
+    "orphanEnginesAfterClose": 0,
+    "crashRecoveryMs": 240,
+    "viewRestoredAfterCrash": true,
+    "otherWindowUnaffected": true,
+    "staleRejected": "E_STALE",
+    "closedDocument": "E_DOC_CLOSED",
+    "crashes": 1
+  },
+  "restartBudget": {
+    "restartsAllowed": 3,
+    "fourthCrashLeavesError": true,
+    "mainNotifiedAndCanClose": true
+  },
+  "closeClean": {
+    "exitMs": 55,
+    "panelsOpen": 1,
+    "queryRunning": true
+  },
+  "closeDirty": {
+    "confirmationShownOnce": true,
+    "cancelKeepsEverything": true,
+    "exitMsAfterDiscard": 50
+  },
+  "persistence": {
+    "atomicNoTemp": true,
+    "invalidKept": true,
+    "unknownKeysRejected": true,
+    "offscreenRecovered": true
+  }
+}
