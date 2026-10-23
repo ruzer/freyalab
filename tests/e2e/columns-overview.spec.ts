@@ -4,6 +4,7 @@ import {mkdtemp,mkdir,writeFile,readFile,rm,truncate,stat} from 'node:fs/promise
 import {join,resolve} from 'node:path'
 import {tmpdir,cpus,release,totalmem} from 'node:os'
 import {stringify} from 'csv-stringify/sync'
+import {showPanel} from './panel'
 let app:ElectronApplication,page:Page,folder:string
 const source='\uFEFFID,Ciudad,Total,Fecha,Opcional\r\n00123,Oaxaca,10,2024-02-29,\r\n9007199254740993,Puebla,20,2026-10-22\r\n00003,Oaxaca,30,2026-02-30,"  "\r\n00004,Oaxaca,40,2026-10-22,ñ\r\n'
 test.beforeEach(async()=>{
@@ -14,7 +15,7 @@ test.beforeEach(async()=>{
 })
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function open(text=source){const path=join(folder,'datos.csv');await writeFile(path,text);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('grid',{name:'Tabla de datos'})).toBeVisible();return{doc,path}}
-async function overview(){await page.getByRole('button',{name:'Estadísticas',exact:true}).click();await page.getByText('Comprender todas las columnas',{exact:true}).click();return page.getByRole('region',{name:'Vista general de columnas',exact:true})}
+async function overview(){await showPanel(page,'Estadísticas');await page.getByText('Comprender todas las columnas',{exact:true}).click();return page.getByRole('region',{name:'Vista general de columnas',exact:true})}
 async function explore(panel:Locator){await panel.getByRole('button',{name:'Explorar columnas',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Exploración de columnas completa.',{timeout:90000})}
 async function report(panel:Locator){await panel.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true}).click();await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')?.text).toContain('# Vista general de columnas CSV');return(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')!}
 

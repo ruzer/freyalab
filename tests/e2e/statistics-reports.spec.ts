@@ -3,12 +3,13 @@ import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,mkdir,readdir,rm,truncate,stat} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
+import {showPanel} from './panel'
 let app:ElectronApplication,page:Page,folder:string
 async function launch(){const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports'),FREYALAB_TEST_SAVE_DIR:join(folder,'saved')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})}
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-reports-e2e-'));await mkdir(join(folder,'exports'));await mkdir(join(folder,'saved'));await launch()})
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function open(text:string){const path=join(folder,'data.csv');await writeFile(path,text);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('grid',{name:'Tabla de datos'})).toBeVisible();return{doc,path}}
-async function statistics(){await page.getByRole('button',{name:'Estadísticas',exact:true}).click();return page.getByRole('region',{name:'Estadísticas por columna',exact:true})}
+async function statistics(){await showPanel(page,'Estadísticas');return page.getByRole('region',{name:'Estadísticas por columna',exact:true})}
 async function analyze(panel:Locator){await panel.getByRole('button',{name:'Analizar',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Análisis completo.')}
 async function report(panel:Locator){await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();await expect(page.locator('.cm-content')).toContainText('#');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).filter(d=>d.kind==='markdown'&&d.dirty).length).toBeGreaterThan(0);return(await page.evaluate(()=>window.freya.documents())).filter(d=>d.kind==='markdown').at(-1)!}
 async function csvTab(){await page.getByRole('tab',{name:/data.csv/}).click();await expect(page.getByRole('grid',{name:'Tabla de datos'})).toBeVisible()}

@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import {parse as parseCSV} from 'csv-parse/sync'
 import {stringify as stringifyCSV} from 'csv-stringify/sync'
+import {showPanel} from './panel'
 let app:ElectronApplication,page:Page,directory:string
 
 test.beforeEach(async()=>{
@@ -531,7 +532,7 @@ test('exploración CSV: perfil, frecuencias, distribución y Pearson conservan d
 test('exploración CSV: paginación, cancelación, muestra e IPC inválido',async()=>{
  const path=join(directory,'frecuencias.csv');await writeFile(path,'Valor\n'+Array.from({length:80},(_,i)=>String(i).padStart(5,'0')).join('\n')+'\n<svg onload=globalThis.__csvAnalysisXss=true>\n')
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
- await page.getByRole('button',{name:'Estadísticas',exact:true}).click();await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click()
+ await showPanel(page,'Estadísticas');await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click()
  const explorer=page.getByRole('region',{name:'Exploración de columna',exact:true})
  await explorer.getByRole('button',{name:'Frecuencias',exact:true}).click();await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer.getByRole('status')).toHaveText('Exploración completa.')
  const rows=explorer.getByRole('region',{name:'Frecuencias de columna',exact:true}).locator('tbody tr');await expect(rows).toHaveCount(50);await expect(rows.first()).toContainText('"00000"')
@@ -542,7 +543,7 @@ test('exploración CSV: paginación, cancelación, muestra e IPC inválido',asyn
  await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(rows).toHaveCount(50)
  const rejected=await page.evaluate(async id=>{try{await window.freya.analyzeColumn(id,{column:0,revision:0,requestId:crypto.randomUUID(),frequencyOffset:0,duplicatesOnly:false,bins:0});return false}catch{return true}},doc.id);expect(rejected).toBe(true)
  const sample=join(directory,'muestra-exploracion.csv');await writeFile(sample,'Valor\n'+'2\n'.repeat(250));await truncate(sample,50*1024*1024+1);await page.evaluate(path=>window.freya.openPaths([path]),sample)
- await page.getByRole('button',{name:'Estadísticas',exact:true}).click();await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click()
+ await showPanel(page,'Estadísticas');await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click()
  await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer).toContainText('Muestra limitada · 200 filas');await expect(explorer).toContainText('no el archivo completo')
 })
 
