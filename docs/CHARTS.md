@@ -100,3 +100,19 @@ Sin nuevas dependencias, motor ni cambios del guardado/recuperación. Reutiliza 
 - Máximo veinte condiciones propias, además del grupo existente de tabla. Comparaciones numéricas explícitas usan el decimal del motor tabular; texto sigue siendo texto (por ejemplo `001` y `1`). Fechas de filtro ISO y expresiones RE2 con los límites existentes. Errores no vuelven silenciosamente al documento sin filtros.
 
 Los filtros son de filas de origen, no condiciones sobre un agregado ya calculado. Todavía no se guardan configuraciones al cerrar el panel/cambiar de archivo (DW-03); un cambio de encabezados reinicia el constructor para evitar aplicar índices a otras columnas. [Evidencia de DW-02c](evidence/chart-local-filters-2026-10-22.md).
+
+
+## DW-03a — configuraciones reutilizables
+
+Abre **Configuraciones guardadas**, escribe un nombre y pulsa **Guardar configuración**. Para recuperarla, elígela y pulsa **Aplicar configuración**; después **Generar gráfico** calcula sobre los datos actuales. Los controles admiten clics y teclado. La biblioteca permanece entre reinicios y puede reutilizarse en otros documentos con las mismas columnas.
+
+- Guarda tipo, ejes, medida, cálculo, intervalos, orden, series, agrupación temporal y filtros propios. No guarda filas, resultados ni cambios del CSV.
+- Si guardas **Vista filtrada actual**, captura la búsqueda y los filtros de tabla. Al recuperar aparece **Filtros de tabla guardados**, con sus condiciones consultables. Cambiar los filtros actuales del editor no sustituye esa captura ni modifica el gráfico recuperado; puedes elegir explícitamente **Documento completo** o **Vista filtrada actual** para cambiar el alcance.
+- La página visible y el orden de la tabla no forman parte de la captura; las agregaciones usan todas las coincidencias y el orden elegido en el gráfico.
+- Los nombres, posiciones y cantidad de encabezados deben coincidir exactamente. Una columna renombrada, movida o eliminada bloquea Aplicar, conservando la configuración original. Encabezados vacíos o duplicados requieren reconocer expresamente que sus posiciones corresponden; no se remapean automáticamente.
+- Las configuraciones de vista filtrada no pueden aplicarse a muestras. Las del documento completo pueden analizar desde disco, manteniendo todos los límites y avisos existentes. Aplicar no inicia consultas ni cambia los filtros de la tabla.
+- Biblioteca local `chart-presets.json`, dentro de los datos de usuario de Electron, separada del CSV. Contiene encabezados y valores de filtros: conserva este archivo como información local propia. Sin sincronización ni cuenta.
+- Hasta 50 configuraciones, nombres de 80 caracteres y biblioteca de 8 MiB. Un nombre existente se rechaza para conservar ambos análisis; guarda los cambios con otro nombre. **Eliminar configuración elegida** elimina solamente esa entrada.
+- Escrituras serializadas mediante el guardado atómico existente, con comprobación de hash al reemplazar. Esquema versionado, validación de opciones/columnas/condiciones y tres operaciones limitadas del puente; no se exponen rutas de archivos. Una biblioteca dañada, ilegible o de versión futura produce un mensaje y se conserva sin sobrescribir.
+
+La exportación de resultados agregados CSV/JSON/Markdown es la siguiente subentrega DW-03b; SVG/PNG/PDF siguen disponibles. No hay nuevas dependencias ni cambios del modelo textual, historial o recuperación de CSV.

@@ -5,17 +5,20 @@
  import {GridComponent,TooltipComponent,VisualMapComponent,AriaComponent,TitleComponent,LegendComponent} from 'echarts/components'
  import {SVGRenderer} from 'echarts/renderers'
  import {chartKinds,chartAggregates,chartTimeGroups,chartLabels,chartSQL,chartData,chartLimit,type ChartOptions,type ChartData} from '../../shared/charts'
+ import ChartPresets from './ChartPresets.svelte'
+ import {chartView,type ChartView,type ChartConfiguration} from '../../shared/chart-presets'
  import CsvQueryTools from './CsvQueryTools.svelte'
  import {describeConditions} from '../../shared/table-conditions'
  import {chartOption,chartSeries} from '../chart-option'
  import type {DocumentInfo,SqlResult,TableQuery,TableConditionGroup} from '../../shared/types'
  use([BarChart,LineChart,ScatterChart,HeatmapChart,BoxplotChart,GridComponent,TooltipComponent,VisualMapComponent,AriaComponent,TitleComponent,LegendComponent,SVGRenderer])
  let {doc,query,queryValid,onclose,onerror}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;onclose:()=>void;onerror:(message:string)=>void}=$props()
- let scope=$state<'all'|'filtered'>('all')
+ let scope=$state<'all'|'filtered'|'saved'>('all'),savedView=$state<ChartView>()
  let where=$state<TableConditionGroup>({conditions:[],filterMode:'all'}),showFilters=$state(false),filtersButton=$state<HTMLButtonElement>()
- const scopeLabel=$derived((scope==='all'?'Documento completo':'Vista filtrada actual')+(where.conditions.length?` · Filtros del gráfico: ${where.conditions.length} (${where.filterMode==='all'?'Y':'O'})`:''))
+ const scopeLabel=$derived((scope==='all'?'Documento completo':scope==='saved'?'Filtros de tabla guardados':'Vista filtrada actual')+(where.conditions.length?` · Filtros del gráfico: ${where.conditions.length} (${where.filterMode==='all'?'Y':'O'})`:''))
  const viewSignature=$derived(JSON.stringify([query.search,query.filters,query.conditions,query.filterMode]))
- const unavailable=$derived(scope==='filtered'&&(!queryValid||doc.readonly))
+ const unavailable=$derived((scope==='filtered'&&(!queryValid||doc.readonly))||(scope==='saved'&&(!savedView||doc.readonly)))
+ const analysisQuery=$derived(scope==='saved'&&savedView?{...savedView,offset:0,limit:1000,requestId:0}:query)
  let options=$state<ChartOptions>({kind:'bar',x:0,y:-1,bins:10,aggregate:'count',descending:false,measureType:'text',series:-1,time:'none'})
  const temporal=$derived(options.time!==undefined&&options.time!=='none')
  const aggregated=$derived(options.kind==='bar'||(options.kind==='line'&&temporal))
@@ -24,7 +27,7 @@
  let hiddenSeries=$state<string[]>([])
  const series=$derived(data?chartSeries(data):[])
  let element:HTMLDivElement,chart:ECharts|undefined,active:string|undefined
- const signature=$derived(JSON.stringify([doc.id,doc.revision,options,scope,where,scope==='filtered'?viewSignature:null]))
+ const signature=$derived(JSON.stringify([doc.id,doc.revision,options,scope,where,scope==='filtered'?viewSignature:scope==='saved'?savedView:null]))
  const tooWide=$derived((doc.headers?.length??0)>200)
  const sql=$derived.by(()=>{try{return chartSQL(doc.headers??[],options)}catch{return ''}})
  function cancel(){const previous=active;active=undefined;busy=false;data=null;source=null;tablePage=0;hiddenSeries=[];if(previous)void window.freya.sqlCancel(previous).catch(()=>{})}
@@ -43,7 +46,7 @@
  async function generate(){
   if(busy||!sql||tooWide||unavailable)return;cancel();const requestId=crypto.randomUUID();active=requestId;busy=true;message='Preparando gráfico…'
   try{
-   const first=await window.freya.sqlRun({requestId,sources:[{id:doc.id,revision:doc.revision,...scope==='filtered'?{query:$state.snapshot(query)}:{},...where.conditions.length?{where:$state.snapshot(where)}:{}}],sql})
+   const first=await window.freya.sqlRun({requestId,sources:[{id:doc.id,revision:doc.revision,...scope!=='all'?{query:$state.snapshot(analysisQuery)}:{},...where.conditions.length?{where:$state.snapshot(where)}:{}}],sql})
    if(active!==requestId)return
    if(first.limited||first.returnedRows>chartLimit(options.kind)+1)throw new Error('El resultado excedió el límite del gráfico.')
    const rows=[...first.rows]
@@ -67,7 +70,7 @@
  <p>Fuente: {doc.name}. Los gráficos no modifican el CSV. Elige qué comparar y qué datos incluir.</p>
  <form onsubmit={event=>{event.preventDefault();void generate()}}>
   <fieldset disabled={busy||exporting}><legend class="sr-only">Opciones del gráfico</legend>
-   <label>Datos incluidos <select aria-label="Alcance del gráfico" bind:value={scope}><option value="all">Documento completo</option><option value="filtered" disabled={doc.readonly}>Vista filtrada actual</option></select></label>
+   <label>Datos incluidos <select aria-label="Alcance del gráfico" bind:value={scope}><option value="all">Documento completo</option><option value="filtered" disabled={doc.readonly}>Vista filtrada actual</option>{#if savedView}<option value="saved" disabled={doc.readonly}>Filtros de tabla guardados</option>{/if}</select></label>
    <label>Gráfico <select aria-label="Tipo de gráfico" bind:value={options.kind} onchange={event=>{if(!['bar','line','scatter'].includes(event.currentTarget.value))options.series=-1;if(!['bar','line'].includes(event.currentTarget.value))options.time='none'}}>{#each Object.entries(chartKinds) as [kind,title]}<option value={kind}>{title}</option>{/each}</select></label>
    {#if ['bar','line'].includes(options.kind)}<label>Agrupar fechas <select aria-label="Agrupación temporal del gráfico" bind:value={options.time}>{#each Object.entries(chartTimeGroups) as [unit,title]}<option value={unit}>{title}</option>{/each}</select></label>{/if}
    {#if options.kind!=='histogram'}<label>{temporal?'Fecha · eje X':options.kind==='line'||options.kind==='scatter'?'Eje X · columna numérica':'Agrupar por · eje X'} <select aria-label="Columna X del gráfico" bind:value={options.x}>{#each doc.headers??[] as header,index}<option value={index}>{index+1}. {header}</option>{/each}</select></label>{/if}
@@ -85,10 +88,12 @@
   </fieldset>
   {#if busy}<button type="button" onclick={()=>{cancel();message='Gráfico cancelado.'}}>Cancelar gráfico</button><progress aria-label="Generación del gráfico"></progress>{/if}
  </form>
+ <ChartPresets docId={doc.id} headers={doc.headers??[]} readonly={doc.readonly} disabled={busy||exporting} canSave={!!sql&&!tooWide&&!unavailable} configuration={{headers:doc.headers??[],options,where,...scope!=='all'?{view:chartView(analysisQuery)}:{}}} onapply={(configuration:ChartConfiguration)=>{options=configuration.options;where=configuration.where;savedView=configuration.view;scope=configuration.view?'saved':'all';showFilters=false}}/>
+ {#if scope==='saved'&&savedView}<details><summary>Filtros de tabla recuperados</summary><p>Se conserva la búsqueda y los filtros guardados, independientemente de la vista actual del editor. El CSV y los filtros de la tabla no cambian.</p><pre>{savedView.search?`Búsqueda: ${savedView.search}\n`:''}{Object.entries(savedView.filters??{}).map(([column,value])=>`${Number(column)+1}. ${(doc.headers??[])[Number(column)]}: ${JSON.stringify(value)}`).join('\n')}{'\n'}{describeConditions(doc.headers??[],{conditions:savedView.conditions??[],filterMode:savedView.filterMode??'all'})}</pre></details>{/if}
  {#if showFilters}<CsvQueryTools filtersOnly headers={doc.headers??[]} initialConditions={where.conditions} initialOrder={[]} initialMode={where.filterMode} onapply={(conditions,_order,filterMode)=>{where={conditions,filterMode};showFilters=false;filtersButton?.focus()}} onclose={()=>{showFilters=false;filtersButton?.focus()}}/>{/if}
  {#if where.conditions.length}<details><summary>Filtros aplicados al gráfico</summary><pre>{describeConditions(doc.headers??[],where)}</pre><p>Los recuentos y el dibujo corresponden solo a las filas que cumplen estas condiciones dentro del alcance elegido.</p></details>{/if}
  <p class="help">{aggregated?(options.aggregate==='count'?'Agrupar por reúne las filas que tienen el mismo texto. El conteo indica cuántas hay en cada grupo.':'Elige el valor que quieres resumir. Para sumar o promediar, indica que es numérico; los identificadores deben seguir como texto.'):options.kind==='histogram'?'Elige una columna numérica: X mostrará sus intervalos e Y cuántas filas caen en cada uno.':options.kind==='heatmap'?'Elige dos categorías: cada celda indica cuántas filas tienen esa combinación.':'Elige las columnas que quieres comparar. Las variables numéricas se calculan con punto decimal.'}</p>
- <p>{scope==='filtered'?'Usa la búsqueda y los filtros actuales de la tabla, sobre todas las filas coincidentes; no solo la página visible. El orden del gráfico se elige aquí.':doc.readonly?'Analiza el archivo completo desde disco; la tabla del editor sigue siendo una muestra de solo lectura.':'Incluye todas las filas y los cambios pendientes, aunque la tabla tenga filtros activos.'}</p>
+ <p>{scope==='saved'?'Usa los filtros de tabla recuperados. No toma la búsqueda ni los filtros actuales del editor.':scope==='filtered'?'Usa la búsqueda y los filtros actuales de la tabla, sobre todas las filas coincidentes; no solo la página visible. El orden del gráfico se elige aquí.':doc.readonly?'Analiza el archivo completo desde disco; la tabla del editor sigue siendo una muestra de solo lectura.':'Incluye todas las filas y los cambios pendientes, aunque la tabla tenga filtros activos.'}</p>
  <p class="scope" aria-label="Configuración del gráfico">{axes.summary} · {scopeLabel}. Eje X: {axes.x}. Eje Y: {axes.y}.</p>
  {#if unavailable}<p role="alert">La vista filtrada no está disponible: espera a que se aplique una consulta válida. Las muestras solo permiten analizar el documento completo.</p>{/if}
  {#if aggregated&&options.measureType==='number'}<p>Conversión numérica explícita con punto decimal. No uses identificadores como medidas; se omiten valores inválidos o fuera del rango seguro. El CSV conserva su texto.</p>{/if}
