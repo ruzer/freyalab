@@ -24,7 +24,7 @@ test('una imagen local ausente no bloquea Mermaid ni la exportación y no revela
  await expect(page.locator('.markdown-body img')).toHaveAttribute('alt','Imagen no disponible: Logo')
  await expect(page.locator('.toast')).toHaveCount(0)
  for(const [name,extension] of [['HTML autónomo','html'],['Documento PDF','pdf']] as const){
-  await page.getByRole('button',{name:'⇧ Exportar ▾',exact:true}).click();await page.getByRole('button',{name,exact:true}).click()
+  await page.getByRole('button',{name:'Exportar',exact:true}).click();await page.getByRole('button',{name,exact:true}).click()
   const toast=page.locator('.toast');await expect(toast).toContainText('Exportado:',{timeout:30_000});await expect(toast).toContainText('1 imagen no se encontró')
   const text=await toast.innerText();for(const forbidden of ['ENOENT','realpath','Error invoking',join(directory,missing),missing])expect(text).not.toContain(forbidden)
   await toast.getByRole('button',{name:'Cerrar aviso'}).click()
@@ -39,6 +39,6 @@ test('un documento sin imágenes ausentes se exporta sin avisos de recursos',asy
  const file=join(directory,'limpio.md');await writeFile(file,'# Limpio\n\nSolo texto.\n')
  await page.evaluate(path=>window.freya.openPaths([path]),file)
  await expect(page.getByRole('document').getByRole('heading',{name:'Limpio'})).toBeVisible()
- await page.getByRole('button',{name:'⇧ Exportar ▾',exact:true}).click();await page.getByRole('button',{name:'HTML autónomo',exact:true}).click()
+ await page.getByRole('button',{name:'Exportar',exact:true}).click();await page.getByRole('button',{name:'HTML autónomo',exact:true}).click()
  const toast=page.locator('.toast');await expect(toast).toContainText('Exportado:',{timeout:30_000});await expect(toast).not.toContainText('imagen')
 })
