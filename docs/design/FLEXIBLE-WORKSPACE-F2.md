@@ -164,6 +164,17 @@ Ventana desacoplada, IPC nuevo, modelo de vista en `main`, caché o reutilizaci�
 
 **Transversales:** `npm run check`, `npm test`, `npm run test:e2e`, `npm run build` en Node 24 y CI de los cuatro sistemas en verde; sin dependencias nuevas; evidencia con capturas antes/después en claro y oscuro (los dos temas existentes).
 
+## 9b. Notas de implementación de F2a
+
+F2a se implementó en `codex/analysis-dock` (PR #48, con su evidencia). Cuatro desvíos respecto a este diseño, todos por lo que mostró el código al implementar:
+
+1. **No se mueve el foco al abrir** (§7): `CsvStatistics` ya enfoca su encabezado al montarse y una prueba existente lo exige; se conserva el comportamiento actual.
+2. **El dock no tiene botón de cierre propio** (§3.1): cada panel conserva el suyo y Escape.
+3. **El estado sigue local a `CsvTable`** (§2): el módulo compartido llega con la persistencia (F2b).
+4. **Las filas de operaciones y de opciones se quedan a todo el ancho** sobre la tabla y el dock (§3.2): dentro de `.csv-main` se envolvían y la tabla perdía 2 filas.
+
+Además, la tabla tiene un mínimo de 240 px (una columna de 180 más la numeración de 52) para que, en las ventanas más estrechas, ceda antes el panel (hasta 360 px) que la tabla.
+
 ## 10. Riesgos
 
 | # | Riesgo | Mitigación |
