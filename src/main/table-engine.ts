@@ -337,7 +337,7 @@ export class TableEngine {
   if(!Number.isInteger(request.frequencyOffset)||request.frequencyOffset<0||!Number.isInteger(request.bins)||request.bins<1||request.bins>30)throw new Error('Opciones de análisis no válidas.')
   this.analyses.set(id,request.requestId)
   const ensure=()=>{if(this.analyses.get(id)!==request.requestId||this.states.get(id)!==s||request.revision!==s.revision)throw new Error('Análisis cancelado: la tabla cambió o se recibió otra solicitud.')}
-  try{const indices=request.query?await this.indices(id,request.query):undefined;ensure();const result=await analyzeColumn(s.rows,indices,request,ensure);ensure();return{...result,revision:s.revision,sample:s.readonly,filtered:!!request.query,column:request.column}}
+  try{const indices=request.query?await this.indices(id,request.query):undefined;ensure();const result=await analyzeColumn(s.rows,indices,request,ensure,s.headers[request.column]);ensure();return{...result,revision:s.revision,sample:s.readonly,filtered:!!request.query,column:request.column}}
   finally{if(this.analyses.get(id)===request.requestId)this.analyses.delete(id)}
  }
  async cancelAnalysis(id:string,requestId:string){if(this.analyses.get(id)===requestId)this.analyses.delete(id)}

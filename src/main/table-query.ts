@@ -3,7 +3,7 @@ import {RE2JS} from 're2js'
 import type {TableFilter,TableQuery} from '../shared/types'
 const numeric=/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/
 function decimal(text:string){const trimmed=text.trim();if(!numeric.test(trimmed))return null;const result=new Decimal(trimmed);return result.isFinite()?result:null}
-function date(text:string){if(!/^\d{4}-\d{2}-\d{2}$/.test(text))return null;const parsed=new Date(text+'T00:00:00Z');return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===text?text:null}
+export function date(text:string){if(!/^\d{4}-\d{2}-\d{2}$/.test(text))return null;const parsed=new Date(text+'T00:00:00Z');return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===text?text:null}
 export function compileTableQuery(query:TableQuery,width:number){
  const column=(index:number)=>{if(!Number.isInteger(index)||index<0||index>=width)throw new Error('Columna de consulta no válida.')}
  const rules=query.conditions??[]
