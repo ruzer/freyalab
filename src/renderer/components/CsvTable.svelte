@@ -11,7 +11,7 @@
  import CsvStatistics from './CsvStatistics.svelte'
  import CsvQueryTools from './CsvQueryTools.svelte'
  import AnalysisDock from './AnalysisDock.svelte'
- import {workspace,saveWorkspace} from '../lib/workspace.svelte'
+ import {workspace,saveWorkspace,settleStartup} from '../lib/workspace.svelte'
  import {dockMode,isNarrow,type DockTab} from '../lib/workspace-layout'
  import {parse} from 'csv-parse/browser/esm/sync'
  import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit} from '../../shared/types'
@@ -19,8 +19,10 @@
  let showCommands=$state(false),commandsButton=$state<HTMLButtonElement>(),commandReturn:HTMLElement|null=null
  let showTransform=$state(false)
  let bodyWidth=$state(0),userOpened=$state(false) // userOpened: el panel lo abrió la persona en este documento (no se restauró), para que Estadísticas pueda llevar el foco a su encabezado
- const dockOpen=$derived(workspace.visible),dockTab=$derived(workspace.tab),mode=$derived(dockMode({visible:workspace.visible,expanded:workspace.expanded,area:bodyWidth})),narrow=$derived(isNarrow(bodyWidth))
+ // El panel no se monta hasta medir el área: así un panel restaurado que va a empezar cerrado (ventana estrecha) nunca llega a montarse.
+ const dockOpen=$derived(workspace.visible&&bodyWidth>0),dockTab=$derived(workspace.tab),mode=$derived(dockMode({visible:workspace.visible,expanded:workspace.expanded,area:bodyWidth})),narrow=$derived(isNarrow(bodyWidth))
  let announcement=$state('')
+ $effect.pre(()=>{if(bodyWidth>0)untrack(()=>settleStartup(bodyWidth))})
  let chartsButton=$state<HTMLButtonElement>(),sqlButton=$state<HTMLButtonElement>(),statisticsButton=$state<HTMLButtonElement>()
  const showCharts=$derived(dockOpen&&dockTab==='graficos'),showSql=$derived(dockOpen&&dockTab==='sql'),showStatistics=$derived(dockOpen&&dockTab==='resumen')
  let interpreting=$state(false)
