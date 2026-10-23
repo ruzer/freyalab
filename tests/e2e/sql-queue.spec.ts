@@ -17,7 +17,7 @@ test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{})
 const csv='Id,Ciudad,Valor\n'+Array.from({length:240},(_,i)=>`${i},C${i%5},${i%97}`).join('\n')+'\n'
 const SQL='SELECT ciudad, count(*) AS n FROM datos GROUP BY 1 ORDER BY 1',ALL='SELECT * FROM datos ORDER BY CAST(id AS INTEGER)'
 const sleep=(ms:number)=>new Promise(resolve=>setTimeout(resolve,ms))
-async function open(name='datos.csv'){const path=join(folder,name);await writeFile(path,csv);return(await page.evaluate(path=>window.freya.openPaths([path]),path))[0]}
+async function open(name='datos.csv',text=csv){const path=join(folder,name);await writeFile(path,text);return(await page.evaluate(path=>window.freya.openPaths([path]),path))[0]}
 // Lanza un análisis sin esperarlo y devuelve cómo y cuándo termina.
 const run=(doc:DocumentInfo,sql=SQL,requestId=crypto.randomUUID())=>({requestId,done:page.evaluate(({id,revision,requestId,sql})=>window.freya.sqlRun({requestId,sources:[{id,revision}],sql}).then(result=>({ok:true as const,rows:result.returnedRows,at:performance.now()}),error=>({ok:false as const,error:String(error.message??error),at:performance.now()})),{id:doc.id,revision:doc.revision,requestId,sql})})
 const exportOnce=(doc:DocumentInfo)=>page.evaluate(doc=>window.freya.exportChartResult(doc.id,{requestId:crypto.randomUUID(),revision:doc.revision,format:'json',protectFormulas:true,configuration:{headers:doc.headers!,options:{kind:'bar',x:1,y:-1,bins:10,aggregate:'count',descending:false,measureType:'text'},where:{conditions:[],filterMode:'all'}}}).then(()=>({ok:true as const,at:performance.now()}),error=>({ok:false as const,error:String(error.message??error),at:performance.now()})),doc)
@@ -81,4 +81,34 @@ test('cerrar la aplicación con un análisis en curso y otro en cola termina sin
  const doc=await open(),running=run(doc);await sleep(150);const queued=run(doc,'SELECT 1 AS uno'),settled=Promise.allSettled([running.done,queued.done]) // la página desaparece al salir
  const closed=app.waitForEvent('close',{timeout:15000});await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows().find(window=>window.isVisible())!.close()).catch(()=>{})
  await closed;await settled
+})
+
+test('muchas solicitudes a la vez: todas devuelven su resultado aunque superen los resultados que se conservan',async()=>{
+ const doc=await open(),requests=Array.from({length:6},(_,n)=>run(doc,`SELECT ${n} AS n FROM datos LIMIT 1`))
+ const outcomes=await Promise.all(requests.map(request=>request.done))
+ expect(outcomes.map(outcome=>outcome.ok?'ok':outcome.error)).toEqual(Array(6).fill('ok'))
+})
+
+test('una exportación en cola no espera indefinidamente aunque sigan llegando consultas interactivas',async()=>{
+ const doc=await open()
+ const order=await page.evaluate(async doc=>{
+  const done:string[]=[],sources=[{id:doc.id,revision:doc.revision}]
+  const hold=window.freya.sqlRun({requestId:crypto.randomUUID(),sources,sql:'SELECT count(*) AS n FROM datos'}).then(()=>{done.push('inicial')})
+  await new Promise(resolve=>setTimeout(resolve,150))
+  const exported=window.freya.exportChartResult(doc.id,{requestId:crypto.randomUUID(),revision:doc.revision,format:'json',protectFormulas:true,configuration:{headers:doc.headers!,options:{kind:'bar',x:1,y:-1,bins:10,aggregate:'count',descending:false,measureType:'text'},where:{conditions:[],filterMode:'all'}}}).then(()=>{done.push('exportación')})
+  // Dos paneles que lanzan otra consulta en cuanto termina la suya: siempre hay una interactiva esperando.
+  const chain=async(panel:string)=>{for(let n=0;n<5;n++){await window.freya.sqlRun({requestId:crypto.randomUUID(),sources,sql:`SELECT '${panel}${n}' AS tag FROM datos LIMIT 1`});done.push(`${panel}${n}`)}}
+  await Promise.all([hold,chain('sql'),chain('gráfico'),exported]);return done
+ },doc)
+ // En cola detrás de la inicial: la adelantan como mucho dos interactivas (una por panel que puede tener una pendiente).
+ expect(order.indexOf('exportación'),order.join(' > ')).toBeLessThanOrEqual(3)
+})
+
+test('cerrar un documento cancela sus solicitudes en cola sin esperar su turno',async()=>{
+ const crossJoin='SELECT count(*) AS n FROM datos a, datos b, datos c',long=await open('larga.csv','Id,Ciudad,Valor\n'+Array.from({length:4000},(_,i)=>`${i},C${i%5},${i%97}`).join('\n')+'\n'),other=await open('otra.csv')
+ const running=run(long,crossJoin);await sleep(400);const queued=run(other);await sleep(100)
+ await page.evaluate(id=>window.freya.close(id),other.id)
+ const outcome=await Promise.race([queued.done.then(result=>result.ok?'ok':result.error),sleep(2000).then(()=>'sigue esperando')])
+ await page.evaluate(id=>window.freya.sqlCancel(id),running.requestId);await running.done
+ expect(outcome).toContain('Análisis cancelado.')
 })

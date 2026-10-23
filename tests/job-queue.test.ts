@@ -25,6 +25,14 @@ describe('JobQueue',()=>{
   await Promise.all(all)
   expect(log.filter(line=>line.startsWith('inicio'))).toEqual(['inicio en curso','inicio interactiva','inicio exportar 1','inicio exportar 2'])
  })
+ it('una tarea de menor prioridad no espera indefinidamente: tras ser adelantada dos veces, pasa',async()=>{
+  const log:string[]=[],queue=new JobQueue(1),items=['en curso','exportar','i1','i2','i3'].map(label=>task(label,log))
+  const [running,exported,i1,i2,i3]=items
+  const all=[queue.run('r','interactive',running.start,running.dispose),queue.run('e','export',exported.start,exported.dispose),queue.run('i1','interactive',i1.start,i1.dispose),queue.run('i2','interactive',i2.start,i2.dispose),queue.run('i3','interactive',i3.start,i3.dispose)]
+  for(const item of items){await tick();item.resolve('ok')}
+  await Promise.all(all)
+  expect(log.filter(line=>line.startsWith('inicio')).map(line=>line.slice(7))).toEqual(['en curso','i1','i2','exportar','i3'])
+ })
  it('cancelar una tarea en cola la retira sin arrancarla ni liberarla',async()=>{
   const log:string[]=[],queue=new JobQueue(1),a=task('A',log),b=task('B',log),c=task('C',log)
   const first=queue.run('a','interactive',a.start,a.dispose),second=queue.run('b','interactive',b.start,b.dispose),third=queue.run('c','interactive',c.start,c.dispose)

@@ -11,13 +11,14 @@ import {JobQueue,type Priority} from './job-queue'
 
 const origin='freyalab-analysis://engine',scheme='freyalab-analysis'
 protocol.registerSchemesAsPrivileged([{scheme,privileges:{standard:true,secure:true,supportFetchAPI:true}}])
-interface Job {id:string;sources:SqlSource[];window?:BrowserWindow;timer?:NodeJS.Timeout;result?:SqlResult;error?:string;disk:Map<string,{size:number;mtimeMs:number}>}
+interface Job {id:string;documents:string[];sources:SqlSource[];window?:BrowserWindow;timer?:NodeJS.Timeout;used:number;result?:SqlResult;error?:string;disk:Map<string,{size:number;mtimeMs:number}>}
 // Resultados terminados que se conservan para paginarlos: el panel SQL, el gráfico y la exportación pueden tener uno cada uno.
 // Peor caso del esquema (10 000 filas × 200 columnas): unos 62 MiB de memoria por resultado, ver docs/evidence/sql-job-queue-2026-10-23.md.
 const retained=3
 export class SqlService {
  private jobs=new Map<string,Job>()
  private queue:JobQueue
+ private tick=0
  constructor(private docs:Documents,private progress:(event:SqlProgress)=>void){
   this.queue=new JobQueue(1,requestId=>progress({requestId,phase:'En cola: hay otro análisis en curso',rows:0}))
   const isolated=session.fromPartition('freyalab-analysis'),root=fileURLToPath(new URL('../renderer',import.meta.url))
@@ -28,14 +29,17 @@ export class SqlService {
  private check(job:Job){if(this.jobs.get(job.id)!==job)throw new Error('Análisis cancelado.');for(const source of job.sources)if(this.docs.get(source.id).info.revision!==source.revision)throw new Error('Una fuente cambió. Ejecuta de nuevo el análisis.')}
  cancel(requestId:string){if(!this.jobs.delete(requestId))return;this.queue.cancel(requestId)}
  stop(){this.jobs.clear();this.queue.clear()}
- private trim(){const finished=[...this.jobs.values()].filter(job=>job.result);for(const old of finished.slice(0,Math.max(0,finished.length-retained)))this.jobs.delete(old.id)}
+ // Al cerrar un documento se cancelan sus solicitudes (en cola, en curso o terminadas) y se suelta lo que retenían.
+ forget(documentId:string){for(const job of [...this.jobs.values()])if(job.documents.includes(documentId))this.cancel(job.id)}
+ // Se descartan los menos usados (por orden de uso, no de llegada: un trabajo que acaba de terminar nunca es el más antiguo).
+ private trim(){const finished=[...this.jobs.values()].filter(job=>job.result).sort((a,b)=>a.used-b.used);for(const old of finished.slice(0,Math.max(0,finished.length-retained)))this.jobs.delete(old.id)}
  async run(request:SqlRequest,priority:Priority='interactive'):Promise<SqlResult>{
   if(app.commandLine.hasSwitch('no-sandbox'))throw new Error('El análisis SQL requiere el aislamiento de Chromium. Inicia FreyaLab sin la opción --no-sandbox.')
   for(const source of request.sources){const record=this.docs.get(source.id);if(record.info.kind!=='csv'||record.info.revision!==source.revision)throw new Error('Una fuente no es CSV o cambió de revisión.')}
-  this.cancel(request.requestId);const job:Job={id:request.requestId,sources:[],disk:new Map()};this.jobs.set(job.id,job)
+  this.cancel(request.requestId);const job:Job={id:request.requestId,documents:request.sources.map(source=>source.id),sources:[],used:0,disk:new Map()};this.jobs.set(job.id,job)
   const start=()=>{job.timer=setTimeout(()=>{job.error='El análisis superó dos minutos. Reduce las fuentes o la consulta.';this.cancel(job.id)},120000);return this.execute(job,request)}
   const dispose=()=>{clearTimeout(job.timer);const owner=job.window;job.window=undefined;owner?.destroy()}
-  try{await this.queue.run(job.id,priority,start,dispose);this.trim();return await this.page(job.id,0)}
+  try{await this.queue.run(job.id,priority,start,dispose);job.used=++this.tick;this.trim();return await this.page(job.id,0)}
   catch(error){if(this.jobs.get(job.id)===job)this.jobs.delete(job.id);throw new Error(job.error??(error as Error).message)}
  }
  private async execute(job:Job,request:SqlRequest):Promise<void>{
@@ -64,7 +68,7 @@ export class SqlService {
  }
  async page(requestId:string,offset:number):Promise<SqlResult>{
   const job=this.jobs.get(requestId);if(!job?.result)throw new Error('El resultado ya no está disponible. Ejecuta de nuevo la consulta.');this.check(job)
-  this.jobs.delete(requestId);this.jobs.set(requestId,job) // el más reciente es el último en descartarse
+  job.used=++this.tick
   for(const [id,expected] of job.disk){const path=this.docs.get(id).info.path;if(!path)throw new Error('La fuente ya no existe.');const current=await stat(path);if(current.size!==expected.size||current.mtimeMs!==expected.mtimeMs)throw new Error('El archivo cambió en disco. Ejecuta de nuevo el análisis.')}
   return{...job.result,offset,rows:job.result.rows.slice(offset,offset+100)}
  }

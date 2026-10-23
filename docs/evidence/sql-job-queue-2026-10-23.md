@@ -9,8 +9,8 @@
 
 ## Cambio
 
-- `src/main/job-queue.ts` (nuevo, sin dependencias de Electron): cola con un hueco. Lo interactivo pasa por delante de lo que exporta; dentro de cada prioridad manda el orden de llegada. Cancelar en cola retira la tarea sin arrancarla; cancelar en curso libera su recurso y el hueco sin esperar a que responda; una respuesta tardía se ignora y el recurso no se libera dos veces; `clear()` cancela todo sin que lo que se libera arranque lo que espera (cierre de la aplicación).
-- `src/main/sql-service.ts`: los trabajos viven en un mapa por `requestId` en lugar de un único hueco. Una solicitud nueva **espera** (con el aviso «En cola: hay otro análisis en curso») en vez de cancelar a la anterior. El tiempo límite de dos minutos cuenta desde que el trabajo empieza a ejecutarse, no desde que se pide. Se conservan los resultados de las tres últimas solicitudes terminadas para paginarlos.
+- `src/main/job-queue.ts` (nuevo, sin dependencias de Electron): cola con un hueco. Lo interactivo pasa por delante de lo que exporta; dentro de cada prioridad manda el orden de llegada. Cancelar en cola retira la tarea sin arrancarla; cancelar en curso libera su recurso y el hueco sin esperar a que responda; una respuesta tardía se ignora y el recurso no se libera dos veces; `clear()` cancela todo sin que lo que se libera arranque lo que espera (cierre de la aplicación). Una tarea de menor prioridad pasa al frente tras ser adelantada dos veces (dos paneles, SQL y gráfico, pueden tener una consulta interactiva pendiente a la vez), de modo que una exportación no espera indefinidamente.
+- `src/main/sql-service.ts`: los trabajos viven en un mapa por `requestId` en lugar de un único hueco. Una solicitud nueva **espera** (con el aviso «En cola: hay otro análisis en curso») en vez de cancelar a la anterior. El tiempo límite de dos minutos cuenta desde que el trabajo empieza a ejecutarse, no desde que se pide. Se conservan los resultados de las tres solicitudes terminadas **usadas más recientemente** para paginarlos. Al cerrar un documento se cancelan sus solicitudes (en cola, en curso o terminadas) y se suelta lo que retenían (`forget`, llamado desde la operación `close`).
 - `src/main/chart-result-export.ts`: la exportación pide prioridad `export`.
 - `docs/ARCHITECTURE.md`: una frase.
 
@@ -30,13 +30,24 @@ Primero fallaron: `tests/job-queue.test.ts` (módulo inexistente) y 6 de las 7 p
 | Lo interactivo pasa por delante de una exportación que espera | falla | pasa |
 | Solo se conservan los resultados más recientes | falla (solo se conservaba uno) | pasa |
 | Cerrar la aplicación con un análisis en curso y otro en cola | pasa | pasa |
-| 11 pruebas unitarias de `JobQueue` (orden, prioridad, cancelación en cola y en curso, fallos, límite, aviso de espera, vaciado) | no existían | pasan |
+| Muchas solicitudes a la vez: todas devuelven su resultado | falla (ver validación) | pasa |
+| Una exportación en cola no espera indefinidamente | falla (ver validación) | pasa |
+| Cerrar un documento cancela sus solicitudes en cola sin esperar su turno | falla (ver validación) | pasa |
+| 12 pruebas unitarias de `JobQueue` (orden, prioridad, adelantamiento acotado, cancelación en cola y en curso, fallos, límite, aviso de espera, vaciado) | no existían | pasan |
 
-Resultado con Node 24 en macOS: `npm run check` sin errores ni avisos; `npm test` 204 pruebas (193 anteriores + 11); `npx playwright test` 118 pruebas, y las específicas (`sql-queue`, `charts`, `sql`) repetidas tres veces sin fallos.
+Resultado con Node 24 en macOS: ver «Validación posterior» más abajo.
+
+## Validación posterior (mismo día)
+
+Una validación de estrés sobre la aplicación real ([`experiments/flexible-workspace/f1-validation.spec.ts`](https://github.com/ruzer/freyalab/pull/46)) encontró tres problemas reproducibles en la primera versión de este PR; los tres se corrigieron aquí, cada uno con su prueba escrita antes:
+
+1. **Un resultado recién calculado podía descartarse al instante.** La poda de resultados conservados ordenaba por orden de llegada de la solicitud, no por uso; con seis solicitudes simultáneas las tres últimas fallaban con «El resultado ya no está disponible». Ahora se ordena por último uso.
+2. **Inanición de exportaciones.** Con dos paneles lanzando consultas interactivas una tras otra, la exportación en cola terminaba la última (puesto 12 de 12). Ahora la adelantan como máximo dos (puesto 4 de 12).
+3. **Datos de un documento cerrado seguían en memoria** (unos 38 MiB más con un resultado de 10 000 × 200 hasta que llegaran tres análisis nuevos) y sus solicitudes en cola esperaban su turno antes de fallar. Ahora cerrar el documento las cancela y libera la memoria.
 
 ## Memoria de los resultados conservados
 
-El esquema permite hasta 10 000 filas × 200 columnas por resultado (con un tope de 8 MiB de texto). Medido en Node con ese peor caso, cada resultado ocupa unos **62 MiB** de montículo, por lo que tres conservados serían unos 186 MiB en el extremo teórico; en la práctica el gráfico y la exportación liberan el suyo al terminar y solo el panel SQL conserva uno. El tope de 3 es el número de consumidores simultáneos, no un valor medido contra el uso real.
+El esquema permite hasta 10 000 filas × 200 columnas por resultado (con un tope de 8 MiB de texto). Medido en la aplicación real con ese peor caso (valores de 1 a 3 caracteres), tres resultados retenidos suman **+116 MiB** de montículo del proceso principal (~39 MiB cada uno) y vuelven a la línea base (9,1 → 11,1 MiB) al cancelarlos; un resultado que nadie cancela baja a 11,3 MiB al cerrar su documento. Con valores más largos el tope de 8 MiB de texto acota el crecimiento, pero no se midió. En doce ciclos de ejecutar y cancelar el montículo se mantuvo en 11,3 MiB y el número de procesos en 5. El tope de 3 es el número de consumidores simultáneos, no un valor medido contra el uso real.
 
 ## Límites
 
