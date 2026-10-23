@@ -31,7 +31,7 @@ Bibliotecas, fuentes y estilos se empaquetan localmente. Los enlaces se abren po
 
 ## Análisis posterior a alpha.1
 
-`SqlService` coordina una consulta a la vez. El proceso tabular produce lotes Arrow UTF-8 del documento y su revisión; para una muestra relee el original autorizado por streaming y comprueba huellas, metadatos y encabezados. La huella compartida usa streaming para evitar otra copia completa en memoria. No se sustituye el documento editable ni su recuperación.
+`SqlService` ejecuta una consulta a la vez mediante una cola (`job-queue.ts`): una solicitud nueva espera en lugar de cancelar a la anterior, lo interactivo pasa por delante de la exportación, cancelar una solicitud en curso destruye su motor y se conservan los resultados de las tres últimas solicitudes para paginarlos. El proceso tabular produce lotes Arrow UTF-8 del documento y su revisión; para una muestra relee el original autorizado por streaming y comprueba huellas, metadatos y encabezados. La huella compartida usa streaming para evitar otra copia completa en memoria. No se sustituye el documento editable ni su recuperación.
 
 DuckDB-Wasm reside en un Web Worker de una ventana oculta con sandbox de Chromium, sin Node/preload, sin permisos, navegación ni conexiones externas. Sus recursos se sirven mediante un protocolo/sesión propios desde los archivos empaquetados. CSP admite WebAssembly y no `unsafe-eval`; Arrow IPC se construye en el proceso tabular para evitar generar código en el navegador. El paquete incluye solo la variante EH y su worker; Arrow sigue disponible para el proceso de datos.
 
