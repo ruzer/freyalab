@@ -3,12 +3,13 @@ import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,mkdir,rm,truncate,stat} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
+import {showPanel} from './panel'
 let app:ElectronApplication,page:Page,folder:string
 const source='ID,Grupo,X,Y\r\n00123,A,2,10\r\n9007199254740993,B,100,1000\r\n00007,A,4,20\r\n00008,A,6,30\r\n'
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-selection-stats-e2e-'));await mkdir(join(folder,'exports'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
 async function open(text=source){const path=join(folder,'data.csv');await writeFile(path,text);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('grid',{name:'Tabla de datos'})).toBeVisible();return{doc,path}}
-async function panel(scope:string){await page.getByRole('button',{name:'Estadísticas',exact:true}).click();const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true});await panel.getByLabel('Columnas para estadísticas',{exact:true}).selectOption(scope);return panel}
+async function panel(scope:string){await showPanel(page,'Estadísticas');const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true});await panel.getByLabel('Columnas para estadísticas',{exact:true}).selectOption(scope);return panel}
 async function analyze(panel:ReturnType<Page['getByRole']>){await panel.getByRole('button',{name:'Analizar',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Análisis completo.')}
 async function cells(panel:ReturnType<Page['getByRole']>,index=0){return panel.locator('tbody tr').nth(index).locator('th,td').allTextContents()}
 

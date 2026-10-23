@@ -3,6 +3,7 @@ import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm,truncate,stat} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
+import {showPanel} from './panel'
 let app:ElectronApplication,page:Page,folder:string
 const fields=['Varianza poblacional (n)','Varianza muestral (n−1)','P10 (percentil 10)','P25 (percentil 25)','P75 (percentil 75)','P90 (percentil 90)']
 test.beforeEach(async()=>{
@@ -13,7 +14,7 @@ test.beforeEach(async()=>{
 })
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function open(source:string,name='datos.csv') {const path=join(folder,name);await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible();return{path,doc}}
-async function statistics(){await page.getByRole('button',{name:'Estadísticas',exact:true}).click();return page.getByRole('region',{name:'Estadísticas por columna',exact:true})}
+async function statistics(){await showPanel(page,'Estadísticas');return page.getByRole('region',{name:'Estadísticas por columna',exact:true})}
 async function explorer(){await statistics();await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click();return page.getByRole('region',{name:'Exploración de columna',exact:true})}
 async function analyze(panel:Locator){await panel.getByRole('button',{name:'Analizar',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Análisis completo.')}
 async function explore(panel:Locator){await panel.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Exploración completa.')}

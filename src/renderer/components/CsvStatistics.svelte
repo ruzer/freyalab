@@ -5,7 +5,7 @@
  import CsvColumnAnalysis from './CsvColumnAnalysis.svelte'
  import CsvColumnsOverview from './CsvColumnsOverview.svelte'
  import type {DocumentInfo,TableQuery,TableRange,TableViewMeta} from '../../shared/types'
- let {doc,columns,range,query,queryValid,viewMeta,onclose,onerror,onreport}:{doc:DocumentInfo;columns:number[];range:TableRange|null;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
+ let {doc,autofocus=true,columns,range,query,queryValid,viewMeta,onclose,onerror,onreport}:{doc:DocumentInfo;autofocus?:boolean;columns:number[];range:TableRange|null;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
  let exploring=$state(false),overviewing=$state(false),explorationColumn=$state(0),explorationScope=$state<'all'|'view'>('all')
  let scope=$state('all'),busy=$state(false),results=$state<StatisticsRow[]>([]),numericDetails=$state(false)
  let message=$state('Elige columnas y pulsa Analizar.'),revision=$state(-1),total=$state(0),analyzedScope=$state(''),heading:HTMLHeadingElement
@@ -14,7 +14,7 @@
  const usingRange=$derived(scope==='range'||scope==='rangeColumns')
  const fields=$derived([...STATISTICS_FIELDS,...(numericDetails?NUMERIC_DETAIL_FIELDS:[])])
  const scopeKey=$derived(JSON.stringify([scope,scope==='selected'?columns:null,usingRange?range:null,usingRange?queryValid:null]))
- onMount(()=>{heading.focus();return window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress&&event.progress.requestId===active)message=`Calculando: ${event.progress.rows.toLocaleString()} filas revisadas.`})})
+ onMount(()=>{if(autofocus)heading.focus();return window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress&&event.progress.requestId===active)message=`Calculando: ${event.progress.rows.toLocaleString()} filas revisadas.`})})
  onDestroy(cancel)
  function cancel(){request++;if(active)void window.freya.cancelAnalysis(doc.id,active).catch(()=>{});active=undefined;busy=false;results=[];reportContext=null;message='Análisis cancelado.'}
  $effect(()=>{void scopeKey;cancel();revision=-1;message='El alcance cambió. Pulsa Analizar para actualizar.'})
