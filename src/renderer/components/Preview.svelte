@@ -3,13 +3,14 @@
  import {markdownHTML,diagramSVG,standaloneHTML,type Heading} from '../lib/render'
  let {text,id,dark=false,onheadings,onerror}:{text:string;id:string;dark?:boolean;onheadings:(headings:Heading[])=>void;onerror:(message:string)=>void}=$props()
  let html=$state(''),busy=$state(false),container:HTMLElement
- let generation=0,completion:Promise<void>=Promise.resolve(),renderError=''
+ let generation=0,completion:Promise<void>=Promise.resolve(),renderError='',missing=0
  export function scrollToHeading(anchor:string){container?.querySelector(`[id="${CSS.escape(anchor)}"]`)?.scrollIntoView({behavior:'smooth',block:'start'})}
  export function scrollRatio(ratio:number){if(container) container.scrollTop=ratio*Math.max(0,container.scrollHeight-container.clientHeight)}
+ export function missingImages(){return missing}
  export async function exportHTML(){while(busy)await completion;if(renderError)throw new Error(renderError);return standaloneHTML(container?.querySelector('article')?.innerHTML??html,'Documento FreyaLab')}
  $effect(()=>{
   const source=text,docId=id,theme=dark,token=++generation
-  busy=true;renderError=''
+  busy=true;renderError='';missing=0
   let finish:()=>void=()=>{};completion=new Promise<void>(resolve=>finish=resolve)
   const timer=setTimeout(async()=>{
    try{
@@ -18,9 +19,9 @@
     html=result.html;onheadings(result.headings);await tick()
     for(const image of container.querySelectorAll('img')){
      const src=image.getAttribute('src')??''
-     const data=await window.freya.image(docId,src)
+     const data=await window.freya.image(docId,src).catch(()=>null)
      if(token!==generation)return
-     if(data)image.src=data;else{image.removeAttribute('src');image.alt=`Imagen no disponible: ${image.alt||src}`}
+     if(data)image.src=data;else{image.removeAttribute('src');image.alt=`Imagen no disponible: ${image.alt||src}`;missing++}
     }
     for(const code of container.querySelectorAll('code.language-mermaid')){
      try{const svg=await diagramSVG(code.textContent??'',theme);if(token!==generation)return;const block=document.createElement('div');block.className='mermaid-render';block.innerHTML=svg;code.parentElement?.replaceWith(block)}
