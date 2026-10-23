@@ -10,6 +10,7 @@ export interface TableConditionGroup {conditions:TableFilter[];filterMode:'all'|
 export interface TableQuery {conditions?:TableFilter[];filterMode?:'all'|'any';order?:TableSort[]; search?:string; filters?:Record<string,string>; sort?:{column:number; descending:boolean; numeric:boolean}; offset:number; limit:number; requestId:number }
 export interface TableRow { id:string; cells:string[] }
 export interface TablePage { rows:TableRow[]; total:number; matched:number; revision:number; requestId:number; sample:boolean }
+export type TableViewMeta=Pick<TablePage,'matched'|'revision'|'requestId'|'sample'>&{query:TableQuery}
 export interface TableRange {top:number;bottom:number;left:number;right:number;query:TableQuery;revision:number}
 export interface TableRangeEdit {type:'range';requestId?:string;range:TableRange;operation:'fill'|'clear'|'trim'|'upper'|'lower'|'replace'|'paste';value?:string;find?:string;values?:string[][]}
 export interface TableRangePreview {cells:number;changed:number;revision:number;samples:{row:number;column:number;before:string;after:string}[]}
@@ -28,6 +29,8 @@ export interface ColumnAnalysis {
  missingRows:{row:number;rowId:string}[];histogram:{lower:number;upper:number;count:number}[];
  correlation?:{column:number;pairs:number;omitted:number;value:number|null};warnings:string[]
 }
+export type ColumnOverviewResult=Pick<ColumnAnalysis,'profile'|'revision'|'sample'|'filtered'|'cells'|'empty'|'missing'|'whitespace'|'numeric'|'unique'|'extraDuplicates'>
+export type ColumnOverviewRow={column:number;name:string}&({result:ColumnOverviewResult}|{error:string})
 export interface SqlRequest {requestId:string;sources:{id:string;revision:number;query?:TableQuery;where?:TableConditionGroup}[];sql:string}
 export interface SqlSource {id:string;name:string;revision:number;table:string;columns:{name:string;original:string;index:number}[];rows:number;fromDisk:boolean;filtered?:boolean;where?:TableConditionGroup}
 export interface SqlResult {requestId:string;sources:SqlSource[];version:string;columns:{name:string;type:string}[];rows:(string|null)[][];returnedRows:number;limited:boolean;offset:number;completedAt:string}

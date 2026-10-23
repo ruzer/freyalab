@@ -1,6 +1,6 @@
 import type {ColumnAnalysis} from './types'
 const labels={empty:'Sin datos',identifier:'Posible identificador',number:'Numérico',date:'Fecha ISO',category:'Categórico',text:'Texto',mixed:'Mixto o con valores incompatibles'} as const
-export function columnSummary(result:ColumnAnalysis){
+export function columnSummary(result:Pick<ColumnAnalysis,'profile'|'cells'|'empty'|'missing'|'whitespace'|'numeric'>){
  const p=result.profile,nonEmpty=result.cells-result.empty
  let reason='Los valores se conservan como texto; no se reconoce un tipo uniforme más específico.'
  if(p.kind==='empty')reason='No hay valores con contenido en las filas analizadas.'

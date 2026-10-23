@@ -1,0 +1,49 @@
+{
+  "recordedAt": "2026-10-23T01:14:21.877Z",
+  "platform": "darwin",
+  "arch": "arm64",
+  "os": "27.0.0",
+  "cpu": "Apple M2 Max",
+  "logicalCpus": 12,
+  "totalMemoryBytes": 34359738368,
+  "node": "24.22.1",
+  "electron": "44.9.2",
+  "measurements": [
+    {
+      "rows": 3000,
+      "columns": 1,
+      "bytes": 11676,
+      "openMs": 158.89954100000614,
+      "exploreMs": 70.10162500001024,
+      "heartbeat": {
+        "intervalMs": 20,
+        "samples": 3,
+        "maxGapMs": 22.100000023841858
+      }
+    },
+    {
+      "rows": 100000,
+      "columns": 1,
+      "bytes": 389006,
+      "openMs": 92.78287500000442,
+      "exploreMs": 110.08904099999927,
+      "heartbeat": {
+        "intervalMs": 20,
+        "samples": 5,
+        "maxGapMs": 21.599999964237213
+      }
+    },
+    {
+      "rows": 1000000,
+      "columns": 1,
+      "bytes": 3890006,
+      "openMs": 502.68070799999987,
+      "exploreMs": 820.1231249999983,
+      "heartbeat": {
+        "intervalMs": 20,
+        "samples": 41,
+        "maxGapMs": 29.899999976158142
+      }
+    }
+  ]
+}

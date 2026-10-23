@@ -1,5 +1,5 @@
 import {columnSummary} from '../../shared/column-profile'
-import type {TableStats,TableQuery,ColumnAnalysis} from '../../shared/types'
+import type {TableStats,TableQuery,ColumnAnalysis,ColumnOverviewRow} from '../../shared/types'
 
 export const STATISTICS_FIELDS=[['cells','Celdas'],['empty','Vacíos'],['unique','Únicos'],['numeric','Numéricos'],['sum','Suma'],['average','Media'],['min','Mínimo'],['max','Máximo'],['median','Mediana'],['deviation','Desv. poblacional (n)'],['sampleDeviation','Desv. muestral (n−1)'],['missing','Ausentes'],['whitespace','Solo espacios'],['excluded','Excluidos']] as const
 export const PROFILE_FIELDS=[['cells','Filas'],['empty','Vacíos'],['missing','Campos ausentes'],['whitespace','Solo espacios'],['unique','Valores distintos exactos'],['duplicateGroups','Grupos repetidos'],['duplicateRows','Filas en grupos repetidos'],['extraDuplicates','Repeticiones adicionales'],['numeric','Numéricos utilizables'],['excluded','No numéricos o fuera del rango seguro'],['leadingZeros','Con ceros iniciales'],['minLength','Longitud mínima'],['maxLength','Longitud máxima'],['sum','Suma'],['average','Media'],['median','Mediana'],['min','Mínimo'],['max','Máximo'],['deviation','Desviación poblacional (n)'],['sampleDeviation','Desviación muestral (n−1)']] as const
@@ -51,4 +51,19 @@ export function columnReport(context:ColumnReportContext,result:ColumnAnalysis,v
   text+=`Comparación con columna ${result.correlation.column+1}: ${literal(context.otherColumnName??'')}\n\n`+table([['Medida','Valor'],['---','---'],['Pearson',number(result.correlation.value)],['Pares numéricos de la misma fila',String(result.correlation.pairs)],['Filas omitidas',String(result.correlation.omitted)]])+'Pearson mide asociación lineal; no demuestra causalidad. Con menos de dos pares o una columna constante puede no estar definido.\n\n'
  }
  return text+notes(context,result.warnings)
+}
+
+
+export function columnOverviewReport(context:ReportContext,rows:ColumnOverviewRow[]){
+ const failed=rows.filter(row=>'error'in row).length
+ let text=preamble(context,'Vista general de columnas CSV')+`Columnas solicitadas: ${rows.length}. Analizadas: ${rows.length-failed}. No disponibles: ${failed}.\n\n`
+ if(failed)text+='**COBERTURA PARCIAL:** algunas columnas no pudieron analizarse. Sus recuentos no se sustituyen por ceros.\n\n'
+ text+='El informe incluye todas las columnas solicitadas, independientemente de la búsqueda de nombres o página mostrada. Los tipos son sugerencias sobre el alcance capturado, sin convertir el CSV.\n\n'
+ text+=table([['Columna','Tipo probable','Filas','Con contenido','Ausentes','Vacíos exactos','Solo espacios','Distintos exactos','Repeticiones adicionales','Interpretación'],Array(10).fill('---'),...rows.map(row=>{
+  const name=`${row.column+1}. ${row.name||'Columna '+(row.column+1)}`
+  if('error'in row)return[literal(name),'No disponible',...Array(7).fill('—'),literal(row.error)]
+  const result=row.result,summary=columnSummary(result)
+  return[literal(name),summary.label,String(result.cells),String(result.cells-result.empty),String(result.missing),String(result.empty-result.missing-result.whitespace),String(result.whitespace),String(result.unique),String(result.extraDuplicates),literal(summary.reason)]
+ })])
+ return text+notes(context)
 }

@@ -100,3 +100,17 @@ it('calidad distingue ausentes, campos vacíos y espacios y la vista puede cambi
  expect(all.profile.kind).toBe('mixed');expect(columnSummary(all).quality).toEqual([['Con contenido',2],['Campos ausentes',1],['Campos vacíos exactos',1],['Solo espacios',1]])
  const view=await engine.analyzeColumn('a',request({column:1,query:{offset:0,limit:1,requestId:1,filters:{0:'A'}}}));expect(view).toMatchObject({filtered:true,cells:1,profile:{kind:'number'}});expect(await engine.snapshot('a')).toEqual(before)
 })
+
+it('el análisis filtrado y la paginación mantienen sus consultas y cancelaciones independientes',async()=>{
+ const source='Grupo,Valor\n'+'visible,2\noculto,9\n'.repeat(4096);await open(source)
+ const before=await engine.snapshot('a'),view={offset:0,limit:3,requestId:1,filters:{0:'visible'},order:[{column:1,descending:true,numeric:true}]}
+ for(const pageFirst of [false,true]){
+  const query={offset:0,limit:2,requestId:pageFirst?3:2,search:'oculto'}
+  const paging=pageFirst?engine.page('a',query):undefined,analysis=engine.analyzeColumn('a',request({column:1,query:view}))
+  const [result,page]=await Promise.all([analysis,paging??engine.page('a',query)])
+  expect(result).toMatchObject({cells:4096,sum:8192,filtered:true,revision:0});expect(page).toMatchObject({matched:4096,revision:0});expect(page.rows.map(row=>row.cells)).toEqual([['oculto','9'],['oculto','9']])
+ }
+ const selected=request({column:1,query:{...view,search:'sin coincidencias'}}),pending=engine.analyzeColumn('a',selected),cancelled=expect(pending).rejects.toThrow('cancelado')
+ const page=engine.page('a',{offset:0,limit:1,requestId:4});await engine.cancelAnalysis('a',selected.requestId);await cancelled;expect((await page).total).toBe(8192)
+ expect(await engine.snapshot('a')).toEqual(before);expect((await engine.serialize('a')).toString()).toBe(source)
+})
