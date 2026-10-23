@@ -35,4 +35,15 @@ Heartbeat solicitado cada 20 ms; solo tres observaciones en el caso pequeño. No
 
 ## Gates y pendientes
 
-Paquete e instalación local se registran por separado después. CI del commit exacto y otras plataformas pendientes. La moda sigue pendiente: no se presenta un único ganador cuando existen empates. DW-04 permanece abierto; DW-05 aún no ofrece recomendaciones automáticas. Sin Python, nuevos motores/dependencias, extractos persistentes ni cambios de guardado/recuperación.
+Paquete e instalación local se registran debajo. CI del commit final y otras plataformas pendientes. La moda sigue pendiente: no se presenta un único ganador cuando existen empates. DW-04 permanece abierto; DW-05 aún no ofrece recomendaciones automáticas. Sin Python, nuevos motores/dependencias, extractos persistentes ni cambios de guardado/recuperación.
+
+## Paquete y copia instalada — macOS ARM64
+
+Paquete de desarrollo **0.1.0-dev.20261022.6208e6b**, commit `6208e6bc4d2bc5003960e3d5edd0b297896f7508` (documentación añadida después del commit de producto probado; mismo código de ejecución). Generado con `electron-builder --mac --arm64 --dir --publish never`, sin cambiar dependencias, lockfile o versión fuente. No es un DMG ni una publicación.
+
+- Paquete real: **19 E2E correctas, 34,1 s**, sin reintentos: ocho de panorámica, tres de percentiles, cuatro de cancelación/foco y cuatro de exportación de resultados. Registro `/private/tmp/freyalab-dw04c-packaged-e2e.log`.
+- Se comprobó que FreyaLab estuviera cerrada antes de reemplazarla; no se cerró la app del usuario ni se accedió a sus documentos/preferencias. Copia instalada: `/Applications/FreyaLab.app`. Respaldo anterior: `/private/tmp/freyalab-before-percentiles-qqxfgrzh/FreyaLab.app`. El respaldo está en almacenamiento temporal, no permanente.
+- SHA-256 de ASAR, icono, Info.plist y ejecutable verificados contra el paquete. ASAR: `0c89a9117f11058b214a5495a67ca85624c360fd28b5736f6d1bf558d46627a0`. Icono de Freya sin cambios: `98a9bfaaeb9a2b98a681601c17b1c294f660c728c89fd53c0e96645a8e1e9f9a`. Metadatos locales: `/private/tmp/freyalab-dw04c-installed.json`.
+- Copia instalada ejecutada con perfil temporal: **1 E2E correcta, 4,1 s**. Contrasta varianzas/percentiles, vista filtrada, ayuda por teclado, informe y fuente intacta. Registro `/private/tmp/freyalab-dw04c-installed-smoke.log`.
+
+La actualización posterior de este documento solo registra esa evidencia; no cambia código o tests. No acredita cuarentena/Gatekeeper, firma comercial/notarización, instalación manual DMG ni Windows/Linux/Intel.
