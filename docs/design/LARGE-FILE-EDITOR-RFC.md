@@ -9,7 +9,7 @@
 
 1. **Objetivo de producto:** el tamaño del archivo elige la *estrategia de procesamiento*, no quita funciones. Un archivo de 5 GiB debe poder editarse, no solo verse. No se promete rendimiento ilimitado: cada capacidad tiene un coste medido y un límite declarado (§9, §10).
 2. **El diseño que se propone** (§4): el archivo original sigue siendo la fuente canónica de bytes; un **índice disperso** de posiciones permite leer por páginas; las ediciones puntuales viven en una **capa** con **diario** de operaciones; guardar es una **copia en flujo** que reescribe solo los registros tocados y reemplaza el original con un `rename` atómico. DuckDB **no** es el almacén canónico.
-3. **Demostrado con 5 GiB** (5 369 182 394 bytes, 3 967 421 filas × 230 columnas): índice completo en 10,1 s con 30 KiB de memoria; páginas de 50 filas en 2,6 ms (mediana); 1000 ediciones en 19 ms; guardado en 5,8 s con 227 MiB de RSS máximo; **1001 tramos sin editar con SHA-256 idéntico** y 1000 registros editados verificados con un analizador independiente; recuperación tras `SIGKILL` real; cambio masivo en flujo en 70 s con 486 MiB de RSS (§4, §5).
+3. **Demostrado con 5 GiB** (5 369 182 394 bytes, 3 967 421 filas × 230 columnas): índice completo en 10,1 s con 30 KiB de memoria; páginas de 50 filas en 2,8 ms (mediana); 1000 ediciones en 24 ms; guardado en 5,8 s con 283 MiB de RSS máximo; **1001 tramos sin editar con SHA-256 idéntico** y 1000 registros editados verificados con un analizador independiente; recuperación tras `SIGKILL` real; cambio masivo en flujo en 75 s con 439 MiB de RSS (§4, §5). Con 1 y 10 GiB el índice y el guardado escalan casi linealmente (19,9 s y 8,5 s a 10 GiB, ≤ 287 MiB de RSS), **pero el cambio masivo a 10 GiB tardó 813 s y su verificación 35 min: anomalía no explicada** (§5, R12).
 4. **Lo que el PR #52 resuelve y lo que no** (§3): corrige el límite de altura de Chromium (524 286 filas) y es exacto hasta 10 M de filas; con más filas la barra de desplazamiento pasa a ser gruesa (a 100 M de filas, 1 píxel físico ≈ 6,7 filas) y «ir a la fila N» se desvía hasta ±15 filas a 500 M si no se ancla la posición lógica. **Con el motor actual (50 MiB / 2 M de celdas) el PR #52 no abre ningún archivo grande**: es un requisito, no la solución.
 5. **Motor analítico** (§6): el DuckDB nativo es ~65 veces más rápido que `csv-parse` y 5–7 veces más que un recorrido propio en JS (5 GiB), pero **no se recomienda adoptarlo todavía**: las restricciones propias de DuckDB funcionan (27 comprobaciones esperadas, todas cumplidas, más 2 informativas), pero **no está demostrado el aislamiento a nivel de sistema operativo** en Windows y Linux ni el empaquetado en las 4 plataformas (§7). Un recorrido propio en JS ya cubre recuento, filtro, agrupación y estadísticas con 250–370 MiB/s y **cero dependencias nuevas**.
 6. **Corrección de una afirmación anterior** (§14): el guardado actual **no** conserva el CSV byte a byte; normaliza las comillas (verificado). El diseño propuesto sí lo hace con los registros que no se tocan.
@@ -80,7 +80,7 @@ guardar = copia en flujo [original + capa] → temporal en la misma carpeta → 
 
 - Un registro termina en `LF` (o `CR` si el archivo no tiene ningún `LF` en sus primeros 64 KiB) **fuera de comillas**; las comillas dobles escapadas (`""`) se compensan solas al alternar el estado. UTF-16LE usa unidades de 2 bytes.
 - Se guarda el desplazamiento de cada 1024.º registro: **30 KiB para 3 967 422 registros**; ~7,5 MiB para mil millones. Leer una página es saltar al punto de control y recorrer como mucho 1023 registros.
-- Medido en 5 GiB: **10,1 s (505 MiB/s)**, 69 MiB de RSS máximo. Una página de 50 filas (~65 KB): **2,64 ms p50, 3,75 ms p95, 8,2 ms máximo**; la última página, 1,7 ms.
+- Medido en 5 GiB: **10,1 s (506 MiB/s)**, 75 MiB de RSS máximo. Una página de 50 filas (~65 KB): **2,84 ms p50, 3,99 ms p95, 5,9 ms máximo**; la última página, 1,9 ms.
 - **Se reconstruye en cada apertura** (el diario de recuperación también tiene que esperar a ese índice: 8,9 s). Un índice persistente con la huella del archivo evitaría la espera; **no se implementó** (estimado, §10 R6).
 - Tras guardar sin altas ni bajas de registros el índice **no se relee**: cada punto de control se desplaza por la suma de diferencias de longitud. Comprobado byte a byte contra un índice reconstruido (5 GiB y pruebas). Con altas/bajas se reconstruye.
 
@@ -90,7 +90,7 @@ El identificador de un registro existente es su **ordinal en el archivo original
 
 ### 4.3 Capa de cambios
 
-`Map<ordinal, {celdas}|eliminado>` en memoria. 1000 ediciones: **19 ms** (19 µs cada una, con diario). Memoria ∝ celdas editadas. Estimado: ~100–200 B por edición ⇒ 1 M de ediciones ≈ 100–200 MB. Regla propuesta: al superar un umbral (p. ej. 1 M de celdas o 256 MiB) la interfaz ofrece **guardar** (consolidar); no se descarta nada.
+`Map<ordinal, {celdas}|eliminado>` en memoria. 1000 ediciones: **24 ms** (24 µs cada una, con diario). Memoria ∝ celdas editadas. Estimado: ~100–200 B por edición ⇒ 1 M de ediciones ≈ 100–200 MB. Regla propuesta: al superar un umbral (p. ej. 1 M de celdas o 256 MiB) la interfaz ofrece **guardar** (consolidar); no se descarta nada.
 
 ### 4.4 Diario y recuperación
 
@@ -109,7 +109,7 @@ El identificador de un registro existente es su **ordinal en el archivo original
 5. `fsync`, volver a comparar la huella (estrecha, no elimina, la carrera con otros procesos) y `rename` sobre el original.
 6. Si algo falla o se cancela: cerrar, borrar el temporal; el original no se tocó y la capa y el diario siguen intactos (se puede reintentar).
 
-Medido: **5,8 s** para 5 GiB con 1000 registros reescritos (≈ 0,9 GiB/s de copia), 227 MiB de RSS máximo, +5333 bytes. Se abre por `realpath` (un `rename` sobre un enlace simbólico lo reemplazaría), y se conservan los permisos (probado).
+Medido: **5,8 s** para 5 GiB con 1000 registros reescritos (≈ 0,9 GiB/s de copia), 283 MiB de RSS máximo, +5333 bytes. Se abre por `realpath` (un `rename` sobre un enlace simbólico lo reemplazaría), y se conservan los permisos (probado).
 
 ### 4.6 Qué se conserva y qué no
 
@@ -120,6 +120,25 @@ Medido: **5,8 s** para 5 GiB con 1000 registros reescritos (≈ 0,9 GiB/s de cop
 | Ceros a la izquierda, identificadores > 2^53 | conservados (nunca se interpretan números) | conservados | — |
 
 **No se conservan:** propietario, ACL, atributos extendidos, marcas de tiempo (el archivo nuevo tiene `mtime` nuevo), vínculos duros (el `rename` rompe el vínculo) ni la identidad del `inode`. Esto debe ser un aviso documentado, no una sorpresa. En Windows el `rename` sobre un archivo abierto por otro proceso sin `FILE_SHARE_DELETE` falla (se informa, no se pierde nada); en carpetas de nube o unidades de red la atomicidad **no está garantizada** (no probado).
+
+### 4.7 Escalado 1 / 5 / 10 GiB
+
+Misma máquina, mismo generador (perfil `wide`, 230 columnas), 1000 ediciones aleatorias; `overlay-1GiB.json`, `overlay-5GiB.json`, `overlay-10GiB.json`.
+
+| | 1 GiB | 5 GiB | 10 GiB |
+|---|---:|---:|---:|
+| Registros | 793 956 | 3 967 422 | 7 934 845 |
+| Índice en memoria | 6 KiB | 30 KiB | 61 KiB |
+| Indexar (RSS máx.) | 2,0 s (74 MiB) | 10,1 s (75 MiB) | 19,9 s (76 MiB) |
+| Página de 50 filas p50 / p95 | 2,9 / 4,1 ms | 2,8 / 4,0 ms | 2,7 / 3,8 ms |
+| 1000 ediciones con diario | 21 ms | 24 ms | 23 ms |
+| Recuperar tras cierre (incluye reindexar) | 1,8 s | 8,9 s | 16,7 s |
+| Guardar (RSS máx.) | 1,6 s (250 MiB) | 5,8 s (283 MiB) | 8,5 s (287 MiB) |
+| Verificar por hash los 1001 tramos sin editar | 7,1 s | 24,1 s | 31,7 s |
+| Cambio masivo en flujo (RSS máx.) | 14,7 s (478 MiB) | 74,9 s (439 MiB) | **812,6 s** (531 MiB) |
+| Abrir la versión nueva y leer 300 registros | 2,7 s | 15,0 s | **2119 s** |
+
+La memoria es plana (≤ 287 MiB en edición y guardado, ≤ 531 MiB en cambios masivos) y el índice, las páginas y el guardado crecen casi linealmente. **El cambio masivo y la apertura de la versión nueva a 10 GiB no**: 10,8 veces más tiempo con el doble de tamaño (cambio masivo) y 141 veces (apertura). La verificación por hash de 20 GiB en la misma ejecución sí fue lineal (31,7 s), así que el disco no era lento en general. La causa no se determinó; la ejecución duró ~57 min y el conjunto de trabajo (fixture + copia + versión nueva) era de unos 30 GiB en una máquina de 32 GiB de RAM. Hasta repetirlo en aislamiento (con `memory_pressure` y sin otras cargas) **no se afirma que el cambio masivo de 10 GiB funcione en un tiempo razonable**.
 
 **Diferencia con el motor actual:** `serialize()` normaliza las comillas de todo el archivo. El modo grande sería *más fiel* que el modo en memoria; la unificación se decide en L9.
 
@@ -132,7 +151,7 @@ Medido: **5,8 s** para 5 GiB con 1000 registros reescritos (≈ 0,9 GiB/s de cop
 | Deshacer | Operación inversa en el diario (barato) | Volver a la versión anterior (el archivo anterior sigue ahí) |
 | Disco | 0 hasta guardar; al guardar, tamaño + margen | **Un archivo completo por versión retenida** |
 
-**Medido (5 GiB, 3 967 422 registros, 230 columnas):** poner en mayúsculas una columna en todos los registros: **70 s (73 MiB/s)**, 486 MiB de RSS máximo, salida de 5 369 187 727 bytes; 300 registros al azar de la versión nueva comparados con la anterior; el archivo anterior intacto. Los registros cuyo valor no cambia se copian como bytes originales. Es la peor tasa de las operaciones: decodifica y divide cada registro; un extractor perezoso por columna (como el de §6) la acercaría a 300 MiB/s (estimado; no implementado en el cambio masivo).
+**Medido (5 GiB, 3 967 422 registros, 230 columnas):** poner en mayúsculas una columna en todos los registros: **75 s (68 MiB/s)**, 439 MiB de RSS máximo, salida de 5 369 187 727 bytes; 300 registros al azar de la versión nueva comparados con la anterior; el archivo anterior intacto. Los registros cuyo valor no cambia se copian como bytes originales. **A 10 GiB el mismo cambio tardó 813 s (13 MiB/s), 10,8 veces más que a 5 GiB, y no se ha explicado** (§4.7, R12). Es la peor tasa de las operaciones: decodifica y divide cada registro; un extractor perezoso por columna (como el de §6) la acercaría a 300 MiB/s (estimado; no implementado en el cambio masivo).
 
 **Historial sin cargar el archivo en RAM:** cada operación masiva produce un archivo nuevo en una carpeta de versiones (misma unidad que el original); «volver» es cambiar el puntero a la versión anterior. No hay datos en RAM. El coste es disco: 5 GiB por versión retenida. Política propuesta: conservar las últimas K versiones mientras el espacio libre sea ≥ 2× el tamaño del archivo, avisando antes de crear una. La clonación de archivos (`COPYFILE_FICLONE`) **no clonó** en esta máquina (APFS): Node copió los 5136 MiB completos en 3,5 s, así que **no se puede contar con ella**. Alternativa investigable en L6 (no recomendada ahora): operaciones por columna como *recetas* aplicadas al leer, sin materializar.
 
@@ -253,15 +272,15 @@ Evaluado en `tests/overlay.test.mjs` (40 pruebas, en la CI de las 4 plataformas)
 |---|---|---|---|
 | Abrir | primera página < 2 s; índice completo con progreso y cancelable | índice completo **demostrado** (10,1 s, caché caliente); primera página antes del índice **estimado**; caché fría **pendiente** | `overlay-5GiB.json` |
 | Navegar | página < 50 ms; llegar a cualquier fila; selección estable | páginas **demostrado** (2,6 / 3,8 ms); 500 M de filas **demostrado**; «Ir a la fila» y barra gruesa **pendiente** (L2) | `overlay-5GiB.json`, `scroll.json` |
-| Editar | celda < 10 ms; filas; columnas | celda y filas **demostrado** (19 µs/celda); columnas **pendiente** (L7) | pruebas |
-| Guardar | sin cargar el archivo; original intacto si falla; < 2× el tiempo de copiar | **demostrado** (5,8 s, 227 MiB RSS; copia pura ≈ 5 s) | `overlay-5GiB.json` |
+| Editar | celda < 10 ms; filas; columnas | celda y filas **demostrado** (24 µs/celda); columnas **pendiente** (L7) | pruebas |
+| Guardar | sin cargar el archivo; original intacto si falla; < 2× el tiempo de copiar | **demostrado** (5,8 s, 283 MiB RSS; 8,5 s y 287 MiB a 10 GiB) | `overlay-5GiB.json` |
 | Buscar | recorrido en flujo cancelable | recorrido **demostrado** (filtro 361 MiB/s ⇒ ~14 s); lista de resultados paginada **pendiente** (L4) | §6 |
-| Reemplazar | vista previa de recuento; versión nueva | cambio masivo **demostrado** (70 s); vista previa **pendiente** | §5 |
+| Reemplazar | vista previa de recuento; versión nueva | cambio masivo **demostrado a 1 y 5 GiB** (75 s a 5 GiB); **no escaló a 10 GiB** (813 s, §5); vista previa **pendiente** | §5 |
 | Filtrar | vista paginada sin arrays de 4 M de enteros | recuento/filtro **demostrado**; vista paginada de identificadores **pendiente** (L5) | §6 |
 | Ordenar | ordenación externa con disco temporal acotado | **ver §6** (motor propio en memoria / DuckDB con derrame) | §6 |
 | Estadísticas | resumen por columna en un recorrido | **demostrado** (278 MiB/s propio, 786 MiB/s nativo) | §6 |
 | Gráficos | agregados pequeños desde el recorrido | agregación **demostrado** (agrupar); integración con ECharts **pendiente** (L8) | §6 |
-| Memoria | < 1 GiB de RSS en cualquier operación | **demostrado**: máx. 486 MiB (cambio masivo), 294 MiB (verificación), 300 MiB (DuckDB con 4 GB de tope) | JSON |
+| Memoria | < 1 GiB de RSS en cualquier operación | **demostrado**: máx. 531 MiB (cambio masivo a 10 GiB; 439 MiB a 5 GiB), 365 MiB (verificación), ~300 MiB (DuckDB con 4 GB de tope en agregaciones; 5,0 GiB al ordenar el archivo entero, §6) | JSON |
 | Disco | aviso antes de crear un temporal o una versión; comprobación de espacio | comprobación **demostrado**; política de versiones **estimado** | §5 |
 | Cancelar | cualquier operación < 1 s | guardado, masivo, indexado y consulta nativa **demostrado** (2–3 ms tras `interrupt`) | pruebas, `duckdb-native-security.json` |
 | Recuperar | sin pérdida tras cierre del proceso; aviso si el archivo cambió | `SIGKILL` **demostrado**; pérdida de energía **pendiente** | pruebas |
@@ -281,7 +300,7 @@ Evaluado en `tests/overlay.test.mjs` (40 pruebas, en la CI de las 4 plataformas)
 | R9 | El campo editado de un registro muy largo (> 1 MiB) o con millones de columnas. | Tope existente de 1 MiB por celda/registro; 200 columnas en las transformaciones actuales. |
 | R10 | Dos ventanas con el mismo archivo editándose a la vez. | La segunda debe abrirse de solo lectura (no implementado). |
 | R11 | Mediciones de un único equipo con caché caliente. | Benchmarks manuales/nocturnos de 1/5/10 GiB en las 3 plataformas (L9). |
-| R12 | Los 10 GiB no se probaron; 5 GiB sí. | Los resultados escalan linealmente en tiempo y no en memoria (estimado); medir antes de prometerlo. |
+| R12 | A 10 GiB el índice, las páginas y el guardado escalaron casi linealmente en tiempo y con memoria plana (≤ 287 MiB), pero el **cambio masivo no**: 813 s frente a 75 s a 5 GiB, y la verificación posterior 2119 s frente a 15 s. | Causa **no determinada** (hipótesis: presión de caché/memoria con fixture + copia + versión nueva = 30 GiB en 32 GiB de RAM, o carga ajena: al terminar, el sistema tenía una carga de 15 con 12 núcleos y el Finder al 86 % de CPU, y dos pruebas pesadas de `npm test` agotaron su tiempo de 90 s en una de tres ejecuciones; **no se descarta que Spotlight o el Finder estuvieran leyendo los fixtures**); volver a medir aislado. No prometer el cambio masivo de 10 GiB hasta entonces. |
 
 ## 11. Hoja de ruta (L1–L9)
 
@@ -305,7 +324,7 @@ Cada paso es un PR pequeño y verificable, con la prueba que falla primero.
 2. **Implementar L2 y L3 a continuación**, en ese orden, junto con L1. **No aprobar L1 solo**: sin L2 el usuario sigue viendo una muestra de 200 filas, y sin L3 solo *ve* el archivo, no lo edita.
 3. **Primera iteración recomendada:** L2 (lectura grande), porque es lo que desbloquea `conjunto_de_datos_ageb_urbana_20_cpv2020.csv` y es la base de todo lo demás; es de solo lectura, así que su riesgo de pérdida de datos es nulo.
 4. **No adoptar DuckDB nativo** hasta que se cumpla §7.4. Para el análisis de campos, usar el recorrido propio (§6): ya es 8–12 veces más rápido que el `csv-parse` actual, sin dependencias nuevas.
-5. **No prometer 10 GiB ni «sin límite»**: prometer 5 GiB con lo medido y declarar los límites de §10.
+5. **No prometer «sin límite»**: prometer 5 GiB con lo medido. A 10 GiB la edición puntual y el guardado se demostraron; el cambio masivo no escaló (§4.7) y no se promete hasta entenderlo. Declarar los límites de §10.
 
 ## 13. Reproducibilidad y evidencia
 
@@ -318,7 +337,7 @@ Cada paso es un PR pequeño y verificable, con la prueba que falla primero.
 | `scroll.json` | PoC 3: 1 M – 500 M de filas |
 | `engines.json` | PoC 4: motores × tareas × tamaños, con el resumen (hash) del resultado de cada motor para comprobar que coinciden |
 
-Generador de fixtures: `gen-fixture.mjs` (determinista, comprueba espacio libre, se niega a escribir dentro del repositorio, deja SHA-256). Los benchmarks de 1/5/10 GiB **no están en la CI**; la CI ejecuta solo `node --test experiments/large-file-editor/tests`.
+Generador de fixtures: `gen-fixture.mjs` (determinista, comprueba espacio libre, se niega a escribir dentro del repositorio, deja SHA-256). Los benchmarks de 1/5/10 GiB **no están en la CI**; la CI ejecuta solo `node --test experiments/large-file-editor/tests/overlay.test.mjs`.
 
 ## 14. Correcciones a afirmaciones anteriores
 
