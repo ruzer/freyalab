@@ -21,10 +21,13 @@
  let newMenu=$state(false),exportMenu=$state(false),about=$state(false),exportScope=$state<'all'|'filtered'|'selection'>('all')
  let editor=$state<Editor>(),preview=$state<Preview>(),diagram=$state<Diagram>(),csv=$state<CsvTable>()
  const pending=new Map<string,Promise<unknown>>()
+ // Apertura de un archivo grande en curso (se indexa de una pasada): progreso y botón para cancelar.
+ let opening=$state<{id:string;phase:string}|null>(null)
+ async function cancelOpening(){const id=opening?.id;if(id)await window.freya.cancelOpen(id).catch(()=>{})}
  let toastTimer:ReturnType<typeof setTimeout>
- function error(message:string){toastKind='error';toast=message.replace(/^Error:\s*/,'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',7000)}
+ function error(message:string){opening=null;toastKind='error';toast=message.replace(/^Error:\s*/,'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',7000)}
  function notify(message:string){toastKind='info';status=message;toast=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',3500)}
- function merge(doc:DocumentInfo,focus=false){documents=documents.some(d=>d.id===doc.id)?documents.map(d=>d.id===doc.id?doc:d):[...documents,doc];if(focus||!activeId)activeId=doc.id}
+ function merge(doc:DocumentInfo,focus=false){if(opening?.id===doc.id)opening=null;documents=documents.some(d=>d.id===doc.id)?documents.map(d=>d.id===doc.id?doc:d):[...documents,doc];if(focus||!activeId)activeId=doc.id}
  async function action<T>(operation:()=>Promise<T>):Promise<T|undefined>{try{return await operation()}catch(e){error(e instanceof Error?e.message:String(e))}}
  async function open(){await action(async()=>{for(const doc of await window.freya.open())merge(doc,true);recent=await window.freya.recents()})}
  async function openPath(path:string){await action(async()=>{for(const doc of await window.freya.openPaths([path]))merge(doc,true)})}
@@ -47,7 +50,7 @@
  onMount(()=>{
   const mq=matchMedia('(prefers-color-scheme: dark)'),change=()=>systemDark=mq.matches;mq.addEventListener('change',change)
   void action(async()=>{documents=await window.freya.documents();activeId=documents[0]?.id??'';recent=await window.freya.recents();recoveries=await window.freya.recoveries()})
-  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='opened'&&event.document)merge(event.document,true);else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];notify(event.message??'El archivo cambió en otra aplicación. Al guardar se comprobarán los cambios.')}})
+  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='opened'&&event.document)merge(event.document,true);else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];notify(event.message??'El archivo cambió en otra aplicación. Al guardar se comprobarán los cambios.')}})
   return()=>{mq.removeEventListener('change',change);unsubscribe();clearTimeout(toastTimer)}
  })
  $effect(()=>{
@@ -102,7 +105,7 @@
    {/if}
   </main>
  </div>
- <footer class="statusbar"><span class="status-dot"></span><span class="truncate">{status}</span><span class="spacer"></span>{#if active}<span>{active.encoding.toUpperCase()}</span><span>{active.readonly?'Solo lectura':!active.path?'Sin guardar':active.dirty?'Cambios pendientes':'Guardado'}</span>{/if}<span>Local</span></footer>
+ <footer class="statusbar"><span class="status-dot"></span><span class="truncate">{status}</span>{#if opening}<span role="status">{opening.phase}</span><button onclick={cancelOpening}>Cancelar apertura</button>{/if}<span class="spacer"></span>{#if active}<span>{active.encoding.toUpperCase()}</span><span>{active.readonly?'Solo lectura':!active.path?'Sin guardar':active.dirty?'Cambios pendientes':'Guardado'}</span>{/if}<span>Local</span></footer>
  {#if toast}<div class="toast {toastKind}" role="status"><Icon name={toastKind==='error'?'triangle-alert':'circle-check'} size={16}/><span>{toast}</span><button onclick={()=>toast=''} aria-label="Cerrar aviso"><Icon name="x" size={14}/></button></div>{/if}
  {#if about}<div class="modal-backdrop" role="presentation"><div class="modal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="about-title"><img class="brand-mark" src={appIcon} alt=""/><h2 id="about-title">FreyaLab</h2><p>Documentos, tablas y diagramas.<br/>Una herramienta local, de código abierto.</p><p>Para Freya. 🐾</p><p class="muted">v0.1.0-alpha.1 · Licencia MIT</p><button class="primary" onclick={()=>about=false}>Cerrar</button></div></div>{/if}
 </div>

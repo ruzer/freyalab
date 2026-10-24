@@ -63,7 +63,7 @@ test('SQL: mide fuentes completas hasta un millón por cuatro columnas y disting
  const block=Array.from({length:1000},(_,i)=>`${String(i).padStart(5,'0')},Ciudad ${i%10},${i%100},nota`),measurements:unknown[]=[]
  for(const count of [100,3000,100000,1000000]){
   const text='Código,Ciudad,Valor,Nota\n'+(count<1000?block.slice(0,count).join('\n')+'\n':(block.join('\n')+'\n').repeat(count/1000)),started=performance.now(),{doc,path}=await open(`filas-${count}.csv`,text),openMs=performance.now()-started
-  expect(doc.readonly).toBe(count===1000000);expect(doc.rowCount).toBe(count===1000000?200:count)
+  expect(doc.readonly).toBe(count===1000000);expect(doc.rowCount).toBe(count) // un millón de filas × 4 columnas supera las 2 M de celdas del modo en memoria: se abre como archivo grande, con su recuento exacto
   await page.evaluate(()=>{let previous=performance.now();const state={gaps:[] as number[],timer:0};state.timer=window.setInterval(()=>{const now=performance.now();state.gaps.push(now-previous);previous=now},20);Reflect.set(window,'sqlTiming',state)})
   await app.evaluate(({app})=>{const state={peakKiB:0,processes:[] as unknown[],timer:undefined as ReturnType<typeof setInterval>|undefined};const sample=()=>{const metrics=app.getAppMetrics(),sum=metrics.reduce((n,item)=>n+item.memory.workingSetSize,0);if(sum>state.peakKiB){state.peakKiB=sum;state.processes=metrics.map(item=>({pid:item.pid,type:item.type,name:item.name,memory:item.memory}))}};sample();state.timer=setInterval(sample,50);Reflect.set(globalThis,'sqlMemory',state)})
   const begin=performance.now(),result=await query(doc,'SELECT COUNT(*) AS filas, SUM(TRY_CAST("Valor" AS BIGINT)) AS total, COUNT(DISTINCT "Código") AS distintos FROM datos'),analysisMs=performance.now()-begin
@@ -111,8 +111,8 @@ test('informe SQL rotula las 10 000 filas conservadas y rechaza resultados cance
 test('informe SQL desde un CSV mayor de 50 MiB identifica la fuente completa sin habilitar guardar su muestra',async()=>{
  test.setTimeout(120000)
  const source='ID,N,Nota\n'+Array.from({length:2400},(_,i)=>`${String(i).padStart(5,'0')},${i},${'x'.repeat(23000)}`).join('\n')+'\n',{doc,path}=await open('fuente-completa.csv',source),before=await stat(path),hash=createHash('sha256').update(source).digest('hex')
- expect(before.size).toBeGreaterThan(50*1024*1024);expect(doc.readonly).toBe(true);expect(doc.rowCount).toBe(200)
+ expect(before.size).toBeGreaterThan(50*1024*1024);expect(doc).toMatchObject({readonly:true,large:true,rowCount:2400})
  const panel=await runSQLPanel('SELECT COUNT(*) AS Filas, SUM(CAST("N" AS BIGINT)) AS Total FROM datos'),output=await sqlMarkdownReport(panel)
- expect(output.text).toContain('Archivo completo desde disco; el editor solo muestra una muestra');expect(output.text).toContain('| 2400 |');expect(output.text).toContain('"2400"');expect(output.text).toContain('"2878800"');expect(output.text).not.toContain('RESULTADO PARCIAL');expect(output.text).not.toContain('MUESTRA LIMITADA')
+ expect(output.text).toContain('Archivo completo desde disco; el editor lo abre en solo lectura');expect(output.text).toContain('| 2400 |');expect(output.text).toContain('"2400"');expect(output.text).toContain('"2878800"');expect(output.text).not.toContain('RESULTADO PARCIAL');expect(output.text).not.toContain('MUESTRA LIMITADA')
  await page.getByRole('tab',{name:/fuente-completa.csv/}).click();await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled();await expect(page.getByRole('button',{name:'Exportar',exact:true})).toBeDisabled();expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toEqual(doc);expect((await stat(path)).mtimeMs).toBe(before.mtimeMs);expect(createHash('sha256').update(await readFile(path)).digest('hex')).toBe(hash)
 })

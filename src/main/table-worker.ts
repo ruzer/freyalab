@@ -1,8 +1,10 @@
 import { TableEngine } from './table-engine'
-const allowed = new Set(['analysisStart','analysisNext','analysisClose','open','create','info','transformPreview','rangePreview','rangeClipboard','clipboard','page','edit','undo','stats','analyzeColumn','cancelAnalysis','markdown','serialize','snapshot','restore','markSaved','close','checkpoint'])
+const allowed = new Set(['analysisStart','analysisNext','analysisClose','open','cancelOpen','create','info','transformPreview','rangePreview','rangeClipboard','clipboard','page','edit','undo','stats','analyzeColumn','cancelAnalysis','markdown','serialize','snapshot','restore','markSaved','close','checkpoint'])
 const port = process.parentPort
 if (!port) throw new Error('El motor tabular necesita un proceso de datos Electron.')
-const engine = new TableEngine(progress=>port.postMessage({progress}))
+// FREYALAB_LARGE_BYTES solo se atiende en las pruebas: fuerza el modo grande con archivos pequeños.
+const forced = process.env.FREYALAB_TEST === '1' ? Number(process.env.FREYALAB_LARGE_BYTES) : 0
+const engine = new TableEngine(progress=>port.postMessage({progress}), forced > 0 ? {largeBytes: forced} : {})
 port.on('message', async ({data}: {data:{requestId:number;method:string;args:unknown[]}}) => {
  const {requestId,method,args}=data
  try {
