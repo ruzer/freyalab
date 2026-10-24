@@ -95,6 +95,7 @@ test('«Filtrar esta columna» muestra los filtros y lleva el foco al de esa col
 })
 
 test('«Estadísticas de la columna» abre el panel de resumen con esa columna marcada', async()=>{
+ await page.setViewportSize({width:1920,height:1080}) // con una ventana estrecha (la de CI) el panel se abre ampliado y oculta la tabla
  await open()
  await columnButton('Ciudad').click();await menu().getByRole('menuitem',{name:'Estadísticas de la columna',exact:true}).click()
  const tabs=page.getByRole('tablist',{name:'Herramientas de análisis'});await expect(tabs).toBeVisible();await expect(tabs.getByRole('tab',{name:'Resumen',exact:true})).toHaveAttribute('aria-selected','true')
