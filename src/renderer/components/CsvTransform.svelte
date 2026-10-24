@@ -1,8 +1,8 @@
 <script lang="ts">
  import {onMount,onDestroy,untrack} from 'svelte'
  import type {DocumentInfo,TableTransformEdit,TableTransformPreview,TableQuery,TableRange} from '../../shared/types'
- let {doc,initialColumns,initialRows,initialRange,viewQuery,onapply,onclose,onerror}:{doc:DocumentInfo;initialColumns:number[];initialRows:string[];initialRange:TableRange|null;viewQuery:TableQuery;onapply:(edit:TableTransformEdit)=>Promise<string|null>;onclose:()=>void;onerror:(message:string)=>void}=$props()
- let operation=$state<TableTransformEdit['operation']>('split'),columns=$state<number[]>(untrack(()=>initialColumns.length?[...initialColumns]:[0])),separator=$state(';'),custom=$state(''),name=$state('Combinada')
+ let {doc,initialColumns,initialOperation,initialRows,initialRange,viewQuery,onapply,onclose,onerror}:{doc:DocumentInfo;initialColumns:number[];initialOperation?:TableTransformEdit['operation'];initialRows:string[];initialRange:TableRange|null;viewQuery:TableQuery;onapply:(edit:TableTransformEdit)=>Promise<string|null>;onclose:()=>void;onerror:(message:string)=>void}=$props()
+ let operation=$state<TableTransformEdit['operation']>(untrack(()=>initialOperation??'split')),columns=$state<number[]>(untrack(()=>initialColumns.length?[...initialColumns]:[0])),separator=$state(';'),custom=$state(''),name=$state('Combinada')
  let preview=$state<TableTransformPreview|null>(null),prepared=$state<TableTransformEdit|null>(null),busy=$state(false),processed=$state(0),message=$state('Elige la operación y revisa su vista previa.'),external=$state(false),dialog:HTMLDialogElement
  const markedRows=untrack(()=>[...initialRows]),markedRange=untrack(()=>initialRange?structuredClone($state.snapshot(initialRange)):null)
  const hasSelection=markedRows.length>0||!!markedRange
