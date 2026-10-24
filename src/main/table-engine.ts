@@ -9,13 +9,14 @@ import { stringify } from 'csv-stringify/sync'
 import iconv from 'iconv-lite'
 import {ANALYSIS_LIMITS,arrowBatches,fileRecords,validateUtf8} from './analysis-source'
 import {compileTableQuery} from './table-query'
+import {buildIndex,readRecords,splitFields,RecordTooLargeError,type LargeIndex} from './large-table'
 import {analyzeColumn,numeric,descriptive} from './table-analysis'
 import type {ColumnAnalysisRequest,ColumnAnalysis,TableTransformEdit,TableTransformPreview,SqlProgress} from '../shared/types'
 import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableConditionGroup, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview,TableStatsOptions } from '../shared/types'
 
 export const TABLE_LIMITS = { bytes: 50 * 1024 * 1024, cells: 2_000_000, record: 1024 * 1024, sampleBytes: 8 * 1024 * 1024, sampleRows: 200 }
 interface Metadata { encoding: Encoding; delimiter: string; eol: string; bom: boolean; header: boolean; finalEol: boolean; headerWidth: number }
-interface State extends Metadata { rows: TableRow[]; headers: string[]; readonly: boolean; warning?: string; revision: number; nextId: number; token: number; savedToken: number; history: Change[]; future: Change[] }
+interface State extends Metadata { rows: TableRow[]; headers: string[]; readonly: boolean; warning?: string; revision: number; nextId: number; token: number; savedToken: number; history: Change[]; future: Change[]; large?: {index:LargeIndex;rowCount:number} }
 type Mutation = {type:'rowOrder'|'columnOrder';order:number[]} | { type: 'cell'; id: string; column: number; value: string; length?:number } | { type: 'header'; column: number; value: string; headerWidth?:number } | { type: 'rows'; index: number; remove: number; rows: TableRow[] } | { type: 'column'; index: number; remove: boolean; name: string; cells: string[]; headerWidth?:number; lengths?:number[] }
 interface Change { forward: Mutation[]; backward: Mutation[]; before: number; after: number; bytes:number }
 class LimitError extends Error {}
@@ -48,7 +49,8 @@ function preservesMissing(order:number[],length:number){for(let i=0;i<length;i++
 function recordBytes(record:string[],encoding:Encoding,delimiter:string){return record.reduce((total,field)=>total+(encoding==='utf8'?Buffer.byteLength(field,'utf8'):field.length*(encoding==='utf16le'?2:1))+delimiter.length,0)}
 
 export class TableEngine {
- constructor(private progress:(event:SqlProgress)=>void=()=>{}){}
+ // `largeBytes` e `indexChunk` solo los cambian las pruebas: fuerzan el modo grande con archivos pequeños.
+ constructor(private progress:(event:SqlProgress)=>void=()=>{},private options:{largeBytes?:number;indexChunk?:number}={}){}
  private states = new Map<string, State>()
  private queries = new Map<string, number>()
  private openings = new Map<string, number>()
@@ -56,7 +58,8 @@ export class TableEngine {
  private analyses = new Map<string,string>()
  private streams=new Map<string,{id:string;iterator:AsyncGenerator<{data:Buffer;rows:number},void>}>()
  private serial = 0
- private get(id: string): State { const s = this.states.get(id); if (!s) throw new Error('La tabla ya no está abierta.'); return s }
+ // Un archivo grande no tiene `rows` en memoria: todo lo que lea o cambie datos debe rechazarlo (solo `info` y `page` lo admiten).
+ private get(id: string, allowLarge = false): State { const s = this.states.get(id); if (!s) throw new Error('La tabla ya no está abierta.'); if (s.large && !allowLarge) throw new Error('Esta función aún no está disponible en archivos grandes (solo lectura): la búsqueda, los filtros, las estadísticas y la edición llegan en fases posteriores.'); return s }
  private editable(id: string): State { const s = this.get(id); if (s.readonly) throw new Error('La muestra es de solo lectura.'); return s }
  async create(id: string) { this.openings.set(id,++this.serial);this.views.delete(id);this.queries.delete(id);const revision=(this.states.get(id)?.revision??-1)+1;this.states.set(id, { encoding:'utf8', delimiter:',',eol:'\n',bom:false,header:true,finalEol:true,headerWidth:1,rows:[],headers:['Columna 1'],readonly:false,revision,nextId:1,token:0,savedToken:-1,history:[],future:[] }); return this.info(id) }
  async open(id: string, path: string, options: TableOptions = {}) {
@@ -64,14 +67,19 @@ export class TableEngine {
   const bytes = (await stat(path)).size
   const meta = metadata(await prefix(path, Math.min(bytes,65536)), options, path)
   meta.finalEol=await endsWithEol(path,bytes,meta.encoding)
-  let records: string[][] = []; let readonly = bytes > TABLE_LIMITS.bytes; let reason = readonly ? 'El archivo supera 50 MiB.' : ''
-  if (!readonly) {
+  // Por encima del umbral no se carga el archivo: se indexa por posición y se lee por páginas (modo grande, solo lectura).
+  let records: string[][] = []; let toLarge = bytes > (this.options.largeBytes ?? TABLE_LIMITS.bytes); let readonly = false; let reason = bytes > TABLE_LIMITS.bytes ? 'El archivo supera 50 MiB.' : ''
+  if (!toLarge) {
    const input = createReadStream(path, {highWaterMark:65536}); const validator=meta.encoding==='utf8'?validateUtf8():new Transform({transform(chunk,_encoding,callback){callback(null,chunk)}}); const decoder = iconv.decodeStream(meta.encoding)
    const parser = parse({delimiter:meta.delimiter,bom:true,relax_column_count:true,max_record_size:TABLE_LIMITS.record})
    input.on('error', error => parser.destroy(error)); validator.on('error',error=>parser.destroy(error)); decoder.on('error', error => parser.destroy(error)); input.pipe(validator).pipe(decoder).pipe(parser)
    try { let cells = 0; for await (const row of parser) { const record=row as string[];const bytesInRecord=recordBytes(record,meta.encoding,meta.delimiter);if(bytesInRecord>TABLE_LIMITS.record)throw new LimitError('Un registro supera 1 MiB.');records.push(record); cells += row.length; if (cells > TABLE_LIMITS.cells) throw new LimitError('El archivo supera dos millones de celdas.'); if (records.length % 2000 === 0) await yieldTurn() } }
-   catch (error) { if (error instanceof LimitError || (error as {code?:string}).code === 'CSV_MAX_RECORD_SIZE') { readonly = true; reason = error instanceof LimitError ? error.message : 'Un registro supera 1 MiB.'; records = [] } else throw new Error(`CSV no válido: ${(error as Error).message}`) }
+   catch (error) { if (error instanceof LimitError) { toLarge = true; reason = error.message; records = [] } else if ((error as {code?:string}).code === 'CSV_MAX_RECORD_SIZE') { readonly = true; reason = 'Un registro supera 1 MiB.'; records = [] } else throw new Error(`CSV no válido: ${(error as Error).message}`) }
    finally { input.unpipe(validator); validator.unpipe(decoder); decoder.unpipe(parser); input.destroy(); validator.destroy(); decoder.end(); parser.destroy() }
+  }
+  if (toLarge) {
+   try { return await this.openLarge(id, path, meta, generation, reason) }
+   catch (error) { if (!(error instanceof RecordTooLargeError)) throw error; readonly = true; reason = `${reason ? reason + ' ' : ''}${error.message}`; records = [] } // sin índice posible: la muestra de siempre, con la posición del problema
   }
   if (readonly) {
    const sample = await prefix(path,TABLE_LIMITS.sampleBytes); const complete = sample.length === bytes
@@ -92,7 +100,28 @@ export class TableEngine {
   if(this.openings.get(id)!==generation)throw new Error('Apertura cancelada por una solicitud más reciente.')
   s.revision=(this.states.get(id)?.revision??-1)+1;this.views.delete(id);this.queries.delete(id);this.states.set(id,s); return this.info(id)
  }
- async info(id: string) { const s=this.get(id); return {headers:[...s.headers],rowCount:s.rows.length,readonly:s.readonly,warning:s.warning,encoding:s.encoding,delimiter:s.delimiter,revision:s.revision,dirty:s.token!==s.savedToken} }
+  private async openLarge(id: string, path: string, meta: Metadata, generation: number, reason: string) {
+  const index = await buildIndex(path, {encoding: meta.encoding, bomLength: meta.bom ? (meta.encoding === 'utf16le' ? 2 : 3) : 0, maxRecord: TABLE_LIMITS.record, chunk: this.options.indexChunk,
+   onProgress: fraction => this.progress({requestId: 'open:' + id, phase: `Indexando archivo grande… ${Math.round(fraction * 100)} %`, rows: Math.round(fraction * 100)}), // `rows` lleva el porcentaje
+   cancelled: () => this.openings.get(id) !== generation})
+  const first = await readRecords(index, 0, Math.min(index.records, 201)), start = meta.header ? 1 : 0
+  const rawHeaders = meta.header && first.length ? splitFields(first[0], meta.delimiter) : []; meta.headerWidth = rawHeaders.length
+  const width = Math.max(rawHeaders.length, ...first.slice(start).map(text => splitFields(text, meta.delimiter).length), 1)
+  const headers = Array.from({length: width}, (_, i) => meta.header ? rawHeaders[i] ?? '' : `Columna ${i + 1}`)
+  const rowCount = Math.max(index.records - start, 0)
+  const warning = `${reason ? reason + ' ' : ''}Archivo grande: ${rowCount.toLocaleString()} filas en solo lectura. Se lee por páginas directamente del archivo; la búsqueda, los filtros, las estadísticas y la edición llegan en fases posteriores.`
+  if (this.openings.get(id) !== generation) throw new Error('Apertura cancelada por una solicitud más reciente.')
+  const s: State = {...meta, rows: [], headers, readonly: true, warning, revision: (this.states.get(id)?.revision ?? -1) + 1, nextId: 1, token: 0, savedToken: 0, history: [], future: [], large: {index, rowCount}}
+  this.views.delete(id); this.queries.delete(id); this.states.set(id, s); return this.info(id)
+ }
+ async cancelOpen(id: string) { this.openings.set(id, ++this.serial) } // la apertura en curso lo nota en su siguiente bloque
+ async info(id: string) { const s=this.get(id,true); return {headers:[...s.headers],rowCount:s.large?s.large.rowCount:s.rows.length,readonly:s.readonly,warning:s.warning,encoding:s.encoding,delimiter:s.delimiter,revision:s.revision,dirty:s.token!==s.savedToken,large:s.large?true:undefined} }
+ private async largePage(id: string, s: State, query: TableQuery): Promise<TablePage> {
+  if (query.search || Object.values(query.filters ?? {}).some(Boolean) || query.sort || query.order?.length || query.conditions?.length) throw new Error('En archivos grandes todavía no hay búsqueda, filtros ni orden.')
+  const {index, rowCount} = s.large!, texts = await readRecords(index, query.offset + (s.header ? 1 : 0), query.limit)
+  if (this.states.get(id) !== s) throw new Error('Consulta cancelada porque cambió la tabla.')
+  return {rows: texts.map((text, i) => ({id: String(query.offset + i + 1), cells: splitFields(text, s.delimiter)})), total: rowCount, matched: rowCount, revision: s.revision, requestId: query.requestId, sample: false, large: true}
+ }
  private async indices(id: string, query: TableQuery,guard?:()=>void): Promise<number[]> {
   const s=this.get(id); const revision=s.revision; const ticket=++this.serial; if(!guard)this.queries.set(id,ticket)
   const search=(query.search??'').toLocaleLowerCase(); const filters=Object.entries(query.filters??{}).filter(([,value])=>value).map(([column,value])=>[Number(column),value.toLocaleLowerCase()] as const)
@@ -109,7 +138,7 @@ export class TableEngine {
   }
   ensure();this.views.set(id,{key,indices});return indices
  }
- async page(id:string,query:TableQuery):Promise<TablePage>{if(!Number.isInteger(query.offset)||query.offset<0||!Number.isInteger(query.limit)||query.limit<1||query.limit>1000)throw new Error('Página no válida.');const s=this.get(id),revision=s.revision;const indices=await this.indices(id,query);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('Consulta cancelada porque cambió la tabla.');return{rows:indices.slice(query.offset,query.offset+query.limit).map(i=>copyRow(s.rows[i])),total:s.rows.length,matched:indices.length,revision:s.revision,requestId:query.requestId,sample:s.readonly}}
+ async page(id:string,query:TableQuery):Promise<TablePage>{if(!Number.isInteger(query.offset)||query.offset<0||!Number.isInteger(query.limit)||query.limit<1||query.limit>1000)throw new Error('Página no válida.');const s=this.get(id,true);if(s.large)return this.largePage(id,s,query);const revision=s.revision;const indices=await this.indices(id,query);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('Consulta cancelada porque cambió la tabla.');return{rows:indices.slice(query.offset,query.offset+query.limit).map(i=>copyRow(s.rows[i])),total:s.rows.length,matched:indices.length,revision:s.revision,requestId:query.requestId,sample:s.readonly}}
  private async rangeRows(id:string,range:TableRange,guard?:()=>void){
   const s=this.get(id),revision=s.revision
   if(range.revision!==revision)throw new Error('La tabla cambió desde que se seleccionó el rango. Vuelve a seleccionarlo.')
@@ -319,15 +348,15 @@ export class TableEngine {
  async undo(id:string,redo=false){const s=this.editable(id);const source=redo?s.future:s.history,target=redo?s.history:s.future;const change=source.at(-1);if(change){this.apply(s,redo?change.forward:change.backward);source.pop();s.token=redo?change.after:change.before;s.revision++;target.push(change)}return this.info(id)}
  private async selected(id:string,options:TableExport){const s=this.get(id),revision=s.revision;if(s.readonly)throw new Error('La muestra no permite exportar el archivo ni selecciones.');let indices:number[];if(options.scope==='selection'&&options.range){const selected=await this.rangeRows(id,options.range);return{rows:selected.indices.map(i=>selected.columns.map(col=>s.rows[i].cells[col]??'')),headers:selected.columns.map(col=>s.headers[col])}}if(options.scope==='filtered')indices=await this.indices(id,options.query??{offset:0,limit:500,requestId:0});else if(options.scope==='selection'){const ids=new Set(options.rowIds??[]);indices=s.rows.flatMap((row,i)=>ids.has(row.id)?[i]:[])}else indices=s.rows.map((_,i)=>i);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.');const columns=options.columns??s.headers.map((_,i)=>i);if(columns.some(i=>!Number.isInteger(i)||i<0||i>=s.headers.length))throw new Error('Selección de columnas no válida.');return{rows:indices.map(i=>columns.map(col=>s.rows[i].cells[col]??'')),headers:columns.map(col=>s.headers[col])}}
  async analysisStart(id:string,ticket:string,revision:number,path:string|null,query?:TableQuery,where?:TableConditionGroup){
-  const s=this.get(id);if(s.revision!==revision)throw new Error('La tabla cambió. Vuelve a analizar.');if(s.headers.length>ANALYSIS_LIMITS.columns)throw new Error('El análisis admite hasta 200 columnas por fuente.')
+  const s=this.get(id,true);if(s.revision!==revision)throw new Error('La tabla cambió. Vuelve a analizar.');if(s.headers.length>ANALYSIS_LIMITS.columns)throw new Error('El análisis admite hasta 200 columnas por fuente.')
   if(s.readonly&&!path)throw new Error('La muestra necesita su archivo original para el análisis completo.')
-  if(s.readonly&&query)throw new Error('La vista filtrada de una muestra no representa el archivo completo. Elige documento completo.')
+  if(s.readonly&&query)throw new Error(s.large?'La vista filtrada no está disponible en archivos grandes. Elige documento completo.':'La vista filtrada de una muestra no representa el archivo completo. Elige documento completo.')
   const ensure=()=>{const active=this.streams.get(ticket);if(!active||this.states.get(id)!==s||s.revision!==revision)throw new Error('Transferencia cancelada: cambió la fuente o la solicitud.')}
   const filter=where?.conditions.length?compileTableQuery({...where,offset:0,limit:1,requestId:0},s.headers.length).matches:undefined
   const indices=()=>this.indices(id,{...query!,order:[],sort:undefined},ensure)
   const records=s.readonly?fileRecords(path!,s,ensure):(async function*(){for(const index of query?await indices():s.rows.keys()){ensure();yield s.rows[index].cells}})()
   this.streams.set(ticket,{id,iterator:arrowBatches(records,s.headers.length,ensure,filter)})
-  return{headers:[...s.headers],revision:s.revision,readonly:s.readonly}
+  return{headers:[...s.headers],revision:s.revision,readonly:s.readonly,large:s.large?true:undefined}
  }
  async analysisNext(ticket:string){const active=this.streams.get(ticket);if(!active)throw new Error('La transferencia ya no está disponible.');try{const chunk=await active.iterator.next();if(chunk.done){this.streams.delete(ticket);return{done:true as const,rows:0}}return{done:false as const,...chunk.value}}catch(error){this.streams.delete(ticket);throw error}}
  async analysisClose(ticket:string){const active=this.streams.get(ticket);this.streams.delete(ticket);await active?.iterator.return().catch(()=>{})}

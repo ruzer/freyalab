@@ -55,8 +55,8 @@ export class SqlService {
    this.check(job);const record=this.docs.get(input.id);if(record.info.kind!=='csv'||record.info.revision!==input.revision)throw new Error('Una fuente no es CSV o cambió de revisión.')
    const ticket=randomUUID(),table=index===0?'datos':`tabla_${index+1}`
    try{
-    const meta=await this.docs.table.call<{headers:string[];revision:number;readonly:boolean}>('analysisStart',input.id,ticket,input.revision,record.info.path,input.query,input.where)
-    const source:SqlSource={id:input.id,name:record.info.name,revision:input.revision,table,columns:sqlColumns(meta.headers),rows:0,fromDisk:meta.readonly,filtered:!!input.query||!!input.where?.conditions.length,...input.where?.conditions.length?{where:input.where}:{}};job.sources.push(source)
+    const meta=await this.docs.table.call<{headers:string[];revision:number;readonly:boolean;large?:boolean}>('analysisStart',input.id,ticket,input.revision,record.info.path,input.query,input.where)
+    const source:SqlSource={id:input.id,name:record.info.name,revision:input.revision,table,columns:sqlColumns(meta.headers),rows:0,fromDisk:meta.readonly,large:meta.large,filtered:!!input.query||!!input.where?.conditions.length,...input.where?.conditions.length?{where:input.where}:{}};job.sources.push(source)
     if(meta.readonly&&record.info.path){const info=await stat(record.info.path);job.disk.set(input.id,{size:info.size,mtimeMs:info.mtimeMs})}
     await call('table',table,source.columns.map(column=>column.name))
     while(true){this.check(job);const batch=await this.docs.table.call<{data?:Uint8Array;rows:number;done:boolean}>('analysisNext',ticket);if(batch.done)break;cells+=batch.rows*source.columns.length;if(cells>8_000_000)throw new Error('El conjunto supera ocho millones de celdas. Reduce las fuentes.');await call('append',table,Buffer.from(batch.data!).toString('base64'));source.rows+=batch.rows;if(source.rows%10000===0)this.progress({requestId:job.id,phase:`Leyendo ${source.name}`,rows:source.rows})}

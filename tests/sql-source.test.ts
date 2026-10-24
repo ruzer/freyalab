@@ -24,9 +24,9 @@ it('cancela entre bloques por revisión, cierre o cancelación explícita y rech
  await engine.analysisStart('a','cancel',1,path);await engine.analysisClose('cancel');await expect(engine.analysisNext('cancel')).rejects.toThrow('disponible')
  await engine.analysisStart('a','closed',1,path);await engine.close('a');await expect(engine.analysisNext('closed')).rejects.toThrow('disponible')
 })
-it('lee íntegra una fuente de un millón por cuatro columnas que el editor limita a muestra',async()=>{
- const block=Array.from({length:1000},(_,i)=>`${String(i).padStart(5,'0')},Ciudad ${i%10},${i%100},nota`).join('\n')+'\n';await writeFile(path,'Código,Ciudad,Valor,Nota\n'+block.repeat(1000));const info=await engine.open('a',path);expect(info.readonly).toBe(true);expect(info.rowCount).toBe(200)
- await expect(engine.analysisStart('a','partial-filter',info.revision,path,{offset:0,limit:1,requestId:1,search:'Ciudad'})).rejects.toThrow('muestra no representa')
+it('lee íntegra una fuente de un millón por cuatro columnas que el editor abre como archivo grande',async()=>{
+ const block=Array.from({length:1000},(_,i)=>`${String(i).padStart(5,'0')},Ciudad ${i%10},${i%100},nota`).join('\n')+'\n';await writeFile(path,'Código,Ciudad,Valor,Nota\n'+block.repeat(1000));const info=await engine.open('a',path);expect(info.readonly).toBe(true);expect(info.large).toBe(true);expect(info.rowCount).toBe(1000000)
+ await expect(engine.analysisStart('a','partial-filter',info.revision,path,{offset:0,limit:1,requestId:1,search:'Ciudad'})).rejects.toThrow('archivos grandes')
  await engine.analysisStart('a','large',info.revision,path);let count=0;while(true){const chunk=await engine.analysisNext('large');if(chunk.done)break;const table=tableFromIPC(chunk.data);count+=chunk.rows;expect(table.numCols).toBe(4);expect(table.getChildAt(0)!.get(0)).toBe('00000')}
  expect(count).toBe(1000000);expect((await engine.info('a')).readonly).toBe(true);expect((await engine.info('a')).dirty).toBe(false)
  await engine.analysisStart('a','where-full-disk',info.revision,path,undefined,{filterMode:'all',conditions:[{column:1,op:'equals',value:'Ciudad 9'}]});let matching=0;while(true){const chunk=await engine.analysisNext('where-full-disk');if(chunk.done)break;matching+=chunk.rows;const table=tableFromIPC(chunk.data);expect(table.getChildAt(1)!.get(0)).toBe('Ciudad 9')}expect(matching).toBe(100000)
