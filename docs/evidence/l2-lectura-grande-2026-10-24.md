@@ -44,3 +44,13 @@ Con esos tres cambios, 15 saltos seguidos en una tabla de 4,6 M de filas (inclui
 - La cancelación de la apertura se comprobó en el motor (prueba unitaria) pero no con una prueba E2E: exige un archivo lo bastante grande para que haya tiempo de pulsar el botón.
 - Escalas: probado hasta 4,6 M de filas (escala ≈ 10×). Con decenas de millones de filas la barra de desplazamiento pierde precisión por diseño (≈ 12 500 filas por píxel de barra a 10 M) y hay que navegar con «Ir a la fila».
 - No se probó con lector de pantalla; la ventana de «Ir a la fila» es un formulario sencillo con etiqueta y mensaje `role="alert"`.
+
+## Resolución de conflictos con main — 24 de octubre
+
+Se incorporó `main` en `d54006a` a L2, conservando los menús de columna de #56 y la navegación y restricciones de archivos grandes de #57. Se unieron los estilos de ambos cambios. No se añadieron dependencias.
+
+La combinación exponía «Filtrar esta columna» en modo grande. La regresión en `large-file.spec.ts` falló antes del ajuste y pasó después: comprueba que las acciones no disponibles del nuevo menú siguen deshabilitadas y que el documento y el archivo original permanecen intactos. «Estadísticas de la columna» queda igualmente bloqueado; el panel general conserva su aviso.
+
+Validación local en macOS: `npm run check` sin errores ni advertencias; `npm test` 267/267; `npm run build` correcto; experimento de edición grande 41/41. `npm run test:e2e`: **170/171**, incluidos los nueve casos de menús de columna y los cuatro de archivos grandes. Falló el caso ya documentado de redimensionamiento (`virtual-scroll.spec.ts:100`): con altura 1200, última fila 999 979 en lugar de 1 000 000. Ese test, el módulo de desplazamiento y su efecto de cambio de escala no se modificaron en esta resolución. El fallo sigue pendiente; no se ocultó con reintentos ni se relajó la prueba.
+
+Esta evidencia acredita la resolución y las comprobaciones locales, no una CI completamente aprobada ni la instalación del paquete.

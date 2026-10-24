@@ -1,7 +1,7 @@
 <script lang="ts">
  import {onMount,onDestroy,untrack} from 'svelte'
  import type {TableRangeEdit,TableRangePreview} from '../../shared/types'
- let {id,initial,cut=false,documentScope=false,onapply,onclose,onerror}:{id:string;initial:TableRangeEdit;cut?:boolean;documentScope?:boolean;onapply:(edit:TableRangeEdit,cancelled:()=>boolean)=>Promise<string|null>;onclose:()=>void;onerror:(text:string)=>void}=$props()
+ let {id,initial,cut=false,documentScope=false,column,onapply,onclose,onerror}:{id:string;initial:TableRangeEdit;cut?:boolean;documentScope?:boolean;column?:{name:string;rows:number;hidden:number;title:string};onapply:(edit:TableRangeEdit,cancelled:()=>boolean)=>Promise<string|null>;onclose:()=>void;onerror:(text:string)=>void}=$props()
  let edit=$state(untrack(()=>structuredClone($state.snapshot(initial)))),preview=$state<TableRangePreview|null>(null),busy=$state(false),message=$state(''),processed=$state(0),external=$state(false),dialog:HTMLDialogElement
  let active:string|undefined,applying=false,cancelled=false,closing=false
  const labels={fill:'Rellenar rango',clear:'Vaciar rango',trim:'Quitar espacios del rango',upper:'Mayúsculas en el rango',lower:'Minúsculas en el rango',replace:'Reemplazar en el rango',paste:'Pegar bloque en el rango'}
@@ -27,8 +27,8 @@
  }
 </script>
 <dialog bind:this={dialog} aria-labelledby="range-preview-title" oncancel={event=>{event.preventDefault();close()}}>
- <h3 id="range-preview-title">{documentScope?'Reemplazar en documento':cut?'Cortar rango':labels[edit.operation]}</h3>
- <p>{documentScope?'Documento completo: incluye filas ocultas por búsqueda o filtros y las columnas indicadas en la vista previa. Reemplazo literal que distingue mayúsculas; no cambia encabezados.':'Solo las celdas del rango visible. Los encabezados y las filas ocultas se conservan.'} Un paso de deshacer.</p>
+ <h3 id="range-preview-title">{documentScope?'Reemplazar en documento':cut?'Cortar rango':column?column.title:labels[edit.operation]}</h3>
+ <p>{column?`Alcance: columna «${column.name}» · ${column.rows.toLocaleString()} ${column.rows===1?'fila':'filas'} de la vista actual.${column.hidden?` ${column.hidden.toLocaleString()} ${column.hidden===1?'fila oculta':'filas ocultas'} por búsqueda o filtros no se modifican.`:''} Los encabezados se conservan.`:documentScope?'Documento completo: incluye filas ocultas por búsqueda o filtros y las columnas indicadas en la vista previa. Reemplazo literal que distingue mayúsculas; no cambia encabezados.':'Solo las celdas del rango visible. Los encabezados y las filas ocultas se conservan.'} Un paso de deshacer.</p>
  <form onsubmit={event=>{event.preventDefault();void inspect()}}>
   {#if edit.operation==='replace'}<label>Buscar <input aria-label="Buscar dentro del rango" bind:value={edit.find} oninput={invalidate} required disabled={busy||external}/></label>{/if}
   {#if ['fill','replace'].includes(edit.operation)}<label>{edit.operation==='fill'?'Valor para todas las celdas':'Reemplazar por'}<textarea aria-label="Valor del rango" bind:value={edit.value} oninput={invalidate} disabled={busy||external} rows="3"></textarea></label>{/if}

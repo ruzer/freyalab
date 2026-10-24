@@ -48,6 +48,10 @@ test('lo que aún no existe en archivos grandes está deshabilitado y el documen
  await expect(bar.getByLabel('Filtrar',{exact:true})).toHaveAttribute('aria-disabled','true')
  await bar.getByLabel('Filtrar',{exact:true}).click();await expect(bar.locator('details[open]')).toHaveCount(0) // el menú de filtros no se abre
  await expect(page.locator('.sort-button').first()).toBeDisabled() // la cabecera ya no ordena
+ await page.getByRole('button',{name:'Acciones de la columna id',exact:true}).click()
+ const menu=page.getByRole('menu',{name:'Acciones de columnas',exact:true});await expect(menu).toBeVisible()
+ for(const item of await menu.getByRole('menuitem').all())await expect(item).toBeDisabled()
+ await page.keyboard.press('Escape');await expect(menu).toHaveCount(0)
  await cell(2).dblclick();await expect(page.getByLabel('Editar celda',{exact:true})).toHaveCount(0)
  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click();await expect(page.getByRole('alert')).toHaveCount(0) // sin error por pedir estadísticas
  await bar.getByLabel('Analizar',{exact:true}).click();await expect(page.getByRole('tabpanel',{name:'Resumen'})).toContainText('aún no están disponibles en archivos grandes')
