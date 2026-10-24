@@ -318,6 +318,7 @@ Cada paso es un PR pequeño y verificable, con la prueba que falla primero.
 | **L7** | Filas y columnas estructurales (altas/bajas, cabecera) con la capa/versión | índice reconstruido tras altas/bajas | propuesto |
 | **L8** | Gráficos y SQL sobre fuentes grandes; **aquí entra la decisión de DuckDB nativo** (puerta de §7.4) | seguridad y empaquetado en 4 SO | condicionado |
 | **L9** | Endurecimiento: pérdida de energía, Windows/Linux a escala, benchmarks nocturnos 1/5/10 GiB, unificación o retirada del motor en memoria | umbrales de §9 en las 3 plataformas | propuesto |
+| **E0 — complementario** | [Paridad, motores y extractos](LARGE-DATA-EXTRACTS.md), recetas evaluadas y política de privacidad/disco; 100 MiB/1 GiB frente a oráculo independiente. **No sustituye L3 ni L4–L9** | evidencia y PR en borrador; sin cambios de producto ni dependencias nuevas; E1 sólo tras aprobación | evaluación del 24-oct-2026; ver [evidencia](../evidence/e0-extractos-2026-10-24.md) |
 
 ## 12. Recomendación
 

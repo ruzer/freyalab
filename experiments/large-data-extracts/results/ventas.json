@@ -1,0 +1,1126 @@
+{
+  "schema": 1,
+  "consulted_at": "2026-10-24T07:00:58.432508+00:00",
+  "base_sha": "a1cd9fd6d354ca004da59e57dc966fcc11a69b54",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "hardware": [
+    "Apple M2 Max",
+    "34359738368"
+  ],
+  "method": "una repetición, un proceso por motor/tarea, caché caliente por SHA-256 previo, time -l RSS bytes, pared incluye arranque; verificación excluida del tiempo",
+  "versions": {
+    "python": "Python 3.15.0",
+    "pandas": "3.12.14 2.2.3",
+    "node": "v24.22.1",
+    "duckdb": "v1.5.6 (Variegata) 069cc9f9b5"
+  },
+  "files": [
+    {
+      "file": "ventas_100MiB.csv",
+      "bytes": 104878987,
+      "encoding": "utf-8",
+      "sha256_before": "826c9d2a98639425e02a09df97d909671bfd67ee4851f8c4f79aa046990d6a9d",
+      "sha256_after": "826c9d2a98639425e02a09df97d909671bfd67ee4851f8c4f79aa046990d6a9d"
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "bytes": 1073832889,
+      "encoding": "utf-8",
+      "sha256_before": "c6e427b9fda544b580e049855086427b2472c55f4b96ac61c511abc5ffdb31a5",
+      "sha256_after": "c6e427b9fda544b580e049855086427b2472c55f4b96ac61c511abc5ffdb31a5"
+    }
+  ],
+  "results": [
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 0.993666458001826,
+      "max_rss_bytes": 19677184,
+      "exit_code": 0,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T2",
+      "wall_seconds": 1.0323143329587765,
+      "max_rss_bytes": 19595264,
+      "exit_code": 0,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T3",
+      "wall_seconds": 1.1913272500387393,
+      "max_rss_bytes": 19955712,
+      "exit_code": 0,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4766906,
+      "output_sha256": "c0651db9ee5db248e518c2796953e22f2b91aa0c28314b10768402b0f95671de",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Python csv.writer"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T4",
+      "wall_seconds": 1.609865834005177,
+      "max_rss_bytes": 19513344,
+      "exit_code": 0,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T5",
+      "wall_seconds": 2.31568216701271,
+      "max_rss_bytes": 19857408,
+      "exit_code": 0,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104767501,
+      "output_sha256": "c1555a527b1b90ab9ec61523965b911976e705bbce4d2e78f76c63ce06fb69be",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T6",
+      "wall_seconds": 1.254835500032641,
+      "max_rss_bytes": 19709952,
+      "exit_code": 0,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T1",
+      "wall_seconds": 0.2626099999761209,
+      "max_rss_bytes": 141705216,
+      "exit_code": 0,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T2",
+      "wall_seconds": 0.602536499965936,
+      "max_rss_bytes": 141918208,
+      "exit_code": 0,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T3",
+      "wall_seconds": 1.0283827919629402,
+      "max_rss_bytes": 199081984,
+      "exit_code": 0,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4766906,
+      "output_sha256": "c0651db9ee5db248e518c2796953e22f2b91aa0c28314b10768402b0f95671de",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "PoC bulkTransform; campos proyectados serializados"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T4",
+      "wall_seconds": 0.698056707973592,
+      "max_rss_bytes": 142475264,
+      "exit_code": 0,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T5",
+      "wall_seconds": 1.1036995419999585,
+      "max_rss_bytes": 267567104,
+      "exit_code": 0,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104767501,
+      "output_sha256": "c1555a527b1b90ab9ec61523965b911976e705bbce4d2e78f76c63ce06fb69be",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T6",
+      "wall_seconds": 1.2242481249850243,
+      "max_rss_bytes": 142491648,
+      "exit_code": 0,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 0.3429645409923978,
+      "max_rss_bytes": 131022848,
+      "exit_code": 0,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T2",
+      "wall_seconds": 0.3441803330206312,
+      "max_rss_bytes": 130138112,
+      "exit_code": 0,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T3",
+      "wall_seconds": 0.3791307909996249,
+      "max_rss_bytes": 131383296,
+      "exit_code": 0,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4654672,
+      "output_sha256": "fb3d3498725d5c2cdf83d43e9fa6beb6fe795a4e757834ffd08f1939a5cc9234",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T4",
+      "wall_seconds": 0.6918877499992959,
+      "max_rss_bytes": 133316608,
+      "exit_code": 0,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T5",
+      "wall_seconds": 0.8171771659981459,
+      "max_rss_bytes": 133480448,
+      "exit_code": 0,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104468950,
+      "output_sha256": "57c0f8d8cb4d9fc457e7b3988153af48d6059d9c5c8b3ae1e2b638bab3be41cb",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "967d7a9cc71ec66c46e55ef172dbb18e544563aa8b2d673887239405b4cc364a"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T6",
+      "wall_seconds": 0.5182307090144604,
+      "max_rss_bytes": 132481024,
+      "exit_code": 0,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "pandas",
+      "task": "T1",
+      "wall_seconds": 1.424935958988499,
+      "max_rss_bytes": 254525440,
+      "exit_code": 0,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "pandas",
+      "task": "T2",
+      "wall_seconds": 1.4707396669546142,
+      "max_rss_bytes": 249561088,
+      "exit_code": 0,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "pandas",
+      "task": "T3",
+      "wall_seconds": 1.62735112500377,
+      "max_rss_bytes": 251740160,
+      "exit_code": 0,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4766906,
+      "output_sha256": "c0651db9ee5db248e518c2796953e22f2b91aa0c28314b10768402b0f95671de",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Python csv.writer"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "pandas",
+      "task": "T4",
+      "wall_seconds": 2.1287192910094745,
+      "max_rss_bytes": 255049728,
+      "exit_code": 0,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "pandas",
+      "task": "T5",
+      "wall_seconds": 2.72958754200954,
+      "max_rss_bytes": 254181376,
+      "exit_code": 0,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104767501,
+      "output_sha256": "c1555a527b1b90ab9ec61523965b911976e705bbce4d2e78f76c63ce06fb69be",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "pandas",
+      "task": "T6",
+      "wall_seconds": 1.7512125000357628,
+      "max_rss_bytes": 254869504,
+      "exit_code": 0,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 10.092494374956004,
+      "max_rss_bytes": 19644416,
+      "exit_code": 0,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T2",
+      "wall_seconds": 10.480487916036509,
+      "max_rss_bytes": 19759104,
+      "exit_code": 0,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T3",
+      "wall_seconds": 11.876811291032936,
+      "max_rss_bytes": 19578880,
+      "exit_code": 0,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 48751376,
+      "output_sha256": "ca98b9e07f63a3072f3d32887d1bdf932917fc87aef3dcf6f51c593760051b75",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Python csv.writer"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T4",
+      "wall_seconds": 16.598119832982775,
+      "max_rss_bytes": 19890176,
+      "exit_code": 0,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T5",
+      "wall_seconds": 23.364729208988138,
+      "max_rss_bytes": 19906560,
+      "exit_code": 0,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1072687805,
+      "output_sha256": "aa54fc7ff2745f055a8e89bf10dfb5f3261defa4a09c33fe865665003acb419a",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T6",
+      "wall_seconds": 12.706493915989995,
+      "max_rss_bytes": 19709952,
+      "exit_code": 0,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T1",
+      "wall_seconds": 1.9590496660093777,
+      "max_rss_bytes": 201031680,
+      "exit_code": 0,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T2",
+      "wall_seconds": 5.7668529999791645,
+      "max_rss_bytes": 232292352,
+      "exit_code": 0,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T3",
+      "wall_seconds": 9.424778916989453,
+      "max_rss_bytes": 335822848,
+      "exit_code": 0,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 48751376,
+      "output_sha256": "ca98b9e07f63a3072f3d32887d1bdf932917fc87aef3dcf6f51c593760051b75",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "PoC bulkTransform; campos proyectados serializados"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T4",
+      "wall_seconds": 6.651631957967766,
+      "max_rss_bytes": 232816640,
+      "exit_code": 0,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T5",
+      "wall_seconds": 10.48125762498239,
+      "max_rss_bytes": 276086784,
+      "exit_code": 0,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1072687805,
+      "output_sha256": "aa54fc7ff2745f055a8e89bf10dfb5f3261defa4a09c33fe865665003acb419a",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T6",
+      "wall_seconds": 11.832842917006928,
+      "max_rss_bytes": 232554496,
+      "exit_code": 0,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 3.1238226670539007,
+      "max_rss_bytes": 505495552,
+      "exit_code": 0,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T2",
+      "wall_seconds": 3.1656711249961518,
+      "max_rss_bytes": 505659392,
+      "exit_code": 0,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T3",
+      "wall_seconds": 3.4290162500110455,
+      "max_rss_bytes": 505872384,
+      "exit_code": 0,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 47604568,
+      "output_sha256": "0fd514be341e70c4ceff5b3de7ea585d30f16d36ba103cc5ffaa0865c362b0ee",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T4",
+      "wall_seconds": 6.762930917029735,
+      "max_rss_bytes": 508706816,
+      "exit_code": 0,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T5",
+      "wall_seconds": 8.034546624985524,
+      "max_rss_bytes": 523878400,
+      "exit_code": 0,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1069630630,
+      "output_sha256": "7727f9d6a6f6f379ab7848012217c406d119099839e1bbd015a1fbca49a841ff",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "e357a09765c6569fe636f506de2c21118127cb36a1171796064316aa878753d5"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T6",
+      "wall_seconds": 4.941757916996721,
+      "max_rss_bytes": 523026432,
+      "exit_code": 0,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "pandas",
+      "task": "T1",
+      "wall_seconds": 13.586422874999698,
+      "max_rss_bytes": 570769408,
+      "exit_code": 0,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "pandas",
+      "task": "T2",
+      "wall_seconds": 13.71706950000953,
+      "max_rss_bytes": 570179584,
+      "exit_code": 0,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "pandas",
+      "task": "T3",
+      "wall_seconds": 15.172493333055172,
+      "max_rss_bytes": 571310080,
+      "exit_code": 0,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 48751376,
+      "output_sha256": "ca98b9e07f63a3072f3d32887d1bdf932917fc87aef3dcf6f51c593760051b75",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Python csv.writer"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "pandas",
+      "task": "T4",
+      "wall_seconds": 21.13663808297133,
+      "max_rss_bytes": 573358080,
+      "exit_code": 0,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "pandas",
+      "task": "T5",
+      "wall_seconds": 27.6931727079791,
+      "max_rss_bytes": 572129280,
+      "exit_code": 0,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1072687805,
+      "output_sha256": "aa54fc7ff2745f055a8e89bf10dfb5f3261defa4a09c33fe865665003acb419a",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "pandas",
+      "task": "T6",
+      "wall_seconds": 17.24909666698659,
+      "max_rss_bytes": 570458112,
+      "exit_code": 0,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    }
+  ],
+  "script_sha256": {
+    "large-data-extracts/benchmark.py": "e489b0a08d17044df2d71665c0e31078cd6080c933b156de98ba78ba040ba50b",
+    "large-data-extracts/common.py": "51e7e1f57460958a63034b2d7ff55f0a81ae6c56053fd3ebdde07e15e1b3fa60",
+    "large-data-extracts/node_worker.mjs": "b2a30523a7bea1d5cc0765c696380e8095049c54037e727b164a7da59a852101",
+    "large-data-extracts/python_worker.py": "3869a221ef6917347f41920811d2743549dee227563492c465e0cdc500727c57",
+    "large-data-extracts/test_experiment.py": "1d4f105797defe21186dfdd7da981f6225f24b48c8b6975492f9d2985568a811",
+    "large-file-editor/lib/document.mjs": "ba3e9fa59fbf67747d011a458c2828e0b8852c8ad44a9523f015840c051a733c",
+    "large-file-editor/lib/fields.mjs": "434458c907b58978adccc1bb6b1cee510820940a1fba28835ff14dfba01b980b",
+    "large-file-editor/lib/record-index.mjs": "7a3f645e5a11236b07de15ca543b6c4d438989204b62c9c572dac802ecd98b25"
+  }
+}
