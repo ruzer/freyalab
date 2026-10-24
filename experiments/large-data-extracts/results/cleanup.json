@@ -1,0 +1,74 @@
+{
+  "removed": [
+    {
+      "run": "freyalab-e0-micro-1",
+      "subdirectory": "artifacts",
+      "bytes": 0,
+      "absent_after": true
+    },
+    {
+      "run": "freyalab-e0-micro-2",
+      "subdirectory": "artifacts",
+      "bytes": 3324,
+      "absent_after": true
+    },
+    {
+      "run": "freyalab-e0-micro-3",
+      "subdirectory": "artifacts",
+      "bytes": 3451,
+      "absent_after": true
+    },
+    {
+      "run": "freyalab-e0-micro-4",
+      "subdirectory": "artifacts",
+      "bytes": 3324,
+      "absent_after": true
+    },
+    {
+      "run": "freyalab-e0-formatos-final",
+      "subdirectory": "artifacts",
+      "bytes": 3324,
+      "absent_after": true
+    },
+    {
+      "run": "freyalab-e0-ventas-final",
+      "subdirectory": "artifacts",
+      "bytes": 0,
+      "absent_after": true
+    },
+    {
+      "run": "freyalab-e0-edges-final",
+      "subdirectory": "fixtures",
+      "bytes": 1782,
+      "absent_after": true
+    },
+    {
+      "run": "freyalab-e0-edges-final",
+      "subdirectory": "outputs",
+      "bytes": 1581,
+      "absent_after": true
+    },
+    {
+      "run": "freyalab-e0-edges-final",
+      "subdirectory": "scratch",
+      "bytes": 0,
+      "absent_after": true
+    }
+  ],
+  "sources_unchanged": [
+    {
+      "file": "ventas_100MiB.csv",
+      "sha256": "826c9d2a98639425e02a09df97d909671bfd67ee4851f8c4f79aa046990d6a9d"
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "sha256": "c6e427b9fda544b580e049855086427b2472c55f4b96ac61c511abc5ffdb31a5"
+    }
+  ],
+  "generator_smoke": {
+    "records": 1000,
+    "bytes": 234767,
+    "sha256": "f65996ccbf531d9c091738afdc3a84c25a2e35b932c53d754d0223807d5d3ec1",
+    "matches_received_first_1000_rows": true
+  }
+}

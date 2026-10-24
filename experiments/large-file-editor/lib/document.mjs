@@ -175,8 +175,9 @@ export async function bulkTransform(srcPath,dstPath,fn,{delimiter=',',encoding,s
   const emit=raw=>{ // síncrono: los trozos de salida se acumulan y se escriben una vez por bloque
    const {body,eol}=splitEol(decode(raw,meta.encoding)),fields=splitFields(body,delimiter),values=fields.map(f=>f.value)
    const next=fn(values,ordinal++)
+   if(next===null){changed++;return}
    if(next===undefined||next.length===values.length&&next.every((v,i)=>v===values[i])){out.push(raw);return}
-   changed++;if(next===null)return
+   changed++
    const text=next.map((v,i)=>fields[i]&&v===values[i]?fields[i].text:serializeField(v,delimiter,fields[i]?.quoted)).join(delimiter)
    out.push(encode(text+eol,meta.encoding))
   }
