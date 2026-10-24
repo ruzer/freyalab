@@ -1,6 +1,6 @@
 # E0 — Editar archivos grandes y trabajar con extractos
 
-Fecha: **24 de octubre de 2026**. Estado: **evaluación; no cambia el producto**. Rama `codex/e0-extractos`, worktree independiente. Base de producto `36c99766d62aca23792d1c28cabebd66422f069e`; el checkout del usuario y la aplicación instalada no se modifican.
+Fecha: **24 de octubre de 2026**. Estado: **evaluación; no cambia el producto**. Rama `codex/e0-extractos`, worktree independiente. Base del ensayo `36c99766d62aca23792d1c28cabebd66422f069e`; base del PR actualizada a `3c3c9ac0a694fcf3b4c7cbc265821485d29b3c97` tras la fusión de #56 por el usuario. El checkout del usuario y la aplicación instalada no se modifican.
 
 ## Decisión propuesta
 
@@ -15,6 +15,7 @@ Este documento y los experimentos implementan **únicamente E0**. Crear extracto
 La [matriz por acción](../../experiments/large-data-extracts/PARITY.md) inventaría apertura, navegación, selección, edición, portapapeles, búsqueda, filtros, ordenamiento, transformaciones, historial, estadísticas, gráficos, SQL, exportación y guardado. Se verificó contra SHA inmutables:
 
 - `main@db9f462` y `main@36c9976` tienen el mismo producto; #58 sólo corrige una prueba de desplazamiento.
+- `main@3c3c9ac` incorpora #56: menú por columna y acceso contextual a operaciones existentes; no cambia el motor de datos ni desbloquea L3/E1. La matriz conserva sus referencias inmutables y documenta este delta; las comprobaciones del PR se repiten sobre esta base.
 - #57/L2 `b5e379f` añade lectura grande paginada, no edición completa. Se describe por separado de `main`.
 - SQL/gráficos tienen una ruta sobre el original completo, pero **256 MiB por fuente y ocho millones de celdas**, contabilizadas antes del filtro. Filtrar desde esos paneles no permite cargar un archivo de 1 GiB. Incluso el archivo de ventas de 100 MiB excede ese límite de celdas.
 - E1 podría producir un documento pequeño editable; si el resultado supera 50 MiB o dos millones de celdas, continúa necesitando el modo grande y L3. «Extraído» no significa «editable íntegramente hoy».
@@ -79,14 +80,14 @@ Ver [mediciones E0](../evidence/e0-extractos-2026-10-24.md) y [comandos del banc
 | Capacidad | Propuesta | Motivo / coste / pendiente |
 |---|---|---|
 | Modelo canónico, edición directa y bytes sin tocar | Motor textual + L2/L3; no dataframe rectangular como fuente canónica | Mantiene ausente/vacío, offsets, overlay/diario y la ruta existente; integración y recuperación de producto aún L3–L9 |
-| E1: filtro/proyección a archivo explícito | Reutilizar lector **validado de L2**, serialización existente y comprobaciones independientes | Sin dependencia nueva. El PoC permisivo de E0 no es un extractor listo para producto; exigir rechazo de malformados, cancelación y limpieza |
+| E1: filtro/proyección a archivo explícito | Reutilizar autorización/flujo de L2 y `csv-parse` ya instalado para validación estricta, con serialización existente | Sin dependencia nueva. Ni el PoC ni L2 son un parser estricto general; exigir rechazo de malformados/UTF-16 impar, cancelación y limpieza. Medir el coste de esa validación; no atribuirle los tiempos del escáner permisivo |
 | Búsqueda, reemplazo literal y copia de registros intactos | Recorrido en flujo existente, endurecido, con versión nueva para cambio masivo | Se evita reescribir registros sin cambios; coste de pasada completa y espacio de salida. La anomalía de 10 GiB del RFC sigue abierta |
 | Agregaciones/ordenamiento/joins grandes | DuckDB nativo candidato para L8 | CLI mide capacidad del motor, no su embedding. MIT; binarios, firma, sandbox, límites/interrupt y versiones en cuatro destinos pendientes (§7.4) |
 | Oráculo, ensayos y validación independiente | Python `csv` estándar | PSF; ya instalado, sin coste de distribución. No convertirlo automáticamente en un segundo runtime de la aplicación |
 | Limpieza dataframe | No añadir pandas/Polars ahora | pandas comparado en una ruta concreta; no prueba una ventaja que compense el runtime. Polars/PyArrow y CLI adicionales sin medición local |
 | SQL/gráficos actuales | Conservar DuckDB-Wasm/Arrow y ECharts | Sin cambio arquitectónico; mantienen sus límites. Un extracto sólo ayuda si realmente cabe |
 
-**Cambio respecto a RFC §6/§12:** no cambia la adopción propuesta L2–L7 sin motor nuevo ni la puerta de L8. E0 añade la vía complementaria de extractos y demuestra que el lector del PoC no basta para aceptar archivos arbitrarios; el siguiente trabajo debe reutilizar la validación de L2 y conservar el objetivo L3. Las recetas se evalúan con más detalle; no se convierten en el almacén canónico ni en requisito para editar.
+**Cambio respecto a RFC §6/§12:** se mantiene L2–L7 sin motor nuevo y la puerta de L8, pero se añade una condición: la velocidad del escáner propio no acredita validación estricta. E0 demuestra límites del PoC; la inspección de `large-table.ts` en #57 también encuentra división tolerante y ausencia de rechazo general de comillas al EOF. Reutilizar `csv-parse` ya instalado o endurecer el lector con pruebas antes de escribir extractos; el coste de la ruta validada debe medirse en E1. Se añade la vía complementaria de extractos y se conserva L3. Las recetas no se convierten en almacén canónico ni requisito para editar.
 
 ## 6. Almacenamiento, privacidad y cierre
 

@@ -1,6 +1,6 @@
 # E0 — Mediciones de extractos, 24 de octubre de 2026
 
-**Medido localmente; no es una capacidad de producto ni una certificación multiplataforma.** Base de producto `36c99766d62aca23792d1c28cabebd66422f069e`; banco de ventas/formatos `a1cd9fd` con hashes de scripts en cada JSON. El sondeo de bordes registra sus propios hashes.
+**Medido localmente; no es una capacidad de producto ni una certificación multiplataforma.** Base del ensayo `36c99766d62aca23792d1c28cabebd66422f069e`; banco de ventas/formatos `a1cd9fd` (snapshot local antes del rebase), con hashes de scripts en cada JSON. El mismo contenido del banco está publicado en `ebe64a2` sobre `main@3c3c9ac`; se verificó por esos hashes, no se repitió el benchmark por un cambio de menús. El sondeo de bordes registra sus propios hashes.
 
 ## Equipo y método
 
@@ -79,13 +79,13 @@ En los fixtures pequeños con todos los campos entrecomillados, los tres escrito
 | Comilla sin cerrar; T1 | Rechazo de parsing | **Acepta entrada inválida** | Error de enlace `force_not_null/notas`; no demuestra rechazo correcto del parser | Rechazo de parsing |
 | UTF-16 de longitud impar; T1 | Rechazo de decodificación | **Timeout 2 s**, grupo terminado; no es rechazo correcto | Rechazo en detección CSV | Rechazo de decodificación |
 
-No se incorpora el escáner permisivo del PoC a producción. E1 debe usar la validación de L2 y pruebas de rechazo/terminación, no sólo copiar este comparador. No se habilita `ignore_errors`, padding silencioso ni conversiones automáticas para fabricar paridad.
+No se incorpora el escáner permisivo del PoC a producción. E1 necesita validación estricta y pruebas de rechazo/terminación, reutilizando `csv-parse` instalado o endureciendo el lector. Tampoco se presupone que L2 ya la resuelva: `large-table.ts` de #57 declara `splitFields` tolerante y su indexado no rechaza genéricamente comillas abiertas al EOF (hallazgo por código, no nuevo ensayo de L2). Sus controles de tamaño no equivalen a esa validación. La ruta estricta no hereda automáticamente los tiempos del PoC. No se habilita `ignore_errors`, padding silencioso ni conversiones automáticas para fabricar paridad.
 
 ## Pruebas y alcance de la revisión
 
 - Prueba roja inicial del banco: módulo de integridad ausente; después, siete pruebas Python pasan. Incluyen sumas independientes calculadas a mano, IDs, aridad, BOM, multilínea y rechazo de comillas.
 - Prueba roja de extracción PoC: `bulkTransform` accedía a `null.length` antes de omitir una fila. Corrección mínima **sólo experimental**, ahora 41/41 tests Node. No hay cambio de `src/`.
-- `npm run check`: 0 errores y 0 avisos. `npm test`: 249/249, 26 archivos. `npm run build`: correcto. `npm run test:e2e`: **158/158, 5,5 min**, una sola suite nativa. CI del PR se registra al finalizar.
+- Sobre la base inicial `36c9976`: check sin errores/avisos, 249/249 unitarias, build correcto y 158/158 E2E. Tras incorporar `main@3c3c9ac` (#56), se repitieron las cuatro comprobaciones: **check sin errores/avisos, 249/249 unitarias (26 archivos), build correcto y 167/167 E2E (5,6 min)**. Una sola suite nativa a la vez. La CI del PR se consulta en GitHub; no queda certificada por este resultado local.
 - La matriz de paridad es auditoría por código; no se reejecutó L2/#57 ni se certifican sus pruebas aquí. #58 fue fusionado por el usuario, no por E0.
 
 Pendiente de producto: L3–L9, cancelación por IPC/latencias del motor, falta de disco/caída al extraer, seguridad de SO, firma/empaquetado y escala Windows/Linux/Intel; motor Python distribuido y alternativas no instaladas sin medición. La anomalía de transformación a 10 GiB del RFC sigue sin resolver.

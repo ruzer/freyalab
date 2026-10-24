@@ -4,10 +4,11 @@ Fecha de revisión: 24 de octubre de 2026. **Auditoría estática; no se ejecut�
 
 ## Referencias y alcance
 
-Se comparan dos árboles inmutables, no el checkout del usuario ni una mezcla de ramas:
+La matriz conserva dos árboles inmutables como cortes de auditoría; el delta posterior de interfaz se identifica aparte, sin mezclar sus referencias:
 
 - **M — corte de `main` auditado: `db9f462bc4bddf3b635a8f7d2aebfdc73b711de1`.** Un CSV que supera los límites se muestra como muestra de solo lectura. El `main` posterior, `36c99766d62aca23792d1c28cabebd66422f069e`, incorpora #58: el único archivo que cambia desde M es `tests/e2e/virtual-scroll.spec.ts`. **El código de producto es equivalente y la matriz M sigue vigente para ese `main`.** La base de la rama E0 se actualizó a `36c9976`.
 - **G — L2 del [PR #57](https://github.com/ruzer/freyalab/pull/57): `b5e379fbaf319fe3a10f4e30379f4173586e762a`.** Añade lectura paginada del archivo grande y «Ir a la fila»; conserva las restricciones restantes. En la consulta de GitHub del 24-oct-2026 continúa abierto, en borrador, con CI verde en las cuatro plataformas; no está fusionado.
+- **C — `main` tras fusionar #56: `3c3c9ac0a694fcf3b4c7cbc265821485d29b3c97`.** La rama E0 se rebasó sobre este corte. Frente a `36c9976` cambia la UX del menú por columna, sus vistas previas, estilos, pruebas y evidencia; **no cambia `table-engine.ts` ni el motor de archivos**. La matriz M conserva validez sobre operaciones y límites; la disponibilidad de nuevos accesos se detalla abajo. C no incorpora L2, L3 ni E1 por esta fusión.
 - Instrucciones de E0: `CODEX-INSTRUCCIONES.md`, recibido en el scratchpad local el 24-oct-2026. E0 produce documentos y experimentos; E1 exige aprobación posterior.
 - [RFC de archivos grandes, §1 y §11 en M](https://github.com/ruzer/freyalab/blob/db9f462bc4bddf3b635a8f7d2aebfdc73b711de1/docs/design/LARGE-FILE-EDITOR-RFC.md#L306): L3–L9 siguen vigentes. Los extractos **complementan** la edición grande con capa y diario; no la sustituyen.
 - [Evaluación previa de bases analíticas](https://github.com/ruzer/freyalab/blob/db9f462bc4bddf3b635a8f7d2aebfdc73b711de1/docs/ANALYSIS-DATASETS.md): no se debe materializar automáticamente un CSV por cada filtro ni confundir receta, copia y resultado.
@@ -32,6 +33,20 @@ Las referencias abreviadas de las tablas remiten a estos archivos y líneas, sie
 | Analítica | [Límites y lectura CSV→Arrow](https://github.com/ruzer/freyalab/blob/db9f462bc4bddf3b635a8f7d2aebfdc73b711de1/src/main/analysis-source.ts#L12), [SqlService](https://github.com/ruzer/freyalab/blob/db9f462bc4bddf3b635a8f7d2aebfdc73b711de1/src/main/sql-service.ts#L36), [panel SQL](https://github.com/ruzer/freyalab/blob/db9f462bc4bddf3b635a8f7d2aebfdc73b711de1/src/renderer/components/CsvSql.svelte#L45) |
 | Gráficos | [Controles, alcance y exportación](https://github.com/ruzer/freyalab/blob/db9f462bc4bddf3b635a8f7d2aebfdc73b711de1/src/renderer/components/CsvCharts.svelte#L85), [consultas y límites](https://github.com/ruzer/freyalab/blob/db9f462bc4bddf3b635a8f7d2aebfdc73b711de1/src/shared/charts.ts#L2), [presets](https://github.com/ruzer/freyalab/blob/db9f462bc4bddf3b635a8f7d2aebfdc73b711de1/src/renderer/components/ChartPresets.svelte) |
 | Exportar | [Bloqueo de CSV de solo lectura; gráficos por ruta separada](https://github.com/ruzer/freyalab/blob/db9f462bc4bddf3b635a8f7d2aebfdc73b711de1/src/main/export.ts#L33), [resultados de gráficos y contexto](https://github.com/ruzer/freyalab/blob/db9f462bc4bddf3b635a8f7d2aebfdc73b711de1/src/main/chart-result.ts#L8) |
+
+### Delta de UX en C: #56 ya fusionado
+
+Se revisó únicamente el diff `36c9976..3c3c9ac`, sin repetir la auditoría del motor. El [menú de cabecera y los comandos de columna](https://github.com/ruzer/freyalab/blob/3c3c9ac0a694fcf3b4c7cbc265821485d29b3c97/src/renderer/components/CsvTable.svelte#L52) reutilizan operaciones existentes:
+
+| Acceso nuevo de #56 | Alcance real; operación que reutiliza |
+|---|---|
+| Botón ▾ por columna, menú contextual y comandos | Orden, filtros, estadísticas, limpieza, estructura e historial existentes; no hay otro motor de edición |
+| Filtrar esta columna | Muestra el filtro existente y lleva allí el foco |
+| Estadísticas de la columna | Marca esa columna y abre Resumen; no ejecuta por sí solo una nueva analítica ni cambia sus límites |
+| Mayúsculas, minúsculas y quitar espacios de columna | Construye un rango de **todas las filas de la vista actual** en esa columna, no solo la página visible; conserva filas ocultas. Reutiliza vista previa y deshacer del rango |
+| Quitar filas duplicadas de la columna | Preselecciona `deduplicate` en el asistente existente: **documento completo**, incluidas filas ocultas; no es el mismo alcance que la limpieza de columna sobre la vista |
+
+La [vista previa en C](https://github.com/ruzer/freyalab/blob/3c3c9ac0a694fcf3b4c7cbc265821485d29b3c97/src/renderer/components/CsvRangePreview.svelte#L30) explica columna, filas y ocultas; el [asistente](https://github.com/ruzer/freyalab/blob/3c3c9ac0a694fcf3b4c7cbc265821485d29b3c97/src/renderer/components/CsvTransform.svelte#L39) conserva su aviso de documento completo. En muestras las mutaciones siguen bloqueadas; los accesos de lectura describen la muestra. Al integrar #57 habrá que conservar sus guardias `large` en estos accesos: fusionar un menú no habilita su operación sobre GB. **No se entregan extracción ni capa/diario por #56.**
 
 ## Cómo leer la paridad
 
@@ -193,8 +208,8 @@ No hay importador general JSON/XLSX ni exportación JSON del **documento CSV com
 |---|---|---|
 | L1 / [#52](https://github.com/ruzer/freyalab/pull/52) | Navegación más allá del techo de altura de Chromium; presente en M | No lee ni edita GB por sí solo |
 | L2 / [#57](https://github.com/ruzer/freyalab/pull/57) | Abierto, en borrador; cuatro CI satisfactorios en la consulta del 24-oct. Índice/páginas/ir a fila/progreso/cancelación; comparado en G | No está fusionado; no habilita las operaciones bloqueadas ni el análisis ilimitado |
-| [#56](https://github.com/ruzer/freyalab/pull/56) | Abierto, fuera de borrador; cuatro CI satisfactorios en la consulta del 24-oct. Menú por columna en rama independiente; coordinar al integrar UI futura | No está fusionado ni es motor de archivos grandes; no se incorpora a esta comparación |
-| [#58](https://github.com/ruzer/freyalab/pull/58) | **Fusionado por el usuario**, con cuatro CI satisfactorios en el PR. Arregla únicamente `tests/e2e/virtual-scroll.spec.ts`; `main` resultante `36c9976` | Un arreglo de prueba no demuestra funciones L3–L9; el verde del PR no certifica el CI posterior de `main` ni E0 |
+| [#56](https://github.com/ruzer/freyalab/pull/56) | **Fusionado por el usuario**; cuatro CI satisfactorios en el PR antes de la fusión. `main` resultante C (`3c3c9ac`); delta de UX por columna descrito arriba | No cambia motor, límites, L3 ni E1; al integrar L2 se deben conservar sus guardias de modo grande |
+| [#58](https://github.com/ruzer/freyalab/pull/58) | **Fusionado por el usuario**, con cuatro CI satisfactorios en el PR. Arregla únicamente `tests/e2e/virtual-scroll.spec.ts`; `main` al fusionarlo fue `36c9976` | Un arreglo de prueba no demuestra funciones L3–L9; el verde del PR no certifica el CI posterior de `main` ni E0 |
 | **E0** | Documentar paridad y evaluar motores con mediciones T1–T6; sin `src/` | No es implementación ni autorización de E1 |
 | **E1** | Tras aprobación de E0, extracción explícita de filas/columnas, vista previa de 20, progreso/cancelación; base #57 si no está fusionado | No edita el original ni garantiza que el extracto quepa en memoria |
 | **L3** | Capa puntual + diario + guardado atómico + recuperación, conflictos, espacio y cancelación sobre L2 | No se reemplaza por «exporta una copia»; sigue pendiente en el producto |
@@ -207,7 +222,7 @@ No hay importador general JSON/XLSX ni exportación JSON del **documento CSV com
 | **L9** | Durabilidad, Windows/Linux a escala, empaquetado y mediciones aisladas; unificación de rutas si se decide | No anunciar «1 a N» como tamaño ilimitado demostrado |
 | **E4** | Inventariar varios archivos y aclarar 2–3 escenarios con el usuario antes de diseñar | Las pestañas o el join de cuatro fuentes no resuelven cualquier flujo multiarquivo |
 
-Los estados de #56/#57/#58 anteriores son la **instantánea de GitHub verificada el 24-oct-2026**; pueden cambiar. No equivalen a instalación verificada ni a CI de la rama E0 o del `main` resultante. La equivalencia de producto M→`36c9976` se comprobó además con el listado de archivos del diff local. Las pruebas ya existentes y las mediciones históricas de L2 están en la [evidencia del SHA G](https://github.com/ruzer/freyalab/blob/b5e379fbaf319fe3a10f4e30379f4173586e762a/docs/evidence/l2-lectura-grande-2026-10-24.md#L34). No se reejecutaron para esta auditoría estática ni se repitieron las comparativas de RFC §6.
+Los estados de #56/#57/#58 anteriores son la **instantánea de GitHub verificada el 24-oct-2026**, actualizada tras la fusión de #56; pueden cambiar. No equivalen a instalación verificada ni a CI de la rama E0 o del `main` resultante. Se comprobaron además en Git local la equivalencia de producto M→`36c9976` y el delta de UX `36c9976..3c3c9ac`; no se afirma igualdad de esos dos `CsvTable.svelte`. Las pruebas ya existentes y las mediciones históricas de L2 están en la [evidencia del SHA G](https://github.com/ruzer/freyalab/blob/b5e379fbaf319fe3a10f4e30379f4173586e762a/docs/evidence/l2-lectura-grande-2026-10-24.md#L34). No se reejecutaron para esta auditoría estática ni se repitieron las comparativas de RFC §6.
 
 ## Condiciones de E1 y riesgos que no debe esconder la paridad
 
