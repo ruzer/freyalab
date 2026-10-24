@@ -1,7 +1,8 @@
 <script lang="ts">
  import Icon from './Icon.svelte'
  import {createTable,tableFeatures} from '@tanstack/svelte-table'
- import {createVirtualizer} from '@tanstack/svelte-virtual'
+ import {createVirtualizer,observeElementOffset} from '@tanstack/svelte-virtual'
+ import {scrollScale,scrollHeight,toLogical,toPhysical,rowTop} from '../lib/virtual-scroll'
  import {get} from 'svelte/store'
  import {untrack,tick} from 'svelte'
  import CsvCommands,{type CsvCommand} from './CsvCommands.svelte'
@@ -92,7 +93,7 @@
   selection=extend&&selection?{...selection,end:{row,column}}:{anchor:{row,column},end:{row,column},query:$state.snapshot(pageQuery),revision:page.revision}
  }
  function beginSelection(event:PointerEvent,row:number,column:number){if(event.button!==0||(event.target as HTMLElement).tagName==='INPUT'||busy)return;event.preventDefault();selectCell(row,column,event.shiftKey);dragging=true;dragPoint={x:event.clientX,y:event.clientY};(event.currentTarget as HTMLElement).focus()}
- $effect(()=>{if(!dragging)return;const timer=setInterval(()=>{const grid=scrollElement;if(!grid)return;const rect=grid.getBoundingClientRect(),{x,y}=dragPoint;grid.scrollBy({top:y>rect.bottom-24?32:y<rect.top+44?-32:0,left:x>rect.right-24?32:x<rect.left+54?-32:0});const cell=document.elementFromPoint(Math.max(rect.left+54,Math.min(x,rect.right-8)),Math.max(rect.top+(showFilters?80:44),Math.min(y,rect.bottom-8)))?.closest<HTMLElement>('.csv-cell');if(cell&&selection)selection={...selection,end:{row:Number(cell.dataset.row),column:Number(cell.dataset.column)}}},50);return()=>clearInterval(timer)})
+ $effect(()=>{if(!dragging)return;const timer=setInterval(()=>{const grid=scrollElement;if(!grid)return;const rect=grid.getBoundingClientRect(),{x,y}=dragPoint;const dy=y>rect.bottom-24?32:y<rect.top+44?-32:0;if(rowScale>1&&dy)get(rowsVirtual).scrollToOffset((get(rowsVirtual).scrollOffset??0)+dy);grid.scrollBy({top:rowScale>1?0:dy,left:x>rect.right-24?32:x<rect.left+54?-32:0});const cell=document.elementFromPoint(Math.max(rect.left+54,Math.min(x,rect.right-8)),Math.max(rect.top+(showFilters?80:44),Math.min(y,rect.bottom-8)))?.closest<HTMLElement>('.csv-cell');if(cell&&selection)selection={...selection,end:{row:Number(cell.dataset.row),column:Number(cell.dataset.column)}}},50);return()=>clearInterval(timer)})
  $effect(()=>{const target=pendingCell;void page;void renderedRows;void $rowsVirtual.getVirtualItems();void $columnsVirtual.getVirtualItems();if(target&&!busy)void tick().then(()=>{if(busy||pendingCell!==target)return;const node=scrollElement?.querySelector<HTMLElement>(`.csv-cell[data-row="${target.row}"][data-column="${target.column}"]`);if(node){node.focus();if(document.activeElement===node)pendingCell=null}})})
  function focusCell(row:number,column:number,extend=false){if(!page.matched)return;row=Math.max(0,Math.min(row,page.matched-1));column=Math.max(0,Math.min(column,(doc.headers?.length??1)-1));selectCell(row,column,extend);pendingCell={row,column};get(rowsVirtual).scrollToIndex(row,{align:'auto'});get(columnsVirtual).scrollToIndex(column,{align:'auto'});if(row<pageOffset||row>=pageOffset+page.rows.length)void load(Math.floor(row/100)*100)}
  function openContext(x:number,y:number,kind:'range'|'rows'|'columns'='range',origin?:HTMLElement){pendingCell=null;contextReturn=origin??(document.activeElement instanceof HTMLElement?document.activeElement:null);context={kind,x:Math.max(0,Math.min(x,window.innerWidth-270)),y:Math.max(0,Math.min(y,window.innerHeight-370))}}
@@ -139,11 +140,19 @@
  }
  const features=tableFeatures({})
  const table=createTable({features,get columns(){return(doc.headers??[]).map((name,index)=>({id:String(index),header:name,accessorFn:(row:{id:string;cells:string[]})=>row.cells[index]}))},get data(){return page.rows},getRowId:row=>row.id})
- const rowsVirtual=createVirtualizer<HTMLDivElement,HTMLDivElement>({count:0,getScrollElement:()=>scrollElement??null,estimateSize:()=>32,overscan:8,paddingStart:40})
+ // Con más filas de las que caben en un elemento, la barra se escala (ver lib/virtual-scroll.ts): el virtualizador trabaja en píxeles lógicos y el DOM en físicos.
+ let rowScale=$state(1),viewHeight=$state(0)
+ const rowsVirtual=createVirtualizer<HTMLDivElement,HTMLDivElement>({count:0,getScrollElement:()=>scrollElement??null,estimateSize:()=>32,overscan:8,paddingStart:40,observeElementOffset:(instance,callback)=>observeElementOffset(instance,(offset,scrolling)=>callback(toLogical(offset,rowScale),scrolling)),scrollToFn:(offset,{adjustments=0,behavior},instance)=>instance.scrollElement?.scrollTo({top:toPhysical(offset+adjustments,rowScale),behavior})})
+ // La biblioteca acota los desplazamientos con el alto físico del elemento (scrollHeight − clientHeight): con la barra escalada el máximo es el lógico.
+ {const rows=get(rowsVirtual) as unknown as {getMaxScrollOffset:()=>number;getTotalSize:()=>number},physicalMax=rows.getMaxScrollOffset;rows.getMaxScrollOffset=()=>rowScale>1?Math.max(rows.getTotalSize()-(scrollElement?.clientHeight??0),0):physicalMax()}
  const columnsVirtual=createVirtualizer<HTMLDivElement,HTMLDivElement>({horizontal:true,count:0,getScrollElement:()=>scrollElement??null,estimateSize:()=>180,overscan:2,paddingStart:52})
  const rowMap=$derived(new Map(table.getRowModel().rows.map(row=>[row.original.id,row.original])))
  const renderedRows=$derived(page.rows.map(row=>rowMap.get(row.id)!).filter(Boolean))
  $effect(()=>{const count=page.matched,padding=showFilters?76:40,columns=doc.headers?.length??0;get(rowsVirtual).setOptions({count,paddingStart:padding});get(columnsVirtual).setOptions({count:columns})})
+ // Si cambia la escala (otro número de filas, otra altura del visor) se conserva la posición lógica, no la física.
+ $effect(()=>{const next=scrollScale($rowsVirtual.getTotalSize(),viewHeight);untrack(()=>{if(next===rowScale)return;const logical=get(rowsVirtual).scrollOffset??0;rowScale=next;scrollElement?.scrollTo({top:toPhysical(logical,next)})})})
+ // Con la barra escalada, una muesca de la rueda mueve filas reales (no `escala` veces más) y la barra se usa para los saltos grandes.
+ function wheelRows(node:HTMLElement){const onwheel=(event:WheelEvent)=>{if(rowScale<=1||event.ctrlKey||Math.abs(event.deltaX)>Math.abs(event.deltaY))return;event.preventDefault();const lines=event.deltaMode===1?32:event.deltaMode===2?node.clientHeight:1,rows=get(rowsVirtual);rows.scrollToOffset((rows.scrollOffset??0)+event.deltaY*lines)};node.addEventListener('wheel',onwheel,{passive:false});return{destroy:()=>node.removeEventListener('wheel',onwheel)}}
  let pageQuery=$state<TableQuery>({offset:0,limit:200,requestId:0})
  const appliedSearch=$derived((pageQuery.search??'').toLocaleLowerCase())
  function query(offset=0):TableQuery{return{search,conditions:$state.snapshot(conditions),filterMode,order:order.length?$state.snapshot(order):undefined,filters:$state.snapshot(filters),sort:sort?$state.snapshot(sort):undefined,offset,limit:200,requestId}}
@@ -222,8 +231,8 @@
  <div class="csv-options"><label>Codificación <select value={doc.encoding} disabled={doc.dirty||interpreting} onchange={e=>void options({encoding:e.currentTarget.value as Encoding})}><option value="utf8">UTF-8</option><option value="utf16le">UTF-16 LE</option><option value="win1252">Windows-1252</option></select></label><label>Separador <select value={doc.delimiter} disabled={doc.dirty||interpreting} onchange={e=>void options({delimiter:e.currentTarget.value})}><option value=",">Coma</option><option value=";">Punto y coma</option><option value={'\t'}>Tabulación</option><option value="|">Barra vertical</option></select></label><label class="check-label"><input type="checkbox" bind:checked={header} disabled={doc.dirty||interpreting} onchange={()=>void options({header})}/>Primera fila como encabezado</label><span class="spacer"></span><button disabled={commandDisabled('insertRow')} onclick={()=>void runCommand('insertRow')}>+ Fila</button><button disabled={commandDisabled('insertColumn')} onclick={()=>void runCommand('insertColumn')}>+ Columna</button><button disabled={commandDisabled('deleteRows')} onclick={()=>void runCommand('deleteRows')}>Eliminar filas</button><button disabled={commandDisabled('deleteColumn')} onclick={()=>void runCommand('deleteColumn')}>Eliminar columna</button></div>
  <div class="csv-body" class:expanded={mode==='expanded'} bind:clientWidth={bodyWidth}>
   <div class="csv-main">
- <div class="csv-scroll" bind:this={scrollElement} role="grid" aria-label="Tabla de datos" aria-rowcount={page.matched+1} aria-colcount={(doc.headers?.length??0)+1} tabindex="0" aria-multiselectable="true" onkeydown={gridKey}>
-  <div class="virtual-table" style:height={`${$rowsVirtual.getTotalSize()}px`} style:width={`${Math.max($columnsVirtual.getTotalSize(),scrollElement?.clientWidth??0)}px`}>
+ <div class="csv-scroll" bind:this={scrollElement} bind:clientHeight={viewHeight} use:wheelRows role="grid" aria-label="Tabla de datos" aria-rowcount={page.matched+1} aria-colcount={(doc.headers?.length??0)+1} tabindex="0" aria-multiselectable="true" onkeydown={gridKey}>
+  <div class="virtual-table" style:height={`${scrollHeight($rowsVirtual.getTotalSize())}px`} style:width={`${Math.max($columnsVirtual.getTotalSize(),scrollElement?.clientWidth??0)}px`}>
    <div class="csv-header" role="row" style:height={showFilters?'76px':'40px'}>
     <div class="row-number corner">#</div>
     {#each $columnsVirtual.getVirtualItems() as col (col.key)}
@@ -235,7 +244,7 @@
    </div>
    {#each $rowsVirtual.getVirtualItems() as virtualRow (virtualRow.key)}
     {@const row=renderedRows[virtualRow.index-pageOffset]}
-    {#if row}<div class="csv-row" class:selected={selectedRows.includes(row.id)} role="row" aria-rowindex={virtualRow.index+2} style:transform={`translateY(${virtualRow.start}px)`} style:height={`${virtualRow.size}px`}>
+    {#if row}<div class="csv-row" class:selected={selectedRows.includes(row.id)} role="row" aria-rowindex={virtualRow.index+2} style:transform={`translateY(${rowTop(virtualRow.start,$rowsVirtual.scrollOffset??0,rowScale)}px)`} style:height={`${virtualRow.size}px`}>
      <button class="row-number" oncontextmenu={event=>structuralContext(event,'rows',row.id)} onkeydown={event=>structuralKey(event,'rows',row.id)} aria-label={`Seleccionar fila ${virtualRow.index+1}`} onclick={event=>selectRow(row.id,event.metaKey||event.ctrlKey||event.shiftKey)}>{virtualRow.index+1}</button>
      {#each $columnsVirtual.getVirtualItems() as col (col.key)}
       {@const value=row.cells[col.index]??''}
