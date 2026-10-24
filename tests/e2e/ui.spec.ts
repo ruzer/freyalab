@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import {parse as parseCSV} from 'csv-parse/sync'
 import {stringify as stringifyCSV} from 'csv-stringify/sync'
-import {showPanel} from './panel'
+import {analyzeButton,menuItem,numericOrder,showPanel} from './panel'
 let app:ElectronApplication,page:Page,directory:string
 
 test.beforeEach(async()=>{
@@ -57,15 +57,15 @@ test('interfaz CSV: buscar, editar una fila filtrada, deshacer y guardar',async(
  await page.getByRole('grid',{name:'Tabla de datos'}).evaluate(element=>element.scrollTop=48_000)
  await expect(page.getByRole('gridcell',{name:'Fila 1501, Código',exact:true})).toContainText('001500')
  await page.getByLabel('Buscar en tabla',{exact:true}).fill('000123')
- await expect(page.locator('.csv-toolbar')).toContainText(/1 de 5[,.]000 filas/)
+ await expect(page.locator('footer')).toContainText(/1 de 5[,.]000 filas/)
  const cell=page.getByRole('gridcell',{name:'Fila 1, Existencias',exact:true})
  await cell.dblclick();await page.getByLabel('Editar celda',{exact:true}).fill('42');await page.getByLabel('Editar celda',{exact:true}).press('Enter')
  await expect(cell).toContainText('42')
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(cell).toContainText('23')
  await page.getByRole('button',{name:'Rehacer',exact:true}).click();await expect(cell).toContainText('42')
- await page.getByRole('button',{name:'Filtros',exact:true}).click()
+ await menuItem(page,'Filtrar','Filtros por columna')
  await page.getByLabel('Filtrar Artículo',{exact:true}).fill('No existe')
- await expect(page.locator('.csv-toolbar')).toContainText(/0 de 5[,.]000 filas/)
+ await expect(page.locator('footer')).toContainText(/0 de 5[,.]000 filas/)
  await page.getByLabel('Filtrar Artículo',{exact:true}).fill('Artículo 123')
  await expect(cell).toContainText('42')
  await page.getByRole('button',{name:'Guardar',exact:true}).click()
@@ -150,22 +150,22 @@ test('barra Markdown: insertar sin sintaxis, conservar selección, deshacer y ve
 test('operaciones CSV: alcance explícito, fila filtrada, ceros iniciales, deshacer y guardar',async()=>{
  const path=join(directory,'limpieza.csv');await writeFile(path,'Código,Nombre\n0001,  Árbol  \n0002,  Intacto  \n')
  const [doc]=await page.evaluate(async path=>window.freya.openPaths([path]),path)
- await page.getByLabel('Operaciones CSV',{exact:true}).click()
+ await page.getByLabel('Limpiar datos',{exact:true}).click()
  await expect(page.getByRole('button',{name:'Convertir a mayúsculas',exact:true})).toBeDisabled()
- await page.getByLabel('Operaciones CSV',{exact:true}).click()
+ await page.getByLabel('Limpiar datos',{exact:true}).click()
  await page.getByLabel('Buscar en tabla',{exact:true}).fill('0001')
  await expect(page.getByRole('gridcell',{name:'Fila 1, Código',exact:true})).toContainText('0001')
  await page.getByLabel('Seleccionar columna Nombre',{exact:true}).check()
  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click()
- await expect(page.locator('.csv-operations')).toContainText('1 filas × 1 columnas')
- await page.getByLabel('Operaciones CSV',{exact:true}).click()
+ await page.getByLabel('Limpiar datos',{exact:true}).click()
+ await expect(page.locator('.dropdown-note')).toContainText('1 filas × 1 columnas')
  await page.getByRole('button',{name:'Quitar espacios al inicio y final',exact:true}).click()
  await expect(page.getByRole('gridcell',{name:'Fila 1, Nombre',exact:true})).toHaveText('Árbol')
  await page.getByRole('button',{name:'Deshacer',exact:true}).click()
  await expect(page.getByRole('gridcell',{name:'Fila 1, Nombre',exact:true})).toHaveText('  Árbol  ')
  await page.getByRole('button',{name:'Rehacer',exact:true}).click()
  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click()
- await page.getByLabel('Operaciones CSV',{exact:true}).click()
+ await page.getByLabel('Limpiar datos',{exact:true}).click()
  // La selección nueva debe sobrevivir a una actualización pendiente de la tabla.
  await page.waitForTimeout(300)
  await page.getByRole('button',{name:'Convertir a mayúsculas',exact:true}).click()
@@ -175,7 +175,7 @@ test('operaciones CSV: alcance explícito, fila filtrada, ceros iniciales, desha
  expect(await readFile(path,'utf8')).toBe('Código,Nombre\n0001,ÁRBOL\n0002,  Intacto  \n')
  const rejected=await page.evaluate(async id=>{try{await window.freya.tableEdit(id,{type:'transform',operation:'execute',rowIds:['1'],columns:[1]} as never);return false}catch{return true}},doc.id)
  expect(rejected).toBe(true)
- await page.getByLabel('Operaciones CSV',{exact:true}).click()
+ await page.getByLabel('Filas y columnas',{exact:true}).click()
  await expect(page.getByRole('button',{name:'Duplicar filas seleccionadas',exact:true})).toBeVisible()
  await page.screenshot({path:test.info().outputPath('csv-operations-1440x900.png')})
 })
@@ -186,13 +186,13 @@ test('operaciones CSV: duplicar filas y columnas conserva valores y permite desh
  await page.evaluate(async path=>window.freya.openPaths([path]),path)
  await expect(page.getByRole('gridcell',{name:'Fila 1, Código',exact:true})).toHaveText('0001')
  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click()
- await page.getByLabel('Operaciones CSV',{exact:true}).click();await page.getByRole('button',{name:'Duplicar filas seleccionadas',exact:true}).click()
+ await menuItem(page,'Filas y columnas','Duplicar filas seleccionadas')
  await expect(page.getByRole('gridcell',{name:'Fila 2, Código',exact:true})).toHaveText('0001')
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 2, Código',exact:true})).toHaveText('0002')
  await page.getByRole('button',{name:'Rehacer',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 2, Código',exact:true})).toHaveText('0001')
- await page.getByRole('button',{name:'Filtros',exact:true}).click();await page.getByLabel('Filtrar Estado',{exact:true}).fill('Pendiente')
+ await menuItem(page,'Filtrar','Filtros por columna');await page.getByLabel('Filtrar Estado',{exact:true}).fill('Pendiente')
  await page.getByLabel('Seleccionar columna Código',{exact:true}).check()
- await page.getByLabel('Operaciones CSV',{exact:true}).click();await page.getByRole('button',{name:'Duplicar columna seleccionada',exact:true}).click()
+ await menuItem(page,'Filas y columnas','Duplicar columna seleccionada')
  await expect(page.getByRole('gridcell',{name:'Fila 1, Código (copia)',exact:true})).toHaveText('0001')
  await expect(page.getByLabel('Filtrar Estado',{exact:true})).toHaveValue('')
  await expect(page.getByRole('gridcell',{name:'Fila 3, Estado',exact:true})).toHaveText('Listo')
@@ -210,9 +210,9 @@ test('estadísticas CSV: columnas, alcance completo, datos pendientes, temas y t
  await expect(page.getByRole('gridcell',{name:'Fila 1, Código',exact:true})).toHaveText('00123')
  const before=await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),doc.id)
  await page.getByLabel('Buscar en tabla',{exact:true}).fill('00123')
- await expect(page.locator('.csv-toolbar')).toContainText('1 de 3 filas')
+ await expect(page.locator('footer')).toContainText('1 de 3 filas')
  await page.getByLabel('Seleccionar columna Valor',{exact:true}).check()
- await page.getByRole('button',{name:'Estadísticas',exact:true}).click()
+ await showPanel(page,'Estadísticas')
  const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true})
  await expect(panel.getByRole('heading')).toBeFocused()
  await expect(panel).toContainText('incluye las filas ocultas')
@@ -236,7 +236,7 @@ test('estadísticas CSV: columnas, alcance completo, datos pendientes, temas y t
  for(const theme of ['dark','light']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.screenshot({path:test.info().outputPath(`csv-statistics-${theme}-1440x900.png`)})}
  await page.setViewportSize({width:1280,height:800});await page.screenshot({path:test.info().outputPath('csv-statistics-light-1280x800.png')})
  await page.getByLabel('Columnas para estadísticas',{exact:true}).focus();await page.keyboard.press('Escape')
- await expect(panel).toHaveCount(0);await expect(page.getByRole('button',{name:'Estadísticas',exact:true})).toBeFocused()
+ await expect(panel).toHaveCount(0);await expect(analyzeButton(page)).toBeFocused()
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(cell).toHaveText('2')
  expect(await readFile(path,'utf8')).toBe(source)
 })
@@ -244,7 +244,7 @@ test('estadísticas CSV: columnas, alcance completo, datos pendientes, temas y t
 test('estadísticas CSV: cancelar descarta respuestas tardías y permite volver a analizar',async()=>{
  const path=join(directory,'cancelar.csv');await writeFile(path,'A,B\n1,2\n3,4\n')
  await page.evaluate(path=>window.freya.openPaths([path]),path)
- await page.getByRole('button',{name:'Estadísticas',exact:true}).click()
+ await showPanel(page,'Estadísticas')
  const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true})
  await panel.evaluate(async element=>{
   element.querySelector<HTMLFormElement>('form')!.requestSubmit()
@@ -265,7 +265,7 @@ test('estadísticas CSV: muestra rotulada e IPC inválido rechazado',async()=>{
  const path=join(directory,'muestra.csv');await writeFile(path,'A,B\n'+'001,2\n'.repeat(250));await truncate(path,50*1024*1024+1)
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
  expect(doc.readonly).toBe(true)
- await page.getByRole('button',{name:'Estadísticas',exact:true}).click()
+ await showPanel(page,'Estadísticas')
  const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true})
  await expect(panel).toContainText('Solo muestra: los recuentos no describen el archivo completo.')
  await panel.getByRole('button',{name:'Analizar',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Análisis completo.')
@@ -278,7 +278,7 @@ test('estadísticas CSV: muestra rotulada e IPC inválido rechazado',async()=>{
 test('estadísticas CSV: límite explícito y encabezados duplicados por índice',async()=>{
  const path=join(directory,'ancho.csv');await writeFile(path,Array(101).fill('A').join(',')+'\n'+Array.from({length:101},(_,i)=>i===0?'00123':String(i+1)).join(',')+'\n')
  await page.evaluate(path=>window.freya.openPaths([path]),path)
- await page.getByRole('button',{name:'Estadísticas',exact:true}).click()
+ await showPanel(page,'Estadísticas')
  const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true})
  await panel.getByRole('button',{name:'Analizar',exact:true}).click()
  await expect(page.locator('.toast')).toContainText('hasta 100 columnas')
@@ -297,9 +297,9 @@ test('CSV: pegar sigue filtros y orden, conserva filas ocultas y se deshace en u
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
  await expect(page.getByRole('gridcell',{name:'Fila 1, Código',exact:true})).toHaveText('001')
  await page.getByLabel('Buscar en tabla',{exact:true}).fill('visible')
- await page.getByRole('button',{name:'Filtros',exact:true}).click()
+ await menuItem(page,'Filtrar','Filtros por columna')
  await page.getByLabel('Filtrar Grupo',{exact:true}).fill('visible')
- await expect(page.locator('.csv-toolbar')).toContainText('2 de 3 filas')
+ await expect(page.locator('footer')).toContainText('2 de 3 filas')
  await page.getByRole('button',{name:'Código',exact:true}).click()
  await expect(page.getByRole('columnheader').filter({has:page.getByLabel('Seleccionar columna Código',{exact:true})})).toHaveAttribute('aria-sort','ascending')
  await page.getByRole('button',{name:'Código',exact:true}).click()
@@ -330,8 +330,8 @@ test('exportación CSV: completo y filtrado conservan columnas; selección limit
  await writeFile(path,source)
  const [doc]=await page.evaluate(async path=>window.freya.openPaths([path]),path)
  await page.getByLabel('Buscar en tabla',{exact:true}).fill('Grupo')
- await expect(page.locator('.csv-toolbar')).toContainText('2 de 3 filas')
- await page.getByLabel('Orden numérico',{exact:true}).check()
+ await expect(page.locator('footer')).toContainText('2 de 3 filas')
+ await numericOrder(page)
  await page.getByRole('button',{name:'Valor',exact:true}).click()
  await expect(page.getByRole('gridcell',{name:'Fila 1, Código',exact:true})).toHaveText('00002')
  await page.getByRole('gridcell',{name:'Fila 1, Nombre',exact:true}).dblclick()
@@ -360,7 +360,7 @@ test('consulta CSV: formulario, orden múltiple exacto, exportación y pegado po
  const path=join(directory,'consulta.csv')
  const source='Código,Grupo,Valor,Fecha,Nota\n001,Z,9007199254740993,2026-01-02,Árbol\n002,A,9007199254740992,2026-01-03,\n003,A,1.00000000000000001,2026-01-01,Inicio\n004,A,1.00000000000000002,2026-01-01,Fin\n005,A,1.00000000000000001,2026-01-01,Otro\n'
  await writeFile(path,source);await page.evaluate(path=>window.freya.openPaths([path]),path)
- await page.getByRole('button',{name:'Consulta avanzada',exact:true}).click()
+ await menuItem(page,'Filtrar','Consulta avanzada')
  const panel=page.getByRole('region',{name:'Consulta avanzada',exact:true})
  await expect(panel.getByRole('heading',{name:'Consulta avanzada'})).toBeFocused()
  for(const [i,column,op,value] of [[1,'1','equals','A'],[2,'4','notEmpty',''],[3,'3','dateOn','2026-01-01']] as const){
@@ -374,7 +374,7 @@ test('consulta CSV: formulario, orden múltiple exacto, exportación y pegado po
  for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect(panel.getByRole('button',{name:'Aplicar consulta',exact:true})).toBeInViewport();await page.screenshot({path:test.info().outputPath(`csv-query-tools-${theme}-1440x900.png`)})}
  await page.setViewportSize({width:1280,height:800});await expect(panel.getByRole('button',{name:'Aplicar consulta',exact:true})).toBeInViewport();await page.screenshot({path:test.info().outputPath('csv-query-tools-dark-1280x800.png')})
  await panel.getByRole('button',{name:'Aplicar consulta',exact:true}).click()
- await expect(page.locator('.csv-toolbar')).toContainText('3 de 5 filas')
+ await expect(page.locator('footer')).toContainText('3 de 5 filas')
  for(const [i,id] of ['003','005','004'].entries())await expect(page.getByRole('gridcell',{name:`Fila ${i+1}, Código`,exact:true})).toHaveText(id)
  const cell=page.getByRole('gridcell',{name:'Fila 1, Nota',exact:true})
  await cell.evaluate(element=>{const data=new DataTransfer();data.setData('text/plain','Primero\nSegundo');element.dispatchEvent(new ClipboardEvent('paste',{clipboardData:data,bubbles:true,cancelable:true}))})
@@ -386,8 +386,8 @@ test('consulta CSV: formulario, orden múltiple exacto, exportación y pegado po
  expect(exported.slice(1).map(row=>row[0])).toEqual(['003','005','004'])
  expect(exported[1][4]).toBe('Primero');expect(exported[2][4]).toBe('Segundo')
  expect(await readFile(path,'utf8')).toBe(source)
- await page.getByRole('button',{name:'Quitar filtros y orden',exact:true}).click()
- await expect(page.locator('.csv-toolbar')).toContainText('5 de 5 filas')
+ await page.getByRole('button',{name:/Quitar filtros y orden/}).click()
+ await expect(page.locator('footer')).toContainText('5 de 5 filas')
  for(const [index,note] of ['Árbol','','Primero','Fin','Segundo'].entries())await expect(page.getByRole('gridcell',{name:`Fila ${index+1}, Nota`,exact:true})).toHaveText(note)
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 3, Nota',exact:true})).toHaveText('Inicio')
 })
@@ -395,12 +395,12 @@ test('consulta CSV: formulario, orden múltiple exacto, exportación y pegado po
 test('consulta CSV: condiciones O, errores visibles, limpiar y ordenar con Mayús',async()=>{
  const path=join(directory,'operadores.csv'),source='ID,Grupo,Valor\n001,Z,1\n002,A,9007199254740993\n003,A,9007199254740992\n'
  await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
- await page.getByRole('button',{name:'Consulta avanzada',exact:true}).click()
+ await menuItem(page,'Filtrar','Consulta avanzada')
  const panel=page.getByRole('region',{name:'Consulta avanzada',exact:true})
  await page.getByLabel('Combinar condiciones',{exact:true}).selectOption('any')
  for(const [i,value] of [[1,'001'],[2,'003']] as const){await panel.getByRole('button',{name:'Añadir condición',exact:true}).click();await page.getByLabel(`Operador de condición ${i}`,{exact:true}).selectOption('equals');await page.getByLabel(`Valor de condición ${i}`,{exact:true}).fill(value)}
- await panel.getByRole('button',{name:'Aplicar consulta',exact:true}).click();await expect(page.locator('.csv-toolbar')).toContainText('2 de 3 filas')
- await page.getByRole('button',{name:'Consulta avanzada',exact:true}).click()
+ await panel.getByRole('button',{name:'Aplicar consulta',exact:true}).click();await expect(page.locator('footer')).toContainText('2 de 3 filas')
+ await menuItem(page,'Filtrar','Consulta avanzada')
  await page.getByLabel('Operador de condición 1',{exact:true}).selectOption('regex');await page.getByLabel('Valor de condición 1',{exact:true}).fill('(')
  await panel.getByRole('button',{name:'Aplicar consulta',exact:true}).click()
  await expect(page.getByRole('alert')).toContainText('Consulta no aplicada')
@@ -408,8 +408,8 @@ test('consulta CSV: condiciones O, errores visibles, limpiar y ordenar con Mayú
  await expect(page.getByRole('gridcell',{name:'Fila 2, ID',exact:true})).toHaveText('003')
  await page.getByRole('gridcell',{name:'Fila 1, ID',exact:true}).dblclick();await expect(page.getByLabel('Editar celda',{exact:true})).toHaveCount(0)
  await page.getByRole('button',{name:'Reintentar consulta',exact:true}).click();await expect(page.getByRole('alert')).toContainText('Expresión regular no válida')
- await page.getByRole('button',{name:'Quitar filtros y orden',exact:true}).click()
- await expect(page.getByRole('alert')).toHaveCount(0);await expect(page.locator('.csv-toolbar')).toContainText('3 de 3 filas')
+ await page.getByRole('button',{name:/Quitar filtros y orden/}).click()
+ await expect(page.getByRole('alert')).toHaveCount(0);await expect(page.locator('footer')).toContainText('3 de 3 filas')
  await page.getByRole('button',{name:'Grupo',exact:true}).click();await page.getByRole('button',{name:'Valor',exact:true}).click({modifiers:['Shift']})
  await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('003')
  await expect(page.getByRole('gridcell',{name:'Fila 2, ID',exact:true})).toHaveText('002')
@@ -421,7 +421,7 @@ test('rangos CSV: selección por teclado, vista previa, filas ocultas, deshacer 
  const path=join(directory,'rangos.csv'),source='ID,Grupo,Nota,Valor\n001,A,  uno  ,1\n002,B,intacto,2\n003,A,  tres  ,3\n004,A,  cuatro  ,4\n'
  await writeFile(path,source)
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
- await page.getByLabel('Tema',{exact:true}).selectOption('light');await page.getByRole('button',{name:/^Filtros( \d+)?$/}).click();await page.getByRole('textbox',{name:'Filtrar Grupo',exact:true}).fill('A')
+ await page.getByLabel('Tema',{exact:true}).selectOption('light');await menuItem(page,'Filtrar','Filtros por columna');await page.getByRole('textbox',{name:'Filtrar Grupo',exact:true}).fill('A')
  await expect(page.locator('.csv-row')).toHaveCount(3)
  await page.getByRole('button',{name:'ID',exact:true}).click();await page.getByRole('button',{name:'ID',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('004')
  const cell=page.getByRole('gridcell',{name:'Fila 1, Nota',exact:true});await cell.click();await page.keyboard.press('Shift+ArrowDown');await page.keyboard.press('Shift+ArrowRight')
@@ -440,7 +440,7 @@ test('rangos CSV: selección por teclado, vista previa, filas ocultas, deshacer 
  expect(await readFile(path,'utf8')).toBe(source)
  await page.getByRole('gridcell',{name:'Fila 1, Nota',exact:true}).click();await page.keyboard.press('Shift+ArrowDown');await page.keyboard.press('Shift+ArrowRight');await page.keyboard.press('ControlOrMeta+C')
  await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toBe('00077\t00077\n00077\t00077\n')
- await page.getByRole('button',{name:'Copiar como Markdown',exact:true}).click();await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toContain('| Nota | Valor |')
+ await menuItem(page,'Filas y columnas','Copiar como Markdown');await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toContain('| Nota | Valor |')
  await page.getByRole('button',{name:'Exportar',exact:true}).click();await page.locator('.export-dropdown select').selectOption('selection');await page.getByRole('button',{name:'CSV',exact:true}).click()
  await expect(page.locator('.toast')).toContainText('Exportado:');const files=await readdir(join(directory,'exports'));expect(files).toHaveLength(1);expect(await readFile(join(directory,'exports',files[0]),'utf8')).toBe('Nota,Valor\n00077,00077\n00077,00077\n')
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 1, Nota',exact:true})).toContainText('cuatro')
@@ -465,7 +465,7 @@ test('rangos CSV: arrastrar, contexto por teclado, cortar y pegar con revisión 
 test('rangos CSV: teclado atraviesa páginas virtuales y una revisión nueva invalida la selección',async()=>{
  const path=join(directory,'paginado.csv');await writeFile(path,'ID,Valor\n'+Array.from({length:500},(_,i)=>String(i).padStart(5,'0')+',x').join('\n')+'\n')
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await page.getByRole('gridcell',{name:'Fila 1, Valor',exact:true}).click();await page.keyboard.press('ControlOrMeta+Shift+End')
- await expect(page.getByRole('gridcell',{name:'Fila 500, Valor',exact:true})).toBeFocused();await expect(page.locator('.selection-bar')).toContainText('500 celdas')
+ await expect(page.getByRole('gridcell',{name:'Fila 500, Valor',exact:true})).toBeFocused();await expect(page.locator('footer')).toContainText('500 celdas')
  await page.keyboard.press('ControlOrMeta+C');await expect.poll(async()=>(await app.evaluate(({clipboard})=>clipboard.readText())).split('\n').length).toBe(501)
  await page.keyboard.press('ControlOrMeta+Enter');const dialog=page.getByRole('dialog',{name:'Rellenar rango',exact:true});await dialog.getByRole('textbox',{name:'Valor del rango'}).fill('nuevo');await dialog.getByRole('button',{name:'Vista previa'}).click();await expect(dialog.getByRole('status')).toContainText('500 de 500')
  await page.evaluate(async id=>{await window.freya.tableEdit(id,{type:'cell',rowId:'1',column:1,value:'externo'})},doc.id)
@@ -503,7 +503,7 @@ test('exploración CSV: perfil, frecuencias, distribución y Pearson conservan d
  const path=join(directory,'exploracion.csv'),source='Valor,Doble,Código\r\n'+[2,4,4,4,5,5,7,9].map((n,i)=>`${n},${n*2},${String(i).padStart(5,'0')}`).join('\r\n')+'\r\n'
  await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
  const before=await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),doc.id)
- await page.getByRole('button',{name:'Estadísticas',exact:true}).click()
+ await showPanel(page,'Estadísticas')
  await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click()
  const explorer=page.getByRole('region',{name:'Exploración de columna',exact:true})
  await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer.getByRole('status')).toHaveText('Exploración completa.')
@@ -523,10 +523,10 @@ test('exploración CSV: perfil, frecuencias, distribución y Pearson conservan d
  await expect(explorer.getByLabel('Correlación de Pearson')).toContainText('Pearson con 2. Doble1')
  for(const theme of ['dark','light']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.screenshot({animations:'disabled',path:test.info().outputPath(`csv-exploration-${theme}-1440x900.png`)})}
  await page.setViewportSize({width:1280,height:800});await explorer.getByLabel('Columna para correlación',{exact:true}).focus();await page.screenshot({animations:'disabled',path:test.info().outputPath('csv-exploration-light-1280x800.png')})
- await page.getByLabel('Buscar en tabla',{exact:true}).fill('00000');await expect(page.locator('.csv-toolbar')).toContainText('1 de 8 filas');await expect(explorer.getByRole('status')).toContainText('Los datos o la vista cambiaron')
+ await page.getByLabel('Buscar en tabla',{exact:true}).fill('00000');await expect(page.locator('footer')).toContainText('1 de 8 filas');await expect(explorer.getByRole('status')).toContainText('Los datos o la vista cambiaron')
  await explorer.getByLabel('Filas para explorar',{exact:true}).selectOption('view');await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer).toContainText('Vista filtrada · 1 filas · revisión 0')
  expect(await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),doc.id)).toEqual(before);expect(await readFile(path,'utf8')).toBe(source)
- await explorer.getByLabel('Filas para explorar',{exact:true}).focus();await page.keyboard.press('Escape');await expect(explorer).toHaveCount(0);await expect(page.getByRole('button',{name:'Estadísticas',exact:true})).toBeFocused()
+ await explorer.getByLabel('Filas para explorar',{exact:true}).focus();await page.keyboard.press('Escape');await expect(explorer).toHaveCount(0);await expect(analyzeButton(page)).toBeFocused()
 })
 
 test('exploración CSV: paginación, cancelación, muestra e IPC inválido',async()=>{
@@ -555,7 +555,7 @@ test('perfil CSV: tipos probables, calidad y teclado sin modificar los datos',as
   ['00003','-2.5','0001-01-01','Oaxaca','2026-10-22','alfa','2024-02-29','01/02/2026','  '],
   ['00004','1e2','9999-12-31','Oaxaca','','beta','2024-01-01','2026-10-22T00:00:00Z','ñ']
  ],source='\uFEFF'+stringifyCSV([headers,...rows],{record_delimiter:'\r\n'}),path=join(directory,'tipos.csv');await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path),before=(await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)
- await page.getByRole('button',{name:'Estadísticas',exact:true}).click();await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click();const explorer=page.getByRole('region',{name:'Exploración de columna',exact:true}),summary=explorer.getByRole('region',{name:'Interpretación de columna',exact:true})
+ await showPanel(page,'Estadísticas');await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click();const explorer=page.getByRole('region',{name:'Exploración de columna',exact:true}),summary=explorer.getByRole('region',{name:'Interpretación de columna',exact:true})
  for(const [column,label] of [['0','Posible identificador'],['1','Numérico'],['2','Fecha ISO'],['3','Categórico'],['4','Mixto o con valores incompatibles'],['5','Categórico'],['6','Fecha ISO'],['7','Mixto o con valores incompatibles'],['8','Texto']]){
   await explorer.getByLabel('Columna para explorar',{exact:true}).selectOption(column);const action=explorer.getByRole('button',{name:'Explorar columna',exact:true});await action.focus();await action.press('Enter');await expect(explorer.getByRole('status')).toHaveText('Exploración completa.');await expect(summary).toContainText('Tipo probable: '+label)
  }

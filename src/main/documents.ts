@@ -22,22 +22,27 @@ export class Documents {
  constructor(private emit:(e:AppEvent)=>void){}
  private owner(){return BrowserWindow.getFocusedWindow()??BrowserWindow.getAllWindows()[0]}
  async authorize(path:string){const canonical=await realpath(path);if((await lstat(path)).isSymbolicLink())throw new Error('Los enlaces simbólicos no se abren para editar en esta alfa.');return canonical}
+ private opening=new Map<string,Promise<DocumentInfo>>()
  async open(path:string):Promise<DocumentInfo>{
   const canonical=await this.authorize(path)
   const existing=[...this.records.values()].find(r=>r.info.path===canonical);if(existing)return this.info(existing.info.id)
+  const running=this.opening.get(canonical);if(running)return running
+  const task=this.openNew(canonical).finally(()=>this.opening.delete(canonical));this.opening.set(canonical,task);return task
+ }
+ // `records` es lo que ve la interfaz (`documents`, `existing`): un documento entra solo cuando su tabla o su texto ya están listos.
+ private async openNew(canonical:string):Promise<DocumentInfo>{
   const kind=extensions[extname(canonical).toLowerCase()];if(!kind)throw new Error('Tipo de archivo no compatible. Usa Markdown, texto, Mermaid, CSV o TSV.')
   const size=(await stat(canonical)).size;if(!(await stat(canonical)).isFile())throw new Error('Selecciona un archivo.')
   const id=randomUUID();const record:RecordDoc={info:{id,name:basename(canonical),path:canonical,kind,dirty:false,readonly:false,revision:0,encoding:'utf8',delimiter:kind==='csv'&&extname(canonical)==='.tsv'?'\t':','},text:'',undo:[],redo:[],root:dirname(canonical),saving:false}
-  this.records.set(id,record)
   try {
-   if(kind==='csv'){const before=size<=50*1024*1024?await digest(canonical):undefined;await this.table.call('open',id,canonical,{delimiter:extname(canonical)==='.tsv'?'\t':undefined});await this.syncTable(id);if(!record.info.readonly){const after=await digest(canonical);if(before!==after)throw new Error('El archivo cambió durante la apertura. Vuelve a abrirlo.');record.hash=after}}
+   if(kind==='csv'){const before=size<=50*1024*1024?await digest(canonical):undefined;await this.table.call('open',id,canonical,{delimiter:extname(canonical)==='.tsv'?'\t':undefined});Object.assign(record.info,await this.table.call('info',id));if(!record.info.readonly){const after=await digest(canonical);if(before!==after)throw new Error('El archivo cambió durante la apertura. Vuelve a abrirlo.');record.hash=after}}
    else if(size>10*1024*1024){const h=await import('node:fs/promises').then(m=>m.open(canonical,'r'));try{const b=Buffer.alloc(1024*1024);const {bytesRead}=await h.read(b,0,b.length,0);record.text=b.subarray(0,bytesRead).toString('utf8')}finally{await h.close()};record.info.readonly=true;record.info.warning='Muestra de solo lectura: primer MiB. El archivo supera 10 MiB.'}
    else{const bytes=await readFile(canonical);record.hash=createHash('sha256').update(bytes).digest('hex');const text=bytes.toString('utf8');if(!Buffer.from(text).equals(bytes))throw new Error('Este documento no es UTF-8 válido. Convierte su codificación antes de editarlo.');record.text=text}
    record.watcher=watch(canonical,{ignoreInitial:true,awaitWriteFinish:{stabilityThreshold:150,pollInterval:50}}).on('change',()=>{if(!record.saving)this.emit({type:'external',id})}).on('unlink',()=>this.emit({type:'external',id}))
-   await this.addRecent(canonical);return this.info(id)
+   this.records.set(id,record);await this.addRecent(canonical);return this.info(id)
   }catch(e){this.records.delete(id);if(kind==='csv')await this.table.call('close',id).catch(()=>{});throw e}
  }
- async create(kind:Kind){const id=randomUUID();const extension=kind==='csv'?'csv':kind==='mermaid'?'mmd':kind==='text'?'txt':'md';const r:RecordDoc={info:{id,name:`Sin título.${extension}`,path:null,kind,dirty:false,readonly:false,revision:0,encoding:'utf8',delimiter:','},text:'',undo:[],redo:[],root:app.getPath('documents'),saving:false};this.records.set(id,r);if(kind==='csv'){await this.table.call('create',id);await this.syncTable(id)}return this.info(id)}
+ async create(kind:Kind){const id=randomUUID();const extension=kind==='csv'?'csv':kind==='mermaid'?'mmd':kind==='text'?'txt':'md';const r:RecordDoc={info:{id,name:`Sin título.${extension}`,path:null,kind,dirty:false,readonly:false,revision:0,encoding:'utf8',delimiter:','},text:'',undo:[],redo:[],root:app.getPath('documents'),saving:false};if(kind==='csv'){await this.table.call('create',id);Object.assign(r.info,await this.table.call('info',id))}this.records.set(id,r);return this.info(id)}
  get(id:string){const r=this.records.get(id);if(!r)throw new Error('El documento ya no está abierto.');return r}
  info(id:string){const r=this.get(id);return {...r.info,...(r.info.kind!=='csv'?{text:r.text}:{})}}
  async syncTable(id:string){const r=this.get(id);Object.assign(r.info,await this.table.call('info',id));return this.info(id)}

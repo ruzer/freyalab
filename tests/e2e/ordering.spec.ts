@@ -4,6 +4,7 @@ import {mkdtemp,writeFile,readFile,mkdir,rm} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
 import {randomUUID} from 'node:crypto'
+import {menuItem} from './panel'
 let app:ElectronApplication,page:Page,folder:string
 const legacyId='00000000-0000-4000-8000-000000000001',unknownId='00000000-0000-4000-8000-000000000002'
 const original='ID,Grupo,Nota\r\n00123,B,"á\r\nñ"\r\n9007199254740993,A,dos\r\n0007,A,tres\r\n004,B,cuatro\r\n'
@@ -15,7 +16,7 @@ test.beforeEach(async()=>{
 })
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
 async function open(source=original){const path=join(folder,`data-${randomUUID()}.csv`);await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('grid',{name:'Tabla de datos'})).toBeVisible();return{doc,path}}
-async function dialog(operation:string){await page.getByLabel('Operaciones CSV',{exact:true}).click();await page.getByRole('button',{name:'Transformar documento…',exact:true}).click();const panel=page.getByRole('dialog',{name:'Transformar documento CSV',exact:true});await panel.getByLabel('Transformación CSV',{exact:true}).selectOption(operation);return panel}
+async function dialog(operation:string){await page.getByLabel('Limpiar datos',{exact:true}).click();await page.getByRole('button',{name:'Transformar documento…',exact:true}).click();const panel=page.getByRole('dialog',{name:'Transformar documento CSV',exact:true});await panel.getByLabel('Transformación CSV',{exact:true}).selectOption(operation);return panel}
 async function preview(panel:ReturnType<Page['getByRole']>){await panel.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Vista previa lista',{timeout:30000})}
 async function apply(panel:ReturnType<Page['getByRole']>){await panel.getByRole('button',{name:'Aplicar transformación',exact:true}).click();await expect(panel).toHaveCount(0)}
 async function rows(id:string){return page.evaluate(async id=>(await window.freya.tablePage(id,{offset:0,limit:100,requestId:1})).rows.map(row=>row.id),id)}
@@ -25,15 +26,15 @@ test('orden visual: mueve filas marcadas y columnas, limpia filtros, conserva va
  let panel=await dialog('moveRows');await expect(panel).toContainText('2 filas marcadas');await panel.getByRole('button',{name:'Colocar al final',exact:true}).click();await preview(panel);await expect(panel.locator('dl')).toContainText('Filas que cambian de posición4');await apply(panel)
  await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('9007199254740993');expect(await rows(doc.id)).toEqual(['2','4','1','3']);expect(await readFile(path,'utf8')).toBe(original)
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00123')
- await page.getByLabel('Buscar en tabla',{exact:true}).fill('00123');await expect(page.locator('.csv-toolbar')).toContainText('1 de 4 filas')
+ await page.getByLabel('Buscar en tabla',{exact:true}).fill('00123');await expect(page.locator('footer')).toContainText('1 de 4 filas')
  panel=await dialog('moveColumns');await panel.getByLabel('Columnas para transformar',{exact:true}).selectOption(['2']);await panel.getByLabel('Posición original de destino',{exact:true}).fill('1');await preview(panel);await apply(panel)
- await expect(page.getByLabel('Buscar en tabla',{exact:true})).toHaveValue('');await expect(page.locator('.csv-toolbar')).toContainText('4 de 4 filas');await expect(page.getByRole('columnheader').first()).toContainText('Nota');await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00123')
+ await expect(page.getByLabel('Buscar en tabla',{exact:true})).toHaveValue('');await expect(page.locator('footer')).toContainText('4 de 4 filas');await expect(page.getByRole('columnheader').first()).toContainText('Nota');await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00123')
  await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect(page.locator('.statusbar')).toContainText('Guardado');expect(await readFile(path,'utf8')).toBe('Nota,ID,Grupo\r\n"á\r\nñ",00123,B\r\ndos,9007199254740993,A\r\ntres,0007,A\r\ncuatro,004,B\r\n')
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect(page.locator('.statusbar')).toContainText('Guardado');expect(await readFile(path,'utf8')).toBe(original)
 })
 
 test('orden visual: rango por teclado, intervalo original, vista previa en temas y rechazo de ausencia destructiva',async()=>{
- const {doc,path}=await open();await page.getByRole('button',{name:'Filtros',exact:true}).click();await page.getByLabel('Filtrar Grupo',{exact:true}).fill('A');await expect(page.locator('.csv-toolbar')).toContainText('2 de 4 filas')
+ const {doc,path}=await open();await menuItem(page,'Filtrar','Filtros por columna');await page.getByLabel('Filtrar Grupo',{exact:true}).fill('A');await expect(page.locator('footer')).toContainText('2 de 4 filas')
  const cell=page.getByRole('gridcell',{name:'Fila 1, ID',exact:true});await cell.click();await page.keyboard.press('Shift+ArrowDown');await page.keyboard.press(process.platform==='darwin'?'Meta+Shift+t':'Control+Shift+t')
  let panel=page.getByRole('dialog',{name:'Transformar documento CSV',exact:true});await panel.getByLabel('Transformación CSV',{exact:true}).selectOption('moveRows');await panel.getByLabel('Posición original de destino',{exact:true}).fill('1');await preview(panel);await apply(panel);expect(await rows(doc.id)).toEqual(['2','3','1','4']);await expect(page.getByLabel('Buscar en tabla',{exact:true})).toHaveValue('')
  await page.getByRole('button',{name:'Deshacer',exact:true}).click()
@@ -43,11 +44,11 @@ test('orden visual: rango por teclado, intervalo original, vista previa en temas
 })
 
 test('orden visual: multisort estable, guardar vista intacta, rechazo con filtros y fijación explícita recuperable',async()=>{
- const {doc,path}=await open();await page.getByRole('button',{name:'Consulta avanzada',exact:true}).click();let tools=page.getByRole('region',{name:'Consulta avanzada',exact:true})
+ const {doc,path}=await open();await menuItem(page,'Filtrar','Consulta avanzada');let tools=page.getByRole('region',{name:'Consulta avanzada',exact:true})
  await tools.getByRole('button',{name:'Añadir orden',exact:true}).click();await tools.getByLabel('Columna de orden 1',{exact:true}).selectOption('1');await tools.getByRole('button',{name:'Añadir orden',exact:true}).click();await tools.getByLabel('Columna de orden 2',{exact:true}).selectOption('0');await tools.getByLabel('Orden numérico 2',{exact:true}).check();await tools.getByRole('button',{name:'Aplicar consulta',exact:true}).click()
  await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('0007');await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect(page.locator('.statusbar')).toContainText('Guardado');expect(await readFile(path,'utf8')).toBe(original)
- await page.getByLabel('Buscar en tabla',{exact:true}).fill('A');await expect(page.locator('.csv-toolbar')).toContainText('3 de 4 filas');let panel=await dialog('commitOrder');await panel.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Quita la búsqueda');await expect(panel.getByRole('button',{name:'Aplicar transformación',exact:true})).toBeDisabled();await panel.getByRole('button',{name:'Cerrar',exact:true}).click()
- await page.getByLabel('Buscar en tabla',{exact:true}).fill('');await expect(page.locator('.csv-toolbar')).toContainText('4 de 4 filas');panel=await dialog('commitOrder');await preview(panel);await apply(panel);expect(await rows(doc.id)).toEqual(['3','2','4','1']);await expect(page.getByRole('button',{name:'Quitar filtros y orden',exact:true})).toHaveCount(0)
+ await page.getByLabel('Buscar en tabla',{exact:true}).fill('A');await expect(page.locator('footer')).toContainText('3 de 4 filas');let panel=await dialog('commitOrder');await panel.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Quita la búsqueda');await expect(panel.getByRole('button',{name:'Aplicar transformación',exact:true})).toBeDisabled();await panel.getByRole('button',{name:'Cerrar',exact:true}).click()
+ await page.getByLabel('Buscar en tabla',{exact:true}).fill('');await expect(page.locator('footer')).toContainText('4 de 4 filas');panel=await dialog('commitOrder');await preview(panel);await apply(panel);expect(await rows(doc.id)).toEqual(['3','2','4','1']);await expect(page.getByRole('button',{name:/Quitar filtros y orden/})).toHaveCount(0)
  await expect.poll(()=>page.evaluate(()=>window.freya.recoveries()),{timeout:10000}).toContainEqual(expect.objectContaining({id:doc.id}));const recovered=await page.evaluate(async id=>window.freya.recover(id),doc.id)
  const checkpoint=JSON.parse(await readFile(join(folder,'profile','recovery',doc.id+'.json'),'utf8'));expect(checkpoint.snapshot.version).toBe(2);expect(await rows(recovered.id)).toEqual(['3','2','4','1']);await page.evaluate(id=>window.freya.undo(id),recovered.id);const copy=await page.evaluate(id=>window.freya.export(id,{format:'csv',table:{scope:'all'}}),recovered.id);expect(await readFile(copy!,'utf8')).toBe(original);expect(await readFile(path,'utf8')).toBe(original)
 })

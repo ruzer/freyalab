@@ -26,7 +26,7 @@ async function report(panel:Locator,title:string){await panel.getByRole('button'
 test('percentiles: perfil filtrado, ayuda por teclado e informe preservan valores y procedencia',async()=>{
  const source='\uFEFFID,Grupo,Valor\r\n'+[2,4,4,4,5,5,7,9].map((value,i)=>`${String(i).padStart(5,'0')},visible,${value}`).join('\r\n')+'\r\n00008,oculto,100\r\n9007199254740993,oculto,9007199254740993\r\n00010,oculto,\r\n00011,oculto,"  "\r\n00012,oculto\r\n'
  const {doc,path}=await open(source),before=(await page.evaluate(()=>window.freya.documents()))[0]
- await page.getByLabel('Buscar en tabla',{exact:true}).fill('visible');await expect(page.locator('.csv-toolbar')).toContainText('8 de 13 filas')
+ await page.getByLabel('Buscar en tabla',{exact:true}).fill('visible');await expect(page.locator('footer')).toContainText('8 de 13 filas')
  const panel=await explorer();await panel.getByLabel('Columna para explorar',{exact:true}).selectOption('2');await panel.getByLabel('Filas para explorar',{exact:true}).selectOption('view');await explore(panel)
  const summary=panel.locator('summary').filter({hasText:/^Varianza y percentiles$/});await expect(panel.locator('dl[aria-label="Varianza y percentiles"]')).toBeHidden();await summary.focus();await summary.press('Enter');await profileValues(panel,[4,32/7,3.4,4,5.5,7.6]);await expect(panel).toContainText('P50 coincide con la mediana')
  const raw=await page.evaluate(doc=>window.freya.analyzeColumn(doc.id,{column:2,revision:doc.revision,requestId:crypto.randomUUID(),frequencyOffset:0,duplicatesOnly:false,bins:10,query:{offset:0,limit:1,requestId:1,search:'visible'}}),doc)
