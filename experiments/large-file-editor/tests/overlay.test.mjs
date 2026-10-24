@@ -210,14 +210,17 @@ test('TSV: el delimitador es tab y un valor con tab se entrecomilla',async()=>{
  assert.equal((await readFile(path,'utf8')),'a\tb\tc\n1\t"x\ty"\t003\n2\t"con\ttab"\t004\n')
 })
 
-test('cierre brusco real: un proceso hijo muere con SIGKILL a mitad de edición y el diario recupera lo escrito',async()=>{
- const {dir,path}=await fixture('utf8',null),{spawnSync}=await import('node:child_process'),{fileURLToPath}=await import('node:url')
- const lib=fileURLToPath(new URL('../lib/document.mjs',import.meta.url))
+test('cierre brusco real: un proceso hijo muere a mitad de edición y el diario recupera lo escrito',async()=>{
+ const {dir,path}=await fixture('utf8',null),{spawnSync}=await import('node:child_process'),{existsSync}=await import('node:fs')
+ const lib=new URL('../lib/document.mjs',import.meta.url).href // una URL file://: una ruta con letra de unidad no se puede importar en ESM (Windows)
+ const flag=join(dir,'listo.txt')
  const child=spawnSync(process.execPath,['--input-type=module','-e',`
   import {LargeDocument} from ${JSON.stringify(lib)}
+  import {writeFileSync} from 'node:fs'
   const doc=await LargeDocument.open(${JSON.stringify(path)},{journalDir:${JSON.stringify(dir)},every:2})
   for(let i=0;i<200;i++)await doc.setCell(1+i%5,1,'v'+i)
-  await doc.flush();process.kill(process.pid,'SIGKILL')`],{encoding:'utf8'})
+  await doc.flush();writeFileSync(${JSON.stringify(flag)},'1');process.kill(process.pid,'SIGKILL')`],{encoding:'utf8'})
+ assert.ok(existsSync(flag),`el hijo no llegó al punto de cierre: ${child.stderr}`)
  assert.ok(child.signal==='SIGKILL'||child.status!==0) // en Windows no hay señales: basta con que muera sin terminar
  const doc=await LargeDocument.open(path,opts(dir))
  assert.equal(doc.recovered,200);assert.equal((await doc.page(1,1))[0].values[1],'v195');assert.equal((await doc.page(5,1))[0].values[1],'v199')
