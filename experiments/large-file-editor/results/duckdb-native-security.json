@@ -1,0 +1,217 @@
+{
+ "version": "v2.0.0",
+ "platform": "darwin-arm64",
+ "node": "v24.22.1",
+ "defaults": {
+  "allow_community_extensions": "true",
+  "allow_unsigned_extensions": "false",
+  "allowed_directories": "[]",
+  "allowed_paths": "[]",
+  "autoinstall_known_extensions": "true",
+  "autoload_known_extensions": "true",
+  "custom_extension_repository": "",
+  "enable_external_access": "true",
+  "lock_configuration": "false",
+  "memory_limit": "25.5 GiB",
+  "temp_directory": ".tmp",
+  "threads": "12"
+ },
+ "hardened": {
+  "allowed_directories": "[/private/var/folders/rx/v31ttmp51ds_6_9cwlsdn4lr0000gn/T/fl-duck-sec-kf9uYK/permitido/, /private/var/folders/rx/v31ttmp51ds_6_9cwlsdn4lr0000gn/T/fl-duck-sec-kf9uYK/tmp/]",
+  "autoinstall_known_extensions": "false",
+  "autoload_known_extensions": "false",
+  "enable_external_access": "false",
+  "lock_configuration": "true",
+  "max_temp_directory_size": "953.6 MiB",
+  "memory_limit": "488.2 MiB",
+  "threads": "2"
+ },
+ "results": [
+  {
+   "name": "leer un CSV autorizado",
+   "expect": "allowed",
+   "outcome": "allowed",
+   "ok": true,
+   "detail": "[{\"n\":2}]"
+  },
+  {
+   "name": "leer un CSV fuera de la carpeta autorizada",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true,
+   "detail": "Permission Error: Cannot access file \"/var/folders/rx/v31ttmp51ds_6_9cwlsdn4lr0000gn/T/fl-duck-sec-kf9uYK/fuera/secreto.csv\" - file system operations are disabled by configuration"
+  },
+  {
+   "name": "recorrido de ruta con ../",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true,
+   "detail": "Permission Error: Cannot access file \"/var/folders/rx/v31ttmp51ds_6_9cwlsdn4lr0000gn/T/fl-duck-sec-kf9uYK/permitido/../fuera/secreto.csv\" - file system operations are disabled by configuration"
+  },
+  {
+   "name": "enlace simbólico dentro de la carpeta que apunta fuera",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true,
+   "detail": "Permission Error: Cannot access file \"/var/folders/rx/v31ttmp51ds_6_9cwlsdn4lr0000gn/T/fl-duck-sec-kf9uYK/permitido/enlace.csv\" - file system operations are disabled by configuration"
+  },
+  {
+   "name": "read_text de /etc/hosts",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true,
+   "detail": "Permission Error: Cannot access file \"/etc/hosts\" - file system operations are disabled by configuration"
+  },
+  {
+   "name": "glob de /etc",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true,
+   "detail": "Permission Error: Cannot access file \"/etc/*\" - file system operations are disabled by configuration"
+  },
+  {
+   "name": "escribir fuera con COPY",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true,
+   "detail": "Permission Error: Cannot access file \"/var/folders/rx/v31ttmp51ds_6_9cwlsdn4lr0000gn/T/fl-duck-sec-kf9uYK/fuera/salida.csv\" - file system operations are disabled by configuration"
+  },
+  {
+   "name": "ATTACH de una base en disco",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true,
+   "detail": "Permission Error: Cannot access file \"/private/var/folders/rx/v31ttmp51ds_6_9cwlsdn4lr0000gn/T/fl-duck-sec-kf9uYK/fuera/x.db\" - file system operations are disabled by configuration"
+  },
+  {
+   "name": "URL local con read_csv (red)",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true,
+   "detail": "Permission Error: Cannot access file \"http://127.0.0.1:55959/x.csv\" - file system operations are disabled by configuration"
+  },
+  {
+   "name": "INSTALL httpfs",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true,
+   "detail": "Permission Error: Cannot access directory \"/Users/ruzer/.duckdb/extensions/v2.0.0/osx_arm64\" - file system operations are disabled by configuration"
+  },
+  {
+   "name": "LOAD httpfs",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true,
+   "detail": "Permission Error: Loading external extensions is disabled through configuration"
+  },
+  {
+   "name": "reactivar el acceso externo",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true,
+   "detail": "Invalid Input Error: Cannot change configuration option \"\"enable_external_access\"\" - the configuration has been locked"
+  },
+  {
+   "name": "ampliar allowed_directories",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true,
+   "detail": "Invalid Input Error: Cannot change configuration option \"\"allowed_directories\"\" - the configuration has been locked"
+  },
+  {
+   "name": "cambiar memory_limit tras el bloqueo",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true,
+   "detail": "Invalid Input Error: Cannot change configuration option \"\"memory_limit\"\" - the configuration has been locked"
+  },
+  {
+   "name": "escribir dentro de la carpeta autorizada (informativo)",
+   "outcome": "allowed",
+   "ok": true
+  },
+  {
+   "name": "validación de la aplicación: select 1",
+   "expect": "allowed",
+   "outcome": "allowed",
+   "ok": true
+  },
+  {
+   "name": "validación de la aplicación: select 1; select 2",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true
+  },
+  {
+   "name": "validación de la aplicación: select 1; drop table t",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true
+  },
+  {
+   "name": "validación de la aplicación: copy (select 1) to '/var/folders/rx/v31ttmp51ds_",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true
+  },
+  {
+   "name": "validación de la aplicación: create table t(a int)",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true
+  },
+  {
+   "name": "validación de la aplicación: pragma database_list",
+   "expect": "allowed",
+   "outcome": "allowed",
+   "ok": true
+  },
+  {
+   "name": "validación de la aplicación: select * from read_csv('/etc/hosts')",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true
+  },
+  {
+   "name": "consulta que excede memory_limit=512MB y max_temp_directory_size=1GB",
+   "outcome": "falló: Out of Memory Error: failed to offload data block of size 192.0 KiB (953.5 MiB/953.6 MiB used).",
+   "peakRssMiB": 624,
+   "ms": 3915,
+   "ok": true
+  },
+  {
+   "name": "interrupt() cancela una consulta larga",
+   "outcome": "rechazada 2 ms después del interrupt()",
+   "ok": true
+  },
+  {
+   "name": "allowed_paths: el archivo exacto",
+   "expect": "allowed",
+   "outcome": "allowed",
+   "ok": true
+  },
+  {
+   "name": "allowed_paths: otro archivo de la misma carpeta",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true
+  },
+  {
+   "name": "allowed_paths: listar la carpeta",
+   "expect": "denied",
+   "outcome": "denied",
+   "ok": true
+  },
+  {
+   "name": "sandbox-exec (solo macOS): proceso auxiliar sin perfil / con perfil correcto / con perfil que usa el enlace /etc",
+   "outcome": "{\"sin\":\"lectura permitida | red permitida\",\"con\":\"lectura EPERM | red EPERM\",\"mal\":\"lectura permitida | red permitida\"}",
+   "ok": true,
+   "informativo": true
+  },
+  {
+   "name": "peticiones de red observadas en el servidor local durante las pruebas",
+   "outcome": "0",
+   "ok": true
+  }
+ ]
+}

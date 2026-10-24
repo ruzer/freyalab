@@ -1,0 +1,48 @@
+<!doctype html><meta charset="utf-8"><title>Banco de desplazamiento</title>
+<style>body{margin:0;font:12px monospace}#viewport{height:600px;width:400px;overflow-y:auto;position:relative}#table{position:relative;width:1px}
+.row{position:absolute;left:0;height:32px;line-height:32px;white-space:nowrap}</style>
+<div id="viewport"><div id="table"></div></div>
+<script>
+// Copia de las funciones puras de src/renderer/lib/virtual-scroll.ts (PR #52). Si ese módulo está en main, importarlo en su lugar.
+const ROW=32,MAX_SCROLL_PX=15_000_000
+const scrollScale=(total,viewport,cap=MAX_SCROLL_PX)=>total<=cap?1:(total-viewport)/(cap-viewport)
+const scrollHeight=(total,cap=MAX_SCROLL_PX)=>Math.min(total,cap)
+const toLogical=(p,scale)=>p*scale,toPhysical=(l,scale)=>l/scale
+const rowTop=(start,offset,scale)=>scale===1?start:start-offset+offset/scale
+const viewport=document.getElementById('viewport'),table=document.getElementById('table')
+let rows=0,scale=1,logical=0,expected=null,anchored=false
+const view=()=>viewport.clientHeight
+function render(){
+ const first=Math.max(0,Math.floor(logical/ROW)-2),last=Math.min(rows-1,Math.ceil((logical+view())/ROW)+2)
+ const frag=document.createDocumentFragment()
+ for(let i=first;i<=last;i++){const d=document.createElement('div');d.className='row';d.dataset.i=i;d.textContent='fila '+i;d.style.transform=`translateY(${rowTop(i*ROW,logical,scale)}px)`;frag.appendChild(d)}
+ table.replaceChildren(frag)
+}
+viewport.addEventListener('scroll',()=>{
+ // modo «anclado»: si el scroll lo provocó el programa (expected), la posición lógica exacta se conserva y no se reconstruye desde el píxel físico redondeado
+ if(anchored&&expected!==null&&Math.abs(viewport.scrollTop-expected)<=1){render();return}
+ expected=null;logical=Math.min(toLogical(viewport.scrollTop,scale),Math.max(rows*ROW-view(),0));render()
+})
+window.setup=(total,anchoredMode)=>{rows=total;anchored=anchoredMode;scale=scrollScale(total*ROW,view());table.style.height=scrollHeight(total*ROW)+'px';viewport.scrollTop=0;logical=0;expected=null;render();return {total,scale,physicalPx:scrollHeight(total*ROW),logicalPx:total*ROW}}
+window.gotoRow=r=>new Promise(res=>{
+ const target=Math.min(r*ROW,Math.max(rows*ROW-view(),0)),physical=Math.round(toPhysical(target,scale))
+ if(anchored){logical=target;expected=physical;viewport.scrollTop=physical;render()} // se conserva la posición lógica exacta
+ else viewport.scrollTop=physical // ingenuo: la posición lógica se reconstruye desde el píxel físico que quedó
+ requestAnimationFrame(()=>requestAnimationFrame(()=>res(topRow())))})
+window.scrollPhysical=p=>new Promise(res=>{viewport.scrollTop=p;requestAnimationFrame(()=>requestAnimationFrame(()=>res(topRow())))})
+function topRow(){ // fila cuyo borde superior está más cerca del borde superior visible, y su desplazamiento en píxeles
+ const vr=viewport.getBoundingClientRect();let best=null
+ for(const d of table.children){const y=d.getBoundingClientRect().top-vr.top;if(y>-ROW&&(best===null||Math.abs(y)<Math.abs(best.y)))best={i:Number(d.dataset.i),y}}
+ return best
+}
+window.audit=()=>{ // las filas pintadas son consecutivas, separadas 32 px y cubren la ventana
+ const vr=viewport.getBoundingClientRect(),list=[...table.children].map(d=>({i:Number(d.dataset.i),y:d.getBoundingClientRect().top-vr.top}))
+ let contiguous=true,spacing=true;for(let k=1;k<list.length;k++){if(list[k].i!==list[k-1].i+1)contiguous=false;if(Math.abs(list[k].y-list[k-1].y-ROW)>0.51)spacing=false}
+ const visible=list.filter(r=>r.y>=-ROW+1&&r.y<view()).length
+ return {contiguous,spacing,rendered:list.length,visibleRows:visible,first:list[0]?.i,last:list.at(-1)?.i,firstY:list[0]?.y,viewRows:view()/ROW}
+}
+window.frames=async(steps,total)=>{ // coste de pintar mientras se barre el rango completo
+ const times=[];for(let s=0;s<steps;s++){const t=performance.now();viewport.scrollTop=(s/steps)*(scrollHeight(total*ROW)-view());await new Promise(r=>requestAnimationFrame(r));times.push(performance.now()-t)}
+ times.sort((a,b)=>a-b);return {p50:+times[Math.floor(steps*.5)].toFixed(2),p95:+times[Math.floor(steps*.95)].toFixed(2),max:+times.at(-1).toFixed(2),domNodes:table.children.length}
+}
+</script>

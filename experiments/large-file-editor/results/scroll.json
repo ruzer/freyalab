@@ -1,0 +1,636 @@
+{
+ "platform": "darwin-arm64",
+ "chromium": "Chrome/152.0.7977.167",
+ "runs": [
+  {
+   "total": 1000000,
+   "scale": 2.1,
+   "physicalPx": 15000000,
+   "rowsPerScrollbarPixel": 0.1,
+   "ingenuo": {
+    "reachesLastRow": true,
+    "lastAudit": {
+     "contiguous": true,
+     "spacing": true,
+     "rendered": 21,
+     "visibleRows": 19,
+     "first": 999979,
+     "last": 999999,
+     "firstY": -72,
+     "viewRows": 18.75
+    },
+    "gotoRowErrors": [
+     {
+      "pedida": 0,
+      "fila": 0,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 1,
+      "fila": 1,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 500000,
+      "fila": 500000,
+      "desvio": 0,
+      "pixelsDeSobra": -1
+     },
+     {
+      "pedida": 913703,
+      "fila": 913703,
+      "desvio": 0,
+      "pixelsDeSobra": -1
+     },
+     {
+      "pedida": 999900,
+      "fila": 999900,
+      "desvio": 0,
+      "pixelsDeSobra": 1
+     },
+     {
+      "pedida": 999970,
+      "fila": 999970,
+      "desvio": 0,
+      "pixelsDeSobra": 1
+     }
+    ],
+    "randomPositions": {
+     "samples": 40,
+     "allContiguous": true,
+     "allSpacing32": true,
+     "minVisibleRows": 19
+    }
+   },
+   "anclado": {
+    "reachesLastRow": true,
+    "lastAudit": {
+     "contiguous": true,
+     "spacing": true,
+     "rendered": 21,
+     "visibleRows": 19,
+     "first": 999979,
+     "last": 999999,
+     "firstY": -72,
+     "viewRows": 18.75
+    },
+    "gotoRowErrors": [
+     {
+      "pedida": 0,
+      "fila": 0,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 1,
+      "fila": 1,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 500000,
+      "fila": 500000,
+      "desvio": 0,
+      "pixelsDeSobra": -0.5
+     },
+     {
+      "pedida": 913703,
+      "fila": 913703,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 999900,
+      "fila": 999900,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 999970,
+      "fila": 999970,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     }
+    ],
+    "randomPositions": {
+     "samples": 40,
+     "allContiguous": true,
+     "allSpacing32": true,
+     "minVisibleRows": 19
+    }
+   },
+   "frames": {
+    "p50": 8.3,
+    "p95": 9.2,
+    "max": 10.4,
+    "domNodes": 25
+   }
+  },
+  {
+   "total": 10000000,
+   "scale": 21.3,
+   "physicalPx": 15000000,
+   "rowsPerScrollbarPixel": 0.7,
+   "ingenuo": {
+    "reachesLastRow": true,
+    "lastAudit": {
+     "contiguous": true,
+     "spacing": true,
+     "rendered": 21,
+     "visibleRows": 19,
+     "first": 9999979,
+     "last": 9999999,
+     "firstY": -72,
+     "viewRows": 18.75
+    },
+    "gotoRowErrors": [
+     {
+      "pedida": 0,
+      "fila": 0,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 1,
+      "fila": 1,
+      "desvio": 0,
+      "pixelsDeSobra": 10.7
+     },
+     {
+      "pedida": 5000000,
+      "fila": 5000000,
+      "desvio": 0,
+      "pixelsDeSobra": 1.5
+     },
+     {
+      "pedida": 9137003,
+      "fila": 9137003,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 9999900,
+      "fila": 9999900,
+      "desvio": 0,
+      "pixelsDeSobra": 3
+     },
+     {
+      "pedida": 9999970,
+      "fila": 9999970,
+      "desvio": 0,
+      "pixelsDeSobra": 3
+     }
+    ],
+    "randomPositions": {
+     "samples": 40,
+     "allContiguous": true,
+     "allSpacing32": true,
+     "minVisibleRows": 19
+    }
+   },
+   "anclado": {
+    "reachesLastRow": true,
+    "lastAudit": {
+     "contiguous": true,
+     "spacing": true,
+     "rendered": 21,
+     "visibleRows": 19,
+     "first": 9999979,
+     "last": 9999999,
+     "firstY": -72,
+     "viewRows": 18.75
+    },
+    "gotoRowErrors": [
+     {
+      "pedida": 0,
+      "fila": 0,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 1,
+      "fila": 1,
+      "desvio": 0,
+      "pixelsDeSobra": 0.5
+     },
+     {
+      "pedida": 5000000,
+      "fila": 5000000,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 9137003,
+      "fila": 9137003,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 9999900,
+      "fila": 9999900,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 9999970,
+      "fila": 9999970,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     }
+    ],
+    "randomPositions": {
+     "samples": 40,
+     "allContiguous": true,
+     "allSpacing32": true,
+     "minVisibleRows": 19
+    }
+   },
+   "frames": {
+    "p50": 8.3,
+    "p95": 9.1,
+    "max": 9.7,
+    "domNodes": 25
+   }
+  },
+  {
+   "total": 50000000,
+   "scale": 106.7,
+   "physicalPx": 15000000,
+   "rowsPerScrollbarPixel": 3.3,
+   "ingenuo": {
+    "reachesLastRow": true,
+    "lastAudit": {
+     "contiguous": true,
+     "spacing": true,
+     "rendered": 21,
+     "visibleRows": 19,
+     "first": 49999979,
+     "last": 49999999,
+     "firstY": -72,
+     "viewRows": 18.75
+    },
+    "gotoRowErrors": [
+     {
+      "pedida": 0,
+      "fila": 0,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 1,
+      "fila": 0,
+      "desvio": -1,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 25000000,
+      "fila": 25000001,
+      "desvio": 1,
+      "pixelsDeSobra": 12
+     },
+     {
+      "pedida": 45685003,
+      "fila": 45685004,
+      "desvio": 1,
+      "pixelsDeSobra": 13
+     },
+     {
+      "pedida": 49999900,
+      "fila": 49999901,
+      "desvio": 1,
+      "pixelsDeSobra": -8
+     },
+     {
+      "pedida": 49999970,
+      "fila": 49999971,
+      "desvio": 1,
+      "pixelsDeSobra": -8
+     }
+    ],
+    "randomPositions": {
+     "samples": 40,
+     "allContiguous": true,
+     "allSpacing32": true,
+     "minVisibleRows": 19
+    }
+   },
+   "anclado": {
+    "reachesLastRow": true,
+    "lastAudit": {
+     "contiguous": true,
+     "spacing": true,
+     "rendered": 21,
+     "visibleRows": 19,
+     "first": 49999979,
+     "last": 49999999,
+     "firstY": -72,
+     "viewRows": 18.75
+    },
+    "gotoRowErrors": [
+     {
+      "pedida": 0,
+      "fila": 0,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 1,
+      "fila": 1,
+      "desvio": 0,
+      "pixelsDeSobra": 0.3
+     },
+     {
+      "pedida": 25000000,
+      "fila": 25000000,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 45685003,
+      "fila": 45685003,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 49999900,
+      "fila": 49999900,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 49999970,
+      "fila": 49999970,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     }
+    ],
+    "randomPositions": {
+     "samples": 40,
+     "allContiguous": true,
+     "allSpacing32": true,
+     "minVisibleRows": 19
+    }
+   },
+   "frames": {
+    "p50": 8.3,
+    "p95": 9.1,
+    "max": 9.5,
+    "domNodes": 25
+   }
+  },
+  {
+   "total": 100000000,
+   "scale": 213.3,
+   "physicalPx": 15000000,
+   "rowsPerScrollbarPixel": 6.7,
+   "ingenuo": {
+    "reachesLastRow": true,
+    "lastAudit": {
+     "contiguous": true,
+     "spacing": true,
+     "rendered": 21,
+     "visibleRows": 19,
+     "first": 99999979,
+     "last": 99999999,
+     "firstY": -72,
+     "viewRows": 18.75
+    },
+    "gotoRowErrors": [
+     {
+      "pedida": 0,
+      "fila": 0,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 1,
+      "fila": 0,
+      "desvio": -1,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 50000000,
+      "fila": 49999997,
+      "desvio": -3,
+      "pixelsDeSobra": -9.5
+     },
+     {
+      "pedida": 91370003,
+      "fila": 91370004,
+      "desvio": 1,
+      "pixelsDeSobra": -11
+     },
+     {
+      "pedida": 99999900,
+      "fila": 99999901,
+      "desvio": 1,
+      "pixelsDeSobra": -8
+     },
+     {
+      "pedida": 99999970,
+      "fila": 99999968,
+      "desvio": -2,
+      "pixelsDeSobra": 3
+     }
+    ],
+    "randomPositions": {
+     "samples": 40,
+     "allContiguous": true,
+     "allSpacing32": true,
+     "minVisibleRows": 19
+    }
+   },
+   "anclado": {
+    "reachesLastRow": true,
+    "lastAudit": {
+     "contiguous": true,
+     "spacing": true,
+     "rendered": 21,
+     "visibleRows": 19,
+     "first": 99999979,
+     "last": 99999999,
+     "firstY": -72,
+     "viewRows": 18.75
+    },
+    "gotoRowErrors": [
+     {
+      "pedida": 0,
+      "fila": 0,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 1,
+      "fila": 1,
+      "desvio": 0,
+      "pixelsDeSobra": 0.1
+     },
+     {
+      "pedida": 50000000,
+      "fila": 50000000,
+      "desvio": 0,
+      "pixelsDeSobra": 0.5
+     },
+     {
+      "pedida": 91370003,
+      "fila": 91370003,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 99999900,
+      "fila": 99999900,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 99999970,
+      "fila": 99999970,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     }
+    ],
+    "randomPositions": {
+     "samples": 40,
+     "allContiguous": true,
+     "allSpacing32": true,
+     "minVisibleRows": 19
+    }
+   },
+   "frames": {
+    "p50": 8.3,
+    "p95": 9.1,
+    "max": 9.9,
+    "domNodes": 25
+   }
+  },
+  {
+   "total": 500000000,
+   "scale": 1066.7,
+   "physicalPx": 15000000,
+   "rowsPerScrollbarPixel": 33.3,
+   "ingenuo": {
+    "reachesLastRow": true,
+    "lastAudit": {
+     "contiguous": true,
+     "spacing": true,
+     "rendered": 21,
+     "visibleRows": 19,
+     "first": 499999979,
+     "last": 499999999,
+     "firstY": -72,
+     "viewRows": 18.75
+    },
+    "gotoRowErrors": [
+     {
+      "pedida": 0,
+      "fila": 0,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 1,
+      "fila": 0,
+      "desvio": -1,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 250000000,
+      "fila": 249999991,
+      "desvio": -9,
+      "pixelsDeSobra": 12
+     },
+     {
+      "pedida": 456850003,
+      "fila": 456849990,
+      "desvio": -13,
+      "pixelsDeSobra": -6
+     },
+     {
+      "pedida": 499999900,
+      "fila": 499999915,
+      "desvio": 15,
+      "pixelsDeSobra": 13
+     },
+     {
+      "pedida": 499999970,
+      "fila": 499999981,
+      "desvio": 11,
+      "pixelsDeSobra": -8
+     }
+    ],
+    "randomPositions": {
+     "samples": 40,
+     "allContiguous": true,
+     "allSpacing32": true,
+     "minVisibleRows": 19
+    }
+   },
+   "anclado": {
+    "reachesLastRow": true,
+    "lastAudit": {
+     "contiguous": true,
+     "spacing": true,
+     "rendered": 21,
+     "visibleRows": 19,
+     "first": 499999979,
+     "last": 499999999,
+     "firstY": -72,
+     "viewRows": 18.75
+    },
+    "gotoRowErrors": [
+     {
+      "pedida": 0,
+      "fila": 0,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 1,
+      "fila": 1,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 250000000,
+      "fila": 250000000,
+      "desvio": 0,
+      "pixelsDeSobra": 0.5
+     },
+     {
+      "pedida": 456850003,
+      "fila": 456850003,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 499999900,
+      "fila": 499999900,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     },
+     {
+      "pedida": 499999970,
+      "fila": 499999970,
+      "desvio": 0,
+      "pixelsDeSobra": 0
+     }
+    ],
+    "randomPositions": {
+     "samples": 40,
+     "allContiguous": true,
+     "allSpacing32": true,
+     "minVisibleRows": 19
+    }
+   },
+   "frames": {
+    "p50": 8.3,
+    "p95": 9.3,
+    "max": 10,
+    "domNodes": 25
+   }
+  }
+ ]
+}
