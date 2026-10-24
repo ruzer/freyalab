@@ -8,6 +8,7 @@ import {readdir,stat,mkdir,rm} from 'node:fs/promises'
 import {join,resolve,dirname} from 'node:path'
 import {createHash} from 'node:crypto'
 import {eachRecord} from './lib/record-index.mjs'
+import {pickFields} from './lib/fields.mjs'
 
 const args=Object.fromEntries(process.argv.slice(2).reduce((a,x,i,all)=>x.startsWith('--')?[...a,[x.slice(2),all[i+1]]]:a,[]))
 const {engine,task}=args,file=resolve(args.file),NUM=Array.from({length:30},(_,i)=>8+i),MiB=2**20
@@ -28,23 +29,6 @@ function accumulator(){
  const result=()=>task==='count'?{rows:state.rows}:task==='filter'?{rows:state.rows,hits:state.hits}:task==='groupby'?[...state.groups].sort((a,b)=>b[1]-a[1]||(a[0]<b[0]?-1:1)).slice(0,5):state.cols.map(s=>({...s,min:fmt(s.min),max:fmt(s.max)}))
  return {visit,result}
 }
-// Extractor perezoso: recorre el registro y solo materializa los campos pedidos (no divide las 230 columnas).
-function picker(wanted,delimiter=','){
- const max=Math.max(...wanted)
- return text=>{
-  const out=new Map();let i=0,field=0,n=text.length
-  while(field<=max&&i<=n){
-   const quoted=text[i]==='"';let value=''
-   if(quoted){i++;let from=i;for(;i<n;i++){if(text[i]==='"'){if(text[i+1]==='"'){value+=text.slice(from,i+1);i++;from=i+1;continue}break}}value+=text.slice(from,i);i++}
-   else{const from=i;while(i<n&&text[i]!==delimiter&&text[i]!=='\n'&&text[i]!=='\r')i++;value=text.slice(from,i)}
-   while(i<n&&text[i]!==delimiter&&text[i]!=='\n'&&text[i]!=='\r')i++
-   if(wanted.has(field))out.set(field,value)
-   if(text[i]===delimiter){i++;field++}else break
-  }
-  return out
- }
-}
-
 const engines={
  async 'csv-parse'(){
   const {parse}=await import('csv-parse'),acc=accumulator();let ordinal=0
@@ -53,11 +37,11 @@ const engines={
   return acc.result()
  },
  async own(){
-  const acc=accumulator(),wanted=new Set([3,...NUM]),pick=picker(wanted)
+  const acc=accumulator(),wanted=new Set([3,...NUM]),pick=pickFields(wanted)
   if(task==='sort-full'){ // llaves en memoria: viable hasta decenas de millones de filas, no más
    const keys=[];await eachRecord(file,(buf,o)=>{if(o)keys.push(pick(buf.toString('utf8')).get(3))})
    const order=Uint32Array.from(keys.keys()).sort((a,b)=>keys[a]<keys[b]?-1:keys[a]>keys[b]?1:a-b)
-   return {rows:keys.length,first:order[0],last:order.at(-1),keyHeapMiB:Math.round(process.memoryUsage().heapUsed/MiB)}
+   return {rows:keys.length,head:[...order.subarray(0,5)].map(i=>i+1),tail:[...order.subarray(-5)].map(i=>i+1)} // ordinales de datos, desde 1
   }
   await eachRecord(file,(buf,o)=>{if(!o){acc.visit(()=>'',0);return}const f=pick(buf.toString('utf8'));acc.visit(i=>f.get(i),o)})
   return acc.result()
@@ -69,7 +53,7 @@ const engines={
   const src=`read_csv('${file}',header=true,all_varchar=true)`
   const rows=async sql=>(await conn.runAndReadAll(sql)).getRowObjects()
   if(task==='count')return {rows:Number((await rows(`select count(*) n from ${src}`))[0].n)}
-  if(task==='filter')return (r=>({rows:Number(r.rows),hits:Number(r.hits)}))((await rows(`select count(*) rows,count(*) filter (where NOM_MUN='Mérida') hits from ${src}`))[0])
+  if(task==='filter')return (r=>({rows:Number(r.total),hits:Number(r.hits)}))((await rows(`select count(*) total,count(*) filter (where NOM_MUN='Mérida') hits from ${src}`))[0])
   if(task==='groupby')return (await rows(`select NOM_MUN k,count(*) c from ${src} group by 1 order by c desc,k limit 5`)).map(r=>[r.k,Number(r.c)])
   if(task==='analyze'){
    const cols=(await rows(`select column_name from (describe select * from ${src})`)).map(r=>r.column_name)
@@ -77,10 +61,18 @@ const engines={
    const r=(await rows(`select ${parts.join(',')} from ${src}`))[0]
    return NUM.map(c=>({nonEmpty:Number(r['a'+c]),numeric:Number(r['b'+c]),min:fmt(Number(r['mn'+c]??Infinity)),max:fmt(Number(r['mx'+c]??-Infinity)),sum:Number(r['s'+c]??0)}))
   }
+  if(args.noorder)await conn.run(`SET preserve_insertion_order=false`)
+  if(task==='sort-rows'){ // archivo entero reordenado por NOM_MUN y escrito como CSV: la carga útil no cabe en memoria, así que DuckDB deriva a disco (--temp)
+   const outDir=`${args.temp}-out`;await mkdir(outDir,{recursive:true});const out=join(outDir,'ordenado.csv');await rm(out,{force:true})
+   await conn.run(`copy (select * from ${src} order by NOM_MUN) to '${out}' (format csv,header true)`)
+   const bytes=(await stat(out)).size;await rm(out,{force:true});return {outputBytes:bytes}
+  }
   if(task==='sort-full'){ // permutación completa ordenada por NOM_MUN, escrita a disco (parquet); el derrame usa --temp
    const out=join(args.temp??dirname(file),'perm.parquet');await rm(out,{force:true})
    await conn.run(`copy (select ordinal from (select row_number() over () ordinal,NOM_MUN from ${src}) order by NOM_MUN,ordinal) to '${out}' (format parquet)`)
-   const r=(await rows(`select count(*) n,min(ordinal) lo,max(ordinal) hi from read_parquet('${out}')`))[0];await rm(out,{force:true});return {rows:Number(r.n),first:Number(r.lo),last:Number(r.hi)}
+   const n=Number((await rows(`select count(*) n from read_parquet('${out}')`))[0].n)
+   const head=(await rows(`select ordinal from read_parquet('${out}') limit 5`)).map(r=>Number(r.ordinal)),tail=(await rows(`select ordinal from read_parquet('${out}') offset ${n-5}`)).map(r=>Number(r.ordinal))
+   await rm(out,{force:true});return {rows:n,head,tail}
   }
  },
  async 'duckdb-wasm'(){
@@ -91,7 +83,7 @@ const engines={
   const conn=db.connect(),src=`read_csv('data.csv',header=true,all_varchar=true)`
   const rows=sql=>conn.query(sql).toArray().map(r=>r.toJSON())
   if(task==='count')return {rows:Number(rows(`select count(*) n from ${src}`)[0].n)}
-  if(task==='filter')return (r=>({rows:Number(r.rows),hits:Number(r.hits)}))(rows(`select count(*) rows,count(*) filter (where NOM_MUN='Mérida') hits from ${src}`)[0])
+  if(task==='filter')return (r=>({rows:Number(r.total),hits:Number(r.hits)}))(rows(`select count(*) total,count(*) filter (where NOM_MUN='Mérida') hits from ${src}`)[0])
   if(task==='groupby')return rows(`select NOM_MUN k,count(*) c from ${src} group by 1 order by c desc,k limit 5`).map(r=>[r.k,Number(r.c)])
   throw new Error(`tarea ${task} no medida en DuckDB-Wasm`)
  },
@@ -103,5 +95,5 @@ const t0=performance.now();let result,error
 try{result=await engines[engine]()}catch(e){error=String(e.message).slice(0,200)}
 const ms=performance.now()-t0;if(sampler)clearInterval(sampler)
 const size=(await stat(file)).size
-console.log(JSON.stringify({engine,task,file,fileMiB:Math.round(size/MiB),ms:Math.round(ms),mibPerS:Math.round(size/MiB/(ms/1000)),maxRssMiB:Math.round(process.resourceUsage().maxRSS/1024),tempPeakMiB:Math.round(tempPeak/MiB),digest:error?null:digest(result),result:error?undefined:(JSON.stringify(result).length>240?JSON.stringify(result).slice(0,240)+'…':result),error}))
+console.log(JSON.stringify({engine,task,memory:args.memory,noorder:args.noorder,file,fileMiB:Math.round(size/MiB),ms:Math.round(ms),mibPerS:Math.round(size/MiB/(ms/1000)),maxRssMiB:Math.round(process.resourceUsage().maxRSS/1024),tempPeakMiB:Math.round(tempPeak/MiB),digest:error?null:digest(result),result:error?undefined:(JSON.stringify(result).length>240?JSON.stringify(result).slice(0,240)+'…':result),error}))
 process.exit(0)

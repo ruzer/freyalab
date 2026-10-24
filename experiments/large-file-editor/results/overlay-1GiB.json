@@ -1,0 +1,92 @@
+{
+ "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+ "platform": "darwin-arm64",
+ "node": "v24.22.1",
+ "edits": 1000,
+ "phases": {
+  "clone": {
+   "ms": 719,
+   "peakRssMiB": 52,
+   "peakHeapMiB": 5,
+   "diskDeltaMiB": 1040
+  },
+  "index": {
+   "ms": 2032,
+   "peakRssMiB": 74,
+   "peakHeapMiB": 6,
+   "diskDeltaMiB": 0,
+   "records": 793956,
+   "indexKiB": 6,
+   "mibPerS": 504
+  },
+  "pages": {
+   "ms": 881,
+   "peakRssMiB": 134,
+   "peakHeapMiB": 30,
+   "diskDeltaMiB": 0,
+   "pageRecords": 50,
+   "p50ms": 2.9,
+   "p95ms": 4.12,
+   "maxMs": 7.61,
+   "lastPageMs": 1.44
+  },
+  "edits": {
+   "ms": 21,
+   "peakRssMiB": 134,
+   "peakHeapMiB": 30,
+   "diskDeltaMiB": 0,
+   "perEditMs": 0.021
+  },
+  "recover": {
+   "ms": 1789,
+   "peakRssMiB": 134,
+   "peakHeapMiB": 30,
+   "diskDeltaMiB": 1,
+   "recoveredOps": 1000,
+   "matches": true
+  },
+  "save": {
+   "ms": 1635,
+   "peakRssMiB": 250,
+   "peakHeapMiB": 19,
+   "diskDeltaMiB": -6,
+   "finalBytes": 1074476885,
+   "deltaBytes": 5338
+  },
+  "verify": {
+   "ms": 7127,
+   "peakRssMiB": 319,
+   "peakHeapMiB": 10,
+   "diskDeltaMiB": 1,
+   "editedRecordsChecked": 1000,
+   "untouchedSegmentsHashEqual": 1001,
+   "incrementalIndexMatchesRebuilt": true
+  },
+  "bulk": {
+   "ms": 14690,
+   "peakRssMiB": 478,
+   "peakHeapMiB": 68,
+   "diskDeltaMiB": 1037,
+   "records": 793956,
+   "changed": 793953,
+   "outputBytes": 1074476885,
+   "mibPerS": 70
+  },
+  "bulk-verify": {
+   "ms": 2663,
+   "peakRssMiB": 479,
+   "peakHeapMiB": 38,
+   "diskDeltaMiB": 0,
+   "sampledRecordsEqual": 300
+  },
+  "versions": {
+   "ms": 0,
+   "peakRssMiB": 479,
+   "peakHeapMiB": 15,
+   "diskDeltaMiB": 0,
+   "previousVersionIntact": true,
+   "extraDiskMiB": 1025
+  }
+ },
+ "fileBytes": 1074471547
+}

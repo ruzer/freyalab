@@ -1,0 +1,117 @@
+[
+ {
+  "file": "$FIXTURES/fixture-wide-lf-utf8-256MiB.csv",
+  "engine": "duckdb-native",
+  "tasks": [
+   "count",
+   "filter",
+   "groupby",
+   "analyze"
+  ],
+  "memory": "4GB"
+ },
+ {
+  "file": "$FIXTURES/fixture-wide-lf-utf8-256MiB.csv",
+  "engine": "own",
+  "tasks": [
+   "count",
+   "filter",
+   "groupby",
+   "analyze"
+  ]
+ },
+ {
+  "file": "$FIXTURES/fixture-wide-lf-utf8-256MiB.csv",
+  "engine": "csv-parse",
+  "tasks": [
+   "count",
+   "filter",
+   "groupby",
+   "analyze"
+  ],
+  "timeoutMs": 900000
+ },
+ {
+  "file": "$FIXTURES/fixture-wide-lf-utf8-1GiB.csv",
+  "engine": "duckdb-native",
+  "tasks": [
+   "count",
+   "filter",
+   "groupby",
+   "analyze"
+  ],
+  "memory": "4GB"
+ },
+ {
+  "file": "$FIXTURES/fixture-wide-lf-utf8-1GiB.csv",
+  "engine": "own",
+  "tasks": [
+   "count",
+   "filter",
+   "groupby",
+   "analyze"
+  ]
+ },
+ {
+  "file": "$FIXTURES/fixture-wide-lf-utf8-1GiB.csv",
+  "engine": "csv-parse",
+  "tasks": [
+   "count",
+   "filter",
+   "groupby",
+   "analyze"
+  ],
+  "timeoutMs": 900000
+ },
+ {
+  "file": "$FIXTURES/fixture-wide-lf-utf8-256MiB.csv",
+  "engine": "duckdb-wasm",
+  "tasks": [
+   "count",
+   "filter",
+   "groupby"
+  ],
+  "timeoutMs": 600000
+ },
+ {
+  "file": "$FIXTURES/fixture-wide-lf-utf8-1GiB.csv",
+  "engine": "duckdb-wasm",
+  "tasks": [
+   "count"
+  ],
+  "timeoutMs": 600000
+ },
+ {
+  "file": "$FIXTURES/fixture-wide-lf-utf8-5GiB.csv",
+  "engine": "duckdb-native",
+  "tasks": [
+   "count",
+   "filter",
+   "groupby",
+   "analyze",
+   "sort-full"
+  ],
+  "memory": "4GB",
+  "timeoutMs": 1800000
+ },
+ {
+  "file": "$FIXTURES/fixture-wide-lf-utf8-5GiB.csv",
+  "engine": "own",
+  "tasks": [
+   "count",
+   "filter",
+   "groupby",
+   "analyze",
+   "sort-full"
+  ],
+  "timeoutMs": 1800000
+ },
+ {
+  "file": "$FIXTURES/fixture-wide-lf-utf8-5GiB.csv",
+  "engine": "csv-parse",
+  "tasks": [
+   "filter"
+  ],
+  "timeoutMs": 1800000
+ }
+]

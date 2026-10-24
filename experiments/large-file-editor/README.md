@@ -21,7 +21,7 @@ node gen-fixture.mjs --size 2MiB --profile hostile --eol mixed --seed 3 --out /r
 
 | Qué | Comando | Resultado |
 |---|---|---|
-| Corrección de la superposición, el diario, el guardado y el índice (formatos hostiles pequeños, 4 codificaciones, contra `csv-parse` como oráculo). **Es la prueba que corre en CI.** | `node --test experiments/large-file-editor/tests` | 30 pruebas |
+| Corrección de la superposición, el diario, el guardado y el índice (formatos hostiles pequeños, 4 codificaciones, contra `csv-parse` como oráculo). **Es la prueba que corre en CI.** | `node --test experiments/large-file-editor/tests` | 40 pruebas |
 | PoC 1 · superposición + guardado en flujo + recuperación + cambio masivo sobre 5 GiB | `node run-overlay-scale.mjs --file <5GiB.csv> --edits 1000 --results results/overlay-5GiB.json` | `results/overlay-5GiB.json` |
 | PoC 2 · DuckDB nativo con controles de seguridad | `node duckdb-native-security.mjs --install <carpeta-aislada> --results results/duckdb-native-security.json` | `results/duckdb-native-security.json` |
 | PoC 3 · desplazamiento de 1 M a 500 M de filas en el Chromium de Electron | `node scroll/run.mjs --results results/scroll.json` | `results/scroll.json` |

@@ -1,0 +1,907 @@
+{
+ "platform": "darwin-arm64",
+ "node": "v24.22.1",
+ "notas": [
+  "sort-full: segunda pasada con comprobación del orden (primeros y últimos 5 ordinales); la primera pasada no comparaba el orden y se descarta.",
+  "sort-rows: ordenar el archivo entero por NOM_MUN y escribirlo como CSV con DuckDB; varias configuraciones de memoria."
+ ],
+ "runs": [
+  {
+   "engine": "duckdb-native",
+   "task": "count",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 480,
+   "mibPerS": 534,
+   "maxRssMiB": 297,
+   "tempPeakMiB": 0,
+   "digest": "96866fb5f29f",
+   "result": {
+    "rows": 198688
+   }
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "filter",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 472,
+   "mibPerS": 543,
+   "maxRssMiB": 298,
+   "tempPeakMiB": 0,
+   "digest": "1df21ef1bc06",
+   "result": {
+    "rows": 198688,
+    "hits": 19959
+   }
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "groupby",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 471,
+   "mibPerS": 544,
+   "maxRssMiB": 301,
+   "tempPeakMiB": 0,
+   "digest": "d2631f913a0e",
+   "result": [
+    [
+     "Zürich",
+     20141
+    ],
+    [
+     "Tlalpan",
+     20002
+    ],
+    [
+     "Mérida",
+     19959
+    ],
+    [
+     "Güémez",
+     19925
+    ],
+    [
+     "Abejones",
+     19870
+    ]
+   ]
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "analyze",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 850,
+   "mibPerS": 302,
+   "maxRssMiB": 297,
+   "tempPeakMiB": 0,
+   "digest": "d5f2ce6b9645",
+   "result": "[{\"nonEmpty\":198688,\"numeric\":198688,\"min\":0,\"max\":99998,\"sum\":9924357880},{\"nonEmpty\":198688,\"numeric\":198688,\"min\":0,\"max\":99999,\"sum\":9935504270},{\"nonEmpty\":198688,\"numeric\":198688,\"min\":0,\"max\":99999,\"sum\":9920737263},{\"nonEmpty\":19868…"
+  },
+  {
+   "engine": "own",
+   "task": "count",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 791,
+   "mibPerS": 324,
+   "maxRssMiB": 172,
+   "tempPeakMiB": 0,
+   "digest": "96866fb5f29f",
+   "result": {
+    "rows": 198688
+   }
+  },
+  {
+   "engine": "own",
+   "task": "filter",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 793,
+   "mibPerS": 323,
+   "maxRssMiB": 170,
+   "tempPeakMiB": 0,
+   "digest": "1df21ef1bc06",
+   "result": {
+    "rows": 198688,
+    "hits": 19959
+   }
+  },
+  {
+   "engine": "own",
+   "task": "groupby",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 799,
+   "mibPerS": 321,
+   "maxRssMiB": 171,
+   "tempPeakMiB": 0,
+   "digest": "d2631f913a0e",
+   "result": [
+    [
+     "Zürich",
+     20141
+    ],
+    [
+     "Tlalpan",
+     20002
+    ],
+    [
+     "Mérida",
+     19959
+    ],
+    [
+     "Güémez",
+     19925
+    ],
+    [
+     "Abejones",
+     19870
+    ]
+   ]
+  },
+  {
+   "engine": "own",
+   "task": "analyze",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 1028,
+   "mibPerS": 250,
+   "maxRssMiB": 162,
+   "tempPeakMiB": 0,
+   "digest": "d5f2ce6b9645",
+   "result": "[{\"nonEmpty\":198688,\"numeric\":198688,\"min\":0,\"max\":99998,\"sum\":9924357880},{\"nonEmpty\":198688,\"numeric\":198688,\"min\":0,\"max\":99999,\"sum\":9935504270},{\"nonEmpty\":198688,\"numeric\":198688,\"min\":0,\"max\":99999,\"sum\":9920737263},{\"nonEmpty\":19868…"
+  },
+  {
+   "engine": "csv-parse",
+   "task": "count",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 8372,
+   "mibPerS": 31,
+   "maxRssMiB": 301,
+   "tempPeakMiB": 0,
+   "digest": "96866fb5f29f",
+   "result": {
+    "rows": 198688
+   }
+  },
+  {
+   "engine": "csv-parse",
+   "task": "filter",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 8380,
+   "mibPerS": 31,
+   "maxRssMiB": 300,
+   "tempPeakMiB": 0,
+   "digest": "1df21ef1bc06",
+   "result": {
+    "rows": 198688,
+    "hits": 19959
+   }
+  },
+  {
+   "engine": "csv-parse",
+   "task": "groupby",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 8426,
+   "mibPerS": 30,
+   "maxRssMiB": 316,
+   "tempPeakMiB": 0,
+   "digest": "d2631f913a0e",
+   "result": [
+    [
+     "Zürich",
+     20141
+    ],
+    [
+     "Tlalpan",
+     20002
+    ],
+    [
+     "Mérida",
+     19959
+    ],
+    [
+     "Güémez",
+     19925
+    ],
+    [
+     "Abejones",
+     19870
+    ]
+   ]
+  },
+  {
+   "engine": "csv-parse",
+   "task": "analyze",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 8558,
+   "mibPerS": 30,
+   "maxRssMiB": 301,
+   "tempPeakMiB": 0,
+   "digest": "d5f2ce6b9645",
+   "result": "[{\"nonEmpty\":198688,\"numeric\":198688,\"min\":0,\"max\":99998,\"sum\":9924357880},{\"nonEmpty\":198688,\"numeric\":198688,\"min\":0,\"max\":99999,\"sum\":9935504270},{\"nonEmpty\":198688,\"numeric\":198688,\"min\":0,\"max\":99999,\"sum\":9920737263},{\"nonEmpty\":19868…"
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "count",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 798,
+   "mibPerS": 1284,
+   "maxRssMiB": 286,
+   "tempPeakMiB": 0,
+   "digest": "ee632abedfb8",
+   "result": {
+    "rows": 793955
+   }
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "filter",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 781,
+   "mibPerS": 1312,
+   "maxRssMiB": 287,
+   "tempPeakMiB": 0,
+   "digest": "5125a523a565",
+   "result": {
+    "rows": 793955,
+    "hits": 79416
+   }
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "groupby",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 779,
+   "mibPerS": 1315,
+   "maxRssMiB": 290,
+   "tempPeakMiB": 0,
+   "digest": "7328b79338cd",
+   "result": [
+    [
+     "Zürich",
+     80134
+    ],
+    [
+     "Cuauhtémoc",
+     79708
+    ],
+    [
+     "Tlalpan",
+     79560
+    ],
+    [
+     "Mérida",
+     79416
+    ],
+    [
+     "Oaxaca",
+     79412
+    ]
+   ]
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "analyze",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 1304,
+   "mibPerS": 786,
+   "maxRssMiB": 319,
+   "tempPeakMiB": 0,
+   "digest": "80ffad6f4ca2",
+   "result": "[{\"nonEmpty\":793955,\"numeric\":793955,\"min\":0,\"max\":99999,\"sum\":39701355577},{\"nonEmpty\":793955,\"numeric\":793955,\"min\":0,\"max\":99999,\"sum\":39715219936},{\"nonEmpty\":793955,\"numeric\":793955,\"min\":0,\"max\":99999,\"sum\":39647434664},{\"nonEmpty\":79…"
+  },
+  {
+   "engine": "own",
+   "task": "count",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 2839,
+   "mibPerS": 361,
+   "maxRssMiB": 282,
+   "tempPeakMiB": 0,
+   "digest": "ee632abedfb8",
+   "result": {
+    "rows": 793955
+   }
+  },
+  {
+   "engine": "own",
+   "task": "filter",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 2785,
+   "mibPerS": 368,
+   "maxRssMiB": 230,
+   "tempPeakMiB": 0,
+   "digest": "5125a523a565",
+   "result": {
+    "rows": 793955,
+    "hits": 79416
+   }
+  },
+  {
+   "engine": "own",
+   "task": "groupby",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 2893,
+   "mibPerS": 354,
+   "maxRssMiB": 282,
+   "tempPeakMiB": 0,
+   "digest": "7328b79338cd",
+   "result": [
+    [
+     "Zürich",
+     80134
+    ],
+    [
+     "Cuauhtémoc",
+     79708
+    ],
+    [
+     "Tlalpan",
+     79560
+    ],
+    [
+     "Mérida",
+     79416
+    ],
+    [
+     "Oaxaca",
+     79412
+    ]
+   ]
+  },
+  {
+   "engine": "own",
+   "task": "analyze",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 3680,
+   "mibPerS": 278,
+   "maxRssMiB": 188,
+   "tempPeakMiB": 0,
+   "digest": "80ffad6f4ca2",
+   "result": "[{\"nonEmpty\":793955,\"numeric\":793955,\"min\":0,\"max\":99999,\"sum\":39701355577},{\"nonEmpty\":793955,\"numeric\":793955,\"min\":0,\"max\":99999,\"sum\":39715219936},{\"nonEmpty\":793955,\"numeric\":793955,\"min\":0,\"max\":99999,\"sum\":39647434664},{\"nonEmpty\":79…"
+  },
+  {
+   "engine": "csv-parse",
+   "task": "count",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 33519,
+   "mibPerS": 31,
+   "maxRssMiB": 336,
+   "tempPeakMiB": 0,
+   "digest": "ee632abedfb8",
+   "result": {
+    "rows": 793955
+   }
+  },
+  {
+   "engine": "csv-parse",
+   "task": "filter",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 33837,
+   "mibPerS": 30,
+   "maxRssMiB": 302,
+   "tempPeakMiB": 0,
+   "digest": "5125a523a565",
+   "result": {
+    "rows": 793955,
+    "hits": 79416
+   }
+  },
+  {
+   "engine": "csv-parse",
+   "task": "groupby",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 33457,
+   "mibPerS": 31,
+   "maxRssMiB": 301,
+   "tempPeakMiB": 0,
+   "digest": "7328b79338cd",
+   "result": [
+    [
+     "Zürich",
+     80134
+    ],
+    [
+     "Cuauhtémoc",
+     79708
+    ],
+    [
+     "Tlalpan",
+     79560
+    ],
+    [
+     "Mérida",
+     79416
+    ],
+    [
+     "Oaxaca",
+     79412
+    ]
+   ]
+  },
+  {
+   "engine": "csv-parse",
+   "task": "analyze",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 34036,
+   "mibPerS": 30,
+   "maxRssMiB": 301,
+   "tempPeakMiB": 0,
+   "digest": "80ffad6f4ca2",
+   "result": "[{\"nonEmpty\":793955,\"numeric\":793955,\"min\":0,\"max\":99999,\"sum\":39701355577},{\"nonEmpty\":793955,\"numeric\":793955,\"min\":0,\"max\":99999,\"sum\":39715219936},{\"nonEmpty\":793955,\"numeric\":793955,\"min\":0,\"max\":99999,\"sum\":39647434664},{\"nonEmpty\":79…"
+  },
+  {
+   "engine": "duckdb-wasm",
+   "task": "count",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 1555,
+   "mibPerS": 165,
+   "maxRssMiB": 674,
+   "tempPeakMiB": 0,
+   "digest": "96866fb5f29f",
+   "result": {
+    "rows": 198688
+   }
+  },
+  {
+   "engine": "duckdb-wasm",
+   "task": "filter",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 1568,
+   "mibPerS": 164,
+   "maxRssMiB": 642,
+   "tempPeakMiB": 0,
+   "digest": "1df21ef1bc06",
+   "result": {
+    "rows": 198688,
+    "hits": 19959
+   }
+  },
+  {
+   "engine": "duckdb-wasm",
+   "task": "groupby",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-256MiB.csv",
+   "fileMiB": 256,
+   "ms": 1565,
+   "mibPerS": 164,
+   "maxRssMiB": 690,
+   "tempPeakMiB": 0,
+   "digest": "d2631f913a0e",
+   "result": [
+    [
+     "Zürich",
+     20141
+    ],
+    [
+     "Tlalpan",
+     20002
+    ],
+    [
+     "Mérida",
+     19959
+    ],
+    [
+     "Güémez",
+     19925
+    ],
+    [
+     "Abejones",
+     19870
+    ]
+   ]
+  },
+  {
+   "engine": "duckdb-wasm",
+   "task": "count",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 3571,
+   "mibPerS": 287,
+   "maxRssMiB": 680,
+   "tempPeakMiB": 0,
+   "digest": "ee632abedfb8",
+   "result": {
+    "rows": 793955
+   }
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "count",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 2579,
+   "mibPerS": 1985,
+   "maxRssMiB": 287,
+   "tempPeakMiB": 0,
+   "digest": "e02e20874301",
+   "result": {
+    "rows": 3967421
+   }
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "filter",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 2499,
+   "mibPerS": 2049,
+   "maxRssMiB": 287,
+   "tempPeakMiB": 0,
+   "digest": "69b0dbf16f94",
+   "result": {
+    "rows": 3967421,
+    "hits": 396617
+   }
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "groupby",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 2474,
+   "mibPerS": 2070,
+   "maxRssMiB": 291,
+   "tempPeakMiB": 0,
+   "digest": "4556b362d33d",
+   "result": [
+    [
+     "Cuauhtémoc",
+     397493
+    ],
+    [
+     "Zürich",
+     397226
+    ],
+    [
+     "Ñuñoa",
+     397082
+    ],
+    [
+     "Abejones",
+     396834
+    ],
+    [
+     "Tlalpan",
+     396676
+    ]
+   ]
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "analyze",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 3823,
+   "mibPerS": 1339,
+   "maxRssMiB": 319,
+   "tempPeakMiB": 0,
+   "digest": "2ead28520a95",
+   "result": "[{\"nonEmpty\":3967421,\"numeric\":3967421,\"min\":0,\"max\":99999,\"sum\":198411748528},{\"nonEmpty\":3967421,\"numeric\":3967421,\"min\":0,\"max\":99999,\"sum\":198323592462},{\"nonEmpty\":3967421,\"numeric\":3967421,\"min\":0,\"max\":99999,\"sum\":198399277592},{\"non…"
+  },
+  {
+   "engine": "own",
+   "task": "count",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 15386,
+   "mibPerS": 333,
+   "maxRssMiB": 273,
+   "tempPeakMiB": 0,
+   "digest": "e02e20874301",
+   "result": {
+    "rows": 3967421
+   }
+  },
+  {
+   "engine": "own",
+   "task": "filter",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 16307,
+   "mibPerS": 314,
+   "maxRssMiB": 281,
+   "tempPeakMiB": 0,
+   "digest": "69b0dbf16f94",
+   "result": {
+    "rows": 3967421,
+    "hits": 396617
+   }
+  },
+  {
+   "engine": "own",
+   "task": "groupby",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 15719,
+   "mibPerS": 326,
+   "maxRssMiB": 282,
+   "tempPeakMiB": 0,
+   "digest": "4556b362d33d",
+   "result": [
+    [
+     "Cuauhtémoc",
+     397493
+    ],
+    [
+     "Zürich",
+     397226
+    ],
+    [
+     "Ñuñoa",
+     397082
+    ],
+    [
+     "Abejones",
+     396834
+    ],
+    [
+     "Tlalpan",
+     396676
+    ]
+   ]
+  },
+  {
+   "engine": "own",
+   "task": "analyze",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 20843,
+   "mibPerS": 246,
+   "maxRssMiB": 286,
+   "tempPeakMiB": 0,
+   "digest": "2ead28520a95",
+   "result": "[{\"nonEmpty\":3967421,\"numeric\":3967421,\"min\":0,\"max\":99999,\"sum\":198411748528},{\"nonEmpty\":3967421,\"numeric\":3967421,\"min\":0,\"max\":99999,\"sum\":198323592462},{\"nonEmpty\":3967421,\"numeric\":3967421,\"min\":0,\"max\":99999,\"sum\":198399277592},{\"non…"
+  },
+  {
+   "engine": "csv-parse",
+   "task": "filter",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 164471,
+   "mibPerS": 31,
+   "maxRssMiB": 300,
+   "tempPeakMiB": 0,
+   "digest": "69b0dbf16f94",
+   "result": {
+    "rows": 3967421,
+    "hits": 396617
+   }
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "sort-full",
+   "memory": "4GB",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 9314,
+   "mibPerS": 550,
+   "maxRssMiB": 501,
+   "tempPeakMiB": 15,
+   "digest": "4a7667940d76",
+   "result": {
+    "rows": 3967421,
+    "head": [
+     14,
+     38,
+     43,
+     61,
+     81
+    ],
+    "tail": [
+     3967390,
+     3967397,
+     3967407,
+     3967409,
+     3967413
+    ]
+   }
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "sort-full",
+   "memory": "512MB",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 9165,
+   "mibPerS": 559,
+   "maxRssMiB": 416,
+   "tempPeakMiB": 0,
+   "digest": "4a7667940d76",
+   "result": {
+    "rows": 3967421,
+    "head": [
+     14,
+     38,
+     43,
+     61,
+     81
+    ],
+    "tail": [
+     3967390,
+     3967397,
+     3967407,
+     3967409,
+     3967413
+    ]
+   }
+  },
+  {
+   "engine": "own",
+   "task": "sort-full",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 16374,
+   "mibPerS": 313,
+   "maxRssMiB": 578,
+   "tempPeakMiB": 0,
+   "digest": "4a7667940d76",
+   "result": {
+    "rows": 3967421,
+    "head": [
+     14,
+     38,
+     43,
+     61,
+     81
+    ],
+    "tail": [
+     3967390,
+     3967397,
+     3967407,
+     3967409,
+     3967413
+    ]
+   }
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "sort-full",
+   "memory": "4GB",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 2250,
+   "mibPerS": 455,
+   "maxRssMiB": 296,
+   "tempPeakMiB": 0,
+   "digest": "3c57393e04dd",
+   "result": {
+    "rows": 793955,
+    "head": [
+     14,
+     38,
+     43,
+     61,
+     81
+    ],
+    "tail": [
+     793917,
+     793942,
+     793947,
+     793949,
+     793953
+    ]
+   }
+  },
+  {
+   "engine": "own",
+   "task": "sort-full",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 3181,
+   "mibPerS": 322,
+   "maxRssMiB": 366,
+   "tempPeakMiB": 0,
+   "digest": "3c57393e04dd",
+   "result": {
+    "rows": 793955,
+    "head": [
+     14,
+     38,
+     43,
+     61,
+     81
+    ],
+    "tail": [
+     793917,
+     793942,
+     793947,
+     793949,
+     793953
+    ]
+   }
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "sort-rows",
+   "memory": "4GB",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 57373,
+   "mibPerS": 89,
+   "maxRssMiB": 5029,
+   "tempPeakMiB": 9627,
+   "digest": "cb7bf71cb4bb",
+   "result": {
+    "outputBytes": 5369182394
+   }
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "sort-rows",
+   "memory": "2GB",
+   "noorder": "1",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 97524,
+   "mibPerS": 53,
+   "maxRssMiB": 2726,
+   "tempPeakMiB": 20693,
+   "digest": "cb7bf71cb4bb",
+   "result": {
+    "outputBytes": 5369182394
+   }
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "sort-rows",
+   "memory": "1GB",
+   "noorder": "1",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 15061,
+   "mibPerS": 340,
+   "maxRssMiB": 1614,
+   "tempPeakMiB": 10461,
+   "digest": null,
+   "error": "Out of Memory Error: failed to allocate data of size 512.0 MiB (676.3 MiB/953.6 MiB used)\n\nPossible solutions:\n* Reducing the number of threads (SET threads=X)\n* Disabling insertion-order preservation"
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "sort-rows",
+   "memory": "1GB",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-5GiB.csv",
+   "fileMiB": 5120,
+   "ms": 15611,
+   "mibPerS": 328,
+   "maxRssMiB": 1427,
+   "tempPeakMiB": 10206,
+   "digest": null,
+   "error": "Out of Memory Error: failed to allocate data of size 512.0 MiB (676.3 MiB/953.6 MiB used)\n\nPossible solutions:\n* Reducing the number of threads (SET threads=X)\n* Disabling insertion-order preservation"
+  },
+  {
+   "engine": "duckdb-native",
+   "task": "sort-rows",
+   "memory": "1GB",
+   "file": "/private/tmp/claude-501/-Users-ruzer-Proyectos-LAB/330fbb0c-cca9-422e-85f0-9c52570c2120/scratchpad/fixtures/fixture-wide-lf-utf8-1GiB.csv",
+   "fileMiB": 1025,
+   "ms": 5174,
+   "mibPerS": 198,
+   "maxRssMiB": 1352,
+   "tempPeakMiB": 2895,
+   "digest": null,
+   "error": "Out of Memory Error: failed to allocate data of size 512.0 MiB (692.3 MiB/953.6 MiB used)\n\nPossible solutions:\n* Reducing the number of threads (SET threads=X)\n* Disabling insertion-order preservation"
+  }
+ ]
+}

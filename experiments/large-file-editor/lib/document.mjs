@@ -1,6 +1,6 @@
 // Documento grande: el archivo original es canónico; los cambios puntuales viven en una capa (overlay) con diario;
 // guardar copia en flujo los bytes que no cambian y reescribe solo los registros tocados. Experimento, no producto.
-import {open,rename,rm,statfs,readFile} from 'node:fs/promises'
+import {open,rename,rm,statfs,readFile,realpath,truncate} from 'node:fs/promises'
 import {createHash} from 'node:crypto'
 import {dirname,basename,join,resolve} from 'node:path'
 import {buildIndex,recordBounds,scan,detect} from './record-index.mjs'
@@ -46,7 +46,8 @@ export class LargeDocument{
  edits=new Map();inserts=new Map();journal=null;opsLogged=0
 
  static async open(path,{journalDir,delimiter,every,encoding,freeBytes,recover=true,onProgress,signal}={}){
-  const doc=new LargeDocument();doc.path=resolve(path);doc.freeBytes=freeBytes
+  const doc=new LargeDocument();doc.path=await realpath(resolve(path)) // rename sobre un enlace simbólico lo reemplazaría: se guarda sobre el destino real
+  doc.freeBytes=freeBytes
   doc.delimiter=delimiter??(/\.tsv$/i.test(path)?'\t':',')
   const before=await fingerprint(doc.path);doc.index=await buildIndex(doc.path,{every,encoding,onProgress,signal});doc.base=await fingerprint(doc.path)
   if(!same(before,doc.base))throw new ExternalChangeError('El archivo cambió mientras se indexaba.')
@@ -102,15 +103,19 @@ export class LargeDocument{
  async close(){await this.journal?.close();this.journal=null} // cierra el diario sin borrarlo: los cambios siguen recuperables
  async #replay(){
   let text;try{text=await readFile(this.journalPath,'utf8')}catch{return}
-  const lines=text.split('\n');const head=JSON.parse(lines.shift())
+  const lines=text.split('\n'),tail=lines.pop() // lo que sigue al último salto de línea es una línea sin terminar
+  let head;try{head=JSON.parse(lines.shift())}catch{await rm(this.journalPath,{force:true});return} // cabecera ilegible: el diario no sirve
   if(!same(head.base,this.base))throw new ExternalChangeError('El archivo cambió desde que se escribió el diario de recuperación; no se aplica.')
-  let ok=0
-  for(const line of lines){if(!line)continue;let op;try{op=JSON.parse(line)}catch{break}
-   if(op.op==='set')this.#applySet(op.r,op.c,op.v);else if(op.op==='del')this.edits.set(op.r,{deleted:true});else if(op.op==='ins')this.#applyIns(op.r,op.v);ok++}
+  let ok=0,good=Buffer.byteLength(JSON.stringify(head))+1,damaged=tail!==''
+  for(const line of lines){let op;try{op=JSON.parse(line)}catch{damaged=true;break}
+   if(op.op==='set')this.#applySet(op.r,op.c,op.v);else if(op.op==='del')this.edits.set(op.r,{deleted:true});else if(op.op==='ins')this.#applyIns(op.r,op.v);ok++;good+=Buffer.byteLength(line)+1}
+  // se recorta hasta el último byte bueno: si no, lo que se añada después quedaría pegado a la línea rota y se perdería en la siguiente recuperación
+  if(damaged)await truncate(this.journalPath,good)
   this.recovered=ok;this.opsLogged=ok
  }
  async discard(){await this.journal?.close();this.journal=null;await rm(this.journalPath,{force:true});this.edits.clear();this.inserts.clear();this.opsLogged=0}
 
+ // shortcut: guardar sin cambios también copia el archivo entero (lo usa la prueba de idempotencia byte a byte); el producto debe omitirlo.
  // Guarda: copia en flujo los bytes sin cambios, reescribe los registros tocados y reemplaza el original con rename.
  async save({signal,onProgress}={}){
   if(!same(await fingerprint(this.path),this.base))throw new ExternalChangeError('El archivo cambió fuera de FreyaLab; no se sobrescribe.')
@@ -122,6 +127,7 @@ export class LargeDocument{
   const temp=join(dirname(this.path),`.${basename(this.path)}.freyalab-${process.pid}.tmp`)
   const src=await open(this.path,'r'),dst=await open(temp,'w'),buffer=Buffer.allocUnsafe(COPY),{encoding}=this.index
   try{
+   await dst.chmod((await src.stat()).mode&0o7777) // conserva los permisos del original (el propietario y las ACL no se conservan: ver RFC)
    let cursor=0;const deltas=[];let structural=this.inserts.size>0||[...this.edits.values()].some(e=>e.deleted)
    for(const [n,ordinal] of touched.entries()){
     if(signal?.aborted)throw new Error('Guardado cancelado.')

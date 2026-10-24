@@ -63,11 +63,12 @@ export async function recordBounds(handle,index,from,count,bufferSize=256*1024){
 }
 
 // Recorre el archivo entero en flujo y llama a `onRecord(buffer, ordinal)` por registro (memoria acotada).
-export async function eachRecord(path,onRecord,{encoding:hint,chunk=CHUNK}={}){
+export async function eachRecord(path,onRecord,{encoding:hint,chunk=CHUNK,signal}={}){
  const handle=await open(path,'r');try{
   const size=(await handle.stat()).size,meta=await detect(handle,size,hint),buffer=Buffer.allocUnsafe(chunk)
   let position=meta.bomLength,carry=Buffer.alloc(0),state={inQuotes:false},ordinal=0
   while(position<size){
+   if(signal?.aborted)throw new Error('Recorrido cancelado.')
    const {bytesRead}=await handle.read(buffer,0,chunk,position);if(!bytesRead)break
    const usable=meta.unit===2?bytesRead-(bytesRead%2):bytesRead,buf=carry.length?Buffer.concat([carry,buffer.subarray(0,usable)]):buffer.subarray(0,usable),ends=[]
    state=scan(buf.subarray(carry.length),usable,carry.length,state,meta,end=>ends.push(end))

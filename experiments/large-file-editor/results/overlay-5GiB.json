@@ -5,83 +5,83 @@
  "edits": 1000,
  "phases": {
   "clone": {
-   "ms": 3478,
+   "ms": 3162,
    "peakRssMiB": 53,
-   "peakHeapMiB": 6,
-   "diskDeltaMiB": 5136
+   "peakHeapMiB": 5,
+   "diskDeltaMiB": 5137
   },
   "index": {
-   "ms": 10139,
-   "peakRssMiB": 69,
+   "ms": 10115,
+   "peakRssMiB": 75,
    "peakHeapMiB": 7,
-   "diskDeltaMiB": 0,
+   "diskDeltaMiB": -15,
    "records": 3967422,
    "indexKiB": 30,
-   "mibPerS": 505
+   "mibPerS": 506
   },
   "pages": {
-   "ms": 801,
-   "peakRssMiB": 128,
-   "peakHeapMiB": 29,
+   "ms": 851,
+   "peakRssMiB": 134,
+   "peakHeapMiB": 19,
    "diskDeltaMiB": 0,
    "pageRecords": 50,
-   "p50ms": 2.64,
-   "p95ms": 3.75,
-   "maxMs": 8.23,
-   "lastPageMs": 1.69
+   "p50ms": 2.84,
+   "p95ms": 3.99,
+   "maxMs": 5.91,
+   "lastPageMs": 1.89
   },
   "edits": {
-   "ms": 19,
-   "peakRssMiB": 130,
-   "peakHeapMiB": 9,
+   "ms": 24,
+   "peakRssMiB": 134,
+   "peakHeapMiB": 24,
    "diskDeltaMiB": 0,
-   "perEditMs": 0.019
+   "perEditMs": 0.024
   },
   "recover": {
-   "ms": 8915,
-   "peakRssMiB": 130,
+   "ms": 8945,
+   "peakRssMiB": 135,
    "peakHeapMiB": 32,
    "diskDeltaMiB": 0,
    "recoveredOps": 1000,
    "matches": true
   },
   "save": {
-   "ms": 5773,
-   "peakRssMiB": 227,
+   "ms": 5768,
+   "peakRssMiB": 283,
    "peakHeapMiB": 22,
-   "diskDeltaMiB": -2,
+   "diskDeltaMiB": -8,
    "finalBytes": 5369187727,
    "deltaBytes": 5333
   },
   "verify": {
-   "ms": 19048,
-   "peakRssMiB": 294,
-   "peakHeapMiB": 31,
+   "ms": 24119,
+   "peakRssMiB": 365,
+   "peakHeapMiB": 30,
    "diskDeltaMiB": 4,
    "editedRecordsChecked": 1000,
    "untouchedSegmentsHashEqual": 1001,
    "incrementalIndexMatchesRebuilt": true
   },
   "bulk": {
-   "ms": 69971,
-   "peakRssMiB": 486,
-   "peakHeapMiB": 60,
-   "diskDeltaMiB": 5128,
+   "ms": 74933,
+   "peakRssMiB": 439,
+   "peakHeapMiB": 67,
+   "diskDeltaMiB": 5121,
    "records": 3967422,
    "changed": 3967419,
    "outputBytes": 5369187727,
-   "mibPerS": 73
+   "mibPerS": 68
   },
   "bulk-verify": {
-   "ms": 9636,
-   "peakRssMiB": 432,
+   "ms": 15011,
+   "peakRssMiB": 407,
    "peakHeapMiB": 58,
-   "diskDeltaMiB": 0,
+   "diskDeltaMiB": -741,
    "sampledRecordsEqual": 300
   },
   "versions": {
    "ms": 0,
-   "peakRssMiB": 418,
+   "peakRssMiB": 407,
    "peakHeapMiB": 7,
    "diskDeltaMiB": 0,
    "previousVersionIntact": true,
