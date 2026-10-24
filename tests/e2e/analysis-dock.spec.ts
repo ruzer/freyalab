@@ -3,6 +3,7 @@ import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
+import {analyzeButton,showPanel} from './panel'
 
 let app:ElectronApplication,page:Page,folder:string
 test.beforeEach(async()=>{
@@ -31,11 +32,11 @@ const visibleColumns=()=>page.evaluate(()=>{
 const stableRows=async()=>{let last=-1,same=0;for(let i=0;i<50&&same<3;i++){const now=await visibleRows();same=now===last?same+1:0;last=now;await page.waitForTimeout(100)}return last}
 const tools=()=>page.getByRole('tablist',{name:'Herramientas de análisis'})
 const panels=[
- {button:'Gráficos',ready:()=>page.getByLabel('Gráficos del CSV')},
- {button:'Estadísticas',ready:()=>page.getByRole('heading',{name:'Estadísticas por columna'})},
- {button:'Análisis',ready:()=>page.getByLabel('Análisis SQL y asistentes')}
+ {button:'Gráficos' as const,ready:()=>page.getByLabel('Gráficos del CSV')},
+ {button:'Estadísticas' as const,ready:()=>page.getByRole('heading',{name:'Estadísticas por columna'})},
+ {button:'Análisis' as const,ready:()=>page.getByLabel('Análisis SQL y asistentes')}
 ]
-const close=async()=>{const open=page.getByRole('button',{expanded:true}).filter({hasText:/Gráficos|Estadísticas|Análisis/});if(await open.count())await open.first().click()}
+const close=async()=>{if(await analyzeButton(page).getAttribute('aria-expanded')==='true')await analyzeButton(page).click()}
 
 test('con un panel de análisis abierto la tabla conserva las filas que tenía sin panel',async()=>{
  for(const [width,height] of [[1440,900],[1366,768]] as const){
@@ -43,7 +44,7 @@ test('con un panel de análisis abierto la tabla conserva las filas que tenía s
   await expect.poll(visibleRows,{message:`sin panel ${width}×${height}`}).toBeGreaterThan(5)
   const without=await stableRows()
   for(const panel of panels){
-   await page.getByRole('button',{name:panel.button,exact:true}).click();await expect(panel.ready()).toBeVisible()
+   await showPanel(page,panel.button);await expect(panel.ready()).toBeVisible()
    await expect.poll(visibleRows,{message:`${panel.button} abierto en ${width}×${height} (sin panel: ${without} filas)`}).toBe(without)
    await close();await expect(panel.ready()).toHaveCount(0)
   }
@@ -52,14 +53,14 @@ test('con un panel de análisis abierto la tabla conserva las filas que tenía s
 
 test('con el panel acoplado a 1366×768 la tabla sigue mostrando al menos tres columnas y no queda debajo del panel',async()=>{
  await page.setViewportSize({width:1366,height:768})
- await page.getByRole('button',{name:'Gráficos',exact:true}).click();await expect(page.getByLabel('Gráficos del CSV')).toBeVisible()
+ await showPanel(page,'Gráficos');await expect(page.getByLabel('Gráficos del CSV')).toBeVisible()
  await expect.poll(visibleColumns).toBeGreaterThanOrEqual(3)
  const [grid,dock]=await Promise.all([page.getByRole('grid').boundingBox(),page.getByLabel('Panel de análisis').boundingBox()])
  expect(dock!.x).toBeGreaterThanOrEqual(grid!.x+grid!.width-1)
 })
 
 test('las herramientas son pestañas accesibles con activación manual por teclado',async()=>{
- await page.getByRole('button',{name:'Gráficos',exact:true}).click();await expect(tools()).toBeVisible()
+ await showPanel(page,'Gráficos');await expect(tools()).toBeVisible()
  const [resumen,graficos,sql]=['Resumen','Gráficos','SQL'].map(name=>tools().getByRole('tab',{name,exact:true}))
  await expect(graficos).toHaveAttribute('aria-selected','true');await expect(resumen).toHaveAttribute('aria-selected','false')
  await expect(graficos).toHaveAttribute('tabindex','0');await expect(sql).toHaveAttribute('tabindex','-1')
@@ -71,7 +72,7 @@ test('las herramientas son pestañas accesibles con activación manual por tecla
 })
 
 test('cambiar de pestaña conserva la configuración del gráfico y el borrador SQL',async()=>{
- await page.getByRole('button',{name:'Gráficos',exact:true}).click()
+ await showPanel(page,'Gráficos')
  const x=page.getByRole('combobox',{name:'Columna X del gráfico'});await x.selectOption({label:'2. Ciudad'});await expect(x).toHaveValue(/1/)
  const chosen=await x.inputValue()
  await tools().getByRole('tab',{name:'SQL',exact:true}).click()
@@ -83,16 +84,16 @@ test('cambiar de pestaña conserva la configuración del gráfico y el borrador 
 test('las pestañas visitadas siguen montadas y ocultas; cerrar el panel las desmonta y devuelve el foco',async()=>{
  const charts=page.locator('.charts-panel'),sql=page.locator('.sql-panel')
  await expect(charts).toHaveCount(0);await expect(sql).toHaveCount(0)
- await page.getByRole('button',{name:'Gráficos',exact:true}).click();await expect(charts).toBeVisible();await expect(sql).toHaveCount(0) // las no visitadas no se montan
+ await showPanel(page,'Gráficos');await expect(charts).toBeVisible();await expect(sql).toHaveCount(0) // las no visitadas no se montan
  await tools().getByRole('tab',{name:'SQL',exact:true}).click();await expect(sql).toBeVisible();await expect(charts).toHaveCount(1);await expect(charts).toBeHidden()
  await page.getByRole('textbox',{name:'Consulta SQL',exact:true}).focus();await page.keyboard.press('Escape')
  await expect(sql).toHaveCount(0);await expect(charts).toHaveCount(0);await expect(tools()).toHaveCount(0)
- await expect(page.getByRole('button',{name:'Análisis',exact:true})).toBeFocused()
+ await expect(analyzeButton(page)).toBeFocused()
 })
 
 test('el gráfico generado en el panel acoplado no se desplaza en horizontal y queda a la vista',async()=>{
  await page.setViewportSize({width:1366,height:768})
- await page.getByRole('button',{name:'Gráficos',exact:true}).click();await expect(page.getByLabel('Gráficos del CSV')).toBeVisible()
+ await showPanel(page,'Gráficos');await expect(page.getByLabel('Gráficos del CSV')).toBeVisible()
  await page.getByRole('combobox',{name:'Columna X del gráfico'}).selectOption({label:'2. Ciudad'})
  await page.getByRole('button',{name:'Generar gráfico'}).scrollIntoViewIfNeeded();await page.getByRole('button',{name:'Generar gráfico'}).click()
  await expect(page.getByText('Gráfico listo.')).toBeVisible({timeout:30_000})

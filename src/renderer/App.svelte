@@ -102,7 +102,7 @@
    {/if}
   </main>
  </div>
- <footer class="statusbar"><span class="status-dot"></span><span class="truncate">{status}</span><span class="spacer"></span>{#if active}<span>{active.encoding.toUpperCase()}</span><span>{active.readonly?'Solo lectura':!active.path?'Sin guardar':active.dirty?'Cambios pendientes':'Guardado'}</span>{/if}<span>Local</span></footer>
+ <footer class="statusbar"><span class="status-dot"></span><span class="truncate">{status}</span><span class="spacer"></span><div id="document-status"></div>{#if active}{#if active.kind!=='csv'}<span>{active.encoding.toUpperCase()}</span>{/if}<span>{active.readonly?'Solo lectura':!active.path?'Sin guardar':active.dirty?'Cambios pendientes':'Guardado'}</span>{/if}<span>Local</span></footer>
  {#if toast}<div class="toast {toastKind}" role="status"><Icon name={toastKind==='error'?'triangle-alert':'circle-check'} size={16}/><span>{toast}</span><button onclick={()=>toast=''} aria-label="Cerrar aviso"><Icon name="x" size={14}/></button></div>{/if}
  {#if about}<div class="modal-backdrop" role="presentation"><div class="modal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="about-title"><img class="brand-mark" src={appIcon} alt=""/><h2 id="about-title">FreyaLab</h2><p>Documentos, tablas y diagramas.<br/>Una herramienta local, de código abierto.</p><p>Para Freya. 🐾</p><p class="muted">v0.1.0-alpha.1 · Licencia MIT</p><button class="primary" onclick={()=>about=false}>Cerrar</button></div></div>{/if}
 </div>
