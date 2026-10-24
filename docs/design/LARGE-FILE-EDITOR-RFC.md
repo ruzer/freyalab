@@ -259,6 +259,7 @@ Evaluado en `tests/overlay.test.mjs` (40 pruebas, en la CI de las 4 plataformas)
 | Recuperación tras `SIGKILL`; diario con última línea truncada; archivo cambiado | **demostrado** |
 | Texto que Windows-1252 no puede representar | **demostrado** (se rechaza al editar, no al guardar) |
 | Apertura por enlace simbólico; conservación de permisos | **demostrado** (POSIX) |
+| **Archivos de prueba hechos por otra herramienta** (`ventas_10MiB`, `100MiB`, `1GiB` y `ancho_150_columnas`, con acentos, comillas, comas, saltos de línea dentro de campos y vacíos) | **demostrado**: el índice cuenta 45 000 / 448 000 / 4 587 000 / 46 000 registros de datos, **igual que su informe de validación**, y los bytes coinciden; 1 GiB en 2,0 s (516 MiB/s) con 35 KiB de índice (`results/user-files-row-counts.json`, `verify-row-counts.mjs`) |
 | UTF-16BE, UTF-16 sin BOM, otras codificaciones (Shift-JIS, ISO-8859-x), detección automática | **pendiente** (el motor actual ya detecta algunas; no se portó) |
 | Comilla sin cerrar en medio del archivo | **pendiente**: el resto del archivo se leería como un registro; hace falta el tope de 1 MiB por registro con error posicionado (L2) |
 | Cadenas de CR solitarias dentro de un archivo LF | **pendiente** (se tratan como parte del registro) |

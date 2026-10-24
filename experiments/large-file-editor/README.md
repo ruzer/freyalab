@@ -25,6 +25,7 @@ node gen-fixture.mjs --size 2MiB --profile hostile --eol mixed --seed 3 --out /r
 | PoC 1 · superposición + guardado en flujo + recuperación + cambio masivo sobre 5 GiB | `node run-overlay-scale.mjs --file <5GiB.csv> --edits 1000 --results results/overlay-5GiB.json` | `results/overlay-5GiB.json` |
 | PoC 2 · DuckDB nativo con controles de seguridad | `node duckdb-native-security.mjs --install <carpeta-aislada> --results results/duckdb-native-security.json` | `results/duckdb-native-security.json` |
 | PoC 3 · desplazamiento de 1 M a 500 M de filas en el Chromium de Electron | `node scroll/run.mjs --results results/scroll.json` | `results/scroll.json` |
+| Contraste del índice con el informe de validación de otra herramienta (recuento de registros por archivo) | `node verify-row-counts.mjs /ruta/validacion.json --results results/user-files-row-counts.json` | `results/user-files-row-counts.json` |
 | PoC 4 · comparación de motores (recuento, filtro, agrupación, análisis de campos, ordenación) | `node run-engine-compare.mjs --plan plan.json --install <carpeta-aislada> --temp <carpeta-temporal> --results results/engines.json` | `results/engines.json` |
 
 Los benchmarks de 1, 5 y 10 GiB **no corren en CI**: son manuales o nocturnos. La CI solo ejecuta `tests/` con fixtures de unos pocos cientos de bytes que fuerzan la lógica del modo grande (trozos de 6 bytes, puntos de control cada 2 registros).

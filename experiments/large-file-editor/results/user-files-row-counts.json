@@ -1,0 +1,58 @@
+{
+ "platform": "darwin-arm64",
+ "node": "v24.22.1",
+ "results": [
+  {
+   "archivo": "ventas_10MiB.csv",
+   "bytes": 10530259,
+   "esperado": 45000,
+   "indexado": 45000,
+   "coincide": true,
+   "columnasEsperadas": 21,
+   "ms": 22,
+   "mibPorS": 456,
+   "indiceKiB": 0,
+   "codificacion": "utf8",
+   "salto": "lf"
+  },
+  {
+   "archivo": "ventas_100MiB.csv",
+   "bytes": 104878987,
+   "esperado": 448000,
+   "indexado": 448000,
+   "coincide": true,
+   "columnasEsperadas": 21,
+   "ms": 192,
+   "mibPorS": 521,
+   "indiceKiB": 3,
+   "codificacion": "utf8",
+   "salto": "lf"
+  },
+  {
+   "archivo": "ventas_1GiB.csv",
+   "bytes": 1073832889,
+   "esperado": 4587000,
+   "indexado": 4587000,
+   "coincide": true,
+   "columnasEsperadas": 21,
+   "ms": 1965,
+   "mibPorS": 521,
+   "indiceKiB": 35,
+   "codificacion": "utf8",
+   "salto": "lf"
+  },
+  {
+   "archivo": "ancho_150_columnas_50MiB.csv",
+   "bytes": 53539141,
+   "esperado": 46000,
+   "indexado": 46000,
+   "coincide": true,
+   "columnasEsperadas": 150,
+   "ms": 94,
+   "mibPorS": 543,
+   "indiceKiB": 0,
+   "codificacion": "utf8",
+   "salto": "lf"
+  }
+ ]
+}
