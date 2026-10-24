@@ -14,14 +14,14 @@ test.beforeEach(async()=>{
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya)
  const file=join(folder,'ventas.csv')
  await writeFile(file,'Folio,Ciudad,Fecha,Categoría,Unidades,Importe_MXN,Estado\n'+Array.from({length:1240},(_,i)=>`F${String(i+1).padStart(5,'0')},${cities[i%6]},2026-0${1+i%9}-${String(1+i%28).padStart(2,'0')},Cat ${i%4},${1+i%12},${(100+i*7.3).toFixed(2)},${['Pagado','Pendiente','Cancelado'][i%3]}`).join('\n')+'\n')
- await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setContentSize(1440,900))
+ await page.setViewportSize({width:1440,height:900}) // el tamaño de la ventana real depende de la pantalla del equipo (en CI es más pequeña)
  await page.evaluate(path=>window.freya.openPaths([path]),file);await expect(page.getByRole('grid')).toBeVisible()
 })
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
 
 const toolbar=()=>page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true})
 const status=()=>page.locator('footer')
-const resize=async(width:number,height:number)=>{await app.evaluate(({BrowserWindow},[w,h])=>BrowserWindow.getAllWindows()[0].setContentSize(w,h),[width,height]);await page.waitForTimeout(400)}
+const resize=async(width:number,height:number)=>{await page.setViewportSize({width,height});await page.waitForTimeout(400)}
 // Espacio entre el borde superior y la tabla, y filas de datos totalmente visibles.
 const layout=()=>page.evaluate(()=>{
  const grid=document.querySelector('[role=grid]')!,box=grid.getBoundingClientRect(),header=grid.querySelector('[role=columnheader]')?.getBoundingClientRect().height??0

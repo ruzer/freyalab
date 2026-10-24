@@ -33,7 +33,7 @@ test('ampliar y volver a la tabla conserva búsqueda, selección y posición de 
  await page.getByRole('textbox',{name:'Buscar en tabla'}).fill('C1')
  await expect.poll(()=>page.locator('[role=gridcell][data-column="0"]').count()).toBeGreaterThan(5)
  await page.locator('[role=gridcell][data-row="1"][data-column="1"]').click()
- const selection=await page.locator('footer').innerText();expect(selection).toContain('Rango')
+ const selection=await page.locator('.csv-status').textContent();expect(selection).toContain('Rango') // solo la parte del documento: el mensaje de la ventana («N de M filas») cambia con la búsqueda
  await grid().evaluate(element=>{element.scrollTop=300});const top=await grid().evaluate(element=>element.scrollTop);expect(top).toBeGreaterThan(100)
  const docked=await width()
  await page.getByRole('button',{name:'Ampliar',exact:true}).click()
@@ -42,7 +42,7 @@ test('ampliar y volver a la tabla conserva búsqueda, selección y posición de 
  await expect(page.getByRole('textbox',{name:'Buscar en tabla'})).toHaveValue('C1') // la barra de herramientas sigue a la vista
  await back().click()
  await expect(grid()).toBeVisible();await expect(back()).toHaveCount(0);await expect(grid()).toBeFocused();await expect(status()).toHaveText('Vuelves a la tabla')
- expect(await page.locator('footer').innerText()).toBe(selection)
+ expect(await page.locator('.csv-status').textContent()).toBe(selection)
  expect(Math.abs(await grid().evaluate(element=>element.scrollTop)-top)).toBeLessThanOrEqual(1)
  await expect(page.getByRole('textbox',{name:'Buscar en tabla'})).toHaveValue('C1')
  expect(Math.abs(await width()-docked)).toBeLessThanOrEqual(1);await expect(separator()).toHaveAttribute('aria-valuenow','520')
