@@ -47,6 +47,13 @@ async function fixture(encoding,bom){
 const oracle=(data,encoding)=>parse(iconv.decode(data,encoding).replace(/^﻿/,''),{relax_column_count:true,skip_empty_lines:false,record_delimiter:['\r\n','\n']})
 const opts=(dir,encoding)=>({journalDir:dir,every:2,encoding:encoding==='win1252'?'win1252':undefined})
 
+test('el cambio masivo permite omitir registros sin tocar el original',async()=>{
+ const {dir,path,data}=await fixture('utf8',null),output=join(dir,'extracto.csv')
+ await bulkTransform(path,output,(values,ordinal)=>ordinal===2?null:undefined)
+ assert.deepEqual(oracle(await readFile(output),'utf8'),rows.filter((_,ordinal)=>ordinal!==2))
+ assert.deepEqual(await readFile(path),data)
+})
+
 for(const [encoding,bom] of variants){
  const name=`${encoding}${bom?'+BOM':''}`
  test(`${name}: el índice y las páginas coinciden con el analizador independiente`,async()=>{
