@@ -42,13 +42,15 @@ test('«Ir a la fila»: botón y Ctrl/⌘ + G, validación, foco y Escape',async
 })
 
 test('lo que aún no existe en archivos grandes está deshabilitado y el documento no cambia',async()=>{
- const {doc,path}=await open(csv(3000)),before=await readFile(path,'utf8')
+ const {doc,path}=await open(csv(3000)),before=await readFile(path,'utf8'),bar=page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true})
  await expect(page.getByLabel('Buscar en tabla',{exact:true})).toBeDisabled()
- for(const name of ['Reemplazar','Consulta avanzada'])await expect(page.getByRole('button',{name,exact:true}),name).toBeDisabled()
- await expect(page.getByRole('button',{name:/^Filtros/})).toBeDisabled();await expect(page.getByLabel('Orden numérico',{exact:true})).toBeDisabled()
- await expect(page.getByRole('button',{name:'Ordenar columna'}).first()).toHaveCount(0) // la cabecera ya no ordena: su botón está deshabilitado
+ await expect(bar.getByRole('button',{name:'Reemplazar',exact:true})).toBeDisabled()
+ await expect(bar.getByLabel('Filtrar',{exact:true})).toHaveAttribute('aria-disabled','true')
+ await bar.getByLabel('Filtrar',{exact:true}).click();await expect(bar.locator('details[open]')).toHaveCount(0) // el menú de filtros no se abre
+ await expect(page.locator('.sort-button').first()).toBeDisabled() // la cabecera ya no ordena
  await cell(2).dblclick();await expect(page.getByLabel('Editar celda',{exact:true})).toHaveCount(0)
  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click();await expect(page.getByRole('alert')).toHaveCount(0) // sin error por pedir estadísticas
+ await bar.getByLabel('Analizar',{exact:true}).click();await expect(page.getByRole('tabpanel',{name:'Resumen'})).toContainText('aún no están disponibles en archivos grandes')
  expect(await readFile(path,'utf8')).toBe(before);expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)).toMatchObject({dirty:false,revision:0})
 })
 

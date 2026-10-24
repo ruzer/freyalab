@@ -3,6 +3,7 @@ import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
+import {numericOrder} from './panel'
 
 // Un millón de filas y una columna (unos 7 MB): por debajo de los límites de edición, pero con una altura de 32 000 040 px que un elemento de Chromium no admite.
 const ROWS=1_000_000,CHROMIUM_MAX=16_777_214
@@ -55,10 +56,10 @@ test('a mitad del recorrido las filas son contiguas, están separadas 32 px y la
 test('la selección sigue en su fila al alejarse y volver',async()=>{
  await page.locator('[role=gridcell][data-row="0"][data-column="0"]').click();await page.keyboard.press('ControlOrMeta+End')
  await expect(page.locator(`[role=gridcell][data-row="${ROWS-1}"][data-column="0"]`)).toBeFocused({timeout:15000})
- const selection=await page.locator('.selection-bar').innerText();expect(selection).toContain('1000000')
+ const selection=await page.locator('.csv-status').textContent();expect(selection).toContain('1000000')
  await scrollTo(0);await expect.poll(async()=>(await visible())[0]?.n).toBe(1)
  await scrollTo(1);await expect.poll(async()=>(await visible()).at(-1)?.n).toBe(ROWS)
- expect(await page.locator('.selection-bar').innerText()).toBe(selection)
+ expect(await page.locator('.csv-status').textContent()).toBe(selection)
  await expect(page.locator(`[role=gridcell][data-row="${ROWS-1}"][data-column="0"]`)).toHaveAttribute('aria-selected','true')
 })
 
@@ -75,10 +76,10 @@ test('una muesca de la rueda mueve las filas que dice la rueda, no miles',async(
 test('con un filtro o un orden la tabla sigue siendo correcta',async()=>{
  const expected=Array.from({length:ROWS},(_,i)=>String(i+1)).filter(n=>n.includes('99999')).length
  await page.getByLabel('Buscar en tabla',{exact:true}).fill('99999')
- await expect(page.locator('.csv-toolbar')).toContainText(`${expected.toLocaleString()} de ${ROWS.toLocaleString()} filas`,{timeout:30000})
+ await expect(page.locator('footer')).toContainText(`${expected.toLocaleString()} de ${ROWS.toLocaleString()} filas`,{timeout:30000})
  await page.getByLabel('Buscar en tabla',{exact:true}).fill('')
- await expect(page.locator('.csv-toolbar')).toContainText(`${ROWS.toLocaleString()} de ${ROWS.toLocaleString()} filas`,{timeout:30000})
- await page.getByLabel('Orden numérico',{exact:true}).check();await page.locator('.sort-button').filter({hasText:/^Id/}).click();await page.locator('.sort-button').filter({hasText:/^Id/}).click() // descendente
+ await expect(page.locator('footer')).toContainText(`${ROWS.toLocaleString()} de ${ROWS.toLocaleString()} filas`,{timeout:30000})
+ await numericOrder(page);await page.locator('.sort-button').filter({hasText:/^Id/}).click();await page.locator('.sort-button').filter({hasText:/^Id/}).click() // descendente
  await expect.poll(async()=>page.locator('[role=gridcell][data-row="0"][data-column="0"]').innerText(),{timeout:30000}).toBe(String(ROWS))
  await scrollTo(1);await expect.poll(async()=>(await visible()).at(-1)?.n).toBe(ROWS)
  await expect(page.locator('[role=gridcell][data-column="0"]').last()).toHaveText('1')

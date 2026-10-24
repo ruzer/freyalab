@@ -3,6 +3,7 @@ import electronPath from 'electron'
 import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
+import {analyzeButton} from './panel'
 let app:ElectronApplication,page:Page,directory:string
 
 test.beforeEach(async()=>{
@@ -37,7 +38,7 @@ test('iconos: la bienvenida, un CSV y un Markdown no usan glifos ni exponen los 
  await page.getByRole('tab',{name:/ventas\.csv/}).click();await expect(page.getByRole('grid')).toBeVisible()
  result=await audit();expect(result.glyphs).toEqual([]);expect(result.exposed).toBe(0);expect(result.unnamed).toBe(0)
  await expect(page.getByRole('button',{name:'Exportar',exact:true})).toBeEnabled()
- await expect(page.getByRole('button',{name:'Gráficos',exact:true}).locator('svg.icon')).toHaveCount(1)
+ await expect(analyzeButton(page).locator('svg.icon')).toHaveCount(1)
 })
 
 test('iconos: los avisos distinguen éxito y error con icono y texto, y Exportar deshabilitado no es azul',async()=>{
