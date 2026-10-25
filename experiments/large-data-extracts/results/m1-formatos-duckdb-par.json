@@ -1,0 +1,1608 @@
+{
+  "schema": 1,
+  "consulted_at": "2026-10-25T07:53:02.277868+00:00",
+  "base_sha": "22d936cb3aa8285f56747688567d89ae1a769921",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "hardware": [
+    "Apple M2 Max",
+    "34359738368"
+  ],
+  "method": "una repetición, un proceso por motor/tarea, caché caliente por SHA-256 previo, time -l RSS bytes, pared incluye arranque; verificación excluida del tiempo",
+  "versions": {
+    "python": "Python 3.15.0",
+    "node": "v24.22.1",
+    "duckdb": "v1.5.6 (Variegata) 069cc9f9b5"
+  },
+  "files": [
+    {
+      "file": "format-utf-8.csv",
+      "bytes": 671,
+      "encoding": "utf-8",
+      "sha256_before": "61ec3ff6bc76cb01c692c3f33789f9b5dfa89d12c424f96b8e3455de5befb35f",
+      "sha256_after": "61ec3ff6bc76cb01c692c3f33789f9b5dfa89d12c424f96b8e3455de5befb35f"
+    },
+    {
+      "file": "format-utf-8-sig.csv",
+      "bytes": 674,
+      "encoding": "utf-8-sig",
+      "sha256_before": "855ecfe1df933aad81387d5225eec569a243867225b68ba750707f39a8cf0526",
+      "sha256_after": "855ecfe1df933aad81387d5225eec569a243867225b68ba750707f39a8cf0526"
+    },
+    {
+      "file": "format-utf-16.csv",
+      "bytes": 1320,
+      "encoding": "utf-16",
+      "sha256_before": "1f7d6d5f715907fb1bfd5ab9c56ec1cc88f16a05a3f3d0448dcb22383bac2e7f",
+      "sha256_after": "1f7d6d5f715907fb1bfd5ab9c56ec1cc88f16a05a3f3d0448dcb22383bac2e7f"
+    },
+    {
+      "file": "format-cp1252.csv",
+      "bytes": 659,
+      "encoding": "cp1252",
+      "sha256_before": "b3392fb76bdbca0cb234329c6cd681eea54700082da179ccea17cca2bb60bcff",
+      "sha256_after": "b3392fb76bdbca0cb234329c6cd681eea54700082da179ccea17cca2bb60bcff"
+    }
+  ],
+  "results": [
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 0.03586833301233128,
+      "max_rss_bytes": 20332544,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T2",
+      "wall_seconds": 0.036554374964907765,
+      "max_rss_bytes": 20414464,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T3",
+      "wall_seconds": 0.037588292034342885,
+      "max_rss_bytes": 20447232,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 130,
+      "output_sha256": "1fbe30b2d9e09f580007c0ed2f4280dc2711291a2fdecc5d8da0bc4f48a9a426",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Python csv.writer"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T4",
+      "wall_seconds": 0.036566958006005734,
+      "max_rss_bytes": 20365312,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T5",
+      "wall_seconds": 0.03699929197318852,
+      "max_rss_bytes": 20447232,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 512,
+      "output_sha256": "6c01daa0d06e77328ff8b2543f5f1dd2f85029093bddce7b9a1a1eb6a9d2cb0a",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "aced5cf8db8b1afb5433f1606ae88034976cc1aa977d297b5a8641ff62ab1bac"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T6",
+      "wall_seconds": 0.03579624998383224,
+      "max_rss_bytes": 20267008,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 0.02057795802829787,
+      "max_rss_bytes": 24428544,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T2",
+      "wall_seconds": 0.02104529197094962,
+      "max_rss_bytes": 24723456,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T3",
+      "wall_seconds": 0.019734166970010847,
+      "max_rss_bytes": 24756224,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T4",
+      "wall_seconds": 0.02083479199791327,
+      "max_rss_bytes": 26705920,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T5",
+      "wall_seconds": 0.020543916034512222,
+      "max_rss_bytes": 25886720,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 600,
+      "output_sha256": "35ca426af592ef7093ef775811fca06ffb027c4cc9805f009a861ec626d9c3a8",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "fa67d317cdf979a8b05eb7fb86b126194cbe3f58793028d517c6df1c0e8efcf5"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T6",
+      "wall_seconds": 0.018926375021692365,
+      "max_rss_bytes": 26165248,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T1",
+      "wall_seconds": 0.019200416980311275,
+      "max_rss_bytes": 24739840,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T2",
+      "wall_seconds": 0.01885741698788479,
+      "max_rss_bytes": 24821760,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T3",
+      "wall_seconds": 0.019253125006798655,
+      "max_rss_bytes": 24920064,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T4",
+      "wall_seconds": 0.01991445804014802,
+      "max_rss_bytes": 28016640,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T5",
+      "wall_seconds": 0.019199541013222188,
+      "max_rss_bytes": 26345472,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 600,
+      "output_sha256": "35ca426af592ef7093ef775811fca06ffb027c4cc9805f009a861ec626d9c3a8",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "fa67d317cdf979a8b05eb7fb86b126194cbe3f58793028d517c6df1c0e8efcf5"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T6",
+      "wall_seconds": 0.019464084005448967,
+      "max_rss_bytes": 26705920,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 0.036437542003113776,
+      "max_rss_bytes": 20283392,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T2",
+      "wall_seconds": 0.036907333007548004,
+      "max_rss_bytes": 20430848,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T3",
+      "wall_seconds": 0.03767866699490696,
+      "max_rss_bytes": 20480000,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 133,
+      "output_sha256": "742a860a82ec886ff35b60ef984dfa2d09c9954ac825d9148a2e8c91124689b2",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Python csv.writer"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T4",
+      "wall_seconds": 0.03657145897159353,
+      "max_rss_bytes": 20430848,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T5",
+      "wall_seconds": 0.036472124978899956,
+      "max_rss_bytes": 20299776,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 515,
+      "output_sha256": "b091e134c0d6db14b12784a7d54eb7a5e4309c656fd8ae46af7ed2d6ad698ac9",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "efbbbf",
+        "output_bom_hex": "efbbbf",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "aced5cf8db8b1afb5433f1606ae88034976cc1aa977d297b5a8641ff62ab1bac"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T6",
+      "wall_seconds": 0.03694495803210884,
+      "max_rss_bytes": 20332544,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 0.019004292029421777,
+      "max_rss_bytes": 24281088,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T2",
+      "wall_seconds": 0.019265707989688963,
+      "max_rss_bytes": 25477120,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T3",
+      "wall_seconds": 0.01930400001583621,
+      "max_rss_bytes": 24854528,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T4",
+      "wall_seconds": 0.018756208010017872,
+      "max_rss_bytes": 26984448,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T5",
+      "wall_seconds": 0.01906279200920835,
+      "max_rss_bytes": 25886720,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 600,
+      "output_sha256": "35ca426af592ef7093ef775811fca06ffb027c4cc9805f009a861ec626d9c3a8",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "efbbbf",
+        "output_bom_hex": "",
+        "bom_preserved": false,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "fa67d317cdf979a8b05eb7fb86b126194cbe3f58793028d517c6df1c0e8efcf5"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T6",
+      "wall_seconds": 0.018915166961960495,
+      "max_rss_bytes": 26116096,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T1",
+      "wall_seconds": 0.01900820800801739,
+      "max_rss_bytes": 24657920,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T2",
+      "wall_seconds": 0.019037874997593462,
+      "max_rss_bytes": 24821760,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T3",
+      "wall_seconds": 0.01970708300359547,
+      "max_rss_bytes": 25018368,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T4",
+      "wall_seconds": 0.019807583012152463,
+      "max_rss_bytes": 28475392,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T5",
+      "wall_seconds": 0.01905333303147927,
+      "max_rss_bytes": 26460160,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 600,
+      "output_sha256": "35ca426af592ef7093ef775811fca06ffb027c4cc9805f009a861ec626d9c3a8",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "efbbbf",
+        "output_bom_hex": "",
+        "bom_preserved": false,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "fa67d317cdf979a8b05eb7fb86b126194cbe3f58793028d517c6df1c0e8efcf5"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T6",
+      "wall_seconds": 0.01959233300294727,
+      "max_rss_bytes": 26558464,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 0.03822504199342802,
+      "max_rss_bytes": 20398080,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T2",
+      "wall_seconds": 0.03685799997765571,
+      "max_rss_bytes": 20299776,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T3",
+      "wall_seconds": 0.0366115000215359,
+      "max_rss_bytes": 20381696,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 250,
+      "output_sha256": "e4e03c6240006c9ba3659bef85c2efe87366e5e891098f4bb65368465312427d",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-16",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Python csv.writer"
+      },
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T4",
+      "wall_seconds": 0.036679500015452504,
+      "max_rss_bytes": 20545536,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T5",
+      "wall_seconds": 0.03837516700150445,
+      "max_rss_bytes": 20398080,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 1004,
+      "output_sha256": "de04ac43d723923b8152fb30e9349016b9761d58c16b72f5fd656fcbdf423d36",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-16",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "fffe",
+        "output_bom_hex": "fffe",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "f2ba028738b45489bedeb151df117052b513c406bfe7a014a1cf7e901f3aa7d0",
+        "unchanged_output_sha256": "f83e9e51f597b1b9e0775e08c714ee0c4682be4cfcd7ba408efb72eada7b9a02"
+      },
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T6",
+      "wall_seconds": 0.03737083304440603,
+      "max_rss_bytes": 20398080,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 0.019584083987865597,
+      "max_rss_bytes": 24363008,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T2",
+      "wall_seconds": 0.019321125000715256,
+      "max_rss_bytes": 24788992,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T3",
+      "wall_seconds": 0.018756415985990316,
+      "max_rss_bytes": 24821760,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T4",
+      "wall_seconds": 0.0193774169893004,
+      "max_rss_bytes": 26755072,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T5",
+      "wall_seconds": 0.01922395796282217,
+      "max_rss_bytes": 26181632,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 600,
+      "output_sha256": "35ca426af592ef7093ef775811fca06ffb027c4cc9805f009a861ec626d9c3a8",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "fffe",
+        "output_bom_hex": "",
+        "bom_preserved": false,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "f2ba028738b45489bedeb151df117052b513c406bfe7a014a1cf7e901f3aa7d0",
+        "unchanged_output_sha256": "fa67d317cdf979a8b05eb7fb86b126194cbe3f58793028d517c6df1c0e8efcf5"
+      },
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T6",
+      "wall_seconds": 0.020105208037421107,
+      "max_rss_bytes": 26345472,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T1",
+      "wall_seconds": 0.01881062501342967,
+      "max_rss_bytes": 24838144,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T2",
+      "wall_seconds": 0.019788917037658393,
+      "max_rss_bytes": 25247744,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T3",
+      "wall_seconds": 0.019265250011812896,
+      "max_rss_bytes": 25001984,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T4",
+      "wall_seconds": 0.02005041704978794,
+      "max_rss_bytes": 28196864,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T5",
+      "wall_seconds": 0.0194181670085527,
+      "max_rss_bytes": 26509312,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 600,
+      "output_sha256": "35ca426af592ef7093ef775811fca06ffb027c4cc9805f009a861ec626d9c3a8",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "fffe",
+        "output_bom_hex": "",
+        "bom_preserved": false,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "f2ba028738b45489bedeb151df117052b513c406bfe7a014a1cf7e901f3aa7d0",
+        "unchanged_output_sha256": "fa67d317cdf979a8b05eb7fb86b126194cbe3f58793028d517c6df1c0e8efcf5"
+      },
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T6",
+      "wall_seconds": 0.019225249998271465,
+      "max_rss_bytes": 26509312,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 0.037287708022631705,
+      "max_rss_bytes": 20332544,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T2",
+      "wall_seconds": 0.037108125048689544,
+      "max_rss_bytes": 20430848,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T3",
+      "wall_seconds": 0.0372888749698177,
+      "max_rss_bytes": 20365312,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 124,
+      "output_sha256": "ba5721a22ad4c79cd753d9f61a3a2e0d29bc0e93bca3cfa56e3fbbdc2e879b3b",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "cp1252",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Python csv.writer"
+      },
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T4",
+      "wall_seconds": 0.03710241598309949,
+      "max_rss_bytes": 20414464,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T5",
+      "wall_seconds": 0.03804149996722117,
+      "max_rss_bytes": 20430848,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 501,
+      "output_sha256": "8bfcb087e00c0cd6c0913b86882c8eb3d10af7b3e8a9c4a24d7b9ff992b6975d",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "cp1252",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "88bb7fd49cf411e59a4539f945b126c51d8b729531bcd9c8981589cabeba8fca",
+        "unchanged_output_sha256": "b11b1c127f7bb9a38c50543a64fed909e27e0c8f57e6326145bb1abcd6eea33a"
+      },
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T6",
+      "wall_seconds": 0.03673295897897333,
+      "max_rss_bytes": 20299776,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 0.016880332957953215,
+      "max_rss_bytes": 19726336,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitar...\n                                                                         ^\n        0.01 real         0.01 user         0.00 sys\n            19726336  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1388  page reclaims\n                  34  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  58  involuntary context switches\n           132609097  instructions retired\n            43382223  cycles elapsed\n             5816728  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb",
+      "task": "T2",
+      "wall_seconds": 0.01575712498743087,
+      "max_rss_bytes": 19709952,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitar...\n                                                                         ^\n        0.01 real         0.00 user         0.00 sys\n            19709952  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1387  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  57  involuntary context switches\n           132365051  instructions retired\n            40617431  cycles elapsed\n             5767600  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb",
+      "task": "T3",
+      "wall_seconds": 0.016755916003603488,
+      "max_rss_bytes": 19873792,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitar...\n                                                                         ^\n        0.01 real         0.00 user         0.00 sys\n            19873792  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1398  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  55  involuntary context switches\n           132842944  instructions retired\n            44168242  cycles elapsed\n             5915056  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb",
+      "task": "T4",
+      "wall_seconds": 0.01636300003156066,
+      "max_rss_bytes": 19726336,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitar...\n                                                                         ^\n        0.01 real         0.00 user         0.00 sys\n            19726336  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1389  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  50  involuntary context switches\n           132570880  instructions retired\n            40788143  cycles elapsed\n             5751216  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb",
+      "task": "T5",
+      "wall_seconds": 0.016577624948695302,
+      "max_rss_bytes": 19709952,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitar...\n                                                                         ^\n        0.01 real         0.00 user         0.00 sys\n            19709952  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1387  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  54  involuntary context switches\n           132619349  instructions retired\n            42520817  cycles elapsed\n             5718448  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb",
+      "task": "T6",
+      "wall_seconds": 0.016423959052190185,
+      "max_rss_bytes": 19857408,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitar...\n                                                                         ^\n        0.01 real         0.00 user         0.00 sys\n            19857408  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1397  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  56  involuntary context switches\n           132932735  instructions retired\n            40680960  cycles elapsed\n             5882288  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T1",
+      "wall_seconds": 0.01641662500333041,
+      "max_rss_bytes": 20004864,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unita...\n                                                                        ^\n        0.01 real         0.00 user         0.00 sys\n            20004864  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1383  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  62  involuntary context switches\n           132726478  instructions retired\n            40594990  cycles elapsed\n             5931440  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T2",
+      "wall_seconds": 0.016544708982110023,
+      "max_rss_bytes": 20037632,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unita...\n                                                                        ^\n        0.01 real         0.00 user         0.00 sys\n            20037632  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1386  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  63  involuntary context switches\n           133543791  instructions retired\n            41792341  cycles elapsed\n             5964208  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T3",
+      "wall_seconds": 0.01615841599414125,
+      "max_rss_bytes": 20037632,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unita...\n                                                                        ^\n        0.01 real         0.00 user         0.00 sys\n            20037632  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1385  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  59  involuntary context switches\n           133014389  instructions retired\n            40980652  cycles elapsed\n             5947824  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T4",
+      "wall_seconds": 0.016712707991246134,
+      "max_rss_bytes": 19906560,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unita...\n                                                                        ^\n        0.01 real         0.00 user         0.00 sys\n            19906560  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1377  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  64  involuntary context switches\n           132900027  instructions retired\n            42518477  cycles elapsed\n             5833136  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T5",
+      "wall_seconds": 0.01585437502944842,
+      "max_rss_bytes": 20054016,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unita...\n                                                                        ^\n        0.01 real         0.00 user         0.00 sys\n            20054016  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1386  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  65  involuntary context switches\n           132776253  instructions retired\n            41293809  cycles elapsed\n             5964208  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T6",
+      "wall_seconds": 0.017224041977897286,
+      "max_rss_bytes": 19922944,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unita...\n                                                                        ^\n        0.01 real         0.00 user         0.00 sys\n            19922944  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1378  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  67  involuntary context switches\n           134432539  instructions retired\n            43541825  cycles elapsed\n             5849520  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    }
+  ],
+  "script_sha256": {
+    "large-data-extracts/benchmark.py": "ac327fef9c9a0e74a9b84cc4ad4ca4fed3fae7fb59b0e21b42524c8c7c9e450c",
+    "large-data-extracts/common.py": "5ad5281ba9a33d55fe20671b85dc16aaf824f79f79643cfe0cfb01fb6d141224",
+    "large-data-extracts/generate_sales.py": "5d194171ba12c6aabfba10aa3a5b7f3a0e5e78ffa2c642718b48e5ec4a128cf7",
+    "large-data-extracts/m1_engines.py": "25c393d872955c8e277287f79d322936845b729ccda410e84d51991903786f04",
+    "large-data-extracts/node_worker.mjs": "b2a30523a7bea1d5cc0765c696380e8095049c54037e727b164a7da59a852101",
+    "large-data-extracts/polars_node_worker.mjs": "b6b31ab73760fbeb72e9b56012d5fefb138e58c70db0369acd5fb8174414ac2e",
+    "large-data-extracts/polars_worker.py": "ecd162f76044de6dcb8f0f936727bfe8742e96d1a239c4169c8f57832f080201",
+    "large-data-extracts/probe_edges.py": "c7bc564523a056eb066aaee94d54c394db3eb2c9ff14b6fd3c18d36b31efe432",
+    "large-data-extracts/probe_m1_integrity.py": "21266cb92c290a411b9275cc8ee7a59ac6b040ff34237109349b5f4035cfc235",
+    "large-data-extracts/probe_m1_resources.py": "7a90395b59e14fd02b9ba25a5cfb0b4a11ac1d25e2690b70cd5a026a50800c54",
+    "large-data-extracts/python_worker.py": "3869a221ef6917347f41920811d2743549dee227563492c465e0cdc500727c57",
+    "large-data-extracts/test_experiment.py": "90ea2fc79cb02b8329bbd9d26111676583c9d186765fc978d926f5dde5356d71",
+    "large-file-editor/lib/document.mjs": "ba3e9fa59fbf67747d011a458c2828e0b8852c8ad44a9523f015840c051a733c",
+    "large-file-editor/lib/fields.mjs": "434458c907b58978adccc1bb6b1cee510820940a1fba28835ff14dfba01b980b",
+    "large-file-editor/lib/record-index.mjs": "7a3f645e5a11236b07de15ca543b6c4d438989204b62c9c572dac802ecd98b25"
+  },
+  "engines": [
+    "python",
+    "duckdb",
+    "duckdb-par"
+  ],
+  "binaries_sha256": {}
+}

@@ -14,10 +14,10 @@ import platform
 import sys
 from pathlib import Path
 
-from benchmark import HERE, execute
+from benchmark import E0_ENGINES, HERE, execute
+from m1_engines import M1_ENGINES
 from common import PROJECT, fidelity, file_hash, rows, value_hash
 
-ENGINES = ['python', 'node', 'duckdb', 'pandas']
 DEFAULT_HEADER = Path('/private/tmp/FreyaLab-pruebas/ventas_10MiB.csv')
 
 
@@ -96,7 +96,10 @@ def assess(case, result, output):
                          'error tokenizing data', 'error when sniffing file',
                          'unexpected end of data', 'unterminated', 'unclosed quoted',
                          'unicodedecodeerror:', 'truncated data', 'could not decode',
-                         'invalid unicode', 'invalid utf-16', 'invalid utf16']
+                         'invalid unicode', 'invalid utf-16', 'invalid utf16',
+                         # M1: mensajes de qsv, Miller y Polars
+                         'csv error', 'length mismatch', 'unmatched double quote', 'found record with', 'incorrect number of fields',
+                         'computeerror', 'valid utf-8', 'valid utf8', 'invalid utf-8', 'encoding error', 'utf-8']
         recognized = status == 'error' and any(marker in error for marker in parse_markers)
         return {'expected': 'rechazar el CSV malformado o los bytes UTF-16 incompletos',
                 'correct_rejection_observed': recognized,
@@ -119,7 +122,7 @@ def assess(case, result, output):
             observed['values_match_expected'] = observed['values_sha256'] == case['oracle']['values_sha256']
             if 'fidelity' not in result:
                 observed['fidelity'] = fidelity(case['source'], output, case['encoding'], encoding)
-        except (csv.Error, UnicodeError, OSError, ValueError) as error:
+        except (csv.Error, UnicodeError, OSError, ValueError, StopIteration) as error:
             observed['output_validation_error'] = f'{type(error).__name__}: {error}'
     observed['guarantee_met'] = (status == 'measured' and observed['arity_preserved'] is True
                                  and observed['values_match_expected'] is True
@@ -147,10 +150,11 @@ def run(args):
               'platform': platform.platform(), 'machine': platform.machine(),
               'header_source': str(source_header), 'header_source_sha256_before': header_sha,
               'executables': {name: str(value) for name, value in vars(args).items()
-                              if name in ['python', 'pandas_python', 'node', 'duckdb']},
+                              if name in ['python', 'pandas_python', 'node', 'duckdb', 'qsv', 'qsvlite', 'miller', 'polars_python', 'polars_node_dir']},
               'script_sha256': {path.name: file_hash(path) for path in
                                 [Path(__file__).resolve(), HERE / 'benchmark.py', HERE / 'common.py',
-                                 HERE / 'python_worker.py', HERE / 'node_worker.mjs']},
+                                 HERE / 'python_worker.py', HERE / 'node_worker.mjs', HERE / 'm1_engines.py',
+                                 HERE / 'polars_worker.py', HERE / 'polars_node_worker.mjs']},
               'method': 'fixtures sintéticos; execute reutilizado; UTF-16 impar limitado a 2s y grupo de procesos terminado si expira; tiempos son observaciones, no comparativa de rendimiento',
               'known_limitations_to_check': [
                   'pandas puede rellenar posiciones ausentes y perder aridad aunque dtype sea texto',
@@ -172,7 +176,7 @@ def run(args):
                      'task': case['task'], 'bytes': case['source'].stat().st_size,
                      'sha256_before': original, 'oracle': case['oracle']}
             report['fixtures'].append(entry)
-            for engine in ENGINES:
+            for engine in args.engines:
                 output = outputs / f'{case["name"]}-{engine}-{case["task"]}.csv'
                 execution_args = argparse.Namespace(**vars(args))
                 if case['name'] == 'utf16_odd':
@@ -199,7 +203,7 @@ def run(args):
     finally:
         report['header_source_sha256_after'] = file_hash(source_header)
         report['header_source_unchanged'] = report['header_source_sha256_after'] == header_sha
-        report['all_probes_completed'] = len(report['results']) == 3 * len(ENGINES)
+        report['all_probes_completed'] = len(report['results']) == 3 * len(args.engines)
         report['all_guarantees_met'] = (report['all_probes_completed'] and report['header_source_unchanged']
                                         and all(item['probe']['guarantee_met'] for item in report['results'])
                                         and all(item.get('original_sha256_unchanged', False)
@@ -215,11 +219,23 @@ if __name__ == '__main__':
     parser.add_argument('--micro', action='store_true', help='Compatibilidad con benchmark.py: estos fixtures siempre son micro.')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--python', default=sys.executable)
-    parser.add_argument('--pandas-python', required=True)
+    parser.add_argument('--pandas-python')
+    parser.add_argument('--engines', default=','.join(E0_ENGINES))
+    parser.add_argument('--qsv')
+    parser.add_argument('--qsvlite')
+    parser.add_argument('--miller')
+    parser.add_argument('--polars-python')
+    parser.add_argument('--polars-node-dir')
     parser.add_argument('--node', required=True)
     parser.add_argument('--duckdb', default='/opt/homebrew/bin/duckdb')
     parser.add_argument('--timeout', type=float, default=900)
     args = parser.parse_args()
+    args.engines = args.engines.split(',')
+    needs = {'pandas': args.pandas_python, 'qsv': args.qsv, 'qsvlite': args.qsvlite, 'miller': args.miller, 'polars': args.polars_python, 'polars-node': args.polars_node_dir}
+    unknown = set(args.engines) - set(E0_ENGINES) - set(M1_ENGINES) - {'duckdb-mt', 'duckdb-par'}
+    missing = [name for name in args.engines if name in needs and not needs[name]]
+    if unknown or missing:
+        parser.error(f'Motores no válidos {sorted(unknown)} o sin ruta {missing}.')
     if len(args.files) > 1:
         parser.error('Se admite una sola fuente de encabezado; los tres casos son fixtures sintéticos.')
     if not math.isfinite(args.timeout) or args.timeout <= 0:

@@ -1,0 +1,4176 @@
+{
+  "schema": 1,
+  "consulted_at": "2026-10-25T07:18:17.184701+00:00",
+  "base_sha": "22d936cb3aa8285f56747688567d89ae1a769921",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "hardware": [
+    "Apple M2 Max",
+    "34359738368"
+  ],
+  "method": "una repetición, un proceso por motor/tarea, caché caliente por SHA-256 previo, time -l RSS bytes, pared incluye arranque; verificación excluida del tiempo",
+  "versions": {
+    "python": "Python 3.15.0",
+    "node": "v24.22.1",
+    "duckdb": "v1.5.6 (Variegata) 069cc9f9b5",
+    "qsv": "qsv 26.0.0-jemalloc-apply;fetch;foreach;geocode;Luau 0.740;magika;to;viz;viz_static;polars-0.55.1:py-2.0.0:b951cd7;self_update-12-12;25.60 GiB-1.15 GiB-25.55 GiB-32.00 GiB (aarch64-apple-darwin compiled with Rust 1.99;macOS 27.0.1-Darwin 27.0.0;Apple M2 Max-12) prebuilt-pgo",
+    "qsvlite": "qsvlite 26.0.0-jemalloc-self_update-12-12;25.60 GiB-1.15 GiB-25.55 GiB-32.00 GiB (aarch64-apple-darwin compiled with Rust 1.99;macOS 27.0.1-Darwin 27.0.0;Apple M2 Max-12) prebuilt",
+    "miller": "mlr 6.22.0",
+    "polars": "3.12.15 2.0.0",
+    "polars-node": "0.26.1"
+  },
+  "files": [
+    {
+      "file": "ventas_100MiB.csv",
+      "bytes": 104878987,
+      "encoding": "utf-8",
+      "sha256_before": "826c9d2a98639425e02a09df97d909671bfd67ee4851f8c4f79aa046990d6a9d",
+      "sha256_after": "826c9d2a98639425e02a09df97d909671bfd67ee4851f8c4f79aa046990d6a9d"
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "bytes": 1073832889,
+      "encoding": "utf-8",
+      "sha256_before": "c6e427b9fda544b580e049855086427b2472c55f4b96ac61c511abc5ffdb31a5",
+      "sha256_after": "c6e427b9fda544b580e049855086427b2472c55f4b96ac61c511abc5ffdb31a5"
+    }
+  ],
+  "results": [
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 0.9914978329907171,
+      "max_rss_bytes": 20250624,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.95,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T2",
+      "wall_seconds": 1.0265953749767505,
+      "max_rss_bytes": 20234240,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.99,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T3",
+      "wall_seconds": 1.1689287080080248,
+      "max_rss_bytes": 20414464,
+      "exit_code": 0,
+      "cpu_user_seconds": 1.13,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4766906,
+      "output_sha256": "c0651db9ee5db248e518c2796953e22f2b91aa0c28314b10768402b0f95671de",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Python csv.writer"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T4",
+      "wall_seconds": 1.6456121670198627,
+      "max_rss_bytes": 20398080,
+      "exit_code": 0,
+      "cpu_user_seconds": 1.61,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T5",
+      "wall_seconds": 2.2419896670035087,
+      "max_rss_bytes": 20430848,
+      "exit_code": 0,
+      "cpu_user_seconds": 2.19,
+      "cpu_sys_seconds": 0.03,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104767501,
+      "output_sha256": "c1555a527b1b90ab9ec61523965b911976e705bbce4d2e78f76c63ce06fb69be",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T6",
+      "wall_seconds": 1.2362041249871254,
+      "max_rss_bytes": 20299776,
+      "exit_code": 0,
+      "cpu_user_seconds": 1.2,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T1",
+      "wall_seconds": 0.258242915966548,
+      "max_rss_bytes": 141639680,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.25,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T2",
+      "wall_seconds": 0.5883390000090003,
+      "max_rss_bytes": 141836288,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.58,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T3",
+      "wall_seconds": 1.005778041027952,
+      "max_rss_bytes": 198311936,
+      "exit_code": 0,
+      "cpu_user_seconds": 1.08,
+      "cpu_sys_seconds": 0.04,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4766906,
+      "output_sha256": "c0651db9ee5db248e518c2796953e22f2b91aa0c28314b10768402b0f95671de",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "PoC bulkTransform; campos proyectados serializados"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T4",
+      "wall_seconds": 0.6633043339825235,
+      "max_rss_bytes": 142180352,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.66,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T5",
+      "wall_seconds": 1.0828472499852069,
+      "max_rss_bytes": 271319040,
+      "exit_code": 0,
+      "cpu_user_seconds": 1.15,
+      "cpu_sys_seconds": 0.06,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104767501,
+      "output_sha256": "c1555a527b1b90ab9ec61523965b911976e705bbce4d2e78f76c63ce06fb69be",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T6",
+      "wall_seconds": 1.1778006249805912,
+      "max_rss_bytes": 142196736,
+      "exit_code": 0,
+      "cpu_user_seconds": 1.18,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 0.33026295801391825,
+      "max_rss_bytes": 129974272,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.3,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T2",
+      "wall_seconds": 0.343455916037783,
+      "max_rss_bytes": 129990656,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.31,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T3",
+      "wall_seconds": 0.3697859999956563,
+      "max_rss_bytes": 130367488,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.34,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4654672,
+      "output_sha256": "fb3d3498725d5c2cdf83d43e9fa6beb6fe795a4e757834ffd08f1939a5cc9234",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T4",
+      "wall_seconds": 0.6881639580242336,
+      "max_rss_bytes": 132235264,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.66,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T5",
+      "wall_seconds": 0.8084286660305224,
+      "max_rss_bytes": 133431296,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.76,
+      "cpu_sys_seconds": 0.03,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104468950,
+      "output_sha256": "57c0f8d8cb4d9fc457e7b3988153af48d6059d9c5c8b3ae1e2b638bab3be41cb",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "967d7a9cc71ec66c46e55ef172dbb18e544563aa8b2d673887239405b4cc364a"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T6",
+      "wall_seconds": 0.5065530409920029,
+      "max_rss_bytes": 132448256,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.48,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-mt",
+      "task": "T1",
+      "wall_seconds": 0.33467833301983774,
+      "max_rss_bytes": 130383872,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.59,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-mt",
+      "task": "T2",
+      "wall_seconds": 0.3399581669946201,
+      "max_rss_bytes": 130629632,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.31,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-mt",
+      "task": "T3",
+      "wall_seconds": 0.36700562498299405,
+      "max_rss_bytes": 141312000,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.34,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4654672,
+      "output_sha256": "fb3d3498725d5c2cdf83d43e9fa6beb6fe795a4e757834ffd08f1939a5cc9234",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-mt",
+      "task": "T4",
+      "wall_seconds": 0.6983781660092063,
+      "max_rss_bytes": 133906432,
+      "exit_code": 0,
+      "cpu_user_seconds": 1.32,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-mt",
+      "task": "T5",
+      "wall_seconds": 0.8732736670062877,
+      "max_rss_bytes": 448217088,
+      "exit_code": 0,
+      "cpu_user_seconds": 1.17,
+      "cpu_sys_seconds": 0.05,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104468950,
+      "output_sha256": "57c0f8d8cb4d9fc457e7b3988153af48d6059d9c5c8b3ae1e2b638bab3be41cb",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "967d7a9cc71ec66c46e55ef172dbb18e544563aa8b2d673887239405b4cc364a"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-mt",
+      "task": "T6",
+      "wall_seconds": 0.5161443749675527,
+      "max_rss_bytes": 136904704,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.96,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T1",
+      "wall_seconds": 0.06070154201006517,
+      "max_rss_bytes": 151601152,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        151601152
+      ],
+      "cpu_user_seconds": 0.2,
+      "cpu_sys_seconds": 0.04,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T2",
+      "wall_seconds": 0.17175183299696073,
+      "max_rss_bytes": 22659072,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        22609920,
+        22659072
+      ],
+      "cpu_user_seconds": 0.16,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T3",
+      "wall_seconds": 0.19597633299417794,
+      "max_rss_bytes": 22626304,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        22200320,
+        22626304,
+        22577152
+      ],
+      "cpu_user_seconds": 0.19,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4654672,
+      "output_sha256": "fb3d3498725d5c2cdf83d43e9fa6beb6fe795a4e757834ffd08f1939a5cc9234",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "qsv (escritor CSV de Rust)"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T4",
+      "wall_seconds": 0.060374958033207804,
+      "max_rss_bytes": 164478976,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        164478976
+      ],
+      "cpu_user_seconds": 0.31,
+      "cpu_sys_seconds": 0.03,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T5",
+      "wall_seconds": 0.4081202499801293,
+      "max_rss_bytes": 22642688,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        22642688
+      ],
+      "cpu_user_seconds": 0.38,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104319500,
+      "output_sha256": "09eab9cee681a49c10dbc550d79fa6ce45e04bd5d5800a77068d9fd9df01251a",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "2ba7d7ac98b0b51f33d29e8cda8c2b1d75940f1b8c6a446e85d200bb412327d8",
+        "normalized_by": "qsv (escritor CSV de Rust)"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T6",
+      "wall_seconds": 0.1804585829959251,
+      "max_rss_bytes": 22626304,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        22626304
+      ],
+      "cpu_user_seconds": 0.16,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T1",
+      "wall_seconds": 0.09515358397038653,
+      "max_rss_bytes": 13467648,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        13467648
+      ],
+      "cpu_user_seconds": 0.08,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T2",
+      "wall_seconds": 0.16881383303552866,
+      "max_rss_bytes": 14401536,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        14401536,
+        14385152
+      ],
+      "cpu_user_seconds": 0.16,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T3",
+      "wall_seconds": 0.1952278750250116,
+      "max_rss_bytes": 14401536,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        14123008,
+        14401536,
+        14368768
+      ],
+      "cpu_user_seconds": 0.19,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4654672,
+      "output_sha256": "fb3d3498725d5c2cdf83d43e9fa6beb6fe795a4e757834ffd08f1939a5cc9234",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "qsvlite (escritor CSV de Rust)"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T4",
+      "wall_seconds": 0.0,
+      "max_rss_bytes": null,
+      "exit_code": null,
+      "status": "unsupported",
+      "error": "qsvlite no incluye sqlp ni ningún verbo de agrupación con suma.",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8"
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T5",
+      "wall_seconds": 0.4163950000074692,
+      "max_rss_bytes": 14483456,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        14483456
+      ],
+      "cpu_user_seconds": 0.39,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104319500,
+      "output_sha256": "09eab9cee681a49c10dbc550d79fa6ce45e04bd5d5800a77068d9fd9df01251a",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "2ba7d7ac98b0b51f33d29e8cda8c2b1d75940f1b8c6a446e85d200bb412327d8",
+        "normalized_by": "qsvlite (escritor CSV de Rust)"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T6",
+      "wall_seconds": 0.17280412500258535,
+      "max_rss_bytes": 14336000,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        14336000
+      ],
+      "cpu_user_seconds": 0.15,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T1",
+      "wall_seconds": 0.5315564579796046,
+      "max_rss_bytes": 919961600,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        919961600
+      ],
+      "cpu_user_seconds": 0.81,
+      "cpu_sys_seconds": 0.1,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T2",
+      "wall_seconds": 0.5348970420309342,
+      "max_rss_bytes": 825425920,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        825425920
+      ],
+      "cpu_user_seconds": 0.89,
+      "cpu_sys_seconds": 0.1,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T3",
+      "wall_seconds": 0.5423397499835119,
+      "max_rss_bytes": 940802048,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        940802048
+      ],
+      "cpu_user_seconds": 0.95,
+      "cpu_sys_seconds": 0.12,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4654672,
+      "output_sha256": "fb3d3498725d5c2cdf83d43e9fa6beb6fe795a4e757834ffd08f1939a5cc9234",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Miller (escritor CSV de Go)"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T4",
+      "wall_seconds": 0.6393565000034869,
+      "max_rss_bytes": 959348736,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        959348736
+      ],
+      "cpu_user_seconds": 1.51,
+      "cpu_sys_seconds": 0.13,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T5",
+      "wall_seconds": 0.5707001250120811,
+      "max_rss_bytes": 890208256,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        890208256
+      ],
+      "cpu_user_seconds": 1.74,
+      "cpu_sys_seconds": 0.27,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104319500,
+      "output_sha256": "09eab9cee681a49c10dbc550d79fa6ce45e04bd5d5800a77068d9fd9df01251a",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "2ba7d7ac98b0b51f33d29e8cda8c2b1d75940f1b8c6a446e85d200bb412327d8",
+        "normalized_by": "Miller (escritor CSV de Go)"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T6",
+      "wall_seconds": 1.65006179100601,
+      "max_rss_bytes": 1094451200,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1094451200
+      ],
+      "cpu_user_seconds": 2.72,
+      "cpu_sys_seconds": 0.17,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller-1t",
+      "task": "T1",
+      "wall_seconds": 0.5318467080360278,
+      "max_rss_bytes": 843497472,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        843497472
+      ],
+      "cpu_user_seconds": 0.83,
+      "cpu_sys_seconds": 0.09,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller-1t",
+      "task": "T2",
+      "wall_seconds": 0.5344601660035551,
+      "max_rss_bytes": 855769088,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        855769088
+      ],
+      "cpu_user_seconds": 0.9,
+      "cpu_sys_seconds": 0.09,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller-1t",
+      "task": "T3",
+      "wall_seconds": 0.5410642079659738,
+      "max_rss_bytes": 820133888,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        820133888
+      ],
+      "cpu_user_seconds": 0.97,
+      "cpu_sys_seconds": 0.11,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4654672,
+      "output_sha256": "fb3d3498725d5c2cdf83d43e9fa6beb6fe795a4e757834ffd08f1939a5cc9234",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Miller (escritor CSV de Go)"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller-1t",
+      "task": "T4",
+      "wall_seconds": 0.6378487079637125,
+      "max_rss_bytes": 932904960,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        932904960
+      ],
+      "cpu_user_seconds": 1.51,
+      "cpu_sys_seconds": 0.12,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller-1t",
+      "task": "T5",
+      "wall_seconds": 0.577716416970361,
+      "max_rss_bytes": 970866688,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        970866688
+      ],
+      "cpu_user_seconds": 1.76,
+      "cpu_sys_seconds": 0.27,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104319500,
+      "output_sha256": "09eab9cee681a49c10dbc550d79fa6ce45e04bd5d5800a77068d9fd9df01251a",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "2ba7d7ac98b0b51f33d29e8cda8c2b1d75940f1b8c6a446e85d200bb412327d8",
+        "normalized_by": "Miller (escritor CSV de Go)"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller-1t",
+      "task": "T6",
+      "wall_seconds": 1.6548339169821702,
+      "max_rss_bytes": 1085669376,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1085669376
+      ],
+      "cpu_user_seconds": 2.75,
+      "cpu_sys_seconds": 0.15,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T1",
+      "wall_seconds": 0.11120666703209281,
+      "max_rss_bytes": 171409408,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        171409408
+      ],
+      "cpu_user_seconds": 0.09,
+      "cpu_sys_seconds": 0.04,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T2",
+      "wall_seconds": 0.13845204201061279,
+      "max_rss_bytes": 274104320,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        274104320
+      ],
+      "cpu_user_seconds": 0.24,
+      "cpu_sys_seconds": 0.03,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T3",
+      "wall_seconds": 0.14137604099232703,
+      "max_rss_bytes": 292732928,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        292732928
+      ],
+      "cpu_user_seconds": 0.26,
+      "cpu_sys_seconds": 0.04,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4766906,
+      "output_sha256": "c0651db9ee5db248e518c2796953e22f2b91aa0c28314b10768402b0f95671de",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Polars sink_csv"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T4",
+      "wall_seconds": 0.13716933300020173,
+      "max_rss_bytes": 280756224,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        280756224
+      ],
+      "cpu_user_seconds": 0.25,
+      "cpu_sys_seconds": 0.04,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T5",
+      "wall_seconds": 0.16370970802381635,
+      "max_rss_bytes": 400326656,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        400326656
+      ],
+      "cpu_user_seconds": 0.57,
+      "cpu_sys_seconds": 0.07,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104767501,
+      "output_sha256": "c1555a527b1b90ab9ec61523965b911976e705bbce4d2e78f76c63ce06fb69be",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "normalized_by": "Polars sink_csv"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T6",
+      "wall_seconds": 0.15415995800867677,
+      "max_rss_bytes": 357171200,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        357171200
+      ],
+      "cpu_user_seconds": 0.39,
+      "cpu_sys_seconds": 0.05,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-1t",
+      "task": "T1",
+      "wall_seconds": 0.11177554103778675,
+      "max_rss_bytes": 162709504,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        162709504
+      ],
+      "cpu_user_seconds": 0.08,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-1t",
+      "task": "T2",
+      "wall_seconds": 0.2423977919970639,
+      "max_rss_bytes": 173391872,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        173391872
+      ],
+      "cpu_user_seconds": 0.21,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-1t",
+      "task": "T3",
+      "wall_seconds": 0.26248012500582263,
+      "max_rss_bytes": 175161344,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        175161344
+      ],
+      "cpu_user_seconds": 0.23,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4766906,
+      "output_sha256": "c0651db9ee5db248e518c2796953e22f2b91aa0c28314b10768402b0f95671de",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Polars sink_csv"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-1t",
+      "task": "T4",
+      "wall_seconds": 0.25427445804234594,
+      "max_rss_bytes": 173408256,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        173408256
+      ],
+      "cpu_user_seconds": 0.22,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-1t",
+      "task": "T5",
+      "wall_seconds": 0.49385995900956914,
+      "max_rss_bytes": 200982528,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        200982528
+      ],
+      "cpu_user_seconds": 0.45,
+      "cpu_sys_seconds": 0.03,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104767501,
+      "output_sha256": "c1555a527b1b90ab9ec61523965b911976e705bbce4d2e78f76c63ce06fb69be",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "normalized_by": "Polars sink_csv"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-1t",
+      "task": "T6",
+      "wall_seconds": 0.34654591704020277,
+      "max_rss_bytes": 182321152,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        182321152
+      ],
+      "cpu_user_seconds": 0.31,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T1",
+      "wall_seconds": 0.0543754170066677,
+      "max_rss_bytes": 172507136,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        172507136
+      ],
+      "cpu_user_seconds": 0.05,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T2",
+      "wall_seconds": 0.07865099998889491,
+      "max_rss_bytes": 219742208,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        219742208
+      ],
+      "cpu_user_seconds": 0.2,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T3",
+      "wall_seconds": 0.08275329205207527,
+      "max_rss_bytes": 242876416,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        242876416
+      ],
+      "cpu_user_seconds": 0.24,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4766906,
+      "output_sha256": "c0651db9ee5db248e518c2796953e22f2b91aa0c28314b10768402b0f95671de",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "nodejs-polars sinkCSV"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T4",
+      "wall_seconds": 0.10507312504341826,
+      "max_rss_bytes": 247611392,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        247611392
+      ],
+      "cpu_user_seconds": 0.22,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T5",
+      "wall_seconds": 0.11101258400594816,
+      "max_rss_bytes": 355975168,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        355975168
+      ],
+      "cpu_user_seconds": 0.52,
+      "cpu_sys_seconds": 0.05,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104767501,
+      "output_sha256": "c1555a527b1b90ab9ec61523965b911976e705bbce4d2e78f76c63ce06fb69be",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "normalized_by": "nodejs-polars sinkCSV"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T6",
+      "wall_seconds": 0.09767862502485514,
+      "max_rss_bytes": 369328128,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        369328128
+      ],
+      "cpu_user_seconds": 0.36,
+      "cpu_sys_seconds": 0.03,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node-1t",
+      "task": "T1",
+      "wall_seconds": 0.059701250051148236,
+      "max_rss_bytes": 171556864,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        171556864
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node-1t",
+      "task": "T2",
+      "wall_seconds": 0.19303379097254947,
+      "max_rss_bytes": 185843712,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        185843712
+      ],
+      "cpu_user_seconds": 0.17,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node-1t",
+      "task": "T3",
+      "wall_seconds": 0.2156052920036018,
+      "max_rss_bytes": 193052672,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        193052672
+      ],
+      "cpu_user_seconds": 0.2,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 112233
+      },
+      "status": "measured",
+      "result_sha256": "93c9841999de81245867c6d15bbba7b7d46610be6964a01ae56192f5bea96d27",
+      "output_bytes": 4766906,
+      "output_sha256": "c0651db9ee5db248e518c2796953e22f2b91aa0c28314b10768402b0f95671de",
+      "values_sha256": "f0b18d669ca6d318ac4ba08b4fd3449b7f457f809ee8c74d03e26a4e43389a99",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "nodejs-polars sinkCSV"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node-1t",
+      "task": "T4",
+      "wall_seconds": 0.2070304580265656,
+      "max_rss_bytes": 208076800,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        208076800
+      ],
+      "cpu_user_seconds": 0.19,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 448000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 112172,
+            "sum_cents": "910767945960"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 111486,
+            "sum_cents": "902175793770"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 112233,
+            "sum_cents": "912471784410"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 112109,
+            "sum_cents": "906286790270"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "8d9c972a0a5a4ff8f1f0dd68d218340750c55a59e37a987da15f7c8027166a65",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node-1t",
+      "task": "T5",
+      "wall_seconds": 0.44005650002509356,
+      "max_rss_bytes": 222380032,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        222380032
+      ],
+      "cpu_user_seconds": 0.42,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 448000
+      },
+      "status": "measured",
+      "result_sha256": "f914df6aa3def85b7f5115c1125fe648c2c64c8e0f4576951281db9bd78199be",
+      "output_bytes": 104767501,
+      "output_sha256": "c1555a527b1b90ab9ec61523965b911976e705bbce4d2e78f76c63ce06fb69be",
+      "values_sha256": "013a171523703b5572c797f5b6a87c0ff7dff11f0e3a78a59c49b99fbbe01a55",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 336515,
+        "changed_records": 111486,
+        "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "unchanged_output_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+        "normalized_by": "nodejs-polars sinkCSV"
+      },
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node-1t",
+      "task": "T6",
+      "wall_seconds": 0.30997858295449987,
+      "max_rss_bytes": 275759104,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        275759104
+      ],
+      "cpu_user_seconds": 0.29,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 74257
+      },
+      "status": "measured",
+      "result_sha256": "89f295af2e80e4479e68bfeaf44c1450958703bc8d4b8239f337faf9221e19c1",
+      "file": "ventas_100MiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 10.061686707951594,
+      "max_rss_bytes": 20398080,
+      "exit_code": 0,
+      "cpu_user_seconds": 9.87,
+      "cpu_sys_seconds": 0.17,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T2",
+      "wall_seconds": 10.40356912498828,
+      "max_rss_bytes": 20299776,
+      "exit_code": 0,
+      "cpu_user_seconds": 10.21,
+      "cpu_sys_seconds": 0.18,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T3",
+      "wall_seconds": 11.616573792009149,
+      "max_rss_bytes": 20168704,
+      "exit_code": 0,
+      "cpu_user_seconds": 11.42,
+      "cpu_sys_seconds": 0.18,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 48751376,
+      "output_sha256": "ca98b9e07f63a3072f3d32887d1bdf932917fc87aef3dcf6f51c593760051b75",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Python csv.writer"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T4",
+      "wall_seconds": 16.480387250019703,
+      "max_rss_bytes": 20103168,
+      "exit_code": 0,
+      "cpu_user_seconds": 16.29,
+      "cpu_sys_seconds": 0.17,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T5",
+      "wall_seconds": 22.997375540959183,
+      "max_rss_bytes": 20299776,
+      "exit_code": 0,
+      "cpu_user_seconds": 22.65,
+      "cpu_sys_seconds": 0.3,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1072687805,
+      "output_sha256": "aa54fc7ff2745f055a8e89bf10dfb5f3261defa4a09c33fe865665003acb419a",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T6",
+      "wall_seconds": 12.547273250005674,
+      "max_rss_bytes": 20316160,
+      "exit_code": 0,
+      "cpu_user_seconds": 12.36,
+      "cpu_sys_seconds": 0.17,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T1",
+      "wall_seconds": 1.805870332987979,
+      "max_rss_bytes": 200458240,
+      "exit_code": 0,
+      "cpu_user_seconds": 1.68,
+      "cpu_sys_seconds": 0.16,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T2",
+      "wall_seconds": 5.623630791029427,
+      "max_rss_bytes": 232439808,
+      "exit_code": 0,
+      "cpu_user_seconds": 5.6,
+      "cpu_sys_seconds": 0.17,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T3",
+      "wall_seconds": 9.200211166986264,
+      "max_rss_bytes": 340164608,
+      "exit_code": 0,
+      "cpu_user_seconds": 9.25,
+      "cpu_sys_seconds": 0.24,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 48751376,
+      "output_sha256": "ca98b9e07f63a3072f3d32887d1bdf932917fc87aef3dcf6f51c593760051b75",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "PoC bulkTransform; campos proyectados serializados"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T4",
+      "wall_seconds": 6.535095583007205,
+      "max_rss_bytes": 232816640,
+      "exit_code": 0,
+      "cpu_user_seconds": 6.51,
+      "cpu_sys_seconds": 0.18,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T5",
+      "wall_seconds": 10.30113983398769,
+      "max_rss_bytes": 275988480,
+      "exit_code": 0,
+      "cpu_user_seconds": 10.83,
+      "cpu_sys_seconds": 0.39,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1072687805,
+      "output_sha256": "aa54fc7ff2745f055a8e89bf10dfb5f3261defa4a09c33fe865665003acb419a",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T6",
+      "wall_seconds": 11.499814957962371,
+      "max_rss_bytes": 232964096,
+      "exit_code": 0,
+      "cpu_user_seconds": 11.48,
+      "cpu_sys_seconds": 0.18,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 2.985297165985685,
+      "max_rss_bytes": 505528320,
+      "exit_code": 0,
+      "cpu_user_seconds": 2.83,
+      "cpu_sys_seconds": 0.14,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T2",
+      "wall_seconds": 3.096828292007558,
+      "max_rss_bytes": 505577472,
+      "exit_code": 0,
+      "cpu_user_seconds": 2.94,
+      "cpu_sys_seconds": 0.14,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T3",
+      "wall_seconds": 3.4326195839676075,
+      "max_rss_bytes": 505905152,
+      "exit_code": 0,
+      "cpu_user_seconds": 3.26,
+      "cpu_sys_seconds": 0.16,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 47604568,
+      "output_sha256": "0fd514be341e70c4ceff5b3de7ea585d30f16d36ba103cc5ffaa0865c362b0ee",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T4",
+      "wall_seconds": 6.648444042017218,
+      "max_rss_bytes": 507805696,
+      "exit_code": 0,
+      "cpu_user_seconds": 6.47,
+      "cpu_sys_seconds": 0.17,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T5",
+      "wall_seconds": 7.806076583045069,
+      "max_rss_bytes": 523796480,
+      "exit_code": 0,
+      "cpu_user_seconds": 7.52,
+      "cpu_sys_seconds": 0.25,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1069630630,
+      "output_sha256": "7727f9d6a6f6f379ab7848012217c406d119099839e1bbd015a1fbca49a841ff",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "e357a09765c6569fe636f506de2c21118127cb36a1171796064316aa878753d5"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T6",
+      "wall_seconds": 4.810736459039617,
+      "max_rss_bytes": 522780672,
+      "exit_code": 0,
+      "cpu_user_seconds": 4.65,
+      "cpu_sys_seconds": 0.15,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-mt",
+      "task": "T1",
+      "wall_seconds": 3.040179207979236,
+      "max_rss_bytes": 1100267520,
+      "exit_code": 0,
+      "cpu_user_seconds": 5.85,
+      "cpu_sys_seconds": 0.16,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-mt",
+      "task": "T2",
+      "wall_seconds": 3.1420730839599855,
+      "max_rss_bytes": 1100677120,
+      "exit_code": 0,
+      "cpu_user_seconds": 2.98,
+      "cpu_sys_seconds": 0.14,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-mt",
+      "task": "T3",
+      "wall_seconds": 3.4253405409981497,
+      "max_rss_bytes": 1248165888,
+      "exit_code": 0,
+      "cpu_user_seconds": 6.6,
+      "cpu_sys_seconds": 0.18,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 47604568,
+      "output_sha256": "0fd514be341e70c4ceff5b3de7ea585d30f16d36ba103cc5ffaa0865c362b0ee",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-mt",
+      "task": "T4",
+      "wall_seconds": 6.805629415961448,
+      "max_rss_bytes": 1104052224,
+      "exit_code": 0,
+      "cpu_user_seconds": 13.35,
+      "cpu_sys_seconds": 0.18,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-mt",
+      "task": "T5",
+      "wall_seconds": 8.826775125053246,
+      "max_rss_bytes": 4273307648,
+      "exit_code": 0,
+      "cpu_user_seconds": 16.71,
+      "cpu_sys_seconds": 0.75,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1069630630,
+      "output_sha256": "7727f9d6a6f6f379ab7848012217c406d119099839e1bbd015a1fbca49a841ff",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "e357a09765c6569fe636f506de2c21118127cb36a1171796064316aa878753d5"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb-mt",
+      "task": "T6",
+      "wall_seconds": 4.885888124990743,
+      "max_rss_bytes": 1124827136,
+      "exit_code": 0,
+      "cpu_user_seconds": 9.54,
+      "cpu_sys_seconds": 0.15,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T1",
+      "wall_seconds": 0.47896195895737037,
+      "max_rss_bytes": 1119059968,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1119059968
+      ],
+      "cpu_user_seconds": 2.06,
+      "cpu_sys_seconds": 0.52,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T2",
+      "wall_seconds": 1.6313353340374306,
+      "max_rss_bytes": 22642688,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        22626304,
+        22642688
+      ],
+      "cpu_user_seconds": 1.6099999999999999,
+      "cpu_sys_seconds": 0.09999999999999999,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T3",
+      "wall_seconds": 1.8636927919578739,
+      "max_rss_bytes": 22642688,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        22233088,
+        22642688,
+        22593536
+      ],
+      "cpu_user_seconds": 1.89,
+      "cpu_sys_seconds": 0.12,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 47604568,
+      "output_sha256": "0fd514be341e70c4ceff5b3de7ea585d30f16d36ba103cc5ffaa0865c362b0ee",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "qsv (escritor CSV de Rust)"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T4",
+      "wall_seconds": 0.3893037499510683,
+      "max_rss_bytes": 1109409792,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1109409792
+      ],
+      "cpu_user_seconds": 3.18,
+      "cpu_sys_seconds": 0.45,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T5",
+      "wall_seconds": 4.042676249984652,
+      "max_rss_bytes": 22691840,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        22691840
+      ],
+      "cpu_user_seconds": 3.86,
+      "cpu_sys_seconds": 0.17,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1068100804,
+      "output_sha256": "9dc073977a620e388c683206de4a04596c51ff48ab32b14015a4831787b31345",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "07e2842266ddc0d851d3e1e6fad898b96cc000f26ea9e6c884ab8d6dda198b02",
+        "normalized_by": "qsv (escritor CSV de Rust)"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T6",
+      "wall_seconds": 1.7512527500512078,
+      "max_rss_bytes": 22626304,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        22626304
+      ],
+      "cpu_user_seconds": 1.67,
+      "cpu_sys_seconds": 0.07,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T1",
+      "wall_seconds": 0.9157595410360955,
+      "max_rss_bytes": 13418496,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        13418496
+      ],
+      "cpu_user_seconds": 0.81,
+      "cpu_sys_seconds": 0.08,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T2",
+      "wall_seconds": 1.6678970829816535,
+      "max_rss_bytes": 14401536,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        14401536,
+        14368768
+      ],
+      "cpu_user_seconds": 1.66,
+      "cpu_sys_seconds": 0.09999999999999999,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T3",
+      "wall_seconds": 1.9056192910065874,
+      "max_rss_bytes": 14368768,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        14123008,
+        14368768,
+        14368768
+      ],
+      "cpu_user_seconds": 1.93,
+      "cpu_sys_seconds": 0.12,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 47604568,
+      "output_sha256": "0fd514be341e70c4ceff5b3de7ea585d30f16d36ba103cc5ffaa0865c362b0ee",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "qsvlite (escritor CSV de Rust)"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T4",
+      "wall_seconds": 0.0,
+      "max_rss_bytes": null,
+      "exit_code": null,
+      "status": "unsupported",
+      "error": "qsvlite no incluye sqlp ni ningún verbo de agrupación con suma.",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8"
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T5",
+      "wall_seconds": 4.188360665983055,
+      "max_rss_bytes": 14499840,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        14499840
+      ],
+      "cpu_user_seconds": 4.0,
+      "cpu_sys_seconds": 0.17,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1068100804,
+      "output_sha256": "9dc073977a620e388c683206de4a04596c51ff48ab32b14015a4831787b31345",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "07e2842266ddc0d851d3e1e6fad898b96cc000f26ea9e6c884ab8d6dda198b02",
+        "normalized_by": "qsvlite (escritor CSV de Rust)"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T6",
+      "wall_seconds": 1.6787563330144621,
+      "max_rss_bytes": 14368768,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        14368768
+      ],
+      "cpu_user_seconds": 1.59,
+      "cpu_sys_seconds": 0.07,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T1",
+      "wall_seconds": 4.802269459003583,
+      "max_rss_bytes": 1059880960,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1059880960
+      ],
+      "cpu_user_seconds": 8.27,
+      "cpu_sys_seconds": 0.38,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T2",
+      "wall_seconds": 4.835188500001095,
+      "max_rss_bytes": 1074200576,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1074200576
+      ],
+      "cpu_user_seconds": 9.08,
+      "cpu_sys_seconds": 0.42,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T3",
+      "wall_seconds": 4.874755750002805,
+      "max_rss_bytes": 1080066048,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1080066048
+      ],
+      "cpu_user_seconds": 9.76,
+      "cpu_sys_seconds": 0.52,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 47604568,
+      "output_sha256": "0fd514be341e70c4ceff5b3de7ea585d30f16d36ba103cc5ffaa0865c362b0ee",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Miller (escritor CSV de Go)"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T4",
+      "wall_seconds": 6.102211666002404,
+      "max_rss_bytes": 1122500608,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1122500608
+      ],
+      "cpu_user_seconds": 15.45,
+      "cpu_sys_seconds": 0.46,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T5",
+      "wall_seconds": 5.447471292049158,
+      "max_rss_bytes": 1134936064,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1134936064
+      ],
+      "cpu_user_seconds": 18.29,
+      "cpu_sys_seconds": 1.46,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1068100804,
+      "output_sha256": "9dc073977a620e388c683206de4a04596c51ff48ab32b14015a4831787b31345",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "07e2842266ddc0d851d3e1e6fad898b96cc000f26ea9e6c884ab8d6dda198b02",
+        "normalized_by": "Miller (escritor CSV de Go)"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T6",
+      "wall_seconds": 16.560580374964047,
+      "max_rss_bytes": 1115570176,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1115570176
+      ],
+      "cpu_user_seconds": 28.26,
+      "cpu_sys_seconds": 0.56,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller-1t",
+      "task": "T1",
+      "wall_seconds": 4.766987834009342,
+      "max_rss_bytes": 1056243712,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1056243712
+      ],
+      "cpu_user_seconds": 8.29,
+      "cpu_sys_seconds": 0.38,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller-1t",
+      "task": "T2",
+      "wall_seconds": 4.8157628329936415,
+      "max_rss_bytes": 1074921472,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1074921472
+      ],
+      "cpu_user_seconds": 9.02,
+      "cpu_sys_seconds": 0.4,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller-1t",
+      "task": "T3",
+      "wall_seconds": 4.874153500015382,
+      "max_rss_bytes": 1075036160,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1075036160
+      ],
+      "cpu_user_seconds": 9.76,
+      "cpu_sys_seconds": 0.51,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 47604568,
+      "output_sha256": "0fd514be341e70c4ceff5b3de7ea585d30f16d36ba103cc5ffaa0865c362b0ee",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Miller (escritor CSV de Go)"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller-1t",
+      "task": "T4",
+      "wall_seconds": 6.164168874965981,
+      "max_rss_bytes": 1126858752,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1126858752
+      ],
+      "cpu_user_seconds": 15.63,
+      "cpu_sys_seconds": 0.48,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller-1t",
+      "task": "T5",
+      "wall_seconds": 5.507928124978207,
+      "max_rss_bytes": 1132855296,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1132855296
+      ],
+      "cpu_user_seconds": 18.39,
+      "cpu_sys_seconds": 1.54,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1068100804,
+      "output_sha256": "9dc073977a620e388c683206de4a04596c51ff48ab32b14015a4831787b31345",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "07e2842266ddc0d851d3e1e6fad898b96cc000f26ea9e6c884ab8d6dda198b02",
+        "normalized_by": "Miller (escritor CSV de Go)"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller-1t",
+      "task": "T6",
+      "wall_seconds": 16.59396316698985,
+      "max_rss_bytes": 1113391104,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1113391104
+      ],
+      "cpu_user_seconds": 28.37,
+      "cpu_sys_seconds": 0.57,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T1",
+      "wall_seconds": 0.2514940410037525,
+      "max_rss_bytes": 1140129792,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1140129792
+      ],
+      "cpu_user_seconds": 0.21,
+      "cpu_sys_seconds": 0.22,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T2",
+      "wall_seconds": 0.37257275002775714,
+      "max_rss_bytes": 1469235200,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1469235200
+      ],
+      "cpu_user_seconds": 1.67,
+      "cpu_sys_seconds": 0.13,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T3",
+      "wall_seconds": 0.3995882919989526,
+      "max_rss_bytes": 1576386560,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1576386560
+      ],
+      "cpu_user_seconds": 1.98,
+      "cpu_sys_seconds": 0.19,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 48751376,
+      "output_sha256": "ca98b9e07f63a3072f3d32887d1bdf932917fc87aef3dcf6f51c593760051b75",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Polars sink_csv"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T4",
+      "wall_seconds": 0.3628446670481935,
+      "max_rss_bytes": 1262665728,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1262665728
+      ],
+      "cpu_user_seconds": 1.83,
+      "cpu_sys_seconds": 0.1,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T5",
+      "wall_seconds": 0.6192381670116447,
+      "max_rss_bytes": 1631600640,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1631600640
+      ],
+      "cpu_user_seconds": 4.93,
+      "cpu_sys_seconds": 0.36,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1072687805,
+      "output_sha256": "aa54fc7ff2745f055a8e89bf10dfb5f3261defa4a09c33fe865665003acb419a",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "normalized_by": "Polars sink_csv"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T6",
+      "wall_seconds": 0.5189531249925494,
+      "max_rss_bytes": 1656799232,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1656799232
+      ],
+      "cpu_user_seconds": 3.11,
+      "cpu_sys_seconds": 0.17,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-1t",
+      "task": "T1",
+      "wall_seconds": 0.2196239999611862,
+      "max_rss_bytes": 1131970560,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1131970560
+      ],
+      "cpu_user_seconds": 0.17,
+      "cpu_sys_seconds": 0.04,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-1t",
+      "task": "T2",
+      "wall_seconds": 1.5512238750234246,
+      "max_rss_bytes": 1143734272,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1143734272
+      ],
+      "cpu_user_seconds": 1.49,
+      "cpu_sys_seconds": 0.05,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-1t",
+      "task": "T3",
+      "wall_seconds": 1.765099082957022,
+      "max_rss_bytes": 1147518976,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1147518976
+      ],
+      "cpu_user_seconds": 1.7,
+      "cpu_sys_seconds": 0.08,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 48751376,
+      "output_sha256": "ca98b9e07f63a3072f3d32887d1bdf932917fc87aef3dcf6f51c593760051b75",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Polars sink_csv"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-1t",
+      "task": "T4",
+      "wall_seconds": 1.5975469999830239,
+      "max_rss_bytes": 1143521280,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1143521280
+      ],
+      "cpu_user_seconds": 1.54,
+      "cpu_sys_seconds": 0.05,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-1t",
+      "task": "T5",
+      "wall_seconds": 4.068719291011803,
+      "max_rss_bytes": 1167622144,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1167622144
+      ],
+      "cpu_user_seconds": 3.89,
+      "cpu_sys_seconds": 0.17,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1072687805,
+      "output_sha256": "aa54fc7ff2745f055a8e89bf10dfb5f3261defa4a09c33fe865665003acb419a",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "normalized_by": "Polars sink_csv"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-1t",
+      "task": "T6",
+      "wall_seconds": 2.595716457988601,
+      "max_rss_bytes": 1151795200,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1151795200
+      ],
+      "cpu_user_seconds": 2.53,
+      "cpu_sys_seconds": 0.06,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T1",
+      "wall_seconds": 0.2175079999724403,
+      "max_rss_bytes": 1141915648,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1141915648
+      ],
+      "cpu_user_seconds": 0.18,
+      "cpu_sys_seconds": 0.21,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T2",
+      "wall_seconds": 0.3366958750411868,
+      "max_rss_bytes": 1283031040,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1283031040
+      ],
+      "cpu_user_seconds": 1.68,
+      "cpu_sys_seconds": 0.11,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T3",
+      "wall_seconds": 0.3382202920038253,
+      "max_rss_bytes": 1275363328,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1275363328
+      ],
+      "cpu_user_seconds": 2.0,
+      "cpu_sys_seconds": 0.16,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 48751376,
+      "output_sha256": "ca98b9e07f63a3072f3d32887d1bdf932917fc87aef3dcf6f51c593760051b75",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "nodejs-polars sinkCSV"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T4",
+      "wall_seconds": 0.5553939579986036,
+      "max_rss_bytes": 1413136384,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1413136384
+      ],
+      "cpu_user_seconds": 1.85,
+      "cpu_sys_seconds": 0.12,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T5",
+      "wall_seconds": 0.5566019580001011,
+      "max_rss_bytes": 1541029888,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1541029888
+      ],
+      "cpu_user_seconds": 5.15,
+      "cpu_sys_seconds": 0.37,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1072687805,
+      "output_sha256": "aa54fc7ff2745f055a8e89bf10dfb5f3261defa4a09c33fe865665003acb419a",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "normalized_by": "nodejs-polars sinkCSV"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T6",
+      "wall_seconds": 0.5058201670181006,
+      "max_rss_bytes": 2185232384,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        2185232384
+      ],
+      "cpu_user_seconds": 3.26,
+      "cpu_sys_seconds": 0.21,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node-1t",
+      "task": "T1",
+      "wall_seconds": 0.17866287496872246,
+      "max_rss_bytes": 1141669888,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1141669888
+      ],
+      "cpu_user_seconds": 0.14,
+      "cpu_sys_seconds": 0.03,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node-1t",
+      "task": "T2",
+      "wall_seconds": 1.5546264169970527,
+      "max_rss_bytes": 1204142080,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1204142080
+      ],
+      "cpu_user_seconds": 1.51,
+      "cpu_sys_seconds": 0.04,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node-1t",
+      "task": "T3",
+      "wall_seconds": 1.749961749999784,
+      "max_rss_bytes": 1176731648,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1176731648
+      ],
+      "cpu_user_seconds": 1.71,
+      "cpu_sys_seconds": 0.07,
+      "result": {
+        "count": 1146807
+      },
+      "status": "measured",
+      "result_sha256": "ede3f67f99b74c0c2b1dcdf51b3e829529e36d3293e01e65ef15c8ff256e81df",
+      "output_bytes": 48751376,
+      "output_sha256": "ca98b9e07f63a3072f3d32887d1bdf932917fc87aef3dcf6f51c593760051b75",
+      "values_sha256": "32b1da302dd5ca55aee858b0f7db21d5a9ccd638e2f0ec699bb2db7bea59792a",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "nodejs-polars sinkCSV"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node-1t",
+      "task": "T4",
+      "wall_seconds": 1.6619470000150613,
+      "max_rss_bytes": 1389690880,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1389690880
+      ],
+      "cpu_user_seconds": 1.58,
+      "cpu_sys_seconds": 0.07,
+      "result": {
+        "count": 4587000,
+        "groups": [
+          {
+            "ciudad": "Guadalajara",
+            "count": 1147554,
+            "sum_cents": "9317647803190"
+          },
+          {
+            "ciudad": "Mérida",
+            "count": 1145084,
+            "sum_cents": "9287595392320"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 1146807,
+            "sum_cents": "9308207853690"
+          },
+          {
+            "ciudad": "Puebla",
+            "count": 1147555,
+            "sum_cents": "9300763151460"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "ed4e9ff3ea1bcb9fea284ac2caa8d9aa8556f67c4509639723e619fcd60c3e17",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node-1t",
+      "task": "T5",
+      "wall_seconds": 4.052596708992496,
+      "max_rss_bytes": 1230585856,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        1230585856
+      ],
+      "cpu_user_seconds": 3.98,
+      "cpu_sys_seconds": 0.18,
+      "result": {
+        "count": 4587000
+      },
+      "status": "measured",
+      "result_sha256": "4113745845a097e1d00ea55357ca11670d3a3332e38aee87d175f7b3ffba2f28",
+      "output_bytes": 1072687805,
+      "output_sha256": "aa54fc7ff2745f055a8e89bf10dfb5f3261defa4a09c33fe865665003acb419a",
+      "values_sha256": "dff08bd72987854cdd0cfa2ccc5f8a478cd4d58f2090282c5952afb37ab3034b",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3441917,
+        "changed_records": 1145084,
+        "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "unchanged_output_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+        "normalized_by": "nodejs-polars sinkCSV"
+      },
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node-1t",
+      "task": "T6",
+      "wall_seconds": 2.699902500025928,
+      "max_rss_bytes": 2075410432,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        2075410432
+      ],
+      "cpu_user_seconds": 2.59,
+      "cpu_sys_seconds": 0.1,
+      "result": {
+        "count": 764648
+      },
+      "status": "measured",
+      "result_sha256": "c2ee0275ccc2fddf5b240d284310f7d36a9bf6827a2ebbb0fb4a7d8deab989cd",
+      "file": "ventas_1GiB.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    }
+  ],
+  "script_sha256": {
+    "large-data-extracts/benchmark.py": "6c8d30e8c074448eb347e1faf8310b0a6c5fa3a8dc0013fe28c3790396c0127d",
+    "large-data-extracts/common.py": "5ad5281ba9a33d55fe20671b85dc16aaf824f79f79643cfe0cfb01fb6d141224",
+    "large-data-extracts/generate_sales.py": "5d194171ba12c6aabfba10aa3a5b7f3a0e5e78ffa2c642718b48e5ec4a128cf7",
+    "large-data-extracts/m1_engines.py": "25c393d872955c8e277287f79d322936845b729ccda410e84d51991903786f04",
+    "large-data-extracts/node_worker.mjs": "b2a30523a7bea1d5cc0765c696380e8095049c54037e727b164a7da59a852101",
+    "large-data-extracts/polars_node_worker.mjs": "b6b31ab73760fbeb72e9b56012d5fefb138e58c70db0369acd5fb8174414ac2e",
+    "large-data-extracts/polars_worker.py": "ecd162f76044de6dcb8f0f936727bfe8742e96d1a239c4169c8f57832f080201",
+    "large-data-extracts/probe_edges.py": "2e0d649ea2dbe88579c19a606d5ea1f80536a6454af8755b2c2760b5c6949387",
+    "large-data-extracts/probe_m1_integrity.py": "21266cb92c290a411b9275cc8ee7a59ac6b040ff34237109349b5f4035cfc235",
+    "large-data-extracts/probe_m1_resources.py": "fcd6380a1535c8ad16dd9258f769d53df061e414bfe68136f06c73d4176b071c",
+    "large-data-extracts/python_worker.py": "3869a221ef6917347f41920811d2743549dee227563492c465e0cdc500727c57",
+    "large-data-extracts/test_experiment.py": "90ea2fc79cb02b8329bbd9d26111676583c9d186765fc978d926f5dde5356d71",
+    "large-file-editor/lib/document.mjs": "ba3e9fa59fbf67747d011a458c2828e0b8852c8ad44a9523f015840c051a733c",
+    "large-file-editor/lib/fields.mjs": "434458c907b58978adccc1bb6b1cee510820940a1fba28835ff14dfba01b980b",
+    "large-file-editor/lib/record-index.mjs": "7a3f645e5a11236b07de15ca543b6c4d438989204b62c9c572dac802ecd98b25"
+  },
+  "engines": [
+    "python",
+    "node",
+    "duckdb",
+    "duckdb-mt",
+    "qsv",
+    "qsvlite",
+    "miller",
+    "miller-1t",
+    "polars",
+    "polars-1t",
+    "polars-node",
+    "polars-node-1t"
+  ],
+  "binaries_sha256": {
+    "qsv": "7b7f5ebd9237199aea7ef97713843eab7afc9cbf1539e45264be9bcef08af70c",
+    "qsvlite": "aedd57ca2b6f79ad973f8f075225ab958a1e2b8035c4779161ac700caa6d1e34",
+    "miller": "976a3ab9527a5f5e62382d2a5fc4b06b1d00733e93d2bb055572b89afaa8de97"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "consulted_at": "2026-10-25",
+  "nota": "Herramientas descargadas SOLO en una carpeta temporal externa al repositorio, con autorización del usuario (M1). Ninguna es dependencia de FreyaLab.",
+  "qsv": {
+    "release": "26.0.0 (2026-10-19)",
+    "fuente": "https://github.com/dathere/qsv/releases/tag/26.0.0",
+    "archivo": "qsv-26.0.0-aarch64-apple-darwin.zip",
+    "bytes": 330865064,
+    "sha256_archivo": "feb85ad07a84564e947813b3b847c7628bc7fa56f145c2509bca719541fb9b06",
+    "sha256_archivo_coincide_con_digest_de_GitHub": true,
+    "contenido_del_zip": "qsv, qsvlite, qsvmcp, qsvpy311, qsvpy312, qsvpy313, qsvpy314, COPYING, LICENSE-MIT, README, THIRD_PARTY_NOTICES.md",
+    "binarios_extraidos": {
+      "qsv": "7b7f5ebd9237199aea7ef97713843eab7afc9cbf1539e45264be9bcef08af70c",
+      "qsvlite": "aedd57ca2b6f79ad973f8f075225ab958a1e2b8035c4779161ac700caa6d1e34"
+    },
+    "licencia": "MIT",
+    "firma": "ad hoc (linker-signed); sin notarizar",
+    "version_qsv": "qsv 26.0.0-jemalloc-apply;fetch;foreach;geocode;Luau 0.740;magika;to;viz;viz_static;polars-0.55.1:py-2.0.0:b951cd7;self_update-12-12;25.60 GiB-1.15 GiB-24.20 GiB-32.00 GiB (aarch64-apple-darwin compiled with Rust 1.99;macOS 27.0.1-Darwin 27.0.0;Apple M2 Max-12) prebuilt-pgo",
+    "version_qsvlite": "qsvlite 26.0.0-jemalloc-self_update-12-12;25.60 GiB-1.15 GiB-24.20 GiB-32.00 GiB (aarch64-apple-darwin compiled with Rust 1.99;macOS 27.0.1-Darwin 27.0.0;Apple M2 Max-12) prebuilt"
+  },
+  "miller": {
+    "release": "6.22.0 (2026-09-25)",
+    "fuente": "https://github.com/johnkerl/miller/releases/tag/v6.22.0",
+    "archivo": "miller-6.22.0-darwin-arm64.tar.gz",
+    "bytes": 5602314,
+    "sha256_archivo": "b99af86bf902c4fd269c28ec4142111dc27815b3ae63801baceaa001d09b9fd7",
+    "sha256_archivo_coincide_con_checksums_oficiales": true,
+    "binario_extraido": {
+      "mlr": "976a3ab9527a5f5e62382d2a5fc4b06b1d00733e93d2bb055572b89afaa8de97"
+    },
+    "licencia": "BSD-2-Clause",
+    "firma": "ad hoc (linker-signed); sin notarizar",
+    "version": "mlr 6.22.0"
+  },
+  "polars_python": {
+    "version": "2.0.0",
+    "instalacion": "uv pip install --require-hashes --no-deps -r requirements.txt, en un venv con Python 3.12.15 (Homebrew), sin tocar el entorno del sistema",
+    "wheels": {
+      "polars-2.0.0-py3-none-any.whl": "35d62f3541b7a6d4c360a2e2f07fccc0c2bcbd33b0ea51c83a25417a47a3f3ad",
+      "polars_runtime_32-2.0.0-cp310-abi3-macosx_11_0_arm64.whl": "7012d8a0201bd95638545ce8f256c0efe2c5cab0f806eb043021dddde5a9498b"
+    },
+    "licencia": "MIT"
+  },
+  "nodejs_polars": {
+    "version": "0.26.1",
+    "instalacion": "npm install nodejs-polars@0.26.1 --save-exact --ignore-scripts (carpeta externa; solo se instala el paquete de la plataforma)",
+    "integrity": {
+      "nodejs-polars": "sha512-nOWRNrwPAle1KP2w+fj9v1UDUZWbPU37uuImF3mntQyLgUvJ6BTj7+gdR3smKHwtm0t2xY5fbFUoRpj3FobZqQ==",
+      "nodejs-polars-darwin-arm64": "sha512-TtuxTOXfItPPIdKSGrxDXuIcQJVR1wD9vdfTRst9vxRkc0nRHo7FSdfS11d/xymzSJzXZlUonK+ah7wQSZY28w=="
+    },
+    "motor_embebido": "crates polars-core/io/lazy/ops 0.55.2 (Cargo.toml del proyecto)",
+    "licencia": "MIT"
+  },
+  "duckdb": {
+    "version_cli_usada_en_E0_y_M1": "v1.5.6 (Homebrew, ya instalado; no se descargó nada)",
+    "licencia": "MIT"
+  }
+}

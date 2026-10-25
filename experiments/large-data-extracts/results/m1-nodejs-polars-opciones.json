@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "archivo": "id,zip,monto / 1,01000,9007199254740993 / 2,72000,1 (CRLF)",
+  "nodejs_polars": "0.26.1",
+  "polars_python": "2.0.0",
+  "resultado": {
+    "inferSchema:false (nombre de Python)": {
+      "dtypes": {
+        "id": "DataType(Int64)",
+        "zip": "DataType(Int64)",
+        "monto": "DataType(Int64)"
+      },
+      "filas": [
+        {
+          "id": 1,
+          "zip": 1000,
+          "monto": "9007199254740992"
+        },
+        {
+          "id": 2,
+          "zip": 72000,
+          "monto": "1"
+        }
+      ]
+    },
+    "inferSchemaLength:0": {
+      "dtypes": {
+        "id": "DataType(String)",
+        "zip": "DataType(String)",
+        "monto": "DataType(String)"
+      },
+      "filas": [
+        {
+          "id": "1",
+          "zip": "01000",
+          "monto": "9007199254740993"
+        },
+        {
+          "id": "2",
+          "zip": "72000",
+          "monto": "1"
+        }
+      ]
+    }
+  },
+  "polars_python_infer_schema_false": [
+    {
+      "id": "1",
+      "zip": "01000",
+      "monto": "9007199254740993"
+    },
+    {
+      "id": "2",
+      "zip": "72000",
+      "monto": "1"
+    }
+  ],
+  "lectura": "En nodejs-polars 0.26.1 la opción `inferSchema:false` (nombre de Python) se ignora sin aviso: las columnas se infieren como Int64, se pierde el cero a la izquierda de 01000 y 9007199254740993 se devuelve como 9007199254740992 al pasar por un number de JavaScript. `inferSchemaLength:0` lee todo como texto.",
+  "suma_int64_en_js": {
+    "oraculo": "900719925474099501",
+    "nodejs_polars_sin_cast": "900719925474099500",
+    "fuente": "results/m1-formatos-nodejs-polars-sin-cast.json (primera pasada con la versión del adaptador que devolvía la suma como number), tarea T4, UTF-8"
+  }
+}

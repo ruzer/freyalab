@@ -1,0 +1,327 @@
+{
+  "schema": 1,
+  "kind": "E0 edge probes; no benchmark de rendimiento",
+  "consulted_at": "2026-10-25T07:53:01.950040+00:00",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "header_source": "/private/tmp/FreyaLab-pruebas/ventas_10MiB.csv",
+  "header_source_sha256_before": "2802e78128245142eff3fb0bc81bb69498d775b16ab1445e7a2e325949dbb498",
+  "executables": {
+    "python": "/opt/homebrew/opt/python@3.15/bin/python3.15",
+    "pandas_python": "None",
+    "qsv": "/private/tmp/freyalab-m1/qsv-bin/qsv",
+    "qsvlite": "/private/tmp/freyalab-m1/qsv-bin/qsvlite",
+    "miller": "/private/tmp/freyalab-m1/miller-bin/miller-6.22.0-darwin-arm64/mlr",
+    "polars_python": "/private/tmp/freyalab-m1/venv-polars/bin/python",
+    "polars_node_dir": "/private/tmp/freyalab-m1/node-polars",
+    "node": "/Users/ruzer/.local/share/mise/installs/node/24/bin/node",
+    "duckdb": "/opt/homebrew/bin/duckdb"
+  },
+  "script_sha256": {
+    "probe_edges.py": "c7bc564523a056eb066aaee94d54c394db3eb2c9ff14b6fd3c18d36b31efe432",
+    "benchmark.py": "ac327fef9c9a0e74a9b84cc4ad4ca4fed3fae7fb59b0e21b42524c8c7c9e450c",
+    "common.py": "5ad5281ba9a33d55fe20671b85dc16aaf824f79f79643cfe0cfb01fb6d141224",
+    "python_worker.py": "3869a221ef6917347f41920811d2743549dee227563492c465e0cdc500727c57",
+    "node_worker.mjs": "b2a30523a7bea1d5cc0765c696380e8095049c54037e727b164a7da59a852101",
+    "m1_engines.py": "25c393d872955c8e277287f79d322936845b729ccda410e84d51991903786f04",
+    "polars_worker.py": "ecd162f76044de6dcb8f0f936727bfe8742e96d1a239c4169c8f57832f080201",
+    "polars_node_worker.mjs": "b6b31ab73760fbeb72e9b56012d5fefb138e58c70db0369acd5fb8174414ac2e"
+  },
+  "method": "fixtures sintéticos; execute reutilizado; UTF-16 impar limitado a 2s y grupo de procesos terminado si expira; tiempos son observaciones, no comparativa de rendimiento",
+  "known_limitations_to_check": [
+    "pandas puede rellenar posiciones ausentes y perder aridad aunque dtype sea texto",
+    "el scanner Node PoC puede aceptar comillas malformadas en T1",
+    "el scanner Node PoC puede no avanzar ante UTF-16 impar; timeout no equivale a rechazo",
+    "un fallo del harness/preparación no acredita que el motor rechace el archivo",
+    "fuente intacta no demuestra fidelidad del resultado ni empaquetado multiplataforma"
+  ],
+  "fixtures": [
+    {
+      "name": "irregular",
+      "source": "/private/tmp/freyalab-m1/out/bordes-par/fixtures/irregular.csv",
+      "encoding": "utf-8",
+      "task": "T5",
+      "bytes": 634,
+      "sha256_before": "b293b4d9a0f830519065872e6cffa99562a78ae07af576686637d62739bd59bd",
+      "oracle": {
+        "arity_including_header": [
+          21,
+          20,
+          21,
+          21
+        ],
+        "data_records": 3,
+        "values_sha256": "0de5fe27ab5198c77e18ac068685e524b1662d097c6dd6bf7c05a39e403bf4c4"
+      },
+      "sha256_after": "b293b4d9a0f830519065872e6cffa99562a78ae07af576686637d62739bd59bd",
+      "original_sha256_unchanged": true
+    },
+    {
+      "name": "malformed_quote",
+      "source": "/private/tmp/freyalab-m1/out/bordes-par/fixtures/malformed-quote.csv",
+      "encoding": "utf-8",
+      "task": "T1",
+      "bytes": 385,
+      "sha256_before": "e048ee45b9e0db8aa743bbc45ef1cbe70f13894da25c3b94cad6a0d2d64ae4d0",
+      "oracle": {
+        "error_type": "Error",
+        "error": "unexpected end of data"
+      },
+      "sha256_after": "e048ee45b9e0db8aa743bbc45ef1cbe70f13894da25c3b94cad6a0d2d64ae4d0",
+      "original_sha256_unchanged": true
+    },
+    {
+      "name": "utf16_odd",
+      "source": "/private/tmp/freyalab-m1/out/bordes-par/fixtures/utf16-odd.csv",
+      "encoding": "utf-16",
+      "task": "T1",
+      "bytes": 763,
+      "sha256_before": "053e5c2d9e804f2dee9f192f2eb16a1cf56195f1c57b636e3ab4a21c38934211",
+      "oracle": {
+        "error_type": "UnicodeDecodeError",
+        "error": "'utf-16-le' codec can't decode byte 0x00 in position 0: truncated data"
+      },
+      "sha256_after": "053e5c2d9e804f2dee9f192f2eb16a1cf56195f1c57b636e3ab4a21c38934211",
+      "original_sha256_unchanged": true
+    }
+  ],
+  "results": [
+    {
+      "engine": "python",
+      "task": "T5",
+      "wall_seconds": 0.037905791017692536,
+      "max_rss_bytes": 20512768,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 474,
+      "output_sha256": "4ed9c509e3bba86539f8db9b3fb7082d72d7771a521aef2b6a331ed1487cd432",
+      "values_sha256": "0de5fe27ab5198c77e18ac068685e524b1662d097c6dd6bf7c05a39e403bf4c4",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 2,
+        "changed_records": 2,
+        "unchanged_source_sha256": "8983b88392c1e6a8fb5cda1b13cbbb7c9af694afbaa2b93a531a15201ea1d224",
+        "unchanged_output_sha256": "477c344fc551729bd873999da945f6937bec266425396d1ccc409495495aea9f"
+      },
+      "fixture": "irregular",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes-par/outputs/irregular-python-T5.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "T5 conserva todas las posiciones y cambia sólo ciudad",
+        "arity_preserved": true,
+        "values_match_expected": true,
+        "guarantee_met": true,
+        "arity_including_header": [
+          21,
+          20,
+          21,
+          21
+        ],
+        "values_sha256": "0de5fe27ab5198c77e18ac068685e524b1662d097c6dd6bf7c05a39e403bf4c4",
+        "assessment": "valores y aridad conservados"
+      }
+    },
+    {
+      "engine": "duckdb",
+      "task": "T5",
+      "wall_seconds": 0.02116266603115946,
+      "max_rss_bytes": 23789568,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: Error when sniffing file \"/private/tmp/freyalab-m1/out/bordes-par/fixtures/irregular.csv\".\nIt was not possible to automatically detect the CSV parsing dialect\nThe search space used was:\nDelimiter Candidates: ','\nQuote/Escape Candidates: ['(no quote)','(no escape)'],['\"','(no escape)'],['\"','\"'],['\"','''],['\"','\\'],[''','(no escape)'],[''','''],[''','\"'],[''','\\']\nComment Candidates: '\\0', '#'\nEncoding: utf-8\nPossible fixes:\n* Disable the parser's strict mode (strict_mode=false) to allow reading rows that do not comply with the CSV standard.\n* Make sure you are using the correct file encoding. If not, set it (e.g., encoding = 'utf-16').\n* Delimiter is set to ','. Consider unsetting it.\n* Set quote (e.g., quote='\"')\n* Set escape (e.g., escape='\"')\n* Set comment (e.g., comment='#')\n* Set skip (skip=${n}) to skip ${n} lines at the top of the file\n* Enable ignore errors (ignore_errors=true) to ignore potential errors\n* Enable null padding (null_padding=true) to pad missing columns with NULL values\n* Check you are using the correct file compression, otherwise set it (e.g., compression = 'zstd')\n* Be sure that the maximum line size is set to an appropriate value, otherwise set it (e.g., max_line_size=10000000)\n\n\nLINE 1: ...','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitario_mxn','descuent...\n                                                                   ^\n        0.01 real         0.01 user         0.00 sys\n            23789568  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1607  page reclaims\n                  63  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  77  involuntary context switches\n           148396168  instructions retired\n            49032586  cycles elapsed\n             9535944  peak memory footprint\n",
+      "status": "error",
+      "fixture": "irregular",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes-par/outputs/irregular-duckdb-T5.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "T5 conserva todas las posiciones y cambia sólo ciudad",
+        "arity_preserved": null,
+        "values_match_expected": null,
+        "guarantee_met": false,
+        "assessment": "estructura irregular rechazada o error: no acredita soporte"
+      }
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T5",
+      "wall_seconds": 0.018166832975111902,
+      "max_rss_bytes": 23937024,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: Error when sniffing file \"/private/tmp/freyalab-m1/out/bordes-par/fixtures/irregular.csv\".\nIt was not possible to automatically detect the CSV parsing dialect\nThe search space used was:\nDelimiter Candidates: ','\nQuote/Escape Candidates: ['(no quote)','(no escape)'],['\"','(no escape)'],['\"','\"'],['\"','''],['\"','\\'],[''','(no escape)'],[''','''],[''','\"'],[''','\\']\nComment Candidates: '\\0', '#'\nEncoding: utf-8\nPossible fixes:\n* Disable the parser's strict mode (strict_mode=false) to allow reading rows that do not comply with the CSV standard.\n* Make sure you are using the correct file encoding. If not, set it (e.g., encoding = 'utf-16').\n* Delimiter is set to ','. Consider unsetting it.\n* Set quote (e.g., quote='\"')\n* Set escape (e.g., escape='\"')\n* Set comment (e.g., comment='#')\n* Set skip (skip=${n}) to skip ${n} lines at the top of the file\n* Enable ignore errors (ignore_errors=true) to ignore potential errors\n* Enable null padding (null_padding=true) to pad missing columns with NULL values\n* Check you are using the correct file compression, otherwise set it (e.g., compression = 'zstd')\n* Be sure that the maximum line size is set to an appropriate value, otherwise set it (e.g., max_line_size=10000000)\n\n\nLINE 1: ...','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitario_mxn','descuento_pct...\n                                                                      ^\n        0.01 real         0.01 user         0.00 sys\n            23937024  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1624  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  72  involuntary context switches\n           146386115  instructions retired\n            47194067  cycles elapsed\n             9683376  peak memory footprint\n",
+      "status": "error",
+      "fixture": "irregular",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes-par/outputs/irregular-duckdb-par-T5.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "T5 conserva todas las posiciones y cambia sólo ciudad",
+        "arity_preserved": null,
+        "values_match_expected": null,
+        "guarantee_met": false,
+        "assessment": "estructura irregular rechazada o error: no acredita soporte"
+      }
+    },
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 0.04953537497203797,
+      "max_rss_bytes": 22626304,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "error": "Traceback (most recent call last):\n  File \"<repo>/experiments/large-data-extracts/python_worker.py\", line 74, in <module>\n    print(json.dumps(run(engine, task, source, encoding, output), ensure_ascii=False))\n                     ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/experiments/large-data-extracts/python_worker.py\", line 29, in run\n    for row in records:\n               ^^^^^^^\n  File \"<repo>/experiments/large-data-extracts/common.py\", line 39, in rows\n    yield from csv.reader(stream, strict=True)\n_csv.Error: unexpected end of data\n        0.04 real         0.03 user         0.00 sys\n            22626304  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2221  page reclaims\n                  47  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  29  involuntary context switches\n           409391675  instructions retired\n           151838028  cycles elapsed\n            12599776  peak memory footprint\n",
+      "status": "error",
+      "fixture": "malformed_quote",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes-par/outputs/malformed_quote-python-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": true,
+        "accepted_invalid_input": false,
+        "guarantee_met": true,
+        "assessment": "rechazo de parsing/decodificación observado"
+      }
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 0.01880433299811557,
+      "max_rss_bytes": 24051712,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "error": "Binder Error: \"force_not_null\" expected to find notas, but it was not found in the table\n\nLINE 1: ...','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitario_mxn','descuent...\n                                                                   ^\n        0.01 real         0.01 user         0.00 sys\n            24051712  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1651  page reclaims\n                  34  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  55  involuntary context switches\n           145574837  instructions retired\n            47712851  cycles elapsed\n             9699760  peak memory footprint\n",
+      "status": "error",
+      "fixture": "malformed_quote",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes-par/outputs/malformed_quote-duckdb-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": false,
+        "accepted_invalid_input": false,
+        "guarantee_met": false,
+        "assessment": "error no atribuido al parsing: resultado no concluyente"
+      }
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T1",
+      "wall_seconds": 0.01814950001426041,
+      "max_rss_bytes": 24182784,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "error": "Binder Error: \"force_not_null\" expected to find notas, but it was not found in the table\n\nLINE 1: ...','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitario_mxn','descuento_pct...\n                                                                      ^\n        0.01 real         0.01 user         0.00 sys\n            24182784  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1638  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  81  involuntary context switches\n           146932415  instructions retired\n            47960388  cycles elapsed\n             9863624  peak memory footprint\n",
+      "status": "error",
+      "fixture": "malformed_quote",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes-par/outputs/malformed_quote-duckdb-par-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": false,
+        "accepted_invalid_input": false,
+        "guarantee_met": false,
+        "assessment": "error no atribuido al parsing: resultado no concluyente"
+      }
+    },
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 0.04927729204064235,
+      "max_rss_bytes": 22511616,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "error": "Traceback (most recent call last):\n  File \"<repo>/experiments/large-data-extracts/python_worker.py\", line 74, in <module>\n    print(json.dumps(run(engine, task, source, encoding, output), ensure_ascii=False))\n                     ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/experiments/large-data-extracts/python_worker.py\", line 29, in run\n    for row in records:\n               ^^^^^^^\n  File \"<repo>/experiments/large-data-extracts/common.py\", line 39, in rows\n    yield from csv.reader(stream, strict=True)\n  File \"<frozen codecs>\", line 325, in decode\n  File \"/opt/homebrew/Cellar/python@3.15/3.15.0/Frameworks/Python.framework/Versions/3.15/lib/python3.15/encodings/utf_16.py\", line 69, in _buffer_decode\n    return self.decoder(input, self.errors, final)\n           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeDecodeError: 'utf-16-le' codec can't decode byte 0x00 in position 0: truncated data\n        0.04 real         0.03 user         0.00 sys\n            22511616  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2214  page reclaims\n                  47  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   1  voluntary context switches\n                  38  involuntary context switches\n           401875185  instructions retired\n           148357105  cycles elapsed\n            12501496  peak memory footprint\n",
+      "status": "error",
+      "fixture": "utf16_odd",
+      "encoding": "utf-16",
+      "timeout_seconds": 2.0,
+      "output": "/private/tmp/freyalab-m1/out/bordes-par/outputs/utf16_odd-python-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": true,
+        "accepted_invalid_input": false,
+        "guarantee_met": true,
+        "assessment": "rechazo de parsing/decodificación observado"
+      }
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 0.018126667011529207,
+      "max_rss_bytes": 23724032,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: Error when sniffing file \"/private/tmp/freyalab-m1/out/bordes-par/fixtures/utf16-odd.csv\".\nIt was not possible to automatically detect the CSV parsing dialect\nThe search space used was:\nDelimiter Candidates: ','\nQuote/Escape Candidates: ['(no quote)','(no escape)'],['\"','(no escape)'],['\"','\"'],['\"','''],['\"','\\'],[''','(no escape)'],[''','''],[''','\"'],[''','\\']\nComment Candidates: '\\0', '#'\nEncoding: utf-16\nPossible fixes:\n* Disable the parser's strict mode (strict_mode=false) to allow reading rows that do not comply with the CSV standard.\n* Make sure you are using the correct file encoding. If not, set it (e.g., encoding = 'utf-16').\n* Delimiter is set to ','. Consider unsetting it.\n* Set quote (e.g., quote='\"')\n* Set escape (e.g., escape='\"')\n* Set comment (e.g., comment='#')\n* Set skip (skip=${n}) to skip ${n} lines at the top of the file\n* Enable ignore errors (ignore_errors=true) to ignore potential errors\n* Enable null padding (null_padding=true) to pad missing columns with NULL values\n* Check you are using the correct file compression, otherwise set it (e.g., compression = 'zstd')\n* Be sure that the maximum line size is set to an appropriate value, otherwise set it (e.g., max_line_size=10000000)\n\n\nLINE 1: ...'cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitario_mxn','descuen...\n                                                                          ^\n        0.01 real         0.01 user         0.00 sys\n            23724032  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1633  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  55  involuntary context switches\n           143633237  instructions retired\n            46937004  cycles elapsed\n             9486792  peak memory footprint\n",
+      "status": "error",
+      "fixture": "utf16_odd",
+      "encoding": "utf-16",
+      "timeout_seconds": 2.0,
+      "output": "/private/tmp/freyalab-m1/out/bordes-par/outputs/utf16_odd-duckdb-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": true,
+        "accepted_invalid_input": false,
+        "guarantee_met": true,
+        "assessment": "rechazo de parsing/decodificación observado"
+      }
+    },
+    {
+      "engine": "duckdb-par",
+      "task": "T1",
+      "wall_seconds": 0.017569791991263628,
+      "max_rss_bytes": 23953408,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: Error when sniffing file \"/private/tmp/freyalab-m1/out/bordes-par/fixtures/utf16-odd.csv\".\nIt was not possible to automatically detect the CSV parsing dialect\nThe search space used was:\nDelimiter Candidates: ','\nQuote/Escape Candidates: ['(no quote)','(no escape)'],['\"','(no escape)'],['\"','\"'],['\"','''],['\"','\\'],[''','(no escape)'],[''','''],[''','\"'],[''','\\']\nComment Candidates: '\\0', '#'\nEncoding: utf-16\nPossible fixes:\n* Disable the parser's strict mode (strict_mode=false) to allow reading rows that do not comply with the CSV standard.\n* Make sure you are using the correct file encoding. If not, set it (e.g., encoding = 'utf-16').\n* Delimiter is set to ','. Consider unsetting it.\n* Set quote (e.g., quote='\"')\n* Set escape (e.g., escape='\"')\n* Set comment (e.g., comment='#')\n* Set skip (skip=${n}) to skip ${n} lines at the top of the file\n* Enable ignore errors (ignore_errors=true) to ignore potential errors\n* Enable null padding (null_padding=true) to pad missing columns with NULL values\n* Check you are using the correct file compression, otherwise set it (e.g., compression = 'zstd')\n* Be sure that the maximum line size is set to an appropriate value, otherwise set it (e.g., max_line_size=10000000)\n\n\nLINE 1: ...','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitario_mxn','descuento_pct...\n                                                                     ^\n        0.01 real         0.01 user         0.00 sys\n            23953408  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1624  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  68  involuntary context switches\n           145073417  instructions retired\n            45388893  cycles elapsed\n             9732552  peak memory footprint\n",
+      "status": "error",
+      "fixture": "utf16_odd",
+      "encoding": "utf-16",
+      "timeout_seconds": 2.0,
+      "output": "/private/tmp/freyalab-m1/out/bordes-par/outputs/utf16_odd-duckdb-par-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": true,
+        "accepted_invalid_input": false,
+        "guarantee_met": true,
+        "assessment": "rechazo de parsing/decodificación observado"
+      }
+    }
+  ],
+  "header_source_sha256_after": "2802e78128245142eff3fb0bc81bb69498d775b16ab1445e7a2e325949dbb498",
+  "header_source_unchanged": true,
+  "all_probes_completed": true,
+  "all_guarantees_met": false
+}

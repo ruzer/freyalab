@@ -58,6 +58,10 @@ def file_hash(path):
     return digest.hexdigest()
 
 
+def _no_final_eol(raw):
+    return raw[:-2] if raw.endswith(b'\r\n') else raw[:-1] if raw.endswith(b'\n') else raw
+
+
 def fidelity(source, output, encoding, output_encoding):
     def bom(path):
         with open(path, 'rb') as stream:
@@ -69,10 +73,11 @@ def fidelity(source, output, encoding, output_encoding):
     new_header, new_header_raw = next(transformed)
     city = header.index('ciudad')
     exact, raw_exact, changed, unchanged = header == new_header, header_raw == new_header_raw, 0, 1
+    raw_exact_eol = _no_final_eol(header_raw) == _no_final_eol(new_header_raw)  # M1: separa el fin de línea del comillado
     old_hash, new_hash = hashlib.sha256(header_raw), hashlib.sha256(new_header_raw)
     for before, after in zip_longest(original, transformed):
         if before is None or after is None:
-            exact = raw_exact = False
+            exact = raw_exact = raw_exact_eol = False
             break
         values, raw = before
         out_values, out_raw = after
@@ -83,11 +88,13 @@ def fidelity(source, output, encoding, output_encoding):
         if expected == values:
             unchanged += 1
             raw_exact &= raw == out_raw
+            raw_exact_eol &= _no_final_eol(raw) == _no_final_eol(out_raw)
             old_hash.update(raw)
             new_hash.update(out_raw)
         else:
             changed += 1
     return dict(values_exact=exact, unchanged_records_byte_exact=raw_exact,
+                unchanged_records_byte_exact_ignoring_final_eol=raw_exact_eol,
                 source_bom_hex=source_bom, output_bom_hex=output_bom, bom_preserved=source_bom == output_bom,
                 unchanged_records_including_header=unchanged, changed_records=changed,
                 unchanged_source_sha256=old_hash.hexdigest(), unchanged_output_sha256=new_hash.hexdigest())
