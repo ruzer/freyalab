@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url'
 import net from 'node:net'
 import os from 'node:os'
 import {integration} from '../lib/integration-core.mjs'
+import {electronNodeArgs} from '../lib/confine.mjs'
 import {verdict} from '../lib/probes.mjs'
 const here = dirname(fileURLToPath(import.meta.url))
 const args = JSON.parse(process.env.M3_ARGS)
@@ -28,7 +29,7 @@ async function utilityControl(install) {
 app.whenReady().then(async () => {
   let code = 0, report = {}
   try {
-    report = await integration({exe: process.execPath, baseEnv: {ELECTRON_RUN_AS_NODE: '1'}, install: args.install, work: args.work, parent: `Electron ${process.versions.electron} (proceso principal)`, memoryLimitMB: Number(args.limitMb ?? 0)})
+    report = await integration({exe: process.execPath, execArgs: electronNodeArgs(), baseEnv: {ELECTRON_RUN_AS_NODE: '1'}, install: args.install, work: args.work, parent: `Electron ${process.versions.electron} (proceso principal)`, memoryLimitMB: Number(args.limitMb ?? 0)})
     report.runtime = 'electron como Node (ELECTRON_RUN_AS_NODE=1)'; report.packaged = app.isPackaged
     report.utilityProcessControl = await utilityControl(args.install)
     report.electron = {electron: process.versions.electron, node: process.versions.node, chrome: process.versions.chrome, modules: process.versions.modules}

@@ -9,6 +9,9 @@ import {join, dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 const here = dirname(fileURLToPath(import.meta.url))
 
+// Electron en modo Node dentro de un AppContainer de Windows aborta («Unable to open nul device needed for initialization»): hay que arrancarlo con --no-stdio-init.
+export const electronNodeArgs = () => (process.platform === 'win32' ? ['--no-stdio-init'] : [])
+
 export function mechanismName() {
   return process.platform === 'darwin' ? 'sandbox-exec (perfil SBPL, solo escritura en la carpeta de trabajo, sin red)'
     : process.platform === 'linux' ? 'bubblewrap (sistema de archivos de solo lectura salvo la carpeta de trabajo, sin red)'

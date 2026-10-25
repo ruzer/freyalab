@@ -18,7 +18,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 const hostsPath = process.platform === 'win32' ? 'C:\\Windows\\System32\\drivers\\etc\\hosts' : '/etc/hosts'
 const round = n => Math.round(n * 10) / 10
 
-export async function integration({exe, baseEnv = {}, install, work, parent, recycleOps = 40, recycleFactor = 1.5, memoryLimitMB = 0}) {
+export async function integration({exe, execArgs = [], baseEnv = {}, install, work, parent, recycleOps = 40, recycleFactor = 1.5, memoryLimitMB = 0}) {
   const report = {kind: 'M3 integración con proceso confinado', parent, platform: `${os.platform()} ${os.arch()}`, mechanism: mechanismName(), exe, started: new Date().toISOString()}
   if (process.platform === 'linux') report.bubblewrap = bwrapAccess()
   const outside = join(os.tmpdir(), `m3-int-fuera-${process.pid}`); mkdirSync(outside, {recursive: true})
@@ -30,7 +30,7 @@ export async function integration({exe, baseEnv = {}, install, work, parent, rec
   const experiments = resolve(here, '..', '..')
   const readDirs = [dirname(exe), install, experiments]
   const heartbeat = join(confinedWork, 'heartbeat.txt')
-  const spawnLayer = () => spawnConfined({exe, args: [worker], workDir: confinedWork, hideDirs: [outside], readDirs, env: {...baseEnv, M3_HEARTBEAT: heartbeat}, memoryLimitMB, timeoutMs: 3600000})
+  const spawnLayer = () => spawnConfined({exe, args: [...execArgs, worker], workDir: confinedWork, hideDirs: [outside], readDirs, env: {...baseEnv, M3_HEARTBEAT: heartbeat}, memoryLimitMB, timeoutMs: 3600000})
   const confinedHost = () => new ConfinedHost(spawnLayer, 'proceso hijo confinado')
   const threads = '2', memory = '512MB'
   const s = settings({work: confinedWork, install, modes: 'selftest', threads, memory})

@@ -5,10 +5,11 @@ import {writeFileSync} from 'node:fs'
 import {join, resolve} from 'node:path'
 import {createRequire} from 'node:module'
 import {integration} from './lib/integration-core.mjs'
+import {electronNodeArgs} from './lib/confine.mjs'
 const args = Object.fromEntries(process.argv.slice(2).reduce((a, x, i, all) => (x.startsWith('--') ? [...a, [x.slice(2), all[i + 1]]] : a), []))
 const runtime = args.runtime ?? 'node'
 const exe = runtime === 'electron' ? createRequire(join(process.cwd(), 'package.json'))('electron') : process.execPath
-const report = await integration({exe, baseEnv: runtime === 'electron' ? {ELECTRON_RUN_AS_NODE: '1'} : {}, install: resolve(args.install), work: resolve(args.work), parent: `Node ${process.version}`, memoryLimitMB: Number(args['limit-mb'] ?? 0)})
+const report = await integration({exe, execArgs: runtime === 'electron' ? electronNodeArgs() : [], baseEnv: runtime === 'electron' ? {ELECTRON_RUN_AS_NODE: '1'} : {}, install: resolve(args.install), work: resolve(args.work), parent: `Node ${process.version}`, memoryLimitMB: Number(args['limit-mb'] ?? 0)})
 report.runtime = runtime
 writeFileSync(args.out, JSON.stringify(report, null, 2) + '\n')
 console.log(JSON.stringify({runtime, verdict: report.confined?.verdict, coldStart: report.coldStart, kill: report.kill, recycle: report.recycle && {recycles: report.recycle.recycles, maxRssMB: report.recycle.maxRssMB, baselineRssMB: report.recycle.baselineRssMB}, selftest: report.confined?.selftest?.checks?.map(c => `${c.ok ? '✓' : '✗'} ${c.name}`), error: report.error?.split('\n')[0]}, null, 1))

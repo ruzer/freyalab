@@ -68,6 +68,9 @@ jobs:
         run: |
           PREFIX=""; if [ "$RUNNER_OS" = "Linux" ]; then PREFIX="xvfb-run -a"; fi
           $PREFIX node experiments/duckdb-isolation/ci/run-electron.mjs --exe dev --install "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-int-main" --out "$RUNNER_TEMP/m3out/integration-electron-main.json"
+      - name: Explicit schema and parallel reader against the strict parser (hostile corpus)
+        continue-on-error: true
+        run: node experiments/duckdb-isolation/schema-parallel.mjs --install "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-schema" --out "$RUNNER_TEMP/m3out/schema-parallel.json"
       - name: Package the mini application
         run: npx electron-builder --dir --projectDir "$RUNNER_TEMP/m3app" --config "$RUNNER_TEMP/m3app/electron-builder.json"
       - name: Prepare packaged sandbox helper (Linux)
@@ -75,6 +78,12 @@ jobs:
         run: |
           sudo chown root:root "$RUNNER_TEMP/m3app/release/linux-unpacked/chrome-sandbox"
           sudo chmod 4755 "$RUNNER_TEMP/m3app/release/linux-unpacked/chrome-sandbox"
+      - name: Signing readiness, fuses and inventory of native binaries (no commercial signing)
+        continue-on-error: true
+        run: |
+          EXE="$(node experiments/duckdb-isolation/ci/find-exe.mjs "$RUNNER_TEMP/m3app")"
+          if [ "$RUNNER_OS" = "macOS" ]; then APP="$(node -p "require('path').resolve(process.argv[1],'..','..','..')" "$EXE")"; else APP="$(node -p "require('path').dirname(process.argv[1])" "$EXE")"; fi
+          node experiments/duckdb-isolation/signing.mjs --app "$APP" --exe "$EXE" --work "$RUNNER_TEMP/m3work-signing" --out "$RUNNER_TEMP/m3out/signing.json"
       - name: Integration, PACKAGED application (Electron main plus confined child)
         continue-on-error: true
         run: |

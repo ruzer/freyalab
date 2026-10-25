@@ -19,6 +19,15 @@ for (const name of readdirSync(dir).filter(n => n.endsWith('.json')).sort()) {
   if (d.kill) lines.push(`- Matar a mitad de operación: ${d.kill.killMs} ms · latido detenido: ${d.kill.heartbeatStoppedAfterKill} · relanzado en ${d.kill.replacementStartMs} ms · salida parcial: ${d.kill.outputLeft} bytes`)
   if (d.recycle) lines.push(`- Memoria (${d.recycle.ops} operaciones pequeñas): línea base ${d.recycle.baselineRssMB} MB, máximo ${d.recycle.maxRssMB} MB, reciclajes ${d.recycle.recycles}`, `- Operación pesada: antes ${d.recycle.heavy?.rssBeforeMB} MB → después ${d.recycle.heavy?.rssAfterMB} MB → tras reiniciar ${d.recycle.heavy?.rssAfterRestartMB} MB (reinicio ${d.recycle.heavy?.restartMs} ms)`)
   if (d.memoryCap) lines.push(`- Tope de memoria 1 GiB (objeto de trabajo): ${typeof d.memoryCap.capped1GiB === 'string' ? d.memoryCap.capped1GiB : JSON.stringify(d.memoryCap.capped1GiB.result ?? {salida: d.memoryCap.capped1GiB.exitCode, stderr: d.memoryCap.capped1GiB.stderr?.slice(0, 120)})}`)
+  if (d.casos) {
+    const tally = {}; for (const c of d.casos) for (const m of ['paralelo', 'no_paralelo', 'paralelo_1_hilo']) tally[`${m}: ${c[m].veredicto}`] = (tally[`${m}: ${c[m].veredicto}`] ?? 0) + 1
+    lines.push(`- DuckDB ${d.duckdb}, ${d.casos.length} casos hostiles: ${Object.entries(tally).map(([k, v]) => `${k} ×${v}`).join(' · ')}`, `- Peligrosos (DuckDB acepta o interpreta distinto): ${d.peligrosos.map(p => `${p.caso} [${p.modo}]`).join('; ') || 'ninguno'}`, `- Estrés de fronteras de trozo (${d.estres.archivo.mib} MiB, ${d.estres.archivo.filas} filas): ${d.estres.lecturas.map(l => `${l.modo} → ${l.coincide ?? l.error}`).join(' · ')}`)
+  }
+  if (d.variantes) {
+    lines.push(`- Inventario de binarios: ${d.inventario.binarios} (${Object.entries(d.inventario.porEstado).map(([k, v]) => `${k} ×${v}`).join(' · ')})`)
+    for (const v of d.variantes) lines.push(`  - ${v.variante}: ${v.cargaElMotor ? `carga DuckDB ${v.duckdb}, hijo confinado ${v.hijoConfinado ? `${v.hijoConfinado.denegado} denegados/${v.hijoConfinado.permitido} permitidos` : '—'}, autocomprobación ${v.autocomprobacion}` : `NO CARGA${v.expirado ? ' (sin respuesta en 90 s)' : ''}: ${String(v.error ?? '').slice(0, 220)}`}${v.firma ? ` · firma ${v.firma.verificacion}, equipo app ${v.firma.equipoDeLaAplicacion}, equipo nativo ${v.firma.equipoDelNativo}` : ''}`)
+    if (d.gatekeeper) lines.push(`- Gatekeeper: ${d.gatekeeper.texto}`)
+  }
   if (d.windowsLauncher) lines.push(`- Lanzador de Windows: SID ${d.windowsLauncher.sid}, concesiones: ${(d.windowsLauncher.grants ?? []).join(' | ')}`)
   if (d.bubblewrap) lines.push(`- bubblewrap: ${JSON.stringify(d.bubblewrap)}`)
   if (d.confined?.error ?? d.confined?.stdout !== undefined) lines.push(`- confined: ${JSON.stringify(d.confined).slice(0, 400)}`)

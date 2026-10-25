@@ -179,12 +179,28 @@ $sid = [FreyaAppContainer]::EnsureProfile($ProfileName)
 New-Item -ItemType Directory -Force -Path $WorkDir | Out-Null
 $grants = @()
 # icacls escribe en stderr si algo falla: con ErrorActionPreference=Stop eso sería terminante, así que cada concesión se registra con su código de salida.
-function Grant($dir, $permission, $label) {
-  try { $text = (& icacls $dir /grant "*${sid}:(OI)(CI)($permission)" 2>&1 | Out-String).Trim(); $script:grants += "$label $dir => $LASTEXITCODE$(if ($LASTEXITCODE -ne 0) { ' ' + $text })" }
+function Grant($dir, $who, $permission, $label, $inherit) {
+  try { $text = (& icacls $dir /grant "*${who}:${inherit}($permission)" 2>&1 | Out-String).Trim(); $script:grants += "$label $dir => $LASTEXITCODE$(if ($LASTEXITCODE -ne 0) { ' ' + $text })" }
   catch { $script:grants += "$label $dir => error $($_.Exception.Message)" }
 }
-Grant $WorkDir 'M' 'escritura'
-foreach ($dir in $ReadDirs) { if ($dir) { Grant $dir 'RX' 'lectura' } }
+# Escritura en la carpeta de trabajo: solo para ESTE AppContainer.
+Grant $WorkDir $sid 'M' 'escritura' '(OI)(CI)'
+# Lectura de los programas: a «TODOS LOS PAQUETES DE APLICACIÓN» (S-1-15-2-1), como Archivos de programa. Conceder solo el SID de este paquete hace que Electron >= 44
+# se niegue a arrancar («its ACL has an entry for an AppContainer package SID but none for ALL APPLICATION PACKAGES»).
+$AAP = 'S-1-15-2-1'
+$ancestors = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+foreach ($dir in $ReadDirs) {
+  if (-not $dir -or -not (Test-Path -LiteralPath $dir)) { $grants += "lectura $dir => no existe en disco"; continue }
+  Grant $dir $AAP 'RX' 'lectura' $(if (Test-Path -LiteralPath $dir -PathType Container) { '(OI)(CI)' } else { '' })
+}
+# Node resuelve la ruta real con lstat de cada componente desde la raíz de la unidad; un AppContainer no puede ni leer los atributos de «D:\» ni de sus carpetas.
+# Se concede lectura SOLO a la carpeta (sin herencia) en cada ancestro de lo que se lee y de la carpeta de trabajo.
+foreach ($path in @($ReadDirs) + @($WorkDir)) {
+  if (-not $path) { continue }
+  $parent = [System.IO.Path]::GetDirectoryName($path)
+  while ($parent) { [void]$ancestors.Add($parent); $parent = [System.IO.Path]::GetDirectoryName($parent) }
+}
+foreach ($ancestor in $ancestors) { if (Test-Path -LiteralPath $ancestor -PathType Container) { Grant $ancestor $AAP 'RX' 'travesia' '' } }
 $stdout = Join-Path $WorkDir 'stdout.txt'; $stderr = Join-Path $WorkDir 'stderr.txt'
 $sw = [Diagnostics.Stopwatch]::StartNew()
 try { $raw = [FreyaAppContainer]::Run($sid, $Exe, $Arguments, $WorkDir, $stdout, $stderr, $ExtraEnv, $MemoryLimitMB, $TimeoutSec, [bool]$Relay); $parts = $raw.Split('|'); $result = @{ exitCode = [uint32]$parts[0]; timedOut = ($parts[1] -eq '1'); error = $null } }

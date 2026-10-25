@@ -8,7 +8,7 @@ import {spawnSync} from 'node:child_process'
 import {createRequire} from 'node:module'
 import net from 'node:net'
 import os from 'node:os'
-import {confinedRun, mechanismName} from './lib/confine.mjs'
+import {confinedRun, mechanismName, electronNodeArgs} from './lib/confine.mjs'
 import {makeFixture} from '../duckdb-native/lib/selftest.mjs'
 const here = dirname(fileURLToPath(import.meta.url))
 const args = Object.fromEntries(process.argv.slice(2).reduce((a, x, i, all) => (x.startsWith('--') ? [...a, [x.slice(2), all[i + 1]]] : a), []))
@@ -23,6 +23,7 @@ const server = net.createServer(socket => { socket.on('error', () => {}); socket
 const port = server.address().port
 const confinedScript = resolve(here, '../duckdb-native/confined.mjs')
 const hostsPath = process.platform === 'win32' ? 'C:\\Windows\\System32\\drivers\\etc\\hosts' : '/etc/hosts'
+const nodeFlags = runtime === 'electron' ? electronNodeArgs() : []
 const scriptArgs = (tag, dir) => [confinedScript, '--install', install, '--work', dir, '--secret', secret, '--port', String(port), '--forbiddenWrite', join(outside, `escrito-${tag}.txt`), '--tag', tag]
 const parse = text => { const line = (text ?? '').split(/\r?\n/).find(l => l.startsWith('CONFINED_RESULT ')); return line ? JSON.parse(line.slice(16)) : null }
 
@@ -31,7 +32,7 @@ const controlResults = parse(control.stdout)
 const confinedWork = join(work, 'confinada'); mkdirSync(join(confinedWork, 'tmp'), {recursive: true})
 makeFixture(join(confinedWork, 'selftest-ventas.csv'), 20000)
 const readDirs = [dirname(exe), install, resolve(here, '..'), ...(runtime === 'electron' ? [dirname(dirname(exe))] : [])]
-const confined = confinedRun({exe, args: scriptArgs('confinada', confinedWork), workDir: confinedWork, hideDirs: [outside], readDirs, env: baseEnv, timeoutMs: 180000})
+const confined = confinedRun({exe, args: [...nodeFlags, ...scriptArgs('confinada', confinedWork)], workDir: confinedWork, hideDirs: [outside], readDirs, env: baseEnv, timeoutMs: 180000})
 const confinedResults = parse(confined.stdout)
 const wrote = existsSync(join(outside, 'escrito-confinada.txt'))
 if (Array.isArray(confinedResults)) for (const r of confinedResults) if (r.name === 'Node escribe fuera de la carpeta de trabajo' && r.outcome === 'escribe' && !wrote) { r.outcome = 'denegado'; r.detail = 'la escritura quedó en un tmpfs efímero; no llegó al disco real' }
@@ -40,7 +41,7 @@ if (Array.isArray(confinedResults)) for (const r of confinedResults) if (r.name 
 const heavyArgs = ['--install', install, '--work', join(work, 'heavy'), '--limit', '2GB', '--rows', '60000000']
 const heavyScript = resolve(here, 'heavy.mjs')
 const heavyControl = spawnSync(exe, [heavyScript, ...heavyArgs], {encoding: 'utf8', timeout: 300000, env: {...process.env, ...baseEnv}})
-const heavyCapped = process.platform === 'win32' ? confinedRun({exe, args: [heavyScript, '--install', install, '--work', join(work, 'heavy-cap'), '--limit', '2GB', '--rows', '60000000'], workDir: join(work, 'heavy-cap'), readDirs, env: baseEnv, memoryLimitMB: 1024, timeoutMs: 300000}) : null
+const heavyCapped = process.platform === 'win32' ? confinedRun({exe, args: [...nodeFlags, heavyScript, '--install', install, '--work', join(work, 'heavy-cap'), '--limit', '2GB', '--rows', '60000000'], workDir: join(work, 'heavy-cap'), readDirs, env: baseEnv, memoryLimitMB: 1024, timeoutMs: 300000}) : null
 const heavyParse = text => { const l = (text ?? '').split(/\r?\n/).find(x => x.startsWith('HEAVY_RESULT ')); return l ? JSON.parse(l.slice(13)) : null }
 
 server.close(); rmSync(outside, {recursive: true, force: true})
