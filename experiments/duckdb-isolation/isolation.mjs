@@ -1,7 +1,7 @@
 // M3 · Capa de aislamiento del sistema operativo alrededor del proceso que ejecuta DuckDB, en las cuatro plataformas, con el runtime elegido.
 //   node isolation.mjs --install <@duckdb/node-api> --work <carpeta nueva> --out resultados.json [--runtime node|electron] [--exe <ruta>]
 // --runtime electron usa el binario de Electron con ELECTRON_RUN_AS_NODE=1 (el mismo ABI que el módulo nativo del producto).
-import {mkdirSync, writeFileSync, rmSync, existsSync} from 'node:fs'
+import {mkdirSync, writeFileSync, rmSync, existsSync, copyFileSync} from 'node:fs'
 import {join, resolve, dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {spawnSync} from 'node:child_process'
@@ -17,7 +17,9 @@ const outside = join(os.tmpdir(), `m3-fuera-${process.pid}`)
 mkdirSync(join(work, 'tmp'), {recursive: true}); mkdirSync(outside, {recursive: true})
 const secret = join(outside, 'secreto.txt'); writeFileSync(secret, 'SECRETO\n')
 makeFixture(join(work, 'selftest-ventas.csv'), 20000)
-const exe = args.exe ?? (runtime === 'electron' ? createRequire(join(process.cwd(), 'package.json'))('electron') : process.execPath)
+let exe = args.exe ?? (runtime === 'electron' ? createRequire(join(process.cwd(), 'package.json'))('electron') : process.execPath)
+// Windows: ver lib/integration-core.mjs; un node.exe copiado a su propia carpeta pequeña.
+if (runtime === 'node' && process.platform === 'win32') { const staged = join(work, 'runtime'); mkdirSync(staged, {recursive: true}); copyFileSync(exe, join(staged, 'node.exe')); exe = join(staged, 'node.exe') }
 const baseEnv = runtime === 'electron' ? {ELECTRON_RUN_AS_NODE: '1'} : {}
 const server = net.createServer(socket => { socket.on('error', () => {}); socket.end('hola') }); await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
 const port = server.address().port
@@ -31,8 +33,8 @@ const control = spawnSync(exe, scriptArgs('control', work), {encoding: 'utf8', t
 const controlResults = parse(control.stdout)
 const confinedWork = join(work, 'confinada'); mkdirSync(join(confinedWork, 'tmp'), {recursive: true})
 makeFixture(join(confinedWork, 'selftest-ventas.csv'), 20000)
-const readDirs = [runtime === 'electron' ? dirname(exe) : exe, install, resolve(here, '..'), ...(runtime === 'electron' ? [dirname(dirname(exe))] : [])]
-const confined = confinedRun({exe, args: [...nodeFlags, ...scriptArgs('confinada', confinedWork)], workDir: confinedWork, hideDirs: [outside], readDirs, env: baseEnv, timeoutMs: 180000})
+const readDirs = [runtime === 'electron' || process.platform === 'win32' ? dirname(exe) : exe, install, resolve(here, '..'), ...(runtime === 'electron' ? [dirname(dirname(exe))] : [])]
+const confined = confinedRun({exe, args: [...nodeFlags, ...scriptArgs('confinada', confinedWork)], workDir: confinedWork, hideDirs: [outside], readDirs, env: baseEnv, timeoutMs: 90000})
 const confinedResults = parse(confined.stdout)
 const wrote = existsSync(join(outside, 'escrito-confinada.txt'))
 if (Array.isArray(confinedResults)) for (const r of confinedResults) if (r.name === 'Node escribe fuera de la carpeta de trabajo' && r.outcome === 'escribe' && !wrote) { r.outcome = 'denegado'; r.detail = 'la escritura quedó en un tmpfs efímero; no llegó al disco real' }

@@ -3,7 +3,7 @@
 import {Host} from '../../duckdb-native/lib/host.mjs'
 import {spawn} from 'node:child_process'
 export class ConfinedHost extends Host {
-  startTimeoutMs = 120000
+  startTimeoutMs = 90000
   // Sin tiempo máximo, un hijo que no llega a responder (p. ej. Electron con el fusible RunAsNode desactivado) deja colgado al anfitrión.
   async start(install, options) {
     let timer

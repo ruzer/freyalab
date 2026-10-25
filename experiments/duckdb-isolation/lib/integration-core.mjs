@@ -1,7 +1,7 @@
 // M3 · Integración: el proceso principal (Node o Electron) lanza el motor DuckDB en un proceso hijo DENTRO de la capa del sistema operativo y le pide las
 // operaciones cerradas de M2 por un protocolo de líneas JSON. Mide: arranque en frío, sobrecoste de la capa, qué puede hacer el proceso fuera de su
 // carpeta, qué ocurre al matarlo y cómo evoluciona su memoria si se reutiliza (política de reciclaje).
-import {mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, statSync} from 'node:fs'
+import {mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, statSync, copyFileSync} from 'node:fs'
 import {join, resolve, dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import net from 'node:net'
@@ -30,7 +30,10 @@ export async function integration({exe, execArgs = [], baseEnv = {}, install, wo
   const experiments = resolve(here, '..', '..')
   // Node: basta con el ejecutable (conceder la carpeta entera recorre miles de archivos de npm). Electron necesita su carpeta (bibliotecas, recursos).
   const isNode = /[\\/]node(\.exe)?$/i.test(exe)
-  const readDirs = [isNode ? exe : dirname(exe), install, experiments]
+  // Windows: un node.exe suelto dentro de un AppContainer no arranca si solo se le concede el archivo, y conceder la carpeta de la instalación de Node recorre miles de archivos.
+  // Un producto llevaría su propio runtime en su carpeta: se imita copiando node.exe a una carpeta propia pequeña.
+  if (isNode && process.platform === 'win32') { const runtime = join(work, 'runtime'); mkdirSync(runtime, {recursive: true}); copyFileSync(exe, join(runtime, 'node.exe')); exe = join(runtime, 'node.exe'); report.exe = exe }
+  const readDirs = [isNode && process.platform !== 'win32' ? exe : dirname(exe), install, experiments]
   const heartbeat = join(confinedWork, 'heartbeat.txt')
   const spawnLayer = () => spawnConfined({exe, args: [...execArgs, worker], workDir: confinedWork, hideDirs: [outside], readDirs, env: {...baseEnv, M3_HEARTBEAT: heartbeat}, memoryLimitMB, timeoutMs: 3600000})
   const confinedHost = () => new ConfinedHost(spawnLayer, 'proceso hijo confinado')
