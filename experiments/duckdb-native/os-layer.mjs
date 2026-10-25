@@ -3,7 +3,7 @@
 // macOS: sandbox-exec (obsoleto pero presente). Linux: bubblewrap (con sudo si hace falta). Windows: sin mecanismo probado → «pendiente».
 // Compara una ejecución de CONTROL (sin capa) con una CONFINADA: el control debe poder leer, escribir y conectar; la confinada no.
 import {spawnSync} from 'node:child_process'
-import {mkdirSync, writeFileSync, rmSync} from 'node:fs'
+import {mkdirSync, writeFileSync, rmSync, realpathSync} from 'node:fs'
 import {join, resolve, dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import net from 'node:net'
@@ -24,7 +24,8 @@ const control = parse(spawnSync(node, confinedArgs('control'), {encoding: 'utf8'
 let mechanism = null, confined = null, note = ''
 if (process.platform === 'darwin') {
   mechanism = 'sandbox-exec (perfil SBPL)'
-  const profile = `(version 1)(allow default)(deny network*)(deny file-read* (subpath "${outside}") (literal "/private/etc/hosts"))(deny file-write* (subpath "${outside}"))`
+  const real = realpathSync(outside) // SBPL compara rutas reales: /var/folders es un enlace a /private/var/folders (el mismo tropiezo que /etc → /private/etc en el RFC)
+  const profile = `(version 1)(allow default)(deny network*)(deny file-read* (subpath "${real}") (literal "/private/etc/hosts"))(deny file-write* (subpath "${real}"))`
   confined = parse(spawnSync('sandbox-exec', ['-p', profile, node, ...confinedArgs('confinada')], {encoding: 'utf8', timeout: 120000}))
 } else if (process.platform === 'linux') {
   mechanism = 'bubblewrap (--ro-bind / /, --unshare-net, tmpfs sobre la carpeta ajena, /dev/null sobre /etc/hosts)'
@@ -33,6 +34,9 @@ if (process.platform === 'darwin') {
   if (!parse(run).length) run = spawnSync('sudo', ['-E', 'bwrap', ...base, node, ...confinedArgs('confinada')], {encoding: 'utf8', timeout: 120000})
   confined = parse(run)
 } else { note = 'Sin mecanismo de aislamiento del sistema operativo probado en esta plataforma: pendiente (AppContainer/token restringido + objeto de trabajo).' }
+// Una escritura «permitida» dentro de un tmpfs que la capa montó sobre la carpeta ajena (Linux) no llega al disco real: se comprueba desde fuera.
+const reached = (await import('node:fs')).existsSync(forbiddenWrite + '.confinada')
+if (Array.isArray(confined)) for (const r of confined) if (r.name === 'Node escribe fuera de la carpeta de trabajo' && r.outcome === 'escribe' && !reached) { r.outcome = 'denegado'; r.detail = 'la escritura quedó en un tmpfs efímero de la capa; no llegó al disco real' }
 server.close(); rmSync(outside, {recursive: true, force: true})
 const by = (list, name) => list?.find?.(r => r.name === name)?.outcome
 const names = ['Node lee el archivo ajeno', 'Node lee /etc/hosts', 'Node abre una conexión TCP a un servidor local', 'Node escribe fuera de la carpeta de trabajo', 'DuckDB sin restricciones lee el archivo ajeno']

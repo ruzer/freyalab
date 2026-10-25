@@ -20,7 +20,7 @@ try {
 const instance = await duck.DuckDBInstance.create(':memory:'), connection = await instance.connect()
 await connection.run('SET autoinstall_known_extensions=false'); await connection.run('SET autoload_known_extensions=false')
 for (const [name, target] of [['DuckDB sin restricciones lee el archivo ajeno', args.secret], ['DuckDB sin restricciones lee /etc/hosts', '/etc/hosts']]) {
-  try { const rows = (await connection.runAndReadAll(`select length(content) n from read_text('${target}')`)).getRowObjects(); record(name, Number(rows[0].n) > 0 ? 'lee' : 'vacío', `${rows[0].n} bytes`) } catch (error) { record(name, 'denegado', error.message) }
+  try { const rows = (await connection.runAndReadAll(`select length(content) n from read_text('${target}')`)).getRowObjects(); record(name, !rows.length ? 'denegado' : Number(rows[0].n) > 0 ? 'lee' : 'vacío', rows.length ? `${rows[0].n} bytes` : 'sin filas: el sistema impidió la lectura') } catch (error) { record(name, 'denegado', error.message) }
 }
 for (const [name, target] of [['Node lee el archivo ajeno', args.secret], ['Node lee /etc/hosts', '/etc/hosts']]) {
   try { const n = readFileSync(target).length; record(name, n > 0 ? 'lee' : 'vacío', `${n} bytes`) } catch (error) { record(name, 'denegado', error.code ?? error.message) }
