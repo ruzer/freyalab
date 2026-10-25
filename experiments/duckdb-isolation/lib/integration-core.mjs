@@ -28,7 +28,9 @@ export async function integration({exe, execArgs = [], baseEnv = {}, install, wo
   const confinedWork = resolve(work, 'confinada'), plainWork = resolve(work, 'sin-capa')
   for (const dir of [confinedWork, plainWork]) mkdirSync(join(dir, 'tmp'), {recursive: true})
   const experiments = resolve(here, '..', '..')
-  const readDirs = [dirname(exe), install, experiments]
+  // Node: basta con el ejecutable (conceder la carpeta entera recorre miles de archivos de npm). Electron necesita su carpeta (bibliotecas, recursos).
+  const isNode = /[\\/]node(\.exe)?$/i.test(exe)
+  const readDirs = [isNode ? exe : dirname(exe), install, experiments]
   const heartbeat = join(confinedWork, 'heartbeat.txt')
   const spawnLayer = () => spawnConfined({exe, args: [...execArgs, worker], workDir: confinedWork, hideDirs: [outside], readDirs, env: {...baseEnv, M3_HEARTBEAT: heartbeat}, memoryLimitMB, timeoutMs: 3600000})
   const confinedHost = () => new ConfinedHost(spawnLayer, 'proceso hijo confinado')
@@ -46,7 +48,7 @@ export async function integration({exe, execArgs = [], baseEnv = {}, install, wo
     const plain = plainHost(); const ts = performance.now(); report.control.selftest = (await runModes(plain, plainSettings, 'sin-capa')).selftest; report.control.selftestMs = round(performance.now() - ts); await plain.stop()
 
     probeHost = confinedHost(); t0 = performance.now()
-    await probeHost.start(resolve(install), s.options).catch(error => { report.startError = {message: error.message, stderr: probeHost.child?.stderr, launcher: probeHost.child?.launcherResult?.()}; throw error })
+    await probeHost.start(resolve(install), s.options).catch(error => { report.startError = {message: error.message, stderr: probeHost.child?.stderr, workerStderr: existsSync(join(confinedWork, 'stderr.txt')) ? readFileSync(join(confinedWork, 'stderr.txt'), 'utf8').slice(-1500) : null, launcher: probeHost.child?.launcherResult?.()}; throw error })
     report.coldStart.conCapaMs = round(performance.now() - t0)
     report.confined = {probe: (await probeHost.send('probe', {install: resolve(install), args: probeArgs})).results}
     // Linux: bubblewrap monta un tmpfs sobre la carpeta ajena, así que una escritura «con éxito» no llega al disco real.
@@ -56,7 +58,7 @@ export async function integration({exe, execArgs = [], baseEnv = {}, install, wo
     const host = confinedHost()
     const cs = performance.now(); const modes = await runModes(host, s, 'confinado'); report.confined.selftest = modes.selftest; report.versions = modes.versions; report.confined.selftestMs = round(performance.now() - cs)
     // La batería de seguridad de M2 abre un servidor HTTP local para ver si DuckDB lo alcanza; dentro de la capa abrir un socket ya es imposible (EPERM): no es aplicable.
-    for (const c of report.confined.selftest.checks) if (!c.ok && c.name.startsWith('aislamiento') && /terminó/.test(c.error ?? '')) c.skipped = 'no aplicable dentro de la capa: la batería abre un servidor local y la capa impide abrir sockets'
+    for (const c of report.confined.selftest.checks) if (!c.ok && c.name.startsWith('aislamiento') && /terminó|EPERM/.test(c.error ?? '')) c.skipped = 'no aplicable dentro de la capa: la batería abre un servidor local y crea enlaces simbólicos, y la capa impide abrir sockets y crear enlaces'
     report.confined.selftest.allOkExceptSkipped = report.confined.selftest.checks.every(c => c.ok || c.skipped)
     // La comparación justa excluye la batería de seguridad (en la capa se omite) y suma el tiempo de cada comprobación.
     const spent = list => round(list.checks.filter(c => !c.name.startsWith('aislamiento')).reduce((n, c) => n + c.ms, 0))

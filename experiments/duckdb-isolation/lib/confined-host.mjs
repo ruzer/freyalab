@@ -3,6 +3,13 @@
 import {Host} from '../../duckdb-native/lib/host.mjs'
 import {spawn} from 'node:child_process'
 export class ConfinedHost extends Host {
+  startTimeoutMs = 120000
+  // Sin tiempo máximo, un hijo que no llega a responder (p. ej. Electron con el fusible RunAsNode desactivado) deja colgado al anfitrión.
+  async start(install, options) {
+    let timer
+    const limit = new Promise((_, reject) => { timer = setTimeout(() => { this.child?.kill?.(); reject(new Error(`el proceso auxiliar no respondió en ${this.startTimeoutMs} ms`)) }, this.startTimeoutMs) })
+    try { return await Promise.race([super.start(install, options), limit]) } finally { clearTimeout(timer) }
+  }
   async rss() { try { return (await this.send('info')).rss } catch { return null } }
   async cpu() { return 0 }
   info() { return this.send('info') }

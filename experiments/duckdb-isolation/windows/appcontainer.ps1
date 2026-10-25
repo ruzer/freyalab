@@ -178,9 +178,17 @@ $ExtraEnv = @($ExtraEnv | ForEach-Object { $_ -split ',' } | Where-Object { $_ }
 $sid = [FreyaAppContainer]::EnsureProfile($ProfileName)
 New-Item -ItemType Directory -Force -Path $WorkDir | Out-Null
 $grants = @()
+$grantTimer = [Diagnostics.Stopwatch]::StartNew()
 # icacls escribe en stderr si algo falla: con ErrorActionPreference=Stop eso sería terminante, así que cada concesión se registra con su código de salida.
+# Si la concesión ya existe (p. ej. de un arranque anterior o del instalador) no se repite: icacls recorre todo el árbol y una carpeta de Node con npm tarda más de 90 s.
+function HasGrant($dir, $who) {
+  try { foreach ($rule in (Get-Acl -LiteralPath $dir).Access) { if ($rule.AccessControlType -eq 'Allow' -and $rule.IdentityReference.Translate([System.Security.Principal.SecurityIdentifier]).Value -eq $who) { return $true } } } catch { }
+  return $false
+}
 function Grant($dir, $who, $permission, $label, $inherit) {
-  try { $text = (& icacls $dir /grant "*${who}:${inherit}($permission)" 2>&1 | Out-String).Trim(); $script:grants += "$label $dir => $LASTEXITCODE$(if ($LASTEXITCODE -ne 0) { ' ' + $text })" }
+  $timer = [Diagnostics.Stopwatch]::StartNew()
+  if ($who -ne $sid -and (HasGrant $dir $who)) { $script:grants += "$label $dir => ya concedido"; return }
+  try { $text = (& icacls $dir /grant "*${who}:${inherit}($permission)" 2>&1 | Out-String).Trim(); $script:grants += "$label $dir => $LASTEXITCODE ($([int]$timer.Elapsed.TotalMilliseconds) ms)$(if ($LASTEXITCODE -ne 0) { ' ' + $text })" }
   catch { $script:grants += "$label $dir => error $($_.Exception.Message)" }
 }
 # Escritura en la carpeta de trabajo: solo para ESTE AppContainer.
@@ -201,10 +209,11 @@ foreach ($path in @($ReadDirs) + @($WorkDir)) {
   while ($parent) { [void]$ancestors.Add($parent); $parent = [System.IO.Path]::GetDirectoryName($parent) }
 }
 foreach ($ancestor in $ancestors) { if (Test-Path -LiteralPath $ancestor -PathType Container) { Grant $ancestor $AAP 'RX' 'travesia' '' } }
+$grantTimer.Stop()
 $stdout = Join-Path $WorkDir 'stdout.txt'; $stderr = Join-Path $WorkDir 'stderr.txt'
 $sw = [Diagnostics.Stopwatch]::StartNew()
 try { $raw = [FreyaAppContainer]::Run($sid, $Exe, $Arguments, $WorkDir, $stdout, $stderr, $ExtraEnv, $MemoryLimitMB, $TimeoutSec, [bool]$Relay); $parts = $raw.Split('|'); $result = @{ exitCode = [uint32]$parts[0]; timedOut = ($parts[1] -eq '1'); error = $null } }
 catch { $result = @{ exitCode = $null; timedOut = $false; error = $_.Exception.Message } }
-$result.grants = $grants; $result.sid = $sid; $result.seconds = [math]::Round($sw.Elapsed.TotalSeconds, 2); $result.memoryLimitMB = $MemoryLimitMB
+$result.grants = $grants; $result.grantsSeconds = [math]::Round($grantTimer.Elapsed.TotalSeconds, 2); $result.sid = $sid; $result.seconds = [math]::Round($sw.Elapsed.TotalSeconds, 2); $result.memoryLimitMB = $MemoryLimitMB
 $result | ConvertTo-Json | Set-Content -Encoding UTF8 -Path $ResultFile
 [FreyaAppContainer]::RemoveProfile($ProfileName)

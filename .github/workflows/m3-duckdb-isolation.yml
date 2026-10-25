@@ -53,23 +53,29 @@ jobs:
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: OS layer around a Node process running DuckDB (one-shot)
         continue-on-error: true
+        timeout-minutes: 10
         run: node experiments/duckdb-isolation/isolation.mjs --runtime node --install "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-node" --out "$RUNNER_TEMP/m3out/isolation-node.json"
       - name: OS layer around an Electron-as-Node process running DuckDB (one-shot)
         continue-on-error: true
+        timeout-minutes: 10
         run: node experiments/duckdb-isolation/isolation.mjs --runtime electron --install "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-electron" --out "$RUNNER_TEMP/m3out/isolation-electron.json"
       - name: Integration, Node parent and Node child (persistent worker)
         continue-on-error: true
+        timeout-minutes: 10
         run: node experiments/duckdb-isolation/integration.mjs --runtime node --install "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-int-node" --out "$RUNNER_TEMP/m3out/integration-node.json"
       - name: Integration, Node parent and Electron-as-Node child
         continue-on-error: true
+        timeout-minutes: 10
         run: node experiments/duckdb-isolation/integration.mjs --runtime electron --install "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-int-electron" --out "$RUNNER_TEMP/m3out/integration-electron-child.json"
       - name: Integration, Electron main process (not packaged) plus utilityProcess control
         continue-on-error: true
+        timeout-minutes: 10
         run: |
           PREFIX=""; if [ "$RUNNER_OS" = "Linux" ]; then PREFIX="xvfb-run -a"; fi
           $PREFIX node experiments/duckdb-isolation/ci/run-electron.mjs --exe dev --install "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-int-main" --out "$RUNNER_TEMP/m3out/integration-electron-main.json"
       - name: Explicit schema and parallel reader against the strict parser (hostile corpus)
         continue-on-error: true
+        timeout-minutes: 10
         run: node experiments/duckdb-isolation/schema-parallel.mjs --install "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-schema" --out "$RUNNER_TEMP/m3out/schema-parallel.json"
       - name: Package the mini application
         run: npx electron-builder --dir --projectDir "$RUNNER_TEMP/m3app" --config "$RUNNER_TEMP/m3app/electron-builder.json"
@@ -80,12 +86,14 @@ jobs:
           sudo chmod 4755 "$RUNNER_TEMP/m3app/release/linux-unpacked/chrome-sandbox"
       - name: Signing readiness, fuses and inventory of native binaries (no commercial signing)
         continue-on-error: true
+        timeout-minutes: 20
         run: |
           EXE="$(node experiments/duckdb-isolation/ci/find-exe.mjs "$RUNNER_TEMP/m3app")"
           if [ "$RUNNER_OS" = "macOS" ]; then APP="$(node -p "require('path').resolve(process.argv[1],'..','..','..')" "$EXE")"; else APP="$(node -p "require('path').dirname(process.argv[1])" "$EXE")"; fi
           node experiments/duckdb-isolation/signing.mjs --app "$APP" --exe "$EXE" --work "$RUNNER_TEMP/m3work-signing" --out "$RUNNER_TEMP/m3out/signing.json"
       - name: Integration, PACKAGED application (Electron main plus confined child)
         continue-on-error: true
+        timeout-minutes: 10
         run: |
           EXE="$(node experiments/duckdb-isolation/ci/find-exe.mjs "$RUNNER_TEMP/m3app")"
           echo "ejecutable: $EXE"
@@ -93,6 +101,7 @@ jobs:
           $PREFIX node experiments/duckdb-isolation/ci/run-electron.mjs --exe "$EXE" --install app --work "$RUNNER_TEMP/m3work-int-packaged" --out "$RUNNER_TEMP/m3out/integration-packaged.json"
       - name: Installer formats (DMG, NSIS, AppImage, DEB) installed and run
         continue-on-error: true
+        timeout-minutes: 20
         run: node experiments/duckdb-isolation/installers.mjs --app "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-installers" --out "$RUNNER_TEMP/m3out/installers.json"
       - name: Summary
         if: always()

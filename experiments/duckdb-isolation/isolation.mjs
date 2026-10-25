@@ -31,7 +31,7 @@ const control = spawnSync(exe, scriptArgs('control', work), {encoding: 'utf8', t
 const controlResults = parse(control.stdout)
 const confinedWork = join(work, 'confinada'); mkdirSync(join(confinedWork, 'tmp'), {recursive: true})
 makeFixture(join(confinedWork, 'selftest-ventas.csv'), 20000)
-const readDirs = [dirname(exe), install, resolve(here, '..'), ...(runtime === 'electron' ? [dirname(dirname(exe))] : [])]
+const readDirs = [runtime === 'electron' ? dirname(exe) : exe, install, resolve(here, '..'), ...(runtime === 'electron' ? [dirname(dirname(exe))] : [])]
 const confined = confinedRun({exe, args: [...nodeFlags, ...scriptArgs('confinada', confinedWork)], workDir: confinedWork, hideDirs: [outside], readDirs, env: baseEnv, timeoutMs: 180000})
 const confinedResults = parse(confined.stdout)
 const wrote = existsSync(join(outside, 'escrito-confinada.txt'))
