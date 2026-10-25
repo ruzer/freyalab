@@ -91,6 +91,9 @@ jobs:
           echo "ejecutable: $EXE"
           PREFIX=""; if [ "$RUNNER_OS" = "Linux" ]; then PREFIX="xvfb-run -a"; fi
           $PREFIX node experiments/duckdb-isolation/ci/run-electron.mjs --exe "$EXE" --install app --work "$RUNNER_TEMP/m3work-int-packaged" --out "$RUNNER_TEMP/m3out/integration-packaged.json"
+      - name: Installer formats (DMG, NSIS, AppImage, DEB) installed and run
+        continue-on-error: true
+        run: node experiments/duckdb-isolation/installers.mjs --app "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-installers" --out "$RUNNER_TEMP/m3out/installers.json"
       - name: Summary
         if: always()
         run: node experiments/duckdb-isolation/ci/summarize.mjs "$RUNNER_TEMP/m3out" | tee -a "$GITHUB_STEP_SUMMARY"

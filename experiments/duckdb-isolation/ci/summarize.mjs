@@ -28,6 +28,10 @@ for (const name of readdirSync(dir).filter(n => n.endsWith('.json')).sort()) {
     for (const v of d.variantes) lines.push(`  - ${v.variante}: ${v.cargaElMotor ? `carga DuckDB ${v.duckdb}, hijo confinado ${v.hijoConfinado ? `${v.hijoConfinado.denegado} denegados/${v.hijoConfinado.permitido} permitidos` : '—'}, autocomprobación ${v.autocomprobacion}` : `NO CARGA${v.expirado ? ' (sin respuesta en 90 s)' : ''}: ${String(v.error ?? '').slice(0, 220)}`}${v.firma ? ` · firma ${v.firma.verificacion}, equipo app ${v.firma.equipoDeLaAplicacion}, equipo nativo ${v.firma.equipoDelNativo}` : ''}`)
     if (d.gatekeeper) lines.push(`- Gatekeeper: ${d.gatekeeper.texto}`)
   }
+  if (d.formatos) {
+    lines.push(`- Construcción de instaladores: ${d.construccion.segundos} s, salida ${d.construccion.salida}${d.construccion.cola ? ' · ' + d.construccion.cola : ''}`)
+    for (const f of d.formatos) lines.push(`  - ${f.formato}: ${f.bytes ? Math.round(f.bytes / 1048576) + ' MiB' : '—'} · ${f.instalacion ?? f.error} · ${f.ejecucion ? (f.ejecucion.carga ? `DuckDB ${f.ejecucion.duckdb}, hijo ${f.ejecucion.hijoConfinado}, autocomprobación ${f.ejecucion.autocomprobacion}` : 'NO CARGA: ' + f.ejecucion.error) : ''}${f.desinstalacion ? ' · desinstalación ' + f.desinstalacion : ''}`)
+  }
   if (d.windowsLauncher) lines.push(`- Lanzador de Windows: SID ${d.windowsLauncher.sid}, concesiones: ${(d.windowsLauncher.grants ?? []).join(' | ')}`)
   if (d.bubblewrap) lines.push(`- bubblewrap: ${JSON.stringify(d.bubblewrap)}`)
   if (d.confined?.error ?? d.confined?.stdout !== undefined) lines.push(`- confined: ${JSON.stringify(d.confined).slice(0, 400)}`)
