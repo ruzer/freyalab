@@ -241,6 +241,7 @@ foreach ($path in @($ReadDirs) + @($WorkDir)) {
 }
 foreach ($ancestor in $ancestors) {
   if (-not (Test-Path -LiteralPath $ancestor -PathType Container)) { continue }
+  Trace "travesia $ancestor"
   $timer = [Diagnostics.Stopwatch]::StartNew()
   $grants += "travesia $ancestor => $([FreyaAppContainer]::GrantTraverse($ancestor, $AAP)) ($([int]$timer.Elapsed.TotalMilliseconds) ms)"
 }

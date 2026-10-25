@@ -79,7 +79,7 @@ try {
       run(join(release, image), ['--appimage-extract'], {cwd: work}) // el producto la extrae igual: la CI no tiene FUSE
       const extracted = join(work, 'squashfs-root')
       if (process.env.CI === 'true') { sudo('chown', 'root:root', join(extracted, 'chrome-sandbox')); sudo('chmod', '4755', join(extracted, 'chrome-sandbox')) }
-      a.instalacion = 'AppImage extraída'; a.ejecucion = selftest('appimage', join(extracted, 'm3duckdb'))
+      const exe = ['freyalab-m3-duckdb', 'm3duckdb'].map(n => join(extracted, n)).find(existsSync); a.instalacion = 'AppImage extraída'; a.ejecucion = exe ? selftest('appimage', exe) : {carga: false, error: 'no se encontró el ejecutable en la AppImage extraída: ' + readdirSync(extracted).slice(0, 12).join(' ')}
     }
     report.formatos.push(a)
     const d = entry('.deb', {})
@@ -90,8 +90,8 @@ try {
       if (inst.status !== 0) d.error = 'apt-get install: ' + inst.out.slice(-200)
       else {
         d.instalacion = 'apt-get install'
-        const dir = ['/opt/M3DuckDB', '/opt/m3duckdb'].find(existsSync)
-        d.ejecucion = dir ? selftest('deb', join(dir, 'm3duckdb')) : {carga: false, error: 'no se encontró /opt/M3DuckDB'}
+        const dir = ['/opt/M3DuckDB', '/opt/m3duckdb', '/opt/freyalab-m3-duckdb'].find(existsSync), exe = dir && ['freyalab-m3-duckdb', 'm3duckdb'].map(n => join(dir, n)).find(existsSync)
+        d.ejecucion = exe ? selftest('deb', exe) : {carga: false, error: dir ? 'no se encontró el ejecutable en ' + dir + ': ' + readdirSync(dir).slice(0, 12).join(' ') : 'no se encontró /opt/M3DuckDB'}
         d.desinstalacion = sudo('apt-get', 'remove', '-y', 'freyalab-m3-duckdb').status === 0 ? 'correcta' : 'falló'
       }
     }
