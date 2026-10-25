@@ -95,7 +95,7 @@ Etiquetas: **[CI]** medido en la ejecución [40224414342](https://github.com/ruz
 | Windows x64 | persistente · padre Electron | 241.1 ms | 8142.5 ms | 1650.8 ms | 9808.5 ms |
 | Windows x64 | persistente · aplicación EMPAQUETADA | 1104.5 ms | 33604.5 ms | 4070.2 ms | 16721.9 ms |
 
-En Windows el arranque con capa incluye compilar el lanzador de PowerShell y preparar las ACL (la traza `launcher-trace.txt` de los artefactos lo desglosa); **una vez arrancado, la autocomprobación tarda lo mismo con y sin capa** (diferencia de unos cientos de ms en las cuatro plataformas).
+En Windows el arranque con capa incluye compilar el lanzador de PowerShell y preparar las ACL (la traza `launcher-trace.txt` de los artefactos lo desglosa); **una vez arrancado, la autocomprobación tarda lo mismo con y sin capa** (diferencia de unos cientos de ms en las cuatro plataformas). Una segunda ejecución sobre el estado fusionado en `main` ([40231623740](https://github.com/ruzer/freyalab/actions/runs/40231623740), también verde en las cuatro) lo confirma y desglosa el arranque de Windows: **el lanzador tarda 0,63 s y las concesiones de ACL 7,8 s**, es decir, el arranque con capa (8,0 s con Node, 9,3–9,6 s con Electron y con el paquete) es casi todo preparación de permisos que haría el instalador; el primer arranque del paquete de la primera ejecución (33,6 s) no se repitió.
 
 ### Dependencias de diseño que hay que decidir
 
