@@ -19,7 +19,7 @@ const secret = join(outside, 'secreto.txt'); writeFileSync(secret, 'SECRETO\n')
 makeFixture(join(work, 'selftest-ventas.csv'), 20000)
 const exe = args.exe ?? (runtime === 'electron' ? createRequire(join(process.cwd(), 'package.json'))('electron') : process.execPath)
 const baseEnv = runtime === 'electron' ? {ELECTRON_RUN_AS_NODE: '1'} : {}
-const server = net.createServer(socket => socket.end('hola')); await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
+const server = net.createServer(socket => { socket.on('error', () => {}); socket.end('hola') }); await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
 const port = server.address().port
 const confinedScript = resolve(here, '../duckdb-native/confined.mjs')
 const hostsPath = process.platform === 'win32' ? 'C:\\Windows\\System32\\drivers\\etc\\hosts' : '/etc/hosts'

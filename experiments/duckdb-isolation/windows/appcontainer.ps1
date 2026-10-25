@@ -1,6 +1,8 @@
 # M3 · Lanza un proceso dentro de un AppContainer de Windows con un objeto de trabajo (Job Object) que limita la memoria y mata el árbol al cerrar.
 #   powershell -NoProfile -File appcontainer.ps1 -Exe <ruta> -Arguments '<línea de órdenes sin el ejecutable>' -WorkDir <carpeta con escritura> `
-#       -ReadDirs <carpeta1>,<carpeta2> -MemoryLimitMB 1024 -TimeoutSec 120 -ResultFile <json>
+#       -ReadDirs <carpeta1>,<carpeta2> -MemoryLimitMB 1024 -TimeoutSec 120 -ResultFile <json> [-Relay]
+# Con -Relay, stdin y stdout del proceso confinado son tuberías anónimas que este script reenvía a su propia stdin/stdout (un worker persistente
+# con protocolo por líneas); stderr sigue yendo a WorkDir\stderr.txt.
 # Un AppContainer no tiene red (sin la capacidad internetClient) y solo ve los archivos cuyo ACL lo permite: se concede escritura a WorkDir y lectura a ReadDirs.
 # stdout y stderr del proceso se redirigen a WorkDir\stdout.txt y WorkDir\stderr.txt. Escribe en ResultFile {exitCode, timedOut, sid, ...}.
 param(
@@ -12,7 +14,8 @@ param(
   [int]$TimeoutSec = 120,
   [Parameter(Mandatory)][string]$ResultFile,
   [string[]]$ExtraEnv = @(),
-  [string]$ProfileName = 'freyalab.m3.helper'
+  [string]$ProfileName = 'freyalab.m3.helper',
+  [switch]$Relay
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -TypeDefinition @'
@@ -21,6 +24,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.IO;
+using Microsoft.Win32.SafeHandles;
 
 public static class FreyaAppContainer
 {
@@ -34,6 +40,7 @@ public static class FreyaAppContainer
     const uint JOB_OBJECT_LIMIT_PROCESS_MEMORY = 0x00000100, JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000;
     const int JobObjectExtendedLimitInformation = 9;
     const uint WAIT_TIMEOUT = 0x102;
+    const uint HANDLE_FLAG_INHERIT = 1;
 
     [StructLayout(LayoutKind.Sequential)] struct SECURITY_CAPABILITIES { public IntPtr AppContainerSid; public IntPtr Capabilities; public uint CapabilityCount; public uint Reserved; }
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -64,6 +71,8 @@ public static class FreyaAppContainer
     [DllImport("kernel32.dll", SetLastError = true)] static extern uint WaitForSingleObject(IntPtr handle, uint ms);
     [DllImport("kernel32.dll", SetLastError = true)] static extern bool GetExitCodeProcess(IntPtr process, out uint code);
     [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr h);
+    [DllImport("kernel32.dll", SetLastError = true)] static extern bool CreatePipe(out IntPtr read, out IntPtr write, ref SECURITY_ATTRIBUTES attrs, uint size);
+    [DllImport("kernel32.dll", SetLastError = true)] static extern bool SetHandleInformation(IntPtr h, uint mask, uint flags);
 
     public static string EnsureProfile(string name)
     {
@@ -85,7 +94,7 @@ public static class FreyaAppContainer
     }
 
     // Devuelve {exitCode, timedOut}. env: pares KEY=VALUE que se añaden al bloque de entorno heredado.
-    public static string Run(string sidText, string exe, string arguments, string workDir, string stdoutPath, string stderrPath, string[] extraEnv, int memoryLimitMB, int timeoutSec)
+    public static string Run(string sidText, string exe, string arguments, string workDir, string stdoutPath, string stderrPath, string[] extraEnv, int memoryLimitMB, int timeoutSec, bool relay)
     {
         IntPtr sid; ConvertStringSidToSidW(sidText, out sid);
         var caps = new SECURITY_CAPABILITIES { AppContainerSid = sid, Capabilities = IntPtr.Zero, CapabilityCount = 0, Reserved = 0 };
@@ -100,8 +109,20 @@ public static class FreyaAppContainer
         var si = new STARTUPINFOEX();
         si.StartupInfo.cb = Marshal.SizeOf(typeof(STARTUPINFOEX));
         si.StartupInfo.dwFlags = STARTF_USESTDHANDLES;
-        si.StartupInfo.hStdInput = Open("NUL", GENERIC_READ, OPEN_EXISTING);
-        si.StartupInfo.hStdOutput = Open(stdoutPath, GENERIC_WRITE, CREATE_ALWAYS);
+        IntPtr parentWrite = IntPtr.Zero, parentRead = IntPtr.Zero, childIn = IntPtr.Zero, childOut = IntPtr.Zero;
+        if (relay)
+        {
+            var pipeAttrs = new SECURITY_ATTRIBUTES { nLength = Marshal.SizeOf(typeof(SECURITY_ATTRIBUTES)), bInheritHandle = true };
+            if (!CreatePipe(out childIn, out parentWrite, ref pipeAttrs, 0)) throw new Win32Exception(Marshal.GetLastWin32Error(), "CreatePipe stdin");
+            if (!CreatePipe(out parentRead, out childOut, ref pipeAttrs, 0)) throw new Win32Exception(Marshal.GetLastWin32Error(), "CreatePipe stdout");
+            SetHandleInformation(parentWrite, HANDLE_FLAG_INHERIT, 0); SetHandleInformation(parentRead, HANDLE_FLAG_INHERIT, 0);
+            si.StartupInfo.hStdInput = childIn; si.StartupInfo.hStdOutput = childOut;
+        }
+        else
+        {
+            si.StartupInfo.hStdInput = Open("NUL", GENERIC_READ, OPEN_EXISTING);
+            si.StartupInfo.hStdOutput = Open(stdoutPath, GENERIC_WRITE, CREATE_ALWAYS);
+        }
         si.StartupInfo.hStdError = Open(stderrPath, GENERIC_WRITE, CREATE_ALWAYS);
         si.lpAttributeList = list;
 
@@ -130,9 +151,19 @@ public static class FreyaAppContainer
             throw new Win32Exception(Marshal.GetLastWin32Error(), "CreateProcess");
         if (!AssignProcessToJobObject(job, pi.hProcess)) { int err = Marshal.GetLastWin32Error(); TerminateJobObject(job, 1); throw new Win32Exception(err, "AssignProcessToJobObject"); }
         ResumeThread(pi.hThread);
+        Thread pumpOut = null;
+        if (relay)
+        {
+            CloseHandle(childIn); CloseHandle(childOut); // el padre solo conserva sus extremos: así se detecta el cierre del hijo
+            var pumpIn = new Thread(() => { try { using (var src = Console.OpenStandardInput()) using (var dst = new FileStream(new SafeFileHandle(parentWrite, true), FileAccess.Write, 1, false)) { var buf = new byte[65536]; int n; while ((n = src.Read(buf, 0, buf.Length)) > 0) { dst.Write(buf, 0, n); dst.Flush(); } } } catch { } });
+            pumpIn.IsBackground = true; pumpIn.Start();
+            pumpOut = new Thread(() => { try { using (var src = new FileStream(new SafeFileHandle(parentRead, true), FileAccess.Read, 1, false)) using (var dst = Console.OpenStandardOutput()) { var buf = new byte[65536]; int n; while ((n = src.Read(buf, 0, buf.Length)) > 0) { dst.Write(buf, 0, n); dst.Flush(); } } } catch { } });
+            pumpOut.IsBackground = true; pumpOut.Start();
+        }
         bool timedOut = WaitForSingleObject(pi.hProcess, (uint)(timeoutSec * 1000)) == WAIT_TIMEOUT;
         if (timedOut) TerminateJobObject(job, 1);
         uint code; GetExitCodeProcess(pi.hProcess, out code);
+        if (pumpOut != null) pumpOut.Join(3000);
         CloseHandle(pi.hThread); CloseHandle(pi.hProcess); CloseHandle(job);
         DeleteProcThreadAttributeList(list);
         return code + "|" + (timedOut ? "1" : "0");
@@ -141,14 +172,23 @@ public static class FreyaAppContainer
     [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)] static extern bool ConvertStringSidToSidW(string text, out IntPtr sid);
 }
 '@
+# Con -File, una lista separada por comas llega como UNA cadena: se separa aquí.
+$ReadDirs = @($ReadDirs | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
+$ExtraEnv = @($ExtraEnv | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
 $sid = [FreyaAppContainer]::EnsureProfile($ProfileName)
 New-Item -ItemType Directory -Force -Path $WorkDir | Out-Null
-& icacls $WorkDir /grant "*${sid}:(OI)(CI)(M)" | Out-Null
-foreach ($dir in $ReadDirs) { if ($dir) { & icacls $dir /grant "*${sid}:(OI)(CI)(RX)" | Out-Null } }
+$grants = @()
+# icacls escribe en stderr si algo falla: con ErrorActionPreference=Stop eso sería terminante, así que cada concesión se registra con su código de salida.
+function Grant($dir, $permission, $label) {
+  try { $text = (& icacls $dir /grant "*${sid}:(OI)(CI)($permission)" 2>&1 | Out-String).Trim(); $script:grants += "$label $dir => $LASTEXITCODE$(if ($LASTEXITCODE -ne 0) { ' ' + $text })" }
+  catch { $script:grants += "$label $dir => error $($_.Exception.Message)" }
+}
+Grant $WorkDir 'M' 'escritura'
+foreach ($dir in $ReadDirs) { if ($dir) { Grant $dir 'RX' 'lectura' } }
 $stdout = Join-Path $WorkDir 'stdout.txt'; $stderr = Join-Path $WorkDir 'stderr.txt'
 $sw = [Diagnostics.Stopwatch]::StartNew()
-try { $raw = [FreyaAppContainer]::Run($sid, $Exe, $Arguments, $WorkDir, $stdout, $stderr, $ExtraEnv, $MemoryLimitMB, $TimeoutSec); $parts = $raw.Split('|'); $result = @{ exitCode = [uint32]$parts[0]; timedOut = ($parts[1] -eq '1'); error = $null } }
+try { $raw = [FreyaAppContainer]::Run($sid, $Exe, $Arguments, $WorkDir, $stdout, $stderr, $ExtraEnv, $MemoryLimitMB, $TimeoutSec, [bool]$Relay); $parts = $raw.Split('|'); $result = @{ exitCode = [uint32]$parts[0]; timedOut = ($parts[1] -eq '1'); error = $null } }
 catch { $result = @{ exitCode = $null; timedOut = $false; error = $_.Exception.Message } }
-$result.sid = $sid; $result.seconds = [math]::Round($sw.Elapsed.TotalSeconds, 2); $result.memoryLimitMB = $MemoryLimitMB
+$result.grants = $grants; $result.sid = $sid; $result.seconds = [math]::Round($sw.Elapsed.TotalSeconds, 2); $result.memoryLimitMB = $MemoryLimitMB
 $result | ConvertTo-Json | Set-Content -Encoding UTF8 -Path $ResultFile
 [FreyaAppContainer]::RemoveProfile($ProfileName)
