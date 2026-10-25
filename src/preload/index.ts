@@ -7,6 +7,7 @@ const api:FreyaAPI={
  tableCopy:(id,options,format)=>invoke('copyTable',id,options,format),tablePaste:(id,range)=>invoke('pasteTable',id,range),
  chartPresets:()=>invoke('chartPresets'),saveChartPreset:(id,input)=>invoke('saveChartPreset',id,input),deleteChartPreset:id=>invoke('deleteChartPreset',id),
  sqlRun:request=>invoke('sqlRun',request),sqlPage:(requestId,offset)=>invoke('sqlPage',requestId,offset),sqlCancel:requestId=>invoke('sqlCancel',requestId),
+ operation:(id,request)=>invoke('operation',id,request),cancelOperation:(id,requestId)=>invoke('cancelOperation',id,requestId),
  analyzeColumn:(id,request)=>invoke('analyzeColumn',id,request),cancelAnalysis:(id,requestId)=>invoke('cancelAnalysis',id,requestId),cancelOpen:id=>invoke('cancelOpen',id),
  transformPreview:(id,edit)=>invoke('transformPreview',id,edit),
  rangePreview:(id,edit)=>invoke('rangePreview',id,edit),rangeClipboard:(id,range)=>invoke('rangeClipboard',id,range),

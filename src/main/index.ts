@@ -9,6 +9,8 @@ import { SqlService } from './sql-service'
 import appIcon from '../../build/icon.png?asset'
 import { Documents } from './documents'
 import { exportDocument,exportGraphic } from './export'
+import { operateDocument } from './extract'
+import { operationRequest } from './operation-schema'
 import type { Kind,TableEdit,TableOptions,TableExport,TableQuery,ExportRequest,TableRange,TableRangeEdit,TableTransformEdit } from '../shared/types'
 const here=dirname(fileURLToPath(import.meta.url))
 if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FREYALAB_USER_DATA))
@@ -59,6 +61,8 @@ async function handle(operation:string,args:unknown[]){
  case'sqlCancel':return analytics.cancel(id.parse(a))
  case'analyzeColumn':docs.get(id.parse(a));return docs.table.call('analyzeColumn',a,z.object({column:col,otherColumn:col.optional(),query:query.optional(),revision:z.number().int().nonnegative(),requestId:z.uuid(),frequencyOffset:z.number().int().min(0).max(2000000),duplicatesOnly:z.boolean(),bins:z.number().int().min(1).max(30)}).parse(b))
  case'cancelAnalysis':docs.get(id.parse(a));return docs.table.call('cancelAnalysis',a,z.uuid().parse(b))
+ case'operation':{const key=id.parse(a),outcome=await operateDocument(docs,key,operationRequest.parse(b));if(outcome?.document)window?.webContents.send('freya:event',{type:'opened',document:outcome.document});return outcome}
+ case'cancelOperation':docs.get(id.parse(a));return docs.table.call('cancelOperation',z.uuid().parse(b))
  case'cancelOpen':return docs.table.call('cancelOpen',id.parse(a)) // el documento aún no está en `records`: se está abriendo
  case'stats':docs.get(id.parse(a));return docs.table.call('stats',a,rows.nullable().parse(b),z.array(col).max(100000).parse(c),z.object({requestId:z.uuid(),revision:z.number().int().nonnegative(),range:range.optional()}).optional().parse(d))
  case'markdown':docs.get(id.parse(a));return docs.table.call('markdown',a,tableExport.parse(b) as TableExport)

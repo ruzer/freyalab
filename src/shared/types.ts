@@ -1,7 +1,8 @@
 import type {ChartConfiguration,ChartPreset} from './chart-presets'
+import type {ExtractOrigin,OperationRequest,OperationOutcome} from './operations'
 export type Kind = 'markdown' | 'text' | 'mermaid' | 'csv'
 export type Encoding = 'utf8' | 'utf16le' | 'win1252'
-export interface DocumentInfo { id:string; name:string; path:string|null; kind:Kind; text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:Encoding; delimiter:string; headers?:string[]; rowCount?:number; large?:boolean }
+export interface DocumentInfo { id:string; name:string; path:string|null; kind:Kind; text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:Encoding; delimiter:string; headers?:string[]; rowCount?:number; large?:boolean; extract?:ExtractOrigin }
 export interface TreeEntry { name:string; path:string; directory:boolean }
 export interface TableSort {column:number;descending:boolean;numeric:boolean}
 export type FilterOperator='contains'|'equals'|'notEquals'|'starts'|'ends'|'empty'|'notEmpty'|'greater'|'greaterEqual'|'less'|'lessEqual'|'dateBefore'|'dateOn'|'dateAfter'|'regex'
@@ -51,6 +52,7 @@ export interface FreyaAPI {
  tablePage(id:string,query:TableQuery):Promise<TablePage>; tableEdit(id:string,edit:TableEdit):Promise<DocumentInfo>; tableOptions(id:string,options:TableOptions):Promise<DocumentInfo>;
  chartPresets():Promise<ChartPreset[]>;saveChartPreset(id:string,input:{name:string;configuration:ChartConfiguration}):Promise<ChartPreset>;deleteChartPreset(id:string):Promise<void>;
  sqlRun(request:SqlRequest):Promise<SqlResult>;sqlPage(requestId:string,offset:number):Promise<SqlResult>;sqlCancel(requestId:string):Promise<void>;
+ operation(id:string,request:OperationRequest):Promise<OperationOutcome>; cancelOperation(id:string,requestId:string):Promise<void>;
  analyzeColumn(id:string,request:ColumnAnalysisRequest):Promise<ColumnAnalysis>; cancelAnalysis(id:string,requestId:string):Promise<void>; cancelOpen(id:string):Promise<void>;
  undo(id:string,redo?:boolean):Promise<DocumentInfo>; stats(id:string,rows:string[]|null,columns:number[],options?:TableStatsOptions):Promise<TableStats>; tableMarkdown(id:string,options:TableExport):Promise<string>;
  exportChartResult(id:string,request:ChartResultRequest):Promise<string|null>;

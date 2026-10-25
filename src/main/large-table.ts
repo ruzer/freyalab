@@ -5,11 +5,20 @@ import iconv from 'iconv-lite'
 import type {Encoding} from '../shared/types'
 
 export const LARGE_CHUNK = 16 * 1024 * 1024
-export class RecordTooLargeError extends Error {
+// Un archivo que no se puede indexar de forma fiable: el motor vuelve a la muestra de siempre y dice dónde está el problema.
+export class LargeFormatError extends Error {}
+export class RecordTooLargeError extends LargeFormatError {
  constructor(readonly ordinal: number, readonly byte: number, limit: number) {
   super(`El registro ${(ordinal + 1).toLocaleString('es')} (desde el byte ${byte.toLocaleString('es')}) supera ${limit / 1024 / 1024} MiB: ¿hay una comilla sin cerrar? Así no se puede indexar el archivo.`)
  }
 }
+// Registro 1-based en el mensaje, como en RecordTooLargeError. Antes el índice daba por bueno un registro abierto hasta el final del archivo.
+export class UnclosedQuoteError extends LargeFormatError {
+ constructor(readonly ordinal: number, readonly byte: number) {
+  super(`El registro ${(ordinal + 1).toLocaleString('es')} (desde el byte ${byte.toLocaleString('es')}) tiene una comilla sin cerrar hasta el final del archivo: no es un CSV válido y no se puede indexar.`)
+ }
+}
+export class InvalidEncodingError extends LargeFormatError {}
 export class OpenCancelled extends Error {}
 
 export interface LargeIndex {
@@ -58,6 +67,7 @@ export async function buildIndex(path: string, options: IndexOptions): Promise<L
  const handle = await open(path, 'r')
  try {
   const size = (await handle.stat()).size, terminator = await terminatorOf(handle, size, unit, bomLength), buffer = Buffer.allocUnsafe(chunk), offsets: number[] = []
+  if (unit === 2 && (size - bomLength) % 2) throw new InvalidEncodingError(`El archivo UTF-16 tiene un número impar de bytes (${size.toLocaleString('es')}): la codificación está incompleta y no se puede indexar.`)
   const state: ScanState = {inQuotes: false}
   let position = bomLength, start = bomLength, records = 0
   const onRecord = (end: number) => {
@@ -74,8 +84,39 @@ export async function buildIndex(path: string, options: IndexOptions): Promise<L
    options.onProgress?.(position / size)
    if (usable < bytesRead) break
   }
+  if (state.inQuotes) throw new UnclosedQuoteError(records, start) // el último registro quedó abierto: antes se daba por bueno
   if (start < size) { if (records % every === 0) offsets.push(start); records++ } // último registro sin salto de línea
   return {path, size, encoding, unit, terminator, bomLength, every, records, offsets: Float64Array.from(offsets)}
+ } finally { await handle.close() }
+}
+
+export interface RecordBatch { first: number; records: Buffer[]; position: number }
+// Recorre el archivo entero en flujo y entrega los registros EXACTOS (bytes, con su fin de línea) en lotes. Es la base de la extracción:
+// el mismo escáner que el índice, así que ambos delimitan igual los registros. Falla si el archivo termina con una comilla sin cerrar.
+export async function* recordBatches(index: LargeIndex, options: {batchRecords?: number; chunk?: number; cancelled?: () => boolean} = {}): AsyncGenerator<RecordBatch> {
+ const {batchRecords = 2000, chunk = 4 * 1024 * 1024} = options
+ const handle = await open(index.path, 'r')
+ try {
+  const state: ScanState = {inQuotes: false}
+  let position = index.bomLength, recordStart = position, ordinal = 0, first = 0, batch: Buffer[] = [], carry: Buffer[] = []
+  while (position < index.size) {
+   if (options.cancelled?.()) throw new OpenCancelled('Operación cancelada.')
+   const buffer = Buffer.allocUnsafe(chunk), {bytesRead} = await handle.read(buffer, 0, chunk, position); if (!bytesRead) break
+   const usable = index.unit === 2 ? bytesRead - (bytesRead % 2) : bytesRead, ends: number[] = []
+   scan(buffer, usable, position, state, index.unit, index.terminator, end => ends.push(end))
+   let cursor = position
+   for (const end of ends) {
+    const part = buffer.subarray(cursor - position, end - position)
+    batch.push(carry.length ? Buffer.concat([...carry, part]) : part); carry = []; cursor = end; recordStart = end; ordinal++
+    if (batch.length >= batchRecords) { yield {first, records: batch, position: end}; first = ordinal; batch = [] }
+   }
+   if (cursor < position + usable) carry.push(buffer.subarray(cursor - position, usable))
+   position += usable
+   if (!usable) break // UTF-16: un único byte suelto al final
+  }
+  if (state.inQuotes) throw new UnclosedQuoteError(ordinal, recordStart)
+  if (carry.length) { batch.push(Buffer.concat(carry)); ordinal++ } // último registro sin salto de línea
+  if (batch.length) yield {first, records: batch, position: index.size}
  } finally { await handle.close() }
 }
 

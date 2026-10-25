@@ -11,12 +11,15 @@
  import CsvSql from './CsvSql.svelte'
  import CsvStatistics from './CsvStatistics.svelte'
  import CsvQueryTools from './CsvQueryTools.svelte'
+ import CsvExtract from './CsvExtract.svelte'
+ import {fidelityLabel} from '../../shared/operations'
  import AnalysisDock from './AnalysisDock.svelte'
  import {workspace,saveWorkspace,settleStartup} from '../lib/workspace.svelte'
  import {dockMode,isNarrow,type DockTab} from '../lib/workspace-layout'
  import {parse} from 'csv-parse/browser/esm/sync'
  import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit} from '../../shared/types'
  let {doc,onchange,onerror,onstatus,onreport}:{doc:DocumentInfo;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
+ let showExtract=$state(false),extractButton=$state<HTMLButtonElement>()
  let showCommands=$state(false),commandsButton=$state<HTMLButtonElement>(),commandReturn:HTMLElement|null=null
  let showTransform=$state(false),transformStart=$state<import('../../shared/types').TableTransformEdit['operation']>()
  // Archivo grande (L2): solo lectura, páginas leídas del disco. Búsqueda, filtros, orden y estadísticas llegan en fases posteriores.
@@ -70,6 +73,7 @@
   {id:'replaceDocument',label:'Reemplazar en documento…',detail:'Documento completo, incluidas filas ocultas · vista previa · Ctrl/⌘ + Mayús + F',disabled:large,run:focusReplace},
   {id:'filters',label:'Filtros por columna',detail:'Mostrar u ocultar filtros de texto en encabezados',disabled:large,run:()=>showFilters=!showFilters},
   {id:'query',label:'Consulta avanzada',detail:'Filtrar por texto, número, fecha o regex; ordenar varias columnas · solo vista',disabled:large,run:()=>showQuery=!showQuery},
+  {id:'extract',label:'Extraer filas a un archivo nuevo…',detail:'Filtra por condiciones y columnas el archivo grande y crea un archivo nuevo; el original no se modifica',disabled:!large,run:()=>{showQuery=false;showExtract=!showExtract}},
   {id:'clearQuery',label:'Quitar filtros y orden',detail:'Restaura la vista de todas las filas; no cambia el documento',disabled:!search&&!Object.values(filters).some(Boolean)&&!sort&&!order.length&&!conditions.length,run:()=>{search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}},
   {id:'sql',label:'Análisis SQL y asistentes',detail:'Mostrar u ocultar agrupaciones, tablas dinámicas (pivot) y cruces de archivos con DuckDB',disabled:false,run:()=>{showQuery=false;return toggleDock('sql')}},
   {id:'statistics',label:'Estadísticas y exploración',detail:'Mostrar u ocultar perfiles, frecuencias, valores faltantes, duplicados y correlación',disabled:false,run:()=>toggleDock('resumen')},
@@ -272,13 +276,16 @@
    <span class="dropdown-label">Copiar</span>
    {@render item('copyMarkdown')}
   </div></details>
+  {#if large}<button bind:this={extractButton} aria-label="Extraer filas" aria-expanded={showExtract} title="Crea un archivo nuevo con las filas que cumplan unas condiciones; el original no se modifica" onclick={()=>void runCommand('extract')}><Icon name="funnel" size={14}/><span class="tool-text">Extraer…</span></button>{/if}
   <span class="spacer"></span>
   <span class="goto-wrap"><button bind:this={gotoButton} aria-label="Ir a la fila" aria-expanded={showGoto} title="Ir a la fila · Ctrl/⌘ + G" disabled={!page.matched} onclick={()=>void runCommand('goToRow')}><Icon name="arrow-down" size={14}/><span class="tool-text">Ir a la fila</span></button>{#if showGoto}<form class="goto-popover" novalidate onsubmit={event=>{event.preventDefault();goToRow()}}><label>Ir a la fila <input bind:this={gotoInput} onkeydown={event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeGoto()}}} type="number" min="1" max={page.matched} step="1" inputmode="numeric" aria-label="Número de fila" aria-invalid={!!gotoError} bind:value={gotoValue} oninput={()=>gotoError=''}/></label><span class="muted">de {page.matched.toLocaleString()}</span><button type="submit">Ir</button><button type="button" onclick={closeGoto}>Cerrar</button>{#if gotoError}<span role="alert" class="goto-error">{gotoError}</span>{/if}</form>{/if}</span>
   <button bind:this={commandsButton} aria-label="Buscar acción" title="Comandos CSV · Ctrl/⌘ + K" onclick={openCommands}><Icon name="command" size={14}/><span class="tool-text">Buscar acción</span></button>
   <button bind:this={analyzeButton} class="analyze" class:active={dockOpen} aria-label="Analizar" aria-expanded={dockOpen} aria-controls="analysis-dock" title="Resumen, gráficos y SQL en un panel lateral" onclick={()=>{showQuery=false;toggleDock(workspace.tab)}}><Icon name="chart-column" size={14}/><span class="tool-text">Analizar</span></button>
  </div>
+ {#if showExtract&&large}<CsvExtract {doc} {onerror} onclose={()=>{showExtract=false;extractButton?.focus()}}/>{/if}
  {#if showQuery}<CsvQueryTools headers={doc.headers??[]} initialConditions={conditions} initialOrder={activeOrder} initialMode={filterMode} onapply={applyQuery} onclose={()=>{showQuery=false;queryButton?.focus()}}/>{/if}
  {#if queryError}<div class="warning-banner" role="alert">Consulta no aplicada. Se conserva la última vista válida. {queryError} Corrige o limpia la consulta para editar. <button disabled={busy} onclick={()=>void load(0)}>Reintentar consulta</button></div>{/if}
+ {#if doc.extract}<div class="warning-banner extract-banner" role="note"><strong>Extracto de «{doc.extract.sourceName}»</strong> · {doc.extract.matched.toLocaleString('es')} de {doc.extract.total.toLocaleString('es')} filas{#if doc.extract.conditions} · {doc.extract.conditions}{/if}{#if doc.extract.columns} · columnas: {doc.extract.columns.join(', ')}{/if} · {fidelityLabel[doc.extract.fidelity]}.{#each doc.extract.normalization as note} {note}{/each}{#if doc.extract.irregularRows} {doc.extract.irregularRows.toLocaleString('es')} filas con distinto número de campos que el encabezado se conservaron como estaban.{/if} El original no se modificó.</div>{/if}
  {#if doc.warning||doc.readonly}<div class="warning-banner">{doc.warning??'Solo lectura'}{#if page.sample} Los filtros y recuentos describen únicamente la muestra.{/if}</div>{/if}
  {#if showReplace}<form class="csv-toolbar" onsubmit={event=>{event.preventDefault();prepareReplacement()}}><input bind:this={replaceInput} aria-label="Buscar valor para reemplazar" placeholder="Buscar valor" bind:value={replaceFind}/><input aria-label="Nuevo valor" placeholder="Reemplazar por" bind:value={replaceWith}/><span class="muted">{selectedColumns.length===1?'Columna marcada':'Todas las columnas'} · documento completo, incluye filas ocultas · literal, distingue mayúsculas</span><button disabled={locked||busy||!replaceFind||!doc.rowCount||!doc.headers?.length} type="submit">Vista previa del reemplazo</button></form>{/if}
  <div class="csv-body" class:expanded={mode==='expanded'} bind:clientWidth={bodyWidth}>

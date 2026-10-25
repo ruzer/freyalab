@@ -5,7 +5,7 @@ import {join} from 'node:path'
 import {parse} from 'csv-parse/sync'
 import iconv from 'iconv-lite'
 import {TableEngine,TABLE_LIMITS} from '../src/main/table-engine'
-import {buildIndex,readRecords,splitFields,RecordTooLargeError} from '../src/main/large-table'
+import {buildIndex,readRecords,splitFields,recordBatches,RecordTooLargeError,UnclosedQuoteError,InvalidEncodingError} from '../src/main/large-table'
 import type {TableQuery} from '../src/shared/types'
 
 // L2: lectura de archivos grandes por índice. Los formatos hostiles se comparan con csv-parse como oráculo independiente.
@@ -44,6 +44,25 @@ describe('índice por posición',()=>{
   const error=await buildIndex(path,{encoding:'utf8',bomLength:0,maxRecord:TABLE_LIMITS.record}).catch(e=>e)
   expect(error).toBeInstanceOf(RecordTooLargeError);expect(error.ordinal).toBe(2);expect(error.message).toContain('El registro 3')
  })
+ it('una comilla sin cerrar hasta el final del archivo falla con su posición en lugar de indexarse',async()=>{
+  const path=join(folder,'abierta.csv');await writeFile(path,'a,b\r\n1,2\r\n3,"sin cerrar\r\n4,5\r\n')
+  const error=await buildIndex(path,{encoding:'utf8',bomLength:0,maxRecord:TABLE_LIMITS.record}).catch(e=>e)
+  expect(error).toBeInstanceOf(UnclosedQuoteError);expect(error.ordinal).toBe(2);expect(error.message).toContain('El registro 3');expect(error.message).toContain('comilla sin cerrar')
+ })
+ it('un archivo UTF-16 con un byte de más no se indexa',async()=>{
+  const path=join(folder,'impar.csv');await writeFile(path,Buffer.concat([Buffer.from([0xff,0xfe]),iconv.encode('a,b\r\n1,2\r\n','utf16le'),Buffer.from([0])]))
+  await expect(buildIndex(path,{encoding:'utf16le',bomLength:2,maxRecord:TABLE_LIMITS.record})).rejects.toBeInstanceOf(InvalidEncodingError)
+ })
+ for(const [encoding,bom] of variants){
+  it(`${encoding}${bom?' con BOM':''}: los lotes entregan los bytes exactos de cada registro, con su fin de línea, y coinciden con el índice`,async()=>{
+   const data=build(encoding,bom),path=join(folder,'lotes.csv');await writeFile(path,data)
+   const index=await buildIndex(path,{encoding,bomLength:bom?(encoding==='utf16le'?2:3):0,maxRecord:TABLE_LIMITS.record,every:2,chunk:6})
+   const records:Buffer[]=[];let expectedFirst=0
+   for await(const batch of recordBatches(index,{batchRecords:2,chunk:5})){expect(batch.first).toBe(expectedFirst);expectedFirst+=batch.records.length;records.push(...batch.records)}
+   expect(records.length).toBe(index.records)
+   expect(Buffer.concat(records).equals(data.subarray(bom?(encoding==='utf16le'?2:3):0))).toBe(true) // ni un byte de más ni de menos
+  })
+ }
  it('la cancelación detiene el recorrido entre bloques',async()=>{
   const path=join(folder,'grande.csv');await writeFile(path,csv(2000));let calls=0
   await expect(buildIndex(path,{encoding:'utf8',bomLength:0,maxRecord:TABLE_LIMITS.record,chunk:1024,cancelled:()=>++calls>3})).rejects.toThrow('cancelada')
