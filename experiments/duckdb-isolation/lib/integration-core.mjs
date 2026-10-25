@@ -57,7 +57,7 @@ export async function integration({exe, execArgs = [], baseEnv = {}, install, wo
     // Linux: bubblewrap monta un tmpfs sobre la carpeta ajena, así que una escritura «con éxito» no llega al disco real.
     for (const r of report.confined.probe) if (r.name === 'Node escribe fuera de la carpeta de trabajo' && r.outcome === 'escribe' && !existsSync(probeArgs.forbiddenWrite)) { r.outcome = 'denegado'; r.detail = 'la escritura quedó en un tmpfs efímero; no llegó al disco real' }
     report.confined.verdict = verdict(report.confined.probe)
-    const launcherFirst = probeHost.child?.launcherResult?.(); await probeHost.stop()
+    await probeHost.stop(); const launcherFirst = probeHost.child?.launcherResult?.() // tras parar: el lanzador escribe su resultado al terminar
     const host = confinedHost()
     const cs = performance.now(); const modes = await runModes(host, s, 'confinado'); report.confined.selftest = modes.selftest; report.versions = modes.versions; report.confined.selftestMs = round(performance.now() - cs)
     // La batería de seguridad de M2 abre un servidor HTTP local para ver si DuckDB lo alcanza; dentro de la capa abrir un socket ya es imposible (EPERM): no es aplicable.
