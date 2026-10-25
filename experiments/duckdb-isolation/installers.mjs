@@ -33,7 +33,7 @@ function selftest(label, exe) {
   const script = [join(here, 'ci', 'run-electron.mjs'), '--exe', exe, '--install', 'app', '--work', join(work, `trabajo-${label}`), '--out', out]
   const [cmd, argv] = process.platform === 'linux' ? ['xvfb-run', ['-a', process.execPath, ...script]] : [process.execPath, script]
   const r = spawnSync(cmd, argv, {encoding: 'utf8', timeout: 180000})
-  if (!existsSync(out)) return {carga: false, error: ((r.stderr ?? '') + (r.stdout ?? '')).split('\n').filter(Boolean).slice(-3).join(' | ').slice(0, 400) || 'sin resultado'}
+  if (!existsSync(out)) return {carga: false, error: ((r.stderr ?? '') + (r.stdout ?? '')).split('\n').filter(Boolean).slice(-3).join(' | ').slice(0, 400) || 'sin resultado', salida: r.status, senal: r.signal, expirado: r.error?.code === 'ETIMEDOUT', mensaje: r.error?.message}
   const d = JSON.parse(readFileSync(out, 'utf8'))
   return {carga: Boolean(d.versions?.duckdb), duckdb: d.versions?.duckdb, hijoConfinado: d.confined?.verdict ? `${d.confined.verdict.denied.length} denegados/${d.confined.verdict.allowed.length} permitidos` : null, autocomprobacion: d.confined?.selftest ? `${d.confined.selftest.checks.filter(c => c.ok).length}/${d.confined.selftest.checks.length}` : null, error: d.error ? String(d.error).split('\n')[0].slice(0, 200) : d.startError?.message ?? null}
 }

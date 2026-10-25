@@ -13,6 +13,13 @@ export class ConfinedHost extends Host {
   async rss() { try { return (await this.send('info')).rss } catch { return null } }
   async cpu() { return 0 }
   info() { return this.send('info') }
+  // Parada ordenada: el worker termina por su cuenta y el lanzador de Windows alcanza a escribir su resultado (concesiones, tiempos). Si no, se mata.
+  async stop() {
+    if (!this.alive) return
+    try { this.child.post({id: 0, type: 'exit'}) } catch {}
+    await Promise.race([this.exited, new Promise(resolve => setTimeout(resolve, 8000))])
+    if (this.alive) await super.stop()
+  }
 }
 // Sin capa: el mismo worker como hijo normal (control para medir lo que cuesta la capa).
 export function spawnPlain({exe, args, env = {}}) {

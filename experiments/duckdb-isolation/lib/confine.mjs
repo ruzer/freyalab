@@ -46,7 +46,7 @@ export function confinedCommand({exe, args, workDir, hideDirs = [], readDirs = [
   }
   const resultFile = join(workDir, 'appcontainer-result.json')
   const quote = a => (/[\s"]/.test(a) ? `"${a.replaceAll('"', '\\"')}"` : a)
-  return {cmd: 'powershell', resultFile, args: ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', join(here, '..', 'windows', 'appcontainer.ps1'), '-Exe', exe, '-Arguments', args.map(quote).join(' '),
+  return {cmd: 'powershell', resultFile, args: ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', join(here, '..', 'windows', 'appcontainer.ps1').replace(/app\.asar([\\/])/, 'app.asar.unpacked$1'), '-Exe', exe, '-Arguments', args.map(quote).join(' '),
     '-WorkDir', workDir, '-ReadDirs', readDirs.join(','), '-MemoryLimitMB', String(memoryLimitMB), '-TimeoutSec', String(Math.round(timeoutMs / 1000)), '-ResultFile', resultFile,
     '-ExtraEnv', Object.entries(env).map(([k, v]) => `${k}=${v}`).join(','), ...(relay ? ['-Relay'] : [])]}
 }

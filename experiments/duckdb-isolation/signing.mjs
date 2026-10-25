@@ -59,7 +59,7 @@ function execute(label, exe) {
   const [cmd, argv] = process.platform === 'linux' ? ['xvfb-run', ['-a', process.execPath, ...script]] : [process.execPath, script]
   const started = performance.now()
   // Las copias en Linux pierden el setuid de chrome-sandbox: esta prueba no trata del sandbox de Chromium.
-  const r = spawnSync(cmd, argv, {encoding: 'utf8', timeout: 90000, cwd, env: {...process.env, ...(process.platform === 'linux' && label !== 'original' ? {ELECTRON_DISABLE_SANDBOX: '1'} : {})}})
+  const r = spawnSync(cmd, argv, {encoding: 'utf8', timeout: 240000, cwd, env: {...process.env, ...(process.platform === 'linux' && label !== 'original' ? {ELECTRON_DISABLE_SANDBOX: '1'} : {})}})
   const entry = {variante: label, ms: Math.round(performance.now() - started), salida: r.status, expirado: r.error?.code === 'ETIMEDOUT'}
   if (existsSync(out)) {
     const d = JSON.parse(readFileSync(out, 'utf8'))
@@ -93,11 +93,11 @@ if (process.platform === 'darwin') {
   const entitlements = dlv => `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>com.apple.security.cs.allow-jit</key><true/><key>com.apple.security.cs.allow-unsigned-executable-memory</key><true/>${dlv ? '<key>com.apple.security.cs.disable-library-validation</key><true/>' : ''}</dict></plist>`
   // Firma como lo hace electron-builder: primero los nativos sueltos (no los cubre --deep: están en Resources), luego frameworks, luego los ayudantes y al final la aplicación.
   // Los ayudantes y la aplicación llevan las mismas excepciones (`entitlementsInherit`).
-  const resign = (label, {hardened, dlv, identity = '-', nativeIdentity, keychain}) => {
+  const resign = (label, {hardened, dlv, identity = '-', skipNatives = false}) => {
     const copy = copyApp(label), ent = join(work, `${label}.entitlements.plist`); writeFileSync(ent, entitlements(dlv))
     const natives = walk(copy).filter(p => /\.(node|dylib)$/.test(p) && !/\.framework[\\/]/.test(p)), log = []
-    const sign = (id, target, extra = []) => { const r = run('codesign', ['--force', '--sign', id, ...(keychain ? ['--keychain', keychain] : []), '--timestamp=none', ...(hardened ? ['--options', 'runtime'] : []), ...extra, target]); if (r.status !== 0) log.push(`${basename(target)}: ${r.out.split('\n').pop()}`); return r.status === 0 }
-    for (const file of natives) sign(nativeIdentity ?? identity, file)
+    const sign = (id, target, extra = []) => { const r = run('codesign', ['--force', '--sign', id, ...(identity === '-' ? ['--timestamp=none'] : ['--timestamp']), ...(hardened ? ['--options', 'runtime'] : []), ...extra, target]); if (r.status !== 0) log.push(`${basename(target)}: ${r.out.split('\n').pop()}`); return r.status === 0 }
+    if (!skipNatives) for (const file of natives) sign(identity, file)
     const frameworks = join(copy, 'Contents', 'Frameworks')
     for (const name of readdirSync(frameworks)) { const bundle = join(frameworks, name); if (name.endsWith('.framework')) sign(identity, bundle, ['--deep']) }
     for (const name of readdirSync(frameworks)) { const bundle = join(frameworks, name); if (name.endsWith('.app')) sign(identity, bundle, ['--entitlements', ent]) }
@@ -106,36 +106,17 @@ if (process.platform === 'darwin') {
     const state = run('codesign', ['-dvv', join(copy, 'Contents', 'MacOS', basename(exeRel))]).out
     const native = natives.find(p => /duckdb.*\.node$/.test(p) || /\.node$/.test(p)), nativeState = native ? run('codesign', ['-dvv', native]).out : ''
     const team = text => (text.match(/TeamIdentifier=(\S+(?: set)?)/) ?? [])[1] ?? null
-    return {...execute(label, join(copy, exeRel)), firma: {hardened, disableLibraryValidation: dlv, identidad: identity === '-' ? 'ad hoc' : 'certificado autofirmado de prueba', verificacion: verify.status === 0 ? 'correcta' : verify.out.split('\n').pop(), equipoDeLaAplicacion: team(state), equipoDelNativo: team(nativeState), erroresDeFirma: log.slice(0, 4)}}
+    return {...execute(label, join(copy, exeRel)), firma: {hardened, disableLibraryValidation: dlv, identidad: identity === '-' ? 'ad hoc' : 'identidad indicada con --identity', nativosVueltosAFirmar: !skipNatives, verificacion: verify.status === 0 ? 'correcta' : verify.out.split('\n').pop(), equipoDeLaAplicacion: team(state), equipoDelNativo: team(nativeState), erroresDeFirma: log.slice(0, 4)}}
   }
   report.variantes.push({...resign('adhoc-sin-runtime', {hardened: false, dlv: false}), nota: 'firma ad hoc, sin runtime reforzado'})
   report.variantes.push({...resign('adhoc-runtime-sin-dlv', {hardened: true, dlv: false}), nota: 'ad hoc + runtime reforzado, validación de bibliotecas activa: una firma ad hoc no tiene equipo y dyld rechaza hasta el Electron Framework'})
   report.variantes.push({...resign('adhoc-runtime-con-dlv', {hardened: true, dlv: true}), nota: 'ad hoc + runtime reforzado + com.apple.security.cs.disable-library-validation'})
-  // Con un certificado autofirmado de prueba (llavero temporal, solo en la CI) la firma sí lleva un identificador de equipo y se puede ver qué hace la validación de bibliotecas.
-  if (process.env.CI) {
-    try {
-      const dir = join(work, 'identidades'); mkdirSync(dir, {recursive: true}); const keychain = join(dir, 'm3.keychain-db'), password = 'm3-prueba'
-      run('security', ['create-keychain', '-p', password, keychain]); run('security', ['set-keychain-settings', '-lut', '3600', keychain]); run('security', ['unlock-keychain', '-p', password, keychain])
-      const identity = (cn, ou) => {
-        writeFileSync(join(dir, `${ou}.cnf`), `[req]\ndistinguished_name=dn\nx509_extensions=ext\nprompt=no\n[dn]\nCN=${cn}\nOU=${ou}\nO=Experimento M3\n[ext]\nbasicConstraints=critical,CA:false\nkeyUsage=critical,digitalSignature\nextendedKeyUsage=critical,codeSigning\n`)
-        run('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', join(dir, `${ou}.key`), '-out', join(dir, `${ou}.crt`), '-days', '2', '-config', join(dir, `${ou}.cnf`)])
-        run('openssl', ['pkcs12', '-export', '-inkey', join(dir, `${ou}.key`), '-in', join(dir, `${ou}.crt`), '-out', join(dir, `${ou}.p12`), '-passout', 'pass:m3'])
-        run('security', ['import', join(dir, `${ou}.p12`), '-k', keychain, '-P', 'm3', '-T', '/usr/bin/codesign'])
-        return cn
-      }
-      const A = identity('M3 Equipo A', 'M3TEAMAAAA'), B = identity('M3 Equipo B', 'M3TEAMBBBB')
-      run('security', ['set-key-partition-list', '-S', 'apple-tool:,apple:,codesign:', '-s', '-k', password, keychain])
-      const listed = run('security', ['find-identity', '-p', 'codesigning', keychain]).out
-      const hash = cn => (listed.split('\n').find(l => l.includes(`"${cn}"`)) ?? '').match(/[0-9A-F]{40}/)?.[0]
-      if (!hash(A) || !hash(B)) report.variantes.push({variante: 'identidades-de-prueba', error: 'no se pudieron crear: ' + listed.slice(0, 300)})
-      else {
-        report.variantes.push({...resign('equipo-unico-sin-dlv', {hardened: true, dlv: false, identity: hash(A), keychain}), nota: 'todo (incluido el nativo) firmado con el mismo equipo, runtime reforzado y SIN disable-library-validation'})
-        report.variantes.push({...resign('nativo-de-otro-equipo', {hardened: true, dlv: false, identity: hash(A), nativeIdentity: hash(B), keychain}), nota: 'el módulo nativo conserva una firma de OTRO equipo (error típico si no se vuelve a firmar)'})
-        report.variantes.push({...resign('nativo-de-otro-equipo-con-dlv', {hardened: true, dlv: true, identity: hash(A), nativeIdentity: hash(B), keychain}), nota: 'igual, pero con disable-library-validation'})
-      }
-      run('security', ['delete-keychain', keychain])
-    } catch (error) { report.variantes.push({variante: 'identidades-de-prueba', error: String(error.message).slice(0, 200)}) }
-  }
+  // Con una identidad real (--identity "Developer ID Application: …") se puede ver lo que un certificado autofirmado no permite: la validación de bibliotecas compara el
+  // identificador de EQUIPO, que solo lleva un certificado de Apple. SIN identidad estas variantes NO se ejecutan (esta preparación no firma de verdad).
+  if (args.identity) {
+    report.variantes.push({...resign('identidad-sin-dlv', {hardened: true, dlv: false, identity: args.identity}), nota: 'todo, incluidos los nativos, con la misma identidad; runtime reforzado SIN disable-library-validation'})
+    report.variantes.push({...resign('identidad-nativo-sin-refirmar', {hardened: true, dlv: false, identity: args.identity, skipNatives: true}), nota: 'el módulo nativo conserva la firma con la que se publicó (error típico)'})
+  } else report.identidadReal = 'no se ejecutó: falta --identity; sin un certificado de Apple no hay identificador de equipo que comprobar'
   const gate = run('spctl', ['--assess', '--type', 'execute', '--verbose=2', appDir]); report.gatekeeper = {salida: gate.status, texto: gate.out.split('\n').slice(0, 2).join(' | '), nota: 'sin certificado de Developer ID ni notarización Gatekeeper rechaza la aplicación: es lo esperado'}
 }
 writeFileSync(args.out, JSON.stringify(report, null, 2) + '\n')

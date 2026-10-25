@@ -1,4 +1,4 @@
-# M3 · Lanza un proceso dentro de un AppContainer de Windows con un objeto de trabajo (Job Object) que limita la memoria y mata el árbol al cerrar.
+﻿# M3 · Lanza un proceso dentro de un AppContainer de Windows con un objeto de trabajo (Job Object) que limita la memoria y mata el árbol al cerrar.
 #   powershell -NoProfile -File appcontainer.ps1 -Exe <ruta> -Arguments '<línea de órdenes sin el ejecutable>' -WorkDir <carpeta con escritura> `
 #       -ReadDirs <carpeta1>,<carpeta2> -MemoryLimitMB 1024 -TimeoutSec 120 -ResultFile <json> [-Relay]
 # Con -Relay, stdin y stdout del proceso confinado son tuberías anónimas que este script reenvía a su propia stdin/stdout (un worker persistente
@@ -71,6 +71,11 @@ public static class FreyaAppContainer
     [DllImport("kernel32.dll", SetLastError = true)] static extern uint WaitForSingleObject(IntPtr handle, uint ms);
     [DllImport("kernel32.dll", SetLastError = true)] static extern bool GetExitCodeProcess(IntPtr process, out uint code);
     [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr h);
+    [StructLayout(LayoutKind.Sequential)] struct TRUSTEE { public IntPtr pMultipleTrustee; public int MultipleTrusteeOperation; public int TrusteeForm; public int TrusteeType; public IntPtr ptstrName; }
+    [StructLayout(LayoutKind.Sequential)] struct EXPLICIT_ACCESS { public uint grfAccessPermissions; public int grfAccessMode; public uint grfInheritance; public TRUSTEE Trustee; }
+    [DllImport("advapi32.dll")] static extern uint GetSecurityInfo(IntPtr handle, int objectType, uint securityInfo, IntPtr owner, IntPtr group, out IntPtr dacl, IntPtr sacl, out IntPtr securityDescriptor);
+    [DllImport("advapi32.dll")] static extern uint SetEntriesInAclW(uint count, ref EXPLICIT_ACCESS entries, IntPtr oldAcl, out IntPtr newAcl);
+    [DllImport("advapi32.dll")] static extern uint SetSecurityInfo(IntPtr handle, int objectType, uint securityInfo, IntPtr owner, IntPtr group, IntPtr dacl, IntPtr sacl);
     [DllImport("kernel32.dll", SetLastError = true)] static extern bool CreatePipe(out IntPtr read, out IntPtr write, ref SECURITY_ATTRIBUTES attrs, uint size);
     [DllImport("kernel32.dll", SetLastError = true)] static extern bool SetHandleInformation(IntPtr h, uint mask, uint flags);
 
@@ -84,6 +89,29 @@ public static class FreyaAppContainer
     }
 
     public static void RemoveProfile(string name) { DeleteAppContainerProfile(name); }
+
+    // Lectura y recorrido SOLO de esta carpeta para un SID, editando el DACL por el manejador. icacls y SetNamedSecurityInfo recorren todo el subárbol aunque la ACE no se herede:
+    // en «C:\» tardaron 96 s. SetSecurityInfo sobre un manejador no propaga nada.
+    public static string GrantTraverse(string path, string sidText)
+    {
+        IntPtr sid; if (!ConvertStringSidToSidW(sidText, out sid)) return "SID no válido";
+        var sa = new SECURITY_ATTRIBUTES { nLength = Marshal.SizeOf(typeof(SECURITY_ATTRIBUTES)), bInheritHandle = false };
+        IntPtr h = CreateFileW(path, 0x20000 | 0x40000, FILE_SHARE_READ | FILE_SHARE_WRITE | 4, ref sa, OPEN_EXISTING, 0x02000000, IntPtr.Zero);
+        if (h == new IntPtr(-1)) return "CreateFile " + Marshal.GetLastWin32Error();
+        try
+        {
+            IntPtr oldDacl, sd;
+            uint r = GetSecurityInfo(h, 1, 4, IntPtr.Zero, IntPtr.Zero, out oldDacl, IntPtr.Zero, out sd);
+            if (r != 0) return "GetSecurityInfo " + r;
+            var ea = new EXPLICIT_ACCESS { grfAccessPermissions = 0x1200A9, grfAccessMode = 1, grfInheritance = 0, Trustee = new TRUSTEE { TrusteeForm = 0, TrusteeType = 5, ptstrName = sid } };
+            IntPtr newDacl; r = SetEntriesInAclW(1, ref ea, oldDacl, out newDacl);
+            if (r != 0) return "SetEntriesInAcl " + r;
+            r = SetSecurityInfo(h, 1, 4, IntPtr.Zero, IntPtr.Zero, newDacl, IntPtr.Zero);
+            LocalFree(newDacl); LocalFree(sd);
+            return r == 0 ? "0" : "SetSecurityInfo " + r;
+        }
+        finally { CloseHandle(h); }
+    }
 
     static IntPtr Open(string path, uint access, uint disposition)
     {
@@ -180,19 +208,21 @@ New-Item -ItemType Directory -Force -Path $WorkDir | Out-Null
 $grants = @()
 $grantTimer = [Diagnostics.Stopwatch]::StartNew()
 # icacls escribe en stderr si algo falla: con ErrorActionPreference=Stop eso sería terminante, así que cada concesión se registra con su código de salida.
-# Si la concesión ya existe (p. ej. de un arranque anterior o del instalador) no se repite: icacls recorre todo el árbol y una carpeta de Node con npm tarda más de 90 s.
+# Si la concesión ya existe (p. ej. de un arranque anterior o del instalador) no se repite. icacls sin /grant solo lee: es rápido.
 function HasGrant($dir, $who) {
-  try { foreach ($rule in (Get-Acl -LiteralPath $dir).Access) { if ($rule.AccessControlType -eq 'Allow' -and $rule.IdentityReference.Translate([System.Security.Principal.SecurityIdentifier]).Value -eq $who) { return $true } } } catch { }
-  return $false
+  try { $text = (& icacls $dir 2>&1 | Out-String); return ($text -match '(?i)S-1-15-2-1(?![-\d])|ALL APPLICATION PACKAGES|TODOS LOS PAQUETES') } catch { return $false }
 }
+function Trace($message) { try { Add-Content -LiteralPath (Join-Path $WorkDir 'launcher-trace.txt') -Value ("{0} {1}" -f (Get-Date).ToString('HH:mm:ss.fff'), $message) } catch { } }
 function Grant($dir, $who, $permission, $label, $inherit) {
   $timer = [Diagnostics.Stopwatch]::StartNew()
   if ($who -ne $sid -and (HasGrant $dir $who)) { $script:grants += "$label $dir => ya concedido"; return }
   try { $text = (& icacls $dir /grant "*${who}:${inherit}($permission)" 2>&1 | Out-String).Trim(); $script:grants += "$label $dir => $LASTEXITCODE ($([int]$timer.Elapsed.TotalMilliseconds) ms)$(if ($LASTEXITCODE -ne 0) { ' ' + $text })" }
   catch { $script:grants += "$label $dir => error $($_.Exception.Message)" }
 }
+Trace "perfil $sid"
 # Escritura en la carpeta de trabajo: solo para ESTE AppContainer.
 Grant $WorkDir $sid 'M' 'escritura' '(OI)(CI)'
+Trace 'concedida la escritura'
 # Lectura de los programas: a «TODOS LOS PAQUETES DE APLICACIÓN» (S-1-15-2-1), como Archivos de programa. Conceder solo el SID de este paquete hace que Electron >= 44
 # se niegue a arrancar («its ACL has an entry for an AppContainer package SID but none for ALL APPLICATION PACKAGES»).
 $AAP = 'S-1-15-2-1'
@@ -201,19 +231,25 @@ foreach ($dir in $ReadDirs) {
   if (-not $dir -or -not (Test-Path -LiteralPath $dir)) { $grants += "lectura $dir => no existe en disco"; continue }
   Grant $dir $AAP 'RX' 'lectura' $(if (Test-Path -LiteralPath $dir -PathType Container) { '(OI)(CI)' } else { '' })
 }
-# Node resuelve la ruta real con lstat de cada componente desde la raíz de la unidad; un AppContainer no puede ni leer los atributos de «D:\» ni de sus carpetas.
-# Se concede lectura SOLO a la carpeta (sin herencia) en cada ancestro de lo que se lee y de la carpeta de trabajo.
+Trace 'concedida la lectura'
+# Node resuelve la ruta real con lstat de cada componente desde la raíz de la unidad; un AppContainer no puede ni leer los atributos de la raíz ni de sus carpetas.
+# Se concede lectura SOLO a la carpeta (sin herencia y sin recorrer el subárbol) en cada ancestro de lo que se lee y de la carpeta de trabajo.
 foreach ($path in @($ReadDirs) + @($WorkDir)) {
   if (-not $path) { continue }
   $parent = [System.IO.Path]::GetDirectoryName($path)
   while ($parent) { [void]$ancestors.Add($parent); $parent = [System.IO.Path]::GetDirectoryName($parent) }
 }
-foreach ($ancestor in $ancestors) { if (Test-Path -LiteralPath $ancestor -PathType Container) { Grant $ancestor $AAP 'RX' 'travesia' '' } }
-$grantTimer.Stop()
+foreach ($ancestor in $ancestors) {
+  if (-not (Test-Path -LiteralPath $ancestor -PathType Container)) { continue }
+  $timer = [Diagnostics.Stopwatch]::StartNew()
+  $grants += "travesia $ancestor => $([FreyaAppContainer]::GrantTraverse($ancestor, $AAP)) ($([int]$timer.Elapsed.TotalMilliseconds) ms)"
+}
+Trace 'concedida la travesia'
 $stdout = Join-Path $WorkDir 'stdout.txt'; $stderr = Join-Path $WorkDir 'stderr.txt'
 $sw = [Diagnostics.Stopwatch]::StartNew()
 try { $raw = [FreyaAppContainer]::Run($sid, $Exe, $Arguments, $WorkDir, $stdout, $stderr, $ExtraEnv, $MemoryLimitMB, $TimeoutSec, [bool]$Relay); $parts = $raw.Split('|'); $result = @{ exitCode = [uint32]$parts[0]; timedOut = ($parts[1] -eq '1'); error = $null } }
 catch { $result = @{ exitCode = $null; timedOut = $false; error = $_.Exception.Message } }
 $result.grants = $grants; $result.grantsSeconds = [math]::Round($grantTimer.Elapsed.TotalSeconds, 2); $result.sid = $sid; $result.seconds = [math]::Round($sw.Elapsed.TotalSeconds, 2); $result.memoryLimitMB = $MemoryLimitMB
+Trace "terminado: $($result.exitCode) $($result.error)"
 $result | ConvertTo-Json | Set-Content -Encoding UTF8 -Path $ResultFile
 [FreyaAppContainer]::RemoveProfile($ProfileName)
