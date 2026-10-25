@@ -20,3 +20,5 @@ Desarrollo DW-04b: [vista general de columnas](csv-column-overview-2026-10-22.md
 DW-04c: [varianza y percentiles](descriptive-percentiles-2026-10-22.md), con controles progresivos, métodos compartidos e informes completos.
 
 I0 y E1: [contrato tipado y extracto no destructivo de archivos grandes](i0-e1-extracto-2026-10-25.md), con medición de 100 MiB y 1 GiB, bytes idénticos al oráculo y límites propios.
+
+M3: [aislamiento, integración con Electron, memoria, empaquetado y firma de DuckDB nativo](m3-aislamiento-2026-10-25.md), con CI en las cuatro plataformas, hallazgos de Windows y límites propios.
