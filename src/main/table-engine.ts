@@ -1,7 +1,8 @@
 import { createReadStream } from 'node:fs'
 import {randomUUID} from 'node:crypto'
 import { Transform } from 'node:stream'
-import { open as openFile, stat } from 'node:fs/promises'
+import { open as openFile, stat, realpath } from 'node:fs/promises'
+import { resolve } from 'node:path'
 import { setImmediate as yieldTurn } from 'node:timers/promises'
 import { parse } from 'csv-parse'
 import { parse as parseSync } from 'csv-parse/sync'
@@ -9,7 +10,9 @@ import { stringify } from 'csv-stringify/sync'
 import iconv from 'iconv-lite'
 import {ANALYSIS_LIMITS,arrowBatches,fileRecords,validateUtf8} from './analysis-source'
 import {compileTableQuery} from './table-query'
-import {buildIndex,readRecords,splitFields,RecordTooLargeError,type LargeIndex} from './large-table'
+import {buildIndex,readRecords,splitFields,LargeFormatError,type LargeIndex} from './large-table'
+import {runOperation,OperationCancelled} from './operations'
+import type {EngineOperation,OperationResult} from '../shared/operations'
 import {analyzeColumn,numeric,descriptive} from './table-analysis'
 import type {ColumnAnalysisRequest,ColumnAnalysis,TableTransformEdit,TableTransformPreview,SqlProgress} from '../shared/types'
 import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableConditionGroup, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview,TableStatsOptions } from '../shared/types'
@@ -50,7 +53,7 @@ function recordBytes(record:string[],encoding:Encoding,delimiter:string){return 
 
 export class TableEngine {
  // `largeBytes` e `indexChunk` solo los cambian las pruebas: fuerzan el modo grande con archivos pequeños.
- constructor(private progress:(event:SqlProgress)=>void=()=>{},private options:{largeBytes?:number;indexChunk?:number}={}){}
+ constructor(private progress:(event:SqlProgress)=>void=()=>{},private options:{largeBytes?:number;indexChunk?:number;extractBatch?:number;extractDelayMs?:number;freeBytes?:(dir:string)=>Promise<number>}={}){}
  private states = new Map<string, State>()
  private queries = new Map<string, number>()
  private openings = new Map<string, number>()
@@ -79,7 +82,7 @@ export class TableEngine {
   }
   if (toLarge) {
    try { return await this.openLarge(id, path, meta, generation, reason) }
-   catch (error) { if (!(error instanceof RecordTooLargeError)) throw error; readonly = true; reason = `${reason ? reason + ' ' : ''}${error.message}`; records = [] } // sin índice posible: la muestra de siempre, con la posición del problema
+   catch (error) { if (!(error instanceof LargeFormatError)) throw error; readonly = true; reason = `${reason ? reason + ' ' : ''}${error.message}`; records = [] } // sin índice posible: la muestra de siempre, con la posición del problema
   }
   if (readonly) {
    const sample = await prefix(path,TABLE_LIMITS.sampleBytes); const complete = sample.length === bytes
@@ -114,6 +117,22 @@ export class TableEngine {
   const s: State = {...meta, rows: [], headers, readonly: true, warning, revision: (this.states.get(id)?.revision ?? -1) + 1, nextId: 1, token: 0, savedToken: 0, history: [], future: [], large: {index, rowCount}}
   this.views.delete(id); this.queries.delete(id); this.states.set(id, s); return this.info(id)
  }
+ private running = new Map<string, {cancelled: boolean}>()
+ // I0/E1: operaciones tipadas sobre un archivo grande. Solo lee el original; la extracción escribe un archivo NUEVO (a un temporal y lo renombra al terminar).
+ async operation(id: string, request: EngineOperation): Promise<OperationResult> {
+  const s = this.get(id, true)
+  if (!s.large) throw new Error('Esta operación solo se ofrece para archivos grandes (solo lectura); en una tabla editable usa los filtros y la exportación.')
+  if (request.source.revision !== s.revision) throw new Error('El documento cambió mientras tanto: vuelve a abrir el cuadro.')
+  if (request.operation === 'filter_extract') { const [a, b] = await Promise.all([realpath(request.output).catch(() => resolve(request.output)), realpath(s.large.index.path).catch(() => resolve(s.large!.index.path))]); if (a === b) throw new Error('El destino no puede ser el archivo original: la extracción nunca lo modifica.') }
+  const control = {cancelled: false}; this.running.set(request.requestId, control)
+  const label = request.operation === 'count' ? 'Contando' : request.operation === 'preview' ? 'Buscando coincidencias' : 'Extrayendo'
+  try {
+   return await runOperation({index: s.large.index, encoding: s.encoding, delimiter: s.delimiter, header: s.header, bom: s.bom, eol: s.eol, finalEol: s.finalEol, headers: s.headers, headerWidth: s.headerWidth}, request,
+    {progress: percent => this.progress({requestId: 'op:' + request.requestId, phase: `${label}… ${percent} %`, rows: percent}), cancelled: () => control.cancelled || this.states.get(id) !== s, batchRecords: this.options.extractBatch, delayMs: this.options.extractDelayMs, freeBytes: this.options.freeBytes})
+  } catch (error) { if (this.states.get(id) !== s && !(error instanceof OperationCancelled)) throw new Error('Operación cancelada porque cambió la tabla.'); throw error }
+  finally { this.running.delete(request.requestId) }
+ }
+ async cancelOperation(requestId: string) { const control = this.running.get(requestId); if (control) control.cancelled = true }
  async cancelOpen(id: string) { this.openings.set(id, ++this.serial) } // la apertura en curso lo nota en su siguiente bloque
  async info(id: string) { const s=this.get(id,true); return {headers:[...s.headers],rowCount:s.large?s.large.rowCount:s.rows.length,readonly:s.readonly,warning:s.warning,encoding:s.encoding,delimiter:s.delimiter,revision:s.revision,dirty:s.token!==s.savedToken,large:s.large?true:undefined} }
  private async largePage(id: string, s: State, query: TableQuery): Promise<TablePage> {

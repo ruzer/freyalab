@@ -18,3 +18,5 @@ Desarrollo DW-04b: [vista general de columnas](csv-column-overview-2026-10-22.md
 - [Checklist y SHA-256](RELEASE-CHECKLIST.md).
 
 DW-04c: [varianza y percentiles](descriptive-percentiles-2026-10-22.md), con controles progresivos, métodos compartidos e informes completos.
+
+I0 y E1: [contrato tipado y extracto no destructivo de archivos grandes](i0-e1-extracto-2026-10-25.md), con medición de 100 MiB y 1 GiB, bytes idénticos al oráculo y límites propios.
