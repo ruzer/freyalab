@@ -1,0 +1,1245 @@
+{
+  "schema": 1,
+  "kind": "M1 identidad: copiar sin transformar",
+  "consulted_at": "2026-10-25T07:16:07.365502+00:00",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "results": [
+    {
+      "fixture": "minimal_crlf",
+      "tool": "qsv",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_crlf",
+      "tool": "qsvlite",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_crlf",
+      "tool": "miller",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_crlf",
+      "tool": "miller_ors_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": true,
+      "records_bytes_equal": true,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_crlf",
+      "tool": "polars",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_crlf",
+      "tool": "polars_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": true,
+      "records_bytes_equal": true,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_crlf",
+      "tool": "polars_node",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_crlf",
+      "tool": "polars_node_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": true,
+      "records_bytes_equal": true,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_crlf",
+      "tool": "duckdb",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_lf",
+      "tool": "qsv",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": true,
+      "records_bytes_equal": true,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_lf",
+      "tool": "qsvlite",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": true,
+      "records_bytes_equal": true,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_lf",
+      "tool": "miller",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": true,
+      "records_bytes_equal": true,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_lf",
+      "tool": "miller_ors_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_lf",
+      "tool": "polars",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": true,
+      "records_bytes_equal": true,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_lf",
+      "tool": "polars_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_lf",
+      "tool": "polars_node",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": true,
+      "records_bytes_equal": true,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_lf",
+      "tool": "polars_node_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "minimal_lf",
+      "tool": "duckdb",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "quote_all",
+      "tool": "qsv",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "quote_all",
+      "tool": "qsvlite",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "quote_all",
+      "tool": "miller",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "quote_all",
+      "tool": "miller_ors_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "quote_all",
+      "tool": "polars",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "quote_all",
+      "tool": "polars_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "quote_all",
+      "tool": "polars_node",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "quote_all",
+      "tool": "polars_node_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "quote_all",
+      "tool": "duckdb",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "hostile",
+      "tool": "qsv",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "hostile",
+      "tool": "qsvlite",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "hostile",
+      "tool": "miller",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": false,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "hostile",
+      "tool": "miller_ors_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": false,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "hostile",
+      "tool": "polars",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "hostile",
+      "tool": "polars_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "hostile",
+      "tool": "polars_node",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "hostile",
+      "tool": "polars_node_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "hostile",
+      "tool": "duckdb",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "ragged",
+      "tool": "qsv",
+      "exit_code": 1,
+      "status": "error",
+      "error": "csv error: CSV error: record 1 (line: 1, byte: 19): found record with 3 fields, but the previous record has 4 fields\n"
+    },
+    {
+      "fixture": "ragged",
+      "tool": "qsvlite",
+      "exit_code": 1,
+      "status": "error",
+      "error": "csv error: CSV error: record 1 (line: 1, byte: 19): found record with 3 fields, but the previous record has 4 fields\n"
+    },
+    {
+      "fixture": "ragged",
+      "tool": "miller",
+      "exit_code": 1,
+      "status": "error",
+      "error": "mlr: CSV header/data length mismatch 4 != 3 at filename /private/tmp/freyalab-m1/out/integridad/ragged.csv row 2\n"
+    },
+    {
+      "fixture": "ragged",
+      "tool": "miller_ors_crlf",
+      "exit_code": 1,
+      "status": "error",
+      "error": "mlr: CSV header/data length mismatch 4 != 3 at filename /private/tmp/freyalab-m1/out/integridad/ragged.csv row 2\n"
+    },
+    {
+      "fixture": "ragged",
+      "tool": "polars",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": false,
+      "structure_equal": false,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        3,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "ragged",
+      "tool": "polars_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": false,
+      "structure_equal": false,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        3,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "ragged",
+      "tool": "polars_node",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": false,
+      "structure_equal": false,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        3,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "ragged",
+      "tool": "polars_node_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": false,
+      "structure_equal": false,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": true,
+      "source_arity": [
+        4,
+        3,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "ragged",
+      "tool": "duckdb",
+      "exit_code": 1,
+      "status": "error",
+      "error": "Binder Error: \"force_not_null\" expected to find nota, but it was not found in the table\n\nLINE 1: ...-m1/out/integridad/ragged.csv', header=true, all_varchar=true, force_not_null=['id','zip','nombre','nota'], strict_mode...\n                                                                       ^\n"
+    },
+    {
+      "fixture": "bom_utf8",
+      "tool": "qsv",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": false,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "bom_utf8",
+      "tool": "qsvlite",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": false,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "bom_utf8",
+      "tool": "miller",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": false,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "bom_utf8",
+      "tool": "miller_ors_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": true,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": false,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "bom_utf8",
+      "tool": "polars",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": false,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "bom_utf8",
+      "tool": "polars_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": true,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": false,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "bom_utf8",
+      "tool": "polars_node",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": false,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "bom_utf8",
+      "tool": "polars_node_crlf",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": true,
+      "records_bytes_equal_ignoring_final_eol": true,
+      "bom_preserved": false,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "fixture": "bom_utf8",
+      "tool": "duckdb",
+      "exit_code": 0,
+      "status": "ok",
+      "values_equal": true,
+      "structure_equal": true,
+      "bytes_equal": false,
+      "records_bytes_equal": false,
+      "records_bytes_equal_ignoring_final_eol": false,
+      "bom_preserved": false,
+      "source_arity": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "output_arity": [
+        4,
+        4,
+        4,
+        4
+      ]
+    }
+  ],
+  "fixtures_sha256": {
+    "minimal_crlf": "ff4b1ba4f3bd642848d21829759985b5f1c61e97ddb9f64e2627f066788ce84a",
+    "minimal_lf": "819fbdc5013e844d1b7c5fe2ea89ee45375896f74f8f24ed99591c6bc03cdbc0",
+    "quote_all": "edf61a2f3b252d3b61e1dd75b8b993a355d3762afa903b3314d2768efdadc18f",
+    "hostile": "76388d10ae641da6a2951e322db5a121f3b85b1f836c5affa39d580f608ce013",
+    "ragged": "5724ebb9c75853c36aa23a5a6f664492b73641b4ae0545e495c63181b5fd918f",
+    "bom_utf8": "602c8aaa2b09f0c1508bac743716dd26c71ee05e184c104f160fa15b74cfb3f4"
+  },
+  "sources_unchanged": {
+    "minimal_crlf": true,
+    "minimal_lf": true,
+    "quote_all": true,
+    "hostile": true,
+    "ragged": true,
+    "bom_utf8": true
+  }
+}

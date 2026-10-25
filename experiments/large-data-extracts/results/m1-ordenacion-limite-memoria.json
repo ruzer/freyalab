@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "kind": "M1 ordenación completa: memoria y disco temporal",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "results": [
+    {
+      "engine": "duckdb-1gb",
+      "status": "measured",
+      "wall_seconds": 5.042634958983399,
+      "exit_codes": [
+        0
+      ],
+      "peak_group_rss_bytes": 1444167680,
+      "peak_scratch_bytes": 1019969536,
+      "peak_output_bytes": 945258069,
+      "peak_disk_bytes": 1959263829,
+      "source_bytes": 1073832889,
+      "verification": {
+        "records": 4587000,
+        "order_independent_hash": 1139582785145418067,
+        "sorted_by_fecha_pedido": true
+      },
+      "matches_source_records": true
+    },
+    {
+      "engine": "qsv-extsort",
+      "status": "measured",
+      "wall_seconds": 44.88334570795996,
+      "exit_codes": [
+        0
+      ],
+      "peak_group_rss_bytes": 300302336,
+      "peak_scratch_bytes": 197848247,
+      "peak_output_bytes": 1066401788,
+      "peak_disk_bytes": 1190250849,
+      "source_bytes": 1073832889,
+      "index_seconds": 0.9828586250077933,
+      "index_bytes": 36696016,
+      "index_written_next_to": "el enlace dentro de la carpeta temporal, no junto al original",
+      "verification": {
+        "records": 4587000,
+        "order_independent_hash": 1139582785145418067,
+        "sorted_by_fecha_pedido": true
+      },
+      "matches_source_records": true
+    },
+    {
+      "engine": "qsv-extsort-256mb",
+      "status": "measured",
+      "wall_seconds": 44.90796112496173,
+      "exit_codes": [
+        0
+      ],
+      "peak_group_rss_bytes": 298680320,
+      "peak_scratch_bytes": 190848324,
+      "peak_output_bytes": 1065353212,
+      "peak_disk_bytes": 1189202273,
+      "source_bytes": 1073832889,
+      "index_seconds": 0.9390590419643559,
+      "index_bytes": 36696016,
+      "index_written_next_to": "el enlace dentro de la carpeta temporal, no junto al original",
+      "verification": {
+        "records": 4587000,
+        "order_independent_hash": 1139582785145418067,
+        "sorted_by_fecha_pedido": true
+      },
+      "matches_source_records": true
+    },
+    {
+      "engine": "qsvlite-extsort-256mb",
+      "status": "measured",
+      "wall_seconds": 45.0077969590202,
+      "exit_codes": [
+        0
+      ],
+      "peak_group_rss_bytes": 290390016,
+      "peak_scratch_bytes": 204848170,
+      "peak_output_bytes": 1063256060,
+      "peak_disk_bytes": 1187105121,
+      "source_bytes": 1073832889,
+      "index_seconds": 0.9348707500030287,
+      "index_bytes": 36696016,
+      "index_written_next_to": "el enlace dentro de la carpeta temporal, no junto al original",
+      "verification": {
+        "records": 4587000,
+        "order_independent_hash": 1139582785145418067,
+        "sorted_by_fecha_pedido": true
+      },
+      "matches_source_records": true
+    }
+  ],
+  "consulted_at": "2026-10-25T07:45:37.694933+00:00",
+  "memory_guard_bytes": 21474836480,
+  "method": "ordenar el archivo por fecha_pedido a un archivo nuevo; RSS = suma del grupo de procesos muestreada cada 0,25 s (puede subestimar picos); disco = salida + carpeta temporal",
+  "source_records": {
+    "records": 4587000,
+    "order_independent_hash": 1139582785145418067,
+    "sorted_by_fecha_pedido": false
+  },
+  "source_unchanged": true
+}

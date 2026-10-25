@@ -1,0 +1,108 @@
+{
+  "kind": "M2 sniffing de DuckDB con archivos pequeños e irregulares",
+  "version": "v2.0.0",
+  "results": [
+    {
+      "fixture": "fila_corta",
+      "sniff": {
+        "delimiter": "|",
+        "hasHeader": true,
+        "columns": {
+          "items": [
+            {
+              "entries": {
+                "name": "id,zip,nombre,nota",
+                "type": "VARCHAR"
+              }
+            }
+          ]
+        }
+      },
+      "read": {
+        "rows": 2,
+        "columns": [
+          "id,zip,nombre,nota"
+        ],
+        "firstRow": {
+          "id,zip,nombre,nota": "1,01000,Ana"
+        }
+      }
+    },
+    {
+      "fixture": "campo_de_mas",
+      "sniff": {
+        "delimiter": "|",
+        "hasHeader": true,
+        "columns": {
+          "items": [
+            {
+              "entries": {
+                "name": "id,zip,nombre,nota",
+                "type": "VARCHAR"
+              }
+            }
+          ]
+        }
+      },
+      "read": {
+        "rows": 2,
+        "columns": [
+          "id,zip,nombre,nota"
+        ],
+        "firstRow": {
+          "id,zip,nombre,nota": "1,01000,Ana,x,EXTRA"
+        }
+      }
+    },
+    {
+      "fixture": "regular",
+      "sniff": {
+        "delimiter": ",",
+        "hasHeader": true,
+        "columns": {
+          "items": [
+            {
+              "entries": {
+                "name": "id",
+                "type": "BIGINT"
+              }
+            },
+            {
+              "entries": {
+                "name": "zip",
+                "type": "VARCHAR"
+              }
+            },
+            {
+              "entries": {
+                "name": "nombre",
+                "type": "VARCHAR"
+              }
+            },
+            {
+              "entries": {
+                "name": "nota",
+                "type": "VARCHAR"
+              }
+            }
+          ]
+        }
+      },
+      "read": {
+        "rows": 2,
+        "columns": [
+          "id",
+          "zip",
+          "nombre",
+          "nota"
+        ],
+        "firstRow": {
+          "id": "1",
+          "zip": "01000",
+          "nombre": "Ana",
+          "nota": "x"
+        }
+      }
+    }
+  ]
+}

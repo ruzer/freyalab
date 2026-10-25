@@ -1,0 +1,93 @@
+{
+  "kind": "M2 capa de aislamiento del sistema operativo",
+  "platform": "darwin arm64",
+  "node": "v24.22.1",
+  "mechanism": "sandbox-exec (perfil SBPL)",
+  "note": "",
+  "control": [
+    {
+      "name": "la operación cerrada funciona dentro de la capa",
+      "outcome": "funciona",
+      "detail": "19908 filas"
+    },
+    {
+      "name": "DuckDB sin restricciones lee el archivo ajeno",
+      "outcome": "lee",
+      "detail": "8 bytes"
+    },
+    {
+      "name": "DuckDB sin restricciones lee /etc/hosts",
+      "outcome": "lee",
+      "detail": "213 bytes"
+    },
+    {
+      "name": "Node lee el archivo ajeno",
+      "outcome": "lee",
+      "detail": "8 bytes"
+    },
+    {
+      "name": "Node lee /etc/hosts",
+      "outcome": "lee",
+      "detail": "213 bytes"
+    },
+    {
+      "name": "Node abre una conexión TCP a un servidor local",
+      "outcome": "conecta",
+      "detail": ""
+    },
+    {
+      "name": "Node escribe fuera de la carpeta de trabajo",
+      "outcome": "escribe",
+      "detail": ""
+    }
+  ],
+  "confined": [
+    {
+      "name": "la operación cerrada funciona dentro de la capa",
+      "outcome": "funciona",
+      "detail": "19908 filas"
+    },
+    {
+      "name": "DuckDB sin restricciones lee el archivo ajeno",
+      "outcome": "denegado",
+      "detail": "sin filas: el sistema impidió la lectura"
+    },
+    {
+      "name": "DuckDB sin restricciones lee /etc/hosts",
+      "outcome": "denegado",
+      "detail": "sin filas: el sistema impidió la lectura"
+    },
+    {
+      "name": "Node lee el archivo ajeno",
+      "outcome": "denegado",
+      "detail": "EPERM"
+    },
+    {
+      "name": "Node lee /etc/hosts",
+      "outcome": "denegado",
+      "detail": "EPERM"
+    },
+    {
+      "name": "Node abre una conexión TCP a un servidor local",
+      "outcome": "denegado",
+      "detail": "EPERM"
+    },
+    {
+      "name": "Node escribe fuera de la carpeta de trabajo",
+      "outcome": "denegado",
+      "detail": "EPERM"
+    }
+  ],
+  "verdict": {
+    "worksInside": true,
+    "controlCanDoEverything": true,
+    "confinedDenied": [
+      "Node lee el archivo ajeno",
+      "Node lee /etc/hosts",
+      "Node abre una conexión TCP a un servidor local",
+      "Node escribe fuera de la carpeta de trabajo",
+      "DuckDB sin restricciones lee el archivo ajeno"
+    ],
+    "confinedStillAllowed": []
+  }
+}

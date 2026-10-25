@@ -1,0 +1,46 @@
+{
+  "kind": "M2 capa de aislamiento del sistema operativo",
+  "platform": "win32 x64",
+  "node": "v24.22.1",
+  "mechanism": null,
+  "note": "Sin mecanismo de aislamiento del sistema operativo probado en esta plataforma: pendiente (AppContainer/token restringido + objeto de trabajo).",
+  "control": [
+    {
+      "name": "la operación cerrada funciona dentro de la capa",
+      "outcome": "funciona",
+      "detail": "19908 filas"
+    },
+    {
+      "name": "DuckDB sin restricciones lee el archivo ajeno",
+      "outcome": "lee",
+      "detail": "8 bytes"
+    },
+    {
+      "name": "DuckDB sin restricciones lee /etc/hosts",
+      "outcome": "denegado",
+      "detail": "sin filas: el sistema impidió la lectura"
+    },
+    {
+      "name": "Node lee el archivo ajeno",
+      "outcome": "lee",
+      "detail": "8 bytes"
+    },
+    {
+      "name": "Node lee /etc/hosts",
+      "outcome": "denegado",
+      "detail": "ENOENT"
+    },
+    {
+      "name": "Node abre una conexión TCP a un servidor local",
+      "outcome": "conecta",
+      "detail": ""
+    },
+    {
+      "name": "Node escribe fuera de la carpeta de trabajo",
+      "outcome": "escribe",
+      "detail": ""
+    }
+  ],
+  "confined": null,
+  "verdict": null
+}

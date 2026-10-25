@@ -1,0 +1,11 @@
+{
+  "platform": "win32",
+  "arch": "x64",
+  "packageBytes": 449275947,
+  "unpackedDuckDBBytes": 63346588,
+  "unpackedEntries": [
+    "node-api",
+    "node-bindings",
+    "node-bindings-win32-x64"
+  ]
+}

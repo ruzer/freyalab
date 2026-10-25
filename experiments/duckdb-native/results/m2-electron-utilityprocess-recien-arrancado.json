@@ -1,0 +1,242 @@
+{
+  "kind": "M2 proceso auxiliar",
+  "host": "utilityProcess de Electron",
+  "started": "2026-10-25T15:48:53.635Z",
+  "platform": "darwin arm64",
+  "options": {
+    "workDir": "/private/tmp/freyalab-m2/work-electron-fresh",
+    "tempDir": "/private/tmp/freyalab-m2/work-electron-fresh/tmp",
+    "threads": 12,
+    "memoryLimit": "4GB",
+    "parallel": true
+  },
+  "main": {
+    "electron": "44.9.2",
+    "node": "24.22.0",
+    "chrome": "152.0.7977.167",
+    "modules": "149"
+  },
+  "versions": {
+    "duckdb": "v2.0.0",
+    "node": "24.22.0",
+    "electron": "44.9.2",
+    "napi": "10",
+    "modules": "149"
+  },
+  "battery": [
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T1",
+      "operation": "count",
+      "label": "utility",
+      "ms": 43.296749999999975,
+      "cpuMs": 190.00000000000003,
+      "rssPeakBytes": 113278976,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T2",
+      "operation": "filter_count",
+      "label": "utility",
+      "ms": 45.44374999999991,
+      "cpuMs": 199.99999999999997,
+      "rssPeakBytes": 113344512,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T3",
+      "operation": "filter_extract",
+      "label": "utility",
+      "ms": 51.284583,
+      "cpuMs": 240.00000000000003,
+      "rssPeakBytes": 113393664,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-electron-fresh/ventas_100MiB.csv-utility-t3.csv",
+      "verified": {
+        "values_sha256_equal": true
+      }
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T4",
+      "operation": "aggregate",
+      "label": "utility",
+      "ms": 47.99908399999981,
+      "cpuMs": 230,
+      "rssPeakBytes": 113623040,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T5",
+      "operation": "replace_literal_to_file",
+      "label": "utility",
+      "ms": 127.70345799999996,
+      "cpuMs": 740,
+      "rssPeakBytes": 491044864,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-electron-fresh/ventas_100MiB.csv-utility-t5.csv",
+      "verified": {
+        "values_sha256_equal": true,
+        "fidelity": {
+          "values_exact": true,
+          "unchanged_records_byte_exact": false,
+          "unchanged_records_byte_exact_ignoring_final_eol": true,
+          "source_bom_hex": "",
+          "output_bom_hex": "",
+          "bom_preserved": true,
+          "unchanged_records_including_header": 336515,
+          "changed_records": 111486,
+          "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+          "unchanged_output_sha256": "2ba7d7ac98b0b51f33d29e8cda8c2b1d75940f1b8c6a446e85d200bb412327d8"
+        }
+      }
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T6",
+      "operation": "search_count",
+      "label": "utility",
+      "ms": 95.14054199999987,
+      "cpuMs": 459.99999999999994,
+      "rssPeakBytes": 113229824,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "sort",
+      "operation": "sort_to_file",
+      "label": "utility",
+      "ms": 200.46937500000013,
+      "cpuMs": 969.9999999999999,
+      "rssPeakBytes": 496467968,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-electron-fresh/ventas_100MiB.csv-utility-sort.csv",
+      "verified": {
+        "records": 448000,
+        "sorted": true,
+        "same_records_as_source": true
+      }
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "positions",
+      "operation": "positions",
+      "label": "utility",
+      "ms": 179.61333299999978,
+      "cpuMs": 199.99999999999997,
+      "rssPeakBytes": 190251008,
+      "ok": true,
+      "positions": 112233
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T1",
+      "operation": "count",
+      "label": "utility",
+      "ms": 201.34608300000036,
+      "cpuMs": 1670.0000000000002,
+      "rssPeakBytes": 213204992,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T2",
+      "operation": "filter_count",
+      "label": "utility",
+      "ms": 215.63120800000024,
+      "cpuMs": 1850,
+      "rssPeakBytes": 256098304,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T3",
+      "operation": "filter_extract",
+      "label": "utility",
+      "ms": 260.5760829999999,
+      "cpuMs": 2310,
+      "rssPeakBytes": 406044672,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-electron-fresh/ventas_1GiB.csv-utility-t3.csv",
+      "verified": {
+        "values_sha256_equal": true
+      }
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T4",
+      "operation": "aggregate",
+      "label": "utility",
+      "ms": 233.94279199999983,
+      "cpuMs": 2070.0000000000005,
+      "rssPeakBytes": 406175744,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T5",
+      "operation": "replace_literal_to_file",
+      "label": "utility",
+      "ms": 785.1807500000004,
+      "cpuMs": 6939.999999999999,
+      "rssPeakBytes": 1472233472,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-electron-fresh/ventas_1GiB.csv-utility-t5.csv",
+      "verified": {
+        "values_sha256_equal": true,
+        "fidelity": {
+          "values_exact": true,
+          "unchanged_records_byte_exact": false,
+          "unchanged_records_byte_exact_ignoring_final_eol": true,
+          "source_bom_hex": "",
+          "output_bom_hex": "",
+          "bom_preserved": true,
+          "unchanged_records_including_header": 3441917,
+          "changed_records": 1145084,
+          "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+          "unchanged_output_sha256": "07e2842266ddc0d851d3e1e6fad898b96cc000f26ea9e6c884ab8d6dda198b02"
+        }
+      }
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T6",
+      "operation": "search_count",
+      "label": "utility",
+      "ms": 435.5460839999996,
+      "cpuMs": 4199.999999999999,
+      "rssPeakBytes": 377585664,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "sort",
+      "operation": "sort_to_file",
+      "label": "utility",
+      "ms": 1667.6291249999995,
+      "cpuMs": 10709.999999999998,
+      "rssPeakBytes": 4374659072,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-electron-fresh/ventas_1GiB.csv-utility-sort.csv",
+      "verified": {
+        "records": 4587000,
+        "sorted": true,
+        "same_records_as_source": true
+      }
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "positions",
+      "operation": "positions",
+      "label": "utility",
+      "ms": 1669.6048339999998,
+      "cpuMs": 2040,
+      "rssPeakBytes": 258260992,
+      "ok": true,
+      "positions": 1146807
+    }
+  ]
+}

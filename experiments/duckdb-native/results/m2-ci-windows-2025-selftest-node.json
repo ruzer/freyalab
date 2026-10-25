@@ -1,0 +1,100 @@
+{
+  "kind": "M2 proceso auxiliar",
+  "host": "proceso hijo de Node (child_process.fork)",
+  "started": "2026-10-25T15:55:03.608Z",
+  "platform": "win32 x64",
+  "options": {
+    "workDir": "D:\\a\\_temp\\m2work-node",
+    "tempDir": "D:\\a\\_temp\\m2work-node\\tmp",
+    "threads": 12,
+    "memoryLimit": "4GB",
+    "parallel": true
+  },
+  "versions": {
+    "duckdb": "v2.0.0",
+    "node": "24.22.1",
+    "electron": null,
+    "napi": "10",
+    "modules": "137"
+  },
+  "selftest": {
+    "rows": 45000,
+    "bytes": 4832808,
+    "checks": [
+      {
+        "name": "count",
+        "ok": true,
+        "ms": 156.6019,
+        "detail": 45000
+      },
+      {
+        "name": "filter_count",
+        "ok": true,
+        "ms": 121.54230000000001,
+        "detail": 14897
+      },
+      {
+        "name": "search_count (campo multilínea)",
+        "ok": true,
+        "ms": 120.52140000000009,
+        "detail": 9166
+      },
+      {
+        "name": "aggregate (suma exacta en céntimos)",
+        "ok": true,
+        "ms": 122.49919999999997,
+        "detail": 2
+      },
+      {
+        "name": "filter_extract",
+        "ok": true,
+        "ms": 240.77030000000002,
+        "detail": 14897
+      },
+      {
+        "name": "replace_literal_to_file",
+        "ok": true,
+        "ms": 370.1874,
+        "detail": 0
+      },
+      {
+        "name": "sort_to_file",
+        "ok": true,
+        "ms": 232.79739999999993,
+        "detail": 45000
+      },
+      {
+        "name": "positions",
+        "ok": true,
+        "ms": 131.96839999999997,
+        "detail": 44794
+      },
+      {
+        "name": "el original no cambió de tamaño",
+        "ok": true,
+        "ms": 0.12770000000000437,
+        "detail": true
+      },
+      {
+        "name": "aislamiento y operaciones cerradas dentro del proceso auxiliar",
+        "ok": true,
+        "ms": 10016.2962,
+        "detail": {
+          "locked": 24,
+          "closed": 18,
+          "interruptMs": 10.526800000001458
+        }
+      },
+      {
+        "name": "matar el proceso auxiliar a mitad de operación y relanzarlo",
+        "ok": true,
+        "ms": 292.5449000000008,
+        "detail": {
+          "exitMs": 10.998700000000099,
+          "partialLeft": false
+        }
+      }
+    ],
+    "allOk": true
+  }
+}

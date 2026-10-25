@@ -14,9 +14,14 @@ import sys
 import time
 from pathlib import Path
 from common import PROJECT, cents, fidelity, file_hash, rows, value_hash
+from m1_engines import M1_ENGINES, execute_external
 
 HERE = Path(__file__).resolve().parent
 TASKS = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6']
+E0_ENGINES = ['python', 'node', 'duckdb', 'pandas']
+# M1: (hilos, memory_limit, lector CSV paralelo). `duckdb-mt` sube los hilos pero E0 fuerza parallel=false en el lector (más estricto) y casi no los usa.
+DUCK_VARIANTS = {'duckdb': (1, '512MB', False), 'duckdb-mt': (12, '4GB', False), 'duckdb-par': (12, '4GB', True),
+                 'duckdb-node': (1, '512MB', False), 'duckdb-node-par': (12, '4GB', True)}  # M2: las dos últimas usan @duckdb/node-api
 
 
 def quote(value):
@@ -27,7 +32,7 @@ def identifier(name):
     return '"' + name.replace('"', '""') + '"'
 
 
-def duck_sql(task, source, encoding, output, scratch):
+def duck_sql(task, source, encoding, output, scratch, threads=1, memory='512MB', parallel=False):
     header = next(rows(source, encoding))
     if len(header) != len(set(header)):
         raise ValueError('Cabeceras duplicadas: no aceptar renombrado automático.')
@@ -37,7 +42,7 @@ def duck_sql(task, source, encoding, output, scratch):
     # No sentinel para NULL que pueda colisionar con un valor real; forzar texto no nulo.
     read = (f'read_csv({quote(source)}, header=true, delim=\',\', all_varchar=true, '
             f'encoding={quote(encoding)}, force_not_null=[{",".join(map(quote, header))}], '
-            'strict_mode=true, parallel=false)')
+            f'strict_mode=true, parallel={str(parallel).lower()})')
     where = "ciudad = 'Oaxaca' AND estado = 'entregado'"
     statements = {
         'T1': 'SELECT count(*) AS count FROM t',
@@ -48,15 +53,35 @@ def duck_sql(task, source, encoding, output, scratch):
         'T6': 'SELECT count(*) AS count FROM t WHERE ' + ' OR '.join(f'contains({identifier(name)}, \'Primera línea\')' for name in header),
     }
     return ("SET autoinstall_known_extensions=false; SET autoload_known_extensions=false; "
-            "SET threads=1; SET memory_limit='512MB'; SET preserve_insertion_order=true; "
+            f"SET threads={threads}; SET memory_limit='{memory}'; SET preserve_insertion_order=true; "
             f'SET temp_directory={quote(scratch)}; CREATE TEMP VIEW t AS SELECT * FROM {read}; {statements[task]};')
+
+
+def finish_external(result, data, label, task, source, encoding, output):
+    # Misma verificación que las rutas de E0 (fuera del cronómetro); las herramientas M1 escriben en la codificación de la fuente.
+    result['result'] = data
+    result['status'] = 'measured'
+    result['result_sha256'] = hashlib.sha256(json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+    if task in ['T3', 'T5']:
+        result.update(output_bytes=output.stat().st_size, output_sha256=file_hash(output),
+                      values_sha256=value_hash(rows(output, encoding if encoding != 'utf-8-sig' else 'utf-8')), output_encoding=encoding)
+        result['fidelity'] = fidelity(source, output, encoding, encoding) if task == 'T5' else {
+            'whole_record_byte_equality': 'no aplicable: proyección de columnas', 'normalized_by': label}
+        if task == 'T5':
+            result['fidelity']['normalized_by'] = label
+    return result
 
 
 def execute(engine, task, source, encoding, output, scratch, args):
     if output.exists() or source.resolve() == output.resolve():
         raise ValueError('Salida existente o igual al original.')
-    if engine == 'duckdb':
-        command = [args.duckdb, '-no-init', '-batch', '-bail', '-json', ':memory:', '-c', duck_sql(task, source, encoding, output, scratch)]
+    if engine in M1_ENGINES:
+        return execute_external(engine, task, source, encoding, output, args,
+                                lambda result, data, label: finish_external(result, data, label, task, source, encoding, output))
+    if engine.startswith('duckdb-node'):
+        command = [args.node, str(HERE / 'duckdb_node_worker.mjs'), duck_sql(task, source, encoding, output, scratch, *DUCK_VARIANTS[engine])]
+    elif engine in DUCK_VARIANTS:
+        command = [args.duckdb, '-no-init', '-batch', '-bail', '-json', ':memory:', '-c', duck_sql(task, source, encoding, output, scratch, *DUCK_VARIANTS[engine])]
     elif engine == 'node':
         command = [args.node, str(HERE / 'node_worker.mjs'), task, str(source), encoding, str(output)]
     else:
@@ -74,21 +99,23 @@ def execute(engine, task, source, encoding, output, scratch, args):
         stdout, stderr = process.communicate()
     elapsed = time.perf_counter() - started
     rss = re.search(r'(\d+)\s+maximum resident set size', stderr)
+    cpu = re.search(r'([\d.]+)\s+real\s+([\d.]+)\s+user\s+([\d.]+)\s+sys', stderr)
     result = {'engine': engine, 'task': task, 'wall_seconds': elapsed,
-              'max_rss_bytes': int(rss[1]) if rss else None, 'exit_code': process.returncode}
+              'max_rss_bytes': int(rss[1]) if rss else None, 'exit_code': process.returncode,
+              'cpu_user_seconds': float(cpu[2]) if cpu else None, 'cpu_sys_seconds': float(cpu[3]) if cpu else None}
     if timed_out:
         result.update(status='timeout', error=f'Grupo de procesos terminado tras {args.timeout}s.')
         return result
     if process.returncode:
         result['error'] = stderr[:4000]
-        result['status'] = 'unsupported' if engine == 'duckdb' and encoding == 'cp1252' and 'encoding' in stderr.lower() else 'error'
+        result['status'] = 'unsupported' if engine in DUCK_VARIANTS and encoding == 'cp1252' and 'encoding' in stderr.lower() else 'error'
         return result
-    if engine == 'duckdb' and task in ['T3', 'T5']:
+    if engine in DUCK_VARIANTS and task in ['T3', 'T5']:
         # COPY no devuelve JSON en esta CLI; recuento de verificación fuera del cronómetro.
         data = {'count': sum(1 for _ in rows(output, 'utf-8')) - 1}
     else:
         data = json.loads(stdout)
-    if engine == 'duckdb' and task not in ['T3', 'T5']:
+    if engine in DUCK_VARIANTS and task not in ['T3', 'T5']:
         if task == 'T4':
             data = {'count': sum(row['count'] for row in data),
                     'groups': [{'ciudad': row['ciudad'], 'count': row['count'], 'sum_cents': str(cents(row['sum_amount']))} for row in data]}
@@ -98,14 +125,14 @@ def execute(engine, task, source, encoding, output, scratch, args):
     result['status'] = 'measured'
     result['result_sha256'] = hashlib.sha256(json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     if task in ['T3', 'T5']:
-        output_encoding = 'utf-8' if engine == 'duckdb' else encoding
+        output_encoding = 'utf-8' if engine in DUCK_VARIANTS else encoding
         result.update(output_bytes=output.stat().st_size, output_sha256=file_hash(output),
                       values_sha256=value_hash(rows(output, output_encoding)), output_encoding=output_encoding)
         if task == 'T5':
             result['fidelity'] = fidelity(source, output, encoding, output_encoding)
         else:
             result['fidelity'] = {'whole_record_byte_equality': 'no aplicable: proyección de columnas',
-                                  'normalized_by': 'DuckDB COPY' if engine == 'duckdb' else 'Python csv.writer' if engine in ['python', 'pandas'] else 'PoC bulkTransform; campos proyectados serializados'}
+                                  'normalized_by': 'DuckDB COPY' if engine in DUCK_VARIANTS else 'Python csv.writer' if engine in ['python', 'pandas'] else 'PoC bulkTransform; campos proyectados serializados'}
     return result
 
 
@@ -148,8 +175,25 @@ def run(args):
               'versions': {}, 'files': [], 'results': []}
     scripts = list(HERE.glob('*.py')) + list(HERE.glob('*.mjs')) + list((HERE.parent / 'large-file-editor' / 'lib').glob('*.mjs'))
     report['script_sha256'] = {str(path.relative_to(HERE.parent)): file_hash(path) for path in sorted(scripts)}
-    for name, command in {'python': [args.python, '--version'], 'pandas': [args.pandas_python, '-c', 'import sys,pandas; print(sys.version.split()[0], pandas.__version__)'], 'node': [args.node, '--version'], 'duckdb': [args.duckdb, '--version']}.items():
-        report['versions'][name] = subprocess.check_output(command, text=True).strip()
+    version_commands = {'python': [args.python, '--version'], 'node': [args.node, '--version'], 'duckdb': [args.duckdb, '--version']}
+    if 'pandas' in args.engines:
+        version_commands['pandas'] = [args.pandas_python, '-c', 'import sys,pandas; print(sys.version.split()[0], pandas.__version__)']
+    if 'qsv' in args.engines:
+        version_commands['qsv'] = [args.qsv, '--version']
+    if 'qsvlite' in args.engines:
+        version_commands['qsvlite'] = [args.qsvlite, '--version']
+    if 'miller' in args.engines:
+        version_commands['miller'] = [args.miller, '--version']
+    if 'polars' in args.engines:
+        version_commands['polars'] = [args.polars_python, '-I', '-c', 'import sys,polars; print(sys.version.split()[0], polars.__version__)']
+    if 'polars-node' in args.engines:
+        version_commands['polars-node'] = [args.node, '-e', f"const p=require('node:path');console.log(require(p.join({json.dumps(args.polars_node_dir)},'node_modules/nodejs-polars/package.json')).version)"]
+    if any(e.startswith('duckdb-node') for e in args.engines):
+        version_commands['duckdb-node'] = [args.node, '-e', f"const p=require('node:path');const d=require(p.join({json.dumps(os.environ.get('DUCKDB_NODE_DIR', ''))},'node_modules/@duckdb/node-api'));d.DuckDBInstance.create(':memory:').then(async i=>{{const c=await i.connect();console.log('@duckdb/node-api 2.0.0-r.1, DuckDB',(await c.runAndReadAll('select version() v')).getRows()[0][0])}})"]
+    for name, command in version_commands.items():
+        report['versions'][name] = subprocess.check_output(command, text=True).strip().splitlines()[0]
+    report['engines'] = args.engines
+    report['binaries_sha256'] = {name: file_hash(Path(path)) for name, path in {'qsv': args.qsv, 'qsvlite': args.qsvlite, 'miller': args.miller}.items() if name in args.engines}
     sources = micro_fixture(scratch) if args.micro else [(path.resolve(), 'utf-8') for path in args.files]
     destination = args.output / 'results.json'
     try:
@@ -159,7 +203,7 @@ def run(args):
             original = file_hash(source)
             report['files'].append({'file': source.name, 'bytes': source.stat().st_size, 'encoding': encoding, 'sha256_before': original})
             expected = {}
-            for engine in ['python', 'node', 'duckdb', 'pandas']:
+            for engine in args.engines:
                 for task in TASKS:
                     assert file_hash(source) == original  # calienta caché y comprueba original
                     output = scratch / f'{source.stem}-{engine}-{task}.csv'
@@ -173,7 +217,7 @@ def run(args):
                         if result['exit_code']:
                             raise RuntimeError(result['error'])
                         expected[task] = result
-                    if result['exit_code'] == 0:
+                    if result['exit_code'] == 0 and result.get('status') == 'measured':
                         result['matches_oracle'] = result['result_sha256'] == expected[task]['result_sha256']
                         if task in ['T3', 'T5']:
                             result['matches_oracle'] &= result['values_sha256'] == expected[task]['values_sha256']
@@ -196,11 +240,30 @@ if __name__ == '__main__':
     parser.add_argument('--micro', action='store_true')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--python', default=sys.executable)
-    parser.add_argument('--pandas-python', required=True)
+    parser.add_argument('--pandas-python')
+    parser.add_argument('--engines', default=','.join(E0_ENGINES), help='lista separada por comas; python debe ir primero (oráculo)')
+    parser.add_argument('--qsv')
+    parser.add_argument('--qsvlite')
+    parser.add_argument('--miller')
+    parser.add_argument('--polars-python', help='intérprete de un entorno externo con polars')
+    parser.add_argument('--polars-node-dir', help='carpeta externa con node_modules/nodejs-polars')
     parser.add_argument('--node', required=True)
     parser.add_argument('--duckdb', default='/opt/homebrew/bin/duckdb')
+    parser.add_argument('--duckdb-node-dir', help='carpeta externa con node_modules/@duckdb/node-api (variable DUCKDB_NODE_DIR)')
     parser.add_argument('--timeout', type=float, default=900)
     args = parser.parse_args()
+    args.engines = args.engines.split(',')
+    if args.duckdb_node_dir:
+        os.environ['DUCKDB_NODE_DIR'] = args.duckdb_node_dir
+    if any(e.startswith('duckdb-node') for e in args.engines) and not os.environ.get('DUCKDB_NODE_DIR'):
+        parser.error('duckdb-node necesita --duckdb-node-dir.')
+    unknown = set(args.engines) - set(E0_ENGINES) - set(M1_ENGINES) - set(DUCK_VARIANTS)
+    if unknown or args.engines[0] != 'python':
+        parser.error(f'Motores no válidos o python no es el primero: {sorted(unknown)}')
+    needs = {'pandas': args.pandas_python, 'qsv': args.qsv, 'qsvlite': args.qsvlite, 'miller': args.miller, 'polars': args.polars_python, 'polars-node': args.polars_node_dir}
+    missing = [name for name in args.engines if name in needs and not needs[name]]
+    if missing:
+        parser.error(f'Falta la ruta de: {missing}')
     if not args.micro and not args.files:
         parser.error('Indicar fuentes o --micro.')
     run(args)

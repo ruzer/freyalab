@@ -1,0 +1,106 @@
+{
+  "kind": "M2 proceso auxiliar",
+  "host": "utilityProcess de Electron",
+  "started": "2026-10-25T15:55:19.881Z",
+  "platform": "win32 x64",
+  "options": {
+    "workDir": "D:\\a\\_temp\\m2work-electron",
+    "tempDir": "D:\\a\\_temp\\m2work-electron\\tmp",
+    "threads": 12,
+    "memoryLimit": "4GB",
+    "parallel": true
+  },
+  "main": {
+    "electron": "44.9.2",
+    "node": "24.22.0",
+    "chrome": "152.0.7977.167",
+    "modules": "149"
+  },
+  "versions": {
+    "duckdb": "v2.0.0",
+    "node": "24.22.0",
+    "electron": "44.9.2",
+    "napi": "10",
+    "modules": "149"
+  },
+  "selftest": {
+    "rows": 45000,
+    "bytes": 4832808,
+    "checks": [
+      {
+        "name": "count",
+        "ok": true,
+        "ms": 140.2328,
+        "detail": 45000
+      },
+      {
+        "name": "filter_count",
+        "ok": true,
+        "ms": 134.88069999999993,
+        "detail": 14897
+      },
+      {
+        "name": "search_count (campo multilínea)",
+        "ok": true,
+        "ms": 134.88969999999995,
+        "detail": 9166
+      },
+      {
+        "name": "aggregate (suma exacta en céntimos)",
+        "ok": true,
+        "ms": 141.05399999999997,
+        "detail": 2
+      },
+      {
+        "name": "filter_extract",
+        "ok": true,
+        "ms": 268.46550000000013,
+        "detail": 14897
+      },
+      {
+        "name": "replace_literal_to_file",
+        "ok": true,
+        "ms": 417.02060000000006,
+        "detail": 0
+      },
+      {
+        "name": "sort_to_file",
+        "ok": true,
+        "ms": 261.30650000000014,
+        "detail": 45000
+      },
+      {
+        "name": "positions",
+        "ok": true,
+        "ms": 142.55320000000006,
+        "detail": 44794
+      },
+      {
+        "name": "el original no cambió de tamaño",
+        "ok": true,
+        "ms": 0.12319999999999709,
+        "detail": true
+      },
+      {
+        "name": "aislamiento y operaciones cerradas dentro del proceso auxiliar",
+        "ok": true,
+        "ms": 10038.8686,
+        "detail": {
+          "locked": 24,
+          "closed": 18,
+          "interruptMs": 1.3514000000013766
+        }
+      },
+      {
+        "name": "matar el proceso auxiliar a mitad de operación y relanzarlo",
+        "ok": true,
+        "ms": 274.5488999999998,
+        "detail": {
+          "exitMs": 1.657100000000355,
+          "partialLeft": false
+        }
+      }
+    ],
+    "allOk": true
+  }
+}

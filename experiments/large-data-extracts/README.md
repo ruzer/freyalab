@@ -71,3 +71,56 @@ Los JSON y documentación se conservan; los CSV nunca se suben. Tras copiar evid
 El banco no garantiza limpieza automática ante toda interrupción ni borrado forense SSD/APFS/snapshots. En E0 se registró limpieza explícita de sus ejecuciones; los fixtures de usuario permanecen en su carpeta. La política de extractos de producto (ubicación, vida, presupuesto, cierre/recuperación) sigue pendiente de decisión antes de E1.
 
 Las comprobaciones generales (`check`, `test`, `test:e2e`, `build`) y su CI se documentan en evidencia. El benchmark grande y los sondeos Python **no forman parte de la CI**; la CI existente sí ejecuta los 41 tests del PoC. No se certifica empaquetado/instalación de un motor nuevo ni se actualiza la app instalada. E0 se detiene en el PR en borrador.
+
+## M1 — qsv, Miller y Polars (25-oct-2026)
+
+Amplía el banco con qsv, qsvlite, Miller y Polars (Python y Node). [Evidencia](../../docs/evidence/m1-motores-externos-2026-10-25.md), [recomendación](../../docs/design/EXTERNAL-ENGINES.md), procedencia y SHA-256 en [`results/m1-procedencia.json`](results/m1-procedencia.json). **Nada de esto es una dependencia de FreyaLab**: las herramientas se instalan en una carpeta temporal externa al repositorio, con autorización explícita, versiones y hashes fijados. No se toca `package.json`, el lockfile ni el instalador. Medido solo en macOS ARM64.
+
+```sh
+M=/private/tmp/freyalab-m1 ; mkdir -p $M/dl-qsv $M/dl-miller $M/qsv-bin $M/miller-bin $M/polars-py $M/node-polars
+
+# qsv 26.0.0 (macOS ARM64): comprobar el SHA-256 antes de extraer; solo se extraen qsv y qsvlite
+gh release download 26.0.0 -R dathere/qsv -p 'qsv-26.0.0-aarch64-apple-darwin.zip' -D $M/dl-qsv
+shasum -a 256 $M/dl-qsv/*.zip      # feb85ad07a84564e947813b3b847c7628bc7fa56f145c2509bca719541fb9b06
+unzip -q $M/dl-qsv/*.zip qsv qsvlite COPYING LICENSE-MIT THIRD_PARTY_NOTICES.md -d $M/qsv-bin
+
+# Miller 6.22.0
+gh release download v6.22.0 -R johnkerl/miller -p 'miller-6.22.0-darwin-arm64.tar.gz' -p 'miller-6.22.0-checksums.txt' -D $M/dl-miller
+shasum -a 256 $M/dl-miller/*.tar.gz  # b99af86bf902c4fd269c28ec4142111dc27815b3ae63801baceaa001d09b9fd7
+tar -xzf $M/dl-miller/miller-6.22.0-darwin-arm64.tar.gz -C $M/miller-bin
+
+# Polars 2.0.0 (Python) en un entorno aislado, con hashes de las dos ruedas
+cat > $M/polars-py/requirements.txt <<'REQ'
+polars==2.0.0 --hash=sha256:35d62f3541b7a6d4c360a2e2f07fccc0c2bcbd33b0ea51c83a25417a47a3f3ad
+polars-runtime-32==2.0.0 --hash=sha256:7012d8a0201bd95638545ce8f256c0efe2c5cab0f806eb043021dddde5a9498b
+REQ
+UV_CACHE_DIR=$M/uv-cache uv venv --python python3.12 $M/venv-polars
+UV_CACHE_DIR=$M/uv-cache uv pip install --python $M/venv-polars/bin/python --require-hashes --no-deps -r $M/polars-py/requirements.txt
+
+# nodejs-polars 0.26.1 (sin scripts de instalación)
+cd $M/node-polars && npm init -y && npm install nodejs-polars@0.26.1 --save-exact --ignore-scripts --no-audit --no-fund --cache $M/npm-cache
+```
+
+El banco necesita `iconv-lite` para el PoC de Node: ejecutarlo desde un worktree con `node_modules` instalado.
+
+```sh
+ARGS="--node $(which node) --qsv $M/qsv-bin/qsv --qsvlite $M/qsv-bin/qsvlite --miller $M/miller-bin/miller-6.22.0-darwin-arm64/mlr \
+      --polars-python $M/venv-polars/bin/python --polars-node-dir $M/node-polars"
+cd experiments/large-data-extracts
+
+# T1–T6, 100 MiB y 1 GiB (unos 30 min; no lanzar nada más durante la medición)
+python3 benchmark.py /private/tmp/FreyaLab-pruebas/ventas_100MiB.csv /private/tmp/FreyaLab-pruebas/ventas_1GiB.csv \
+  --output $M/out/ventas --engines python,node,duckdb,duckdb-mt,qsv,qsvlite,miller,miller-1t,polars,polars-1t,polars-node,polars-node-1t $ARGS
+python3 benchmark.py <las mismas fuentes> --output $M/out/ventas-duckdb-par --engines python,duckdb-par $ARGS
+
+# Formatos, casos límite y copia sin transformar (salen con código distinto de 0 a propósito si hay discrepancias)
+python3 benchmark.py --micro --output $M/out/formatos --engines python,node,duckdb,qsv,qsvlite,miller,polars,polars-node $ARGS
+python3 probe_edges.py --output $M/out/bordes --engines python,node,duckdb,qsv,qsvlite,miller,polars,polars-node $ARGS
+python3 probe_m1_integrity.py --output $M/out/integridad --qsv ... --qsvlite ... --miller ... --polars-python ... --polars-node-dir ... --node ...
+
+# Cancelación y ordenación completa (1 GiB)
+python3 probe_m1_resources.py cancel /private/tmp/FreyaLab-pruebas/ventas_1GiB.csv --output $M/out/cancelacion --engines duckdb,node,qsv,qsvlite,miller,polars,polars-node --after 0.3 ...
+python3 probe_m1_resources.py sort   /private/tmp/FreyaLab-pruebas/ventas_1GiB.csv --output $M/out/ordenacion  --engines duckdb,qsv-extsort,qsvlite-extsort,polars,polars-node,qsv-sort,miller ...
+```
+
+Variantes: `duckdb-mt` y `duckdb-par` (12 hilos, lector no paralelo y paralelo), `-1t` (un hilo: `POLARS_MAX_THREADS=1`; `miller-1t` usa `GOMAXPROCS=1` y **no limita** a Miller). `benchmark.py` registra también `cpu_user_seconds` y `cpu_sys_seconds` por medición. Las tuberías de qsv se encadenan sin shell y el RSS informado es el mayor de una etapa. `probe_m1_resources.py` termina el grupo de procesos con SIGTERM o SIGKILL y, para `qsv extsort`, indexa un enlace simbólico dentro de la carpeta temporal (`qsv index` escribe `<entrada>.idx` junto a la entrada). Limpieza: retirar `/private/tmp/freyalab-m1` entera al terminar.

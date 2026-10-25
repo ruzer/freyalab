@@ -48,6 +48,20 @@ class IntegrityTests(unittest.TestCase):
             self.assertTrue(result['values_exact'])
             self.assertFalse(result['unchanged_records_byte_exact'])
 
+    def test_fidelity_separates_line_endings_from_quoting(self):
+        # M1: una herramienta que solo cambia CRLF a LF no es lo mismo que una que quita comillas.
+        with tempfile.TemporaryDirectory() as folder:
+            source, output = [Path(folder) / name for name in ['source.csv', 'output.csv']]
+            source.write_bytes(b'ciudad,id\r\n"Oaxaca",00123\r\nM\xc3\xa9rida,9\r\n')
+            output.write_bytes(b'ciudad,id\n"Oaxaca",00123\nMerida,9\n')
+            result = common.fidelity(source, output, 'utf-8', 'utf-8')
+            self.assertFalse(result['unchanged_records_byte_exact'])
+            self.assertTrue(result['unchanged_records_byte_exact_ignoring_final_eol'])
+            output.write_bytes(b'ciudad,id\nOaxaca,00123\nMerida,9\n')
+            result = common.fidelity(source, output, 'utf-8', 'utf-8')
+            self.assertFalse(result['unchanged_records_byte_exact'])
+            self.assertFalse(result['unchanged_records_byte_exact_ignoring_final_eol'])
+
     def test_bom_is_checked_separately_from_records(self):
         with tempfile.TemporaryDirectory() as folder:
             source, output = [Path(folder) / name for name in ['source.csv', 'output.csv']]

@@ -1,0 +1,11 @@
+{
+  "platform": "linux",
+  "arch": "x64",
+  "packageBytes": 393572782,
+  "unpackedDuckDBBytes": 96917474,
+  "unpackedEntries": [
+    "node-api",
+    "node-bindings",
+    "node-bindings-linux-x64"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "kind": "M2 formato de salida de COPY entre versiones",
+  "input": "\"a,b,c,d\\r\\n1,,\\\"\\\",x\\r\\n2,\\\" espacios \\\",\\\"con \\\"\\\"comillas\\\"\\\"\\\",\\\"línea 1\\nlínea 2\\\"\\r\\n3,\\\"con,coma\\\",ñ,\\\"€\\\"\\r\\n\"",
+  "native": {
+    "version": "v2.0.0",
+    "output": "\"a,b,c,d\\n1,,,x\\n2, espacios ,\\\"con \\\"\\\"comillas\\\"\\\"\\\",\\\"línea 1\\nlínea 2\\\"\\n3,\\\"con,coma\\\",ñ,€\\n\""
+  },
+  "cli": {
+    "version": "v1.5.6 (Variegata) 069cc9f9b5",
+    "output": "\"a,b,c,d\\n1,,,x\\n2, espacios ,\\\"con \\\"\\\"comillas\\\"\\\"\\\",\\\"línea 1\\nlínea 2\\\"\\n3,\\\"con,coma\\\",ñ,€\\n\""
+  },
+  "identical": true
+}

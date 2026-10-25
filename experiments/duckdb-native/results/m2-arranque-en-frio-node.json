@@ -1,0 +1,54 @@
+{
+  "kind": "M2 proceso auxiliar",
+  "host": "proceso hijo de Node (child_process.fork)",
+  "started": "2026-10-25T15:48:42.857Z",
+  "platform": "darwin arm64",
+  "options": {
+    "workDir": "/private/tmp/freyalab-m2/work-node-startup",
+    "tempDir": "/private/tmp/freyalab-m2/work-node-startup/tmp",
+    "threads": 12,
+    "memoryLimit": "4GB",
+    "parallel": true
+  },
+  "versions": {
+    "duckdb": "v2.0.0",
+    "node": "24.22.1",
+    "electron": null,
+    "napi": "10",
+    "modules": "137"
+  },
+  "startup": {
+    "rounds": [
+      {
+        "startMs": 97.166292,
+        "firstCountMs": 39.203832999999975,
+        "secondCountMs": 42.82458300000002,
+        "rssAfterBytes": 218316800
+      },
+      {
+        "startMs": 98.31829099999999,
+        "firstCountMs": 41.94554100000005,
+        "secondCountMs": 39.84554200000002,
+        "rssAfterBytes": 218677248
+      },
+      {
+        "startMs": 97.32237499999997,
+        "firstCountMs": 42.53329099999996,
+        "secondCountMs": 40.17916600000001,
+        "rssAfterBytes": 218316800
+      },
+      {
+        "startMs": 98.21920799999998,
+        "firstCountMs": 42.121791999999914,
+        "secondCountMs": 37.716458999999986,
+        "rssAfterBytes": 218349568
+      },
+      {
+        "startMs": 98.630584,
+        "firstCountMs": 40.993791999999985,
+        "secondCountMs": 38.23075000000017,
+        "rssAfterBytes": 218087424
+      }
+    ]
+  }
+}

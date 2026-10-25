@@ -1,0 +1,4037 @@
+{
+  "schema": 1,
+  "consulted_at": "2026-10-25T07:16:51.739984+00:00",
+  "base_sha": "22d936cb3aa8285f56747688567d89ae1a769921",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "hardware": [
+    "Apple M2 Max",
+    "34359738368"
+  ],
+  "method": "una repetición, un proceso por motor/tarea, caché caliente por SHA-256 previo, time -l RSS bytes, pared incluye arranque; verificación excluida del tiempo",
+  "versions": {
+    "python": "Python 3.15.0",
+    "node": "v24.22.1",
+    "duckdb": "v1.5.6 (Variegata) 069cc9f9b5",
+    "qsv": "qsv 26.0.0-jemalloc-apply;fetch;foreach;geocode;Luau 0.740;magika;to;viz;viz_static;polars-0.55.1:py-2.0.0:b951cd7;self_update-12-12;25.60 GiB-1.15 GiB-25.58 GiB-32.00 GiB (aarch64-apple-darwin compiled with Rust 1.99;macOS 27.0.1-Darwin 27.0.0;Apple M2 Max-12) prebuilt-pgo",
+    "qsvlite": "qsvlite 26.0.0-jemalloc-self_update-12-12;25.60 GiB-1.15 GiB-25.58 GiB-32.00 GiB (aarch64-apple-darwin compiled with Rust 1.99;macOS 27.0.1-Darwin 27.0.0;Apple M2 Max-12) prebuilt",
+    "miller": "mlr 6.22.0",
+    "polars": "3.12.15 2.0.0",
+    "polars-node": "0.26.1"
+  },
+  "files": [
+    {
+      "file": "format-utf-8.csv",
+      "bytes": 671,
+      "encoding": "utf-8",
+      "sha256_before": "61ec3ff6bc76cb01c692c3f33789f9b5dfa89d12c424f96b8e3455de5befb35f",
+      "sha256_after": "61ec3ff6bc76cb01c692c3f33789f9b5dfa89d12c424f96b8e3455de5befb35f"
+    },
+    {
+      "file": "format-utf-8-sig.csv",
+      "bytes": 674,
+      "encoding": "utf-8-sig",
+      "sha256_before": "855ecfe1df933aad81387d5225eec569a243867225b68ba750707f39a8cf0526",
+      "sha256_after": "855ecfe1df933aad81387d5225eec569a243867225b68ba750707f39a8cf0526"
+    },
+    {
+      "file": "format-utf-16.csv",
+      "bytes": 1320,
+      "encoding": "utf-16",
+      "sha256_before": "1f7d6d5f715907fb1bfd5ab9c56ec1cc88f16a05a3f3d0448dcb22383bac2e7f",
+      "sha256_after": "1f7d6d5f715907fb1bfd5ab9c56ec1cc88f16a05a3f3d0448dcb22383bac2e7f"
+    },
+    {
+      "file": "format-cp1252.csv",
+      "bytes": 659,
+      "encoding": "cp1252",
+      "sha256_before": "b3392fb76bdbca0cb234329c6cd681eea54700082da179ccea17cca2bb60bcff"
+    }
+  ],
+  "results": [
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 0.033192666014656425,
+      "max_rss_bytes": 20054016,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T2",
+      "wall_seconds": 0.0315338330110535,
+      "max_rss_bytes": 20332544,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T3",
+      "wall_seconds": 0.03140183398500085,
+      "max_rss_bytes": 20299776,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 130,
+      "output_sha256": "1fbe30b2d9e09f580007c0ed2f4280dc2711291a2fdecc5d8da0bc4f48a9a426",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Python csv.writer"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T4",
+      "wall_seconds": 0.03163162502460182,
+      "max_rss_bytes": 20086784,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T5",
+      "wall_seconds": 0.03142895799828693,
+      "max_rss_bytes": 20316160,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 512,
+      "output_sha256": "6c01daa0d06e77328ff8b2543f5f1dd2f85029093bddce7b9a1a1eb6a9d2cb0a",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "aced5cf8db8b1afb5433f1606ae88034976cc1aa977d297b5a8641ff62ab1bac"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T6",
+      "wall_seconds": 0.0311974169453606,
+      "max_rss_bytes": 20332544,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T1",
+      "wall_seconds": 0.04815262497868389,
+      "max_rss_bytes": 54280192,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T2",
+      "wall_seconds": 0.03776645800098777,
+      "max_rss_bytes": 53772288,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T3",
+      "wall_seconds": 0.046937417006120086,
+      "max_rss_bytes": 54575104,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 150,
+      "output_sha256": "c2aec069bdcec8337bd4699181aee88ad422b263bb44bf189ea542c12e9948e5",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "PoC bulkTransform; campos proyectados serializados"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T4",
+      "wall_seconds": 0.03783004102297127,
+      "max_rss_bytes": 54231040,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T5",
+      "wall_seconds": 0.041704165982082486,
+      "max_rss_bytes": 54394880,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 670,
+      "output_sha256": "6887189344305df98751101e265483171b40753d46759583e7d568e593d6d2b8",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T6",
+      "wall_seconds": 0.035960333014372736,
+      "max_rss_bytes": 54542336,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 0.017553541983943433,
+      "max_rss_bytes": 24444928,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T2",
+      "wall_seconds": 0.01685270800953731,
+      "max_rss_bytes": 24461312,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T3",
+      "wall_seconds": 0.016825500002596527,
+      "max_rss_bytes": 24707072,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T4",
+      "wall_seconds": 0.016780083009507507,
+      "max_rss_bytes": 26836992,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T5",
+      "wall_seconds": 0.017048708046786487,
+      "max_rss_bytes": 25870336,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 600,
+      "output_sha256": "35ca426af592ef7093ef775811fca06ffb027c4cc9805f009a861ec626d9c3a8",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "fa67d317cdf979a8b05eb7fb86b126194cbe3f58793028d517c6df1c0e8efcf5"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T6",
+      "wall_seconds": 0.017102083016652614,
+      "max_rss_bytes": 26165248,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T1",
+      "wall_seconds": 0.017935541982296854,
+      "max_rss_bytes": 40206336,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        40206336
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T2",
+      "wall_seconds": 0.01578691601753235,
+      "max_rss_bytes": 22609920,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        22609920,
+        22593536
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T3",
+      "wall_seconds": 0.018217750010080636,
+      "max_rss_bytes": 22577152,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        22298624,
+        22577152,
+        22544384
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "qsv (escritor CSV de Rust)"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T4",
+      "wall_seconds": 0.018716583028435707,
+      "max_rss_bytes": 48234496,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        48234496
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T5",
+      "wall_seconds": 0.014593250001780689,
+      "max_rss_bytes": 22675456,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        22675456
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 508,
+      "output_sha256": "4a4678bf0a9c0fadb3e8e77bb3a5fb1111bb787c0a01039b9d92059cc77fa7cf",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "299fdb4a1a789a22ff4fde5d073e24760ebfa0e5d74385046a14bbf0ce26bf4a",
+        "normalized_by": "qsv (escritor CSV de Rust)"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T6",
+      "wall_seconds": 0.013942084042355418,
+      "max_rss_bytes": 22642688,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        22642688
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T1",
+      "wall_seconds": 0.009422875009477139,
+      "max_rss_bytes": 13451264,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        13451264
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T2",
+      "wall_seconds": 0.010805832978803664,
+      "max_rss_bytes": 14417920,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        14417920,
+        14385152
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T3",
+      "wall_seconds": 0.011846000037621707,
+      "max_rss_bytes": 14385152,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        14139392,
+        14385152,
+        14368768
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "qsvlite (escritor CSV de Rust)"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T4",
+      "wall_seconds": 0.0,
+      "max_rss_bytes": null,
+      "exit_code": null,
+      "status": "unsupported",
+      "error": "qsvlite no incluye sqlp ni ningún verbo de agrupación con suma.",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8"
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T5",
+      "wall_seconds": 0.009382083953823894,
+      "max_rss_bytes": 14499840,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        14499840
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 508,
+      "output_sha256": "4a4678bf0a9c0fadb3e8e77bb3a5fb1111bb787c0a01039b9d92059cc77fa7cf",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "299fdb4a1a789a22ff4fde5d073e24760ebfa0e5d74385046a14bbf0ce26bf4a",
+        "normalized_by": "qsvlite (escritor CSV de Rust)"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T6",
+      "wall_seconds": 0.009258334001060575,
+      "max_rss_bytes": 14352384,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        14352384
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T1",
+      "wall_seconds": 0.015384541999083012,
+      "max_rss_bytes": 33226752,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        33226752
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T2",
+      "wall_seconds": 0.015793583006598055,
+      "max_rss_bytes": 33554432,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        33554432
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T3",
+      "wall_seconds": 0.015919625002425164,
+      "max_rss_bytes": 33472512,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        33472512
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Miller (escritor CSV de Go)"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T4",
+      "wall_seconds": 0.015539665997494012,
+      "max_rss_bytes": 33783808,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        33783808
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T5",
+      "wall_seconds": 0.015372708032373339,
+      "max_rss_bytes": 33767424,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        33767424
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 508,
+      "output_sha256": "4a4678bf0a9c0fadb3e8e77bb3a5fb1111bb787c0a01039b9d92059cc77fa7cf",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "299fdb4a1a789a22ff4fde5d073e24760ebfa0e5d74385046a14bbf0ce26bf4a",
+        "normalized_by": "Miller (escritor CSV de Go)"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T6",
+      "wall_seconds": 0.015520500019192696,
+      "max_rss_bytes": 33341440,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        33341440
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T1",
+      "wall_seconds": 0.10856449999846518,
+      "max_rss_bytes": 66011136,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        66011136
+      ],
+      "cpu_user_seconds": 0.08,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T2",
+      "wall_seconds": 0.10673925001174212,
+      "max_rss_bytes": 68747264,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        68747264
+      ],
+      "cpu_user_seconds": 0.08,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T3",
+      "wall_seconds": 0.10622437502024695,
+      "max_rss_bytes": 68812800,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        68812800
+      ],
+      "cpu_user_seconds": 0.08,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 130,
+      "output_sha256": "1fbe30b2d9e09f580007c0ed2f4280dc2711291a2fdecc5d8da0bc4f48a9a426",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Polars sink_csv"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T4",
+      "wall_seconds": 0.11133074999088421,
+      "max_rss_bytes": 73842688,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        73842688
+      ],
+      "cpu_user_seconds": 0.08,
+      "cpu_sys_seconds": 0.03,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T5",
+      "wall_seconds": 0.10942329198587686,
+      "max_rss_bytes": 68042752,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        68042752
+      ],
+      "cpu_user_seconds": 0.08,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 604,
+      "output_sha256": "8036c0e90a861503f634f2dfaef4c0a1abee4ae456a58706d3142dbc0bfbb099",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "76fe58873de510bdef597e38bd31cd5566d88a579feaa295802fffebd49715e4",
+        "normalized_by": "Polars sink_csv"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T6",
+      "wall_seconds": 0.11102574999677017,
+      "max_rss_bytes": 70991872,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        70991872
+      ],
+      "cpu_user_seconds": 0.08,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T1",
+      "wall_seconds": 0.05043141701025888,
+      "max_rss_bytes": 68386816,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        68386816
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T2",
+      "wall_seconds": 0.05127020803047344,
+      "max_rss_bytes": 73449472,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        73449472
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T3",
+      "wall_seconds": 0.053888083959463984,
+      "max_rss_bytes": 83361792,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        83361792
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 130,
+      "output_sha256": "1fbe30b2d9e09f580007c0ed2f4280dc2711291a2fdecc5d8da0bc4f48a9a426",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "nodejs-polars sinkCSV"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T4",
+      "wall_seconds": 0.0559192500077188,
+      "max_rss_bytes": 82853888,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        82853888
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099500"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "18db0187c50a6436e1dde08025b0756b72d0ff9d4a822205212ccb9d5b81ebab",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": false
+    },
+    {
+      "engine": "polars-node",
+      "task": "T5",
+      "wall_seconds": 0.05108299996936694,
+      "max_rss_bytes": 82640896,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        82640896
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 604,
+      "output_sha256": "8036c0e90a861503f634f2dfaef4c0a1abee4ae456a58706d3142dbc0bfbb099",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "76fe58873de510bdef597e38bd31cd5566d88a579feaa295802fffebd49715e4",
+        "normalized_by": "nodejs-polars sinkCSV"
+      },
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T6",
+      "wall_seconds": 0.05475895799463615,
+      "max_rss_bytes": 78413824,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        78413824
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8.csv",
+      "encoding": "utf-8",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 0.03481949999695644,
+      "max_rss_bytes": 20365312,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T2",
+      "wall_seconds": 0.0350006659864448,
+      "max_rss_bytes": 20299776,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T3",
+      "wall_seconds": 0.03779987496091053,
+      "max_rss_bytes": 20316160,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 133,
+      "output_sha256": "742a860a82ec886ff35b60ef984dfa2d09c9954ac825d9148a2e8c91124689b2",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Python csv.writer"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T4",
+      "wall_seconds": 0.03429516701726243,
+      "max_rss_bytes": 20365312,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T5",
+      "wall_seconds": 0.03407783299917355,
+      "max_rss_bytes": 20250624,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 515,
+      "output_sha256": "b091e134c0d6db14b12784a7d54eb7a5e4309c656fd8ae46af7ed2d6ad698ac9",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "efbbbf",
+        "output_bom_hex": "efbbbf",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "aced5cf8db8b1afb5433f1606ae88034976cc1aa977d297b5a8641ff62ab1bac"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T6",
+      "wall_seconds": 0.0339516670210287,
+      "max_rss_bytes": 20348928,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T1",
+      "wall_seconds": 0.03955299995141104,
+      "max_rss_bytes": 53755904,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T2",
+      "wall_seconds": 0.03897770802723244,
+      "max_rss_bytes": 53755904,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T3",
+      "wall_seconds": 0.04484120802953839,
+      "max_rss_bytes": 54493184,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 153,
+      "output_sha256": "d02656ac17274efa3da0583f0154996ad3534cad75152d0939b681d6dea92d13",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "PoC bulkTransform; campos proyectados serializados"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T4",
+      "wall_seconds": 0.03757120802765712,
+      "max_rss_bytes": 54476800,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T5",
+      "wall_seconds": 0.04131445800885558,
+      "max_rss_bytes": 54525952,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 673,
+      "output_sha256": "4f42c96f1f50791a88faa172be9656afd8064cbc0c7bf1201e795756c184c19d",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "efbbbf",
+        "output_bom_hex": "efbbbf",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T6",
+      "wall_seconds": 0.035620582988485694,
+      "max_rss_bytes": 54525952,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 0.017222167050931603,
+      "max_rss_bytes": 24346624,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T2",
+      "wall_seconds": 0.01651845796732232,
+      "max_rss_bytes": 24444928,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T3",
+      "wall_seconds": 0.016666917013935745,
+      "max_rss_bytes": 24870912,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T4",
+      "wall_seconds": 0.01673824997851625,
+      "max_rss_bytes": 26755072,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T5",
+      "wall_seconds": 0.01647549995686859,
+      "max_rss_bytes": 25903104,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 600,
+      "output_sha256": "35ca426af592ef7093ef775811fca06ffb027c4cc9805f009a861ec626d9c3a8",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "efbbbf",
+        "output_bom_hex": "",
+        "bom_preserved": false,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "fa67d317cdf979a8b05eb7fb86b126194cbe3f58793028d517c6df1c0e8efcf5"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T6",
+      "wall_seconds": 0.016918750014156103,
+      "max_rss_bytes": 26329088,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T1",
+      "wall_seconds": 0.01811329199699685,
+      "max_rss_bytes": 39829504,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        39829504
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T2",
+      "wall_seconds": 0.01535016595153138,
+      "max_rss_bytes": 22626304,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        22626304,
+        22544384
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T3",
+      "wall_seconds": 0.01724524999735877,
+      "max_rss_bytes": 22609920,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        22233088,
+        22609920,
+        22544384
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "qsv (escritor CSV de Rust)"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T4",
+      "wall_seconds": 0.01778429199475795,
+      "max_rss_bytes": 48283648,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        48283648
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T5",
+      "wall_seconds": 0.01412099995650351,
+      "max_rss_bytes": 22675456,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        22675456
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 508,
+      "output_sha256": "4a4678bf0a9c0fadb3e8e77bb3a5fb1111bb787c0a01039b9d92059cc77fa7cf",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "efbbbf",
+        "output_bom_hex": "",
+        "bom_preserved": false,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "299fdb4a1a789a22ff4fde5d073e24760ebfa0e5d74385046a14bbf0ce26bf4a",
+        "normalized_by": "qsv (escritor CSV de Rust)"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T6",
+      "wall_seconds": 0.013311374990735203,
+      "max_rss_bytes": 22609920,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        22609920
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T1",
+      "wall_seconds": 0.008473583962768316,
+      "max_rss_bytes": 13451264,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        13451264
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T2",
+      "wall_seconds": 0.010632125020492822,
+      "max_rss_bytes": 14368768,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        14368768,
+        14352384
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T3",
+      "wall_seconds": 0.012320750043727458,
+      "max_rss_bytes": 14368768,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        14172160,
+        14368768,
+        14368768
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "qsvlite (escritor CSV de Rust)"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T4",
+      "wall_seconds": 0.0,
+      "max_rss_bytes": null,
+      "exit_code": null,
+      "status": "unsupported",
+      "error": "qsvlite no incluye sqlp ni ningún verbo de agrupación con suma.",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig"
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T5",
+      "wall_seconds": 0.008892417012248188,
+      "max_rss_bytes": 14483456,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        14483456
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 508,
+      "output_sha256": "4a4678bf0a9c0fadb3e8e77bb3a5fb1111bb787c0a01039b9d92059cc77fa7cf",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "efbbbf",
+        "output_bom_hex": "",
+        "bom_preserved": false,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "299fdb4a1a789a22ff4fde5d073e24760ebfa0e5d74385046a14bbf0ce26bf4a",
+        "normalized_by": "qsvlite (escritor CSV de Rust)"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T6",
+      "wall_seconds": 0.008947624999564141,
+      "max_rss_bytes": 14352384,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        14352384
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T1",
+      "wall_seconds": 0.014594500011298805,
+      "max_rss_bytes": 33226752,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        33226752
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T2",
+      "wall_seconds": 0.01522720797220245,
+      "max_rss_bytes": 33619968,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        33619968
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T3",
+      "wall_seconds": 0.015346875006798655,
+      "max_rss_bytes": 33685504,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        33685504
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Miller (escritor CSV de Go)"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T4",
+      "wall_seconds": 0.015810874989256263,
+      "max_rss_bytes": 33619968,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        33619968
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T5",
+      "wall_seconds": 0.015239000029396266,
+      "max_rss_bytes": 33357824,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        33357824
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 508,
+      "output_sha256": "4a4678bf0a9c0fadb3e8e77bb3a5fb1111bb787c0a01039b9d92059cc77fa7cf",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "efbbbf",
+        "output_bom_hex": "",
+        "bom_preserved": false,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "299fdb4a1a789a22ff4fde5d073e24760ebfa0e5d74385046a14bbf0ce26bf4a",
+        "normalized_by": "Miller (escritor CSV de Go)"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "miller",
+      "task": "T6",
+      "wall_seconds": 0.015563666995149106,
+      "max_rss_bytes": 33816576,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        33816576
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T1",
+      "wall_seconds": 0.10224258300149813,
+      "max_rss_bytes": 65159168,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        65159168
+      ],
+      "cpu_user_seconds": 0.07,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T2",
+      "wall_seconds": 0.10170975001528859,
+      "max_rss_bytes": 68780032,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        68780032
+      ],
+      "cpu_user_seconds": 0.07,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T3",
+      "wall_seconds": 0.09970083297230303,
+      "max_rss_bytes": 68747264,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        68747264
+      ],
+      "cpu_user_seconds": 0.07,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 130,
+      "output_sha256": "1fbe30b2d9e09f580007c0ed2f4280dc2711291a2fdecc5d8da0bc4f48a9a426",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Polars sink_csv"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T4",
+      "wall_seconds": 0.1015492079895921,
+      "max_rss_bytes": 73220096,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        73220096
+      ],
+      "cpu_user_seconds": 0.07,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T5",
+      "wall_seconds": 0.10088433400960639,
+      "max_rss_bytes": 67698688,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        67698688
+      ],
+      "cpu_user_seconds": 0.07,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 604,
+      "output_sha256": "8036c0e90a861503f634f2dfaef4c0a1abee4ae456a58706d3142dbc0bfbb099",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "efbbbf",
+        "output_bom_hex": "",
+        "bom_preserved": false,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "76fe58873de510bdef597e38bd31cd5566d88a579feaa295802fffebd49715e4",
+        "normalized_by": "Polars sink_csv"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars",
+      "task": "T6",
+      "wall_seconds": 0.10219370800768957,
+      "max_rss_bytes": 71008256,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        71008256
+      ],
+      "cpu_user_seconds": 0.08,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T1",
+      "wall_seconds": 0.04939758300315589,
+      "max_rss_bytes": 68173824,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        68173824
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T2",
+      "wall_seconds": 0.047268458001781255,
+      "max_rss_bytes": 73252864,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        73252864
+      ],
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T3",
+      "wall_seconds": 0.05050304200267419,
+      "max_rss_bytes": 83165184,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        83165184
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 130,
+      "output_sha256": "1fbe30b2d9e09f580007c0ed2f4280dc2711291a2fdecc5d8da0bc4f48a9a426",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "nodejs-polars sinkCSV"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T4",
+      "wall_seconds": 0.051961624994874,
+      "max_rss_bytes": 82542592,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        82542592
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099500"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "18db0187c50a6436e1dde08025b0756b72d0ff9d4a822205212ccb9d5b81ebab",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": false
+    },
+    {
+      "engine": "polars-node",
+      "task": "T5",
+      "wall_seconds": 0.04828912497032434,
+      "max_rss_bytes": 81870848,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        81870848
+      ],
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 604,
+      "output_sha256": "8036c0e90a861503f634f2dfaef4c0a1abee4ae456a58706d3142dbc0bfbb099",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8-sig",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "efbbbf",
+        "output_bom_hex": "",
+        "bom_preserved": false,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "0a84246af90e33aa048d12549a2037cf2535b94bf5fc28a9ea50153572bb5d38",
+        "unchanged_output_sha256": "76fe58873de510bdef597e38bd31cd5566d88a579feaa295802fffebd49715e4",
+        "normalized_by": "nodejs-polars sinkCSV"
+      },
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "polars-node",
+      "task": "T6",
+      "wall_seconds": 0.048394499986898154,
+      "max_rss_bytes": 78102528,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        78102528
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-8-sig.csv",
+      "encoding": "utf-8-sig",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 0.033276917005423456,
+      "max_rss_bytes": 20316160,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T2",
+      "wall_seconds": 0.03156254201894626,
+      "max_rss_bytes": 20348928,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T3",
+      "wall_seconds": 0.03161645901855081,
+      "max_rss_bytes": 20250624,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 250,
+      "output_sha256": "e4e03c6240006c9ba3659bef85c2efe87366e5e891098f4bb65368465312427d",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-16",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Python csv.writer"
+      },
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T4",
+      "wall_seconds": 0.03156616695923731,
+      "max_rss_bytes": 20381696,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T5",
+      "wall_seconds": 0.032174708030652255,
+      "max_rss_bytes": 20316160,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 1004,
+      "output_sha256": "de04ac43d723923b8152fb30e9349016b9761d58c16b72f5fd656fcbdf423d36",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-16",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "fffe",
+        "output_bom_hex": "fffe",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "f2ba028738b45489bedeb151df117052b513c406bfe7a014a1cf7e901f3aa7d0",
+        "unchanged_output_sha256": "f83e9e51f597b1b9e0775e08c714ee0c4682be4cfcd7ba408efb72eada7b9a02"
+      },
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T6",
+      "wall_seconds": 0.03169570799218491,
+      "max_rss_bytes": 20316160,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T1",
+      "wall_seconds": 0.04343587503535673,
+      "max_rss_bytes": 55214080,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T2",
+      "wall_seconds": 0.04029725003056228,
+      "max_rss_bytes": 55279616,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T3",
+      "wall_seconds": 0.048004332988057286,
+      "max_rss_bytes": 55394304,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 290,
+      "output_sha256": "31a53993bbb082b2a470de1a3f292d8c14623b51f5a9c6d570b9b42180587983",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-16",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "PoC bulkTransform; campos proyectados serializados"
+      },
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T4",
+      "wall_seconds": 0.03941120899980888,
+      "max_rss_bytes": 55279616,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T5",
+      "wall_seconds": 0.044747999985702336,
+      "max_rss_bytes": 55312384,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 1320,
+      "output_sha256": "796305edb62c74062fcfaee4d7d7332b0fa086067f23846dcfbbca6b17ef2a4a",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-16",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "fffe",
+        "output_bom_hex": "fffe",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "f2ba028738b45489bedeb151df117052b513c406bfe7a014a1cf7e901f3aa7d0",
+        "unchanged_output_sha256": "f2ba028738b45489bedeb151df117052b513c406bfe7a014a1cf7e901f3aa7d0"
+      },
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T6",
+      "wall_seconds": 0.03889258299022913,
+      "max_rss_bytes": 55164928,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 0.01721916696988046,
+      "max_rss_bytes": 24395776,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T2",
+      "wall_seconds": 0.01649995899060741,
+      "max_rss_bytes": 24510464,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T3",
+      "wall_seconds": 0.01700279099168256,
+      "max_rss_bytes": 24723456,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 127,
+      "output_sha256": "a3157640a84bba1a1f5f6dd7b1c9295b24a18dfe67a9beba0e08ab3e05537b40",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "DuckDB COPY"
+      },
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T4",
+      "wall_seconds": 0.01679083303315565,
+      "max_rss_bytes": 26705920,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T5",
+      "wall_seconds": 0.016867916972842067,
+      "max_rss_bytes": 25985024,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 600,
+      "output_sha256": "35ca426af592ef7093ef775811fca06ffb027c4cc9805f009a861ec626d9c3a8",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "fffe",
+        "output_bom_hex": "",
+        "bom_preserved": false,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "f2ba028738b45489bedeb151df117052b513c406bfe7a014a1cf7e901f3aa7d0",
+        "unchanged_output_sha256": "fa67d317cdf979a8b05eb7fb86b126194cbe3f58793028d517c6df1c0e8efcf5"
+      },
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T6",
+      "wall_seconds": 0.016868332982994616,
+      "max_rss_bytes": 26132480,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T1",
+      "wall_seconds": 0.017274709010962397,
+      "max_rss_bytes": 37568512,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        37568512
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "csv error: CSV error: record 1 (line: 1, byte: 539): found record with 1 fields, but the previous record has 21 fields\n        0.01 real         0.00 user         0.00 sys\n            37568512  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2806  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                 223  involuntary context switches\n           136182887  instructions retired\n            51598147  cycles elapsed\n            20857696  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "qsv",
+      "task": "T2",
+      "wall_seconds": 0.015507708012592047,
+      "max_rss_bytes": 22495232,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1,
+        1
+      ],
+      "stage_rss_bytes": [
+        22462464,
+        22495232
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "Selector name 'estado' does not exist as a named header in the given CSV data.\n        0.01 real         0.00 user         0.00 sys\n            22462464  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1874  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   1  voluntary context switches\n                  12  involuntary context switches\n           116178845  instructions retired\n            32853664  cycles elapsed\n            10027680  peak memory footprint\n\nSelector name 'ciudad' does not exist as a named header in the given CSV data.\n        0.01 real         0.00 user         0.00 sys\n            22495232  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1875  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  12  involuntary context switches\n           116191279  instructions retired\n            34084173  cycles elapsed\n            10011272  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "qsv",
+      "task": "T3",
+      "wall_seconds": 0.017352666007354856,
+      "max_rss_bytes": 22528000,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1,
+        1,
+        1
+      ],
+      "stage_rss_bytes": [
+        22331392,
+        22528000,
+        22347776
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "Selector name 'venta_id' does not exist as a named header in the given CSV data.\n        0.01 real         0.00 user         0.00 sys\n            22331392  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1865  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   1  voluntary context switches\n                  10  involuntary context switches\n           115870613  instructions retired\n            35119875  cycles elapsed\n            10011296  peak memory footprint\n\nSelector name 'ciudad' does not exist as a named header in the given CSV data.\n        0.01 real         0.00 user         0.00 sys\n            22528000  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1877  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  12  involuntary context switches\n           116214482  instructions retired\n            36583663  cycles elapsed\n            10060448  peak memory footprint\n\nSelector name 'estado' does not exist as a named header in the given CSV data.\n        0.01 real         0.00 user         0.00 sys\n            22347776  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1867  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   1  voluntary context switches\n                  12  involuntary context switches\n           116182619  instructions retired\n            33303140  cycles elapsed\n             9962120  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "qsv",
+      "task": "T4",
+      "wall_seconds": 0.016357375017832965,
+      "max_rss_bytes": 32079872,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        32079872
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "Failed to execute query:\nSELECT ciudad, COUNT(*) AS count, CAST(SUM(CAST(total_mxn AS DECIMAL(38,2))) AS VARCHAR) AS s FROM read_csv('/private/tmp/freyalab-m1/out/formatos/artifacts/format-utf-16.csv', infer_schema_length => 0) GROUP BY ciudad ORDER BY ciudad\n\nERROR: Polars error: ColumnNotFound(ErrString(\"unable to find column \\\"ciudad\\\"; valid columns: [\\\"��\\\\\\\"\\\\0v\\\\0e\\\\0n\\\\0t\\\\0a\\\\0_\\\\0i\\\\0d\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0c\\\\0l\\\\0i\\\\0e\\\\0n\\\\0t\\\\0e\\\\0_\\\\0i\\\\0d\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0c\\\\0l\\\\0i\\\\0e\\\\0n\\\\0t\\\\0e\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0c\\\\0o\\\\0r\\\\0r\\\\0e\\\\0o\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0c\\\\0i\\\\0u\\\\0d\\\\0a\\\\0d\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0c\\\\0o\\\\0d\\\\0i\\\\0g\\\\0o\\\\0_\\\\0p\\\\0o\\\\0s\\\\0t\\\\0a\\\\0l\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0p\\\\0r\\\\0o\\\\0d\\\\0u\\\\0c\\\\0t\\\\0o\\\\0_\\\\0i\\\\0d\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0p\\\\0r\\\\0o\\\\0d\\\\0u\\\\0c\\\\0t\\\\0o\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0c\\\\0a\\\\0t\\\\0e\\\\0g\\\\0o\\\\0r\\\\0i\\\\0a\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0c\\\\0a\\\\0n\\\\0t\\\\0i\\\\0d\\\\0a\\\\0d\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0p\\\\0r\\\\0e\\\\0c\\\\0i\\\\0o\\\\0_\\\\0u\\\\0n\\\\0i\\\\0t\\\\0a\\\\0r\\\\0i\\\\0o\\\\0_\\\\0m\\\\0x\\\\0n\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0d\\\\0e\\\\0s\\\\0c\\\\0u\\\\0e\\\\0n\\\\0t\\\\0o\\\\0_\\\\0p\\\\0c\\\\0t\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0s\\\\0u\\\\0b\\\\0t\\\\0o\\\\0t\\\\0a\\\\0l\\\\0_\\\\0m\\\\0x\\\\0n\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0d\\\\0e\\\\0s\\\\0c\\\\0u\\\\0e\\\\0n\\\\0t\\\\0o\\\\0_\\\\0m\\\\0x\\\\0n\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0i\\\\0v\\\\0a\\\\0_\\\\0m\\\\0x\\\\0n\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0t\\\\0o\\\\0t\\\\0a\\\\0l\\\\0_\\\\0m\\\\0x\\\\0n\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0f\\\\0e\\\\0c\\\\0h\\\\0a\\\\0_\\\\0p\\\\0e\\\\0d\\\\0i\\\\0d\\\\0o\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0f\\\\0e\\\\0c\\\\0h\\\\0a\\\\0_\\\\0e\\\\0n\\\\0v\\\\0i\\\\0o\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0f\\\\0e\\\\0c\\\\0h\\\\0a\\\\0_\\\\0e\\\\0n\\\\0t\\\\0r\\\\0e\\\\0g\\\\0a\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0e\\\\0s\\\\0t\\\\0a\\\\0d\\\\0o\\\\0\\\\\\\"\\\\0\\\", \\\"\\\\0\\\\\\\"\\\\0n\\\\0o\\\\0t\\\\0a\\\\0s\\\\0\\\\\\\"\\\\0\\\\r\\\\0\\\"]\"))\n        0.01 real         0.00 user         0.00 sys\n            32079872  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2463  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                 104  involuntary context switches\n           128748651  instructions retired\n            46458691  cycles elapsed\n            15418136  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "qsv",
+      "task": "T5",
+      "wall_seconds": 0.014531625027302653,
+      "max_rss_bytes": 22462464,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        22462464
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "Selector name 'ciudad' does not exist as a named header in the given CSV data.\n        0.01 real         0.00 user         0.00 sys\n            22462464  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1873  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                   9  involuntary context switches\n           116784778  instructions retired\n            35672010  cycles elapsed\n             9945736  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "qsv",
+      "task": "T6",
+      "wall_seconds": 0.014316957967821509,
+      "max_rss_bytes": 22659072,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        22659072
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "csv error: CSV error: record 1 (line: 1, byte: 539): found record with 1 fields, but the previous record has 21 fields\n        0.01 real         0.00 user         0.00 sys\n            22659072  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1885  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  13  involuntary context switches\n           116186610  instructions retired\n            35078212  cycles elapsed\n            10027680  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T1",
+      "wall_seconds": 0.009160667017567903,
+      "max_rss_bytes": 13500416,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        13500416
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "csv error: CSV error: record 1 (line: 1, byte: 539): found record with 1 fields, but the previous record has 21 fields\n        0.00 real         0.00 user         0.00 sys\n            13500416  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1144  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  10  involuntary context switches\n            59823225  instructions retired\n            20009386  cycles elapsed\n             6373856  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T2",
+      "wall_seconds": 0.010395375022199005,
+      "max_rss_bytes": 14188544,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1,
+        1
+      ],
+      "stage_rss_bytes": [
+        14188544,
+        14139392
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "Selector name 'estado' does not exist as a named header in the given CSV data.\n        0.00 real         0.00 user         0.00 sys\n            14188544  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1186  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   1  voluntary context switches\n                  12  involuntary context switches\n            61018329  instructions retired\n            19437882  cycles elapsed\n             6947296  peak memory footprint\n\nSelector name 'ciudad' does not exist as a named header in the given CSV data.\n        0.00 real         0.00 user         0.00 sys\n            14139392  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1183  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  11  involuntary context switches\n            60915923  instructions retired\n            19806658  cycles elapsed\n             6898144  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T3",
+      "wall_seconds": 0.012112417025491595,
+      "max_rss_bytes": 14172160,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1,
+        1,
+        1
+      ],
+      "stage_rss_bytes": [
+        14057472,
+        14123008,
+        14172160
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "Selector name 'venta_id' does not exist as a named header in the given CSV data.\n        0.00 real         0.00 user         0.00 sys\n            14057472  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1178  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  12  involuntary context switches\n            60616414  instructions retired\n            19167802  cycles elapsed\n             6898144  peak memory footprint\n\nSelector name 'ciudad' does not exist as a named header in the given CSV data.\n        0.00 real         0.00 user         0.00 sys\n            14123008  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1182  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  13  involuntary context switches\n            61429147  instructions retired\n            21384861  cycles elapsed\n             6881760  peak memory footprint\n\nSelector name 'estado' does not exist as a named header in the given CSV data.\n        0.00 real         0.00 user         0.00 sys\n            14172160  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1185  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   1  voluntary context switches\n                   7  involuntary context switches\n            60774512  instructions retired\n            18945271  cycles elapsed\n             6930912  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T4",
+      "wall_seconds": 0.0,
+      "max_rss_bytes": null,
+      "exit_code": null,
+      "status": "unsupported",
+      "error": "qsvlite no incluye sqlp ni ningún verbo de agrupación con suma.",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T5",
+      "wall_seconds": 0.009167457988951355,
+      "max_rss_bytes": 14172160,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        14172160
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "Selector name 'ciudad' does not exist as a named header in the given CSV data.\n        0.00 real         0.00 user         0.00 sys\n            14172160  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1186  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  12  involuntary context switches\n            61413163  instructions retired\n            19587139  cycles elapsed\n             6930912  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T6",
+      "wall_seconds": 0.009433042025193572,
+      "max_rss_bytes": 14270464,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        14270464
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "csv error: CSV error: record 1 (line: 1, byte: 539): found record with 1 fields, but the previous record has 21 fields\n        0.00 real         0.00 user         0.00 sys\n            14270464  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1192  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  11  involuntary context switches\n            61222509  instructions retired\n            20210238  cycles elapsed\n             6898144  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "miller",
+      "task": "T1",
+      "wall_seconds": 0.01572895800927654,
+      "max_rss_bytes": 33243136,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        33243136
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "mlr: parse error on line 1, column 3: bare \" in non-quoted-field\n        0.01 real         0.01 user         0.00 sys\n            33243136  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2355  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                  38  signals received\n                  27  voluntary context switches\n                 328  involuntary context switches\n           146473367  instructions retired\n            58807123  cycles elapsed\n            20890224  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "miller",
+      "task": "T2",
+      "wall_seconds": 0.015319833008106798,
+      "max_rss_bytes": 33767424,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        33767424
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "mlr: parse error on line 1, column 3: bare \" in non-quoted-field\n        0.01 real         0.01 user         0.00 sys\n            33767424  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2388  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                  32  signals received\n                  11  voluntary context switches\n                 327  involuntary context switches\n           145522933  instructions retired\n            55773436  cycles elapsed\n            21103240  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "miller",
+      "task": "T3",
+      "wall_seconds": 0.015145624987781048,
+      "max_rss_bytes": 33357824,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        33357824
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "mlr: parse error on line 1, column 3: bare \" in non-quoted-field\n        0.01 real         0.01 user         0.00 sys\n            33357824  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2364  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                  23  signals received\n                   9  voluntary context switches\n                 354  involuntary context switches\n           144372999  instructions retired\n            54781094  cycles elapsed\n            21086808  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "miller",
+      "task": "T4",
+      "wall_seconds": 0.015054665971547365,
+      "max_rss_bytes": 33374208,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        33374208
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "mlr: parse error on line 1, column 3: bare \" in non-quoted-field\n        0.01 real         0.01 user         0.00 sys\n            33374208  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2363  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                  31  signals received\n                  16  voluntary context switches\n                 318  involuntary context switches\n           146029698  instructions retired\n            55027837  cycles elapsed\n            20955712  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "miller",
+      "task": "T5",
+      "wall_seconds": 0.015599832986481488,
+      "max_rss_bytes": 32964608,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        32964608
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "mlr: parse error on line 1, column 3: bare \" in non-quoted-field\n        0.01 real         0.01 user         0.00 sys\n            32964608  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2339  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                  32  signals received\n                  28  voluntary context switches\n                 308  involuntary context switches\n           142688059  instructions retired\n            52230946  cycles elapsed\n            20759128  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "miller",
+      "task": "T6",
+      "wall_seconds": 0.015564957982860506,
+      "max_rss_bytes": 33439744,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        33439744
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "mlr: parse error on line 1, column 3: bare \" in non-quoted-field\n        0.01 real         0.01 user         0.00 sys\n            33439744  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2367  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                  29  signals received\n                  16  voluntary context switches\n                 277  involuntary context switches\n           143969410  instructions retired\n            53361726  cycles elapsed\n            20873816  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "polars",
+      "task": "T1",
+      "wall_seconds": 0.10228058299981058,
+      "max_rss_bytes": 65306624,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        65306624
+      ],
+      "cpu_user_seconds": 0.07,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 4
+      },
+      "status": "measured",
+      "result_sha256": "a5fb8eb97856970b61d9f466deb64f7659e835ee8ec5497003b78438fe888cad",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": false
+    },
+    {
+      "engine": "polars",
+      "task": "T2",
+      "wall_seconds": 0.10262520797550678,
+      "max_rss_bytes": 58195968,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        58195968
+      ],
+      "cpu_user_seconds": 0.07,
+      "cpu_sys_seconds": 0.02,
+      "status": "error",
+      "error": "Traceback (most recent call last):\n  File \"<repo>/experiments/large-data-extracts/polars_worker.py\", line 16, in <module>\n    result = {'count': one(lazy.filter(where))}\n                       ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/experiments/large-data-extracts/polars_worker.py\", line 12, in <lambda>\n    one = lambda frame: frame.select(pl.len()).collect(engine='streaming').item()\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/_utils/expired.py\", line 114, in wrapper\n    return function(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/lazyframe/frame.py\", line 2225, in collect\n    return engine_.collect(\n           ^^^^^^^^^^^^^^^^\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/lazyframe/engine.py\", line 408, in collect\n    return wrap_df(ldf.collect(self.name, callback))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npolars.exceptions.ColumnNotFoundError: unable to find column \"ciudad\"; valid columns: [\"��\\\"\\0v\\0e\\0n\\0t\\0a\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0r\\0r\\0e\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0i\\0u\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0d\\0i\\0g\\0o\\0_\\0p\\0o\\0s\\0t\\0a\\0l\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0t\\0e\\0g\\0o\\0r\\0i\\0a\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0n\\0t\\0i\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0e\\0c\\0i\\0o\\0_\\0u\\0n\\0i\\0t\\0a\\0r\\0i\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0p\\0c\\0t\\0\\\"\\0\", \"\\0\\\"\\0s\\0u\\0b\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0i\\0v\\0a\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0p\\0e\\0d\\0i\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0v\\0i\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0t\\0r\\0e\\0g\\0a\\0\\\"\\0\", \"\\0\\\"\\0e\\0s\\0t\\0a\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0n\\0o\\0t\\0a\\0s\\0\\\"\\0\\r\\0\"]\n\nResolved plan until failure:\n\n\t---> FAILED HERE RESOLVING 'select' <---\nCsv SCAN [/private/tmp/freyalab-m1/out/formatos/artifacts/format-utf-16.csv]\nPROJECT */21 COLUMNS\nESTIMATED ROWS: 5\n\nThis error occurred with the following context stack:\n\t[1] 'select'\n\n        0.09 real         0.07 user         0.02 sys\n            58195968  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                5020  page reclaims\n                  86  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   4  voluntary context switches\n                 222  involuntary context switches\n           921658111  instructions retired\n           334174088  cycles elapsed\n            37094288  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "polars",
+      "task": "T3",
+      "wall_seconds": 0.10022816597484052,
+      "max_rss_bytes": 58327040,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        58327040
+      ],
+      "cpu_user_seconds": 0.07,
+      "cpu_sys_seconds": 0.01,
+      "status": "error",
+      "error": "Traceback (most recent call last):\n  File \"<repo>/experiments/large-data-extracts/polars_worker.py\", line 18, in <module>\n    lazy.filter(where).select(PROJECT).sink_csv(output, line_terminator='\\r\\n', engine='streaming')\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/_utils/expired.py\", line 114, in wrapper\n    return function(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/lazyframe/frame.py\", line 3723, in sink_csv\n    _select_engine(engine).sink_csv(\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/lazyframe/engine.py\", line 590, in sink_csv\n    self.collect(\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/lazyframe/engine.py\", line 408, in collect\n    return wrap_df(ldf.collect(self.name, callback))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npolars.exceptions.ColumnNotFoundError: unable to find column \"ciudad\"; valid columns: [\"��\\\"\\0v\\0e\\0n\\0t\\0a\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0r\\0r\\0e\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0i\\0u\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0d\\0i\\0g\\0o\\0_\\0p\\0o\\0s\\0t\\0a\\0l\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0t\\0e\\0g\\0o\\0r\\0i\\0a\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0n\\0t\\0i\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0e\\0c\\0i\\0o\\0_\\0u\\0n\\0i\\0t\\0a\\0r\\0i\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0p\\0c\\0t\\0\\\"\\0\", \"\\0\\\"\\0s\\0u\\0b\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0i\\0v\\0a\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0p\\0e\\0d\\0i\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0v\\0i\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0t\\0r\\0e\\0g\\0a\\0\\\"\\0\", \"\\0\\\"\\0e\\0s\\0t\\0a\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0n\\0o\\0t\\0a\\0s\\0\\\"\\0\\r\\0\"]\n\nResolved plan until failure:\n\n\t---> FAILED HERE RESOLVING 'sink' <---\nCsv SCAN [/private/tmp/freyalab-m1/out/formatos/artifacts/format-utf-16.csv]\nPROJECT */21 COLUMNS\nESTIMATED ROWS: 5\n\nThis error occurred with the following context stack:\n\t[1] 'select'\n\t[2] 'sink'\n\n        0.09 real         0.07 user         0.01 sys\n            58327040  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                5042  page reclaims\n                  78  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   1  voluntary context switches\n                 137  involuntary context switches\n           920581899  instructions retired\n           330846261  cycles elapsed\n            37110672  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "polars",
+      "task": "T4",
+      "wall_seconds": 0.10034583299420774,
+      "max_rss_bytes": 58359808,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        58359808
+      ],
+      "cpu_user_seconds": 0.07,
+      "cpu_sys_seconds": 0.02,
+      "status": "error",
+      "error": "Traceback (most recent call last):\n  File \"<repo>/experiments/large-data-extracts/polars_worker.py\", line 23, in <module>\n    .sort('ciudad').collect(engine='streaming'))\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/_utils/expired.py\", line 114, in wrapper\n    return function(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/lazyframe/frame.py\", line 2225, in collect\n    return engine_.collect(\n           ^^^^^^^^^^^^^^^^\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/lazyframe/engine.py\", line 408, in collect\n    return wrap_df(ldf.collect(self.name, callback))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npolars.exceptions.ColumnNotFoundError: unable to find column \"ciudad\"; valid columns: [\"��\\\"\\0v\\0e\\0n\\0t\\0a\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0r\\0r\\0e\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0i\\0u\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0d\\0i\\0g\\0o\\0_\\0p\\0o\\0s\\0t\\0a\\0l\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0t\\0e\\0g\\0o\\0r\\0i\\0a\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0n\\0t\\0i\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0e\\0c\\0i\\0o\\0_\\0u\\0n\\0i\\0t\\0a\\0r\\0i\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0p\\0c\\0t\\0\\\"\\0\", \"\\0\\\"\\0s\\0u\\0b\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0i\\0v\\0a\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0p\\0e\\0d\\0i\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0v\\0i\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0t\\0r\\0e\\0g\\0a\\0\\\"\\0\", \"\\0\\\"\\0e\\0s\\0t\\0a\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0n\\0o\\0t\\0a\\0s\\0\\\"\\0\\r\\0\"]\n\nResolved plan until failure:\n\n\t---> FAILED HERE RESOLVING 'select' <---\nCsv SCAN [/private/tmp/freyalab-m1/out/formatos/artifacts/format-utf-16.csv]\nPROJECT */21 COLUMNS\nESTIMATED ROWS: 5\n\nThis error occurred with the following context stack:\n\t[1] 'group_by'\n\t[2] 'select'\n\n        0.09 real         0.07 user         0.02 sys\n            58359808  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                5044  page reclaims\n                  78  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                 150  involuntary context switches\n           918685401  instructions retired\n           332753000  cycles elapsed\n            37127056  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "polars",
+      "task": "T5",
+      "wall_seconds": 0.09902324998984113,
+      "max_rss_bytes": 58392576,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        58392576
+      ],
+      "cpu_user_seconds": 0.07,
+      "cpu_sys_seconds": 0.02,
+      "status": "error",
+      "error": "Traceback (most recent call last):\n  File \"<repo>/experiments/large-data-extracts/polars_worker.py\", line 27, in <module>\n    lazy.with_columns(pl.col('ciudad').str.replace_all('Mérida', 'Merida', literal=True)).sink_csv(output, line_terminator='\\r\\n', engine='streaming')\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/_utils/expired.py\", line 114, in wrapper\n    return function(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/lazyframe/frame.py\", line 3723, in sink_csv\n    _select_engine(engine).sink_csv(\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/lazyframe/engine.py\", line 590, in sink_csv\n    self.collect(\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/lazyframe/engine.py\", line 408, in collect\n    return wrap_df(ldf.collect(self.name, callback))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npolars.exceptions.ColumnNotFoundError: unable to find column \"ciudad\"; valid columns: [\"��\\\"\\0v\\0e\\0n\\0t\\0a\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0r\\0r\\0e\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0i\\0u\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0d\\0i\\0g\\0o\\0_\\0p\\0o\\0s\\0t\\0a\\0l\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0t\\0e\\0g\\0o\\0r\\0i\\0a\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0n\\0t\\0i\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0e\\0c\\0i\\0o\\0_\\0u\\0n\\0i\\0t\\0a\\0r\\0i\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0p\\0c\\0t\\0\\\"\\0\", \"\\0\\\"\\0s\\0u\\0b\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0i\\0v\\0a\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0p\\0e\\0d\\0i\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0v\\0i\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0t\\0r\\0e\\0g\\0a\\0\\\"\\0\", \"\\0\\\"\\0e\\0s\\0t\\0a\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0n\\0o\\0t\\0a\\0s\\0\\\"\\0\\r\\0\"]\n\nResolved plan until failure:\n\n\t---> FAILED HERE RESOLVING 'sink' <---\nCsv SCAN [/private/tmp/freyalab-m1/out/formatos/artifacts/format-utf-16.csv]\nPROJECT */21 COLUMNS\nESTIMATED ROWS: 5\n\nThis error occurred with the following context stack:\n\t[1] 'with_columns'\n\t[2] 'sink'\n\n        0.09 real         0.07 user         0.02 sys\n            58392576  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                5038  page reclaims\n                  78  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                 143  involuntary context switches\n           922000004  instructions retired\n           329267076  cycles elapsed\n            37077880  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "polars",
+      "task": "T6",
+      "wall_seconds": 0.12950679200002924,
+      "max_rss_bytes": 68337664,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        68337664
+      ],
+      "cpu_user_seconds": 0.08,
+      "cpu_sys_seconds": 0.02,
+      "status": "error",
+      "error": "Traceback (most recent call last):\n  File \"<repo>/experiments/large-data-extracts/polars_worker.py\", line 30, in <module>\n    result = {'count': one(lazy.filter(pl.any_horizontal(pl.all().str.contains('Primera línea', literal=True))))}\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/experiments/large-data-extracts/polars_worker.py\", line 12, in <lambda>\n    one = lambda frame: frame.select(pl.len()).collect(engine='streaming').item()\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/_utils/expired.py\", line 114, in wrapper\n    return function(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/lazyframe/frame.py\", line 2225, in collect\n    return engine_.collect(\n           ^^^^^^^^^^^^^^^^\n  File \"/private/tmp/freyalab-m1/venv-polars/lib/python3.12/site-packages/polars/lazyframe/engine.py\", line 408, in collect\n    return wrap_df(ldf.collect(self.name, callback))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\npolars.exceptions.ComputeError: invalid utf-8 sequence\n        0.12 real         0.08 user         0.02 sys\n            68337664  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                5670  page reclaims\n                  81  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   2  voluntary context switches\n                 241  involuntary context switches\n           955738639  instructions retired\n           343219899  cycles elapsed\n            42910656  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "polars-node",
+      "task": "T1",
+      "wall_seconds": 0.050004166027065367,
+      "max_rss_bytes": 68321280,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        68321280
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 4
+      },
+      "status": "measured",
+      "result_sha256": "a5fb8eb97856970b61d9f466deb64f7659e835ee8ec5497003b78438fe888cad",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16",
+      "matches_oracle": false
+    },
+    {
+      "engine": "polars-node",
+      "task": "T2",
+      "wall_seconds": 0.04606895899632946,
+      "max_rss_bytes": 65552384,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        65552384
+      ],
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "/private/tmp/freyalab-m1/node-polars/node_modules/nodejs-polars/bin/lazy/dataframe.js:64\n            return (0, dataframe_1._DataFrame)(_ldf.collectSync(opts?.engine ?? \"auto\"));\n                                                    ^\n\nError: not found: unable to find column \"ciudad\"; valid columns: [\"��\\\"\\0v\\0e\\0n\\0t\\0a\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0r\\0r\\0e\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0i\\0u\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0d\\0i\\0g\\0o\\0_\\0p\\0o\\0s\\0t\\0a\\0l\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0t\\0e\\0g\\0o\\0r\\0i\\0a\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0n\\0t\\0i\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0e\\0c\\0i\\0o\\0_\\0u\\0n\\0i\\0t\\0a\\0r\\0i\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0p\\0c\\0t\\0\\\"\\0\", \"\\0\\\"\\0s\\0u\\0b\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0i\\0v\\0a\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0p\\0e\\0d\\0i\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0v\\0i\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0t\\0r\\0e\\0g\\0a\\0\\\"\\0\", \"\\0\\\"\\0e\\0s\\0t\\0a\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0n\\0o\\0t\\0a\\0s\\0\\\"\\0\\r\\0\"]\n\nResolved plan until failure:\n\n\t---> FAILED HERE RESOLVING 'select' <---\nCsv SCAN [/private/tmp/freyalab-m1/out/formatos/artifacts/format-utf-16.csv]\nPROJECT */21 COLUMNS\nESTIMATED ROWS: 5: 'select'\n    at Object.collectSync (/private/tmp/freyalab-m1/node-polars/node_modules/nodejs-polars/bin/lazy/dataframe.js:64:53)\n    at one (file://<repo>/experiments/large-data-extracts/polars_node_worker.mjs:11:63)\n    at file://<repo>/experiments/large-data-extracts/polars_node_worker.mjs:14:42\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  code: 'GenericFailure'\n}\n\nNode.js v24.22.1\n        0.04 real         0.03 user         0.00 sys\n            65552384  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                4310  page reclaims\n                  96  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                 288  involuntary context switches\n           487100759  instructions retired\n           151428856  cycles elapsed\n            26381984  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "polars-node",
+      "task": "T3",
+      "wall_seconds": 0.04391404101625085,
+      "max_rss_bytes": 67158016,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        67158016
+      ],
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "/private/tmp/freyalab-m1/node-polars/node_modules/nodejs-polars/bin/lazy/dataframe.js:64\n            return (0, dataframe_1._DataFrame)(_ldf.collectSync(opts?.engine ?? \"auto\"));\n                                                    ^\n\nError: not found: unable to find column \"ciudad\"; valid columns: [\"��\\\"\\0v\\0e\\0n\\0t\\0a\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0r\\0r\\0e\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0i\\0u\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0d\\0i\\0g\\0o\\0_\\0p\\0o\\0s\\0t\\0a\\0l\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0t\\0e\\0g\\0o\\0r\\0i\\0a\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0n\\0t\\0i\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0e\\0c\\0i\\0o\\0_\\0u\\0n\\0i\\0t\\0a\\0r\\0i\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0p\\0c\\0t\\0\\\"\\0\", \"\\0\\\"\\0s\\0u\\0b\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0i\\0v\\0a\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0p\\0e\\0d\\0i\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0v\\0i\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0t\\0r\\0e\\0g\\0a\\0\\\"\\0\", \"\\0\\\"\\0e\\0s\\0t\\0a\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0n\\0o\\0t\\0a\\0s\\0\\\"\\0\\r\\0\"]\n\nResolved plan until failure:\n\n\t---> FAILED HERE RESOLVING 'sink' <---\nCsv SCAN [/private/tmp/freyalab-m1/out/formatos/artifacts/format-utf-16.csv]\nPROJECT */21 COLUMNS\nESTIMATED ROWS: 5: 'select': 'sink'\n    at Object.collectSync (/private/tmp/freyalab-m1/node-polars/node_modules/nodejs-polars/bin/lazy/dataframe.js:64:53)\n    at file://<repo>/experiments/large-data-extracts/polars_node_worker.mjs:15:133\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  code: 'GenericFailure'\n}\n\nNode.js v24.22.1\n        0.04 real         0.03 user         0.00 sys\n            67158016  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                4427  page reclaims\n                  75  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                 317  involuntary context switches\n           490786184  instructions retired\n           152276581  cycles elapsed\n            27954920  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "polars-node",
+      "task": "T4",
+      "wall_seconds": 0.048740832949988544,
+      "max_rss_bytes": 73678848,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        73678848
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "/private/tmp/freyalab-m1/node-polars/node_modules/nodejs-polars/bin/lazy/dataframe.js:64\n            return (0, dataframe_1._DataFrame)(_ldf.collectSync(opts?.engine ?? \"auto\"));\n                                                    ^\n\nError: not found: unable to find column \"ciudad\"; valid columns: [\"��\\\"\\0v\\0e\\0n\\0t\\0a\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0r\\0r\\0e\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0i\\0u\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0d\\0i\\0g\\0o\\0_\\0p\\0o\\0s\\0t\\0a\\0l\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0t\\0e\\0g\\0o\\0r\\0i\\0a\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0n\\0t\\0i\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0e\\0c\\0i\\0o\\0_\\0u\\0n\\0i\\0t\\0a\\0r\\0i\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0p\\0c\\0t\\0\\\"\\0\", \"\\0\\\"\\0s\\0u\\0b\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0i\\0v\\0a\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0p\\0e\\0d\\0i\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0v\\0i\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0t\\0r\\0e\\0g\\0a\\0\\\"\\0\", \"\\0\\\"\\0e\\0s\\0t\\0a\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0n\\0o\\0t\\0a\\0s\\0\\\"\\0\\r\\0\"]\n\nResolved plan until failure:\n\n\t---> FAILED HERE RESOLVING 'select' <---\nCsv SCAN [/private/tmp/freyalab-m1/out/formatos/artifacts/format-utf-16.csv]\nPROJECT */21 COLUMNS\nESTIMATED ROWS: 5: 'group_by': 'select'\n    at Object.collectSync (/private/tmp/freyalab-m1/node-polars/node_modules/nodejs-polars/bin/lazy/dataframe.js:64:53)\n    at file://<repo>/experiments/large-data-extracts/polars_node_worker.mjs:19:21\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  code: 'GenericFailure'\n}\n\nNode.js v24.22.1\n        0.04 real         0.04 user         0.00 sys\n            73678848  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                4824  page reclaims\n                  75  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                 213  involuntary context switches\n           532058011  instructions retired\n           167175008  cycles elapsed\n            35690160  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "polars-node",
+      "task": "T5",
+      "wall_seconds": 0.04503812501206994,
+      "max_rss_bytes": 66797568,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        66797568
+      ],
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "/private/tmp/freyalab-m1/node-polars/node_modules/nodejs-polars/bin/lazy/dataframe.js:64\n            return (0, dataframe_1._DataFrame)(_ldf.collectSync(opts?.engine ?? \"auto\"));\n                                                    ^\n\nError: not found: unable to find column \"ciudad\"; valid columns: [\"��\\\"\\0v\\0e\\0n\\0t\\0a\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0l\\0i\\0e\\0n\\0t\\0e\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0r\\0r\\0e\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0i\\0u\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0c\\0o\\0d\\0i\\0g\\0o\\0_\\0p\\0o\\0s\\0t\\0a\\0l\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0_\\0i\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0o\\0d\\0u\\0c\\0t\\0o\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0t\\0e\\0g\\0o\\0r\\0i\\0a\\0\\\"\\0\", \"\\0\\\"\\0c\\0a\\0n\\0t\\0i\\0d\\0a\\0d\\0\\\"\\0\", \"\\0\\\"\\0p\\0r\\0e\\0c\\0i\\0o\\0_\\0u\\0n\\0i\\0t\\0a\\0r\\0i\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0p\\0c\\0t\\0\\\"\\0\", \"\\0\\\"\\0s\\0u\\0b\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0d\\0e\\0s\\0c\\0u\\0e\\0n\\0t\\0o\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0i\\0v\\0a\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0t\\0o\\0t\\0a\\0l\\0_\\0m\\0x\\0n\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0p\\0e\\0d\\0i\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0v\\0i\\0o\\0\\\"\\0\", \"\\0\\\"\\0f\\0e\\0c\\0h\\0a\\0_\\0e\\0n\\0t\\0r\\0e\\0g\\0a\\0\\\"\\0\", \"\\0\\\"\\0e\\0s\\0t\\0a\\0d\\0o\\0\\\"\\0\", \"\\0\\\"\\0n\\0o\\0t\\0a\\0s\\0\\\"\\0\\r\\0\"]\n\nResolved plan until failure:\n\n\t---> FAILED HERE RESOLVING 'sink' <---\nCsv SCAN [/private/tmp/freyalab-m1/out/formatos/artifacts/format-utf-16.csv]\nPROJECT */21 COLUMNS\nESTIMATED ROWS: 5: 'with_columns': 'sink'\n    at Object.collectSync (/private/tmp/freyalab-m1/node-polars/node_modules/nodejs-polars/bin/lazy/dataframe.js:64:53)\n    at file://<repo>/experiments/large-data-extracts/polars_node_worker.mjs:22:147\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  code: 'GenericFailure'\n}\n\nNode.js v24.22.1\n        0.04 real         0.03 user         0.00 sys\n            66797568  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                4404  page reclaims\n                  75  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                 194  involuntary context switches\n           494936098  instructions retired\n           150628383  cycles elapsed\n            27397768  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "polars-node",
+      "task": "T6",
+      "wall_seconds": 0.04797195899300277,
+      "max_rss_bytes": 75284480,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        75284480
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "status": "error",
+      "error": "/private/tmp/freyalab-m1/node-polars/node_modules/nodejs-polars/bin/lazy/dataframe.js:64\n            return (0, dataframe_1._DataFrame)(_ldf.collectSync(opts?.engine ?? \"auto\"));\n                                                    ^\n\nError: invalid utf-8 sequence\n    at Object.collectSync (/private/tmp/freyalab-m1/node-polars/node_modules/nodejs-polars/bin/lazy/dataframe.js:64:53)\n    at one (file://<repo>/experiments/large-data-extracts/polars_node_worker.mjs:11:63)\n    at file://<repo>/experiments/large-data-extracts/polars_node_worker.mjs:23:42\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  code: 'GenericFailure'\n}\n\nNode.js v24.22.1\n        0.04 real         0.04 user         0.01 sys\n            75284480  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                4928  page reclaims\n                  75  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                 423  involuntary context switches\n           537472864  instructions retired\n           167853316  cycles elapsed\n            31362864  peak memory footprint\n",
+      "file": "format-utf-16.csv",
+      "encoding": "utf-16"
+    },
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 0.03384079097304493,
+      "max_rss_bytes": 20283392,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T2",
+      "wall_seconds": 0.031264916993677616,
+      "max_rss_bytes": 20348928,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T3",
+      "wall_seconds": 0.03126437502214685,
+      "max_rss_bytes": 20381696,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 124,
+      "output_sha256": "ba5721a22ad4c79cd753d9f61a3a2e0d29bc0e93bca3cfa56e3fbbdc2e879b3b",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "cp1252",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "Python csv.writer"
+      },
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T4",
+      "wall_seconds": 0.03125216701300815,
+      "max_rss_bytes": 20381696,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T5",
+      "wall_seconds": 0.031243916018866003,
+      "max_rss_bytes": 20283392,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 501,
+      "output_sha256": "8bfcb087e00c0cd6c0913b86882c8eb3d10af7b3e8a9c4a24d7b9ff992b6975d",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "cp1252",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "88bb7fd49cf411e59a4539f945b126c51d8b729531bcd9c8981589cabeba8fca",
+        "unchanged_output_sha256": "b11b1c127f7bb9a38c50543a64fed909e27e0c8f57e6326145bb1abcd6eea33a"
+      },
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "python",
+      "task": "T6",
+      "wall_seconds": 0.031643667025491595,
+      "max_rss_bytes": 20299776,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T1",
+      "wall_seconds": 0.03949541598558426,
+      "max_rss_bytes": 55132160,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T2",
+      "wall_seconds": 0.039073541993275285,
+      "max_rss_bytes": 55164928,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T3",
+      "wall_seconds": 0.04420049994951114,
+      "max_rss_bytes": 55083008,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "output_bytes": 144,
+      "output_sha256": "d01d6b69b25fc96f6131c847af2e77f649e4b60f69c0455b2ad9a1ba9ccb0563",
+      "values_sha256": "a78a5aea1a9d1799870569a143caa12676771ece47a2612278ab1febcb616b3f",
+      "output_encoding": "cp1252",
+      "fidelity": {
+        "whole_record_byte_equality": "no aplicable: proyección de columnas",
+        "normalized_by": "PoC bulkTransform; campos proyectados serializados"
+      },
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T4",
+      "wall_seconds": 0.042545042000710964,
+      "max_rss_bytes": 55197696,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3,
+        "groups": [
+          {
+            "ciudad": "Mérida",
+            "count": 1,
+            "sum_cents": "-1"
+          },
+          {
+            "ciudad": "Oaxaca",
+            "count": 2,
+            "sum_cents": "900719925474099501"
+          }
+        ]
+      },
+      "status": "measured",
+      "result_sha256": "dfffb8db91bb83be5e8131e6e880ea034e97541fbfca9f76910974d593b3a2ac",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T5",
+      "wall_seconds": 0.046939457999542356,
+      "max_rss_bytes": 55738368,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 659,
+      "output_sha256": "52b2afa2d6197ea35f877b7bbecf4c014b2a054a129be2c6c58776e079310bd3",
+      "values_sha256": "535a7127eba2194fba3f43b1433adf05e701d684076901ebb5ffcb49e6024cc8",
+      "output_encoding": "cp1252",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 3,
+        "changed_records": 1,
+        "unchanged_source_sha256": "88bb7fd49cf411e59a4539f945b126c51d8b729531bcd9c8981589cabeba8fca",
+        "unchanged_output_sha256": "88bb7fd49cf411e59a4539f945b126c51d8b729531bcd9c8981589cabeba8fca"
+      },
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "node",
+      "task": "T6",
+      "wall_seconds": 0.04238470800919458,
+      "max_rss_bytes": 55361536,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 0.016167958034202456,
+      "max_rss_bytes": 19824640,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitar...\n                                                                         ^\n        0.01 real         0.00 user         0.00 sys\n            19824640  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1392  page reclaims\n                  35  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  50  involuntary context switches\n           133002739  instructions retired\n            41348976  cycles elapsed\n             5882288  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb",
+      "task": "T2",
+      "wall_seconds": 0.015372916997876018,
+      "max_rss_bytes": 19857408,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitar...\n                                                                         ^\n        0.01 real         0.00 user         0.00 sys\n            19857408  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1396  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  55  involuntary context switches\n           132506018  instructions retired\n            39634067  cycles elapsed\n             5915056  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb",
+      "task": "T3",
+      "wall_seconds": 0.015356875024735928,
+      "max_rss_bytes": 19791872,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitar...\n                                                                         ^\n        0.01 real         0.00 user         0.00 sys\n            19791872  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1393  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  59  involuntary context switches\n           132803763  instructions retired\n            38991654  cycles elapsed\n             5816752  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb",
+      "task": "T4",
+      "wall_seconds": 0.015412166947498918,
+      "max_rss_bytes": 19742720,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitar...\n                                                                         ^\n        0.01 real         0.00 user         0.00 sys\n            19742720  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1389  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  49  involuntary context switches\n           132550395  instructions retired\n            39062369  cycles elapsed\n             5783984  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb",
+      "task": "T5",
+      "wall_seconds": 0.014938334003090858,
+      "max_rss_bytes": 19693568,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitar...\n                                                                         ^\n        0.01 real         0.00 user         0.00 sys\n            19693568  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1386  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  49  involuntary context switches\n           132332561  instructions retired\n            38899820  cycles elapsed\n             5685680  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "duckdb",
+      "task": "T6",
+      "wall_seconds": 0.01501058303983882,
+      "max_rss_bytes": 19709952,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: The CSV Reader does not support the encoding: \"windows-1252\"\nIt is possible that the encoding exists in the encodings extension. You can try \"INSTALL encodings; LOAD encodings\"\nThe currently supported encodings are: \n*  utf-16\n*  latin-1\n*  utf-8\n\n\nLINE 1: ...','cliente_id','cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitar...\n                                                                         ^\n        0.01 real         0.00 user         0.00 sys\n            19709952  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1387  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  51  involuntary context switches\n           132679883  instructions retired\n            39193593  cycles elapsed\n             5800368  peak memory footprint\n",
+      "status": "unsupported",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252"
+    },
+    {
+      "engine": "qsv",
+      "task": "T1",
+      "wall_seconds": 0.01755154103739187,
+      "max_rss_bytes": 37650432,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        37650432
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    },
+    {
+      "engine": "qsv",
+      "task": "T2",
+      "wall_seconds": 0.016795833013020456,
+      "max_rss_bytes": 22642688,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0,
+        0
+      ],
+      "stage_rss_bytes": [
+        22642688,
+        22593536
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "file": "format-cp1252.csv",
+      "encoding": "cp1252",
+      "matches_oracle": true
+    }
+  ],
+  "script_sha256": {
+    "large-data-extracts/benchmark.py": "0594a2ebb0d1d35782874612c9078e64e364383f2082026d63a04a587e3d8836",
+    "large-data-extracts/common.py": "5ad5281ba9a33d55fe20671b85dc16aaf824f79f79643cfe0cfb01fb6d141224",
+    "large-data-extracts/generate_sales.py": "5d194171ba12c6aabfba10aa3a5b7f3a0e5e78ffa2c642718b48e5ec4a128cf7",
+    "large-data-extracts/m1_engines.py": "252aba415eac9235e4fcfc73d64b562af4f6df7f2c1bbf868bdd6bfc07b0489f",
+    "large-data-extracts/node_worker.mjs": "b2a30523a7bea1d5cc0765c696380e8095049c54037e727b164a7da59a852101",
+    "large-data-extracts/polars_node_worker.mjs": "edcc5b4fcded070117b03685eeac97a4ae5a195f798e78441f56d81f0b4246eb",
+    "large-data-extracts/polars_worker.py": "ecd162f76044de6dcb8f0f936727bfe8742e96d1a239c4169c8f57832f080201",
+    "large-data-extracts/probe_edges.py": "2173c35aa9bedb2601b3b1f1e74f5b4556898d76de29c3a262fc0f6408e02568",
+    "large-data-extracts/probe_m1_integrity.py": "21266cb92c290a411b9275cc8ee7a59ac6b040ff34237109349b5f4035cfc235",
+    "large-data-extracts/probe_m1_resources.py": "fcd6380a1535c8ad16dd9258f769d53df061e414bfe68136f06c73d4176b071c",
+    "large-data-extracts/python_worker.py": "3869a221ef6917347f41920811d2743549dee227563492c465e0cdc500727c57",
+    "large-data-extracts/test_experiment.py": "90ea2fc79cb02b8329bbd9d26111676583c9d186765fc978d926f5dde5356d71",
+    "large-file-editor/lib/document.mjs": "ba3e9fa59fbf67747d011a458c2828e0b8852c8ad44a9523f015840c051a733c",
+    "large-file-editor/lib/fields.mjs": "434458c907b58978adccc1bb6b1cee510820940a1fba28835ff14dfba01b980b",
+    "large-file-editor/lib/record-index.mjs": "7a3f645e5a11236b07de15ca543b6c4d438989204b62c9c572dac802ecd98b25"
+  },
+  "engines": [
+    "python",
+    "node",
+    "duckdb",
+    "qsv",
+    "qsvlite",
+    "miller",
+    "polars",
+    "polars-node"
+  ],
+  "binaries_sha256": {
+    "qsv": "7b7f5ebd9237199aea7ef97713843eab7afc9cbf1539e45264be9bcef08af70c",
+    "qsvlite": "aedd57ca2b6f79ad973f8f075225ab958a1e2b8035c4779161ac700caa6d1e34",
+    "miller": "976a3ab9527a5f5e62382d2a5fc4b06b1d00733e93d2bb055572b89afaa8de97"
+  }
+}

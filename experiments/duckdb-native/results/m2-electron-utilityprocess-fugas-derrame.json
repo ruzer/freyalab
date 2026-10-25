@@ -1,0 +1,94 @@
+{
+  "kind": "M2 proceso auxiliar",
+  "host": "utilityProcess de Electron",
+  "started": "2026-10-25T15:59:25.685Z",
+  "platform": "darwin arm64",
+  "options": {
+    "workDir": "/private/tmp/freyalab-m2/work-ls-electron",
+    "tempDir": "/private/tmp/freyalab-m2/work-ls-electron/tmp",
+    "threads": 12,
+    "memoryLimit": "4GB",
+    "parallel": true
+  },
+  "main": {
+    "electron": "44.9.2",
+    "node": "24.22.0",
+    "chrome": "152.0.7977.167",
+    "modules": "149"
+  },
+  "versions": {
+    "duckdb": "v2.0.0",
+    "node": "24.22.0",
+    "electron": "44.9.2",
+    "napi": "10",
+    "modules": "149"
+  },
+  "leak": {
+    "rounds": 40,
+    "samples": [
+      {
+        "after": 0,
+        "rssBytes": 113344512
+      },
+      {
+        "after": 1,
+        "rssBytes": 126730240
+      },
+      {
+        "after": 5,
+        "rssBytes": 142753792
+      },
+      {
+        "after": 10,
+        "rssBytes": 144637952
+      },
+      {
+        "after": 20,
+        "rssBytes": 146227200
+      },
+      {
+        "after": 30,
+        "rssBytes": 147030016
+      },
+      {
+        "after": 40,
+        "rssBytes": 148422656
+      }
+    ]
+  },
+  "spill": [
+    {
+      "memoryLimit": "4GB",
+      "threads": 4,
+      "ok": true,
+      "ms": 2242.767833,
+      "rssPeakBytes": 3831234560,
+      "cpuMs": 8410,
+      "tempPeakBytes": 0,
+      "tempLeftBytes": 0,
+      "output": "/private/tmp/freyalab-m2/work-ls-electron/derrame-4GB.csv"
+    },
+    {
+      "memoryLimit": "1GB",
+      "threads": 4,
+      "ok": true,
+      "ms": 4071.6727500000006,
+      "rssPeakBytes": 1301037056,
+      "cpuMs": 10820,
+      "tempPeakBytes": 1099333632,
+      "tempLeftBytes": 0,
+      "output": "/private/tmp/freyalab-m2/work-ls-electron/derrame-1GB.csv"
+    },
+    {
+      "memoryLimit": "512MB",
+      "threads": 4,
+      "ok": true,
+      "ms": 7155.299041,
+      "rssPeakBytes": 742113280,
+      "cpuMs": 12080,
+      "tempPeakBytes": 1304231936,
+      "tempLeftBytes": 0,
+      "output": "/private/tmp/freyalab-m2/work-ls-electron/derrame-512MB.csv"
+    }
+  ]
+}

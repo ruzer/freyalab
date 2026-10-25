@@ -1,0 +1,276 @@
+{
+  "kind": "M2 integridad frente al índice de FreyaLab",
+  "node": "v24.22.1",
+  "results": [
+    {
+      "fixture": "regular",
+      "bytes": 72,
+      "freyalab": {
+        "records": 4,
+        "dataRecords": 3
+      },
+      "strict": {
+        "ok": true,
+        "dataRecords": 3
+      },
+      "duckdb": {
+        "parallel": {
+          "count": 3
+        },
+        "serial": {
+          "count": 3
+        }
+      },
+      "delegate": {
+        "allowed_by_strict": true,
+        "strict_matches_index": true,
+        "parallel_reconciles": true,
+        "serial_reconciles": true,
+        "verdict": "se delega y el recuento cuadra"
+      }
+    },
+    {
+      "fixture": "campos_entrecomillados_multilinea",
+      "bytes": 101,
+      "freyalab": {
+        "records": 4,
+        "dataRecords": 3
+      },
+      "strict": {
+        "ok": true,
+        "dataRecords": 3
+      },
+      "duckdb": {
+        "parallel": {
+          "count": 3
+        },
+        "serial": {
+          "count": 3
+        }
+      },
+      "delegate": {
+        "allowed_by_strict": true,
+        "strict_matches_index": true,
+        "parallel_reconciles": true,
+        "serial_reconciles": true,
+        "verdict": "se delega y el recuento cuadra"
+      }
+    },
+    {
+      "fixture": "fila_corta",
+      "bytes": 50,
+      "freyalab": {
+        "records": 3,
+        "dataRecords": 2
+      },
+      "strict": {
+        "ok": false,
+        "error": "Invalid Record Length: expect 4, got 3 on line 2"
+      },
+      "duckdb": {
+        "parallel": {
+          "error": "Invalid Input Error: CSV Error on Line: 2 | Original Line: 1,01000,Ana"
+        },
+        "serial": {
+          "error": "Invalid Input Error: CSV Error on Line: 2 | Original Line: 1,01000,Ana"
+        }
+      },
+      "delegate": {
+        "allowed_by_strict": false,
+        "strict_matches_index": false,
+        "parallel_reconciles": false,
+        "serial_reconciles": false,
+        "verdict": "se rechaza antes de delegar (R2)"
+      }
+    },
+    {
+      "fixture": "campo_de_mas",
+      "bytes": 58,
+      "freyalab": {
+        "records": 3,
+        "dataRecords": 2
+      },
+      "strict": {
+        "ok": false,
+        "error": "Invalid Record Length: expect 4, got 5 on line 2"
+      },
+      "duckdb": {
+        "parallel": {
+          "error": "Invalid Input Error: CSV Error on Line: 2 | Original Line: 1,01000,Ana,x,EXTRA"
+        },
+        "serial": {
+          "error": "Invalid Input Error: CSV Error on Line: 2 | Original Line: 1,01000,Ana,x,EXTRA"
+        }
+      },
+      "delegate": {
+        "allowed_by_strict": false,
+        "strict_matches_index": false,
+        "parallel_reconciles": false,
+        "serial_reconciles": false,
+        "verdict": "se rechaza antes de delegar (R2)"
+      }
+    },
+    {
+      "fixture": "comilla_sin_cerrar_a_mitad",
+      "bytes": 69,
+      "freyalab": {
+        "records": 3,
+        "dataRecords": 2
+      },
+      "strict": {
+        "ok": false,
+        "error": "Quote Not Closed: the parsing is finished with an opening quote at line 6"
+      },
+      "duckdb": {
+        "parallel": {
+          "error": "Invalid Input Error: CSV Error on Line: 3 | Original Line: "
+        },
+        "serial": {
+          "count": 1
+        }
+      },
+      "delegate": {
+        "allowed_by_strict": false,
+        "strict_matches_index": false,
+        "parallel_reconciles": false,
+        "serial_reconciles": false,
+        "verdict": "se rechaza antes de delegar (R2)"
+      }
+    },
+    {
+      "fixture": "comilla_sin_cerrar_en_el_ultimo_registro",
+      "bytes": 52,
+      "freyalab": {
+        "records": 3,
+        "dataRecords": 2
+      },
+      "strict": {
+        "ok": false,
+        "error": "Quote Not Closed: the parsing is finished with an opening quote at line 4"
+      },
+      "duckdb": {
+        "parallel": {
+          "error": "Invalid Input Error: CSV Error on Line: 3 | Original Line: "
+        },
+        "serial": {
+          "count": 1
+        }
+      },
+      "delegate": {
+        "allowed_by_strict": false,
+        "strict_matches_index": false,
+        "parallel_reconciles": false,
+        "serial_reconciles": false,
+        "verdict": "se rechaza antes de delegar (R2)"
+      }
+    },
+    {
+      "fixture": "sin_salto_de_linea_final",
+      "bytes": 50,
+      "freyalab": {
+        "records": 3,
+        "dataRecords": 2
+      },
+      "strict": {
+        "ok": true,
+        "dataRecords": 2
+      },
+      "duckdb": {
+        "parallel": {
+          "count": 2
+        },
+        "serial": {
+          "count": 2
+        }
+      },
+      "delegate": {
+        "allowed_by_strict": true,
+        "strict_matches_index": true,
+        "parallel_reconciles": true,
+        "serial_reconciles": true,
+        "verdict": "se delega y el recuento cuadra"
+      }
+    },
+    {
+      "fixture": "bom_utf8",
+      "bytes": 55,
+      "freyalab": {
+        "records": 3,
+        "dataRecords": 2
+      },
+      "strict": {
+        "ok": true,
+        "dataRecords": 2
+      },
+      "duckdb": {
+        "parallel": {
+          "count": 2
+        },
+        "serial": {
+          "count": 2
+        }
+      },
+      "delegate": {
+        "allowed_by_strict": true,
+        "strict_matches_index": true,
+        "parallel_reconciles": true,
+        "serial_reconciles": true,
+        "verdict": "se delega y el recuento cuadra"
+      }
+    },
+    {
+      "fixture": "utf16_le_con_bom",
+      "bytes": 104,
+      "freyalab": {
+        "records": 3,
+        "dataRecords": 2
+      },
+      "strict": {
+        "ok": true,
+        "dataRecords": 2
+      },
+      "duckdb": {
+        "parallel": {
+          "count": 2
+        },
+        "serial": {
+          "count": 2
+        }
+      },
+      "delegate": {
+        "allowed_by_strict": true,
+        "strict_matches_index": true,
+        "parallel_reconciles": true,
+        "serial_reconciles": true,
+        "verdict": "se delega y el recuento cuadra"
+      }
+    },
+    {
+      "fixture": "utf16_longitud_impar",
+      "bytes": 73,
+      "freyalab": {
+        "records": 3,
+        "dataRecords": 2
+      },
+      "strict": {
+        "ok": false,
+        "error": "UTF-16 con un número impar de bytes: decodificación incompleta"
+      },
+      "duckdb": {
+        "parallel": {
+          "error": "Invalid Input Error: File is not utf-16 encoded"
+        },
+        "serial": {
+          "error": "Invalid Input Error: File is not utf-16 encoded"
+        }
+      },
+      "delegate": {
+        "allowed_by_strict": false,
+        "strict_matches_index": false,
+        "parallel_reconciles": false,
+        "serial_reconciles": false,
+        "verdict": "se rechaza antes de delegar (R2)"
+      }
+    }
+  ]
+}

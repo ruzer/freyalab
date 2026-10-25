@@ -1,0 +1,142 @@
+{
+  "kind": "M2 paridad DuckDB-Wasm (producto) frente a DuckDB nativo",
+  "versions": {
+    "wasm": "[{\"v\":\"v1.5.4\"}]",
+    "native": "[{\"v\":\"v2.0.0\"}]",
+    "wasmPackage": "1.33.1-dev57.0"
+  },
+  "results": [
+    {
+      "name": "count",
+      "wasm": {
+        "rows": "[{\"n\":45000}]"
+      },
+      "native": {
+        "rows": "[{\"n\":45000}]"
+      },
+      "same": true,
+      "sameOutcomeKind": true
+    },
+    {
+      "name": "filtro Oaxaca y entregado",
+      "wasm": {
+        "rows": "[{\"n\":11277}]"
+      },
+      "native": {
+        "rows": "[{\"n\":11277}]"
+      },
+      "same": true,
+      "sameOutcomeKind": true
+    },
+    {
+      "name": "búsqueda con salto de línea dentro del campo",
+      "wasm": {
+        "rows": "[{\"n\":7310}]"
+      },
+      "native": {
+        "rows": "[{\"n\":7310}]"
+      },
+      "same": true,
+      "sameOutcomeKind": true
+    },
+    {
+      "name": "agregación con suma decimal exacta",
+      "wasm": {
+        "rows": "[{\"c4\":\"Guadalajara\",\"n\":11213,\"s\":\"908126546.50\"},{\"c4\":\"Mérida\",\"n\":11265,\"s\":\"915588229.10\"},{\"c4\":\"Oaxaca\",\"n\":11277,\"s\":\"914353368.50\"},{\"c4\":\"Puebla\",\"n\":11245,\"s\":\"906013609.40\"}]"
+      },
+      "native": {
+        "rows": "[{\"c4\":\"Guadalajara\",\"n\":11213,\"s\":\"908126546.50\"},{\"c4\":\"Mérida\",\"n\":11265,\"s\":\"915588229.10\"},{\"c4\":\"Oaxaca\",\"n\":11277,\"s\":\"914353368.50\"},{\"c4\":\"Puebla\",\"n\":11245,\"s\":\"906013609.40\"}]"
+      },
+      "same": true,
+      "sameOutcomeKind": true
+    },
+    {
+      "name": "ordenación (primeras 3 fechas)",
+      "wasm": {
+        "rows": "[{\"c16\":\"2023-01-01\"},{\"c16\":\"2023-01-01\"},{\"c16\":\"2023-01-01\"}]"
+      },
+      "native": {
+        "rows": "[{\"c16\":\"2023-01-01\"},{\"c16\":\"2023-01-01\"},{\"c16\":\"2023-01-01\"}]"
+      },
+      "same": true,
+      "sameOutcomeKind": true
+    },
+    {
+      "name": "replace literal (recuento de Merida)",
+      "wasm": {
+        "rows": "[{\"n\":11265}]"
+      },
+      "native": {
+        "rows": "[{\"n\":11265}]"
+      },
+      "same": true,
+      "sameOutcomeKind": true
+    },
+    {
+      "name": "ragged.csv con parallel=true",
+      "wasm": {
+        "error": "Invalid Input Error: CSV Error on Line: 2 | Original Line: 1,01000,Ana"
+      },
+      "native": {
+        "error": "Invalid Input Error: CSV Error on Line: 2 | Original Line: 1,01000,Ana"
+      },
+      "same": true,
+      "sameOutcomeKind": true
+    },
+    {
+      "name": "ragged.csv con parallel=false",
+      "wasm": {
+        "error": "Invalid Input Error: CSV Error on Line: 2 | Original Line: 1,01000,Ana"
+      },
+      "native": {
+        "error": "Invalid Input Error: CSV Error on Line: 2 | Original Line: 1,01000,Ana"
+      },
+      "same": true,
+      "sameOutcomeKind": true
+    },
+    {
+      "name": "extra.csv con parallel=true",
+      "wasm": {
+        "error": "Invalid Input Error: CSV Error on Line: 2 | Original Line: 1,01000,Ana,x,EXTRA"
+      },
+      "native": {
+        "error": "Invalid Input Error: CSV Error on Line: 2 | Original Line: 1,01000,Ana,x,EXTRA"
+      },
+      "same": true,
+      "sameOutcomeKind": true
+    },
+    {
+      "name": "extra.csv con parallel=false",
+      "wasm": {
+        "error": "Invalid Input Error: CSV Error on Line: 2 | Original Line: 1,01000,Ana,x,EXTRA"
+      },
+      "native": {
+        "error": "Invalid Input Error: CSV Error on Line: 2 | Original Line: 1,01000,Ana,x,EXTRA"
+      },
+      "same": true,
+      "sameOutcomeKind": true
+    },
+    {
+      "name": "unclosed.csv con parallel=true",
+      "wasm": {
+        "error": "Invalid Input Error: CSV Error on Line: 3 | Original Line: "
+      },
+      "native": {
+        "error": "Invalid Input Error: CSV Error on Line: 3 | Original Line: "
+      },
+      "same": true,
+      "sameOutcomeKind": true
+    },
+    {
+      "name": "unclosed.csv con parallel=false",
+      "wasm": {
+        "rows": "[{\"n\":1}]"
+      },
+      "native": {
+        "rows": "[{\"n\":1}]"
+      },
+      "same": true,
+      "sameOutcomeKind": true
+    }
+  ]
+}

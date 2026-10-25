@@ -1,0 +1,80 @@
+name: M2 DuckDB native (experiment)
+# Experimento de evaluación (docs/evidence/m2-duckdb-nativo-*.md): no forma parte de la verificación del producto ni la sustituye.
+# Instala @duckdb/node-api SOLO en una carpeta temporal del ejecutor, lo empaqueta en una mini-aplicación de Electron y comprueba, en las cuatro
+# plataformas, que carga, que ejecuta las operaciones cerradas en un proceso auxiliar y que las restricciones de aislamiento se cumplen.
+on:
+  pull_request:
+    paths:
+      - 'experiments/duckdb-native/**'
+      - '.github/workflows/m2-duckdb-native.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: m2-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  duckdb-native:
+    name: DuckDB native ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025, macos-15, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Prepare Electron sandbox helper (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          node -e "require('electron')"
+          sudo chown root:root node_modules/electron/dist/chrome-sandbox
+          sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
+      - name: Stage the mini application outside the repository
+        run: |
+          node experiments/duckdb-native/ci/stage-app.mjs --out "$RUNNER_TEMP/m2app" --duckdb 2.0.0-r.1 \
+            --electron-dist "$PWD/node_modules/electron/dist" --electron-version "$(node -p "require('electron/package.json').version")"
+          mkdir -p "$RUNNER_TEMP/m2out"
+      - name: Self-test with a Node child process
+        run: node experiments/duckdb-native/run-host.mjs --install "$RUNNER_TEMP/m2app" --work "$RUNNER_TEMP/m2work-node" --out "$RUNNER_TEMP/m2out/selftest-node.json" --modes selftest
+      - name: Self-test with an Electron utilityProcess (not packaged)
+        run: |
+          PREFIX=""; if [ "$RUNNER_OS" = "Linux" ]; then PREFIX="xvfb-run -a"; fi
+          $PREFIX node experiments/duckdb-native/ci/run-electron.mjs --exe dev --install "$RUNNER_TEMP/m2app" --work "$RUNNER_TEMP/m2work-electron" --out "$RUNNER_TEMP/m2out/selftest-electron.json" --modes selftest
+      - name: Package the mini application
+        run: npx electron-builder --dir --projectDir "$RUNNER_TEMP/m2app" --config "$RUNNER_TEMP/m2app/electron-builder.json"
+      - name: Prepare packaged sandbox helper (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo chown root:root "$RUNNER_TEMP/m2app/release/linux-unpacked/chrome-sandbox"
+          sudo chmod 4755 "$RUNNER_TEMP/m2app/release/linux-unpacked/chrome-sandbox"
+      - name: Self-test of the PACKAGED application
+        run: |
+          EXE="$(node experiments/duckdb-native/ci/find-exe.mjs "$RUNNER_TEMP/m2app")"
+          echo "ejecutable: $EXE"
+          PREFIX=""; if [ "$RUNNER_OS" = "Linux" ]; then PREFIX="xvfb-run -a"; fi
+          $PREFIX node experiments/duckdb-native/ci/run-electron.mjs --exe "$EXE" --install app --work "$RUNNER_TEMP/m2work-packaged" --out "$RUNNER_TEMP/m2out/selftest-packaged.json" --modes selftest
+          node experiments/duckdb-native/ci/sizes.mjs "$RUNNER_TEMP/m2app" > "$RUNNER_TEMP/m2out/sizes.json"
+      - name: Install bubblewrap (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y bubblewrap
+      - name: Operating-system isolation layer around the engine process
+        continue-on-error: true
+        run: node experiments/duckdb-native/os-layer.mjs --install "$RUNNER_TEMP/m2app" --work "$RUNNER_TEMP/m2work-os" --out "$RUNNER_TEMP/m2out/os-layer.json"
+      - name: Summary
+        if: always()
+        run: node experiments/duckdb-native/ci/summarize.mjs "$RUNNER_TEMP/m2out" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: m2-${{ matrix.os }}
+          path: ${{ runner.temp }}/m2out
+          if-no-files-found: warn

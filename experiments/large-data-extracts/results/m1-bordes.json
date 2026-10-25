@@ -1,0 +1,898 @@
+{
+  "schema": 1,
+  "kind": "E0 edge probes; no benchmark de rendimiento",
+  "consulted_at": "2026-10-25T07:18:04.294742+00:00",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "header_source": "/private/tmp/FreyaLab-pruebas/ventas_10MiB.csv",
+  "header_source_sha256_before": "2802e78128245142eff3fb0bc81bb69498d775b16ab1445e7a2e325949dbb498",
+  "executables": {
+    "python": "/opt/homebrew/opt/python@3.15/bin/python3.15",
+    "pandas_python": "None",
+    "qsv": "/private/tmp/freyalab-m1/qsv-bin/qsv",
+    "qsvlite": "/private/tmp/freyalab-m1/qsv-bin/qsvlite",
+    "miller": "/private/tmp/freyalab-m1/miller-bin/miller-6.22.0-darwin-arm64/mlr",
+    "polars_python": "/private/tmp/freyalab-m1/venv-polars/bin/python",
+    "polars_node_dir": "/private/tmp/freyalab-m1/node-polars",
+    "node": "/Users/ruzer/.local/share/mise/installs/node/24/bin/node",
+    "duckdb": "/opt/homebrew/bin/duckdb"
+  },
+  "script_sha256": {
+    "probe_edges.py": "2e0d649ea2dbe88579c19a606d5ea1f80536a6454af8755b2c2760b5c6949387",
+    "benchmark.py": "6c8d30e8c074448eb347e1faf8310b0a6c5fa3a8dc0013fe28c3790396c0127d",
+    "common.py": "5ad5281ba9a33d55fe20671b85dc16aaf824f79f79643cfe0cfb01fb6d141224",
+    "python_worker.py": "3869a221ef6917347f41920811d2743549dee227563492c465e0cdc500727c57",
+    "node_worker.mjs": "b2a30523a7bea1d5cc0765c696380e8095049c54037e727b164a7da59a852101",
+    "m1_engines.py": "25c393d872955c8e277287f79d322936845b729ccda410e84d51991903786f04",
+    "polars_worker.py": "ecd162f76044de6dcb8f0f936727bfe8742e96d1a239c4169c8f57832f080201",
+    "polars_node_worker.mjs": "b6b31ab73760fbeb72e9b56012d5fefb138e58c70db0369acd5fb8174414ac2e"
+  },
+  "method": "fixtures sintéticos; execute reutilizado; UTF-16 impar limitado a 2s y grupo de procesos terminado si expira; tiempos son observaciones, no comparativa de rendimiento",
+  "known_limitations_to_check": [
+    "pandas puede rellenar posiciones ausentes y perder aridad aunque dtype sea texto",
+    "el scanner Node PoC puede aceptar comillas malformadas en T1",
+    "el scanner Node PoC puede no avanzar ante UTF-16 impar; timeout no equivale a rechazo",
+    "un fallo del harness/preparación no acredita que el motor rechace el archivo",
+    "fuente intacta no demuestra fidelidad del resultado ni empaquetado multiplataforma"
+  ],
+  "fixtures": [
+    {
+      "name": "irregular",
+      "source": "/private/tmp/freyalab-m1/out/bordes/fixtures/irregular.csv",
+      "encoding": "utf-8",
+      "task": "T5",
+      "bytes": 634,
+      "sha256_before": "b293b4d9a0f830519065872e6cffa99562a78ae07af576686637d62739bd59bd",
+      "oracle": {
+        "arity_including_header": [
+          21,
+          20,
+          21,
+          21
+        ],
+        "data_records": 3,
+        "values_sha256": "0de5fe27ab5198c77e18ac068685e524b1662d097c6dd6bf7c05a39e403bf4c4"
+      },
+      "sha256_after": "b293b4d9a0f830519065872e6cffa99562a78ae07af576686637d62739bd59bd",
+      "original_sha256_unchanged": true
+    },
+    {
+      "name": "malformed_quote",
+      "source": "/private/tmp/freyalab-m1/out/bordes/fixtures/malformed-quote.csv",
+      "encoding": "utf-8",
+      "task": "T1",
+      "bytes": 385,
+      "sha256_before": "e048ee45b9e0db8aa743bbc45ef1cbe70f13894da25c3b94cad6a0d2d64ae4d0",
+      "oracle": {
+        "error_type": "Error",
+        "error": "unexpected end of data"
+      },
+      "sha256_after": "e048ee45b9e0db8aa743bbc45ef1cbe70f13894da25c3b94cad6a0d2d64ae4d0",
+      "original_sha256_unchanged": true
+    },
+    {
+      "name": "utf16_odd",
+      "source": "/private/tmp/freyalab-m1/out/bordes/fixtures/utf16-odd.csv",
+      "encoding": "utf-16",
+      "task": "T1",
+      "bytes": 763,
+      "sha256_before": "053e5c2d9e804f2dee9f192f2eb16a1cf56195f1c57b636e3ab4a21c38934211",
+      "oracle": {
+        "error_type": "UnicodeDecodeError",
+        "error": "'utf-16-le' codec can't decode byte 0x00 in position 0: truncated data"
+      },
+      "sha256_after": "053e5c2d9e804f2dee9f192f2eb16a1cf56195f1c57b636e3ab4a21c38934211",
+      "original_sha256_unchanged": true
+    }
+  ],
+  "results": [
+    {
+      "engine": "python",
+      "task": "T5",
+      "wall_seconds": 0.034154375025536865,
+      "max_rss_bytes": 20299776,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 474,
+      "output_sha256": "4ed9c509e3bba86539f8db9b3fb7082d72d7771a521aef2b6a331ed1487cd432",
+      "values_sha256": "0de5fe27ab5198c77e18ac068685e524b1662d097c6dd6bf7c05a39e403bf4c4",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 2,
+        "changed_records": 2,
+        "unchanged_source_sha256": "8983b88392c1e6a8fb5cda1b13cbbb7c9af694afbaa2b93a531a15201ea1d224",
+        "unchanged_output_sha256": "477c344fc551729bd873999da945f6937bec266425396d1ccc409495495aea9f"
+      },
+      "fixture": "irregular",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/irregular-python-T5.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "T5 conserva todas las posiciones y cambia sólo ciudad",
+        "arity_preserved": true,
+        "values_match_expected": true,
+        "guarantee_met": true,
+        "arity_including_header": [
+          21,
+          20,
+          21,
+          21
+        ],
+        "values_sha256": "0de5fe27ab5198c77e18ac068685e524b1662d097c6dd6bf7c05a39e403bf4c4",
+        "assessment": "valores y aridad conservados"
+      }
+    },
+    {
+      "engine": "node",
+      "task": "T5",
+      "wall_seconds": 0.045309708977583796,
+      "max_rss_bytes": 54493184,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 632,
+      "output_sha256": "f8eca3f72aef6f63fb8d1fd85c9ca047670cef3b39495506134c7c7252fc5b5a",
+      "values_sha256": "0de5fe27ab5198c77e18ac068685e524b1662d097c6dd6bf7c05a39e403bf4c4",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": true,
+        "unchanged_records_byte_exact": true,
+        "unchanged_records_byte_exact_ignoring_final_eol": true,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 2,
+        "changed_records": 2,
+        "unchanged_source_sha256": "8983b88392c1e6a8fb5cda1b13cbbb7c9af694afbaa2b93a531a15201ea1d224",
+        "unchanged_output_sha256": "8983b88392c1e6a8fb5cda1b13cbbb7c9af694afbaa2b93a531a15201ea1d224"
+      },
+      "fixture": "irregular",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/irregular-node-T5.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "T5 conserva todas las posiciones y cambia sólo ciudad",
+        "arity_preserved": true,
+        "values_match_expected": true,
+        "guarantee_met": true,
+        "arity_including_header": [
+          21,
+          20,
+          21,
+          21
+        ],
+        "values_sha256": "0de5fe27ab5198c77e18ac068685e524b1662d097c6dd6bf7c05a39e403bf4c4",
+        "assessment": "valores y aridad conservados"
+      }
+    },
+    {
+      "engine": "duckdb",
+      "task": "T5",
+      "wall_seconds": 0.017148874991107732,
+      "max_rss_bytes": 23724032,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: Error when sniffing file \"/private/tmp/freyalab-m1/out/bordes/fixtures/irregular.csv\".\nIt was not possible to automatically detect the CSV parsing dialect\nThe search space used was:\nDelimiter Candidates: ','\nQuote/Escape Candidates: ['(no quote)','(no escape)'],['\"','(no escape)'],['\"','\"'],['\"','''],['\"','\\'],[''','(no escape)'],[''','''],[''','\"'],[''','\\']\nComment Candidates: '\\0', '#'\nEncoding: utf-8\nPossible fixes:\n* Disable the parser's strict mode (strict_mode=false) to allow reading rows that do not comply with the CSV standard.\n* Make sure you are using the correct file encoding. If not, set it (e.g., encoding = 'utf-16').\n* Delimiter is set to ','. Consider unsetting it.\n* Set quote (e.g., quote='\"')\n* Set escape (e.g., escape='\"')\n* Set comment (e.g., comment='#')\n* Set skip (skip=${n}) to skip ${n} lines at the top of the file\n* Enable ignore errors (ignore_errors=true) to ignore potential errors\n* Enable null padding (null_padding=true) to pad missing columns with NULL values\n* Check you are using the correct file compression, otherwise set it (e.g., compression = 'zstd')\n* Be sure that the maximum line size is set to an appropriate value, otherwise set it (e.g., max_line_size=10000000)\n\n\nLINE 1: ...','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitario_mxn','descuent...\n                                                                   ^\n        0.01 real         0.01 user         0.00 sys\n            23724032  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1632  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  50  involuntary context switches\n           144586859  instructions retired\n            45372473  cycles elapsed\n             9470408  peak memory footprint\n",
+      "status": "error",
+      "fixture": "irregular",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/irregular-duckdb-T5.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "T5 conserva todas las posiciones y cambia sólo ciudad",
+        "arity_preserved": null,
+        "values_match_expected": null,
+        "guarantee_met": false,
+        "assessment": "estructura irregular rechazada o error: no acredita soporte"
+      }
+    },
+    {
+      "engine": "qsv",
+      "task": "T5",
+      "wall_seconds": 0.015392792003694922,
+      "max_rss_bytes": 22675456,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        22675456
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "csv error: CSV error: record 1 (line: 1, byte: 269): found record with 20 fields, but the previous record has 21 fields\n        0.01 real         0.00 user         0.00 sys\n            22675456  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1886  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                   9  involuntary context switches\n           117480472  instructions retired\n            36256861  cycles elapsed\n            10011272  peak memory footprint\n",
+      "fixture": "irregular",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/irregular-qsv-T5.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "T5 conserva todas las posiciones y cambia sólo ciudad",
+        "arity_preserved": false,
+        "values_match_expected": false,
+        "guarantee_met": false,
+        "arity_including_header": [
+          21
+        ],
+        "values_sha256": "3328ed06dbfbd958105dac08195135419a6b3c67561d1fe179de8bf24a538902",
+        "fidelity": {
+          "values_exact": false,
+          "unchanged_records_byte_exact": false,
+          "unchanged_records_byte_exact_ignoring_final_eol": false,
+          "source_bom_hex": "",
+          "output_bom_hex": "",
+          "bom_preserved": true,
+          "unchanged_records_including_header": 1,
+          "changed_records": 0,
+          "unchanged_source_sha256": "e468172f35c918cb6eb8090d4733e0e049b4776848ab7249fae479cf715aa02e",
+          "unchanged_output_sha256": "642f542f004d0abe5dc8e61c914fcaf8edde544b490852903a0c40e3c860badf"
+        },
+        "assessment": "estructura irregular rechazada o error: no acredita soporte"
+      }
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T5",
+      "wall_seconds": 0.009391916973982006,
+      "max_rss_bytes": 14434304,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        14434304
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "csv error: CSV error: record 1 (line: 1, byte: 269): found record with 20 fields, but the previous record has 21 fields\n        0.00 real         0.00 user         0.00 sys\n            14434304  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1201  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                   9  involuntary context switches\n            62230777  instructions retired\n            20178148  cycles elapsed\n             6930912  peak memory footprint\n",
+      "fixture": "irregular",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/irregular-qsvlite-T5.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "T5 conserva todas las posiciones y cambia sólo ciudad",
+        "arity_preserved": false,
+        "values_match_expected": false,
+        "guarantee_met": false,
+        "arity_including_header": [
+          21
+        ],
+        "values_sha256": "3328ed06dbfbd958105dac08195135419a6b3c67561d1fe179de8bf24a538902",
+        "fidelity": {
+          "values_exact": false,
+          "unchanged_records_byte_exact": false,
+          "unchanged_records_byte_exact_ignoring_final_eol": false,
+          "source_bom_hex": "",
+          "output_bom_hex": "",
+          "bom_preserved": true,
+          "unchanged_records_including_header": 1,
+          "changed_records": 0,
+          "unchanged_source_sha256": "e468172f35c918cb6eb8090d4733e0e049b4776848ab7249fae479cf715aa02e",
+          "unchanged_output_sha256": "642f542f004d0abe5dc8e61c914fcaf8edde544b490852903a0c40e3c860badf"
+        },
+        "assessment": "estructura irregular rechazada o error: no acredita soporte"
+      }
+    },
+    {
+      "engine": "miller",
+      "task": "T5",
+      "wall_seconds": 0.015497167012654245,
+      "max_rss_bytes": 33259520,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        33259520
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "mlr: CSV header/data length mismatch 21 != 20 at filename /private/tmp/freyalab-m1/out/bordes/fixtures/irregular.csv row 2\n        0.01 real         0.01 user         0.00 sys\n            33259520  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2357  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                  44  signals received\n                  28  voluntary context switches\n                 360  involuntary context switches\n           146368380  instructions retired\n            55787021  cycles elapsed\n            21086832  peak memory footprint\n",
+      "fixture": "irregular",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/irregular-miller-T5.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "T5 conserva todas las posiciones y cambia sólo ciudad",
+        "arity_preserved": false,
+        "values_match_expected": false,
+        "guarantee_met": false,
+        "arity_including_header": [],
+        "values_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output_validation_error": "StopIteration: ",
+        "assessment": "estructura irregular rechazada o error: no acredita soporte"
+      }
+    },
+    {
+      "engine": "polars",
+      "task": "T5",
+      "wall_seconds": 0.10648912499891594,
+      "max_rss_bytes": 68386816,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        68386816
+      ],
+      "cpu_user_seconds": 0.08,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 567,
+      "output_sha256": "ed75770f6fa06ab044ccb3e03fada8188944eef90e95cc9590aae43de7be466d",
+      "values_sha256": "0c39b8ee0e67acd506da8ab27bb6145dcea7de91be1813c6a7735b72369c1bf3",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": false,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 2,
+        "changed_records": 2,
+        "unchanged_source_sha256": "8983b88392c1e6a8fb5cda1b13cbbb7c9af694afbaa2b93a531a15201ea1d224",
+        "unchanged_output_sha256": "3fed293354b77068b31eb2aa3ba8a273ed7575b1a06a5f5b6d66ea6681e96873",
+        "normalized_by": "Polars sink_csv"
+      },
+      "fixture": "irregular",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/irregular-polars-T5.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "T5 conserva todas las posiciones y cambia sólo ciudad",
+        "arity_preserved": false,
+        "values_match_expected": false,
+        "guarantee_met": false,
+        "arity_including_header": [
+          21,
+          21,
+          21,
+          21
+        ],
+        "values_sha256": "0c39b8ee0e67acd506da8ab27bb6145dcea7de91be1813c6a7735b72369c1bf3",
+        "assessment": "pérdida de aridad o valores: limitación"
+      }
+    },
+    {
+      "engine": "polars-node",
+      "task": "T5",
+      "wall_seconds": 0.04958787496434525,
+      "max_rss_bytes": 82427904,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        82427904
+      ],
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 3
+      },
+      "status": "measured",
+      "result_sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "output_bytes": 567,
+      "output_sha256": "ed75770f6fa06ab044ccb3e03fada8188944eef90e95cc9590aae43de7be466d",
+      "values_sha256": "0c39b8ee0e67acd506da8ab27bb6145dcea7de91be1813c6a7735b72369c1bf3",
+      "output_encoding": "utf-8",
+      "fidelity": {
+        "values_exact": false,
+        "unchanged_records_byte_exact": false,
+        "unchanged_records_byte_exact_ignoring_final_eol": false,
+        "source_bom_hex": "",
+        "output_bom_hex": "",
+        "bom_preserved": true,
+        "unchanged_records_including_header": 2,
+        "changed_records": 2,
+        "unchanged_source_sha256": "8983b88392c1e6a8fb5cda1b13cbbb7c9af694afbaa2b93a531a15201ea1d224",
+        "unchanged_output_sha256": "3fed293354b77068b31eb2aa3ba8a273ed7575b1a06a5f5b6d66ea6681e96873",
+        "normalized_by": "nodejs-polars sinkCSV"
+      },
+      "fixture": "irregular",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/irregular-polars-node-T5.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "T5 conserva todas las posiciones y cambia sólo ciudad",
+        "arity_preserved": false,
+        "values_match_expected": false,
+        "guarantee_met": false,
+        "arity_including_header": [
+          21,
+          21,
+          21,
+          21
+        ],
+        "values_sha256": "0c39b8ee0e67acd506da8ab27bb6145dcea7de91be1813c6a7735b72369c1bf3",
+        "assessment": "pérdida de aridad o valores: limitación"
+      }
+    },
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 0.043755457969382405,
+      "max_rss_bytes": 22413312,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "error": "Traceback (most recent call last):\n  File \"<repo>/experiments/large-data-extracts/python_worker.py\", line 74, in <module>\n    print(json.dumps(run(engine, task, source, encoding, output), ensure_ascii=False))\n                     ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/experiments/large-data-extracts/python_worker.py\", line 29, in run\n    for row in records:\n               ^^^^^^^\n  File \"<repo>/experiments/large-data-extracts/common.py\", line 39, in rows\n    yield from csv.reader(stream, strict=True)\n_csv.Error: unexpected end of data\n        0.04 real         0.03 user         0.00 sys\n            22413312  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2208  page reclaims\n                  47  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  18  involuntary context switches\n           401665812  instructions retired\n           136197257  cycles elapsed\n            12403192  peak memory footprint\n",
+      "status": "error",
+      "fixture": "malformed_quote",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/malformed_quote-python-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": true,
+        "accepted_invalid_input": false,
+        "guarantee_met": true,
+        "assessment": "rechazo de parsing/decodificación observado"
+      }
+    },
+    {
+      "engine": "node",
+      "task": "T1",
+      "wall_seconds": 0.03622495802119374,
+      "max_rss_bytes": 53755904,
+      "exit_code": 0,
+      "cpu_user_seconds": 0.02,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "fixture": "malformed_quote",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/malformed_quote-node-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": false,
+        "accepted_invalid_input": true,
+        "guarantee_met": false,
+        "assessment": "entrada inválida aceptada: limitación"
+      }
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 0.016397416999097914,
+      "max_rss_bytes": 24068096,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "error": "Binder Error: \"force_not_null\" expected to find notas, but it was not found in the table\n\nLINE 1: ...','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitario_mxn','descuent...\n                                                                   ^\n        0.01 real         0.01 user         0.00 sys\n            24068096  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1652  page reclaims\n                  34  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  47  involuntary context switches\n           145551761  instructions retired\n            44622524  cycles elapsed\n             9716168  peak memory footprint\n",
+      "status": "error",
+      "fixture": "malformed_quote",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/malformed_quote-duckdb-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": false,
+        "accepted_invalid_input": false,
+        "guarantee_met": false,
+        "assessment": "error no atribuido al parsing: resultado no concluyente"
+      }
+    },
+    {
+      "engine": "qsv",
+      "task": "T1",
+      "wall_seconds": 0.01689845899818465,
+      "max_rss_bytes": 37552128,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        37552128
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "fixture": "malformed_quote",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/malformed_quote-qsv-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": false,
+        "accepted_invalid_input": true,
+        "guarantee_met": false,
+        "assessment": "entrada inválida aceptada: limitación"
+      }
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T1",
+      "wall_seconds": 0.009247957961633801,
+      "max_rss_bytes": 13451264,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        13451264
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "result": {
+        "count": 1
+      },
+      "status": "measured",
+      "result_sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "fixture": "malformed_quote",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/malformed_quote-qsvlite-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": false,
+        "accepted_invalid_input": true,
+        "guarantee_met": false,
+        "assessment": "entrada inválida aceptada: limitación"
+      }
+    },
+    {
+      "engine": "miller",
+      "task": "T1",
+      "wall_seconds": 0.015489541052374989,
+      "max_rss_bytes": 33243136,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        33243136
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "mlr: CSV header/data length mismatch 21 != 20 at filename /private/tmp/freyalab-m1/out/bordes/fixtures/malformed-quote.csv row 2\n        0.01 real         0.01 user         0.00 sys\n            33243136  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2357  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                  29  signals received\n                  15  voluntary context switches\n                 357  involuntary context switches\n           144348381  instructions retired\n            54086295  cycles elapsed\n            20906584  peak memory footprint\n",
+      "fixture": "malformed_quote",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/malformed_quote-miller-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": true,
+        "accepted_invalid_input": false,
+        "guarantee_met": true,
+        "assessment": "rechazo de parsing/decodificación observado"
+      }
+    },
+    {
+      "engine": "polars",
+      "task": "T1",
+      "wall_seconds": 0.09969524998450652,
+      "max_rss_bytes": 65486848,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        65486848
+      ],
+      "cpu_user_seconds": 0.07,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 0
+      },
+      "status": "measured",
+      "result_sha256": "618de7d9f46f3f697d827a1b6d84974760d5deda62e4e592adaa3c646602a94c",
+      "fixture": "malformed_quote",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/malformed_quote-polars-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": false,
+        "accepted_invalid_input": true,
+        "guarantee_met": false,
+        "assessment": "entrada inválida aceptada: limitación"
+      }
+    },
+    {
+      "engine": "polars-node",
+      "task": "T1",
+      "wall_seconds": 0.0491555419866927,
+      "max_rss_bytes": 68222976,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        68222976
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 0
+      },
+      "status": "measured",
+      "result_sha256": "618de7d9f46f3f697d827a1b6d84974760d5deda62e4e592adaa3c646602a94c",
+      "fixture": "malformed_quote",
+      "encoding": "utf-8",
+      "timeout_seconds": 900,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/malformed_quote-polars-node-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": false,
+        "accepted_invalid_input": true,
+        "guarantee_met": false,
+        "assessment": "entrada inválida aceptada: limitación"
+      }
+    },
+    {
+      "engine": "python",
+      "task": "T1",
+      "wall_seconds": 0.04323337500682101,
+      "max_rss_bytes": 22446080,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.03,
+      "cpu_sys_seconds": 0.0,
+      "error": "Traceback (most recent call last):\n  File \"<repo>/experiments/large-data-extracts/python_worker.py\", line 74, in <module>\n    print(json.dumps(run(engine, task, source, encoding, output), ensure_ascii=False))\n                     ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<repo>/experiments/large-data-extracts/python_worker.py\", line 29, in run\n    for row in records:\n               ^^^^^^^\n  File \"<repo>/experiments/large-data-extracts/common.py\", line 39, in rows\n    yield from csv.reader(stream, strict=True)\n  File \"<frozen codecs>\", line 325, in decode\n  File \"/opt/homebrew/Cellar/python@3.15/3.15.0/Frameworks/Python.framework/Versions/3.15/lib/python3.15/encodings/utf_16.py\", line 69, in _buffer_decode\n    return self.decoder(input, self.errors, final)\n           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeDecodeError: 'utf-16-le' codec can't decode byte 0x00 in position 0: truncated data\n        0.04 real         0.03 user         0.00 sys\n            22446080  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2210  page reclaims\n                  47  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   1  voluntary context switches\n                  13  involuntary context switches\n           401718039  instructions retired\n           133588063  cycles elapsed\n            12435960  peak memory footprint\n",
+      "status": "error",
+      "fixture": "utf16_odd",
+      "encoding": "utf-16",
+      "timeout_seconds": 2.0,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/utf16_odd-python-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": true,
+        "accepted_invalid_input": false,
+        "guarantee_met": true,
+        "assessment": "rechazo de parsing/decodificación observado"
+      }
+    },
+    {
+      "engine": "node",
+      "task": "T1",
+      "wall_seconds": 2.003073416010011,
+      "max_rss_bytes": null,
+      "exit_code": -9,
+      "cpu_user_seconds": null,
+      "cpu_sys_seconds": null,
+      "status": "timeout",
+      "error": "Grupo de procesos terminado tras 2.0s.",
+      "fixture": "utf16_odd",
+      "encoding": "utf-16",
+      "timeout_seconds": 2.0,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/utf16_odd-node-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": false,
+        "accepted_invalid_input": false,
+        "guarantee_met": false,
+        "assessment": "timeout: no es un rechazo correcto"
+      }
+    },
+    {
+      "engine": "duckdb",
+      "task": "T1",
+      "wall_seconds": 0.016875165980309248,
+      "max_rss_bytes": 23691264,
+      "exit_code": 1,
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "error": "Invalid Input Error: Error when sniffing file \"/private/tmp/freyalab-m1/out/bordes/fixtures/utf16-odd.csv\".\nIt was not possible to automatically detect the CSV parsing dialect\nThe search space used was:\nDelimiter Candidates: ','\nQuote/Escape Candidates: ['(no quote)','(no escape)'],['\"','(no escape)'],['\"','\"'],['\"','''],['\"','\\'],[''','(no escape)'],[''','''],[''','\"'],[''','\\']\nComment Candidates: '\\0', '#'\nEncoding: utf-16\nPossible fixes:\n* Disable the parser's strict mode (strict_mode=false) to allow reading rows that do not comply with the CSV standard.\n* Make sure you are using the correct file encoding. If not, set it (e.g., encoding = 'utf-16').\n* Delimiter is set to ','. Consider unsetting it.\n* Set quote (e.g., quote='\"')\n* Set escape (e.g., escape='\"')\n* Set comment (e.g., comment='#')\n* Set skip (skip=${n}) to skip ${n} lines at the top of the file\n* Enable ignore errors (ignore_errors=true) to ignore potential errors\n* Enable null padding (null_padding=true) to pad missing columns with NULL values\n* Check you are using the correct file compression, otherwise set it (e.g., compression = 'zstd')\n* Be sure that the maximum line size is set to an appropriate value, otherwise set it (e.g., max_line_size=10000000)\n\n\nLINE 1: ...'cliente','correo','ciudad','codigo_postal','producto_id','producto','categoria','cantidad','precio_unitario_mxn','descuen...\n                                                                          ^\n        0.01 real         0.01 user         0.00 sys\n            23691264  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1630  page reclaims\n                  33  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  46  involuntary context switches\n           143876805  instructions retired\n            44497201  cycles elapsed\n             9437616  peak memory footprint\n",
+      "status": "error",
+      "fixture": "utf16_odd",
+      "encoding": "utf-16",
+      "timeout_seconds": 2.0,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/utf16_odd-duckdb-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": true,
+        "accepted_invalid_input": false,
+        "guarantee_met": true,
+        "assessment": "rechazo de parsing/decodificación observado"
+      }
+    },
+    {
+      "engine": "qsv",
+      "task": "T1",
+      "wall_seconds": 0.016916416003368795,
+      "max_rss_bytes": 37453824,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        37453824
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "csv error: CSV error: record 1 (line: 1, byte: 539): found record with 1 fields, but the previous record has 21 fields\n        0.01 real         0.00 user         0.00 sys\n            37453824  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2796  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                 222  involuntary context switches\n           136405074  instructions retired\n            50735266  cycles elapsed\n            20726600  peak memory footprint\n",
+      "fixture": "utf16_odd",
+      "encoding": "utf-16",
+      "timeout_seconds": 2.0,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/utf16_odd-qsv-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": true,
+        "accepted_invalid_input": false,
+        "guarantee_met": true,
+        "assessment": "rechazo de parsing/decodificación observado"
+      }
+    },
+    {
+      "engine": "qsvlite",
+      "task": "T1",
+      "wall_seconds": 0.00908199994591996,
+      "max_rss_bytes": 13467648,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        13467648
+      ],
+      "cpu_user_seconds": 0.0,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "csv error: CSV error: record 1 (line: 1, byte: 539): found record with 1 fields, but the previous record has 21 fields\n        0.00 real         0.00 user         0.00 sys\n            13467648  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                1143  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                   0  signals received\n                   0  voluntary context switches\n                  10  involuntary context switches\n            59959731  instructions retired\n            19693211  cycles elapsed\n             6341088  peak memory footprint\n",
+      "fixture": "utf16_odd",
+      "encoding": "utf-16",
+      "timeout_seconds": 2.0,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/utf16_odd-qsvlite-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": true,
+        "accepted_invalid_input": false,
+        "guarantee_met": true,
+        "assessment": "rechazo de parsing/decodificación observado"
+      }
+    },
+    {
+      "engine": "miller",
+      "task": "T1",
+      "wall_seconds": 0.01516104198526591,
+      "max_rss_bytes": 33128448,
+      "exit_code": 1,
+      "stage_exit_codes": [
+        1
+      ],
+      "stage_rss_bytes": [
+        33128448
+      ],
+      "cpu_user_seconds": 0.01,
+      "cpu_sys_seconds": 0.0,
+      "status": "error",
+      "error": "mlr: parse error on line 1, column 3: bare \" in non-quoted-field\n        0.01 real         0.01 user         0.00 sys\n            33128448  maximum resident set size\n                   0  average shared memory size\n                   0  average unshared data size\n                   0  average unshared stack size\n                2349  page reclaims\n                   0  page faults\n                   0  swaps\n                   0  block input operations\n                   0  block output operations\n                   0  messages sent\n                   0  messages received\n                  29  signals received\n                  13  voluntary context switches\n                 366  involuntary context switches\n           144329975  instructions retired\n            53854231  cycles elapsed\n            20775512  peak memory footprint\n",
+      "fixture": "utf16_odd",
+      "encoding": "utf-16",
+      "timeout_seconds": 2.0,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/utf16_odd-miller-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": false,
+        "accepted_invalid_input": false,
+        "guarantee_met": false,
+        "assessment": "error no atribuido al parsing: resultado no concluyente"
+      }
+    },
+    {
+      "engine": "polars",
+      "task": "T1",
+      "wall_seconds": 0.0984409999800846,
+      "max_rss_bytes": 65126400,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        65126400
+      ],
+      "cpu_user_seconds": 0.07,
+      "cpu_sys_seconds": 0.02,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "fixture": "utf16_odd",
+      "encoding": "utf-16",
+      "timeout_seconds": 2.0,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/utf16_odd-polars-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": false,
+        "accepted_invalid_input": true,
+        "guarantee_met": false,
+        "assessment": "entrada inválida aceptada: limitación"
+      }
+    },
+    {
+      "engine": "polars-node",
+      "task": "T1",
+      "wall_seconds": 0.04976937500759959,
+      "max_rss_bytes": 68386816,
+      "exit_code": 0,
+      "stage_exit_codes": [
+        0
+      ],
+      "stage_rss_bytes": [
+        68386816
+      ],
+      "cpu_user_seconds": 0.04,
+      "cpu_sys_seconds": 0.01,
+      "result": {
+        "count": 2
+      },
+      "status": "measured",
+      "result_sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+      "fixture": "utf16_odd",
+      "encoding": "utf-16",
+      "timeout_seconds": 2.0,
+      "output": "/private/tmp/freyalab-m1/out/bordes/outputs/utf16_odd-polars-node-T1.csv",
+      "original_sha256_unchanged": true,
+      "probe": {
+        "expected": "rechazar el CSV malformado o los bytes UTF-16 incompletos",
+        "correct_rejection_observed": false,
+        "accepted_invalid_input": true,
+        "guarantee_met": false,
+        "assessment": "entrada inválida aceptada: limitación"
+      }
+    }
+  ],
+  "header_source_sha256_after": "2802e78128245142eff3fb0bc81bb69498d775b16ab1445e7a2e325949dbb498",
+  "header_source_unchanged": true,
+  "all_probes_completed": true,
+  "all_guarantees_met": false
+}
