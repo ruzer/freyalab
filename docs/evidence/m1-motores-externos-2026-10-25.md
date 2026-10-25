@@ -235,7 +235,7 @@ Con memoria suficiente nada usa temporales (DuckDB con 4 GB ordena 1 GiB en RAM)
 
 - Un equipo (M2 Max, macOS ARM64), una repetición por celda, caché caliente. No es un SLA, no hay intervalos ni distribución, y no se midió con caché fría.
 - **No se midió** macOS Intel (qsv no publica binario precompilado para x86_64-apple-darwin en 26.0.0 y los x64 exigen CPU con AVX2), Windows ni Linux. Tampoco el arranque ni el tamaño del instalador con ninguno de estos motores.
-- **No se descargó DuckDB nativo 2.0.0** (`@duckdb/node-api`): la autorización de M1 cubría qsv, Miller y Polars. Las cifras de DuckDB son de la CLI 1.5.6 de Homebrew; el RFC §6 midió el nativo 2.0.0 con otros archivos (230 columnas). Dos versiones de DuckDB siguen sin compararse entre sí.
+- **M1 no descargó DuckDB nativo 2.0.0** (`@duckdb/node-api`): la autorización cubría qsv, Miller y Polars. **Se midió después, en [M2](m2-duckdb-nativo-2026-10-25.md)**. Las cifras de DuckDB de este documento son de la CLI 1.5.6 de Homebrew; el RFC §6 midió el nativo 2.0.0 con otros archivos (230 columnas). Dos versiones de DuckDB siguen sin compararse entre sí.
 - La CLI de DuckDB y los binarios de qsv y Miller se ejecutaron como procesos hijo. **Ejecutar un binario externo no es un aislamiento**: ninguno se probó bajo un sandbox del sistema operativo.
 - Las tuberías de qsv se midieron con procesos encadenados sin shell; el RSS es el de la etapa mayor.
 - La ordenación y la cancelación son una repetición; la memoria de la ordenación es una muestra a 4 Hz.

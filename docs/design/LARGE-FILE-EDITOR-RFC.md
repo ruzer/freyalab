@@ -241,6 +241,10 @@ Una barrera de la aplicación (una sola sentencia y solo `SELECT`, comprobado co
 
 **No adoptar DuckDB nativo en L2–L4.** Puerta de entrada para L5/L8: (a) proceso auxiliar dedicado con `allowed_paths` exacto + `enable_external_access=false` + `lock_configuration` + extensiones y repositorio desactivados + límites de memoria/disco temporal + `interrupt`, todo con pruebas automáticas como las de este experimento; (b) al menos una capa de aislamiento del sistema operativo demostrada **en cada plataforma publicada**, o un riesgo residual aceptado por escrito; (c) empaquetado y firma comprobados en las 4 plataformas en la CI; (d) una sola versión de DuckDB en el producto o diferencias documentadas. Si (b) no se puede demostrar, **no se adopta** y los análisis grandes se quedan con el motor propio (§6).
 
+### 7.5 Estado de las puertas tras M2 (25 de octubre de 2026)
+
+Evaluación en [`docs/evidence/m2-duckdb-nativo-2026-10-25.md`](../evidence/m2-duckdb-nativo-2026-10-25.md) (DuckDB nativo 2.0.0 en un hijo de Node y en un `utilityProcess` de Electron 44.9.2; autocomprobación empaquetada en la CI de las cuatro plataformas). **(a) Aprobada.** **(b) Pendiente:** capa del sistema operativo demostrada en macOS (`sandbox-exec`) y Linux (`bubblewrap`), no en Windows; hace falta construirla o aceptar el riesgo residual por escrito. **(c) Pendiente:** empaquetado comprobado en las cuatro plataformas; la firma y la notarización no se probaron. **(d) Aprobada con diferencias documentadas:** el DuckDB-Wasm del producto es la v1.5.4, el nativo es la 2.0.0 y 12 de 12 sentencias dieron el mismo resultado. Recomendación y decisiones: [`EXTERNAL-ENGINES.md`](EXTERNAL-ENGINES.md).
+
 ## 8. Formatos y casos límite
 
 Evaluado en `tests/overlay.test.mjs` (40 pruebas, en la CI de las 4 plataformas) con fixtures de unos cientos de bytes que fuerzan el modo grande (trozos de 6 bytes, puntos de control cada 2 registros), contra `csv-parse` como oráculo independiente:

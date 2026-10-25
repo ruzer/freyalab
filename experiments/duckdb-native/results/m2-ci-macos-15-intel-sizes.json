@@ -1,0 +1,11 @@
+{
+  "platform": "darwin",
+  "arch": "x64",
+  "packageBytes": 593762587,
+  "unpackedDuckDBBytes": 69300063,
+  "unpackedEntries": [
+    "node-api",
+    "node-bindings",
+    "node-bindings-darwin-x64"
+  ]
+}

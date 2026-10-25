@@ -30,6 +30,7 @@ export async function cancelScenario(host, {source, workDir, tempDir, repetition
 
 export async function leakScenario(host, {source, workDir, rounds = 40}) {
   const src = {path: source, columns: HEADER, delimiter: ',', encoding: 'utf-8'}
+  await host.restart() // proceso nuevo: la línea base no arrastra operaciones anteriores
   const samples = [{after: 0, rssBytes: await host.rss()}]
   for (let i = 1; i <= rounds; i++) {
     await host.call(i % 4 === 0 ? 'filter_extract' : 'count', i % 4 === 0 ? {source: src, columns: [0, 4], conditions: [{col: COL.ciudad, op: 'eq', value: 'Oaxaca'}], output: join(workDir, `fuga-${i}.csv`)} : {source: src})

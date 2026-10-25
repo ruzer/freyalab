@@ -1,0 +1,713 @@
+{
+  "kind": "M2 proceso auxiliar",
+  "host": "utilityProcess de Electron",
+  "started": "2026-10-25T15:48:03.105Z",
+  "platform": "darwin arm64",
+  "options": {
+    "workDir": "/private/tmp/freyalab-m2/work-electron",
+    "tempDir": "/private/tmp/freyalab-m2/work-electron/tmp",
+    "threads": 12,
+    "memoryLimit": "4GB",
+    "parallel": true
+  },
+  "main": {
+    "electron": "44.9.2",
+    "node": "24.22.0",
+    "chrome": "152.0.7977.167",
+    "modules": "149"
+  },
+  "versions": {
+    "duckdb": "v2.0.0",
+    "node": "24.22.0",
+    "electron": "44.9.2",
+    "napi": "10",
+    "modules": "149"
+  },
+  "battery": [
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T1",
+      "operation": "count",
+      "label": "utility",
+      "ms": 49.49316700000003,
+      "cpuMs": 199.99999999999997,
+      "rssPeakBytes": 113672192,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T2",
+      "operation": "filter_count",
+      "label": "utility",
+      "ms": 62.272749999999974,
+      "cpuMs": 240,
+      "rssPeakBytes": 126681088,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T3",
+      "operation": "filter_extract",
+      "label": "utility",
+      "ms": 59.63454200000001,
+      "cpuMs": 280,
+      "rssPeakBytes": 130187264,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-electron/ventas_100MiB.csv-utility-t3.csv",
+      "verified": {
+        "values_sha256_equal": true
+      }
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T4",
+      "operation": "aggregate",
+      "label": "utility",
+      "ms": 57.032249999999976,
+      "cpuMs": 240.0000000000001,
+      "rssPeakBytes": 151158784,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T5",
+      "operation": "replace_literal_to_file",
+      "label": "utility",
+      "ms": 127.10929099999998,
+      "cpuMs": 829.9999999999999,
+      "rssPeakBytes": 490569728,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-electron/ventas_100MiB.csv-utility-t5.csv",
+      "verified": {
+        "values_sha256_equal": true,
+        "fidelity": {
+          "values_exact": true,
+          "unchanged_records_byte_exact": false,
+          "unchanged_records_byte_exact_ignoring_final_eol": true,
+          "source_bom_hex": "",
+          "output_bom_hex": "",
+          "bom_preserved": true,
+          "unchanged_records_including_header": 336515,
+          "changed_records": 111486,
+          "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+          "unchanged_output_sha256": "2ba7d7ac98b0b51f33d29e8cda8c2b1d75940f1b8c6a446e85d200bb412327d8"
+        }
+      }
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T6",
+      "operation": "search_count",
+      "label": "utility",
+      "ms": 84.91537500000004,
+      "cpuMs": 510,
+      "rssPeakBytes": 389611520,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "sort",
+      "operation": "sort_to_file",
+      "label": "utility",
+      "ms": 208.4370829999998,
+      "cpuMs": 990.0000000000002,
+      "rssPeakBytes": 616562688,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-electron/ventas_100MiB.csv-utility-sort.csv",
+      "verified": {
+        "records": 448000,
+        "sorted": true,
+        "same_records_as_source": true
+      }
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "positions",
+      "operation": "positions",
+      "label": "utility",
+      "ms": 187.986625,
+      "cpuMs": 199.99999999999974,
+      "rssPeakBytes": 652771328,
+      "ok": true,
+      "positions": 112233
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T1",
+      "operation": "count",
+      "label": "utility",
+      "ms": 218.44150000000013,
+      "cpuMs": 1840.0000000000002,
+      "rssPeakBytes": 808992768,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T2",
+      "operation": "filter_count",
+      "label": "utility",
+      "ms": 251.01029100000005,
+      "cpuMs": 2019.9999999999995,
+      "rssPeakBytes": 851525632,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T3",
+      "operation": "filter_extract",
+      "label": "utility",
+      "ms": 284.1363329999999,
+      "cpuMs": 2490,
+      "rssPeakBytes": 759431168,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-electron/ventas_1GiB.csv-utility-t3.csv",
+      "verified": {
+        "values_sha256_equal": true
+      }
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T4",
+      "operation": "aggregate",
+      "label": "utility",
+      "ms": 235.77595800000017,
+      "cpuMs": 2130.000000000001,
+      "rssPeakBytes": 780566528,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T5",
+      "operation": "replace_literal_to_file",
+      "label": "utility",
+      "ms": 870.9244169999997,
+      "cpuMs": 7279.999999999999,
+      "rssPeakBytes": 1409662976,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-electron/ventas_1GiB.csv-utility-t5.csv",
+      "verified": {
+        "values_sha256_equal": true,
+        "fidelity": {
+          "values_exact": true,
+          "unchanged_records_byte_exact": false,
+          "unchanged_records_byte_exact_ignoring_final_eol": true,
+          "source_bom_hex": "",
+          "output_bom_hex": "",
+          "bom_preserved": true,
+          "unchanged_records_including_header": 3441917,
+          "changed_records": 1145084,
+          "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+          "unchanged_output_sha256": "07e2842266ddc0d851d3e1e6fad898b96cc000f26ea9e6c884ab8d6dda198b02"
+        }
+      }
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T6",
+      "operation": "search_count",
+      "label": "utility",
+      "ms": 448.3788749999999,
+      "cpuMs": 4260.000000000002,
+      "rssPeakBytes": 1368850432,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "sort",
+      "operation": "sort_to_file",
+      "label": "utility",
+      "ms": 1753.5931660000006,
+      "cpuMs": 10780.000000000002,
+      "rssPeakBytes": 4347052032,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-electron/ventas_1GiB.csv-utility-sort.csv",
+      "verified": {
+        "records": 4587000,
+        "sorted": true,
+        "same_records_as_source": true
+      }
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "positions",
+      "operation": "positions",
+      "label": "utility",
+      "ms": 1674.0251669999998,
+      "cpuMs": 1759.999999999998,
+      "rssPeakBytes": 3889381376,
+      "ok": true,
+      "positions": 1146807
+    }
+  ],
+  "startup": {
+    "rounds": [
+      {
+        "startMs": 204.94729199999983,
+        "firstCountMs": 44.00604199999998,
+        "secondCountMs": 43.055875000000015,
+        "rssAfterBytes": 127041536
+      },
+      {
+        "startMs": 153.99429200000122,
+        "firstCountMs": 51.639500000001135,
+        "secondCountMs": 43.34370900000067,
+        "rssAfterBytes": 127401984
+      },
+      {
+        "startMs": 143.824125000001,
+        "firstCountMs": 47.379541000000245,
+        "secondCountMs": 57.27208399999836,
+        "rssAfterBytes": 127434752
+      },
+      {
+        "startMs": 139.44883299999856,
+        "firstCountMs": 58.010041999999885,
+        "secondCountMs": 52.306666999998924,
+        "rssAfterBytes": 127303680
+      },
+      {
+        "startMs": 137.68654200000128,
+        "firstCountMs": 45.39941700000054,
+        "secondCountMs": 42.903040999999575,
+        "rssAfterBytes": 127303680
+      }
+    ]
+  },
+  "security": {
+    "locked": [
+      {
+        "name": "leer la fuente autorizada",
+        "expect": "permitido",
+        "outcome": "permitido",
+        "ok": true,
+        "detail": "[{\"n\":2}]"
+      },
+      {
+        "name": "leer otro archivo de la misma carpeta",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-electron/seguridad/permitido/otro.csv\" - file system"
+      },
+      {
+        "name": "leer un archivo fuera de la carpeta",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-electron/seguridad/fuera/secreto.csv\" - file system "
+      },
+      {
+        "name": "recorrido con ../",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-electron/seguridad/fuera/secreto.csv\" - file system "
+      },
+      {
+        "name": "enlace simbólico dentro de la carpeta que apunta fuera",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-electron/seguridad/permitido/enlace.csv\" - file syst"
+      },
+      {
+        "name": "read_text de /etc/hosts",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/etc/hosts\" - file system operations are disabled by configuration"
+      },
+      {
+        "name": "glob de /etc",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/etc/*\" - file system operations are disabled by configuration"
+      },
+      {
+        "name": "listar la carpeta autorizada",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-electron/seguridad/permitido/*\" - file system operat"
+      },
+      {
+        "name": "COPY fuera de lo autorizado",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-electron/seguridad/fuera/escape.csv\" - file system o"
+      },
+      {
+        "name": "COPY al archivo de salida autorizado",
+        "expect": "permitido",
+        "outcome": "permitido",
+        "ok": true,
+        "detail": "[{\"Count\":1}]"
+      },
+      {
+        "name": "COPY a otro archivo de la misma carpeta",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-electron/seguridad/permitido/otra-salida.csv\" - file"
+      },
+      {
+        "name": "ATTACH de una base en disco",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-electron/seguridad/base.duckdb\" - file system operat"
+      },
+      {
+        "name": "read_csv por HTTP a un servidor local",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"http://127.0.0.1:58401/x.csv\" - file system operations are disabled by configurati"
+      },
+      {
+        "name": "INSTALL httpfs",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access directory \"/Users/ruzer/.duckdb/extensions/v2.0.0/osx_arm64\" - file system operations ar"
+      },
+      {
+        "name": "LOAD httpfs",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Loading external extensions is disabled through configuration"
+      },
+      {
+        "name": "reactivar el acceso externo tras bloquear",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Invalid Input Error: Cannot change configuration option \"\"enable_external_access\"\" - the configuration has been locked"
+      },
+      {
+        "name": "ampliar allowed_paths tras bloquear",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Invalid Input Error: Cannot change configuration option \"\"allowed_paths\"\" - the configuration has been locked"
+      },
+      {
+        "name": "subir memory_limit tras bloquear",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Invalid Input Error: Cannot change configuration option \"\"memory_limit\"\" - the configuration has been locked"
+      },
+      {
+        "name": "cambiar temp_directory tras bloquear",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Invalid Input Error: Cannot change configuration option \"\"temp_directory\"\" - the configuration has been locked"
+      },
+      {
+        "name": "activar autoinstall tras bloquear",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Invalid Input Error: Cannot change configuration option \"\"autoinstall_known_extensions\"\" - the configuration has been lo"
+      },
+      {
+        "name": "desbloquear la configuración tras bloquear",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Invalid Input Error: Cannot change configuration option \"\"lock_configuration\"\" - the configuration has been locked"
+      },
+      {
+        "name": "ordenar 200 M de filas con 512 MB y 1 GB de temporales",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Out of Memory Error: failed to offload data block of size 256.0 KiB (953.6 MiB/953.6 MiB used)."
+      },
+      {
+        "name": "cancelar con interrupt() una consulta de 10^11 filas",
+        "expect": "cancelada",
+        "outcome": "cancelada",
+        "ok": true,
+        "detail": "1.4 ms tras interrupt()",
+        "latencyMs": 1.42766599999959
+      },
+      {
+        "name": "peticiones HTTP recibidas por el servidor local",
+        "expect": "0",
+        "outcome": "0",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "closed": [
+      {
+        "name": "operación válida",
+        "expect": "permitido",
+        "outcome": "permitido",
+        "ok": true,
+        "detail": "{\"rows\":[{\"n\":2}]}"
+      },
+      {
+        "name": "operación que no está en la lista",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "operación no permitida"
+      },
+      {
+        "name": "SQL en lugar de operación",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "operación no permitida"
+      },
+      {
+        "name": "valor con comillas y punto y coma (se enlaza como literal)",
+        "expect": "permitido",
+        "outcome": "permitido",
+        "ok": true,
+        "detail": "{\"rows\":[{\"n\":0}]}"
+      },
+      {
+        "name": "valor con NUL",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "valor no válido"
+      },
+      {
+        "name": "columna fuera de rango",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "columna fuera de rango"
+      },
+      {
+        "name": "columna con texto en vez de entero",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "columna fuera de rango"
+      },
+      {
+        "name": "operador no permitido",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "operador no admitido"
+      },
+      {
+        "name": "nombre de columna con comillas (se cita)",
+        "expect": "permitido",
+        "outcome": "permitido",
+        "ok": true,
+        "detail": "{\"output\":\"/private/tmp/freyalab-m2/work-electron/seguridad/cerradas/trabajo/comillas.csv\",\"rows\":2}"
+      },
+      {
+        "name": "fuente fuera de las carpetas autorizadas",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "la fuente está fuera de las carpetas autorizadas"
+      },
+      {
+        "name": "fuente que es un enlace simbólico",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "la fuente no puede ser un enlace simbólico"
+      },
+      {
+        "name": "fuente con ruta relativa",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "la fuente debe ser una ruta absoluta"
+      },
+      {
+        "name": "separador no admitido",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "separador no admitido"
+      },
+      {
+        "name": "codificación no admitida (Windows-1252)",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "codificación no admitida (el motor solo recibe UTF-8 o UTF-16)"
+      },
+      {
+        "name": "salida fuera de la carpeta de trabajo",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "la salida debe estar dentro de la carpeta de trabajo"
+      },
+      {
+        "name": "salida que ya existe (nunca se sobrescribe)",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "la salida ya existe: nunca se sobrescribe"
+      },
+      {
+        "name": "salida con ../ que sale de la carpeta",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "la salida debe estar dentro de la carpeta de trabajo"
+      },
+      {
+        "name": "texto de 2 000 caracteres",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "valor no válido"
+      }
+    ]
+  },
+  "cancel": {
+    "rssBeforeBytes": 668581888,
+    "rounds": [
+      {
+        "repetition": 0,
+        "cancelled": true,
+        "latencyMs": 41.64679199999955,
+        "message": "INTERRUPT Error: Interrupted!",
+        "partialOutputExists": false,
+        "tempEntriesLeft": 0,
+        "tempBytesLeft": 0,
+        "rssAfterBytes": 1548419072
+      },
+      {
+        "repetition": 1,
+        "cancelled": true,
+        "latencyMs": 38.18329199999789,
+        "message": "INTERRUPT Error: Interrupted!",
+        "partialOutputExists": false,
+        "tempEntriesLeft": 0,
+        "tempBytesLeft": 0,
+        "rssAfterBytes": 1557495808
+      },
+      {
+        "repetition": 2,
+        "cancelled": true,
+        "latencyMs": 38.78554200000144,
+        "message": "INTERRUPT Error: Interrupted!",
+        "partialOutputExists": false,
+        "tempEntriesLeft": 0,
+        "tempBytesLeft": 0,
+        "rssAfterBytes": 1561362432
+      },
+      {
+        "repetition": 3,
+        "cancelled": true,
+        "latencyMs": 39.26554100000067,
+        "message": "INTERRUPT Error: Interrupted!",
+        "partialOutputExists": false,
+        "tempEntriesLeft": 0,
+        "tempBytesLeft": 0,
+        "rssAfterBytes": 1563082752
+      },
+      {
+        "repetition": 4,
+        "cancelled": true,
+        "latencyMs": 36.10554100000081,
+        "message": "INTERRUPT Error: Interrupted!",
+        "partialOutputExists": false,
+        "tempEntriesLeft": 0,
+        "tempBytesLeft": 0,
+        "rssAfterBytes": 1564246016
+      }
+    ],
+    "serves_after_cancel": true
+  },
+  "leak": {
+    "rounds": 40,
+    "samples": [
+      {
+        "after": 0,
+        "rssBytes": 1564295168
+      },
+      {
+        "after": 1,
+        "rssBytes": 1564295168
+      },
+      {
+        "after": 5,
+        "rssBytes": 1566146560
+      },
+      {
+        "after": 10,
+        "rssBytes": 1566982144
+      },
+      {
+        "after": 20,
+        "rssBytes": 1567604736
+      },
+      {
+        "after": 30,
+        "rssBytes": 1568325632
+      },
+      {
+        "after": 40,
+        "rssBytes": 1568735232
+      }
+    ]
+  },
+  "spill": [
+    {
+      "memoryLimit": "4GB",
+      "threads": 4,
+      "ok": true,
+      "ms": 2286.1121249999997,
+      "rssPeakBytes": 3852845056,
+      "cpuMs": 8430,
+      "tempPeakBytes": 0,
+      "tempLeftBytes": 0,
+      "output": "/private/tmp/freyalab-m2/work-electron/derrame-4GB.csv"
+    },
+    {
+      "memoryLimit": "1GB",
+      "threads": 4,
+      "ok": true,
+      "ms": 4619.381292000002,
+      "rssPeakBytes": 1345159168,
+      "cpuMs": 11020,
+      "tempPeakBytes": 1083867136,
+      "tempLeftBytes": 0,
+      "output": "/private/tmp/freyalab-m2/work-electron/derrame-1GB.csv"
+    },
+    {
+      "memoryLimit": "512MB",
+      "threads": 4,
+      "ok": true,
+      "ms": 7077.674541,
+      "rssPeakBytes": 744947712,
+      "cpuMs": 12370,
+      "tempPeakBytes": 1314553856,
+      "tempLeftBytes": 0,
+      "output": "/private/tmp/freyalab-m2/work-electron/derrame-512MB.csv"
+    }
+  ],
+  "kill": {
+    "pid": 56208,
+    "exitMs": 44.29608300000109,
+    "processGone": true,
+    "partialOutputBytes": 226,
+    "tempEntriesLeft": 0,
+    "tempBytesLeft": 0,
+    "cleanedByLauncher": true,
+    "restarted": true,
+    "servesAfterRestart": true,
+    "newPid": 56940
+  }
+}

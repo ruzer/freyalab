@@ -1,0 +1,236 @@
+{
+  "kind": "M2 proceso auxiliar",
+  "host": "proceso hijo de Node (child_process.fork)",
+  "started": "2026-10-25T15:48:44.578Z",
+  "platform": "darwin arm64",
+  "options": {
+    "workDir": "/private/tmp/freyalab-m2/work-node-fresh",
+    "tempDir": "/private/tmp/freyalab-m2/work-node-fresh/tmp",
+    "threads": 12,
+    "memoryLimit": "4GB",
+    "parallel": true
+  },
+  "versions": {
+    "duckdb": "v2.0.0",
+    "node": "24.22.1",
+    "electron": null,
+    "napi": "10",
+    "modules": "137"
+  },
+  "battery": [
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T1",
+      "operation": "count",
+      "label": "hijo-node",
+      "ms": 40.66250000000002,
+      "cpuMs": 180,
+      "rssPeakBytes": 99844096,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T2",
+      "operation": "filter_count",
+      "label": "hijo-node",
+      "ms": 42.388833999999974,
+      "cpuMs": 190,
+      "rssPeakBytes": 100597760,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T3",
+      "operation": "filter_extract",
+      "label": "hijo-node",
+      "ms": 49.773207999999954,
+      "cpuMs": 240,
+      "rssPeakBytes": 100368384,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-node-fresh/ventas_100MiB.csv-hijo-node-t3.csv",
+      "verified": {
+        "values_sha256_equal": true
+      }
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T4",
+      "operation": "aggregate",
+      "label": "hijo-node",
+      "ms": 45.79783299999997,
+      "cpuMs": 210.00000000000003,
+      "rssPeakBytes": 99581952,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T5",
+      "operation": "replace_literal_to_file",
+      "label": "hijo-node",
+      "ms": 111.54312499999992,
+      "cpuMs": 690.0000000000001,
+      "rssPeakBytes": 564838400,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-node-fresh/ventas_100MiB.csv-hijo-node-t5.csv",
+      "verified": {
+        "values_sha256_equal": true,
+        "fidelity": {
+          "values_exact": true,
+          "unchanged_records_byte_exact": false,
+          "unchanged_records_byte_exact_ignoring_final_eol": true,
+          "source_bom_hex": "",
+          "output_bom_hex": "",
+          "bom_preserved": true,
+          "unchanged_records_including_header": 336515,
+          "changed_records": 111486,
+          "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+          "unchanged_output_sha256": "2ba7d7ac98b0b51f33d29e8cda8c2b1d75940f1b8c6a446e85d200bb412327d8"
+        }
+      }
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T6",
+      "operation": "search_count",
+      "label": "hijo-node",
+      "ms": 70.17654199999993,
+      "cpuMs": 430.00000000000006,
+      "rssPeakBytes": 100155392,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "sort",
+      "operation": "sort_to_file",
+      "label": "hijo-node",
+      "ms": 201.87412500000005,
+      "cpuMs": 910,
+      "rssPeakBytes": 525762560,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-node-fresh/ventas_100MiB.csv-hijo-node-sort.csv",
+      "verified": {
+        "records": 448000,
+        "sorted": true,
+        "same_records_as_source": true
+      }
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "positions",
+      "operation": "positions",
+      "label": "hijo-node",
+      "ms": 179.06037500000002,
+      "cpuMs": 200,
+      "rssPeakBytes": 175898624,
+      "ok": true,
+      "positions": 112233
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T1",
+      "operation": "count",
+      "label": "hijo-node",
+      "ms": 201.0324999999998,
+      "cpuMs": 1640.0000000000002,
+      "rssPeakBytes": 306446336,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T2",
+      "operation": "filter_count",
+      "label": "hijo-node",
+      "ms": 220.94395899999972,
+      "cpuMs": 1819.9999999999998,
+      "rssPeakBytes": 308084736,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T3",
+      "operation": "filter_extract",
+      "label": "hijo-node",
+      "ms": 268.1094589999998,
+      "cpuMs": 2230,
+      "rssPeakBytes": 409763840,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-node-fresh/ventas_1GiB.csv-hijo-node-t3.csv",
+      "verified": {
+        "values_sha256_equal": true
+      }
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T4",
+      "operation": "aggregate",
+      "label": "hijo-node",
+      "ms": 232.9199580000004,
+      "cpuMs": 1970,
+      "rssPeakBytes": 317341696,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T5",
+      "operation": "replace_literal_to_file",
+      "label": "hijo-node",
+      "ms": 879.1199159999996,
+      "cpuMs": 6790,
+      "rssPeakBytes": 1666531328,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-node-fresh/ventas_1GiB.csv-hijo-node-t5.csv",
+      "verified": {
+        "values_sha256_equal": true,
+        "fidelity": {
+          "values_exact": true,
+          "unchanged_records_byte_exact": false,
+          "unchanged_records_byte_exact_ignoring_final_eol": true,
+          "source_bom_hex": "",
+          "output_bom_hex": "",
+          "bom_preserved": true,
+          "unchanged_records_including_header": 3441917,
+          "changed_records": 1145084,
+          "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+          "unchanged_output_sha256": "07e2842266ddc0d851d3e1e6fad898b96cc000f26ea9e6c884ab8d6dda198b02"
+        }
+      }
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T6",
+      "operation": "search_count",
+      "label": "hijo-node",
+      "ms": 443.11083400000007,
+      "cpuMs": 4030.0000000000005,
+      "rssPeakBytes": 462061568,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "sort",
+      "operation": "sort_to_file",
+      "label": "hijo-node",
+      "ms": 1355.4869580000004,
+      "cpuMs": 9960,
+      "rssPeakBytes": 4396154880,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-node-fresh/ventas_1GiB.csv-hijo-node-sort.csv",
+      "verified": {
+        "records": 4587000,
+        "sorted": true,
+        "same_records_as_source": true
+      }
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "positions",
+      "operation": "positions",
+      "label": "hijo-node",
+      "ms": 1694.378999999999,
+      "cpuMs": 2020,
+      "rssPeakBytes": 373915648,
+      "ok": true,
+      "positions": 1146807
+    }
+  ]
+}

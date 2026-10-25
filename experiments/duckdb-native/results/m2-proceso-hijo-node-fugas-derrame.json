@@ -1,0 +1,88 @@
+{
+  "kind": "M2 proceso auxiliar",
+  "host": "proceso hijo de Node (child_process.fork)",
+  "started": "2026-10-25T15:59:06.867Z",
+  "platform": "darwin arm64",
+  "options": {
+    "workDir": "/private/tmp/freyalab-m2/work-ls-node",
+    "tempDir": "/private/tmp/freyalab-m2/work-ls-node/tmp",
+    "threads": 12,
+    "memoryLimit": "4GB",
+    "parallel": true
+  },
+  "versions": {
+    "duckdb": "v2.0.0",
+    "node": "24.22.1",
+    "electron": null,
+    "napi": "10",
+    "modules": "137"
+  },
+  "leak": {
+    "rounds": 40,
+    "samples": [
+      {
+        "after": 0,
+        "rssBytes": 100007936
+      },
+      {
+        "after": 1,
+        "rssBytes": 217989120
+      },
+      {
+        "after": 5,
+        "rssBytes": 229474304
+      },
+      {
+        "after": 10,
+        "rssBytes": 232407040
+      },
+      {
+        "after": 20,
+        "rssBytes": 238583808
+      },
+      {
+        "after": 30,
+        "rssBytes": 239599616
+      },
+      {
+        "after": 40,
+        "rssBytes": 241385472
+      }
+    ]
+  },
+  "spill": [
+    {
+      "memoryLimit": "4GB",
+      "threads": 4,
+      "ok": true,
+      "ms": 2134.8138750000007,
+      "rssPeakBytes": 4169744384,
+      "cpuMs": 8130.000000000001,
+      "tempPeakBytes": 0,
+      "tempLeftBytes": 0,
+      "output": "/private/tmp/freyalab-m2/work-ls-node/derrame-4GB.csv"
+    },
+    {
+      "memoryLimit": "1GB",
+      "threads": 4,
+      "ok": true,
+      "ms": 3758.2826669999995,
+      "rssPeakBytes": 1562443776,
+      "cpuMs": 10270.000000000002,
+      "tempPeakBytes": 1077772288,
+      "tempLeftBytes": 0,
+      "output": "/private/tmp/freyalab-m2/work-ls-node/derrame-1GB.csv"
+    },
+    {
+      "memoryLimit": "512MB",
+      "threads": 4,
+      "ok": true,
+      "ms": 7374.191582999998,
+      "rssPeakBytes": 897204224,
+      "cpuMs": 12670,
+      "tempPeakBytes": 1357873152,
+      "tempLeftBytes": 0,
+      "output": "/private/tmp/freyalab-m2/work-ls-node/derrame-512MB.csv"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "M2 patr\u00f3n DuckDB decide / FreyaLab copia",
+  "source": "/private/tmp/FreyaLab-pruebas/ventas_100MiB.csv",
+  "sourceBytes": 104878987,
+  "eolAssumed": "\"\\r\\n\"",
+  "freyalab": {
+    "indexMs": 212.97312500000004,
+    "records": 448001,
+    "dataRecords": 448000
+  },
+  "duckdb": {
+    "countMs": 49.109500000000025,
+    "count": 448000,
+    "reconcilesWithIndex": true,
+    "positionsMs": 176.299167,
+    "matches": 112233
+  },
+  "copy": {
+    "ms": 741.4964170000001,
+    "bytes": 26097501,
+    "output": "/private/tmp/freyalab-m2/work-patron-100MiB/patron-bytes.csv",
+    "sha256": "f82eb2d70eced7d9321d1bc5b6b6b857ce83c871b7c98051749de809684bc540"
+  },
+  "duckdbWholeRecordExtract": {
+    "ms": 78.65662500000008,
+    "rows": 112233,
+    "output": "/private/tmp/freyalab-m2/work-patron-100MiB/patron-duckdb-registro-completo.csv"
+  },
+  "totalPatternMs": 917.7955840000001,
+  "verification": {
+    "expected_records": 112233,
+    "expected_sha256": "f82eb2d70eced7d9321d1bc5b6b6b857ce83c871b7c98051749de809684bc540",
+    "output_sha256": "f82eb2d70eced7d9321d1bc5b6b6b857ce83c871b7c98051749de809684bc540",
+    "bytes_identical": true
+  }
+}

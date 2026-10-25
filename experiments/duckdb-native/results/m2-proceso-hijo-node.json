@@ -1,0 +1,673 @@
+{
+  "kind": "M2 proceso auxiliar",
+  "host": "proceso hijo de Node (child_process.fork)",
+  "started": "2026-10-25T15:43:49.577Z",
+  "platform": "darwin arm64",
+  "options": {
+    "workDir": "/private/tmp/freyalab-m2/work-host",
+    "tempDir": "/private/tmp/freyalab-m2/work-host/tmp",
+    "threads": 12,
+    "memoryLimit": "4GB",
+    "parallel": true
+  },
+  "versions": {
+    "duckdb": "v2.0.0",
+    "node": "24.22.1",
+    "electron": null,
+    "napi": "10",
+    "modules": "137"
+  },
+  "battery": [
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T1",
+      "operation": "count",
+      "label": "hijo-node",
+      "ms": 44.91795900000001,
+      "cpuMs": 169.99999999999997,
+      "rssPeakBytes": 99663872,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T2",
+      "operation": "filter_count",
+      "label": "hijo-node",
+      "ms": 41.40870800000002,
+      "cpuMs": 200,
+      "rssPeakBytes": 216891392,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T3",
+      "operation": "filter_extract",
+      "label": "hijo-node",
+      "ms": 50.36458299999998,
+      "cpuMs": 240,
+      "rssPeakBytes": 219627520,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-host/ventas_100MiB.csv-hijo-node-t3.csv",
+      "verified": {
+        "values_sha256_equal": true
+      }
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T4",
+      "operation": "aggregate",
+      "label": "hijo-node",
+      "ms": 46.76783400000005,
+      "cpuMs": 229.99999999999997,
+      "rssPeakBytes": 241860608,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T5",
+      "operation": "replace_literal_to_file",
+      "label": "hijo-node",
+      "ms": 121.42962499999999,
+      "cpuMs": 760,
+      "rssPeakBytes": 538132480,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-host/ventas_100MiB.csv-hijo-node-t5.csv",
+      "verified": {
+        "values_sha256_equal": true,
+        "fidelity": {
+          "values_exact": true,
+          "unchanged_records_byte_exact": false,
+          "unchanged_records_byte_exact_ignoring_final_eol": true,
+          "source_bom_hex": "",
+          "output_bom_hex": "",
+          "bom_preserved": true,
+          "unchanged_records_including_header": 336515,
+          "changed_records": 111486,
+          "unchanged_source_sha256": "cef7c0d63df051f5f0a5097449718f1ac97faf09395a760daeffbc61ca292af3",
+          "unchanged_output_sha256": "2ba7d7ac98b0b51f33d29e8cda8c2b1d75940f1b8c6a446e85d200bb412327d8"
+        }
+      }
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "T6",
+      "operation": "search_count",
+      "label": "hijo-node",
+      "ms": 72.85591699999998,
+      "cpuMs": 429.99999999999994,
+      "rssPeakBytes": 580337664,
+      "ok": true
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "sort",
+      "operation": "sort_to_file",
+      "label": "hijo-node",
+      "ms": 188.79454199999998,
+      "cpuMs": 910.0000000000001,
+      "rssPeakBytes": 753401856,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-host/ventas_100MiB.csv-hijo-node-sort.csv",
+      "verified": {
+        "records": 448000,
+        "sorted": true,
+        "same_records_as_source": true
+      }
+    },
+    {
+      "file": "ventas_100MiB.csv",
+      "task": "positions",
+      "operation": "positions",
+      "label": "hijo-node",
+      "ms": 186.064167,
+      "cpuMs": 250,
+      "rssPeakBytes": 942964736,
+      "ok": true,
+      "positions": 112233
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T1",
+      "operation": "count",
+      "label": "hijo-node",
+      "ms": 183.52829100000008,
+      "cpuMs": 1609.9999999999998,
+      "rssPeakBytes": 814137344,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T2",
+      "operation": "filter_count",
+      "label": "hijo-node",
+      "ms": 201.36699999999996,
+      "cpuMs": 1820.0000000000002,
+      "rssPeakBytes": 846168064,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T3",
+      "operation": "filter_extract",
+      "label": "hijo-node",
+      "ms": 240.37424999999985,
+      "cpuMs": 2209.999999999999,
+      "rssPeakBytes": 850984960,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-host/ventas_1GiB.csv-hijo-node-t3.csv",
+      "verified": {
+        "values_sha256_equal": true
+      }
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T4",
+      "operation": "aggregate",
+      "label": "hijo-node",
+      "ms": 217.9617920000003,
+      "cpuMs": 1950.0000000000011,
+      "rssPeakBytes": 883982336,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T5",
+      "operation": "replace_literal_to_file",
+      "label": "hijo-node",
+      "ms": 775.7322080000004,
+      "cpuMs": 6860.000000000001,
+      "rssPeakBytes": 1690337280,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-host/ventas_1GiB.csv-hijo-node-t5.csv",
+      "verified": {
+        "values_sha256_equal": true,
+        "fidelity": {
+          "values_exact": true,
+          "unchanged_records_byte_exact": false,
+          "unchanged_records_byte_exact_ignoring_final_eol": true,
+          "source_bom_hex": "",
+          "output_bom_hex": "",
+          "bom_preserved": true,
+          "unchanged_records_including_header": 3441917,
+          "changed_records": 1145084,
+          "unchanged_source_sha256": "7ed43a24067959d73871acbe13ffbb52be5549b100f4534068f15523a22be604",
+          "unchanged_output_sha256": "07e2842266ddc0d851d3e1e6fad898b96cc000f26ea9e6c884ab8d6dda198b02"
+        }
+      }
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "T6",
+      "operation": "search_count",
+      "label": "hijo-node",
+      "ms": 413.4709170000001,
+      "cpuMs": 4149.999999999998,
+      "rssPeakBytes": 1692188672,
+      "ok": true
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "sort",
+      "operation": "sort_to_file",
+      "label": "hijo-node",
+      "ms": 1534.7587079999998,
+      "cpuMs": 10349.999999999998,
+      "rssPeakBytes": 4735336448,
+      "ok": true,
+      "output": "/private/tmp/freyalab-m2/work-host/ventas_1GiB.csv-hijo-node-sort.csv",
+      "verified": {
+        "records": 4587000,
+        "sorted": true,
+        "same_records_as_source": true
+      }
+    },
+    {
+      "file": "ventas_1GiB.csv",
+      "task": "positions",
+      "operation": "positions",
+      "label": "hijo-node",
+      "ms": 1655.3737920000003,
+      "cpuMs": 1740.000000000002,
+      "rssPeakBytes": 4589731840,
+      "ok": true,
+      "positions": 1146807
+    }
+  ],
+  "security": {
+    "locked": [
+      {
+        "name": "leer la fuente autorizada",
+        "expect": "permitido",
+        "outcome": "permitido",
+        "ok": true,
+        "detail": "[{\"n\":2}]"
+      },
+      {
+        "name": "leer otro archivo de la misma carpeta",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-host/seguridad/permitido/otro.csv\" - file system ope"
+      },
+      {
+        "name": "leer un archivo fuera de la carpeta",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-host/seguridad/fuera/secreto.csv\" - file system oper"
+      },
+      {
+        "name": "recorrido con ../",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-host/seguridad/fuera/secreto.csv\" - file system oper"
+      },
+      {
+        "name": "enlace simbólico dentro de la carpeta que apunta fuera",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-host/seguridad/permitido/enlace.csv\" - file system o"
+      },
+      {
+        "name": "read_text de /etc/hosts",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/etc/hosts\" - file system operations are disabled by configuration"
+      },
+      {
+        "name": "glob de /etc",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/etc/*\" - file system operations are disabled by configuration"
+      },
+      {
+        "name": "listar la carpeta autorizada",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-host/seguridad/permitido/*\" - file system operations"
+      },
+      {
+        "name": "COPY fuera de lo autorizado",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-host/seguridad/fuera/escape.csv\" - file system opera"
+      },
+      {
+        "name": "COPY al archivo de salida autorizado",
+        "expect": "permitido",
+        "outcome": "permitido",
+        "ok": true,
+        "detail": "[{\"Count\":1}]"
+      },
+      {
+        "name": "COPY a otro archivo de la misma carpeta",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-host/seguridad/permitido/otra-salida.csv\" - file sys"
+      },
+      {
+        "name": "ATTACH de una base en disco",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"/private/tmp/freyalab-m2/work-host/seguridad/base.duckdb\" - file system operations"
+      },
+      {
+        "name": "read_csv por HTTP a un servidor local",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access file \"http://127.0.0.1:58369/x.csv\" - file system operations are disabled by configurati"
+      },
+      {
+        "name": "INSTALL httpfs",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Cannot access directory \"/Users/ruzer/.duckdb/extensions/v2.0.0/osx_arm64\" - file system operations ar"
+      },
+      {
+        "name": "LOAD httpfs",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Permission Error: Loading external extensions is disabled through configuration"
+      },
+      {
+        "name": "reactivar el acceso externo tras bloquear",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Invalid Input Error: Cannot change configuration option \"\"enable_external_access\"\" - the configuration has been locked"
+      },
+      {
+        "name": "ampliar allowed_paths tras bloquear",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Invalid Input Error: Cannot change configuration option \"\"allowed_paths\"\" - the configuration has been locked"
+      },
+      {
+        "name": "subir memory_limit tras bloquear",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Invalid Input Error: Cannot change configuration option \"\"memory_limit\"\" - the configuration has been locked"
+      },
+      {
+        "name": "cambiar temp_directory tras bloquear",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Invalid Input Error: Cannot change configuration option \"\"temp_directory\"\" - the configuration has been locked"
+      },
+      {
+        "name": "activar autoinstall tras bloquear",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Invalid Input Error: Cannot change configuration option \"\"autoinstall_known_extensions\"\" - the configuration has been lo"
+      },
+      {
+        "name": "desbloquear la configuración tras bloquear",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Invalid Input Error: Cannot change configuration option \"\"lock_configuration\"\" - the configuration has been locked"
+      },
+      {
+        "name": "ordenar 200 M de filas con 512 MB y 1 GB de temporales",
+        "expect": "denegado",
+        "outcome": "denegado",
+        "ok": true,
+        "detail": "Out of Memory Error: failed to offload data block of size 256.0 KiB (953.5 MiB/953.6 MiB used)."
+      },
+      {
+        "name": "cancelar con interrupt() una consulta de 10^11 filas",
+        "expect": "cancelada",
+        "outcome": "cancelada",
+        "ok": true,
+        "detail": "1.4 ms tras interrupt()",
+        "latencyMs": 1.3919580000001588
+      },
+      {
+        "name": "peticiones HTTP recibidas por el servidor local",
+        "expect": "0",
+        "outcome": "0",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "closed": [
+      {
+        "name": "operación válida",
+        "expect": "permitido",
+        "outcome": "permitido",
+        "ok": true,
+        "detail": "{\"rows\":[{\"n\":2}]}"
+      },
+      {
+        "name": "operación que no está en la lista",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "operación no permitida"
+      },
+      {
+        "name": "SQL en lugar de operación",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "operación no permitida"
+      },
+      {
+        "name": "valor con comillas y punto y coma (se enlaza como literal)",
+        "expect": "permitido",
+        "outcome": "permitido",
+        "ok": true,
+        "detail": "{\"rows\":[{\"n\":0}]}"
+      },
+      {
+        "name": "valor con NUL",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "valor no válido"
+      },
+      {
+        "name": "columna fuera de rango",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "columna fuera de rango"
+      },
+      {
+        "name": "columna con texto en vez de entero",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "columna fuera de rango"
+      },
+      {
+        "name": "operador no permitido",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "operador no admitido"
+      },
+      {
+        "name": "nombre de columna con comillas (se cita)",
+        "expect": "permitido",
+        "outcome": "permitido",
+        "ok": true,
+        "detail": "{\"output\":\"/private/tmp/freyalab-m2/work-host/seguridad/cerradas/trabajo/comillas.csv\",\"rows\":2}"
+      },
+      {
+        "name": "fuente fuera de las carpetas autorizadas",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "la fuente está fuera de las carpetas autorizadas"
+      },
+      {
+        "name": "fuente que es un enlace simbólico",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "la fuente no puede ser un enlace simbólico"
+      },
+      {
+        "name": "fuente con ruta relativa",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "la fuente debe ser una ruta absoluta"
+      },
+      {
+        "name": "separador no admitido",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "separador no admitido"
+      },
+      {
+        "name": "codificación no admitida (Windows-1252)",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "codificación no admitida (el motor solo recibe UTF-8 o UTF-16)"
+      },
+      {
+        "name": "salida fuera de la carpeta de trabajo",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "la salida debe estar dentro de la carpeta de trabajo"
+      },
+      {
+        "name": "salida que ya existe (nunca se sobrescribe)",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "la salida ya existe: nunca se sobrescribe"
+      },
+      {
+        "name": "salida con ../ que sale de la carpeta",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "la salida debe estar dentro de la carpeta de trabajo"
+      },
+      {
+        "name": "texto de 2 000 caracteres",
+        "expect": "rechazado",
+        "outcome": "rechazado",
+        "ok": true,
+        "detail": "valor no válido"
+      }
+    ]
+  },
+  "cancel": {
+    "rssBeforeBytes": 4720558080,
+    "rounds": [
+      {
+        "repetition": 0,
+        "cancelled": true,
+        "latencyMs": 8.680458000000726,
+        "message": "INTERRUPT Error: Interrupted!",
+        "partialOutputExists": false,
+        "tempEntriesLeft": 0,
+        "tempBytesLeft": 0,
+        "rssAfterBytes": 4857036800
+      },
+      {
+        "repetition": 1,
+        "cancelled": true,
+        "latencyMs": 9.181749999999738,
+        "message": "INTERRUPT Error: Interrupted!",
+        "partialOutputExists": false,
+        "tempEntriesLeft": 0,
+        "tempBytesLeft": 0,
+        "rssAfterBytes": 4889690112
+      },
+      {
+        "repetition": 2,
+        "cancelled": true,
+        "latencyMs": 6.750500000000102,
+        "message": "INTERRUPT Error: Interrupted!",
+        "partialOutputExists": false,
+        "tempEntriesLeft": 0,
+        "tempBytesLeft": 0,
+        "rssAfterBytes": 4889870336
+      },
+      {
+        "repetition": 3,
+        "cancelled": true,
+        "latencyMs": 8.492333000000144,
+        "message": "INTERRUPT Error: Interrupted!",
+        "partialOutputExists": false,
+        "tempEntriesLeft": 0,
+        "tempBytesLeft": 0,
+        "rssAfterBytes": 4890050560
+      },
+      {
+        "repetition": 4,
+        "cancelled": true,
+        "latencyMs": 7.380750000000262,
+        "message": "INTERRUPT Error: Interrupted!",
+        "partialOutputExists": false,
+        "tempEntriesLeft": 0,
+        "tempBytesLeft": 0,
+        "rssAfterBytes": 4890722304
+      }
+    ],
+    "serves_after_cancel": true
+  },
+  "leak": {
+    "rounds": 40,
+    "samples": [
+      {
+        "after": 0,
+        "rssBytes": 4922769408
+      },
+      {
+        "after": 1,
+        "rssBytes": 4922834944
+      },
+      {
+        "after": 5,
+        "rssBytes": 4923047936
+      },
+      {
+        "after": 10,
+        "rssBytes": 4923326464
+      },
+      {
+        "after": 20,
+        "rssBytes": 4923916288
+      },
+      {
+        "after": 30,
+        "rssBytes": 4924555264
+      },
+      {
+        "after": 40,
+        "rssBytes": 4925751296
+      }
+    ]
+  },
+  "spill": [
+    {
+      "memoryLimit": "4GB",
+      "threads": 4,
+      "ok": true,
+      "ms": 1990.4957080000022,
+      "rssPeakBytes": 5347557376,
+      "cpuMs": 7519.999999999996,
+      "tempPeakBytes": 0,
+      "tempLeftBytes": 0,
+      "output": "/private/tmp/freyalab-m2/work-host/derrame-4GB.csv"
+    },
+    {
+      "memoryLimit": "1GB",
+      "threads": 4,
+      "ok": true,
+      "ms": 4166.268541999998,
+      "rssPeakBytes": 5350162432,
+      "cpuMs": 10250,
+      "tempPeakBytes": 1053818880,
+      "tempLeftBytes": 0,
+      "output": "/private/tmp/freyalab-m2/work-host/derrame-1GB.csv"
+    },
+    {
+      "memoryLimit": "512MB",
+      "threads": 4,
+      "ok": true,
+      "ms": 6894.708916999996,
+      "rssPeakBytes": 5358387200,
+      "cpuMs": 12079.999999999998,
+      "tempPeakBytes": 1367343104,
+      "tempLeftBytes": 0,
+      "output": "/private/tmp/freyalab-m2/work-host/derrame-512MB.csv"
+    }
+  ],
+  "kill": {
+    "pid": 45407,
+    "exitMs": 60.3949999999968,
+    "processGone": true,
+    "partialOutputBytes": 226,
+    "tempEntriesLeft": 0,
+    "tempBytesLeft": 0,
+    "cleanedByLauncher": true,
+    "restarted": true,
+    "servesAfterRestart": true,
+    "newPid": 49762
+  }
+}

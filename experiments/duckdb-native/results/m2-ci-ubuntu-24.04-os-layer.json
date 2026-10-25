@@ -1,0 +1,93 @@
+{
+  "kind": "M2 capa de aislamiento del sistema operativo",
+  "platform": "linux x64",
+  "node": "v24.21.0",
+  "mechanism": "bubblewrap (--ro-bind / /, --unshare-net, tmpfs sobre la carpeta ajena, /dev/null sobre /etc/hosts)",
+  "note": "",
+  "control": [
+    {
+      "name": "la operación cerrada funciona dentro de la capa",
+      "outcome": "funciona",
+      "detail": "19908 filas"
+    },
+    {
+      "name": "DuckDB sin restricciones lee el archivo ajeno",
+      "outcome": "lee",
+      "detail": "8 bytes"
+    },
+    {
+      "name": "DuckDB sin restricciones lee /etc/hosts",
+      "outcome": "lee",
+      "detail": "326 bytes"
+    },
+    {
+      "name": "Node lee el archivo ajeno",
+      "outcome": "lee",
+      "detail": "8 bytes"
+    },
+    {
+      "name": "Node lee /etc/hosts",
+      "outcome": "lee",
+      "detail": "326 bytes"
+    },
+    {
+      "name": "Node abre una conexión TCP a un servidor local",
+      "outcome": "conecta",
+      "detail": ""
+    },
+    {
+      "name": "Node escribe fuera de la carpeta de trabajo",
+      "outcome": "escribe",
+      "detail": ""
+    }
+  ],
+  "confined": [
+    {
+      "name": "la operación cerrada funciona dentro de la capa",
+      "outcome": "funciona",
+      "detail": "19908 filas"
+    },
+    {
+      "name": "DuckDB sin restricciones lee el archivo ajeno",
+      "outcome": "denegado",
+      "detail": "sin filas: el sistema impidió la lectura"
+    },
+    {
+      "name": "DuckDB sin restricciones lee /etc/hosts",
+      "outcome": "denegado",
+      "detail": "IO Error: Cannot open file \"/etc/hosts\": Permission denied"
+    },
+    {
+      "name": "Node lee el archivo ajeno",
+      "outcome": "denegado",
+      "detail": "ENOENT"
+    },
+    {
+      "name": "Node lee /etc/hosts",
+      "outcome": "denegado",
+      "detail": "EACCES"
+    },
+    {
+      "name": "Node abre una conexión TCP a un servidor local",
+      "outcome": "denegado",
+      "detail": "ECONNREFUSED"
+    },
+    {
+      "name": "Node escribe fuera de la carpeta de trabajo",
+      "outcome": "denegado",
+      "detail": "la escritura quedó en un tmpfs efímero de la capa; no llegó al disco real"
+    }
+  ],
+  "verdict": {
+    "worksInside": true,
+    "controlCanDoEverything": true,
+    "confinedDenied": [
+      "Node lee el archivo ajeno",
+      "Node lee /etc/hosts",
+      "Node abre una conexión TCP a un servidor local",
+      "Node escribe fuera de la carpeta de trabajo",
+      "DuckDB sin restricciones lee el archivo ajeno"
+    ],
+    "confinedStillAllowed": []
+  }
+}
