@@ -4,11 +4,13 @@ Estas funciones se incorporan después de v0.1.0-alpha.1. No cambian los binario
 
 ## Markdown
 
-En **Editar** o **Dividido**, la barra ofrece **B**, **I**, código en línea, **Tarea**, **Tabla** y **Mermaid**. Selecciona texto antes de aplicar negrita, cursiva o código en línea. Los botones devuelven el foco al editor; cada acción se puede deshacer por separado.
+En **Editar** o **Dividido**, la misma barra permite elegir **Párrafo / Título 1 / Título 2 / Título 3**, aplicar y quitar **negrita**, **cursiva**, **tachado** y **código en línea**. Los botones muestran el formato del cursor; los títulos, listas y citas actúan sobre las líneas de la selección. Repetir un formato lo quita; elegir otro título sustituye su nivel. Párrafo quita el título. Una selección que cruza un bloque de código cercado no cambia al aplicar títulos, listas o citas.
 
-**Insertar** incluye encabezado, lista con viñetas, cita, enlace y bloque de código. Tareas, tablas y Mermaid empiezan con ejemplos válidos que puedes modificar mientras ves el resultado. En un bloque de código, cambia `text` por el lenguaje, por ejemplo `python` o `javascript`, para resaltar la sintaxis. La barra ayuda a escribir Markdown y conserva el editor de texto; no es un editor visual de arrastrar elementos.
+**Tarea**, **Tabla** y **Mermaid** conservan su lugar. **Insertar** reúne listas con viñetas, numeradas y de tareas, cita, separador, enlace y bloque de código. El selector de lenguaje ofrece `text`, `bash`, `python`, `javascript`, `typescript`, `json`, `yaml`, `sql` y `go`. Tablas y Mermaid conservan sus ejemplos editables. La barra edita el Markdown original; no transforma la vista previa de vuelta a texto.
 
-La vista previa oculta la barra. Los documentos de solo lectura desactivan sus acciones.
+Los controles son accesibles con Tab, Enter y los controles nativos del selector. Los atajos son **Ctrl/⌘ + B** (negrita), **Ctrl/⌘ + I** (cursiva), **Ctrl/⌘ + Mayús + X** (tachado) y **Ctrl/⌘ + Alt + 0…3** (párrafo/títulos 1…3). Cada acción devuelve el foco al editor y se deshace en un paso. La composición de texto en curso no se interrumpe por un comando de formato.
+
+La vista previa oculta la barra. Los documentos de solo lectura desactivan todos sus controles. Se conservan los saltos CRLF o LF del documento Markdown.
 
 ## CSV y TSV
 
