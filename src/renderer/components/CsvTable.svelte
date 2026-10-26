@@ -182,8 +182,9 @@
  const rowMap=$derived(new Map(table.getRowModel().rows.map(row=>[row.original.id,row.original])))
  const renderedRows=$derived(page.rows.map(row=>rowMap.get(row.id)!).filter(Boolean))
  $effect(()=>{const count=page.matched,padding=showFilters?76:40,columns=doc.headers?.length??0;get(rowsVirtual).setOptions({count,paddingStart:padding});get(columnsVirtual).setOptions({count:columns})})
- // Si cambia la escala (otro número de filas, otra altura del visor) se conserva la posición lógica, no la física.
- $effect(()=>{const next=scrollScale($rowsVirtual.getTotalSize(),viewHeight);untrack(()=>{if(next===rowScale)return;const logical=get(rowsVirtual).scrollOffset??0;rowScale=next;scrollElement?.scrollTo({top:toPhysical(logical,next)})})})
+ // Si cambia la escala (otro número de filas, otra altura del visor) se conserva la posición lógica, no la física. Excepto al final: el navegador ya recortó `scrollTop`
+ // al nuevo máximo y la posición lógica, calculada con la escala anterior, lo dejaría decenas de filas antes (el cociente de escalas no es 1).
+ $effect(()=>{const total=$rowsVirtual.getTotalSize(),next=scrollScale(total,viewHeight);untrack(()=>{if(next===rowScale)return;const element=scrollElement,logical=get(rowsVirtual).scrollOffset??0;rowScale=next;if(!element)return;const end=scrollHeight(total)-element.clientHeight;element.scrollTo({top:end>0&&element.scrollTop>=end-1?end:toPhysical(logical,next)})})})
  // Con la barra escalada, una muesca de la rueda mueve filas reales (no `escala` veces más) y la barra se usa para los saltos grandes.
  function wheelRows(node:HTMLElement){const onwheel=(event:WheelEvent)=>{if(rowScale<=1||event.ctrlKey||Math.abs(event.deltaX)>Math.abs(event.deltaY))return;event.preventDefault();const lines=event.deltaMode===1?32:event.deltaMode===2?node.clientHeight:1,rows=get(rowsVirtual);rows.scrollToOffset((rows.scrollOffset??0)+event.deltaY*lines)};node.addEventListener('wheel',onwheel,{passive:false});return{destroy:()=>node.removeEventListener('wheel',onwheel)}}
  let pageQuery=$state<TableQuery>({offset:0,limit:200,requestId:0})
