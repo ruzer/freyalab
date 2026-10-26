@@ -103,3 +103,9 @@ test('al cambiar el alto de la ventana con la barra escalada la última fila sig
   await expect.poll(async()=>(await visible()).at(-1)?.n,{message:`última fila con ${height} px`}).toBe(ROWS)
  }
 })
+
+test('al agrandar la ventana estando al final la última fila se queda a la vista sin volver a desplazar',async()=>{
+ await scrollTo(1);await expect.poll(async()=>(await visible()).at(-1)?.n).toBe(ROWS)
+ await page.setViewportSize({width:1440,height:1200}) // el navegador recorta scrollTop al nuevo máximo y la tabla cambia de escala
+ await expect.poll(async()=>(await visible()).at(-1)?.n,{message:'última fila tras agrandar'}).toBe(ROWS)
+})
