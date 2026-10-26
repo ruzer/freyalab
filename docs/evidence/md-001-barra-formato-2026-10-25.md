@@ -65,6 +65,8 @@ No se cambiaron `package.json`, el lockfile, CSV, `Diagram.svelte`, `Preview.sve
 
 ## CI y distribución
 
+La primera ejecución remota (`40264365015`, commit `463cfce`) detectó una expectativa incorrecta en la prueba de rehacer de Windows: se enviaba Ctrl+Mayús+Z, pero `historyKeymap` instalado define Ctrl+Y fuera de macOS (y Cmd+Mayús+Z en macOS). Windows aprobó los otros 211 casos y falló ese mismo caso también en el reintento automático. Se corrigió únicamente el atajo de la prueba, conservando las verificaciones de un paso de deshacer y rehacer. El historial de producción no se cambió. La CI de la revisión actual debe completar otra vez las cuatro plataformas.
+
 Las cuatro comprobaciones remotas son una puerta de aceptación adicional. El panel de checks del PR de esta rama identifica el commit y los resultados vigentes; este documento acredita las comprobaciones locales, no reutiliza checks de otra revisión.
 
 No se fusionó el PR, no se publicó una release y no se actualizó la aplicación instalada. Compilar y ejecutar pruebas no acredita por sí solo la instalación de un paquete.

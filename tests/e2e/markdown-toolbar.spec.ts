@@ -38,7 +38,7 @@ test('selector de bloque: títulos multilínea, cambio de nivel, párrafo y desh
  await expect.poll(source).toBe('# Primera\n# \n# Tercera');await expect(block()).toHaveValue('heading1');await focusedEditor()
  await block().selectOption('heading3');await expect.poll(source).toBe('### Primera\n### \n### Tercera')
  await page.keyboard.press('ControlOrMeta+Z');await expect.poll(source).toBe('# Primera\n# \n# Tercera')
- await page.keyboard.press('ControlOrMeta+Shift+Z');await expect.poll(source).toBe('### Primera\n### \n### Tercera')
+ await page.keyboard.press(process.platform==='darwin'?'ControlOrMeta+Shift+Z':'ControlOrMeta+Y');await expect.poll(source).toBe('### Primera\n### \n### Tercera')
  await block().selectOption('paragraph');await expect.poll(source).toBe(text)
  await block().selectOption('heading2');await block().selectOption('heading2');await expect.poll(source).toBe(text)
 })
