@@ -143,6 +143,14 @@ test('Markdown: varios errores, línea relativa al bloque y HTML técnico tratad
  await expect(page.locator('.markdown-body p').first()).toHaveText('Texto previo.')
 })
 
+test('Markdown sin ubicación conocida no añade un párrafo de ubicación vacío',async()=>{
+ await open('```mermaid\nflowchart LR\n%% '+ 'x'.repeat(50_001)+'\n```\n','md')
+ const block=page.locator('.preview .diagram-error')
+ await expect(block).toContainText('El diagrama es demasiado grande.')
+ await expect(block.locator('p:empty')).toHaveCount(0)
+ await expect(block.locator('p')).toHaveCount(1)
+})
+
 test('error sin parpadeo ni anuncios repetidos: el status permanece mientras cambia solo el detalle',async()=>{
  await open('tipoDesconocido');await spanishError();await settled()
  await status().evaluate(node=>{
