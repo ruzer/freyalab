@@ -47,6 +47,9 @@ export async function diagramSVG(source:string,dark:boolean):Promise<string> {
  const cached=diagramCache.get(key); if(cached) return cached
  const [{default:mermaid},{default:purify}] = await Promise.all([mermaidModule ??= import('mermaid'),import('dompurify')])
  mermaid.initialize({startOnLoad:false,securityLevel:'strict',htmlLabels:false,flowchart:{htmlLabels:false},theme:dark?'dark':'default',suppressErrorRendering:true,fontFamily:'Inter, Arial, sans-serif'})
+ // shortcut: cuenta comentarios en el límite de Mermaid; afinar si el motor expone un preprocesamiento público.
+ const maxTextSize=mermaid.mermaidAPI.getConfig().maxTextSize
+ if(maxTextSize!==undefined&&source.length>maxTextSize)throw new Error('Maximum text size in diagram exceeded')
  const {svg}=await mermaid.render(`freya-diagram-${++diagramNumber}`,source)
  const safe=purify.sanitize(svg,{USE_PROFILES:{svg:true,svgFilters:true},ADD_TAGS:['foreignObject'],ADD_ATTR:['xmlns']})
  if(diagramCache.size>=64) diagramCache.delete(diagramCache.keys().next().value!)
