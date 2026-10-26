@@ -17,7 +17,7 @@ export function explainDiagramError(message:string,source:string):DiagramError {
  if(/maximum text size|max(?:imum)?(?:Edges| edges)|too (?:large|many)/i.test(message))return{kind:'otro',title:'El diagrama es demasiado grande.',hint:'Reduce el contenido o divide el dibujo en diagramas más pequeños y vuelve a probar.',detail}
  const location=/(?:parse|lexer)\s+error\s+on\s+line\s+(\d+)(?:,\s*column\s+(\d+))?/i.exec(message)
  const number=(value:string|undefined)=>value&&Number.isSafeInteger(Number(value))&&Number(value)>0?Number(value):undefined
- const line=number(location?.[1]),column=line?number(location?.[2]):undefined
+ const reportedLine=number(location?.[1]),line=reportedLine?Math.min(reportedLine,source.split(/\r?\n/).length):undefined,column=line&&line===reportedLine?number(location?.[2]):undefined
  const where=line?`Revisa la línea ${line}${column?`, columna ${column}`:''}`:'Revisa la definición'
  const nearby=line?`${where} y la anterior`:where
  const base={kind:'sintaxis' as const,...(line?{line}:{}),...(column?{column}:{}),detail}

@@ -199,7 +199,7 @@ Las inserciones relativas se ofrecen también en Comandos, con el mismo bloqueo 
 
 ## Mermaid: errores
 
-Si la definición tiene un problema, el aviso explica en español qué revisar y qué probar. Muestra la línea y, cuando Mermaid la proporciona, la columna. La numeración es la del analizador: algunos errores al final de un diagrama señalan la línea siguiente; la pista pide revisar también la anterior. **Ver detalle técnico** conserva el mensaje original y comienza plegado. Se abre con Enter al enfocarlo mediante Tab.
+Si la definición tiene un problema, el aviso explica en español qué revisar y qué probar. Muestra la línea y, cuando Mermaid la proporciona, la columna. Si el analizador señala más allá del final del texto, el aviso indica la última línea existente y omite una columna fuera de rango; **Ver detalle técnico** conserva el mensaje original y su numeración exacta. Comienza plegado y se abre con Enter al enfocarlo mediante Tab.
 
 En archivos `.mmd` o `.mermaid`, el último dibujo válido permanece atenuado y marcado como **Mostrando la última versión válida**. Sus controles de zoom e interacción quedan deshabilitados mientras haya un error. SVG, PNG y PDF se bloquean con **Corrige el diagrama antes de exportar.**; nunca exportan ese dibujo anterior como si correspondiera al texto actual. Sin versión válida se muestra un ejemplo mínimo seleccionable y copiable con teclado. El código del usuario no se sustituye.
 

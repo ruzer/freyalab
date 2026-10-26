@@ -13,13 +13,13 @@ describe('explicaciones de errores reales de Mermaid 12.2.0',()=>{
   expect(capture.version).toBe('12.2.0');expect(capture.fixtures.length).toBeGreaterThanOrEqual(10)
   for(const id of ['flowchart-corchete','sequence','class','state','er','gantt','pie','tipo','vacio','flowchart-comilla'])expect(capture.fixtures.some(item=>item.id===id)).toBe(true)
  })
- it.each(capture.fixtures)('$id: conserva el detalle, informa en español y respeta la línea del parser',fixture=>{
+ it.each(capture.fixtures)('$id: conserva el detalle, informa en español y señala una línea existente',fixture=>{
   const result=explainDiagramError(fixture.message,fixture.source)
   expect(result.detail).toBe(fixture.message)
   expect(result.title.length).toBeGreaterThan(10);expect(result.hint.length).toBeGreaterThan(15)
   expect(result.title+' '+result.hint).not.toMatch(/Parse error|Expecting|got |No diagram type|Lexer error|Parsing failed|EOF_IN_STRUCT|unexpected character/i)
   expect(result.hint).toMatch(/revisa|cierra|añade|completa|escribe|empieza|prueba|indica/i)
-  if('line' in fixture)expect(result.line).toBe(fixture.line)
+  if(typeof fixture.line==='number')expect(result.line).toBe(Math.min(fixture.line,fixture.source.split(/\r?\n/).length))
  })
  it('un corchete abierto obtiene una pista concreta',()=>{
   const f=capture.fixtures.find(item=>item.id==='flowchart-corchete')!,r=explainDiagramError(f.message,f.source)
@@ -74,5 +74,19 @@ describe('explicaciones de errores reales de Mermaid 12.2.0',()=>{
  it('un número de línea inválido no produce ubicaciones falsas',()=>{
   const r=explainDiagramError('Parse error on line 0, column 4: got EOF','flowchart LR\n A -->')
   expect(r.line).toBeUndefined();expect(r.column).toBeUndefined()
+ })
+ // Metadatos sintéticos aíslan el límite; el corpus anterior conserva los mensajes reales sin cambios.
+ it.each([
+  {label:'LF',source:'flowchart LR\n  A --> B\n  B -->',reported:4,last:3},
+  {label:'CRLF',source:'flowchart LR\r\n  A --> B\r\n  B -->',reported:4,last:3},
+  {label:'LF final',source:'flowchart LR\n  A --> B\n  B -->\n',reported:5,last:4},
+  {label:'CRLF final',source:'flowchart LR\r\n  A --> B\r\n  B -->\r\n',reported:5,last:4}
+ ])('EOF con $label señala la última línea y conserva el detalle original',({source,reported,last})=>{
+  const message=`Parse error on line ${reported}, column 7: got EOF`,r=explainDiagramError(message,source)
+  expect(r.line).toBe(last);expect(r.column).toBeUndefined();expect(r.hint).toContain(`Revisa la línea ${last}`);expect(r.detail).toBe(message)
+ })
+ it('una línea y columna existentes conservan la ubicación del motor',()=>{
+  const r=explainDiagramError('Parse error on line 2, column 3: got EOF','flowchart LR\n  A --> B\n  B -->')
+  expect(r.line).toBe(2);expect(r.column).toBe(3)
  })
 })

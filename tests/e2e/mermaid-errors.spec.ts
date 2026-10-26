@@ -45,9 +45,15 @@ test('último dibujo válido: romper y corregir conserva SVG atenuado, aviso esp
  for(const label of ['Alejar','Acercar','Ajustar'])await expect(page.getByRole('button',{name:label,exact:true})).toBeDisabled()
  await notice().getByText('Ver detalle técnico',{exact:true}).click()
  const raw=await notice().locator('details pre').innerText(),line=/Parse error on line\s+(\d+)/i.exec(raw)
- expect(line).not.toBeNull();await expect(status()).toContainText(new RegExp(`línea ${line![1]}(?:\\D|$)`,'i'))
+ expect(line).not.toBeNull();await expect(status()).toContainText(new RegExp(`línea ${Math.min(Number(line![1]),broken.split('\n').length)}(?:\\D|$)`,'i'))
  await replace('flowchart LR\n  A[Corregido] --> B[Guardado]');await expect(notice()).toHaveCount(0);await expect(drawing()).not.toHaveAttribute('inert','');await expect(drawing()).toContainText('Corregido')
  await expect(page.getByRole('button',{name:'Acercar',exact:true})).toBeEnabled();expect(await source()).toContain('Corregido')
+})
+
+test('el EOF fuera del texto señala la última línea existente y conserva el número técnico original',async()=>{
+ await open('flowchart LR\n  A --> B\n  B -->');await spanishError()
+ await expect(status()).toContainText('línea 3');expect(await status().innerText()).not.toMatch(/línea 4/)
+ await expect(notice().locator('details pre')).toContainText('Parse error on line 4')
 })
 
 for(const [format,label] of [['svg','Imagen SVG'],['png','Imagen PNG'],['pdf','Documento PDF']]){
@@ -122,7 +128,7 @@ test('Markdown: varios errores, línea relativa al bloque y HTML técnico tratad
  }
  const raw=await blocks.first().locator('details pre').innerText(),line=/Parse error on line\s+(\d+)/i.exec(raw);expect(line).not.toBeNull()
  const explanation=await blocks.first().locator('details').evaluate(node=>{const clone=node.parentElement!.cloneNode(true) as HTMLElement;clone.querySelectorAll('details').forEach(details=>details.remove());return clone.textContent})
- expect(explanation).toMatch(new RegExp(`línea ${line![1]} del diagrama`,'i'))
+ expect(explanation).toMatch(new RegExp(`línea ${Math.min(Number(line![1]),(broken+'\n').split('\n').length)} del diagrama`,'i'))
  // Mermaid cambia las comillas dobles por simples antes de producir este error.
  await expect(blocks.nth(1).locator('details pre')).toContainText('<img src=x onerror=');await expect(blocks.nth(1).locator('details pre')).toContainText('window.__mermaidInjected=1');await expect(blocks.locator('img,script')).toHaveCount(0)
  expect(await page.evaluate(()=>(window as unknown as Record<string,unknown>).__mermaidInjected)).toBeUndefined()
