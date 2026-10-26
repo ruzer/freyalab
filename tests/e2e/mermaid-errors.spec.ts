@@ -73,22 +73,27 @@ test('exportar inmediatamente después de romper la fuente espera el render pend
  await expect(page.locator('.toast')).toContainText('Corrige el diagrama antes de exportar.');expect(await readdir(join(folder,'exports'))).toEqual([]);expect(await source()).toBe(broken)
 })
 
-test('cerrar una pestaña limpia mientras espera exportar cancela la salida de su vista destruida',async()=>{
- const {path,doc}=await open()
- const result=await page.evaluate(async name=>{
+for(const scenario of [
+ {name:'Mermaid',extension:'mmd',text:valid,label:'Imagen SVG',message:'Corrige el diagrama antes de exportar.'},
+ {name:'Markdown',extension:'md',text:'# Documento\n\n```mermaid\n'+valid+'\n```\n',label:'HTML autónomo',message:'El documento se cerró antes de terminar la vista previa.'}
+]){
+test(`cerrar una pestaña limpia ${scenario.name} mientras espera exportar cancela la salida de su vista destruida`,async()=>{
+ const {path,doc}=await open(scenario.text,scenario.extension)
+ const result=await page.evaluate(async({name,label})=>{
   const started=Date.now()
   const click=(label:string)=>{const button=Array.from(document.querySelectorAll<HTMLButtonElement>('.toolbar button')).find(node=>node.textContent?.trim()===label);if(!button)throw new Error(`Falta el control ${label}`);button.click()}
-  click('Exportar');await Promise.resolve();click('Imagen SVG')
+  click('Exportar');await Promise.resolve();click(label)
   for(let i=0;i<4;i++)await Promise.resolve()
   const waiting=Array.from(document.querySelectorAll<HTMLButtonElement>('.toolbar button')).some(node=>node.textContent?.includes('Exportando'))
   const close=Array.from(document.querySelectorAll<HTMLButtonElement>('.tab-close')).find(node=>node.getAttribute('aria-label')===`Cerrar ${name}`);if(!close)throw new Error('Falta el botón para cerrar la pestaña');close.click()
   return{waiting,elapsedMs:Date.now()-started}
- },doc.name)
+ },{name:doc.name,label:scenario.label})
  await test.info().attach('cierre-durante-exportacion',{body:Buffer.from(JSON.stringify(result)),contentType:'application/json'})
  expect(result.waiting).toBe(true)
- await expect(page.getByRole('tab')).toHaveCount(0);await expect(page.locator('.toast')).toContainText('Corrige el diagrama antes de exportar.')
- expect(await readdir(join(folder,'exports'))).toEqual([]);expect(await readFile(path,'utf8')).toBe(valid)
+ await expect(page.getByRole('tab')).toHaveCount(0);await expect(page.locator('.toast')).toContainText(scenario.message)
+ expect(await readdir(join(folder,'exports'))).toEqual([]);expect(await readFile(path,'utf8')).toBe(scenario.text)
 })
+}
 
 test('primer error: ejemplo mínimo seleccionable por teclado y detalle técnico plegado sin inglés visible',async()=>{
  await open(broken);await spanishError();await expect(drawing()).toHaveCount(0)
