@@ -38,3 +38,6 @@
 .goto-wrap{position:relative;display:inline-flex}.goto-popover{position:absolute;top:calc(100% + 6px);right:0;z-index:70;display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--panel);border:1px solid var(--border);border-radius:9px;box-shadow:0 12px 35px #0004;white-space:nowrap;font-size:11px}.goto-popover label{display:flex;align-items:center;gap:6px}.goto-popover input{width:110px}
 .header-menu{display:inline-flex;padding:3px;background:transparent;border:0;opacity:.7}.header-menu:hover,.header-menu:focus-visible,.header-menu[aria-expanded=true]{opacity:1;background:var(--hover)}.range-context .dropdown-label{padding:6px 7px 2px}
 .range-context[aria-label='Acciones de columnas'] button{padding:5px 7px}
+
+/* FL-MD-001 */
+.document-tools:has(.markdown-toolbar){height:43px;min-height:43px;flex-wrap:nowrap;gap:6px;padding-top:5px;padding-bottom:5px}

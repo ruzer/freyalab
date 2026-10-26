@@ -17,7 +17,7 @@ test.beforeEach(async()=>{
  await page.setViewportSize({width:1440,height:900})
 })
 test.afterEach(async()=>{if(app){await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{})}await rm(directory,{recursive:true,force:true})})
-async function replaceEditor(text:string){const editor=page.locator('.cm-content');await editor.click();await page.keyboard.press('ControlOrMeta+A');await page.keyboard.insertText(text)}
+async function replaceEditor(text:string){const editor=page.locator('.cm-content');await editor.click();await page.keyboard.press('ControlOrMeta+A');if(text)await page.keyboard.insertText(text);else await page.keyboard.press('Backspace')}
 
 test('interfaz: crear, editar, visualizar, guardar y exportar Markdown en ambos temas',async()=>{
  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message))
@@ -130,14 +130,13 @@ test('barra Markdown: insertar sin sintaxis, conservar selección, deshacer y ve
  await page.getByLabel('Más opciones de Markdown',{exact:true}).click()
  await page.getByRole('button',{name:'Bloque de código',exact:true}).click()
  await expect(page.locator('.markdown-body pre code')).toHaveText('const ejemplo = `hola`;\n')
- await replaceEditor('');await page.getByLabel('Más opciones de Markdown',{exact:true}).press('Enter')
- await page.getByRole('button',{name:'Encabezado',exact:true}).click()
+ await replaceEditor('Título');await page.getByRole('combobox',{name:'Tipo de bloque',exact:true}).selectOption('heading2')
  await expect(page.locator('.markdown-body h2')).toHaveText('Título')
  for(const [label,selector,value] of [['Lista con viñetas','.markdown-body li','Elemento'],['Cita','.markdown-body blockquote p','Cita'],['Enlace','.markdown-body a','Texto del enlace']]){
-  await replaceEditor('');await page.getByLabel('Más opciones de Markdown',{exact:true}).click();await page.getByRole('button',{name:label,exact:true}).click();await expect(page.locator(selector)).toHaveText(value)
+  await replaceEditor(value);await page.keyboard.press('ControlOrMeta+A');await page.getByLabel('Más opciones de Markdown',{exact:true}).click();await page.getByRole('button',{name:label,exact:true}).click();await expect(page.locator(selector)).toHaveText(value)
  }
  await replaceEditor('Freya');await page.keyboard.press('ControlOrMeta+A');await page.getByRole('button',{name:'Código en línea',exact:true}).click();await expect(page.locator('.markdown-body p code')).toHaveText('Freya')
- await replaceEditor('```\nejemplo\n```');await page.keyboard.press('ControlOrMeta+A');await page.getByLabel('Más opciones de Markdown',{exact:true}).click();await page.getByRole('button',{name:'Bloque de código',exact:true}).click();await expect(page.locator('.markdown-body pre code')).toHaveText('```\nejemplo\n```\n')
+ await replaceEditor('```\nejemplo\n```');await page.keyboard.press('ControlOrMeta+A');await page.getByLabel('Más opciones de Markdown',{exact:true}).click();await page.getByRole('button',{name:'Bloque de código',exact:true}).click();await expect(page.locator('.cm-content')).toHaveText('ejemplo')
  await replaceEditor('# Crear sin memorizar Markdown\n\nUsa la barra para insertar tablas, tareas, código y diagramas.');await expect(page.locator('.markdown-body h1')).toHaveText('Crear sin memorizar Markdown')
  await page.getByLabel('Tema',{exact:true}).selectOption('dark')
  await expect(page.locator('.render-progress')).toHaveCount(0)
