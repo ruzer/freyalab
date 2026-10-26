@@ -113,8 +113,16 @@ test('primer error: ejemplo mínimo seleccionable por teclado y detalle técnico
 })
 
 test('fuente vacía y espacios: ayuda en español sin dibujo ficticio ni modificación del archivo',async()=>{
- const {path}=await open('');await spanishError();await expect(status()).toContainText(/escrib|vacío|definición/i);await expect(drawing()).toHaveCount(0)
- await replace('   \n\t');await spanishError();await expect(drawing()).toHaveCount(0);expect(await source()).toBe('   \n\t');expect(await readFile(path,'utf8')).toBe('')
+ const neutral=async()=>{
+  await expect(notice()).toBeVisible();await expect(notice()).toHaveClass(/diagram-empty/)
+  await expect(notice()).not.toHaveClass(/diagram-error/);await expect(notice().locator('details')).toHaveCount(0)
+  expect(await notice().evaluate(node=>getComputedStyle(node).backgroundColor)).not.toMatch(/rgb\(255, 241, 240\)|rgb\(58, 37, 37\)/)
+ }
+ const {path}=await open('');await neutral();await expect(status()).toContainText(/escrib|vacío|definición/i);await expect(drawing()).toHaveCount(0)
+ await replace('   \n\t');await neutral();await expect(drawing()).toHaveCount(0);expect(await source()).toBe('   \n\t');expect(await readFile(path,'utf8')).toBe('')
+ await page.getByLabel('Tema',{exact:true}).selectOption('dark');await neutral()
+ await open('# Bloque vacío\n\n```mermaid\n\n```\n','md');await neutral()
+ await expect(page.locator('.preview').getByRole('status')).toContainText('Escribe un diagrama para empezar.')
 })
 
 test('Markdown: varios errores, línea relativa al bloque y HTML técnico tratado como texto',async()=>{

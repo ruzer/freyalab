@@ -26,10 +26,10 @@
 <div class="diagram-panel">
  <div class="diagram-toolbar"><span class="tag">MERMAID</span><span class="spacer"></span><button disabled={!!failure} onclick={()=>zoom=Math.max(.2,zoom-.1)} aria-label="Alejar"><Icon name="zoom-out" size={14}/></button><span>{Math.round(zoom*100)}%</span><button disabled={!!failure} onclick={()=>zoom=Math.min(5,zoom+.1)} aria-label="Acercar"><Icon name="zoom-in" size={14}/></button><button disabled={!!failure} onclick={()=>{zoom=1;host.scrollTo({top:0,left:0})}}><Icon name="maximize-2" size={14}/> Ajustar</button></div>
  <div class="diagram-view">
-  <div class="diagram-feedback" class:diagram-notice={!!failure} class:diagram-error={!!failure}>
+  <div class="diagram-feedback" class:diagram-notice={!!failure} class:diagram-error={!!failure&&failure.kind!=='vacio'} class:diagram-empty={failure?.kind==='vacio'}>
    <div role="status" aria-live="polite" aria-atomic="true">{#if failure}{#if svg}<p>Mostrando la última versión válida.</p>{/if}<strong>{failure.title}</strong><p>{failure.hint}</p>{#if failure.line}<p>Ubicación: línea {failure.line}{failure.column?`, columna ${failure.column}`:''}.</p>{/if}{/if}</div>
    {#if failure}
-    <details><summary>Ver detalle técnico</summary><pre>{failure.detail}</pre></details>
+    {#if failure.kind!=='vacio'}<details><summary>Ver detalle técnico</summary><pre>{failure.detail}</pre></details>{/if}
     {#if !svg}<label class="diagram-example">Ejemplo mínimo para copiar<textarea aria-label="Ejemplo mínimo Mermaid" readonly rows="2" value={'flowchart LR\n  A --> B'}></textarea></label>{/if}
    {/if}
   </div>

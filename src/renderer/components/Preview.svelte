@@ -39,13 +39,16 @@
      catch(error){
       if(token!==generation)return
       const explanation=explainDiagramError(error instanceof Error?error.message:String(error),diagram.source)
-      const block=document.createElement('div');block.className='diagram-error diagram-notice'
+      const block=document.createElement('div');block.className=explanation.kind==='vacio'?'diagram-notice diagram-empty':'diagram-error diagram-notice'
       const title=document.createElement('strong');title.textContent=explanation.title
       const hint=document.createElement('p');hint.textContent=explanation.hint
       const location=document.createElement('p');location.textContent=explanation.line?`Ubicación: línea ${explanation.line} del diagrama${explanation.column?`, columna ${explanation.column}`:''}.`:''
-      const details=document.createElement('details'),summary=document.createElement('summary'),detail=document.createElement('pre')
-      summary.textContent='Ver detalle técnico';detail.textContent=explanation.detail;details.append(summary,detail)
-      block.append(title,hint,location,details);diagram.node.replaceWith(block);diagram.node=block
+      block.append(title,hint,location)
+      if(explanation.kind!=='vacio'){
+       const details=document.createElement('details'),summary=document.createElement('summary'),detail=document.createElement('pre')
+       summary.textContent='Ver detalle técnico';detail.textContent=explanation.detail;details.append(summary,detail);block.append(details)
+      }
+      diagram.node.replaceWith(block);diagram.node=block
       errors.push(`Diagrama ${index+1}. ${explanation.title} ${explanation.hint} ${location.textContent}`)
      }
     };if(token===generation)announcement=errors.join(' ')}

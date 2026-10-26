@@ -208,3 +208,5 @@ Dentro de Markdown, cada bloque inválido muestra la misma explicación y su ubi
 Mermaid 12.2.0 sustituye una definición excesiva por un SVG con un aviso en inglés. Para impedir que ese aviso se guarde en caché o se exporte como dibujo válido, se comprueba el límite configurado del motor antes de renderizar (actualmente 50 000 unidades UTF-16). Es una comprobación conservadora: cuenta también comentarios y frontmatter; no amplía el límite ni modifica la configuración de seguridad. Si se supera, la pista propone dividir el diagrama y conserva el texto del usuario.
 
 Esta entrega cubre la parte de errores de UX-10 y F06. No añade plantillas, navegación a la línea, asistentes ni confirmaciones de exportación Markdown.
+
+Una definición vacía se presenta como estado inicial neutro, sin color de error ni detalle técnico; conserva la explicación y el ejemplo para comenzar. Lo mismo se aplica a un bloque Mermaid vacío dentro de Markdown.
