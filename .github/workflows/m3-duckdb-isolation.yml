@@ -1,0 +1,119 @@
+name: M3 DuckDB isolation (experiment)
+# Experimento de evaluación (línea B del RFC §7.4): aislamiento del sistema operativo, memoria, empaquetado y firma de DuckDB nativo.
+# No forma parte de la verificación del producto. @duckdb/node-api se instala SOLO en una carpeta temporal del ejecutor.
+on:
+  pull_request:
+    paths:
+      - 'experiments/duckdb-isolation/**'
+      - '.github/workflows/m3-duckdb-isolation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: m3-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  isolation:
+    name: Isolation ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025, macos-15, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Prepare Electron sandbox helper (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          node -e "require('electron')"
+          sudo chown root:root node_modules/electron/dist/chrome-sandbox
+          sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
+      - name: Stage the mini application outside the repository
+        run: |
+          node experiments/duckdb-isolation/ci/stage-app.mjs --out "$RUNNER_TEMP/m3app" --duckdb 2.0.0-r.1 \
+            --electron-dist "$PWD/node_modules/electron/dist" --electron-version "$(node -p "require('electron/package.json').version")"
+          mkdir -p "$RUNNER_TEMP/m3out"
+      - name: Install bubblewrap and record unprivileged access (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update && sudo apt-get install -y bubblewrap xvfb
+          node --input-type=module -e "import {bwrapAccess} from './experiments/duckdb-isolation/lib/confine.mjs'; console.log(JSON.stringify(bwrapAccess()))" | tee "$RUNNER_TEMP/m3out/bwrap-default.json.txt"
+          sysctl kernel.apparmor_restrict_unprivileged_userns || true
+      - name: Allow unprivileged user namespaces (Linux, Ubuntu 24.04 AppArmor policy)
+        if: runner.os == 'Linux'
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: OS layer around a Node process running DuckDB (one-shot)
+        continue-on-error: true
+        timeout-minutes: 10
+        run: node experiments/duckdb-isolation/isolation.mjs --runtime node --install "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-node" --out "$RUNNER_TEMP/m3out/isolation-node.json"
+      - name: OS layer around an Electron-as-Node process running DuckDB (one-shot)
+        continue-on-error: true
+        timeout-minutes: 10
+        run: node experiments/duckdb-isolation/isolation.mjs --runtime electron --install "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-electron" --out "$RUNNER_TEMP/m3out/isolation-electron.json"
+      - name: Integration, Node parent and Node child (persistent worker)
+        continue-on-error: true
+        timeout-minutes: 10
+        run: node experiments/duckdb-isolation/integration.mjs --runtime node --install "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-int-node" --out "$RUNNER_TEMP/m3out/integration-node.json"
+      - name: Integration, Node parent and Electron-as-Node child
+        continue-on-error: true
+        timeout-minutes: 10
+        run: node experiments/duckdb-isolation/integration.mjs --runtime electron --install "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-int-electron" --out "$RUNNER_TEMP/m3out/integration-electron-child.json"
+      - name: Integration, Electron main process (not packaged) plus utilityProcess control
+        continue-on-error: true
+        timeout-minutes: 10
+        run: |
+          PREFIX=""; if [ "$RUNNER_OS" = "Linux" ]; then PREFIX="xvfb-run -a"; fi
+          $PREFIX node experiments/duckdb-isolation/ci/run-electron.mjs --exe dev --install "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-int-main" --out "$RUNNER_TEMP/m3out/integration-electron-main.json"
+      - name: Explicit schema and parallel reader against the strict parser (hostile corpus)
+        continue-on-error: true
+        timeout-minutes: 10
+        run: node experiments/duckdb-isolation/schema-parallel.mjs --install "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-schema" --out "$RUNNER_TEMP/m3out/schema-parallel.json"
+      - name: Package the mini application
+        run: npx electron-builder --dir --projectDir "$RUNNER_TEMP/m3app" --config "$RUNNER_TEMP/m3app/electron-builder.json"
+      - name: Prepare packaged sandbox helper (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo chown root:root "$RUNNER_TEMP/m3app/release/linux-unpacked/chrome-sandbox"
+          sudo chmod 4755 "$RUNNER_TEMP/m3app/release/linux-unpacked/chrome-sandbox"
+      - name: Signing readiness, fuses and inventory of native binaries (no commercial signing)
+        continue-on-error: true
+        timeout-minutes: 30
+        run: |
+          EXE="$(node experiments/duckdb-isolation/ci/find-exe.mjs "$RUNNER_TEMP/m3app")"
+          if [ "$RUNNER_OS" = "macOS" ]; then APP="$(node -p "require('path').resolve(process.argv[1],'..','..','..')" "$EXE")"; else APP="$(node -p "require('path').dirname(process.argv[1])" "$EXE")"; fi
+          node experiments/duckdb-isolation/signing.mjs --app "$APP" --exe "$EXE" --work "$RUNNER_TEMP/m3work-signing" --out "$RUNNER_TEMP/m3out/signing.json"
+      - name: Integration, PACKAGED application (Electron main plus confined child)
+        continue-on-error: true
+        timeout-minutes: 10
+        run: |
+          EXE="$(node experiments/duckdb-isolation/ci/find-exe.mjs "$RUNNER_TEMP/m3app")"
+          echo "ejecutable: $EXE"
+          PREFIX=""; if [ "$RUNNER_OS" = "Linux" ]; then PREFIX="xvfb-run -a"; fi
+          $PREFIX node experiments/duckdb-isolation/ci/run-electron.mjs --exe "$EXE" --install app --work "$RUNNER_TEMP/m3work-int-packaged" --out "$RUNNER_TEMP/m3out/integration-packaged.json"
+      - name: Installer formats (DMG, NSIS, AppImage, DEB) installed and run
+        continue-on-error: true
+        timeout-minutes: 20
+        run: node experiments/duckdb-isolation/installers.mjs --app "$RUNNER_TEMP/m3app" --work "$RUNNER_TEMP/m3work-installers" --out "$RUNNER_TEMP/m3out/installers.json"
+      - name: Summary
+        if: always()
+        run: node experiments/duckdb-isolation/ci/summarize.mjs "$RUNNER_TEMP/m3out" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: m3-isolation-${{ matrix.os }}
+          path: |
+            ${{ runner.temp }}/m3out
+            ${{ runner.temp }}/m3work-node/confinada/*.txt
+            ${{ runner.temp }}/m3work-node/confinada/*.json
+            ${{ runner.temp }}/m3work-int-*/confinada/*.txt
+            ${{ runner.temp }}/m3work-int-*/confinada/appcontainer-result.json
+          if-no-files-found: warn

@@ -245,6 +245,10 @@ Una barrera de la aplicación (una sola sentencia y solo `SELECT`, comprobado co
 
 Evaluación en [`docs/evidence/m2-duckdb-nativo-2026-10-25.md`](../evidence/m2-duckdb-nativo-2026-10-25.md) (DuckDB nativo 2.0.0 en un hijo de Node y en un `utilityProcess` de Electron 44.9.2; autocomprobación empaquetada en la CI de las cuatro plataformas). **(a) Aprobada.** **(b) Pendiente:** capa del sistema operativo demostrada en macOS (`sandbox-exec`) y Linux (`bubblewrap`), no en Windows; hace falta construirla o aceptar el riesgo residual por escrito. **(c) Pendiente:** empaquetado comprobado en las cuatro plataformas; la firma y la notarización no se probaron. **(d) Aprobada con diferencias documentadas:** el DuckDB-Wasm del producto es la v1.5.4, el nativo es la 2.0.0 y 12 de 12 sentencias dieron el mismo resultado. Recomendación y decisiones: [`EXTERNAL-ENGINES.md`](EXTERNAL-ENGINES.md).
 
+### 7.6 Estado de las puertas tras M3 (25 de octubre de 2026)
+
+Evaluación en [`docs/evidence/m3-aislamiento-2026-10-25.md`](../evidence/m3-aislamiento-2026-10-25.md), con CI en macOS ARM e Intel, Linux y Windows. **(a) Aprobada** y **(d) aprobada con diferencias**, sin cambios; el lector de DuckDB no es equivalente al estricto de FreyaLab. **(b) Demostrada técnicamente en las cuatro plataformas** con un hijo propio bajo `sandbox-exec`, `bubblewrap` o un AppContainer con objeto de trabajo (un `utilityProcess` no se puede confinar), **pendiente de trabajo de producto**: ejecutable auxiliar nativo y ACL del instalador en Windows, perfil de AppArmor en Ubuntu 24.04+ y la aceptación de una API obsoleta en macOS. **(c) Empaquetado comprobado** en DMG, NSIS, AppImage y DEB; **firma y notarización pendientes** (sin certificado de Apple no se puede probar la validación de bibliotecas entre equipos). El diseño exige mantener activo el fusible `RunAsNode` o llevar un runtime propio.
+
 ## 8. Formatos y casos límite
 
 Evaluado en `tests/overlay.test.mjs` (40 pruebas, en la CI de las 4 plataformas) con fixtures de unos cientos de bytes que fuerzan el modo grande (trozos de 6 bytes, puntos de control cada 2 registros), contra `csv-parse` como oráculo independiente:

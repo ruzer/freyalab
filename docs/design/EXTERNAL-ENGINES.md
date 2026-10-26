@@ -181,3 +181,27 @@ Conclusión del RFC §7.3, confirmada: **un proceso separado da aislamiento de f
 - Los paquetes de Linux como AppImage y DEB (solo se probó el directorio desempaquetado).
 - `qsv index` como sustituto del índice de L2 (solo se midió su coste de 1 s y 35 MiB en 1 GiB).
 - VisiData (solo licencia y descripción), el tamaño y el arranque del instalador completo, y la caché fría.
+
+## 11. Actualización tras M3 (25 de octubre de 2026)
+
+[M3](../evidence/m3-aislamiento-2026-10-25.md) responde a lo que la sección 10 dejaba abierto. Sigue siendo **solo experimento**: DuckDB nativo no se ha incorporado al producto ni está autorizado.
+
+**Resuelto con medición [M3, CI en las cuatro plataformas]:**
+
+- **`utilityProcess` bajo una capa del sistema operativo: no es posible** (lo crea Chromium) y sin capa **lee archivos ajenos, abre red y escribe fuera** en las cuatro plataformas. La arquitectura de la sección 5.3 queda así: DuckDB va en un **hijo propio** (`ELECTRON_RUN_AS_NODE=1`) lanzado por el proceso principal **bajo la capa**, con protocolo por líneas JSON. Funciona con padre Node, padre Electron, aplicación empaquetada y aplicación instalada (DMG, NSIS, AppImage, DEB); la capa no añade coste por operación.
+- **Capa en Windows: demostrada** con un AppContainer sin capacidades y un objeto de trabajo, que además impone un **tope de memoria real** (la ordenación de 60 millones de filas falla con «Out of Memory» controlado con 1 GiB). Conserva la lectura de lo que Windows concede a «todos los paquetes de aplicación» (p. ej. `hosts`).
+- **Paquetes de Linux:** AppImage y DEB probados.
+- **Reciclaje:** reiniciar el hijo devuelve el RSS a su línea base (macOS ARM: 486 → 87 MB) en 165–270 ms en macOS/Linux y 6,7 s en Windows (arranque con capa).
+
+**Sigue sin resolverse (trabajo de producto, no de experimento):**
+
+1. **Windows:** un ejecutable auxiliar nativo firmado en lugar del script de PowerShell, y las ACL (lectura para «ALL APPLICATION PACKAGES» y traversal de los ancestros) preparadas por el instalador. Conceder traversal en tiempo de ejecución cuesta de 6 a 33 s.
+2. **Linux:** Ubuntu 24.04 impide `bubblewrap` sin privilegios por AppArmor; hace falta un perfil instalado por el DEB o Landlock (no probado). La AppImage sin privilegios queda sin solución probada.
+3. **macOS:** `sandbox-exec` está obsoleto; el *hardened runtime* con firma ad hoc depende de la versión del sistema (macOS 27 exige `disable-library-validation`); la prueba con un Developer ID y la notarización siguen pendientes. `libduckdb.dylib` llega firmada por otro equipo y habrá que volver a firmarla.
+4. **Fusible `RunAsNode`:** el diseño lo necesita activado. Si FreyaLab quiere desactivarlo, debe llevar su propio runtime o ejecutable auxiliar.
+5. **El lector de DuckDB no es equivalente al estricto de FreyaLab** (M3 §5): rechaza fin de línea mezclado y filas irregulares, acepta con otra interpretación una comilla dentro de un campo y un espacio antes de la comilla, y cuenta distinto las líneas vacías; con `parallel=false` descarta en silencio una comilla sin cerrar. El contrato de B1 debe fijar `parallel=true` y `max_line_size=1048576`, y esos archivos deben seguir por el motor propio. Las fronteras de trozo del lector paralelo no fallaron en 64 MiB.
+
+**Entregado en paralelo (no es un motor externo):** I0 y E1 con el motor propio estricto, en [#62](https://github.com/ruzer/freyalab/pull/62) (fusionado en `main`): contrato cerrado `count`/`preview`/`filter_extract`, extracto no destructivo con bytes idénticos o normalización informada, cancelación y límites. Endurece el índice de L2 (comilla sin cerrar y UTF-16 impar), de modo que el riesgo 14 de la sección 7 queda cubierto allí.
+
+**Decisiones del usuario recogidas:** no iniciar todavía firma comercial ni notarización; conservar los bytes originales cuando sea posible y permitir extractos normalizados informándolo; mantener macOS ARM e Intel, Windows x64 y Linux x64. **Siguen abiertas:** aceptar por escrito el riesgo residual de Windows o construir el ejecutable auxiliar (decisión 1 de la sección 9, ahora con datos) y cuándo firmar.
+
