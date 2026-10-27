@@ -201,8 +201,196 @@ Prueba de red por plataforma (sin tráfico); E2E del interruptor y su persistenc
 
 Cero tráfico de red demostrado; opción elegida por el propietario implementada tal cual; documentación de la limitación por plataforma; sin dependencias no aprobadas.
 
+## Segunda tanda (2026-10-27): comparación con Joplin y MDViewer
+
+El propietario comparó FreyaLab con Joplin (barra del editor) y MDViewer (índice lateral). Evidencia sobre `origin/main` en `61d0e05`, con la aplicación real (Electron 44, 1440×900); lo demás sale del código. Regla de la tanda: no duplicar lo que ya existe.
+
+| # | Idea | Estado hoy | Valor | Esfuerzo | Riesgo | Decisión |
+|---|---|---|---|---|---|---|
+| 9 | Índice con sección actual, ramas que se contraen y disponible al editar | Existe como lista plana, sin sección actual, solo en Dividido y Vista previa | Alto | M | Bajo–medio (desplazamiento y correspondencia con las líneas del editor) | **FL-MD-007** (tras FL-MD-002) |
+| 10 | Insertar fecha y hora | No existe (sin coincidencias en `markdown-commands.ts` ni en `MarkdownToolbar.svelte`) | Medio | S | Bajo | **FL-MD-008** |
+| 11 | Etiquetas (tags) | No existe | Alto | M a L | Medio (dónde se guardan) | Pendiente de decisión del propietario; ver «Aplazadas» |
+| 12 | Atrás/adelante entre documentos y «abrir en editor externo» | No existe (solo deshacer y rehacer) | Bajo | S a M | Bajo | No hacer ahora; ver «Aplazadas» |
+| 13 | Dibujo libre (el lápiz de Joplin) | Planeado | Alto | L | Alto | Iteración 4 (`4-dibujos-editables.md`), a la espera de las decisiones D1–D6 |
+
+Sin diferencia con Joplin, y por eso sin historia: negrita, cursiva, código, tachado, títulos, listas con viñetas, numeradas y de tareas, separador, tabla y enlace (FL-MD-001).
+
+Orden: FL-MD-008 puede ir en paralelo con cualquiera (toca `markdown-commands.ts` y `MarkdownToolbar.svelte`). FL-MD-007 espera a FL-MD-002 porque ambas tocan `Preview.svelte`.
+
+## FL-MD-007 · Un índice que dice dónde estás
+
+### 1. Historia de usuario
+
+Como persona que lee o edita un documento largo con muchas secciones, quiero que el índice me muestre en qué sección estoy, me deje contraer lo que no uso y siga disponible mientras escribo, para orientarme y saltar sin perder el hilo.
+
+### 2. Problema y evidencia
+
+El índice es una lista de botones con sangría de 10 px por nivel (`{#if outline&&active.kind==='markdown'&&mode!=='edit'&&headings.length}` en `App.svelte`, estilos `.outline` en `style.css`). Un clic llama a `preview.scrollToHeading(id)`. Medido con un documento sintético de 23 títulos (1 de nivel 1 y 22 de niveles 2 y 3, con títulos largos), 1440×900, modo Dividido:
+
+| Medida | Resultado |
+|---|---|
+| Panel | 185 px de ancho; 755 px de alto visible y 1.000 px de contenido (245 px fuera de vista) |
+| Altura de las filas | 29, 44 y 59 px; 5 de las 23 filas ocupan tres líneas (los títulos largos se parten, no se cortan) |
+| Sección actual | **No existe**: el aspecto de las 23 entradas es idéntico con el documento al inicio, al 50 % y al final |
+| Accesibilidad | 0 entradas con `aria-current`, 0 con `aria-expanded`, 0 con tooltip; el `<aside>` no tiene nombre accesible |
+| Modo Editar | El panel desaparece (0 botones) mientras el botón «Índice» de la barra sigue activo y no hace nada visible |
+| Ancho de ventana | 185 px por encima de 1100 px, 155 px hasta 850 px y oculto por debajo de 850 px |
+| Clic en una entrada | Funciona: desplaza la vista previa (4.731 px en la prueba) |
+
+La referencia del propietario (MDViewer) muestra un árbol con flechas para contraer ramas, la sección actual resaltada y los títulos largos cortados con puntos suspensivos. `App.svelte` enlaza además el `onscroll` del editor con la vista previa (línea 87); Codex debe comprobar el sentido de esa sincronización antes de mover el cursor del editor desde el índice.
+
+### 3. Diseño UX/UI
+
+El panel «En este documento» pasa a ser un árbol:
+
+```text
+EN ESTE DOCUMENTO
+▾ Manual de usuario
+  ▾ Primeros pasos
+      Requisitos del sistema
+  ▸ Flujo general de trabajo…          ← rama contraída
+┃ ▾ Configuración avanzada…            ← sección actual: barra de 2 px + color de acento
+      Opciones de exportación
+```
+
+- Cada título con hijos tiene una flecha (un botón aparte del título) que contrae o expande su rama.
+- La **sección actual** se marca con una barra lateral de 2 px y el color de acento (no solo color) y con `aria-current="location"`. Si queda fuera de la vista del panel, este se desplaza lo mínimo para mostrarla.
+- Si la sección actual está dentro de una rama contraída, se marca la rama visible más cercana; el índice nunca se expande solo.
+- Los títulos largos ocupan como máximo dos líneas con puntos suspensivos; el texto completo va en el tooltip y es el nombre accesible.
+- El estado de contracción vive en memoria mientras la aplicación está abierta, por documento. No se guarda en el archivo ni en disco.
+- **Modo Editar:** el panel se muestra también (mismo ancho y mismos puntos de corte). Un clic lleva el cursor al inicio de la línea del título, lo deja arriba del editor y enfoca el editor; la sección actual sigue la primera línea visible. En Dividido y Vista previa el clic sigue desplazando la vista previa, como hoy.
+
+### 4. Criterios de aceptación
+
+Tres bloques, un commit por bloque, en este orden.
+
+**A · Sección actual (Dividido y Vista previa)**
+- A1. Antes del primer título no hay sección actual. En cualquier otra posición la actual es el último título cuyo borde superior queda por encima del 30 % superior del panel de vista previa.
+- A2. Al desplazar la vista previa (rueda, teclado, clic en el índice o en un enlace interno), la entrada actual cambia sin más de 100 ms de retraso tras detenerse el desplazamiento. Se marca con `aria-current="location"` y con un indicador que no depende solo del color.
+- A3. La entrada actual queda visible dentro del panel; este se desplaza lo mínimo y sin animación.
+- A4. Si el último título no llega nunca al umbral, se marca como actual cuando el desplazamiento llega al final del documento.
+- A5. No se recorre el DOM en cada evento: los desplazamientos de los títulos se calculan tras cada render y al cambiar el tamaño, y el evento solo hace una búsqueda binaria. La evidencia da el coste medido por evento con 1.000 títulos.
+- A6. Los títulos ocultos (por ejemplo dentro de un `<details>` cerrado) no cuentan para la sección actual.
+- A7. El `<aside>` recibe `aria-label="Índice del documento"`.
+
+**B · Ramas que se contraen**
+- B1. El árbol se deriva de los niveles: un título es hijo del anterior de nivel menor. Un salto (nivel 1 a nivel 3) no crea nodos vacíos.
+- B2. Cada título con hijos tiene una flecha con `aria-expanded` y nombre «Contraer sección <título>» o «Expandir sección <título>». Funciona con Intro y Espacio; Tab recorre la flecha y el título.
+- B3. Contraer oculta los descendientes también para las tecnologías de apoyo (`hidden`), no solo a la vista.
+- B4. La rama contraída que contiene la sección actual se marca como actual (A1) sin expandirse.
+- B5. El estado se conserva entre renders y al cambiar de pestaña, identificado por la ruta de títulos (no solo por el `id`, que cambia al editar el título). Si el título desaparece, su estado se descarta.
+- B6. Los títulos largos se limitan a dos líneas con puntos suspensivos, con tooltip y nombre accesible completos.
+
+**C · Modo Editar**
+- C1. El panel se muestra también en modo Editar y el botón «Índice» de la barra lo alterna.
+- C2. En modo Editar, un clic en una entrada mueve el cursor al inicio de la línea de ese título, lo deja en la parte superior del editor y enfoca el editor. El texto no cambia.
+- C3. En modo Editar, la sección actual sigue la primera línea visible del editor.
+- C4. La correspondencia entre las entradas del índice y las líneas del editor se hace en orden y por texto contra los títulos del árbol sintáctico del editor (ATX y Setext). Una entrada sin pareja (por ejemplo, un título dentro de un bloque HTML) no mueve el cursor y avisa «Ese título no se puede localizar en el editor». **Nunca se salta a una línea equivocada.**
+- C5. En Dividido y Vista previa el clic desplaza la vista previa como hoy, y el índice no cambia el contenido de ninguna exportación.
+
+**Transversales:** sin dependencias nuevas; el texto del documento y el HTML exportado no cambian; `npm run check`, `npm test`, `npm run test:e2e` y `npm run build` en verde; los puntos de corte de ancho (1100 y 850 px) se conservan.
+
+### 5. Casos límite
+
+Documento sin títulos; solo títulos de nivel 2; saltos de nivel (1, 3, 2); títulos repetidos («Uno» dos veces); título solo con emoji o signos; título editado mientras su rama está contraída; documento con 1.000 títulos; títulos dentro de un `<details>` cerrado (tras FL-MD-002 un clic los abre); título dentro de una lista o una cita; título Setext (`Texto` y `===`); documento con front matter (el emparejamiento por texto no depende de los desplazamientos de línea); render progresivo mientras se desplaza; cambio de tema; ventana de 850 px o menos (el panel sigue oculto); edición con IME (el clic en el índice no interrumpe la composición); modo Vista previa sin editor montado (C no aplica).
+
+### 6. Prompt ejecutable para Codex
+
+```text
+Tarea: FL-MD-007 · Índice con sección actual, ramas contraíbles y modo Editar. REQUISITO: FL-MD-002 (PR #67) fusionada, porque ambas tocan Preview.svelte y render.ts.
+Lee AGENTS.md, CONTRIBUTING.md y docs/stories/3-markdown-experiencia.md (FL-MD-007: criterios A1–C5, casos límite y la medición de la sección 2). Rama codex/md-007-indice desde main actualizado. Sin dependencias; no toques package.json ni el lockfile.
+Archivos probables: src/renderer/App.svelte (retirar el bloque del índice), src/renderer/components/Outline.svelte (nuevo), src/renderer/lib/outline.ts (funciones puras nuevas), src/renderer/components/Preview.svelte (exponer los desplazamientos de los títulos), src/renderer/components/Editor.svelte (ir a una línea; primera línea visible), src/renderer/style.css, tests/outline.test.ts (nuevo), tests/e2e/ (nuevo).
+Método, por bloque y en este orden (A, B, C), UN commit por bloque:
+1. Escribe primero las pruebas y comprueba que FALLAN por la razón descrita. Funciones puras: construir el árbol a partir de los títulos (B1), elegir la sección actual dada una lista de desplazamientos y un scrollTop (A1, A4, A6), emparejar títulos del índice con títulos del árbol sintáctico del editor (C4). E2E: desplazar y comprobar aria-current, contraer y expandir con teclado, clic en modo Editar.
+2. Implementa lo mínimo. Reutiliza el tipo Heading de render.ts y el árbol sintáctico de CodeMirror que el editor ya importa (syntaxTree). Antes de mover el cursor desde el índice, comprueba el sentido de la sincronización onscroll del editor con la vista previa (App.svelte); si el clic en modo Editar provoca un desplazamiento extra de la vista previa, repórtalo.
+3. Vuelve a ejecutar: las pruebas del bloque pasan y las anteriores siguen pasando.
+Medición obligatoria con un documento sintético de 1.000 títulos: coste por evento de desplazamiento y tiempo de construir el árbol; comparar con main 61d0e05. Sin umbrales de reloj en las pruebas: demuestra con conteo de operaciones que el evento no recorre el DOM.
+Al terminar: npm run check && npm test && npm run test:e2e && npm run build. Evidencia: docs/evidence/md-007-<fecha>.md con la tabla rojo→verde por bloque, capturas 1440×900 en claro y oscuro de cada bloque (panel con la sección actual marcada, una rama contraída, modo Editar), los números reales y lo que NO se verificó. PR en BORRADOR; no fusiones, no publiques versiones, no actualices la app instalada. Si algo es ambiguo, detente y pregunta.
+```
+
+### 7. Plan de pruebas
+
+| Nivel | Qué | Dónde |
+|---|---|---|
+| Unitaria (rojo→verde) | Árbol a partir de niveles con saltos; elección de la sección actual (inicio, medio, final, títulos ocultos); emparejamiento por texto con títulos repetidos, Setext, front matter y bloques HTML | `tests/outline.test.ts` |
+| E2E | Desplazar la vista previa y comprobar `aria-current`; contraer y expandir con Intro y Espacio; la rama contraída marcada como actual; modo Editar: clic lleva el cursor a la línea correcta y el texto no cambia | `tests/e2e/` |
+| Accesibilidad | `getByRole` por nombre de las flechas; `aria-expanded`; `aria-current`; nombre del panel; contraste del indicador en ambos temas | E2E |
+| Rendimiento | 1.000 títulos: coste por evento y construcción del árbol frente a `main` | Informe de evidencia |
+| Regresión | El clic sigue desplazando en Dividido y Vista previa; anchos de 185 y 155 px; panel oculto a 850 px o menos; FL-MD-002 intacta | E2E existentes |
+
+### 8. Criterios de revisión (Claude)
+
+- Tres commits (A, B, C), cada uno con rojo→verde; sin dependencias nuevas.
+- El indicador de sección actual no depende solo del color y es coherente en claro y oscuro; `aria-current` y `aria-expanded` verificados por rol.
+- La elección de la sección actual y el árbol son funciones puras probadas fuera de la interfaz; el evento de desplazamiento no recorre el DOM.
+- **Ningún clic en modo Editar salta a una línea equivocada**; un título sin pareja avisa. Se prueba con títulos repetidos, Setext y un título dentro de un bloque HTML.
+- El texto del documento y las exportaciones no cambian.
+- El informe incluye el coste medido con 1.000 títulos y separa lo ejecutado de lo no verificado.
+- `NEEDS TESTING` si falta alguna plataforma de CI o el modo Editar sin capturas; `BLOCKED` si se propone una dependencia.
+
+## FL-MD-008 · Insertar fecha y hora
+
+### 1. Historia de usuario
+
+Como persona que lleva un diario, actas o un registro de cambios, quiero insertar la fecha o la hora actual donde está el cursor con un clic, para fechar mis notas sin teclearlas.
+
+### 2. Problema y evidencia
+
+En `origin/main` (`61d0e05`) no hay inserción de fecha ni de hora: ni `markdown-commands.ts` ni `MarkdownToolbar.svelte` contienen coincidencias de `fecha`, `datetime` ni `toLocaleDate`. El menú **Insertar** ofrece lista con viñetas, lista numerada, lista de tareas, cita, separador, enlace y bloque de código. Joplin ofrece un botón de calendario en su barra (captura del propietario).
+
+### 3. Diseño UX/UI
+
+Dos entradas nuevas al final de las acciones de **Insertar**, antes del selector de lenguaje:
+
+- «Fecha de hoy» inserta `2026-10-27`.
+- «Fecha y hora» inserta `2026-10-27 22:49`.
+
+El formato es ISO 8601 con la hora local del equipo, 24 horas, sin segundos ni zona. Se eligió porque es inequívoco, se ordena alfabéticamente y no depende del idioma del sistema. Reemplaza la selección, como si se tecleara; se deshace con un solo paso; el cursor queda después del texto insertado. Deshabilitado en solo lectura, como el resto del menú. Sin atajo de teclado en la primera versión.
+
+### 4. Criterios de aceptación
+
+- F1. Sin selección, inserta exactamente `AAAA-MM-DD` o `AAAA-MM-DD HH:mm` en el cursor, con ceros a la izquierda y hora local de 24 horas (`09:05`).
+- F2. Con selección, la reemplaza y el cursor queda tras el texto insertado.
+- F3. Un paso de deshacer revierte la inserción completa; el estado «con cambios» se actualiza.
+- F4. La función es pura y recibe la fecha como parámetro; las pruebas usan una fecha fija construida con componentes locales, sin depender del reloj ni de la zona del equipo.
+- F5. No se inserta durante una composición con IME (misma guarda que `format()`).
+- F6. Solo actúa en documentos Markdown; deshabilitada en solo lectura.
+- F7. Etiquetas en español y accesibles por teclado; la entrada se anuncia como «Fecha de hoy» y «Fecha y hora».
+- F8. El texto del resto del documento no cambia (CRLF y LF incluidos).
+
+### 5. Casos límite
+
+Medianoche (`00:00`) y `23:59`; cambio de año; 29 de febrero; día de cambio de horario (se usa la hora local tal como la entrega el sistema); selección multilínea (se reemplaza completa, como al teclear); cursor dentro de un bloque de código o del front matter (se inserta igual: es texto); documento con CRLF; dos inserciones seguidas (dos pasos de deshacer); reloj del sistema desajustado (se usa tal cual); solo lectura; composición con IME.
+
+### 6. Prompt ejecutable para Codex
+
+```text
+Tarea: FL-MD-008 · Insertar fecha y hora.
+Lee AGENTS.md, CONTRIBUTING.md y docs/stories/3-markdown-experiencia.md (FL-MD-008). Rama codex/md-008-fecha-hora desde main actualizado. Sin dependencias.
+Archivos probables: src/renderer/lib/markdown-commands.ts (nuevas acciones; la fecha entra por parámetro para que la función siga siendo pura), src/renderer/components/MarkdownToolbar.svelte (dos entradas en el menú Insertar), src/renderer/components/Editor.svelte (pasar new Date() solo en el punto de llamada), tests/markdown-commands.test.ts, tests/e2e/markdown-toolbar.spec.ts.
+1) Pruebas primero: unitarias con una fecha fija construida con new Date(año, mes, día, hora, minuto) (F1, F2, F8, medianoche, 29 de febrero, CRLF) y un E2E que inserta y deshace; deben fallar porque las acciones no existen. Guarda la salida roja.
+2) Implementa lo mínimo siguiendo el patrón de las acciones existentes (MarkdownChange).
+3) Verifica F1–F8; no añadas atajo ni configuración de formato.
+Comprobaciones: npm run check, npm test, npm run test:e2e, npm run build. Evidencia: docs/evidence/md-008-<fecha>.md con capturas 1440×900 en claro y oscuro del menú Insertar y del resultado. PR en BORRADOR; no fusionar.
+```
+
+### 7. Plan de pruebas
+
+Unitarias con fecha fija (formato, ceros, medianoche, bisiesto, selección, CRLF); E2E de inserción desde el menú, reemplazo de selección y un solo paso de deshacer; solo lectura deshabilitado; regresión de las acciones existentes de la barra.
+
+### 8. Criterios de revisión (Claude)
+
+La función es pura y probada con fecha fija en cualquier zona; el formato coincide con el diseño; un paso de deshacer; no hay atajo ni opciones de formato añadidas; no cambia el comportamiento de las demás acciones de la barra.
+
 ## Aplazadas (con condición para retomarlas)
 
 - **Pegar HTML como Markdown.** Requiere convertir HTML no confiable: se parsearía de forma inerte, se saneará con `sanitize-html` (ya instalado) y se convertiría con `turndown` (MIT, dependencia nueva). Retomar tras aprobar la dependencia y cuando FL-MD-005 esté fusionada para compartir el controlador de pegado.
 - **Inserción visual de imágenes.** Depende de la política de activos relativos y «Guardar como» (F05): FL-DRW-001. Sin esa política, una imagen insertada puede dejar de resolverse al guardar con otro nombre.
 - **Menú `/`.** Duplica **Insertar**; solo se retoma si el uso real muestra que la gente no encuentra los bloques o si se añaden plantillas (galería Mermaid) que justifiquen un acceso por teclado.
+- **Etiquetas (tags). Pendiente de decisión del propietario (2026-10-27).** Joplin las guarda en su base de datos y las muestra bajo el título («Haga clic aquí para agregar etiquetas…»). FreyaLab trabaja sobre archivos, así que la decisión es dónde viven:
+  - **Recomendada: el front matter del propio documento** (`tags: [a, b]` o lista en bloque). Es texto del archivo, portable (Obsidian, Hugo y Jekyll lo entienden) y encaja con «Propiedades del documento» de FL-MD-002. Depende de FL-MD-002 fusionada, que es donde se aparta el front matter.
+  - Primera versión de solo lectura: etiquetas como chips bajo el título en la vista previa, y filtro por etiqueta en el explorador (hoy «Buscar archivo» muestra nombre y ruta y no conoce las etiquetas; habría que leer solo el encabezado de cada archivo de la carpeta).
+  - Segunda versión con edición: añadir y quitar etiquetas con chips que escriben el front matter con el cambio mínimo (conserva comentarios, orden, CRLF y el resto del YAML), un paso de deshacer.
+  - Descartadas: una base de datos de etiquetas dentro de la aplicación (no es portable y se desincroniza al mover o renombrar archivos) y `#etiqueta` dentro del texto (ambiguo con títulos, enlaces y números de incidencia).
+  - Decisiones que pide: T1 ¿las etiquetas viven en el front matter? T2 ¿primera versión de solo lectura con filtro en el explorador? T3 ¿solo documentos Markdown?
+- **Atrás/adelante entre documentos y «abrir en editor externo» (Joplin).** Valor bajo hoy: FreyaLab ya tiene pestañas, deshacer y rehacer. Se retoma si el uso real muestra que se echa en falta el historial de navegación.

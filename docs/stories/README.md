@@ -1,6 +1,6 @@
 # Historias para Codex · Markdown y Mermaid
 
-Fecha: 2026-10-26 · Base: `main` en `da7a002` (incluye FL-MD-001, PR #65) · Autor del diseño: Claude · Implementa: Codex · Valida: Claude.
+Fecha: 2026-10-26, estado actualizado el 2026-10-27 · Base de las medidas originales: `main` en `da7a002` (incluye FL-MD-001, PR #65); estado de esta tabla sobre `main` en `61d0e05` (incluye el PR #66) · Autor del diseño: Claude · Implementa: Codex · Valida: Claude.
 
 Este directorio contiene las historias de mejora continua de los editores Markdown y Mermaid. **Son documentos de diseño: no cambian código de producción.** No fusionar PR, no publicar versiones y no actualizar la aplicación instalada.
 
@@ -26,28 +26,32 @@ Cada historia tiene los mismos ocho apartados: 1 historia de usuario, 2 problema
 
 | Iteración | Historia | Tamaño | Depende de | Estado |
 |---|---|---|---|---|
-| 1 · Correcciones Markdown | [FL-MD-002](1-markdown-correcciones.md): front matter, enlaces internos, notas al pie, `<details>` | M | — | Lista para Codex |
-| 2 · Robustez Mermaid | FL-MER-001: último SVG válido y errores con línea | — | — | **Cubierta por el PR #66** (borrador, CI 4/4); pendiente de revisión |
+| 1 · Correcciones Markdown | [FL-MD-002](1-markdown-correcciones.md): front matter, enlaces internos, notas al pie, `<details>` | M | — | **En revisión: PR #67** (`CHANGES REQUESTED`: el render se vuelve cuadrático con definiciones de enlace y plegables; el resto cumple A–D) |
+| 2 · Robustez Mermaid | FL-MER-001: último SVG válido y errores con línea | — | — | **Hecha**: PR #66 fusionado en `main` (`61d0e05`); `CHANGES REQUESTED` por latencia (544 ms), corregido y `APPROVED` (169 y 171 ms) |
 | 2 | [FL-MER-008](2-mermaid-robustez.md): «Ajustar a pantalla» | S | — | Lista |
 | 2 | [FL-MER-009](2-mermaid-robustez.md): exportación en tema claro y oscuro | S | — | Lista (hay medición) |
-| 2 | [FL-MER-007](2-mermaid-robustez.md): marcas en el editor (CodeMirror) | M | #66 fusionado | Bloqueada por #66 |
+| 2 | [FL-MER-007](2-mermaid-robustez.md): marcas en el editor (CodeMirror) | M | #66 fusionado | Lista (el #66 ya está fusionado) |
 | 2 | [FL-MER-010](2-mermaid-robustez.md): vista ampliada | M | FL-MER-008 | Bloqueada por FL-MER-008 |
 | 3 · Experiencia Markdown | [FL-MD-003](3-markdown-experiencia.md): palabras y tiempo de lectura | S | — | Lista |
 | 3 | FL-MD-004: casillas interactivas | M | FL-MD-002 | Lista tras FL-MD-002 |
 | 3 | FL-MD-005: pegar una URL sobre texto seleccionado | S | — | Lista |
 | 3 | FL-MD-006: corrector ortográfico | S + decisión | Decisión de diccionarios | **Bloqueada** hasta decidir Windows/Linux |
-| 3 | Pegar HTML como Markdown · imágenes · menú `/` | — | Aprobación | Evaluadas, aplazadas |
+| 3 | [FL-MD-007](3-markdown-experiencia.md): índice con sección actual, ramas que se contraen y modo Editar | M | FL-MD-002 | Lista tras FL-MD-002 |
+| 3 | [FL-MD-008](3-markdown-experiencia.md): insertar fecha y hora | S | — | Lista |
+| 3 | Etiquetas (tags) | M a L | Decisiones T1–T3 del propietario | **Pendiente de decisión** (recomendado: front matter; ver «Aplazadas») |
+| 3 | Pegar HTML como Markdown · imágenes · menú `/` · atrás/adelante y editor externo | — | Aprobación | Evaluadas, aplazadas |
 | 4 · Dibujos editables | [FL-DRW-001](4-dibujos-editables.md): activos relativos y «Guardar como» (F05) | M | — | Lista (sin dependencias) |
 | 4 | FL-DRW-002: prototipo aislado con js-draw | S | Aprobación del propietario | **Bloqueada** hasta aprobar |
 | 4 | FL-DRW-003 a 005: integración, inserción y exportación | L | FL-DRW-001 y 002 | Esbozadas |
 
-Orden recomendado: **FL-MD-002 → (revisión del #66) → FL-MER-009 → FL-MER-008 → FL-MD-003 → FL-MD-005 → FL-MD-004 → FL-MER-007 → FL-MER-010 → FL-DRW-001**. Las historias independientes pueden ir en paralelo si tocan archivos distintos: FL-MD-002 toca `render.ts`, `Preview.svelte` y las pruebas de render; FL-MER-008/009/010 tocan `Diagram.svelte` y la exportación; FL-MD-003 y FL-MD-005 tocan `Editor.svelte`/`App.svelte`.
+Orden recomendado (2026-10-27): **FL-MD-002 (corrección pendiente en el #67) → FL-MER-009 → FL-MER-008 → FL-MD-003 → FL-MD-005 → FL-MD-008 → FL-MD-004 → FL-MD-007 → FL-MER-007 → FL-MER-010 → FL-DRW-001**. Las historias independientes pueden ir en paralelo si tocan archivos distintos: FL-MD-002 toca `render.ts`, `Preview.svelte` y las pruebas de render; FL-MER-008/009/010 tocan `Diagram.svelte` y la exportación; FL-MD-003 y FL-MD-005 tocan `Editor.svelte`/`App.svelte`; FL-MD-008 toca `markdown-commands.ts` y `MarkdownToolbar.svelte`; FL-MD-007 toca `App.svelte`, `Preview.svelte`, `Editor.svelte` y un componente nuevo del índice, por eso espera a FL-MD-002.
 
 ## Contexto verificado el 2026-10-26
 
 - `main` incluye la barra de formato completa (FL-MD-001: tachado, títulos, listas numeradas, separador, selector de 9 lenguajes). Por eso **no hay historias de barra ni de menú «Insertar»**.
-- PR #66 `codex/mer-001-errores-diagrama` (borrador): traductor de errores de Mermaid al español, último dibujo válido atenuado, exportación bloqueada si el diagrama es inválido. CI en verde en las cuatro plataformas. No lo he revisado a fondo; se revisa contra los criterios de FL-MER-001 de [2-mermaid-robustez.md](2-mermaid-robustez.md).
-- Las medidas de esta carpeta salen de una **copia del canal de renderizado** (`unified`, `remark-gfm`, `remark-math`, `remark-rehype`, `rehype-sanitize`, `rehype-katex`, `rehype-highlight`) y de **Mermaid 12.2.0 real en Chromium**. No se ejecutó la aplicación empaquetada.
+- PR #66 `codex/mer-001-errores-diagrama`: traductor de errores de Mermaid al español, último dibujo válido atenuado, exportación bloqueada si el diagrama es inválido. Revisado contra los criterios de FL-MER-001 de [2-mermaid-robustez.md](2-mermaid-robustez.md) y fusionado el 2026-10-26.
+- PR #67 `codex/md-002-correcciones-render` (FL-MD-002), revisado el 2026-10-27 sobre `84efa63`: A–D cumplen sus criterios, con rojo→verde por commit, 527 pruebas unitarias, 4 E2E nuevos y CI 4/4. `CHANGES REQUESTED` por un cambio obligatorio: `remark-details.ts` añade todas las definiciones del documento a cada fragmento, y el render pasa de 41 ms en `main` a 2.493 ms con 100 plegables y 400 definiciones.
+- Las medidas de las iteraciones 1 a 4 salen de una **copia del canal de renderizado** (`unified`, `remark-gfm`, `remark-math`, `remark-rehype`, `rehype-sanitize`, `rehype-katex`, `rehype-highlight`) y de **Mermaid 12.2.0 real en Chromium**. Las del índice (FL-MD-007) salen de la **aplicación real construida desde `main`** (Electron 44, 1440×900). Ninguna procede de la aplicación empaquetada ni de los instaladores.
 
 ## Veredictos de revisión
 
