@@ -1,0 +1,792 @@
+{
+  "story": "FL-MD-005",
+  "date": "2026-10-27",
+  "branch": "codex/md-005-pegar-url",
+  "baseCommit": "1df90fdb8c46bab61c28b090113596b00848e5da",
+  "candidateCommit": null,
+  "candidateState": "Corrección sin commit del fixture E2E sobre el head publicado del PR #72; cuatro fuentes de producto intactas, identificadas por SHA-256. Nueva CI pendiente.",
+  "environment": {
+    "platform": "macOS 27.0.1",
+    "arch": "arm64",
+    "processor": "Apple M2 Max",
+    "memoryGiB": 32,
+    "node": "24.22.1",
+    "electron": "44.9.2",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "input": "Teclado virtual Playwright con eventos trusted; IME sintético separado."
+  },
+  "results": {
+    "coreRed": {
+      "status": "failed",
+      "reason": "Módulo inexistente antes de implementación.",
+      "testsExecuted": 0
+    },
+    "coreInitialEncoding": {
+      "passed": 39,
+      "failed": 1,
+      "reason": "Expectativa de href [] incorrecta; el renderizador emite %5B/%5D."
+    },
+    "htmlContextRed": {
+      "failed": 3,
+      "skipped": 40
+    },
+    "coreFinal": {
+      "status": "passed",
+      "passed": 43,
+      "durationMs": 247
+    },
+    "e2eRed": {
+      "status": "failed",
+      "failed": 1,
+      "durationSeconds": 2.6,
+      "baseline": {
+        "source": "[texto](https://example.com/una ruta)",
+        "preview": "<p>[texto](<a href=\"https://example.com/una\">https://example.com/una</a> ruta)</p>",
+        "selection": "texto"
+      },
+      "candidate": {
+        "source": "https://example.com/una ruta",
+        "preview": "<p><a href=\"https://example.com/una\">https://example.com/una</a> ruta</p>",
+        "selection": ""
+      }
+    },
+    "e2eFirst": {
+      "passed": 8,
+      "failed": 3,
+      "durationSeconds": 24.3,
+      "issues": [
+        "P3: expectativa extra de cursor al rehacer distinta del historial estándar.",
+        "P4: expectativa de href sin percent-encoding incorrecta.",
+        "Cmd/Control+Shift+V no generaba paste en Mac."
+      ]
+    },
+    "check": {
+      "status": "passed",
+      "errors": 0,
+      "warnings": 0,
+      "log": "/private/tmp/freyalab-lote/4-check-empty-clipboard.log",
+      "phase": "local_after_empty_clipboard_fixture_fix"
+    },
+    "focalBuild": {
+      "status": "passed",
+      "phase": "historical_before_empty_clipboard_fixture_fix"
+    },
+    "e2eFocal": {
+      "status": "passed",
+      "passed": 11,
+      "durationSeconds": 8.4,
+      "exitCode": 0,
+      "log": "/private/tmp/freyalab-lote/4-e2e-empty-clipboard.log",
+      "phase": "local_after_empty_clipboard_fixture_fix",
+      "bodiesExecuted": true
+    },
+    "globalUnit": {
+      "status": "passed",
+      "passed": 584,
+      "files": 33,
+      "durationSeconds": 4.96,
+      "exitCode": 0,
+      "log": "/private/tmp/freyalab-lote/4-unit-empty-clipboard.log",
+      "phase": "local_after_empty_clipboard_fixture_fix"
+    },
+    "globalE2e": {
+      "status": "historical_passed_before_empty_clipboard_fixture_fix",
+      "passed": 245,
+      "durationMinutesReported": 8.1,
+      "retries": 0,
+      "exitCode": 0,
+      "head": "6d7e9ce98738ddf43fb1d4e3a4c13510e375f7e2",
+      "repeatedAfterFixtureFix": false
+    },
+    "finalBuild": {
+      "status": "passed",
+      "exitCode": 0,
+      "log": "/private/tmp/freyalab-lote/4-build-empty-clipboard.log",
+      "phase": "local_after_empty_clipboard_fixture_fix",
+      "warningsPresent": true
+    },
+    "ciFourPlatforms": {
+      "status": "pending_corrected_head",
+      "manualRerunsRequested": false,
+      "oldRunStatus": "failed_in_fixture_on_three_observed_platforms",
+      "oldRunId": 40504740427,
+      "oldRunHead": "6d7e9ce98738ddf43fb1d4e3a4c13510e375f7e2",
+      "intelFinalResultVerified": false
+    }
+  },
+  "history": {
+    "realPureRuns": 6,
+    "afterPaste": "cursor colapsado al final",
+    "undo": "texto y selección originales",
+    "redo": "rango insertado seleccionado; misma semántica que CodeMirror normal"
+  },
+  "shortcutDiagnostics": {
+    "direct": [
+      {
+        "shortcut": "ControlOrMeta+Shift+V",
+        "source": "texto",
+        "pasteEvents": 0
+      },
+      {
+        "shortcut": "ControlOrMeta+Alt+Shift+V",
+        "source": "texto",
+        "pasteEvents": 0
+      },
+      {
+        "shortcut": "ControlOrMeta+V",
+        "source": "[texto](https://example.com/plano)",
+        "pasteEvents": 1
+      }
+    ],
+    "execCommand": [
+      {
+        "shortcut": "ControlOrMeta+Shift+V",
+        "source": "texto",
+        "execCommandResults": [
+          {
+            "name": "execCommand",
+            "trustedTrigger": true,
+            "result": false
+          }
+        ]
+      },
+      {
+        "shortcut": "ControlOrMeta+Alt+Shift+V",
+        "source": "texto",
+        "execCommandResults": [
+          {
+            "name": "execCommand",
+            "trustedTrigger": true,
+            "result": false
+          }
+        ]
+      },
+      {
+        "shortcut": "ControlOrMeta+V",
+        "source": "[texto](https://example.com/plano)",
+        "execCommandResults": []
+      }
+    ],
+    "beforeInputHook": {
+      "implemented": false,
+      "scope": "Sonda solo de prueba. Playwright/CDP no generó before-input-event en la ventana correcta, incluso con Cmd+V. No demuestra el hook con teclado físico.",
+      "events": [
+        {
+          "shortcut": "ControlOrMeta+Shift+V",
+          "mainEvents": [
+            {
+              "name": "hook-installed",
+              "targetId": 1,
+              "url": "file:///private/tmp/freyalab-lote/md-005/out/renderer/index.html"
+            }
+          ]
+        },
+        {
+          "shortcut": "ControlOrMeta+Alt+Shift+V",
+          "mainEvents": []
+        },
+        {
+          "shortcut": "ControlOrMeta+V",
+          "mainEvents": []
+        }
+      ]
+    },
+    "adopted": "Preload consume solo keydown trusted Mod+Shift+V, emite una señal DOM fija y un mensaje IPC privado sin datos. Main valida emisor y ejecuta pasteAndMatchStyle. Editor consume el pegado plain una sola vez."
+  },
+  "clipboard": {
+    "snapshot": "Todas las representaciones MIME expuestas por ClipboardItem de los items con tipos, materializadas y retenidas solo en memoria de main. Los items sin tipos no tienen representación que recrear.",
+    "restore": "Se comprueba la reescritura antes de sustituir el portapapeles; finally restaura el snapshot MIME expuesto. Para snapshot vacío utiliza clipboard.clear().",
+    "scope": "No acredita conservación de formatos nativos opacos que la API no expone ni su interpretación en cada aplicación externa.",
+    "originalStoredInEvidence": false,
+    "originalPayloadReturnedToNode": false,
+    "physicalIMEVerified": false
+  },
+  "sources": [
+    {
+      "path": "src/renderer/lib/markdown-paste.ts",
+      "sha256": "20e30ebe0a5d6c984b836aa3ea1ece4fbc89b99347d70708f243a288c2a26028"
+    },
+    {
+      "path": "src/renderer/components/Editor.svelte",
+      "sha256": "3e70b20741750bfaa663873ad13b5bf1d25646698f71ddbe60f4f07b0e229bd6"
+    },
+    {
+      "path": "src/preload/index.ts",
+      "sha256": "022dcfb5de10fa8bfeac59dec32aab6740e59d128d40e15b11a0a686bd4de728"
+    },
+    {
+      "path": "src/main/index.ts",
+      "sha256": "b186d2846858606644162ad4443bab800ea885af8f7aee7430e7c672ca7b63ab"
+    },
+    {
+      "path": "tests/markdown-paste.test.ts",
+      "sha256": "918b3d5ea75adc61bcb47860f840f9e5e51d43b891418cdff2cc7638aef526eb"
+    },
+    {
+      "path": "tests/e2e/markdown-paste.spec.ts",
+      "sha256": "60acf38c9bc7510cb3e9d26261012af0ce79cb287a62664c9e67779dc6d2856d"
+    }
+  ],
+  "ciConfiguration": {
+    "path": ".github/workflows/ci.yml",
+    "sha256": "43078e35cec4634d3e10cc7c5924d560ff1a885c56ab6fb772f018b3445e5d72",
+    "macOSIntelTimeoutMinutes": 60,
+    "otherPlatformsTimeoutMinutes": 45,
+    "newRetries": false,
+    "reason": "Mismo ajuste de capacidad del hardware Intel usado en los trabajos anteriores; no demuestra CI aprobada."
+  },
+  "manifests": [
+    {
+      "path": "package.json",
+      "sha256": "2cafd9bf6a092d590c256c7aa913ddb1b7008db31540549ac82226fa902ca94a",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "7008658adc0a5b0c85073de556f4f249fc2853005bedcaec64f777fe684ee3d9",
+      "unchangedFromBase": true
+    }
+  ],
+  "screenshots": [
+    {
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "path": "docs/evidence/md-005-pegar-url-light-1440x900.png",
+      "source": "/private/tmp/freyalab-lote/4-global-evidence/4-paste-light-1440x900.png",
+      "sha256": "eefaa924ba841f5e814cb63798183c95fb42c3d438f34bc735beedc36c337d9c",
+      "phase": "historical_global_before_empty_clipboard_fixture_fix; mismas fuentes de producto"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "path": "docs/evidence/md-005-pegar-url-dark-1440x900.png",
+      "source": "/private/tmp/freyalab-lote/4-global-evidence/4-paste-dark-1440x900.png",
+      "sha256": "452b4b39aca5d0cbffa9ee4536d15b432787a7a9787e6639a43bfcb6c9fc92c2",
+      "phase": "historical_global_before_empty_clipboard_fixture_fix; mismas fuentes de producto"
+    }
+  ],
+  "screenshotsFocalHistory": [
+    {
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "source": "/private/tmp/freyalab-lote/4-focal-native/4-paste-light-1440x900.png",
+      "sha256": "eefaa924ba841f5e814cb63798183c95fb42c3d438f34bc735beedc36c337d9c",
+      "preserved": true
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "source": "/private/tmp/freyalab-lote/4-focal-native/4-paste-dark-1440x900.png",
+      "sha256": "452b4b39aca5d0cbffa9ee4536d15b432787a7a9787e6639a43bfcb6c9fc92c2",
+      "preserved": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/private/tmp/freyalab-lote/4-core-red.log",
+      "sha256": "c2f968f495b5dbcce37efed7662d58264e06361f45494b5dae5269b39b16e2ef",
+      "bytes": 926
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-core-render-encoding-initial.log",
+      "sha256": "dd23b2e0b2e5fd734992976bb308922a8911124e266829c55ba527691f8d8f8a",
+      "bytes": 1355
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-html-context-red.log",
+      "sha256": "b8060592e103442093c8e4a62c0602a145dba9e1f6f821665d2275fc36dfc277",
+      "bytes": 3324
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-core-final.log",
+      "sha256": "d26e4c95cb0ba4917a85277be2cc56b5c9a22019f32e4a3d4602bed9267d0656",
+      "bytes": 196
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-baseline-build.log",
+      "sha256": "77caa030322fb6078056d533162c87125f306dd72400802cf4dd774d2621b026",
+      "bytes": 21324
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-e2e-red.log",
+      "sha256": "3c67c52b6d2ed66137e1e183b1398b6f46f002afb8ac977a2c80be2ee5586e1c",
+      "bytes": 2287
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-e2e-first.log",
+      "sha256": "54930057a27eb35cac31a4d129b64c085800056bfdbbdf41dad31f9463237e94",
+      "bytes": 8433
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-check-native.log",
+      "sha256": "cdb6fb4f632ab16917bb1f720cc0a49bea8f3e76045d1de8a854478bd4747914",
+      "bytes": 256
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-check-final.log",
+      "sha256": "cdb6fb4f632ab16917bb1f720cc0a49bea8f3e76045d1de8a854478bd4747914",
+      "bytes": 256
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-unit-final.log",
+      "sha256": "68b9bd12cbabbacb7da3bc7dc410d55b07a07481005e8e5e8ea060c46afa65a0",
+      "bytes": 233
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-build-native.log",
+      "sha256": "15bfbc3d0847b10a0bcea6ea7dda31dab2bd729d89aa7626e88af92c035a1eb6",
+      "bytes": 21324
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-e2e-native.log",
+      "sha256": "32394eb73bde957bb97b39f43cf847e7c69004e2aa43b47833a1f0c8df463745",
+      "bytes": 1902
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-e2e-final.log",
+      "sha256": "a190d18be939030ca9999adc4d51c2fbfb45ed9d114b286a833d23336a1d1ae0",
+      "bytes": 58067
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-build-final.log",
+      "sha256": "cf366dc26c09720d7f6572d2322a64a236250735b1cf5bb47c54584c0fc13ca6",
+      "bytes": 21324
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-history-diagnostic.mjs",
+      "sha256": "2301aa3d57e6ef937ac933de0ac76400f5754147b72303bfc5c28062abec0446",
+      "bytes": 3263
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-history-diagnostic.json",
+      "sha256": "caacb13ca04e2c3f03cacece8f56727df845f9ff00f74d90a6ddce2c277f35bb",
+      "bytes": 8947
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-history-diagnostic.log",
+      "sha256": "a031f3675aa5bb4727dce2f193958f2be1efe15af7e2e3e2c651c3d334b7379d",
+      "bytes": 3110
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-shortcut-diagnostic.mjs",
+      "sha256": "b339c752434de8a2e3eb5f85c994681c3b4bd78fad04a0d6d9035acf8525da72",
+      "bytes": 5765
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-shortcut-diagnostic.json",
+      "sha256": "620a2dfc74364341edd15ac6e793243cb039f970b25377e6c343e1b32ec9e7b1",
+      "bytes": 19764
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-shortcut-diagnostic.log",
+      "sha256": "eada645a5beb4942b1f40015ba893ffa8b3f31d16f714e69259b40d7274a89b9",
+      "bytes": 19765
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-shortcut-exec-command.json",
+      "sha256": "77185f19a4e96ba138ce0de9aca20827abbb9c4322f08e9eae774f4758f8c8ff",
+      "bytes": 20015
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-shortcut-exec-command.log",
+      "sha256": "a038c1055856d207038e4afbfc5e741fb07d683b00c7505336eed7bfc5803051",
+      "bytes": 20016
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-shortcut-native-hook.json",
+      "sha256": "a3ac977f5d1b39922eb2464d84695b2865ac06b225289db9f174d3e6d2cf80dd",
+      "bytes": 20355
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-shortcut-native-hook.log",
+      "sha256": "a57ac8e35ead51988e1e49cbb167abfb9fbb033384cfaac8c0379246d7bf8142",
+      "bytes": 20356
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-shortcut-native-hook-first.log",
+      "sha256": "8b04022dfe4b77d5bd34438986085d7776622ebcb1dc7e6ee0329a56a78faa93",
+      "bytes": 242
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-shortcut-native-hook-initial.json",
+      "sha256": "c289ab86b20458e52b28879e38117abdb9d8524a107e255774b2ef59124abf54",
+      "bytes": 20183
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-paste-baseline.json",
+      "sha256": "1abc6f75bc27e20f4fdf72617986b21a83b400c1e5791b682e9ba1b78426bb4a",
+      "bytes": 180
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-focal-native/4-paste-native.json",
+      "sha256": "b9923c459b7419fc90a74eca7e3872b2d67740baf4beef2468d880f18536e72f",
+      "bytes": 157
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-global-evidence/4-paste-final.json",
+      "sha256": "b9923c459b7419fc90a74eca7e3872b2d67740baf4beef2468d880f18536e72f",
+      "bytes": 157
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-ci-snapshot-before-emptyfix.json",
+      "sha256": "9ca176813d20b63c552de81b6778bd85fde4d46c959ac90c96421ee6affd20d4",
+      "bytes": 4550
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-empty-clipboard-probe.mjs",
+      "sha256": "540dbbd4c5f081722664bd1053512d8acdcb7a7c76fccb52bddde3a92444facd",
+      "bytes": 3893
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-empty-clipboard-probe.json",
+      "sha256": "7bd97fd7107555d9be33be11ad6950080d0b81006823642729b0ca8ea660105f",
+      "bytes": 908
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-empty-clipboard-probe.log",
+      "sha256": "7bd97fd7107555d9be33be11ad6950080d0b81006823642729b0ca8ea660105f",
+      "bytes": 908
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-check-empty-clipboard.log",
+      "sha256": "cdb6fb4f632ab16917bb1f720cc0a49bea8f3e76045d1de8a854478bd4747914",
+      "bytes": 256
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-unit-empty-clipboard.log",
+      "sha256": "a35610224ba4f7d7c27d947cf53c48934a4c1b09b9138da45fdf403611673646",
+      "bytes": 233
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-e2e-empty-clipboard.log",
+      "sha256": "a82a15003560ce03252bd32afe0686dcf4a5c6b3a8a57dd06e1a42286c0a649b",
+      "bytes": 1902
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-build-empty-clipboard.log",
+      "sha256": "2caeda98ca34c18cb05f5e9c5811da45c1b683f624896f854e03692b629cfe7b",
+      "bytes": 21324
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-emptyfix-evidence/4-paste-emptyfix.json",
+      "sha256": "b9923c459b7419fc90a74eca7e3872b2d67740baf4beef2468d880f18536e72f",
+      "bytes": 157
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-emptyfix-evidence/4-paste-dark-1440x900.png",
+      "sha256": "452b4b39aca5d0cbffa9ee4536d15b432787a7a9787e6639a43bfcb6c9fc92c2",
+      "bytes": 51556,
+      "phase": "local_focal_after_fixture_fix; original fuera del repositorio, sin reemplazar capturas globales históricas"
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/4-emptyfix-evidence/4-paste-light-1440x900.png",
+      "sha256": "905461d5c3d31b097c5b58c234e78929c3ebe7b76bce22444461396acdd10c9d",
+      "bytes": 52041,
+      "phase": "local_focal_after_fixture_fix; original fuera del repositorio, sin reemplazar capturas globales históricas"
+    }
+  ],
+  "notVerified": [
+    "Nueva CI del head corregido en macOS Intel/ARM, Windows y Linux pendiente; el primer CI falló en beforeEach en tres plataformas observadas, sin acreditar los 11 cuerpos ni el paquete.",
+    "Resultado final de Intel del primer run no recopilado en esta evidencia.",
+    "No se repitió el global local tras el ajuste exclusivo del fixture; 245/245 en 8,1 min es histórico con el mismo producto.",
+    "No se probaron instaladores, aplicación instalada ni publicación.",
+    "No se probó un IME físico ni un teclado físico.",
+    "La restauración se limita a los MIME expuestos por ClipboardItem; no se validaron formatos nativos opacos ni cada aplicación externa.",
+    "Sin nuevo benchmark de archivos de 10 MiB en esta historia."
+  ],
+  "productReferenceCommit": "6d7e9ce98738ddf43fb1d4e3a4c13510e375f7e2",
+  "historicalLocalBeforeEmptyFixtureFix": {
+    "head": "6d7e9ce98738ddf43fb1d4e3a4c13510e375f7e2",
+    "results": {
+      "coreRed": {
+        "status": "failed",
+        "reason": "Módulo inexistente antes de implementación.",
+        "testsExecuted": 0
+      },
+      "coreInitialEncoding": {
+        "passed": 39,
+        "failed": 1,
+        "reason": "Expectativa de href [] incorrecta; el renderizador emite %5B/%5D."
+      },
+      "htmlContextRed": {
+        "failed": 3,
+        "skipped": 40
+      },
+      "coreFinal": {
+        "status": "passed",
+        "passed": 43,
+        "durationMs": 247
+      },
+      "e2eRed": {
+        "status": "failed",
+        "failed": 1,
+        "durationSeconds": 2.6,
+        "baseline": {
+          "source": "[texto](https://example.com/una ruta)",
+          "preview": "<p>[texto](<a href=\"https://example.com/una\">https://example.com/una</a> ruta)</p>",
+          "selection": "texto"
+        },
+        "candidate": {
+          "source": "https://example.com/una ruta",
+          "preview": "<p><a href=\"https://example.com/una\">https://example.com/una</a> ruta</p>",
+          "selection": ""
+        }
+      },
+      "e2eFirst": {
+        "passed": 8,
+        "failed": 3,
+        "durationSeconds": 24.3,
+        "issues": [
+          "P3: expectativa extra de cursor al rehacer distinta del historial estándar.",
+          "P4: expectativa de href sin percent-encoding incorrecta.",
+          "Cmd/Control+Shift+V no generaba paste en Mac."
+        ]
+      },
+      "check": {
+        "status": "passed",
+        "errors": 0,
+        "warnings": 0
+      },
+      "focalBuild": {
+        "status": "passed"
+      },
+      "e2eFocal": {
+        "status": "passed",
+        "passed": 11,
+        "durationSeconds": 8.3
+      },
+      "globalUnit": {
+        "status": "passed",
+        "passed": 584,
+        "files": 33,
+        "durationSeconds": 5.19
+      },
+      "globalE2e": {
+        "status": "passed",
+        "passed": 245,
+        "durationMinutesReported": 8.1,
+        "retries": 0,
+        "exitCode": 0
+      },
+      "finalBuild": {
+        "status": "passed",
+        "exitCode": 0
+      },
+      "ciFourPlatforms": {
+        "status": "pending"
+      }
+    },
+    "sources": [
+      {
+        "path": "src/renderer/lib/markdown-paste.ts",
+        "sha256": "20e30ebe0a5d6c984b836aa3ea1ece4fbc89b99347d70708f243a288c2a26028"
+      },
+      {
+        "path": "src/renderer/components/Editor.svelte",
+        "sha256": "3e70b20741750bfaa663873ad13b5bf1d25646698f71ddbe60f4f07b0e229bd6"
+      },
+      {
+        "path": "src/preload/index.ts",
+        "sha256": "022dcfb5de10fa8bfeac59dec32aab6740e59d128d40e15b11a0a686bd4de728"
+      },
+      {
+        "path": "src/main/index.ts",
+        "sha256": "b186d2846858606644162ad4443bab800ea885af8f7aee7430e7c672ca7b63ab"
+      },
+      {
+        "path": "tests/markdown-paste.test.ts",
+        "sha256": "918b3d5ea75adc61bcb47860f840f9e5e51d43b891418cdff2cc7638aef526eb"
+      },
+      {
+        "path": "tests/e2e/markdown-paste.spec.ts",
+        "sha256": "7aa2bfe9dd4f4461d26ffc289ff722d55e13ba73221c021c58f05faf268a1db2"
+      }
+    ],
+    "note": "El global 245/245 en 8,1 min corresponde al fixture anterior; no es una nueva ejecución tras la corrección."
+  },
+  "emptyClipboardFixtureCorrection": {
+    "pullRequest": 72,
+    "oldHead": "6d7e9ce98738ddf43fb1d4e3a4c13510e375f7e2",
+    "scope": "Solo tests/e2e/markdown-paste.spec.ts: filtrar items con types.length antes de materializar el snapshot y comentario explicativo. Sin cambios de producto.",
+    "filter": "(await clipboard.read()).filter(item => item.types.length)",
+    "sourceChecks": [
+      {
+        "path": "src/renderer/lib/markdown-paste.ts",
+        "beforeSha256": "20e30ebe0a5d6c984b836aa3ea1ece4fbc89b99347d70708f243a288c2a26028",
+        "afterSha256": "20e30ebe0a5d6c984b836aa3ea1ece4fbc89b99347d70708f243a288c2a26028",
+        "unchanged": true
+      },
+      {
+        "path": "src/renderer/components/Editor.svelte",
+        "beforeSha256": "3e70b20741750bfaa663873ad13b5bf1d25646698f71ddbe60f4f07b0e229bd6",
+        "afterSha256": "3e70b20741750bfaa663873ad13b5bf1d25646698f71ddbe60f4f07b0e229bd6",
+        "unchanged": true
+      },
+      {
+        "path": "src/preload/index.ts",
+        "beforeSha256": "022dcfb5de10fa8bfeac59dec32aab6740e59d128d40e15b11a0a686bd4de728",
+        "afterSha256": "022dcfb5de10fa8bfeac59dec32aab6740e59d128d40e15b11a0a686bd4de728",
+        "unchanged": true
+      },
+      {
+        "path": "src/main/index.ts",
+        "beforeSha256": "b186d2846858606644162ad4443bab800ea885af8f7aee7430e7c672ca7b63ab",
+        "afterSha256": "b186d2846858606644162ad4443bab800ea885af8f7aee7430e7c672ca7b63ab",
+        "unchanged": true
+      },
+      {
+        "path": "tests/markdown-paste.test.ts",
+        "beforeSha256": "918b3d5ea75adc61bcb47860f840f9e5e51d43b891418cdff2cc7638aef526eb",
+        "afterSha256": "918b3d5ea75adc61bcb47860f840f9e5e51d43b891418cdff2cc7638aef526eb",
+        "unchanged": true
+      },
+      {
+        "path": "tests/e2e/markdown-paste.spec.ts",
+        "beforeSha256": "7aa2bfe9dd4f4461d26ffc289ff722d55e13ba73221c021c58f05faf268a1db2",
+        "afterSha256": "60acf38c9bc7510cb3e9d26261012af0ce79cb287a62664c9e67779dc6d2856d",
+        "unchanged": false
+      }
+    ],
+    "firstCi": {
+      "repository": "ruzer/freyalab",
+      "pull_request": 72,
+      "head": "6d7e9ce98738ddf43fb1d4e3a4c13510e375f7e2",
+      "run_id": 40504740427,
+      "run_number": 178,
+      "run_url": "https://github.com/ruzer/freyalab/actions/runs/40504740427",
+      "phase": "historical first run; failures observed before feature bodies",
+      "gate_satisfied": false,
+      "observed_at_utc": "2026-10-27 12:48:16 UTC",
+      "tested_merge": "0d232bf38678b2799e72a63669809844d4c03204",
+      "base": "1df90fdb8c46bab61c28b090113596b00848e5da",
+      "jobs_snapshot": [
+        {
+          "name": "Verify windows-2025",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "name": "Verify macos-15",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Verify ubuntu-24.04",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Verify macos-15-intel",
+          "status": "in_progress",
+          "conclusion": null
+        }
+      ],
+      "failures": {
+        "platforms": [
+          "ubuntu-24.04",
+          "macos-15",
+          "windows-2025"
+        ],
+        "shared_error": "electronApplication.evaluate: TypeError: Failed to construct 'ClipboardItem': at least one MIME type is required.",
+        "location": "tests/e2e/markdown-paste.spec.ts:16:12",
+        "phase": "beforeEach snapshot of the existing clipboard",
+        "unit_passed": 584,
+        "global_passed_each": 234,
+        "global_failed_each": 11,
+        "feature_bodies_reached": false,
+        "feature_failed_each": 11,
+        "automatic_retry_1_failed_for_all_11": true,
+        "packaged_executed": false,
+        "interpretation": "The fixture failed while materializing clipboard items, before paste or IPC assertions. No product/IPC regression or successful behavior is concluded from these failed cases."
+      },
+      "evidence": {
+        "ubuntu": {
+          "log": "/private/tmp/freyalab-lote/4-ci-first-ubuntu-job.log",
+          "excerpt": "/private/tmp/freyalab-lote/4-ci-first-ubuntu-failure.log",
+          "artifact": "/private/tmp/freyalab-lote/4-ci-first-ubuntu-evidence.zip",
+          "manifest": "/private/tmp/freyalab-lote/4-ci-first-ubuntu-artifacts/manifest.json",
+          "artifact_id": 12734528340,
+          "artifact_digest": "sha256:aa01007a60dee01b427cdd70c587f3a29656633162fe0dee9f12732cb22eacc5",
+          "trace_count": 22
+        },
+        "mac": {
+          "log": "/private/tmp/freyalab-lote/4-ci-first-mac-job.log",
+          "artifact": "/private/tmp/freyalab-lote/4-ci-first-mac-evidence.zip",
+          "manifest": "/private/tmp/freyalab-lote/4-ci-first-mac-artifacts/manifest.json",
+          "artifact_id": 12734872855,
+          "artifact_digest": "sha256:e43f79af9f71c278612a4b09fee4bd094d0a8bb76e20946d64a1c1709370b83c",
+          "trace_count": 22
+        },
+        "windows": {
+          "log": "/private/tmp/freyalab-lote/4-ci-first-windows-job.log",
+          "artifact": "/private/tmp/freyalab-lote/4-ci-first-windows-evidence.zip",
+          "manifest": "/private/tmp/freyalab-lote/4-ci-first-windows-artifacts/manifest.json",
+          "artifact_id": 12735367022,
+          "artifact_digest": "sha256:591719359792068665104b8d5e28e464025617ff500e3b89c1502cc6db2d11f4",
+          "trace_count": 22
+        }
+      },
+      "observations": [
+        "Installed electron.d.ts:7443 defines ClipboardItem input as Record of MIME keys; 7458-7464 documents platform-exposed types of read clipboard entries.",
+        "No clipboard payload contents were logged or attached by the monitoring agent.",
+        "No workflow reruns, cancellations, source edits or native-app runs were requested/performed by the monitor."
+      ],
+      "evidence_sha256": {
+        "/private/tmp/freyalab-lote/4-ci-first-ubuntu-job.log": "3310fb00857af7505af98a45b3fb268e92c78f25c12c794a5dd83193903625f8",
+        "/private/tmp/freyalab-lote/4-ci-first-ubuntu-artifacts/manifest.json": "a405b5d768844af1c8892fdad5c7989a83db252ef8644f8c8b99418b3e58e93e",
+        "/private/tmp/freyalab-lote/4-ci-first-mac-job.log": "70f8a2c31468ae8c826c87a04a1334f9ff4964b3310183e1161f5517a76d99f2",
+        "/private/tmp/freyalab-lote/4-ci-first-mac-artifacts/manifest.json": "09f752850662813b84e459101788b8828a57a9b5d20750fa218d98b1c505e30b",
+        "/private/tmp/freyalab-lote/4-ci-before-adjustment-jobs.json": "0e8c20cc5c692f85517b0340ef9174759f180d91e103686acdb52cf47d3e9630",
+        "/private/tmp/freyalab-lote/4-ci-first-windows-job.log": "1d47a475e35b4cbb93ba95b7113b9bd055fe1b67d847cf8858803e38a5be6113",
+        "/private/tmp/freyalab-lote/4-ci-first-windows-artifacts/manifest.json": "c59348688cf770f26a45d2e48abf7ea64d93428df34e470f5c428ee2dbf4b903"
+      },
+      "before_adjustment_snapshot": "/private/tmp/freyalab-lote/4-ci-before-adjustment-jobs.json"
+    },
+    "realProbe": {
+      "platform": "darwin",
+      "electron": "44.9.2",
+      "originalCounts": {
+        "items": 1,
+        "mimeCounts": [
+          2
+        ],
+        "legacyEnumerationAvailable": false,
+        "legacyCount": null
+      },
+      "afterClear": {
+        "items": 1,
+        "mimeCounts": [
+          0
+        ],
+        "availableFormats": null,
+        "legacyEnumerationAvailable": false
+      },
+      "oldConstructorError": "TypeError: Failed to construct 'ClipboardItem': at least one MIME type is required.",
+      "oldMapError": "TypeError: Failed to construct 'ClipboardItem': at least one MIME type is required.",
+      "newFiltered": {
+        "succeeded": true,
+        "snapshotItems": 0,
+        "restoreStrategy": "clear() para snapshot vacío; no se crea ClipboardItem({})."
+      },
+      "selfCheck": {
+        "oldEmptyConstructorFailed": true,
+        "newEmptySnapshotSucceeded": true
+      },
+      "originalPayloadLogged": false,
+      "restore": {
+        "attempted": true,
+        "completed": true
+      }
+    },
+    "probeScope": "Metadatos y estados únicamente. Un item original con dos MIME conservado/restaurado en main; sus contenidos nunca se devolvieron a Node ni a logs.",
+    "availableFormats": "No existe en Electron 44.9.2; null no prueba que haya cero formatos nativos. No se incorporó una guarda basada en esa API ausente.",
+    "correctedHeadCi": "Pendiente; futura CI completa en cuatro plataformas. No se solicitaron reruns manuales."
+  }
+}
