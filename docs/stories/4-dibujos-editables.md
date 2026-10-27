@@ -1,6 +1,6 @@
 # Iteración 4 · Dibujos editables
 
-Investigación del editor de dibujos de Joplin y plan para FreyaLab. **No se incorpora ninguna dependencia hasta que el propietario apruebe la solución** (decisiones D1 a D6 al final). La única historia que se puede empezar ya es FL-DRW-001, que no necesita librerías.
+Investigación del editor de dibujos de Joplin y plan para FreyaLab. **Decisiones D1 a D6 aprobadas por el propietario el 2026-10-27** (sección 5). Sigue vigente que **no se incorpora ninguna dependencia a `main` hasta el «go» del informe de FL-DRW-002**: js-draw se instala solo en una rama de prototipo que nunca se fusiona. Se pueden empezar ya FL-DRW-001 (sin librerías) y FL-DRW-002 (prototipo y medidas); son independientes y no tocan los mismos archivos.
 
 Marcas: ✔ comprobado en el artefacto instalado o en el registro/repositorio oficial · ◐ por lectura de código o documentación · ○ no verificado.
 
@@ -46,7 +46,7 @@ REA (`analyze_javascript_application`, estático, sin ejecutar nada) y lectura d
 
 ## 3. Diseño propuesto para FreyaLab
 
-**Almacenamiento (recomendado):** el dibujo es un archivo `.svg` junto al documento, en `<documento>.assets/dibujo-1.svg`, y el Markdown lleva `![Descripción del dibujo](documento.assets/dibujo-1.svg)`. Es una imagen normal: la ven otros visores (incluido GitHub), no hay formato propietario y la vista previa ya sabe cargarla (`Documents.image()` admite `.svg`, hasta 8 MiB, contenida en la carpeta del documento, entregada como `data:`) ✔.
+**Almacenamiento (decidido en D2, 2026-10-27):** el dibujo es un archivo `.svg` junto al documento, en `<documento>.assets/dibujo-1.svg`, y el Markdown lleva `![Descripción del dibujo](documento.assets/dibujo-1.svg)`. Es una imagen normal: la ven otros visores (incluido GitHub), no hay formato propietario y la vista previa ya sabe cargarla (`Documents.image()` admite `.svg`, hasta 8 MiB, contenida en la carpeta del documento, entregada como `data:`) ✔.
 
 **Insertar:** el menú **Insertar** gana «Dibujo…». Abre el editor en un panel grande; al pulsar «Guardar y cerrar» pide la **descripción** (texto alternativo, obligatoria para accesibilidad) y escribe el archivo y la línea Markdown en una sola acción deshacible.
 
@@ -101,7 +101,7 @@ Archivos probables: src/main/documents.ts (image, saveNow y la ruta de «Guardar
 
 **8. Criterios de revisión.** Rojo→verde del caso F05; ninguna escritura fuera de la carpeta del documento; la copia es atómica o se revierte; el texto del usuario solo cambia donde hace falta y con aviso; sin dependencias.
 
-### FL-DRW-002 · Prototipo aislado con js-draw (BLOQUEADA hasta aprobar D1)
+### FL-DRW-002 · Prototipo aislado con js-draw (D1 aprobada el 2026-10-27; el prototipo nunca se fusiona)
 
 **1. Historia de usuario.** Como propietario, quiero medir si js-draw encaja en FreyaLab antes de decidir, para no comprometer el tamaño, la seguridad ni la accesibilidad por una intuición.
 
@@ -123,7 +123,7 @@ Archivos probables: src/main/documents.ts (image, saveNow y la ruta de «Guardar
 **6. Prompt ejecutable para Codex.**
 
 ```text
-Tarea: FL-DRW-002 · Prototipo js-draw. NO EMPIECES sin aprobación escrita del propietario (decisión D1).
+Tarea: FL-DRW-002 · Prototipo js-draw. Aprobada por el propietario el 2026-10-27 (decisión D1, sección 5): solo medir; esa aprobación NO autoriza incorporar js-draw a main.
 Lee docs/stories/4-dibujos-editables.md. Rama de prototipo spike/drw-js-draw desde main; instala js-draw SOLO en esa rama. NUNCA abras PR de fusión: el resultado es un informe.
 Mide S1–S7 y escribe docs/evidence/drw-002-spike-<fecha>.md con números reales, la salida de los comandos y un veredicto go/no-go propuesto con riesgos. Incluye la versión exacta de js-draw y de Coloris y sus licencias. Si algo no se puede medir, dilo. No cambies producción, package.json de main ni el lockfile de main.
 ```
@@ -144,11 +144,13 @@ Se detallan en cuanto FL-DRW-002 dé un «go».
 
 ## 5. Decisiones del propietario
 
-| ID | Decisión | Recomendación |
-|---|---|---|
-| D1 | ¿Se aprueba medir js-draw en una rama de prototipo sin fusionar? | Sí; cuesta poco y evita decidir a ciegas |
-| D2 | ¿Dónde viven los activos? | `<documento>.assets/` junto al archivo |
-| D3 | ¿Solo se editan dibujos con la marca de FreyaLab/js-draw? | Sí, para no alterar SVG ajenos |
-| D4 | ¿La primera versión importa imágenes y PDF dentro del dibujo (como Joplin)? | No; solo dibujo a mano y formas |
-| D5 | ¿La descripción (texto alternativo) es obligatoria? | Sí |
-| D6 | ¿Qué nivel de accesibilidad por teclado se exige antes de publicarlo? | Documentarlo y ofrecer la descripción como alternativa; no prometer paridad con el ratón |
+**Aprobadas el 2026-10-27, todas con la recomendación.**
+
+| ID | Decisión | Resolución (2026-10-27) | Qué implica |
+|---|---|---|---|
+| D1 | ¿Se aprueba medir js-draw en una rama de prototipo sin fusionar? | **Sí.** Cuesta poco y evita decidir a ciegas | Desbloquea FL-DRW-002. Solo autoriza medir en `spike/drw-js-draw`; **no** autoriza añadir js-draw ni Coloris a `main`: eso requiere el informe go/no-go y una decisión nueva del propietario |
+| D2 | ¿Dónde viven los activos? | **`<documento>.assets/` junto al archivo** | Es la política que FL-DRW-001 implementa para activos relativos y «Guardar como» |
+| D3 | ¿Solo se editan dibujos con la marca de FreyaLab/js-draw? | **Sí**, para no alterar SVG ajenos | FL-DRW-004 ofrece «Editar dibujo» solo para SVG con la marca; FL-DRW-002 (S3) identifica cuál es esa marca |
+| D4 | ¿La primera versión importa imágenes y PDF dentro del dibujo (como Joplin)? | **No**; solo dibujo a mano y formas | Importar imágenes o PDF queda fuera de FL-DRW-003 a 005 |
+| D5 | ¿La descripción (texto alternativo) es obligatoria? | **Sí** | FL-DRW-004 no inserta un dibujo sin descripción |
+| D6 | ¿Qué nivel de accesibilidad por teclado se exige antes de publicarlo? | **Documentarlo y ofrecer la descripción como alternativa; no prometer paridad con el ratón** | FL-DRW-002 (S5) mide qué se puede hacer sin ratón; la documentación pública no promete paridad |

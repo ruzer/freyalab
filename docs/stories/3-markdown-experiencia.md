@@ -211,7 +211,7 @@ El propietario comparó FreyaLab con Joplin (barra del editor) y MDViewer (índi
 | 10 | Insertar fecha y hora | No existe (sin coincidencias en `markdown-commands.ts` ni en `MarkdownToolbar.svelte`) | Medio | S | Bajo | **FL-MD-008** |
 | 11 | Etiquetas (tags): chips, filtro, lista con recuentos y edición | No existe | Alto | M a L (lectura) y L (edición) | Medio (dónde se guardan; escribir YAML) | **FL-MD-009** (chips, filtro y lista con recuentos; decisiones T1–T4 aprobadas el 2026-10-27) y **FL-MD-010** (edición) esbozada |
 | 12 | Atrás/adelante entre documentos y «abrir en editor externo» | No existe (solo deshacer y rehacer) | Bajo | S a M | Bajo | No hacer ahora; ver «Aplazadas» |
-| 13 | Dibujo libre (el lápiz de Joplin) | Planeado | Alto | L | Alto | Iteración 4 (`4-dibujos-editables.md`), a la espera de las decisiones D1–D6 |
+| 13 | Dibujo libre (el lápiz de Joplin) | Planeado | Alto | L | Alto | Iteración 4 (`4-dibujos-editables.md`); decisiones D1–D6 aprobadas el 2026-10-27, FL-DRW-002 lista |
 
 Sin diferencia con Joplin, y por eso sin historia: negrita, cursiva, código, tachado, títulos, listas con viñetas, numeradas y de tareas, separador, tabla y enlace (FL-MD-001).
 
