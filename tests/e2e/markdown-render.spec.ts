@@ -99,8 +99,12 @@ test('B: enlaces con acentos, mayúsculas y porcentaje navegan y enfocan; huérf
  await app.evaluate(({shell})=>{const state=globalThis as unknown as {md002Opened:string[]};state.md002Opened=[];shell.openExternal=async url=>{state.md002Opened.push(url)}})
  await article().getByRole('link',{name:'externo',exact:true}).click();await article().getByRole('link',{name:'correo',exact:true}).click()
  await expect.poll(()=>app.evaluate(()=>(globalThis as unknown as {md002Opened:string[]}).md002Opened)).toEqual(['https://example.com/guia#Parte','mailto:equipo@example.com'])
+ const allowedLinks=['mailto:equipo@example.com?subject=Consulta&body=Texto%20con%20attachment','MAILTO:equipo@example.com?SUBJECT=attach&body=Adjunto%20no%20incluido','mailto:equipo@example.com?attachmentName=referencia','http://example.com/guia?attach=referencia','https://example.com/guia?attachment=referencia']
+ for(const href of allowedLinks)await page.evaluate(href=>window.freya.openLink(href),href)
+ const opened=['https://example.com/guia#Parte','mailto:equipo@example.com',...allowedLinks]
+ for(const query of ['attach=archivo.txt','attachment=','ATTACH=','Attachment=archivo.txt','a%74tach=archivo.txt','%61ttachment=','subject=Consulta&AtTaChMeNt=archivo.txt','attach&body=Texto'])await expect(page.evaluate(href=>window.freya.openLink(href),`mailto:equipo@example.com?${query}`)).rejects.toThrow(/adjuntos/i)
  for(const href of ['file:///tmp/no-abras.md','javascript:alert(1)','data:text/html,<script>alert(1)</script>'])await expect(page.evaluate(href=>window.freya.openLink(href),href)).rejects.toThrow(/permiten|permitidos|enlaces/i)
- expect(await app.evaluate(()=>(globalThis as unknown as {md002Opened:string[]}).md002Opened)).toEqual(['https://example.com/guia#Parte','mailto:equipo@example.com'])
+ expect(await app.evaluate(()=>(globalThis as unknown as {md002Opened:string[]}).md002Opened)).toEqual(opened)
  const count=await invariant(page,'.preview article','invariante-b-vista');expect(count.links).toBe(4)
  await screenshots('b')
  const view=await standalone(await exportFile('html'))
