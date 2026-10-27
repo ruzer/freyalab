@@ -1,10 +1,10 @@
-export type MarkdownAction='bold'|'italic'|'strike'|'inline'|'task'|'table'|'mermaid'|'code'|'paragraph'|'heading1'|'heading2'|'heading3'|'heading'|'list'|'ordered'|'quote'|'rule'|'link'
+export type MarkdownAction='bold'|'italic'|'strike'|'inline'|'task'|'table'|'mermaid'|'code'|'paragraph'|'heading1'|'heading2'|'heading3'|'heading'|'list'|'ordered'|'quote'|'rule'|'link'|'date'|'datetime'
 export type MarkdownSelection={anchor:number;head:number}
 export type MarkdownChange={changes:{from:number;to:number;insert:string}[];selection:MarkdownSelection}
 export const codeLanguages=['text','bash','python','javascript','typescript','json','yaml','sql','go'] as const
 export type CodeLanguage=typeof codeLanguages[number]
 export type MarkdownFormatState={bold:boolean;italic:boolean;strike:boolean;inline:boolean;block:'paragraph'|'heading1'|'heading2'|'heading3'}
-type Command=(text:string,selection:MarkdownSelection,language?:CodeLanguage)=>MarkdownChange
+type Command=(text:string,selection:MarkdownSelection,language?:CodeLanguage,now?:Date)=>MarkdownChange
 type Line={from:number;to:number;end:number;text:string}
 type Span={from:number;to:number;start:number;end:number}
 const unchanged=(selection:MarkdownSelection):MarkdownChange=>({changes:[],selection})
@@ -158,9 +158,17 @@ const rule:Command=(text,original)=>{
  if(line&&/^ {0,3}---[ \t]*$/.test(line.text))return{changes:[{from:line.from,to:line.to,insert:''}],selection:{anchor:line.from,head:line.from}}
  return inserted(text,{anchor:Math.max(value.anchor,value.head),head:Math.max(value.anchor,value.head)},'---',3)
 }
+const date=(withTime:boolean):Command=>(text,original,_language,now)=>{
+ if(!now||!Number.isFinite(now.getTime()))return unchanged(original)
+ const value=selection(text,original),pad=(part:number)=>String(part).padStart(2,'0')
+ const day=`${String(now.getFullYear()).padStart(4,'0')}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`
+ const insert=day+(withTime?` ${pad(now.getHours())}:${pad(now.getMinutes())}`:'')
+ const from=Math.min(value.anchor,value.head),to=Math.max(value.anchor,value.head),end=from+insert.length
+ return{changes:[{from,to,insert}],selection:{anchor:end,head:end}}
+}
 export const markdownCommands:Record<MarkdownAction,Command>={
  bold:inline('bold'),italic:inline('italic'),strike:inline('strike'),inline:inline('inline'),
- paragraph:block('paragraph'),heading1:block('heading1'),heading2:block('heading2'),heading3:block('heading3'),heading:block('heading2'),list:block('list'),ordered:block('ordered'),task:block('task'),quote:block('quote'),code,link,rule,
+ paragraph:block('paragraph'),heading1:block('heading1'),heading2:block('heading2'),heading3:block('heading3'),heading:block('heading2'),list:block('list'),ordered:block('ordered'),task:block('task'),quote:block('quote'),code,link,rule,date:date(false),datetime:date(true),
  table:(text,value)=>inserted(text,selection(text,value),'| Columna 1 | Columna 2 |\n| --- | --- |\n| Dato 1 | Dato 2 |',2),
  mermaid:(text,value)=>inserted(text,selection(text,value),'```mermaid\nflowchart LR\n  A[Inicio] --> B[Proceso]\n  B --> C[Fin]\n```',11)
 }

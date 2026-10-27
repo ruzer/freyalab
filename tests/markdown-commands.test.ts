@@ -132,3 +132,65 @@ describe('estado local de la línea del cursor',()=>{
  it('ignora marcadores dentro de código en línea',()=>expect(lineFormatState('`~~literal~~`',5).strike).toBe(false))
  it.each([['texto','paragraph'],['# texto','heading1'],['## texto','heading2'],['### texto','heading3']] as const)('bloque de %s',(line,block)=>expect(lineFormatState(line,line.length).block).toBe(block))
 })
+
+describe('FL-MD-008 · fecha y hora locales inyectadas',()=>{
+ const fixed=new Date(2024,1,29,9,5,48)
+ function dated(action:'date'|'datetime',text:string,anchor=0,head=anchor,now:Date|undefined=fixed){
+  const result=markdownCommands[action](text,{anchor,head},undefined,now)
+  let value=text
+  for(const change of [...result.changes].sort((a,b)=>b.from-a.from))value=value.slice(0,change.from)+change.insert+value.slice(change.to)
+  return{...result,value}
+ }
+ const dates=[
+  [new Date(2024,1,29,9,5),'2024-02-29','2024-02-29 09:05'],
+  [new Date(2026,0,2,0,0),'2026-01-02','2026-01-02 00:00'],
+  [new Date(2025,11,31,23,59),'2025-12-31','2025-12-31 23:59'],
+  [new Date(2026,0,1,0,1),'2026-01-01','2026-01-01 00:01'],
+  [new Date(2026,11,10,10,9),'2026-12-10','2026-12-10 10:09'],
+  [new Date(1999,11,31,23,59),'1999-12-31','1999-12-31 23:59'],
+ ] as const
+ for(const action of ['date','datetime'] as const)it.each(dates)(`${action}: %s`,(now,date,datetime)=>{
+  const expected=action==='date'?date:datetime,result=dated(action,'',0,0,now)
+  expect(result.value).toBe(expected);expect(result.changes).toHaveLength(1)
+  expect(result.selection).toEqual({anchor:expected.length,head:expected.length})
+ })
+ it.each([
+  ['vacío','',0,0,'2024-02-29'],
+  ['cursor interior','abc',1,1,'a2024-02-29bc'],
+  ['reemplazo','hola mundo',5,10,'hola 2024-02-29'],
+  ['selección inversa','hola mundo',10,5,'hola 2024-02-29'],
+  ['selección multilínea LF','a\nb\nc',0,5,'2024-02-29'],
+  ['selección multilínea CRLF','a\r\nb\r\nc',0,7,'2024-02-29'],
+  ['resto LF intacto','uno\ntexto\nfin',4,9,'uno\n2024-02-29\nfin'],
+  ['resto CRLF intacto','uno\r\ntexto\r\nfin',5,10,'uno\r\n2024-02-29\r\nfin'],
+  ['dentro de cerca','```text\nx\n```',8,9,'```text\n2024-02-29\n```'],
+  ['dentro de propiedades','---\nfecha: \n---',11,11,'---\nfecha: 2024-02-29\n---'],
+  ['no parte Unicode','A🐕B',2,2,'A2024-02-29🐕B'],
+ ] as const)('%s',(_,text,anchor,head,expected)=>{
+  const result=dated('date',text,anchor,head);expect(result.value).toBe(expected)
+  expect(result.selection.anchor).toBe(result.selection.head)
+  expect(result.changes).toHaveLength(1)
+ })
+ for(const action of ['date','datetime'] as const){
+  it(`${action}: sin reloj no cambia texto ni selección`,()=>{
+   const original={anchor:1,head:2},result=markdownCommands[action]('abc',original)
+   expect(result).toEqual({changes:[],selection:original})
+  })
+  it(`${action}: Invalid Date no cambia texto ni selección`,()=>{
+   const original={anchor:2,head:1},result=markdownCommands[action]('abc',original,undefined,new Date(NaN))
+   expect(result).toEqual({changes:[],selection:original})
+  })
+ }
+ it('no modifica el objeto Date y no inserta segundos',()=>{
+  const timestamp=fixed.getTime(),result=dated('datetime','antes después',6,6)
+  expect(result.value).toBe('antes 2024-02-29 09:05después');expect(fixed.getTime()).toBe(timestamp)
+ })
+ it('completa también los años menores de cuatro cifras',()=>{
+  const now=new Date(2000,0,2,0,0);now.setFullYear(0)
+  expect(dated('date','',0,0,now).value).toBe('0000-01-02')
+ })
+ it('respeta la hora local que resuelve el sistema en un día de cambio horario',()=>{
+  const now=new Date(2024,2,10,2,30),result=dated('datetime','',0,0,now)
+  expect(new Date(result.value.replace(' ','T')).getTime()).toBe(now.getTime())
+ })
+})
