@@ -29,19 +29,21 @@ async function intact(source:string){
  await page.getByRole('button',{name:'Guardar',exact:true}).click()
  expect(await readFile(documentPath,'utf8')).toBe(source)
 }
-async function screenshots(block:string){
+async function screenshots(block:string,prepare?:()=>Promise<void>){
  for(const theme of ['light','dark']){
   await page.getByRole('combobox',{name:'Tema',exact:true}).selectOption(theme)
   if(theme==='dark')await expect(page.locator('html')).toHaveClass(/dark/);else await expect(page.locator('html')).not.toHaveClass(/dark/)
   await settled()
+  if(prepare)await prepare()
   if(process.env.FREYALAB_MD_EVIDENCE)await page.screenshot({path:resolve(`docs/evidence/md-002-${block}-${theme}-1440x900.png`),animations:'disabled'})
  }
 }
 async function exportFile(format:'html'|'pdf'){
+ const name=`documento.${format}`,path=join(directory,'exports',name);await rm(path,{force:true})
  await page.getByRole('button',{name:'Exportar',exact:true}).click()
  await page.getByRole('button',{name:format==='html'?'HTML autónomo':'Documento PDF',exact:true}).click()
- const name=`documento.${format}`;await expect.poll(()=>readdir(join(directory,'exports')),{timeout:30_000}).toContain(name)
- return join(directory,'exports',name)
+ await expect.poll(()=>readdir(join(directory,'exports')),{timeout:30_000}).toContain(name)
+ return path
 }
 async function pdfText(path:string){
  const {getDocument}=await import('pdfjs-dist/legacy/build/pdf.mjs'),loading=getDocument({data:new Uint8Array(await readFile(path)),useSystemFonts:true})
@@ -129,6 +131,47 @@ test('C: notas al pie en español, sin doble prefijo ni índice; ida y vuelta ta
   const back=view.locator('a[aria-label^="Volver a la referencia"]').first(),backTarget=await back.getAttribute('href');expect(backTarget).toBeTruthy();await back.click();await expect(view.locator(':target')).toHaveAttribute('id',backTarget!.slice(1))
   await expect(view.getByRole('heading',{name:'Notas al pie',exact:true})).toBeVisible()
  }finally{await view.close()}
+ await intact(source)
+})
+
+test('D: plegables nativos con Markdown, tres niveles y teclado; HTML conserva open y PDF incluye el contenido cerrado',async()=>{
+ const source='---\nprivado: PROPIEDAD_PRIVADA_MD002_D\n---\n\n# Plegables\n\n[Ir al contenido oculto](#encabezado-oculto)\n\n<details><summary>Guía exterior</summary>\n\n## Encabezado oculto\n\nContenido exterior de prueba.\n\n| Clave | Valor |\n| --- | --- |\n| dato | conservado |\n\n<details open><summary>Nivel dos</summary>\n\nContenido intermedio único.\n\n<details><summary>Nivel tres</summary>\n\nContenido profundo oculto.\n\n</details>\n\n</details>\n\n```python\nprint("código conservado")\n```\n\n</details>\n\n- Elemento\n\n  <details><summary>En lista</summary>\n\n  **Contenido en lista.**\n\n  </details>\n\n> <details><summary>En cita</summary>\n>\n> Contenido en cita.\n>\n> </details>\n'
+ await open(source)
+ const details=article().locator('details'),outer=details.filter({has:page.locator(':scope > summary',{hasText:'Guía exterior'})}).first()
+ await expect(details).toHaveCount(5);await expect(outer).not.toHaveAttribute('open','')
+ const states=await details.evaluateAll(nodes=>nodes.map(node=>node.hasAttribute('open')));expect(states).toEqual([false,true,false,false,false])
+ const htmlPath=await exportFile('html'),view=await standalone(htmlPath)
+ try{
+  await expect(view.locator('details')).toHaveCount(5);expect(await view.locator('details').evaluateAll(nodes=>nodes.map(node=>node.hasAttribute('open')))).toEqual(states)
+  await invariant(view,'body','invariante-d-html-autonomo')
+  await view.locator('summary').filter({hasText:'Guía exterior'}).first().click();await expect(view.getByRole('heading',{name:'Encabezado oculto',exact:true})).toBeVisible()
+ }finally{await view.close()}
+ const text=await pdfText(await exportFile('pdf'))
+ for(const content of ['Contenido exterior de prueba.','Contenido intermedio único.','Contenido profundo oculto.','Contenido en lista.','Contenido en cita.'])expect(text).toContain(content)
+ expect(text).not.toContain('PROPIEDAD_PRIVADA_MD002_D');expect(await details.evaluateAll(nodes=>nodes.map(node=>node.hasAttribute('open')))).toEqual(states)
+ const summary=outer.locator(':scope > summary');await summary.focus();await page.keyboard.press('Enter');await expect(outer).toHaveAttribute('open','')
+ await expect(outer.locator('table')).toContainText('conservado');await expect(outer.locator('code.language-python')).toContainText('print("código conservado")')
+ await summary.focus();await page.keyboard.press('Space');await expect(outer).not.toHaveAttribute('open','')
+ await article().getByRole('link',{name:'Ir al contenido oculto',exact:true}).click();await expect(article().locator('#heading-encabezado-oculto')).toBeFocused();await expect(outer).toHaveAttribute('open','')
+ const third=article().locator('details').filter({has:page.locator(':scope > summary',{hasText:'Nivel tres'})}).first()
+ await third.locator(':scope > summary').focus();await page.keyboard.press('Space');await expect(third).toHaveAttribute('open','');await expect(third).toContainText('Contenido profundo oculto.')
+ await article().locator('summary').filter({hasText:'Nivel dos'}).first().click()
+ const uiStates=await details.evaluateAll(nodes=>nodes.map(node=>node.hasAttribute('open')));expect(uiStates).toEqual([true,false,true,false,false])
+ const exported=await readFile(await exportFile('html'),'utf8')
+ const exportedStates=await page.evaluate(html=>Array.from(new DOMParser().parseFromString(html,'text/html').querySelectorAll('details'),node=>node.hasAttribute('open')),exported)
+ expect(exportedStates).toEqual(states);expect(exported).not.toContain('data-freya-open')
+ expect(await details.evaluateAll(nodes=>nodes.map(node=>node.hasAttribute('open')))).toEqual(uiStates)
+ const afterToggle=await pdfText(await exportFile('pdf'))
+ for(const content of ['Contenido exterior de prueba.','Contenido intermedio único.','Contenido profundo oculto.','Contenido en lista.','Contenido en cita.'])expect(afterToggle).toContain(content)
+ expect(afterToggle).not.toContain('PROPIEDAD_PRIVADA_MD002_D');expect(await details.evaluateAll(nodes=>nodes.map(node=>node.hasAttribute('open')))).toEqual(uiStates)
+ await screenshots('d',async()=>{
+  const close=page.getByRole('button',{name:'Cerrar aviso',exact:true});if(await close.isVisible())await close.click()
+  for(const label of ['Guía exterior','Nivel dos','Nivel tres']){
+   const summary=article().locator('summary').filter({hasText:label}).first(),details=summary.locator('..')
+   if(!await details.evaluate(node=>(node as HTMLDetailsElement).open))await summary.click()
+   await expect(details).toHaveAttribute('open','')
+  }
+ })
  await intact(source)
 })
 

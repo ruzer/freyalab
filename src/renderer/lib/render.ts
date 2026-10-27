@@ -8,6 +8,7 @@ import rehypeKatex from 'rehype-katex'
 import rehypeHighlight from 'rehype-highlight'
 import rehypeStringify from 'rehype-stringify'
 import katexCSS from 'katex/dist/katex.min.css?inline'
+import remarkDetails from './remark-details'
 
 export interface Heading { id:string; text:string; level:number }
 export function decodeFragment(value:string):string {try{return decodeURIComponent(value)}catch{return value}}
@@ -35,7 +36,7 @@ export async function markdownHTML(source:string):Promise<{html:string;headings:
  const headings:Heading[] = []
  const counts = new Map<string,number>()
  const used=new Set<string>(),aliases=new Map<string,string>(),ids=new Map<string,string>()
- const result = await unified().use(remarkParse).use(remarkGfm).use(remarkMath).use(remarkRehype,{clobberPrefix:'',footnoteLabel:'Notas al pie',footnoteLabelProperties:{},footnoteBackLabel:(index:number,reuse:number)=>`Volver a la referencia ${index+1}${reuse>1?` (${reuse})`:''}`})
+ const result = await unified().use(remarkParse).use(remarkGfm).use(remarkMath).use(remarkDetails).use(remarkRehype,{clobberPrefix:'',footnoteLabel:'Notas al pie',footnoteLabelProperties:{},footnoteBackLabel:(index:number,reuse:number)=>`Volver a la referencia ${index+1}${reuse>1?` (${reuse})`:''}`})
  .use(rehypeSanitize)
  .use(() => (tree:any) => {
    const references:{node:any;key:string}[]=[],notes=new Map<string,{node:any;id:string;references:string[]}>()

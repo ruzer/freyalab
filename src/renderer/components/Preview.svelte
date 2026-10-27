@@ -17,7 +17,14 @@
  }
  export function scrollRatio(ratio:number){if(container) container.scrollTop=ratio*Math.max(0,container.scrollHeight-container.clientHeight)}
  export function missingImages(){return missing}
- export async function exportHTML(){await tick();while(busy&&!disposed)await completion;if(disposed)throw new Error('El documento se cerró antes de terminar la vista previa.');if(renderError)throw new Error(renderError);return standaloneHTML(article?.innerHTML??'','Documento FreyaLab')}
+ export async function exportHTML(){
+  await tick();while(busy&&!disposed)await completion
+  if(disposed)throw new Error('El documento se cerró antes de terminar la vista previa.')
+  if(renderError)throw new Error(renderError)
+  const copy=article?.cloneNode(true) as HTMLElement|undefined
+  for(const details of copy?.querySelectorAll<HTMLDetailsElement>('details[data-freya-open]')??[]){details.open=details.dataset.freyaOpen==='1';details.removeAttribute('data-freya-open')}
+  return standaloneHTML(copy?.innerHTML??'','Documento FreyaLab')
+ }
  $effect(()=>{
   const source=text,docId=id,theme=dark,token=++generation
   busy=true;renderError='';missing=0
@@ -28,6 +35,7 @@
     if(token!==generation)return
     frontMatter=result.frontMatter
     const staged=document.createElement('template');staged.innerHTML=result.html
+    for(const details of staged.content.querySelectorAll('details'))details.dataset.freyaOpen=details.open?'1':'0'
     const images=Array.from(staged.content.querySelectorAll('img'),image=>{const src=image.getAttribute('src')??'';image.removeAttribute('src');return{image,src}})
     const diagrams=Array.from(staged.content.querySelectorAll('code.language-mermaid'),(code,index)=>{
      const source=code.textContent??'',previous=diagramBlocks[index]

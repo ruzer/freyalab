@@ -1,10 +1,104 @@
 import {describe,it,expect} from 'vitest'
 import {markdownHTML,standaloneHTML} from '../src/renderer/lib/render'
 import {localAnchorStats} from './helpers/markdown-invariants'
+import {readFile,readdir,writeFile} from 'node:fs/promises'
 describe('Markdown rendering',()=>{
  it('renders GFM without executing or preserving raw HTML',async()=>{const result=await markdownHTML('# Hola\n\n<script>alert(1)</script>\n\n| A | B |\n| - | - |\n| 1 | 2 |\n\n[mal](javascript:alert(1))');expect(result.html).toContain('<table>');expect(result.html).not.toContain('<script>');expect(result.html).not.toContain('href="javascript:');expect(result.headings).toEqual([{id:'heading-hola',text:'Hola',level:1}])})
  it('makes repeated heading anchors unique and retains diagram source',async()=>{const result=await markdownHTML('# Uno\n\n# Uno\n\n```mermaid\nflowchart LR\nA-->B\n```');expect(result.headings.map(h=>h.id)).toEqual(['heading-uno','heading-uno-1']);expect(result.html).toContain('language-mermaid');expect(result.html).toContain('A-->B')})
  it('renders formulas and produces a standalone document with escaped title',async()=>{const result=await markdownHTML('$x^2$');expect(result.html).toContain('class="katex"');const html=standaloneHTML(result.html,'<script>');expect(html).toContain('<title>&lt;script&gt;</title>');expect(html).toContain('@page');expect(html).not.toContain('cdn.')})
+})
+it('FL-MD-002 · todo href local no vacío del corpus tiene id real y único',async()=>{
+ const directory=new URL('./fixtures/markdown-corpus/',import.meta.url),report=[]
+ for(const name of (await readdir(directory)).filter(name=>name.endsWith('.md')).sort()){
+  const result=await markdownHTML(await readFile(new URL(name,directory),'utf8')),stats=localAnchorStats(result.html)
+  expect(stats.missing,name).toEqual([]);expect(stats.duplicates,name).toEqual([])
+  expect(result.headings.some(heading=>heading.id==='user-content-footnote-label')).toBe(false)
+  report.push({file:name,ids:stats.ids.length,localHrefs:stats.targets.length,missing:stats.missing.length,duplicates:stats.duplicates.length})
+ }
+ expect(report.length).toBeGreaterThanOrEqual(6)
+ if(process.env.FREYALAB_MD_EVIDENCE==='1')await writeFile('/private/tmp/md002-corpus-anchors.json',JSON.stringify(report,null,2))
+})
+// Añadir después de A–C; no cambia los tres casos originales.
+describe('FL-MD-002 D · plegables restringidos',()=>{
+ it.each([
+  ['misma línea', '<details><summary>Más</summary>\n\n**contenido**\n\n</details>', ['<details>', '<summary>Más</summary>', '<strong>contenido</strong>']],
+  ['etiquetas separadas', '<details open>\n<summary>Más *detalle*</summary>\n\ncontenido\n\n</details>', ['<details open>', '<summary>Más <em>detalle</em></summary>', '<p>contenido</p>']],
+  ['compacto', '<details><summary>Más</summary>contenido **visible**</details>', ['<details>', '<summary>Más</summary>', '<strong>visible</strong>']],
+  ['sin línea en blanco', '<details>\n<summary>Más</summary>\n# Interior\n\ncontenido\n</details>', ['<summary>Más</summary>', '<h1', 'Interior', '<p>contenido</p>']],
+  ['lista', '- <details><summary>Dentro</summary>\n\n  Texto **lista**\n\n  </details>', ['<ul>', '<li>', '<details>', '<summary>Dentro</summary>', '<strong>lista</strong>']],
+  ['cita', '> <details><summary>Cita</summary>\n>\n> Texto *citado*\n>\n> </details>', ['<blockquote>', '<details>', '<summary>Cita</summary>', '<em>citado</em>']],
+  ['tabla y código', '<details><summary>Datos</summary>\n\n| A | B |\n| - | - |\n| 1 | 2 |\n\n```js\nconst x = 1\n```\n\n</details>', ['<details>', '<summary>Datos</summary>', '<table>', '<pre>', '<code', 'const']],
+  ['sin summary', '<details>\n\ncontenido sin resumen\n\n</details>', ['<details>', '<p>contenido sin resumen</p>']],
+ ] as const)('%s conserva la etiqueta, el resumen y el Markdown interior',async(_,source,parts)=>{
+  const r=await markdownHTML(source)
+  for(const part of parts)expect(r.html).toContain(part)
+ })
+ it('anida tres niveles sin perder texto ni duplicar cierres',async()=>{
+  const r=await markdownHTML('<details><summary>Uno</summary>\n\n<details><summary>Dos</summary>\n\n<details><summary>Tres</summary>\n\nTexto final\n\n</details>\n\n</details>\n\n</details>')
+  expect(r.html.match(/<details(?:\s|>)/g)).toHaveLength(3)
+  expect(r.html.match(/<\/details>/g)).toHaveLength(3)
+  expect(r.html.match(/<summary>/g)).toHaveLength(3)
+  expect(r.html).toContain('Texto final')
+ })
+ it.each([
+  ['apertura sola', '<details>\ncontenido restante', 'contenido restante'],
+  ['cierre solo', '</details>\ncontenido restante', 'contenido restante'],
+  ['apertura sin cierre tras bloques', '<details><summary>Resumen visible</summary>\n\ncontenido\n\nfinal', 'Resumen visible'],
+  ['summary huérfano', '<summary>Resumen huérfano</summary>\n\ncontenido', 'Resumen huérfano'],
+ ] as const)('%s no oculta el contenido restante',async(_,source,text)=>{
+  const r=await markdownHTML(source)
+  expect(r.html).toContain(text)
+  expect(r.html).not.toContain('<details')
+ })
+ it.each([
+  '<details onclick="x()"><summary>Más</summary>\n\nTexto seguro\n\n</details>',
+  '<details><summary><img src=x onerror=x></summary>\n\nTexto seguro\n\n</details>',
+  '<details open="javascript:"><summary>Más</summary>\n\nTexto seguro\n\n</details>',
+  '<details><summary>Más</summary>\n\n<script>alert(1)</script>\n\nTexto seguro\n\n</details>',
+ ])('no conserva atributos ni HTML crudo hostil: %s',async source=>{
+  const r=await markdownHTML(source)
+  expect(r.html).toContain('Texto seguro')
+  expect(r.html).not.toMatch(/<(?:img|script)\b/i)
+  expect(r.html).not.toMatch(/<[^>]+(?:onerror|onclick|javascript:)/i)
+ })
+ it('no interpreta las etiquetas escritas dentro de un bloque de código',async()=>{
+  const r=await markdownHTML('```html\n<details><summary>Código</summary></details>\n```')
+  expect(r.html).toContain('<pre>')
+  expect(r.html).toContain('Código')
+  expect(r.html).not.toMatch(/<details(?:\s|>)/)
+ })
+ it('el código cercado dentro de un plegable sin líneas vacías conserva sus etiquetas literales',async()=>{
+  const r=await markdownHTML('<details><summary>Ejemplo</summary>\n```html\n<details><summary>Literal</summary></details>\n```\n</details>')
+  expect(r.html.match(/<details(?:\s|>)/g)).toHaveLength(1)
+  expect(r.html).toContain('<pre>')
+  expect(r.html).toContain('Literal')
+ })
+ it.each([
+  '<script><details><summary>No visible</summary>oculto</details></script>',
+  '<!-- <details><summary>No visible</summary>oculto</details> -->',
+  '<pre><details><summary>No visible</summary>oculto</details></pre>',
+  '<textarea><details><summary>No visible</summary>oculto</details></textarea>',
+  '<style><details><summary>No visible</summary>oculto</details></style>',
+  '<iframe><details><summary>No visible</summary>oculto</details></iframe>',
+ ])('no promociona etiquetas permitidas dentro de HTML crudo descartado: %s',async source=>{
+  const r=await markdownHTML(source)
+  expect(r.html).not.toContain('<details')
+  expect(r.html).not.toContain('No visible')
+ })
+ it('conserva el estado open del documento al preparar HTML autónomo',async()=>{
+  const closed=await markdownHTML('<details><summary>Cerrado</summary>\n\nInterior\n\n</details>')
+  const open=await markdownHTML('<details open><summary>Abierto</summary>\n\nInterior\n\n</details>')
+  expect(standaloneHTML(closed.html,'Cerrado')).toContain('<details>')
+  expect(standaloneHTML(open.html,'Abierto')).toContain('<details open>')
+ })
+ it('no crea un elemento de bloque dentro de un párrafo inline',async()=>{
+  const r=await markdownHTML('Antes <details><summary>Más</summary>texto</details> después')
+  expect(r.html).not.toContain('<details');expect(r.html).toContain('Antes');expect(r.html).toContain('después')
+ })
+ it('conserva el texto inline de xmp como antes, sin promover sus etiquetas',async()=>{
+  const r=await markdownHTML('<xmp><details><summary>No visible</summary>oculto</details></xmp>')
+  expect(r.html).not.toContain('<details');expect(r.html).toContain('No visibleoculto')
+ })
 })
 describe('FL-MD-002 C · notas al pie',()=>{
  it('un título dentro del cuerpo de una nota admite enlaces sin entrar en el índice',async()=>{
