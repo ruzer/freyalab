@@ -2,7 +2,7 @@
   "date": "2026-10-27",
   "base_commit": "1df90fdb8c46bab61c28b090113596b00848e5da",
   "branch": "codex/md-003-conteo-palabras",
-  "source_state": "working_tree_local_checks_complete_no_feature_commit_yet",
+  "source_state": "product_sources_bab0cf3_unchanged_platform_shortcut_test_corrected",
   "status": "Local completo: check 0 errores y 0 advertencias; unitarias 610/610 en 33 archivos, 5,26 s; E2E global 245/245 en 8,4 min sin reintentos locales; build separado final salida 0. CI de cuatro plataformas pendiente.",
   "system": {
     "os": "macOS 27.0.1",
@@ -87,6 +87,36 @@
       "phase": "separate_final_build_exit0",
       "raw_path": "/private/tmp/freyalab-lote/3-build-final.log",
       "sha256": "36c3886a4d308f327bd639aa301f80c1a27c363c12bc223a5aa5ab5aba1bf813"
+    },
+    "3-check-shortcut.log": {
+      "phase": "platform_shortcut_check_green",
+      "raw_path": "/private/tmp/freyalab-lote/3-check-shortcut.log",
+      "sha256": "43ee3b171f66d1461bea649536024381cd1f8f02039ab3d21f22b3c6df6b5ba0"
+    },
+    "3-unit-shortcut.log": {
+      "phase": "platform_shortcut_610_unit_green",
+      "raw_path": "/private/tmp/freyalab-lote/3-unit-shortcut.log",
+      "sha256": "71e927e2390461c0873edf22aa365e713d30ec38b5bbd7d5fcee9f8fe6b94858"
+    },
+    "3-shortcut-focal.log": {
+      "phase": "platform_shortcut_focal_1_green",
+      "raw_path": "/private/tmp/freyalab-lote/3-shortcut-focal.log",
+      "sha256": "be057b0ef0c5d2ad8b3a3feb04e3bf686b8a396fca479267838bea393976798d"
+    },
+    "3-build-shortcut.log": {
+      "phase": "platform_shortcut_build_green",
+      "raw_path": "/private/tmp/freyalab-lote/3-build-shortcut.log",
+      "sha256": "655351b73f22e44f5f1aeecff5de00aa7e595765474912a728b82b94f27dcd49"
+    },
+    "3-ci-windows-job.log": {
+      "phase": "ci_ccfdc54_windows_failed_wrong_test_shortcut",
+      "raw_path": "/private/tmp/freyalab-lote/3-ci-windows-job.log",
+      "sha256": "99372854913dc62e2bd25a36143b76d4b54f1fbdac201e1793f529ece3f2b61a"
+    },
+    "3-ci-windows-failure.log": {
+      "phase": "ci_ccfdc54_windows_failure_excerpt",
+      "raw_path": "/private/tmp/freyalab-lote/3-ci-windows-failure.log",
+      "sha256": "beec21bc53cbeed145ec10a53ee3623cd268749300414b3ca53fbc432f3e1e4e"
     }
   },
   "diagnostics": {
@@ -144,7 +174,7 @@
     "src/renderer/lib/text-stats.worker.ts": "83b96f11ef0b7bf83e9a1be6faccd00f168ec22ac1899cb6c35c91c904d63d4f",
     "src/shared/front-matter.ts": "659ac7b2f6fe6ca7b5a0bd71efb87f31b6f769163e85d7a73d1e0b4615b35af6",
     "tests/text-stats.test.ts": "012fa4b0d5ff3a0b05700a3b19138e6b5171244f321247b8c35c0c9d21057422",
-    "tests/e2e/text-stats.spec.ts": "51bbf625c8cfcd936dd47e42e85cf059f462b33c548144a524ae933463023d91"
+    "tests/e2e/text-stats.spec.ts": "1c8f0ae06c278f09ed5c867a283fb4fca15539561da581ba0d0380a4e22719ed"
   },
   "screenshots_phase": "global_e2e_final_preview_settled",
   "performance": {
@@ -815,5 +845,33 @@
     },
     "spec_sha256": "67a380c4062590bea3f4d25e74eade3caa153215c77d11c4d3a47943f673a9a8",
     "note": "Las copias actuales se sustituyen por las capturas de la suite global, que espera a Preview estable. Originales focales intactos."
+  },
+  "prior_test_source_sha256_before_platform_shortcut": "51bbf625c8cfcd936dd47e42e85cf059f462b33c548144a524ae933463023d91",
+  "ci_incident": {
+    "run_id": 40496763862,
+    "head": "ccfdc5414ee60f2fee00d77323e33f5ed3ed9e24",
+    "platform": "windows-2025",
+    "e2e_passed": 244,
+    "e2e_failed": 1,
+    "automatic_retry_also_failed": true,
+    "package_tests_executed": false,
+    "cause": "Test used macOS redo shortcut on Windows; installed historyKeymap uses Ctrl+Y",
+    "fix": "Use the existing platform-specific pattern from markdown-toolbar.spec.ts; no product changes",
+    "new_head_ci": "pending",
+    "local_after_test_fix": {
+      "check_errors": 0,
+      "check_warnings": 0,
+      "unit_passed": 610,
+      "unit_files": 33,
+      "unit_seconds": 5.04,
+      "focused_e2e_passed": 1,
+      "focused_e2e_seconds": 4.4,
+      "build_exit": 0,
+      "full_e2e_before_fix": {
+        "passed": 245,
+        "minutes": 8.4,
+        "note": "Mac shortcut unchanged; whole suite was not repeated after this test-only correction"
+      }
+    }
   }
 }

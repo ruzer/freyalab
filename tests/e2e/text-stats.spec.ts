@@ -126,7 +126,7 @@ test('deshacer y rehacer actualizan el contador y conservan un historial de edic
  expect((await current(document.id))?.dirty).toBe(true)
  await page.keyboard.press('ControlOrMeta+Z');await words(2)
  expect((await current(document.id))?.text).toBe('Hola mundo')
- await page.keyboard.press('ControlOrMeta+Shift+Z');await words(4)
+ await page.keyboard.press(process.platform==='darwin'?'ControlOrMeta+Shift+Z':'ControlOrMeta+Y');await words(4)
  expect((await current(document.id))?.text).toBe('Hola mundo tres cuatro')
 })
 
