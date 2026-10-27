@@ -4,6 +4,7 @@
  import {markdownHTML,diagramSVG,standaloneHTML,type Heading} from '../lib/render'
  let {text,id,dark=false,onheadings,onerror}:{text:string;id:string;dark?:boolean;onheadings:(headings:Heading[])=>void;onerror:(message:string)=>void}=$props()
  let busy=$state(false),announcement=$state(''),container:HTMLElement,article:HTMLElement
+ let frontMatter=$state<string|undefined>(undefined)
  let diagramBlocks:{source:string;dark:boolean;node:HTMLElement}[]=[]
  let generation=0,completion:Promise<void>=Promise.resolve(),renderError='',missing=0,disposed=false
  export function scrollToHeading(anchor:string){container?.querySelector(`[id="${CSS.escape(anchor)}"]`)?.scrollIntoView({behavior:'smooth',block:'start'})}
@@ -18,6 +19,7 @@
    try{
     const result=await markdownHTML(source)
     if(token!==generation)return
+    frontMatter=result.frontMatter
     const staged=document.createElement('template');staged.innerHTML=result.html
     const images=Array.from(staged.content.querySelectorAll('img'),image=>{const src=image.getAttribute('src')??'';image.removeAttribute('src');return{image,src}})
     const diagrams=Array.from(staged.content.querySelectorAll('code.language-mermaid'),(code,index)=>{
@@ -66,5 +68,11 @@
 <section class="preview" bind:this={container} aria-label="Vista previa del documento" role="document">
  {#if busy}<span class="render-progress">Actualizando vista previa…</span>{/if}
  <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</span>
+ {#if frontMatter!==undefined}<details class="document-properties"><summary>Propiedades del documento</summary><pre>{frontMatter}</pre></details>{/if}
  <article class="markdown-body" bind:this={article}></article>
 </section>
+<style>
+ .document-properties{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;color:var(--muted)}
+ .document-properties summary{cursor:pointer;width:fit-content}
+ .document-properties pre{font:12px/1.6 'JetBrains Mono',monospace;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text);padding:12px;background:var(--panel);border:1px solid var(--border);border-radius:6px}
+</style>
