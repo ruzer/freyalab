@@ -41,3 +41,9 @@
 
 /* FL-MD-001 */
 .document-tools:has(.markdown-toolbar){height:43px;min-height:43px;flex-wrap:nowrap;gap:6px;padding-top:5px;padding-bottom:5px}
+
+/* FL-MER-001 */
+.diagram-notice{background:#fff1f0;color:#821b19;border:1px solid #d6a6a2;border-radius:7px;padding:14px;font-size:12px;line-height:1.6;white-space:normal;text-align:left}
+:root.dark .diagram-notice{background:#3a2525;color:#ffcfcc;border-color:#90605d}
+.diagram-notice p{margin:4px 0 8px}.diagram-notice summary{cursor:pointer;width:fit-content;margin-top:6px}.diagram-notice pre{color:inherit;background:var(--bg);border:1px solid var(--border);padding:10px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;max-height:200px;overflow:auto}
+:root .diagram-notice.diagram-empty{background:var(--panel);color:var(--text);border-color:var(--border)}

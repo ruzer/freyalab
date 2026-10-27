@@ -1,0 +1,81 @@
+{
+  "version": "12.2.0",
+  "capture": "mermaid.render through baseline Diagram.svelte / diagramSVG, securityLevel strict and htmlLabels false; no initialization changes",
+  "fixtures": [
+    {
+      "id": "flowchart-corchete",
+      "source": "flowchart LR\n A[Inicio",
+      "message": "Parse error on line 3:\n...wchart LR A[Inicio\n---------------------^\nExpecting 'SQE', 'DOUBLECIRCLEEND', 'PE', '-)', 'STADIUMEND', 'SUBROUTINEEND', 'PIPE', 'CYLINDEREND', 'DIAMOND_STOP', 'TAGEND', 'TRAPEND', 'INVTRAPEND', 'UNICODE_TEXT', 'TEXT', 'TAGSTART', got '1'",
+      "line": 3
+    },
+    {
+      "id": "flowchart-comilla",
+      "source": "flowchart LR\n A[\"Inicio]",
+      "message": "Parse error on line 3:\n...hart LR A[\"Inicio]\n---------------------^\nExpecting 'SQE', 'DOUBLECIRCLEEND', 'PE', '-)', 'STADIUMEND', 'SUBROUTINEEND', 'PIPE', 'CYLINDEREND', 'DIAMOND_STOP', 'TAGEND', 'TRAPEND', 'INVTRAPEND', 'UNICODE_TEXT', 'TEXT', 'TAGSTART', got '1'",
+      "line": 3
+    },
+    {
+      "id": "flowchart-flecha",
+      "source": "flowchart LR\n A ->-> B",
+      "message": "Parse error on line 2:\nflowchart LR A ->-> B\n---------------^\nExpecting 'SEMI', 'NEWLINE', 'EOF', 'AMP', 'START_LINK', 'LINK', 'LINK_ID', got 'MINUS'",
+      "line": 2
+    },
+    {
+      "id": "flowchart-fin",
+      "source": "flowchart LR\n A -->",
+      "message": "Parse error on line 3:\nflowchart LR A -->\n------------------^\nExpecting 'AMP', 'COLON', 'PIPE', 'TESTSTR', 'DOWN', 'DEFAULT', 'NUM', 'COMMA', 'NODE_STRING', 'BRKT', 'MINUS', 'MULT', 'UNICODE_TEXT', got 'EOF'",
+      "line": 3
+    },
+    {
+      "id": "sequence",
+      "source": "sequenceDiagram\n Alice ?? Bob: hola",
+      "message": "Parse error on line 2:\n...iagram Alice ?? Bob: hola\n----------------------^\nExpecting '()', 'SOLID_OPEN_ARROW', 'DOTTED_OPEN_ARROW', 'SOLID_ARROW', 'SOLID_ARROW_TOP', 'SOLID_ARROW_BOTTOM', 'STICK_ARROW_TOP', 'STICK_ARROW_BOTTOM', 'SOLID_ARROW_TOP_DOTTED', 'SOLID_ARROW_BOTTOM_DOTTED', 'STICK_ARROW_TOP_DOTTED', 'STICK_ARROW_BOTTOM_DOTTED', 'SOLID_ARROW_TOP_REVERSE', 'SOLID_ARROW_BOTTOM_REVERSE', 'STICK_ARROW_TOP_REVERSE', 'STICK_ARROW_BOTTOM_REVERSE', 'SOLID_ARROW_TOP_REVERSE_DOTTED', 'SOLID_ARROW_BOTTOM_REVERSE_DOTTED', 'STICK_ARROW_TOP_REVERSE_DOTTED', 'STICK_ARROW_BOTTOM_REVERSE_DOTTED', 'BIDIRECTIONAL_SOLID_ARROW', 'DOTTED_ARROW', 'BIDIRECTIONAL_DOTTED_ARROW', 'SOLID_CROSS', 'DOTTED_CROSS', 'SOLID_POINT', 'DOTTED_POINT', got 'TXT'",
+      "line": 2
+    },
+    {
+      "id": "class",
+      "source": "classDiagram\n class A {\n +metodo()\n",
+      "message": "Parse error on line 3:\n...ass A { +metodo()\n--------------------^\nExpecting 'STRUCT_STOP', 'MEMBER', got 'EOF_IN_STRUCT'",
+      "line": 3
+    },
+    {
+      "id": "state",
+      "source": "stateDiagram-v2\n A -->",
+      "message": "Parse error on line 2:\n...ateDiagram-v2 A -->\n----------------------^\nExpecting 'ID', 'EDGE_STATE', got 'NL'",
+      "line": 2
+    },
+    {
+      "id": "er",
+      "source": "erDiagram\n CLIENTE ||--o{",
+      "message": "Parse error on line 2:\n...gram CLIENTE ||--o{\n----------------------^\nExpecting 'UNICODE_TEXT', 'NUM', 'ENTITY_NAME', 'DECIMAL_NUM', 'ENTITY_ONE', 'NON_IDENTIFYING', 'IDENTIFYING', got 'NEWLINE'",
+      "line": 2
+    },
+    {
+      "id": "gantt",
+      "source": "gantt\n dateFormat YYYY-MM-DD\n section Trabajo\n Tarea :",
+      "message": "Parse error on line 4:\n...tion Trabajo Tarea :\n----------------------^\nExpecting 'taskData', got ':'",
+      "line": 4
+    },
+    {
+      "id": "pie",
+      "source": "pie\n \"Uno\" : no",
+      "message": "Parsing failed: Lexer error on line 2, column 10: unexpected character: ->n<- at offset: 13, skipped 2 characters. Parse error on line 2, column 12: Expecting token of type 'NUMBER_PIE' but found `\n`.",
+      "line": 2
+    },
+    {
+      "id": "tipo",
+      "source": "diagramaInventado\n A --> B",
+      "message": "No diagram type detected matching given configuration for text: diagramaInventado\n A --> B"
+    },
+    {
+      "id": "vacio",
+      "source": "",
+      "message": "No diagram type detected matching given configuration for text: "
+    },
+    {
+      "id": "espacios",
+      "source": " \n\t ",
+      "message": "No diagram type detected matching given configuration for text: "
+    }
+  ]
+}

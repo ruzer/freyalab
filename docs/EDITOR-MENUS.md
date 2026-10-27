@@ -196,3 +196,17 @@ Al abrir dentro de filas/columnas ya marcadas, conserva la selección múltiple.
 - **Orden ascendente/descendente (vista):** necesita una columna marcada y usa el tipo elegido por Orden numérico. Sustituye los criterios de orden por ese criterio; Guardar conserva el orden del documento. Las muestras permiten ordenar su vista, sin habilitar edición o exportación.
 
 Las inserciones relativas se ofrecen también en Comandos, con el mismo bloqueo contextual. Cada cambio de datos se deshace en un paso y conserva el formato/recuperación existentes. Abrir/cerrar el menú o cambiar marcas no cambia datos. Escape devuelve foco al origen; si desapareció al desplazarse la tabla, vuelve a Comandos. Flechas/Home/End recorren opciones habilitadas. Las muestras y las consultas inválidas conservan sus bloqueos; las solicitudes que indiquen antes y después a la vez se rechazan.
+
+## Mermaid: errores
+
+Si la definición tiene un problema, el aviso explica en español qué revisar y qué probar. Muestra la línea y, cuando Mermaid la proporciona, la columna. Si el analizador señala más allá del final del texto, el aviso indica la última línea existente y omite una columna fuera de rango; **Ver detalle técnico** conserva el mensaje original y su numeración exacta. Comienza plegado y se abre con Enter al enfocarlo mediante Tab.
+
+En archivos `.mmd` o `.mermaid`, el último dibujo válido permanece atenuado y marcado como **Mostrando la última versión válida**. Sus controles de zoom e interacción quedan deshabilitados mientras haya un error. SVG, PNG y PDF se bloquean con **Corrige el diagrama antes de exportar.**; nunca exportan ese dibujo anterior como si correspondiera al texto actual. Sin versión válida se muestra un ejemplo mínimo seleccionable y copiable con teclado. El código del usuario no se sustituye.
+
+Dentro de Markdown, cada bloque inválido muestra la misma explicación y su ubicación se indica como **línea N del diagrama**, relativa al bloque. Los demás bloques siguen renderizándose. Los mensajes técnicos se insertan como texto, sin interpretar su HTML. El anuncio accesible contiene solo la explicación y cambia cuando cambia el diagnóstico; no repite el detalle técnico mientras se escribe. La actualización conserva el retardo de 150 ms y descarta resultados antiguos. Al corregir la definición, el aviso desaparece.
+
+Mermaid 12.2.0 sustituye una definición excesiva por un SVG con un aviso en inglés. Para impedir que ese aviso se guarde en caché o se exporte como dibujo válido, se comprueba el límite configurado del motor antes de renderizar (actualmente 50 000 unidades UTF-16). Es una comprobación conservadora: cuenta también comentarios y frontmatter; no amplía el límite ni modifica la configuración de seguridad. Si se supera, la pista propone dividir el diagrama y conserva el texto del usuario.
+
+Esta entrega cubre la parte de errores de UX-10 y F06. No añade plantillas, navegación a la línea, asistentes ni confirmaciones de exportación Markdown.
+
+Una definición vacía se presenta como estado inicial neutro, sin color de error ni detalle técnico; conserva la explicación y el ejemplo para comenzar. Lo mismo se aplica a un bloque Mermaid vacío dentro de Markdown.
