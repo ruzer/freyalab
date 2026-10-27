@@ -34,7 +34,9 @@ Pruebas existentes que no deben romperse: `tests/render.test.ts` (3 casos: GFM s
 │ # Hola                                       │
 ```
 
-**B. Enlaces internos.** Un clic en `#sección` lleva a ese título y deja el foco en él (para teclado y lectores de pantalla). Si no existe, aparece un aviso no bloqueante: «No encontré la sección “instalacion” en este documento». La coincidencia tolera mayúsculas y acentos (`#instalacion` encuentra «Instalación»). En el HTML exportado el enlace funciona sin JavaScript porque el `href` ya apunta al `id` real.
+**B. Enlaces internos.** Un clic en `#sección` lleva a ese título y deja el foco en él (para teclado y lectores de pantalla). La coincidencia tolera mayúsculas y acentos (`#instalacion` encuentra «Instalación»). En el HTML exportado el enlace funciona sin JavaScript porque el `href` ya apunta al `id` real.
+
+**Enlace a una sección que no existe (decisión 2026-10-26).** No se deja un enlace muerto: el generador lo convierte en `<span class="enlace-roto" data-seccion-faltante="instalacion">texto del enlace</span>`, **sin `href`**, con subrayado punteado y tono apagado. En la vista previa, pulsarlo muestra un aviso no bloqueante: «No encontré la sección “instalacion” en este documento». En el HTML y el PDF exportados es texto sin salto y sin JavaScript. Es una sola representación para vista previa y exportación. Límite asumido: el `span` no recibe foco (un enlace muerto no debe ser tabulable), así que el aviso es para quien usa el ratón; la marca visual sí es para todos.
 
 **C. Notas al pie.** La sección final se titula «Notas al pie»; el enlace de vuelta dice «Volver a la referencia 1». Los saltos de ida y vuelta funcionan en vista previa y en el HTML exportado. La sección no aparece en el índice.
 
@@ -49,11 +51,13 @@ Pruebas existentes que no deben romperse: `tests/render.test.ts` (3 casos: GFM s
 - A4. El texto fuente no se modifica, ni al abrir, ni al guardar, ni al exportar.
 
 **B**
-- B1. Para todo `href="#x"` del HTML generado existe un elemento con `id="x"` en ese mismo HTML (invariante comprobado sobre el corpus).
+- B1. Para todo `href="#x"` del HTML generado existe un elemento con `id="x"` en ese mismo HTML (invariante comprobado sobre el corpus). Un enlace interno sin destino **no conserva `href`** (ver B6), de modo que el invariante vale para todo el HTML, no solo para los enlaces que funcionan.
 - B2. `[ir](#instalacion)` y `[ir](#Instalación)` llevan al título «Instalación»; con repetidos (`# Uno` dos veces) `#uno` lleva al primero.
-- B3. En la vista previa, el clic desplaza al título y le da foco; si no existe, muestra el aviso del diseño sin lanzar excepción.
-- B4. En el HTML exportado el enlace funciona sin el controlador de clics de la aplicación.
-- B5. Enlaces externos y `mailto:` siguen abriéndose por `window.freya.openLink`.
+- B3. En la vista previa, el clic en un enlace válido desplaza al título y le da foco; pulsar un `.enlace-roto` muestra el aviso del diseño («No encontré la sección “x” en este documento») sin lanzar excepción.
+- B4. En el HTML exportado, el enlace válido funciona sin el controlador de clics de la aplicación; el enlace roto sale como texto sin `href`, con el estilo de `.enlace-roto` incluido en `documentCSS`, y no hay JavaScript.
+- B5. Enlaces externos y `mailto:` siguen abriéndose por `window.freya.openLink`; `href="#"` (ir al inicio) y los enlaces con fragmento hacia otra dirección (`otro.md#sec`, `https://x#y`) no se tocan.
+- B6. Un enlace interno `#x` sin destino se convierte en `<span class="enlace-roto" data-seccion-faltante="x">…</span>` conservando el contenido del enlace (incluido formato interior como negrita) y sin `href`; el texto del documento fuente no cambia.
+- B7. El fragmento se decodifica antes de comparar (`#caf%C3%A9` encuentra «Café») y la comparación ignora acentos y mayúsculas; un fragmento mal codificado no lanza excepción y cuenta como sin destino.
 
 **C**
 - C1. Para cada nota, el `href` de ida coincide con un `id` y el de vuelta también (mismo invariante B1).
@@ -73,6 +77,7 @@ Pruebas existentes que no deben romperse: `tests/render.test.ts` (3 casos: GFM s
 - Front matter con CRLF, con BOM al inicio, con cierre `...`, vacío (`---\n---`), sin cierre, de más de 100 líneas, y un documento que empieza por un título y contiene `---` más abajo.
 - Título repetido, título con símbolos o emoji, título solo con signos (`seccion` de respaldo), título con enlace dentro.
 - Enlace a un título que está dentro de un `<details>` cerrado: debe abrirlo al navegar (o documentar que no).
+- Enlaces rotos: repetido varias veces; dentro de una lista, una tabla o una nota al pie; con formato interior (`[**x**](#nada)`); fragmento con `%` mal formado; `[x](#)` y `[x]( #y)`; enlace roto que pasa a ser válido al añadir el título (el `span` debe volver a ser enlace en el siguiente render).
 - Dos notas con el mismo texto; nota referenciada dos veces; nota definida pero nunca usada.
 - `<details>` anidado hasta 3 niveles; `<summary>` ausente; `<details>` dentro de una lista o cita; Markdown con tabla o código dentro del plegable.
 - Entradas hostiles: `<details onclick="x()">`, `<summary><img src=x onerror=x></summary>`, `<details open="javascript:">`; ninguna debe conservar atributos ni ejecutar nada.
@@ -92,7 +97,7 @@ Método, por bloque y en este orden (A, B, C, D), con UN commit por bloque:
 1. Escribe primero las pruebas del bloque en tests/render.test.ts con el corpus de la historia y ejecútalas: deben FALLAR por la razón descrita (guarda la salida roja).
 2. Implementa lo mínimo. Preferencias de diseño:
    - A: detectar el front matter al inicio del texto (primera línea exactamente '---', cierre '---' o '...', líneas con forma clave: valor / lista / comentario / sangría, límite de 100 líneas) y apartarlo ANTES de parsear; devolverlo como campo opcional (frontMatter) del resultado. No dependas de remark-frontmatter.
-   - B: reescribe los href '#frag' del HTML generado al id real del título (comparación sin acentos ni mayúsculas) en un plugin rehype que corre después de asignar los id; conserva el clic de Preview como respaldo con foco en el título y aviso si no existe.
+   - B: reescribe los href '#frag' del HTML generado al id real del título (comparación sin acentos ni mayúsculas, fragmento decodificado) en un plugin rehype que corre después de asignar los id. Si no hay destino, conviértelo en <span class="enlace-roto" data-seccion-faltante="frag"> sin href (criterio B6); en Preview, pulsar .enlace-roto muestra el aviso «No encontré la sección “frag” en este documento»; el estilo de .enlace-roto va en documentCSS para que la exportación lo lleve. Conserva el clic de Preview con foco en el título para los enlaces válidos. No toques href="#" ni enlaces externos con fragmento.
    - C: elimina el doble prefijo y localiza etiquetas con las opciones de remark-rehype (footnoteLabel, footnoteBackLabel, clobberPrefix) y la configuración de rehype-sanitize; excluye la sección del índice.
    - D: transforma SOLO <details>/<details open>/<summary>…</summary>/</details> en un plugin remark propio y restringido (nodos html hermanos → nodos con data.hName), sin rehype-raw. Si concluyes que necesitas rehype-raw u otra dependencia, DETENTE y repórtalo.
 3. Ejecuta de nuevo: las pruebas del bloque deben pasar y las anteriores seguir pasando.
@@ -107,10 +112,10 @@ Entrega: PR en BORRADOR con el cuerpo basado en la historia. No fusiones, no pub
 | Nivel | Qué | Dónde |
 |---|---|---|
 | Unitaria (rojo→verde) | Una tabla de casos por bloque con entrada y salida esperada (los de la sección 2 y los límite 5) | `tests/render.test.ts` |
-| Invariante | Para cada documento del corpus: todo `href="#x"` tiene un `id="x"`; ningún `id` duplicado; el índice no incluye metadatos ni «Notas al pie» | `tests/render.test.ts` + `tests/fixtures/markdown-corpus/` |
+| Invariante | Para cada documento del corpus: todo `href="#x"` tiene un `id="x"`; ningún `id` duplicado; el índice no incluye metadatos ni «Notas al pie»; todo enlace interno sin destino aparece como `span.enlace-roto` con `data-seccion-faltante` y **sin** `href` | `tests/render.test.ts` + `tests/fixtures/markdown-corpus/` |
 | Seguridad | Las entradas hostiles de la sección 5 no conservan atributos de evento ni `javascript:`; el caso `<script>` existente sigue pasando | `tests/render.test.ts` |
-| E2E | Clic en `[ir](#instalacion)` desplaza y da foco; salto y vuelta de una nota; plegable con teclado; aviso por sección inexistente | `tests/e2e/ui.spec.ts` |
-| Exportación | Exportar HTML y abrirlo en una ventana sin la aplicación: los enlaces internos y las notas funcionan; el PDF muestra el contenido de los plegables y no los metadatos | `tests/export.test.ts` y E2E de exportación existentes |
+| E2E | Clic en `[ir](#instalacion)` desplaza y da foco; salto y vuelta de una nota; plegable con teclado; pulsar un `.enlace-roto` muestra el aviso sin excepción y sin desplazar | `tests/e2e/ui.spec.ts` |
+| Exportación | Exportar HTML y abrirlo en una ventana sin la aplicación: los enlaces internos y las notas funcionan; el enlace roto sale como texto sin `href` y con su estilo; el PDF muestra el contenido de los plegables y no los metadatos | `tests/export.test.ts` y E2E de exportación existentes |
 | Regresión | Los 3 casos actuales de `render.test.ts` y toda la suite E2E sin cambios | CI en las cuatro plataformas |
 
 Ejemplo del primer caso (rojo esperado antes del cambio):
@@ -129,5 +134,10 @@ it('no convierte el front matter en un título ni lo mete en el índice', async 
 - No hay dependencias nuevas; `package.json` y el lockfile no cambian.
 - El texto del usuario nunca se modifica; la detección de front matter no consume contenido que no lo sea (caso A3).
 - La seguridad no empeora: ningún atributo de HTML crudo sobrevive; la prueba de `<script>` original está intacta; el prefijo de `id` sigue protegiendo lo que no genera FreyaLab.
+- Ningún HTML generado ni exportado contiene un `href="#x"` sin su `id`; los enlaces rotos son `span` con la clase y el atributo acordados; el estilo viaja en `documentCSS`; la evidencia documenta el límite de teclado.
 - La evidencia incluye el invariante B1 con números reales y capturas en ambos temas; el informe separa lo ejecutado de lo no verificado.
 - Veredicto `NEEDS TESTING` si falta la exportación HTML/PDF o alguna plataforma de CI; `BLOCKED` si Codex propone una dependencia.
+
+## Decisiones registradas
+
+- **2026-10-26 · Enlaces a secciones inexistentes (B1, B3, B4).** Codex se detuvo por la ambigüedad entre «todo `href="#x"` tiene su `id`» (B1) y «aviso al pulsar un enlace roto» (B3). Decisión de diseño: una sola representación, `span.enlace-roto` sin `href`, con aviso al pulsar en la vista previa y texto plano al exportar (criterios B6 y B7). Alternativas descartadas: dejar el `href` roto (viola B1 y deja un enlace muerto en el HTML exportado) y dos representaciones distintas para vista previa y exportación (más código y riesgo de divergencia).
