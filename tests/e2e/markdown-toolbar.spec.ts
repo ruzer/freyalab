@@ -107,7 +107,7 @@ test('CRLF se conserva al formatear y guardar; el original no cambia hasta guard
  await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect.poll(()=>readFile(path,'utf8')).toBe(fenced)
 })
 
-test('solo lectura deshabilita todos los controles y vista previa oculta la barra',async()=>{
+test('solo lectura deshabilita todos los controles y vista previa oculta la barra',{tag:'@perf'},async()=>{
  await open('Pequeño');await page.getByRole('button',{name:'Editar',exact:true}).click()
  const text='# Fuente protegida\n'+('Texto sin modificar.\n'.repeat(600000)),{path,doc}=await open(text,'solo-lectura.md');expect(doc.readonly).toBe(true)
  const before=await readFile(path,'utf8')
@@ -149,7 +149,7 @@ test('composición IME sintética: los atajos no insertan marcadores y Unicode c
  // Los eventos son sintéticos: este caso no sustituye una comprobación con un IME del sistema.
 })
 
-test('documento de 10 MiB: el estado sigue al cursor sin bloquear la navegación',async()=>{
+test('documento de 10 MiB: el estado sigue al cursor sin bloquear la navegación',{tag:'@perf'},async()=>{
  test.setTimeout(300_000)
  await open('Preparando la medición') // el siguiente documento conserva el modo Editar
  const bytes=10*1024*1024,prefix='# Inicio\n\n',suffix='\n# Final\nFin de Freya',line='dato '.repeat(48)+'\n'

@@ -201,7 +201,7 @@ test('W1/W3: puntuación, acentos, vacío y límites de lectura siguen la regla 
  }
 })
 
-test('una muestra TXT de solo lectura cuenta el primer MiB y lo identifica sin presentar el total del archivo',async()=>{
+test('una muestra TXT de solo lectura cuenta el primer MiB y lo identifica sin presentar el total del archivo',{tag:'@perf'},async()=>{
  // El archivo supera el límite, pero la app solo carga su muestra de 1 MiB: no es un benchmark de edición 10 MiB en CI.
  const line='hola mundo '.repeat(80)+'\n',bytes=10*1024*1024+1,source=Buffer.alloc(bytes,32)
  source.write(line.repeat(Math.floor(bytes/line.length)),0,'ascii')

@@ -1,0 +1,16 @@
+export const shellFiles=['app.spec.ts','icons.spec.ts','ui.spec.ts'] as const
+
+export const mdFiles=[
+ 'markdown-render.spec.ts',
+ 'markdown-toolbar.spec.ts',
+ 'mermaid-errors.spec.ts',
+ 'mermaid-export-theme.spec.ts',
+ 'mermaid-fit.spec.ts',
+ 'missing-resources.spec.ts',
+ 'preview-edit.spec.ts',
+ 'preview-progressive.spec.ts',
+ 'text-stats.spec.ts',
+ 'markdown-paste.spec.ts',
+ 'markdown-date.spec.ts',
+ 'markdown-tasks.spec.ts',
+] as const

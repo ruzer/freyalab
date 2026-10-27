@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test'
+import {shellFiles,mdFiles} from './tests/e2e/groups'
 export default defineConfig({
   testDir: './tests/e2e',
   timeout: 90_000,
@@ -8,5 +9,10 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: [['list'], ['html', { open: 'never' }]],
-  use: { trace: 'retain-on-failure', screenshot: 'only-on-failure' }
+  use: { trace: 'retain-on-failure', screenshot: 'only-on-failure' },
+  projects: [
+    {name:'shell',testMatch:shellFiles.map(file=>`**/${file}`)},
+    {name:'md',testMatch:mdFiles.map(file=>`**/${file}`)},
+    {name:'csv',testMatch:'**/*.spec.ts',testIgnore:[...shellFiles,...mdFiles].map(file=>`**/${file}`)},
+  ]
 })
