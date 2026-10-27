@@ -37,7 +37,8 @@
  }
  export function format(action:MarkdownAction,language:CodeLanguage='text'){
   if(!view||kind!=='markdown'||readonly||view.state.readOnly||view.composing||view.compositionStarted)return
-  const result=markdownCommands[action](view.state.doc.toString(),view.state.selection.main,language)
+  const now=action==='date'||action==='datetime'?new Date():undefined
+  const result=markdownCommands[action](view.state.doc.toString(),view.state.selection.main,language,now)
   view.dispatch({changes:result.changes.map(change=>({...change,insert:Text.of(change.insert.split('\n'))})),selection:EditorSelection.range(result.selection.anchor,result.selection.head),annotations:isolateHistory.of('full'),scrollIntoView:true,userEvent:'input'})
   view.focus()
  }

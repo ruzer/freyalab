@@ -1,0 +1,460 @@
+{
+  "story": "FL-MD-008",
+  "date": "2026-10-27",
+  "branch": "codex/md-008-fecha-hora",
+  "baseCommit": "1df90fdb8c46bab61c28b090113596b00848e5da",
+  "candidateCommit": null,
+  "candidateState": "Fuentes sin commit al cerrar las comprobaciones locales; identificación por SHA-256.",
+  "environment": {
+    "platform": "macOS 27.0.1",
+    "arch": "arm64",
+    "processor": "Apple M2 Max",
+    "memoryGiB": 32,
+    "node": "24.22.1",
+    "electron": "44.9.2",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "rendererClock": {
+      "API": "page.clock.setFixedTime",
+      "localConstructor": [
+        2024,
+        1,
+        29,
+        9,
+        5
+      ],
+      "expected": "2024-02-29 09:05",
+      "timersFrozen": false
+    }
+  },
+  "results": {
+    "coreRed": {
+      "status": "failed",
+      "failed": 29,
+      "skipped": 116,
+      "reason": "Acciones date/datetime inexistentes antes de implementar."
+    },
+    "coreBeforeDST": {
+      "status": "passed",
+      "passed": 145,
+      "newTests": 29,
+      "existingTests": 116,
+      "durationMs": 149
+    },
+    "coreFinal": {
+      "status": "passed",
+      "passed": 146,
+      "newTests": 30,
+      "existingTests": 116,
+      "verifiedInGlobalUnit": true,
+      "standaloneDurationNotMeasured": true
+    },
+    "timezoneCorrectness": [
+      {
+        "TZ": "UTC",
+        "passed": 29,
+        "skipped": 116,
+        "durationMs": 87
+      },
+      {
+        "TZ": "America/New_York",
+        "passed": 29,
+        "skipped": 116,
+        "durationMs": 87
+      },
+      {
+        "TZ": "Pacific/Kiritimati",
+        "passed": 29,
+        "skipped": 116,
+        "durationMs": 88
+      }
+    ],
+    "additionalDST": {
+      "addedAfterInitialImplementation": true,
+      "baselineRed": {
+        "failed": 1,
+        "skipped": 145,
+        "base": "1df90fdb",
+        "reason": "Acciones date/datetime ausentes en la base; no es un trigésimo rojo previo a la primera implementación."
+      },
+      "zones": [
+        {
+          "TZ": "UTC",
+          "passed": 1,
+          "skipped": 145,
+          "durationMs": 123
+        },
+        {
+          "TZ": "America/New_York",
+          "passed": 1,
+          "skipped": 145,
+          "durationMs": 123
+        },
+        {
+          "TZ": "Pacific/Kiritimati",
+          "passed": 1,
+          "skipped": 145,
+          "durationMs": 123
+        }
+      ],
+      "rule": "Se usa la hora local que entrega el sistema; New York normaliza 02:30 inexistente al crear Date."
+    },
+    "timezoneTimingMeaning": "Duración del proceso de pruebas; no es un benchmark de CPU de las acciones.",
+    "e2eRed": {
+      "status": "failed",
+      "failed": 1,
+      "durationSeconds": 17.4,
+      "reason": "La entrada Fecha de hoy no existía en el menú Insertar.",
+      "diagnostic": {
+        "source": "Antes  después",
+        "menuLabels": [
+          "Lista con viñetas",
+          "Lista numerada",
+          "Lista de tareas",
+          "Cita",
+          "Separador",
+          "Enlace",
+          "Bloque de código"
+        ]
+      }
+    },
+    "e2eFirst": {
+      "passed": 9,
+      "failed": 1,
+      "durationSeconds": 7.7,
+      "reason": "Expectativa adicional incorrecta de selección al rehacer inserción sin selección previa; fuente y dos undos sí pasaban.",
+      "productChangedToFix": false
+    },
+    "checkBeforeFocal": {
+      "status": "passed",
+      "errors": 0,
+      "warnings": 0
+    },
+    "focalBuild": {
+      "status": "passed",
+      "exitCode": 0
+    },
+    "e2eFocal": {
+      "status": "passed",
+      "passed": 10,
+      "durationSeconds": 7.7,
+      "menuDiagnostic": {
+        "source": "Antes  después",
+        "menuLabels": [
+          "Lista con viñetas",
+          "Lista numerada",
+          "Lista de tareas",
+          "Cita",
+          "Separador",
+          "Enlace",
+          "Fecha de hoy",
+          "Fecha y hora",
+          "Bloque de código"
+        ]
+      }
+    },
+    "finalCheck": {
+      "status": "passed",
+      "errors": 0,
+      "warnings": 0,
+      "log": "5-check-after-dst.log"
+    },
+    "globalUnitBeforeDST": {
+      "status": "passed",
+      "passed": 570,
+      "files": 32,
+      "durationSeconds": 5.09
+    },
+    "globalUnit": {
+      "status": "passed",
+      "passed": 571,
+      "files": 32,
+      "durationSeconds": 5.02,
+      "log": "5-unit-after-dst.log"
+    },
+    "globalE2e": {
+      "status": "passed",
+      "passed": 244,
+      "durationMinutesReported": 8,
+      "retries": 0,
+      "exitCode": 0
+    },
+    "finalBuild": {
+      "status": "passed",
+      "exitCode": 0
+    },
+    "ciFourPlatforms": {
+      "status": "pending"
+    }
+  },
+  "decisions": {
+    "format": "AAAA-MM-DD o AAAA-MM-DD HH:mm; fecha/hora locales, 24 horas, sin segundos ni zona.",
+    "clockBoundary": "Solo Editor crea new Date() al ejecutar date/datetime; el módulo puro requiere el parámetro y no lee el reloj.",
+    "invalidDate": "Ausencia de fecha o Invalid Date devuelve changes=[] y selección intacta.",
+    "newShortcuts": false,
+    "formatSettings": false,
+    "IME": "CompositionEvent y clic sintéticos para ejercitar la guarda sin terminar la composición al cambiar de foco; no IME físico."
+  },
+  "sources": [
+    {
+      "path": "src/renderer/lib/markdown-commands.ts",
+      "sha256": "7383d546891da286c46f45bdd362aa149558f9f54f904f6c4405b678c6a1000b"
+    },
+    {
+      "path": "src/renderer/components/Editor.svelte",
+      "sha256": "476ab553dc4d5741a00ed99d3363358675033b8faa336d6d42df6916e2f12a7a"
+    },
+    {
+      "path": "src/renderer/components/MarkdownToolbar.svelte",
+      "sha256": "589b66b77d7fd25462915d860cc0564365b90163486de6b0c8320aad10f520ed"
+    },
+    {
+      "path": "tests/markdown-commands.test.ts",
+      "sha256": "cb1a6c2c1ea0ea7952d5eb11d7ccd95fa306a19589717d18af2a4990cec2eb59"
+    },
+    {
+      "path": "tests/e2e/markdown-date.spec.ts",
+      "sha256": "447308134c59972c67e083a8d8f130d052d2a960737c0b895efe94a5d188efe2"
+    }
+  ],
+  "runtimeProvenance": {
+    "unchangedSinceFocalAndGlobalE2E": true,
+    "additionalCoverageAtLocalClosure": "Una prueba unitaria DST en tests/markdown-commands.test.ts; ni producto ni E2E cambian y no afecta el bundle usado.",
+    "unitTestBeforeDST": {
+      "path": "tests/markdown-commands.test.ts",
+      "sha256": "46cafebb83e21801a89983ddd845a3affc496bada95151bd5d5ca4eeae921fe8"
+    }
+  },
+  "ciConfiguration": {
+    "path": ".github/workflows/ci.yml",
+    "sha256": "43078e35cec4634d3e10cc7c5924d560ff1a885c56ab6fb772f018b3445e5d72",
+    "macOSIntelTimeoutMinutes": 60,
+    "otherPlatformsTimeoutMinutes": 45,
+    "newRetries": false,
+    "reason": "Ajuste de capacidad de hardware ya usado en los trabajos anteriores; CI de esta rama pendiente."
+  },
+  "manifests": [
+    {
+      "path": "package.json",
+      "sha256": "2cafd9bf6a092d590c256c7aa913ddb1b7008db31540549ac82226fa902ca94a",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "7008658adc0a5b0c85073de556f4f249fc2853005bedcaec64f777fe684ee3d9",
+      "unchangedFromBase": true
+    }
+  ],
+  "screenshots": [
+    {
+      "theme": "light",
+      "scene": "menu",
+      "width": 1440,
+      "height": 900,
+      "path": "docs/evidence/md-008-fecha-hora-menu-light-1440x900.png",
+      "source": "/private/tmp/freyalab-lote/5-global-evidence/5-date-menu-light-1440x900.png",
+      "sha256": "b7b53b28bae0db1a6185abfa1a96719244c5c0396eb60897b3da243e1dc4f1f5"
+    },
+    {
+      "theme": "light",
+      "scene": "result",
+      "width": 1440,
+      "height": 900,
+      "path": "docs/evidence/md-008-fecha-hora-result-light-1440x900.png",
+      "source": "/private/tmp/freyalab-lote/5-global-evidence/5-date-result-light-1440x900.png",
+      "sha256": "6a93ef9c9e96bf6c034c30a48c5f80559fb11bf802f6eecbf397f41bd138e4d7"
+    },
+    {
+      "theme": "dark",
+      "scene": "menu",
+      "width": 1440,
+      "height": 900,
+      "path": "docs/evidence/md-008-fecha-hora-menu-dark-1440x900.png",
+      "source": "/private/tmp/freyalab-lote/5-global-evidence/5-date-menu-dark-1440x900.png",
+      "sha256": "a72f6604df367fcebdcfa522901f81c652e689019f6c550dcb94f771402477be"
+    },
+    {
+      "theme": "dark",
+      "scene": "result",
+      "width": 1440,
+      "height": 900,
+      "path": "docs/evidence/md-008-fecha-hora-result-dark-1440x900.png",
+      "source": "/private/tmp/freyalab-lote/5-global-evidence/5-date-result-dark-1440x900.png",
+      "sha256": "2373f923c16869fa5a96e04516a2821baa48db235af014f58c87c8522ee53d82"
+    }
+  ],
+  "screenshotsFocalHistory": [
+    {
+      "theme": "light",
+      "scene": "menu",
+      "width": 1440,
+      "height": 900,
+      "source": "/private/tmp/freyalab-lote/5-focal-final/5-date-menu-light-1440x900.png",
+      "sha256": "b7b53b28bae0db1a6185abfa1a96719244c5c0396eb60897b3da243e1dc4f1f5",
+      "preserved": true
+    },
+    {
+      "theme": "light",
+      "scene": "result",
+      "width": 1440,
+      "height": 900,
+      "source": "/private/tmp/freyalab-lote/5-focal-final/5-date-result-light-1440x900.png",
+      "sha256": "6a93ef9c9e96bf6c034c30a48c5f80559fb11bf802f6eecbf397f41bd138e4d7",
+      "preserved": true
+    },
+    {
+      "theme": "dark",
+      "scene": "menu",
+      "width": 1440,
+      "height": 900,
+      "source": "/private/tmp/freyalab-lote/5-focal-final/5-date-menu-dark-1440x900.png",
+      "sha256": "a72f6604df367fcebdcfa522901f81c652e689019f6c550dcb94f771402477be",
+      "preserved": true
+    },
+    {
+      "theme": "dark",
+      "scene": "result",
+      "width": 1440,
+      "height": 900,
+      "source": "/private/tmp/freyalab-lote/5-focal-final/5-date-result-dark-1440x900.png",
+      "sha256": "2373f923c16869fa5a96e04516a2821baa48db235af014f58c87c8522ee53d82",
+      "preserved": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/private/tmp/freyalab-lote/5-core-red.log",
+      "sha256": "4afd5339343a3215ae401054424e51097bfa1dca6b4a62f7fa029143451c5d11",
+      "bytes": 9364
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-core-green.log",
+      "sha256": "7b0d9b19f034e51b9031a36c45f6be311d1370bda6571f89526fb1cbf651ce43",
+      "bytes": 198
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-core-utc.log",
+      "sha256": "c573839f6b0f38e37b067867ec101510c803cafe5b59288b27a63ceb672af522",
+      "bytes": 211
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-core-ny.log",
+      "sha256": "25e7c6a447f701dcabc67dda0d39462db615f67e36b302f93112241ec7836c9c",
+      "bytes": 211
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-core-kiritimati.log",
+      "sha256": "36f04d390e167318806ccce03b68ca188506005fdf7a31fdf4aa4bb9e9ac89f8",
+      "bytes": 211
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-baseline-build.log",
+      "sha256": "454fb4563e543a5de62e18ed2c87e2fe76a97d6fed73a45fa4650b1f309047b2",
+      "bytes": 21324
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-e2e-red.log",
+      "sha256": "771f9d0930afde894b798e23a1dc15b3c05b2a98d607e4ab2425559eb3a0a41b",
+      "bytes": 2895
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-date-baseline.json",
+      "sha256": "14c6a3fd6c5b46c0f0aa9705b8ec4428c11b50bdd1e3520c1124d708657c5eb2",
+      "bytes": 194
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-check-first.log",
+      "sha256": "f506a287e48d7a0e07486e2376ff9652afb67e05e7ddcc1e66cf25f094071099",
+      "bytes": 256
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-build-focal.log",
+      "sha256": "5fc501da5bc552b6f27cffac93ab84e892b1d726544612db529c58c87244368f",
+      "bytes": 21324
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-e2e-first.log",
+      "sha256": "7fdf6850d7f146b818a63f3b4ac30a626f45eb514b00aa801721cf27e9f16e42",
+      "bytes": 3942
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-e2e-final-focal.log",
+      "sha256": "c141a7b2c952d968482c1a73a686de27f0f81514470ef2f63b20bf47ce905b82",
+      "bytes": 1731
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-focal-final/5-date-final.json",
+      "sha256": "8398d7499f3619f7c88d3e2303c172a0dfbe29838a95081cb7832c457bcef271",
+      "bytes": 234
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-check-final.log",
+      "sha256": "f506a287e48d7a0e07486e2376ff9652afb67e05e7ddcc1e66cf25f094071099",
+      "bytes": 256
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-unit-final.log",
+      "sha256": "2d75707223f214b028cbe0948b57f97d00858d3d5e2b3c6c785dfbfee86775af",
+      "bytes": 233
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-e2e-final.log",
+      "sha256": "9e606ed53ad9bcd601c629b81168d29dfb30eef42e8178f5eab93ec87db17b16",
+      "bytes": 57892
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-build-final.log",
+      "sha256": "dbe996e6ed6d043a013de89064cc45d411e220e9c90a85b132eb14bc5053ce73",
+      "bytes": 21324
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-check-after-dst.log",
+      "sha256": "f506a287e48d7a0e07486e2376ff9652afb67e05e7ddcc1e66cf25f094071099",
+      "bytes": 256
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-unit-after-dst.log",
+      "sha256": "abcd228c00aef3e7571f50b4499eff086677801d860da06aa0d3e573f7ac5956",
+      "bytes": 233
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-dst-red-baseline.log",
+      "sha256": "e8aa6db584356a02dc5cce07e548a893d8b09399bf23330c486f5beaec6ef34e",
+      "bytes": 1272
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-dst-utc.log",
+      "sha256": "b41dda77d08cd695d24d53c75a5d9654e44a673d1432c6cfb06f9030c48e24dd",
+      "bytes": 209
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-dst-ny.log",
+      "sha256": "9e852c1d6aa929cf8e90dd4a1d9e7d2aaaa9843c03cc18a71de22272172cd5d3",
+      "bytes": 209
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-dst-kiritimati.log",
+      "sha256": "63a433457284c848513278ce9309dd5d1ce5d0ed6c887ebe4bcaa424a724960c",
+      "bytes": 209
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-global-evidence/5-date-final.json",
+      "sha256": "8398d7499f3619f7c88d3e2303c172a0dfbe29838a95081cb7832c457bcef271",
+      "bytes": 234
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/5-evidence-before-dst.json",
+      "sha256": "fff543f7445940c307394290b7c1be371d5af3221b899b76477a66cdcbef4944",
+      "bytes": 9534
+    }
+  ],
+  "notVerified": [
+    "CI de macOS Intel/ARM, Windows y Linux pendiente.",
+    "No se verificó un IME físico ni teclado físico.",
+    "No se cambió físicamente el reloj o zona del sistema; tres procesos de unitarias usaron TZ explícita.",
+    "Las pruebas de zona no constituyen garantía universal de configuraciones regionales ni un benchmark.",
+    "No se probaron instaladores, publicación o actualización de la app instalada."
+  ]
+}

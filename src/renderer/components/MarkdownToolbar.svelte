@@ -22,7 +22,7 @@
  <details bind:this={menu} class="insert-menu">
   <summary aria-label="Más opciones de Markdown" aria-disabled={readonly} onclick={event=>{if(readonly)event.preventDefault()}} onkeydown={event=>{if(readonly&&(event.key==='Enter'||event.key===' '))event.preventDefault()}}>Insertar <Icon name="chevron-down" size={12}/></summary>
   <div class="dropdown">
-   {#each [{action:'list',label:'Lista con viñetas'},{action:'ordered',label:'Lista numerada'},{action:'task',label:'Lista de tareas'},{action:'quote',label:'Cita'},{action:'rule',label:'Separador'},{action:'link',label:'Enlace'}] as item}
+   {#each [{action:'list',label:'Lista con viñetas'},{action:'ordered',label:'Lista numerada'},{action:'task',label:'Lista de tareas'},{action:'quote',label:'Cita'},{action:'rule',label:'Separador'},{action:'link',label:'Enlace'},{action:'date',label:'Fecha de hoy'},{action:'datetime',label:'Fecha y hora'}] as item}
     <button disabled={readonly} onclick={()=>apply(item.action as MarkdownAction)}>{item.label}</button>
    {/each}
    <label>Lenguaje del bloque de código<select aria-label="Lenguaje del bloque de código" disabled={readonly} bind:value={language}>{#each codeLanguages as value}<option value={value}>{value}</option>{/each}</select></label>
