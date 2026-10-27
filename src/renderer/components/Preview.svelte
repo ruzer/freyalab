@@ -22,6 +22,16 @@
   if(disposed)throw new Error('El documento se cerró antes de terminar la vista previa.')
   if(renderError)throw new Error(renderError)
   const copy=article?.cloneNode(true) as HTMLElement|undefined
+  if(copy&&diagramBlocks.length){
+   const cloned=copy.querySelectorAll('*'),targets=new Map(Array.from(article.querySelectorAll('*'),(node,index)=>[node,cloned[index]]))
+   const diagrams=diagramBlocks.filter(block=>block.node.classList.contains('mermaid-render')).map(block=>({source:block.source,target:targets.get(block.node)}))
+   for(const {source,target} of diagrams){
+    if(!target)throw new Error('No pude preparar los diagramas. Espera a la vista previa e inténtalo de nuevo.')
+    const svg=await diagramSVG(source,false)
+    if(disposed)throw new Error('El documento se cerró antes de terminar la vista previa.')
+    const block=document.createElement('div');block.className='mermaid-render';block.innerHTML=svg;target.replaceWith(block)
+   }
+  }
   for(const details of copy?.querySelectorAll<HTMLDetailsElement>('details[data-freya-open]')??[]){details.open=details.dataset.freyaOpen==='1';details.removeAttribute('data-freya-open')}
   return standaloneHTML(copy?.innerHTML??'','Documento FreyaLab')
  }

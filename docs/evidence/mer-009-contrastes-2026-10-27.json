@@ -1,0 +1,212 @@
+{
+  "antes-svg": {
+    "archivo": "1-red-individual-svg-colors.json",
+    "sha256": "f2a88a56bb20762f4814d78cd553d52dd849883f7ad48ba3d7e670c61cc3f1db",
+    "background": "rgb(255, 255, 255)",
+    "minimum": {
+      "text": 1.6059285649300714,
+      "edge": 1.4969939561114844,
+      "marker": 1.4969939561114844
+    },
+    "sampleCount": {
+      "text": 24,
+      "edge": 4,
+      "marker": 7
+    },
+    "colors": {
+      "text": [
+        {
+          "color": "rgb(204, 204, 204)",
+          "ratio": 1.6059285649300714
+        }
+      ],
+      "edge": [
+        {
+          "color": "rgb(211, 211, 211)",
+          "ratio": 1.4969939561114844
+        }
+      ],
+      "marker": [
+        {
+          "color": "rgb(211, 211, 211)",
+          "ratio": 1.4969939561114844
+        }
+      ]
+    }
+  },
+  "antes-markdown": {
+    "archivo": "1-red-markdown-html-colors.json",
+    "sha256": "7099516af0576464966eac9979ffc41065e4807b767a9187f664e7f97d0eb80f",
+    "background": "rgb(255, 255, 255)",
+    "minimum": {
+      "text": 1.6059285649300714,
+      "edge": 1.4969939561114844,
+      "marker": 1.4969939561114844
+    },
+    "sampleCount": {
+      "text": 30,
+      "edge": 5,
+      "marker": 14
+    },
+    "colors": {
+      "text": [
+        {
+          "color": "rgb(204, 204, 204)",
+          "ratio": 1.6059285649300714
+        }
+      ],
+      "edge": [
+        {
+          "color": "rgb(211, 211, 211)",
+          "ratio": 1.4969939561114844
+        }
+      ],
+      "marker": [
+        {
+          "color": "rgb(211, 211, 211)",
+          "ratio": 1.4969939561114844
+        }
+      ]
+    }
+  },
+  "despues-svg": {
+    "archivo": "1-final-individual-svg-colors.json",
+    "sha256": "fdbe5d8fbc049d0405374f4c5ff4c02645a2319eff46d6b23fd426214c315e72",
+    "background": "rgb(255, 255, 255)",
+    "minimum": {
+      "text": 12.63465434445799,
+      "edge": 12.63465434445799,
+      "marker": 12.63465434445799
+    },
+    "sampleCount": {
+      "text": 24,
+      "edge": 4,
+      "marker": 7
+    },
+    "colors": {
+      "text": [
+        {
+          "color": "rgb(51, 51, 51)",
+          "ratio": 12.63465434445799
+        }
+      ],
+      "edge": [
+        {
+          "color": "rgb(51, 51, 51)",
+          "ratio": 12.63465434445799
+        }
+      ],
+      "marker": [
+        {
+          "color": "rgb(51, 51, 51)",
+          "ratio": 12.63465434445799
+        }
+      ]
+    }
+  },
+  "despues-html-individual": {
+    "archivo": "1-final-individual-html-colors.json",
+    "sha256": "fdbe5d8fbc049d0405374f4c5ff4c02645a2319eff46d6b23fd426214c315e72",
+    "background": "rgb(255, 255, 255)",
+    "minimum": {
+      "text": 12.63465434445799,
+      "edge": 12.63465434445799,
+      "marker": 12.63465434445799
+    },
+    "sampleCount": {
+      "text": 24,
+      "edge": 4,
+      "marker": 7
+    },
+    "colors": {
+      "text": [
+        {
+          "color": "rgb(51, 51, 51)",
+          "ratio": 12.63465434445799
+        }
+      ],
+      "edge": [
+        {
+          "color": "rgb(51, 51, 51)",
+          "ratio": 12.63465434445799
+        }
+      ],
+      "marker": [
+        {
+          "color": "rgb(51, 51, 51)",
+          "ratio": 12.63465434445799
+        }
+      ]
+    }
+  },
+  "despues-html-markdown": {
+    "archivo": "1-final-markdown-html-colors.json",
+    "sha256": "44e0d3f062bae265437f4063742de4b08ef95f011831a78d215982c0e2e0c344",
+    "background": "rgb(255, 255, 255)",
+    "minimum": {
+      "text": 12.63465434445799,
+      "edge": 12.63465434445799,
+      "marker": 12.63465434445799
+    },
+    "sampleCount": {
+      "text": 30,
+      "edge": 5,
+      "marker": 14
+    },
+    "colors": {
+      "text": [
+        {
+          "color": "rgb(51, 51, 51)",
+          "ratio": 12.63465434445799
+        }
+      ],
+      "edge": [
+        {
+          "color": "rgb(51, 51, 51)",
+          "ratio": 12.63465434445799
+        }
+      ],
+      "marker": [
+        {
+          "color": "rgb(51, 51, 51)",
+          "ratio": 12.63465434445799
+        }
+      ]
+    }
+  },
+  "excepcion-autor": {
+    "archivo": "1-final-tema-autoral-colors.json",
+    "sha256": "f2a88a56bb20762f4814d78cd553d52dd849883f7ad48ba3d7e670c61cc3f1db",
+    "background": "rgb(255, 255, 255)",
+    "minimum": {
+      "text": 1.6059285649300714,
+      "edge": 1.4969939561114844,
+      "marker": 1.4969939561114844
+    },
+    "sampleCount": {
+      "text": 24,
+      "edge": 4,
+      "marker": 7
+    },
+    "colors": {
+      "text": [
+        {
+          "color": "rgb(204, 204, 204)",
+          "ratio": 1.6059285649300714
+        }
+      ],
+      "edge": [
+        {
+          "color": "rgb(211, 211, 211)",
+          "ratio": 1.4969939561114844
+        }
+      ],
+      "marker": [
+        {
+          "color": "rgb(211, 211, 211)",
+          "ratio": 1.4969939561114844
+        }
+      ]
+    }
+  }
+}
