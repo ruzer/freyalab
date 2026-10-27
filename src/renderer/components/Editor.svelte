@@ -8,10 +8,12 @@
  import {syntaxHighlighting,defaultHighlightStyle,syntaxTree} from '@codemirror/language'
  import {markdownCommands,lineFormatState,type MarkdownAction,type CodeLanguage} from '../lib/markdown-commands'
  import type {TextSelection} from '../lib/text-stats'
+ import {markdownLinkOnPaste} from '../lib/markdown-paste'
  let {text='',readonly=false,kind='markdown',label='Editor de texto',onchange,onscroll,onformatstate,onselection}: {text:string;label?:string;readonly?:boolean;kind?:string;onchange:(text:string)=>void;onscroll?:(ratio:number)=>void;onformatstate?:(state:ReturnType<typeof lineFormatState>)=>void;onselection?:(selection:TextSelection|null)=>void}=$props()
  let host:HTMLDivElement
  let view:EditorView|undefined
  let applying=false
+ let plainPaste=false
  const permission=new Compartment()
  let lastFormat=''
  function publishSelection(state:EditorState){const selection=state.selection.main;onselection?.(selection.empty?null:{from:selection.from,to:selection.to})}
@@ -43,10 +45,20 @@
  export function undoEdit(){if(view) undo(view)}
  export function redoEdit(){if(view) redo(view)}
  export function search(){if(view) openSearchPanel(view)}
+ function paste(event:ClipboardEvent,view:EditorView){
+  const plain=plainPaste;plainPaste=false
+  if(kind!=='markdown'||readonly||view.state.readOnly||plain||view.composing||view.compositionStarted)return false
+  const result=markdownLinkOnPaste(view.state,event.clipboardData?.getData('text/plain')??'')
+  if(!result)return false
+  view.dispatch({changes:result.changes,selection:EditorSelection.range(result.selection.anchor,result.selection.head),annotations:isolateHistory.of('full'),scrollIntoView:true,userEvent:'input.paste'})
+  return true
+ }
  onMount(()=>{
-  view=new EditorView({parent:host,state:EditorState.create({doc:text,extensions:[...(kind==='markdown'&&text.includes('\r\n')?[EditorState.lineSeparator.of('\r\n')]:[]),EditorView.contentAttributes.of({'aria-label':label}),lineNumbers(),highlightActiveLine(),drawSelection(),history(),highlightSelectionMatches(),keymap.of([{key:'Mod-b',run:shortcut('bold')},{key:'Mod-i',run:shortcut('italic')},{key:'Mod-Shift-x',run:shortcut('strike')},...(['paragraph','heading1','heading2','heading3'] as const).map((action,index)=>({key:`Mod-Alt-${index}`,run:shortcut(action)})),...defaultKeymap,...historyKeymap,...searchKeymap]),syntaxHighlighting(defaultHighlightStyle),...(kind==='markdown'?[markdown()]:[]),EditorView.lineWrapping,permission.of([EditorState.readOnly.of(readonly),EditorView.editable.of(!readonly)]),EditorView.theme({'&':{height:'100%',fontSize:'13px'},'.cm-scroller':{fontFamily:'"JetBrains Mono", monospace',lineHeight:'1.8'},'.cm-content':{padding:'20px 0'},'.cm-gutters':{backgroundColor:'transparent',color:'var(--muted)',borderRight:'1px solid var(--border)'},'.cm-activeLine':{backgroundColor:'var(--hover)'},'.cm-activeLineGutter':{backgroundColor:'var(--hover)'},'.cm-cursor':{borderLeftColor:'var(--text)'},'.cm-selectionBackground, &.cm-focused .cm-selectionBackground':{backgroundColor:'#007aff35'},'.cm-panels':{backgroundColor:'var(--panel)',color:'var(--text)'},'.cm-search input':{color:'var(--text)'}}),EditorView.updateListener.of(update=>{if(update.docChanged&&!applying) onchange(update.state.sliceDoc());publishFormat(update.state);if(update.docChanged||update.selectionSet)publishSelection(update.state)}),EditorView.domEventHandlers({scroll:()=>{const el=view!.scrollDOM;onscroll?.(el.scrollTop/Math.max(1,el.scrollHeight-el.clientHeight))}})]})})
+  view=new EditorView({parent:host,state:EditorState.create({doc:text,extensions:[...(kind==='markdown'&&text.includes('\r\n')?[EditorState.lineSeparator.of('\r\n')]:[]),EditorView.contentAttributes.of({'aria-label':label}),lineNumbers(),highlightActiveLine(),drawSelection(),history(),highlightSelectionMatches(),keymap.of([{key:'Mod-b',run:shortcut('bold')},{key:'Mod-i',run:shortcut('italic')},{key:'Mod-Shift-x',run:shortcut('strike')},...(['paragraph','heading1','heading2','heading3'] as const).map((action,index)=>({key:`Mod-Alt-${index}`,run:shortcut(action)})),...defaultKeymap,...historyKeymap,...searchKeymap]),syntaxHighlighting(defaultHighlightStyle),...(kind==='markdown'?[markdown({pasteURLAsLink:false})]:[]),EditorView.lineWrapping,permission.of([EditorState.readOnly.of(readonly),EditorView.editable.of(!readonly)]),EditorView.theme({'&':{height:'100%',fontSize:'13px'},'.cm-scroller':{fontFamily:'"JetBrains Mono", monospace',lineHeight:'1.8'},'.cm-content':{padding:'20px 0'},'.cm-gutters':{backgroundColor:'transparent',color:'var(--muted)',borderRight:'1px solid var(--border)'},'.cm-activeLine':{backgroundColor:'var(--hover)'},'.cm-activeLineGutter':{backgroundColor:'var(--hover)'},'.cm-cursor':{borderLeftColor:'var(--text)'},'.cm-selectionBackground, &.cm-focused .cm-selectionBackground':{backgroundColor:'#007aff35'},'.cm-panels':{backgroundColor:'var(--panel)',color:'var(--text)'},'.cm-search input':{color:'var(--text)'}}),EditorView.updateListener.of(update=>{if(update.docChanged&&!applying) onchange(update.state.sliceDoc());publishFormat(update.state);if(update.docChanged||update.selectionSet)publishSelection(update.state)}),EditorView.domEventHandlers({paste,keydown:()=>{plainPaste=false},blur:()=>{plainPaste=false},scroll:()=>{const el=view!.scrollDOM;onscroll?.(el.scrollTop/Math.max(1,el.scrollHeight-el.clientHeight))}})]})})
+  const plain=()=>{plainPaste=!!view?.hasFocus}
+  window.addEventListener('freya-paste-plain',plain)
   publishFormat(view.state);publishSelection(view.state)
-  return()=>view?.destroy()
+  return()=>{window.removeEventListener('freya-paste-plain',plain);view?.destroy()}
  })
  $effect(()=>{const locked=readonly;if(view)view.dispatch({effects:permission.reconfigure([EditorState.readOnly.of(locked),EditorView.editable.of(!locked)])})})
  $effect(()=>{const value=text;if(view&&value!==view.state.sliceDoc()){applying=true;view.dispatch({changes:{from:0,to:view.state.doc.length,insert:value}});applying=false}})

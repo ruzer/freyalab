@@ -1,6 +1,13 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { FreyaAPI, AppEvent } from '../shared/types'
 const invoke=(operation:string,...args:unknown[])=>ipcRenderer.invoke('freya',operation,...args)
+// El atajo requiere una pulsación real; el puente no ofrece lectura del portapapeles.
+window.addEventListener('keydown',event=>{
+ if(!event.isTrusted||event.isComposing||!(event.metaKey||event.ctrlKey)||!event.shiftKey||event.altKey||event.key.toLowerCase()!=='v')return
+ event.preventDefault();event.stopImmediatePropagation()
+ window.dispatchEvent(new Event('freya-paste-plain'))
+ ipcRenderer.send('freya:paste-plain')
+},true)
 const api:FreyaAPI={
  open:()=>invoke('open'),openPaths:paths=>invoke('openPaths',paths),newDocument:kind=>invoke('new',kind),folder:()=>invoke('folder'),tree:path=>invoke('tree',path),findFiles:(root,query)=>invoke('findFiles',root,query),
  update:(id,text)=>invoke('update',id,text),save:(id,as)=>invoke('save',id,as),close:id=>invoke('close',id),reload:id=>invoke('reload',id),documents:()=>invoke('documents'),
