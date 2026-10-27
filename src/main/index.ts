@@ -70,7 +70,7 @@ async function handle(operation:string,args:unknown[]){
  case'exportGraphic':return exportGraphic(docs,id.parse(a),z.object({format:z.enum(['svg','png','pdf']),svg:text.min(1),revision:z.number().int().nonnegative()}).strict().parse(b))
  case'export':return exportDocument(docs,id.parse(a),z.object({format:z.enum(['pdf','html','svg','png','csv','tsv']),html:text.optional(),svg:text.optional(),table:tableExport.optional()}).parse(b) as ExportRequest)
  case'image':return docs.image(id.parse(a),z.string().max(16*1024*1024).parse(b))
- case'link':{const url=z.url().parse(a);if(!['https:','http:','mailto:'].includes(new URL(url).protocol))throw new Error('Solo se permiten enlaces web o de correo.');await shell.openExternal(url);return}
+ case'link':{const url=z.url().parse(a),target=new URL(url);if(!['https:','http:','mailto:'].includes(target.protocol))throw new Error('Solo se permiten enlaces web o de correo.');if(target.protocol==='mailto:'&&[...target.searchParams.keys()].some(key=>['attach','attachment'].includes(key.toLowerCase())))throw new Error('No se permiten adjuntos en enlaces de correo.');await shell.openExternal(url);return}
  case'recents':{const recents=await docs.recents();for(const p of recents)docs.grants.add(resolve(p));return recents}
  case'recoveries':return docs.listRecoveries()
  case'recover':return docs.recover(id.parse(a))

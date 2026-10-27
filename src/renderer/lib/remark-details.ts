@@ -1,11 +1,17 @@
-type Node={type:string;value?:string;children?:Node[];data?:{hName?:unknown;hProperties?:unknown};position?:{start:{offset?:number};end:{offset?:number}}}
+type Node={type:string;value?:string;identifier?:string;children?:Node[];data?:{hName?:unknown;hProperties?:unknown};position?:{start:{offset?:number};end:{offset?:number}}}
 type Tag={tag:'details'|'summary';close:boolean;open:boolean}
 type Frame=Tag&{children:Node[];broken?:boolean}
 
 export default function remarkDetails(this:{parse:(value:string)=>Node}) {
- let context=''
+ const definitions=new Map<string,string>()
+ // CommonMark aplica este plegado para que también coincidan rótulos como ß/SS.
+ const label=(value:string)=>value.replace(/[\t\n\r ]+/g,' ').replace(/^ | $/g,'').toLowerCase().toUpperCase()
  const parse=(value:string)=>{
-  if(!context)return this.parse(value).children??[]
+  if(!definitions.size||!value.includes('['))return this.parse(value).children??[]
+  const selected=new Set<string>()
+  for(const match of value.matchAll(/\[((?:\\.|[^\[\]\\])*)\]/g)){const definition=definitions.get(label(match[1]));if(definition)selected.add(definition)}
+  if(!selected.size)return this.parse(value).children??[]
+  const context='\n\n'+[...selected].join('\n\n')
   const nodes=(this.parse(value+context).children??[]).filter(node=>(node.position?.start.offset??0)<value.length)
   if(!nodes.some(node=>(node.position?.end.offset??0)>value.length))return nodes
   // An unclosed code/raw block must not absorb the appended reference definitions.
@@ -91,14 +97,14 @@ export default function remarkDetails(this:{parse:(value:string)=>Node}) {
   return output
  }
  return(tree:Node,file?:{value?:unknown})=>{
-  const source=typeof file?.value==='string'?file.value:'',definitions:string[]=[]
+  const source=typeof file?.value==='string'?file.value:''
+  definitions.clear()
   function collect(node:Node){
    const start=node.position?.start.offset,end=node.position?.end.offset
-   if((node.type==='definition'||node.type==='footnoteDefinition')&&start!==undefined&&end!==undefined){definitions.push(source.slice(start,end));return}
+   if((node.type==='definition'||node.type==='footnoteDefinition')&&node.identifier!==undefined&&start!==undefined&&end!==undefined){const key=label((node.type==='footnoteDefinition'?'^':'')+node.identifier);if(!definitions.has(key))definitions.set(key,source.slice(start,end))}
    for(const child of node.children??[])collect(child)
   }
   if(source)collect(tree)
-  context=definitions.length?'\n\n'+definitions.join('\n\n'):''
   if(tree.children)tree.children=children(tree.children)
  }
 }
