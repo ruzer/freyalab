@@ -4,6 +4,8 @@
  import type {DocumentInfo,Kind,TreeEntry,RecoveryEntry,ExportRequest} from '../shared/types'
  import Editor from './components/Editor.svelte'
  import MarkdownToolbar from './components/MarkdownToolbar.svelte'
+ import TextStats from './components/TextStats.svelte'
+ import type {TextSelection} from './lib/text-stats'
  import {lineFormatState} from './lib/markdown-commands'
  import Preview from './components/Preview.svelte'
  import Diagram from './components/Diagram.svelte'
@@ -21,7 +23,7 @@
  const dark=$derived(theme==='system'?systemDark:theme==='dark')
  const active=$derived(documents.find(doc=>doc.id===activeId))
  let newMenu=$state(false),exportMenu=$state(false),about=$state(false),exportScope=$state<'all'|'filtered'|'selection'>('all')
- let markdownState=$state(lineFormatState('',0))
+ let markdownState=$state(lineFormatState('',0)),textSelection=$state<TextSelection|null>(null)
  let editor=$state<Editor>(),preview=$state<Preview>(),diagram=$state<Diagram>(),csv=$state<CsvTable>()
  const pending=new Map<string,Promise<unknown>>()
  // Apertura de un archivo grande en curso (se indexa de una pasada): progreso y botón para cancelar.
@@ -84,7 +86,7 @@
       <div class="document-tools"><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div>{#if active.kind==='markdown'&&mode!=='preview'}<MarkdownToolbar readonly={active.readonly} formatState={markdownState} onformat={(action,language)=>editor?.format(action,language)}/>{/if}<span class="spacer"></span><button class="text-button" onclick={()=>editor?.search()}><Icon name="search" size={14}/> Buscar</button>{#if active.kind==='markdown'}<button class="text-button" class:active={outline} onclick={()=>outline=!outline}><Icon name="table-of-contents" size={14}/> Índice</button>{/if}</div>
       {#if active.warning}<div class="warning-banner">{active.warning}</div>{/if}
       <div class="document-panes">
-       <div class:hidden={mode==='preview'&&active.kind!=='text'} class="editor-pane" style:width={mode==='split'&&active.kind!=='text'?`${split}%`:'100%'}><div class="pane-caption">{active.kind==='mermaid'?'DEFINICIÓN MERMAID':active.kind==='text'?'TEXTO':'MARKDOWN'}{#if active.readonly}<span>Solo lectura</span>{/if}</div><Editor bind:this={editor} text={active.text??''} readonly={active.readonly} kind={active.kind} onformatstate={state=>markdownState=state} onchange={text=>updateText(active!.id,text)} onscroll={ratio=>preview?.scrollRatio(ratio)}/></div>
+       <div class:hidden={mode==='preview'&&active.kind!=='text'} class="editor-pane" style:width={mode==='split'&&active.kind!=='text'?`${split}%`:'100%'}><div class="pane-caption">{active.kind==='mermaid'?'DEFINICIÓN MERMAID':active.kind==='text'?'TEXTO':'MARKDOWN'}{#if active.readonly}<span>Solo lectura</span>{/if}</div><Editor bind:this={editor} text={active.text??''} readonly={active.readonly} kind={active.kind} onformatstate={state=>markdownState=state} onselection={selection=>textSelection=selection} onchange={text=>updateText(active!.id,text)} onscroll={ratio=>preview?.scrollRatio(ratio)}/></div>
        {#if active.kind!=='text'}<button class:hidden={mode!=='split'} class="resize-handle split-handle" aria-valuenow={split} aria-valuemin="20" aria-valuemax="80" role="slider" aria-label="Ancho del editor" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSplit} onkeydown={e=>{if(e.key==='ArrowRight')split=Math.min(80,split+2);if(e.key==='ArrowLeft')split=Math.max(20,split-2)}}></button><div class:hidden={mode==='edit'} class="preview-pane"><div class="pane-caption">VISTA PREVIA <span>{active.kind==='mermaid'?'SVG':'Renderizado local'}</span></div>{#if active.kind==='mermaid'}<Diagram bind:this={diagram} text={active.text??''} {dark} onerror={error}/>{:else}<Preview bind:this={preview} text={active.text??''} id={active.id} {dark} onheadings={value=>headings=value} onerror={error}/>{/if}</div>{/if}
        {#if outline&&active.kind==='markdown'&&mode!=='edit'&&headings.length}<aside class="outline"><div class="sidebar-label">EN ESTE DOCUMENTO</div>{#each headings as heading}<button style:padding-left={`${12+(heading.level-1)*10}px`} onclick={()=>preview?.scrollToHeading(heading.id)}>{heading.text}</button>{/each}</aside>{/if}
       </div>
@@ -95,7 +97,7 @@
    {/if}
   </main>
  </div>
- <footer class="statusbar"><span class="status-dot"></span><span class="truncate">{status}</span>{#if opening}<span role="status">{opening.phase}</span><button onclick={cancelOpening}>Cancelar apertura</button>{/if}<span class="spacer"></span><div id="document-status"></div>{#if active}{#if active.kind!=='csv'}<span>{active.encoding.toUpperCase()}</span>{/if}<span>{active.readonly?'Solo lectura':!active.path?'Sin guardar':active.dirty?'Cambios pendientes':'Guardado'}</span>{/if}<span>Local</span></footer>
+ <footer class="statusbar"><span class="status-dot"></span><span class="truncate">{status}</span>{#if opening}<span role="status">{opening.phase}</span><button onclick={cancelOpening}>Cancelar apertura</button>{/if}<span class="spacer"></span><div id="document-status"></div>{#if active&&(active.kind==='markdown'||active.kind==='text')}<TextStats id={active.id} name={active.name} text={active.text??''} markdown={active.kind==='markdown'} partial={active.readonly} selection={textSelection}/>{/if}{#if active}{#if active.kind!=='csv'}<span>{active.encoding.toUpperCase()}</span>{/if}<span>{active.readonly?'Solo lectura':!active.path?'Sin guardar':active.dirty?'Cambios pendientes':'Guardado'}</span>{/if}<span>Local</span></footer>
  {#if toast}<div class="toast {toastKind}" role="status"><Icon name={toastKind==='error'?'triangle-alert':'circle-check'} size={16}/><span>{toast}</span><button onclick={()=>toast=''} aria-label="Cerrar aviso"><Icon name="x" size={14}/></button></div>{/if}
  {#if about}<div class="modal-backdrop" role="presentation"><div class="modal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="about-title"><img class="brand-mark" src={appIcon} alt=""/><h2 id="about-title">FreyaLab</h2><p>Documentos, tablas y diagramas.<br/>Una herramienta local, de código abierto.</p><p>Para Freya. 🐾</p><p class="muted">v0.1.0-alpha.1 · Licencia MIT</p><button class="primary" onclick={()=>about=false}>Cerrar</button></div></div>{/if}
 </div>
