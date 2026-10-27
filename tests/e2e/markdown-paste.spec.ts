@@ -14,7 +14,9 @@ test.beforeEach(async()=>{
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
  // Materializar todos los formatos y conservarlos únicamente en memoria de main; nunca adjuntarlos a logs.
  await app.evaluate(async({clipboard,ClipboardItem})=>{
-  const items=await clipboard.read(),snapshot=await Promise.all(items.map(async item=>new ClipboardItem(Object.fromEntries(await Promise.all(item.types.map(async type=>[type,await item.getType(type)]))))))
+  // La API representa un portapapeles vacío con un item sin tipos; no admite recrearlo.
+  const items=(await clipboard.read()).filter(item=>item.types.length)
+  const snapshot=await Promise.all(items.map(async item=>new ClipboardItem(Object.fromEntries(await Promise.all(item.types.map(async type=>[type,await item.getType(type)]))))))
   if(snapshot.length)await clipboard.write(snapshot) // Verificar restauración atómica antes de cambiar el contenido por datos de prueba.
   ;(globalThis as typeof globalThis&{freyaPasteClipboard?:typeof snapshot}).freyaPasteClipboard=snapshot
  })
