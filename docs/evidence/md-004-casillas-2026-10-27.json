@@ -1,0 +1,1051 @@
+{
+  "story": "FL-MD-004",
+  "date": "2026-10-27",
+  "branch": "codex/md-004-casillas",
+  "baseBranch": "codex/md-002-correcciones-render",
+  "baseCommit": "a93c4b2f598861ef208cae1fff28ba9a8b3930a4",
+  "basePullRequest": "https://github.com/ruzer/freyalab/pull/68",
+  "retargetPolicy": "Mantener la base indicada por el lote hasta reconciliar/integrar el padre; no se cambió su base desde esta evidencia.",
+  "candidateCommit": null,
+  "candidateState": "Cierre local completo antes del commit: check 0/0, unitarias 621/621, E2E global 246/246 y build final0. CI del PR pendiente; fuentes identificadas por SHA-256.",
+  "environment": {
+    "platform": "macOS 27.0.1",
+    "arch": "arm64",
+    "processor": "Apple M2 Max",
+    "memoryGiB": 32,
+    "node": "24.22.1",
+    "electron": "44.9.2"
+  },
+  "results": {
+    "coreInitialRed": {
+      "status": "failed",
+      "reason": "Módulo inexistente; cero tests ejecutados.",
+      "testsExecuted": 0
+    },
+    "coreInitialGreen": {
+      "status": "passed",
+      "passed": 45,
+      "durationMs": 108
+    },
+    "renderRed": {
+      "failed": 22,
+      "passed": 7,
+      "total": 29,
+      "durationMs": 432,
+      "meaning": "Metadatos/data-line ausentes; las siete guardas existentes ya pasaban."
+    },
+    "renderGreen": {
+      "status": "passed",
+      "passed": 127,
+      "files": 5,
+      "durationMs": 400,
+      "newMetadataTests": 29
+    },
+    "originalRenderTests": {
+      "path": "tests/render.test.ts",
+      "sha256": "bb40eac42bf2b820efa4040f11fbd577ef55c56cd4b3ac635e4472e18d7aeaf1",
+      "unchangedFromBase": true,
+      "threeOriginalCasesUnchanged": true
+    },
+    "e2eBasalRed": {
+      "status": "failed",
+      "failed": 1,
+      "durationSeconds": 17.5,
+      "reason": "La casilla seguía disabled en el build basal a93."
+    },
+    "sessionFactoryRed": {
+      "failed": 6,
+      "skipped": 45,
+      "total": 51,
+      "durationMs": 161
+    },
+    "sessionFactoryGreen": {
+      "passed": 51,
+      "durationMs": 126
+    },
+    "readonlyReload": {
+      "mountedDiagnostic": {
+        "passed": 1,
+        "durationSeconds": 1.9,
+        "scope": "Diagnóstico inicial con CodeMirror montado; no reproducía la ruta de Vista previa."
+      },
+      "withoutEditorRed": {
+        "status": "failed",
+        "reason": "Tras recargar la muestra en Vista previa sin CodeMirror, readonly=false y checkbox enabled pero el clic no modificaba la fuente."
+      },
+      "fix": "Root retiró el facet readOnly fijo del núcleo; conserva la guarda de documento y el compartment de permisos de UI.",
+      "pureDiagnosticCaveat": "La sonda pura puso el facet base antes del compartimento ui; App ponía ui antes del base. No prueba la ruta montada, que pasó; el fallo nativo solo se reprodujo sin UI/Editor.",
+      "fixVerification": {
+        "status": "passed",
+        "durationSeconds": 1.6,
+        "verifiedIn": "6-e2e-first.log"
+      },
+      "redDurationSeconds": 16.6
+    },
+    "e2eFocal": {
+      "status": "passed",
+      "passed": 12,
+      "durationSeconds": 15.3,
+      "reloadWithoutEditorSeconds": 1.7,
+      "log": "6-e2e-parser-ui-focal.log"
+    },
+    "finalCheck": {
+      "status": "passed",
+      "errors": 0,
+      "warnings": 0,
+      "log": "6-check-final.log"
+    },
+    "globalUnit": {
+      "status": "passed",
+      "passed": 621,
+      "files": 34,
+      "durationSeconds": 5.02,
+      "log": "6-unit-final.log"
+    },
+    "focalBuild": {
+      "status": "passed",
+      "exitCode": 0,
+      "log": "6-build-parser-ui-focal.log"
+    },
+    "globalE2e": {
+      "status": "passed",
+      "passed": 246,
+      "durationMinutesReported": 8.1,
+      "retries": 0,
+      "exitCode": 0,
+      "log": "6-e2e-final.log"
+    },
+    "finalBuild": {
+      "status": "passed",
+      "exitCode": 0,
+      "log": "6-build-final.log"
+    },
+    "ciFourPlatforms": {
+      "status": "pending"
+    }
+  },
+  "historicalBeforeParserUI": {
+    "scope": "Estado anterior con gramática en el núcleo, no resultado del último producto.",
+    "check": {
+      "errors": 0,
+      "warnings": 0,
+      "observedBeforeOverwrite": true
+    },
+    "unit": {
+      "passed": 615,
+      "files": 34,
+      "durationSeconds": 5.1,
+      "observedBeforeOverwrite": true
+    },
+    "e2e": {
+      "passed": 246,
+      "durationMinutesReported": 8.4,
+      "log": "6-e2e-before-parser-ui.log",
+      "preserved": true
+    },
+    "e2eFocal": {
+      "passed": 12,
+      "durationSeconds": 15.5
+    },
+    "sources": [
+      {
+        "path": "src/renderer/App.svelte",
+        "sha256": "6ad344761472b686e6ba3b2865291b2b493884e58ca5029d8c827b1a302669fd"
+      },
+      {
+        "path": "src/renderer/components/Editor.svelte",
+        "sha256": "baf644a1873299f8bc0dc0fab7d89f453b43f0300ae48b6261e5c83f96bb2cde"
+      },
+      {
+        "path": "src/renderer/components/Preview.svelte",
+        "sha256": "013a9d4939399b294f2e8d8c569965b33b934b465888acd7d23b812a98d9c278"
+      },
+      {
+        "path": "src/renderer/lib/markdown-tasks.ts",
+        "sha256": "db9124c4dbe6c422eb785d78cd1dcf83bb778067b76d1c73867b9077d0a321d9"
+      },
+      {
+        "path": "src/renderer/lib/render.ts",
+        "sha256": "80f265e523a26e759616e00551efed77a641d1f52d7bc572acd3b820d48c7391"
+      },
+      {
+        "path": "src/renderer/lib/remark-details.ts",
+        "sha256": "9046245cb63e988fcfa0b57833745b2f5eb6a8f6535fe5b4ce889922ca2d88d1"
+      },
+      {
+        "path": "tests/markdown-tasks.test.ts",
+        "sha256": "799019d0ed5f8356a82e1b77167fddb4327eba79feeef6045c774996c17f5768"
+      },
+      {
+        "path": "tests/markdown-task-render.test.ts",
+        "sha256": "2655676ba4467bb2cd252995991126995ee9ab1601ae50dc2b93bbc5bbc74c1f"
+      },
+      {
+        "path": "tests/e2e/markdown-tasks.spec.ts",
+        "sha256": "e894380977f0aeea6320aaabbeedef6aab5fc6fe8572e34c116ab6831c41986c"
+      }
+    ],
+    "logsOverwritten": [
+      {
+        "path": "/private/tmp/freyalab-lote/6-check-final.log",
+        "sha256": "98e88b8eecd4d2a94c35a7a92e408ce28e0b14f003192833850d27dee14284e0",
+        "bytes": 256,
+        "available": false,
+        "status": "LOG SOBRESCRITO",
+        "note": "Hash registrado en la evidencia previa; no se fabricó copia del log antiguo ni se repitió su ejecución."
+      },
+      {
+        "path": "/private/tmp/freyalab-lote/6-unit-final.log",
+        "sha256": "b8498f5a1e301a969135651b7f7355b1694cfb72e46c55c21ecc7a9ed4b45df9",
+        "bytes": 233,
+        "available": false,
+        "status": "LOG SOBRESCRITO",
+        "note": "Hash registrado en la evidencia previa; no se fabricó copia del log antiguo ni se repitió su ejecución."
+      }
+    ],
+    "buildLogsPreserved": [
+      {
+        "path": "/private/tmp/freyalab-lote/6-build-focal.log",
+        "sha256": "cc4527d76097a1c95bc40fdc296545bb31f525eeffdf40e8355c96fb776a256c",
+        "bytes": 21324,
+        "available": true,
+        "status": "PRESERVADO"
+      },
+      {
+        "path": "/private/tmp/freyalab-lote/6-build-focal-final.log",
+        "sha256": "8b0c142c28c95e998048b1041433e0099f2fc288907f3ebf684cf3a1e0e68366",
+        "bytes": 21324,
+        "available": true,
+        "status": "PRESERVADO"
+      }
+    ]
+  },
+  "decisions": {
+    "taskIdentity": "TaskReference en memoria: línea física, offset UTF-16 RAW, contenido esperado de línea y marcador exacto. data-line numérico es el único atributo de anotación emitido tras saneado.",
+    "race": "Rechazar cualquier snapshot completo cambiado, incluso notas fuera de la tarea.",
+    "history": "Un EditorState/Compartment por documento; createMarkdownSession sin gramática y Editor añade/retira el lenguaje en UI conservando la misma historia.",
+    "export": "Mantener checkbox disabled en HTML de render; Preview solo habilita controles propios y exporta una copia deshabilitada sin data-line.",
+    "source": "Parche solo de los tres caracteres; BOM, LF/CRLF y prefijos de fragmentos details conservados en offsets RAW."
+  },
+  "benchmark": {
+    "scope": "Solo Node/EditorState; nunca latencia de app, RAF o memoria.",
+    "currentFactoryWithoutEditor": {
+      "date": "2026-10-27T14:20:58.687Z",
+      "environment": {
+        "node": "v24.22.1",
+        "platform": "darwin",
+        "arch": "arm64",
+        "cpu": "Apple M2 Max",
+        "logicalCpus": 12,
+        "memoryBytes": 34359738368
+      },
+      "method": {
+        "scope": "Helper puro en Node; sin DOM, EditorView, IPC, guardado, render HTML ni Electron.",
+        "setup": "Factory de producto createMarkdownSession(source) fuera de medición: history(), ui vacío y separador preciso; sin gramática. Ámbito: núcleo sin editor montado, como Vista previa. Los editores montados sí instalan markdown() en ui.",
+        "samples": "Un calentamiento descartado y tres muestras por formato, en orden LF, CRLF, mixto.",
+        "transaction": "taskTransaction incluye validación de RAW, localización de prefijo y verificación de RAW final. Undo StateCommand se mide aparte.",
+        "integrity": "SHA-256 del RAW completo antes, del parche esperado y tras deshacer; cada muestra verifica exactamente tres caracteres reemplazados y un paso de undo.",
+        "threshold": "Sin umbral de aceptación de reloj; no es latencia ni rendimiento de la aplicación completa.",
+        "memory": "No medida."
+      },
+      "helper": {
+        "path": "/private/tmp/freyalab-lote/md-004/src/renderer/lib/markdown-tasks.ts",
+        "sha256": "3fca943f88883a9971138e7901bcfc5899795cc23dfab3b3404f28096e5d7607"
+      },
+      "cases": [
+        {
+          "format": "LF",
+          "bytes": 10485760,
+          "characters": 10485760,
+          "physicalLines": 11917,
+          "rawMarkerOffset": 10485745,
+          "sourceSha256": "1a08ddeff89e61b168ca827afbef0da1d98e5b1021e42a9ce6c1fa51038d6862",
+          "expectedSha256": "d3fa0e4d04ed807ca7dd3befdbe91288fe6d9eee5e885f1c39c33725bec4f684",
+          "warmup": {
+            "setupMs": 2.4312499999999915,
+            "transactionMs": 9.811624999999992,
+            "undoMs": 0.1817920000000015,
+            "integrity": true
+          },
+          "samples": [
+            {
+              "setupMs": 1.6690419999999904,
+              "transactionMs": 6.605416000000005,
+              "undoMs": 0.10375000000000512,
+              "integrity": true
+            },
+            {
+              "setupMs": 1.0389169999999979,
+              "transactionMs": 5.825416999999987,
+              "undoMs": 0.06225000000000591,
+              "integrity": true
+            },
+            {
+              "setupMs": 1.0161249999999882,
+              "transactionMs": 5.805500000000023,
+              "undoMs": 0.052209000000004835,
+              "integrity": true
+            }
+          ],
+          "medianTransactionMs": 5.825416999999987,
+          "medianUndoMs": 0.06225000000000591,
+          "maxTransactionMs": 6.605416000000005
+        },
+        {
+          "format": "CRLF",
+          "bytes": 10485760,
+          "characters": 10485760,
+          "physicalLines": 11904,
+          "rawMarkerOffset": 10485745,
+          "sourceSha256": "9c109e902a30a4748a988f60a71f9826ffbcd95c9369c693c38d7ba2e8b57084",
+          "expectedSha256": "bbc581eaffcc1879833f1375ed2609212fce81785aeff20b34bb3e25719a86a3",
+          "warmup": {
+            "setupMs": 0.5917089999999803,
+            "transactionMs": 7.422415999999998,
+            "undoMs": 0.11941699999999855,
+            "integrity": true
+          },
+          "samples": [
+            {
+              "setupMs": 0.5475419999999929,
+              "transactionMs": 6.246250000000003,
+              "undoMs": 0.07837499999999409,
+              "integrity": true
+            },
+            {
+              "setupMs": 0.5764589999999998,
+              "transactionMs": 6.52800000000002,
+              "undoMs": 0.08333300000001032,
+              "integrity": true
+            },
+            {
+              "setupMs": 0.6413749999999823,
+              "transactionMs": 5.73845799999998,
+              "undoMs": 0.08925000000004957,
+              "integrity": true
+            }
+          ],
+          "medianTransactionMs": 6.246250000000003,
+          "medianUndoMs": 0.08333300000001032,
+          "maxTransactionMs": 6.52800000000002
+        },
+        {
+          "format": "mixto",
+          "bytes": 10485760,
+          "characters": 10485760,
+          "physicalLines": 11910,
+          "rawMarkerOffset": 10485745,
+          "sourceSha256": "6631c14ad2172e299e8d64636ce4a00a5ac9dc1011a2d526af901f05a4214d15",
+          "expectedSha256": "af7558c86c1c6035fa0bc94829e43244fed8d8470a1d9014ffe82fd10d4d72e6",
+          "warmup": {
+            "setupMs": 0.5272089999999707,
+            "transactionMs": 5.7353330000000255,
+            "undoMs": 0.06008300000002009,
+            "integrity": true
+          },
+          "samples": [
+            {
+              "setupMs": 0.5349580000000174,
+              "transactionMs": 5.46754199999998,
+              "undoMs": 0.06579199999998764,
+              "integrity": true
+            },
+            {
+              "setupMs": 0.5504169999999817,
+              "transactionMs": 5.6521660000000224,
+              "undoMs": 0.04216700000000628,
+              "integrity": true
+            },
+            {
+              "setupMs": 0.4695830000000001,
+              "transactionMs": 5.406791999999996,
+              "undoMs": 0.04533300000002782,
+              "integrity": true
+            }
+          ],
+          "medianTransactionMs": 5.46754199999998,
+          "medianUndoMs": 0.04533300000002782,
+          "maxTransactionMs": 5.6521660000000224
+        }
+      ],
+      "noLanguageInFactory": true
+    },
+    "currentHelperMatchesSource": true,
+    "historicalWithMarkdownInCore": {
+      "date": "2026-10-27T13:56:26.647Z",
+      "environment": {
+        "node": "v24.22.1",
+        "platform": "darwin",
+        "arch": "arm64",
+        "cpu": "Apple M2 Max",
+        "logicalCpus": 12,
+        "memoryBytes": 34359738368
+      },
+      "method": {
+        "scope": "Helper puro en Node; sin DOM, EditorView, IPC, guardado, render HTML ni Electron.",
+        "setup": "EditorState fuera de medición: history(), markdown(), ui.of([]), readOnly=false y lineSeparator CRLF si existe, igual al núcleo actual de App.",
+        "samples": "Un calentamiento descartado y tres muestras por formato, en orden LF, CRLF, mixto.",
+        "transaction": "taskTransaction incluye validación de RAW, localización de prefijo y verificación de RAW final. Undo StateCommand se mide aparte.",
+        "integrity": "SHA-256 del RAW completo antes, del parche esperado y tras deshacer; cada muestra verifica exactamente tres caracteres reemplazados y un paso de undo.",
+        "threshold": "Sin umbral de aceptación de reloj; no es latencia ni rendimiento de la aplicación completa.",
+        "memory": "No medida."
+      },
+      "helper": {
+        "path": "/private/tmp/freyalab-lote/md-004/src/renderer/lib/markdown-tasks.ts",
+        "sha256": "db9124c4dbe6c422eb785d78cd1dcf83bb778067b76d1c73867b9077d0a321d9"
+      },
+      "cases": [
+        {
+          "format": "LF",
+          "bytes": 10485760,
+          "characters": 10485760,
+          "physicalLines": 11917,
+          "rawMarkerOffset": 10485745,
+          "sourceSha256": "1a08ddeff89e61b168ca827afbef0da1d98e5b1021e42a9ce6c1fa51038d6862",
+          "expectedSha256": "d3fa0e4d04ed807ca7dd3befdbe91288fe6d9eee5e885f1c39c33725bec4f684",
+          "warmup": {
+            "setupMs": 475.64037499999995,
+            "transactionMs": 477.47387500000013,
+            "undoMs": 472.83345800000006,
+            "integrity": true
+          },
+          "samples": [
+            {
+              "setupMs": 463.0730410000001,
+              "transactionMs": 478.89145900000017,
+              "undoMs": 468.25812499999984,
+              "integrity": true
+            },
+            {
+              "setupMs": 462.1563329999999,
+              "transactionMs": 474.0638339999996,
+              "undoMs": 469.8577919999998,
+              "integrity": true
+            },
+            {
+              "setupMs": 461.5860419999999,
+              "transactionMs": 472.4530420000001,
+              "undoMs": 468.72433399999954,
+              "integrity": true
+            }
+          ],
+          "medianTransactionMs": 474.0638339999996,
+          "medianUndoMs": 468.72433399999954,
+          "maxTransactionMs": 478.89145900000017
+        },
+        {
+          "format": "CRLF",
+          "bytes": 10485760,
+          "characters": 10485760,
+          "physicalLines": 11904,
+          "rawMarkerOffset": 10485745,
+          "sourceSha256": "9c109e902a30a4748a988f60a71f9826ffbcd95c9369c693c38d7ba2e8b57084",
+          "expectedSha256": "bbc581eaffcc1879833f1375ed2609212fce81785aeff20b34bb3e25719a86a3",
+          "warmup": {
+            "setupMs": 464.27479200000016,
+            "transactionMs": 478.0479999999998,
+            "undoMs": 472.69016700000066,
+            "integrity": true
+          },
+          "samples": [
+            {
+              "setupMs": 461.5797079999993,
+              "transactionMs": 480.47600000000057,
+              "undoMs": 467.69895799999904,
+              "integrity": true
+            },
+            {
+              "setupMs": 470.60162499999933,
+              "transactionMs": 479.17241600000125,
+              "undoMs": 470.4221670000006,
+              "integrity": true
+            },
+            {
+              "setupMs": 467.5992500000011,
+              "transactionMs": 468.2415839999994,
+              "undoMs": 478.01708300000064,
+              "integrity": true
+            }
+          ],
+          "medianTransactionMs": 479.17241600000125,
+          "medianUndoMs": 470.4221670000006,
+          "maxTransactionMs": 480.47600000000057
+        },
+        {
+          "format": "mixto",
+          "bytes": 10485760,
+          "characters": 10485760,
+          "physicalLines": 11910,
+          "rawMarkerOffset": 10485745,
+          "sourceSha256": "6631c14ad2172e299e8d64636ce4a00a5ac9dc1011a2d526af901f05a4214d15",
+          "expectedSha256": "af7558c86c1c6035fa0bc94829e43244fed8d8470a1d9014ffe82fd10d4d72e6",
+          "warmup": {
+            "setupMs": 495.46358300000065,
+            "transactionMs": 473.4563330000001,
+            "undoMs": 470.6110829999998,
+            "integrity": true
+          },
+          "samples": [
+            {
+              "setupMs": 479.36679099999856,
+              "transactionMs": 487.1744579999995,
+              "undoMs": 502.7325000000001,
+              "integrity": true
+            },
+            {
+              "setupMs": 489.494917,
+              "transactionMs": 467.2076670000006,
+              "undoMs": 462.79662499999904,
+              "integrity": true
+            },
+            {
+              "setupMs": 460.67849999999817,
+              "transactionMs": 468.71662500000093,
+              "undoMs": 463.1544169999979,
+              "integrity": true
+            }
+          ],
+          "medianTransactionMs": 468.71662500000093,
+          "medianUndoMs": 463.1544169999979,
+          "maxTransactionMs": 487.1744579999995
+        }
+      ],
+      "readonlyFacetDiagnostic": {
+        "initialBaseReadOnly": true,
+        "uiReadOnlyAfterReconfigure": false,
+        "actualReadOnly": true,
+        "note": "Reproduce la composición actual: un readOnly=true fuera del compartment no se desbloquea al cambiar el de la UI."
+      }
+    },
+    "historicalHistoryOnlyControl": {
+      "date": "2026-10-27T13:57:34.500Z",
+      "environment": {
+        "node": "v24.22.1",
+        "platform": "darwin",
+        "arch": "arm64",
+        "cpu": "Apple M2 Max",
+        "logicalCpus": 12,
+        "memoryBytes": 34359738368
+      },
+      "method": {
+        "scope": "Helper puro en Node; sin DOM, EditorView, IPC, guardado, render HTML ni Electron.",
+        "setup": "EditorState fuera de medición: history(), ui.of([]), readOnly=false y lineSeparator CRLF si existe. Control sin la extensión markdown(); no es el núcleo completo de App.",
+        "samples": "Un calentamiento descartado y tres muestras por formato, en orden LF, CRLF, mixto.",
+        "transaction": "taskTransaction incluye validación de RAW, localización de prefijo y verificación de RAW final. Undo StateCommand se mide aparte.",
+        "integrity": "SHA-256 del RAW completo antes, del parche esperado y tras deshacer; cada muestra verifica exactamente tres caracteres reemplazados y un paso de undo.",
+        "threshold": "Sin umbral de aceptación de reloj; no es latencia ni rendimiento de la aplicación completa.",
+        "memory": "No medida."
+      },
+      "helper": {
+        "path": "/private/tmp/freyalab-lote/md-004/src/renderer/lib/markdown-tasks.ts",
+        "sha256": "db9124c4dbe6c422eb785d78cd1dcf83bb778067b76d1c73867b9077d0a321d9"
+      },
+      "cases": [
+        {
+          "format": "LF",
+          "bytes": 10485760,
+          "characters": 10485760,
+          "physicalLines": 11917,
+          "rawMarkerOffset": 10485745,
+          "sourceSha256": "1a08ddeff89e61b168ca827afbef0da1d98e5b1021e42a9ce6c1fa51038d6862",
+          "expectedSha256": "d3fa0e4d04ed807ca7dd3befdbe91288fe6d9eee5e885f1c39c33725bec4f684",
+          "warmup": {
+            "setupMs": 2.4237919999999917,
+            "transactionMs": 10.052375000000012,
+            "undoMs": 0.20529200000000003,
+            "integrity": true
+          },
+          "samples": [
+            {
+              "setupMs": 1.710792000000012,
+              "transactionMs": 6.693917000000013,
+              "undoMs": 0.09454099999999244,
+              "integrity": true
+            },
+            {
+              "setupMs": 1.051499999999976,
+              "transactionMs": 5.957042000000001,
+              "undoMs": 0.07312500000000455,
+              "integrity": true
+            },
+            {
+              "setupMs": 1.008958000000007,
+              "transactionMs": 5.663167000000016,
+              "undoMs": 0.051625000000001364,
+              "integrity": true
+            }
+          ],
+          "medianTransactionMs": 5.957042000000001,
+          "medianUndoMs": 0.07312500000000455,
+          "maxTransactionMs": 6.693917000000013
+        },
+        {
+          "format": "CRLF",
+          "bytes": 10485760,
+          "characters": 10485760,
+          "physicalLines": 11904,
+          "rawMarkerOffset": 10485745,
+          "sourceSha256": "9c109e902a30a4748a988f60a71f9826ffbcd95c9369c693c38d7ba2e8b57084",
+          "expectedSha256": "bbc581eaffcc1879833f1375ed2609212fce81785aeff20b34bb3e25719a86a3",
+          "warmup": {
+            "setupMs": 0.5828329999999937,
+            "transactionMs": 7.035708,
+            "undoMs": 0.1444580000000144,
+            "integrity": true
+          },
+          "samples": [
+            {
+              "setupMs": 0.5530000000000257,
+              "transactionMs": 6.327000000000027,
+              "undoMs": 0.10162499999998431,
+              "integrity": true
+            },
+            {
+              "setupMs": 0.582583000000028,
+              "transactionMs": 6.242999999999995,
+              "undoMs": 0.05333300000000918,
+              "integrity": true
+            },
+            {
+              "setupMs": 0.5291670000000295,
+              "transactionMs": 5.988375000000019,
+              "undoMs": 0.08983299999999872,
+              "integrity": true
+            }
+          ],
+          "medianTransactionMs": 6.242999999999995,
+          "medianUndoMs": 0.08983299999999872,
+          "maxTransactionMs": 6.327000000000027
+        },
+        {
+          "format": "mixto",
+          "bytes": 10485760,
+          "characters": 10485760,
+          "physicalLines": 11910,
+          "rawMarkerOffset": 10485745,
+          "sourceSha256": "6631c14ad2172e299e8d64636ce4a00a5ac9dc1011a2d526af901f05a4214d15",
+          "expectedSha256": "af7558c86c1c6035fa0bc94829e43244fed8d8470a1d9014ffe82fd10d4d72e6",
+          "warmup": {
+            "setupMs": 0.513499999999965,
+            "transactionMs": 5.868625000000009,
+            "undoMs": 0.05741700000004357,
+            "integrity": true
+          },
+          "samples": [
+            {
+              "setupMs": 0.49670900000000984,
+              "transactionMs": 5.755792000000042,
+              "undoMs": 0.05520799999999326,
+              "integrity": true
+            },
+            {
+              "setupMs": 0.5193340000000148,
+              "transactionMs": 5.673915999999963,
+              "undoMs": 0.03745800000001509,
+              "integrity": true
+            },
+            {
+              "setupMs": 0.4599169999999617,
+              "transactionMs": 5.364250000000027,
+              "undoMs": 0.0399169999999458,
+              "integrity": true
+            }
+          ],
+          "medianTransactionMs": 5.673915999999963,
+          "medianUndoMs": 0.0399169999999458,
+          "maxTransactionMs": 5.755792000000042
+        }
+      ],
+      "readonlyFacetDiagnostic": {
+        "initialBaseReadOnly": true,
+        "uiReadOnlyAfterReconfigure": false,
+        "actualReadOnly": true,
+        "note": "Reproduce la composición actual: un readOnly=true fuera del compartment no se desbloquea al cambiar el de la UI."
+      }
+    },
+    "rawHistoricalManifest": [
+      {
+        "path": "/private/tmp/freyalab-lote/6-task-benchmark.mjs",
+        "sha256": "7e1d6b305cae7f6cdec859cfc9087139684f9748c3353caab8bda02777cc5d98",
+        "bytes": 5245
+      },
+      {
+        "path": "/private/tmp/freyalab-lote/6-task-benchmark.json",
+        "sha256": "3986b31b4f047c06f0b76efd8ddbe0ba384734cbe75462833be82c9dad65e0bd",
+        "bytes": 5124
+      },
+      {
+        "path": "/private/tmp/freyalab-lote/6-task-benchmark.log",
+        "sha256": "047b2549770a7836ea7d5fcd988354e5adf0f45f908e492ef81d35cc74d0c0dc",
+        "bytes": 876
+      },
+      {
+        "path": "/private/tmp/freyalab-lote/6-task-benchmark-history.mjs",
+        "sha256": "417e2674b36a18dc8e262b99f829f6be94b870c77cc77f369d277051fd0bbe67",
+        "bytes": 5166
+      },
+      {
+        "path": "/private/tmp/freyalab-lote/6-task-benchmark-history.json",
+        "sha256": "80f9d988b5dee2d29f4ee38bafb26af2cb2ab68828d82557a4a1b192175c9a3b",
+        "bytes": 5164
+      },
+      {
+        "path": "/private/tmp/freyalab-lote/6-task-benchmark-history.log",
+        "sha256": "9626133b1fad8b74ea855aa0d5991c18343b3f9f20c932263e4dec2a2696b28c",
+        "bytes": 884
+      }
+    ],
+    "rawCurrentManifest": [
+      {
+        "path": "/private/tmp/freyalab-lote/6-session-red.log",
+        "bytes": 4032,
+        "sha256": "664a0f5eeb4616299f47d919afab386145bcb1b125765d619b7ff7a05814177f"
+      },
+      {
+        "path": "/private/tmp/freyalab-lote/6-session-green.log",
+        "bytes": 196,
+        "sha256": "d3d4f5ef5e34ff0ce4642f52a0477c35344a6db358ad008ee5ad42472bb993a7"
+      },
+      {
+        "path": "/private/tmp/freyalab-lote/6-task-benchmark-current.mjs",
+        "bytes": 4595,
+        "sha256": "140dd4c39d7c32d9b42b586c3897a35417dae32e616929ef469d0f557b475381"
+      },
+      {
+        "path": "/private/tmp/freyalab-lote/6-task-benchmark-current.json",
+        "bytes": 5005,
+        "sha256": "210cbb8ad0c9dd2054032b110b9a6ea66d30a9d5d1f59f1ac78ed1539de181a7"
+      },
+      {
+        "path": "/private/tmp/freyalab-lote/6-task-benchmark-current.log",
+        "bytes": 676,
+        "sha256": "ee73edfb245d42d83a3ae2951d2686fde3d088424b120c221e4183fe4c5a0125"
+      }
+    ],
+    "note": "Las cifras actuales de 5–7ms son de la factoría real sin UI/Editor. Un editor montado vuelve a añadir gramática y no se ha medido aquí una app nativa de 10 MiB."
+  },
+  "integrationNote": "Al integrar PR72, conservar markdown({pasteURLAsLink:false}) en el compartimento UI de Editor; no se importa su código en esta rama.",
+  "sources": [
+    {
+      "path": "src/renderer/App.svelte",
+      "sha256": "867289f4d9fe509b60132fd1df9fbb4d6ef034ce5bf05bb682abcebcd4745832"
+    },
+    {
+      "path": "src/renderer/components/Editor.svelte",
+      "sha256": "f689ceb0288f2b3f9ac1372528c2dcd59c00e37d47257730d6376536f91eacc4"
+    },
+    {
+      "path": "src/renderer/components/Preview.svelte",
+      "sha256": "013a9d4939399b294f2e8d8c569965b33b934b465888acd7d23b812a98d9c278"
+    },
+    {
+      "path": "src/renderer/lib/markdown-tasks.ts",
+      "sha256": "3fca943f88883a9971138e7901bcfc5899795cc23dfab3b3404f28096e5d7607"
+    },
+    {
+      "path": "src/renderer/lib/render.ts",
+      "sha256": "80f265e523a26e759616e00551efed77a641d1f52d7bc572acd3b820d48c7391"
+    },
+    {
+      "path": "src/renderer/lib/remark-details.ts",
+      "sha256": "9046245cb63e988fcfa0b57833745b2f5eb6a8f6535fe5b4ce889922ca2d88d1"
+    },
+    {
+      "path": "tests/markdown-tasks.test.ts",
+      "sha256": "5b1b3f3757f047f00bf6f150ffb904923d998af1f2d0eab9c19763b43bb068b6"
+    },
+    {
+      "path": "tests/markdown-task-render.test.ts",
+      "sha256": "2655676ba4467bb2cd252995991126995ee9ab1601ae50dc2b93bbc5bbc74c1f"
+    },
+    {
+      "path": "tests/e2e/markdown-tasks.spec.ts",
+      "sha256": "e894380977f0aeea6320aaabbeedef6aab5fc6fe8572e34c116ab6831c41986c"
+    }
+  ],
+  "ciConfiguration": {
+    "path": ".github/workflows/ci.yml",
+    "sha256": "43078e35cec4634d3e10cc7c5924d560ff1a885c56ab6fb772f018b3445e5d72",
+    "macOSIntelTimeoutMinutes": 60,
+    "otherPlatformsTimeoutMinutes": 45,
+    "newRetries": false
+  },
+  "manifests": [
+    {
+      "path": "package.json",
+      "sha256": "2cafd9bf6a092d590c256c7aa913ddb1b7008db31540549ac82226fa902ca94a",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "7008658adc0a5b0c85073de556f4f249fc2853005bedcaec64f777fe684ee3d9",
+      "unchangedFromBase": true
+    }
+  ],
+  "screenshots": [
+    {
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "path": "docs/evidence/md-004-casillas-light-1440x900.png",
+      "source": "/private/tmp/freyalab-lote/6-global-evidence/6-tasks-light-1440x900.png",
+      "sha256": "9e8e69ff77d108a4467bc407d2f41e3bb28126394c90823f839f629f7fbfb9cf",
+      "stage": "Global final actual 246/246 posterior a gramática/UI; capturas sin retoque."
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "path": "docs/evidence/md-004-casillas-dark-1440x900.png",
+      "source": "/private/tmp/freyalab-lote/6-global-evidence/6-tasks-dark-1440x900.png",
+      "sha256": "98f631fa4c670f2737195ec1b716cfe42e5b7e244b0752ebbd5c38f64e38f72e",
+      "stage": "Global final actual 246/246 posterior a gramática/UI; capturas sin retoque."
+    }
+  ],
+  "screenshotsHistory": [
+    {
+      "theme": "light",
+      "source": "/private/tmp/freyalab-lote/6-focal-parser-ui/6-tasks-light-1440x900.png",
+      "sha256": "9e8e69ff77d108a4467bc407d2f41e3bb28126394c90823f839f629f7fbfb9cf",
+      "preserved": true,
+      "scene": "Focal actual 12/12 posterior a gramática/UI."
+    },
+    {
+      "theme": "light",
+      "source": "/private/tmp/freyalab-lote/6-before-parser-ui-evidence/6-tasks-light-1440x900.png",
+      "sha256": "9e8e69ff77d108a4467bc407d2f41e3bb28126394c90823f839f629f7fbfb9cf",
+      "preserved": true,
+      "scene": "Global histórica 246/246, guía breve."
+    },
+    {
+      "theme": "light",
+      "source": "/private/tmp/freyalab-lote/6-focal-evidence/6-tasks-light-1440x900.png",
+      "sha256": "4241fbdbc624a9921998370e2a8ac89da59d824ab9b9d2e0d56f35c32dff411f",
+      "preserved": true,
+      "scene": "Focal histórica, documento largo."
+    },
+    {
+      "theme": "dark",
+      "source": "/private/tmp/freyalab-lote/6-focal-parser-ui/6-tasks-dark-1440x900.png",
+      "sha256": "190a3f8afc5e6dc85012f9a69f3c92f3d03110c3a451112f145d8c14035869ef",
+      "preserved": true,
+      "scene": "Focal actual 12/12 posterior a gramática/UI."
+    },
+    {
+      "theme": "dark",
+      "source": "/private/tmp/freyalab-lote/6-before-parser-ui-evidence/6-tasks-dark-1440x900.png",
+      "sha256": "190a3f8afc5e6dc85012f9a69f3c92f3d03110c3a451112f145d8c14035869ef",
+      "preserved": true,
+      "scene": "Global histórica 246/246, guía breve."
+    },
+    {
+      "theme": "dark",
+      "source": "/private/tmp/freyalab-lote/6-focal-evidence/6-tasks-dark-1440x900.png",
+      "sha256": "99a536b8b5229e8a47f3f90f660dd0921b1b1e21ae745f7fb884a666f7fdbbe2",
+      "preserved": true,
+      "scene": "Focal histórica, documento largo."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/private/tmp/freyalab-lote/6-core-red.log",
+      "sha256": "9427309b625d88db12c931cc58cd51ead7707b6e032c16d86313de6d39e2c79d",
+      "bytes": 953
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-core-green.log",
+      "sha256": "bdbb51dca2dcdd7ea7aca02664d4e89eb6de74d24dabf3879aeeb4980c50b5ec",
+      "bytes": 196
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-render-red.log",
+      "sha256": "90179352b5cf0b65b1503871c66422ed13f0247786ffb5ee49af02420ade373b",
+      "bytes": 21222
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-render-green-first.log",
+      "sha256": "138991144ecbda2bc9da24a2b17f29ce8acf4c21a6865b538c69a47df6b36481",
+      "bytes": 196
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-render-green.log",
+      "sha256": "b6aa9f02fb868b69429ad1a9594fbf2655b59999a1a5c982aca80ea3a56f6517",
+      "bytes": 198
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-build-baseline.log",
+      "sha256": "5eb0fd0735490bf6ddbb24ea561bb43983ba7d7664ec2e87761154892745f0a5",
+      "bytes": 21324
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-e2e-red.log",
+      "sha256": "fe859c022cd737f676a622279ff88e1c051cde51ececf5be11e2d1b693c12dab",
+      "bytes": 2969
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-e2e-first.log",
+      "sha256": "9a4600b255e4068e38ec8d9cb903341f66569372b927868274646c4932b52ee7",
+      "bytes": 1973
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-readonly-reload-mounted-diagnostic.log",
+      "sha256": "31dbc68423e776f24a7a6ae5013210f56655b441f13336f4416e6ce5771ba383",
+      "bytes": 357
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-readonly-reload-red.log",
+      "sha256": "946531da54d33c57190626dc0d9d034fe24d7e22fc9c4a15e38d6c84cc844d4d",
+      "bytes": 2889
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-session-red.log",
+      "sha256": "664a0f5eeb4616299f47d919afab386145bcb1b125765d619b7ff7a05814177f",
+      "bytes": 4032
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-session-green.log",
+      "sha256": "d3d4f5ef5e34ff0ce4642f52a0477c35344a6db358ad008ee5ad42472bb993a7",
+      "bytes": 196
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-e2e-before-parser-ui.log",
+      "sha256": "18d34e9abb303ece0a6a9396133ae81a846e73f2544701ac95346c79143cc601",
+      "bytes": 58137
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-e2e-parser-ui-focal.log",
+      "sha256": "d39db65f168c172c0baed7fd748d77b43258143437684fe76fbd0658b489c726",
+      "bytes": 1973
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-e2e-final.log",
+      "sha256": "9ce606e0e3bc637c29943ce09fc4ea0569d75a6d97d134d911a6149edf6e2bed",
+      "bytes": 58137
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-build-final.log",
+      "sha256": "c54d939682c43a43523814d144f3537dad64209f2422505aa58354e9a6a09a08",
+      "bytes": 21324
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-check-final.log",
+      "sha256": "98e88b8eecd4d2a94c35a7a92e408ce28e0b14f003192833850d27dee14284e0",
+      "bytes": 256
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-unit-final.log",
+      "sha256": "15455eb198f3a6696e65dd479aa6c4df652d664b3fb7897677dea379aab37366",
+      "bytes": 233
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-build-focal.log",
+      "sha256": "cc4527d76097a1c95bc40fdc296545bb31f525eeffdf40e8355c96fb776a256c",
+      "bytes": 21324
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-build-focal-final.log",
+      "sha256": "8b0c142c28c95e998048b1041433e0099f2fc288907f3ebf684cf3a1e0e68366",
+      "bytes": 21324
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-build-parser-ui-focal.log",
+      "sha256": "d27d3db1f03c4eef5c392ae31cbe89c42d21d14ae062d4d73a7119634da391a8",
+      "bytes": 21324
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-check-parser-ui.log",
+      "sha256": "98e88b8eecd4d2a94c35a7a92e408ce28e0b14f003192833850d27dee14284e0",
+      "bytes": 256
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-unit-parser-ui.log",
+      "sha256": "15455eb198f3a6696e65dd479aa6c4df652d664b3fb7897677dea379aab37366",
+      "bytes": 233
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-build-focal-preserved-copy.log",
+      "sha256": "cc4527d76097a1c95bc40fdc296545bb31f525eeffdf40e8355c96fb776a256c",
+      "bytes": 21324
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-task-benchmark.mjs",
+      "sha256": "7e1d6b305cae7f6cdec859cfc9087139684f9748c3353caab8bda02777cc5d98",
+      "bytes": 5245
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-task-benchmark.json",
+      "sha256": "3986b31b4f047c06f0b76efd8ddbe0ba384734cbe75462833be82c9dad65e0bd",
+      "bytes": 5124
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-task-benchmark.log",
+      "sha256": "047b2549770a7836ea7d5fcd988354e5adf0f45f908e492ef81d35cc74d0c0dc",
+      "bytes": 876
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-task-benchmark-history.mjs",
+      "sha256": "417e2674b36a18dc8e262b99f829f6be94b870c77cc77f369d277051fd0bbe67",
+      "bytes": 5166
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-task-benchmark-history.json",
+      "sha256": "80f9d988b5dee2d29f4ee38bafb26af2cb2ab68828d82557a4a1b192175c9a3b",
+      "bytes": 5164
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-task-benchmark-history.log",
+      "sha256": "9626133b1fad8b74ea855aa0d5991c18343b3f9f20c932263e4dec2a2696b28c",
+      "bytes": 884
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-task-benchmark-manifest.json",
+      "sha256": "bf36cd07fb87d9694729e62250eb012895ca6524f17bb46711603ef63882e08c",
+      "bytes": 1059
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-task-benchmark-summary.md",
+      "sha256": "8cd0aa2b3525b976d9bdaa1d302b7698ee37fd211f9c137a20400deda8a32cd7",
+      "bytes": 4700
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-task-benchmark-current.mjs",
+      "sha256": "140dd4c39d7c32d9b42b586c3897a35417dae32e616929ef469d0f557b475381",
+      "bytes": 4595
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-task-benchmark-current.json",
+      "sha256": "210cbb8ad0c9dd2054032b110b9a6ea66d30a9d5d1f59f1ac78ed1539de181a7",
+      "bytes": 5005
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-task-benchmark-current.log",
+      "sha256": "ee73edfb245d42d83a3ae2951d2686fde3d088424b120c221e4183fe4c5a0125",
+      "bytes": 676
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-session-current-manifest.json",
+      "sha256": "9de4c329f6b484e482a5d99a717c926675ce1ae19c6b58482a65c73b300c1d01",
+      "bytes": 882
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-evidence-before-parser-ui.json",
+      "sha256": "de33513c42f835742b6e40c7c5bae67101b4b3d5959003211e96712678faa61a",
+      "bytes": 25607
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-ast-probe.mjs",
+      "sha256": "9c22f6d3ddc394868ac2490b9ae575f80d18d280a6523f927a86284c0eeb381e",
+      "bytes": 996
+    },
+    {
+      "path": "/private/tmp/freyalab-lote/6-ast-probe.json",
+      "sha256": "783630f92bfc8afb426960133fb7a4d7181d002abddba144a2b285ecc84439fe",
+      "bytes": 3033
+    }
+  ],
+  "notVerified": [
+    "CI del PR en cuatro plataformas pendiente; cuatro comprobaciones locales completas.",
+    "No se midió latencia de app/RAF/memoria ni se acreditó respuesta de 200 ms para 10 MiB.",
+    "No se probaron instaladores ni se actualizó la app instalada."
+  ]
+}

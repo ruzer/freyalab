@@ -1,5 +1,8 @@
 <script lang="ts">
- import {onMount} from 'svelte'
+ import {onMount,tick} from 'svelte'
+ import {Transaction} from '@codemirror/state'
+ import {undo as undoText,redo as redoText} from '@codemirror/commands'
+ import {createMarkdownSession,taskTransaction,type TaskReference,type MarkdownSession} from './lib/markdown-tasks'
  import appIcon from '../../build/icon.png'
  import type {DocumentInfo,Kind,TreeEntry,RecoveryEntry,ExportRequest} from '../shared/types'
  import Editor from './components/Editor.svelte'
@@ -26,13 +29,41 @@
  let markdownState=$state(lineFormatState('',0)),textSelection=$state<TextSelection|null>(null)
  let editor=$state<Editor>(),preview=$state<Preview>(),diagram=$state<Diagram>(),csv=$state<CsvTable>()
  const pending=new Map<string,Promise<unknown>>()
+ const textSessions=new Map<string,MarkdownSession>()
  // Apertura de un archivo grande en curso (se indexa de una pasada): progreso y botón para cancelar.
  let opening=$state<{id:string;phase:string}|null>(null)
  async function cancelOpening(){const id=opening?.id;if(id)await window.freya.cancelOpen(id).catch(()=>{})}
  let toastTimer:ReturnType<typeof setTimeout>
  function error(message:string){opening=null;toastKind='error';toast=message.replace(/^Error:\s*/,'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',7000)}
  function notify(message:string){toastKind='info';status=message;toast=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',3500)}
- function merge(doc:DocumentInfo,focus=false){if(opening?.id===doc.id)opening=null;documents=documents.some(d=>d.id===doc.id)?documents.map(d=>d.id===doc.id?doc:d):[...documents,doc];if(focus||!activeId)activeId=doc.id}
+ function textSession(doc:DocumentInfo){
+  let session=textSessions.get(doc.id)
+  if(!session){session=createMarkdownSession(doc.text??'');textSessions.set(doc.id,session)}
+  return session
+ }
+ $effect(()=>{
+  const doc=active
+  if(doc?.kind==='markdown'&&mode==='preview'){const selection=textSession(doc).state.selection.main;textSelection=selection.empty?null:{from:selection.from,to:selection.to}}
+ })
+ function receiveText(id:string){return(transactions:readonly Transaction[])=>{
+  const session=textSessions.get(id);if(!session||!transactions.length)return
+  let current=session.state
+  for(const transaction of transactions){if(transaction.startState!==current)return;current=transaction.state}
+  session.state=current;session.receive?.(transactions)
+  if(transactions.some(transaction=>transaction.docChanged))updateText(id,current.sliceDoc())
+ }}
+ function toggleTask(id:string,snapshot:string,reference:TaskReference){
+  const doc=documents.find(value=>value.id===id)
+  if(!doc||id!==activeId||doc.kind!=='markdown'||doc.readonly)return false
+  const session=textSession(doc),transaction=doc.text===snapshot?taskTransaction(session.state,snapshot,reference):undefined
+  if(!transaction){notify('La lista cambió. Espera a que se actualice la vista previa y vuelve a intentarlo.');return false}
+  receiveText(id)([transaction]);return true
+ }
+ async function searchText(){if(active?.kind==='markdown'&&mode==='preview'){mode='edit';await tick()}editor?.search()}
+ function merge(doc:DocumentInfo,focus=false){
+  const session=textSessions.get(doc.id)
+  if(session&&doc.text!==undefined&&doc.text!==session.state.sliceDoc()){const transaction=session.state.update({changes:{from:0,to:session.state.doc.length,insert:doc.text},annotations:Transaction.addToHistory.of(false)});session.state=transaction.state;session.receive?.([transaction])}
+  if(opening?.id===doc.id)opening=null;documents=documents.some(d=>d.id===doc.id)?documents.map(d=>d.id===doc.id?doc:d):[...documents,doc];if(focus||!activeId)activeId=doc.id}
  async function action<T>(operation:()=>Promise<T>):Promise<T|undefined>{try{return await operation()}catch(e){error(e instanceof Error?e.message:String(e))}}
  async function open(){await action(async()=>{for(const doc of await window.freya.open())merge(doc,true);recent=await window.freya.recents()})}
  async function openPath(path:string){await action(async()=>{for(const doc of await window.freya.openPaths([path]))merge(doc,true)})}
@@ -42,12 +73,12 @@
  async function openStatisticsReport(text:string){await action(async()=>{if(new TextEncoder().encode(text).byteLength>10*1024*1024)throw new Error('El informe supera el límite de edición de 10 MiB. Reduce el alcance del análisis.');const doc=await window.freya.newDocument('markdown');merge(doc,true);updateText(doc.id,text);await pending.get(doc.id)})}
  async function save(as=false){if(!active)return;const id=active.id;await action(async()=>{await pending.get(id);const doc=await window.freya.save(id,as);if(doc){merge(doc);external=external.filter(value=>value!==id);notify('Archivo guardado')}})}
  async function reload(id:string){await action(async()=>{merge(await window.freya.reload(id));external=external.filter(value=>value!==id)})}
- async function close(id:string){await action(async()=>{await pending.get(id);if(await window.freya.close(id)){const index=documents.findIndex(d=>d.id===id);documents=documents.filter(d=>d.id!==id);if(activeId===id)activeId=documents[Math.max(0,index-1)]?.id??''}})}
- async function undo(redo=false){if(active?.kind==='csv')await csv?.undoEdit(redo);else if(redo)editor?.redoEdit();else editor?.undoEdit()}
+ async function close(id:string){await action(async()=>{await pending.get(id);if(await window.freya.close(id)){const index=documents.findIndex(d=>d.id===id);documents=documents.filter(d=>d.id!==id);textSessions.delete(id);if(activeId===id)activeId=documents[Math.max(0,index-1)]?.id??''}})}
+ async function undo(redo=false){if(!active||active.readonly)return;if(active.kind==='csv')await csv?.undoEdit(redo);else if(active.kind==='markdown'){const id=active.id,session=textSession(active);(redo?redoText:undoText)({state:session.state,dispatch:transaction=>receiveText(id)([transaction])})}else if(redo)editor?.redoEdit();else editor?.undoEdit()}
  async function exportDocument(format:ExportRequest['format']){if(!active)return;exportMenu=false;busy=true;await action(async()=>{await pending.get(active!.id);const request:ExportRequest={format};if(active!.kind==='csv'){request.table=csv?.exportOptions(exportScope)}else if(active!.kind==='mermaid'){if(format==='svg'||format==='png')request.svg=await diagram?.exportSVG();else request.html=await diagram?.exportHTML()}else request.html=await preview?.exportHTML();const missing=active!.kind==='markdown'?preview?.missingImages()??0:0;const path=await window.freya.export(active!.id,request);if(path)notify(`Exportado: ${path}`+(missing?` · ${missing===1?'1 imagen no se encontró':`${missing} imágenes no se encontraron`}; se exportó con su texto alternativo`:''))});busy=false}
  async function recover(id:string){await action(async()=>{merge(await window.freya.recover(id),true);recoveries=await window.freya.recoveries()})}
  async function discard(id:string){await action(async()=>{await window.freya.discardRecovery(id);recoveries=await window.freya.recoveries()})}
- function keydown(event:KeyboardEvent){if(event.defaultPrevented||!(event.metaKey||event.ctrlKey))return;const key=event.key.toLowerCase();if(key==='o'){event.preventDefault();void(event.shiftKey?openFolder():open())}else if(key==='s'){event.preventDefault();void save(event.shiftKey)}else if(key==='n'){event.preventDefault();void create(event.shiftKey?'mermaid':event.altKey?'csv':'markdown')}else if(key==='b'){event.preventDefault();sidebar=!sidebar;localStorage.setItem('freya-sidebar',String(sidebar))}else if(key==='w'&&active){event.preventDefault();void close(active.id)}}
+ function keydown(event:KeyboardEvent){if(event.defaultPrevented||!(event.metaKey||event.ctrlKey))return;const key=event.key.toLowerCase();if(active?.kind==='markdown'&&!event.altKey&&(mode==='preview'||event.target instanceof Element&&!!event.target.closest('.preview'))&&(key==='z'||key==='y'&&!event.metaKey&&!event.shiftKey)){event.preventDefault();void undo(key==='y'||event.shiftKey)}else if(key==='o'){event.preventDefault();void(event.shiftKey?openFolder():open())}else if(key==='s'){event.preventDefault();void save(event.shiftKey)}else if(key==='n'){event.preventDefault();void create(event.shiftKey?'mermaid':event.altKey?'csv':'markdown')}else if(key==='b'){event.preventDefault();sidebar=!sidebar;localStorage.setItem('freya-sidebar',String(sidebar))}else if(key==='w'&&active){event.preventDefault();void close(active.id)}}
  function themeChange(value:string){theme=value;localStorage.setItem('freya-theme',value)}
  function drop(event:DragEvent){event.preventDefault();const files=Array.from(event.dataTransfer?.files??[]);if(files.length)void action(async()=>{for(const doc of await window.freya.openPaths(window.freya.droppedPaths(files)))merge(doc,true)})}
  function resizeSidebar(event:PointerEvent){const start=event.clientX,width=sidebarWidth;const move=(e:PointerEvent)=>sidebarWidth=Math.min(420,Math.max(180,width+e.clientX-start));const stop=()=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',stop);localStorage.setItem('freya-sidebar-width',String(sidebarWidth))};window.addEventListener('pointermove',move);window.addEventListener('pointerup',stop)}
@@ -83,11 +114,11 @@
     {#key active.id}
      {#if active.kind==='csv'}<CsvTable bind:this={csv} doc={active} onchange={doc=>merge(doc)} onerror={error} onstatus={value=>status=value} onreport={openStatisticsReport}/>
      {:else}
-      <div class="document-tools"><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div>{#if active.kind==='markdown'&&mode!=='preview'}<MarkdownToolbar readonly={active.readonly} formatState={markdownState} onformat={(action,language)=>editor?.format(action,language)}/>{/if}<span class="spacer"></span><button class="text-button" onclick={()=>editor?.search()}><Icon name="search" size={14}/> Buscar</button>{#if active.kind==='markdown'}<button class="text-button" class:active={outline} onclick={()=>outline=!outline}><Icon name="table-of-contents" size={14}/> Índice</button>{/if}</div>
+      <div class="document-tools"><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div>{#if active.kind==='markdown'&&mode!=='preview'}<MarkdownToolbar readonly={active.readonly} formatState={markdownState} onformat={(action,language)=>editor?.format(action,language)}/>{/if}<span class="spacer"></span><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> Buscar</button>{#if active.kind==='markdown'}<button class="text-button" class:active={outline} onclick={()=>outline=!outline}><Icon name="table-of-contents" size={14}/> Índice</button>{/if}</div>
       {#if active.warning}<div class="warning-banner">{active.warning}</div>{/if}
       <div class="document-panes">
-       <div class:hidden={mode==='preview'&&active.kind!=='text'} class="editor-pane" style:width={mode==='split'&&active.kind!=='text'?`${split}%`:'100%'}><div class="pane-caption">{active.kind==='mermaid'?'DEFINICIÓN MERMAID':active.kind==='text'?'TEXTO':'MARKDOWN'}{#if active.readonly}<span>Solo lectura</span>{/if}</div><Editor bind:this={editor} text={active.text??''} readonly={active.readonly} kind={active.kind} onformatstate={state=>markdownState=state} onselection={selection=>textSelection=selection} onchange={text=>updateText(active!.id,text)} onscroll={ratio=>preview?.scrollRatio(ratio)}/></div>
-       {#if active.kind!=='text'}<button class:hidden={mode!=='split'} class="resize-handle split-handle" aria-valuenow={split} aria-valuemin="20" aria-valuemax="80" role="slider" aria-label="Ancho del editor" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSplit} onkeydown={e=>{if(e.key==='ArrowRight')split=Math.min(80,split+2);if(e.key==='ArrowLeft')split=Math.max(20,split-2)}}></button><div class:hidden={mode==='edit'} class="preview-pane"><div class="pane-caption">VISTA PREVIA <span>{active.kind==='mermaid'?'SVG':'Renderizado local'}</span></div>{#if active.kind==='mermaid'}<Diagram bind:this={diagram} text={active.text??''} {dark} onerror={error}/>{:else}<Preview bind:this={preview} text={active.text??''} id={active.id} {dark} onheadings={value=>headings=value} onerror={error}/>{/if}</div>{/if}
+       {#if active.kind!=='markdown'||mode!=='preview'}<div class:hidden={mode==='preview'&&active.kind!=='text'} class="editor-pane" style:width={mode==='split'&&active.kind!=='text'?`${split}%`:'100%'}><div class="pane-caption">{active.kind==='mermaid'?'DEFINICIÓN MERMAID':active.kind==='text'?'TEXTO':'MARKDOWN'}{#if active.readonly}<span>Solo lectura</span>{/if}</div><Editor bind:this={editor} session={active.kind==='markdown'?textSession(active):undefined} ontransactions={active.kind==='markdown'?receiveText(active.id):undefined} text={active.text??''} readonly={active.readonly} kind={active.kind} onformatstate={state=>markdownState=state} onselection={selection=>textSelection=selection} onchange={text=>updateText(active!.id,text)} onscroll={ratio=>preview?.scrollRatio(ratio)}/></div>{/if}
+       {#if active.kind!=='text'}<button class:hidden={mode!=='split'} class="resize-handle split-handle" aria-valuenow={split} aria-valuemin="20" aria-valuemax="80" role="slider" aria-label="Ancho del editor" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSplit} onkeydown={e=>{if(e.key==='ArrowRight')split=Math.min(80,split+2);if(e.key==='ArrowLeft')split=Math.max(20,split-2)}}></button><div class:hidden={mode==='edit'} class="preview-pane"><div class="pane-caption">VISTA PREVIA <span>{active.kind==='mermaid'?'SVG':'Renderizado local'}</span></div>{#if active.kind==='mermaid'}<Diagram bind:this={diagram} text={active.text??''} {dark} onerror={error}/>{:else}<Preview bind:this={preview} text={active.text??''} id={active.id} {dark} readonly={active.readonly} ontask={toggleTask} onheadings={value=>headings=value} onerror={error}/>{/if}</div>{/if}
        {#if outline&&active.kind==='markdown'&&mode!=='edit'&&headings.length}<aside class="outline"><div class="sidebar-label">EN ESTE DOCUMENTO</div>{#each headings as heading}<button style:padding-left={`${12+(heading.level-1)*10}px`} onclick={()=>preview?.scrollToHeading(heading.id)}>{heading.text}</button>{/each}</aside>{/if}
       </div>
      {/if}
