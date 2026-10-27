@@ -1,0 +1,1669 @@
+{
+  "date": "2026-10-27",
+  "base_commit": "7955b68a82e53949466f39e61439e72b693372f1",
+  "status": "Cierre local: check 0/0, 527 unitarias, E2E final 246/246 en 9,0 min y build final 0; CI pendiente",
+  "system": {
+    "os": "macOS 27.0.1",
+    "architecture": "arm64",
+    "cpu": "Apple M2 Max",
+    "memory_gib": 32,
+    "node": "24.22.1",
+    "electron": "44.9.2"
+  },
+  "measurement_notes": [
+    "overflow usa diferencias enteras de scroll; scrollbar mide offset menos client y bordes para detectar la pista física",
+    "La corrida final resta 1 px de seguridad en el cálculo del área disponible para evitar redondeos fraccionales; no oculta overflow",
+    "La geometría 1x1 y viewBox ausente son mutaciones DOM controladas; zoom150% es de Chromium, no monitor físico"
+  ],
+  "measurements": {
+    "baseline/2-red-basal-alto.json": {
+      "phase": "baseline_7955b68",
+      "raw_path": "/private/tmp/freyalab-lote/2-red-basal-alto.json",
+      "sha256": "0e68c52ae45440b91daf5eb390808e1e2b7d061b1c331de405ae0a8c9977c69f",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 544,
+          "height": 594
+        },
+        "svg": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 543.5,
+          "height": 1597.8828125
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 1003.8828125
+        },
+        "center": {
+          "x": -0.25,
+          "y": 501.94140625
+        },
+        "overflow": {
+          "x": 0,
+          "y": 1004
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "100%",
+        "scale": {
+          "x": 1.2077777777777778,
+          "y": 1.2077723450491307
+        }
+      }
+    },
+    "baseline/2-red-basal-ancho.json": {
+      "phase": "baseline_7955b68",
+      "raw_path": "/private/tmp/freyalab-lote/2-red-basal-ancho.json",
+      "sha256": "d050f19554fb2d23cb9fae28ee2a59b0d16c6bb5bc213a2b407f1d2b5630d4e0",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 865.5,
+          "top": 522.515625,
+          "width": 550.5,
+          "height": 11.46875
+        },
+        "viewBox": {
+          "width": 2856,
+          "height": 59.5
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.25,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "100%",
+        "scale": {
+          "x": 0.19275210084033614,
+          "y": 0.19275210084033614
+        }
+      }
+    },
+    "scrollbar_red/2-red-basal-alto.json": {
+      "phase": "physical_scrollbar_red",
+      "raw_path": "/private/tmp/freyalab-lote/2-scrollbar-red/2-red-basal-alto.json",
+      "sha256": "b78d5f62e8c4028dd8b982a84eba08d215441b7bbd820df72e0f531fad767482",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 544,
+          "height": 594
+        },
+        "svg": {
+          "left": 1036.234375,
+          "top": 231.5,
+          "width": 202.0390625,
+          "height": 594
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": 0
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 7
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "44,9%",
+        "scale": {
+          "x": 0.44897569444444446,
+          "y": 0.4489795918367347
+        }
+      }
+    },
+    "scrollbar_red/2-red-basal-ancho.json": {
+      "phase": "physical_scrollbar_red",
+      "raw_path": "/private/tmp/freyalab-lote/2-scrollbar-red/2-red-basal-ancho.json",
+      "sha256": "130a9b04c2944f182299136d506616244c3ca284ed0468a3a611761ca5957418",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 587
+        },
+        "svg": {
+          "left": 865.5,
+          "top": 519.0078125,
+          "width": 551,
+          "height": 11.4765625
+        },
+        "viewBox": {
+          "width": 2856,
+          "height": 59.5
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": 0,
+          "y": -0.25390625
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 7,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "19,3%",
+        "scale": {
+          "x": 0.19292717086834735,
+          "y": 0.19288340336134455
+        }
+      }
+    },
+    "final/2-final-250-nodos.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-250-nodos.json",
+      "sha256": "54095b3c556fd995d88d162f472e11b39ac0a82618a8c713af82c969ef3a22f4",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 1138.375,
+          "top": 231.75,
+          "width": 4.7578125,
+          "height": 593
+        },
+        "viewBox": {
+          "width": 168,
+          "height": 20934.5
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "2,83%",
+        "scale": {
+          "x": 0.0283203125,
+          "y": 0.028326446774463207
+        }
+      }
+    },
+    "final/2-final-ajustado-alto.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-ajustado-alto.json",
+      "sha256": "0b56781feff59647836ff0bf9a383da32ec5d9b29653cf1c914b14687fa22845",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 1039.90625,
+          "top": 231.75,
+          "width": 201.6953125,
+          "height": 593
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "44,8%",
+        "scale": {
+          "x": 0.44821180555555556,
+          "y": 0.4482237339380197
+        }
+      }
+    },
+    "final/2-final-ajustado-ancho.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-ajustado-ancho.json",
+      "sha256": "0e0c169d4f796d9b7880242b93a6930f338d27c7b3e7e9d6a73770a37585f2d0",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 865.75,
+          "top": 522.5234375,
+          "width": 550,
+          "height": 11.453125
+        },
+        "viewBox": {
+          "width": 2856,
+          "height": 59.5
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.25,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "19,3%",
+        "scale": {
+          "x": 0.19257703081232494,
+          "y": 0.19248949579831934
+        }
+      }
+    },
+    "final/2-final-basal-alto.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-basal-alto.json",
+      "sha256": "0b56781feff59647836ff0bf9a383da32ec5d9b29653cf1c914b14687fa22845",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 1039.90625,
+          "top": 231.75,
+          "width": 201.6953125,
+          "height": 593
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "44,8%",
+        "scale": {
+          "x": 0.44821180555555556,
+          "y": 0.4482237339380197
+        }
+      }
+    },
+    "final/2-final-basal-ancho.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-basal-ancho.json",
+      "sha256": "0e0c169d4f796d9b7880242b93a6930f338d27c7b3e7e9d6a73770a37585f2d0",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 865.75,
+          "top": 522.5234375,
+          "width": 550,
+          "height": 11.453125
+        },
+        "viewBox": {
+          "width": 2856,
+          "height": 59.5
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.25,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "19,3%",
+        "scale": {
+          "x": 0.19257703081232494,
+          "y": 0.19248949579831934
+        }
+      }
+    },
+    "final/2-final-dark-1280x800.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-dark-1280x800.json",
+      "sha256": "bc7144c7c535bc5a53555ec6bc731eeb8dd3d04687bde31e9975ff8293476c35",
+      "data": {
+        "available": {
+          "left": 785.5,
+          "top": 231.5,
+          "width": 471,
+          "height": 494
+        },
+        "svg": {
+          "left": 936.9140625,
+          "top": 231.75,
+          "width": 167.6796875,
+          "height": 493
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "37,3%",
+        "scale": {
+          "x": 0.3726215277777778,
+          "y": 0.3726379440665155
+        }
+      }
+    },
+    "final/2-final-dark-1440x900.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-dark-1440x900.json",
+      "sha256": "0b56781feff59647836ff0bf9a383da32ec5d9b29653cf1c914b14687fa22845",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 1039.90625,
+          "top": 231.75,
+          "width": 201.6953125,
+          "height": 593
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "44,8%",
+        "scale": {
+          "x": 0.44821180555555556,
+          "y": 0.4482237339380197
+        }
+      }
+    },
+    "final/2-final-fit-1280x800.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-fit-1280x800.json",
+      "sha256": "e57a489a0041da0fc4eff32fef4f795472a0be05f1f728f0a2b7358a0e12e9ab",
+      "data": {
+        "available": {
+          "left": 889.3984375,
+          "top": 231.5,
+          "width": 367,
+          "height": 494
+        },
+        "svg": {
+          "left": 889.703125,
+          "top": 474.4375,
+          "width": 366,
+          "height": 7.625
+        },
+        "viewBox": {
+          "width": 2856,
+          "height": 59.5
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.1953125,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "12,8%",
+        "scale": {
+          "x": 0.12815126050420167,
+          "y": 0.12815126050420167
+        }
+      }
+    },
+    "final/2-final-fit-inicial.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-fit-inicial.json",
+      "sha256": "0e0c169d4f796d9b7880242b93a6930f338d27c7b3e7e9d6a73770a37585f2d0",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 865.75,
+          "top": 522.5234375,
+          "width": 550,
+          "height": 11.453125
+        },
+        "viewBox": {
+          "width": 2856,
+          "height": 59.5
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.25,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "19,3%",
+        "scale": {
+          "x": 0.19257703081232494,
+          "y": 0.19248949579831934
+        }
+      }
+    },
+    "final/2-final-fit-panel-estrecho.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-fit-panel-estrecho.json",
+      "sha256": "baebf104b46a97656d7eb18084e957b59f806c308f01fc8635f3b05d21feac2d",
+      "data": {
+        "available": {
+          "left": 985.3984375,
+          "top": 231.5,
+          "width": 431,
+          "height": 594
+        },
+        "svg": {
+          "left": 985.703125,
+          "top": 523.7734375,
+          "width": 430,
+          "height": 8.953125
+        },
+        "viewBox": {
+          "width": 2856,
+          "height": 59.5
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.1953125,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "15,1%",
+        "scale": {
+          "x": 0.15056022408963585,
+          "y": 0.15047268907563024
+        }
+      }
+    },
+    "final/2-final-geometria-1x1.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-geometria-1x1.json",
+      "sha256": "32e68b31cb51408a19eaa8f4f95ed933dbea21ef5a579ec2d01a4c7654152e41",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 865.75,
+          "top": 253.25,
+          "width": 550,
+          "height": 550
+        },
+        "viewBox": {
+          "width": 1,
+          "height": 1
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.25,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "55.000%",
+        "scale": {
+          "x": 550,
+          "y": 550
+        }
+      }
+    },
+    "final/2-final-light-1280x800.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-light-1280x800.json",
+      "sha256": "bc7144c7c535bc5a53555ec6bc731eeb8dd3d04687bde31e9975ff8293476c35",
+      "data": {
+        "available": {
+          "left": 785.5,
+          "top": 231.5,
+          "width": 471,
+          "height": 494
+        },
+        "svg": {
+          "left": 936.9140625,
+          "top": 231.75,
+          "width": 167.6796875,
+          "height": 493
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "37,3%",
+        "scale": {
+          "x": 0.3726215277777778,
+          "y": 0.3726379440665155
+        }
+      }
+    },
+    "final/2-final-light-1440x900.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-light-1440x900.json",
+      "sha256": "0b56781feff59647836ff0bf9a383da32ec5d9b29653cf1c914b14687fa22845",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 1039.90625,
+          "top": 231.75,
+          "width": 201.6953125,
+          "height": 593
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "44,8%",
+        "scale": {
+          "x": 0.44821180555555556,
+          "y": 0.4482237339380197
+        }
+      }
+    },
+    "final/2-final-manual-tras-resize.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-manual-tras-resize.json",
+      "sha256": "787f3640a4e29b9e3da95cc10e9b082242cb29c135aac1bbd954d72ed144dbb9",
+      "data": {
+        "available": {
+          "left": 985.3984375,
+          "top": 231.5,
+          "width": 431,
+          "height": 587
+        },
+        "svg": {
+          "left": 985.3984375,
+          "top": 520.171875,
+          "width": 439.1953125,
+          "height": 9.1484375
+        },
+        "viewBox": {
+          "width": 2856,
+          "height": 59.5
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 8.1953125,
+          "bottom": 0
+        },
+        "center": {
+          "x": 4.09765625,
+          "y": -0.25390625
+        },
+        "overflow": {
+          "x": 8,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 7,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "15,4%",
+        "scale": {
+          "x": 0.1537798713235294,
+          "y": 0.15375525210084034
+        }
+      }
+    },
+    "final/2-final-modo-dividido.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-modo-dividido.json",
+      "sha256": "bc7144c7c535bc5a53555ec6bc731eeb8dd3d04687bde31e9975ff8293476c35",
+      "data": {
+        "available": {
+          "left": 785.5,
+          "top": 231.5,
+          "width": 471,
+          "height": 494
+        },
+        "svg": {
+          "left": 936.9140625,
+          "top": 231.75,
+          "width": 167.6796875,
+          "height": 493
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "37,3%",
+        "scale": {
+          "x": 0.3726215277777778,
+          "y": 0.3726379440665155
+        }
+      }
+    },
+    "final/2-final-modo-vista-previa.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-modo-vista-previa.json",
+      "sha256": "c285bb2a1132a5cdd2bf12c1768b3015bb7199d1f53668a9f2450efd22697d43",
+      "data": {
+        "available": {
+          "left": 265,
+          "top": 231.5,
+          "width": 991,
+          "height": 494
+        },
+        "svg": {
+          "left": 676.6640625,
+          "top": 231.75,
+          "width": 167.6796875,
+          "height": 493
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": 0.00390625,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "37,3%",
+        "scale": {
+          "x": 0.3726215277777778,
+          "y": 0.3726379440665155
+        }
+      }
+    },
+    "final/2-final-natural-boton.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-natural-boton.json",
+      "sha256": "e94f7375a2f6fd731b81cf6069f2c454d18c728f5c040b8ec86759fce02570c4",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 544,
+          "height": 594
+        },
+        "svg": {
+          "left": 912.25,
+          "top": 231.5,
+          "width": 450,
+          "height": 1323
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 729
+        },
+        "center": {
+          "x": -0.25,
+          "y": 364.5
+        },
+        "overflow": {
+          "x": 0,
+          "y": 729
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 7
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "100%",
+        "scale": {
+          "x": 1,
+          "y": 1
+        }
+      }
+    },
+    "final/2-final-panel-restaurado.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-panel-restaurado.json",
+      "sha256": "32e68b31cb51408a19eaa8f4f95ed933dbea21ef5a579ec2d01a4c7654152e41",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 865.75,
+          "top": 253.25,
+          "width": 550,
+          "height": 550
+        },
+        "viewBox": {
+          "width": 1,
+          "height": 1
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.25,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "55.000%",
+        "scale": {
+          "x": 550,
+          "y": 550
+        }
+      }
+    },
+    "final/2-final-pestana-alto-inicial.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-pestana-alto-inicial.json",
+      "sha256": "0b56781feff59647836ff0bf9a383da32ec5d9b29653cf1c914b14687fa22845",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 1039.90625,
+          "top": 231.75,
+          "width": 201.6953125,
+          "height": 593
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "44,8%",
+        "scale": {
+          "x": 0.44821180555555556,
+          "y": 0.4482237339380197
+        }
+      }
+    },
+    "final/2-final-pestana-alto-regreso.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-pestana-alto-regreso.json",
+      "sha256": "bc7144c7c535bc5a53555ec6bc731eeb8dd3d04687bde31e9975ff8293476c35",
+      "data": {
+        "available": {
+          "left": 785.5,
+          "top": 231.5,
+          "width": 471,
+          "height": 494
+        },
+        "svg": {
+          "left": 936.9140625,
+          "top": 231.75,
+          "width": 167.6796875,
+          "height": 493
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "37,3%",
+        "scale": {
+          "x": 0.3726215277777778,
+          "y": 0.3726379440665155
+        }
+      }
+    },
+    "final/2-final-pestana-ancho.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-pestana-ancho.json",
+      "sha256": "0e0c169d4f796d9b7880242b93a6930f338d27c7b3e7e9d6a73770a37585f2d0",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 865.75,
+          "top": 522.5234375,
+          "width": 550,
+          "height": 11.453125
+        },
+        "viewBox": {
+          "width": 2856,
+          "height": 59.5
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.25,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "19,3%",
+        "scale": {
+          "x": 0.19257703081232494,
+          "y": 0.19248949579831934
+        }
+      }
+    },
+    "final/2-final-sin-cambiar-exportacion.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-sin-cambiar-exportacion.json",
+      "sha256": "0b56781feff59647836ff0bf9a383da32ec5d9b29653cf1c914b14687fa22845",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 1039.90625,
+          "top": 231.75,
+          "width": 201.6953125,
+          "height": 593
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "44,8%",
+        "scale": {
+          "x": 0.44821180555555556,
+          "y": 0.4482237339380197
+        }
+      }
+    },
+    "final/2-final-teclado-ajustar.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-teclado-ajustar.json",
+      "sha256": "0b56781feff59647836ff0bf9a383da32ec5d9b29653cf1c914b14687fa22845",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 1039.90625,
+          "top": 231.75,
+          "width": 201.6953125,
+          "height": 593
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "44,8%",
+        "scale": {
+          "x": 0.44821180555555556,
+          "y": 0.4482237339380197
+        }
+      }
+    },
+    "final/2-final-teclado-fit-inicial.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-teclado-fit-inicial.json",
+      "sha256": "0b56781feff59647836ff0bf9a383da32ec5d9b29653cf1c914b14687fa22845",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 1039.90625,
+          "top": 231.75,
+          "width": 201.6953125,
+          "height": 593
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "44,8%",
+        "scale": {
+          "x": 0.44821180555555556,
+          "y": 0.4482237339380197
+        }
+      }
+    },
+    "final/2-final-tema-oscuro-ajustado.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-tema-oscuro-ajustado.json",
+      "sha256": "bc7144c7c535bc5a53555ec6bc731eeb8dd3d04687bde31e9975ff8293476c35",
+      "data": {
+        "available": {
+          "left": 785.5,
+          "top": 231.5,
+          "width": 471,
+          "height": 494
+        },
+        "svg": {
+          "left": 936.9140625,
+          "top": 231.75,
+          "width": 167.6796875,
+          "height": 493
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.24609375,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "37,3%",
+        "scale": {
+          "x": 0.3726215277777778,
+          "y": 0.3726379440665155
+        }
+      }
+    },
+    "final/2-final-un-nodo.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-un-nodo.json",
+      "sha256": "ffa4085311292a00d3b50817ef1848c842d00a09bf9649a0af54830067dccb0c",
+      "data": {
+        "available": {
+          "left": 865.5,
+          "top": 231.5,
+          "width": 551,
+          "height": 594
+        },
+        "svg": {
+          "left": 865.75,
+          "top": 430.8515625,
+          "width": 550,
+          "height": 194.7890625
+        },
+        "viewBox": {
+          "width": 168,
+          "height": 59.5
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.25,
+          "y": -0.25390625
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "327%",
+        "scale": {
+          "x": 3.2738095238095237,
+          "y": 3.273765756302521
+        }
+      }
+    },
+    "final/2-final-zoom-chromium-150.json": {
+      "phase": "final_no_scrollbars",
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-zoom-chromium-150.json",
+      "sha256": "c22ebaefb1e4d9760da90db6d9218fc0976688408701a86fbdb371bf53b78de8",
+      "data": {
+        "available": {
+          "left": 625.5,
+          "top": 231.5,
+          "width": 311,
+          "height": 294
+        },
+        "svg": {
+          "left": 730.921875,
+          "top": 231.75,
+          "width": 99.65625,
+          "height": 293
+        },
+        "viewBox": {
+          "width": 450,
+          "height": 1323
+        },
+        "outside": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "center": {
+          "x": -0.25,
+          "y": -0.25
+        },
+        "overflow": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollbar": {
+          "x": 0,
+          "y": 0
+        },
+        "scroll": {
+          "left": 0,
+          "top": 0
+        },
+        "percentage": "22,1%",
+        "scale": {
+          "x": 0.22145833333333334,
+          "y": 0.2214663643235072
+        }
+      }
+    }
+  },
+  "screenshots": {
+    "mer-008-oscuro-1280x800-2026-10-27.png": {
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-fit-dark-1280x800.png",
+      "sha256": "2725ec4a2fb6342a1bb92abacf06030f2e7d6d59a35bfa0fa2f40afa362e66ae"
+    },
+    "mer-008-oscuro-1440x900-2026-10-27.png": {
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-fit-dark-1440x900.png",
+      "sha256": "3ffae9f5f5067aa56963408fa5831f80e56cef62ec35fd0fbb3b7895ce270de2"
+    },
+    "mer-008-claro-1280x800-2026-10-27.png": {
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-fit-light-1280x800.png",
+      "sha256": "b833e5af33a2f29cefa9b3e8116c6d40ef61002d55f0554ac54fdfe20b9c6d1b"
+    },
+    "mer-008-claro-1440x900-2026-10-27.png": {
+      "raw_path": "/private/tmp/freyalab-lote/2-no-scrollbars/2-final-fit-light-1440x900.png",
+      "sha256": "0086cefc6f72073a143872288f77df5ba26cb720344241f58506f0aa5556defb"
+    }
+  },
+  "logs": {
+    "2-fit-red.log": {
+      "raw_path": "/private/tmp/freyalab-lote/2-fit-red.log",
+      "sha256": "9f2d33b81064eba42724a42b3ff907e61e6823bc1608b0498ddb79c2138ef1e9"
+    },
+    "2-fit-green-first.log": {
+      "raw_path": "/private/tmp/freyalab-lote/2-fit-green-first.log",
+      "sha256": "fd36603c5e16564e495ffc28cdea24a657657b035ed1b1b1827720d874171cb4"
+    },
+    "2-fit-green-hidden-locator.log": {
+      "raw_path": "/private/tmp/freyalab-lote/2-fit-green-hidden-locator.log",
+      "sha256": "dc54e2f97c38b96960d940d5b8e5f8a91ce4a8efef3061fdc803e1813d69e14b"
+    },
+    "2-tiny-zoom-red.log": {
+      "raw_path": "/private/tmp/freyalab-lote/2-tiny-zoom-red.log",
+      "sha256": "c35213f9eb4affcdd04c2d3e2f09a8330df750567d9548890073e4930ac33d1d"
+    },
+    "2-fit-green-final.log": {
+      "raw_path": "/private/tmp/freyalab-lote/2-fit-green-final.log",
+      "sha256": "24e55a5be40063aeeec521b69686592838852e4eceda4f442171db520a210cd9"
+    },
+    "2-scrollbar-red.log": {
+      "raw_path": "/private/tmp/freyalab-lote/2-scrollbar-red.log",
+      "sha256": "141b04d410a3c613fb9437c3cdd9d1189812056a19f30adceb446d15fc0c9a9a"
+    },
+    "2-check-scrollbar-type.log": {
+      "raw_path": "/private/tmp/freyalab-lote/2-check-scrollbar-type.log",
+      "sha256": "0bac326ecbccd8383c9e4362fac594977752ef41607247e6d5a25a84b8703a24"
+    },
+    "2-fit-no-scrollbars.log": {
+      "raw_path": "/private/tmp/freyalab-lote/2-fit-no-scrollbars.log",
+      "sha256": "b36e4f70092e1aba935b920c0577f6ad9ea61f1afaf3170d2991880726652e6d"
+    },
+    "2-check-final.log": {
+      "raw_path": "/private/tmp/freyalab-lote/2-check-final.log",
+      "sha256": "8cffe819b7ee8e58113b6b5cd090bb8f15777ef2415394ce9441a29f15f5f161"
+    },
+    "2-unit-final.log": {
+      "raw_path": "/private/tmp/freyalab-lote/2-unit-final.log",
+      "sha256": "0ae34dddaff86afcc35e4f8036caef5127a379f73af907451c47835ebe40088e"
+    },
+    "2-build-scrollbar.log": {
+      "raw_path": "/private/tmp/freyalab-lote/2-build-scrollbar.log",
+      "sha256": "0366b84c583d7c7f1da07c36c82500cc5b9a635ad667635587ebc7e315d91ff8"
+    },
+    "2-e2e-legacy-percentage.log": {
+      "raw_path": "/private/tmp/freyalab-lote/2-e2e-legacy-percentage.log",
+      "sha256": "a84671c767e7833c1b870fd90d1400cfd821f0e17a14af7e6f8097209707af88"
+    },
+    "2-e2e-final.log": {
+      "raw_path": "/private/tmp/freyalab-lote/2-e2e-final.log",
+      "sha256": "b8ceeda636f2c54141029395894119c5b0c67bbe79d85990f59694ffa8d180ca"
+    },
+    "2-build-final.log": {
+      "raw_path": "/private/tmp/freyalab-lote/2-build-final.log",
+      "sha256": "4c610e3f77de101831176376f85a644cda9066a77c2b7bf90baf6597754e9f94"
+    }
+  },
+  "source_hashes": {
+    "src/renderer/components/Diagram.svelte": "6f4611504a5262151c014c1441bb85ffd579bc4f35502e4c1f3c9096df4d7240",
+    "tests/e2e/mermaid-fit.spec.ts": "8f6987ac5d07924accebb29c7ab71ad0ca2da6276c7a783da41326d0c6a5af6c",
+    "tests/e2e/ui.spec.ts": "7158aa6aafa7c34ca430961ef4b6964c053228047bd73d882272896cd4dddd82"
+  },
+  "superseded_focal": {
+    "raw_directory": "/private/tmp/freyalab-lote/2-final-focal",
+    "status": "12/12 pero la prueba aún no medía grosor físico de barras; sustituida por corrida final",
+    "source_hashes": {
+      "src/renderer/components/Diagram.svelte": "4202325c2a2ff1b0d61a5de79e72aec653ded9cdca6403c97cafb1018f8407a9",
+      "tests/e2e/mermaid-fit.spec.ts": "789fca4b4218f54e7bb1c0b56eafa1f0b35ecf70b200c32533f14171f79b70e1"
+    },
+    "screenshots": {
+      "mer-008-oscuro-1280x800-2026-10-27.png": {
+        "raw_path": "/private/tmp/freyalab-lote/2-final-focal/2-final-fit-dark-1280x800.png",
+        "sha256": "285a0e0ee9afec535c82c8e411e54478ebb484ba2b8c553fc51a95310ba94653"
+      },
+      "mer-008-oscuro-1440x900-2026-10-27.png": {
+        "raw_path": "/private/tmp/freyalab-lote/2-final-focal/2-final-fit-dark-1440x900.png",
+        "sha256": "e8fc2be8aacc1607d09e9b90b14edd1448edfadf828a9191c68c65f222df2cb9"
+      },
+      "mer-008-claro-1280x800-2026-10-27.png": {
+        "raw_path": "/private/tmp/freyalab-lote/2-final-focal/2-final-fit-light-1280x800.png",
+        "sha256": "b9641d96c8b0cbc379532f3e01d044d2f85341867194634975f7e65383c23634"
+      },
+      "mer-008-claro-1440x900-2026-10-27.png": {
+        "raw_path": "/private/tmp/freyalab-lote/2-final-focal/2-final-fit-light-1440x900.png",
+        "sha256": "00880767d0157574aa4eb45787480e138520bde416238cb4629da3797773d4be"
+      }
+    }
+  }
+}
