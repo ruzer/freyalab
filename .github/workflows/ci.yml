@@ -24,7 +24,8 @@ jobs:
           - os: macos-15-intel
             executable: release/mac/FreyaLab.app/Contents/MacOS/FreyaLab
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 45
+    # Intel agotó 45 min tras aprobar 43/61 pruebas del paquete; conserva el resto del gate.
+    timeout-minutes: ${{ matrix.os == 'macos-15-intel' && 60 || 45 }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
