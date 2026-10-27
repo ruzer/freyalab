@@ -7,6 +7,7 @@ Base: `61d0e05b1d87ba30186a7a8f1908f1c9ed06d73a`, main actualizado con PR #66 fu
 | Bloque | Rojo real antes del cambio | Verde comprobado |
 | --- | --- | --- |
 | A · Front matter | `npx vitest run tests/render.test.ts`: 8 fallos y 6 aprobados, incluyendo los tres casos originales; `/private/tmp/md002-a-red.log`. | 14/14; `/private/tmp/md002-a-green.log`. E2E A 1/1 en 4,8 s: propiedades fuera del artículo/índice, HTML/PDF sin metadatos y fuente/guardado intactos; `/private/tmp/md002-a-e2e.log`. |
+| B · Enlaces internos | 9 fallos/15 aprobados en render; 1 fallo/3 aprobados en export. `/private/tmp/md002-b-red-corrected.log`, `md002-b-export-red.log`. E2E detectó además que `mailto:` estaba bloqueado pese a B5 (`md002-b-e2e.log`). | 29/29 render+export; `/private/tmp/md002-b-green.log`. A+B: 2/2 E2E, 7,9 s; `/private/tmp/md002-b-e2e-green.log`. |
 
 ## A · Propiedades del documento
 
@@ -21,3 +22,13 @@ Capturas A de Electron real a 1440×900: [claro](md-002-a-light-1440x900.png) y 
 El usuario aclaró la tensión B1/B3: enlaces internos sin destino pasan a `<span class="enlace-roto" data-seccion-faltante="x">texto</span>`, sin href ni foco. En la app, pulsarlos muestra el aviso; al exportar son texto sin salto ni JavaScript, con subrayado punteado y tono apagado. `href="#"` es una excepción explícita (inicio) y los enlaces externos con fragmento no se reescriben. Se decodifican fragmentos antes de compararlos, sin distinguir acentos ni mayúsculas. El span no es tabulable: límite de teclado aceptado expresamente por el usuario.
 
 Los resultados globales, el invariante y lo no verificado se completarán al terminar B–D. Este estado parcial no afirma pruebas de bloques aún no implementados ni CI multiplataforma.
+
+## B · Destinos reales y representación única de huérfanos
+
+Los id de títulos conservan `heading-` y tienen slug sin acentos/mayúsculas; se evitan también colisiones entre duplicados y títulos terminados en número. Un plugin rehype después de generar los id reescribe los fragmentos válidos al id real. Los inválidos pasan al span acordado, preservando sus hijos y el fragmento decodificado como texto; porcentajes mal formados no lanzan excepciones. El estilo punteado/apagado está tanto en Preview como en `documentCSS`. Se conserva el atributo inerte del span en la frontera de exportación.
+
+Preview abre ancestros `<details>` al navegar, desplaza el destino y le da foco sin quitar del recorrido de Tab a los enlaces de vuelta. Un span roto solo responde al clic con el aviso, sin href ni tabindex (limitación de teclado acordada). `#` va al inicio. Los enlaces externos con fragmento no se reescriben. B5 reveló que `mailto:` estaba bloqueado en main: se añadió únicamente ese protocolo a la lista HTTP/HTTPS existente; `file:`, `javascript:` y `data:` siguen rechazados por el puente. El test sustituye solo `shell.openExternal` para no abrir apps reales.
+
+No se amplió `allowedSchemes` de `autonomousHTML`: la política preexistente de exportación retira los href externos. La excepción de no reescribirlos se prueba en `markdownHTML` y B5 se verifica en Preview. Se corrigió una aserción inicial que esperaba Unicode sin codificar en una URL externa: remark ya lo codificaba a UTF-8 antes de este cambio.
+
+Invariante E2E B comprobado sobre elementos DOM, excluyendo `href="#"`: **Preview 4 id / 4 href internos; HTML autónomo sin JS 4 / 4; 0 destinos ausentes y 0 id duplicados en ambos**. La comprobación unitaria usa el parser de `sanitize-html` ya instalado, no regex sobre texto que podría contener `href`/`id` de ejemplo en un bloque de código. Capturas B: [claro](md-002-b-light-1440x900.png) y [oscuro](md-002-b-dark-1440x900.png), 1440×900. Tipos y build del bloque correctos.

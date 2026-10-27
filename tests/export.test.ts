@@ -6,3 +6,7 @@ describe('exportaciones de contenido no confiable',()=>{
  it('HTML autónomo bloquea red y suprime scripts y objetos',async()=>{const result=await autonomousHTML('<h1>Freya</h1><script>alert(1)</script><object data="file:///etc/passwd"></object><img src="https://example.com/secret"><style>body{background:url(https://example.com/x)}</style>');expect(result).toContain("default-src 'none'");expect(result).not.toContain('<script');expect(result).not.toContain('<object');expect(result).not.toContain('https://');expect(result).toContain('<h1>Freya</h1>')})
  it('prepara SVG autónomo saneado y rechaza contenido sin raíz SVG',async()=>{const svg=await autonomousSVG('<svg xmlns="http://www.w3.org/2000/svg"><text onclick="alert(1)">Freya</text></svg>');expect(svg).toContain('<svg');expect(svg).toContain('Freya');expect(svg).not.toContain('onclick');await expect(autonomousSVG('<p>No es un SVG</p>')).rejects.toThrow('SVG válido')})
 })
+it('B conserva el marcado inerte de una sección faltante en HTML autónomo',async()=>{
+ const result=await autonomousHTML('<span class="enlace-roto" data-seccion-faltante="ausente">texto</span>')
+ expect(result).toContain('class="enlace-roto" data-seccion-faltante="ausente"');expect(result).not.toContain('href="#ausente"')
+})

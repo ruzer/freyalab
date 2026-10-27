@@ -1,5 +1,6 @@
 import {describe,it,expect} from 'vitest'
 import {markdownHTML,standaloneHTML} from '../src/renderer/lib/render'
+import {localAnchorStats} from './helpers/markdown-invariants'
 describe('Markdown rendering',()=>{
  it('renders GFM without executing or preserving raw HTML',async()=>{const result=await markdownHTML('# Hola\n\n<script>alert(1)</script>\n\n| A | B |\n| - | - |\n| 1 | 2 |\n\n[mal](javascript:alert(1))');expect(result.html).toContain('<table>');expect(result.html).not.toContain('<script>');expect(result.html).not.toContain('href="javascript:');expect(result.headings).toEqual([{id:'heading-hola',text:'Hola',level:1}])})
  it('makes repeated heading anchors unique and retains diagram source',async()=>{const result=await markdownHTML('# Uno\n\n# Uno\n\n```mermaid\nflowchart LR\nA-->B\n```');expect(result.headings.map(h=>h.id)).toEqual(['heading-uno','heading-uno-1']);expect(result.html).toContain('language-mermaid');expect(result.html).toContain('A-->B')})
@@ -47,5 +48,51 @@ describe('FL-MD-002 A · propiedades del documento',()=>{
  })
  it('no interpreta un separador posterior a un título como propiedades',async()=>{
   const r=await markdownHTML('# Hola\n\n---\ntitle: visible\n---');expect(r.frontMatter).toBeUndefined();expect(r.html).toContain('title: visible')
+ })
+})
+
+describe('FL-MD-002 B · enlaces internos',()=>{
+ const targets=(html:string)=>{
+  const stats=localAnchorStats(html)
+  expect(stats.duplicates).toEqual([]);expect(stats.missing).toEqual([])
+  return{ids:stats.ids,hrefs:stats.targets}
+ }
+ it.each(['instalacion','Instalación','INSTALACI%C3%93N','heading-instalacion'])('resuelve #%s al id real sin acentos ni mayúsculas',async fragment=>{
+  const r=await markdownHTML(`# Instalación\n\n[ir](#${fragment})`)
+  expect(r.headings[0].id).toBe('heading-instalacion');expect(r.html).toContain('href="#heading-instalacion"');targets(r.html)
+ })
+ it('los repetidos y las colisiones con un título numerado tienen ids únicos',async()=>{
+  const r=await markdownHTML('# Uno\n\n# Uno\n\n# Uno-1\n\n[primero](#uno) [segundo](#uno-1)')
+  expect(r.headings.map(h=>h.id)).toEqual(['heading-uno','heading-uno-1','heading-uno-1-1']);targets(r.html)
+  expect(r.html).toContain('href="#heading-uno"');expect(r.html).toContain('href="#heading-uno-1"')
+ })
+ it('respaldo seccion para signos/emoji y títulos que contienen enlaces',async()=>{
+  const r=await markdownHTML('# !!!\n\n# 🐕\n\n# Guía con [enlace](https://example.com)\n\n[primero](#seccion) [segundo](#seccion-1) [tercero](#guia-con-enlace)')
+  expect(r.headings.map(h=>h.id)).toEqual(['heading-seccion','heading-seccion-1','heading-guia-con-enlace']);targets(r.html)
+ })
+ it('un destino inexistente es un span sin href ni foco y conserva el contenido',async()=>{
+  const r=await markdownHTML('[**ausente**](#Secci%C3%B3n-faltante)')
+  expect(r.html).toContain('<span class="enlace-roto" data-seccion-faltante="Sección-faltante"><strong>ausente</strong></span>')
+  expect(r.html).not.toContain('href=');expect(r.html).not.toContain('tabindex');targets(r.html)
+  expect(standaloneHTML(r.html,'Documento')).toContain('.enlace-roto{')
+ })
+ it('un porcentaje mal formado no lanza excepciones y también se marca sin salto',async()=>{
+  const r=await markdownHTML('[mal](#%ZZ)');expect(r.html).toContain('data-seccion-faltante="%ZZ"');expect(r.html).not.toContain('href=')
+ })
+ it('un fragmento mal codificado sigue roto aunque su slug coincida con un título',async()=>{
+  const r=await markdownHTML('# ZZ\n\n[mal](#%ZZ)');expect(r.html).toContain('data-seccion-faltante="%ZZ"');expect(r.html).not.toContain('href=')
+ })
+ it('no toca # ni enlaces externos o mailto con fragmento',async()=>{
+  const r=await markdownHTML('[inicio](#) [web](https://example.com/#Instalación) [correo](mailto:test@example.com#seccion)')
+  expect(r.html).toContain('href="#"');expect(r.html).toContain('href="https://example.com/#Instalaci%C3%B3n"');expect(r.html).toContain('href="mailto:test@example.com#seccion"')
+  expect(r.html).not.toContain('enlace-roto')
+ })
+ it('el corpus B cumple el invariante para cada href local no vacío',async()=>{
+  const {readFile}=await import('node:fs/promises'),source=await readFile(new URL('./fixtures/markdown-corpus/b-links.md',import.meta.url),'utf8')
+  const r=await markdownHTML(source);const stats=targets(r.html);expect(stats.hrefs.length).toBeGreaterThan(6);expect(r.html).toContain('enlace-roto')
+ })
+ it('el invariante cuenta elementos reales, no cadenas href/id dentro del código',async()=>{
+  const r=await markdownHTML('```html\n<a href="#fantasma" id="falso">no es enlace</a>\n```')
+  expect(localAnchorStats(r.html)).toEqual({ids:[],targets:[],duplicates:[],missing:[]})
  })
 })
