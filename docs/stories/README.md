@@ -38,13 +38,14 @@ Cada historia tiene los mismos ocho apartados: 1 historia de usuario, 2 problema
 | 3 | FL-MD-006: corrector ortográfico | S + decisión | Decisión de diccionarios | **Bloqueada** hasta decidir Windows/Linux |
 | 3 | [FL-MD-007](3-markdown-experiencia.md): índice con sección actual, ramas que se contraen y modo Editar | M | FL-MD-002 | Lista tras FL-MD-002 |
 | 3 | [FL-MD-008](3-markdown-experiencia.md): insertar fecha y hora | S | — | Lista |
-| 3 | Etiquetas (tags) | M a L | Decisiones T1–T3 del propietario | **Pendiente de decisión** (recomendado: front matter; ver «Aplazadas») |
+| 3 | [FL-MD-009](3-markdown-experiencia.md): etiquetas en el front matter (solo lectura): chips en la vista previa y filtro `#etiqueta` en el explorador | M | FL-MD-002 | Lista tras FL-MD-002 (T1–T3 aprobadas el 2026-10-27) |
+| 3 | FL-MD-010: etiquetas, segunda versión (lista con recuentos en el explorador y diálogo «Agregar o eliminar etiquetas», como Joplin) | L | FL-MD-009; decisión T4 | Esbozada dentro de [FL-MD-009](3-markdown-experiencia.md) |
 | 3 | Pegar HTML como Markdown · imágenes · menú `/` · atrás/adelante y editor externo | — | Aprobación | Evaluadas, aplazadas |
 | 4 · Dibujos editables | [FL-DRW-001](4-dibujos-editables.md): activos relativos y «Guardar como» (F05) | M | — | Lista (sin dependencias) |
 | 4 | FL-DRW-002: prototipo aislado con js-draw | S | Aprobación del propietario | **Bloqueada** hasta aprobar |
 | 4 | FL-DRW-003 a 005: integración, inserción y exportación | L | FL-DRW-001 y 002 | Esbozadas |
 
-Orden recomendado (2026-10-27): **FL-MD-002 (corrección pendiente en el #67) → FL-MER-009 → FL-MER-008 → FL-MD-003 → FL-MD-005 → FL-MD-008 → FL-MD-004 → FL-MD-007 → FL-MER-007 → FL-MER-010 → FL-DRW-001**. Las historias independientes pueden ir en paralelo si tocan archivos distintos: FL-MD-002 toca `render.ts`, `Preview.svelte` y las pruebas de render; FL-MER-008/009/010 tocan `Diagram.svelte` y la exportación; FL-MD-003 y FL-MD-005 tocan `Editor.svelte`/`App.svelte`; FL-MD-008 toca `markdown-commands.ts` y `MarkdownToolbar.svelte`; FL-MD-007 toca `App.svelte`, `Preview.svelte`, `Editor.svelte` y un componente nuevo del índice, por eso espera a FL-MD-002.
+Orden recomendado (2026-10-27): **FL-MD-002 (corrección pendiente en el #67) → FL-MER-009 → FL-MER-008 → FL-MD-003 → FL-MD-005 → FL-MD-008 → FL-MD-004 → FL-MD-007 → FL-MD-009 → FL-MER-007 → FL-MER-010 → FL-DRW-001**. Las historias independientes pueden ir en paralelo si tocan archivos distintos: FL-MD-002 toca `render.ts`, `Preview.svelte` y las pruebas de render; FL-MER-008/009/010 tocan `Diagram.svelte` y la exportación; FL-MD-003 y FL-MD-005 tocan `Editor.svelte`/`App.svelte`; FL-MD-008 toca `markdown-commands.ts` y `MarkdownToolbar.svelte`; FL-MD-007 toca `App.svelte`, `Preview.svelte`, `Editor.svelte` y un componente nuevo del índice, por eso espera a FL-MD-002; FL-MD-009 toca `src/shared/front-matter.ts` (nuevo), `documents.ts` (`findFiles`), `Preview.svelte` y `App.svelte`, y va después de FL-MD-007 para no solaparse en `Preview.svelte` y `App.svelte`.
 
 ## Contexto verificado el 2026-10-26
 

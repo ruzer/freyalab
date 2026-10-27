@@ -209,7 +209,7 @@ El propietario comparó FreyaLab con Joplin (barra del editor) y MDViewer (índi
 |---|---|---|---|---|---|---|
 | 9 | Índice con sección actual, ramas que se contraen y disponible al editar | Existe como lista plana, sin sección actual, solo en Dividido y Vista previa | Alto | M | Bajo–medio (desplazamiento y correspondencia con las líneas del editor) | **FL-MD-007** (tras FL-MD-002) |
 | 10 | Insertar fecha y hora | No existe (sin coincidencias en `markdown-commands.ts` ni en `MarkdownToolbar.svelte`) | Medio | S | Bajo | **FL-MD-008** |
-| 11 | Etiquetas (tags) | No existe | Alto | M a L | Medio (dónde se guardan) | Pendiente de decisión del propietario; ver «Aplazadas» |
+| 11 | Etiquetas (tags): chips, filtro, lista con recuentos y edición | No existe | Alto | M (lectura) y L (edición) | Medio (dónde se guardan; escribir YAML) | **FL-MD-009** (lectura y filtro; decisiones T1–T3 aprobadas el 2026-10-27) y **FL-MD-010** esbozada |
 | 12 | Atrás/adelante entre documentos y «abrir en editor externo» | No existe (solo deshacer y rehacer) | Bajo | S a M | Bajo | No hacer ahora; ver «Aplazadas» |
 | 13 | Dibujo libre (el lápiz de Joplin) | Planeado | Alto | L | Alto | Iteración 4 (`4-dibujos-editables.md`), a la espera de las decisiones D1–D6 |
 
@@ -382,15 +382,153 @@ Unitarias con fecha fija (formato, ceros, medianoche, bisiesto, selección, CRLF
 
 La función es pura y probada con fecha fija en cualquier zona; el formato coincide con el diseño; un paso de deshacer; no hay atajo ni opciones de formato añadidas; no cambia el comportamiento de las demás acciones de la barra.
 
+## FL-MD-009 · Etiquetas en el front matter y filtro en el explorador
+
+### 1. Historia de usuario
+
+Como persona con muchos documentos Markdown en una carpeta, quiero escribir etiquetas en las propiedades del documento, verlas como chips al leerlo y filtrar el explorador por etiqueta, para encontrar «todo lo del proyecto X» sin recordar los nombres de los archivos.
+
+### 2. Problema y evidencia
+
+Joplin guarda las etiquetas en su base de datos y las muestra bajo el título («Haga clic aquí para agregar etiquetas…», captura del propietario). FreyaLab trabaja sobre archivos, así que no hay base de datos que reutilizar. Sobre `origin/main` (`61d0e05`):
+
+- **El explorador solo busca por nombre.** `findFiles` (`src/main/documents.ts`) recorre la carpeta en anchura, visita como máximo 1.000 directorios, devuelve como máximo 200 resultados y compara únicamente `entry.name` con la consulta; nunca abre un archivo. `App.svelte` lo llama con la cadena escrita en «Buscar archivo…» tras una espera corta.
+- **No hay noción de etiqueta.** Un `tags: [a, b]` en el encabezado de un documento hoy se renderiza como un título (el defecto de FL-MD-002 bloque A). Con FL-MD-002 fusionada ese encabezado se aparta en `frontMatterOf` y se muestra en «Propiedades del documento», pero nada lo interpreta.
+- **Coste de leer los encabezados de una carpeta, medido** (Apple M2, APFS, caché de disco caliente, Node 26, archivos de unos 5 KiB con el encabezado al inicio; solo los primeros 16 KiB de cada uno; 8 lecturas a la vez):
+
+| Archivos `.md` | Tiempo |
+|---:|---:|
+| 500 | 11 ms |
+| 2.000 | 40 ms |
+| 5.000 | 92 ms |
+
+Con la caché fría, en Windows o en una unidad de red el coste será mayor; por eso la historia pide un tope de archivos leídos y que Codex mida y publique sus propios números.
+
+**Referencia de Joplin (tres capturas del propietario).** Las etiquetas tienen tres piezas: una sección «ETIQUETAS» en la barra lateral con cada etiqueta y su recuento de notas («Inicio 1», «welcome 1»); chips bajo el editor con el aviso «Haga clic aquí para agregar etiquetas…»; y un diálogo «Agregar o eliminar etiquetas:» con un campo combinado (autocompletado), «OK» y «Cancelar». En las tres capturas se ve que al quitar una etiqueta de la única nota que la tenía, desaparece de la lista lateral. Esta historia cubre la parte de lectura (chips y filtro); la lista con recuentos y el diálogo son la segunda versión, abajo.
+
+**Decisiones del propietario (2026-10-27):** T1 las etiquetas viven en el front matter del documento; T2 primera versión de solo lectura (chips en la vista previa y filtro en el explorador); T3 solo documentos Markdown. Editar etiquetas desde chips queda fuera de esta historia.
+
+### 3. Diseño UX/UI
+
+**Dónde se escriben.** En el encabezado del documento, con las convenciones que ya entienden Obsidian, Hugo y Jekyll. Se reconoce la clave `tags` en el primer nivel:
+
+```yaml
+---
+title: Informe trimestral
+tags: [proyecto, informe, 2026]        # lista en línea
+---
+```
+
+```yaml
+---
+tags:                                  # lista en bloque
+  - proyecto
+  - "informe final"
+---
+```
+
+También `tags: proyecto, informe` (valor suelto separado por comas). Una etiqueta puede llevar `#` delante (`#proyecto`); se ignora. No se interpreta nada más de YAML.
+
+**Dónde se ven.** En la vista previa, en la fila de «Propiedades del documento» (la de FL-MD-002), a su derecha y visibles aunque la fila esté cerrada: chips discretos `proyecto` `informe` `2026`. Fuera del artículo, así que no entran en el HTML ni en el PDF exportados. En modo Editar no se muestran (la vista previa está oculta).
+
+```text
+▸ Propiedades del documento   [proyecto] [informe] [2026]
+```
+
+**Qué hace un chip.** Es un botón. Al pulsarlo abre el explorador si estaba oculto, escribe `#proyecto` en «Buscar archivo…» (sin repetirlo si ya está) y le da el foco. Sin carpeta abierta avisa: «Abre una carpeta para filtrar por etiqueta».
+
+**Cómo se filtra.** En «Buscar archivo…» una palabra que empieza por `#` es una etiqueta; el resto es texto del nombre, como hoy:
+
+| Se escribe | Encuentra |
+|---|---|
+| `#proyecto` | Documentos Markdown con una etiqueta que empieza por «proyecto» |
+| `#proyecto #2026` | Documentos con ambas etiquetas |
+| `informe #proyecto` | Documentos cuyo nombre contiene «informe» y que tienen la etiqueta |
+
+La comparación ignora mayúsculas y acentos y acepta el comienzo de la etiqueta (para que funcione al ir escribiendo). Solo los archivos Markdown pueden coincidir con una etiqueta. Los resultados se muestran como hoy: nombre y ruta.
+
+### 4. Criterios de aceptación
+
+Tres bloques, un commit por bloque, en este orden.
+
+**A · Leer etiquetas (módulo compartido)**
+- E1. `parseTags(frontMatter)` devuelve las etiquetas de `tags` en el primer nivel: lista en línea de una sola línea, lista en bloque y valor suelto separado por comas. Quita comillas simples o dobles que rodean cada valor, ignora el `#` inicial, quita espacios y comentarios finales (` # nota`) y descarta vacíos.
+- E2. Se eliminan duplicados sin distinguir mayúsculas ni acentos (se conserva la primera grafía). Máximo 50 etiquetas por documento y 64 caracteres por etiqueta; las más largas se descartan.
+- E3. Una entrada que no se entiende (lista en línea de varias líneas, `tags` anidada dentro de otra clave, valor que no es texto) devuelve `[]` sin lanzar excepción. Si `tags` aparece dos veces, vale la primera. Solo se reconoce la clave en minúsculas.
+- E4. `frontMatterOf` (hoy en `render.ts`) se mueve sin cambios de comportamiento a `src/shared/front-matter.ts`, junto con `parseTags`, para que el renderizador y el proceso principal usen **una sola implementación**. Las pruebas A1–A4 de FL-MD-002 pasan sin editarse.
+- E5. Sin dependencias nuevas y sin analizador de YAML.
+
+**B · Chips en la vista previa**
+- E6. La fila de propiedades muestra un chip por etiqueta cuando hay etiquetas y no muestra nada extra cuando no las hay. Las etiquetas se actualizan al editar el encabezado y desaparecen al borrarlas.
+- E7. Los chips quedan fuera de `article`: el HTML y el PDF exportados no los contienen.
+- E8. El texto de cada etiqueta se escapa (se renderiza como texto, nunca como HTML). Cada chip es un `<button>` con nombre accesible «Filtrar archivos por la etiqueta <x>», operable con Intro y Espacio; las etiquetas largas se cortan con puntos suspensivos y llevan el texto completo en el tooltip.
+- E9. Pulsar un chip abre el explorador si estaba oculto, escribe `#<etiqueta>` en «Buscar archivo…» sin duplicarlo, le da el foco y el filtro se aplica. Sin carpeta abierta aparece el aviso del diseño y no cambia nada.
+- E10. El texto del documento, su estado «con cambios» y lo que se guarda no cambian (la lectura de etiquetas no modifica nada).
+
+**C · Filtro en el explorador**
+- E11. En `findFiles`, una palabra que empieza por `#` seguida de al menos un carácter es una etiqueta; las demás palabras filtran por nombre como hoy y todas se combinan con Y. Sin palabras con `#` el comportamiento es idéntico al actual (la prueba existente `findFiles(root,'objetivo')` pasa sin editarse y la firma no cambia).
+- E12. La coincidencia de etiquetas ignora mayúsculas y acentos y acepta el comienzo de la etiqueta; varias etiquetas se combinan con Y.
+- E13. Solo se leen archivos Markdown y solo los primeros 16 KiB de cada uno; si el encabezado no se cierra dentro de ese tramo, el archivo no tiene etiquetas. Se respetan las reglas de `tree()` (sin archivos ocultos, `node_modules` ni enlaces simbólicos) y la autorización de la carpeta (`allowed`).
+- E14. Se mantienen los límites actuales (1.000 directorios, 200 resultados) y se añaden: como máximo 8 lecturas simultáneas y como máximo 5.000 archivos leídos por búsqueda. Al alcanzar un tope el resultado marca `limited` y la interfaz muestra el aviso existente («Resultados limitados; acota la búsqueda.»).
+- E15. Una búsqueda nueva cancela la anterior con el mecanismo de cancelación actual; un archivo que desaparece, no se puede leer o no es UTF-8 válido se omite sin interrumpir la búsqueda.
+- E16. El texto de una etiqueta nunca se usa como ruta ni como expresión regular.
+
+**Transversales:** sin dependencias nuevas; `npm run check`, `npm test`, `npm run test:e2e` y `npm run build` en verde; las pruebas de FL-MD-002 y la búsqueda por nombre actual no se editan; el contenido de los documentos nunca se modifica.
+
+### 5. Casos límite
+
+Encabezado con BOM o CRLF; `tags:` vacío o `null`; `tags: [a,,b]`; `tags: "a, b"` (un valor entre comillas es **una** etiqueta); lista en bloque con sangrías distintas y con comentarios; `tags` dentro de otra clave (`meta:` y debajo `  tags: [a]`, que se ignora); `tags` repetida; etiqueta con acento, emoji o `/` (`proyecto/2026`, se trata como texto); etiqueta numérica sin comillas (`2026`); etiqueta con `<script>`; 50 y 51 etiquetas; etiqueta de 64 y 65 caracteres; encabezado de más de 16 KiB; archivo con cierre `...`; carpeta con 10.000 archivos Markdown; archivo borrado o sin permiso durante la búsqueda; consulta con solo `#`; consulta `#a #b informe`; archivo cuyo nombre empieza por `#` (no se puede buscar con ese prefijo: queda como límite documentado); documento con una etiqueta añadida y sin guardar (el explorador lee el disco y la vista previa lee el texto abierto, así que solo coinciden tras guardar; límite documentado); cambio de carpeta mientras se busca; documento solo de lectura (≥ 10 MiB).
+
+### 6. Prompt ejecutable para Codex
+
+```text
+Tarea: FL-MD-009 · Etiquetas en el front matter (solo lectura) y filtro en el explorador. REQUISITO: FL-MD-002 (PR #67) fusionada, porque se apoya en frontMatterOf y en la fila «Propiedades del documento» de Preview.svelte.
+Lee AGENTS.md, CONTRIBUTING.md y docs/stories/3-markdown-experiencia.md (FL-MD-009: criterios E1–E16, casos límite y la medición de la sección 2). Rama codex/md-009-etiquetas desde main actualizado. Sin dependencias; no toques package.json ni el lockfile; sin analizador de YAML.
+Archivos probables: src/shared/front-matter.ts (nuevo: frontMatterOf movido desde render.ts sin cambiar su comportamiento, y parseTags), src/renderer/lib/render.ts (importar desde shared), src/renderer/components/Preview.svelte (chips en la fila de propiedades), src/renderer/App.svelte (clic en un chip → buscar archivo), src/main/documents.ts (findFiles), src/renderer/style.css, tests/front-matter.test.ts (nuevo), tests de findFiles con una carpeta temporal, tests/e2e/ (nuevo).
+Método, por bloque y en este orden (A, B, C), UN commit por bloque:
+1. Escribe primero las pruebas del bloque y comprueba que FALLAN por la razón descrita (guarda la salida roja). A: tabla de casos de parseTags con la sección 5; las pruebas A1–A4 de FL-MD-002 deben seguir pasando tras mover frontMatterOf. B: E2E de chips, escape, exportación sin chips y clic. C: findFiles con carpeta temporal (etiquetas, combinación con texto, topes, cancelación, archivo ilegible).
+2. Implementa lo mínimo. parseTags y frontMatterOf son funciones puras compartidas entre renderizador y proceso principal. En findFiles lee con el manejador de archivo solo los primeros 16 KiB, con 8 lecturas a la vez y un tope de 5.000 archivos por búsqueda.
+3. Vuelve a ejecutar: las pruebas del bloque pasan y las anteriores siguen pasando.
+Medición obligatoria: tiempo de una búsqueda por etiqueta en una carpeta sintética de 2.000 y 5.000 archivos Markdown (indica sistema, caché y comandos; mi referencia con caché caliente en un M2 fue 40 ms y 92 ms para la lectura sola) y comparación con la búsqueda por nombre en main 61d0e05. Sin umbrales de reloj en las pruebas.
+Al terminar: npm run check && npm test && npm run test:e2e && npm run build. Evidencia: docs/evidence/md-009-<fecha>.md con la tabla rojo→verde por bloque, capturas 1440×900 en claro y oscuro (chips con la fila cerrada y abierta; explorador filtrado), los números reales y lo que NO se verificó. PR en BORRADOR; no fusiones, no publiques versiones, no actualices la app instalada. Si algo es ambiguo, detente y pregunta; no lo interpretes en silencio.
+```
+
+### 7. Plan de pruebas
+
+| Nivel | Qué | Dónde |
+|---|---|---|
+| Unitaria (rojo→verde) | Tabla de casos de `parseTags` (listas en línea y en bloque, valor suelto, comillas, `#`, comentarios, duplicados, límites 50/64, entradas no entendidas); `frontMatterOf` sin cambios de comportamiento | `tests/front-matter.test.ts` y pruebas A de FL-MD-002 |
+| Seguridad | Una etiqueta con HTML se muestra como texto; una etiqueta con `..` o `/` nunca se usa como ruta ni como expresión regular | Unitarias y E2E |
+| Proceso principal | `findFiles` con carpeta temporal: etiqueta, varias etiquetas, texto + etiqueta, solo Markdown, encabezado cortado a 16 KiB, topes (directorios, resultados, archivos), cancelación, archivo ilegible; compatibilidad con la consulta sin `#` | Pruebas de `Documents` |
+| E2E | Chips visibles con la fila cerrada; fuera del HTML y del PDF exportados; clic abre el explorador y filtra; sin carpeta avisa | `tests/e2e/` |
+| Rendimiento | 2.000 y 5.000 archivos frente a la búsqueda por nombre de `main` | Informe de evidencia |
+| Regresión | Búsqueda por nombre actual, FL-MD-002 completa, anchos y modos de la vista previa | Suites existentes y CI en las cuatro plataformas |
+
+### 8. Criterios de revisión (Claude)
+
+- Tres commits (A, B, C), cada uno con rojo→verde; sin dependencias nuevas ni analizador de YAML; `package.json` y el lockfile sin cambios.
+- `frontMatterOf` se movió, no se copió: una sola implementación usada por renderizador y proceso principal, y las pruebas A de FL-MD-002 pasan sin editarse.
+- **El texto del usuario nunca se modifica**; las etiquetas solo se leen.
+- Lo que se lee del disco está acotado (16 KiB por archivo, 8 simultáneas, 5.000 por búsqueda), respeta la autorización de la carpeta y se cancela; se comprueba con carpetas sintéticas.
+- Ninguna etiqueta se interpreta como HTML, ruta o expresión regular; los chips quedan fuera de las exportaciones.
+- La búsqueda por nombre sin `#` se comporta exactamente como antes (la prueba actual no se editó).
+- La evidencia trae los tiempos reales con 2.000 y 5.000 archivos y separa lo ejecutado de lo no verificado; documenta los límites (documento con cambios sin guardar, nombres de archivo que empiezan por `#`, listas en línea de varias líneas).
+- `NEEDS TESTING` si falta alguna plataforma de CI o la medición de carpetas grandes; `BLOCKED` si se propone una dependencia o un analizador de YAML.
+
+### Segunda versión (FL-MD-010, esbozada, no incluida)
+
+Depende de FL-MD-009 y de una decisión del propietario sobre el alcance (ver abajo). Lo que muestran las capturas de Joplin, trasladado a archivos:
+
+- **Lista «Etiquetas» en el explorador, con recuento.** Cada etiqueta de la carpeta abierta con el número de documentos; un clic filtra (escribe `#etiqueta` en «Buscar archivo…»). Una etiqueta sin documentos desaparece. Reutiliza el mismo recorrido que el filtro de FL-MD-009: un solo escaneo que devuelve las etiquetas y sus recuentos, con los mismos topes (16 KiB por archivo, 8 lecturas simultáneas, 5.000 archivos) y un aviso cuando el resultado es parcial.
+- **«Agregar o eliminar etiquetas» desde la vista previa.** Un botón «Agregar etiquetas…» junto a los chips abre un diálogo con campo combinado (autocompletado con las etiquetas de la carpeta), «Aceptar» y «Cancelar». Al aceptar se escribe el front matter con el **cambio mínimo**: se conserva el resto del YAML, los comentarios, el orden y CRLF; se crea el encabezado solo si no existe; un solo paso de deshacer; nunca se pierde texto (si el encabezado no se entiende, el diálogo avisa y no escribe).
+- Riesgo principal: escribir YAML sin un analizador. Por eso la edición se limita a los formatos que `parseTags` entiende (lista en línea y en bloque) y rechaza el resto con un aviso.
+
+**Decisión pendiente del propietario (T4):** ¿la lista «Etiquetas» con recuentos entra ya en FL-MD-009 como un cuarto bloque (D), o espera a FL-MD-010? Recomiendo esperar: es la misma lectura de la carpeta más una interfaz nueva, pero el filtro ya resuelve «encontrar todo lo del proyecto X» y la historia sigue siendo revisable en tres bloques.
+
 ## Aplazadas (con condición para retomarlas)
 
 - **Pegar HTML como Markdown.** Requiere convertir HTML no confiable: se parsearía de forma inerte, se saneará con `sanitize-html` (ya instalado) y se convertiría con `turndown` (MIT, dependencia nueva). Retomar tras aprobar la dependencia y cuando FL-MD-005 esté fusionada para compartir el controlador de pegado.
 - **Inserción visual de imágenes.** Depende de la política de activos relativos y «Guardar como» (F05): FL-DRW-001. Sin esa política, una imagen insertada puede dejar de resolverse al guardar con otro nombre.
 - **Menú `/`.** Duplica **Insertar**; solo se retoma si el uso real muestra que la gente no encuentra los bloques o si se añaden plantillas (galería Mermaid) que justifiquen un acceso por teclado.
-- **Etiquetas (tags). Pendiente de decisión del propietario (2026-10-27).** Joplin las guarda en su base de datos y las muestra bajo el título («Haga clic aquí para agregar etiquetas…»). FreyaLab trabaja sobre archivos, así que la decisión es dónde viven:
-  - **Recomendada: el front matter del propio documento** (`tags: [a, b]` o lista en bloque). Es texto del archivo, portable (Obsidian, Hugo y Jekyll lo entienden) y encaja con «Propiedades del documento» de FL-MD-002. Depende de FL-MD-002 fusionada, que es donde se aparta el front matter.
-  - Primera versión de solo lectura: etiquetas como chips bajo el título en la vista previa, y filtro por etiqueta en el explorador (hoy «Buscar archivo» muestra nombre y ruta y no conoce las etiquetas; habría que leer solo el encabezado de cada archivo de la carpeta).
-  - Segunda versión con edición: añadir y quitar etiquetas con chips que escriben el front matter con el cambio mínimo (conserva comentarios, orden, CRLF y el resto del YAML), un paso de deshacer.
-  - Descartadas: una base de datos de etiquetas dentro de la aplicación (no es portable y se desincroniza al mover o renombrar archivos) y `#etiqueta` dentro del texto (ambiguo con títulos, enlaces y números de incidencia).
-  - Decisiones que pide: T1 ¿las etiquetas viven en el front matter? T2 ¿primera versión de solo lectura con filtro en el explorador? T3 ¿solo documentos Markdown?
+- **Etiquetas (tags).** Decididas el 2026-10-27 (T1 front matter, T2 primera versión de solo lectura con filtro en el explorador, T3 solo Markdown): ver FL-MD-009. La lista de etiquetas con recuentos y el diálogo para agregar o eliminar (referencia: Joplin) quedan esbozados como FL-MD-010 dentro de FL-MD-009. Descartadas: una base de datos de etiquetas dentro de la aplicación (no es portable y se desincroniza al mover o renombrar archivos) y `#etiqueta` dentro del texto (ambiguo con títulos, enlaces y números de incidencia).
 - **Atrás/adelante entre documentos y «abrir en editor externo» (Joplin).** Valor bajo hoy: FreyaLab ya tiene pestañas, deshacer y rehacer. Se retoma si el uso real muestra que se echa en falta el historial de navegación.
