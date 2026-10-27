@@ -17,7 +17,13 @@
   return()=>{clearTimeout(timer);finish()}
  })
  onDestroy(()=>{disposed=true;generation++})
- export async function exportSVG(){await tick();while(busy&&!disposed)await completion;if(disposed||failure||!svg||validSource!==text||validTheme!==dark)throw new Error('Corrige el diagrama antes de exportar.');return svg}
+ export async function exportSVG(){
+  await tick();while(busy&&!disposed)await completion
+  if(disposed||failure||!svg||validSource!==text||validTheme!==dark)throw new Error('Corrige el diagrama antes de exportar.')
+  const source=text,result=await diagramSVG(source,false)
+  if(disposed||failure||source!==text)throw new Error('Corrige el diagrama antes de exportar.')
+  return result
+ }
  export async function exportHTML(){return standaloneHTML(await exportSVG(),'Diagrama Mermaid')}
  let dragging=false,x=0,y=0,left=0,top=0
  function dragStart(event:PointerEvent){if(failure||event.button!==0)return;dragging=true;x=event.clientX;y=event.clientY;left=host.scrollLeft;top=host.scrollTop;host.setPointerCapture(event.pointerId)}
