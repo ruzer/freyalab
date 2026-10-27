@@ -41,6 +41,10 @@
   if(!session){session=createMarkdownSession(doc.text??'');textSessions.set(doc.id,session)}
   return session
  }
+ $effect(()=>{
+  const doc=active
+  if(doc?.kind==='markdown'&&mode==='preview'){const selection=textSession(doc).state.selection.main;textSelection=selection.empty?null:{from:selection.from,to:selection.to}}
+ })
  function receiveText(id:string){return(transactions:readonly Transaction[])=>{
   const session=textSessions.get(id);if(!session||!transactions.length)return
   let current=session.state

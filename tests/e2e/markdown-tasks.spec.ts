@@ -118,3 +118,19 @@ test('el documento largo mantiene correspondencia al final; dos temas y misma al
   if(process.env.FREYALAB_TASK_EVIDENCE_DIR){await mkdir(process.env.FREYALAB_TASK_EVIDENCE_DIR,{recursive:true});await page.screenshot({path:join(process.env.FREYALAB_TASK_EVIDENCE_DIR,`6-tasks-${theme}-1440x900.png`),animations:'disabled'})}
  }
 })
+
+test('integración con el contador: cada pestaña en Vista previa conserva su propia selección sin Editor montado',async()=>{
+ const counter=page.locator('.statusbar .text-stats'),firstSource='Uno dos tres\n\n- [ ] Primera\n'
+ const first=await open(firstSource);const firstId=id
+ await expect(counter).toContainText('4 palabras');await content().focus();await page.keyboard.press('ControlOrMeta+Home')
+ for(let index=0;index<3;index++)await page.keyboard.press('Shift+ArrowRight')
+ await expect(counter).toContainText('1 de 4 palabras')
+ await page.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(page.locator('.cm-editor')).toHaveCount(0)
+ const secondSource='Segundo documento distinto\n\n- [ ] Otra\n',second=await open(secondSource)
+ await expect(page.locator('.cm-editor')).toHaveCount(0);await expect(counter).toContainText('4 palabras');await expect(counter).toHaveAttribute('aria-busy','false');await expect(counter).not.toContainText(' de ')
+ await boxes().first().click();await expect.poll(source).toBe(secondSource.replace('[ ]','[x]'));await settled();await expect(counter).not.toContainText(' de ')
+ expect(await readFile(second.path,'utf8')).toBe(secondSource)
+ await page.getByRole('tab').filter({hasText:first.doc.name}).click();id=firstId
+ await expect(page.locator('.cm-editor')).toHaveCount(0);await expect(counter).toContainText('1 de 4 palabras')
+ expect(await readFile(first.path,'utf8')).toBe(firstSource);expect(await source()).toBe(firstSource)
+})
