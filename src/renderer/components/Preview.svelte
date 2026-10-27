@@ -1,15 +1,30 @@
 <script lang="ts">
  import {tick,onMount,onDestroy} from 'svelte'
  import {explainDiagramError} from '../lib/diagram-errors'
- import {markdownHTML,diagramSVG,standaloneHTML,type Heading} from '../lib/render'
+ import {markdownHTML,diagramSVG,standaloneHTML,decodeFragment,type Heading} from '../lib/render'
  let {text,id,dark=false,onheadings,onerror}:{text:string;id:string;dark?:boolean;onheadings:(headings:Heading[])=>void;onerror:(message:string)=>void}=$props()
  let busy=$state(false),announcement=$state(''),container:HTMLElement,article:HTMLElement
+ let frontMatter=$state<string|undefined>(undefined)
  let diagramBlocks:{source:string;dark:boolean;node:HTMLElement}[]=[]
  let generation=0,completion:Promise<void>=Promise.resolve(),renderError='',missing=0,disposed=false
- export function scrollToHeading(anchor:string){container?.querySelector(`[id="${CSS.escape(anchor)}"]`)?.scrollIntoView({behavior:'smooth',block:'start'})}
+ export function scrollToHeading(anchor:string){
+  if(!anchor){container?.scrollTo({top:0,behavior:'smooth'});return}
+  const fragment=decodeFragment(anchor),target=article?.querySelector<HTMLElement>(`[id="${CSS.escape(fragment)}"]`)
+  if(!target){onerror(`No encontré la sección “${fragment}” en este documento`);return}
+  for(let parent=target.parentElement;parent&&parent!==container;parent=parent.parentElement)if(parent instanceof HTMLDetailsElement)parent.open=true
+  if(target.tabIndex<0)target.tabIndex=-1
+  target.scrollIntoView({behavior:'smooth',block:'start'});target.focus({preventScroll:true})
+ }
  export function scrollRatio(ratio:number){if(container) container.scrollTop=ratio*Math.max(0,container.scrollHeight-container.clientHeight)}
  export function missingImages(){return missing}
- export async function exportHTML(){await tick();while(busy&&!disposed)await completion;if(disposed)throw new Error('El documento se cerró antes de terminar la vista previa.');if(renderError)throw new Error(renderError);return standaloneHTML(article?.innerHTML??'','Documento FreyaLab')}
+ export async function exportHTML(){
+  await tick();while(busy&&!disposed)await completion
+  if(disposed)throw new Error('El documento se cerró antes de terminar la vista previa.')
+  if(renderError)throw new Error(renderError)
+  const copy=article?.cloneNode(true) as HTMLElement|undefined
+  for(const details of copy?.querySelectorAll<HTMLDetailsElement>('details[data-freya-open]')??[]){details.open=details.dataset.freyaOpen==='1';details.removeAttribute('data-freya-open')}
+  return standaloneHTML(copy?.innerHTML??'','Documento FreyaLab')
+ }
  $effect(()=>{
   const source=text,docId=id,theme=dark,token=++generation
   busy=true;renderError='';missing=0
@@ -18,7 +33,9 @@
    try{
     const result=await markdownHTML(source)
     if(token!==generation)return
+    frontMatter=result.frontMatter
     const staged=document.createElement('template');staged.innerHTML=result.html
+    for(const details of staged.content.querySelectorAll('details'))details.dataset.freyaOpen=details.open?'1':'0'
     const images=Array.from(staged.content.querySelectorAll('img'),image=>{const src=image.getAttribute('src')??'';image.removeAttribute('src');return{image,src}})
     const diagrams=Array.from(staged.content.querySelectorAll('code.language-mermaid'),(code,index)=>{
      const source=code.textContent??'',previous=diagramBlocks[index]
@@ -61,10 +78,17 @@
  })
  onDestroy(()=>{disposed=true;generation++})
  onMount(()=>{container.addEventListener('click',linkClick);return()=>container.removeEventListener('click',linkClick)})
- function linkClick(event:MouseEvent){const anchor=(event.target as Element).closest('a');if(!anchor)return;event.preventDefault();const href=anchor.getAttribute('href')??'';if(href.startsWith('#')){scrollToHeading(href.slice(1));return}window.freya.openLink(href).catch(error=>onerror(String(error)))}
+ function linkClick(event:MouseEvent){const anchor=(event.target as Element).closest('a,.enlace-roto');if(!anchor)return;event.preventDefault();if(anchor.classList.contains('enlace-roto')){onerror(`No encontré la sección “${anchor.getAttribute('data-seccion-faltante')??''}” en este documento`);return}const href=anchor.getAttribute('href')??'';if(href.startsWith('#')){scrollToHeading(href.slice(1));return}window.freya.openLink(href).catch(error=>onerror(String(error)))}
 </script>
 <section class="preview" bind:this={container} aria-label="Vista previa del documento" role="document">
  {#if busy}<span class="render-progress">Actualizando vista previa…</span>{/if}
  <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</span>
+ {#if frontMatter!==undefined}<details class="document-properties"><summary>Propiedades del documento</summary><pre>{frontMatter}</pre></details>{/if}
  <article class="markdown-body" bind:this={article}></article>
 </section>
+<style>
+ :global(.markdown-body .enlace-roto){color:var(--muted);text-decoration:underline dotted;cursor:help}
+ .document-properties{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;color:var(--muted)}
+ .document-properties summary{cursor:pointer;width:fit-content}
+ .document-properties pre{font:12px/1.6 'JetBrains Mono',monospace;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text);padding:12px;background:var(--panel);border:1px solid var(--border);border-radius:6px}
+</style>
