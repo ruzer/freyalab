@@ -207,7 +207,7 @@ El propietario comparó FreyaLab con Joplin (barra del editor) y MDViewer (índi
 
 | # | Idea | Estado hoy | Valor | Esfuerzo | Riesgo | Decisión |
 |---|---|---|---|---|---|---|
-| 9 | Índice con sección actual, ramas que se contraen y disponible al editar | Existe como lista plana, sin sección actual, solo en Dividido y Vista previa | Alto | M | Bajo–medio (desplazamiento y correspondencia con las líneas del editor) | **FL-MD-007** (tras FL-MD-002) |
+| 9 | Índice en la barra izquierda, con sección actual, ramas que se contraen y disponible al editar | Existe como lista plana en un panel derecho, sin sección actual, solo en Dividido y Vista previa | Alto | M a L | Bajo–medio (pestañas de la barra, desplazamiento y correspondencia con las líneas del editor) | **FL-MD-007** (índice como pestaña «Archivos \| Índice»; decisión del 2026-10-27) |
 | 10 | Insertar fecha y hora | No existe (sin coincidencias en `markdown-commands.ts` ni en `MarkdownToolbar.svelte`) | Medio | S | Bajo | **FL-MD-008** |
 | 11 | Etiquetas (tags): chips, filtro, lista con recuentos y edición | No existe | Alto | M a L (lectura) y L (edición) | Medio (dónde se guardan; escribir YAML) | **FL-MD-009** (chips, filtro y lista con recuentos; decisiones T1–T4 aprobadas el 2026-10-27) y **FL-MD-010** (edición) esbozada |
 | 12 | Atrás/adelante entre documentos y «abrir en editor externo» | No existe (solo deshacer y rehacer) | Bajo | S a M | Bajo | No hacer ahora; ver «Aplazadas» |
@@ -215,13 +215,13 @@ El propietario comparó FreyaLab con Joplin (barra del editor) y MDViewer (índi
 
 Sin diferencia con Joplin, y por eso sin historia: negrita, cursiva, código, tachado, títulos, listas con viñetas, numeradas y de tareas, separador, tabla y enlace (FL-MD-001).
 
-Orden: FL-MD-008 puede ir en paralelo con cualquiera (toca `markdown-commands.ts` y `MarkdownToolbar.svelte`). FL-MD-007 espera a FL-MD-002 porque ambas tocan `Preview.svelte`.
+Orden: FL-MD-008 puede ir en paralelo con cualquiera (toca `markdown-commands.ts` y `MarkdownToolbar.svelte`). FL-MD-007 y FL-MD-009 tocan la barra lateral de `App.svelte` (pestañas y lista de etiquetas): van seguidas, no en paralelo.
 
 ## FL-MD-007 · Un índice que dice dónde estás
 
 ### 1. Historia de usuario
 
-Como persona que lee o edita un documento largo con muchas secciones, quiero que el índice me muestre en qué sección estoy, me deje contraer lo que no uso y siga disponible mientras escribo, para orientarme y saltar sin perder el hilo.
+Como persona que lee o edita un documento largo con muchas secciones, quiero que el índice me muestre en qué sección estoy, me deje contraer lo que no uso y viva en la barra lateral izquierda, junto al explorador de archivos, disponible también mientras escribo, para orientarme y saltar sin perder el hilo.
 
 ### 2. Problema y evidencia
 
@@ -237,14 +237,36 @@ El índice es una lista de botones con sangría de 10 px por nivel (`{#if outlin
 | Ancho de ventana | 185 px por encima de 1100 px, 155 px hasta 850 px y oculto por debajo de 850 px |
 | Clic en una entrada | Funciona: desplaza la vista previa (4.731 px en la prueba) |
 
-La referencia del propietario (MDViewer) muestra un árbol con flechas para contraer ramas, la sección actual resaltada y los títulos largos cortados con puntos suspensivos. `App.svelte` enlaza además el `onscroll` del editor con la vista previa (línea 87); Codex debe comprobar el sentido de esa sincronización antes de mover el cursor del editor desde el índice.
+**Dónde vive hoy.** El índice es un panel a la derecha, aparte de la barra izquierda del explorador (de 180 a 420 px, redimensionable; su visibilidad y su ancho se recuerdan en `localStorage` con `freya-sidebar` y `freya-sidebar-width`). El botón «Índice» de la barra de herramientas lo muestra u oculta (`outline=!outline`). En la captura de 1440×900 con el índice abierto, la vista previa mide unos 410 px: el panel derecho le quita 185 px. La barra izquierda solo tiene un ancho mínimo y máximo, sin reglas por ancho de ventana; el índice, en cambio, desaparece por debajo de 850 px.
+
+La referencia del propietario (MDViewer) coloca el índice en la barra izquierda, con un conmutador entre carpetas e índice, y muestra un árbol con flechas para contraer ramas, la sección actual resaltada y los títulos largos cortados con puntos suspensivos. `App.svelte` enlaza además el `onscroll` del editor con la vista previa (línea 87); Codex debe comprobar el sentido de esa sincronización antes de mover el cursor del editor desde el índice.
 
 ### 3. Diseño UX/UI
 
-El panel «En este documento» pasa a ser un árbol:
+**Dónde vive (decisión del propietario, 2026-10-27).** El índice deja de ser un panel a la derecha y pasa a ser una **pestaña de la barra lateral izquierda**, junto al explorador:
 
 ```text
-EN ESTE DOCUMENTO
+┌───────────────────────┐
+│ [Archivos]  Índice    │   ← pestañas; la activa va marcada
+├───────────────────────┤
+│ ▾ Manual de usuario   │
+│   ▾ Primeros pasos    │
+│ …                     │
+├───────────────────────┤
+│ FreyaLab alfa   Tema  │   ← el pie no cambia
+└───────────────────────┘
+```
+
+- **Archivos** contiene exactamente el explorador de hoy (etiqueta EXPLORADOR con «＋», búsqueda, árbol o estado vacío y, con FL-MD-009, la lista «ETIQUETAS»). **Índice** muestra el índice del documento activo.
+- La pestaña Índice solo está disponible con un documento Markdown activo. Con otro tipo de documento está deshabilitada, con la ayuda «El índice está disponible en documentos Markdown», y se muestra Archivos sin borrar la preferencia guardada.
+- El botón «Índice» de la barra de herramientas sigue existiendo: abre la barra lateral si estaba oculta y selecciona la pestaña Índice; si el índice ya está visible, vuelve a Archivos.
+- La última pestaña elegida se recuerda (como ya se recuerdan la visibilidad y el ancho de la barra). El ancho de la barra (de 180 a 420 px) es el mismo para las dos pestañas.
+- Un documento sin títulos muestra «Este documento no tiene títulos» en lugar de ocultar el panel.
+- Desaparecen el panel derecho, sus anchos de 185 y 155 px y su corte a 850 px: el índice queda disponible en ventanas estrechas mientras la barra esté visible, y la vista previa recupera el ancho que ocupaba.
+
+El contenido de la pestaña Índice es un árbol:
+
+```text
 ▾ Manual de usuario
   ▾ Primeros pasos
       Requisitos del sistema
@@ -258,11 +280,23 @@ EN ESTE DOCUMENTO
 - Si la sección actual está dentro de una rama contraída, se marca la rama visible más cercana; el índice nunca se expande solo.
 - Los títulos largos ocupan como máximo dos líneas con puntos suspensivos; el texto completo va en el tooltip y es el nombre accesible.
 - El estado de contracción vive en memoria mientras la aplicación está abierta, por documento. No se guarda en el archivo ni en disco.
-- **Modo Editar:** el panel se muestra también (mismo ancho y mismos puntos de corte). Un clic lleva el cursor al inicio de la línea del título, lo deja arriba del editor y enfoca el editor; la sección actual sigue la primera línea visible. En Dividido y Vista previa el clic sigue desplazando la vista previa, como hoy.
+- **Modo Editar:** la barra lateral es visible en todos los modos, así que el índice se muestra también. Un clic lleva el cursor al inicio de la línea del título, lo deja arriba del editor y enfoca el editor; la sección actual sigue la primera línea visible. En Dividido y Vista previa el clic sigue desplazando la vista previa, como hoy.
 
 ### 4. Criterios de aceptación
 
-Tres bloques, un commit por bloque, en este orden.
+Cuatro bloques, un commit por bloque, en este orden: P, A, B, C.
+
+**P · Pestañas en la barra lateral izquierda**
+- P1. La parte superior de la barra tiene dos pestañas, «Archivos» e «Índice», con semántica de pestañas (`role="tablist"`, `tab` con `aria-selected` y `aria-controls`; las flechas izquierda y derecha, Inicio y Fin cambian de pestaña). La pestaña Archivos contiene exactamente el explorador actual sin cambios funcionales; el pie (marca y tema) se ve en las dos.
+- P2. El índice se retira del lado derecho: no queda ningún panel `.outline` ni sus estilos (anchos de 185 y 155 px, `display:none` a 850 px, ni el estado `outline` de `App.svelte`).
+- P3. La pestaña Índice solo está disponible con un documento Markdown activo. Con otro tipo está deshabilitada (`aria-disabled`) con la ayuda del diseño y, si estaba seleccionada, se muestra Archivos sin pisar la preferencia guardada; al volver a un Markdown reaparece la preferencia.
+- P4. El botón «Índice» de la barra de herramientas abre la barra lateral si estaba oculta y selecciona Índice; si Índice ya está seleccionada y visible, vuelve a Archivos. `aria-pressed` refleja que el índice está visible.
+- P5. La pestaña elegida se guarda en `localStorage` (`freya-sidebar-tab`, valores `files` u `outline`) con la misma tolerancia a fallos que `freya-sidebar-width`: valor ausente o inválido da Archivos, y sin almacenamiento la interfaz funciona igual.
+- P6. El ancho de la barra (de 180 a 420 px, redimensionable y recordado) es el mismo en las dos pestañas.
+- P7. Cambiar de pestaña conserva el estado de la otra: texto de la búsqueda de archivos, resultados, carpetas abiertas del árbol, desplazamiento y, en el índice, ramas contraídas y desplazamiento.
+- P8. Con la barra oculta no se ve ni el índice ni el explorador; al reabrirla se muestra la última pestaña.
+- P9. En ventanas de 850 px o menos el índice sigue disponible mientras la barra esté visible; a 1440×900 la vista previa mide al menos 185 px más que antes con el índice abierto (se mide antes y después).
+- P10. Un documento Markdown sin títulos muestra «Este documento no tiene títulos» en la pestaña Índice.
 
 **A · Sección actual (Dividido y Vista previa)**
 - A1. Antes del primer título no hay sección actual. En cualquier otra posición la actual es el último título cuyo borde superior queda por encima del 30 % superior del panel de vista previa.
@@ -271,7 +305,7 @@ Tres bloques, un commit por bloque, en este orden.
 - A4. Si el último título no llega nunca al umbral, se marca como actual cuando el desplazamiento llega al final del documento.
 - A5. No se recorre el DOM en cada evento: los desplazamientos de los títulos se calculan tras cada render y al cambiar el tamaño, y el evento solo hace una búsqueda binaria. La evidencia da el coste medido por evento con 1.000 títulos.
 - A6. Los títulos ocultos (por ejemplo dentro de un `<details>` cerrado) no cuentan para la sección actual.
-- A7. El `<aside>` recibe `aria-label="Índice del documento"`.
+- A7. El panel de la pestaña Índice es un `tabpanel` con el nombre accesible «Índice del documento».
 
 **B · Ramas que se contraen**
 - B1. El árbol se deriva de los niveles: un título es hijo del anterior de nivel menor. Un salto (nivel 1 a nivel 3) no crea nodos vacíos.
@@ -282,29 +316,29 @@ Tres bloques, un commit por bloque, en este orden.
 - B6. Los títulos largos se limitan a dos líneas con puntos suspensivos, con tooltip y nombre accesible completos.
 
 **C · Modo Editar**
-- C1. El panel se muestra también en modo Editar y el botón «Índice» de la barra lo alterna.
+- C1. La pestaña Índice funciona también en modo Editar (la barra lateral es visible en todos los modos) y se puede alternar con el botón «Índice» de la barra (P4).
 - C2. En modo Editar, un clic en una entrada mueve el cursor al inicio de la línea de ese título, lo deja en la parte superior del editor y enfoca el editor. El texto no cambia.
 - C3. En modo Editar, la sección actual sigue la primera línea visible del editor.
 - C4. La correspondencia entre las entradas del índice y las líneas del editor se hace en orden y por texto contra los títulos del árbol sintáctico del editor (ATX y Setext). Una entrada sin pareja (por ejemplo, un título dentro de un bloque HTML) no mueve el cursor y avisa «Ese título no se puede localizar en el editor». **Nunca se salta a una línea equivocada.**
 - C5. En Dividido y Vista previa el clic desplaza la vista previa como hoy, y el índice no cambia el contenido de ninguna exportación.
 
-**Transversales:** sin dependencias nuevas; el texto del documento y el HTML exportado no cambian; `npm run check`, `npm test`, `npm run test:e2e` y `npm run build` en verde; los puntos de corte de ancho (1100 y 850 px) se conservan.
+**Transversales:** sin dependencias nuevas; el texto del documento y el HTML exportado no cambian; `npm run check`, `npm test`, `npm run test:e2e` y `npm run build` en verde; se elimina el panel derecho con sus puntos de corte de ancho (1100 y 850 px); la barra izquierda conserva su ancho (de 180 a 420 px), su recuerdo y el resto de su comportamiento. Interacción con FL-MD-009: pulsar un chip de etiqueta selecciona la pestaña Archivos antes de escribir en la búsqueda; si FL-MD-009 se fusiona antes, este ajuste se hace aquí.
 
 ### 5. Casos límite
 
-Documento sin títulos; solo títulos de nivel 2; saltos de nivel (1, 3, 2); títulos repetidos («Uno» dos veces); título solo con emoji o signos; título editado mientras su rama está contraída; documento con 1.000 títulos; títulos dentro de un `<details>` cerrado (tras FL-MD-002 un clic los abre); título dentro de una lista o una cita; título Setext (`Texto` y `===`); documento con front matter (el emparejamiento por texto no depende de los desplazamientos de línea); render progresivo mientras se desplaza; cambio de tema; ventana de 850 px o menos (el panel sigue oculto); edición con IME (el clic en el índice no interrumpe la composición); modo Vista previa sin editor montado (C no aplica).
+Documento sin títulos; solo títulos de nivel 2; saltos de nivel (1, 3, 2); títulos repetidos («Uno» dos veces); título solo con emoji o signos; título editado mientras su rama está contraída; documento con 1.000 títulos; títulos dentro de un `<details>` cerrado (tras FL-MD-002 un clic los abre); título dentro de una lista o una cita; título Setext (`Texto` y `===`); documento con front matter (el emparejamiento por texto no depende de los desplazamientos de línea); render progresivo mientras se desplaza; cambio de tema; ventana de 850 px o menos (el índice sigue disponible en la barra izquierda mientras esté visible); edición con IME (el clic en el índice no interrumpe la composición); modo Vista previa sin editor montado (C no aplica). Para las pestañas: documento no Markdown con la pestaña Índice seleccionada; cambio de Markdown a CSV y de vuelta; sin carpeta abierta (Archivos muestra «Abrir carpeta» e Índice sigue disponible); barra oculta y botón «Índice»; `localStorage` no disponible o con un valor inválido; documento sin títulos; barra de 180 px con títulos largos; teclado entre pestañas (flechas, Inicio, Fin); lector de pantalla; pulsar un chip de etiqueta (FL-MD-009) con la pestaña Índice seleccionada.
 
 ### 6. Prompt ejecutable para Codex
 
 ```text
-Tarea: FL-MD-007 · Índice con sección actual, ramas contraíbles y modo Editar. REQUISITO: FL-MD-002 (PR #67) fusionada, porque ambas tocan Preview.svelte y render.ts.
-Lee AGENTS.md, CONTRIBUTING.md y docs/stories/3-markdown-experiencia.md (FL-MD-007: criterios A1–C5, casos límite y la medición de la sección 2). Rama codex/md-007-indice desde main actualizado. Sin dependencias; no toques package.json ni el lockfile.
-Archivos probables: src/renderer/App.svelte (retirar el bloque del índice), src/renderer/components/Outline.svelte (nuevo), src/renderer/lib/outline.ts (funciones puras nuevas), src/renderer/components/Preview.svelte (exponer los desplazamientos de los títulos), src/renderer/components/Editor.svelte (ir a una línea; primera línea visible), src/renderer/style.css, tests/outline.test.ts (nuevo), tests/e2e/ (nuevo).
-Método, por bloque y en este orden (A, B, C), UN commit por bloque:
-1. Escribe primero las pruebas y comprueba que FALLAN por la razón descrita. Funciones puras: construir el árbol a partir de los títulos (B1), elegir la sección actual dada una lista de desplazamientos y un scrollTop (A1, A4, A6), emparejar títulos del índice con títulos del árbol sintáctico del editor (C4). E2E: desplazar y comprobar aria-current, contraer y expandir con teclado, clic en modo Editar.
+Tarea: FL-MD-007 · Índice en una pestaña de la barra lateral izquierda, con sección actual, ramas contraíbles y modo Editar. FL-MD-002 (PR #67) ya está en main (ambas tocan Preview.svelte y render.ts).
+Lee AGENTS.md, CONTRIBUTING.md y docs/stories/3-markdown-experiencia.md (FL-MD-007: criterios P1–P10 y A1–C5, casos límite y la medición de la sección 2). Rama codex/md-007-indice desde main actualizado. Sin dependencias; no toques package.json ni el lockfile.
+Archivos probables: src/renderer/App.svelte (pestañas de la barra izquierda; retirar el panel derecho y el estado outline), src/renderer/components/Outline.svelte (nuevo), src/renderer/lib/outline.ts (funciones puras nuevas), src/renderer/components/Preview.svelte (exponer los desplazamientos de los títulos), src/renderer/components/Editor.svelte (ir a una línea; primera línea visible), src/renderer/style.css, tests/outline.test.ts (nuevo), tests/e2e/ (nuevo).
+Método, por bloque y en este orden (P, A, B, C), UN commit por bloque:
+1. Escribe primero las pruebas y comprueba que FALLAN por la razón descrita. Bloque P: E2E de pestañas (roles y flechas, botón Índice, localStorage con valor inválido, documento no Markdown, estado conservado al cambiar de pestaña, vista previa más ancha). Funciones puras: construir el árbol a partir de los títulos (B1), elegir la sección actual dada una lista de desplazamientos y un scrollTop (A1, A4, A6), emparejar títulos del índice con títulos del árbol sintáctico del editor (C4). E2E: desplazar y comprobar aria-current, contraer y expandir con teclado, clic en modo Editar.
 2. Implementa lo mínimo. Reutiliza el tipo Heading de render.ts y el árbol sintáctico de CodeMirror que el editor ya importa (syntaxTree). Antes de mover el cursor desde el índice, comprueba el sentido de la sincronización onscroll del editor con la vista previa (App.svelte); si el clic en modo Editar provoca un desplazamiento extra de la vista previa, repórtalo.
 3. Vuelve a ejecutar: las pruebas del bloque pasan y las anteriores siguen pasando.
-Medición obligatoria con un documento sintético de 1.000 títulos: coste por evento de desplazamiento y tiempo de construir el árbol; comparar con main 61d0e05. Sin umbrales de reloj en las pruebas: demuestra con conteo de operaciones que el evento no recorre el DOM.
+Medición obligatoria: ancho de la vista previa a 1440×900 con el índice visible, antes y después de mover el panel; y con un documento sintético de 1.000 títulos: coste por evento de desplazamiento y tiempo de construir el árbol; comparar con main 61d0e05. Sin umbrales de reloj en las pruebas: demuestra con conteo de operaciones que el evento no recorre el DOM.
 Al terminar: npm run check && npm test && npm run test:e2e && npm run build. Evidencia: docs/evidence/md-007-<fecha>.md con la tabla rojo→verde por bloque, capturas 1440×900 en claro y oscuro de cada bloque (panel con la sección actual marcada, una rama contraída, modo Editar), los números reales y lo que NO se verificó. PR en BORRADOR; no fusiones, no publiques versiones, no actualices la app instalada. Si algo es ambiguo, detente y pregunta.
 ```
 
@@ -314,13 +348,15 @@ Al terminar: npm run check && npm test && npm run test:e2e && npm run build. Evi
 |---|---|---|
 | Unitaria (rojo→verde) | Árbol a partir de niveles con saltos; elección de la sección actual (inicio, medio, final, títulos ocultos); emparejamiento por texto con títulos repetidos, Setext, front matter y bloques HTML | `tests/outline.test.ts` |
 | E2E | Desplazar la vista previa y comprobar `aria-current`; contraer y expandir con Intro y Espacio; la rama contraída marcada como actual; modo Editar: clic lleva el cursor a la línea correcta y el texto no cambia | `tests/e2e/` |
+| Pestañas | `tablist`, `tab` y `tabpanel` por rol; flechas, Inicio y Fin; botón «Índice» abre y alterna; `localStorage` con valor inválido o ausente; documento no Markdown; estado de cada pestaña conservado | `tests/e2e/` |
 | Accesibilidad | `getByRole` por nombre de las flechas; `aria-expanded`; `aria-current`; nombre del panel; contraste del indicador en ambos temas | E2E |
 | Rendimiento | 1.000 títulos: coste por evento y construcción del árbol frente a `main` | Informe de evidencia |
-| Regresión | El clic sigue desplazando en Dividido y Vista previa; anchos de 185 y 155 px; panel oculto a 850 px o menos; FL-MD-002 intacta | E2E existentes |
+| Regresión | El clic sigue desplazando en Dividido y Vista previa; la barra conserva su ancho y su recuerdo; el índice sigue disponible a 850 px o menos; el explorador (búsqueda, árbol, etiquetas) funciona igual; FL-MD-002 intacta | E2E existentes |
 
 ### 8. Criterios de revisión (Claude)
 
-- Tres commits (A, B, C), cada uno con rojo→verde; sin dependencias nuevas.
+- Cuatro commits (P, A, B, C), cada uno con rojo→verde; sin dependencias nuevas.
+- No queda ningún resto del panel derecho (marcado, estilos, estado `outline`); las pestañas tienen roles y teclado correctos; la preferencia es robusta (valor inválido, sin almacenamiento); cambiar de pestaña no pierde el estado del explorador ni del índice; un chip de etiqueta (FL-MD-009) lleva a Archivos.
 - El indicador de sección actual no depende solo del color y es coherente en claro y oscuro; `aria-current` y `aria-expanded` verificados por rol.
 - La elección de la sección actual y el árbol son funciones puras probadas fuera de la interfaz; el evento de desplazamiento no recorre el DOM.
 - **Ningún clic en modo Editar salta a una línea equivocada**; un título sin pareja avisa. Se prueba con títulos repetidos, Setext y un título dentro de un bloque HTML.
@@ -476,7 +512,7 @@ Cuatro bloques (A a D), un commit por bloque, en este orden.
 - E6. La fila de propiedades muestra un chip por etiqueta cuando hay etiquetas y no muestra nada extra cuando no las hay. Las etiquetas se actualizan al editar el encabezado y desaparecen al borrarlas.
 - E7. Los chips quedan fuera de `article`: el HTML y el PDF exportados no los contienen.
 - E8. El texto de cada etiqueta se escapa (se renderiza como texto, nunca como HTML). Cada chip es un `<button>` con nombre accesible «Filtrar archivos por la etiqueta <x>», operable con Intro y Espacio; las etiquetas largas se cortan con puntos suspensivos y llevan el texto completo en el tooltip.
-- E9. Pulsar un chip abre el explorador si estaba oculto, escribe `#<etiqueta>` en «Buscar archivo…» sin duplicarlo, le da el foco y el filtro se aplica. Sin carpeta abierta aparece el aviso del diseño y no cambia nada.
+- E9. Pulsar un chip abre el explorador si estaba oculto (y selecciona la pestaña «Archivos» si FL-MD-007 ya está fusionada), escribe `#<etiqueta>` en «Buscar archivo…» sin duplicarlo, le da el foco y el filtro se aplica. Sin carpeta abierta aparece el aviso del diseño y no cambia nada.
 - E10. El texto del documento, su estado «con cambios» y lo que se guarda no cambian (la lectura de etiquetas no modifica nada).
 
 **C · Filtro en el explorador**
