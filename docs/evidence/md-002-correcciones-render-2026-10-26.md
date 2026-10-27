@@ -8,6 +8,7 @@ Base: `61d0e05b1d87ba30186a7a8f1908f1c9ed06d73a`, main actualizado con PR #66 fu
 | --- | --- | --- |
 | A · Front matter | `npx vitest run tests/render.test.ts`: 8 fallos y 6 aprobados, incluyendo los tres casos originales; `/private/tmp/md002-a-red.log`. | 14/14; `/private/tmp/md002-a-green.log`. E2E A 1/1 en 4,8 s: propiedades fuera del artículo/índice, HTML/PDF sin metadatos y fuente/guardado intactos; `/private/tmp/md002-a-e2e.log`. |
 | B · Enlaces internos | 9 fallos/15 aprobados en render; 1 fallo/3 aprobados en export. `/private/tmp/md002-b-red-corrected.log`, `md002-b-export-red.log`. E2E detectó además que `mailto:` estaba bloqueado pese a B5 (`md002-b-e2e.log`). | 29/29 render+export; `/private/tmp/md002-b-green.log`. A+B: 2/2 E2E, 7,9 s; `/private/tmp/md002-b-e2e-green.log`. |
+| C · Notas al pie | 8 fallos/31 aprobados en render+export; `/private/tmp/md002-c-red-corrected.log`. Una prueba adicional de un título dentro de una nota falló antes de darle ancla (`md002-c-note-heading-red.log`). | 40/40 render+export; `/private/tmp/md002-c-green.log`. A+B+C: 3/3 E2E, 9,9 s; `/private/tmp/md002-c-e2e.log`. |
 
 ## A · Propiedades del documento
 
@@ -32,3 +33,11 @@ Preview abre ancestros `<details>` al navegar, desplaza el destino y le da foco 
 No se amplió `allowedSchemes` de `autonomousHTML`: la política preexistente de exportación retira los href externos. La excepción de no reescribirlos se prueba en `markdownHTML` y B5 se verifica en Preview. Se corrigió una aserción inicial que esperaba Unicode sin codificar en una URL externa: remark ya lo codificaba a UTF-8 antes de este cambio.
 
 Invariante E2E B comprobado sobre elementos DOM, excluyendo `href="#"`: **Preview 4 id / 4 href internos; HTML autónomo sin JS 4 / 4; 0 destinos ausentes y 0 id duplicados en ambos**. La comprobación unitaria usa el parser de `sanitize-html` ya instalado, no regex sobre texto que podría contener `href`/`id` de ejemplo en un bloque de código. Capturas B: [claro](md-002-b-light-1440x900.png) y [oscuro](md-002-b-dark-1440x900.png), 1440×900. Tipos y build del bloque correctos.
+
+## C · Notas en español, con un único prefijo y destinos coherentes
+
+`remark-rehype` deja de añadir su propio prefijo; `rehype-sanitize` conserva su configuración predeterminada y aplica `user-content-` una sola vez. Se localizan «Notas al pie» y «Volver a la referencia N». El título generado es visible, conserva su id para `aria-describedby` y queda fuera del índice; un título real del usuario con ese nombre sí entra.
+
+Las notas y referencias generadas reciben identificadores ordinales opacos por documento. Así no colisionan la segunda referencia de `1` y una nota llamada `1-2`, ni se depende de porcentajes o Unicode en la URL. Se enlazan las vueltas con las referencias de cada nota. Las definiciones nunca usadas no se emiten. El HTML crudo no puede declarar esos id ni atributos de nota; el saneamiento sigue activo. Los títulos dentro del cuerpo de una nota admiten ancla, aunque no aparezcan en el índice de secciones.
+
+Se conservan los atributos semánticos inertes de las notas en la frontera de exportación. E2E C comprobó ida/vuelta con foco, español, exclusión del índice, fuente/guardado intactos y navegación del HTML fuera de la app con JavaScript deshabilitado. **7 id / 6 href internos / 0 ausentes / 0 duplicados**, tanto Preview como HTML exportado. Capturas C: [claro](md-002-c-light-1440x900.png) y [oscuro](md-002-c-dark-1440x900.png), 1440×900. Tipos y build correctos.

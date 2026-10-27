@@ -111,3 +111,24 @@ test('B: enlaces con acentos, mayúsculas y porcentaje navegan y enfocan; huérf
  await intact(source)
 })
 
+test('C: notas al pie en español, sin doble prefijo ni índice; ida y vuelta también en HTML sin JavaScript',async()=>{
+ const source='# Apuntes\n\nUna referencia[^uno], otra nota[^dos] y la primera de nuevo[^uno].\n\n[^uno]: Nota idéntica.\n[^dos]: Nota idéntica.\n[^sinuso]: Esta nota nunca fue usada.\n'
+ await open(source)
+ const notes=article().locator('section[data-footnotes]'),refs=article().locator('a[data-footnote-ref]'),backs=article().locator('a[data-footnote-backref]')
+ await expect(notes.getByRole('heading',{name:'Notas al pie',exact:true})).toBeAttached();await expect(page.locator('.outline button')).toHaveText(['Apuntes'])
+ await expect(refs).toHaveCount(3);await expect(backs).toHaveCount(3);expect(await article().innerHTML()).not.toContain('user-content-user-content-');await expect(article()).not.toContainText('Esta nota nunca fue usada.')
+ for(const back of await backs.all())expect(await back.getAttribute('aria-label')).toMatch(/^Volver a la referencia \d/)
+ const href=await refs.first().getAttribute('href');expect(href).toBeTruthy();await refs.first().click();await expect(article().locator(`[id="${href!.slice(1)}"]`)).toBeFocused()
+ const backHref=await backs.first().getAttribute('href');await backs.first().click();await expect(article().locator(`[id="${backHref!.slice(1)}"]`)).toBeFocused()
+ const count=await invariant(page,'.preview article','invariante-c-vista');expect(count.links).toBe(6)
+ await screenshots('c')
+ const view=await standalone(await exportFile('html'))
+ try{
+  await invariant(view,'body','invariante-c-html-autonomo')
+  const forward=view.locator('a[href]').filter({hasText:'1'}).first(),forwardHref=await forward.getAttribute('href');expect(forwardHref).toBeTruthy();await forward.click();await expect(view.locator(':target')).toHaveAttribute('id',forwardHref!.slice(1))
+  const back=view.locator('a[aria-label^="Volver a la referencia"]').first(),backTarget=await back.getAttribute('href');expect(backTarget).toBeTruthy();await back.click();await expect(view.locator(':target')).toHaveAttribute('id',backTarget!.slice(1))
+  await expect(view.getByRole('heading',{name:'Notas al pie',exact:true})).toBeVisible()
+ }finally{await view.close()}
+ await intact(source)
+})
+

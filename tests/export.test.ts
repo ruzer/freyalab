@@ -10,3 +10,9 @@ it('B conserva el marcado inerte de una sección faltante en HTML autónomo',asy
  const result=await autonomousHTML('<span class="enlace-roto" data-seccion-faltante="ausente">texto</span>')
  expect(result).toContain('class="enlace-roto" data-seccion-faltante="ausente"');expect(result).not.toContain('href="#ausente"')
 })
+it('C conserva las etiquetas semánticas de notas en la frontera de exportación',async()=>{
+ const html='<sup><a id="user-content-fnref-1" href="#user-content-fn-1" data-footnote-ref aria-describedby="user-content-footnote-label">1</a></sup><section data-footnotes><h2 id="user-content-footnote-label">Notas al pie</h2><ol><li id="user-content-fn-1">Nota <a href="#user-content-fnref-1" data-footnote-backref aria-label="Volver a la referencia 1">↩</a></li></ol></section>'
+ const result=await autonomousHTML(html)
+ expect(result).toContain('data-footnotes');expect(result).toContain('data-footnote-ref');expect(result).toContain('data-footnote-backref')
+ expect(result).toContain('aria-describedby="user-content-footnote-label"')
+})

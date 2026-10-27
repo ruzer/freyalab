@@ -6,6 +6,72 @@ describe('Markdown rendering',()=>{
  it('makes repeated heading anchors unique and retains diagram source',async()=>{const result=await markdownHTML('# Uno\n\n# Uno\n\n```mermaid\nflowchart LR\nA-->B\n```');expect(result.headings.map(h=>h.id)).toEqual(['heading-uno','heading-uno-1']);expect(result.html).toContain('language-mermaid');expect(result.html).toContain('A-->B')})
  it('renders formulas and produces a standalone document with escaped title',async()=>{const result=await markdownHTML('$x^2$');expect(result.html).toContain('class="katex"');const html=standaloneHTML(result.html,'<script>');expect(html).toContain('<title>&lt;script&gt;</title>');expect(html).toContain('@page');expect(html).not.toContain('cdn.')})
 })
+describe('FL-MD-002 C · notas al pie',()=>{
+ it('un título dentro del cuerpo de una nota admite enlaces sin entrar en el índice',async()=>{
+  const r=await markdownHTML('Ver [detalle](#detalle). Texto[^1].\n\n[^1]: Nota.\n\n    ### Detalle\n\n    Contenido de la nota.')
+  expect(r.html).toContain('href="#heading-detalle"');expect(r.html).toContain('id="heading-detalle"');expect(r.headings).toEqual([])
+ })
+ const linkedIds=(html:string)=>{const stats=localAnchorStats(html);expect(stats.duplicates).toEqual([]);expect(stats.missing).toEqual([]);return{ids:stats.ids,links:stats.targets}}
+ it('usa un solo prefijo, localiza título y vuelta, y mantiene los saltos',async()=>{
+  const result=await markdownHTML('Texto[^1].\n\n[^1]: Nota.')
+  const {ids,links}=linkedIds(result.html)
+  expect(ids).toContain('user-content-fnref-1');expect(ids).toContain('user-content-fn-1')
+  expect(links).toEqual(['user-content-fn-1','user-content-fnref-1'])
+  expect(result.html).not.toContain('user-content-user-content-')
+  expect(result.html).toContain('Notas al pie');expect(result.html).toContain('aria-label="Volver a la referencia 1"')
+  expect(result.html).not.toMatch(/Footnotes|Back to reference/)
+  expect(result.headings).toEqual([])
+ })
+ it('una nota referenciada dos veces tiene dos id de referencia y dos vueltas válidas',async()=>{
+  const result=await markdownHTML('Texto[^1], otra vez[^1].\n\n[^1]: Nota.')
+  const {ids,links}=linkedIds(result.html)
+  const references=Array.from(result.html.matchAll(/<a\b(?=[^>]*\bdata-footnote-ref\b)[^>]*\bid="([^"]+)"[^>]*>/g),match=>match[1])
+  expect(references).toHaveLength(2);expect(references[0]).not.toBe(references[1])
+  expect(links.filter(id=>id==='user-content-fn-1')).toHaveLength(2)
+  expect(links).toContain(references[0]);expect(links).toContain(references[1])
+  expect(result.html).toContain('Volver a la referencia 1 (2)')
+ })
+ it('dos notas con el mismo texto conservan destinos distintos',async()=>{
+  const result=await markdownHTML('Una[^1] y otra[^2].\n\n[^1]: Igual.\n\n[^2]: Igual.')
+  const {ids}=linkedIds(result.html)
+  expect(ids).toContain('user-content-fn-1');expect(ids).toContain('user-content-fn-2')
+  expect(result.html.match(/Igual\./g)).toHaveLength(2)
+ })
+ it('no emite una nota definida pero nunca usada',async()=>{
+  const result=await markdownHTML('Texto.\n\n[^sinuso]: Nota no usada.')
+  expect(result.html).not.toContain('Nota no usada');expect(result.html).not.toContain('data-footnotes')
+  expect(result.headings).toEqual([])
+ })
+ it('conserva un título real llamado Notas al pie en el índice y excluye solo la sección generada',async()=>{
+  const result=await markdownHTML('# Notas al pie\n\nTexto[^1].\n\n[^1]: Nota.')
+  linkedIds(result.html)
+  expect(result.headings).toEqual([{id:'heading-notas-al-pie',text:'Notas al pie',level:1}])
+  expect(result.html).toContain('id="user-content-footnote-label"')
+  expect(result.html).toContain('aria-describedby="user-content-footnote-label"')
+ })
+ it('los nombres de notas no generan id globales sin prefijo ni conservan atributos de HTML crudo',async()=>{
+  const result=await markdownHTML('Texto[^location].\n\n[^location]: Nota.\n\n<a id="location" data-footnote-ref onclick="x()">crudo</a>')
+  linkedIds(result.html)
+  expect(result.html).toContain('id="user-content-fn-1"')
+  expect(result.html).not.toContain('id="location"');expect(result.html).not.toContain('onclick')
+ })
+ it('un nombre de nota 1-2 no suplanta la segunda referencia de la nota 1',async()=>{
+  const result=await markdownHTML('A[^1] B[^1] C[^1-2].\n\n[^1]: Primera.\n\n[^1-2]: Segunda.')
+  const {links}=linkedIds(result.html)
+  const references=Array.from(result.html.matchAll(/<a\b(?=[^>]*\bdata-footnote-ref\b)[^>]*\bid="([^"]+)"[^>]*>/g),match=>match[1])
+  expect(references).toHaveLength(3);expect(new Set(references).size).toBe(3)
+  for(const reference of references)expect(links).toContain(reference)
+ })
+
+ it('los identificadores de notas son opacos y únicos también con Unicode y porcentajes',async()=>{
+  const r=await markdownHTML('N[^n], Ñ[^ñ], porcentaje[^%41].\n\n[^n]: Primera.\n\n[^ñ]: Segunda.\n\n[^%41]: Tercera.')
+  const stats=linkedIds(r.html);expect(stats.ids.filter(id=>/^user-content-fn-/.test(id))).toEqual(['user-content-fn-1','user-content-fn-2','user-content-fn-3'])
+ })
+ it('un enlace huérfano dentro de una nota sigue siendo texto marcado',async()=>{
+  const r=await markdownHTML('Texto[^1].\n\n[^1]: Nota con [destino ausente](#no-existe).');linkedIds(r.html)
+  expect(r.html).toContain('data-seccion-faltante="no-existe"');expect(r.html).not.toContain('href="#no-existe"')
+ })
+})
 
 describe('FL-MD-002 A · propiedades del documento',()=>{
  it('A1 aparta YAML antes de parsearlo y deja solo títulos del cuerpo en el índice',async()=>{

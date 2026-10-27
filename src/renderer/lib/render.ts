@@ -35,23 +35,39 @@ export async function markdownHTML(source:string):Promise<{html:string;headings:
  const headings:Heading[] = []
  const counts = new Map<string,number>()
  const used=new Set<string>(),aliases=new Map<string,string>(),ids=new Map<string,string>()
- const result = await unified().use(remarkParse).use(remarkGfm).use(remarkMath).use(remarkRehype)
+ const result = await unified().use(remarkParse).use(remarkGfm).use(remarkMath).use(remarkRehype,{clobberPrefix:'',footnoteLabel:'Notas al pie',footnoteLabelProperties:{},footnoteBackLabel:(index:number,reuse:number)=>`Volver a la referencia ${index+1}${reuse>1?` (${reuse})`:''}`})
  .use(rehypeSanitize)
  .use(() => (tree:any) => {
+   const references:{node:any;key:string}[]=[],notes=new Map<string,{node:any;id:string;references:string[]}>()
    function text(node:any):string { return node.value ?? (node.children ?? []).map(text).join('') }
-   function visit(node:any) {
-    if (/^h[1-6]$/.test(node.tagName ?? '')) {
+   function visit(node:any,footnotes=false) {
+    const properties=node.properties??{},inNotes=footnotes||'dataFootnotes' in properties
+    if(inNotes&&node.tagName==='li'&&typeof properties.id==='string'){
+     const id=`user-content-fn-${notes.size+1}`
+     notes.set(properties.id,{node,id,references:[]});properties.id=id
+    }
+    if('dataFootnoteRef' in properties){
+     const key=`user-content-${String(properties.href).slice(1)}`
+     properties.id=`user-content-fnref-${references.length+1}`;references.push({node,key})
+    }
+    if (/^h[1-6]$/.test(node.tagName ?? '')&&!(inNotes&&properties.id==='user-content-footnote-label')) {
      const label=text(node),base=slug(label)
      let count=counts.get(base)??0,id:string
      do{id=`heading-${base}${count?`-${count}`:''}`;count++}while(used.has(id))
      counts.set(base,count);used.add(id)
-     node.properties={...node.properties,id}; headings.push({id,text:label,level:Number(node.tagName[1])})
+     node.properties={...node.properties,id};if(!inNotes)headings.push({id,text:label,level:Number(node.tagName[1])})
      for(const alias of [base,id.slice('heading-'.length)])if(!aliases.has(alias))aliases.set(alias,id)
     }
     if(typeof node.properties?.id==='string')ids.set(fold(decodeFragment(node.properties.id)),node.properties.id)
-    for (const child of node.children ?? []) visit(child)
+    for (const child of node.children ?? []) visit(child,inNotes)
    }
    visit(tree)
+   for(const {node,key} of references){const note=notes.get(key);if(note){node.properties.href=`#${note.id}`;note.references.push(node.properties.id)}}
+   for(const note of notes.values()){
+    let index=0
+    function back(node:any){if(node.properties&&'dataFootnoteBackref' in node.properties)node.properties.href=`#${note.references[index++]}`;for(const child of node.children??[])back(child)}
+    back(note.node)
+   }
    function links(node:any){
     const href=node.properties?.href
     if(node.tagName==='a'&&typeof href==='string'&&href.startsWith('#')&&href.length>1){
