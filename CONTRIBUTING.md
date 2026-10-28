@@ -38,3 +38,13 @@ La CI obligatoria debe pasar sobre el commit que se integra. Que compile no demu
 No añadas funciones fuera de la alfa, dependencias grandes, ejecución de contenido de documentos ni acceso genérico al sistema desde la interfaz. Las modificaciones deben preservar los valores de CSV y permitir recuperar el trabajo ante errores de guardado.
 
 No se requieren cesiones de copyright. Al contribuir aceptas distribuir tu contribución bajo la licencia MIT de este repositorio. Los avisos de terceros no se eliminan.
+
+## Idiomas
+
+Desde que I18N-01 esté en `main`, toda cadena nueva visible usa `t()`, incluidas las historias de CSV y de reportes que ya estén en curso. El proceso principal importa de `src/shared/i18n`; los componentes Svelte importan de `src/renderer/lib/i18n.svelte` para actualizarse al cambiar el idioma. Los parámetros contienen datos, no fragmentos de frases traducibles; los documentos del usuario nunca se traducen. Usa `plural()` e `Intl` mediante los formatos compartidos.
+
+Los catálogos planos `es.json` y `en.json` deben tener las mismas claves y marcadores, sin HTML. Español usa `es-MX`, inglés `en-US`. `en-XA` es solo para pruebas. El selector de idioma seguirá oculto hasta I18N-02; el almacén permanente llega con APP-03.
+
+`src/shared/i18n/pending-files.json` es la lista de fuentes anteriores a la adopción que todavía no están completamente traducidas. Su fotografía inicial documenta `main` y los carriles que ya estaban en curso; no reserva archivos futuros. Solo se retiran rutas: no se añaden para saltarse la comprobación. Al terminar de migrar un archivo, retíralo y comprueba que no vuelvan los literales visibles. Los archivos nuevos nacen traducibles.
+
+El guard usa los AST de Svelte y TypeScript instalados: texto y atributos visibles, expresiones de plantilla, variables locales simples y puntos de salida conocidos de mensajes, errores y diálogos. No trata los identificadores, CSS ni unidades técnicas como frases; los datos no vinculados a una salida visible conocida no se catalogan. No hace análisis semántico de flujos arbitrarios: las cadenas construidas mediante funciones ajenas o accesos dinámicos, los nombres sombreados y los valores reutilizados como dato y etiqueta requieren también revisión de código. Esta limitación no permite añadir literales nuevos ni ampliar la lista pendiente.
