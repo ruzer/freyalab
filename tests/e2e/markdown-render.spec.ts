@@ -73,7 +73,7 @@ test('A: propiedades plegadas y de solo lectura; abrir, guardar y exportar no re
  await open(source)
  const properties=preview().locator('details.document-properties'),summary=properties.locator('summary')
  await expect(summary).toHaveText('Propiedades del documento');await expect(properties).not.toHaveAttribute('open','')
- await expect(article()).not.toContainText('PROPIEDAD_PRIVADA_MD002');await expect(page.locator('.outline button')).toHaveText(['Guía principal'])
+ await expect(article()).not.toContainText('PROPIEDAD_PRIVADA_MD002');await page.locator('.document-tools').getByRole('button',{name:'Índice',exact:true}).click();await expect(page.getByRole('tabpanel',{name:'Índice del documento',exact:true}).locator('.sidebar-heading')).toHaveText(['Guía principal'])
  await summary.focus();await page.keyboard.press('Enter');await expect(properties).toHaveAttribute('open','')
  await expect(properties.locator('pre')).toHaveText(yaml);await expect(properties.locator('script')).toHaveCount(0)
  await expect(article().getByRole('heading',{name:'Guía principal',exact:true})).toBeVisible()
@@ -121,7 +121,7 @@ test('C: notas al pie en español, sin doble prefijo ni índice; ida y vuelta ta
  const source='# Apuntes\n\nUna referencia[^uno], otra nota[^dos] y la primera de nuevo[^uno].\n\n[^uno]: Nota idéntica.\n[^dos]: Nota idéntica.\n[^sinuso]: Esta nota nunca fue usada.\n'
  await open(source)
  const notes=article().locator('section[data-footnotes]'),refs=article().locator('a[data-footnote-ref]'),backs=article().locator('a[data-footnote-backref]')
- await expect(notes.getByRole('heading',{name:'Notas al pie',exact:true})).toBeAttached();await expect(page.locator('.outline button')).toHaveText(['Apuntes'])
+ await expect(notes.getByRole('heading',{name:'Notas al pie',exact:true})).toBeAttached();await page.locator('.document-tools').getByRole('button',{name:'Índice',exact:true}).click();await expect(page.getByRole('tabpanel',{name:'Índice del documento',exact:true}).locator('.sidebar-heading')).toHaveText(['Apuntes'])
  await expect(refs).toHaveCount(3);await expect(backs).toHaveCount(3);expect(await article().innerHTML()).not.toContain('user-content-user-content-');await expect(article()).not.toContainText('Esta nota nunca fue usada.')
  for(const back of await backs.all())expect(await back.getAttribute('aria-label')).toMatch(/^Volver a la referencia \d/)
  const href=await refs.first().getAttribute('href');expect(href).toBeTruthy();await refs.first().click();await expect(article().locator(`[id="${href!.slice(1)}"]`)).toBeFocused()

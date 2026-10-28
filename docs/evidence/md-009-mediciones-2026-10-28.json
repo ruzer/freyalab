@@ -1,0 +1,1894 @@
+{
+  "schema": 1,
+  "date": "2026-10-28",
+  "scope": "Métodos Documents reales en Node, con filesystem/autorización reales y mocks de Electron; no IPC/UI/Electron nativo.",
+  "benchmarkSourcePinned": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+  "integrationHeadAtEvidence": "4a544b391e88036ed068caf7edd58cb886fb6a30",
+  "pathRepresentation": "Solo rutas locales absolutas sustituidas por etiquetas relativas benchmark-output, candidate y baseline; valores, muestras, hashes de fuente y SHA de commits no se modificaron. Los SHA de artifacts originales se conservan abajo.",
+  "originalArtifacts": [
+    {
+      "name": "results.json",
+      "sha256": "32936323334f36d33c65e617a5f451e4b0dd062892de1d5e957782bf0206371f",
+      "bytes": 105757
+    },
+    {
+      "name": "provenance.json",
+      "sha256": "868dcf13f7de258c67046fb6c9a3a3fd568c2513e53c0c867aecb57194146844",
+      "bytes": 25845
+    },
+    {
+      "name": "vitest.log",
+      "sha256": "500594cdd210133a888f52b87eda4622a8e814e884d20f34cc871690e0dd4d82",
+      "bytes": 306
+    }
+  ],
+  "results": {
+    "status": "COMPLETE",
+    "scope": "Métodos reales Node; incluye autorización/recorrido y lectura/parser cuando corresponde; sin IPC/UI/Electron nativo.",
+    "cache": "Una pasada descartada por método/tamaño después de crear fixtures; ninguna afirmación de caché fría.",
+    "sampleOrder": "Tres rondas rotadas: nombre/tag/lista; tag/lista/nombre; lista/nombre/tag.",
+    "records": [
+      {
+        "count": 2000,
+        "bytesEach": 5120,
+        "totalBytes": 10240000,
+        "root": "benchmark-output/fixture-2000",
+        "expectedMatches": 40,
+        "fixtureSha256": "d37a29dce7c8d728bca9ea24e95cf7ae5fb354a83155c781e7fd3115c68ee217",
+        "warmupPassesPerMethod": 1,
+        "samples": [
+          {
+            "operation": "baselineName",
+            "sample": 1,
+            "ms": 4.274167000000034,
+            "limited": false,
+            "resultCount": 40,
+            "validatedAgainstKnownFixture": true,
+            "matchingPaths": [
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00000.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00100.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00200.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00300.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00400.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00500.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00600.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00700.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00800.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00900.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01000.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01100.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01200.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01300.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01400.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01500.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01600.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01700.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01800.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01900.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00050.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00150.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00250.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00350.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00450.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00550.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00650.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00750.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00850.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00950.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01050.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01150.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01250.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01350.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01450.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01550.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01650.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01750.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01850.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01950.md"
+            ]
+          },
+          {
+            "operation": "candidateTag",
+            "sample": 1,
+            "ms": 199.77600000000007,
+            "limited": false,
+            "resultCount": 40,
+            "validatedAgainstKnownFixture": true,
+            "matchingPaths": [
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00000.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00100.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00200.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00300.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00400.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00500.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00600.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00700.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00800.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00900.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01000.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01100.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01200.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01300.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01400.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01500.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01600.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01700.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01800.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01900.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00050.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00150.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00250.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00350.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00450.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00550.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00650.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00750.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00850.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00950.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01050.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01150.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01250.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01350.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01450.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01550.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01650.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01750.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01850.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01950.md"
+            ]
+          },
+          {
+            "operation": "candidateList",
+            "sample": 1,
+            "ms": 202.1863330000001,
+            "limited": false,
+            "resultCount": 3,
+            "validatedAgainstKnownFixture": true,
+            "tagCounts": {
+              "comun": 2000,
+              "otra": 1960,
+              "proyecto": 40
+            }
+          },
+          {
+            "operation": "candidateTag",
+            "sample": 2,
+            "ms": 203.00549999999998,
+            "limited": false,
+            "resultCount": 40,
+            "validatedAgainstKnownFixture": true,
+            "matchingPaths": [
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00000.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00100.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00200.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00300.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00400.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00500.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00600.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00700.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00800.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00900.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01000.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01100.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01200.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01300.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01400.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01500.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01600.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01700.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01800.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01900.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00050.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00150.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00250.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00350.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00450.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00550.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00650.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00750.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00850.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00950.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01050.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01150.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01250.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01350.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01450.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01550.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01650.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01750.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01850.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01950.md"
+            ]
+          },
+          {
+            "operation": "candidateList",
+            "sample": 2,
+            "ms": 201.1719579999999,
+            "limited": false,
+            "resultCount": 3,
+            "validatedAgainstKnownFixture": true,
+            "tagCounts": {
+              "comun": 2000,
+              "otra": 1960,
+              "proyecto": 40
+            }
+          },
+          {
+            "operation": "baselineName",
+            "sample": 2,
+            "ms": 4.640875000000051,
+            "limited": false,
+            "resultCount": 40,
+            "validatedAgainstKnownFixture": true,
+            "matchingPaths": [
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00000.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00100.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00200.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00300.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00400.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00500.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00600.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00700.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00800.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00900.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01000.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01100.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01200.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01300.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01400.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01500.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01600.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01700.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01800.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01900.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00050.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00150.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00250.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00350.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00450.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00550.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00650.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00750.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00850.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00950.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01050.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01150.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01250.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01350.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01450.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01550.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01650.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01750.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01850.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01950.md"
+            ]
+          },
+          {
+            "operation": "candidateList",
+            "sample": 3,
+            "ms": 198.0988329999998,
+            "limited": false,
+            "resultCount": 3,
+            "validatedAgainstKnownFixture": true,
+            "tagCounts": {
+              "comun": 2000,
+              "otra": 1960,
+              "proyecto": 40
+            }
+          },
+          {
+            "operation": "baselineName",
+            "sample": 3,
+            "ms": 4.188000000000102,
+            "limited": false,
+            "resultCount": 40,
+            "validatedAgainstKnownFixture": true,
+            "matchingPaths": [
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00000.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00100.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00200.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00300.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00400.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00500.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00600.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00700.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00800.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00900.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01000.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01100.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01200.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01300.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01400.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01500.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01600.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01700.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01800.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01900.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00050.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00150.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00250.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00350.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00450.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00550.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00650.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00750.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00850.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00950.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01050.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01150.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01250.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01350.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01450.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01550.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01650.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01750.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01850.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01950.md"
+            ]
+          },
+          {
+            "operation": "candidateTag",
+            "sample": 3,
+            "ms": 198.20974999999999,
+            "limited": false,
+            "resultCount": 40,
+            "validatedAgainstKnownFixture": true,
+            "matchingPaths": [
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00000.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00100.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00200.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00300.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00400.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00500.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00600.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00700.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00800.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-00900.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01000.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01100.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01200.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01300.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01400.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01500.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01600.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01700.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01800.md",
+              "benchmark-output/fixture-2000/carpeta-00/proyecto-01900.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00050.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00150.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00250.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00350.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00450.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00550.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00650.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00750.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00850.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-00950.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01050.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01150.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01250.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01350.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01450.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01550.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01650.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01750.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01850.md",
+              "benchmark-output/fixture-2000/carpeta-10/proyecto-01950.md"
+            ]
+          }
+        ],
+        "summary": {
+          "baselineName": {
+            "n": 3,
+            "medianMs": 4.274167000000034,
+            "minMs": 4.188000000000102,
+            "maxMs": 4.640875000000051
+          },
+          "candidateTag": {
+            "n": 3,
+            "medianMs": 199.77600000000007,
+            "minMs": 198.20974999999999,
+            "maxMs": 203.00549999999998
+          },
+          "candidateList": {
+            "n": 3,
+            "medianMs": 201.1719579999999,
+            "minMs": 198.0988329999998,
+            "maxMs": 202.1863330000001
+          }
+        },
+        "integrityVerified": true
+      },
+      {
+        "count": 5000,
+        "bytesEach": 5120,
+        "totalBytes": 25600000,
+        "root": "benchmark-output/fixture-5000",
+        "expectedMatches": 100,
+        "fixtureSha256": "6bfd7d509ce5e432622e23c52f952a8a4c8a5804e786404e9e223c5cd3adac0d",
+        "warmupPassesPerMethod": 1,
+        "samples": [
+          {
+            "operation": "baselineName",
+            "sample": 1,
+            "ms": 7.8985829999996895,
+            "limited": false,
+            "resultCount": 100,
+            "validatedAgainstKnownFixture": true,
+            "matchingPaths": [
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04900.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04950.md"
+            ]
+          },
+          {
+            "operation": "candidateTag",
+            "sample": 1,
+            "ms": 504.11699999999973,
+            "limited": true,
+            "resultCount": 100,
+            "validatedAgainstKnownFixture": true,
+            "matchingPaths": [
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04900.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04950.md"
+            ]
+          },
+          {
+            "operation": "candidateList",
+            "sample": 1,
+            "ms": 493.08449999999993,
+            "limited": true,
+            "resultCount": 3,
+            "validatedAgainstKnownFixture": true,
+            "tagCounts": {
+              "comun": 5000,
+              "otra": 4900,
+              "proyecto": 100
+            }
+          },
+          {
+            "operation": "candidateTag",
+            "sample": 2,
+            "ms": 498.7233749999996,
+            "limited": true,
+            "resultCount": 100,
+            "validatedAgainstKnownFixture": true,
+            "matchingPaths": [
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04900.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04950.md"
+            ]
+          },
+          {
+            "operation": "candidateList",
+            "sample": 2,
+            "ms": 489.52316599999995,
+            "limited": true,
+            "resultCount": 3,
+            "validatedAgainstKnownFixture": true,
+            "tagCounts": {
+              "comun": 5000,
+              "otra": 4900,
+              "proyecto": 100
+            }
+          },
+          {
+            "operation": "baselineName",
+            "sample": 2,
+            "ms": 8.812125000000378,
+            "limited": false,
+            "resultCount": 100,
+            "validatedAgainstKnownFixture": true,
+            "matchingPaths": [
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04900.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04950.md"
+            ]
+          },
+          {
+            "operation": "candidateList",
+            "sample": 3,
+            "ms": 488.4833749999998,
+            "limited": true,
+            "resultCount": 3,
+            "validatedAgainstKnownFixture": true,
+            "tagCounts": {
+              "comun": 5000,
+              "otra": 4900,
+              "proyecto": 100
+            }
+          },
+          {
+            "operation": "baselineName",
+            "sample": 3,
+            "ms": 7.8269579999996495,
+            "limited": false,
+            "resultCount": 100,
+            "validatedAgainstKnownFixture": true,
+            "matchingPaths": [
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04900.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04950.md"
+            ]
+          },
+          {
+            "operation": "candidateTag",
+            "sample": 3,
+            "ms": 487.0398329999998,
+            "limited": true,
+            "resultCount": 100,
+            "validatedAgainstKnownFixture": true,
+            "matchingPaths": [
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-00900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-01900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-02900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-03900.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04000.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04100.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04200.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04300.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04400.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04500.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04600.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04700.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04800.md",
+              "benchmark-output/fixture-5000/carpeta-00/proyecto-04900.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-00950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-01950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-02950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-03950.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04050.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04150.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04250.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04350.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04450.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04550.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04650.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04750.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04850.md",
+              "benchmark-output/fixture-5000/carpeta-10/proyecto-04950.md"
+            ]
+          }
+        ],
+        "summary": {
+          "baselineName": {
+            "n": 3,
+            "medianMs": 7.8985829999996895,
+            "minMs": 7.8269579999996495,
+            "maxMs": 8.812125000000378
+          },
+          "candidateTag": {
+            "n": 3,
+            "medianMs": 498.7233749999996,
+            "minMs": 487.0398329999998,
+            "maxMs": 504.11699999999973
+          },
+          "candidateList": {
+            "n": 3,
+            "medianMs": 489.52316599999995,
+            "minMs": 488.4833749999998,
+            "maxMs": 493.08449999999993
+          }
+        },
+        "integrityVerified": true
+      }
+    ]
+  },
+  "provenance": {
+    "status": "COMPLETE",
+    "startedAtUtc": "2026-10-28T07:24:08.730Z",
+    "roots": {
+      "candidate": "candidate",
+      "baseline": "baseline"
+    },
+    "sources": {
+      "baseline": {
+        "root": "baseline",
+        "head": "61d0e05b1d87ba30186a7a8f1908f1c9ed06d73a",
+        "tree": "8568114ee362ecf3585ca0bf6b2641243e5acc70",
+        "status": "",
+        "files": [
+          {
+            "file": "package-lock.json",
+            "sha256": "7008658adc0a5b0c85073de556f4f249fc2853005bedcaec64f777fe684ee3d9"
+          },
+          {
+            "file": "package.json",
+            "sha256": "2cafd9bf6a092d590c256c7aa913ddb1b7008db31540549ac82226fa902ca94a"
+          },
+          {
+            "file": "src/main/analysis-source.ts",
+            "sha256": "0e6aa6ab5b127847b178f0fc3b324d89818d9da023afcd77daa1970fec579b72"
+          },
+          {
+            "file": "src/main/assets.d.ts",
+            "sha256": "864b4293d340c31b74887972655cdae400c3682b6ec3055a1bbeded2ea01c7ed"
+          },
+          {
+            "file": "src/main/chart-presets.ts",
+            "sha256": "70cd776909528f26a5123d84789ff9aa16b1b4557c8e8a411ec38390c635a793"
+          },
+          {
+            "file": "src/main/chart-result-export.ts",
+            "sha256": "8ccc7610ba66f43e94a3935b05fed5eeceea29d5726ee447e932927c26582e74"
+          },
+          {
+            "file": "src/main/chart-result.ts",
+            "sha256": "3a3506b5ee3335f54ca28cbabe5550d06d993e6e605be35701701363f9393207"
+          },
+          {
+            "file": "src/main/documents.ts",
+            "sha256": "5bb6728e03fb71edf314d8791b23f494c7f98c22543fe23aaed3f35b41516bff"
+          },
+          {
+            "file": "src/main/export.ts",
+            "sha256": "c60d394510a91a40c985e2e0014a127680f2346656b3aa4fdb14e4448cdf7346"
+          },
+          {
+            "file": "src/main/extract.ts",
+            "sha256": "c81539ce93416159c16a3431883c8de2887e6f1f55df4025fc5af705e5360bb0"
+          },
+          {
+            "file": "src/main/files.ts",
+            "sha256": "7ebb78656e08e31e8d50c24bd264abdd5546f7bb48f82c9ca24f8226bac63c70"
+          },
+          {
+            "file": "src/main/index.ts",
+            "sha256": "3515e34c20ea03e19603c925ec9b532fbe4c1d911e2b18dcbb4aaaa445f74b55"
+          },
+          {
+            "file": "src/main/job-queue.ts",
+            "sha256": "cdecd6ede2559440156d57a9e5f198fce8806daa65b41fe20db5ab26f0cc409d"
+          },
+          {
+            "file": "src/main/large-table.ts",
+            "sha256": "eecf816f91057f7d2507bf37dfee0d59cab8d94e47985310b2f01d21454b4653"
+          },
+          {
+            "file": "src/main/operation-schema.ts",
+            "sha256": "30e43a6dffb6a15dc57d174d5032a2324d05dc4fbcc1fb9a6022abe731324e22"
+          },
+          {
+            "file": "src/main/operations.ts",
+            "sha256": "56c6ae8db0b2c3586983920e34d7ed2f083e0721d82c5fa514885e103b12cd2b"
+          },
+          {
+            "file": "src/main/query-schema.ts",
+            "sha256": "53c114c199086e6d1f57fee5d117402d0e5dbce589c13ddfaad19468de6242b1"
+          },
+          {
+            "file": "src/main/sql-service.ts",
+            "sha256": "175b5f7eb197b3ea148650bfa6c333a648134894f7fbf94c0cf75b49b772f049"
+          },
+          {
+            "file": "src/main/table-analysis.ts",
+            "sha256": "1a7f15021be0492a5dcdc4ead464f8c6d6ec09f4a3a76a61613b514079b223a5"
+          },
+          {
+            "file": "src/main/table-client.ts",
+            "sha256": "91d2558ff9844aeb34a4f7b9749ebb3dd9128770c2b1ed429b805b927eeb019f"
+          },
+          {
+            "file": "src/main/table-engine.ts",
+            "sha256": "9ec332b259cc998874834e15f6cb14410cf0bfcec0cdf137beac1a74929dc535"
+          },
+          {
+            "file": "src/main/table-query.ts",
+            "sha256": "e4ae0c13228315630588b2d4caceb0394f4511e15638c0cafddcfa334ccd4975"
+          },
+          {
+            "file": "src/main/table-worker.ts",
+            "sha256": "3a0476b0fdd671d8430507e109b85c4615dbdabcf12955432d8a3bd96c35ea01"
+          },
+          {
+            "file": "src/preload/index.ts",
+            "sha256": "daa1268e252085a5c20f24d4aaf9664719563ab3a2d65272e889a5209a27dc89"
+          },
+          {
+            "file": "src/renderer/App.svelte",
+            "sha256": "66674e94ca41707e37f44a8e3ca1a467e2e403609ed14250d7383595f86a5c5b"
+          },
+          {
+            "file": "src/renderer/analytics.html",
+            "sha256": "252094c8023fd8975243c9a886e656538d02dc0e6452b0eb50dc0d2a4e4170e1"
+          },
+          {
+            "file": "src/renderer/analytics.ts",
+            "sha256": "3680e5230253298b44a6fd9f4fa548b7fed4defd14797d764653050bb4467254"
+          },
+          {
+            "file": "src/renderer/chart-option.ts",
+            "sha256": "6433930f0f670fd33f00ccfc13a367b3a9ef771d3a43058efd08af6b7d95d820"
+          },
+          {
+            "file": "src/renderer/components/AnalysisDock.svelte",
+            "sha256": "9f7fe58616cf70fcdd3a07779da0fd8884653c3e599b7785e9bd52390fa5f42b"
+          },
+          {
+            "file": "src/renderer/components/ChartPresets.svelte",
+            "sha256": "c7685ece6959e8d21cf925178505579a1d2e753da0c6edce8558d0adad65ad48"
+          },
+          {
+            "file": "src/renderer/components/CsvCharts.svelte",
+            "sha256": "3e90ad42eec1917c553c8012326017af610e9b9bc670232cba8bc5cdd9c62e59"
+          },
+          {
+            "file": "src/renderer/components/CsvColumnAnalysis.svelte",
+            "sha256": "5ec6dac63df2c8c5d0ef7f7db3e26a02f97ed45cf24b877e632edff929722452"
+          },
+          {
+            "file": "src/renderer/components/CsvColumnsOverview.svelte",
+            "sha256": "0123375d09c0970a84736a25d5404d7151bd3bacf0f8e06690a34f3568118503"
+          },
+          {
+            "file": "src/renderer/components/CsvCommands.svelte",
+            "sha256": "99c9be110b25cd48087fcab96beea2d412dbf74d4488d5b606cf9199a7380b4d"
+          },
+          {
+            "file": "src/renderer/components/CsvExtract.svelte",
+            "sha256": "952f49940a82e31aabb55a01e456c32584c5b05c8ed6c55bd3319d5b6e7fb7a2"
+          },
+          {
+            "file": "src/renderer/components/CsvQueryTools.svelte",
+            "sha256": "b9a05afa462f761fea6a4430b80bc181d2d90b114151013fc70f6e169b1dab4d"
+          },
+          {
+            "file": "src/renderer/components/CsvRangePreview.svelte",
+            "sha256": "fe9de91922ba71e0a23e4ca1affbb478c99461d021bad82fe6bc7639f14272ea"
+          },
+          {
+            "file": "src/renderer/components/CsvSql.svelte",
+            "sha256": "1b78cf7eaf112deb4ce406572b80157497c03cdc7c66f6d821838a93669bd1ad"
+          },
+          {
+            "file": "src/renderer/components/CsvStatistics.svelte",
+            "sha256": "b401535b3a072ce51e64c209afc4c0007e82284bec079904e0ac3dd7e4022536"
+          },
+          {
+            "file": "src/renderer/components/CsvTable.svelte",
+            "sha256": "fd386ca1b521671ac1d335097d149b7f8bdf108d6a4adf532e6d779ca12df389"
+          },
+          {
+            "file": "src/renderer/components/CsvTransform.svelte",
+            "sha256": "bb9a4ef5713eeeeafcdd3dc6c508f906d11306298b339bdc72253d6148e2f556"
+          },
+          {
+            "file": "src/renderer/components/Diagram.svelte",
+            "sha256": "1a01e0b5a991f6d6e2da1a9a34382b9cd22e05010066bf50d8d8b39b5e3bae89"
+          },
+          {
+            "file": "src/renderer/components/Editor.svelte",
+            "sha256": "5b5ebb9e682d0ebe51be844df9fddde0a6621a91e30ebfcd7372f26ce6364f08"
+          },
+          {
+            "file": "src/renderer/components/Icon.svelte",
+            "sha256": "c3ceb00cb09fcb7f98920ccd2be86c4062826b86bcd2ff1f079bd7fdf79e6620"
+          },
+          {
+            "file": "src/renderer/components/MarkdownToolbar.svelte",
+            "sha256": "60ff78fef7a1f0004aa40fb398a2532ca885df9f11515913504199750dd939e6"
+          },
+          {
+            "file": "src/renderer/components/Preview.svelte",
+            "sha256": "196eaaafafb2a28b3d3fe101a243f96ede351b4bcf6f14a919a7238935b4e908"
+          },
+          {
+            "file": "src/renderer/components/Tree.svelte",
+            "sha256": "3efece551752537b9dfdfffac91fa8ab2fb3cf30dd9c4444cf2cecbe415e60e4"
+          },
+          {
+            "file": "src/renderer/global.d.ts",
+            "sha256": "71287abcee995f2f639a0c6011055ec7119949641d5f4e970530e4d1466a0c5b"
+          },
+          {
+            "file": "src/renderer/index.html",
+            "sha256": "0b6a9789a24836b53b5d5da69a7300fc61cd9ca297f14b06a6a0856a52535c84"
+          },
+          {
+            "file": "src/renderer/lib/diagram-errors.ts",
+            "sha256": "02d9f43fede10634088b30f3795e733cffac1c262db4f9d57630712e7d4413d6"
+          },
+          {
+            "file": "src/renderer/lib/icons.ts",
+            "sha256": "a0777199635480bd580c1afe0abd9acc30d84b22176ce25f74f8210fd50e9708"
+          },
+          {
+            "file": "src/renderer/lib/markdown-commands.ts",
+            "sha256": "88a3f8271d8d28a57691b1f42525cfe192e8e3dca97f69c41abb32a7c65377ef"
+          },
+          {
+            "file": "src/renderer/lib/render.ts",
+            "sha256": "f36a699f01f6137bc03d125dd7db4f3f10c7f20b93e83a63f104a9bfdec90bb2"
+          },
+          {
+            "file": "src/renderer/lib/sql-report.ts",
+            "sha256": "15f4bb07e552b8876d9a2be15d3668d72b3ce41a1cc0b0a1305092067e421314"
+          },
+          {
+            "file": "src/renderer/lib/statistics-report.ts",
+            "sha256": "3bb3d0fe7e272ed1b7c77ce605acae2830457293e59f0fc72dadd91866a01cb2"
+          },
+          {
+            "file": "src/renderer/lib/virtual-scroll.ts",
+            "sha256": "9a4362f7dde2a5d8bef9338eb6c27182d040326dbfb2f7fd113fb07cba5c8dab"
+          },
+          {
+            "file": "src/renderer/lib/workspace-layout.ts",
+            "sha256": "871301d8fe12edf2b62a0d6f87e0f93b9ece9d04584a017d913c3d76f3097315"
+          },
+          {
+            "file": "src/renderer/lib/workspace.svelte.ts",
+            "sha256": "b1a9af519192774bf214a42b348c78d968d8687a01530e2f22caa6a5b1888ac1"
+          },
+          {
+            "file": "src/renderer/main.ts",
+            "sha256": "cdf41b56b45bd9682bad1b1f4a297c92e2d4ffaf784c119be809737507693109"
+          },
+          {
+            "file": "src/renderer/style.css",
+            "sha256": "d444b83b837b91ebcc88a1cd6f296ab7d222e5697868cebcc46358f0a5da9d05"
+          },
+          {
+            "file": "src/shared/chart-presets.ts",
+            "sha256": "d83366be310e84aed480f7300e9c5b231d2eacdaffac7a47b48b57094bb5dc3a"
+          },
+          {
+            "file": "src/shared/charts.ts",
+            "sha256": "3c899ad3b11a53e036f07798356fbaed557936f70cb49a2d8aead8ca5a8643a8"
+          },
+          {
+            "file": "src/shared/column-profile.ts",
+            "sha256": "f71bb9386242ffb776609447e39166f4e4386d1cd41a8c4d2417b9a41879f9fd"
+          },
+          {
+            "file": "src/shared/markdown-table.ts",
+            "sha256": "7da559cbcf9afa649cb2cb5d51da97e138785bc84a7566464fc3bf715b49116d"
+          },
+          {
+            "file": "src/shared/operations.ts",
+            "sha256": "1c31bbced565fdc8337fa514d94aec1614668c7a5365b0bf93d82c9d1c6e6a4e"
+          },
+          {
+            "file": "src/shared/sql-assist.ts",
+            "sha256": "40554dd890d42e955df02c2b4014df52a086d648021900986d82ba786e32f29b"
+          },
+          {
+            "file": "src/shared/sql-helpers.ts",
+            "sha256": "6f963e6a24edb5d0602b56c0195f19cc4dca04912e4b3e26b67bb458c7695abe"
+          },
+          {
+            "file": "src/shared/table-conditions.ts",
+            "sha256": "b767cb9026d301aa23c6d8323297323ce43cf3f94b1b73f2d9d0d36d2c052d86"
+          },
+          {
+            "file": "src/shared/types.ts",
+            "sha256": "f4f6dec81e51479ae12c2320871c1f0e24949034c52b49a002d46f6253475978"
+          },
+          {
+            "file": "vitest.config.ts",
+            "sha256": "0e22eae6b63e9dfad457c9c1a35c00ea98eefeefb0bcb8589e1fc2a31d16c232"
+          }
+        ],
+        "sha256": "99771c561d1e9f9418f9073a1fe39ed5c60364dc3cd871bb05b6f38aad46944b"
+      },
+      "candidate": {
+        "root": "candidate",
+        "head": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+        "tree": "4f4226bb9993273a2588acf593d5fa553c052846",
+        "status": "",
+        "files": [
+          {
+            "file": "package-lock.json",
+            "sha256": "7008658adc0a5b0c85073de556f4f249fc2853005bedcaec64f777fe684ee3d9"
+          },
+          {
+            "file": "package.json",
+            "sha256": "c97ebae3d9ea0222f6029a1c89129624fb62e1175c1f65a109fd42a600272eb0"
+          },
+          {
+            "file": "src/main/analysis-source.ts",
+            "sha256": "0e6aa6ab5b127847b178f0fc3b324d89818d9da023afcd77daa1970fec579b72"
+          },
+          {
+            "file": "src/main/assets.d.ts",
+            "sha256": "864b4293d340c31b74887972655cdae400c3682b6ec3055a1bbeded2ea01c7ed"
+          },
+          {
+            "file": "src/main/chart-presets.ts",
+            "sha256": "70cd776909528f26a5123d84789ff9aa16b1b4557c8e8a411ec38390c635a793"
+          },
+          {
+            "file": "src/main/chart-result-export.ts",
+            "sha256": "8ccc7610ba66f43e94a3935b05fed5eeceea29d5726ee447e932927c26582e74"
+          },
+          {
+            "file": "src/main/chart-result.ts",
+            "sha256": "3a3506b5ee3335f54ca28cbabe5550d06d993e6e605be35701701363f9393207"
+          },
+          {
+            "file": "src/main/documents.ts",
+            "sha256": "af1105f35a9ec0c409675a4e58e012d80760a6fcb15055863b31c54dc012c1d7"
+          },
+          {
+            "file": "src/main/export.ts",
+            "sha256": "7ac7ad77cb898f56f3a6113ec4956b92906eb31920d73b7f0c8e76a8f9429840"
+          },
+          {
+            "file": "src/main/extract.ts",
+            "sha256": "c81539ce93416159c16a3431883c8de2887e6f1f55df4025fc5af705e5360bb0"
+          },
+          {
+            "file": "src/main/files.ts",
+            "sha256": "7ebb78656e08e31e8d50c24bd264abdd5546f7bb48f82c9ca24f8226bac63c70"
+          },
+          {
+            "file": "src/main/index.ts",
+            "sha256": "09e75efbb305b9cff2835142bb5b609b0dbbf556d7234ae611e91536a21a9967"
+          },
+          {
+            "file": "src/main/job-queue.ts",
+            "sha256": "cdecd6ede2559440156d57a9e5f198fce8806daa65b41fe20db5ab26f0cc409d"
+          },
+          {
+            "file": "src/main/large-table.ts",
+            "sha256": "eecf816f91057f7d2507bf37dfee0d59cab8d94e47985310b2f01d21454b4653"
+          },
+          {
+            "file": "src/main/operation-schema.ts",
+            "sha256": "30e43a6dffb6a15dc57d174d5032a2324d05dc4fbcc1fb9a6022abe731324e22"
+          },
+          {
+            "file": "src/main/operations.ts",
+            "sha256": "56c6ae8db0b2c3586983920e34d7ed2f083e0721d82c5fa514885e103b12cd2b"
+          },
+          {
+            "file": "src/main/query-schema.ts",
+            "sha256": "53c114c199086e6d1f57fee5d117402d0e5dbce589c13ddfaad19468de6242b1"
+          },
+          {
+            "file": "src/main/sql-service.ts",
+            "sha256": "175b5f7eb197b3ea148650bfa6c333a648134894f7fbf94c0cf75b49b772f049"
+          },
+          {
+            "file": "src/main/table-analysis.ts",
+            "sha256": "1a7f15021be0492a5dcdc4ead464f8c6d6ec09f4a3a76a61613b514079b223a5"
+          },
+          {
+            "file": "src/main/table-client.ts",
+            "sha256": "91d2558ff9844aeb34a4f7b9749ebb3dd9128770c2b1ed429b805b927eeb019f"
+          },
+          {
+            "file": "src/main/table-engine.ts",
+            "sha256": "9ec332b259cc998874834e15f6cb14410cf0bfcec0cdf137beac1a74929dc535"
+          },
+          {
+            "file": "src/main/table-query.ts",
+            "sha256": "e4ae0c13228315630588b2d4caceb0394f4511e15638c0cafddcfa334ccd4975"
+          },
+          {
+            "file": "src/main/table-worker.ts",
+            "sha256": "3a0476b0fdd671d8430507e109b85c4615dbdabcf12955432d8a3bd96c35ea01"
+          },
+          {
+            "file": "src/preload/index.ts",
+            "sha256": "fd69e2ea2f8795329d0457da4fa97cffe01165b66de34c846f3058e58e69dc16"
+          },
+          {
+            "file": "src/renderer/App.svelte",
+            "sha256": "83b9dbb3a90ca02ed24a233b98f41bba2c3798f6da275b082dad73d758c980f1"
+          },
+          {
+            "file": "src/renderer/analytics.html",
+            "sha256": "252094c8023fd8975243c9a886e656538d02dc0e6452b0eb50dc0d2a4e4170e1"
+          },
+          {
+            "file": "src/renderer/analytics.ts",
+            "sha256": "3680e5230253298b44a6fd9f4fa548b7fed4defd14797d764653050bb4467254"
+          },
+          {
+            "file": "src/renderer/chart-option.ts",
+            "sha256": "6433930f0f670fd33f00ccfc13a367b3a9ef771d3a43058efd08af6b7d95d820"
+          },
+          {
+            "file": "src/renderer/components/AnalysisDock.svelte",
+            "sha256": "9f7fe58616cf70fcdd3a07779da0fd8884653c3e599b7785e9bd52390fa5f42b"
+          },
+          {
+            "file": "src/renderer/components/ChartPresets.svelte",
+            "sha256": "c7685ece6959e8d21cf925178505579a1d2e753da0c6edce8558d0adad65ad48"
+          },
+          {
+            "file": "src/renderer/components/CsvCharts.svelte",
+            "sha256": "3e90ad42eec1917c553c8012326017af610e9b9bc670232cba8bc5cdd9c62e59"
+          },
+          {
+            "file": "src/renderer/components/CsvColumnAnalysis.svelte",
+            "sha256": "5ec6dac63df2c8c5d0ef7f7db3e26a02f97ed45cf24b877e632edff929722452"
+          },
+          {
+            "file": "src/renderer/components/CsvColumnsOverview.svelte",
+            "sha256": "0123375d09c0970a84736a25d5404d7151bd3bacf0f8e06690a34f3568118503"
+          },
+          {
+            "file": "src/renderer/components/CsvCommands.svelte",
+            "sha256": "99c9be110b25cd48087fcab96beea2d412dbf74d4488d5b606cf9199a7380b4d"
+          },
+          {
+            "file": "src/renderer/components/CsvExtract.svelte",
+            "sha256": "952f49940a82e31aabb55a01e456c32584c5b05c8ed6c55bd3319d5b6e7fb7a2"
+          },
+          {
+            "file": "src/renderer/components/CsvQueryTools.svelte",
+            "sha256": "b9a05afa462f761fea6a4430b80bc181d2d90b114151013fc70f6e169b1dab4d"
+          },
+          {
+            "file": "src/renderer/components/CsvRangePreview.svelte",
+            "sha256": "fe9de91922ba71e0a23e4ca1affbb478c99461d021bad82fe6bc7639f14272ea"
+          },
+          {
+            "file": "src/renderer/components/CsvSql.svelte",
+            "sha256": "1b78cf7eaf112deb4ce406572b80157497c03cdc7c66f6d821838a93669bd1ad"
+          },
+          {
+            "file": "src/renderer/components/CsvStatistics.svelte",
+            "sha256": "b401535b3a072ce51e64c209afc4c0007e82284bec079904e0ac3dd7e4022536"
+          },
+          {
+            "file": "src/renderer/components/CsvTable.svelte",
+            "sha256": "fd386ca1b521671ac1d335097d149b7f8bdf108d6a4adf532e6d779ca12df389"
+          },
+          {
+            "file": "src/renderer/components/CsvTransform.svelte",
+            "sha256": "bb9a4ef5713eeeeafcdd3dc6c508f906d11306298b339bdc72253d6148e2f556"
+          },
+          {
+            "file": "src/renderer/components/Diagram.svelte",
+            "sha256": "4276d4c8581fe046ab5275b1d38b92080bfcef35f82439ac2fb95a0b402ff717"
+          },
+          {
+            "file": "src/renderer/components/Editor.svelte",
+            "sha256": "1ca4b05846618eb416e066b52caad9927bfdaa03fe4504b0f6c220f1ab6e2a45"
+          },
+          {
+            "file": "src/renderer/components/Icon.svelte",
+            "sha256": "c3ceb00cb09fcb7f98920ccd2be86c4062826b86bcd2ff1f079bd7fdf79e6620"
+          },
+          {
+            "file": "src/renderer/components/MarkdownToolbar.svelte",
+            "sha256": "589b66b77d7fd25462915d860cc0564365b90163486de6b0c8320aad10f520ed"
+          },
+          {
+            "file": "src/renderer/components/Outline.svelte",
+            "sha256": "08de5bf005dc93ba2ae1970c452b4109f46bdf9a1b8ea0672d3d9aae7e2fd8f7"
+          },
+          {
+            "file": "src/renderer/components/Preview.svelte",
+            "sha256": "9de94ec4224dc10b0fa5ce1bc1070237ab92f2423536954cebde76a056b7f746"
+          },
+          {
+            "file": "src/renderer/components/TextStats.svelte",
+            "sha256": "9a4477352dcf563d35cf58e2480ce0cebbd1b3d619a9273cd78680f80a366b30"
+          },
+          {
+            "file": "src/renderer/components/Tree.svelte",
+            "sha256": "3efece551752537b9dfdfffac91fa8ab2fb3cf30dd9c4444cf2cecbe415e60e4"
+          },
+          {
+            "file": "src/renderer/global.d.ts",
+            "sha256": "71287abcee995f2f639a0c6011055ec7119949641d5f4e970530e4d1466a0c5b"
+          },
+          {
+            "file": "src/renderer/index.html",
+            "sha256": "0b6a9789a24836b53b5d5da69a7300fc61cd9ca297f14b06a6a0856a52535c84"
+          },
+          {
+            "file": "src/renderer/lib/diagram-errors.ts",
+            "sha256": "02d9f43fede10634088b30f3795e733cffac1c262db4f9d57630712e7d4413d6"
+          },
+          {
+            "file": "src/renderer/lib/icons.ts",
+            "sha256": "a0777199635480bd580c1afe0abd9acc30d84b22176ce25f74f8210fd50e9708"
+          },
+          {
+            "file": "src/renderer/lib/markdown-commands.ts",
+            "sha256": "7383d546891da286c46f45bdd362aa149558f9f54f904f6c4405b678c6a1000b"
+          },
+          {
+            "file": "src/renderer/lib/markdown-paste.ts",
+            "sha256": "20e30ebe0a5d6c984b836aa3ea1ece4fbc89b99347d70708f243a288c2a26028"
+          },
+          {
+            "file": "src/renderer/lib/markdown-tasks.ts",
+            "sha256": "3fca943f88883a9971138e7901bcfc5899795cc23dfab3b3404f28096e5d7607"
+          },
+          {
+            "file": "src/renderer/lib/outline.ts",
+            "sha256": "3298ee6db82d5388bf6f6808666b5ecb0af525419e5563c0575902322dca4e5e"
+          },
+          {
+            "file": "src/renderer/lib/remark-details.ts",
+            "sha256": "9046245cb63e988fcfa0b57833745b2f5eb6a8f6535fe5b4ce889922ca2d88d1"
+          },
+          {
+            "file": "src/renderer/lib/render.ts",
+            "sha256": "1da6903e0ec509b7187435d5873ad096fd1f9416957393de586d85817bfcb673"
+          },
+          {
+            "file": "src/renderer/lib/sql-report.ts",
+            "sha256": "15f4bb07e552b8876d9a2be15d3668d72b3ce41a1cc0b0a1305092067e421314"
+          },
+          {
+            "file": "src/renderer/lib/statistics-report.ts",
+            "sha256": "3bb3d0fe7e272ed1b7c77ce605acae2830457293e59f0fc72dadd91866a01cb2"
+          },
+          {
+            "file": "src/renderer/lib/text-stats.ts",
+            "sha256": "fa85218c353577b0202abcc68aca89cdfae0e8336af4e812e346b4b923684f9a"
+          },
+          {
+            "file": "src/renderer/lib/text-stats.worker.ts",
+            "sha256": "83b96f11ef0b7bf83e9a1be6faccd00f168ec22ac1899cb6c35c91c904d63d4f"
+          },
+          {
+            "file": "src/renderer/lib/virtual-scroll.ts",
+            "sha256": "9a4362f7dde2a5d8bef9338eb6c27182d040326dbfb2f7fd113fb07cba5c8dab"
+          },
+          {
+            "file": "src/renderer/lib/workspace-layout.ts",
+            "sha256": "871301d8fe12edf2b62a0d6f87e0f93b9ece9d04584a017d913c3d76f3097315"
+          },
+          {
+            "file": "src/renderer/lib/workspace.svelte.ts",
+            "sha256": "b1a9af519192774bf214a42b348c78d968d8687a01530e2f22caa6a5b1888ac1"
+          },
+          {
+            "file": "src/renderer/main.ts",
+            "sha256": "cdf41b56b45bd9682bad1b1f4a297c92e2d4ffaf784c119be809737507693109"
+          },
+          {
+            "file": "src/renderer/style.css",
+            "sha256": "8a1d030bfc82c666ebb591a986725a7078ee9a28fada3e2c47ee79d2383403bc"
+          },
+          {
+            "file": "src/shared/chart-presets.ts",
+            "sha256": "d83366be310e84aed480f7300e9c5b231d2eacdaffac7a47b48b57094bb5dc3a"
+          },
+          {
+            "file": "src/shared/charts.ts",
+            "sha256": "3c899ad3b11a53e036f07798356fbaed557936f70cb49a2d8aead8ca5a8643a8"
+          },
+          {
+            "file": "src/shared/column-profile.ts",
+            "sha256": "f71bb9386242ffb776609447e39166f4e4386d1cd41a8c4d2417b9a41879f9fd"
+          },
+          {
+            "file": "src/shared/front-matter.ts",
+            "sha256": "5a22d026a0dd335dae9797e2a803ed54574288c6f7d3831f975ac05ea564aac3"
+          },
+          {
+            "file": "src/shared/markdown-table.ts",
+            "sha256": "7da559cbcf9afa649cb2cb5d51da97e138785bc84a7566464fc3bf715b49116d"
+          },
+          {
+            "file": "src/shared/operations.ts",
+            "sha256": "1c31bbced565fdc8337fa514d94aec1614668c7a5365b0bf93d82c9d1c6e6a4e"
+          },
+          {
+            "file": "src/shared/sql-assist.ts",
+            "sha256": "40554dd890d42e955df02c2b4014df52a086d648021900986d82ba786e32f29b"
+          },
+          {
+            "file": "src/shared/sql-helpers.ts",
+            "sha256": "6f963e6a24edb5d0602b56c0195f19cc4dca04912e4b3e26b67bb458c7695abe"
+          },
+          {
+            "file": "src/shared/table-conditions.ts",
+            "sha256": "b767cb9026d301aa23c6d8323297323ce43cf3f94b1b73f2d9d0d36d2c052d86"
+          },
+          {
+            "file": "src/shared/tag-query.ts",
+            "sha256": "b6c240095fdf38f865e142fca736d35863fee19bf62b39863ad951c13602c4b2"
+          },
+          {
+            "file": "src/shared/types.ts",
+            "sha256": "f93f6f41c1f2dc8e80c3e56f2b2ba62cbad3d61484dbe54b7e9ccd33348665ba"
+          },
+          {
+            "file": "vitest.config.ts",
+            "sha256": "0e22eae6b63e9dfad457c9c1a35c00ea98eefeefb0bcb8589e1fc2a31d16c232"
+          }
+        ],
+        "sha256": "eada69101937a11f0098798f512b5e244b859ceadb2d5d7325d1f69a3f3e693e"
+      }
+    },
+    "harness": {
+      "driverSha256": "9a38f18af7f8c0ba495d7175a118e4762e1239206397cb23568ad747d54cfe78",
+      "testSha256": "5aab682426e9e6e04370091a323aef17b7889df529040228e8a2aed905761ed5",
+      "fixtureGeneratorSha256": "77cc4e47edefbcbd519a1afb385453d37a1313026a566b6c5d2f96b3943a07d2",
+      "configSha256": "3e892ca50dd20bd0c6ae518b3f99e104921b4c2e75ed4f0b5171a69d248f8331"
+    },
+    "environment": {
+      "node": "v24.22.1",
+      "vitest": "5.0.5",
+      "platform": "darwin",
+      "arch": "arm64",
+      "osRelease": "27.0.0",
+      "cpu": "Apple M2 Max",
+      "logicalCpus": 12,
+      "totalMemoryBytes": 34359738368
+    },
+    "cache": "Creación de fixtures más una pasada descartada por operación/tamaño; sin purgar caché ni afirmar caché fría.",
+    "scope": "Métodos reales Documents en Node; incluye autorización/recorrido/lectura/parser según operación. Sin IPC, renderer o Electron nativo.",
+    "child": {
+      "status": 0,
+      "signal": null,
+      "error": null
+    },
+    "sourcesUnchanged": true,
+    "completedAtUtc": "2026-10-28T07:24:16.092Z"
+  },
+  "integrationEquivalence": {
+    "main79Rebase": {
+      "head": "4a544b391e88036ed068caf7edd58cb886fb6a30",
+      "base": "0368e3cd65a7afaa699a87e2bda8afa0476bdddd",
+      "mapping": [
+        {
+          "before": "9e96ec2f2c1bcb5ea2a5c1f0230a9e2c9e3dad24",
+          "after": "e71f169b4c7577674df8e3b267b80721ec9f76d8",
+          "subject": "chore(ci): validar por bloques y evitar la construcción duplicada"
+        },
+        {
+          "before": "d36ce5675731af33f6461bc0b6da726d78c9da64",
+          "after": "326f47b055be121709c237ab20e73e9577311101",
+          "subject": "feat(md): llevar el índice a las pestañas de la barra izquierda"
+        },
+        {
+          "before": "d7846ca80ee86c5b6a58cfc4b060990ee089f052",
+          "after": "5147df019959c56947b280dd9468ba0fa66e3efd",
+          "subject": "feat(md): señalar la sección actual en el índice izquierdo"
+        },
+        {
+          "before": "9b34271669ca13be17ea0d3cf9f7d3e08a490049",
+          "after": "c5687f10dc9aa3660483091c5d3461d6d1107a1c",
+          "subject": "feat(md): contraer las ramas del índice sin perder su estado"
+        },
+        {
+          "before": "a3db83698ca80f11a8a519f185d8603c9f21a052",
+          "after": "6f05733796ef3fb42e7070d700e497928d3a328e",
+          "subject": "feat(md): navegar del índice a las líneas del editor con seguridad"
+        },
+        {
+          "before": "a9b6b427856203564f389100573a31fb87092bc5",
+          "after": "76dda4fe0f96ef4be749b0d06e2b165821ff0e03",
+          "subject": "feat(md): leer etiquetas del front matter sin alterar el documento"
+        },
+        {
+          "before": "f82fac3470b1979f613d16dfb0558d1b6e39509b",
+          "after": "8cd4119e2d8c1a97a52d24f81c5834949fd2c419",
+          "subject": "feat(md): mostrar etiquetas seguras fuera del documento exportado"
+        },
+        {
+          "before": "1361e054512c8dc807f30ae33563db22828171e6",
+          "after": "154044453c4052ffde4a45bca49e51bf5ad3943c",
+          "subject": "feat(md): filtrar archivos por etiquetas con límites y cancelación"
+        },
+        {
+          "before": "e84ac880159e1fe7edac42997feea2c69b5b15b4",
+          "after": "483b4139ce8d067300830847449387549e5146b3",
+          "subject": "feat(md): listar etiquetas y recuentos sin bloquear el explorador"
+        },
+        {
+          "before": "65d19d785bc787ecae2e141932ee53f377045f9f",
+          "after": "52191ba52e1a0fe4e8bbf6083fbfbed924758317",
+          "subject": "test(md): preparar los árboles de las fixtures sin depender del reloj"
+        },
+        {
+          "before": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+          "after": "49083712e8ac89452187430dc9b21d91c066fb45",
+          "subject": "fix(md): conservar el foco de composición en controles accesibles"
+        },
+        {
+          "before": "147001cd304e5e6956cd75c5de366a77ee0646d5",
+          "after": "4a544b391e88036ed068caf7edd58cb886fb6a30",
+          "subject": "test(ui): distinguir pestañas de documentos y estados de búsqueda"
+        }
+      ],
+      "functionalFiles": 185,
+      "changedFunctionalFiles": [],
+      "baseChangeOnlyDocs": [
+        "docs/stories/1-markdown-correcciones.md",
+        "docs/stories/2-mermaid-robustez.md",
+        "docs/stories/3-markdown-experiencia.md",
+        "docs/stories/4-dibujos-editables.md",
+        "docs/stories/5-pruebas.md",
+        "docs/stories/README.md"
+      ],
+      "status": ""
+    },
+    "selectorOnlyCorrection": {
+      "localFullHead": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+      "localFull": {
+        "passed": 351,
+        "failed": 4,
+        "flaky": 0,
+        "skipped": 0,
+        "retry": 0,
+        "total": 355,
+        "durationMs": 623328.439
+      },
+      "focusedCorrection": {
+        "passed": 4,
+        "failed": 0,
+        "log": "bloque-a-selectors-fixed.log"
+      },
+      "changedOnly": [
+        "tests/e2e/markdown-sidebar.spec.ts",
+        "tests/e2e/mermaid-errors.spec.ts",
+        "tests/e2e/mermaid-export-theme.spec.ts"
+      ],
+      "allChangesAreExactLocatorReplacements": true,
+      "fixturesTitlesTimeoutsAndAssertionsOtherwiseUnchanged": true,
+      "otherGuardedFilesUnchanged": 182,
+      "bundledFilesUnchanged": 247,
+      "note": "No hubo otra ejecución local completa verde. La CI obligatoria ejecutará 355 pruebas sobre el head definitivo."
+    }
+  }
+}

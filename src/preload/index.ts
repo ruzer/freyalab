@@ -9,7 +9,7 @@ window.addEventListener('keydown',event=>{
  ipcRenderer.send('freya:paste-plain')
 },true)
 const api:FreyaAPI={
- open:()=>invoke('open'),openPaths:paths=>invoke('openPaths',paths),newDocument:kind=>invoke('new',kind),folder:()=>invoke('folder'),tree:path=>invoke('tree',path),findFiles:(root,query)=>invoke('findFiles',root,query),
+ open:()=>invoke('open'),openPaths:paths=>invoke('openPaths',paths),newDocument:kind=>invoke('new',kind),folder:()=>invoke('folder'),tree:path=>invoke('tree',path),findFiles:(root,query)=>invoke('findFiles',root,query),cancelFileSearch:()=>invoke('cancelFileSearch'),listTags:root=>invoke('listTags',root),cancelTagList:()=>invoke('cancelTagList'),
  update:(id,text)=>invoke('update',id,text),save:(id,as)=>invoke('save',id,as),close:id=>invoke('close',id),reload:id=>invoke('reload',id),documents:()=>invoke('documents'),
  tableCopy:(id,options,format)=>invoke('copyTable',id,options,format),tablePaste:(id,range)=>invoke('pasteTable',id,range),
  chartPresets:()=>invoke('chartPresets'),saveChartPreset:(id,input)=>invoke('saveChartPreset',id,input),deleteChartPreset:id=>invoke('deleteChartPreset',id),

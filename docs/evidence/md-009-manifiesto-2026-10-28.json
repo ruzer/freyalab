@@ -1,0 +1,956 @@
+{
+  "status": "LOCAL_FULL_351_PASS_4_FAIL_FOCAL_CORRECTED_4_PASS_CI_PENDING",
+  "date": "2026-10-28",
+  "sourceHead": "4a544b391e88036ed068caf7edd58cb886fb6a30",
+  "branch": "codex/integracion-navegacion-markdown",
+  "preservedCompleteEvidence": {
+    "path": "external/8-evidence-afuera-completo.md",
+    "bytes": 15113,
+    "sha256": "9209fbe0bf8e90efdbd08fb1f02e8871909de6cead72da8747fb53c742c2a643"
+  },
+  "validation": {
+    "check": {
+      "errors": 0,
+      "warnings": 0,
+      "log": "external/bloque-a-check-final.log",
+      "head": "884e404bf62aa617daf5e0f2e7e352eea501d3a4"
+    },
+    "unit": {
+      "passed": 959,
+      "files": 40,
+      "durationSeconds": 6.12,
+      "log": "external/bloque-a-unit-final.log",
+      "head": "884e404bf62aa617daf5e0f2e7e352eea501d3a4"
+    },
+    "build": {
+      "exit": 0,
+      "log": "external/bloque-a-build-final.log",
+      "durationNotInferredFromLastPhase": true,
+      "head": "884e404bf62aa617daf5e0f2e7e352eea501d3a4"
+    },
+    "e2eFull": {
+      "status": "FAILED",
+      "head": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+      "passed": 351,
+      "failed": 4,
+      "flaky": 0,
+      "skipped": 0,
+      "retry": 0,
+      "total": 355,
+      "durationMs": 623328.439,
+      "projectCounts": {
+        "md": {
+          "total": 165,
+          "expected": 161,
+          "unexpected": 4
+        },
+        "shell": {
+          "total": 38,
+          "expected": 38
+        },
+        "csv": {
+          "total": 152,
+          "expected": 152
+        }
+      },
+      "reportStartUtc": "2026-10-28T07:33:26.476Z",
+      "computedEndUtc": "2026-10-28T07:43:49.804Z",
+      "timeSemantics": "duration is the exact numeric HTML reporter duration; end is arithmetically startTime+duration, rounded to milliseconds for display, not an independently observed terminal timestamp",
+      "failures": [
+        {
+          "file": "mermaid-errors.spec.ts",
+          "title": "cerrar una pestaña limpia Mermaid mientras espera exportar cancela la salida de su vista destruida",
+          "location": {
+            "file": "mermaid-errors.spec.ts",
+            "line": 86,
+            "column": 1
+          },
+          "attempts": [
+            {
+              "retry": 0,
+              "status": "failed",
+              "durationMs": 15564,
+              "startUtc": "2026-10-28T07:35:43.223Z"
+            }
+          ]
+        },
+        {
+          "file": "mermaid-errors.spec.ts",
+          "title": "cerrar una pestaña limpia Markdown mientras espera exportar cancela la salida de su vista destruida",
+          "location": {
+            "file": "mermaid-errors.spec.ts",
+            "line": 86,
+            "column": 1
+          },
+          "attempts": [
+            {
+              "retry": 0,
+              "status": "failed",
+              "durationMs": 15553,
+              "startUtc": "2026-10-28T07:35:59.031Z"
+            }
+          ]
+        },
+        {
+          "file": "markdown-sidebar.spec.ts",
+          "title": "P7: alternar conserva árbol expandido, búsqueda, resultados y desplazamiento de ambos paneles",
+          "location": {
+            "file": "markdown-sidebar.spec.ts",
+            "line": 147,
+            "column": 1
+          },
+          "attempts": [
+            {
+              "retry": 0,
+              "status": "failed",
+              "durationMs": 801,
+              "startUtc": "2026-10-28T07:34:47.702Z"
+            }
+          ]
+        },
+        {
+          "file": "mermaid-export-theme.spec.ts",
+          "title": "cerrar la pestaña mientras espera el render cancela la salida de la vista destruida",
+          "location": {
+            "file": "mermaid-export-theme.spec.ts",
+            "line": 237,
+            "column": 1
+          },
+          "attempts": [
+            {
+              "retry": 0,
+              "status": "failed",
+              "durationMs": 15578,
+              "startUtc": "2026-10-28T07:36:45.859Z"
+            }
+          ]
+        }
+      ],
+      "rawReportHtmlSha256": "3581bd92854c3046d8a85583ea71d009ff872eed22943f44fb4a7140a251fec2",
+      "rawEmbeddedZipSha256": "cfe7b12fb248e5f7595f08d2e1f6c21bfc13f53d025ebb745daebf2b34ae8355",
+      "note": "El reporte conserva el fallo completo; no hubo nueva ejecución local completa verde."
+    },
+    "pullRequest": "PENDING",
+    "fourPlatformCI": "PENDING",
+    "packageTests": "PENDING",
+    "focusedSelectorCorrection": {
+      "passed": 4,
+      "failed": 0,
+      "durationSeconds": 3,
+      "log": "external/bloque-a-selectors-fixed.log",
+      "sha256": "e0be520032fc2e65d4c71cecd2fe2af5c68d1113d96dd52185f32cc8502ab4d1",
+      "scope": {
+        "localFullHead": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+        "localFull": {
+          "passed": 351,
+          "failed": 4,
+          "flaky": 0,
+          "skipped": 0,
+          "retry": 0,
+          "total": 355,
+          "durationMs": 623328.439
+        },
+        "focusedCorrection": {
+          "passed": 4,
+          "failed": 0,
+          "log": "bloque-a-selectors-fixed.log"
+        },
+        "changedOnly": [
+          "tests/e2e/markdown-sidebar.spec.ts",
+          "tests/e2e/mermaid-errors.spec.ts",
+          "tests/e2e/mermaid-export-theme.spec.ts"
+        ],
+        "allChangesAreExactLocatorReplacements": true,
+        "fixturesTitlesTimeoutsAndAssertionsOtherwiseUnchanged": true,
+        "otherGuardedFilesUnchanged": 182,
+        "bundledFilesUnchanged": 247,
+        "note": "No hubo otra ejecución local completa verde. La CI obligatoria ejecutará 355 pruebas sobre el head definitivo."
+      }
+    }
+  },
+  "redGreen": [
+    {
+      "block": "A",
+      "commit": "76dda4fe0f96ef4be749b0d06e2b165821ff0e03",
+      "red": "62 failed / 5 passed (67)",
+      "redLog": "8-tags-helper/a-unit-red.log",
+      "green": "132/132, 2 files",
+      "greenLog": "8-a-integrated-green.log",
+      "observedOriginalCommit": "a9b6b427856203564f389100573a31fb87092bc5"
+    },
+    {
+      "block": "B",
+      "commit": "8cd4119e2d8c1a97a52d24f81c5834949fd2c419",
+      "red": "B3 chip absent, 1 failed",
+      "redLog": "8-b-chip-red.log",
+      "green": "B1+B3 2/2; B2 integrated with C",
+      "greenLog": "8-b-fixed-green.log",
+      "observedOriginalCommit": "f82fac3470b1979f613d16dfb0558d1b6e39509b"
+    },
+    {
+      "block": "C",
+      "commit": "154044453c4052ffde4a45bca49e51bf5ad3943c",
+      "red": "19 failed / 5 passed; B2 expected paths missing",
+      "redLog": "8-tags-helper/c-core-unit-red-clean.log",
+      "redUILog": "8-c-filter-red.log",
+      "green": "core auxiliary 167/167, integrated 164/164; GUI 3/3 4.3s",
+      "greenLog": "8-c-green.log",
+      "observedOriginalCommit": "1361e054512c8dc807f30ae33563db22828171e6"
+    },
+    {
+      "block": "D",
+      "commit": "483b4139ce8d067300830847449387549e5146b3",
+      "red": "19 failed / 32 passed; inventory absent; later D2 save refresh failed",
+      "redLog": "8-tags-helper/d-core-unit-red.log",
+      "redUILog": "8-d-list-red.log",
+      "laterFailureLog": "8-d-green.log",
+      "green": "integrated 187/187; D1 passed, D2 fixed 1/1 2.4s; shared-reader core auxiliary 190/190",
+      "greenLog": "8-d-save-refresh.log",
+      "sharedReaderLog": "8-tags-helper/d-shared-readers-all-green.log",
+      "observedOriginalCommit": "e84ac880159e1fe7edac42997feea2c69b5b15b4"
+    }
+  ],
+  "incidents": [
+    {
+      "kind": "Harness CJS loader, not product",
+      "log": "8-tags-benchmark-run-884e404/vitest.log",
+      "tests": 0,
+      "fixtureDirectoriesCreated": false,
+      "measurementResultsCreated": false,
+      "detail": "require.resolve(vitest) selected index.cjs. Only alias changed to ESM dist/index.js; runtime skip check: 1 skipped/0 bodies/exit0. Actual benchmark later authorized by Root in new esm directory."
+    },
+    {
+      "kind": "Intermediate Electron startup failure",
+      "log": "8-b-green.log",
+      "failed": 2,
+      "stage": "beforeEach launch/firstWindow, before assertions",
+      "cause": "Not established by this log",
+      "creditedGreenLog": "8-b-fixed-green.log"
+    },
+    {
+      "kind": "Save refresh alias regression",
+      "log": "8-d-green.log",
+      "passed": 4,
+      "failed": 1,
+      "detail": "D2 retained old counts after save with path alias. Markdown save now schedules refresh without textual prefix comparison. D2 later passes in8-d-save-refresh.log."
+    },
+    {
+      "kind": "Test rejection handler capture",
+      "log": "8-tags-helper/c-core-unit-red.log",
+      "detail": "19 semantic failures plus 3 unhandled rejections; capture handling fixed, same semantic red recaptured clean before product implementation."
+    },
+    {
+      "kind": "Shared concurrency budget",
+      "logs": [
+        "8-tags-helper/d-shared-readers-red.log",
+        "8-tags-helper/d-shared-readers-red-queued.log"
+      ],
+      "redMaxHandles": 16,
+      "greenMaxHandles": 8,
+      "greenOpenedAndClosed": 20,
+      "greenRemainingHandles": 0,
+      "greenRemainingWaiters": 0
+    },
+    {
+      "kind": "Parser fixture determinism",
+      "commit": "65d19d7",
+      "detail": "Positive small fixtures explicitly prepare installed parser tree; incomplete-tree negative preserved; no production guard relaxed. Separate technical response to main207 failure, not new CI proof."
+    },
+    {
+      "kind": "E2E selectors after UI integration",
+      "rawFullPassed": 351,
+      "rawFullFailed": 4,
+      "detail": "Tres esperas globales de tab incluían Archivos/Índice tras cerrar el documento; otra consulta de status resolvía también Leyendo etiquetas. Únicamente se acotaron los locators a pestañas de documentos/estado de búsqueda; fixtures, títulos, timeouts y demás aserciones intactos. Las cuatro focales corregidas pasan, no se repitió el full local.",
+      "changedFiles": [
+        "tests/e2e/markdown-sidebar.spec.ts",
+        "tests/e2e/mermaid-errors.spec.ts",
+        "tests/e2e/mermaid-export-theme.spec.ts"
+      ],
+      "otherGuardedFilesUnchanged": 182,
+      "bundledFilesUnchanged": 247
+    }
+  ],
+  "benchmark": {
+    "status": "COMPLETE",
+    "command": "FREYALAB_BENCH_CPU_READY=1 node external/8-tags-benchmark.mjs --run --candidate-head=884e404bf62aa617daf5e0f2e7e352eea501d3a4 --output-dir=benchmark-output",
+    "environment": {
+      "node": "v24.22.1",
+      "vitest": "5.0.5",
+      "platform": "darwin",
+      "arch": "arm64",
+      "osRelease": "27.0.0",
+      "cpu": "Apple M2 Max",
+      "logicalCpus": 12,
+      "totalMemoryBytes": 34359738368
+    },
+    "startedAtUtc": "2026-10-28T07:24:08.730Z",
+    "completedAtUtc": "2026-10-28T07:24:16.092Z",
+    "scope": "Métodos reales Node; incluye autorización/recorrido y lectura/parser cuando corresponde; sin IPC/UI/Electron nativo.",
+    "cache": "Una pasada descartada por método/tamaño después de crear fixtures; ninguna afirmación de caché fría.",
+    "sampleOrder": "Tres rondas rotadas: nombre/tag/lista; tag/lista/nombre; lista/nombre/tag.",
+    "sourcesUnchanged": true,
+    "sourceGuardScope": "src+package.json+package-lock.json+vitest.config.ts; sorted file NUL sha256 LF; distinct from global guard",
+    "sources": {
+      "baseline": {
+        "head": "61d0e05b1d87ba30186a7a8f1908f1c9ed06d73a",
+        "tree": "8568114ee362ecf3585ca0bf6b2641243e5acc70",
+        "status": "",
+        "fileCount": 70,
+        "sha256": "99771c561d1e9f9418f9073a1fe39ed5c60364dc3cd871bb05b6f38aad46944b"
+      },
+      "candidate": {
+        "head": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+        "tree": "4f4226bb9993273a2588acf593d5fa553c052846",
+        "status": "",
+        "fileCount": 80,
+        "sha256": "eada69101937a11f0098798f512b5e244b859ceadb2d5d7325d1f69a3f3e693e"
+      }
+    },
+    "harness": {
+      "driverSha256": "9a38f18af7f8c0ba495d7175a118e4762e1239206397cb23568ad747d54cfe78",
+      "testSha256": "5aab682426e9e6e04370091a323aef17b7889df529040228e8a2aed905761ed5",
+      "fixtureGeneratorSha256": "77cc4e47edefbcbd519a1afb385453d37a1313026a566b6c5d2f96b3943a07d2",
+      "configSha256": "3e892ca50dd20bd0c6ae518b3f99e104921b4c2e75ed4f0b5171a69d248f8331"
+    },
+    "records": [
+      {
+        "count": 2000,
+        "bytesEach": 5120,
+        "totalBytes": 10240000,
+        "root": "benchmark-output/fixture-2000",
+        "expectedMatches": 40,
+        "fixtureSha256": "d37a29dce7c8d728bca9ea24e95cf7ae5fb354a83155c781e7fd3115c68ee217",
+        "warmupPassesPerMethod": 1,
+        "summary": {
+          "baselineName": {
+            "n": 3,
+            "medianMs": 4.274167000000034,
+            "minMs": 4.188000000000102,
+            "maxMs": 4.640875000000051
+          },
+          "candidateTag": {
+            "n": 3,
+            "medianMs": 199.77600000000007,
+            "minMs": 198.20974999999999,
+            "maxMs": 203.00549999999998
+          },
+          "candidateList": {
+            "n": 3,
+            "medianMs": 201.1719579999999,
+            "minMs": 198.0988329999998,
+            "maxMs": 202.1863330000001
+          }
+        },
+        "integrityVerified": true,
+        "samples": [
+          {
+            "operation": "baselineName",
+            "sample": 1,
+            "ms": 4.274167000000034,
+            "limited": false,
+            "resultCount": 40,
+            "validatedAgainstKnownFixture": true
+          },
+          {
+            "operation": "candidateTag",
+            "sample": 1,
+            "ms": 199.77600000000007,
+            "limited": false,
+            "resultCount": 40,
+            "validatedAgainstKnownFixture": true
+          },
+          {
+            "operation": "candidateList",
+            "sample": 1,
+            "ms": 202.1863330000001,
+            "limited": false,
+            "resultCount": 3,
+            "validatedAgainstKnownFixture": true,
+            "tagCounts": {
+              "comun": 2000,
+              "otra": 1960,
+              "proyecto": 40
+            }
+          },
+          {
+            "operation": "candidateTag",
+            "sample": 2,
+            "ms": 203.00549999999998,
+            "limited": false,
+            "resultCount": 40,
+            "validatedAgainstKnownFixture": true
+          },
+          {
+            "operation": "candidateList",
+            "sample": 2,
+            "ms": 201.1719579999999,
+            "limited": false,
+            "resultCount": 3,
+            "validatedAgainstKnownFixture": true,
+            "tagCounts": {
+              "comun": 2000,
+              "otra": 1960,
+              "proyecto": 40
+            }
+          },
+          {
+            "operation": "baselineName",
+            "sample": 2,
+            "ms": 4.640875000000051,
+            "limited": false,
+            "resultCount": 40,
+            "validatedAgainstKnownFixture": true
+          },
+          {
+            "operation": "candidateList",
+            "sample": 3,
+            "ms": 198.0988329999998,
+            "limited": false,
+            "resultCount": 3,
+            "validatedAgainstKnownFixture": true,
+            "tagCounts": {
+              "comun": 2000,
+              "otra": 1960,
+              "proyecto": 40
+            }
+          },
+          {
+            "operation": "baselineName",
+            "sample": 3,
+            "ms": 4.188000000000102,
+            "limited": false,
+            "resultCount": 40,
+            "validatedAgainstKnownFixture": true
+          },
+          {
+            "operation": "candidateTag",
+            "sample": 3,
+            "ms": 198.20974999999999,
+            "limited": false,
+            "resultCount": 40,
+            "validatedAgainstKnownFixture": true
+          }
+        ]
+      },
+      {
+        "count": 5000,
+        "bytesEach": 5120,
+        "totalBytes": 25600000,
+        "root": "benchmark-output/fixture-5000",
+        "expectedMatches": 100,
+        "fixtureSha256": "6bfd7d509ce5e432622e23c52f952a8a4c8a5804e786404e9e223c5cd3adac0d",
+        "warmupPassesPerMethod": 1,
+        "summary": {
+          "baselineName": {
+            "n": 3,
+            "medianMs": 7.8985829999996895,
+            "minMs": 7.8269579999996495,
+            "maxMs": 8.812125000000378
+          },
+          "candidateTag": {
+            "n": 3,
+            "medianMs": 498.7233749999996,
+            "minMs": 487.0398329999998,
+            "maxMs": 504.11699999999973
+          },
+          "candidateList": {
+            "n": 3,
+            "medianMs": 489.52316599999995,
+            "minMs": 488.4833749999998,
+            "maxMs": 493.08449999999993
+          }
+        },
+        "integrityVerified": true,
+        "samples": [
+          {
+            "operation": "baselineName",
+            "sample": 1,
+            "ms": 7.8985829999996895,
+            "limited": false,
+            "resultCount": 100,
+            "validatedAgainstKnownFixture": true
+          },
+          {
+            "operation": "candidateTag",
+            "sample": 1,
+            "ms": 504.11699999999973,
+            "limited": true,
+            "resultCount": 100,
+            "validatedAgainstKnownFixture": true
+          },
+          {
+            "operation": "candidateList",
+            "sample": 1,
+            "ms": 493.08449999999993,
+            "limited": true,
+            "resultCount": 3,
+            "validatedAgainstKnownFixture": true,
+            "tagCounts": {
+              "comun": 5000,
+              "otra": 4900,
+              "proyecto": 100
+            }
+          },
+          {
+            "operation": "candidateTag",
+            "sample": 2,
+            "ms": 498.7233749999996,
+            "limited": true,
+            "resultCount": 100,
+            "validatedAgainstKnownFixture": true
+          },
+          {
+            "operation": "candidateList",
+            "sample": 2,
+            "ms": 489.52316599999995,
+            "limited": true,
+            "resultCount": 3,
+            "validatedAgainstKnownFixture": true,
+            "tagCounts": {
+              "comun": 5000,
+              "otra": 4900,
+              "proyecto": 100
+            }
+          },
+          {
+            "operation": "baselineName",
+            "sample": 2,
+            "ms": 8.812125000000378,
+            "limited": false,
+            "resultCount": 100,
+            "validatedAgainstKnownFixture": true
+          },
+          {
+            "operation": "candidateList",
+            "sample": 3,
+            "ms": 488.4833749999998,
+            "limited": true,
+            "resultCount": 3,
+            "validatedAgainstKnownFixture": true,
+            "tagCounts": {
+              "comun": 5000,
+              "otra": 4900,
+              "proyecto": 100
+            }
+          },
+          {
+            "operation": "baselineName",
+            "sample": 3,
+            "ms": 7.8269579999996495,
+            "limited": false,
+            "resultCount": 100,
+            "validatedAgainstKnownFixture": true
+          },
+          {
+            "operation": "candidateTag",
+            "sample": 3,
+            "ms": 487.0398329999998,
+            "limited": true,
+            "resultCount": 100,
+            "validatedAgainstKnownFixture": true
+          }
+        ]
+      }
+    ],
+    "sampleCount": 18,
+    "publicRawData": "md-009-mediciones-2026-10-28.json",
+    "benchmarkSourceMustNotBeRewritten": true
+  },
+  "screenshots": [
+    {
+      "path": "md009-chips-abiertos-dark-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 81702,
+      "sha256": "b317f7f640263a6d92637c7abedf9646a113ea14b17441ebc6e9936b5d4f7aff"
+    },
+    {
+      "path": "md009-chips-abiertos-light-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 81218,
+      "sha256": "fdccd908e48d31499d34b519c105a31ae50cac57b523626800dbdc57cbd4ffad"
+    },
+    {
+      "path": "md009-chips-cerrados-dark-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 74161,
+      "sha256": "90b8dd55877a2378cf04a2edc42663a9486d18ae57459bfc4981232bc2058301"
+    },
+    {
+      "path": "md009-chips-cerrados-light-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 73317,
+      "sha256": "7ce878e192eedaa2ee9d759209cd1978113d9f947ff4434902742330ac5c831c"
+    },
+    {
+      "path": "md009-lista-activa-dark-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 72263,
+      "sha256": "e3393e57aa5c2d653c52c1517fe5c5458ad33e10a1f8d7f78c1b18b36d9f6ac7"
+    },
+    {
+      "path": "md009-lista-activa-light-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 71937,
+      "sha256": "89e8d21cf7dcb34f1a7fd3e9ea591d43cff1aad84dba487671e19bb3a71b95e9"
+    },
+    {
+      "path": "md009-lista-guardada-dark-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 70027,
+      "sha256": "c9126f9baf54e2960e9c80b9836ff12a47ea70878b4d841ca46a66cf987436ec"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "benchmark-output/results.json",
+      "bytes": 105757,
+      "sha256": "32936323334f36d33c65e617a5f451e4b0dd062892de1d5e957782bf0206371f"
+    },
+    {
+      "path": "benchmark-output/provenance.json",
+      "bytes": 25845,
+      "sha256": "868dcf13f7de258c67046fb6c9a3a3fd568c2513e53c0c867aecb57194146844"
+    },
+    {
+      "path": "benchmark-output/vitest.log",
+      "bytes": 306,
+      "sha256": "500594cdd210133a888f52b87eda4622a8e814e884d20f34cc871690e0dd4d82"
+    },
+    {
+      "path": "external/8-tags-benchmark-runtime-skip-check-884e404/proof.json",
+      "bytes": 1825,
+      "sha256": "2dabd5c923a00a4ec2cb63a895e46d699e201cf94adfca221163dd95e7d398c0"
+    },
+    {
+      "path": "external/8-tags-benchmark-run-884e404/vitest.log",
+      "bytes": 855,
+      "sha256": "e9fd8788e0e6d7dfa61847315e46b845ab48ece2d17c4490180d06dff71ecff8"
+    },
+    {
+      "path": "external/bloque-a-check-final.log",
+      "bytes": 256,
+      "sha256": "d92af34039c76d5983df584dcb33e6a458e2ad5d0d05402c409b6eae9a1768a5"
+    },
+    {
+      "path": "external/bloque-a-unit-final.log",
+      "bytes": 233,
+      "sha256": "345b39f4c9dc3711c3c885f5aefd8d4ebc2bf1ae05941828f6888a5b86652504"
+    },
+    {
+      "path": "external/bloque-a-build-final.log",
+      "bytes": 21409,
+      "sha256": "45f3b7cced726ca07845329d6a549e48549d7f90a9d18d7fc1bdf887df3f9b57"
+    },
+    {
+      "path": "external/bloque-a-before-full.json",
+      "bytes": 19668,
+      "sha256": "1f4cc5ea24a7f5ad4adc83d1a42e532d4d79d94601f7246fcfd4761eacce5ae0"
+    },
+    {
+      "path": "external/8-tags-helper/a-unit-red.log",
+      "bytes": 11605,
+      "sha256": "5571d6bada9ca29ef43bd282de489a0e3e44f2d6decd1b8fe56519949e859896"
+    },
+    {
+      "path": "external/8-tags-helper/a-unit-green.log",
+      "bytes": 307,
+      "sha256": "f0e4ff8c77d1a66ddaeed2fdf5d46c9c8b52cf4904b063a092855c6777ea621e"
+    },
+    {
+      "path": "external/8-b-chip-red.log",
+      "bytes": 2595,
+      "sha256": "375c3d8d801f4c1cee4df18ee40f9889c4a8d28e6c168d435cbb7e5e76cddf5e"
+    },
+    {
+      "path": "external/8-b-fixed-green.log",
+      "bytes": 560,
+      "sha256": "d6855ea729aeebb3b58f806c17601e45163716abd94ce8f18743f52bc0729d5c"
+    },
+    {
+      "path": "external/8-tags-helper/c-core-unit-red-clean.log",
+      "bytes": 14667,
+      "sha256": "e109d9711329ae3d6a9b51ad70ec5fb7b2e2b043fd18515a4ce0ce4dcdd94541"
+    },
+    {
+      "path": "external/8-c-filter-red.log",
+      "bytes": 3319,
+      "sha256": "c9a0810d35d3603d853479b8b40c1bd8ab8f3f3f140d5cfecfb9f80759059c96"
+    },
+    {
+      "path": "external/8-c-green.log",
+      "bytes": 752,
+      "sha256": "72e0e2b2b0b53142fc47cf869d3310f75fb40b18b5eafb04ed77d13801da9b92"
+    },
+    {
+      "path": "external/8-tags-helper/d-core-unit-red.log",
+      "bytes": 13099,
+      "sha256": "9c9255c9c10a23a4f111988e7ec6e1169ddefce16712ccd8bb46a73708db6c54"
+    },
+    {
+      "path": "external/8-d-list-red.log",
+      "bytes": 2942,
+      "sha256": "d16aca26dcca94136bc5d990af9fe6abebdd4aa7a5618e8ffc5d20c67b6f0380"
+    },
+    {
+      "path": "external/8-d-green.log",
+      "bytes": 4578,
+      "sha256": "250f7e5918192e1326293e8995c3efa72f11a7f4a38d5365650b1f43c65fcb27"
+    },
+    {
+      "path": "external/8-d-save-refresh.log",
+      "bytes": 400,
+      "sha256": "ada817ea2739c4fe0950d276118e226bd0897128ce366d857106f31321ddd618"
+    },
+    {
+      "path": "external/8-tags-helper/d-shared-readers-red.log",
+      "bytes": 3038,
+      "sha256": "a519b2abf38327cafe0748ab201165aa17c2cb4a82669950bbe6bf2a4c877711"
+    },
+    {
+      "path": "external/8-tags-helper/d-shared-readers-all-green.log",
+      "bytes": 571,
+      "sha256": "f369ed8910e03f4fd0c666cf06e2741a062b2f01d0ac5f16566df43996272eb7"
+    },
+    {
+      "path": "external/8-b-green.log",
+      "bytes": 7995,
+      "sha256": "17703191983fca869ed367fd63c3ef8edb965faac20b330d454d9bf45bdba956"
+    },
+    {
+      "path": "external/8-tags-helper/c-core-unit-red.log",
+      "bytes": 21173,
+      "sha256": "b6fcd6629c7972186d641154c6009041fe8f8d9e158d6e3a54b8a9163c0ed35b"
+    },
+    {
+      "path": "external/8-tags-helper/c-core-unit-green-final.log",
+      "bytes": 354,
+      "sha256": "fc9016af60c9187aff95a03e42d2be5be229a4c858ba6ec2def8af3a9c1d6a33"
+    },
+    {
+      "path": "external/8-tags-helper/d-empty-budget-red.log",
+      "bytes": 1456,
+      "sha256": "1eca5b3ba753534314499349c1f540ddbf5ac6326cfd64d9dc82744237316c16"
+    },
+    {
+      "path": "external/8-tags-helper/d-shared-readers-red-queued.log",
+      "bytes": 2644,
+      "sha256": "adac69130ad9202fa5185a46678e1982510d52ecc9c7d207c8b6521d52458b7f"
+    },
+    {
+      "path": "benchmark-output.log",
+      "bytes": 177,
+      "sha256": "0c322460491272b7abe910db2502f2be5e87f68efaa721059ce66e9022f82abd"
+    },
+    {
+      "path": "external/8-c-integrated-green.log",
+      "bytes": 186,
+      "sha256": "025a1e3768cb8e43b8661012b28cf03f1efe869e0a88f4e5e576851ae0935b6d"
+    },
+    {
+      "path": "external/8-d-integrated-green.log",
+      "bytes": 185,
+      "sha256": "4d59e26979b3a1e8f37a23ea5e42de7c8bdb629e8d69cb8a3d89aed3a4a9773d"
+    },
+    {
+      "path": "external/bloque-a-e2e-full.log",
+      "bytes": 88152,
+      "sha256": "3bd7bd5bb83a847a2ea4b11534867cdd6109ad8483e22e3effa08ed13f383106"
+    },
+    {
+      "path": "external/bloque-a-full1-summary.json",
+      "bytes": 12262,
+      "sha256": "81792aeea9cc940838b29d5de04c5cc6935af5e59e6b03317d8cafbe6f9995cd"
+    },
+    {
+      "path": "external/bloque-a-selectors-fixed.log",
+      "bytes": 879,
+      "sha256": "e0be520032fc2e65d4c71cecd2fe2af5c68d1113d96dd52185f32cc8502ab4d1"
+    },
+    {
+      "path": "external/bloque-a-main79-sync-proof.json",
+      "bytes": 3147,
+      "sha256": "b20e98839a9c6b5cf91e4a8a07c214942f578da253a75507d55ac7ff02ddebc8"
+    },
+    {
+      "path": "external/bloque-a-selector-scope-proof.json",
+      "bytes": 795,
+      "sha256": "b3c91a524ed5952879d3401422a1139ecb580538b2696ed9966ccf39e9c2bb88"
+    }
+  ],
+  "notVerified": [
+    "Nueva ejecución local completa verde tras los cuatro locators corregidos; no realizada",
+    "CI on published SHA",
+    "packaged execution/installers",
+    "Windows/Linux native",
+    "memory",
+    "cold cache/network IO",
+    "IME across platforms",
+    "visual tag editing FL-MD-010"
+  ],
+  "locallyTestedAndBenchmarkedHead": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+  "baseMain": "0368e3cd65a7afaa699a87e2bda8afa0476bdddd",
+  "baseUpdate": "PR79 fue fusionado por una persona. Rebase posterior solo incorpora historias/documentación; Root no fusionó.",
+  "integrationEquivalence": {
+    "rebaseProof": {
+      "head": "4a544b391e88036ed068caf7edd58cb886fb6a30",
+      "base": "0368e3cd65a7afaa699a87e2bda8afa0476bdddd",
+      "mapping": [
+        {
+          "before": "9e96ec2f2c1bcb5ea2a5c1f0230a9e2c9e3dad24",
+          "after": "e71f169b4c7577674df8e3b267b80721ec9f76d8",
+          "subject": "chore(ci): validar por bloques y evitar la construcción duplicada"
+        },
+        {
+          "before": "d36ce5675731af33f6461bc0b6da726d78c9da64",
+          "after": "326f47b055be121709c237ab20e73e9577311101",
+          "subject": "feat(md): llevar el índice a las pestañas de la barra izquierda"
+        },
+        {
+          "before": "d7846ca80ee86c5b6a58cfc4b060990ee089f052",
+          "after": "5147df019959c56947b280dd9468ba0fa66e3efd",
+          "subject": "feat(md): señalar la sección actual en el índice izquierdo"
+        },
+        {
+          "before": "9b34271669ca13be17ea0d3cf9f7d3e08a490049",
+          "after": "c5687f10dc9aa3660483091c5d3461d6d1107a1c",
+          "subject": "feat(md): contraer las ramas del índice sin perder su estado"
+        },
+        {
+          "before": "a3db83698ca80f11a8a519f185d8603c9f21a052",
+          "after": "6f05733796ef3fb42e7070d700e497928d3a328e",
+          "subject": "feat(md): navegar del índice a las líneas del editor con seguridad"
+        },
+        {
+          "before": "a9b6b427856203564f389100573a31fb87092bc5",
+          "after": "76dda4fe0f96ef4be749b0d06e2b165821ff0e03",
+          "subject": "feat(md): leer etiquetas del front matter sin alterar el documento"
+        },
+        {
+          "before": "f82fac3470b1979f613d16dfb0558d1b6e39509b",
+          "after": "8cd4119e2d8c1a97a52d24f81c5834949fd2c419",
+          "subject": "feat(md): mostrar etiquetas seguras fuera del documento exportado"
+        },
+        {
+          "before": "1361e054512c8dc807f30ae33563db22828171e6",
+          "after": "154044453c4052ffde4a45bca49e51bf5ad3943c",
+          "subject": "feat(md): filtrar archivos por etiquetas con límites y cancelación"
+        },
+        {
+          "before": "e84ac880159e1fe7edac42997feea2c69b5b15b4",
+          "after": "483b4139ce8d067300830847449387549e5146b3",
+          "subject": "feat(md): listar etiquetas y recuentos sin bloquear el explorador"
+        },
+        {
+          "before": "65d19d785bc787ecae2e141932ee53f377045f9f",
+          "after": "52191ba52e1a0fe4e8bbf6083fbfbed924758317",
+          "subject": "test(md): preparar los árboles de las fixtures sin depender del reloj"
+        },
+        {
+          "before": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+          "after": "49083712e8ac89452187430dc9b21d91c066fb45",
+          "subject": "fix(md): conservar el foco de composición en controles accesibles"
+        },
+        {
+          "before": "147001cd304e5e6956cd75c5de366a77ee0646d5",
+          "after": "4a544b391e88036ed068caf7edd58cb886fb6a30",
+          "subject": "test(ui): distinguir pestañas de documentos y estados de búsqueda"
+        }
+      ],
+      "functionalFiles": 185,
+      "changedFunctionalFiles": [],
+      "baseChangeOnlyDocs": [
+        "docs/stories/1-markdown-correcciones.md",
+        "docs/stories/2-mermaid-robustez.md",
+        "docs/stories/3-markdown-experiencia.md",
+        "docs/stories/4-dibujos-editables.md",
+        "docs/stories/5-pruebas.md",
+        "docs/stories/README.md"
+      ],
+      "status": ""
+    },
+    "selectorScopeProof": {
+      "localFullHead": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+      "localFull": {
+        "passed": 351,
+        "failed": 4,
+        "flaky": 0,
+        "skipped": 0,
+        "retry": 0,
+        "total": 355,
+        "durationMs": 623328.439
+      },
+      "focusedCorrection": {
+        "passed": 4,
+        "failed": 0,
+        "log": "bloque-a-selectors-fixed.log"
+      },
+      "changedOnly": [
+        "tests/e2e/markdown-sidebar.spec.ts",
+        "tests/e2e/mermaid-errors.spec.ts",
+        "tests/e2e/mermaid-export-theme.spec.ts"
+      ],
+      "allChangesAreExactLocatorReplacements": true,
+      "fixturesTitlesTimeoutsAndAssertionsOtherwiseUnchanged": true,
+      "otherGuardedFilesUnchanged": 182,
+      "bundledFilesUnchanged": 247,
+      "note": "No hubo otra ejecución local completa verde. La CI obligatoria ejecutará 355 pruebas sobre el head definitivo."
+    },
+    "proofArtifacts": [
+      {
+        "name": "bloque-a-main79-sync-proof.json",
+        "sha256": "b20e98839a9c6b5cf91e4a8a07c214942f578da253a75507d55ac7ff02ddebc8"
+      },
+      {
+        "name": "bloque-a-selector-scope-proof.json",
+        "sha256": "b3c91a524ed5952879d3401422a1139ecb580538b2696ed9966ccf39e9c2bb88"
+      },
+      {
+        "name": "bloque-a-full1-summary.json",
+        "sha256": "81792aeea9cc940838b29d5de04c5cc6935af5e59e6b03317d8cafbe6f9995cd"
+      },
+      {
+        "name": "bloque-a-selectors-fixed.log",
+        "sha256": "e0be520032fc2e65d4c71cecd2fe2af5c68d1113d96dd52185f32cc8502ab4d1"
+      }
+    ]
+  },
+  "limitClarification": {
+    "E14": "La búsqueda retorna como máximo 200 resultados y marca limited; la cantidad retornada no se confunde con todos los documentos coincidentes.",
+    "E20": "listTags cuenta documentos hasta el presupuesto de 5000, sin truncar los conteos a 200; equality con filas del filtro solo cuando ninguna salida está limitada. Inventario máximo500 claves.",
+    "exact5000Boundary": "En las seis muestras candidatas con fixture5000 la marca limited fue true; cuentas verificadas contra la fixture conocida, sin prometer exhaustividad arbitraria."
+  },
+  "rawLogsNotShipped": "Logs de ejecución externos conservados; este manifiesto publica nombres y SHA, no enlaces a archivos ausentes del repositorio.",
+  "publicMeasurementsSha256": "d5dcd4a231c15dde1900f60b92dc0c175ed7ff9c721cfe9f0f3079e4f1d84f30",
+  "ci209WindowsFixtureCorrection": {
+    "run": 40654934662,
+    "number": 209,
+    "head": "50db6f0202b5b8758e9cc87e4820a7226f52e1b9",
+    "candidateMerge": "69d3552cfa53b701c4533c77bed182d3b23c0d7d",
+    "platform": "windows-2025",
+    "job": 122703562556,
+    "unit": {
+      "passed": 956,
+      "failed": 1,
+      "skipped": 2
+    },
+    "e2e": "not_run",
+    "packaged": "not_run",
+    "causeObserved": "ENOENT al crear informe \"final\".txt; nombre de fixture no admitido en Windows, antes de ejecutar la búsqueda.",
+    "correction": "Nombre portable con comillas simples y comprobación adicional de consulta literal con comillas dobles; producto intacto.",
+    "localFocused": {
+      "file": "tests/document-tags.test.ts",
+      "passed": 55,
+      "durationSeconds": 3.03,
+      "platform": "darwin-arm64"
+    },
+    "newCI": "pending",
+    "logSha256": "870b7e5be00f7ee7dea92c4c580cd9f713ae764f8f8a8420526e5733b2b4cb46"
+  }
+}

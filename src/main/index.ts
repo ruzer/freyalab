@@ -39,6 +39,9 @@ async function handle(operation:string,args:unknown[]){
  case'folder':{if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_FOLDER){const folder=resolve(process.env.FREYALAB_TEST_FOLDER);docs.roots.add(folder);return folder}const result=await dialog.showOpenDialog(window!,{properties:['openDirectory']});if(result.canceled)return null;docs.roots.add(result.filePaths[0]);return result.filePaths[0]}
  case'tree':return docs.tree(path.parse(a))
  case'findFiles':return docs.findFiles(path.parse(a),z.string().min(1).max(500).parse(b))
+ case'cancelFileSearch':return docs.cancelFileSearch()
+ case'listTags':return docs.listTags(path.parse(a))
+ case'cancelTagList':return docs.cancelTagList()
  case'documents':return[...docs.records.keys()].map(key=>docs.info(key))
  case'update':return docs.update(id.parse(a),text.parse(b))
  case'save':return docs.save(id.parse(a),z.boolean().optional().parse(b))
@@ -92,7 +95,7 @@ app.whenReady().then(async()=>{
   try{assertSender(event);if(!event.sender.isDestroyed())event.sender.pasteAndMatchStyle()}
   catch{if(window&&!window.isDestroyed())window.webContents.send('freya:event',{type:'error',message:'No pude pegar sin formato.'})}
  })
- window=new BrowserWindow({icon:appIcon,width:1440,height:900,minWidth:900,minHeight:600,title:'FreyaLab',backgroundColor:'#18181b',titleBarStyle:process.platform==='darwin'?'hiddenInset':'default',webPreferences:{preload:join(here,'../preload/index.cjs'),sandbox:true,contextIsolation:true,nodeIntegration:false}})
+ window=new BrowserWindow({icon:appIcon,width:1440,height:900,minWidth:720,minHeight:600,title:'FreyaLab',backgroundColor:'#18181b',titleBarStyle:process.platform==='darwin'?'hiddenInset':'default',webPreferences:{preload:join(here,'../preload/index.cjs'),sandbox:true,contextIsolation:true,nodeIntegration:false}})
  window.webContents.setWindowOpenHandler(()=>({action:'deny'}))
  window.webContents.on('will-navigate',(event)=>event.preventDefault())
  window.webContents.session.setPermissionRequestHandler((_wc,_permission,callback)=>callback(false))

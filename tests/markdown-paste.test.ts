@@ -1,6 +1,7 @@
 import {describe,it,expect,vi} from 'vitest'
 import {EditorState,EditorSelection} from '@codemirror/state'
 import {markdown,markdownLanguage} from '@codemirror/lang-markdown'
+import {ensureSyntaxTree,syntaxTreeAvailable} from '@codemirror/language'
 import {markdownHTML} from '../src/renderer/lib/render'
 import {markdownLinkOnPaste} from '../src/renderer/lib/markdown-paste'
 
@@ -8,7 +9,12 @@ type Case={name:string;doc?:string;selected?:string;clipboard?:string;expected?:
 const url='https://example.org'
 function stateFor(value:Case){
  const doc=value.doc??'Freya',text=doc.replace(/\r\n?/g,'\n'),selected=value.selected??text,from=text.indexOf(selected),to=from+selected.length
- return EditorState.create({doc,selection:value.multiple?EditorSelection.create([EditorSelection.range(0,1),EditorSelection.range(2,3)]):EditorSelection.range(from,to),extensions:[markdown({pasteURLAsLink:false}),EditorState.readOnly.of(!!value.readonly),EditorState.allowMultipleSelections.of(true),...(doc.includes('\r\n')?[EditorState.lineSeparator.of('\r\n')]:[])]})
+ const state=EditorState.create({doc,selection:value.multiple?EditorSelection.create([EditorSelection.range(0,1),EditorSelection.range(2,3)]):EditorSelection.range(from,to),extensions:[markdown({pasteURLAsLink:false}),EditorState.readOnly.of(!!value.readonly),EditorState.allowMultipleSelections.of(true),...(doc.includes('\r\n')?[EditorState.lineSeparator.of('\r\n')]:[])]})
+ // Fixtures pequeñas: su árbol no debe depender del presupuesto inicial de CodeMirror.
+ expect(ensureSyntaxTree(state,state.doc.length,Infinity)).not.toBeNull()
+ const ready=state.update({}).state
+ expect(syntaxTreeAvailable(ready,ready.doc.length)).toBe(true)
+ return ready
 }
 const cases:Case[]=[
  {name:'https',expected:'[Freya](https://example.org)'},
@@ -68,6 +74,30 @@ describe('FL-MD-005 · enlace al pegar',()=>{
   const value={name:'escapes',doc:'A [B] (C)',clipboard:'https://example.org/a(b)[c]'},state=stateFor(value),result=markdownLinkOnPaste(state,value.clipboard)!
   const output=state.update({changes:result.changes}).state.sliceDoc(),html=(await markdownHTML(output)).html
   expect(html).toContain('>A [B] (C)</a>');expect(html).toContain('href="https://example.org/a(b)%5Bc%5D"')
+ })
+ it('prepara el título con el presupuesto inicial agotado',()=>{
+  let now=0
+  const clock=vi.spyOn(Date,'now').mockImplementation(()=>now+=1000)
+  try{
+   const state=stateFor({name:'título',doc:'# Freya',selected:'Freya'})
+   expect(syntaxTreeAvailable(state,state.doc.length)).toBe(true)
+   const result=markdownLinkOnPaste(state,url)
+   expect(result).toBeDefined()
+   expect(state.update({changes:result!.changes}).state.sliceDoc()).toBe('# [Freya](https://example.org)')
+  }finally{clock.mockRestore()}
+ })
+ it('no envuelve la selección si el presupuesto inicial deja un árbol incompleto',()=>{
+  let now=0
+  const clock=vi.spyOn(Date,'now').mockImplementation(()=>now+=1000)
+  try{
+   const state=EditorState.create({doc:'# Freya',selection:EditorSelection.range(2,7),extensions:[markdown({pasteURLAsLink:false})]})
+   const before=state.sliceDoc(),selection=state.selection,parse=vi.spyOn(markdownLanguage.parser,'startParse')
+   try{
+    expect(syntaxTreeAvailable(state,state.doc.length)).toBe(false)
+    expect(markdownLinkOnPaste(state,url)).toBeUndefined();expect(parse).not.toHaveBeenCalled()
+    expect(state.sliceDoc()).toBe(before);expect(state.selection).toBe(selection)
+   }finally{parse.mockRestore()}
+  }finally{clock.mockRestore()}
  })
  it('consulta el árbol disponible sin iniciar un nuevo parseo',()=>{
   const state=stateFor({name:'árbol'}),parse=vi.spyOn(markdownLanguage.parser,'startParse')

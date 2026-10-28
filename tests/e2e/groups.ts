@@ -13,4 +13,7 @@ export const mdFiles=[
  'markdown-paste.spec.ts',
  'markdown-date.spec.ts',
  'markdown-tasks.spec.ts',
+ 'markdown-sidebar.spec.ts',
+ 'outline.spec.ts',
+ 'markdown-tags.spec.ts',
 ] as const
