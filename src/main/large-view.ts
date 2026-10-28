@@ -99,7 +99,7 @@ export class LargeViews {
   try{
    for(const entry of entries){const bytes=Buffer.alloc(entry.length);let read=0;while(read<bytes.length){const result=await handle.read(bytes,read,bytes.length-read,entry.position+read);if(!result.bytesRead)throw new Error('El archivo cambió mientras se leía la página.');read+=result.bytesRead}const text=(job.source.index.encoding==='utf8'?bytes.toString('utf8'):iconv.decode(bytes,job.source.index.encoding)).replace(/(\r\n|\n|\r)$/,'');rows.push({id:String(entry.row),cells:splitFields(text,job.source.delimiter)})}
   }finally{await handle.close()}
-  if(this.jobs.get(id)!==job)throw new Error('La búsqueda cambió por una solicitud más reciente.')
+  if(this.jobs.get(id)!==job||job.state.requestId!==requestId)throw new Error('La búsqueda cambió por una solicitud más reciente.')
   if(!await this.unchanged(job)){this.invalidate(job);return {rows:[],view:this.snapshot(job)}}
   return {rows,view:this.snapshot(job)}
  }

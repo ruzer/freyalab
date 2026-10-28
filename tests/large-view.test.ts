@@ -1,5 +1,5 @@
-import {it,expect,beforeAll,afterAll} from 'vitest'
-import {mkdtemp,writeFile,readFile,rm,symlink} from 'node:fs/promises'
+import {it,expect,beforeAll,afterAll,vi} from 'vitest'
+import {mkdtemp,writeFile,readFile,rm,symlink,open} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
 import {build} from 'rolldown'
@@ -129,4 +129,21 @@ it('cancelar o cerrar un documento no cancela la búsqueda de otro; reinterpreta
   await writeFile(path,text);await engine.open('a',path);await engine.open('b',path);const a=request('grupo'),b=request('grupo b');await engine.viewStart('a',a);await engine.viewStart('b',b);await scanned(engine,'a');const start=performance.now();await engine.close('a');expect(performance.now()-start).toBeLessThan(1000);expect(await finished(engine,'b')).toMatchObject({status:'complete',matched:2000});expect((await engine.page('b',{viewId:b.requestId,offset:0,limit:200,requestId:1})).rows[0].id).toBe('2')
   const next=request('grupo');await engine.viewStart('b',next);await scanned(engine,'b');const reinterpreted=await engine.open('b',path,{header:false});expect(reinterpreted.rowCount).toBe(4001);expect(await engine.viewState('b')).toBeNull();await expect(engine.page('b',{viewId:next.requestId,offset:0,limit:200,requestId:2})).rejects.toThrow('más reciente');expect(await readFile(path,'utf8')).toBe(text)
  }finally{await engine.close('a');await engine.close('b');await rm(folder,{recursive:true,force:true})}
+})
+
+it('reaplicar filtros completos reutiliza la vista y cambiar sólo todas/cualquiera inicia otra',async()=>{
+ const folder=await mkdtemp(join(tmpdir(),'freya-filter-cache-')),path=join(folder,'data.csv'),engine=new TableEngine(()=>{},{largeBytes:1,viewWorkerPath:workerPath,viewWorkers:1})
+ try{
+  await writeFile(path,'id,text\n1,a\n2,b\n3,c\n');await engine.open('a',path);const conditions=[{column:1,op:'equals' as const,value:'a'},{column:1,op:'equals' as const,value:'b'}],first={requestId:crypto.randomUUID(),revision:0,conditions,filterMode:'any' as const};await engine.viewStart('a',first);const complete=await finished(engine);expect(complete).toMatchObject({status:'complete',matched:2});const reused=await engine.viewStart('a',{...first,requestId:crypto.randomUUID()});expect(reused).toMatchObject({status:'complete',matched:2,elapsedMs:complete!.elapsedMs});expect(await engine.viewStart('a',{...first,requestId:crypto.randomUUID(),filterMode:'all'})).toMatchObject({status:'running'});expect(await finished(engine)).toMatchObject({status:'complete',matched:0})
+ }finally{await engine.close('a');await rm(folder,{recursive:true,force:true})}
+})
+
+
+it('una página pendiente de la vista anterior se rechaza aunque la nueva solicitud reutilice la caché',async()=>{
+ const folder=await mkdtemp(join(tmpdir(),'freya-view-page-cache-')),path=join(folder,'data.csv'),engine=new TableEngine(()=>{},{largeBytes:1,viewWorkerPath:workerPath,viewWorkers:1});let release!:()=>void,reading!:()=>void
+ const entered=new Promise<void>(resolve=>{reading=resolve}),hold=new Promise<void>(resolve=>{release=resolve});let restore:undefined|(()=>void)
+ try{
+  await writeFile(path,table(10));await engine.open('a',path);const q=request('grupo');await engine.viewStart('a',q);await finished(engine);const probe=await open(path,'r'),prototype=Object.getPrototypeOf(probe),native=prototype.read;await probe.close();const spy=vi.spyOn(prototype,'read').mockImplementation(async function(this:unknown,...args:unknown[]){reading();await hold;return native.apply(this,args)});restore=()=>spy.mockRestore()
+  const pending=engine.page('a',{viewId:q.requestId,offset:0,limit:200,requestId:1});await entered;const next=request('grupo');expect(await engine.viewStart('a',next)).toMatchObject({status:'complete'});release();await expect(pending).rejects.toThrow('más reciente')
+ }finally{release?.();restore?.();await engine.close('a');await rm(folder,{recursive:true,force:true})}
 })
