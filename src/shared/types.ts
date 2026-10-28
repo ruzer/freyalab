@@ -1,4 +1,5 @@
 import type {ChartConfiguration,ChartPreset} from './chart-presets'
+import type {LanguagePreference,LanguageState} from './i18n'
 import type {ExtractOrigin,OperationRequest,OperationOutcome} from './operations'
 export type Kind = 'markdown' | 'text' | 'mermaid' | 'csv'
 export type Encoding = 'utf8' | 'utf16le' | 'win1252'
@@ -44,8 +45,9 @@ export interface ExportRequest { format:'pdf'|'html'|'svg'|'png'|'csv'|'tsv'; ht
 export interface ChartResultRequest {requestId:string;revision:number;configuration:ChartConfiguration;format:'csv'|'json'|'md';protectFormulas:boolean}
 export interface GraphicExportRequest {format:'svg'|'png'|'pdf';svg:string;revision:number}
 export interface RecoveryEntry { id:string; name:string; savedAt:string }
-export interface AppEvent { type:'opened'|'changed'|'external'|'error'|'analysis';progress?:SqlProgress; document?:DocumentInfo; id?:string; message?:string }
+export interface AppEvent { type:'opened'|'changed'|'external'|'error'|'analysis'|'language';language?:LanguageState;progress?:SqlProgress; document?:DocumentInfo; id?:string; message?:string }
 export interface FreyaAPI {
+ language():Promise<LanguageState>;setLanguage(preference:LanguagePreference):Promise<LanguageState>;
  open():Promise<DocumentInfo[]>; openPaths(paths:string[]):Promise<DocumentInfo[]>; newDocument(kind:Kind):Promise<DocumentInfo>; folder():Promise<string|null>; tree(path:string):Promise<TreeEntry[]>; findFiles(root:string,query:string):Promise<{entries:TreeEntry[];limited:boolean}>; cancelFileSearch():Promise<void>; listTags(root:string):Promise<{tags:{tag:string;count:number}[];limited:boolean}>; cancelTagList():Promise<void>;
  update(id:string,text:string):Promise<DocumentInfo>; save(id:string,as?:boolean):Promise<SaveOutcome|null>; locateImage(id:string,source:string):Promise<SaveOutcome|null>; close(id:string):Promise<boolean>; reload(id:string):Promise<DocumentInfo>; documents():Promise<DocumentInfo[]>;
  tableCopy(id:string,options:TableExport,format:'tsv'|'markdown'):Promise<void>; tablePaste(id:string,range:TableRange):Promise<string>;

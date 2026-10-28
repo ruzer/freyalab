@@ -4,6 +4,7 @@ import { basename, extname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import sanitize from 'sanitize-html'
 import {createHash} from 'node:crypto'
+import {t} from '../shared/i18n'
 import { atomicWrite,digest } from './files'
 import type { Documents } from './documents'
 import type { ExportRequest,GraphicExportRequest } from '../shared/types'
@@ -73,7 +74,7 @@ async function exportDestination(source:string,format:string,analysis=false){
  const name=`${basename(source,extname(source))}${analysis?'.analisis':''}.${format}`
  let destination:string|undefined
  if(process.env.FREYALAB_TEST==='1'&&(process.env.FREYALAB_TEST_EXPORT_PATH||process.env.FREYALAB_TEST_EXPORT_DIR))destination=process.env.FREYALAB_TEST_EXPORT_PATH??join(process.env.FREYALAB_TEST_EXPORT_DIR!,name)
- else{const owner=BrowserWindow.getFocusedWindow()??BrowserWindow.getAllWindows()[0];const result=await dialog.showSaveDialog(owner,{defaultPath:name,filters:[{name:format.toUpperCase(),extensions:[format]}]});if(result.canceled)return null;destination=result.filePath}
+ else{const owner=BrowserWindow.getFocusedWindow()??BrowserWindow.getAllWindows()[0];const result=await dialog.showSaveDialog(owner,{title:t('dialog.export.title'),buttonLabel:t('dialog.save'),defaultPath:name,filters:[{name:format.toUpperCase(),extensions:[format]}]});if(result.canceled)return null;destination=result.filePath}
  if(!destination)return null
  return destination
 }

@@ -1,5 +1,7 @@
 import { defineConfig } from '@playwright/test'
 import {shellFiles,mdFiles} from './tests/e2e/groups'
+// El producto solo lee este valor cuando FREYALAB_TEST=1.
+process.env.FREYALAB_LANG??='es'
 export default defineConfig({
   testDir: './tests/e2e',
   timeout: 90_000,

@@ -15,5 +15,14 @@
  "dialog.reload.discard": "Reload and discard changes",
  "error.invalidOperation": "Invalid operation data.",
  "filas.one": "{count} row",
- "filas.other": "{count} rows"
+ "filas.other": "{count} rows",
+ "toolbar.open": "Open",
+ "toolbar.open.title": "Open file · Ctrl/Cmd O",
+ "toolbar.folder.title": "Open folder · Ctrl/Cmd Shift O",
+ "toolbar.save": "Save",
+ "toolbar.save.title": "Save · Ctrl/Cmd S",
+ "toolbar.saveAs": "Save as",
+ "toolbar.saveAs.title": "Save as… · Ctrl/Cmd Shift S",
+ "dialog.open.button": "Open",
+ "dialog.close.error": "Could not close"
 }
