@@ -15,6 +15,9 @@ const extensions:Record<string,Kind>={'.md':'markdown','.markdown':'markdown','.
 export class Documents {
  records=new Map<string,RecordDoc>(); roots=new Set<string>(); grants=new Set<string>(); table=new TableClient(progress=>this.emit({type:'analysis',progress}))
  private fileSearch=0
+ private tagList=0
+ private tagReaders=0
+ private tagReadQueue:{check:()=>void;resolve:()=>void;reject:(error:unknown)=>void}[]=[]
  private operations=new Map<string,Promise<unknown>>()
  private reloading=new Set<string>()
  private serial<T>(id:string,operation:()=>Promise<T>):Promise<T>{const task=(this.operations.get(id)??Promise.resolve()).catch(()=>{}).then(operation);this.operations.set(id,task);void task.finally(()=>{if(this.operations.get(id)===task)this.operations.delete(id)}).catch(()=>{});return task}
@@ -74,9 +77,10 @@ export class Documents {
   r.hash=r.info.readonly?undefined:await digest(r.info.path);r.undo=[];r.redo=[];clearTimeout(r.timer);await this.discardRecovery(id);return this.info(id)
  }
  async tree(path:string):Promise<TreeEntry[]>{if(!await this.allowed(path))throw new Error('Carpeta no autorizada.');const entries=await readdir(path,{withFileTypes:true});return entries.filter(e=>!e.name.startsWith('.')&&e.name!=='node_modules'&&!e.isSymbolicLink()&&(e.isDirectory()||extensions[extname(e.name).toLowerCase()])).sort((a,b)=>Number(b.isDirectory())-Number(a.isDirectory())||a.name.localeCompare(b.name)).map(e=>({name:e.name,path:join(path,e.name),directory:e.isDirectory()}))}
- cancelFileSearch(){this.fileSearch++}
+ cancelFileSearch(){this.fileSearch++;this.cancelQueuedTagReads()}
  async findFiles(root:string,query:string){
   const token=++this.fileSearch,check=()=>{if(token!==this.fileSearch)throw new Error('Búsqueda cancelada.')}
+  this.cancelQueuedTagReads()
   const tokens=tokensFileQuery(query),tags=tokens.filter(part=>part.tag).map(part=>normalizeTag(part.value)),entries:TreeEntry[]=[]
   let limited:boolean
   if(tags.length){
@@ -90,6 +94,27 @@ export class Documents {
    limited=await this.scanFiles(root,check,async batch=>{for(const entry of batch)if(entry.name.toLocaleLowerCase().includes(needle)){entries.push(entry);if(entries.length===200)return true};return false})
   }
   check();return{entries,limited}
+ }
+ cancelTagList(){this.tagList++;this.cancelQueuedTagReads()}
+ async listTags(root:string){
+  const token=++this.tagList,check=()=>{if(token!==this.tagList)throw new Error('Lectura de etiquetas cancelada.')}
+  this.cancelQueuedTagReads()
+  const counts=new Map<string,{count:number;variants:Map<string,number>}>();let overflow=false
+  const limited=await this.scanTaggedFiles(root,check,()=>true,batch=>{
+   for(const {tags} of batch)for(const tag of tags){
+    const key=normalizeTag(tag);let entry=counts.get(key)
+    if(!entry){if(counts.size===500){overflow=true;continue};entry={count:0,variants:new Map()};counts.set(key,entry)}
+    entry.count++;entry.variants.set(tag,(entry.variants.get(tag)??0)+1)
+   }
+   return false
+  })
+  check()
+  const tags=Array.from(counts.values(),entry=>{
+   let tag='',frequency=0
+   for(const [variant,count] of entry.variants)if(count>frequency){tag=variant;frequency=count}
+   return{tag,count:entry.count}
+  }).sort((a,b)=>normalizeTag(a.tag).localeCompare(normalizeTag(b.tag),'es'))
+  return{tags,limited:limited||overflow}
  }
  private async scanFiles(root:string,check:()=>void,visit:(batch:TreeEntry[])=>Promise<boolean>):Promise<boolean>{
   check();const authorized=await this.allowed(root);check();if(!authorized)throw new Error('Carpeta no autorizada.')
@@ -120,7 +145,13 @@ export class Documents {
    return false
   })
  }
+ private cancelQueuedTagReads(){
+  this.tagReadQueue=this.tagReadQueue.filter(waiter=>{try{waiter.check();return true}catch(error){waiter.reject(error);return false}})
+ }
  private async fileTags(root:string,path:string,check:()=>void):Promise<{tags:string[];read:boolean}>{
+  check()
+  if(this.tagReaders<8)this.tagReaders++
+  else await new Promise<void>((resolve,reject)=>this.tagReadQueue.push({check,resolve,reject}))
   let handle:Awaited<ReturnType<typeof openFile>>|undefined,read=false
   try{
    check();const authorized=await this.allowed(path);check();if(!authorized)return{tags:[],read}
@@ -134,13 +165,17 @@ export class Documents {
    const openedPath=await realpath(path);check();if(openedPath!==canonical)return{tags:[],read}
    const stillInside=await contained(root,openedPath);check();if(!stillInside)return{tags:[],read}
    const stillAuthorized=await this.allowed(openedPath);check();if(!stillAuthorized)return{tags:[],read}
-   const bytes=Buffer.alloc(Math.min(16384,info.size));let offset=0
-   while(offset<bytes.length){check();read=true;const result=await handle.read(bytes,offset,bytes.length-offset,offset);check();if(!result.bytesRead)break;offset+=result.bytesRead}
+   read=true;const bytes=Buffer.alloc(Math.min(16384,info.size));let offset=0
+   while(offset<bytes.length){check();const result=await handle.read(bytes,offset,bytes.length-offset,offset);check();if(!result.bytesRead)break;offset+=result.bytesRead}
    const after=await handle.stat();check();if(after.size!==info.size||after.mtimeMs!==info.mtimeMs)return{tags:[],read}
    const decoder=new TextDecoder('utf-8',{fatal:true}),source=decoder.decode(bytes.subarray(0,offset),{stream:offset===16384&&info.size>offset})
    return{tags:parseTags(frontMatterOf(source).frontMatter),read}
   }catch{check();return{tags:[],read}}
-  finally{await handle?.close().catch(()=>{})}
+  finally{
+   try{await handle?.close()}catch{}
+   const next=this.tagReadQueue.shift()
+   if(next)next.resolve();else this.tagReaders--
+  }
  }
  async allowed(path:string){for(const root of this.roots)if(await contained(root,path).catch(()=>false))return true;return this.grants.has(resolve(path))||process.env.FREYALAB_TEST==='1'}
  async recents():Promise<string[]>{try{return JSON.parse(await readFile(join(app.getPath('userData'),'recents.json'),'utf8'))}catch{return[]}}

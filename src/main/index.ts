@@ -40,6 +40,8 @@ async function handle(operation:string,args:unknown[]){
  case'tree':return docs.tree(path.parse(a))
  case'findFiles':return docs.findFiles(path.parse(a),z.string().min(1).max(500).parse(b))
  case'cancelFileSearch':return docs.cancelFileSearch()
+ case'listTags':return docs.listTags(path.parse(a))
+ case'cancelTagList':return docs.cancelTagList()
  case'documents':return[...docs.records.keys()].map(key=>docs.info(key))
  case'update':return docs.update(id.parse(a),text.parse(b))
  case'save':return docs.save(id.parse(a),z.boolean().optional().parse(b))

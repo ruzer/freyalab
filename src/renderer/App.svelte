@@ -31,6 +31,8 @@
  let sidebarTab=$state<SidebarTab>(preference('freya-sidebar-tab','files')==='outline'?'outline':'files')
  let filesScroll=$state<HTMLDivElement>(),indexScroll=$state<HTMLDivElement>()
  const sidebarScroll={files:0,outline:0}
+ let folderTags=$state<{tag:string;count:number}[]>([]),tagsBusy=$state(false),tagsLimited=$state(false),tagsRefresh=$state(0),tagGeneration=0,tagFolder=''
+ const activeTags=$derived(new Set(tokensFileQuery(filterFiles).filter(token=>token.tag).map(token=>normalizeTag(token.value))))
  let fileMatches=$state<TreeEntry[]>([]),fileSearchBusy=$state(false),fileSearchLimited=$state(false),fileSearchGeneration=0
  let mode=$state<'edit'|'preview'|'split'>('split'),headings=$state<Heading[]>([]),headingDocument=$state(''),status=$state('Todo se procesa en este equipo'),toast=$state(''),toastKind=$state<'info'|'error'>('info'),busy=$state(false)
  let theme=$state(preference('freya-theme','system')),systemDark=$state(matchMedia('(prefers-color-scheme: dark)').matches)
@@ -73,6 +75,12 @@
   if(!folderPath){notify('Abre una carpeta para filtrar por etiqueta');return}
   sidebar=true;remember('freya-sidebar','true');await selectSidebarTab('files')
   if(!tokensFileQuery(filterFiles).some(token=>token.tag&&normalizeTag(token.value)===normalizeTag(tag)))filterFiles=[filterFiles.trim(),tagQueryToken(tag)].filter(Boolean).join(' ')
+  await tick();document.querySelector<HTMLInputElement>('.sidebar-search input')?.focus()
+ }
+ async function toggleTag(tag:string){
+  const found=tokensFileQuery(filterFiles).find(token=>token.tag&&normalizeTag(token.value)===normalizeTag(tag))
+  if(!found){await filterByTag(tag);return}
+  filterFiles=[filterFiles.slice(0,found.from).trim(),filterFiles.slice(found.to).trim()].filter(Boolean).join(' ')
   await tick();document.querySelector<HTMLInputElement>('.sidebar-search input')?.focus()
  }
  function receiveCurrent(docId:string){return(value:string|undefined)=>{if(activeId===docId)previewHeading=value}}
@@ -125,7 +133,8 @@
  async function create(kind:Kind){newMenu=false;await action(async()=>merge(await window.freya.newDocument(kind),true))}
  function updateText(id:string,text:string){documents=documents.map(d=>d.id===id?{...d,text,dirty:true}:d);const previous=pending.get(id)??Promise.resolve();const task=previous.catch(()=>{}).then(()=>window.freya.update(id,text)).then(doc=>{const current=documents.find(d=>d.id===id);if(current?.text===text)merge(doc)}).catch(e=>{error(String(e));throw e});pending.set(id,task);void task.catch(()=>{}).finally(()=>{if(pending.get(id)===task)pending.delete(id)})}
  async function openStatisticsReport(text:string){await action(async()=>{if(new TextEncoder().encode(text).byteLength>10*1024*1024)throw new Error('El informe supera el límite de edición de 10 MiB. Reduce el alcance del análisis.');const doc=await window.freya.newDocument('markdown');merge(doc,true);updateText(doc.id,text);await pending.get(doc.id)})}
- async function save(as=false){if(!active)return;const id=active.id;await action(async()=>{await pending.get(id);const doc=await window.freya.save(id,as);if(doc){merge(doc);external=external.filter(value=>value!==id);notify('Archivo guardado')}})}
+ // Las rutas del diálogo y del documento pueden usar alias distintos del sistema.
+ async function save(as=false){if(!active)return;const id=active.id;await action(async()=>{await pending.get(id);const doc=await window.freya.save(id,as);if(doc){merge(doc);external=external.filter(value=>value!==id);if(doc.kind==='markdown')tagsRefresh++;notify('Archivo guardado')}})}
  async function reload(id:string){await action(async()=>{merge(await window.freya.reload(id));external=external.filter(value=>value!==id)})}
  async function close(id:string){await action(async()=>{await pending.get(id);if(await window.freya.close(id)){const index=documents.findIndex(d=>d.id===id);documents=documents.filter(d=>d.id!==id);textSessions.delete(id);delete collapsedByDocument[id];if(activeId===id)activate(documents[Math.max(0,index-1)]?.id??'')}})}
  async function undo(redo=false){if(!active||active.readonly)return;if(active.kind==='csv')await csv?.undoEdit(redo);else if(active.kind==='markdown'){const id=active.id,session=textSession(active);(redo?redoText:undoText)({state:session.state,dispatch:transaction=>receiveText(id)([transaction])})}else if(redo)editor?.redoEdit();else editor?.undoEdit()}
@@ -150,6 +159,15 @@
   const timer=setTimeout(async()=>{try{const result=await window.freya.findFiles(root,query);if(token!==fileSearchGeneration)return;fileMatches=result.entries;fileSearchLimited=result.limited}catch(e){if(token===fileSearchGeneration)error(String(e))}finally{if(token===fileSearchGeneration)fileSearchBusy=false}},150)
   return()=>{clearTimeout(timer);void window.freya.cancelFileSearch().catch(()=>{})}
  })
+ $effect(()=>{
+  tagsRefresh
+  const root=folderPath,visible=sidebar&&effectiveSidebarTab==='files',token=++tagGeneration
+  if(tagFolder!==root){tagFolder=root;folderTags=[];tagsLimited=false}
+  tagsBusy=!!root&&visible
+  if(!root||!visible)return
+  const timer=setTimeout(async()=>{try{const result=await window.freya.listTags(root);if(token!==tagGeneration)return;folderTags=result.tags;tagsLimited=result.limited}catch(e){if(token===tagGeneration)error(String(e))}finally{if(token===tagGeneration)tagsBusy=false}},150)
+  return()=>{clearTimeout(timer);void window.freya.cancelTagList().catch(()=>{})}
+ })
  $effect(()=>{document.documentElement.classList.toggle('dark',dark)})
 </script>
 <svelte:window onkeydown={keydown} ondragover={event=>event.preventDefault()} ondrop={drop}/>
@@ -165,7 +183,7 @@
     <button id="freya-files-tab" role="tab" onkeydown={sidebarKeydown} aria-selected={effectiveSidebarTab==='files'} aria-controls="freya-files-panel" tabindex={effectiveSidebarTab==='files'?0:-1} onclick={()=>selectSidebarTab('files')}>Archivos</button>
     <button id="freya-outline-tab" role="tab" onkeydown={sidebarKeydown} aria-selected={effectiveSidebarTab==='outline'} aria-controls="freya-outline-panel" aria-disabled={active?.kind!=='markdown'} disabled={active?.kind!=='markdown'} title={active?.kind!=='markdown'?'El índice está disponible en documentos Markdown':undefined} tabindex={effectiveSidebarTab==='outline'?0:-1} onclick={()=>selectSidebarTab('outline')}>Índice</button>
    </div>
-   <div id="freya-files-panel" class="sidebar-tab-panel" role="tabpanel" aria-label="Archivos" hidden={effectiveSidebarTab!=='files'}><div class="sidebar-label">EXPLORADOR <button class="icon-button" title="Abrir carpeta" onclick={openFolder}><Icon name="plus" size={14}/></button></div><div class="sidebar-search"><Icon name="search" size={14}/><input aria-label="Buscar archivo" placeholder="Buscar archivo…" bind:value={filterFiles}/></div>{#if folderPath}<div class="folder-root" title={folderPath}><Icon name="chevron-down" size={12}/> <span class="folder-icon"><Icon name="folder-open" size={14}/></span> {folderPath.split(/[\\/]/).at(-1)}</div><div class="tree-scroll" bind:this={filesScroll} onscroll={event=>{if(event.currentTarget.clientHeight)sidebarScroll.files=event.currentTarget.scrollTop}}>{#if filterFiles.trim()}<div class="file-search-status" role="status">{fileSearchBusy?'Buscando en la carpeta…':fileSearchLimited?'Resultados limitados; acota la búsqueda.':`${fileMatches.length} archivos encontrados`}</div>{#each fileMatches as match (match.path)}{@const type=fileKind(match.name)}<button class="file-search-result" title={match.path} onclick={()=>openPath(match.path)}><span><span class="kind-{type.kind}"><Icon name={type.icon} size={14}/></span> {match.name}</span><small>{match.path.slice(folderPath.length+1)}</small></button>{/each}{:else}<Tree {entries} open={openPath} onerror={error}/>{/if}</div>{:else}<div class="sidebar-empty"><p>Explora tus archivos<br/>en un solo lugar.</p><button onclick={openFolder}>Abrir carpeta</button></div>{/if}</div>
+   <div id="freya-files-panel" class="sidebar-tab-panel" role="tabpanel" aria-label="Archivos" hidden={effectiveSidebarTab!=='files'}><div class="sidebar-label">EXPLORADOR <button class="icon-button" title="Abrir carpeta" onclick={openFolder}><Icon name="plus" size={14}/></button></div><div class="sidebar-search"><Icon name="search" size={14}/><input aria-label="Buscar archivo" placeholder="Buscar archivo…" bind:value={filterFiles}/></div>{#if folderPath}<div class="folder-root" title={folderPath}><Icon name="chevron-down" size={12}/> <span class="folder-icon"><Icon name="folder-open" size={14}/></span> {folderPath.split(/[\\/]/).at(-1)}</div><div class="tree-scroll" bind:this={filesScroll} onscroll={event=>{if(event.currentTarget.clientHeight)sidebarScroll.files=event.currentTarget.scrollTop}}>{#if filterFiles.trim()}<div class="file-search-status" role="status">{fileSearchBusy?'Buscando en la carpeta…':fileSearchLimited?'Resultados limitados; acota la búsqueda.':`${fileMatches.length} archivos encontrados`}</div>{#each fileMatches as match (match.path)}{@const type=fileKind(match.name)}<button class="file-search-result" title={match.path} onclick={()=>openPath(match.path)}><span><span class="kind-{type.kind}"><Icon name={type.icon} size={14}/></span> {match.name}</span><small>{match.path.slice(folderPath.length+1)}</small></button>{/each}{:else}<Tree {entries} open={openPath} onerror={error}/>{/if}</div>{#if tagsBusy}<p class="file-tag-status" role="status">Leyendo etiquetas…</p>{/if}{#if tagsLimited}<p class="file-tag-status" role="status">Lista parcial: la carpeta tiene demasiados archivos</p>{/if}{#if folderTags.length}<section class="file-tags" role="group" aria-label="Etiquetas"><div class="sidebar-label">ETIQUETAS <button class="icon-button" aria-label="Actualizar" title="Volver a leer las etiquetas guardadas" onclick={()=>tagsRefresh++}><span aria-hidden="true">↻</span></button></div><div class="file-tags-scroll">{#each folderTags as item (normalizeTag(item.tag))}<button aria-label={`${item.tag}, ${item.count} documentos`} aria-pressed={activeTags.has(normalizeTag(item.tag))} title={item.tag} onclick={()=>toggleTag(item.tag)}><span>{item.tag}</span><small>{item.count}</small></button>{/each}</div></section>{/if}{:else}<div class="sidebar-empty"><p>Explora tus archivos<br/>en un solo lugar.</p><button onclick={openFolder}>Abrir carpeta</button></div>{/if}</div>
    <div id="freya-outline-panel" class="sidebar-tab-panel" role="tabpanel" aria-label="Índice del documento" hidden={effectiveSidebarTab!=='outline'}>
     <div class="sidebar-label">EN ESTE DOCUMENTO</div>
     <Outline headings={outlineHeadings} current={mode==='edit'?editorHeading:previewHeading} collapsed={collapsedByDocument[activeId]??new Set()} oncollapse={next=>collapsedByDocument={...collapsedByDocument,[activeId]:next}} ready={headingDocument===activeId} shown={indexVisible} bind:container={indexScroll} onscroll={top=>sidebarScroll.outline=top} onselect={selectHeading} canselect={()=>mode!=='edit'||!editor?.isComposing()}/>

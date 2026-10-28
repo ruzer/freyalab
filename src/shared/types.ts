@@ -44,7 +44,7 @@ export interface GraphicExportRequest {format:'svg'|'png'|'pdf';svg:string;revis
 export interface RecoveryEntry { id:string; name:string; savedAt:string }
 export interface AppEvent { type:'opened'|'changed'|'external'|'error'|'analysis';progress?:SqlProgress; document?:DocumentInfo; id?:string; message?:string }
 export interface FreyaAPI {
- open():Promise<DocumentInfo[]>; openPaths(paths:string[]):Promise<DocumentInfo[]>; newDocument(kind:Kind):Promise<DocumentInfo>; folder():Promise<string|null>; tree(path:string):Promise<TreeEntry[]>; findFiles(root:string,query:string):Promise<{entries:TreeEntry[];limited:boolean}>; cancelFileSearch():Promise<void>;
+ open():Promise<DocumentInfo[]>; openPaths(paths:string[]):Promise<DocumentInfo[]>; newDocument(kind:Kind):Promise<DocumentInfo>; folder():Promise<string|null>; tree(path:string):Promise<TreeEntry[]>; findFiles(root:string,query:string):Promise<{entries:TreeEntry[];limited:boolean}>; cancelFileSearch():Promise<void>; listTags(root:string):Promise<{tags:{tag:string;count:number}[];limited:boolean}>; cancelTagList():Promise<void>;
  update(id:string,text:string):Promise<DocumentInfo>; save(id:string,as?:boolean):Promise<DocumentInfo|null>; close(id:string):Promise<boolean>; reload(id:string):Promise<DocumentInfo>; documents():Promise<DocumentInfo[]>;
  tableCopy(id:string,options:TableExport,format:'tsv'|'markdown'):Promise<void>; tablePaste(id:string,range:TableRange):Promise<string>;
  transformPreview(id:string,edit:TableTransformEdit):Promise<TableTransformPreview>;

@@ -90,3 +90,35 @@ test('B2 E9/E12: un chip abre Archivos desde Índice oculto, enfoca la consulta 
  await search().fill('#proy');await results([]);await search().fill('#PROYECTO');await results([path]);await intact(doc.id,path,text)
 })
 
+
+test('D1 E17–E20/E23/E25: recuentos por documento, acentos, orden y filtros AND accesibles en ambos temas',async()=>{
+ const sources={'a.md':markdown('[Proyecto, proyecto, Árbol, "informe final"]'),'b.md':markdown('[proyecto, arbol]'),'c.md':markdown('[proyecto, 2026]'),'sub/d.md':markdown('["informe final"]')}
+ await mkdir(join(fixtures,'sub'));for(const[name,text]of Object.entries(sources))await writeFile(join(fixtures,name),text)
+ const{path,doc}=await open(sources['a.md'],'a.md');await openFolder()
+ for(const value of ['light','dark'] as const){
+  await theme(value);await expect(tags()).toBeVisible()
+  await expect(tags().getByRole('button',{name:/, \d+ documentos$/})).toHaveText([/2026\s*1/,/Árbol\s*2/,/informe final\s*2/,/proyecto\s*3/])
+  await tagButton('proyecto',3).focus();await page.keyboard.press('Enter');await expect(tagButton('proyecto',3)).toHaveAttribute('aria-pressed','true');await expect(search()).toHaveValue('#proyecto')
+  await results(['a.md','b.md','c.md'].map(name=>join(fixtures,name)))
+  await tagButton('Árbol',2).focus();await page.keyboard.press('Space');await expect(tagButton('Árbol',2)).toHaveAttribute('aria-pressed','true');await expect(search()).toHaveValue('#proyecto #Árbol');await results(['a.md','b.md'].map(name=>join(fixtures,name)));await screenshot(`lista-activa-${value}`)
+  await tagButton('proyecto',3).focus();await page.keyboard.press('Enter');await expect(tagButton('proyecto',3)).toHaveAttribute('aria-pressed','false');await expect(search()).toHaveValue('#Árbol');await results(['a.md','b.md'].map(name=>join(fixtures,name)))
+  await tagButton('Árbol',2).focus();await page.keyboard.press('Space');await expect(tagButton('Árbol',2)).toHaveAttribute('aria-pressed','false');await expect(search()).toHaveValue('')
+ }
+ await intact(doc.id,path,sources['a.md']);for(const[name,text]of Object.entries(sources))expect(await readFile(join(fixtures,name),'utf8')).toBe(text)
+})
+
+test('D2 E6/E21–E22: Actualizar relee el disco y guardar Markdown actualiza recuentos, sin usar cambios aún no guardados',async()=>{
+ const original=markdown('[proyecto, temporal]'),{path,doc}=await open(original,'a.md'),other=join(fixtures,'b.md')
+ await writeFile(other,markdown('[proyecto]'));await openFolder();await theme('dark');await expect(tagButton('proyecto',2)).toBeVisible();await expect(tagButton('temporal',1)).toBeVisible()
+ const external=markdown('[proyecto, añadido]');await writeFile(other,external);await files().getByRole('button',{name:'Actualizar',exact:true}).click()
+ await expect(tagButton('añadido',1)).toBeVisible();await expect(tagButton('proyecto',2)).toBeVisible();expect(await readFile(other,'utf8')).toBe(external);await intact(doc.id,path,original)
+ const edited=markdown('[proyecto, "informe final"]');await page.locator('.cm-content').click();await page.keyboard.press('ControlOrMeta+A');await page.keyboard.insertText(edited)
+ await expect.poll(async()=>(await info(doc.id))?.text).toBe(edited);await expect(chip('informe final')).toBeVisible();await expect(chip('temporal')).toHaveCount(0)
+ expect((await info(doc.id))?.dirty).toBe(true);expect(await readFile(path,'utf8')).toBe(original);await expect(tagButton('temporal',1)).toBeVisible();await expect(tagButton('informe final',1)).toHaveCount(0)
+ await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect(page.locator('.toast')).toContainText('Archivo guardado');await expect.poll(async()=>(await info(doc.id))?.dirty).toBe(false)
+ await expect(tagButton('temporal',1)).toHaveCount(0);await expect(tagButton('informe final',1)).toBeVisible();await expect(tagButton('proyecto',2)).toBeVisible();await intact(doc.id,path,edited);await screenshot('lista-guardada-dark')
+ await rm(other);await files().getByRole('button',{name:'Actualizar',exact:true}).click();await expect(tagButton('añadido',1)).toHaveCount(0);await expect(tagButton('proyecto',1)).toBeVisible()
+ const empty=markdown('[]');await page.locator('.cm-content').click();await page.keyboard.press('ControlOrMeta+A');await page.keyboard.insertText(empty)
+ await expect.poll(async()=>(await info(doc.id))?.text).toBe(empty);await settled();await expect(preview().getByRole('button',{name:/Filtrar archivos por la etiqueta/})).toHaveCount(0)
+ expect(await readFile(path,'utf8')).toBe(edited);await expect(tagButton('informe final',1)).toBeVisible()
+})

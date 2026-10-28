@@ -54,3 +54,13 @@
 .sidebar-tabs button[aria-selected=true]{border-bottom-color:var(--accent);background:var(--hover);font-weight:600}
 .sidebar-tab-panel{display:flex;flex:1;flex-direction:column;min-height:0;overflow:hidden}
 .sidebar-tab-panel[hidden]{display:none}
+
+/* FL-MD-009 · Etiquetas del explorador */
+.file-tags{flex:none;max-height:35%;display:flex;flex-direction:column;min-height:0;border-top:1px solid var(--border)}
+.file-tags .sidebar-label{padding-top:7px;padding-bottom:5px}
+.file-tags-scroll{overflow:auto;min-height:0;padding:0 5px 5px}
+.file-tags-scroll button{width:100%;display:flex;align-items:center;gap:8px;justify-content:space-between;background:transparent;border:0;padding:6px 9px;text-align:left;font-size:11px;color:var(--text)}
+.file-tags-scroll button span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.file-tags-scroll button small{flex:none;color:var(--muted)}
+.file-tags-scroll button[aria-pressed=true]{background:var(--hover);box-shadow:inset 2px 0 var(--accent);font-weight:600}
+.file-tag-status{flex:none;margin:4px 12px;font-size:11px;color:var(--muted)}
