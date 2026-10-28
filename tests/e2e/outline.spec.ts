@@ -181,3 +181,100 @@ test('A3: al reaparecer el panel, la sección que cambió oculta queda visible',
  await indexTab().click();await expect(outline()).toBeVisible()
  await expect(current()).toHaveText('H100');await expect(current()).toBeInViewport()
 })
+test('B1/B2: contraer una rama oculta descendientes y mantiene botones separados',async()=>{
+ await open('# Manual\n\n## Introducción\n\nTexto.\n\n### Requisitos\n\nTexto.\n\n## Configuración\n\nTexto.\n\n# Apéndice\n\nFin.')
+ await evidence('7-b-baseline',{buttons:await outline().getByRole('button').allTextContents(),collapseButtons:await outline().getByRole('button',{name:'Contraer sección Manual',exact:true}).count()})
+ const collapse=outline().getByRole('button',{name:'Contraer sección Manual',exact:true});await expect(collapse).toBeVisible()
+ await expect(collapse).toHaveAttribute('aria-expanded','true');await expect(outline().getByRole('button',{name:'Manual',exact:true})).toBeVisible()
+ await collapse.click();await expect(outline().getByRole('button',{name:'Expandir sección Manual',exact:true})).toHaveAttribute('aria-expanded','false')
+ await expect(outline().getByRole('button',{name:'Introducción',exact:true})).toHaveCount(0);await expect(outline().getByRole('button',{name:'Requisitos',exact:true})).toHaveCount(0)
+ await expect(outline().getByRole('button',{name:'Introducción',exact:true,includeHidden:true}).locator('..')).toHaveAttribute('hidden','')
+ await expect(outline().getByRole('button',{name:'Apéndice',exact:true})).toBeVisible()
+ await outline().getByRole('button',{name:'Expandir sección Manual',exact:true}).click();await expect(outline().getByRole('button',{name:'Requisitos',exact:true})).toBeVisible()
+})
+
+test('B1: niveles ausentes y saltos no crean filas vacías y conservan la jerarquía',async()=>{
+ await open('## Solo nivel dos\n\n### Hijo de dos\n\n# Raíz\n\n### Salto nivel tres\n\n## Hermana nivel dos\n\n### Nieta\n\n# Fin\n')
+ await expect(outline().locator('.outline-row')).toHaveCount(7)
+ const indent=(name:string)=>outline().getByRole('button',{name,exact:true}).locator('..').evaluate(node=>Number.parseFloat((node as HTMLElement).style.paddingLeft))
+ expect(await indent('Hijo de dos')).toBeGreaterThan(await indent('Solo nivel dos'))
+ expect(await indent('Salto nivel tres')).toBe(await indent('Hermana nivel dos'));expect(await indent('Nieta')).toBeGreaterThan(await indent('Hermana nivel dos'))
+ await outline().getByRole('button',{name:'Contraer sección Raíz',exact:true}).click()
+ for(const name of ['Salto nivel tres','Hermana nivel dos','Nieta'])await expect(outline().getByRole('button',{name,exact:true})).toHaveCount(0)
+ await expect(outline().getByRole('button',{name:'Hijo de dos',exact:true})).toBeVisible();await expect(outline().getByRole('button',{name:'Fin',exact:true})).toBeVisible()
+})
+
+test('B1/B5: títulos repetidos en otros padres y hermanos tienen contracción independiente',async()=>{
+ await open('# Uno\n\n## Repetido\n\n### Hijo primero\n\n# Dos\n\n## Repetido\n\n### Hijo segundo\n\n## Repetido\n\n### Hijo tercero\n')
+ const controls=outline().getByRole('button',{name:'Contraer sección Repetido',exact:true});await expect(controls).toHaveCount(3);await controls.nth(1).click()
+ await expect(outline().getByRole('button',{name:'Hijo segundo',exact:true})).toHaveCount(0)
+ await expect(outline().getByRole('button',{name:'Hijo primero',exact:true})).toBeVisible();await expect(outline().getByRole('button',{name:'Hijo tercero',exact:true})).toBeVisible()
+ await outline().getByRole('button',{name:'Expandir sección Repetido',exact:true}).click();await expect(outline().getByRole('button',{name:'Hijo segundo',exact:true})).toBeVisible()
+})
+
+test('B2/B3: Tab recorre flecha y título; Intro y Espacio alternan sin perder el foco',async()=>{
+ await open('# Manual\n\n## Hijo\n\nTexto.\n\n# Otro\n\nFin.')
+ const collapse=()=>outline().getByRole('button',{name:'Contraer sección Manual',exact:true}),expand=()=>outline().getByRole('button',{name:'Expandir sección Manual',exact:true})
+ await collapse().focus();await page.keyboard.press('Tab');await expect(outline().getByRole('button',{name:'Manual',exact:true})).toBeFocused()
+ await page.keyboard.press('Shift+Tab');await expect(collapse()).toBeFocused();await page.keyboard.press('Enter');await expect(expand()).toBeFocused();await expect(expand()).toHaveAttribute('aria-expanded','false')
+ await page.keyboard.press('Tab');await expect(outline().getByRole('button',{name:'Manual',exact:true})).toBeFocused();await page.keyboard.press('Tab');await expect(outline().getByRole('button',{name:'Otro',exact:true})).toBeFocused()
+ await page.keyboard.press('Shift+Tab');await page.keyboard.press('Shift+Tab');await expect(expand()).toBeFocused();await page.keyboard.press('Space');await expect(collapse()).toBeFocused();await expect(collapse()).toHaveAttribute('aria-expanded','true')
+ await expect(outline().getByRole('button',{name:'Hijo',exact:true})).toBeVisible()
+})
+
+test('B4: se marca el ancestro cerrado sin expandirlo y se recupera el hijo al abrir',async()=>{
+ await open('# Raíz\n\n'+paragraphs(8)+'## Rama\n\n'+paragraphs(8)+'### Interior\n\n'+paragraphs(25)+'# Después\n\n'+paragraphs(10))
+ await threshold('Interior');await expect(current()).toHaveText('Interior');const top=(await geometry()).top
+ await outline().getByRole('button',{name:'Contraer sección Rama',exact:true}).click();await expect(current()).toHaveText('Rama');await expect(outline().getByRole('button',{name:'Expandir sección Rama',exact:true})).toHaveAttribute('aria-expanded','false')
+ expect(Math.abs((await geometry()).top-top)).toBeLessThan(1)
+ await outline().getByRole('button',{name:'Contraer sección Raíz',exact:true}).click();await expect(current()).toHaveText('Raíz')
+ await outline().getByRole('button',{name:'Expandir sección Raíz',exact:true}).click();await expect(current()).toHaveText('Rama');await expect(outline().getByRole('button',{name:'Expandir sección Rama',exact:true})).toHaveAttribute('aria-expanded','false')
+ await outline().getByRole('button',{name:'Expandir sección Rama',exact:true}).click();await expect(current()).toHaveText('Interior');expect(Math.abs((await geometry()).top-top)).toBeLessThan(1)
+})
+
+test('B5: contracción por documento sobrevive tema y pestañas y se descarta al cerrar',async()=>{
+ const first=await open('# Primero\n\n## Rama\n\n### Dentro\n\nTexto.');await outline().getByRole('button',{name:'Contraer sección Rama',exact:true}).click()
+ await page.getByRole('combobox',{name:'Tema',exact:true}).selectOption('dark');await settled();await expect(outline().getByRole('button',{name:'Expandir sección Rama',exact:true})).toBeVisible()
+ await filesTab().click();await expect(outline()).toBeHidden();await indexTab().click();await expect(outline().getByRole('button',{name:'Expandir sección Rama',exact:true})).toBeVisible()
+ const second=await open('# Segundo\n\n## Rama\n\n### Dentro del segundo\n\nTexto.');await expect(outline().getByRole('button',{name:'Contraer sección Rama',exact:true})).toHaveAttribute('aria-expanded','true')
+ await page.getByRole('tab',{name:first.doc.name,exact:true}).click();id=first.doc.id;await settled();await expect(outline().getByRole('button',{name:'Expandir sección Rama',exact:true})).toBeVisible();await expect(outline().getByRole('button',{name:'Dentro',exact:true})).toHaveCount(0)
+ await page.getByRole('tab',{name:second.doc.name,exact:true}).click();id=second.doc.id;await settled();await expect(outline().getByRole('button',{name:'Contraer sección Rama',exact:true})).toBeVisible()
+ await page.getByRole('button',{name:`Cerrar ${first.doc.name}`,exact:true}).click();const[reopened]=await page.evaluate(path=>window.freya.openPaths([path]),first.path);id=reopened.id;await settled();await expect(outline().getByRole('button',{name:'Contraer sección Rama',exact:true})).toHaveAttribute('aria-expanded','true')
+})
+
+test('B5: la ruta conserva contracción cuando otra sección cambia los ids globales',async()=>{
+ const original='# A\n\n## Rama\n\n### Interior\n\n# B\n\n## Rama\n\n### Otro\n';await open(original)
+ const before=await outline().getByRole('button',{name:'Rama',exact:true}).first().getAttribute('data-heading-id');await outline().getByRole('button',{name:'Contraer sección Rama',exact:true}).first().click()
+ await replaceSource('# Nuevo\n\n## Rama\n\n### Nueva\n\n'+original)
+ const collapsedRow=outline().getByRole('button',{name:'Expandir sección Rama',exact:true}).locator('..')
+ expect(await collapsedRow.locator('[data-heading-id]').getAttribute('data-heading-id')).not.toBe(before)
+ await expect(outline().getByRole('button',{name:'Interior',exact:true})).toHaveCount(0);await expect(outline().getByRole('button',{name:'Nueva',exact:true})).toBeVisible();await expect(outline().getByRole('button',{name:'Otro',exact:true})).toBeVisible()
+})
+
+test('B5: renombrar o eliminar una ruta descarta su estado en lugar de transferirlo',async()=>{
+ const original='# Manual\n\n## Rama\n\n### Dentro\n';await open(original);await outline().getByRole('button',{name:'Contraer sección Rama',exact:true}).click()
+ await replaceSource(original.replace('## Rama','## Renombrada'));await expect(outline().getByRole('button',{name:'Contraer sección Renombrada',exact:true})).toHaveAttribute('aria-expanded','true');await expect(outline().getByRole('button',{name:'Dentro',exact:true})).toBeVisible()
+ await replaceSource(original);await expect(outline().getByRole('button',{name:'Contraer sección Rama',exact:true})).toHaveAttribute('aria-expanded','true')
+ await outline().getByRole('button',{name:'Contraer sección Rama',exact:true}).click();await replaceSource('# Manual\n\nSin ramas.');await replaceSource(original);await expect(outline().getByRole('button',{name:'Contraer sección Rama',exact:true})).toHaveAttribute('aria-expanded','true')
+})
+
+test('B6: títulos largos muestran dos líneas, tooltip y nombre completo en claro/oscuro',async()=>{
+ const title='Manual de FreyaLab para estudiantes y profesionales que necesitan consultar documentos extensos sin perder el contexto de las secciones y todas sus instrucciones de trabajo'
+ await open(`# ${title}\n\n${paragraphs(5)}## Rama contraída\n\n${paragraphs(5)}### Sección actual\n\n${paragraphs(25)}`);await threshold('Sección actual');await outline().getByRole('button',{name:'Contraer sección Rama contraída',exact:true}).click()
+ const measured=[]
+ for(const theme of ['light','dark']){
+  await page.getByRole('combobox',{name:'Tema',exact:true}).selectOption(theme);await settled();await expect(current()).toHaveText('Rama contraída')
+  const label=outline().getByRole('button',{name:title,exact:true});await expect(label).toHaveAttribute('title',title);await expect(label).toHaveAccessibleName(title)
+  const layout=await label.locator('span').evaluate(node=>{const style=getComputedStyle(node);return{height:node.getBoundingClientRect().height,lineHeight:Number.parseFloat(style.lineHeight),clamp:style.getPropertyValue('-webkit-line-clamp'),text:node.textContent}})
+  expect(layout.clamp).toBe('2');expect(layout.height).toBeLessThanOrEqual(2*layout.lineHeight+1);expect(layout.text).toBe(title);measured.push({theme,...layout})
+  await screenshot(theme,'b')
+ }
+ await evidence('7-b-titulos-largos',measured)
+})
+
+test('B: contraer ramas no modifica fuente, dirty ni HTML exportado',async()=>{
+ const original='# Manual\n\n## Capítulo\n\n### Detalle\n\nTexto.\n';const{path}=await open(original),before=await exportHTML('b-antes.html')
+ await outline().getByRole('button',{name:'Contraer sección Manual',exact:true}).click();await expect(outline().getByRole('button',{name:'Detalle',exact:true})).toHaveCount(0)
+ const after=await exportHTML('b-despues.html');expect(after).toBe(before);expect(await source()).toBe(original);expect(await readFile(path,'utf8')).toBe(original)
+ expect(await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id)?.dirty,id)).toBe(false)
+})
