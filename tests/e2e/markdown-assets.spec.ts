@@ -113,7 +113,11 @@ test('U1 · Guardar como nombra el activo propio ausente sin mostrar el prefijo 
  await page.getByRole('button',{name:'Guardar como',exact:true}).click()
  const toast=page.locator('.toast.error');await expect(toast).toContainText('foto á.png');await expect(toast).toContainText('No se encontró')
  const message=await toast.innerText();expect(message).not.toContain('Error invoking remote method');expect(message).not.toContain('Error:')
- expect((await current(doc.id))?.path).toBe(path);expect(await readFile(path,'utf8')).toBe(source);expect(await readdir(join(folder,'destino'))).toEqual([])
+ expect((await current(doc.id))?.path).toBe(doc.path);expect(await readFile(path,'utf8')).toBe(source);expect(await readdir(join(folder,'destino'))).toEqual([])
+ if(process.env.FREYALAB_A0_EVIDENCE==='1')for(const theme of ['light','dark']){
+  await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect(page.locator('.preview .render-progress')).toHaveCount(0)
+  await page.screenshot({path:`docs/evidence/a0-error-activo-${theme}-1440x900.png`,animations:'disabled'})
+ }
 })
 
 test('U2 · el resumen conserva el detalle de cada imagen hasta cerrarlo y sobrevive a otro aviso',async()=>{
@@ -127,5 +131,9 @@ test('U2 · el resumen conserva el detalle de cada imagen hasta cerrarlo y sobre
  await page.getByRole('tab',{name:'Copia á.md',exact:true}).click();await expect(warning).toBeVisible();expect((await current(doc.id))?.path).toBe(target)
  await warning.locator('summary').focus();await page.keyboard.press('Enter')
  await expect(warning.getByRole('listitem')).toHaveCount(2);await expect(warning.getByRole('list')).toContainText('fuera.png:');await expect(warning.getByRole('list')).toContainText('https://example.invalid/remota.png:')
+ if(process.env.FREYALAB_A0_EVIDENCE==='1')for(const theme of ['light','dark']){
+  await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.clock.runFor(200);await expect(page.locator('.preview .render-progress')).toHaveCount(0)
+  await page.screenshot({path:`docs/evidence/a0-avisos-activos-${theme}-1440x900.png`,animations:'disabled'})
+ }
  await warning.getByRole('button',{name:'Cerrar aviso de imágenes'}).click();await expect(warning).toHaveCount(0);await expect(page.locator('.cm-content')).toBeFocused()
 })
