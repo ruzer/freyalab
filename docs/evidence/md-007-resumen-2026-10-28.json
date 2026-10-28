@@ -1,0 +1,1118 @@
+{
+  "reviewedAtUtc": "2026-10-28T07:38:49.665631+00:00",
+  "scope": "Evidencia local MD007: benchmark completo; suite global local fallida, cuatro selectores corregidos y CI final pendiente.",
+  "rawResultSha256": "cb9f4574ed130ef1d707252ce345e1c9d590dbbacd1c62445d8a1882d3a14613",
+  "successfulScriptSha256": "417f4d69fa923d639e1554ad528d7b7f8f18ed4a3f4964955e357166f418b0e6",
+  "fixture": {
+    "titles": 1000,
+    "bytes": 108666,
+    "sha256": "6ba38447ecdce966233cb843320461eb2b0fba79ca52089896dddda72c7dc6ce"
+  },
+  "environment": {
+    "node": "v24.22.1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "osRelease": "27.0.0",
+    "cpu": "Apple M2 Max",
+    "totalMemoryBytes": 34359738368
+  },
+  "order": [
+    "baseline",
+    "candidate",
+    "candidate",
+    "baseline",
+    "baseline",
+    "candidate"
+  ],
+  "replicates": {
+    "baseline": 3,
+    "candidate": 3,
+    "note": "Cada proceso es una réplica; no tratar100 eventos internos como100 procesos independientes."
+  },
+  "preferences": {
+    "freya-theme": "light",
+    "freya-sidebar": "true",
+    "freya-sidebar-width": "260",
+    "freya-split": "50"
+  },
+  "sourceOutputChecksAfterSeriesAndAtReview": {
+    "baseline": {
+      "head": "61d0e05b1d87ba30186a7a8f1908f1c9ed06d73a",
+      "tree": "8568114ee362ecf3585ca0bf6b2641243e5acc70",
+      "clean": true,
+      "sourceHashes": {
+        "count": 70,
+        "sha256OfSortedPathSpaceHashNewline": "2b676f1d1b92a00dfe532678f3b2c23c687c524ab4365dce46fc3d318756b32e",
+        "mismatches": 0
+      },
+      "outputHashes": {
+        "count": 246,
+        "sha256OfSortedPathSpaceHashNewline": "3211a1913113c9de12b95af2eaca8b687891ba7f000414002776e01a1bfa480f",
+        "mismatches": 0
+      }
+    },
+    "candidate": {
+      "head": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+      "tree": "4f4226bb9993273a2588acf593d5fa553c052846",
+      "clean": true,
+      "sourceHashes": {
+        "count": 80,
+        "sha256OfSortedPathSpaceHashNewline": "ad1ac03681c2b66e5e33a7b942157cde6bba976b72c1ae4c6d5d9d216c32d9f1",
+        "mismatches": 0
+      },
+      "outputHashes": {
+        "count": 247,
+        "sha256OfSortedPathSpaceHashNewline": "ef350db1fcfa96ccb4ce641b2fa15666213b181b62d73bd5cff9f4f40bbfde5b",
+        "mismatches": 0
+      }
+    }
+  },
+  "independentlyRecomputedSummariesMatch": true,
+  "geometry": {
+    "pairs": [
+      {
+        "pair": 1,
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "baselinePreviewWidth": 403.5,
+        "candidatePreviewWidth": 588.5,
+        "gainPx": 185,
+        "baselinePaneWidth": 403.5,
+        "candidatePaneWidth": 588.5,
+        "paneGainPx": 185,
+        "p9Pass": true
+      },
+      {
+        "pair": 2,
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "baselinePreviewWidth": 403.5,
+        "candidatePreviewWidth": 588.5,
+        "gainPx": 185,
+        "baselinePaneWidth": 403.5,
+        "candidatePaneWidth": 588.5,
+        "paneGainPx": 185,
+        "p9Pass": true
+      },
+      {
+        "pair": 3,
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "baselinePreviewWidth": 403.5,
+        "candidatePreviewWidth": 588.5,
+        "gainPx": 185,
+        "baselinePaneWidth": 403.5,
+        "candidatePaneWidth": 588.5,
+        "paneGainPx": 185,
+        "p9Pass": true
+      }
+    ],
+    "summary": {
+      "gainPx": {
+        "count": 3,
+        "median": 185,
+        "p95": 185,
+        "maximum": 185
+      },
+      "allThreePairsMeetP9": true
+    }
+  },
+  "runs": [
+    {
+      "run": 1,
+      "name": "baseline",
+      "counts": {
+        "wheels": 100,
+        "scrollEvents": 100,
+        "handlerCalls": 0
+      },
+      "timingSummaryMs": {
+        "wheelToRaf1": {
+          "count": 100,
+          "median": 0.20000004768371582,
+          "p95": 0.3999999761581421,
+          "maximum": 0.7999999523162842
+        },
+        "wheelToRaf2": {
+          "count": 100,
+          "median": 7.899999976158142,
+          "p95": 9.799999952316284,
+          "maximum": 10
+        },
+        "scrollToRaf1": {
+          "count": 100,
+          "median": 0,
+          "p95": 0.10000002384185791,
+          "maximum": 0.20000004768371582
+        },
+        "productHandlerMs": null
+      },
+      "diagnostic": {
+        "status": "not-applicable",
+        "counts": null,
+        "reads": null,
+        "summary": null
+      },
+      "sourceAndDirtyUnchanged": true
+    },
+    {
+      "run": 2,
+      "name": "candidate",
+      "counts": {
+        "wheels": 100,
+        "scrollEvents": 100,
+        "handlerCalls": 100
+      },
+      "timingSummaryMs": {
+        "wheelToRaf1": {
+          "count": 100,
+          "median": 1.5,
+          "p95": 3.3000000715255737,
+          "maximum": 4
+        },
+        "wheelToRaf2": {
+          "count": 100,
+          "median": 16.600000023841858,
+          "p95": 17.200000047683716,
+          "maximum": 17.59999990463257
+        },
+        "scrollToRaf1": {
+          "count": 100,
+          "median": 1.2999999523162842,
+          "p95": 2.899999976158142,
+          "maximum": 3.600000023841858
+        },
+        "productHandlerMs": {
+          "count": 100,
+          "median": 0.10000002384185791,
+          "p95": 0.30000007152557373,
+          "maximum": 0.3999999761581421
+        }
+      },
+      "diagnostic": {
+        "status": "observed",
+        "counts": {
+          "wheels": 100,
+          "scrollEvents": 100,
+          "handlerCalls": 100,
+          "sectionTransitions": 100
+        },
+        "reads": {
+          "queries": 0,
+          "headingRectanglesInHandler": 0,
+          "headingRectanglesOutsideHandler": 0
+        },
+        "summary": {
+          "lastObservedScrollToCurrentDomMs": {
+            "count": 100,
+            "median": 1.3000000715255737,
+            "p95": 2.899999976158142,
+            "maximum": 3.1999999284744263
+          },
+          "currentDomToRafMs": {
+            "count": 100,
+            "median": 0.10000002384185791,
+            "p95": 0.3999999761581421,
+            "maximum": 0.5
+          }
+        }
+      },
+      "sourceAndDirtyUnchanged": true
+    },
+    {
+      "run": 3,
+      "name": "candidate",
+      "counts": {
+        "wheels": 100,
+        "scrollEvents": 100,
+        "handlerCalls": 100
+      },
+      "timingSummaryMs": {
+        "wheelToRaf1": {
+          "count": 100,
+          "median": 1.5,
+          "p95": 3.6999999284744263,
+          "maximum": 4
+        },
+        "wheelToRaf2": {
+          "count": 100,
+          "median": 16.600000023841858,
+          "p95": 17.40000009536743,
+          "maximum": 17.799999952316284
+        },
+        "scrollToRaf1": {
+          "count": 100,
+          "median": 1.3000000715255737,
+          "p95": 3.200000047683716,
+          "maximum": 3.5
+        },
+        "productHandlerMs": {
+          "count": 100,
+          "median": 0.10000002384185791,
+          "p95": 0.30000007152557373,
+          "maximum": 0.3999999761581421
+        }
+      },
+      "diagnostic": {
+        "status": "observed",
+        "counts": {
+          "wheels": 100,
+          "scrollEvents": 100,
+          "handlerCalls": 100,
+          "sectionTransitions": 100
+        },
+        "reads": {
+          "queries": 0,
+          "headingRectanglesInHandler": 0,
+          "headingRectanglesOutsideHandler": 0
+        },
+        "summary": {
+          "lastObservedScrollToCurrentDomMs": {
+            "count": 100,
+            "median": 1.2999999523162842,
+            "p95": 2.6999999284744263,
+            "maximum": 3.100000023841858
+          },
+          "currentDomToRafMs": {
+            "count": 100,
+            "median": 0.10000002384185791,
+            "p95": 0.2999999523162842,
+            "maximum": 0.3999999761581421
+          }
+        }
+      },
+      "sourceAndDirtyUnchanged": true
+    },
+    {
+      "run": 4,
+      "name": "baseline",
+      "counts": {
+        "wheels": 100,
+        "scrollEvents": 100,
+        "handlerCalls": 0
+      },
+      "timingSummaryMs": {
+        "wheelToRaf1": {
+          "count": 100,
+          "median": 0.2999999523162842,
+          "p95": 0.40000009536743164,
+          "maximum": 0.6000000238418579
+        },
+        "wheelToRaf2": {
+          "count": 100,
+          "median": 7.899999976158142,
+          "p95": 8.900000095367432,
+          "maximum": 9.700000047683716
+        },
+        "scrollToRaf1": {
+          "count": 100,
+          "median": 0,
+          "p95": 0.10000002384185791,
+          "maximum": 0.20000004768371582
+        },
+        "productHandlerMs": null
+      },
+      "diagnostic": {
+        "status": "not-applicable",
+        "counts": null,
+        "reads": null,
+        "summary": null
+      },
+      "sourceAndDirtyUnchanged": true
+    },
+    {
+      "run": 5,
+      "name": "baseline",
+      "counts": {
+        "wheels": 100,
+        "scrollEvents": 100,
+        "handlerCalls": 0
+      },
+      "timingSummaryMs": {
+        "wheelToRaf1": {
+          "count": 100,
+          "median": 0.2999999523162842,
+          "p95": 0.40000009536743164,
+          "maximum": 0.5
+        },
+        "wheelToRaf2": {
+          "count": 100,
+          "median": 7.899999976158142,
+          "p95": 9.699999928474426,
+          "maximum": 10.100000023841858
+        },
+        "scrollToRaf1": {
+          "count": 100,
+          "median": 0,
+          "p95": 0.10000002384185791,
+          "maximum": 0.20000004768371582
+        },
+        "productHandlerMs": null
+      },
+      "diagnostic": {
+        "status": "not-applicable",
+        "counts": null,
+        "reads": null,
+        "summary": null
+      },
+      "sourceAndDirtyUnchanged": true
+    },
+    {
+      "run": 6,
+      "name": "candidate",
+      "counts": {
+        "wheels": 100,
+        "scrollEvents": 100,
+        "handlerCalls": 100
+      },
+      "timingSummaryMs": {
+        "wheelToRaf1": {
+          "count": 100,
+          "median": 1.600000023841858,
+          "p95": 3.5,
+          "maximum": 3.899999976158142
+        },
+        "wheelToRaf2": {
+          "count": 100,
+          "median": 16.5,
+          "p95": 17.299999952316284,
+          "maximum": 17.899999976158142
+        },
+        "scrollToRaf1": {
+          "count": 100,
+          "median": 1.399999976158142,
+          "p95": 3.100000023841858,
+          "maximum": 3.5
+        },
+        "productHandlerMs": {
+          "count": 100,
+          "median": 0.19999992847442627,
+          "p95": 0.3999999761581421,
+          "maximum": 0.40000009536743164
+        }
+      },
+      "diagnostic": {
+        "status": "observed",
+        "counts": {
+          "wheels": 100,
+          "scrollEvents": 100,
+          "handlerCalls": 100,
+          "sectionTransitions": 100
+        },
+        "reads": {
+          "queries": 0,
+          "headingRectanglesInHandler": 0,
+          "headingRectanglesOutsideHandler": 0
+        },
+        "summary": {
+          "lastObservedScrollToCurrentDomMs": {
+            "count": 100,
+            "median": 1.2999999523162842,
+            "p95": 2.799999952316284,
+            "maximum": 3.200000047683716
+          },
+          "currentDomToRafMs": {
+            "count": 100,
+            "median": 0.10000002384185791,
+            "p95": 0.2999999523162842,
+            "maximum": 0.5
+          }
+        }
+      },
+      "sourceAndDirtyUnchanged": true
+    }
+  ],
+  "processMedianSummary": {
+    "baseline": {
+      "wheelToRaf1": {
+        "count": 3,
+        "median": 0.2999999523162842,
+        "p95": 0.2999999523162842,
+        "maximum": 0.2999999523162842
+      },
+      "wheelToRaf2": {
+        "count": 3,
+        "median": 7.899999976158142,
+        "p95": 7.899999976158142,
+        "maximum": 7.899999976158142
+      },
+      "scrollToRaf1": {
+        "count": 3,
+        "median": 0,
+        "p95": 0,
+        "maximum": 0
+      },
+      "productHandlerMs": null
+    },
+    "candidate": {
+      "wheelToRaf1": {
+        "count": 3,
+        "median": 1.5,
+        "p95": 1.600000023841858,
+        "maximum": 1.600000023841858
+      },
+      "wheelToRaf2": {
+        "count": 3,
+        "median": 16.600000023841858,
+        "p95": 16.600000023841858,
+        "maximum": 16.600000023841858
+      },
+      "scrollToRaf1": {
+        "count": 3,
+        "median": 1.3000000715255737,
+        "p95": 1.399999976158142,
+        "maximum": 1.399999976158142
+      },
+      "productHandlerMs": {
+        "count": 3,
+        "median": 0.10000002384185791,
+        "p95": 0.19999992847442627,
+        "maximum": 0.19999992847442627
+      }
+    }
+  },
+  "core": {
+    "baseline": {
+      "status": "not-applicable",
+      "reason": "61 carece de este árbol y sección actual.",
+      "treeBuildMs": null,
+      "searchMs": null
+    },
+    "candidate": {
+      "topGetterReads": {
+        "count": 1000,
+        "median": 10,
+        "p95": 10,
+        "maximum": 10
+      },
+      "treeBuildMs": {
+        "count": 100,
+        "median": 0.2420620000048075,
+        "p95": 0.2978750000038417,
+        "maximum": 0.4333340000011958
+      },
+      "searchMs": {
+        "count": 100,
+        "median": 0.00020899999799439684,
+        "p95": 0.000291000003926456,
+        "maximum": 0.0009580000041751191
+      }
+    },
+    "scope": "Estructura plana en memoria y búsqueda; no montaje DOM.",
+    "projectionExports": [
+      "currentHeading",
+      "outlineTree"
+    ],
+    "projectionImports": [],
+    "sourceSha256": "3298ee6db82d5388bf6f6808666b5ecb0af525419e5563c0575902322dca4e5e",
+    "generatedSha256": "0f2ecd963d3b91e8189155c8abdc736ce7c8c41612b8099735df630037553c83",
+    "semanticGroupsPassed": 19
+  },
+  "firstAttemptPreserved": {
+    "rawResult": "/private/tmp/freyalab-lote/7-outline-benchmark-run-884e404/results.json",
+    "sha256": "b5cb99af302f074bb0629868bcc89a4f4e2c440dd975aefb17b7a9a3c455903a",
+    "status": "FAILED",
+    "completedRuns": 0,
+    "failure": {
+      "message": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('aside.outline') to be visible\u001b[22m\n",
+      "at": "2026-10-28T07:26:16.293Z"
+    },
+    "scriptSha256": "9996c994e9319bfd622920bd09cfa531de5db03395627de5e3361cd8029d1656",
+    "timingsUsed": false,
+    "changeForNextAttempt": "La espera de los1000 títulos y render terminado se movió antes de consultar/toggle del índice basal; ningún cambio de producto ni métricas.",
+    "sourceAndBundleSnapshotsIdenticalToSuccessfulSeries": true,
+    "onlyHarnessDeltaIsRenderReadyGuardPosition": true
+  },
+  "limits": [
+    "61 es comparador histórico; incluye otros cambios y no permite atribución exclusiva al índice.",
+    "Rueda→rAF mide callbacks observados, no píxeles presentados. El listener mide CPU síncrona con dos lecturas de reloj, sin restar una constante.",
+    "Las operaciones/UI se recogen después y separadas de los tiempos primarios. No se fuerza rueda=scroll=mutación.",
+    "Último scroll observado→mutación de aria-current no es latencia causal por rueda.",
+    "Conteos de APIs interceptadas no equivalen a interceptar todo el DOM; completar con inspección y cota pura del helper.",
+    "No acredita modo Editar, IME físico, exportación, memoria sostenida, instaladores, Linux o Windows.",
+    "No equivale a finalizar E2E global o CI; están fuera de esta evidencia."
+  ],
+  "benchmarkRawSource": "/private/tmp/freyalab-lote/7-outline-benchmark-run-884e404-render-ready/results.json",
+  "rawResult": "md-007-mediciones-2026-10-28.json",
+  "story": "FL-MD-007",
+  "documentedAtUtc": "2026-10-28T08:03:59.695995+00:00",
+  "documentationContext": {
+    "headBeforeEvidenceCommit": "4a544b391e88036ed068caf7edd58cb886fb6a30",
+    "base": "0368e3cd65a7afaa699a87e2bda8afa0476bdddd",
+    "measuredHead": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+    "measuredHeadRebasedEquivalent": "49083712e8ac89452187430dc9b21d91c066fb45",
+    "humanMerge": {
+      "pr": 79,
+      "changes": "solo seis documentos de historias",
+      "mergedBy": "propietario; no por el agente"
+    },
+    "rebaseProof": {
+      "origin": "/private/tmp/freyalab-lote/bloque-a-main79-sync-proof.json",
+      "sha256": "b20e98839a9c6b5cf91e4a8a07c214942f578da253a75507d55ac7ff02ddebc8",
+      "functionalFiles": 185,
+      "changedFunctionalFiles": [],
+      "baseChangeOnlyDocs": [
+        "docs/stories/1-markdown-correcciones.md",
+        "docs/stories/2-mermaid-robustez.md",
+        "docs/stories/3-markdown-experiencia.md",
+        "docs/stories/4-dibujos-editables.md",
+        "docs/stories/5-pruebas.md",
+        "docs/stories/README.md"
+      ],
+      "commitMapping": [
+        {
+          "before": "9e96ec2f2c1bcb5ea2a5c1f0230a9e2c9e3dad24",
+          "after": "e71f169b4c7577674df8e3b267b80721ec9f76d8",
+          "subject": "chore(ci): validar por bloques y evitar la construcción duplicada"
+        },
+        {
+          "before": "d36ce5675731af33f6461bc0b6da726d78c9da64",
+          "after": "326f47b055be121709c237ab20e73e9577311101",
+          "subject": "feat(md): llevar el índice a las pestañas de la barra izquierda"
+        },
+        {
+          "before": "d7846ca80ee86c5b6a58cfc4b060990ee089f052",
+          "after": "5147df019959c56947b280dd9468ba0fa66e3efd",
+          "subject": "feat(md): señalar la sección actual en el índice izquierdo"
+        },
+        {
+          "before": "9b34271669ca13be17ea0d3cf9f7d3e08a490049",
+          "after": "c5687f10dc9aa3660483091c5d3461d6d1107a1c",
+          "subject": "feat(md): contraer las ramas del índice sin perder su estado"
+        },
+        {
+          "before": "a3db83698ca80f11a8a519f185d8603c9f21a052",
+          "after": "6f05733796ef3fb42e7070d700e497928d3a328e",
+          "subject": "feat(md): navegar del índice a las líneas del editor con seguridad"
+        },
+        {
+          "before": "a9b6b427856203564f389100573a31fb87092bc5",
+          "after": "76dda4fe0f96ef4be749b0d06e2b165821ff0e03",
+          "subject": "feat(md): leer etiquetas del front matter sin alterar el documento"
+        },
+        {
+          "before": "f82fac3470b1979f613d16dfb0558d1b6e39509b",
+          "after": "8cd4119e2d8c1a97a52d24f81c5834949fd2c419",
+          "subject": "feat(md): mostrar etiquetas seguras fuera del documento exportado"
+        },
+        {
+          "before": "1361e054512c8dc807f30ae33563db22828171e6",
+          "after": "154044453c4052ffde4a45bca49e51bf5ad3943c",
+          "subject": "feat(md): filtrar archivos por etiquetas con límites y cancelación"
+        },
+        {
+          "before": "e84ac880159e1fe7edac42997feea2c69b5b15b4",
+          "after": "483b4139ce8d067300830847449387549e5146b3",
+          "subject": "feat(md): listar etiquetas y recuentos sin bloquear el explorador"
+        },
+        {
+          "before": "65d19d785bc787ecae2e141932ee53f377045f9f",
+          "after": "52191ba52e1a0fe4e8bbf6083fbfbed924758317",
+          "subject": "test(md): preparar los árboles de las fixtures sin depender del reloj"
+        },
+        {
+          "before": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+          "after": "49083712e8ac89452187430dc9b21d91c066fb45",
+          "subject": "fix(md): conservar el foco de composición en controles accesibles"
+        },
+        {
+          "before": "147001cd304e5e6956cd75c5de366a77ee0646d5",
+          "after": "4a544b391e88036ed068caf7edd58cb886fb6a30",
+          "subject": "test(ui): distinguir pestañas de documentos y estados de búsqueda"
+        }
+      ]
+    },
+    "runtimeUnchangedAfterLocatorCorrection": {
+      "otherGuardedFiles": 182,
+      "bundledFiles": 247,
+      "changedOnly": [
+        "tests/e2e/markdown-sidebar.spec.ts",
+        "tests/e2e/mermaid-errors.spec.ts",
+        "tests/e2e/mermaid-export-theme.spec.ts"
+      ],
+      "assertionsFixturesTitlesTimeoutsOtherwiseUnchanged": true
+    },
+    "postEvidenceBuild": "pendiente de Root; no ejecutado por este agente"
+  },
+  "localCommands": {
+    "check": {
+      "command": "npm run check",
+      "head": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 0,
+      "log": "bloque-a-check-final.log"
+    },
+    "unit": {
+      "command": "npm test",
+      "head": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+      "exitCode": 0,
+      "passed": 959,
+      "testFiles": 40,
+      "durationSeconds": 6.12,
+      "log": "bloque-a-unit-final.log"
+    },
+    "build": {
+      "command": "npm run build",
+      "head": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+      "exitCode": 0,
+      "log": "bloque-a-build-final.log"
+    },
+    "e2e": {
+      "command": "npm run test:e2e",
+      "head": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+      "exitCode": 1,
+      "passed": 351,
+      "failed": 4,
+      "total": 355,
+      "flaky": 0,
+      "skipped": 0,
+      "retryAttempts": 0,
+      "durationMs": 623328.439,
+      "log": "bloque-a-e2e-full.log",
+      "reportHtmlSha256": "3581bd92854c3046d8a85583ea71d009ff872eed22943f44fb4a7140a251fec2",
+      "projectCounts": {
+        "md": {
+          "total": 165,
+          "expected": 161,
+          "unexpected": 4
+        },
+        "shell": {
+          "total": 38,
+          "expected": 38
+        },
+        "csv": {
+          "total": 152,
+          "expected": 152
+        }
+      },
+      "failingCases": [
+        {
+          "file": "mermaid-errors.spec.ts",
+          "title": "cerrar una pestaña limpia Mermaid mientras espera exportar cancela la salida de su vista destruida",
+          "location": {
+            "file": "mermaid-errors.spec.ts",
+            "line": 86,
+            "column": 1
+          }
+        },
+        {
+          "file": "mermaid-errors.spec.ts",
+          "title": "cerrar una pestaña limpia Markdown mientras espera exportar cancela la salida de su vista destruida",
+          "location": {
+            "file": "mermaid-errors.spec.ts",
+            "line": 86,
+            "column": 1
+          }
+        },
+        {
+          "file": "markdown-sidebar.spec.ts",
+          "title": "P7: alternar conserva árbol expandido, búsqueda, resultados y desplazamiento de ambos paneles",
+          "location": {
+            "file": "markdown-sidebar.spec.ts",
+            "line": 147,
+            "column": 1
+          }
+        },
+        {
+          "file": "mermaid-export-theme.spec.ts",
+          "title": "cerrar la pestaña mientras espera el render cancela la salida de la vista destruida",
+          "location": {
+            "file": "mermaid-export-theme.spec.ts",
+            "line": 237,
+            "column": 1
+          }
+        }
+      ]
+    },
+    "correctedSelectorsFocused": {
+      "command": "playwright test (cuatro casos afectados; mismos escenarios)",
+      "passed": 4,
+      "failed": 0,
+      "durationSeconds": 3,
+      "log": "bloque-a-selectors-fixed.log",
+      "fullFinalRerunExecuted": false
+    }
+  },
+  "focalBlocks": {
+    "P": {
+      "commit": "326f47b055be121709c237ab20e73e9577311101",
+      "red": "tablist ausente; después preferencia no MD, clic activo y mínimo de ventana",
+      "green": {
+        "passed": 14,
+        "durationSeconds": 20.9
+      },
+      "coverage": "nueve P más cinco regresiones"
+    },
+    "A": {
+      "commit": "5147df019959c56947b280dd9468ba0fa66e3efd",
+      "unitRed": "módulo ausente; cero ejecutadas",
+      "unitGreen": 12,
+      "firstE2e": {
+        "passed": 20,
+        "failed": 1,
+        "durationSeconds": 30.4
+      },
+      "correction": "instrumentación de contraste esperaba transición real; foco posterior1/1",
+      "fullCombined21GreenExecuted": false
+    },
+    "B": {
+      "commit": "c5687f10dc9aa3660483091c5d3461d6d1107a1c",
+      "unitRed": {
+        "failed": 15,
+        "passed": 12
+      },
+      "unitGreen": 27,
+      "e2eGreen": {
+        "passed": 10,
+        "durationSeconds": 12.5
+      }
+    },
+    "C": {
+      "commit": "6f05733796ef3fb42e7070d700e497928d3a328e",
+      "unitRed": {
+        "failed": 31,
+        "passed": 27
+      },
+      "unitGreen": 58,
+      "firstE2e": {
+        "passed": 11,
+        "failed": 1,
+        "durationSeconds": 30.7
+      },
+      "eofFinalFocused": {
+        "passed": 1,
+        "durationSeconds": 1.6,
+        "firstLine": 93,
+        "cursorTopPx": 0.15625
+      },
+      "notes": "Aserción dirty tras Undo corregida según política existente; no cambio de guardado. Casos C sin fallos en full1, que globalmente falló por cuatro selectores."
+    }
+  },
+  "featureGuards": {
+    "contrast": {
+      "light": 13.0318,
+      "dark": 12.4875,
+      "ratio": "texto activo/fondo, tras Animation.finished",
+      "indicatorInsetPx": 2
+    },
+    "sourceAndExport": "Focales conservan fuente/disco y HTML al navegar o contraer; no se añade motor Markdown",
+    "canonicalHistory": "Casillas y editor visible comparten sesión/historial CodeMirror; backend/recuperación existentes intactos",
+    "unknownHtmlReferenceEntity": "Aviso conservador cuando no hay correspondencia demostrada; no transforma texto",
+    "ime": "Solo eventos sintéticos; no IME físico",
+    "eof": "scrollPastEnd y padding1lh solo con Índice visible en Editar; sin insertar texto ni segundo scroll manual"
+  },
+  "pending": {
+    "finalFullLocalGreen": false,
+    "ciFourPlatformsFinalHead": "pendiente; debe ejecutar355 casos",
+    "pullRequestDraft": "pendiente",
+    "packagedRegression": "pendiente;61 casos CSV no acreditan por sí solos Markdown/Mermaid empaquetado",
+    "manualInstallAndAccessibility": "pendiente",
+    "releaseAndInstalledApp": "no realizados"
+  },
+  "captureManifest": [
+    {
+      "file": "md-007-a-light-1440x900.png",
+      "sha256": "6b758211d1448812cc27384af0d8253ee980de87993808194a76bb602b44b3c4",
+      "bytes": 174879,
+      "dimensions": [
+        1440,
+        900
+      ],
+      "origin": "/private/tmp/freyalab-lote/7-outline-artifacts/7-a-outline-light-1440x900.png",
+      "provenance": "Captura focal del bloque A; no captura del cierre global ni del paquete",
+      "sourceMtimeUtc": "2026-10-28T06:33:44.824661+00:00",
+      "exactCaptureHead": null
+    },
+    {
+      "file": "md-007-a-dark-1440x900.png",
+      "sha256": "2aefe58d00c9b9f21586e943ddb358948544cd5846f843035c804ef34e98d132",
+      "bytes": 175907,
+      "dimensions": [
+        1440,
+        900
+      ],
+      "origin": "/private/tmp/freyalab-lote/7-outline-artifacts/7-a-outline-dark-1440x900.png",
+      "provenance": "Captura focal del bloque A; no captura del cierre global ni del paquete",
+      "sourceMtimeUtc": "2026-10-28T06:33:45.109359+00:00",
+      "exactCaptureHead": null
+    },
+    {
+      "file": "md-007-b-light-1440x900.png",
+      "sha256": "a0a5b968e4cdc27b9bfb4baa91701ead43b6eba8f6d76edee0c0e7c3f715031f",
+      "bytes": 179900,
+      "dimensions": [
+        1440,
+        900
+      ],
+      "origin": "/private/tmp/freyalab-lote/7-outline-artifacts/7-b-outline-light-1440x900.png",
+      "provenance": "Captura focal del bloque B; no captura del cierre global ni del paquete",
+      "sourceMtimeUtc": "2026-10-28T06:36:46.263628+00:00",
+      "exactCaptureHead": null
+    },
+    {
+      "file": "md-007-b-dark-1440x900.png",
+      "sha256": "18b0db62dda9f7db0654bfc13564ba6b68576b5c09214cdf0c3c607ddcfe9a7c",
+      "bytes": 181705,
+      "dimensions": [
+        1440,
+        900
+      ],
+      "origin": "/private/tmp/freyalab-lote/7-outline-artifacts/7-b-outline-dark-1440x900.png",
+      "provenance": "Captura focal del bloque B; no captura del cierre global ni del paquete",
+      "sourceMtimeUtc": "2026-10-28T06:36:46.534598+00:00",
+      "exactCaptureHead": null
+    },
+    {
+      "file": "md-007-c-light-1440x900.png",
+      "sha256": "114d0cbd04906d781849b43c29284f958b1f40f63b12016f93b38242887e9d07",
+      "bytes": 114416,
+      "dimensions": [
+        1440,
+        900
+      ],
+      "origin": "/private/tmp/freyalab-lote/7-outline-artifacts/7-c-outline-light-1440x900.png",
+      "provenance": "Captura focal del bloque C; no captura del cierre global ni del paquete",
+      "sourceMtimeUtc": "2026-10-28T06:41:28.974008+00:00",
+      "exactCaptureHead": null
+    },
+    {
+      "file": "md-007-c-dark-1440x900.png",
+      "sha256": "f337fd68be946584e79f54ba0ae099d332239b823720614052c2f4b890b2b303",
+      "bytes": 114865,
+      "dimensions": [
+        1440,
+        900
+      ],
+      "origin": "/private/tmp/freyalab-lote/7-outline-artifacts/7-c-outline-dark-1440x900.png",
+      "provenance": "Captura focal del bloque C; no captura del cierre global ni del paquete",
+      "sourceMtimeUtc": "2026-10-28T06:41:29.051280+00:00",
+      "exactCaptureHead": null
+    }
+  ],
+  "localLogManifest": {
+    "bloque-a-check-final.log": {
+      "origin": "/private/tmp/freyalab-lote/bloque-a-check-final.log",
+      "sha256": "d92af34039c76d5983df584dcb33e6a458e2ad5d0d05402c409b6eae9a1768a5",
+      "bytes": 256,
+      "includedInRepository": false
+    },
+    "bloque-a-unit-final.log": {
+      "origin": "/private/tmp/freyalab-lote/bloque-a-unit-final.log",
+      "sha256": "345b39f4c9dc3711c3c885f5aefd8d4ebc2bf1ae05941828f6888a5b86652504",
+      "bytes": 233,
+      "includedInRepository": false
+    },
+    "bloque-a-build-final.log": {
+      "origin": "/private/tmp/freyalab-lote/bloque-a-build-final.log",
+      "sha256": "45f3b7cced726ca07845329d6a549e48549d7f90a9d18d7fc1bdf887df3f9b57",
+      "bytes": 21409,
+      "includedInRepository": false
+    },
+    "bloque-a-e2e-full.log": {
+      "origin": "/private/tmp/freyalab-lote/bloque-a-e2e-full.log",
+      "sha256": "3bd7bd5bb83a847a2ea4b11534867cdd6109ad8483e22e3effa08ed13f383106",
+      "bytes": 88152,
+      "includedInRepository": false
+    },
+    "bloque-a-selectors-fixed.log": {
+      "origin": "/private/tmp/freyalab-lote/bloque-a-selectors-fixed.log",
+      "sha256": "e0be520032fc2e65d4c71cecd2fe2af5c68d1113d96dd52185f32cc8502ab4d1",
+      "bytes": 879,
+      "includedInRepository": false
+    },
+    "bloque-a-selector-scope-proof.json": {
+      "origin": "/private/tmp/freyalab-lote/bloque-a-selector-scope-proof.json",
+      "sha256": "b3c91a524ed5952879d3401422a1139ecb580538b2696ed9966ccf39e9c2bb88",
+      "bytes": 795,
+      "includedInRepository": false
+    },
+    "bloque-a-full1-summary.json": {
+      "origin": "/private/tmp/freyalab-lote/bloque-a-full1-summary.json",
+      "sha256": "81792aeea9cc940838b29d5de04c5cc6935af5e59e6b03317d8cafbe6f9995cd",
+      "bytes": 12262,
+      "includedInRepository": false
+    },
+    "7-p-b230-p1-final-red.log": {
+      "origin": "/private/tmp/freyalab-lote/7-p-b230-p1-final-red.log",
+      "sha256": "045f9dc5c2add7c8a70aad230710825c424f50c1aa486b3892ad31994bdf4508",
+      "bytes": 3154,
+      "includedInRepository": false
+    },
+    "7-p-new-red.log": {
+      "origin": "/private/tmp/freyalab-lote/7-p-new-red.log",
+      "sha256": "7091f11a79e8da79bd7dc8bff5ac380d1e63aa9bd2b4f04b8700eed1d475df55",
+      "bytes": 9193,
+      "includedInRepository": false
+    },
+    "7-p-final-green.log": {
+      "origin": "/private/tmp/freyalab-lote/7-p-final-green.log",
+      "sha256": "6a97ea82bddcdb48a6d0da4019fbe30c0faebe80a222d3d9214c85510c0383e4",
+      "bytes": 2492,
+      "includedInRepository": false
+    },
+    "7-a-b230-core-red.log": {
+      "origin": "/private/tmp/freyalab-lote/7-a-b230-core-red.log",
+      "sha256": "94eb83ac050831742e0de884a6188879feccc55dac1823e4e67332a43c5f0481",
+      "bytes": 776,
+      "includedInRepository": false
+    },
+    "7-a-b230-core-green.log": {
+      "origin": "/private/tmp/freyalab-lote/7-a-b230-core-green.log",
+      "sha256": "d605ce758e05dadc3877ef7df4b3e78b7ad4bd25a43fe20c616c9a68c6f88d65",
+      "bytes": 196,
+      "includedInRepository": false
+    },
+    "7-a-current-red.log": {
+      "origin": "/private/tmp/freyalab-lote/7-a-current-red.log",
+      "sha256": "f255f2e416adc557bd5a2db65a4c441a8f73e6b5c462db2fd2f1cc9d718da58d",
+      "bytes": 2912,
+      "includedInRepository": false
+    },
+    "7-a-all-green.log": {
+      "origin": "/private/tmp/freyalab-lote/7-a-all-green.log",
+      "sha256": "2e8f6163aa6cf83f35562cea5a8682253595c1bae22ebb83d19f85b02c9f9194",
+      "bytes": 5350,
+      "includedInRepository": false
+    },
+    "7-a-style-diagnostic.log": {
+      "origin": "/private/tmp/freyalab-lote/7-a-style-diagnostic.log",
+      "sha256": "5338282c2e2c741ce4637129d6f3aab97e49317abda25428bb8e25453921e27e",
+      "bytes": 342,
+      "includedInRepository": false
+    },
+    "7-b-core-red.log": {
+      "origin": "/private/tmp/freyalab-lote/7-b-core-red.log",
+      "sha256": "458aa9dc1ccc93df8d1b505627533f306e3932fa832707a79d4e8b985cb8d726",
+      "bytes": 7101,
+      "includedInRepository": false
+    },
+    "7-b-core-green.log": {
+      "origin": "/private/tmp/freyalab-lote/7-b-core-green.log",
+      "sha256": "4b07e4d012460551c9734b270dcf2ffd88054124302e68260b0ae9934f95dff1",
+      "bytes": 196,
+      "includedInRepository": false
+    },
+    "7-b-tree-red.log": {
+      "origin": "/private/tmp/freyalab-lote/7-b-tree-red.log",
+      "sha256": "5b8c2e322135a0855f565f9d2cfafd6c520d92a5b80f4fddd187d09762669b50",
+      "bytes": 3357,
+      "includedInRepository": false
+    },
+    "7-b-green.log": {
+      "origin": "/private/tmp/freyalab-lote/7-b-green.log",
+      "sha256": "b1ed18b602b19bbc8b790c39806a1e4dfbc284f4e01fa944b488dfe2a3d4c0bd",
+      "bytes": 1629,
+      "includedInRepository": false
+    },
+    "7-c-core-red.log": {
+      "origin": "/private/tmp/freyalab-lote/7-c-core-red.log",
+      "sha256": "8412a2a9a8911f99cbad22c3b4d8ab1b30e809ff2f8c7f883f46cddf5a384a8f",
+      "bytes": 11762,
+      "includedInRepository": false
+    },
+    "7-c-core-green.log": {
+      "origin": "/private/tmp/freyalab-lote/7-c-core-green.log",
+      "sha256": "cd71d8c9540c287a8391ead2ba1b3050a10ad57592e01453f7b3934070ec66de",
+      "bytes": 196,
+      "includedInRepository": false
+    },
+    "7-c-editor-real-red.log": {
+      "origin": "/private/tmp/freyalab-lote/7-c-editor-real-red.log",
+      "sha256": "5b8ac14908cc526b737876e9bf7b1cb732147c5ec0707cde1a9222fec7719fa5",
+      "bytes": 2761,
+      "includedInRepository": false
+    },
+    "7-c-green.log": {
+      "origin": "/private/tmp/freyalab-lote/7-c-green.log",
+      "sha256": "33540dd8e94619718de929c4d85a897b4ff926d70b33407bb25d75892aa83e5f",
+      "bytes": 4302,
+      "includedInRepository": false
+    },
+    "7-c-eof-diagnostic.log": {
+      "origin": "/private/tmp/freyalab-lote/7-c-eof-diagnostic.log",
+      "sha256": "ffeece3b3190a8d36cd3c9f3688a2ffcdeca796b3f15da647feffc95a5407f50",
+      "bytes": 2742,
+      "includedInRepository": false
+    },
+    "7-c-eof-fixed.log": {
+      "origin": "/private/tmp/freyalab-lote/7-c-eof-fixed.log",
+      "sha256": "129c16b84e7521e07e0dd261c0ba8e6f7aead3569d161d5ba41a153f369a44a6",
+      "bytes": 2736,
+      "includedInRepository": false
+    },
+    "7-c-eof-final.log": {
+      "origin": "/private/tmp/freyalab-lote/7-c-eof-final.log",
+      "sha256": "a5cf82b292eac2f7cd84167b2909147efedf85fcf6eb39731660e6c192dbbd0b",
+      "bytes": 375,
+      "includedInRepository": false
+    },
+    "7-outline-benchmark-run-884e404.log": {
+      "origin": "/private/tmp/freyalab-lote/7-outline-benchmark-run-884e404.log",
+      "sha256": "712bd0af630a647e451e0734bc6c47d0c413b388c8da7ca5b4d4abb552e5e9ee",
+      "bytes": 383,
+      "includedInRepository": false
+    },
+    "7-outline-benchmark-run-884e404-render-ready.log": {
+      "origin": "/private/tmp/freyalab-lote/7-outline-benchmark-run-884e404-render-ready.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "includedInRepository": false
+    }
+  },
+  "artifactManifest": [
+    {
+      "file": "md-007-mediciones-2026-10-28.json",
+      "sha256": "cb9f4574ed130ef1d707252ce345e1c9d590dbbacd1c62445d8a1882d3a14613",
+      "bytes": 903974,
+      "copiedByteExact": true,
+      "origin": "/private/tmp/freyalab-lote/7-outline-benchmark-run-884e404-render-ready/results.json"
+    },
+    {
+      "file": "md-007-a-light-1440x900.png",
+      "sha256": "6b758211d1448812cc27384af0d8253ee980de87993808194a76bb602b44b3c4",
+      "bytes": 174879
+    },
+    {
+      "file": "md-007-a-dark-1440x900.png",
+      "sha256": "2aefe58d00c9b9f21586e943ddb358948544cd5846f843035c804ef34e98d132",
+      "bytes": 175907
+    },
+    {
+      "file": "md-007-b-light-1440x900.png",
+      "sha256": "a0a5b968e4cdc27b9bfb4baa91701ead43b6eba8f6d76edee0c0e7c3f715031f",
+      "bytes": 179900
+    },
+    {
+      "file": "md-007-b-dark-1440x900.png",
+      "sha256": "18b0db62dda9f7db0654bfc13564ba6b68576b5c09214cdf0c3c607ddcfe9a7c",
+      "bytes": 181705
+    },
+    {
+      "file": "md-007-c-light-1440x900.png",
+      "sha256": "114d0cbd04906d781849b43c29284f958b1f40f63b12016f93b38242887e9d07",
+      "bytes": 114416
+    },
+    {
+      "file": "md-007-c-dark-1440x900.png",
+      "sha256": "f337fd68be946584e79f54ba0ae099d332239b823720614052c2f4b890b2b303",
+      "bytes": 114865
+    },
+    {
+      "file": "md-007-indice-2026-10-28.md",
+      "sha256": "2d4a032a6d9895e98ecc58b86dab1847e982695e0397586d960a03209abdf8d5",
+      "bytes": 6672,
+      "lines": 62
+    }
+  ],
+  "benchmarkStatus": "COMPLETE",
+  "status": "LOCAL_EVIDENCE_GLOBAL_FAILED_SELECTORS_FIXED_FINAL_CI_PENDING",
+  "benchmarkStartedAtUtc": "2026-10-28T07:28:44.791Z",
+  "benchmarkCompletedAtUtc": "2026-10-28T07:29:59.042Z"
+}

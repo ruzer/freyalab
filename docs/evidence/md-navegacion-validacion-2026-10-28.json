@@ -1,0 +1,364 @@
+{
+  "sourceHeadBeforeDocumentation": "4a544b391e88036ed068caf7edd58cb886fb6a30",
+  "baseMain": "0368e3cd65a7afaa699a87e2bda8afa0476bdddd",
+  "localTestedHead": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+  "check": {
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 0
+  },
+  "unit": {
+    "passed": 959,
+    "files": 40,
+    "durationSeconds": 6.12
+  },
+  "build": {
+    "exitCode": 0
+  },
+  "licenses": {
+    "exitCode": 0,
+    "productionInstallations": 353
+  },
+  "e2eFull": {
+    "scope": "Frozen full1 HTML report extraction only; no test, build, Native app or worktree mutation",
+    "reader": "Reused HTML template playwrightReportBase64 data:application/zip;base64 reader from pr77-ci/full1-timeline-extract.py; standard-library ZIP parser; no report JS execution",
+    "created_utc": "2026-10-28T07:50:04+00:00",
+    "report_source": "/private/tmp/freyalab-lote/bloque-a-full1-playwright-report/index.html",
+    "report_html_sha256": "3581bd92854c3046d8a85583ea71d009ff872eed22943f44fb4a7140a251fec2",
+    "embedded_zip_sha256": "cfe7b12fb248e5f7595f08d2e1f6c21bfc13f53d025ebb745daebf2b34ae8355",
+    "report_stats": {
+      "total": 355,
+      "expected": 351,
+      "unexpected": 4,
+      "flaky": 0,
+      "skipped": 0,
+      "ok": false
+    },
+    "project_counts": {
+      "md": {
+        "total": 165,
+        "expected": 161,
+        "unexpected": 4
+      },
+      "shell": {
+        "total": 38,
+        "expected": 38
+      },
+      "csv": {
+        "total": 152,
+        "expected": 152
+      }
+    },
+    "outcome_counts": {
+      "expected": 351,
+      "unexpected": 4
+    },
+    "attempt_status_counts": {
+      "passed": 351,
+      "failed": 4
+    },
+    "attempt_retry_indices": {
+      "0": 355
+    },
+    "test_count": 355,
+    "attempt_count": 355,
+    "retry_attempt_count": 0,
+    "report_start_utc": "2026-10-28T07:33:26.476Z",
+    "report_duration_ms": 623328.439,
+    "report_duration_minutes": 10.388807316666666,
+    "computed_end_utc": "2026-10-28T07:43:49.804Z",
+    "time_semantics": "duration is the exact numeric HTML reporter duration; end is arithmetically startTime+duration, rounded to milliseconds for display, not an independently observed terminal timestamp",
+    "report_errors": [],
+    "failures": [
+      {
+        "test_id": "58a8592909f169daaef4-887eec9c1cb4636f6a0a",
+        "file": "mermaid-errors.spec.ts",
+        "title": "cerrar una pestaña limpia Mermaid mientras espera exportar cancela la salida de su vista destruida",
+        "project": "md",
+        "outcome": "unexpected",
+        "location": {
+          "file": "mermaid-errors.spec.ts",
+          "line": 86,
+          "column": 1
+        },
+        "attempts": [
+          {
+            "retry": 0,
+            "status": "failed",
+            "duration_ms": 15564,
+            "start_utc": "2026-10-28T07:35:43.223Z",
+            "worker_index": 2,
+            "errors": [
+              "Error: expect(locator).toHaveCount(expected) failed\n\nLocator:  getByRole('tab')\nExpected: 0\nReceived: 2\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toHaveCount\" getByRole('tab') with timeout 15000ms\n  - waiting for getByRole('tab')\n    34 × locator resolved to 2 elements\n       - unexpected value \"2\"\n\n\n   97 |  await test.info().attach('cierre-durante-exportacion',{body:Buffer.from(JSON.stringify(result)),contentType:'application/json'})\n   98 |  expect(result.waiting).toBe(true)\n>  99 |  await expect(page.getByRole('tab')).toHaveCount(0);await expect(page.locator('.toast')).toContainText(scenario.message)\n      |                                      ^\n  100 |  expect(await readdir(join(folder,'exports'))).toEqual([]);expect(await readFile(path,'utf8')).toBe(scenario.text)\n  101 | })\n  102 | }\n    at /private/tmp/freyalab-lote/md-007/tests/e2e/mermaid-errors.spec.ts:99:38"
+            ],
+            "errors_truncated": [
+              false
+            ],
+            "attachments": [
+              {
+                "name": "error-context",
+                "path": "/private/tmp/freyalab-lote/bloque-a-full1-playwright-report/data/3c06ce0c820586ed193cb75c7791a5721678d10b.md",
+                "sha256": "9fe52af9c7723bc7b4714ef4d2d14ea7fce4d247406f66e167ac491756dae461"
+              },
+              {
+                "name": "trace",
+                "path": "/private/tmp/freyalab-lote/bloque-a-full1-playwright-report/data/77457a762e254d4882c04b2b6c5b2df12e7b65c2.zip",
+                "sha256": "20ee9fa862a1673cc297853337a439008492cea1bc882e1fb8ee3a95405cc33e"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "test_id": "58a8592909f169daaef4-4bb80706d69e68639ee0",
+        "file": "mermaid-errors.spec.ts",
+        "title": "cerrar una pestaña limpia Markdown mientras espera exportar cancela la salida de su vista destruida",
+        "project": "md",
+        "outcome": "unexpected",
+        "location": {
+          "file": "mermaid-errors.spec.ts",
+          "line": 86,
+          "column": 1
+        },
+        "attempts": [
+          {
+            "retry": 0,
+            "status": "failed",
+            "duration_ms": 15553,
+            "start_utc": "2026-10-28T07:35:59.031Z",
+            "worker_index": 3,
+            "errors": [
+              "Error: expect(locator).toHaveCount(expected) failed\n\nLocator:  getByRole('tab')\nExpected: 0\nReceived: 2\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toHaveCount\" getByRole('tab') with timeout 15000ms\n  - waiting for getByRole('tab')\n    34 × locator resolved to 2 elements\n       - unexpected value \"2\"\n\n\n   97 |  await test.info().attach('cierre-durante-exportacion',{body:Buffer.from(JSON.stringify(result)),contentType:'application/json'})\n   98 |  expect(result.waiting).toBe(true)\n>  99 |  await expect(page.getByRole('tab')).toHaveCount(0);await expect(page.locator('.toast')).toContainText(scenario.message)\n      |                                      ^\n  100 |  expect(await readdir(join(folder,'exports'))).toEqual([]);expect(await readFile(path,'utf8')).toBe(scenario.text)\n  101 | })\n  102 | }\n    at /private/tmp/freyalab-lote/md-007/tests/e2e/mermaid-errors.spec.ts:99:38"
+            ],
+            "errors_truncated": [
+              false
+            ],
+            "attachments": [
+              {
+                "name": "error-context",
+                "path": "/private/tmp/freyalab-lote/bloque-a-full1-playwright-report/data/bc758b30380f9acf448d91d3193c6f24f5ee0cf1.md",
+                "sha256": "f34a178e611b9067cb3107f15eb3ce441680ce3141a4f4c6d8865087eee3e8b5"
+              },
+              {
+                "name": "trace",
+                "path": "/private/tmp/freyalab-lote/bloque-a-full1-playwright-report/data/9825944956085881247de8a4472d9c188a6b9c85.zip",
+                "sha256": "105da43abc1b74290715ddd550b9b375be170fb952a7865e12ef02bbcfb66161"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "test_id": "9ea0983217dc522cc458-76b0c1378a83ea54aaa2",
+        "file": "markdown-sidebar.spec.ts",
+        "title": "P7: alternar conserva árbol expandido, búsqueda, resultados y desplazamiento de ambos paneles",
+        "project": "md",
+        "outcome": "unexpected",
+        "location": {
+          "file": "markdown-sidebar.spec.ts",
+          "line": 147,
+          "column": 1
+        },
+        "attempts": [
+          {
+            "retry": 0,
+            "status": "failed",
+            "duration_ms": 801,
+            "start_utc": "2026-10-28T07:34:47.702Z",
+            "worker_index": 1,
+            "errors": [
+              "Error: expect(locator).toHaveText(expected) failed\n\nLocator: locator('aside.sidebar').getByRole('status')\nExpected: \"40 archivos encontrados\"\nError: strict mode violation: locator('aside.sidebar').getByRole('status') resolved to 2 elements:\n    1) <div role=\"status\" class=\"file-search-status\">Buscando en la carpeta…</div> aka getByText('Buscando en la carpeta…')\n    2) <p role=\"status\" class=\"file-tag-status\">Leyendo etiquetas…</p> aka getByText('Leyendo etiquetas…')\n\nCall log:\n  - Expect \"toHaveText\" locator('aside.sidebar').getByRole('status') with timeout 15000ms\n  - waiting for locator('aside.sidebar').getByRole('status')\n\n\n  154 |  await indexTab().click();await expect(indexPanel()).toContainText('Apartado 80');const indexTop=await scroll(indexPanel(),220);expect(indexTop).toBeGreaterThan(0)\n  155 |  await filesTab().click();await expect(branch).toHaveAttribute('aria-expanded','true');await expect.poll(()=>scroll(tree)).toBe(treeTop)\n> 156 |  await page.getByLabel('Buscar archivo',{exact:true}).fill('objetivo');await expect(sidebar().getByRole('status')).toHaveText('40 archivos encontrados');const names=await sidebar().locator('.file-search-result').allTextContents(),searchTop=await scroll(tree,180);expect(searchTop).toBeGreaterThan(0)\n      |                                                                                                                    ^\n  157 |  await indexTab().click();await expect.poll(()=>scroll(indexPanel())).toBe(indexTop);await filesTab().click();await expect(page.getByLabel('Buscar archivo',{exact:true})).toHaveValue('objetivo');expect(await sidebar().locator('.file-search-result').allTextContents()).toEqual(names);await expect.poll(()=>scroll(tree)).toBe(searchTop)\n  158 | })\n  159 |\n    at /private/tmp/freyalab-lote/md-007/tests/e2e/markdown-sidebar.spec.ts:156:116"
+            ],
+            "errors_truncated": [
+              false
+            ],
+            "attachments": [
+              {
+                "name": "error-context",
+                "path": "/private/tmp/freyalab-lote/bloque-a-full1-playwright-report/data/a0d336a2223b62d9a6c9efde5a44bcfa239804a6.md",
+                "sha256": "e4b3bf1f3391626ed7efee2145f62b80fa14d9fd013a64d23b25de390b0416c9"
+              },
+              {
+                "name": "trace",
+                "path": "/private/tmp/freyalab-lote/bloque-a-full1-playwright-report/data/06b3be9a93741be81b5e998c2e1716dc89765913.zip",
+                "sha256": "b7ce3baa4dc70571955fbc2e0125dd77be4061917a9cf60f007c1f451630e181"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "test_id": "c1541dbd8fc9b7599590-f7998c2c126fc3b75853",
+        "file": "mermaid-export-theme.spec.ts",
+        "title": "cerrar la pestaña mientras espera el render cancela la salida de la vista destruida",
+        "project": "md",
+        "outcome": "unexpected",
+        "location": {
+          "file": "mermaid-export-theme.spec.ts",
+          "line": 237,
+          "column": 1
+        },
+        "attempts": [
+          {
+            "retry": 0,
+            "status": "failed",
+            "duration_ms": 15578,
+            "start_utc": "2026-10-28T07:36:45.859Z",
+            "worker_index": 4,
+            "errors": [
+              "Error: expect(locator).toHaveCount(expected) failed\n\nLocator:  getByRole('tab')\nExpected: 0\nReceived: 2\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toHaveCount\" getByRole('tab') with timeout 15000ms\n  - waiting for getByRole('tab')\n    34 × locator resolved to 2 elements\n       - unexpected value \"2\"\n\n\n  245 |   document.querySelector<HTMLButtonElement>(`.tab-close[aria-label=${JSON.stringify('Cerrar '+name)}]`)!.click()\n  246 |  },doc.name)\n> 247 |  await expect(page.getByRole('tab')).toHaveCount(0)\n      |                                      ^\n  248 |  await expect(page.locator('.toast')).toContainText('Corrige el diagrama antes de exportar.')\n  249 |  expect(await readdir(join(directory,'exports'))).toEqual([])\n  250 | })\n    at /private/tmp/freyalab-lote/md-007/tests/e2e/mermaid-export-theme.spec.ts:247:38"
+            ],
+            "errors_truncated": [
+              false
+            ],
+            "attachments": [
+              {
+                "name": "error-context",
+                "path": "/private/tmp/freyalab-lote/bloque-a-full1-playwright-report/data/d56081df79e1cc7f69c6443cf0de145be55e14cc.md",
+                "sha256": "c105111992f27322f959a5d9c67b3b6da11d42b29dd466211b2949b1ed0e9e84"
+              },
+              {
+                "name": "trace",
+                "path": "/private/tmp/freyalab-lote/bloque-a-full1-playwright-report/data/0635e76bb70c01d71ef2ba3e33d7fa5a6b3137ff.zip",
+                "sha256": "cb782b922dd67257525b4e33d4ee4cecf5a96e7dd1cf5a9e7520ee9a755d3744"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "interpretation": {
+      "observed": "Four locator failures: one ambiguous explorer status and three zero-count expectations on global tab roles now containing sidebar tabs. No retry or recovered flaky case in this local full1 run.",
+      "root_reported_followup": "Root changed only the three locator source sites after freezing this report and is running four focused cases separately. This extraction does not assert their outcome.",
+      "limits": "This run is not green. The first failing assertion prevents later assertions in each failed case from executing; their closure/toast/export/source checks are not proven by this report. No CI, packaged-app or performance result is inferred."
+    }
+  },
+  "focusedCorrection": {
+    "localFullHead": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+    "localFull": {
+      "passed": 351,
+      "failed": 4,
+      "flaky": 0,
+      "skipped": 0,
+      "retry": 0,
+      "total": 355,
+      "durationMs": 623328.439
+    },
+    "focusedCorrection": {
+      "passed": 4,
+      "failed": 0,
+      "log": "bloque-a-selectors-fixed.log"
+    },
+    "changedOnly": [
+      "tests/e2e/markdown-sidebar.spec.ts",
+      "tests/e2e/mermaid-errors.spec.ts",
+      "tests/e2e/mermaid-export-theme.spec.ts"
+    ],
+    "allChangesAreExactLocatorReplacements": true,
+    "fixturesTitlesTimeoutsAndAssertionsOtherwiseUnchanged": true,
+    "otherGuardedFilesUnchanged": 182,
+    "bundledFilesUnchanged": 247,
+    "note": "No hubo otra ejecución local completa verde. La CI obligatoria ejecutará 355 pruebas sobre el head definitivo."
+  },
+  "mainSync": {
+    "head": "4a544b391e88036ed068caf7edd58cb886fb6a30",
+    "base": "0368e3cd65a7afaa699a87e2bda8afa0476bdddd",
+    "mapping": [
+      {
+        "before": "9e96ec2f2c1bcb5ea2a5c1f0230a9e2c9e3dad24",
+        "after": "e71f169b4c7577674df8e3b267b80721ec9f76d8",
+        "subject": "chore(ci): validar por bloques y evitar la construcción duplicada"
+      },
+      {
+        "before": "d36ce5675731af33f6461bc0b6da726d78c9da64",
+        "after": "326f47b055be121709c237ab20e73e9577311101",
+        "subject": "feat(md): llevar el índice a las pestañas de la barra izquierda"
+      },
+      {
+        "before": "d7846ca80ee86c5b6a58cfc4b060990ee089f052",
+        "after": "5147df019959c56947b280dd9468ba0fa66e3efd",
+        "subject": "feat(md): señalar la sección actual en el índice izquierdo"
+      },
+      {
+        "before": "9b34271669ca13be17ea0d3cf9f7d3e08a490049",
+        "after": "c5687f10dc9aa3660483091c5d3461d6d1107a1c",
+        "subject": "feat(md): contraer las ramas del índice sin perder su estado"
+      },
+      {
+        "before": "a3db83698ca80f11a8a519f185d8603c9f21a052",
+        "after": "6f05733796ef3fb42e7070d700e497928d3a328e",
+        "subject": "feat(md): navegar del índice a las líneas del editor con seguridad"
+      },
+      {
+        "before": "a9b6b427856203564f389100573a31fb87092bc5",
+        "after": "76dda4fe0f96ef4be749b0d06e2b165821ff0e03",
+        "subject": "feat(md): leer etiquetas del front matter sin alterar el documento"
+      },
+      {
+        "before": "f82fac3470b1979f613d16dfb0558d1b6e39509b",
+        "after": "8cd4119e2d8c1a97a52d24f81c5834949fd2c419",
+        "subject": "feat(md): mostrar etiquetas seguras fuera del documento exportado"
+      },
+      {
+        "before": "1361e054512c8dc807f30ae33563db22828171e6",
+        "after": "154044453c4052ffde4a45bca49e51bf5ad3943c",
+        "subject": "feat(md): filtrar archivos por etiquetas con límites y cancelación"
+      },
+      {
+        "before": "e84ac880159e1fe7edac42997feea2c69b5b15b4",
+        "after": "483b4139ce8d067300830847449387549e5146b3",
+        "subject": "feat(md): listar etiquetas y recuentos sin bloquear el explorador"
+      },
+      {
+        "before": "65d19d785bc787ecae2e141932ee53f377045f9f",
+        "after": "52191ba52e1a0fe4e8bbf6083fbfbed924758317",
+        "subject": "test(md): preparar los árboles de las fixtures sin depender del reloj"
+      },
+      {
+        "before": "884e404bf62aa617daf5e0f2e7e352eea501d3a4",
+        "after": "49083712e8ac89452187430dc9b21d91c066fb45",
+        "subject": "fix(md): conservar el foco de composición en controles accesibles"
+      },
+      {
+        "before": "147001cd304e5e6956cd75c5de366a77ee0646d5",
+        "after": "4a544b391e88036ed068caf7edd58cb886fb6a30",
+        "subject": "test(ui): distinguir pestañas de documentos y estados de búsqueda"
+      }
+    ],
+    "functionalFiles": 185,
+    "changedFunctionalFiles": [],
+    "baseChangeOnlyDocs": [
+      "docs/stories/1-markdown-correcciones.md",
+      "docs/stories/2-mermaid-robustez.md",
+      "docs/stories/3-markdown-experiencia.md",
+      "docs/stories/4-dibujos-editables.md",
+      "docs/stories/5-pruebas.md",
+      "docs/stories/README.md"
+    ],
+    "status": ""
+  },
+  "logSha256": {
+    "bloque-a-check-final.log": "d92af34039c76d5983df584dcb33e6a458e2ad5d0d05402c409b6eae9a1768a5",
+    "bloque-a-unit-final.log": "345b39f4c9dc3711c3c885f5aefd8d4ebc2bf1ae05941828f6888a5b86652504",
+    "bloque-a-build-final.log": "45f3b7cced726ca07845329d6a549e48549d7f90a9d18d7fc1bdf887df3f9b57",
+    "bloque-a-e2e-full.log": "3bd7bd5bb83a847a2ea4b11534867cdd6109ad8483e22e3effa08ed13f383106",
+    "bloque-a-selectors-fixed.log": "e0be520032fc2e65d4c71cecd2fe2af5c68d1113d96dd52185f32cc8502ab4d1",
+    "bloque-a-licenses.log": "b8b2b1309851f43cc1fc2dbba0e3d19b8feeb47366dc8b3af2fbc80055cf7ef9"
+  },
+  "ci": {
+    "state": "pending",
+    "requiredPlatforms": [
+      "ubuntu-24.04",
+      "windows-2025",
+      "macos-15",
+      "macos-15-intel"
+    ],
+    "fullSuiteRequired": true,
+    "packagedTestsRequired": true
+  },
+  "limitations": [
+    "No segunda suite local completa verde; la corrección solo cambia tres selectores y se verificó con cuatro focales.",
+    "Los 247 binarios y los otros 182 archivos guardados no cambiaron.",
+    "No se verificó la instalación manual ni se actualizó la app instalada."
+  ]
+}
