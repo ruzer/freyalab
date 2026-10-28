@@ -101,18 +101,45 @@ export function standaloneHTML(body:string,title:string):string {
 
 let mermaidModule:Promise<typeof import('mermaid')>|undefined
 const diagramCache=new Map<string,string>()
+const diagramValidationCache=new Map<string,Promise<void>>()
 let diagramNumber=0
-export async function diagramSVG(source:string,dark:boolean):Promise<string> {
- const key=`${dark}:${source}`
- const cached=diagramCache.get(key); if(cached) return cached
- const [{default:mermaid},{default:purify}] = await Promise.all([mermaidModule ??= import('mermaid'),import('dompurify')])
+// La cola interna de Mermaid no incluye initialize, que cambia su configuración global.
+let diagramQueue:Promise<void>=Promise.resolve()
+function diagramOperation<T>(run:()=>Promise<T>):Promise<T>{
+ const pending=diagramQueue.then(run)
+ diagramQueue=pending.then(()=>{},()=>{})
+ return pending
+}
+function diagramEngine(mermaid:(typeof import('mermaid'))['default'],source:string,dark:boolean){
  mermaid.initialize({startOnLoad:false,securityLevel:'strict',htmlLabels:false,flowchart:{htmlLabels:false},theme:dark?'dark':'default',suppressErrorRendering:true,fontFamily:'Inter, Arial, sans-serif'})
  // shortcut: cuenta comentarios en el límite de Mermaid; afinar si el motor expone un preprocesamiento público.
  const maxTextSize=mermaid.mermaidAPI.getConfig().maxTextSize
  if(maxTextSize!==undefined&&source.length>maxTextSize)throw new Error('Maximum text size in diagram exceeded')
- const {svg}=await mermaid.render(`freya-diagram-${++diagramNumber}`,source)
- const safe=purify.sanitize(svg,{USE_PROFILES:{svg:true,svgFilters:true},ADD_TAGS:['foreignObject'],ADD_ATTR:['xmlns']})
- if(diagramCache.size>=64) diagramCache.delete(diagramCache.keys().next().value!)
- diagramCache.set(key,safe)
- return safe
+ return mermaid
+}
+export function validateDiagram(source:string,dark:boolean):Promise<void>{
+ const key=`${dark}:${source}`
+ if(diagramCache.has(key))return Promise.resolve()
+ const cached=diagramValidationCache.get(key);if(cached)return cached
+ const pending=(async()=>{
+  const {default:mermaid}=await(mermaidModule ??= import('mermaid'))
+  await diagramOperation(async()=>{diagramEngine(mermaid,source,dark);await mermaid.parse(source)})
+ })()
+ if(diagramValidationCache.size>=64)diagramValidationCache.delete(diagramValidationCache.keys().next().value!)
+ diagramValidationCache.set(key,pending)
+ void pending.catch(()=>{if(diagramValidationCache.get(key)===pending)diagramValidationCache.delete(key)})
+ return pending
+}
+export async function diagramSVG(source:string,dark:boolean):Promise<string> {
+ const key=`${dark}:${source}`
+ const cached=diagramCache.get(key);if(cached)return cached
+ const [{default:mermaid},{default:purify}]=await Promise.all([mermaidModule ??= import('mermaid'),import('dompurify')])
+ return diagramOperation(async()=>{
+  diagramEngine(mermaid,source,dark)
+  const {svg}=await mermaid.render(`freya-diagram-${++diagramNumber}`,source)
+  const safe=purify.sanitize(svg,{USE_PROFILES:{svg:true,svgFilters:true},ADD_TAGS:['foreignObject'],ADD_ATTR:['xmlns']})
+  if(diagramCache.size>=64) diagramCache.delete(diagramCache.keys().next().value!)
+  diagramCache.set(key,safe)
+  return safe
+ })
 }

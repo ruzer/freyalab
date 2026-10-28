@@ -1,3 +1,4 @@
+import {t} from '../shared/i18n'
 import {mkdir,readFile,realpath,stat} from 'node:fs/promises'
 import {dirname,isAbsolute} from 'node:path'
 import {atomicWrite} from './files'
@@ -23,10 +24,10 @@ export class CsvViewStore {
  }
  remember(path:string,view:CsvView):Promise<void>{
   const task=this.pending.then(async()=>{
-   if(view!=='table'&&view!=='text')throw new Error('Modo de CSV no válido.')
+   if(view!=='table'&&view!=='text')throw new Error(t('csvText.invalidView'))
    const canonical=await realpath(path),info=await stat(canonical)
-   if(!info.isFile())throw new Error('Selecciona un archivo.')
-   if(view==='text'&&info.size>CSV_TEXT_LIMIT)throw new Error('El modo Texto admite hasta 10 MiB. Usa la tabla.')
+   if(!info.isFile())throw new Error(t('csvText.selectFile'))
+   if(view==='text'&&info.size>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'))
    const next=[...(await this.entries()).filter(entry=>entry.path!==canonical),{path:canonical,view}].slice(-500)
    await mkdir(dirname(this.path),{recursive:true});await atomicWrite(this.path,JSON.stringify({version:1,entries:next}))
    this.loaded=Promise.resolve(next)

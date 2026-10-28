@@ -4,10 +4,12 @@ import { basename, dirname, extname, join, resolve } from 'node:path'
 import { randomUUID, createHash } from 'node:crypto'
 import {constants} from 'node:fs'
 import {frontMatterOf,parseTags,normalizeTag} from '../shared/front-matter'
+import {t} from '../shared/i18n'
 import {tokensFileQuery} from '../shared/tag-query'
 import { watch, type FSWatcher } from 'chokidar'
 import iconv from 'iconv-lite'
 import { atomicWrite, contained, digest } from './files'
+import type {DocumentAssets} from './document-assets'
 import { TableClient } from './table-client'
 import {CsvViewStore} from './csv-view-store'
 import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type AppEvent,type DocumentInfo,type Kind,type RecoveryEntry,type TableOptions,type TableEdit,type TableExport,type TreeEntry} from '../shared/types'
@@ -33,7 +35,7 @@ export class Documents {
  private opening=new Map<string,Promise<DocumentInfo>>()
  async open(path:string,view?:CsvView):Promise<DocumentInfo>{
   const canonical=await this.authorize(path)
-  if(view&&extensions[extname(canonical).toLowerCase()]!=='csv')throw new Error('Elige un archivo CSV o TSV para cambiar la vista.')
+  if(view&&extensions[extname(canonical).toLowerCase()]!=='csv')throw new Error(t('csvText.chooseFileForView'))
   const existing=[...this.records.values()].find(r=>r.info.path===canonical);if(existing)return view?this.setCsvView(existing.info.id,view):this.info(existing.info.id)
   const running=this.opening.get(canonical);if(running){const document=await running;return view?this.setCsvView(document.id,view):document}
   const task=this.openNew(canonical,view).finally(()=>this.opening.delete(canonical));this.opening.set(canonical,task);return task
@@ -43,7 +45,7 @@ export class Documents {
   const kind=extensions[extname(canonical).toLowerCase()];if(!kind)throw new Error('Tipo de archivo no compatible. Usa Markdown, texto, Mermaid, CSV o TSV.')
   const size=(await stat(canonical)).size;if(!(await stat(canonical)).isFile())throw new Error('Selecciona un archivo.')
   const view=kind==='csv'?(requested??await this.csvViews.get(canonical)):undefined
-  if(view==='text'&&size>CSV_TEXT_LIMIT)throw new Error('El modo Texto admite hasta 10 MiB. Usa la tabla.')
+  if(view==='text'&&size>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'))
   const id=previous?.info.id??randomUUID();const record:RecordDoc={info:{id,name:basename(canonical),path:canonical,kind,csvView:view,byteLength:kind==='csv'?size:undefined,extract:previous?.info.extract,dirty:false,readonly:false,revision:previous?previous.info.revision+1:0,encoding:'utf8',delimiter:kind==='csv'&&extname(canonical)==='.tsv'?'\t':','},text:'',undo:[],redo:[],root:dirname(canonical),saving:false}
   try {
    if(isTableDocument(record.info)){const before=size<=50*1024*1024?await digest(canonical):undefined;await this.table.call('open',id,canonical,{delimiter:extname(canonical)==='.tsv'?'\t':undefined});Object.assign(record.info,await this.table.call('info',id));if(!record.info.readonly){const after=await digest(canonical);if(before!==after)throw new Error('El archivo cambió durante la apertura. Vuelve a abrirlo.');record.hash=after}}
@@ -55,11 +57,11 @@ export class Documents {
    this.records.set(id,record);return this.info(id)
   }catch(e){await record.watcher?.close();if(!previous)this.records.delete(id);if(isTableDocument(record.info)&&(!previous||!isTableDocument(previous.info)))await this.table.call('close',id).catch(()=>{});throw e}
  }
- async setCsvView(id:string,view:CsvView){return this.reinterpret(id,async()=>{const record=this.get(id);if(record.info.kind!=='csv')throw new Error('Elige un archivo CSV o TSV para cambiar la vista.');if(view!=='table'&&view!=='text')throw new Error('Modo de CSV no válido.');if(!record.info.path)throw new Error('Guarda el archivo antes de cambiar la vista.');if((record.info.csvView??'table')===view){await this.csvViews.remember(record.info.path,view);return this.info(id)}if(record.info.dirty)throw new Error('Hay cambios pendientes. Elige cómo conservarlos antes de cambiar la vista.');return this.openNew(record.info.path,view,record)})}
- async csvViewInfo(path:string){const canonical=await this.authorize(path);if(extensions[extname(canonical).toLowerCase()]!=='csv')throw new Error('Elige un archivo CSV o TSV.');const info=await stat(canonical);if(!info.isFile())throw new Error('Selecciona un archivo.');return{byteLength:info.size,textAllowed:info.size<=CSV_TEXT_LIMIT}}
+ async setCsvView(id:string,view:CsvView){return this.reinterpret(id,async()=>{const record=this.get(id);if(record.info.kind!=='csv')throw new Error(t('csvText.chooseFileForView'));if(view!=='table'&&view!=='text')throw new Error(t('csvText.invalidView'));if(!record.info.path)throw new Error(t('csvText.saveBeforeView'));if((record.info.csvView??'table')===view){await this.csvViews.remember(record.info.path,view);return this.info(id)}if(record.info.dirty)throw new Error(t('csvText.pendingChanges'));return this.openNew(record.info.path,view,record)})}
+ async csvViewInfo(path:string){const canonical=await this.authorize(path);if(extensions[extname(canonical).toLowerCase()]!=='csv')throw new Error(t('csvText.chooseFile'));const info=await stat(canonical);if(!info.isFile())throw new Error(t('csvText.selectFile'));return{byteLength:info.size,textAllowed:info.size<=CSV_TEXT_LIMIT}}
  async create(kind:Kind){const id=randomUUID();const extension=kind==='csv'?'csv':kind==='mermaid'?'mmd':kind==='text'?'txt':'md';const r:RecordDoc={info:{id,name:`Sin título.${extension}`,path:null,kind,csvView:kind==='csv'?'table':undefined,byteLength:kind==='csv'?0:undefined,dirty:false,readonly:false,revision:0,encoding:'utf8',delimiter:','},text:'',undo:[],redo:[],root:app.getPath('documents'),saving:false};if(kind==='csv'){await this.table.call('create',id);Object.assign(r.info,await this.table.call('info',id))}this.records.set(id,r);return this.info(id)}
  get(id:string){const r=this.records.get(id);if(!r)throw new Error('El documento ya no está abierto.');return r}
- requireTable(id:string){const record=this.get(id);if(!isTableDocument(record.info))throw new Error('Disponible en modo Tabla.');return record}
+ requireTable(id:string){const record=this.get(id);if(!isTableDocument(record.info))throw new Error(t('csvText.tableOnly'));return record}
  info(id:string){const r=this.get(id);return {...r.info,...(!isTableDocument(r.info)?{text:r.text}:{})}}
  async syncTable(id:string){const r=this.get(id);Object.assign(r.info,await this.table.call('info',id));return this.info(id)}
  async update(id:string,text:string){this.rejectDuringReload(id);return this.serial(id,()=>this.updateNow(id,text))}
@@ -73,15 +75,60 @@ export class Documents {
  private async tableOptionsNow(id:string,options:TableOptions){const r=this.requireTable(id);if(r.info.dirty)throw new Error('Guarda los cambios antes de cambiar cómo se interpreta el archivo.');if(!r.info.path)throw new Error('Guarda el archivo antes de cambiar su interpretación.');const initial=await stat(r.info.path);const before=initial.size<=50*1024*1024?await digest(r.info.path):undefined;if(r.hash!==undefined&&r.hash!==before)throw new Error('El archivo cambió en disco. Recárgalo antes de cambiar su interpretación.');await this.table.call('open',id,r.info.path,options);await this.syncTable(id);const after=await stat(r.info.path);if(before!==undefined?before!==await digest(r.info.path):initial.size!==after.size||initial.mtimeMs!==after.mtimeMs)throw new Error('El archivo cambió durante la lectura. Recárgalo antes de guardar.');r.hash=before;return this.info(id)}
  async undo(id:string,redo=false){this.rejectDuringReload(id);return this.serial(id,()=>this.undoNow(id,redo))}
  private async undoNow(id:string,redo=false){const r=this.get(id);if(r.info.readonly)return this.info(id);if(isTableDocument(r.info)){await this.table.call('undo',id,redo);await this.syncTable(id)}else{const from=redo?r.redo:r.undo,to=redo?r.undo:r.redo;const text=from.pop();if(text===undefined)return this.info(id);to.push(r.text);r.text=text;r.info.dirty=true;r.info.revision++}this.schedule(id);return this.info(id)}
- private async saveDestination(r:RecordDoc){if(process.env.FREYALAB_TEST==='1'&&(process.env.FREYALAB_TEST_SAVE_PATH||process.env.FREYALAB_TEST_SAVE_DIR))return process.env.FREYALAB_TEST_SAVE_PATH??join(process.env.FREYALAB_TEST_SAVE_DIR!,r.info.name.replace('Sin título','documento'));const result=await dialog.showSaveDialog(this.owner(),{defaultPath:r.info.path??r.info.name});return result.canceled?null:result.filePath??null}
+ private async saveDestination(r:RecordDoc){if(process.env.FREYALAB_TEST==='1'&&(process.env.FREYALAB_TEST_SAVE_PATH||process.env.FREYALAB_TEST_SAVE_DIR))return process.env.FREYALAB_TEST_SAVE_PATH??join(process.env.FREYALAB_TEST_SAVE_DIR!,r.info.name.replace('Sin título','documento'));const result=await dialog.showSaveDialog(this.owner(),{title:t('dialog.save.title'),buttonLabel:t('dialog.save'),defaultPath:r.info.path??r.info.name});return result.canceled?null:result.filePath??null}
  async save(id:string,as=false){return this.serial(id,()=>this.saveNow(id,as))}
- private async saveNow(id:string,as=false){const r=this.get(id);if(r.info.readonly)throw new Error('La muestra es de solo lectura.');const dest=as||!r.info.path?await this.saveDestination(r):r.info.path;if(!dest)return null;const canonical=await realpath(dest).catch(()=>resolve(dest));if([...this.records.values()].some(other=>other!==r&&other.info.path===canonical))throw new Error('El destino corresponde a otro documento abierto. Guarda una copia con otro nombre.');if((await lstat(dest).catch(()=>null))?.isSymbolicLink())throw new Error('No se sobrescriben enlaces simbólicos.');const revision=r.info.revision;const data=isTableDocument(r.info)?Buffer.from(await this.table.call('serialize',id)):Buffer.from(r.text,'utf8');const same=r.info.path===dest;r.saving=true;try{await atomicWrite(dest,data,same?r.hash:undefined);r.hash=createHash('sha256').update(data).digest('hex');if(revision===r.info.revision){if(isTableDocument(r.info)){const marked=await this.table.call('markSaved',id,revision);if(marked.revision>=r.info.revision)Object.assign(r.info,marked)}else r.info.dirty=false;if(!r.info.dirty){clearTimeout(r.timer);await this.recoveryTasks.get(id);if(!r.info.dirty)await this.discardRecovery(id)}}r.info.path=dest;r.info.name=basename(dest);r.root=dirname(dest);await r.watcher?.close();r.watcher=watch(dest,{ignoreInitial:true}).on('change',()=>{if(!r.saving)this.emit({type:'external',id})});await this.addRecent(dest);return this.info(id)}finally{setTimeout(()=>{r.saving=false},300)}}
+ private async saveNow(id:string,as=false){
+  const r=this.get(id);if(r.info.readonly)throw new Error('La muestra es de solo lectura.')
+  const dest=as||!r.info.path?await this.saveDestination(r):r.info.path;if(!dest)return null
+  const canonical=await realpath(dest).catch(()=>resolve(dest))
+  if([...this.records.values()].some(other=>other!==r&&other.info.path===canonical))throw new Error('El destino corresponde a otro documento abierto. Guarda una copia con otro nombre.')
+  if((await lstat(dest).catch(()=>null))?.isSymbolicLink())throw new Error('No se sobrescriben enlaces simbólicos.')
+  const revision=r.info.revision,same=r.info.path===dest||r.info.path===canonical
+  let data=isTableDocument(r.info)?Buffer.from(await this.table.call('serialize',id)):Buffer.from(r.text,'utf8'),assets:DocumentAssets|undefined
+  r.saving=true
+  try{
+   if(r.info.kind==='markdown'&&!same){
+    const {saveMarkdownCopy}=await import('./document-assets')
+    const result=await saveMarkdownCopy(r.text,r.info.path,dest);data=Buffer.from(result.text,'utf8');assets=result.assets
+    if(result.text!==r.text){r.text=result.text;r.info.revision++}
+   }else await atomicWrite(dest,data,same?r.hash:undefined)
+   r.hash=createHash('sha256').update(data).digest('hex')
+   if(revision===r.info.revision||assets){
+    if(isTableDocument(r.info)){const marked=await this.table.call('markSaved',id,revision);if(marked.revision>=r.info.revision)Object.assign(r.info,marked)}else r.info.dirty=false
+    if(!r.info.dirty){clearTimeout(r.timer);await this.recoveryTasks.get(id);if(!r.info.dirty)await this.discardRecovery(id)}
+   }
+   r.info.path=dest;r.info.name=basename(dest);r.root=dirname(dest);await r.watcher?.close();r.watcher=watch(dest,{ignoreInitial:true}).on('change',()=>{if(!r.saving)this.emit({type:'external',id})});await this.addRecent(dest)
+   return{...this.info(id),...(assets?{assets}:{})}
+  }finally{setTimeout(()=>{r.saving=false},300)}
+ }
+
+ async locateImage(id:string,missingURL:string){return this.serial(id,()=>this.locateImageNow(id,missingURL))}
+ private async locateImageNow(id:string,missingURL:string){
+  const r=this.get(id)
+  if(r.info.kind!=='markdown')throw new Error('Buscar imágenes está disponible en documentos Markdown.')
+  if(r.info.readonly)throw new Error('La muestra es de solo lectura.')
+  if(!r.info.path)throw new Error('Guarda el documento para poder insertar imágenes')
+  const source=r.text,path=r.info.path,revision=r.info.revision
+  const {hasImageReference,locateMarkdownImage}=await import('./document-assets')
+  if(!hasImageReference(source,missingURL))throw new Error('La referencia de imagen debe ser relativa y seguir presente en el documento.')
+  let selected:string|undefined
+  if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_IMAGE_PATH!==undefined)selected=process.env.FREYALAB_TEST_IMAGE_PATH||undefined
+  else{
+   const result=await dialog.showOpenDialog(this.owner(),{title:t('dialog.image.title'),buttonLabel:t('dialog.open.button'),properties:['openFile'],filters:[{name:t('dialog.image.filter'),extensions:['png','jpg','jpeg','gif','webp','svg']}]})
+   if(!result.canceled)selected=result.filePaths[0]
+  }
+  if(!selected)return null
+  const assertCurrent=()=>{if(this.records.get(id)!==r||r.info.path!==path||r.info.readonly||r.text!==source||r.info.revision!==revision)throw new Error('El documento cambió mientras elegías la imagen. Vuelve a intentarlo.')}
+  assertCurrent()
+  const result=await locateMarkdownImage(source,path,missingURL,selected,assertCurrent)
+  return{...await this.updateNow(id,result.text),assets:result.assets}
+ }
  async close(id:string){return this.serial(id,()=>this.closeNow(id))}
- private async closeNow(id:string){const r=this.get(id);if(r.info.dirty){const {response}=await dialog.showMessageBox(this.owner(),{type:'question',buttons:['Guardar','Cancelar','Descartar cambios'],defaultId:0,cancelId:1,message:`¿Guardar los cambios de ${r.info.name}?`});if(response===1)return false;if(response===0&&!(await this.saveNow(id)))return false}clearTimeout(r.timer);await r.watcher?.close();if(isTableDocument(r.info))await this.table.call('close',id);this.records.delete(id);await this.discardRecovery(id);return true}
+ private async closeNow(id:string){const r=this.get(id);if(r.info.dirty){const {response}=await dialog.showMessageBox(this.owner(),{type:'question',buttons:[t('dialog.save'),t('dialog.cancel'),t('dialog.discard')],defaultId:0,cancelId:1,message:t('dialog.close.message',{nombre:r.info.name})});if(response===1)return false;if(response===0&&!(await this.saveNow(id)))return false}clearTimeout(r.timer);await r.watcher?.close();if(isTableDocument(r.info))await this.table.call('close',id);this.records.delete(id);await this.discardRecovery(id);return true}
  async reload(id:string){return this.reinterpret(id,()=>this.reloadNow(id))}
  private async reloadNow(id:string){
   const r=this.get(id);if(!r.info.path)throw new Error('El documento no tiene un archivo original.')
-  if(r.info.dirty){const {response}=await dialog.showMessageBox(this.owner(),{type:'warning',buttons:['Conservar mis cambios','Recargar y descartar cambios'],defaultId:0,cancelId:0,message:'El archivo cambió fuera de FreyaLab. Recargar reemplazará tus cambios locales.'});if(response===0)return this.info(id)}
+  if(r.info.dirty){const {response}=await dialog.showMessageBox(this.owner(),{type:'warning',title:t('dialog.reload.title'),buttons:[t('dialog.reload.keep'),t('dialog.reload.discard')],defaultId:0,cancelId:0,message:t('dialog.reload.message')});if(response===0)return this.info(id)}
   if(isTableDocument(r.info)){const size=(await stat(r.info.path)).size;const before=size<=50*1024*1024?await digest(r.info.path):undefined;await this.table.call('open',id,r.info.path,{encoding:r.info.encoding,delimiter:r.info.delimiter});await this.syncTable(id);if(!r.info.readonly&&before!==await digest(r.info.path))throw new Error('El archivo cambió durante la recarga. Vuelve a intentarlo.')}
   else {r.info.readonly=(await stat(r.info.path)).size>10*1024*1024;let data:Buffer;if(r.info.readonly){const handle=await openFile(r.info.path,'r');try{data=Buffer.alloc(1024*1024);const result=await handle.read(data,0,data.length,0);data=data.subarray(0,result.bytesRead)}finally{await handle.close()}}else data=await readFile(r.info.path);const nextText=data.toString('utf8');if(!r.info.readonly&&!Buffer.from(nextText).equals(data))throw new Error('El archivo externo no es UTF-8 válido.');r.text=nextText;r.info.warning=r.info.readonly?'Muestra de solo lectura: primer MiB. El archivo supera 10 MiB.':undefined;r.info.revision++;r.info.dirty=false}
   r.hash=r.info.readonly?undefined:await digest(r.info.path);r.undo=[];r.redo=[];clearTimeout(r.timer);await this.discardRecovery(id);return this.info(id)

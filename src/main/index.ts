@@ -8,6 +8,8 @@ import {exportChartResult} from './chart-result-export'
 import { SqlService } from './sql-service'
 import appIcon from '../../build/icon.png?asset'
 import { Documents } from './documents'
+import {initializeLanguage,languageState,changeLanguage} from './language'
+import {t} from '../shared/i18n'
 import { exportDocument,exportGraphic } from './export'
 import { operateDocument } from './extract'
 import { operationRequest } from './operation-schema'
@@ -36,13 +38,15 @@ function assertSender(event:Electron.IpcMainInvokeEvent|Electron.IpcMainEvent){i
 async function handle(operation:string,args:unknown[]){
  const [a,b,c,d]=args
  switch(operation){
- case'open':{const result=await dialog.showOpenDialog(window!,{properties:['openFile','multiSelections'],filters:[{name:'Documentos',extensions:['md','markdown','txt','mmd','mermaid','csv','tsv']}]});for(const p of result.filePaths)docs.grants.add(resolve(p));return result.canceled?[]:openPaths(result.filePaths)}
+ case'language':return languageState()
+ case'setLanguage':{const language=changeLanguage(z.enum(['sistema','es','en']).parse(a));window?.webContents.send('freya:event',{type:'language',language});return language}
+ case'open':{const result=await dialog.showOpenDialog(window!,{title:t('dialog.open.title'),buttonLabel:t('dialog.open.button'),properties:['openFile','multiSelections'],filters:[{name:t('dialog.open.filter'),extensions:['md','markdown','txt','mmd','mermaid','csv','tsv']}]});for(const p of result.filePaths)docs.grants.add(resolve(p));return result.canceled?[]:openPaths(result.filePaths)}
  case'openPaths':return openPaths(z.array(path).max(100).parse(a))
- case'csvOpen':{const target=path.parse(a),view=csvView.parse(b);if(!await docs.allowed(target))throw new Error('Abre el archivo desde el selector o arrástralo a la ventana.');const previous=new Map([...docs.records].map(([key,record])=>[key,record.info.csvView??'table'])),document=await docs.open(target,view);if(previous.has(document.id)&&previous.get(document.id)!==document.csvView)analytics.forget(document.id);window?.webContents.send('freya:event',{type:'opened',document});return document}
+ case'csvOpen':{const target=path.parse(a),view=csvView.parse(b);if(!await docs.allowed(target))throw new Error(t('csvText.openAuthorized'));const previous=new Map([...docs.records].map(([key,record])=>[key,record.info.csvView??'table'])),document=await docs.open(target,view);if(previous.has(document.id)&&previous.get(document.id)!==document.csvView)analytics.forget(document.id);window?.webContents.send('freya:event',{type:'opened',document});return document}
  case'csvView':{const key=id.parse(a),before=docs.info(key).csvView,document=await docs.setCsvView(key,csvView.parse(b));if(before!==document.csvView)analytics.forget(key);return document}
- case'csvViewInfo':{const target=path.parse(a);if(!await docs.allowed(target))throw new Error('Abre el archivo desde el selector o arrástralo a la ventana.');return docs.csvViewInfo(target)}
+ case'csvViewInfo':{const target=path.parse(a);if(!await docs.allowed(target))throw new Error(t('csvText.openAuthorized'));return docs.csvViewInfo(target)}
  case'new':return docs.create(z.enum(['markdown','text','mermaid','csv']).parse(a) as Kind)
- case'folder':{if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_FOLDER){const folder=resolve(process.env.FREYALAB_TEST_FOLDER);docs.roots.add(folder);return folder}const result=await dialog.showOpenDialog(window!,{properties:['openDirectory']});if(result.canceled)return null;docs.roots.add(result.filePaths[0]);return result.filePaths[0]}
+ case'folder':{if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_FOLDER){const folder=resolve(process.env.FREYALAB_TEST_FOLDER);docs.roots.add(folder);return folder}const result=await dialog.showOpenDialog(window!,{title:t('dialog.folder.title'),buttonLabel:t('dialog.open.button'),properties:['openDirectory']});if(result.canceled)return null;docs.roots.add(result.filePaths[0]);return result.filePaths[0]}
  case'tree':return docs.tree(path.parse(a))
  case'findFiles':return docs.findFiles(path.parse(a),z.string().min(1).max(500).parse(b))
  case'cancelFileSearch':return docs.cancelFileSearch()
@@ -82,6 +86,7 @@ async function handle(operation:string,args:unknown[]){
  case'exportChartResult':return exportChartResult(docs,analytics,id.parse(a),z.object({requestId:id,revision:z.number().int().nonnegative(),configuration:chartConfiguration,format:z.enum(['csv','json','md']),protectFormulas:z.boolean()}).strict().parse(b))
  case'exportGraphic':return exportGraphic(docs,id.parse(a),z.object({format:z.enum(['svg','png','pdf']),svg:text.min(1),revision:z.number().int().nonnegative()}).strict().parse(b))
  case'export':return exportDocument(docs,id.parse(a),z.object({format:z.enum(['pdf','html','svg','png','csv','tsv']),html:text.optional(),svg:text.optional(),table:tableExport.optional()}).parse(b) as ExportRequest)
+ case'locateImage':return docs.locateImage(id.parse(a),z.string().min(1).max(16*1024*1024).parse(b))
  case'image':return docs.image(id.parse(a),z.string().max(16*1024*1024).parse(b))
  case'link':{const url=z.url().parse(a),target=new URL(url);if(!['https:','http:','mailto:'].includes(target.protocol))throw new Error('Solo se permiten enlaces web o de correo.');if(target.protocol==='mailto:'&&[...target.searchParams.keys()].some(key=>['attach','attachment'].includes(key.toLowerCase())))throw new Error('No se permiten adjuntos en enlaces de correo.');await shell.openExternal(url);return}
  case'recents':{const recents=await docs.recents();for(const p of recents)docs.grants.add(resolve(p));return recents}
@@ -96,10 +101,11 @@ if(!app.requestSingleInstanceLock()&&process.env.FREYALAB_TEST!=='1')app.quit()
 app.on('second-instance',(_event,argv)=>{window?.show();window?.focus();const paths=argv.filter(p=>/\.(md|markdown|csv|tsv|mmd|mermaid|txt)$/i.test(p)&&!p.startsWith('-'));for(const p of paths)docs.grants.add(resolve(p));void openPaths(paths).catch(e=>window?.webContents.send('freya:event',{type:'error',message:e.message}))})
 app.whenReady().then(async()=>{
  app.setName('FreyaLab')
+ initializeLanguage(app.getPreferredSystemLanguages(),process.env)
  docs=new Documents(event=>window?.webContents.send('freya:event',event))
  presets=new ChartPresets(join(app.getPath('userData'),'chart-presets.json'))
  analytics=new SqlService(docs,progress=>window?.webContents.send('freya:event',{type:'analysis',progress}))
- ipcMain.handle('freya',async(event,operation,...args)=>{assertSender(event);try{return await handle(z.string().max(100).parse(operation),args)}catch(e){throw new Error(e instanceof z.ZodError?'Datos de operación no válidos.':(e as Error).message)}})
+ ipcMain.handle('freya',async(event,operation,...args)=>{assertSender(event);try{return await handle(z.string().max(100).parse(operation),args)}catch(e){throw new Error(e instanceof z.ZodError?t('error.invalidOperation'):(e as Error).message)}})
  ipcMain.on('freya:drop',(event,paths)=>{assertSender(event);for(const p of z.array(path).max(100).parse(paths))docs.grants.add(resolve(p))})
  ipcMain.on('freya:paste-plain',event=>{
   try{assertSender(event);if(!event.sender.isDestroyed())event.sender.pasteAndMatchStyle()}
@@ -113,7 +119,7 @@ app.whenReady().then(async()=>{
   if(details.url.startsWith('data:')||details.url.startsWith('devtools:')){callback({cancel:false});return}
   try{const asset=relative(resolve(here,'../renderer'),fileURLToPath(details.url));callback({cancel:asset.startsWith('..')||isAbsolute(asset)})}catch{callback({cancel:true})}
  })
- window.on('close',event=>{if(quitting)return;event.preventDefault();void(async()=>{for(const key of [...docs.records.keys()])if(!await docs.close(key))return;quitting=true;analytics.stop();await docs.shutdown();window?.destroy();app.quit()})().catch(e=>dialog.showErrorBox('No se pudo cerrar',e.message))})
+ window.on('close',event=>{if(quitting)return;event.preventDefault();void(async()=>{for(const key of [...docs.records.keys()])if(!await docs.close(key))return;quitting=true;analytics.stop();await docs.shutdown();window?.destroy();app.quit()})().catch(e=>dialog.showErrorBox(t('dialog.close.error'),e.message))})
  const url=process.env.ELECTRON_RENDERER_URL;if(url)await window.loadURL(url);else await window.loadFile(join(here,'../renderer/index.html'))
  const initial=process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_OPEN?JSON.parse(process.env.FREYALAB_TEST_OPEN):process.argv.slice(1).filter(p=>/\.(md|markdown|csv|tsv|mmd|mermaid|txt)$/i.test(p))
  for(const p of [...waiting,...initial]){docs.grants.add(resolve(p));await openPaths([p]).catch(e=>window?.webContents.send('freya:event',{type:'error',message:e.message}))}

@@ -1,5 +1,6 @@
 <script lang="ts">
  import {onMount,tick} from 'svelte'
+ import {t} from '../lib/i18n.svelte'
  import type {CsvView} from '../../shared/types'
  let {path,x,y,onopen,onclose,onerror}:{path:string;x:number;y:number;onopen:(path:string,view:CsvView)=>void;onclose:(restoreFocus:boolean)=>void;onerror:(message:string)=>void}=$props()
  let menu:HTMLDivElement,allowed=$state(false),loading=$state(true)
@@ -8,7 +9,7 @@
  function choose(view:CsvView){const selected=path,open=onopen;onclose(false);open(selected,view)}
 </script>
 <svelte:window onpointerdown={event=>{if(menu&&!menu.contains(event.target as Node))onclose(false)}}/>
-<div bind:this={menu} class="range-context" role="menu" aria-label="Abrir CSV" tabindex="-1" style:left={`${Math.max(8,Math.min(x,innerWidth-268))}px`} style:top={`${Math.max(8,Math.min(y,innerHeight-100))}px`} onkeydown={key}>
- <button role="menuitem" onclick={()=>choose('table')}>Abrir como tabla</button>
- <button role="menuitem" disabled={loading||!allowed} title={loading?'Comprobando el tamaño…':!allowed?'El modo Texto admite hasta 10 MiB. Usa la tabla.':undefined} onclick={()=>choose('text')}>Abrir como texto</button>
+<div bind:this={menu} class="range-context" role="menu" aria-label={t('csvText.menu')} tabindex="-1" style:left={`${Math.max(8,Math.min(x,innerWidth-268))}px`} style:top={`${Math.max(8,Math.min(y,innerHeight-100))}px`} onkeydown={key}>
+ <button role="menuitem" onclick={()=>choose('table')}>{t('csvText.openTable')}</button>
+ <button role="menuitem" disabled={loading||!allowed} title={loading?t('csvText.checkSize'):!allowed?t('csvText.limit'):undefined} onclick={()=>choose('text')}>{t('csvText.openText')}</button>
 </div>
