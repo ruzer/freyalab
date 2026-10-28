@@ -24,5 +24,7 @@
  "toolbar.saveAs": "Guardar como",
  "toolbar.saveAs.title": "Guardar como… · Ctrl/Cmd Mayús S",
  "dialog.open.button": "Abrir",
- "dialog.close.error": "No se pudo cerrar"
+ "dialog.close.error": "No se pudo cerrar",
+ "dialog.image.title": "Buscar imagen",
+ "dialog.image.filter": "Imágenes"
 }

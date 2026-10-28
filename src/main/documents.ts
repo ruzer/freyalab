@@ -104,7 +104,7 @@ export class Documents {
   let selected:string|undefined
   if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_IMAGE_PATH!==undefined)selected=process.env.FREYALAB_TEST_IMAGE_PATH||undefined
   else{
-   const result=await dialog.showOpenDialog(this.owner(),{properties:['openFile'],filters:[{name:'Imágenes',extensions:['png','jpg','jpeg','gif','webp','svg']}]})
+   const result=await dialog.showOpenDialog(this.owner(),{title:t('dialog.image.title'),buttonLabel:t('dialog.open.button'),properties:['openFile'],filters:[{name:t('dialog.image.filter'),extensions:['png','jpg','jpeg','gif','webp','svg']}]})
    if(!result.canceled)selected=result.filePaths[0]
   }
   if(!selected)return null

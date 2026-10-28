@@ -24,5 +24,7 @@
  "toolbar.saveAs": "Save as",
  "toolbar.saveAs.title": "Save as… · Ctrl/Cmd Shift S",
  "dialog.open.button": "Open",
- "dialog.close.error": "Could not close"
+ "dialog.close.error": "Could not close",
+ "dialog.image.title": "Find image",
+ "dialog.image.filter": "Images"
 }
