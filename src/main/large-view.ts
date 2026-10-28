@@ -11,7 +11,7 @@ import type {LargeViewRequest,LargeViewState,TableRow} from '../shared/types'
 interface Source {index:LargeIndex;delimiter:string;header:boolean;width:number;revision:number;alive:()=>boolean}
 interface RangeState {list:MatchList;from:number;to:number;first:number;scanned:number;position:number;stop:SharedArrayBuffer;done:boolean}
 interface Job {source:Source;state:LargeViewState;key:string;started:number;cancel:SharedArrayBuffer;ranges:RangeState[];pending:number;done:Promise<void>;resolve:()=>void;finishing:boolean}
-export interface ViewOptions {workers?:number;workerPath?:URL|string;batchRecords?:number;chunk?:number;delayMs?:number;limit?:number;bytes?:number}
+export interface ViewOptions {workers?:number;workerPath?:URL|string;batchRecords?:number;chunk?:number;delayMs?:number;limit?:number;bytes?:number;prefilter?:boolean;partial?:boolean}
 export class LargeViews {
  private jobs=new Map<string,Job>()
  private generation=new Map<string,number>()
@@ -38,7 +38,7 @@ export class LargeViews {
   else if(job.state.status==='running')job.state.status=Atomics.load(new Int32Array(job.cancel),0)?'cancelled':'complete'
   job.state.elapsedMs=Math.round(performance.now()-job.started);job.resolve()
  }
- private progress(job:Job,range:RangeState,data:{scanned:number;position:number}){range.scanned=data.scanned;range.position=data.position;job.state.scanned=job.ranges.reduce((n,item)=>n+item.scanned,0)}
+ private progress(job:Job,range:RangeState,data:{scanned:number;position:number}){range.scanned=Math.max(range.scanned,data.scanned);range.position=Math.max(range.position,data.position);job.state.scanned=job.ranges.reduce((n,item)=>n+item.scanned,0)}
  async start(id:string,source:Source,request:LargeViewRequest){
   compileTableQuery({...request,offset:0,limit:1,requestId:0},source.width)
   if(!request.search&&!request.conditions?.length)throw new Error('Introduce una búsqueda o una condición.')
@@ -61,7 +61,7 @@ export class LargeViews {
    job.ranges.push({from:index.offsets[from],to:to===index.offsets.length?index.size:index.offsets[to],first:from*index.every,scanned:0,position:index.offsets[from],stop:new SharedArrayBuffer(4),done:false,list:new MatchList(()=>(this.options.bytes??MATCH_BYTES)-this.allocated())})
   }
   job.pending=job.ranges.length
-  for(const range of job.ranges)this.pool.submit({task:{taskId:++this.task,index,range:{from:range.from,to:range.to,first:range.first},query:job.state.query,delimiter:source.delimiter,header:source.header,width:source.width,cancel:job.cancel,stop:range.stop,batchRecords:this.options.batchRecords,chunk:this.options.chunk,delayMs:this.options.delayMs},chunk:(data:SearchChunk)=>{
+  for(const range of job.ranges)this.pool.submit({task:{taskId:++this.task,index,range:{from:range.from,to:range.to,first:range.first},query:job.state.query,delimiter:source.delimiter,header:source.header,width:source.width,cancel:job.cancel,stop:range.stop,batchRecords:this.options.batchRecords,chunk:this.options.chunk,delayMs:this.options.delayMs,prefilter:this.options.prefilter,partial:this.options.partial},chunk:(data:SearchChunk)=>{
    if(this.jobs.get(id)!==job)return
    this.progress(job,range,data)
    if(job.state.status!=='running'&&job.state.status!=='cancelled')return
@@ -80,7 +80,7 @@ export class LargeViews {
     this.cutoff(job)
    }catch(error){job.state.status='error';job.state.error=(error as Error).message;this.pool.cancel(job.cancel)}
   },done:result=>{
-   if('error'in result){if(job.state.status==='running'){job.state.status='error';job.state.error=result.error;this.pool.cancel(job.cancel)}}else this.progress(job,range,result)
+   if('error'in result){if(job.state.status==='running'||job.state.status==='cancelled'){job.state.status='error';job.state.error=result.error;this.pool.cancel(job.cancel)}}else this.progress(job,range,result)
    range.done=true;job.pending--;this.cutoff(job);void this.finish(id,job)
   }})
   if(!job.pending)void this.finish(id,job)

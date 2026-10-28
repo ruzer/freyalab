@@ -17,7 +17,7 @@
  import {workspace,saveWorkspace,settleStartup} from '../lib/workspace.svelte'
  import {dockMode,isNarrow,type DockTab} from '../lib/workspace-layout'
  import {parse} from 'csv-parse/browser/esm/sync'
- import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit,LargeViewState} from '../../shared/types'
+ import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit,LargeViewState,LargeViewQuery} from '../../shared/types'
  let {doc,onchange,onerror,onstatus,onreport}:{doc:DocumentInfo;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
  let showExtract=$state(false),extractButton=$state<HTMLButtonElement>()
  let showCommands=$state(false),commandsButton=$state<HTMLButtonElement>(),commandReturn:HTMLElement|null=null
@@ -39,11 +39,11 @@
  function setExpanded(value:boolean){workspace.expanded=value;announcement=value?'Panel de análisis ampliado':'Panel de análisis acoplado'}
  // Con la ventana estrecha no hay sitio para acoplar: volver a la tabla es cerrar el panel.
  async function backToTable(){if(narrow){closeDock(analyzeButton);return}workspace.expanded=false;announcement='Vuelves a la tabla';await tick();scrollElement?.focus()}
- let conditions=$state<TableFilter[]>([]),order=$state<TableSort[]>([]),filterMode=$state<'all'|'any'>('all'),showQuery=$state(false),queryError=$state(''),queryButton=$state<HTMLElement>()
+ let conditions=$state<TableFilter[]>([]),order=$state<TableSort[]>([]),filterMode=$state<'all'|'any'>('all'),showQuery=$state(false),queryError=$state(''),filterError=$state(''),queryButton=$state<HTMLElement>()
  const locked=$derived(doc.readonly||interpreting||!!queryError)
  let search=$state(''),filters=$state<Record<string,string>>({}),sort=$state<TableQuery['sort']>(),page=$state<TablePage>({rows:[],total:0,matched:0,revision:0,requestId:0,sample:false}),busy=$state(false),showFilters=$state(false),showReplace=$state(false)
  const activeOrder=$derived(order.length?order:sort?[sort]:[])
- const filterCount=$derived(large?(largeView?.query.search?1:0):Object.values(filters).filter(Boolean).length+conditions.length+(search?1:0))
+ const filterCount=$derived(large?(largeView?.query.conditions?.length??0)+(largeView?.query.search?1:0):Object.values(filters).filter(Boolean).length+conditions.length+(search?1:0))
  const viewActive=$derived(large?!!largeView&&largeView.status!=='invalidated':filterCount>0||activeOrder.length>0),gotoTotal=$derived(large?(doc.rowCount??page.total):page.matched)
  let selectedRows=$state<string[]>([]),selectedColumns=$state<number[]>([]),selectionStats=$state<TableStats|null>(null)
  let searchInput=$state<HTMLInputElement>(),replaceInput=$state<HTMLInputElement>()
@@ -68,23 +68,30 @@
   const titles={upper:'Mayúsculas',lower:'Minúsculas',trim:'Quitar espacios'}
   rangeDialog={edit:{type:'range',range:columnRange(column),operation,value:'',find:''},column:{name:columnLabel(column),rows:page.matched,hidden:Math.max(page.total-page.matched,0),title:`${titles[operation]} en la columna «${columnLabel(column)}»`}}
  }
- async function filterColumn(){const column=targetColumn;if(column===undefined)return;context=null;showFilters=true;get(columnsVirtual).scrollToIndex(column);await tick();document.querySelector<HTMLInputElement>(`[data-column-filter="${column}"]`)?.focus()}
+ async function filterColumn(){const column=targetColumn;if(column===undefined)return;context=null;if(large){await openLargeFilters(column);return}showFilters=true;get(columnsVirtual).scrollToIndex(column);await tick();document.querySelector<HTMLInputElement>(`[data-column-filter="${column}"]`)?.focus()}
+ async function openLargeFilters(column?:number){
+  if(!viewReady||changingView||interpreting)return
+  showExtract=false;showQuery=false;filterError=''
+  conditions=structuredClone($state.snapshot(largeView?.query.conditions??[]));filterMode=largeView?.query.filterMode??'all'
+  if(column!==undefined&&!conditions.some(rule=>rule.column===column)&&conditions.length<20)conditions=[...conditions,{column,op:'contains',value:''}]
+  await tick();showQuery=true
+ }
  function columnStatistics(){if(targetColumn===undefined)return;selectedColumns=[targetColumn];context=null;showQuery=false;userOpened=true;workspace.visible=true;workspace.tab='resumen';saveWorkspace()}
  const commands=$derived<CsvCommand[]>([
   {id:'goToRow',label:'Ir a la fila…',detail:'Salta a una fila por su número · Ctrl/⌘ + G',disabled:!gotoTotal,run:openGoto},
   {id:'search',label:'Buscar en tabla',detail:large?'Buscar en el archivo completo con Enter · Ctrl/⌘ + F':'Filtra filas · Ctrl/⌘ + F',disabled:large&&!viewReady,run:()=>{searchInput?.focus();searchInput?.select()}},
   {id:'viewDocument',label:'Ver en el documento completo',detail:'Quita la búsqueda y enfoca la fila original · Ctrl/⌘ + Mayús + G',disabled:!large||!viewActive||selectedRows.length!==1,run:()=>revealRow(Number(selectedRows[0]))},
   {id:'replaceDocument',label:'Reemplazar en documento…',detail:'Documento completo, incluidas filas ocultas · vista previa · Ctrl/⌘ + Mayús + F',disabled:large,run:focusReplace},
-  {id:'filters',label:'Filtros por columna',detail:'Mostrar u ocultar filtros de texto en encabezados',disabled:large,run:()=>showFilters=!showFilters},
-  {id:'query',label:'Consulta avanzada',detail:'Filtrar por texto, número, fecha o regex; ordenar varias columnas · solo vista',disabled:large,run:()=>showQuery=!showQuery},
+  {id:'filters',label:'Filtros por columna',detail:large?'Usa Filtrar: en archivos grandes cada filtro recorre el archivo':'Mostrar u ocultar filtros de texto en encabezados',disabled:large,run:()=>showFilters=!showFilters},
+  {id:'query',label:large?'Filtrar archivo completo':'Consulta avanzada',detail:large?'Filtrar por texto, número, fecha o regex al pulsar Aplicar':'Filtrar por texto, número, fecha o regex; ordenar varias columnas · solo vista',disabled:large&&(!viewReady||changingView),run:()=>large?openLargeFilters():showQuery=!showQuery},
   {id:'extract',label:'Extraer filas a un archivo nuevo…',detail:'Filtra por condiciones y columnas el archivo grande y crea un archivo nuevo; el original no se modifica',disabled:!large,run:()=>{showQuery=false;showExtract=!showExtract}},
-  {id:'clearQuery',label:large?'Quitar búsqueda':'Quitar filtros y orden',detail:'Restaura la vista de todas las filas; no cambia el documento',disabled:large?!largeView:!search&&!Object.values(filters).some(Boolean)&&!sort&&!order.length&&!conditions.length,run:()=>{if(large)return clearView();search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}},
+  {id:'clearQuery',label:large?'Quitar búsqueda y filtros':'Quitar filtros y orden',detail:'Restaura la vista de todas las filas; no cambia el documento',disabled:large?!largeView:!search&&!Object.values(filters).some(Boolean)&&!sort&&!order.length&&!conditions.length,run:()=>{if(large)return clearView();search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}},
   {id:'sql',label:'Análisis SQL y asistentes',detail:'Mostrar u ocultar agrupaciones, tablas dinámicas (pivot) y cruces de archivos con DuckDB',disabled:false,run:()=>{showQuery=false;return toggleDock('sql')}},
   {id:'statistics',label:'Estadísticas y exploración',detail:large?'Las estadísticas llegan en una fase posterior':'Mostrar u ocultar perfiles, frecuencias, valores faltantes, duplicados y correlación',disabled:large,run:()=>toggleDock('resumen')},
   {id:'charts',label:'Gráficos',detail:'Mostrar u ocultar histogramas, barras, líneas, dispersión, mapas de calor y cajas',disabled:false,run:()=>{showQuery=false;return toggleDock('graficos')}},
   {id:'dockExpand',label:'Ampliar panel de análisis',detail:'El panel ocupa toda el área de trabajo; la tabla se conserva · «Volver a la tabla» o Escape lo acopla',disabled:!dockOpen||mode==='expanded',run:()=>setExpanded(true)},
   {id:'dockDock',label:'Acoplar panel de análisis',detail:'Devuelve el panel junto a la tabla (no disponible con la ventana estrecha)',disabled:mode!=='expanded'||narrow,run:()=>setExpanded(false)},
-  {id:'columnFilter',label:'Filtrar esta columna',detail:'Muestra los filtros por columna y lleva el foco al de esta columna',disabled:large||interpreting||targetColumn===undefined,run:filterColumn},
+  {id:'columnFilter',label:'Filtrar esta columna',detail:large?'Abre las condiciones con esta columna seleccionada':'Muestra los filtros por columna y lleva el foco al de esta columna',disabled:interpreting||targetColumn===undefined||large&&(!viewReady||changingView),run:filterColumn},
   {id:'columnStats',label:'Estadísticas de la columna',detail:'Abre el resumen con esta columna marcada: faltantes, únicos, duplicados y distribución',disabled:large||targetColumn===undefined,run:columnStatistics},
   ...([['upper','Mayúsculas en la columna…','Convertir a mayúsculas'],['lower','Minúsculas en la columna…','Convertir a minúsculas'],['trim','Quitar espacios en la columna…','Quitar espacios al inicio y al final']] as const).map(([operation,label,title])=>({id:'column-'+operation,label,detail:`${title} en toda la columna de la vista actual · vista previa antes → después, recuento y un paso de deshacer`,disabled:locked||busy||!page.matched||targetColumn===undefined,run:()=>cleanColumn(operation)})),
   {id:'columnDuplicates',label:'Quitar filas duplicadas de la columna…',detail:'Compara el texto exacto de esta columna y conserva la primera fila · vista previa, recuento y un paso de deshacer',disabled:locked||targetColumn===undefined,run:()=>openTransform('deduplicate')},
@@ -262,17 +269,17 @@
  })
  $effect(()=>{const items=$rowsVirtual.getVirtualItems(),first=items[0]?.index??0,last=items.at(-1)?.index??0;if(items.length&&!busy&&(!large||viewReady&&(!largeView||hasViewPage(largeView)))&&(first<pageOffset||last>=pageOffset+page.rows.length))untrack(()=>void load(Math.floor(first/100)*100))})
  onDestroy(()=>{requestId++;viewGeneration++}) // Switching tabs preserves the backend job; closing the document releases it there.
- async function startView(){
+ async function startView(nextQuery:LargeViewQuery={search:search||undefined,conditions:$state.snapshot(largeView?.query.conditions),filterMode:largeView?.query.filterMode},fromFilters=false){
   if(!large||!viewReady||changingView||interpreting)return
-  if(!search){await clearView();return}
+  if(!nextQuery.search&&!nextQuery.conditions?.length){if(await clearView())showQuery=false;return}
   const generation=++viewGeneration,revision=doc.revision;requestId++;busy=false;changingView=true;viewAnnouncement=''
   try{
-   const next=await window.freya.tableViewStart(doc.id,{requestId:crypto.randomUUID(),revision,search})
+   const next=await window.freya.tableViewStart(doc.id,{requestId:crypto.randomUUID(),revision,...nextQuery})
    if(generation!==viewGeneration)return
-   queryError='';resetViewPosition();pageOffset=0;page={...page,rows:[],matched:0};receiveView(next)
+   queryError='';filterError='';if(fromFilters)showQuery=false;resetViewPosition();pageOffset=0;page={...page,rows:[],matched:0};receiveView(next)
    if(next.status!=='invalidated'&&hasViewPage(next))await load(0)
-   await tick();searchInput?.focus()
-  }catch(error){if(generation===viewGeneration){queryError=String(error).replace(/^.*Error: /,'');onerror(queryError)}}finally{if(generation===viewGeneration)changingView=false}
+   await tick();if(fromFilters)queryButton?.focus();else searchInput?.focus()
+  }catch(error){if(generation===viewGeneration){const message=String(error).replace(/^.*Error: /,'');if(fromFilters)filterError=message;else{queryError=message;onerror(queryError)}}}finally{if(generation===viewGeneration)changingView=false}
  }
  async function cancelView(){
   const current=largeView;if(!current||!viewRunning||changingView)return
@@ -283,7 +290,7 @@
  async function clearView(restoreFocus=true){
   if(changingView)return false
   const generation=++viewGeneration;requestId++;busy=false;changingView=true
-  try{await window.freya.tableViewClear(doc.id);if(generation!==viewGeneration)return false;largeView=null;search='';queryError='';viewAnnouncement='Se quitó la búsqueda.';resetViewPosition();await load(0);if(restoreFocus){await tick();searchInput?.focus()}return true}
+  try{await window.freya.tableViewClear(doc.id);if(generation!==viewGeneration)return false;largeView=null;search='';queryError='';filterError='';showQuery=false;viewAnnouncement='Se quitó la búsqueda.';resetViewPosition();await load(0);if(restoreFocus){await tick();searchInput?.focus()}return true}
   catch(error){if(generation===viewGeneration)onerror(String(error));return false}finally{if(generation===viewGeneration)changingView=false}
  }
  async function revealRow(row:number){
@@ -328,7 +335,7 @@
  function selectRow(id:string,add:boolean){selection=null;context=null;selectedRows=add?(selectedRows.includes(id)?selectedRows.filter(x=>x!==id):[...selectedRows,id]):[id];void stats()}
  function selectColumn(index:number,replace=false){selection=null;context=null;selectedColumns=replace?[index]:selectedColumns.includes(index)?selectedColumns.filter(x=>x!==index):[...selectedColumns,index];void stats()}
  function sortBy(column:number,append=false,descending?:boolean){if(large)return;const current=activeOrder.find(item=>item.column===column),next={column,descending:descending??(current?!current.descending:false),numeric};if(append){order=current?activeOrder.map(item=>item.column===column?next:item):[...activeOrder,next];sort=undefined}else{sort=next;order=[]}}
- function applyQuery(next:TableFilter[],sorts:TableSort[],mode:'all'|'any'){conditions=next;order=sorts;filterMode=mode;sort=undefined;showQuery=false;queryButton?.focus()}
+ function applyQuery(next:TableFilter[],sorts:TableSort[],mode:'all'|'any'){if(large){void startView({search:largeView?.query.search,conditions:next,filterMode:mode},true);return}conditions=next;order=sorts;filterMode=mode;sort=undefined;showQuery=false;queryButton?.focus()}
 
  function setFilter(column:number,value:string){filters={...filters,[column]:value}}
  async function copyMarkdown(){try{await window.freya.tableCopy(doc.id,{scope:cellRange||selectedRows.length?'selection':'filtered',range:cellRange?$state.snapshot(cellRange):undefined,rowIds:$state.snapshot(selectedRows),columns:selectedColumns.length?$state.snapshot(selectedColumns):undefined,query:query()},'markdown');onstatus('Tabla Markdown copiada')}catch(error){onerror(String(error))}}
@@ -358,13 +365,13 @@
  <div class="csv-toolbar" class:compact={bodyWidth>0&&bodyWidth<1000} role="toolbar" aria-label="Herramientas de la tabla">
   <div class="search-field"><Icon name="search" size={14}/><input bind:this={searchInput} aria-label="Buscar en tabla" aria-describedby={large?'large-search-help':undefined} title={large?'Buscar en el archivo completo (Enter)':'Buscar en tabla · Ctrl/⌘ + F · no distingue mayúsculas'} placeholder={large?'Buscar en el archivo completo (Enter)':'Buscar en la tabla…'} disabled={large&&(!viewReady||interpreting)} maxlength={large?1000:undefined} bind:value={search} onkeydown={searchInputKey}/>{#if search||largeView}<button disabled={large&&changingView} onclick={()=>{if(large)void clearView();else search=''}} aria-label="Borrar búsqueda"><Icon name="x" size={14}/></button>{/if}</div>
   <button aria-label="Reemplazar" aria-expanded={showReplace} disabled={large} title="Reemplazar · Ctrl/⌘ + Mayús + F" onclick={()=>{if(showReplace)showReplace=false;else void runCommand('replaceDocument')}}><Icon name="replace" size={14}/><span class="tool-text">Reemplazar</span></button>
-  <details class="insert-menu"><summary bind:this={queryButton} class:active={showFilters||showQuery||viewActive} aria-label="Filtrar" aria-disabled={large} class:disabled={large} title={large?'Los filtros llegan en una fase posterior (archivos grandes)':undefined} onclick={event=>{if(large)event.preventDefault()}}><Icon name="funnel" size={14}/><span class="tool-text">Filtrar</span><Icon name="chevron-down" size={12}/></summary><div class="dropdown">
+  <details class="insert-menu"><summary bind:this={queryButton} class:active={showFilters||showQuery||viewActive} aria-label="Filtrar" aria-expanded={large?showQuery:undefined} aria-disabled={large&&(!viewReady||changingView)} class:disabled={large&&(!viewReady||changingView)} title={large?'Filtrar el archivo completo al pulsar Aplicar':undefined} onclick={event=>{if(large){event.preventDefault();if(showQuery)showQuery=false;else void openLargeFilters()}}}><Icon name="funnel" size={14}/><span class="tool-text">Filtrar</span><Icon name="chevron-down" size={12}/></summary><div class="dropdown">
    <button aria-pressed={showFilters} title={commands.find(command=>command.id==='filters')?.detail} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand('filters')}}>Filtros por columna</button>
    {@render item('query')}
    <label class="menu-check"><input type="checkbox" bind:checked={numeric} onchange={()=>{if(sort)sort={...sort,numeric}}}/>Orden numérico</label>
    {#if viewActive}{@render item('clearQuery')}{/if}
   </div></details>
-  {#if viewActive}<button class="filter-chip" disabled={large&&changingView} aria-label={large?'Búsqueda activa. Quitar búsqueda':filterCount?`${filterCount} ${filterCount===1?'filtro activo':'filtros activos'}. Quitar filtros y orden`:'Orden activo. Quitar filtros y orden'} title={large?'Quitar búsqueda':'Quitar filtros y orden'} onclick={()=>void runCommand('clearQuery')}>{large?'Búsqueda':filterCount?`${filterCount} ${filterCount===1?'filtro':'filtros'}`:'Orden'} <Icon name="x" size={12}/></button>{/if}
+  {#if viewActive}<button class="filter-chip" disabled={large&&changingView} aria-label={large?'Búsqueda activa. Quitar búsqueda y filtros':filterCount?`${filterCount} ${filterCount===1?'filtro activo':'filtros activos'}. Quitar filtros y orden`:'Orden activo. Quitar filtros y orden'} title={large?'Quitar búsqueda y filtros':'Quitar filtros y orden'} onclick={()=>void runCommand('clearQuery')}>{filterCount?`${filterCount} ${filterCount===1?'filtro':'filtros'}`:'Orden'} <Icon name="x" size={12}/></button>{/if}
   <details class="insert-menu"><summary aria-label="Limpiar datos" aria-disabled={large} class:disabled={large} title={large?'La edición llega en una fase posterior (archivos grandes)':undefined} onclick={event=>{if(large)event.preventDefault()}}><Icon name="wrench" size={14}/><span class="tool-text">Limpiar datos</span><Icon name="chevron-down" size={12}/></summary><div class="dropdown">
    {@render item('transformations')}
    <span class="dropdown-label">Limpiar filas marcadas</span>
@@ -387,13 +394,14 @@
  </div>
  {#if large}<p id="large-search-help" class="large-search-help">Enter para buscar en las {number(doc.rowCount??page.total)} filas. Esc cancela el recorrido o quita la búsqueda.</p>{/if}
  {#if largeView}<section class="large-search-status" aria-label="Búsqueda en archivo grande">
+  {#if largeView.query.conditions?.length}<p>Vista filtrada: {largeView.query.conditions.length} {largeView.query.conditions.length===1?'condición':'condiciones'} ({largeView.query.filterMode==='any'?'cualquiera':'todas'}) · {number(largeView.matched)} de {number(largeView.total)} filas <button disabled={changingView} onclick={()=>void openLargeFilters()}>Editar filtros</button></p>{/if}
   <p aria-live="off">{viewText}</p>
   {#if viewRunning}<progress max="1" value={largeView.fraction} aria-label="Avance de la búsqueda"></progress><button disabled={changingView} onclick={()=>void cancelView()}>Cancelar búsqueda</button>{:else}<button disabled={changingView} onclick={()=>void clearView()}>Quitar búsqueda</button>{/if}
-  {#if viewActive}<p class="large-search-scope">Analizar, SQL, Gráficos y Extraer… usan el documento completo, no esta vista.</p>{/if}
+  {#if viewActive}<p class="large-search-scope">Analizar, SQL y Gráficos usan el documento completo, no esta vista. Extraer… recorre todo el archivo con la búsqueda y los filtros aplicados.</p>{/if}
  </section>{/if}
  {#if large}<p id="large-search-announcement" class="sr-only" role="status">{viewAnnouncement}</p>{/if}
- {#if showExtract&&large}<CsvExtract {doc} {onerror} onclose={()=>{showExtract=false;extractButton?.focus()}}/>{/if}
- {#if showQuery}<CsvQueryTools headers={doc.headers??[]} initialConditions={conditions} initialOrder={activeOrder} initialMode={filterMode} onapply={applyQuery} onclose={()=>{showQuery=false;queryButton?.focus()}}/>{/if}
+ {#if showExtract&&large}<CsvExtract {doc} {onerror} initialQuery={largeView?.query} partial={!!largeView&&largeView.status!=='complete'} onclose={()=>{showExtract=false;extractButton?.focus()}}/>{/if}
+ {#if showQuery}<CsvQueryTools {large} total={doc.rowCount??page.total} error={filterError} applying={large&&changingView} headers={doc.headers??[]} initialConditions={conditions} initialOrder={activeOrder} initialMode={filterMode} onapply={applyQuery} onclose={()=>{showQuery=false;queryButton?.focus()}}/>{/if}
  {#if queryError}<div class="warning-banner" role="alert">{#if large}{queryError} <button disabled={busy||changingView} onclick={()=>void startView()}>Volver a buscar</button>{:else}Consulta no aplicada. Se conserva la última vista válida. {queryError} Corrige o limpia la consulta para editar. <button disabled={busy} onclick={()=>void load(0)}>Reintentar consulta</button>{/if}</div>{/if}
  {#if doc.extract}<div class="warning-banner extract-banner" role="note"><strong>Extracto de «{doc.extract.sourceName}»</strong> · {doc.extract.matched.toLocaleString('es')} de {doc.extract.total.toLocaleString('es')} filas{#if doc.extract.conditions} · {doc.extract.conditions}{/if}{#if doc.extract.columns} · columnas: {doc.extract.columns.join(', ')}{/if} · {fidelityLabel[doc.extract.fidelity]}.{#each doc.extract.normalization as note} {note}{/each}{#if doc.extract.irregularRows} {doc.extract.irregularRows.toLocaleString('es')} filas con distinto número de campos que el encabezado se conservaron como estaban.{/if} El original no se modificó.</div>{/if}
  {#if doc.warning||doc.readonly}<div class="warning-banner">{doc.warning??'Solo lectura'}{#if page.sample} Los filtros y recuentos describen únicamente la muestra.{/if}</div>{/if}

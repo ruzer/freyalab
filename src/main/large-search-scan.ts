@@ -6,12 +6,12 @@ import type {LargeViewQuery} from '../shared/types'
 
 export interface SearchRange {from:number;to:number;first:number}
 export interface SearchChunk {rows:Float64Array<ArrayBuffer>;positions:Float64Array<ArrayBuffer>;lengths:Uint32Array<ArrayBuffer>;scanned:number;position:number}
-export interface SearchTask {taskId:number;index:LargeIndex;range:SearchRange;query:LargeViewQuery;delimiter:string;header:boolean;width:number;cancel:SharedArrayBuffer;stop:SharedArrayBuffer;batchRecords?:number;chunk?:number;delayMs?:number}
+export interface SearchTask {taskId:number;index:LargeIndex;range:SearchRange;query:LargeViewQuery;delimiter:string;header:boolean;width:number;cancel:SharedArrayBuffer;stop:SharedArrayBuffer;batchRecords?:number;chunk?:number;delayMs?:number;prefilter?:boolean;partial?:boolean}
 export async function scanSearch(task:SearchTask,send:(chunk:SearchChunk)=>void|Promise<void>){
  const {index,range,query,delimiter,header,width}=task,flag=new Int32Array(task.cancel),stop=new Int32Array(task.stop),cancelled=()=>Atomics.load(flag,0)!==0||Atomics.load(stop,0)!==0,compiled=compileTableQuery({...query,offset:0,limit:1,requestId:0},width)
  const necessary=query.search??(query.conditions?.length&&((query.filterMode??'all')==='all'||query.conditions.length===1)?query.conditions.find(rule=>rule.op==='contains'&&rule.value)?.value:undefined)
- const lower=necessary?.toLocaleLowerCase(),prefilter=!!lower&&index.unit===1&&/^[\x00-\x7f]+$/.test(necessary!)&&/^[\x00-\x7f]+$/.test(lower)&&![delimiter,'"','\r','\n'].some(value=>necessary!.includes(value)),needle=lower?Buffer.from(lower):undefined
- const through=!query.search&&query.conditions?.length?Math.max(...query.conditions.map(rule=>rule.column)):undefined
+ const lower=necessary?.toLocaleLowerCase(),prefilter=task.prefilter!==false&&!!lower&&index.unit===1&&/^[\x00-\x7f]+$/.test(necessary!)&&/^[\x00-\x7f]+$/.test(lower)&&![delimiter,'"','\r','\n'].some(value=>necessary!.includes(value)),needle=lower?Buffer.from(lower):undefined
+ const through=task.partial!==false&&!query.search&&query.conditions?.length?Math.max(...query.conditions.map(rule=>rule.column)):undefined
  let scanned=0,position=range.from,lastProgress=0
  try{for await(const batch of recordBatches(index,{...range,batchRecords:task.batchRecords??512,batchBytes:1024*1024,chunk:task.chunk??1024*1024,cancelled})){
   if(cancelled())break
@@ -23,6 +23,7 @@ export async function scanSearch(task:SearchTask,send:(chunk:SearchChunk)=>void|
   if(prefilter&&!(utf8&&(bytes.includes(Buffer.from('K'))||bytes.includes(Buffer.from('İ'))))){folded=bytes;for(let i=0;i<folded.length;i++)if(folded[i]>=65&&folded[i]<=90)folded[i]+=32}
   const candidate=!folded||folded.includes(needle!),rows:number[]=[],positions:number[]=[],lengths:number[]=[];let cursor=0
   for(let i=0;i<batch.records.length;i++){
+   if(cancelled())break
    const raw=batch.records[i],ordinal=batch.first+i,start=position,from=cursor;position+=raw.length;cursor+=raw.length
    try{validateRecordQuotes(raw,index,delimiter)}catch(error){throw new Error(`El registro ${ordinal+1} (byte ${start}) no es un CSV válido: ${(error as Error).message}`)}
    if(header&&ordinal===0)continue

@@ -8,11 +8,11 @@
  import {onMount} from 'svelte'
  import {filterOperators} from '../../shared/table-conditions'
  import {PREVIEW_LIMIT,type OperationRequest,type PreviewResult} from '../../shared/operations'
- import type {DocumentInfo} from '../../shared/types'
+ import type {DocumentInfo,LargeViewQuery} from '../../shared/types'
  // E1 · Extracto no destructivo de un archivo grande: filtros y columnas → recuento, vista previa o archivo NUEVO. El original no se modifica nunca.
- let {doc,onclose,onerror}:{doc:DocumentInfo;onclose:()=>void;onerror:(message:string)=>void}=$props()
+ let {doc,initialQuery,partial=false,onclose,onerror}:{doc:DocumentInfo;initialQuery?:LargeViewQuery;partial?:boolean;onclose:()=>void;onerror:(message:string)=>void}=$props()
  const headers=$derived(doc.headers??[])
- let conditions=$state<TableFilter[]>([]),mode=$state<'all'|'any'>('all'),chosen=$state<boolean[]>([]),allColumns=$state(true)
+ let conditions=$state<TableFilter[]>([]),mode=$state<'all'|'any'>('all'),chosen=$state<boolean[]>([]),allColumns=$state(true),search=$state('')
  let busy=$state<'count'|'preview'|'filter_extract'|null>(null),active='',percent=$state<number|null>(null),phase=$state(''),error=$state(''),cancelled=$state(false)
  let counted=$state<{matched:number;scanned:number}|null>(null),preview=$state<PreviewResult|null>(null)
  let title:HTMLHeadingElement,region:HTMLElement
@@ -20,10 +20,10 @@
  const columns=$derived(allColumns?undefined:chosen.flatMap((on,index)=>on?[index]:[]))
  const noColumns=$derived(!allColumns&&!columns?.length)
  const number=(value:number)=>value.toLocaleString('es')
- onMount(()=>{const draft=drafts.get(doc.id);if(draft)({conditions,mode,chosen,allColumns}=structuredClone(draft));title.focus();return window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress?.requestId==='op:'+active){percent=event.progress.rows;phase=event.progress.phase}})})
+ onMount(()=>{const draft=drafts.get(doc.id);if(draft)({conditions,mode,chosen,allColumns}=structuredClone(draft));if(initialQuery){conditions=structuredClone($state.snapshot(initialQuery.conditions??[]));mode=initialQuery.filterMode??'all';search=initialQuery.search??''}title.focus();return window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress?.requestId==='op:'+active){percent=event.progress.rows;phase=event.progress.phase}})})
  $effect(()=>{drafts.set(doc.id,$state.snapshot({conditions,mode,chosen,allColumns}))})
  function build<T extends OperationRequest['operation']>(operation:T){
-  const base={requestId:crypto.randomUUID(),source:{revision:doc.revision},...(conditions.length?{conditions:{conditions:$state.snapshot(conditions),filterMode:mode}}:{}),...(columns?{columns}:{})}
+  const base={requestId:crypto.randomUUID(),source:{revision:doc.revision},...(search?{search}:{}),...(conditions.length?{conditions:{conditions:$state.snapshot(conditions),filterMode:mode}}:{}),...(columns?{columns}:{})}
   return (operation==='preview'?{...base,operation,limit:PREVIEW_LIMIT}:{...base,operation}) as OperationRequest
  }
  async function run(operation:'count'|'preview'|'filter_extract'){
@@ -49,6 +49,8 @@
 <section bind:this={region} class="extract-tools" aria-labelledby={titleId}>
  <div class="heading"><h3 id={titleId} tabindex="-1" bind:this={title}>Extraer filas de un archivo grande</h3><button type="button" aria-label="Cerrar extracción" disabled={!!busy} onclick={onclose}><Icon name="x" size={14}/></button></div>
  <p>Crea un archivo nuevo con las filas que cumplan las condiciones. <strong>El original no se modifica.</strong> Las filas se copian tal cual (bytes idénticos) salvo que elijas columnas: entonces el CSV se vuelve a escribir y se te avisa de qué se normaliza.</p>
+ {#if search}<p>Búsqueda global aplicada: <strong class="search-needle">{search}</strong>. Se combina con las condiciones mediante Y para contar, previsualizar y extraer.</p>{/if}
+ {#if partial}<p role="note">La vista es parcial. Extraer recorre todo el archivo con estas reglas; el extracto no se limita a las coincidencias mostradas en la tabla.</p>{/if}
  <div class="extract-body" oninput={changed} onchange={changed}>
   <label>Coincidir <select aria-label="Combinar condiciones" bind:value={mode}><option value="all">Todas las condiciones (Y)</option><option value="any">Cualquier condición (O)</option></select></label>
   {#each conditions as rule,index}<div class="rule">

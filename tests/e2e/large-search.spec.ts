@@ -29,7 +29,7 @@ async function capture(name:string){
  for(const theme of ['light','dark']){
   await page.getByLabel('Tema',{exact:true}).selectOption(theme)
   await expect.poll(()=>page.locator('html').evaluate(node=>node.classList.contains('dark'))).toBe(theme==='dark')
-  await page.screenshot({path:test.info().outputPath(`large-search-${name}-${theme}-1440x900.png`)})
+  await page.screenshot({animations:'disabled',path:test.info().outputPath(`large-search-${name}-${theme}-1440x900.png`)})
  }
 }
 
@@ -97,7 +97,8 @@ test('el tope de coincidencias conserva una vista parcial y mantiene bloqueadas 
  const {path,source}=await open();await find('Cliente')
  await expect(statePanel()).toContainText('Se detuvo al llegar a 7 coincidencias');await expect(statePanel()).toContainText('Resultado parcial');await expect(grid()).toHaveAttribute('aria-rowcount','8')
  const bar=page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true})
- for(const name of ['Filtrar','Limpiar datos','Filas y columnas']){const button=bar.getByLabel(name,{exact:true});await expect(button).toHaveAttribute('aria-disabled','true');await expect(button).toHaveCSS('opacity','0.45')}
+ await expect(bar.getByLabel('Filtrar',{exact:true})).toHaveAttribute('aria-disabled','false')
+ for(const name of ['Limpiar datos','Filas y columnas']){const button=bar.getByLabel(name,{exact:true});await expect(button).toHaveAttribute('aria-disabled','true');await expect(button).toHaveCSS('opacity','0.45')}
  await expect(bar.getByRole('button',{name:'Reemplazar',exact:true})).toBeDisabled();await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled();await expect(page.getByRole('button',{name:'Exportar',exact:false}).first()).toBeDisabled()
  await capture('limit');expect(await readFile(path,'utf8')).toBe(source)
 })

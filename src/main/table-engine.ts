@@ -65,7 +65,7 @@ export class TableEngine {
  private streams=new Map<string,{id:string;iterator:AsyncGenerator<{data:Buffer;rows:number},void>}>()
  private serial = 0
  // Un archivo grande no tiene `rows` en memoria: todo lo que lea o cambie datos debe rechazarlo (solo `info` y `page` lo admiten).
- private get(id: string, allowLarge = false): State { const s = this.states.get(id); if (!s) throw new Error('La tabla ya no está abierta.'); if (s.large && !allowLarge) throw new Error('Esta función aún no está disponible en archivos grandes (solo lectura): la búsqueda, los filtros, las estadísticas y la edición llegan en fases posteriores.'); return s }
+ private get(id: string, allowLarge = false): State { const s = this.states.get(id); if (!s) throw new Error('La tabla ya no está abierta.'); if (s.large && !allowLarge) throw new Error('Esta función aún no está disponible en archivos grandes (solo lectura): el orden, las estadísticas y la edición llegan en fases posteriores.'); return s }
  private editable(id: string): State { const s = this.get(id); if (s.readonly) throw new Error('La muestra es de solo lectura.'); return s }
  async create(id: string) { await this.diskViews.clear(id);this.openings.set(id,++this.serial);this.views.delete(id);this.queries.delete(id);const revision=(this.states.get(id)?.revision??-1)+1;this.states.set(id, { encoding:'utf8', delimiter:',',eol:'\n',bom:false,header:true,finalEol:true,headerWidth:1,rows:[],headers:['Columna 1'],readonly:false,revision,nextId:1,token:0,savedToken:-1,history:[],future:[] }); return this.info(id) }
  async open(id: string, path: string, options: TableOptions = {}) {
@@ -116,7 +116,7 @@ export class TableEngine {
   const width = Math.max(rawHeaders.length,index.width??0,...first.slice(start).map(text => splitFields(text, meta.delimiter).length), 1)
   const headers = Array.from({length: width}, (_, i) => meta.header ? rawHeaders[i] ?? '' : `Columna ${i + 1}`)
   const rowCount = Math.max(index.records - start, 0)
-  const warning = `${reason ? reason + ' ' : ''}Archivo grande: ${rowCount.toLocaleString()} filas en solo lectura. Buscar recorre el archivo completo; los filtros, el orden, las estadísticas y la edición aún no están disponibles.`
+  const warning = `${reason ? reason + ' ' : ''}Archivo grande: ${rowCount.toLocaleString()} filas en solo lectura. Buscar y Filtrar recorren el archivo completo; el orden, las estadísticas y la edición aún no están disponibles.`
   if (this.openings.get(id) !== generation) throw new Error('Apertura cancelada por una solicitud más reciente.')
   const s: State = {...meta, rows: [], headers, readonly: true, warning, revision: (this.states.get(id)?.revision ?? -1) + 1, nextId: 1, token: 0, savedToken: 0, history: [], future: [], large: {index, rowCount}}
   this.views.delete(id); this.queries.delete(id); this.states.set(id, s); return this.info(id)
@@ -126,6 +126,7 @@ export class TableEngine {
  async operation(id: string, request: EngineOperation): Promise<OperationResult> {
   const s = this.get(id, true)
   if (!s.large) throw new Error('Esta operación solo se ofrece para archivos grandes (solo lectura); en una tabla editable usa los filtros y la exportación.')
+  if(!await indexUnchanged(s.large.index))throw new Error('El archivo cambió. Vuelve a abrirlo antes de extraer sus filas.')
   if (request.source.revision !== s.revision) throw new Error('El documento cambió mientras tanto: vuelve a abrir el cuadro.')
   if (request.operation === 'filter_extract') { const [a, b] = await Promise.all([realpath(request.output).catch(() => resolve(request.output)), realpath(s.large.index.path).catch(() => resolve(s.large!.index.path))]); if (a === b) throw new Error('El destino no puede ser el archivo original: la extracción nunca lo modifica.') }
   const control = {cancelled: false}; this.running.set(request.requestId, control)

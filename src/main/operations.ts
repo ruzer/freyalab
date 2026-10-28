@@ -5,7 +5,7 @@ import {setTimeout as sleep} from 'node:timers/promises'
 import {parse as parseSync} from 'csv-parse/sync'
 import {stringify} from 'csv-stringify/sync'
 import iconv from 'iconv-lite'
-import {recordBatches,LargeFormatError,RECORD_DELIMITERS,type LargeIndex} from './large-table'
+import {recordBatches,indexUnchanged,LargeFormatError,RECORD_DELIMITERS,type LargeIndex} from './large-table'
 import {compileTableQuery} from './table-query'
 import type {Encoding} from '../shared/types'
 import type {EngineOperation,OperationResult,Fidelity} from '../shared/operations'
@@ -48,7 +48,7 @@ export async function runOperation(state:OperationSourceState,request:EngineOper
  const started=performance.now(),width=state.headers.length,total=state.index.records-(state.header?1:0)
  const columns=request.operation==='count'?undefined:request.columns
  if(columns?.some(column=>column>=width))throw new Error('Una de las columnas elegidas no existe en este archivo.')
- const compiled=compileTableQuery({conditions:request.conditions?.conditions,filterMode:request.conditions?.filterMode,offset:0,limit:1,requestId:0},width)
+ const compiled=compileTableQuery({search:request.search,conditions:request.conditions?.conditions,filterMode:request.conditions?.filterMode,offset:0,limit:1,requestId:0},width)
  const project=(fields:string[],ordinal:number)=>{
   if(!columns)return fields
   return columns.map(column=>{ if(column>=fields.length)throw new StrictRecordError(`El registro ${recordNumber(ordinal)} solo tiene ${fields.length} campos y falta la columna ${column+1}: no se rellena en silencio.`); return fields[column] })
@@ -92,6 +92,7 @@ export async function runOperation(state:OperationSourceState,request:EngineOper
    hooks.progress?.(Math.min(99,Math.floor(batch.position/state.index.size*100)))
    if(hooks.delayMs)await sleep(hooks.delayMs)
   }
+  if(!await indexUnchanged(state.index))throw new StrictRecordError('El archivo cambió durante la operación. Vuelve a abrirlo; no se completó el extracto.')
   hooks.progress?.(100)
   if(request.operation==='count')return {operation:'count',matched,scanned}
   if(request.operation==='preview'){
