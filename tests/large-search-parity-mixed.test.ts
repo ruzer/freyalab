@@ -61,3 +61,7 @@ for(const encoding of ['utf8','utf16le','win1252'] as const)for(const delimiter 
   expect(analysis).toEqual(expected.slice(1))
  }finally{await rm(folder,{recursive:true,force:true})}
 })
+it('las columnas de una fila irregular posterior a la muestra también existen en el modo grande',async()=>{
+ const folder=await mkdtemp(join(tmpdir(),'freya-search-late-columns-')),path=join(folder,'data.csv'),editable=new TableEngine(),large=new TableEngine(()=>{},{largeBytes:1})
+ try{await writeFile(path,'id,text\n'+'1,x\n'.repeat(300)+'2,y,extra,final\n');const small=await editable.open('a',path),big=await large.open('a',path);expect(big.headers).toEqual(small.headers);expect(big.headers).toHaveLength(4)}finally{await editable.close('a');await large.close('a');await rm(folder,{recursive:true,force:true})}
+})

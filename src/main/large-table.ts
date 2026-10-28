@@ -1,6 +1,6 @@
 // Lectura de CSV/TSV grandes por posición (L2 del RFC `docs/design/LARGE-FILE-EDITOR-RFC.md`): el archivo no se carga entero,
 // se recorre una vez en flujo para guardar la posición de cada 1024.º registro y las páginas se leen saltando a esa posición.
-import {open} from 'node:fs/promises'
+import {open,stat} from 'node:fs/promises'
 import iconv from 'iconv-lite'
 import type {Encoding} from '../shared/types'
 
@@ -23,12 +23,14 @@ export class InvalidEncodingError extends LargeFormatError {}
 export class OpenCancelled extends Error {}
 
 export interface LargeIndex {
- path: string; size: number; encoding: Encoding
+ path: string; size: number; encoding: Encoding;mtimeMs:number;ino:number;maxRecord:number
  unit: 1 | 2 // bytes por carácter de control: UTF-16 usa 2
  bomLength: number; every: number; records: number
  offsets: Float64Array // posición del registro 0, `every`, 2·`every`…
+ width?:number
 }
-interface ScanState { inQuotes: boolean; cr?:number }
+interface ScanState { inQuotes: boolean; cr?:number;delimiter?:number;columns?:number }
+export async function indexUnchanged(index:LargeIndex){try{const current=await stat(index.path);return current.size===index.size&&current.mtimeMs===index.mtimeMs&&current.ino===index.ino}catch{return false}}
 
 // Recorre `buffer[0..length)` y llama a `onRecord(fin)` en cada fin de registro: un salto de línea fuera de comillas. Las comillas escapadas ("") se compensan solas.
 function scan(buffer: Buffer, length: number, base: number, state: ScanState, unit: 1 | 2, onRecord: (end: number) => void) {
@@ -39,6 +41,7 @@ function scan(buffer: Buffer, length: number, base: number, state: ScanState, un
    if (code === 0x22) inQuotes = !inQuotes
    else if(!inQuotes&&code===0x0d)cr=base+i+unit
    else if(!inQuotes&&code===0x0a)onRecord(base+i+unit)
+   else if(!inQuotes&&code===state.delimiter)state.columns=(state.columns??1)+1
  }
  state.inQuotes = inQuotes
  state.cr = cr
@@ -47,6 +50,7 @@ function scan(buffer: Buffer, length: number, base: number, state: ScanState, un
 export interface IndexOptions {
  encoding: Encoding; bomLength: number; maxRecord: number
  every?: number; chunk?: number
+ delimiter?:string
  onProgress?: (fraction: number) => void
  cancelled?: () => boolean
 }
@@ -54,13 +58,14 @@ export async function buildIndex(path: string, options: IndexOptions): Promise<L
  const {encoding, bomLength, maxRecord, every = 1024, chunk = LARGE_CHUNK} = options, unit: 1 | 2 = encoding === 'utf16le' ? 2 : 1
  const handle = await open(path, 'r')
  try {
-  const size = (await handle.stat()).size, buffer = Buffer.allocUnsafe(chunk), offsets: number[] = []
+  const before=await handle.stat(),size=before.size,buffer=Buffer.allocUnsafe(chunk), offsets: number[] = []
   if (unit === 2 && (size - bomLength) % 2) throw new InvalidEncodingError(`El archivo UTF-16 tiene un número impar de bytes (${size.toLocaleString('es')}): la codificación está incompleta y no se puede indexar.`)
-  const state: ScanState = {inQuotes: false}
-  let position = bomLength, start = bomLength, records = 0
+  const state: ScanState = {inQuotes: false,...(options.delimiter?{delimiter:options.delimiter.charCodeAt(0),columns:1}:{})}
+  let position = bomLength, start = bomLength, records = 0,width=0
   const onRecord = (end: number) => {
    if (end - start > maxRecord) throw new RecordTooLargeError(records, start, maxRecord)
    if (records % every === 0) offsets.push(start)
+   if(state.columns!==undefined){width=Math.max(width,state.columns);state.columns=1}
    records++; start = end
   }
   while (position < size) {
@@ -74,38 +79,41 @@ export async function buildIndex(path: string, options: IndexOptions): Promise<L
   }
   if(state.cr!==undefined)onRecord(state.cr)
   if (state.inQuotes) throw new UnclosedQuoteError(records, start) // el último registro quedó abierto: antes se daba por bueno
-  if (start < size) { if (records % every === 0) offsets.push(start); records++ } // último registro sin salto de línea
-  return {path, size, encoding, unit, bomLength, every, records, offsets: Float64Array.from(offsets)}
+  if (start < size) { if (records % every === 0) offsets.push(start); records++;if(state.columns!==undefined)width=Math.max(width,state.columns) } // último registro sin salto de línea
+  const after=await handle.stat();if(after.size!==size||after.mtimeMs!==before.mtimeMs||after.ino!==before.ino)throw new LargeFormatError('El archivo cambió durante la indexación. Vuelve a abrirlo.')
+  return {path, size, encoding, unit, bomLength, every, records, offsets: Float64Array.from(offsets),mtimeMs:before.mtimeMs,ino:before.ino,maxRecord,...(options.delimiter?{width}:{})}
  } finally { await handle.close() }
 }
 
 export interface RecordBatch { first: number; records: Buffer[]; position: number }
 // Recorre el archivo entero en flujo y entrega los registros EXACTOS (bytes, con su fin de línea) en lotes. Es la base de la extracción:
 // el mismo escáner que el índice, así que ambos delimitan igual los registros. Falla si el archivo termina con una comilla sin cerrar.
-export async function* recordBatches(index: LargeIndex, options: {batchRecords?: number; chunk?: number; cancelled?: () => boolean} = {}): AsyncGenerator<RecordBatch> {
- const {batchRecords = 2000, chunk = 4 * 1024 * 1024} = options
+export async function* recordBatches(index: LargeIndex, options: {batchRecords?: number;batchBytes?:number; chunk?: number; cancelled?: () => boolean;from?:number;to?:number;first?:number} = {}): AsyncGenerator<RecordBatch> {
+ const {batchRecords = 2000,batchBytes=Infinity,chunk = 4 * 1024 * 1024,from=index.bomLength,to=index.size,first:initial=0} = options
  const handle = await open(index.path, 'r')
  try {
   const state: ScanState = {inQuotes: false}
-  let position = index.bomLength, recordStart = position, ordinal = 0, first = 0, batch: Buffer[] = [], carry: Buffer[] = []
-  while (position < index.size) {
+  let position = from, recordStart = position, ordinal = initial, first = initial, batch: Buffer[] = [], carry: Buffer[] = [],batchSize=0
+  while (position < to) {
    if (options.cancelled?.()) throw new OpenCancelled('Operación cancelada.')
-   const buffer = Buffer.allocUnsafe(chunk), {bytesRead} = await handle.read(buffer, 0, chunk, position); if (!bytesRead) break
+   const buffer = Buffer.allocUnsafe(Math.min(chunk,to-position)), {bytesRead} = await handle.read(buffer, 0, buffer.length, position); if (!bytesRead) break
    const usable = index.unit === 2 ? bytesRead - (bytesRead % 2) : bytesRead, ends: number[] = []
    scan(buffer, usable, position, state, index.unit, end => ends.push(end))
    let cursor = position
    for (const end of ends) {
+    if(end-recordStart>index.maxRecord)throw new RecordTooLargeError(ordinal,recordStart,index.maxRecord)
     const part = buffer.subarray(cursor - position, end - position)
-    batch.push(carry.length ? Buffer.concat([...carry, part]) : part); carry = []; cursor = end; recordStart = end; ordinal++
-    if (batch.length >= batchRecords) { yield {first, records: batch, position: end}; first = ordinal; batch = [] }
+    const raw=carry.length?Buffer.concat([...carry,part]):part;batch.push(raw);batchSize+=raw.length;carry = []; cursor = end; recordStart = end; ordinal++
+    if (batch.length >= batchRecords||batchSize>=batchBytes) { yield {first, records: batch, position: end}; first = ordinal; batch = [];batchSize=0 }
    }
    if (cursor < position + usable) carry.push(buffer.subarray(cursor - position, usable))
    position += usable
+   if(position-recordStart>index.maxRecord)throw new RecordTooLargeError(ordinal,recordStart,index.maxRecord)
    if (!usable) break // UTF-16: un único byte suelto al final
   }
   if (state.inQuotes) throw new UnclosedQuoteError(ordinal, recordStart)
   if (carry.length) { batch.push(Buffer.concat(carry)); ordinal++ } // último registro sin salto de línea
-  if (batch.length) yield {first, records: batch, position: index.size}
+  if (batch.length) yield {first, records: batch, position: to}
  } finally { await handle.close() }
 }
 
@@ -140,7 +148,7 @@ export async function readRecords(index: LargeIndex, from: number, count: number
 }
 
 // Campos de un registro. Tolerante: una comilla solo abre un campo al principio de este y lo que siga a la comilla de cierre se conserva.
-export function splitFields(record: string, delimiter: string): string[] {
+export function splitFields(record: string, delimiter: string, through?:number): string[] {
  const fields: string[] = []; let i = 0
  while (true) {
   let value = ''
@@ -150,9 +158,26 @@ export function splitFields(record: string, delimiter: string): string[] {
    while (i < record.length && record[i] !== delimiter) value += record[i++]
   } else { const from = i; while (i < record.length && record[i] !== delimiter) i++; value = record.slice(from, i) }
   fields.push(value)
+  if(through!==undefined&&fields.length>through)break
   if (i >= record.length) break
   i++
   if (i === record.length) { fields.push(''); break } // delimitador final = campo vacío
  }
  return fields
+}
+
+// Read-only searches still reject invalid quote boundaries, including records discarded by a byte prefilter.
+export function validateRecordQuotes(raw:Buffer,index:Pick<LargeIndex,'encoding'|'unit'>,delimiter:string){
+ const bytes=index.unit===2?Buffer.from(decode(raw,index.encoding).replace(/(\r\n|\n|\r)$/,'')):raw
+ let end=bytes.length
+ if(bytes[end-1]===10){end--;if(bytes[end-1]===13)end--}else if(bytes[end-1]===13)end--
+ let next=0
+ while(true){
+  const quote=bytes.indexOf(34,next);if(quote<0||quote>=end)return
+  if(quote!==0&&bytes[quote-1]!==delimiter.charCodeAt(0))throw new Error('Comilla dentro de un campo sin entrecomillar.')
+  let closing=quote
+  while(true){closing=bytes.indexOf(34,closing+1);if(closing<0||closing>=end)throw new Error('Campo entrecomillado sin cerrar.');if(bytes[closing+1]===34){closing++;continue}break}
+  if(closing+1!==end&&bytes[closing+1]!==delimiter.charCodeAt(0))throw new Error('Contenido después de una comilla de cierre.')
+  next=closing+1
+ }
 }

@@ -5,6 +5,7 @@ const numeric=/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/
 function decimal(text:string){const trimmed=text.trim();if(!numeric.test(trimmed))return null;const result=new Decimal(trimmed);return result.isFinite()?result:null}
 export function date(text:string){if(!/^\d{4}-\d{2}-\d{2}$/.test(text))return null;const parsed=new Date(text+'T00:00:00Z');return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===text?text:null}
 export function compileTableQuery(query:TableQuery,width:number){
+ const search=(query.search??'').toLocaleLowerCase()
  const column=(index:number)=>{if(!Number.isInteger(index)||index<0||index>=width)throw new Error('Columna de consulta no válida.')}
  const rules=query.conditions??[]
  if(rules.length>20)throw new Error('Se admiten hasta 20 condiciones por consulta.')
@@ -38,7 +39,7 @@ export function compileTableQuery(query:TableQuery,width:number){
  const parsed=(cells:string[],column:number)=>{const cache=numbers.get(column)!;if(cache.has(cells))return cache.get(cells)!;const result=decimal(cells[column]??'');cache.set(cells,result);return result}
 
  return{
-  matches:(cells:string[])=>!tests.length||(query.filterMode==='any'?tests.some(test=>test(cells)):tests.every(test=>test(cells))),
+  matches:(cells:string[])=>(!search||cells.some(value=>value.toLocaleLowerCase().includes(search)))&&(!tests.length||(query.filterMode==='any'?tests.some(test=>test(cells)):tests.every(test=>test(cells)))),
   ordered:order.length>0,
   compare:(a:string[],b:string[])=>{
    for(const item of order){const x=a[item.column]??'',y=b[item.column]??'';let comparison:number

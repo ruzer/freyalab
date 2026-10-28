@@ -43,7 +43,8 @@ test('«Ir a la fila»: botón y Ctrl/⌘ + G, validación, foco y Escape',async
 
 test('lo que aún no existe en archivos grandes está deshabilitado y el documento no cambia',async()=>{
  const {doc,path}=await open(csv(3000)),before=await readFile(path,'utf8'),bar=page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true})
- await expect(page.getByLabel('Buscar en tabla',{exact:true})).toBeDisabled()
+ await expect(page.getByLabel('Buscar en tabla',{exact:true})).toBeEnabled()
+ await expect(page.getByLabel('Buscar en tabla',{exact:true})).toHaveAttribute('placeholder','Buscar en el archivo completo (Enter)')
  await expect(bar.getByRole('button',{name:'Reemplazar',exact:true})).toBeDisabled()
  await expect(bar.getByLabel('Filtrar',{exact:true})).toHaveAttribute('aria-disabled','true')
  await bar.getByLabel('Filtrar',{exact:true}).click();await expect(bar.locator('details[open]')).toHaveCount(0) // el menú de filtros no se abre
