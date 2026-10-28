@@ -101,6 +101,7 @@ export function standaloneHTML(body:string,title:string):string {
 
 let mermaidModule:Promise<typeof import('mermaid')>|undefined
 const diagramCache=new Map<string,string>()
+const diagramValidationCache=new Map<string,Promise<void>>()
 let diagramNumber=0
 // La cola interna de Mermaid no incluye initialize, que cambia su configuración global.
 let diagramQueue:Promise<void>=Promise.resolve()
@@ -116,9 +117,18 @@ function diagramEngine(mermaid:(typeof import('mermaid'))['default'],source:stri
  if(maxTextSize!==undefined&&source.length>maxTextSize)throw new Error('Maximum text size in diagram exceeded')
  return mermaid
 }
-export async function validateDiagram(source:string,dark:boolean){
- const {default:mermaid}=await(mermaidModule ??= import('mermaid'))
- await diagramOperation(async()=>{diagramEngine(mermaid,source,dark);await mermaid.parse(source)})
+export function validateDiagram(source:string,dark:boolean):Promise<void>{
+ const key=`${dark}:${source}`
+ if(diagramCache.has(key))return Promise.resolve()
+ const cached=diagramValidationCache.get(key);if(cached)return cached
+ const pending=(async()=>{
+  const {default:mermaid}=await(mermaidModule ??= import('mermaid'))
+  await diagramOperation(async()=>{diagramEngine(mermaid,source,dark);await mermaid.parse(source)})
+ })()
+ if(diagramValidationCache.size>=64)diagramValidationCache.delete(diagramValidationCache.keys().next().value!)
+ diagramValidationCache.set(key,pending)
+ void pending.catch(()=>{if(diagramValidationCache.get(key)===pending)diagramValidationCache.delete(key)})
+ return pending
 }
 export async function diagramSVG(source:string,dark:boolean):Promise<string> {
  const key=`${dark}:${source}`

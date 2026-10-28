@@ -31,10 +31,12 @@
   if(!blocks)return
   const timer=setTimeout(async()=>{
    const results:{source:string;error?:DiagramError}[]=[]
-   for(const block of blocks){
+   for(const [index,block] of blocks.entries()){
+    if(token!==diagnosticGeneration||disposed)return
     try{await validateDiagram(block.source,theme);results.push({source:block.source})}
     catch(error){results.push({source:block.source,error:explainDiagramError(error instanceof Error?error.message:String(error),block.source)})}
     if(token!==diagnosticGeneration||disposed)return
+    if(index<blocks.length-1)await new Promise<void>(resolve=>setTimeout(resolve,0))
    }
    publish(results,blocks)
   },150)
