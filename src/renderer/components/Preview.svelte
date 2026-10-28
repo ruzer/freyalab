@@ -1,5 +1,6 @@
 <script lang="ts">
  import {tick,onMount,onDestroy} from 'svelte'
+ import Diagram from './Diagram.svelte'
  import type {DiagramError} from '../lib/diagram-errors'
  import {matchDiagramBlocks,diagramDocumentLine,type DiagramBlock} from '../lib/diagram-diagnostics'
  import type {DiagramDiagnostics,DiagramMark} from '../lib/diagram-marks'
@@ -13,7 +14,7 @@
  let renderForExport=$state(false)
  let frontMatter=$state<string|undefined>(undefined)
  const tags=$derived(parseTags(frontMatter))
- let diagramBlocks:{source:string;dark:boolean;node:HTMLElement}[]=[]
+ let diagramBlocks:{source:string;documentSource:string;dark:boolean;node:HTMLElement}[]=[]
  let renderDiagnostics=$state<{source:string;results:{source:string;error?:DiagramError}[]}|undefined>(),diagnosticGeneration=0
  $effect(()=>{
   const source=text,theme=dark,enabled=renderEnabled||renderForExport,token=++diagnosticGeneration
@@ -37,6 +38,17 @@
   },150)
   return()=>clearTimeout(timer)
  })
+ let expanded=$state<{source:string;documentSource:string;index:number;type:string}|undefined>(),modal=$state<HTMLDialogElement>()
+ const expandedChanged=$derived(!!expanded&&expanded.documentSource!==text)
+ function diagramType(node:HTMLElement){const type=node.querySelector('svg')?.getAttribute('aria-roledescription')??'Mermaid';return type.startsWith('flowchart')?'flujo':type.startsWith('sequence')?'secuencia':type}
+ function closeExpanded(){const previous=expanded;expanded=undefined;if(previous)void tick().then(()=>diagramBlocks[previous.index]?.node.querySelector<HTMLButtonElement>('.diagram-expand')?.focus({preventScroll:true}))}
+ function expandDiagram(event:MouseEvent){
+  const button=(event.target as Element).closest<HTMLButtonElement>('.diagram-expand');if(!button)return
+  const index=Number(button.dataset.diagramIndex),block=diagramBlocks[index]
+  if(!block||!block.node.contains(button)||!block.node.querySelector('svg'))return
+  expanded={source:block.source,documentSource:block.documentSource,index,type:diagramType(block.node)}
+ }
+ $effect(()=>{if(expanded)void tick().then(()=>{if(modal?.isConnected&&!modal.open)modal.showModal()})})
  let taskTargets=new WeakMap<HTMLInputElement,{id:string;source:string;reference:TaskReference}>()
  let generation=0,completion:Promise<void>=Promise.resolve(),renderError='',missing=0,disposed=false
  let headingNodes:HTMLElement[]=[],metrics:HeadingMetric[]=[],metricFrame=0,viewportHeight=0,scrollHeight=0,lastCurrent:string|undefined|null=null
@@ -104,11 +116,12 @@
     const staged=document.createElement('template');staged.innerHTML=result.html
     for(const details of staged.content.querySelectorAll('details'))details.dataset.freyaOpen=details.open?'1':'0'
     const images=Array.from(staged.content.querySelectorAll('img'),image=>{const src=image.getAttribute('src')??'';image.removeAttribute('src');return{image,src}})
+    const documentSource=source
     const diagrams=Array.from(staged.content.querySelectorAll('code.language-mermaid'),(code,index)=>{
      const source=code.textContent??'',previous=diagramBlocks[index]
      const node=previous?.source===source&&previous.dark===theme?previous.node:document.createElement('div')
      if(node!==previous?.node){node.className='mermaid-render';node.textContent='Preparando diagrama…'}
-     code.parentElement?.replaceWith(node);return{source,dark:theme,node}
+     code.parentElement?.replaceWith(node);return{source,documentSource,dark:theme,node}
     })
     // El article tiene un único dueño DOM: publica texto saneado sin serializar otra vez imágenes base64.
     const focusedTask=document.activeElement instanceof HTMLInputElement?taskTargets.get(document.activeElement):undefined
@@ -134,7 +147,7 @@
      scheduleMetrics()
     }}
     const loadDiagrams=async()=>{for(const [index,diagram] of diagrams.entries()){
-     try{const svg=await diagramSVG(diagram.source,theme);if(token!==generation)return;const block=document.createElement('div');block.className='mermaid-render';block.innerHTML=svg;diagram.node.replaceWith(block);diagram.node=block;scheduleMetrics();diagnosticResults.push({source:diagram.source})}
+     try{const svg=await diagramSVG(diagram.source,theme);if(token!==generation)return;const block=document.createElement('div');block.className='mermaid-render';block.innerHTML=svg;const button=document.createElement('button');button.className='diagram-expand';button.dataset.diagramIndex=String(index);button.textContent='⤢ Ampliar';button.setAttribute('aria-label',`Ampliar diagrama de ${diagramType(block)}`);block.append(button);diagram.node.replaceWith(block);diagram.node=block;scheduleMetrics();diagnosticResults.push({source:diagram.source})}
      catch(error){
       if(token!==generation)return
       const explanation=explainDiagramError(error instanceof Error?error.message:String(error),diagram.source)
@@ -164,8 +177,8 @@
   const observer=new ResizeObserver(scheduleMetrics);observer.observe(container);observer.observe(article)
   container.addEventListener('scroll',publishCurrent,{passive:true});container.addEventListener('toggle',scheduleMetrics,true)
   document.fonts.addEventListener('loadingdone',scheduleMetrics);void document.fonts.ready.then(scheduleMetrics)
-  container.addEventListener('click',linkClick);article.addEventListener('change',taskChanged);article.addEventListener('keydown',taskKeydown)
-  return()=>{observer.disconnect();container.removeEventListener('scroll',publishCurrent);container.removeEventListener('toggle',scheduleMetrics,true);document.fonts.removeEventListener('loadingdone',scheduleMetrics);container.removeEventListener('click',linkClick);article.removeEventListener('change',taskChanged);article.removeEventListener('keydown',taskKeydown)}
+  container.addEventListener('click',linkClick);article.addEventListener('click',expandDiagram);article.addEventListener('change',taskChanged);article.addEventListener('keydown',taskKeydown)
+  return()=>{observer.disconnect();container.removeEventListener('scroll',publishCurrent);container.removeEventListener('toggle',scheduleMetrics,true);document.fonts.removeEventListener('loadingdone',scheduleMetrics);container.removeEventListener('click',linkClick);article.removeEventListener('click',expandDiagram);article.removeEventListener('change',taskChanged);article.removeEventListener('keydown',taskKeydown)}
  })
  function taskChanged(event:Event){
   const input=event.target;if(!(input instanceof HTMLInputElement))return
@@ -182,7 +195,23 @@
  {#if frontMatter!==undefined}<div class="document-properties-row"><details class="document-properties"><summary>Propiedades del documento</summary><pre>{frontMatter}</pre></details>{#if tags.length}<div class="document-tags">{#each tags as tag}<button aria-label={`Filtrar archivos por la etiqueta ${tag}`} title={tag} disabled={!onfiltertag} onclick={()=>onfiltertag?.(tag)}>{tag}</button>{/each}</div>{/if}</div>{/if}
  <article class="markdown-body" bind:this={article}></article>
 </section>
+{#if expanded}
+ <dialog class="diagram-modal" bind:this={modal} aria-modal="true" aria-label={`Vista ampliada: diagrama de ${expanded.type}`} oncancel={closeExpanded}>
+  <header><strong>Diagrama de {expanded.type}</strong><button onclick={closeExpanded} aria-label="Cerrar vista ampliada">Cerrar · Esc</button></header>
+  {#if expandedChanged}<p class="expanded-warning" role="status">El documento cambió. Cierra esta vista y vuelve a ampliar el diagrama actualizado.</p>{/if}
+  <Diagram text={expanded.source} {dark} {onerror}/>
+ </dialog>
+{/if}
 <style>
+ .diagram-modal[open]{display:flex;flex-direction:column;width:calc(100vw - 32px);height:calc(100dvh - 32px);max-width:none;max-height:none;padding:0;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text)}
+ .diagram-modal::backdrop{background:#0008}
+ .diagram-modal header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);gap:12px}
+ .expanded-warning{padding:8px 12px;margin:0;background:var(--panel);font-size:12px}
+ :global(.markdown-body .mermaid-render){position:relative}
+ :global(.markdown-body .diagram-expand){position:absolute;right:8px;top:8px;opacity:0}
+ :global(.markdown-body .mermaid-render:hover .diagram-expand),:global(.markdown-body .mermaid-render:focus-within .diagram-expand){opacity:1}
+ @media(hover:none){:global(.markdown-body .diagram-expand){opacity:1}}
+ @media print{.diagram-modal[open]{display:none}.diagram-modal::backdrop{display:none}:global(.markdown-body .diagram-expand){display:none}}
  :global(.markdown-body input[type="checkbox"]:not(:disabled)){cursor:pointer}
  :global(.markdown-body input[type="checkbox"]:focus-visible){outline:2px solid var(--accent);outline-offset:3px}
  :global(.markdown-body .enlace-roto){color:var(--muted);text-decoration:underline dotted;cursor:help}

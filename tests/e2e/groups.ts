@@ -7,6 +7,7 @@ export const mdFiles=[
  'mermaid-export-theme.spec.ts',
  'mermaid-fit.spec.ts',
  'mermaid-diagnostics.spec.ts',
+ 'mermaid-expanded.spec.ts',
  'missing-resources.spec.ts',
  'preview-edit.spec.ts',
  'preview-progressive.spec.ts',
