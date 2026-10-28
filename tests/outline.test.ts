@@ -1,6 +1,7 @@
-import {describe,it,expect} from 'vitest'
+import {describe,it,expect,vi} from 'vitest'
 import {EditorState} from '@codemirror/state'
 import {markdown} from '@codemirror/lang-markdown'
+import {ensureSyntaxTree,syntaxTreeAvailable} from '@codemirror/language'
 import {currentHeading,outlineTree,visibleHeading,editorHeadings,matchHeadings,type HeadingMetric} from '../src/renderer/lib/outline'
 import type {Heading} from '../src/renderer/lib/render'
 
@@ -35,7 +36,23 @@ describe('FL-MD-007 A · sección actual desde métricas visibles y ordenadas',(
 })
 
 describe('FL-MD-007 C · correspondencia comprobada con el AST de CodeMirror',()=>{
- const stateOf=(source:string)=>EditorState.create({doc:source,extensions:[markdown(),...(source.includes('\r\n')?[EditorState.lineSeparator.of('\r\n')]:[])]})
+ const stateOf=(source:string)=>{
+  const state=EditorState.create({doc:source,extensions:[markdown(),...(source.includes('\r\n')?[EditorState.lineSeparator.of('\r\n')]:[])]})
+  // Fixtures pequeñas: el AST completo no debe depender del presupuesto inicial de CodeMirror.
+  expect(ensureSyntaxTree(state,state.doc.length,Infinity)).not.toBeNull()
+  const ready=state.update({}).state
+  expect(syntaxTreeAvailable(ready,ready.doc.length)).toBe(true)
+  return ready
+ }
+ it('prepara el título con el presupuesto inicial agotado',()=>{
+  let now=0
+  const clock=vi.spyOn(Date,'now').mockImplementation(()=>now+=1000)
+  try{
+   const state=stateOf('# Uno')
+   expect(syntaxTreeAvailable(state,state.doc.length)).toBe(true)
+   expect(editorHeadings(state)).toEqual({complete:true,headings:[{text:'Uno',level:1,from:0}]})
+  }finally{clock.mockRestore()}
+ })
  it.each([
   ['ATX','# Uno', 'Uno',1],
   ['ATX con cierre','## Dos ##','Dos',2],
@@ -85,7 +102,7 @@ describe('FL-MD-007 C · correspondencia comprobada con el AST de CodeMirror',()
   expect([...matchHeadings(rendered,result.headings)]).toEqual([])
  })
  it('un árbol parcial no habilita emparejamiento greedy de su prefijo',()=>{
-  const state=stateOf(Array.from({length:1000},(_,index)=>`# Título ${index}\n\n`).join('')),result=editorHeadings(state)
+  const source=Array.from({length:1000},(_,index)=>`# Título ${index}\n\n`).join(''),state=EditorState.create({doc:source,extensions:[markdown()]}),result=editorHeadings(state)
   expect(result).toEqual({complete:false,headings:[]})
   expect([...matchHeadings([{id:'ultimo',text:'Título 999',level:1}],result.headings)]).toEqual([])
  })
