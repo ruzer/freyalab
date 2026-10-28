@@ -1,0 +1,600 @@
+{
+  "dateLocal": "2026-10-27",
+  "timezone": "America/Mexico_City",
+  "generatedAtUtc": "2026-10-28T02:43:16.359194+00:00",
+  "scope": "Regresión local y diagnóstico sintético del render Markdown oculto; no acredita CI, instalación o causa remota de Intel.",
+  "pullRequest": 77,
+  "implementationCommit": "8302e1dc3256acd297215deb9b2291d8b71b6844",
+  "originalDocumentationCommit": "27671454300aeb89043823c295c51feb077f866e",
+  "originalDocumentationPreserved": {
+    "file": "docs/stories/8-escritura-academica.md",
+    "sha256": "06dba9a9ff6c6c3695d3656d121ea0fd7ca23716032d087efaf158ae95b5c5bb",
+    "unchanged": true
+  },
+  "ciAtEvidenceGeneration": {
+    "state": "PENDING_NEW_HEAD",
+    "finalHead": null,
+    "run": null,
+    "closure": "Verificar en el PR los checks de las cuatro plataformas sobre el head final. No editar solo esta evidencia para convertir el estado a verde y provocar otro commit."
+  },
+  "environment": {
+    "node": "v24.22.1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M2 Max",
+    "electron": "44.9.2",
+    "playwright": "1.64.1",
+    "vitest": "5.0.5",
+    "scope": "Solo macOS arm64 local; CPU16 es ralentización CDP sintética, no Intel real."
+  },
+  "functionalSource": {
+    "files": 171,
+    "beforeSha256": "bb6dc8baece78bd87459c4c1c826d52cc995e28d6c083bdc4ab0a84b036552fb",
+    "afterSha256": "bb6dc8baece78bd87459c4c1c826d52cc995e28d6c083bdc4ab0a84b036552fb",
+    "unchanged": true,
+    "capturedBeforeEvidenceDocs": true,
+    "changedFiles": {
+      "src/renderer/App.svelte": "694ab1345c99d074602d595d9a4108c28085602abdd11c26946a7a9f521262d2",
+      "src/renderer/components/Preview.svelte": "46f434dcb0b9fda192e8966c134c00d64d97817f593ac3ef99ca14c8fd8e84e2",
+      "tests/e2e/preview-edit.spec.ts": "056b671fb2c8b4ddd3224cfe42ffd6faef7430323812f239d441b054886c7e0e"
+    }
+  },
+  "verification": {
+    "check": {
+      "command": "npm run check",
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 0
+    },
+    "unit": {
+      "command": "npm test",
+      "exitCode": 0,
+      "passed": 763,
+      "total": 763,
+      "files": 36,
+      "runnerDurationSeconds": 5.57
+    },
+    "buildFinal": {
+      "command": "npm run build",
+      "exitCode": 0
+    },
+    "red": {
+      "passed": 0,
+      "failed": 3,
+      "caseLines": [
+        42,
+        55,
+        67
+      ],
+      "reason": [
+        "article oculto no vacío al abrir otro documento",
+        "article oculto actualizado al escribir",
+        "article oculto actualizado tras exportar y volver a escribir"
+      ]
+    },
+    "focalGreen": {
+      "passed": 4,
+      "total": 4,
+      "durationSecondsRounded": 5.8,
+      "originalReadonlyCaseSecondsRounded": 1.3
+    },
+    "controlsBase": {
+      "head": "27671454300aeb89043823c295c51feb077f866e",
+      "passed": 12,
+      "total": 12,
+      "durationSecondsRounded": 53.6,
+      "exitCode": 0
+    },
+    "controlsFixed": {
+      "head": "8302e1dc3256acd297215deb9b2291d8b71b6844",
+      "passed": 12,
+      "total": 12,
+      "durationSecondsRounded": 50.5,
+      "exitCode": 0
+    },
+    "full2": {
+      "command": "/usr/bin/caffeinate -i npm run test:e2e",
+      "exitCode": 0,
+      "stats": {
+        "total": 307,
+        "expected": 307,
+        "unexpected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "ok": true
+      },
+      "retryAttempts": 0,
+      "attempts": 307,
+      "reportStartUtc": "2026-10-28T02:15:52.792Z",
+      "reportDurationMs": 517619.821,
+      "reportDurationSeconds": 517.619821,
+      "computedEndUtc": "2026-10-28T02:24:30.411Z",
+      "endMeaning": "Inicio + duración del reporter; no timestamp de fin independiente.",
+      "selectedCases": [
+        {
+          "file": "markdown-toolbar.spec.ts",
+          "title": "solo lectura deshabilita todos los controles y vista previa oculta la barra",
+          "duration_ms": 993,
+          "outcome": "expected"
+        },
+        {
+          "file": "preview-edit.spec.ts",
+          "title": "abrir un segundo Markdown en Editar no renderiza el article oculto; Dividido y Vista previa sí lo muestran",
+          "duration_ms": 1050,
+          "outcome": "expected"
+        },
+        {
+          "file": "preview-edit.spec.ts",
+          "title": "editar con la vista previa oculta conserva su article y al mostrarla usa la fuente nueva",
+          "duration_ms": 1034,
+          "outcome": "expected"
+        },
+        {
+          "file": "preview-edit.spec.ts",
+          "title": "exportar HTML desde Editar prepara la fuente actual, Mermaid e imágenes sin activar el render oculto permanente",
+          "duration_ms": 2147,
+          "outcome": "expected"
+        },
+        {
+          "file": "preview-progressive.spec.ts",
+          "title": "el párrafo nuevo aparece mientras las imágenes siguen pendientes, sin depender de su latencia",
+          "duration_ms": 7515,
+          "outcome": "expected"
+        }
+      ]
+    }
+  },
+  "incidents": {
+    "pr77Original": {
+      "head": "27671454300aeb89043823c295c51feb077f866e",
+      "run": 40583966581,
+      "platformSuccesses": 3,
+      "requiredPlatforms": 4,
+      "intel": {
+        "passed": 303,
+        "failed": 1,
+        "readonlyAutomaticAttempts": 2,
+        "cause": "UNCONFIRMED"
+      }
+    },
+    "pr78Observed": {
+      "head": "647566dfa954c4999c4a99464e51cf6a04eee85c",
+      "run": 40592392260,
+      "platformSuccesses": 3,
+      "requiredPlatforms": 4,
+      "intel": {
+        "passed": 301,
+        "flaky": 2,
+        "failed": 1,
+        "cause": "UNCONFIRMED"
+      }
+    },
+    "full1Local": {
+      "exitCode": 1,
+      "stats": {
+        "total": 307,
+        "expected": 295,
+        "unexpected": 12,
+        "flaky": 0,
+        "skipped": 0,
+        "ok": false
+      },
+      "retryAttempts": 0,
+      "reportStartUtc": "2026-10-27T23:10:26.511Z",
+      "reportDurationMs": 7904728.705,
+      "computedEndUtc": "2026-10-28T01:22:11.239Z",
+      "endMeaning": "Cálculo aritmético; no fin observado independiente.",
+      "firstFailure": {
+        "ordinal": 211,
+        "test": "preview-progressive.spec.ts:7",
+        "durationSeconds": 2.802,
+        "failedAssertion": "Espera inicial de dos imágenes (línea19), antes de editar el párrafo.",
+        "error": "TargetClosed",
+        "errorUtc": "2026-10-27T23:15:59.537Z",
+        "secondsBeforeLoggedClamshell": 5.463,
+        "cause": "UNKNOWN"
+      },
+      "powerInterval": {
+        "start_utc": "2026-10-27T23:16:05.000Z",
+        "end_utc": "2026-10-28T01:57:53.000Z",
+        "span_seconds": 9708.0,
+        "label": "Clamshell Sleep through maintenance/DarkWake to lid/HID Wake, not Idle Sleep"
+      },
+      "laterFailureStartsWithinPowerInterval": 11,
+      "causality": "La primera caída precede a la suspensión registrada. La alineación de las otras11 no acredita una causa común.",
+      "guard": "No expiró: Root terminó67087 con Ctrl+C; posteriores guardas transitorias ligadas al hijo, sin settings persistentes.",
+      "artifactsPreserved": [
+        "full1-playwright-report",
+        "full1-test-results"
+      ]
+    }
+  },
+  "diagnostics": {
+    "fixture": {
+      "bytes": 12600019,
+      "sampleBytes": 1048576,
+      "samplePhysicalLines": 49933,
+      "originalFixtureAndTimeoutsUnchanged": true
+    },
+    "probesPerSourceAndRate": 1,
+    "profileMethod": "Weight actual sample timeDeltas; absence of sampled ancestry gives sampled_ms:null and observed_samples0, not a claim of0ms runtime. Categories may overlap.",
+    "pairedProbes": [
+      {
+        "probe": "original-cpu1",
+        "head": "27671454300aeb89043823c295c51feb077f866e",
+        "cpuRate": 1,
+        "passed": true,
+        "driverResultSavedElapsedMs": 1654.262875,
+        "profileWindowMs": 283.168,
+        "profileSamples": 202,
+        "markdownHTML": {
+          "observed_samples": 8,
+          "sampled_ms": 9.984,
+          "meaning": "Measured weighted time in sampled stacks"
+        },
+        "resolveAllText": {
+          "observed_samples": 0,
+          "sampled_ms": null,
+          "meaning": "No observed samples; not proof of zero runtime"
+        },
+        "codeMirrorStateView": {
+          "observed_samples": 114,
+          "sampled_ms": 134.454,
+          "meaning": "Measured weighted time in sampled stacks"
+        },
+        "ariaRole": {
+          "observed_samples": 1,
+          "sampled_ms": 1.066,
+          "meaning": "Measured weighted time in sampled stacks"
+        },
+        "heartbeatSamples": 3,
+        "heartbeatMaxGapMs": 263.7000000476837,
+        "sourceUnchanged": true,
+        "inputSha256": {
+          "result.json": "9c0a31c6f8adc4dbf2ce065bddbf27b2cf4352e91baf0ca11f1cc4924961c05c",
+          "raw.log": "df87abbe107c16a512e823742c5d418b00f905747dad286b2d2e5f6cc1585386",
+          "renderer.cpuprofile": "383f60c76f3848a2823fb49764853c53a21d998a7bb588fa567710fbcc62ff71",
+          "browser-trace.zip": "5e7f92e26486a89aaf2c56d4845e5864288d65d5d0954e6c86217dab06071c8e"
+        }
+      },
+      {
+        "probe": "fixed-cpu1",
+        "head": "8302e1dc3256acd297215deb9b2291d8b71b6844",
+        "cpuRate": 1,
+        "passed": true,
+        "driverResultSavedElapsedMs": 1566.288959,
+        "profileWindowMs": 276.375,
+        "profileSamples": 197,
+        "markdownHTML": {
+          "observed_samples": 0,
+          "sampled_ms": null,
+          "meaning": "No observed samples; not proof of zero runtime"
+        },
+        "resolveAllText": {
+          "observed_samples": 0,
+          "sampled_ms": null,
+          "meaning": "No observed samples; not proof of zero runtime"
+        },
+        "codeMirrorStateView": {
+          "observed_samples": 112,
+          "sampled_ms": 131.264,
+          "meaning": "Measured weighted time in sampled stacks"
+        },
+        "ariaRole": {
+          "observed_samples": 1,
+          "sampled_ms": 1.255,
+          "meaning": "Measured weighted time in sampled stacks"
+        },
+        "heartbeatSamples": 4,
+        "heartbeatMaxGapMs": 160.89999997615814,
+        "sourceUnchanged": true,
+        "inputSha256": {
+          "result.json": "f0c56b21989016115b898ef788133754da11fddb4e619fb5bc2b23cc0e13e2a4",
+          "raw.log": "48219873da66a9ff3b28d76b9298db68009e06fc4fb4b7e88f417c4eeb2012b5",
+          "renderer.cpuprofile": "20aea96195908e39bc8ddca795eeaea5b71c9f8678f368770f38bf5daac8855f",
+          "browser-trace.zip": "b03ce3f1035d320f85c5d383095a9482e7cd69de283ce8f9e5d032317f15a974"
+        }
+      },
+      {
+        "probe": "original-cpu16",
+        "head": "27671454300aeb89043823c295c51feb077f866e",
+        "cpuRate": 16,
+        "passed": true,
+        "driverResultSavedElapsedMs": 38820.809,
+        "profileWindowMs": 35948.155,
+        "profileSamples": 16179,
+        "markdownHTML": {
+          "observed_samples": 12674,
+          "sampled_ms": 27247.87,
+          "meaning": "Measured weighted time in sampled stacks"
+        },
+        "resolveAllText": {
+          "observed_samples": 9888,
+          "sampled_ms": 21260.009,
+          "meaning": "Measured weighted time in sampled stacks"
+        },
+        "codeMirrorStateView": {
+          "observed_samples": 999,
+          "sampled_ms": 2228.772,
+          "meaning": "Measured weighted time in sampled stacks"
+        },
+        "ariaRole": {
+          "observed_samples": 9,
+          "sampled_ms": 21.009,
+          "meaning": "Measured weighted time in sampled stacks"
+        },
+        "heartbeatSamples": 12,
+        "heartbeatMaxGapMs": 30936,
+        "sourceUnchanged": true,
+        "inputSha256": {
+          "result.json": "5000fb2a69d8f7482d69ba0577468c1b274c01ae56a41ee14190ac04c1c54a03",
+          "raw.log": "cc07ddb4a514813a11620f1bcc53b5dbc94f9191f159dea4780e5341b21c0dcf",
+          "renderer.cpuprofile": "3f15e239b6ebe57c8f28f94783115648c3ed7b1d1c60a978373a9f054056fd4c",
+          "browser-trace.zip": "a5f31809117dffafe27f064b9a371864f0955d605d6be8bd5263104b206658c0"
+        }
+      },
+      {
+        "probe": "fixed-cpu16",
+        "head": "8302e1dc3256acd297215deb9b2291d8b71b6844",
+        "cpuRate": 16,
+        "passed": true,
+        "driverResultSavedElapsedMs": 6919.773125,
+        "profileWindowMs": 4961.601,
+        "profileSamples": 1873,
+        "markdownHTML": {
+          "observed_samples": 0,
+          "sampled_ms": null,
+          "meaning": "No observed samples; not proof of zero runtime"
+        },
+        "resolveAllText": {
+          "observed_samples": 0,
+          "sampled_ms": null,
+          "meaning": "No observed samples; not proof of zero runtime"
+        },
+        "codeMirrorStateView": {
+          "observed_samples": 974,
+          "sampled_ms": 2235.777,
+          "meaning": "Measured weighted time in sampled stacks"
+        },
+        "ariaRole": {
+          "observed_samples": 9,
+          "sampled_ms": 15.426,
+          "meaning": "Measured weighted time in sampled stacks"
+        },
+        "heartbeatSamples": 10,
+        "heartbeatMaxGapMs": 2704.600000023842,
+        "sourceUnchanged": true,
+        "inputSha256": {
+          "result.json": "d69b1884d3365fedff6bf3a7f95db24fdbe2becad05e4a7356d14646cffa1a60",
+          "raw.log": "db578b746d6980b8fd1c68ce53335ff8b48242cb69939df9f181e64412020cbe",
+          "renderer.cpuprofile": "d827e63a7ee1de78fd29f848f891ded5bd96a84fac146575025bad3cab6f9ba1",
+          "browser-trace.zip": "19e7091c88e1cbac0832bd3e1bb4469c37706235c6f0dbb795f8c0caf5a89daa"
+        }
+      }
+    ],
+    "originalAdditionalRates": [
+      {
+        "probe": "original-cpu4",
+        "cpuRate": 4,
+        "passed": true,
+        "profileWindowMs": 5893.278,
+        "profileSamples": 5220,
+        "markdownHTMLInclusiveMs": 4405.362,
+        "ariaRoleInclusiveMs": 5.031,
+        "heartbeatMaxGapMs": 4933.5
+      },
+      {
+        "probe": "original-cpu8",
+        "cpuRate": 8,
+        "passed": true,
+        "profileWindowMs": 12096.667,
+        "profileSamples": 8903,
+        "markdownHTMLInclusiveMs": 9158.397,
+        "ariaRoleInclusiveMs": 9.528,
+        "heartbeatMaxGapMs": 10117
+      }
+    ],
+    "fixedBundleMapsEqual": true,
+    "harnessProvenance": {
+      "preserved_original_copy_sha256": "76f347d1fc263c1b5cd743e61a6ff636f294e2084441cac48266f67747596b21",
+      "modified_harness_sha256": "4491ad48d0f54e49156de29eb8924b9129db1c06bda8981d3e50861a2dab6701",
+      "guard_manifest": "/private/tmp/freyalab-lote/pr77-ci/probe-guard-update-provenance.json",
+      "sequence_diff_note": "/private/tmp/freyalab-lote/pr77-ci/probe-guard-update.md",
+      "runtime_hash_available_original": false,
+      "fixed_probes_match_modified_harness": true,
+      "phase_sequence_fixture_and_click_timeout_equal": true
+    },
+    "limitations": [
+      "One diagnostic per source/rate, no randomized/repeated benchmark or universal bound",
+      "CPU16 is synthetic renderer slowdown, not actual IntelCI hardware",
+      "Original probes passed too: exact30s CI failure was not reproduced here",
+      "Original harness lacked runtime harness/bundle hashes; preserved copy provenance does not invent missing original fields",
+      "Modified harness hashes bundles before launch, outside timed phases; cache/instrumentation effects prevent cold-benchmark claims",
+      "No CI result, installer or release is inferred"
+    ]
+  },
+  "captureEvidence": {
+    "head": "8302e1dc3256acd297215deb9b2291d8b71b6844",
+    "status": "complete",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "fixture": {
+      "sha256": "89ebea411d42fd7330f1edb06a40d318b3719e9cb8173c71226082d488d518c2",
+      "bytes": 191
+    },
+    "integrity": {
+      "sourceHashesUnchanged": true,
+      "gitHeadUnchanged": true,
+      "worktreeClean": true,
+      "fixtureUnchanged": true
+    },
+    "captures": [
+      {
+        "file": "ci-preview-editar-claro-1440x900.png",
+        "theme": "light",
+        "mode": "Editar",
+        "bytes": 64423,
+        "sha256": "949bbce1cc4b752b255dc41730a27b836ae1d355129b35e1615a16b224088220",
+        "memoryTextUnchanged": true,
+        "diskTextUnchanged": true,
+        "dirty": false
+      },
+      {
+        "file": "ci-preview-vista-previa-claro-1440x900.png",
+        "theme": "light",
+        "mode": "Vista previa",
+        "bytes": 57148,
+        "sha256": "9132717ce40b3dcf40146493aee2a2fbf38866bd37db2e2a3bcab3a46f16c259",
+        "memoryTextUnchanged": true,
+        "diskTextUnchanged": true,
+        "dirty": false
+      },
+      {
+        "file": "ci-preview-editar-oscuro-1440x900.png",
+        "theme": "dark",
+        "mode": "Editar",
+        "bytes": 64281,
+        "sha256": "75be4f3eff452ca8c03082d403f285496951e1095bb36b3ba8bddb774161285c",
+        "memoryTextUnchanged": true,
+        "diskTextUnchanged": true,
+        "dirty": false
+      },
+      {
+        "file": "ci-preview-vista-previa-oscuro-1440x900.png",
+        "theme": "dark",
+        "mode": "Vista previa",
+        "bytes": 57138,
+        "sha256": "943514bb046c67db52752adb0ff08e00ef0a337bf814f41285d589e64b1a1f60",
+        "memoryTextUnchanged": true,
+        "diskTextUnchanged": true,
+        "dirty": false
+      }
+    ],
+    "visualReview": "Root confirmó inspección visual de las cuatro capturas."
+  },
+  "commands": {
+    "commonPath": "/Users/ruzer/.npm/_npx/387698761821791d/node_modules/node/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "full1": "env PATH=\"$PATH_COMUN\" npm run test:e2e",
+    "full1Condition": "Sin caffeinate externo; el guard separado seguía activo y no evitó Clamshell Sleep.",
+    "full2": "env PATH=\"$PATH_COMUN\" /usr/bin/caffeinate -i npm run test:e2e",
+    "controls": "env PATH=\"$PATH_COMUN\" /usr/bin/caffeinate -i npx playwright test --grep \"$FILTRO12\" --output=<controls-baseline-results|controls-fixed-results>",
+    "controlsGrep": "el párrafo nuevo aparece|buscar muestra CSV|lo interactivo pasa por delante|una exportación en cola no espera|SQL: valores exactos|SQL: mide fuentes completas|informe SQL rotula|W6: el anuncio cortés|W1/W3: puntuación|interfaz Mermaid: renderizar|operaciones CSV: duplicar|editable · 249 999 filas.*al agrandar la ventana",
+    "controlsRoots": {
+      "baseline": "/private/tmp/freyalab-lote/pr77-ci/baseline-openlid",
+      "fixed": "/private/tmp/freyalab-lote/pr77-ci/wt"
+    },
+    "capture": "node capture-evidence.mjs 8302e1dc3256acd297215deb9b2291d8b71b6844 /private/tmp/freyalab-lote/pr77-ci/captures-fixed"
+  },
+  "limits": [
+    "La causa exacta del timeout de IntelCI sigue sin demostrarse; pendientes los nuevos checks del PR.",
+    "Una sonda por fuente/tasa, ventanas distintas y cachés/instrumentación: no es benchmark universal ni prueba de cero coste.",
+    "La preparación Markdown visible y la exportación siguen siendo síncronas en el renderer; no hay cancelación preemptiva del parser.",
+    "No se cambiaron el fixture readonly, sus timeouts/retries o sus aserciones para obtener el verde.",
+    "Solo Mac local; sin verificación nativa Windows/Linux/Intel, instalador, firma/notarización o IME físico.",
+    "No nuevas dependencias, IPC, CSV, guardado, release, merge o actualización de app instalada."
+  ],
+  "externalInputHashes": {
+    "initial-intel-job.log": {
+      "bytes": 158453,
+      "sha256": "fef79b8fb6cfd541eeec06c4e918579f4087a462f439e3b010d8b9d4a6441a70"
+    },
+    "baseline-targeted-real.log": {
+      "bytes": 352,
+      "sha256": "5ebb2cbc5ba79e4438088970f8fc9dec85e24a772c1125c525b78455a35e23db"
+    },
+    "deferred-red.log": {
+      "bytes": 19718,
+      "sha256": "45a8b6f577ff8e5bcbff0b6f80d79dfb3d19cd37df6ab5e18b5982f891853068"
+    },
+    "deferred-green.log": {
+      "bytes": 829,
+      "sha256": "68b1ca49eace2a799a5d84d955e8aefbbf2f6c2f76586083b5811d1b350b499d"
+    },
+    "fix-check.log": {
+      "bytes": 260,
+      "sha256": "16b88a075f2dd82e3017abcaa037019305b02c52c285d86b6a0bfc19268f59de"
+    },
+    "fix-unit-full.log": {
+      "bytes": 238,
+      "sha256": "0c349e90864747a61e793c845f648ad6e645f3555d811145bacf78a13bca3d80"
+    },
+    "fix-build-final.log": {
+      "bytes": 21413,
+      "sha256": "8d8beb410e7a7b9d3857a6e72b5631b4432e539df652fe622180b195fd9e1ebd"
+    },
+    "fix-e2e-full.log": {
+      "bytes": 105644,
+      "sha256": "701cb6967fd3be3130dce4c146ceaf35d572cb3c80270d627b54fa523c535310"
+    },
+    "fix-e2e-full2-awake.log": {
+      "bytes": 67355,
+      "sha256": "922d2fd81cdfdeab1c6b9730bc886bacdef0ce7d32fe92294bc1658c383caf42"
+    },
+    "controls-baseline.log": {
+      "bytes": 1980,
+      "sha256": "7f12e1606fee667f48df38e69d4d374a5e79bbfaa41eacddbeb6115d0d592db8"
+    },
+    "controls-fixed.log": {
+      "bytes": 1980,
+      "sha256": "dbce809c4b5776a4e91b13a426346b5a1eccbf58d67a69673500439b2b990b9e"
+    },
+    "full1-timeline.json": {
+      "bytes": 294286,
+      "sha256": "d16e06e999e0ac2eeac9ee9ed6792fdf1b21a1dfb25d5a6ccea9ac9dfb6beb90"
+    },
+    "full1-preview-failure-review.md": {
+      "bytes": 4551,
+      "sha256": "031b90bdfc10958b3ff43e53fbc2103456a43c763127be98c0eca30bcdb0b249"
+    },
+    "full1-power-events.log": {
+      "bytes": 5650,
+      "sha256": "917dfe077d0884b7a1a8a6debb4c0572bd5f826f33c89e49d44a73369b6f1784"
+    },
+    "full2-summary.json": {
+      "bytes": 198481,
+      "sha256": "65ac1900f8f915133da8de49dcd4e95ff16155c0959a85fa5ee7470d2a1572b4"
+    },
+    "fixed-profile-comparison.json": {
+      "bytes": 36071,
+      "sha256": "63bcab3d504c6d895b77ee8d25307d849727098e780137b8d48c4b255f589322"
+    },
+    "profile-analysis-readonly.json": {
+      "bytes": 50191,
+      "sha256": "86c634a8083c6380c2560cddf4dd9ba006e01812e2cfb6100258ad6ee803d07b"
+    },
+    "fix-source-before-full2.json": {
+      "bytes": 18352,
+      "sha256": "f8ee6ba022db43a03183f2f7122c780fcc25d8584ed31384445020b624c7872a"
+    },
+    "fix-source-after-full2.json": {
+      "bytes": 293,
+      "sha256": "7d94fe382e92df9585d27ec1f97dbe309573cb339e03ae4ff3efb34a53c7d48d"
+    },
+    "captures-fixed/manifest.json": {
+      "bytes": 9958,
+      "sha256": "f5aafc86a6dfc4d8af7a278b7ea41e0f4413b336f5ce975b05947c5fcbd9699c"
+    },
+    "capture-evidence.mjs": {
+      "bytes": 5648,
+      "sha256": "e7d68d5dc7f95914cbf24eac3314856c33f4bb440443f5cfaad5f732d6c44496"
+    },
+    "probe-readonly-original-guard.mjs": {
+      "bytes": 8811,
+      "sha256": "76f347d1fc263c1b5cd743e61a6ff636f294e2084441cac48266f67747596b21"
+    },
+    "probe-readonly.mjs": {
+      "bytes": 9732,
+      "sha256": "4491ad48d0f54e49156de29eb8924b9129db1c06bda8981d3e50861a2dab6701"
+    },
+    "probe-guard-update-provenance.json": {
+      "bytes": 934,
+      "sha256": "418d0e0cf9fbf3ed46a6e286a464832f66f226e6b37ef0b49a59b6259329ba3d"
+    }
+  },
+  "markdown": {
+    "file": "ci-preview-edit-2026-10-27.md",
+    "sha256": "1148748f4ec7f624f7f3455ac7bff0b9b73cc6ed7a989a0632aa889f2728a8b5"
+  }
+}
