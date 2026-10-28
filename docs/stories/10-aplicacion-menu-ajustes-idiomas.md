@@ -8,7 +8,7 @@ Origen (el propietario, 2026-10-28): «preparemos multilengua, opciones de confi
 | **APP-01** | Menú nativo de la aplicación (macOS, Windows y Linux) con Archivo, Edición, Ver, Ir, Ventana y Ayuda | M | I18N-01 | **Lista** (abajo) |
 | **APP-02** | «Acerca de FreyaLab» con versión real, compilación, versiones de Electron/Chromium/Node, avisos de terceros y copiar información para un informe | S | I18N-01 | **Lista** (abajo) |
 | **APP-03** | Ajustes (⌘,): modelo versionado, migración de lo que hoy vive en `localStorage` y ventana de ajustes | M a L | I18N-01 | **Lista** (abajo) |
-| **APP-04** | Buscar actualizaciones: manual, opcional al iniciar, solo avisa y abre la página de descarga | M | APP-02, APP-03; decisión D7 | **Lista** tras confirmar D7 |
+| **APP-04** | Buscar actualizaciones: manual, opcional al iniciar, solo avisa y abre la página de descarga | M | APP-02, APP-03 | **Lista** (D7 confirmada el 2026-10-28) |
 | I18N-02 | Migrar el resto de la interfaz de Markdown, Mermaid y el shell | L | I18N-01; carril de render/Preview cerrado | Esbozada |
 | I18N-03 | Migrar la interfaz de CSV (≈ 700 cadenas) | L | I18N-01; L4a y L5a cerradas | Esbozada |
 | I18N-04 | Idioma de los informes y exportaciones que la aplicación genera | M | I18N-02, I18N-03; decisión D10 | Esbozada |
@@ -38,7 +38,7 @@ Evidencia y método en [`docs/evidence/app-auditoria-2026-10-28.md`](../evidence
 | **D4** | Dónde viven los ajustes | **Un diálogo dentro de la aplicación** (⌘, / Ctrl+,) con lista de secciones a la izquierda; los cambios se aplican al instante, sin «Aceptar». No una pestaña ni una ventana aparte. |
 | **D5** | Almacén de ajustes | **Un `settings.json` versionado en la carpeta de datos**, validado con zod, gestionado por el proceso principal; migración única desde `localStorage`. |
 | **D6** | Herramientas de desarrollo | **Fuera del paquete por omisión:** «Reload» y «Toggle Developer Tools» solo en desarrollo o con Ajustes → Avanzado → «Mostrar herramientas de desarrollo». |
-| **D7** | Política de actualizaciones | **Manual, opcional al iniciar (desactivada por omisión), solo avisa y abre la página de descarga.** Una petición HTTPS a `api.github.com` desde el proceso principal, sin telemetría ni identificadores. Exige **ajustar `AGENTS.md` y `SECURITY.md`**: «la única conexión de red de la aplicación es la comprobación de actualizaciones, que haces tú o activas tú». Instalación automática solo cuando haya firma y notarización (decisión posterior). |
+| **D7** | Política de actualizaciones | **CONFIRMADA por el propietario el 2026-10-28.** **Manual, opcional al iniciar (desactivada por omisión), solo avisa y abre la página de descarga.** Una petición HTTPS a `api.github.com` desde el proceso principal, sin telemetría ni identificadores. Exige **ajustar `AGENTS.md` y `SECURITY.md`**: «la única conexión de red de la aplicación es la comprobación de actualizaciones, que haces tú o activas tú». Instalación automática solo cuando haya firma y notarización (decisión posterior). |
 | **D8** | Canal | **Seguir el de la versión instalada:** una alfa ve pre-releases; una estable, solo estables. Sin selector en la v1. |
 | **D9** | Atajos nuevos | **⌘1 / ⌘2 / ⌘3 para Editar, Dividido y Vista previa**, previa comprobación de que no chocan con ninguno existente. |
 | **D10** | Idioma de lo que la aplicación genera (informes de estadísticas, texto de exportaciones) | **El idioma de la interfaz en el momento de generarlo**; el contenido del documento del usuario nunca se traduce. |
@@ -341,7 +341,7 @@ Lee docs/stories/10-aplicacion-menu-ajustes-idiomas.md (§3.3 y §7) y las decis
 - **Qué muestra y qué no hace:** diálogo de §3.4. «Descargar» abre la **página de la versión** en el navegador (solo si empieza por `https://github.com/ruzer/freyalab/releases/`); la aplicación **no descarga ni instala nada**. Recuerda comprobar el SHA-256 con `SHA256SUMS.txt`.
 - **Comprobación automática (opcional):** «Buscar al iniciar», **desactivada por omisión**; si se activa, como máximo una vez cada 24 h, en silencio si no hay novedades y con un aviso discreto si las hay («Ver», «Recordármelo después», «Omitir esta versión»). Los fallos en automático son silenciosos.
 - **Fuera de la v1:** descarga e instalación dentro de la aplicación, actualización automática (exige firma y notarización), actualizaciones delta, notas de la versión dentro de la aplicación, telemetría de cualquier tipo, un servidor propio.
-- **Política (D7):** ajustar `AGENTS.md` y `SECURITY.md` («la única conexión de red de la aplicación es la comprobación de actualizaciones, que haces tú o activas tú»).
+- **Política (D7, confirmada el 2026-10-28):** `AGENTS.md` y `SECURITY.md` se ajustan con el texto de U14, en el PR que implemente esta historia.
 
 **4. Criterios de aceptación.**
 - **U1.** «Buscar actualizaciones…» (menú, Ajustes, Acerca de) abre el diálogo con estados «Buscando…», «Hay una versión nueva», «Estás al día» y «No se pudo comprobar», con «Cancelar» durante la búsqueda.
@@ -357,7 +357,9 @@ Lee docs/stories/10-aplicacion-menu-ajustes-idiomas.md (§3.3 y §7) y las decis
 - **U11.** El aviso automático no roba el foco ni interrumpe la edición.
 - **U12.** Los ajustes de actualizaciones (§3.3) quedan activos; la sección muestra la última comprobación y las versiones omitidas, con «Olvidar omitidas».
 - **U13.** Los textos están en el catálogo `es` y `en`, con fechas en el idioma activo.
-- **U14.** `AGENTS.md` y `SECURITY.md` actualizados con la frase de D7 **solo si el propietario confirma D7**; se registra la confirmación en el PR.
+- **U14.** `AGENTS.md` y `SECURITY.md` se actualizan **en el mismo PR que implementa APP-04** (no antes), con este texto aprobado el 2026-10-28:
+  - `AGENTS.md` (línea de recursos locales), tras «sin telemetría ni cargas remotas»: «Única excepción: la comprobación de actualizaciones (APP-04), una petición HTTPS a `api.github.com` desde el proceso principal que la persona hace o activa en Ajustes; sin identificadores, sin descarga ni instalación automática.»
+  - `SECURITY.md`, nuevo punto bajo el de «sin telemetría, cuentas o servicios remotos obligatorios»: «La única conexión de red de la aplicación es la comprobación de actualizaciones: una petición HTTPS `GET` a `api.github.com` desde el proceso principal, que la persona inicia o activa en Ajustes (desactivada por omisión). No envía identificadores ni datos de documentos, no descarga ni instala nada, y el renderer sigue sin acceso a la red (`connect-src 'self'`).»
 - **U15.** Accesibilidad: el diálogo anuncia cada estado, foco atrapado, Esc cancela, contraste en claro y oscuro.
 - **U16.** Capturas 1440×900 en claro y oscuro de los cuatro estados; casos NO probados declarados (red real, Windows y Linux).
 
@@ -366,7 +368,7 @@ Lee docs/stories/10-aplicacion-menu-ajustes-idiomas.md (§3.3 y §7) y las decis
 **6. Prompt ejecutable para Codex.**
 
 ```text
-Tarea: APP-04 · Buscar actualizaciones. Sin dependencias nuevas. SOLO tras confirmar D7 el propietario (registra su confirmación en el PR).
+Tarea: APP-04 · Buscar actualizaciones. Sin dependencias nuevas. D7 fue confirmada por el propietario el 2026-10-28: aplica el texto aprobado de U14 a AGENTS.md y SECURITY.md en este mismo PR y cítalo en la descripción.
 Lee docs/stories/10-aplicacion-menu-ajustes-idiomas.md (§3.4 y §8) y SECURITY.md. Rama nueva codex/aplicacion-actualizaciones desde main (con el bloque «Aplicación» ya en main) o desde la rama de integración si aún no se fusionó, con PR en borrador y base main.
 1) Reproduce primero: pruebas que fallan porque no existe el servicio, y la prueba U2 (cero peticiones por omisión) con un servidor local que cuenta peticiones.
 2) Implementa U1–U16: servicio en el proceso principal, comparación de versiones, canal, validación zod, diálogo, aviso opcional, ajustes, textos es/en. No descargues ni instales nada.
