@@ -1,3 +1,4 @@
+import {isTableDocument} from '../shared/types'
 import { BrowserWindow, dialog, app } from 'electron'
 import { readFile, readdir, realpath, lstat, open, unlink } from 'node:fs/promises'
 import { basename, extname, join, resolve } from 'node:path'
@@ -35,7 +36,7 @@ export async function exportDocument(docs:Documents,id:string,request:ExportRequ
  return writeExport(docs,id,request)
 }
 export async function exportGraphic(docs:Documents,id:string,request:GraphicExportRequest){
- const validateGraphic=()=>{const record=docs.get(id);if(record.info.kind!=='csv')throw new Error('La exportación de gráficos requiere un CSV abierto.');if(record.info.revision!==request.revision)throw new Error('La fuente cambió. Genera de nuevo el gráfico antes de exportar.')}
+ const validateGraphic=()=>{const record=docs.get(id);if(!isTableDocument(record.info))throw new Error('La exportación de gráficos requiere un CSV abierto.');if(record.info.revision!==request.revision)throw new Error('La fuente cambió. Genera de nuevo el gráfico antes de exportar.')}
  validateGraphic()
  return writeExport(docs,id,request,validateGraphic)
 }
@@ -46,7 +47,7 @@ async function writeExport(docs:Documents,id:string,request:ExportRequest,valida
  await validateDestination(docs,destination,request.format)
  const svg=request.svg&&['svg','png','pdf'].includes(request.format)?await autonomousSVG(request.svg):undefined
  let data:Buffer|string
- if(request.format==='csv'||request.format==='tsv'){if(record.info.kind!=='csv')throw new Error('Exportación tabular requiere CSV/TSV.');data=Buffer.from(await docs.table.call('serialize',id,{...request.table,delimiter:request.format==='tsv'?'\t':','}))}
+ if(request.format==='csv'||request.format==='tsv'){if(!isTableDocument(record.info))throw new Error('Exportación tabular requiere CSV/TSV.');data=Buffer.from(await docs.table.call('serialize',id,{...request.table,delimiter:request.format==='tsv'?'\t':','}))}
  else if(request.format==='svg'){if(!svg)throw new Error('No hay un diagrama renderizado.');data=svg}
  else if(request.format==='html'){if(!request.html)throw new Error('No hay contenido renderizado.');data=await autonomousHTML(request.html)}
  else{
