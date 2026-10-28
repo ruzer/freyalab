@@ -3,7 +3,7 @@ import {mkdir,writeFile} from 'node:fs/promises'
 import {join} from 'node:path'
 import iconv from 'iconv-lite'
 import {parse} from 'csv-parse/sync'
-import {buildIndex,recordBatches,splitFields} from '../../src/main/large-table'
+import {buildIndex,recordBatches,splitFields,RECORD_DELIMITERS} from '../../src/main/large-table'
 import {TableEngine} from '../../src/main/table-engine'
 import {pickFields} from '../large-file-editor/lib/fields.mjs'
 import {scan,decode,body,strictRows,byteCandidate,validateQuotes} from './scan'
@@ -12,14 +12,14 @@ export async function parity(folder:string){
  await mkdir(folder,{recursive:true})
  const source=[['id','nombre','texto','nota'],['000123','Ana','dice "hola"','x'],['9007199254740993','José, el "grande"','línea 1\r\nlínea 2',''],['4','corto'],['5','','',' espacios '],['6','Zoë','a;b','fin'],['7','Kelvin','İSTANBUL','ñ ÁÉÍÓÚ'],['8','ASCII K','ASCII I','tab\tinside'],['9','a\rb','a\nb','a\r\nb'],['10','header-like','a,b','']]
  const quote=(value:string,delimiter:string)=>value.includes(delimiter)||/["\r\n]/.test(value)?`"${value.replaceAll('"','""')}"`:value
- const variants=[['utf8',false,',','\n'],['utf8',true,',','\r\n'],['utf16le',true,',','\r\n'],['win1252',false,',','\r\n'],['utf8',false,';','\r'],['utf8',true,'\t','\n'],['utf8',false,'|','\r\n']] as const
+ const variants=[['utf8',false,',','\n'],['utf8',true,',','\r\n'],['utf16le',true,',','\r\n'],['win1252',false,',','\r\n'],['utf8',false,';','\r'],['utf8',true,'\t','\n'],['utf8',false,'|','\r\n'],['utf8',true,',','mixed'],['utf16le',true,';','mixed'],['win1252',false,'\t','mixed']] as const
  const valid:unknown[]=[],invalid:unknown[]=[]
  for(const [encoding,bom,delimiter,eol] of variants){
-  const text=source.map(row=>row.map(value=>quote(value,delimiter)).join(delimiter)).join(eol),prefix=bom?(encoding==='utf16le'?Buffer.from([255,254]):Buffer.from([239,187,191])):Buffer.alloc(0)
+  const text=source.map((row,i)=>row.map(value=>quote(value,delimiter)).join(delimiter)+(i<source.length-1?(eol==='mixed'?RECORD_DELIMITERS[i%3]:eol):'')).join(''),prefix=bom?(encoding==='utf16le'?Buffer.from([255,254]):Buffer.from([239,187,191])):Buffer.alloc(0)
   const data=Buffer.concat([prefix,iconv.encode(text,encoding)]),path=join(folder,`hostile-${encoding}-${bom}-${delimiter.charCodeAt(0)}.csv`)
   await writeFile(path,data)
   const index=await buildIndex(path,{encoding,bomLength:prefix.length,maxRecord:1048576,every:2,chunk:6})
-  const expected=parse(iconv.decode(data,encoding).replace(/^\uFEFF/,''),{delimiter,relax_column_count:true,skip_empty_lines:false,record_delimiter:eol==='\r'?['\r']:['\r\n','\n']}) as string[][]
+  const expected=parse(iconv.decode(data,encoding).replace(/^\uFEFF/,''),{delimiter,relax_column_count:true,skip_empty_lines:false,record_delimiter:RECORD_DELIMITERS}) as string[][]
   const actual:string[][]=[],raws:Buffer[]=[]
   for await(const batch of recordBatches(index,{batchRecords:2,chunk:6})){actual.push(...batch.records.map(raw=>splitFields(body(decode(raw,index)),delimiter)));raws.push(...batch.records)}
   if(JSON.stringify(actual)!==JSON.stringify(expected)){
@@ -60,13 +60,13 @@ export async function parity(folder:string){
  const invalidIndex=await buildIndex(invalidPath,{encoding:'utf8',bomLength:0,maxRecord:1048576})
  for(const strategy of ['strict','own','prefilter','partial'] as const){let rejected=false;try{await scan(invalidIndex,strategy,'zzq99')}catch{rejected=true}assert.ok(rejected)}
  const mixed=[]
- for(const eol of ['\n','\r\n']){
+ for(const eol of RECORD_DELIMITERS){
   const path=join(folder,`mixed-${eol.length}.csv`),text=`id,text${eol}1,x\r\n2,y\n3,z\r\n`;await writeFile(path,text)
   const editable=new TableEngine(),large=new TableEngine(()=>{},{largeBytes:1});await editable.open('a',path);await large.open('a',path)
-  const query={offset:0,limit:1000,requestId:1},editableRows=(await editable.page('a',query)).rows.map(row=>row.cells),largeRows=(await large.page('a',query)).rows.map(row=>row.cells),strict=parse(text,{record_delimiter:['\r\n','\n'],relax_column_count:true}).slice(1)
-  assert.notDeepEqual(editableRows,strict);assert.deepEqual(largeRows,strict)
-  mixed.push({firstEol:eol,editableRows,largeRows,strictRows:strict,parity:false})
+  const query={offset:0,limit:1000,requestId:1},editableRows=(await editable.page('a',query)).rows.map(row=>row.cells),largeRows=(await large.page('a',query)).rows.map(row=>row.cells),strict=parse(text,{record_delimiter:RECORD_DELIMITERS,relax_column_count:true}).slice(1)
+  assert.deepEqual(editableRows,strict);assert.deepEqual(largeRows,strict)
+  mixed.push({firstEol:eol,editableRows,largeRows,strictRows:strict,parity:true})
  }
- return {valid,invalid,invalidUtf8Rejected:true,mixed,rawFastStrictParity:false,checkedUniformFormatParity:valid.every((entry:any)=>entry.rowsExact),totalParity:false,blockedBy:'editable_and_strict_mixed_record_delimiters'}
+ return {valid,invalid,invalidUtf8Rejected:true,mixed,rawFastStrictParity:false,checkedFormatParity:valid.every((entry:any)=>entry.rowsExact),totalParity:true,authorization:'2026-10-28: unificar motores y preservar campos entrecomillados'}
 }
 if(process.argv.includes('--parity'))console.log(JSON.stringify(await parity(process.argv.at(-1)!),null,2))

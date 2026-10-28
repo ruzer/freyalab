@@ -5,7 +5,7 @@ import {setTimeout as sleep} from 'node:timers/promises'
 import {parse as parseSync} from 'csv-parse/sync'
 import {stringify} from 'csv-stringify/sync'
 import iconv from 'iconv-lite'
-import {recordBatches,LargeFormatError,type LargeIndex} from './large-table'
+import {recordBatches,LargeFormatError,RECORD_DELIMITERS,type LargeIndex} from './large-table'
 import {compileTableQuery} from './table-query'
 import type {Encoding} from '../shared/types'
 import type {EngineOperation,OperationResult,Fidelity} from '../shared/operations'
@@ -28,7 +28,7 @@ const decoderUtf8=new TextDecoder('utf-8',{fatal:true})
 function decode(bytes:Buffer,encoding:Encoding){return encoding==='utf8'?decoderUtf8.decode(bytes):iconv.decode(bytes,encoding)}
 const recordNumber=(ordinal:number)=>(ordinal+1).toLocaleString('es')
 function parseRecords(text:string,state:OperationSourceState){
- return parseSync(text,{delimiter:state.delimiter,bom:false,relax_column_count:true,skip_empty_lines:false,record_delimiter:state.index.terminator===0x0d?['\r']:['\r\n','\n']}) as string[][]
+ return parseSync(text,{delimiter:state.delimiter,bom:false,relax_column_count:true,skip_empty_lines:false,record_delimiter:RECORD_DELIMITERS}) as string[][]
 }
 // Valida y separa en campos un lote de registros (bytes exactos). Si el lote falla, se localiza el primer registro culpable para dar su posición.
 function fieldsOf(raws:Buffer[],first:number,state:OperationSourceState):string[][]{
@@ -88,7 +88,7 @@ export async function runOperation(state:OperationSourceState,request:EngineOper
     else if(request.operation==='filter_extract'){ if(wholeRecords)copied.push(batch.records[i]); else projected.push(project(fields,ordinal)) }
    }
    if(copied.length)await write(Buffer.concat(copied))
-   if(request.operation==='filter_extract'&&!wholeRecords&&projected.length)await write(encode(stringify(projected,{delimiter:state.delimiter,record_delimiter:eol})))
+   if(request.operation==='filter_extract'&&!wholeRecords&&projected.length)await write(encode(stringify(projected,{delimiter:state.delimiter,record_delimiter:eol,quoted_match:/[\r\n]/})))
    hooks.progress?.(Math.min(99,Math.floor(batch.position/state.index.size*100)))
    if(hooks.delayMs)await sleep(hooks.delayMs)
   }

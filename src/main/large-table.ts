@@ -5,6 +5,7 @@ import iconv from 'iconv-lite'
 import type {Encoding} from '../shared/types'
 
 export const LARGE_CHUNK = 16 * 1024 * 1024
+export const RECORD_DELIMITERS = ['\r\n','\n','\r']
 // Un archivo que no se puede indexar de forma fiable: el motor vuelve a la muestra de siempre y dice dónde está el problema.
 export class LargeFormatError extends Error {}
 export class RecordTooLargeError extends LargeFormatError {
@@ -24,43 +25,23 @@ export class OpenCancelled extends Error {}
 export interface LargeIndex {
  path: string; size: number; encoding: Encoding
  unit: 1 | 2 // bytes por carácter de control: UTF-16 usa 2
- terminator: number // LF (también CRLF) o CR, según el primer salto fuera de comillas
  bomLength: number; every: number; records: number
  offsets: Float64Array // posición del registro 0, `every`, 2·`every`…
 }
-interface ScanState { inQuotes: boolean }
+interface ScanState { inQuotes: boolean; cr?:number }
 
 // Recorre `buffer[0..length)` y llama a `onRecord(fin)` en cada fin de registro: un salto de línea fuera de comillas. Las comillas escapadas ("") se compensan solas.
-function scan(buffer: Buffer, length: number, base: number, state: ScanState, unit: 1 | 2, terminator: number, onRecord: (end: number) => void) {
- let inQuotes = state.inQuotes
- if (unit === 2) {
-  for (let i = 0; i + 1 < length; i += 2) {
-   if (buffer[i + 1] !== 0) continue
-   const code = buffer[i]
+function scan(buffer: Buffer, length: number, base: number, state: ScanState, unit: 1 | 2, onRecord: (end: number) => void) {
+ let inQuotes = state.inQuotes, cr = state.cr
+ for(let i=0;i<length;i+=unit){
+   const code=unit===2&&buffer[i+1]!==0?-1:buffer[i]
+   if(cr!==undefined){const end=cr;cr=undefined;if(code===0x0a){onRecord(base+i+unit);continue}onRecord(end)}
    if (code === 0x22) inQuotes = !inQuotes
-   else if (!inQuotes && code === terminator) onRecord(base + i + 2)
-  }
- } else {
-  for (let i = 0; i < length; i++) {
-   const code = buffer[i]
-   if (code === 0x22) inQuotes = !inQuotes
-   else if (code === terminator && !inQuotes) onRecord(base + i + 1)
-  }
+   else if(!inQuotes&&code===0x0d)cr=base+i+unit
+   else if(!inQuotes&&code===0x0a)onRecord(base+i+unit)
  }
  state.inQuotes = inQuotes
-}
-
-async function terminatorOf(handle: Awaited<ReturnType<typeof open>>, size: number, unit: 1 | 2, from: number, maxRecord: number) {
- const head = Buffer.alloc(Math.min(Math.max(size - from, 0), maxRecord + unit)); await handle.read(head, 0, head.length, from)
- let inQuotes = false
- for(let i=0;i<head.length;i+=unit){
-  if(unit===2&&head[i+1]!==0)continue
-  const code=head[i]
-  if(code===0x22)inQuotes=!inQuotes
-  else if(!inQuotes&&code===0x0a)return 0x0a
-  else if(!inQuotes&&code===0x0d)return head[i+unit]===0x0a&&(unit===1||head[i+unit+1]===0)?0x0a:0x0d
- }
- return 0x0a
+ state.cr = cr
 }
 
 export interface IndexOptions {
@@ -73,7 +54,7 @@ export async function buildIndex(path: string, options: IndexOptions): Promise<L
  const {encoding, bomLength, maxRecord, every = 1024, chunk = LARGE_CHUNK} = options, unit: 1 | 2 = encoding === 'utf16le' ? 2 : 1
  const handle = await open(path, 'r')
  try {
-  const size = (await handle.stat()).size, terminator = await terminatorOf(handle, size, unit, bomLength, maxRecord), buffer = Buffer.allocUnsafe(chunk), offsets: number[] = []
+  const size = (await handle.stat()).size, buffer = Buffer.allocUnsafe(chunk), offsets: number[] = []
   if (unit === 2 && (size - bomLength) % 2) throw new InvalidEncodingError(`El archivo UTF-16 tiene un número impar de bytes (${size.toLocaleString('es')}): la codificación está incompleta y no se puede indexar.`)
   const state: ScanState = {inQuotes: false}
   let position = bomLength, start = bomLength, records = 0
@@ -86,14 +67,15 @@ export async function buildIndex(path: string, options: IndexOptions): Promise<L
    if (options.cancelled?.()) throw new OpenCancelled('Apertura cancelada.')
    const {bytesRead} = await handle.read(buffer, 0, chunk, position); if (!bytesRead) break
    const usable = unit === 2 ? bytesRead - (bytesRead % 2) : bytesRead
-   scan(buffer, usable, position, state, unit, terminator, onRecord); position += usable
+   scan(buffer, usable, position, state, unit, onRecord); position += usable
    if (position - start > maxRecord) throw new RecordTooLargeError(records, start, maxRecord) // un registro que aún no termina
    options.onProgress?.(position / size)
    if (usable < bytesRead) break
   }
+  if(state.cr!==undefined)onRecord(state.cr)
   if (state.inQuotes) throw new UnclosedQuoteError(records, start) // el último registro quedó abierto: antes se daba por bueno
   if (start < size) { if (records % every === 0) offsets.push(start); records++ } // último registro sin salto de línea
-  return {path, size, encoding, unit, terminator, bomLength, every, records, offsets: Float64Array.from(offsets)}
+  return {path, size, encoding, unit, bomLength, every, records, offsets: Float64Array.from(offsets)}
  } finally { await handle.close() }
 }
 
@@ -110,7 +92,7 @@ export async function* recordBatches(index: LargeIndex, options: {batchRecords?:
    if (options.cancelled?.()) throw new OpenCancelled('Operación cancelada.')
    const buffer = Buffer.allocUnsafe(chunk), {bytesRead} = await handle.read(buffer, 0, chunk, position); if (!bytesRead) break
    const usable = index.unit === 2 ? bytesRead - (bytesRead % 2) : bytesRead, ends: number[] = []
-   scan(buffer, usable, position, state, index.unit, index.terminator, end => ends.push(end))
+   scan(buffer, usable, position, state, index.unit, end => ends.push(end))
    let cursor = position
    for (const end of ends) {
     const part = buffer.subarray(cursor - position, end - position)
@@ -136,8 +118,9 @@ async function bounds(handle: Awaited<ReturnType<typeof open>>, index: LargeInde
  while (seen < need && position < index.size) {
   const {bytesRead} = await handle.read(buffer, 0, buffer.length, position); if (!bytesRead) break
   const usable = index.unit === 2 ? bytesRead - (bytesRead % 2) : bytesRead
-  scan(buffer, usable, position, state, index.unit, index.terminator, onRecord); position += usable
+  scan(buffer, usable, position, state, index.unit, onRecord); position += usable
  }
+ if(position>=index.size&&state.cr!==undefined)onRecord(state.cr)
  if (seen < need && start < index.size && out.length < count) out.push([start, index.size])
  return out.slice(0, count)
 }

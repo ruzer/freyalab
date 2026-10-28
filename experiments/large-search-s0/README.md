@@ -23,6 +23,6 @@ node node_modules/electron/cli.js experiments/large-search-s0/launch.cjs /privat
 
 El lanzador usa una sola sesión Electron y un proceso de tablas nuevo por muestra, para que el RSS máximo sea independiente. Cada línea de `raw.ndjson` guarda solicitud, resultado y versiones reales. Hay aserciones de paridad, cobertura de ordinales, límite de memoria y cancelación; un error detiene la serie. Los archivos CSV y los resultados extensos permanecen fuera del repositorio.
 
-`parity.mjs` conserva también el desacuerdo conocido de finales mixtos y emite `totalParity: false`. Que termine sin fallar sus aserciones confirma los casos registrados; no levanta el bloqueo de interpretación ni autoriza B1.
+El propietario autorizó unificar LF/CRLF/CR fuera de comillas el 2026-10-28. `parity.mjs` verifica también los finales mixtos y emite `totalParity: true` para los casos comprobados. La evidencia anterior con el desacuerdo y sus rojas permanece archivada; el rendimiento posterior debe medirse sobre la nueva fuente.
 
 Las mediciones requieren una ventana exclusiva sin compilaciones, pruebas u otras mediciones pesadas. No ejecutar este banco en la CI ni junto con otra sesión Electron.

@@ -4,7 +4,7 @@ import {isUtf8} from 'node:buffer'
 import {performance} from 'node:perf_hooks'
 import {parse} from 'csv-parse/sync'
 import iconv from 'iconv-lite'
-import {recordBatches,splitFields,type LargeIndex} from '../../src/main/large-table'
+import {recordBatches,splitFields,RECORD_DELIMITERS,type LargeIndex} from '../../src/main/large-table'
 import {compileTableQuery} from '../../src/main/table-query'
 import {runOperation} from '../../src/main/operations'
 import {pickFields} from '../large-file-editor/lib/fields.mjs'
@@ -13,7 +13,7 @@ const decoder=new TextDecoder('utf-8',{fatal:true})
 export const decode=(raw:Buffer,index:LargeIndex)=>index.encoding==='utf8'?decoder.decode(raw):iconv.decode(raw,index.encoding)
 export const body=(text:string)=>text.replace(/(\r\n|\n|\r)$/,'')
 export function strictRows(raws:Buffer[],index:LargeIndex,delimiter:string){
- const rows=parse(decode(Buffer.concat(raws),index),{delimiter,bom:false,relax_column_count:true,skip_empty_lines:false,record_delimiter:index.terminator===13?['\r']:['\r\n','\n']}) as string[][]
+ const rows=parse(decode(Buffer.concat(raws),index),{delimiter,bom:false,relax_column_count:true,skip_empty_lines:false,record_delimiter:RECORD_DELIMITERS}) as string[][]
  if(rows.length!==raws.length)throw new Error('Scanner/strict record count differs')
  return rows
 }
