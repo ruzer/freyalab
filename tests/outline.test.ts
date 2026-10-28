@@ -1,5 +1,7 @@
 import {describe,it,expect} from 'vitest'
-import {currentHeading,outlineTree,visibleHeading,type HeadingMetric} from '../src/renderer/lib/outline'
+import {EditorState} from '@codemirror/state'
+import {markdown} from '@codemirror/lang-markdown'
+import {currentHeading,outlineTree,visibleHeading,editorHeadings,matchHeadings,type HeadingMetric} from '../src/renderer/lib/outline'
 import type {Heading} from '../src/renderer/lib/render'
 
 const metrics:readonly HeadingMetric[]=Object.freeze([
@@ -29,6 +31,76 @@ describe('FL-MD-007 A · sección actual desde métricas visibles y ordenadas',(
   expect(currentHeading(headings,49950,100,1000000)).toBe('titulo-499')
   expect(reads).toBeGreaterThan(0)
   expect(reads).toBeLessThanOrEqual(11)
+ })
+})
+
+describe('FL-MD-007 C · correspondencia comprobada con el AST de CodeMirror',()=>{
+ const stateOf=(source:string)=>EditorState.create({doc:source,extensions:[markdown(),...(source.includes('\r\n')?[EditorState.lineSeparator.of('\r\n')]:[])]})
+ it.each([
+  ['ATX','# Uno', 'Uno',1],
+  ['ATX con cierre','## Dos ##','Dos',2],
+  ['Setext nivel uno','Tres\n====','Tres',1],
+  ['Setext nivel dos','Cuatro\n----','Cuatro',2],
+  ['negrita/cursiva/código','# Texto **fuerte** y *énfasis* con `código`','Texto fuerte y énfasis con código',1],
+  ['escapes','# A \\*literal\\*','A *literal*',1],
+  ['espacios en código en línea','# ` código ` y ``a ` b``','código y a ` b',1],
+  ['enlace explícito','# [**Guía**](./guia.md "Título")','Guía',1],
+  ['autolink','# <https://example.com>','https://example.com',1],
+  ['imagen sin sumar alt','# Logo ![Alternativo](./imagen.png)','Logo',1],
+  ['HTML inline descartado por el render','# Texto <em>Hola</em>','Texto Hola',1],
+  ['Unicode','# 🐕 café e\u0301','🐕 café e\u0301',1],
+ ] as const)('%s extrae el texto y nivel sin modificar el estado',(_,source,text,level)=>{
+  const state=stateOf(source),result=editorHeadings(state)
+  expect(result.complete).toBe(true)
+  expect(result.headings).toEqual([{text,level,from:0}])
+  expect(state.sliceDoc()).toBe(source)
+ })
+ it.each([
+  ['referencia sin destino','# [Guía]'],
+  ['referencia resuelta no normalizada aquí','# [Guía][ref]\n\n[ref]: ./guia.md'],
+  ['entidad desconocida','# &desconocida;'],
+  ['entidad sin normalización demostrada','# Uno &amp; Dos'],
+ ])('%s queda sin candidato antes que adivinar su texto',(_,source)=>{
+  expect(editorHeadings(stateOf(source))).toEqual({complete:true,headings:[]})
+ })
+ it.each([
+  ['---\ntitle: Uno\n---\n\n# title: Uno'],
+  ['\uFEFF---\r\ntitle: Uno\r\n---\r\n\r\n# title: Uno\r\n'],
+ ])('excluye el falso Setext YAML usando el front matter existente: %j',source=>{
+  const state=stateOf(source),result=editorHeadings(state)
+  expect(result).toEqual({complete:true,headings:[{text:'title: Uno',level:1,from:state.doc.toString().lastIndexOf('# title: Uno')}]})
+  expect(state.sliceDoc()).toBe(source)
+ })
+ it('no excluye un Setext real que solo parece un encabezado YAML',()=>{
+  expect(editorHeadings(stateOf('---\nTexto\n---'))).toEqual({complete:true,headings:[{text:'Texto',level:2,from:4}]})
+ })
+ it('código no genera candidatos; títulos en cita y lista conservan su posición real',()=>{
+  const source='    # No título\n\n```md\n# Literal\n```\n\n> ## Cita\n\n- ### Lista',state=stateOf(source)
+  expect(editorHeadings(state)).toEqual({complete:true,headings:[{text:'Cita',level:2,from:source.indexOf('## Cita')},{text:'Lista',level:3,from:source.indexOf('### Lista')}]})
+ })
+ it('el AST de details compacto no inventa un candidato por cada título renderizado',()=>{
+  const source='<details><summary>Más</summary>\n# Uno\n</details>\n\n# Uno',result=editorHeadings(stateOf(source))
+  expect(result.headings).toEqual([{text:'Uno',level:1,from:source.lastIndexOf('# Uno')}])
+  const rendered=[{id:'html',text:'Uno',level:1},{id:'normal',text:'Uno',level:1}]
+  expect([...matchHeadings(rendered,result.headings)]).toEqual([])
+ })
+ it('un árbol parcial no habilita emparejamiento greedy de su prefijo',()=>{
+  const state=stateOf(Array.from({length:1000},(_,index)=>`# Título ${index}\n\n`).join('')),result=editorHeadings(state)
+  expect(result).toEqual({complete:false,headings:[]})
+  expect([...matchHeadings([{id:'ultimo',text:'Título 999',level:1}],result.headings)]).toEqual([])
+ })
+ it.each([
+  ['orden completo',[{id:'a',text:'Uno',level:1},{id:'b',text:'Dos',level:2}],[{text:'Uno',level:1,from:0},{text:'Dos',level:2,from:20}],[['a',0],['b',20]]],
+  ['repetidos equilibrados',[{id:'a',text:'Uno',level:1},{id:'b',text:'Uno',level:1}],[{text:'Uno',level:1,from:0},{text:'Uno',level:1,from:20}],[['a',0],['b',20]]],
+  ['render con un duplicado adicional',[{id:'a',text:'Uno',level:1},{id:'b',text:'Uno',level:1}],[{text:'Uno',level:1,from:20}],[]],
+  ['AST con un duplicado adicional',[{id:'a',text:'Uno',level:1}],[{text:'Uno',level:1,from:0},{text:'Uno',level:1,from:20}],[]],
+  ['otro grupo comprobable sigue disponible',[{id:'a',text:'Uno',level:1},{id:'b',text:'Uno',level:1},{id:'c',text:'Fin',level:2}],[{text:'Uno',level:1,from:0},{text:'Fin',level:2,from:30}],[['c',30]]],
+  ['niveles incompatibles',[{id:'a',text:'Uno',level:1},{id:'b',text:'Uno',level:2}],[{text:'Uno',level:1,from:0},{text:'Uno',level:1,from:20}],[]],
+  ['orden incompatible',[{id:'a',text:'Uno',level:1},{id:'b',text:'Dos',level:1}],[{text:'Dos',level:1,from:0},{text:'Uno',level:1,from:20}],[]],
+  ['espacios equivalentes',[{id:'a',text:'Uno\n Dos',level:1}],[{text:'Uno Dos',level:1,from:10}],[['a',10]]],
+  ['no confunde acentos ni mayúsculas',[{id:'a',text:'Café',level:1}],[{text:'cafe',level:1,from:0}],[]],
+ ] as const)('%s',(_,rendered,candidates,expected)=>{
+  expect([...matchHeadings(rendered,candidates)]).toEqual(expected)
  })
 })
 

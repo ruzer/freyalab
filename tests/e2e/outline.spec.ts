@@ -278,3 +278,162 @@ test('B: contraer ramas no modifica fuente, dirty ni HTML exportado',async()=>{
  const after=await exportHTML('b-despues.html');expect(after).toBe(before);expect(await source()).toBe(original);expect(await readFile(path,'utf8')).toBe(original)
  expect(await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id)?.dirty,id)).toBe(false)
 })
+
+test('C1: el índice permanece disponible en Editar y el botón Índice lo alterna',async()=>{
+ await open('# Inicio\n\nTexto inicial.\n\n## Destino\n\nContenido final.')
+ await page.getByRole('group',{name:'Modo de edición',exact:true}).getByRole('button',{name:'Editar',exact:true}).click()
+ await evidence('7-c-baseline',{editorCount:await page.locator('.cm-content').count(),outlineCount:await outline().count(),outlineVisible:await outline().isVisible(),source:await source()})
+ await expect(outline()).toBeVisible();await expect(outline().getByRole('button',{name:'Destino',exact:true})).toBeVisible()
+ await page.getByRole('button',{name:'Índice',exact:true}).click();await expect(outline()).toHaveCount(0)
+ await page.getByRole('button',{name:'Índice',exact:true}).click();await expect(outline()).toBeVisible()
+})
+
+test('C2/C5: navegar enfoca el inicio del título arriba sin editar ni crear pasos de deshacer',async()=>{
+ const original='# Inicio\n\n'+paragraphs(30)+'## Destino\n\n'+paragraphs(35),{path}=await open(original),before=await exportHTML('c-antes.html')
+ await editMode();await outline().getByRole('button',{name:'Destino',exact:true}).click()
+ await expect.poll(editorSnapshot).toMatchObject({lineText:'## Destino',focused:true})
+ const alignment=[];for(let index=0;index<4;index++){await frames();alignment.push(await editorSnapshot())}await evidence('7-c-align-before',alignment)
+ // scrollIntoView alinea el cursor; el bloque incluye el leading de la fuente.
+ await expect.poll(async()=>{const state=await editorSnapshot();return Math.abs(state.cursorTop??Infinity)<2&&state.firstLine===state.line}).toBe(true)
+ const moved=await editorSnapshot();expect(moved.from).toBe(moved.lineFrom);expect(moved.to).toBe(moved.from);expect(moved.firstLine).toBe(moved.line);expect(moved.domSelection).toBe('')
+ expect(await source()).toBe(original);expect(await readFile(path,'utf8')).toBe(original);expect(await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id)?.dirty,id)).toBe(false)
+ const after=await exportHTML('c-despues.html');expect(after).toBe(before)
+ await page.locator('.cm-content').focus();await page.keyboard.insertText('!');await expect.poll(source).toBe(original.slice(0,moved.from)+'!'+original.slice(moved.from))
+ await page.keyboard.press('ControlOrMeta+Z');await expect.poll(source).toBe(original)
+ await page.keyboard.press(process.platform==='darwin'?'ControlOrMeta+Shift+Z':'ControlOrMeta+Y');await expect.poll(source).toBe(original.slice(0,moved.from)+'!'+original.slice(moved.from))
+ await evidence('7-c-navegacion',{...moved,htmlUnchanged:before===after,sourceBeforeTypingUnchanged:true})
+})
+
+test('C4: ATX, Setext, duplicados, front matter, Unicode y contenedores llevan a su línea real',async()=>{
+ const fixtures=[
+  {name:'ATX y Setext',text:'# Uno\n\n## Dos ##\n\nTres\n====\n\nCuatro\n----\n',targets:[{name:'Uno',line:1},{name:'Dos',line:3},{name:'Tres',line:5},{name:'Cuatro',line:8}]},
+  {name:'Duplicados',text:'# Uno\n\nTexto.\n\n# Uno\n\nFin.',targets:[{name:'Uno',occurrence:0,line:1},{name:'Uno',occurrence:1,line:5}]},
+  {name:'BOM, CRLF, propiedades y símbolos',text:'\ufeff---\r\ntitle: Uno\r\n---\r\n\r\n# 🐕\r\n\r\n## !!!\r\n\r\nSetext\r\n====\r\n',targets:[{name:'🐕',line:5},{name:'!!!',line:7},{name:'Setext',line:9}]},
+  {name:'Cita y lista',text:'> ## Cita **fuerte**\n\n- ### Lista\n\n  Texto.\n\n# Final\n',targets:[{name:'Cita fuerte',line:1},{name:'Lista',line:3},{name:'Final',line:7}]},
+  {name:'Details estándar cerrado',text:'<details><summary>Más</summary>\n\n# Interior\n\n</details>\n\n# Exterior\n',targets:[{name:'Interior',line:3},{name:'Exterior',line:7}]}
+ ]
+ const destinations=[]
+ for(const fixture of fixtures){
+  const{path}=await open(fixture.text);await editMode()
+  for(const target of fixture.targets){
+   await outline().getByRole('button',{name:target.name,exact:true}).nth('occurrence'in target?target.occurrence!:0).click()
+   await expect.poll(async()=>(await editorSnapshot()).line).toBe(target.line)
+   const moved=await editorSnapshot();expect(moved.from).toBe(moved.lineFrom);expect(moved.to).toBe(moved.from);expect(moved.focused).toBe(true);destinations.push({fixture:fixture.name,target:target.name,...moved})
+  }
+  expect(await source()).toBe(fixture.text);expect(await readFile(path,'utf8')).toBe(fixture.text)
+ }
+ await evidence('7-c-destinos',destinations)
+})
+
+test('C3: la sección actual sigue la primera línea realmente visible, no el margen virtualizado',async()=>{
+ const prefix=paragraphs(12),original=prefix+Array.from({length:6},(_,i)=>`# Sección ${i+1}\n\n${paragraphs(16)}`).join('')
+ await open(original);await editMode();await expect(current()).toHaveCount(0)
+ const headings=original.split('\n').flatMap((text,index)=>text.startsWith('# ')?[{line:index+1,text:text.slice(2)}]:[]),samples=[]
+ for(let index=0;index<4;index++){
+  await page.locator('.cm-scroller').hover();await page.mouse.wheel(0,700);await frames()
+  await expect.poll(async()=>{const view=await editorSnapshot(),wanted=headings.filter(heading=>heading.line<=(view.firstLine??0)).at(-1)?.text??'',actual=await current().count()?await current().textContent():'';return actual===wanted}).toBe(true)
+  const view=await editorSnapshot();expect(view.firstLine).toBeGreaterThan(1);samples.push({...view,current:await current().count()?await current().textContent():''})
+ }
+ await page.locator('.cm-content').focus();await page.keyboard.press('PageDown');await frames()
+ await expect.poll(async()=>{const view=await editorSnapshot(),wanted=headings.filter(heading=>heading.line<=(view.firstLine??0)).at(-1)?.text??'';return(await current().count()?await current().textContent():'')===wanted}).toBe(true)
+ expect(await source()).toBe(original);await evidence('7-c-primera-linea',samples)
+})
+
+test('C3: títulos dentro de cita y lista marcan su sección al inicio real de la línea',async()=>{
+ const original='> ## Cita\n\nTexto inicial.\n\n- ### Lista\n\n  Texto de la lista.\n\n# Final\n\n'+paragraphs(20)
+ await open(original);await editMode();const observations=[]
+ for(const target of [{name:'Cita',line:'> ## Cita'},{name:'Lista',line:'- ### Lista'}]){
+  await outline().getByRole('button',{name:target.name,exact:true}).click();await expect.poll(async()=>(await editorSnapshot()).lineText).toBe(target.line)
+  const state=await editorSnapshot();observations.push({target:target.name,...state});await evidence('7-c-contenedores',observations)
+  expect(state.from).toBe(state.lineFrom);expect(state.to).toBe(state.from);await expect(current()).toHaveText(target.name)
+ }
+ expect(await source()).toBe(original)
+})
+
+test('C4: el título HTML sin pareja y sus duplicados avisan sin mover el cursor a otro título',async()=>{
+ const original='<details><summary>Más</summary>\n# Uno\n</details>\n\n# Uno\n\n# Seguro\n'
+ await open(original);await editMode();await page.locator('.cm-content').focus();await page.keyboard.press('ControlOrMeta+Home')
+ const before=await editorSnapshot();await expect(outline().getByRole('button',{name:'Uno',exact:true})).toHaveCount(2)
+ for(let occurrence=0;occurrence<2;occurrence++){
+  await outline().getByRole('button',{name:'Uno',exact:true}).nth(occurrence).click()
+  await expect(page.locator('.toast')).toContainText('Ese título no se puede localizar en el editor')
+  const after=await editorSnapshot();expect(after.from).toBe(before.from);expect(after.to).toBe(before.to)
+ }
+ await outline().getByRole('button',{name:'Seguro',exact:true}).click();await expect.poll(async()=>(await editorSnapshot()).line).toBe(7);expect(await source()).toBe(original)
+})
+
+test('C4: una entrada del render anterior se rechaza antes de actualizar el índice',async()=>{
+ const original='# Inicio\n\nTexto.\n\n## Destino\n\nFin.',changed='# Nuevo\n\n'+original
+ await open(original);await editMode()
+ const result=await page.locator('.cm-content').evaluate((node,changed)=>{
+  const owner=node as HTMLDivElement&{cmTile?:{view:EditorView};cmView?:{view:EditorView}},view=owner.cmTile?.view??owner.cmView?.view
+  if(!view)throw new Error('No encontré la vista CodeMirror montada')
+  const stale=Array.from(document.querySelectorAll<HTMLButtonElement>('#freya-outline-panel button')).find(button=>(button.getAttribute('aria-label')??button.textContent?.trim())==='Destino');if(!stale)throw new Error('Falta la entrada anterior')
+  view.dispatch({changes:{from:0,to:view.state.doc.length,insert:changed},selection:{anchor:0},userEvent:'input'})
+  const before=view.state.selection.main.head;stale.click()
+  return{before,after:view.state.selection.main.head,staleLabel:stale.getAttribute('aria-label')}
+ },changed)
+ expect(result.after).toBe(result.before);await expect(page.locator('.toast')).toContainText('Ese título no se puede localizar en el editor');await expect.poll(source).toBe(changed)
+ await evidence('7-c-snapshot-anterior',result)
+})
+
+test('C4: el árbol incompleto termina cubriendo el título mil sin saltos aproximados ni cambios',async()=>{
+ test.setTimeout(60_000)
+ const original=Array.from({length:1000},(_,i)=>`## Sección ${i+1}\n\n${paragraphs(4)}`).join(''),{path}=await open(original);await editMode()
+ await page.locator('.cm-content').focus();await page.keyboard.press('ControlOrMeta+Home');const before=await editorSnapshot(),targetLine=original.slice(0,original.indexOf('## Sección 1000\n')).split('\n').length,observed:number[]=[]
+ await expect.poll(async()=>{await outline().getByRole('button',{name:'Sección 1000',exact:true}).click();const moved=await editorSnapshot();observed.push(moved.line);return moved.line},{timeout:30_000}).toBe(targetLine)
+ expect(observed.every(line=>line===before.line||line===targetLine)).toBe(true)
+ const moved=await editorSnapshot();expect(moved.from).toBe(moved.lineFrom);expect(moved.to).toBe(moved.from);expect(moved.focused).toBe(true)
+ expect(await source()).toBe(original);expect(await readFile(path,'utf8')).toBe(original);expect(await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id)?.dirty,id)).toBe(false)
+ await evidence('7-c-mil-titulos',{titles:1000,targetLine,observed,moved,sourceUnchanged:true})
+})
+
+test('C5: Dividido y Vista previa conservan el desplazamiento de lectura sin mover el cursor',async()=>{
+ const original='# Primera\n\n'+paragraphs(20)+'## Segunda\n\n'+paragraphs(20)+'## Tercera\n\n'+paragraphs(30)
+ await open(original);await editMode();await outline().getByRole('button',{name:'Segunda',exact:true}).click();await expect.poll(async()=>(await editorSnapshot()).lineText).toBe('## Segunda');const before=await editorSnapshot()
+ await page.getByRole('group',{name:'Modo de edición',exact:true}).getByRole('button',{name:'Dividido',exact:true}).click();await settled()
+ await expect.poll(async()=>await current().count()?await current().textContent():'').toBe(await expected())
+ await outline().getByRole('button',{name:'Tercera',exact:true}).click();await scrollIdle();await expect(current()).toHaveText('Tercera');const split=await editorSnapshot();expect(split.from).toBe(before.from)
+ await page.getByRole('group',{name:'Modo de edición',exact:true}).getByRole('button',{name:'Vista previa',exact:true}).click();await settled();await outline().getByRole('button',{name:'Segunda',exact:true}).click();await scrollIdle();await expect(current()).toHaveText('Segunda')
+ await expect(page.locator('.cm-content')).toHaveCount(0);await editMode();expect((await editorSnapshot()).from).toBe(before.from);expect(await source()).toBe(original)
+})
+
+test('C: un clic durante composición IME sintética no roba el foco ni mueve el cursor',async()=>{
+ const original='# Inicio\n\nTexto.\n\n## Destino\n\nContenido.';await open(original);await editMode();await page.locator('.cm-content').focus();await page.keyboard.press('ControlOrMeta+Home')
+ await page.locator('.cm-content').dispatchEvent('compositionstart',{data:''});await expect.poll(async()=>(await editorSnapshot()).compositionStarted).toBe(true)
+ const before=await editorSnapshot();await outline().getByRole('button',{name:'Destino',exact:true}).click();const after=await editorSnapshot()
+ expect(after.from).toBe(before.from);expect(after.to).toBe(before.to);expect(after.focused).toBe(true);expect(after.compositionStarted).toBe(true)
+ await outline().getByRole('button',{name:'Contraer sección Inicio',exact:true}).click();await expect(page.locator('.cm-content')).toBeFocused();expect((await editorSnapshot()).compositionStarted).toBe(true);expect(await source()).toBe(original)
+ await page.locator('.cm-content').dispatchEvent('compositionend',{data:''});await expect.poll(async()=>(await editorSnapshot()).compositionStarted).toBe(false)
+ await outline().getByRole('button',{name:'Expandir sección Inicio',exact:true}).click();await outline().getByRole('button',{name:'Destino',exact:true}).click();await expect.poll(async()=>(await editorSnapshot()).lineText).toBe('## Destino')
+ await evidence('7-c-ime-sintetico',{before,after,scope:'Eventos compositionstart/end sintéticos y clics Playwright; no IME físico del sistema.'})
+})
+
+test('C: modo Editar conserva contraste, árbol y barra en claro/oscuro a 1440 por 900',async()=>{
+ const original='# Manual de FreyaLab\n\n'+paragraphs(8)+'## Consultar resultados\n\n'+paragraphs(8)+'### Interpretar el informe\n\n'+paragraphs(30)
+ await open(original);await editMode();await outline().getByRole('button',{name:'Interpretar el informe',exact:true}).click();await expect.poll(async()=>(await editorSnapshot()).lineText).toBe('### Interpretar el informe')
+ await outline().getByRole('button',{name:'Contraer sección Consultar resultados',exact:true}).click();await expect(current()).toHaveText('Consultar resultados')
+ const layouts=[]
+ for(const theme of ['light','dark']){
+  await page.getByRole('combobox',{name:'Tema',exact:true}).selectOption(theme);await frames();await expect(outline()).toBeVisible();await expect(current()).toHaveText('Consultar resultados');await expect(current()).toBeInViewport()
+  const bounds=await page.locator('.document-tools').boundingBox();expect(bounds!.height).toBeLessThanOrEqual(43);layouts.push({theme,barHeight:bounds!.height,editor:await editorSnapshot()});await screenshot(theme,'c')
+ }
+ expect(await source()).toBe(original);await evidence('7-c-temas',layouts)
+})
+
+test('C2: el título final sin cuerpo queda arriba del editor y navegar no consume el siguiente deshacer',async()=>{
+ const original='# Inicio\n\n'+paragraphs(45)+'## Fin del archivo',edited=original.replace('# Inicio','# Inicio editado'),{path}=await open(original)
+ await editMode();await replaceSource(edited)
+ const beforeNavigation=await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),id)
+ // Una edición conocida permite comprobar que navegar no añade otro paso al historial.
+ await outline().getByRole('button',{name:'Fin del archivo',exact:true}).click()
+ await expect.poll(editorSnapshot).toMatchObject({lineText:'## Fin del archivo',focused:true})
+ const aligned=[];for(let index=0;index<4;index++){await frames();aligned.push(await editorSnapshot())};await evidence('7-c-eof-align',aligned)
+ await expect.poll(async()=>{const moved=await editorSnapshot();return moved.firstLine===moved.line&&Math.abs(moved.cursorTop??Infinity)<2}).toBe(true)
+ const moved=await editorSnapshot();expect(moved.from).toBe(moved.lineFrom);expect(moved.to).toBe(moved.lineFrom)
+ expect(await source()).toBe(edited);expect(await readFile(path,'utf8')).toBe(original)
+ expect(await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id)?.dirty,id)).toBe(beforeNavigation?.dirty)
+ await page.keyboard.press('ControlOrMeta+Z');await expect.poll(source).toBe(original)
+ await page.keyboard.press(process.platform==='darwin'?'ControlOrMeta+Shift+Z':'ControlOrMeta+Y');await expect.poll(source).toBe(edited)
+ expect(await readFile(path,'utf8')).toBe(original)
+})

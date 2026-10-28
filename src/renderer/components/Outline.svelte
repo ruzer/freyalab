@@ -3,7 +3,7 @@
  import type {Heading} from '../lib/render'
  import {outlineTree,visibleHeading} from '../lib/outline'
  import Icon from './Icon.svelte'
- let {headings,current,onselect,shown=true,collapsed,oncollapse,ready=true,container=$bindable<HTMLDivElement|undefined>(),onscroll}:{headings:Heading[];current?:string;onselect:(heading:Heading)=>void;shown?:boolean;collapsed:ReadonlySet<string>;oncollapse:(next:Set<string>)=>void;ready?:boolean;container?:HTMLDivElement;onscroll?:(top:number)=>void}=$props()
+ let {headings,current,onselect,shown=true,collapsed,oncollapse,ready=true,canselect,container=$bindable<HTMLDivElement|undefined>(),onscroll}:{headings:Heading[];current?:string;onselect:(heading:Heading)=>void;shown?:boolean;collapsed:ReadonlySet<string>;oncollapse:(next:Set<string>)=>void;ready?:boolean;canselect?:()=>boolean;container?:HTMLDivElement;onscroll?:(top:number)=>void}=$props()
  const nodes=$derived(outlineTree(headings)),visibleCurrent=$derived(visibleHeading(nodes,current,collapsed))
  function toggle(key:string){const next=new Set(collapsed);if(next.has(key))next.delete(key);else next.add(key);oncollapse(next)}
  $effect(()=>{if(!ready)return;const valid=new Set(nodes.map(node=>node.key)),next=new Set([...collapsed].filter(key=>valid.has(key)));if(next.size!==collapsed.size)oncollapse(next)})
@@ -41,11 +41,11 @@
   return()=>observer.disconnect()
  })
 </script>
-<div class="document-outline" hidden={!shown} bind:this={container} onscroll={event=>{if(event.currentTarget.clientHeight)onscroll?.(event.currentTarget.scrollTop)}}>
+<div class="document-outline" onpointerdown={event=>{if(canselect?.()===false)event.preventDefault()}} hidden={!shown} bind:this={container} onscroll={event=>{if(event.currentTarget.clientHeight)onscroll?.(event.currentTarget.scrollTop)}}>
  {#each nodes as node (node.key)}
   <div class="outline-row" data-outline-row={node.id} hidden={node.ancestors.some(key=>collapsed.has(key))} style:padding-left={`${2+node.depth*10}px`}>
    {#if node.hasChildren}<button class="branch-toggle" aria-expanded={!collapsed.has(node.key)} aria-label={`${collapsed.has(node.key)?'Expandir':'Contraer'} sección ${node.text}`} onclick={()=>toggle(node.key)}><Icon name={collapsed.has(node.key)?'chevron-right':'chevron-down'} size={12}/></button>{:else}<span class="branch-space" aria-hidden="true"></span>{/if}
-   <button class="sidebar-heading title" data-heading-id={node.id} aria-current={visibleCurrent===node.id?'location':undefined} aria-label={node.text} title={node.text} onclick={()=>onselect(node)}><span>{node.text}</span></button>
+   <button class="sidebar-heading title" data-heading-id={node.id} aria-current={visibleCurrent===node.id?'location':undefined} aria-label={node.text} title={node.text} onclick={()=>{if(canselect?.()!==false)onselect(node)}}><span>{node.text}</span></button>
   </div>
  {:else}<p class="sidebar-empty">Este documento no tiene títulos</p>{/each}
 </div>

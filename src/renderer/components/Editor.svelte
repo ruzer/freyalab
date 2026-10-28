@@ -1,22 +1,58 @@
 <script lang="ts">
  import {onMount} from 'svelte'
- import {EditorState,EditorSelection,Compartment,Text,type Transaction} from '@codemirror/state'
- import {EditorView,keymap,lineNumbers,highlightActiveLine,drawSelection} from '@codemirror/view'
+ import {EditorState,EditorSelection,Compartment,Text,Transaction} from '@codemirror/state'
+ import {EditorView,keymap,lineNumbers,highlightActiveLine,drawSelection,scrollPastEnd} from '@codemirror/view'
  import {defaultKeymap,history,historyKeymap,undo,redo,isolateHistory} from '@codemirror/commands'
  import {searchKeymap,highlightSelectionMatches,openSearchPanel} from '@codemirror/search'
  import {markdown} from '@codemirror/lang-markdown'
- import {syntaxHighlighting,defaultHighlightStyle,syntaxTree} from '@codemirror/language'
+ import {syntaxHighlighting,defaultHighlightStyle,syntaxTree,syntaxTreeAvailable,forceParsing} from '@codemirror/language'
+ import {editorHeadings,type EditorHeading} from '../lib/outline'
  import type {MarkdownSession} from '../lib/markdown-tasks'
  import {markdownCommands,lineFormatState,type MarkdownAction,type CodeLanguage} from '../lib/markdown-commands'
  import type {TextSelection} from '../lib/text-stats'
  import {markdownLinkOnPaste} from '../lib/markdown-paste'
- let {text='',readonly=false,kind='markdown',label='Editor de texto',onchange,onscroll,onformatstate,onselection,session,ontransactions}: {session?:MarkdownSession;ontransactions?:(transactions:readonly Transaction[])=>void;text:string;label?:string;readonly?:boolean;kind?:string;onchange:(text:string)=>void;onscroll?:(ratio:number)=>void;onformatstate?:(state:ReturnType<typeof lineFormatState>)=>void;onselection?:(selection:TextSelection|null)=>void}=$props()
+ let {text='',readonly=false,kind='markdown',label='Editor de texto',onchange,onscroll,onformatstate,onselection,session,ontransactions,outlineEnabled=false,onoutline,oncurrentline}: {outlineEnabled?:boolean;onoutline?:(headings:EditorHeading[],source:string)=>void;oncurrentline?:(from:number)=>void;session?:MarkdownSession;ontransactions?:(transactions:readonly Transaction[])=>void;text:string;label?:string;readonly?:boolean;kind?:string;onchange:(text:string)=>void;onscroll?:(ratio:number)=>void;onformatstate?:(state:ReturnType<typeof lineFormatState>)=>void;onselection?:(selection:TextSelection|null)=>void}=$props()
  let host:HTMLDivElement
  let view:EditorView|undefined
  let mountedSession:MarkdownSession|undefined
  let applying=false
  let plainPaste=false
  const permission=new Compartment()
+ // El margen del documento también necesita espacio para alinear su última línea.
+ const outlinePadding=new Compartment()
+ let outlineIdle=0,lastOutlineTree:ReturnType<typeof syntaxTree>|undefined,lastOutlineDoc:EditorState['doc']|undefined,lastVisibleLine=-1
+ const lineMeasureKey={}
+ function publishVisibleLine(){
+  if(!view||!outlineEnabled)return
+  const owner=view,doc=owner.state.doc
+  owner.requestMeasure({key:lineMeasureKey,read:()=>{
+   if(!outlineEnabled||owner!==view||!owner.scrollDOM.clientHeight)return
+   const top=owner.scrollDOM.getBoundingClientRect().top+owner.scrollDOM.clientTop
+   return owner.state.doc.lineAt(owner.lineBlockAtHeight(Math.max(0,top-owner.documentTop)).from).from
+  },write:from=>{if(from!==undefined&&outlineEnabled&&owner===view&&doc===owner.state.doc&&from!==lastVisibleLine){lastVisibleLine=from;oncurrentline?.(from)}}})
+ }
+ function cancelOutline(){cancelIdleCallback(outlineIdle);outlineIdle=0}
+ function publishOutline(){
+  if(!view||!outlineEnabled||kind!=='markdown')return
+  const tree=syntaxTree(view.state),doc=view.state.doc
+  if(tree!==lastOutlineTree||doc!==lastOutlineDoc){
+   lastOutlineTree=tree;lastOutlineDoc=doc
+   const state=view.state,result=editorHeadings(state)
+   onoutline?.(result.headings.map(heading=>({...heading,from:state.doc.lineAt(heading.from).from})),result.complete?state.sliceDoc():'')
+  }
+  if(!syntaxTreeAvailable(view.state,doc.length)&&!outlineIdle&&!isComposing())outlineIdle=requestIdleCallback(()=>{
+   outlineIdle=0
+   if(!view||!outlineEnabled||isComposing())return
+   // shortcut: presupuesto cooperativo; revisar si un paso indivisible bloquea documentos grandes.
+   forceParsing(view,view.state.doc.length,10);publishOutline()
+  })
+ }
+ export function isComposing(){return !!view&&(view.composing||view.compositionStarted)}
+ export function goToHeading(from:number,source:string){
+  if(!view||isComposing()||!Number.isInteger(from)||from<0||from>view.state.doc.length||view.state.sliceDoc()!==source||!syntaxTreeAvailable(view.state,view.state.doc.length))return false
+  const position=view.state.doc.lineAt(from).from
+  view.dispatch({selection:EditorSelection.cursor(position),effects:EditorView.scrollIntoView(position,{y:'start',yMargin:0}),annotations:Transaction.addToHistory.of(false)});view.focus();return true
+ }
  let lastFormat=''
  function publishSelection(state:EditorState){const selection=state.selection.main;onselection?.(selection.empty?null:{from:selection.from,to:selection.to})}
  function publishFormat(state:EditorState){
@@ -58,15 +94,16 @@
  }
  onMount(()=>{
   const sessionAtMount=session,dispatch=ontransactions;mountedSession=sessionAtMount
-  const extensions=[...(kind==='markdown'&&text.includes('\r\n')&&!sessionAtMount?[EditorState.lineSeparator.of('\r\n')]:[]),EditorView.contentAttributes.of({'aria-label':label}),lineNumbers(),highlightActiveLine(),drawSelection(),...(!sessionAtMount?[history()]:[]),highlightSelectionMatches(),keymap.of([{key:'Mod-b',run:shortcut('bold')},{key:'Mod-i',run:shortcut('italic')},{key:'Mod-Shift-x',run:shortcut('strike')},...(['paragraph','heading1','heading2','heading3'] as const).map((action,index)=>({key:`Mod-Alt-${index}`,run:shortcut(action)})),...defaultKeymap,...historyKeymap,...searchKeymap]),syntaxHighlighting(defaultHighlightStyle),...(kind==='markdown'?[markdown({pasteURLAsLink:false})]:[]),EditorView.lineWrapping,permission.of([EditorState.readOnly.of(readonly),EditorView.editable.of(!readonly)]),EditorView.theme({'&':{height:'100%',fontSize:'13px'},'.cm-scroller':{fontFamily:'"JetBrains Mono", monospace',lineHeight:'1.8'},'.cm-content':{padding:'20px 0'},'.cm-gutters':{backgroundColor:'transparent',color:'var(--muted)',borderRight:'1px solid var(--border)'},'.cm-activeLine':{backgroundColor:'var(--hover)'},'.cm-activeLineGutter':{backgroundColor:'var(--hover)'},'.cm-cursor':{borderLeftColor:'var(--text)'},'.cm-selectionBackground, &.cm-focused .cm-selectionBackground':{backgroundColor:'#007aff35'},'.cm-panels':{backgroundColor:'var(--panel)',color:'var(--text)'},'.cm-search input':{color:'var(--text)'}}),EditorView.updateListener.of(update=>{if(update.docChanged&&!applying&&!sessionAtMount) onchange(update.state.sliceDoc());publishFormat(update.state);if(update.docChanged||update.selectionSet)publishSelection(update.state)}),EditorView.domEventHandlers({paste,keydown:()=>{plainPaste=false},blur:()=>{plainPaste=false},scroll:()=>{const el=view!.scrollDOM;onscroll?.(el.scrollTop/Math.max(1,el.scrollHeight-el.clientHeight))}})]
+  const extensions=[...(kind==='markdown'&&text.includes('\r\n')&&!sessionAtMount?[EditorState.lineSeparator.of('\r\n')]:[]),EditorView.contentAttributes.of({'aria-label':label}),lineNumbers(),outlinePadding.of(outlineEnabled?[scrollPastEnd(),EditorView.theme({'.cm-scroller':{paddingBottom:'1lh'}})]:[]),highlightActiveLine(),drawSelection(),...(!sessionAtMount?[history()]:[]),highlightSelectionMatches(),keymap.of([{key:'Mod-b',run:shortcut('bold')},{key:'Mod-i',run:shortcut('italic')},{key:'Mod-Shift-x',run:shortcut('strike')},...(['paragraph','heading1','heading2','heading3'] as const).map((action,index)=>({key:`Mod-Alt-${index}`,run:shortcut(action)})),...defaultKeymap,...historyKeymap,...searchKeymap]),syntaxHighlighting(defaultHighlightStyle),...(kind==='markdown'?[markdown({pasteURLAsLink:false})]:[]),EditorView.lineWrapping,permission.of([EditorState.readOnly.of(readonly),EditorView.editable.of(!readonly)]),EditorView.theme({'&':{height:'100%',fontSize:'13px'},'.cm-scroller':{fontFamily:'"JetBrains Mono", monospace',lineHeight:'1.8'},'.cm-content':{padding:'20px 0'},'.cm-gutters':{backgroundColor:'transparent',color:'var(--muted)',borderRight:'1px solid var(--border)'},'.cm-activeLine':{backgroundColor:'var(--hover)'},'.cm-activeLineGutter':{backgroundColor:'var(--hover)'},'.cm-cursor':{borderLeftColor:'var(--text)'},'.cm-selectionBackground, &.cm-focused .cm-selectionBackground':{backgroundColor:'#007aff35'},'.cm-panels':{backgroundColor:'var(--panel)',color:'var(--text)'},'.cm-search input':{color:'var(--text)'}}),EditorView.updateListener.of(update=>{if(update.docChanged){cancelOutline();if(!applying&&!sessionAtMount)onchange(update.state.sliceDoc())}publishFormat(update.state);if(update.docChanged||update.selectionSet)publishSelection(update.state);if(update.docChanged||syntaxTree(update.startState)!==syntaxTree(update.state))publishOutline();if(update.geometryChanged||update.viewportChanged)publishVisibleLine()}),EditorView.domEventHandlers({paste,keydown:()=>{plainPaste=false},blur:()=>{plainPaste=false},scroll:()=>{const el=view!.scrollDOM;onscroll?.(el.scrollTop/Math.max(1,el.scrollHeight-el.clientHeight));publishVisibleLine()},compositionstart:()=>{cancelOutline()},compositionend:()=>{queueMicrotask(publishOutline)}})]
   if(sessionAtMount&&dispatch)dispatch([sessionAtMount.state.update({effects:sessionAtMount.ui.reconfigure(extensions)})])
   view=new EditorView({parent:host,state:sessionAtMount?.state??EditorState.create({doc:text,extensions}),...(sessionAtMount&&dispatch?{dispatchTransactions:dispatch}:{})})
   if(sessionAtMount)sessionAtMount.receive=transactions=>view?.update(transactions)
   const plain=()=>{plainPaste=!!view?.hasFocus}
   window.addEventListener('freya-paste-plain',plain)
-  publishFormat(view.state);publishSelection(view.state)
-  return()=>{window.removeEventListener('freya-paste-plain',plain);if(sessionAtMount){sessionAtMount.receive=undefined;dispatch?.([sessionAtMount.state.update({effects:sessionAtMount.ui.reconfigure([])})])}view?.destroy();view=undefined}
+  publishFormat(view.state);publishSelection(view.state);publishOutline();publishVisibleLine()
+  return()=>{cancelOutline();window.removeEventListener('freya-paste-plain',plain);if(sessionAtMount){sessionAtMount.receive=undefined;dispatch?.([sessionAtMount.state.update({effects:sessionAtMount.ui.reconfigure([])})])}view?.destroy();view=undefined}
  })
+ $effect(()=>{const enabled=outlineEnabled;cancelOutline();lastOutlineTree=undefined;lastOutlineDoc=undefined;lastVisibleLine=-1;if(view)view.dispatch({effects:outlinePadding.reconfigure(enabled?[scrollPastEnd(),EditorView.theme({'.cm-scroller':{paddingBottom:'1lh'}})]:[])});if(enabled){publishOutline();publishVisibleLine()}})
  $effect(()=>{const locked=readonly;if(view)view.dispatch({effects:permission.reconfigure([EditorState.readOnly.of(locked),EditorView.editable.of(!locked)])})})
  $effect(()=>{const value=text;if(view&&!mountedSession&&value!==view.state.sliceDoc()){applying=true;view.dispatch({changes:{from:0,to:view.state.doc.length,insert:value}});applying=false}})
 </script>
