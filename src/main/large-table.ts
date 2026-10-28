@@ -157,7 +157,7 @@ export function splitFields(record: string, delimiter: string, through?:number):
    i++
    while (i < record.length) { if (record[i] === '"') { if (record[i + 1] === '"') { value += '"'; i += 2; continue } i++; break } value += record[i++] }
    while (i < record.length && record[i] !== delimiter) value += record[i++]
-  } else { const from = i; while (i < record.length && record[i] !== delimiter) i++; value = record.slice(from, i) }
+  } else { const from = i, next = record.indexOf(delimiter,i); i=next<0?record.length:next; value = record.slice(from, i) }
   fields.push(value)
   if(through!==undefined&&fields.length>through)break
   if (i >= record.length) break
