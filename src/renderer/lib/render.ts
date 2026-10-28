@@ -9,6 +9,7 @@ import rehypeHighlight from 'rehype-highlight'
 import rehypeStringify from 'rehype-stringify'
 import katexCSS from 'katex/dist/katex.min.css?inline'
 import remarkDetails from './remark-details'
+import remarkNumbering,{numberingFor,type NumberedItem} from './remark-numbering'
 import {frontMatterOf} from '../../shared/front-matter'
 import type {TaskReference} from './markdown-tasks'
 
@@ -16,10 +17,10 @@ export interface Heading { id:string; text:string; level:number }
 export function decodeFragment(value:string):string {try{return decodeURIComponent(value)}catch{return value}}
 const fold=(value:string)=>value.normalize('NFD').replace(/\p{M}/gu,'').toLowerCase()
 const slug=(value:string)=>fold(value).replace(/[^\p{L}\p{N}]+/gu,'-').replace(/^-|-$/g,'')||'seccion'
-export const documentCSS = `body{font:15px/1.75 Inter,Arial,sans-serif;color:#202024;margin:0;padding:32px;background:white}article{max-width:880px;margin:auto}h1,h2,h3,h4{line-height:1.3;break-after:avoid}h1{font-size:30px}h2{font-size:23px;border-bottom:1px solid #ddd;padding-bottom:8px}a{color:#007aff}pre{background:#f4f4f6;padding:16px;overflow-wrap:anywhere;white-space:pre-wrap;border-radius:7px}code{font:13px/1.6 'JetBrains Mono',monospace}p code{background:#f0f0f3;padding:2px 4px;border-radius:4px}table{border-collapse:collapse;width:100%;font-size:13px}td,th{overflow-wrap:anywhere;border:1px solid #ddd;padding:8px 12px;text-align:left}th{background:#f6f6f8}blockquote{border-left:3px solid #ccc;padding-left:16px;color:#666}img,svg{max-width:100%;height:auto}.mermaid-render{overflow:auto;text-align:center}input[type=checkbox]{accent-color:#007aff}.hljs-keyword,.hljs-selector-tag{color:#b33ca5}.hljs-string,.hljs-attr{color:#288342}.hljs-number,.hljs-literal{color:#8055bb}.hljs-comment{color:#787880}.diagram-error{background:#fff0f0;color:#a3192c;padding:12px;white-space:pre-wrap}.enlace-roto{color:#666;text-decoration:underline dotted}.katex-display{overflow-x:auto;overflow-y:hidden}@page{size:A4;margin:16mm}@media print{body{padding:0}pre,blockquote,tr,.mermaid-render{break-inside:avoid}a{color:inherit;text-decoration:none}}`
+export const documentCSS = `body{font:15px/1.75 Inter,Arial,sans-serif;color:#202024;margin:0;padding:32px;background:white}article{max-width:880px;margin:auto}h1,h2,h3,h4{line-height:1.3;break-after:avoid}h1{font-size:30px}h2{font-size:23px;border-bottom:1px solid #ddd;padding-bottom:8px}a{color:#007aff}pre{background:#f4f4f6;padding:16px;overflow-wrap:anywhere;white-space:pre-wrap;border-radius:7px}code{font:13px/1.6 'JetBrains Mono',monospace}p code{background:#f0f0f3;padding:2px 4px;border-radius:4px}table{border-collapse:collapse;width:100%;font-size:13px}td,th{overflow-wrap:anywhere;border:1px solid #ddd;padding:8px 12px;text-align:left}th{background:#f6f6f8}blockquote{border-left:3px solid #ccc;padding-left:16px;color:#666}img,svg{max-width:100%;height:auto}.mermaid-render{overflow:auto;text-align:center}figure{margin:24px 0;break-inside:avoid}figcaption{margin-top:8px;font-size:13px;color:inherit}figure img{display:block;margin:auto}input[type=checkbox]{accent-color:#007aff}.hljs-keyword,.hljs-selector-tag{color:#b33ca5}.hljs-string,.hljs-attr{color:#288342}.hljs-number,.hljs-literal{color:#8055bb}.hljs-comment{color:#787880}.diagram-error{background:#fff0f0;color:#a3192c;padding:12px;white-space:pre-wrap}.enlace-roto{color:#666;text-decoration:underline dotted}.katex-display{overflow-x:auto;overflow-y:hidden}@page{size:A4;margin:16mm}@media print{body{padding:0}pre,blockquote,tr,.mermaid-render{break-inside:avoid}a{color:inherit;text-decoration:none}}`
 
-export async function markdownHTML(source:string):Promise<{html:string;headings:Heading[];frontMatter?:string;tasks:TaskReference[]}> {
- const {body,frontMatter}=frontMatterOf(source)
+export async function markdownHTML(source:string):Promise<{html:string;headings:Heading[];frontMatter?:string;tasks:TaskReference[];figures:NumberedItem[];tables:NumberedItem[];warnings:string[]}> {
+ const {body,frontMatter}=frontMatterOf(source),numbering=numberingFor(frontMatter)
  // micromark omits an initial BOM in positions; make that origin explicit for raw offsets.
  const parsedBody=body.charCodeAt(0)===0xfeff?body.slice(1):body,bodyOffset=source.length-parsedBody.length
  const lineOffset=source.slice(0,bodyOffset).split('\n').length-1,tasks:TaskReference[]=[]
@@ -35,12 +36,14 @@ export async function markdownHTML(source:string):Promise<{html:string;headings:
  const headings:Heading[] = []
  const counts = new Map<string,number>()
  const used=new Set<string>(),aliases=new Map<string,string>(),ids=new Map<string,string>()
- const result = await unified().use(remarkParse).use(remarkGfm).use(remarkMath).use(remarkDetails).use(remarkRehype,{clobberPrefix:'',footnoteLabel:'Notas al pie',footnoteLabelProperties:{},footnoteBackLabel:(index:number,reuse:number)=>`Volver a la referencia ${index+1}${reuse>1?` (${reuse})`:''}`})
+ const result = await unified().use(remarkParse).use(remarkGfm).use(remarkMath).use(remarkDetails).use(remarkNumbering,numbering).use(remarkRehype,{clobberPrefix:'',footnoteLabel:'Notas al pie',footnoteLabelProperties:{},footnoteBackLabel:(index:number,reuse:number)=>`Volver a la referencia ${index+1}${reuse>1?` (${reuse})`:''}`})
  .use(rehypeSanitize)
  .use(() => (tree:any) => {
    const references:{node:any;key:string}[]=[],notes=new Map<string,{node:any;id:string;references:string[]}>()
    function text(node:any):string { return node.value ?? (node.children ?? []).map(text).join('') }
    function visit(node:any,footnotes=false) {
+    const numbered=numbering.targets.get(node.properties?.id)
+    if(numbered){node.tagName=numbered.tag;node.properties=numbered.properties}
     const properties=node.properties??{},inNotes=footnotes||'dataFootnotes' in properties
     if(node.tagName==='li'&&properties.className?.includes('task-list-item')){
      const point=node.position?.start,line=point?.line+lineOffset,offset=point?.offset+bodyOffset
@@ -91,7 +94,7 @@ export async function markdownHTML(source:string):Promise<{html:string;headings:
    links(tree)
  })
  .use(rehypeKatex,{strict:'warn',trust:false}).use(rehypeHighlight,{detect:false,ignoreMissing:true}).use(rehypeStringify).process(parsedBody)
- return {html:String(result),headings,tasks,...(frontMatter!==undefined?{frontMatter}:{})}
+ return {html:String(result),headings,tasks,figures:numbering.figures,tables:numbering.tables,warnings:numbering.warnings,...(frontMatter!==undefined?{frontMatter}:{})}
 }
 
 export function standaloneHTML(body:string,title:string):string {
