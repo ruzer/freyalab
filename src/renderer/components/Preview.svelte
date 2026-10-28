@@ -9,15 +9,17 @@
  import {currentHeading,type HeadingMetric} from '../lib/outline'
  import {parseTags} from '../../shared/front-matter'
  import type {TaskReference} from '../lib/markdown-tasks'
- let {text,id,dark=false,readonly=true,renderEnabled=true,ontask,onheadings,onerror,oncurrent,onfiltertag,candidates,ondiagnostics}:{candidates?:{source:string;blocks:DiagramBlock[];complete:boolean};ondiagnostics?:(value:DiagramDiagnostics)=>void;text:string;id:string;dark?:boolean;readonly?:boolean;renderEnabled?:boolean;ontask?:(id:string,snapshot:string,reference:TaskReference)=>boolean;onfiltertag?:(tag:string)=>void;oncurrent?:(id:string|undefined)=>void;onheadings:(headings:Heading[],source:string)=>void;onerror:(message:string)=>void}=$props()
+ let {text,id,path=null,dark=false,readonly=true,renderEnabled=true,ontask,onheadings,onerror,oncurrent,onfiltertag,candidates,ondiagnostics,onlocateimage}:{path?:string|null;onlocateimage?:(id:string,snapshot:string,source:string)=>void|Promise<void>;candidates?:{source:string;blocks:DiagramBlock[];complete:boolean};ondiagnostics?:(value:DiagramDiagnostics)=>void;text:string;id:string;dark?:boolean;readonly?:boolean;renderEnabled?:boolean;ontask?:(id:string,snapshot:string,reference:TaskReference)=>boolean;onfiltertag?:(tag:string)=>void;oncurrent?:(id:string|undefined)=>void;onheadings:(headings:Heading[],source:string)=>void;onerror:(message:string)=>void}=$props()
  let busy=$state(false),announcement=$state(''),container:HTMLElement,article:HTMLElement
  let renderForExport=$state(false)
+ // Cambiar el estado de guardado no vuelve a preparar contenido y recursos idénticos.
+ const renderText=$derived(text),renderId=$derived(id),renderPath=$derived(path),renderTheme=$derived(dark),shouldRender=$derived(renderEnabled||renderForExport)
  let frontMatter=$state<string|undefined>(undefined)
  const tags=$derived(parseTags(frontMatter))
  let diagramBlocks:{source:string;documentSource:string;dark:boolean;node:HTMLElement}[]=[]
  let renderDiagnostics=$state<{source:string;results:{source:string;error?:DiagramError}[]}|undefined>(),diagnosticGeneration=0
  $effect(()=>{
-  const source=text,theme=dark,enabled=renderEnabled||renderForExport,token=++diagnosticGeneration
+  const source=renderText,theme=renderTheme,enabled=shouldRender,token=++diagnosticGeneration
   const blocks=candidates?.source===source&&candidates.complete?candidates.blocks:undefined,rendered=renderDiagnostics
   const publish=(results:{source:string;error?:DiagramError}[],matches:(DiagramBlock|undefined)[])=>{
    if(token!==diagnosticGeneration||disposed)return
@@ -49,6 +51,9 @@
   expanded={source:block.source,documentSource:block.documentSource,index,type:diagramType(block.node)}
  }
  $effect(()=>{if(expanded)void tick().then(()=>{if(modal?.isConnected&&!modal.open)modal.showModal()})})
+ let imageTargets=new WeakMap<HTMLButtonElement,{id:string;snapshot:string;source:string}>()
+ export function focus(){container?.focus({preventScroll:true})}
+ function locateMissingImage(event:MouseEvent){const button=(event.target as Element).closest<HTMLButtonElement>('.image-locate'),target=button&&imageTargets.get(button);if(!button||!target)return;event.preventDefault();event.stopPropagation();if(!button.disabled)void onlocateimage?.(target.id,target.snapshot,target.source)}
  let taskTargets=new WeakMap<HTMLInputElement,{id:string;source:string;reference:TaskReference}>()
  let generation=0,completion:Promise<void>=Promise.resolve(),renderError='',missing=0,disposed=false
  let headingNodes:HTMLElement[]=[],metrics:HeadingMetric[]=[],metricFrame=0,viewportHeight=0,scrollHeight=0,lastCurrent:string|undefined|null=null
@@ -98,13 +103,21 @@
     }
    }
    for(const details of copy?.querySelectorAll<HTMLDetailsElement>('details[data-freya-open]')??[]){details.open=details.dataset.freyaOpen==='1';details.removeAttribute('data-freya-open')}
+   for(const button of copy?.querySelectorAll('.image-locate')??[])button.remove()
    for(const input of copy?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')??[])input.disabled=true
    for(const item of copy?.querySelectorAll('[data-line]')??[])item.removeAttribute('data-line')
    return standaloneHTML(copy?.innerHTML??'','Documento FreyaLab')
   }finally{renderForExport=false}
  }
  $effect(()=>{
-  const source=text,docId=id,theme=dark,locked=readonly,enabled=renderEnabled||renderForExport,token=++generation
+  const locked=readonly
+  for(const input of article?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')??[])if(taskTargets.has(input))input.disabled=locked||!ontask
+  for(const button of article?.querySelectorAll<HTMLButtonElement>('.image-locate')??[])if(imageTargets.has(button))button.disabled=locked
+ })
+ $effect(()=>{
+  // Guardar como cambia la base de imágenes aunque el texto siga igual.
+  void renderPath
+  const source=renderText,docId=renderId,theme=renderTheme,enabled=shouldRender,token=++generation
   if(!enabled){busy=false;return}
   busy=true;renderError='';missing=0
   let finish:()=>void=()=>{};completion=new Promise<void>(resolve=>finish=resolve)
@@ -125,7 +138,7 @@
     })
     // El article tiene un único dueño DOM: publica texto saneado sin serializar otra vez imágenes base64.
     const focusedTask=document.activeElement instanceof HTMLInputElement?taskTargets.get(document.activeElement):undefined
-    article.replaceChildren(staged.content);diagramBlocks=diagrams
+    article.replaceChildren(staged.content);diagramBlocks=diagrams;imageTargets=new WeakMap()
     const ids=new Set(result.headings.map(heading=>heading.id))
     headingNodes=Array.from(article.querySelectorAll<HTMLElement>('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]')).filter(heading=>ids.has(heading.id))
     onheadings(result.headings,source);scheduleMetrics()
@@ -136,14 +149,15 @@
      const label=item.cloneNode(true) as HTMLElement
      for(const nested of label.querySelectorAll('ul,ol'))nested.remove()
      input.setAttribute('aria-label',`Marcar tarea: ${label.textContent?.trim().replace(/\s+/g,' ')??''}`)
-     input.disabled=locked||!ontask;taskTargets.set(input,{id:docId,source,reference})
+     input.disabled=readonly||!ontask;taskTargets.set(input,{id:docId,source,reference})
      if(focusedTask?.id===docId&&focusedTask.reference.from===reference.from&&!input.disabled)input.focus({preventScroll:true})
     }
     const errors:string[]=[],diagnosticResults:{source:string;error?:DiagramError}[]=[]
     const loadImages=async()=>{for(const {image,src} of images){
      const data=await window.freya.image(docId,src).catch(()=>null)
      if(token!==generation)return
-     if(data){image.addEventListener('load',scheduleMetrics,{once:true});image.src=data}else{image.removeAttribute('src');image.alt=`Imagen no disponible: ${image.alt||src}`;missing++}
+     if(data){image.addEventListener('load',scheduleMetrics,{once:true});image.src=data}else{image.removeAttribute('src');const label=image.alt||src;image.alt=`Imagen no disponible: ${label}`;missing++
+      if(onlocateimage&&!/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(src)){const wrapper=document.createElement('span'),button=document.createElement('button');wrapper.className='missing-image';button.className='image-locate';button.textContent='Buscar…';button.setAttribute('aria-label',`Buscar imagen: ${label}`);button.disabled=readonly;const anchor=image.closest('a');if(anchor){anchor.after(wrapper);wrapper.append(button)}else{image.replaceWith(wrapper);wrapper.append(image,button)}imageTargets.set(button,{id:docId,snapshot:source,source:src})}}
      scheduleMetrics()
     }}
     const loadDiagrams=async()=>{for(const [index,diagram] of diagrams.entries()){
@@ -177,8 +191,8 @@
   const observer=new ResizeObserver(scheduleMetrics);observer.observe(container);observer.observe(article)
   container.addEventListener('scroll',publishCurrent,{passive:true});container.addEventListener('toggle',scheduleMetrics,true)
   document.fonts.addEventListener('loadingdone',scheduleMetrics);void document.fonts.ready.then(scheduleMetrics)
-  container.addEventListener('click',linkClick);article.addEventListener('click',expandDiagram);article.addEventListener('change',taskChanged);article.addEventListener('keydown',taskKeydown)
-  return()=>{observer.disconnect();container.removeEventListener('scroll',publishCurrent);container.removeEventListener('toggle',scheduleMetrics,true);document.fonts.removeEventListener('loadingdone',scheduleMetrics);container.removeEventListener('click',linkClick);article.removeEventListener('click',expandDiagram);article.removeEventListener('change',taskChanged);article.removeEventListener('keydown',taskKeydown)}
+  container.addEventListener('click',linkClick);article.addEventListener('click',expandDiagram);article.addEventListener('click',locateMissingImage);article.addEventListener('change',taskChanged);article.addEventListener('keydown',taskKeydown)
+  return()=>{observer.disconnect();container.removeEventListener('scroll',publishCurrent);container.removeEventListener('toggle',scheduleMetrics,true);document.fonts.removeEventListener('loadingdone',scheduleMetrics);container.removeEventListener('click',linkClick);article.removeEventListener('click',expandDiagram);article.removeEventListener('click',locateMissingImage);article.removeEventListener('change',taskChanged);article.removeEventListener('keydown',taskKeydown)}
  })
  function taskChanged(event:Event){
   const input=event.target;if(!(input instanceof HTMLInputElement))return
@@ -189,7 +203,7 @@
  function taskKeydown(event:KeyboardEvent){if(event.key==='Enter'&&event.target instanceof HTMLInputElement&&taskTargets.has(event.target)){event.preventDefault();if(!event.target.disabled)event.target.click()}}
  function linkClick(event:MouseEvent){const anchor=(event.target as Element).closest('a,.enlace-roto');if(!anchor)return;event.preventDefault();if(anchor.classList.contains('enlace-roto')){onerror(`No encontré la sección “${anchor.getAttribute('data-seccion-faltante')??''}” en este documento`);return}const href=anchor.getAttribute('href')??'';if(href.startsWith('#')){scrollToHeading(href.slice(1));return}window.freya.openLink(href).catch(error=>onerror(String(error)))}
 </script>
-<section class="preview" bind:this={container} aria-label="Vista previa del documento" role="document">
+<section class="preview" bind:this={container} aria-label="Vista previa del documento" role="document" tabindex="-1">
  {#if busy}<span class="render-progress">Actualizando vista previa…</span>{/if}
  <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</span>
  {#if frontMatter!==undefined}<div class="document-properties-row"><details class="document-properties"><summary>Propiedades del documento</summary><pre>{frontMatter}</pre></details>{#if tags.length}<div class="document-tags">{#each tags as tag}<button aria-label={`Filtrar archivos por la etiqueta ${tag}`} title={tag} disabled={!onfiltertag} onclick={()=>onfiltertag?.(tag)}>{tag}</button>{/each}</div>{/if}</div>{/if}
@@ -203,6 +217,8 @@
  </dialog>
 {/if}
 <style>
+ :global(.markdown-body .missing-image){display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px;border:1px dashed var(--border);border-radius:6px}
+ :global(.markdown-body .image-locate){font-size:12px}
  .diagram-modal[open]{display:flex;flex-direction:column;width:calc(100vw - 32px);height:calc(100dvh - 32px);max-width:none;max-height:none;padding:0;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text)}
  .diagram-modal::backdrop{background:#0008}
  .diagram-modal header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);gap:12px}

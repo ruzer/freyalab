@@ -87,6 +87,7 @@
  function shortcut(action:MarkdownAction){return()=>{if(kind!=='markdown'||!view)return false;if(!view.composing&&!view.compositionStarted)format(action);return true}}
  export function undoEdit(){if(view) undo(view)}
  export function redoEdit(){if(view) redo(view)}
+ export function focus(){view?.focus()}
  export function search(){if(view) openSearchPanel(view)}
  function paste(event:ClipboardEvent,view:EditorView){
   const plain=plainPaste;plainPaste=false
