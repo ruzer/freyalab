@@ -163,7 +163,7 @@ it('un recuperado sin ruta no usa Documentos como autorización para copiar acti
  const original=await docs.create('markdown');await docs.update(original.id,'![x](a.assets/x.png)');await mkdir(join(state.folder,'a.assets'));await writeFile(join(state.folder,'a.assets','x.png'),PNG)
  await docs.shutdown();const recovered=await docs.recover(original.id);expect(recovered.path).toBeNull()
  const saved=await docs.save(recovered.id,true),assets=(saved as typeof saved&{assets:{copied:number;warnings:string[]}})!.assets
- expect(assets.copied).toBe(0);expect(assets.warnings.join(' ')).toMatch(/Guarda el documento/i);expect(await readdir(dirname(state.target))).toEqual(['b.md']);expect(await readFile(join(state.folder,'a.assets','x.png'))).toEqual(PNG)
+ expect(assets.copied).toBe(0);expect(assets.warnings.join(' ')).toMatch(/no tenía una ubicación/i);expect(assets.warnings.join(' ')).not.toMatch(/Guarda el documento/i);expect(await readdir(dirname(state.target))).toEqual(['b.md']);expect(await readFile(join(state.folder,'a.assets','x.png'))).toEqual(PNG)
 })
 
 it('el mismo directorio assets no necesita copias y un guardado ordinario posterior conserva historial',async()=>{

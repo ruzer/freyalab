@@ -145,7 +145,7 @@ export async function saveMarkdownCopy(source:string,previousPath:string|null,de
  const parent=await realpath(dirname(destinationPath)),targetRoot=assetDirectory(join(parent,basename(destinationPath)))
  if(previousPath&&resolve(assetDirectory(previousPath))===resolve(targetRoot)){await atomicWrite(destinationPath,source);return{text:source,assets}}
  if(!previousPath){
-  if(references.some(reference=>!reference.url.startsWith('data:')))assets.warnings.push('Guarda el documento para poder insertar imágenes; no se copiaron activos desde la recuperación sin ruta.')
+  if(references.some(reference=>!reference.url.startsWith('data:')))assets.warnings.push('No se copiaron imágenes porque el documento no tenía una ubicación propia; sus referencias se conservaron.')
   await atomicWrite(destinationPath,source);return{text:source,assets}
  }
  const previousRoot=assetDirectory(previousPath),documentRoot=dirname(previousPath)
