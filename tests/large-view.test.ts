@@ -122,3 +122,11 @@ for(const encoding of ['utf8','utf16le'] as const)it(`${encoding}: paridad de 33
   expect(await readFile(path)).toEqual(data)
  }finally{await views.stop();await small.close('a');await rm(folder,{recursive:true,force:true})}
 })
+
+it('cancelar o cerrar un documento no cancela la búsqueda de otro; reinterpretar elimina la vista antigua',async()=>{
+ const folder=await mkdtemp(join(tmpdir(),'freya-view-lifecycle-')),path=join(folder,'data.csv'),text=table(4000),engine=new TableEngine(()=>{},{largeBytes:1,viewWorkerPath:workerPath,viewWorkers:2,viewBatch:10,viewDelayMs:1})
+ try{
+  await writeFile(path,text);await engine.open('a',path);await engine.open('b',path);const a=request('grupo'),b=request('grupo b');await engine.viewStart('a',a);await engine.viewStart('b',b);await scanned(engine,'a');const start=performance.now();await engine.close('a');expect(performance.now()-start).toBeLessThan(1000);expect(await finished(engine,'b')).toMatchObject({status:'complete',matched:2000});expect((await engine.page('b',{viewId:b.requestId,offset:0,limit:200,requestId:1})).rows[0].id).toBe('2')
+  const next=request('grupo');await engine.viewStart('b',next);await scanned(engine,'b');const reinterpreted=await engine.open('b',path,{header:false});expect(reinterpreted.rowCount).toBe(4001);expect(await engine.viewState('b')).toBeNull();await expect(engine.page('b',{viewId:next.requestId,offset:0,limit:200,requestId:2})).rejects.toThrow('más reciente');expect(await readFile(path,'utf8')).toBe(text)
+ }finally{await engine.close('a');await engine.close('b');await rm(folder,{recursive:true,force:true})}
+})
