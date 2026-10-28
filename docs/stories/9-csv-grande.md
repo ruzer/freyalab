@@ -6,8 +6,8 @@ Principio del RFC (§0.1) que gobierna todo: **el tamaño del archivo elige la e
 
 | ID | Contenido | Depende de | Tamaño | Estado |
 |---|---|---|---|---|
-| **L4a** | Buscar en el archivo completo: recorrido en flujo, lista de coincidencias paginada, progreso, cancelación y resultados parciales honestos | L2 (en `main`) | M a L | **Lista** (abajo) |
-| **L5a** | Filtrar con las condiciones de siempre (hasta 20, todas/cualquiera, regex RE2) sobre el archivo completo; «Extraer coincidencias» desde la vista | L4a | M | **Lista** (abajo), va después de L4a en el mismo bloque |
+| **L4a** | Buscar en el archivo completo: recorrido en flujo, lista de coincidencias paginada, progreso, cancelación y resultados parciales honestos | L2 (en `main`) | M a L | **Lista** (abajo); decisiones Q1 a Q6 aprobadas el 2026-10-28 |
+| **L5a** | Filtrar con las condiciones de siempre (hasta 20, todas/cualquiera, regex RE2) sobre el archivo completo; «Extraer coincidencias» desde la vista | L4a | M | **Lista** (abajo), va después de L4a en el mismo bloque; decisiones aprobadas |
 | L4b | Reemplazar en un archivo grande: vista previa de recuento y **archivo nuevo**, nunca el original | L4a; decisión sobre versiones (L6) | M a L | Esbozada |
 | L5b | Estadísticas de columna en un recorrido (vacíos, numéricos, mínimo/máximo/suma, únicos con tope declarado) | L5a | M a L | Esbozada |
 | L5c | Ordenar: vista ordenada por llaves en memoria hasta un tope; más allá, ordenación externa | L5a | L | Esbozada |
@@ -79,9 +79,9 @@ Mismas coincidencias en todas las estrategias comparables. Lo que **no** está d
 7. **Honestidad sobre lo que no cambia.** Reemplazar, orden, estadísticas y edición siguen deshabilitados y lo dicen. «Analizar», SQL, Gráficos y «Extraer…» siguen trabajando sobre el **documento completo** y, con una vista activa, lo indican explícitamente («usa el documento completo, no la vista»); ninguno toma la vista en silencio.
 8. **Accesibilidad.** El estado va en una región `role="status"` y se anuncia solo al empezar, terminar, cancelar, llegar al tope o invalidarse (**no** en cada actualización de progreso, que se dibuja como máximo cuatro veces por segundo). «Cancelar» alcanzable por teclado; al cancelar, el foco vuelve al campo. Contraste correcto en claro y oscuro.
 
-## 3. Decisiones propuestas (a confirmar por el propietario antes de implementar)
+## 3. Decisiones del propietario (Q1 a Q6 aprobadas el 2026-10-28, tal como se recomiendan)
 
-| ID | Decisión | Recomendación |
+| ID | Decisión | Resolución (aprobada) |
 |---|---|---|
 | **Q1** | ¿Búsqueda explícita (Enter) o en vivo? | **Explícita.** Cada consulta recorre el archivo (3–30 s por GiB). |
 | **Q2** | ¿Qué motor decide la coincidencia en lectura? | **Recorrido propio rápido** (escáner de L2 + `splitFields`) para buscar y filtrar, **si** una prueba diferencial demuestra paridad exacta con el modo editable y con `csv-parse` (S0 y B3). **Extraer sigue estricto** porque escribe un archivo. Medido: el recorrido propio es **4 a 5 veces más rápido** que el estricto (116–138 frente a 29 MiB/s). Si la paridad no se demuestra, se usa el motor estricto, se declara el tiempo (≈ 30 s/GiB) y se vuelve a pedir decisión: no se degrada la paridad en silencio. |
@@ -89,6 +89,13 @@ Mismas coincidencias en todas las estrategias comparables. Lo que **no** está d
 | **Q4** | Orden, estadísticas, reemplazar | **Fuera** de L4a y L5a (L5c, L5b, L4b). |
 | **Q5** | «Ir a la fila» con vista activa | **Quita la vista y avisa** (diseño §2.5). |
 | **Q6** | «Extraer coincidencias» desde una búsqueda | Hace falta que el contrato de operaciones (I0) acepte un campo `search` además de `conditions`: la búsqueda global no se puede expresar con 20 condiciones en una tabla de 230 columnas. **Sí, en L5a**, sin cambiar el comportamiento de lo existente. |
+
+Notas sobre lo aprobado:
+
+- **Q2 es condicional por diseño:** el recorrido propio rápido solo se adopta si la paridad se demuestra (B3, F4 y B25). Si no se demuestra, Codex usa el motor estricto, declara el tiempo y **se detiene a preguntar**; no degrada la paridad en silencio.
+- **Q3:** 10.000.000 es el valor inicial; Codex puede proponer otro con medición, sin superar 128 MiB para la lista de coincidencias, y lo declara en la evidencia.
+- **Q6:** extender I0 con `search` está aprobado **solo** para «Extraer coincidencias» (L5a); cualquier otro cambio del contrato I0 exige nueva aprobación.
+- **Sin aprobar todavía:** el orden de entrega frente a TXT y PRJ (README).
 
 ## 4. L4a · Buscar en un archivo grande
 
