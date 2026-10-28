@@ -3,8 +3,9 @@
  import {explainDiagramError} from '../lib/diagram-errors'
  import {markdownHTML,diagramSVG,standaloneHTML,decodeFragment,type Heading} from '../lib/render'
  import type {TaskReference} from '../lib/markdown-tasks'
- let {text,id,dark=false,readonly=true,ontask,onheadings,onerror}:{text:string;id:string;dark?:boolean;readonly?:boolean;ontask?:(id:string,snapshot:string,reference:TaskReference)=>boolean;onheadings:(headings:Heading[])=>void;onerror:(message:string)=>void}=$props()
+ let {text,id,dark=false,readonly=true,renderEnabled=true,ontask,onheadings,onerror}:{text:string;id:string;dark?:boolean;readonly?:boolean;renderEnabled?:boolean;ontask?:(id:string,snapshot:string,reference:TaskReference)=>boolean;onheadings:(headings:Heading[])=>void;onerror:(message:string)=>void}=$props()
  let busy=$state(false),announcement=$state(''),container:HTMLElement,article:HTMLElement
+ let renderForExport=$state(false)
  let frontMatter=$state<string|undefined>(undefined)
  let diagramBlocks:{source:string;dark:boolean;node:HTMLElement}[]=[]
  let taskTargets=new WeakMap<HTMLInputElement,{id:string;source:string;reference:TaskReference}>()
@@ -20,27 +21,31 @@
  export function scrollRatio(ratio:number){if(container) container.scrollTop=ratio*Math.max(0,container.scrollHeight-container.clientHeight)}
  export function missingImages(){return missing}
  export async function exportHTML(){
-  await tick();while(busy&&!disposed)await completion
-  if(disposed)throw new Error('El documento se cerró antes de terminar la vista previa.')
-  if(renderError)throw new Error(renderError)
-  const copy=article?.cloneNode(true) as HTMLElement|undefined
-  if(copy&&diagramBlocks.length){
-   const cloned=copy.querySelectorAll('*'),targets=new Map(Array.from(article.querySelectorAll('*'),(node,index)=>[node,cloned[index]]))
-   const diagrams=diagramBlocks.filter(block=>block.node.classList.contains('mermaid-render')).map(block=>({source:block.source,target:targets.get(block.node)}))
-   for(const {source,target} of diagrams){
-    if(!target)throw new Error('No pude preparar los diagramas. Espera a la vista previa e inténtalo de nuevo.')
-    const svg=await diagramSVG(source,false)
-    if(disposed)throw new Error('El documento se cerró antes de terminar la vista previa.')
-    const block=document.createElement('div');block.className='mermaid-render';block.innerHTML=svg;target.replaceWith(block)
+  renderForExport=true
+  try{
+   await tick();while(busy&&!disposed)await completion
+   if(disposed)throw new Error('El documento se cerró antes de terminar la vista previa.')
+   if(renderError)throw new Error(renderError)
+   const copy=article?.cloneNode(true) as HTMLElement|undefined
+   if(copy&&diagramBlocks.length){
+    const cloned=copy.querySelectorAll('*'),targets=new Map(Array.from(article.querySelectorAll('*'),(node,index)=>[node,cloned[index]]))
+    const diagrams=diagramBlocks.filter(block=>block.node.classList.contains('mermaid-render')).map(block=>({source:block.source,target:targets.get(block.node)}))
+    for(const {source,target} of diagrams){
+     if(!target)throw new Error('No pude preparar los diagramas. Espera a la vista previa e inténtalo de nuevo.')
+     const svg=await diagramSVG(source,false)
+     if(disposed)throw new Error('El documento se cerró antes de terminar la vista previa.')
+     const block=document.createElement('div');block.className='mermaid-render';block.innerHTML=svg;target.replaceWith(block)
+    }
    }
-  }
-  for(const details of copy?.querySelectorAll<HTMLDetailsElement>('details[data-freya-open]')??[]){details.open=details.dataset.freyaOpen==='1';details.removeAttribute('data-freya-open')}
-  for(const input of copy?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')??[])input.disabled=true
-  for(const item of copy?.querySelectorAll('[data-line]')??[])item.removeAttribute('data-line')
-  return standaloneHTML(copy?.innerHTML??'','Documento FreyaLab')
+   for(const details of copy?.querySelectorAll<HTMLDetailsElement>('details[data-freya-open]')??[]){details.open=details.dataset.freyaOpen==='1';details.removeAttribute('data-freya-open')}
+   for(const input of copy?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')??[])input.disabled=true
+   for(const item of copy?.querySelectorAll('[data-line]')??[])item.removeAttribute('data-line')
+   return standaloneHTML(copy?.innerHTML??'','Documento FreyaLab')
+  }finally{renderForExport=false}
  }
  $effect(()=>{
-  const source=text,docId=id,theme=dark,locked=readonly,token=++generation
+  const source=text,docId=id,theme=dark,locked=readonly,enabled=renderEnabled||renderForExport,token=++generation
+  if(!enabled){busy=false;return}
   busy=true;renderError='';missing=0
   let finish:()=>void=()=>{};completion=new Promise<void>(resolve=>finish=resolve)
   const timer=setTimeout(async()=>{
