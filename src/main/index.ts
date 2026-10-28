@@ -92,7 +92,7 @@ app.whenReady().then(async()=>{
   try{assertSender(event);if(!event.sender.isDestroyed())event.sender.pasteAndMatchStyle()}
   catch{if(window&&!window.isDestroyed())window.webContents.send('freya:event',{type:'error',message:'No pude pegar sin formato.'})}
  })
- window=new BrowserWindow({icon:appIcon,width:1440,height:900,minWidth:900,minHeight:600,title:'FreyaLab',backgroundColor:'#18181b',titleBarStyle:process.platform==='darwin'?'hiddenInset':'default',webPreferences:{preload:join(here,'../preload/index.cjs'),sandbox:true,contextIsolation:true,nodeIntegration:false}})
+ window=new BrowserWindow({icon:appIcon,width:1440,height:900,minWidth:720,minHeight:600,title:'FreyaLab',backgroundColor:'#18181b',titleBarStyle:process.platform==='darwin'?'hiddenInset':'default',webPreferences:{preload:join(here,'../preload/index.cjs'),sandbox:true,contextIsolation:true,nodeIntegration:false}})
  window.webContents.setWindowOpenHandler(()=>({action:'deny'}))
  window.webContents.on('will-navigate',(event)=>event.preventDefault())
  window.webContents.session.setPermissionRequestHandler((_wc,_permission,callback)=>callback(false))
