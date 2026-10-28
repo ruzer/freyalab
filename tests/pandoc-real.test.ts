@@ -55,7 +55,8 @@ describe.skipIf(!pandoc.available)('AC-00 · P4 con Pandoc real',()=>{
  it('hallazgo 1: el YAML no incorpora una bibliografía externa, ni con encabezados largos o YAML intermedio',async()=>{
   const secret=join(folder,'externa.bib')
   await writeFile(secret,'@book{canary, author={Autor Canario}, title={SECRETOBIBLIOGRAFICO}, year={2026}}')
-  const yaml=`bibliography: ${JSON.stringify(secret)}\nnocite: '@*'`
+  // Pandoc relee el metadato como Markdown: los separadores Windows se interpretarían como TeX.
+  const yaml=`bibliography: ${JSON.stringify(secret.replaceAll('\\','/'))}\nnocite: '@*'`
   const control=zipFiles(await unsafe(`---\n${yaml}\n---\n# Informe`,['--sandbox','--citeproc']))
   expect(control.get('word/document.xml')?.toString()).toContain('SECRETOBIBLIOGRAFICO')
   for(const source of [`---\n${yaml}\n---\n# Informe`,`---\n${Array.from({length:110},(_,i)=>`key${i}: valor`).join('\n')}\n${yaml}\n---\n# Informe`,`# Informe\n\n---\n${yaml}\n---\n\nTexto`]){
