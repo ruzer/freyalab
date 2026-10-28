@@ -7,6 +7,7 @@ interface Request {productWorker?:boolean;path:string;query:LargeViewQuery;worke
 const pause=(ms:number)=>new Promise(resolve=>setTimeout(resolve,ms))
 export async function task(request:Request){
  const engine=new TableEngine(()=>{},{largeBytes:1,viewWorkers:request.workers,viewPrefilter:request.prefilter,viewPartial:request.partial,viewWorkerPath:new URL(request.productWorker?'./product-main/large-search-worker.js':'./worker.mjs',import.meta.url)}),id='measured',requestId=crypto.randomUUID(),started=performance.now();await engine.open(id,request.path,{encoding:'utf8',delimiter:','});const indexMs=performance.now()-started,index=(engine as unknown as {states:Map<string,{large:{index:LargeIndex}}>}).states.get(id)!.large.index,views=(engine as unknown as {diskViews:{allocated:()=>number}}).diskViews
+ if(request.kind==='cancel')assert.ok(index.size>=1024**3,'Hostile regex fixture must be at least 1GiB')
  let cancellation:ReturnType<typeof setTimeout>|undefined,cancelled:Promise<LargeViewState|null>|undefined,cancelMs:number|undefined
  try{
   const began=performance.now();await engine.viewStart(id,{...request.query,requestId,revision:0})
