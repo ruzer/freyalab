@@ -42,6 +42,22 @@
     "a0Prefix": {
       "failed": 1,
       "passed": 5
+    },
+    "windowsCRLF": {
+      "head": "618f4d11a57e0eaab60a23fe99c9dfbb1dedae4d",
+      "run": 40763132745,
+      "job": 123080063208,
+      "failed": 1,
+      "passed": 1139,
+      "skipped": 4,
+      "localRed": {
+        "failed": 1,
+        "passed": 6
+      },
+      "localGreen": {
+        "passed": 7
+      },
+      "scope": "Solo se normaliza CRLF a LF al comparar el manifest fijo; contenido y producto intactos"
     }
   },
   "focusedUnit": {
@@ -161,5 +177,14 @@
     "Lector/IME/táctil físicos",
     "Textos propios del sistema en diálogos nativos",
     "Migración completa I18N-02/03/04"
-  ]
+  ],
+  "interruptedClosure": {
+    "head": "618f4d11a57e0eaab60a23fe99c9dfbb1dedae4d",
+    "reason": "CI Windows roja en comparación de hash de prueba",
+    "passed": 36,
+    "interrupted": 1,
+    "didNotRun": 350,
+    "exitCode": 130,
+    "durationMs": 46210
+  }
 }
