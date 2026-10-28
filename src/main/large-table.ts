@@ -24,7 +24,7 @@ export class OpenCancelled extends Error {}
 export interface LargeIndex {
  path: string; size: number; encoding: Encoding
  unit: 1 | 2 // bytes por carácter de control: UTF-16 usa 2
- terminator: number // 0x0A, o 0x0D si el archivo no tiene ningún salto de línea LF en sus primeros 64 KiB
+ terminator: number // LF (también CRLF) o CR, según el primer salto fuera de comillas
  bomLength: number; every: number; records: number
  offsets: Float64Array // posición del registro 0, `every`, 2·`every`…
 }
@@ -50,10 +50,17 @@ function scan(buffer: Buffer, length: number, base: number, state: ScanState, un
  state.inQuotes = inQuotes
 }
 
-async function terminatorOf(handle: Awaited<ReturnType<typeof open>>, size: number, unit: 1 | 2, from: number) {
- const head = Buffer.alloc(Math.min(Math.max(size - from, 0), 65536)); await handle.read(head, 0, head.length, from)
- const hasLf = unit === 2 ? head.includes(Buffer.from([0x0a, 0x00])) : head.includes(0x0a)
- return hasLf ? 0x0a : 0x0d
+async function terminatorOf(handle: Awaited<ReturnType<typeof open>>, size: number, unit: 1 | 2, from: number, maxRecord: number) {
+ const head = Buffer.alloc(Math.min(Math.max(size - from, 0), maxRecord + unit)); await handle.read(head, 0, head.length, from)
+ let inQuotes = false
+ for(let i=0;i<head.length;i+=unit){
+  if(unit===2&&head[i+1]!==0)continue
+  const code=head[i]
+  if(code===0x22)inQuotes=!inQuotes
+  else if(!inQuotes&&code===0x0a)return 0x0a
+  else if(!inQuotes&&code===0x0d)return head[i+unit]===0x0a&&(unit===1||head[i+unit+1]===0)?0x0a:0x0d
+ }
+ return 0x0a
 }
 
 export interface IndexOptions {
@@ -66,7 +73,7 @@ export async function buildIndex(path: string, options: IndexOptions): Promise<L
  const {encoding, bomLength, maxRecord, every = 1024, chunk = LARGE_CHUNK} = options, unit: 1 | 2 = encoding === 'utf16le' ? 2 : 1
  const handle = await open(path, 'r')
  try {
-  const size = (await handle.stat()).size, terminator = await terminatorOf(handle, size, unit, bomLength), buffer = Buffer.allocUnsafe(chunk), offsets: number[] = []
+  const size = (await handle.stat()).size, terminator = await terminatorOf(handle, size, unit, bomLength, maxRecord), buffer = Buffer.allocUnsafe(chunk), offsets: number[] = []
   if (unit === 2 && (size - bomLength) % 2) throw new InvalidEncodingError(`El archivo UTF-16 tiene un número impar de bytes (${size.toLocaleString('es')}): la codificación está incompleta y no se puede indexar.`)
   const state: ScanState = {inQuotes: false}
   let position = bomLength, start = bomLength, records = 0
