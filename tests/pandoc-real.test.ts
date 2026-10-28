@@ -42,8 +42,10 @@ describe.skipIf(!pandoc.available)('AC-00 · P4 con Pandoc real',()=>{
  })
  async function unsafe(source:string,args:string[]=[]):Promise<Buffer> {
   const child=execFile(executable,['-f','markdown','-t','docx','-o','-',...args],{encoding:'buffer',timeout:10_000,maxBuffer:64*1024*1024})
+  let stderr=Buffer.alloc(0)
+  child.stderr?.on('data',chunk=>{if(stderr.length<8192)stderr=Buffer.concat([stderr,chunk.subarray(0,8192-stderr.length)])})
   child.stdin?.end(source)
-  return new Promise((resolve,reject)=>{const parts:Buffer[]=[];child.stdout?.on('data',chunk=>parts.push(chunk));child.on('error',reject);child.on('close',code=>code===0?resolve(Buffer.concat(parts)):reject(new Error(`Pandoc de control terminó con ${code}`)))})
+  return new Promise((resolve,reject)=>{const parts:Buffer[]=[];child.stdout?.on('data',chunk=>parts.push(chunk));child.on('error',reject);child.on('close',code=>code===0?resolve(Buffer.concat(parts)):reject(new Error(`Pandoc de control sintético terminó con ${code}: ${stderr.toString('utf8')}`)))})
  }
  it('Probar Pandoc produce un DOCX y conserva el texto UTF-8',async()=>{
   expect(await testPandoc(executable)).toMatchObject({ok:true,bytes:expect.any(Number)})
