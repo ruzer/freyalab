@@ -95,7 +95,7 @@ Notas sobre lo aprobado:
 - **Q2 es condicional por diseño:** el recorrido propio rápido solo se adopta si la paridad se demuestra (B3, F4 y B25). Si no se demuestra, Codex usa el motor estricto, declara el tiempo y **se detiene a preguntar**; no degrada la paridad en silencio.
 - **Q3:** 10.000.000 es el valor inicial; Codex puede proponer otro con medición, sin superar 128 MiB para la lista de coincidencias, y lo declara en la evidencia.
 - **Q6:** extender I0 con `search` está aprobado **solo** para «Extraer coincidencias» (L5a); cualquier otro cambio del contrato I0 exige nueva aprobación.
-- **Sin aprobar todavía:** el orden de entrega frente a TXT y PRJ (README).
+- **Orden de entrega:** aprobado el 2026-10-28, L4a y L5a van delante de TXT y PRJ (README).
 
 ## 4. L4a · Buscar en un archivo grande
 
