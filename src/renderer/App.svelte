@@ -11,6 +11,7 @@
  import type {TextSelection} from './lib/text-stats'
  import {lineFormatState} from './lib/markdown-commands'
  import Preview from './components/Preview.svelte'
+ import Outline from './components/Outline.svelte'
  import Diagram from './components/Diagram.svelte'
  import CsvTable from './components/CsvTable.svelte'
  import Tree from './components/Tree.svelte'
@@ -36,6 +37,7 @@
  const indexVisible=$derived(sidebar&&effectiveSidebarTab==='outline'&&active?.kind==='markdown')
  const outlineHeadings=$derived(headingDocument===activeId?headings:[])
  let newMenu=$state(false),exportMenu=$state(false),about=$state(false),exportScope=$state<'all'|'filtered'|'selection'>('all')
+ let currentHeading=$state<string|undefined>()
  let markdownState=$state(lineFormatState('',0)),textSelection=$state<TextSelection|null>(null)
  let editor=$state<Editor>(),preview=$state<Preview>(),diagram=$state<Diagram>(),csv=$state<CsvTable>()
  const pending=new Map<string,Promise<unknown>>()
@@ -59,6 +61,7 @@
   void selectSidebarTab(active?.kind==='markdown'?tab:'files',true)
  }
  function toggleIndex(){if(indexVisible)void selectSidebarTab('files');else{sidebar=true;remember('freya-sidebar','true');void selectSidebarTab('outline')}}
+ function receiveCurrent(docId:string){return(value:string|undefined)=>{if(activeId===docId)currentHeading=value}}
  function receiveHeadings(docId:string){return(value:Heading[])=>{if(activeId===docId){headings=value;headingDocument=docId}}}
  $effect(()=>{
   const tab=effectiveSidebarTab,shown=sidebar,target=tab==='files'?filesScroll:indexScroll
@@ -142,9 +145,7 @@
    <div id="freya-files-panel" class="sidebar-tab-panel" role="tabpanel" aria-label="Archivos" hidden={effectiveSidebarTab!=='files'}><div class="sidebar-label">EXPLORADOR <button class="icon-button" title="Abrir carpeta" onclick={openFolder}><Icon name="plus" size={14}/></button></div><div class="sidebar-search"><Icon name="search" size={14}/><input aria-label="Buscar archivo" placeholder="Buscar archivo…" bind:value={filterFiles}/></div>{#if folderPath}<div class="folder-root" title={folderPath}><Icon name="chevron-down" size={12}/> <span class="folder-icon"><Icon name="folder-open" size={14}/></span> {folderPath.split(/[\\/]/).at(-1)}</div><div class="tree-scroll" bind:this={filesScroll} onscroll={event=>{if(event.currentTarget.clientHeight)sidebarScroll.files=event.currentTarget.scrollTop}}>{#if filterFiles.trim()}<div class="file-search-status" role="status">{fileSearchBusy?'Buscando en la carpeta…':fileSearchLimited?'Resultados limitados; acota la búsqueda.':`${fileMatches.length} archivos encontrados`}</div>{#each fileMatches as match (match.path)}{@const type=fileKind(match.name)}<button class="file-search-result" title={match.path} onclick={()=>openPath(match.path)}><span><span class="kind-{type.kind}"><Icon name={type.icon} size={14}/></span> {match.name}</span><small>{match.path.slice(folderPath.length+1)}</small></button>{/each}{:else}<Tree {entries} open={openPath} onerror={error}/>{/if}</div>{:else}<div class="sidebar-empty"><p>Explora tus archivos<br/>en un solo lugar.</p><button onclick={openFolder}>Abrir carpeta</button></div>{/if}</div>
    <div id="freya-outline-panel" class="sidebar-tab-panel" role="tabpanel" aria-label="Índice del documento" hidden={effectiveSidebarTab!=='outline'}>
     <div class="sidebar-label">EN ESTE DOCUMENTO</div>
-    <div class="sidebar-index-scroll" bind:this={indexScroll} onscroll={event=>{if(event.currentTarget.clientHeight)sidebarScroll.outline=event.currentTarget.scrollTop}}>
-     {#if outlineHeadings.length}{#each outlineHeadings as heading}<button class="sidebar-heading" style:padding-left={`${12+(heading.level-1)*10}px`} onclick={()=>preview?.scrollToHeading(heading.id)}>{heading.text}</button>{/each}{:else}<p class="sidebar-empty">Este documento no tiene títulos</p>{/if}
-    </div>
+    <Outline headings={outlineHeadings} current={currentHeading} shown={indexVisible} bind:container={indexScroll} onscroll={top=>sidebarScroll.outline=top} onselect={heading=>preview?.scrollToHeading(heading.id)}/>
    </div>
    <div class="sidebar-bottom"><img class="brand-mark small" src={appIcon} alt=""/><button class="text-button" onclick={()=>about=true}>FreyaLab <span class="muted">alfa</span></button><span class="spacer"></span><select aria-label="Tema" value={theme} onchange={e=>themeChange(e.currentTarget.value)}><option value="system">Sistema</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></div>
   </aside><button class="resize-handle sidebar-handle" aria-valuenow={sidebarWidth} aria-valuemin="180" aria-valuemax="420" role="slider" aria-label="Ancho del explorador" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSidebar} onkeydown={e=>{if(e.key==='ArrowRight')sidebarWidth=Math.min(420,sidebarWidth+10);if(e.key==='ArrowLeft')sidebarWidth=Math.max(180,sidebarWidth-10);if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();remember('freya-sidebar-width',String(sidebarWidth))}}}></button>{/if}
@@ -159,7 +160,7 @@
       {#if active.warning}<div class="warning-banner">{active.warning}</div>{/if}
       <div class="document-panes">
        {#if active.kind!=='markdown'||mode!=='preview'}<div class:hidden={mode==='preview'&&active.kind!=='text'} class="editor-pane" style:width={mode==='split'&&active.kind!=='text'?`${split}%`:'100%'}><div class="pane-caption">{active.kind==='mermaid'?'DEFINICIÓN MERMAID':active.kind==='text'?'TEXTO':'MARKDOWN'}{#if active.readonly}<span>Solo lectura</span>{/if}</div><Editor bind:this={editor} session={active.kind==='markdown'?textSession(active):undefined} ontransactions={active.kind==='markdown'?receiveText(active.id):undefined} text={active.text??''} readonly={active.readonly} kind={active.kind} onformatstate={state=>markdownState=state} onselection={selection=>textSelection=selection} onchange={text=>updateText(active!.id,text)} onscroll={ratio=>preview?.scrollRatio(ratio)}/></div>{/if}
-       {#if active.kind!=='text'}<button class:hidden={mode!=='split'} class="resize-handle split-handle" aria-valuenow={split} aria-valuemin="20" aria-valuemax="80" role="slider" aria-label="Ancho del editor" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSplit} onkeydown={e=>{if(e.key==='ArrowRight')split=Math.min(80,split+2);if(e.key==='ArrowLeft')split=Math.max(20,split-2)}}></button><div class:hidden={mode==='edit'} class="preview-pane"><div class="pane-caption">VISTA PREVIA <span>{active.kind==='mermaid'?'SVG':'Renderizado local'}</span></div>{#if active.kind==='mermaid'}<Diagram bind:this={diagram} text={active.text??''} {dark} onerror={error}/>{:else}<Preview bind:this={preview} text={active.text??''} id={active.id} renderEnabled={mode!=='edit'||indexVisible} {dark} readonly={active.readonly} ontask={toggleTask} onheadings={receiveHeadings(active.id)} onerror={error}/>{/if}</div>{/if}
+       {#if active.kind!=='text'}<button class:hidden={mode!=='split'} class="resize-handle split-handle" aria-valuenow={split} aria-valuemin="20" aria-valuemax="80" role="slider" aria-label="Ancho del editor" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSplit} onkeydown={e=>{if(e.key==='ArrowRight')split=Math.min(80,split+2);if(e.key==='ArrowLeft')split=Math.max(20,split-2)}}></button><div class:hidden={mode==='edit'} class="preview-pane"><div class="pane-caption">VISTA PREVIA <span>{active.kind==='mermaid'?'SVG':'Renderizado local'}</span></div>{#if active.kind==='mermaid'}<Diagram bind:this={diagram} text={active.text??''} {dark} onerror={error}/>{:else}<Preview bind:this={preview} text={active.text??''} id={active.id} renderEnabled={mode!=='edit'||indexVisible} {dark} readonly={active.readonly} ontask={toggleTask} onheadings={receiveHeadings(active.id)} oncurrent={receiveCurrent(active.id)} onerror={error}/>{/if}</div>{/if}
       </div>
      {/if}
     {/key}
