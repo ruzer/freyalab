@@ -38,7 +38,7 @@ test('A1 A2 · Guardar como copia tres activos; cerrar y reabrir prueba que las 
 test('Buscar · el marcador permite elegir, copiar, deshacer y rehacer sin modificar el Markdown original en disco',async()=>{
  const source='# Sin imagen\n\n![Gráfico](a.assets/ausente.png "Descripción")\n',{path,doc}=await open(source)
  const locate=article().getByRole('button',{name:/Buscar imagen.*Gráfico/});await expect(locate).toBeVisible()
- for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect(locate).toBeEnabled();await page.screenshot({path:resolve(`docs/evidence/drw-001-missing-${theme}-1440x900.png`),animations:'disabled'})}
+ for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect(locate).toBeEnabled();if(process.env.FREYALAB_ASSET_EVIDENCE)await page.screenshot({path:resolve(`docs/evidence/drw-001-missing-${theme}-1440x900.png`),animations:'disabled'})}
  await locate.focus();await page.keyboard.press('Enter')
  await loaded();const changed=(await current(doc.id))!
  expect(changed.dirty).toBe(true);expect(changed.text).toMatch(/!\[Gráfico\]\(a\.assets\/[a-f0-9-]+\.png "Descripción"\)/);expect(await readFile(path,'utf8')).toBe(source)

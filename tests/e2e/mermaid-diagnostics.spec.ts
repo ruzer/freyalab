@@ -61,7 +61,7 @@ for(const theme of ['light','dark'])test(`D4 · icono y contraste real en tema $
  // El marcador tiene fondo opaco: se mide su contraste real sin adivinar el compuesto del tema.
  const contrast=await marker.evaluate(node=>{const style=getComputedStyle(node),rgb=(value:string)=>value.match(/[\d.]+/g)!.slice(0,3).map(Number),lum=(value:string)=>rgb(value).map(c=>{c/=255;return c<=.04045?c/12.92:((c+.055)/1.055)**2.4}).reduce((a,c,i)=>a+c*[.2126,.7152,.0722][i],0);const a=lum(style.color),b=lum(style.backgroundColor);return(Math.max(a,b)+.05)/(Math.min(a,b)+.05)})
  await test.info().attach('contraste-marca',{body:Buffer.from(JSON.stringify({theme,contrast})),contentType:'application/json'});expect(contrast).toBeGreaterThanOrEqual(3)
- await page.screenshot({path:resolve(`docs/evidence/mer-007-${theme}-1440x900.png`)})
+ if(process.env.FREYALAB_MER_EVIDENCE)await page.screenshot({path:resolve(`docs/evidence/mer-007-${theme}-1440x900.png`)})
 })
 test('D3 · una respuesta de error retenida no resucita marcas de otra generación',async()=>{
  const {doc}=await open(valid);await expect(page.locator('.diagram-svg svg')).toBeVisible()
