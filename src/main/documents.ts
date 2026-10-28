@@ -4,6 +4,7 @@ import { basename, dirname, extname, join, resolve } from 'node:path'
 import { randomUUID, createHash } from 'node:crypto'
 import {constants} from 'node:fs'
 import {frontMatterOf,parseTags,normalizeTag} from '../shared/front-matter'
+import {t} from '../shared/i18n'
 import {tokensFileQuery} from '../shared/tag-query'
 import { watch, type FSWatcher } from 'chokidar'
 import iconv from 'iconv-lite'
@@ -64,7 +65,7 @@ export class Documents {
  private async tableOptionsNow(id:string,options:TableOptions){const r=this.get(id);if(r.info.dirty)throw new Error('Guarda los cambios antes de cambiar cómo se interpreta el archivo.');if(!r.info.path)throw new Error('Guarda el archivo antes de cambiar su interpretación.');const initial=await stat(r.info.path);const before=initial.size<=50*1024*1024?await digest(r.info.path):undefined;if(r.hash!==undefined&&r.hash!==before)throw new Error('El archivo cambió en disco. Recárgalo antes de cambiar su interpretación.');await this.table.call('open',id,r.info.path,options);await this.syncTable(id);const after=await stat(r.info.path);if(before!==undefined?before!==await digest(r.info.path):initial.size!==after.size||initial.mtimeMs!==after.mtimeMs)throw new Error('El archivo cambió durante la lectura. Recárgalo antes de guardar.');r.hash=before;return this.info(id)}
  async undo(id:string,redo=false){this.rejectDuringReload(id);return this.serial(id,()=>this.undoNow(id,redo))}
  private async undoNow(id:string,redo=false){const r=this.get(id);if(r.info.readonly)return this.info(id);if(r.info.kind==='csv'){await this.table.call('undo',id,redo);await this.syncTable(id)}else{const from=redo?r.redo:r.undo,to=redo?r.undo:r.redo;const text=from.pop();if(text===undefined)return this.info(id);to.push(r.text);r.text=text;r.info.dirty=true;r.info.revision++}this.schedule(id);return this.info(id)}
- private async saveDestination(r:RecordDoc){if(process.env.FREYALAB_TEST==='1'&&(process.env.FREYALAB_TEST_SAVE_PATH||process.env.FREYALAB_TEST_SAVE_DIR))return process.env.FREYALAB_TEST_SAVE_PATH??join(process.env.FREYALAB_TEST_SAVE_DIR!,r.info.name.replace('Sin título','documento'));const result=await dialog.showSaveDialog(this.owner(),{defaultPath:r.info.path??r.info.name});return result.canceled?null:result.filePath??null}
+ private async saveDestination(r:RecordDoc){if(process.env.FREYALAB_TEST==='1'&&(process.env.FREYALAB_TEST_SAVE_PATH||process.env.FREYALAB_TEST_SAVE_DIR))return process.env.FREYALAB_TEST_SAVE_PATH??join(process.env.FREYALAB_TEST_SAVE_DIR!,r.info.name.replace('Sin título','documento'));const result=await dialog.showSaveDialog(this.owner(),{title:t('dialog.save.title'),buttonLabel:t('dialog.save'),defaultPath:r.info.path??r.info.name});return result.canceled?null:result.filePath??null}
  async save(id:string,as=false){return this.serial(id,()=>this.saveNow(id,as))}
  private async saveNow(id:string,as=false){
   const r=this.get(id);if(r.info.readonly)throw new Error('La muestra es de solo lectura.')
@@ -103,7 +104,7 @@ export class Documents {
   let selected:string|undefined
   if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_IMAGE_PATH!==undefined)selected=process.env.FREYALAB_TEST_IMAGE_PATH||undefined
   else{
-   const result=await dialog.showOpenDialog(this.owner(),{properties:['openFile'],filters:[{name:'Imágenes',extensions:['png','jpg','jpeg','gif','webp','svg']}]})
+   const result=await dialog.showOpenDialog(this.owner(),{title:t('dialog.image.title'),buttonLabel:t('dialog.open.button'),properties:['openFile'],filters:[{name:t('dialog.image.filter'),extensions:['png','jpg','jpeg','gif','webp','svg']}]})
    if(!result.canceled)selected=result.filePaths[0]
   }
   if(!selected)return null
@@ -113,11 +114,11 @@ export class Documents {
   return{...await this.updateNow(id,result.text),assets:result.assets}
  }
  async close(id:string){return this.serial(id,()=>this.closeNow(id))}
- private async closeNow(id:string){const r=this.get(id);if(r.info.dirty){const {response}=await dialog.showMessageBox(this.owner(),{type:'question',buttons:['Guardar','Cancelar','Descartar cambios'],defaultId:0,cancelId:1,message:`¿Guardar los cambios de ${r.info.name}?`});if(response===1)return false;if(response===0&&!(await this.saveNow(id)))return false}clearTimeout(r.timer);await r.watcher?.close();if(r.info.kind==='csv')await this.table.call('close',id);this.records.delete(id);await this.discardRecovery(id);return true}
+ private async closeNow(id:string){const r=this.get(id);if(r.info.dirty){const {response}=await dialog.showMessageBox(this.owner(),{type:'question',buttons:[t('dialog.save'),t('dialog.cancel'),t('dialog.discard')],defaultId:0,cancelId:1,message:t('dialog.close.message',{nombre:r.info.name})});if(response===1)return false;if(response===0&&!(await this.saveNow(id)))return false}clearTimeout(r.timer);await r.watcher?.close();if(r.info.kind==='csv')await this.table.call('close',id);this.records.delete(id);await this.discardRecovery(id);return true}
  async reload(id:string){return this.reinterpret(id,()=>this.reloadNow(id))}
  private async reloadNow(id:string){
   const r=this.get(id);if(!r.info.path)throw new Error('El documento no tiene un archivo original.')
-  if(r.info.dirty){const {response}=await dialog.showMessageBox(this.owner(),{type:'warning',buttons:['Conservar mis cambios','Recargar y descartar cambios'],defaultId:0,cancelId:0,message:'El archivo cambió fuera de FreyaLab. Recargar reemplazará tus cambios locales.'});if(response===0)return this.info(id)}
+  if(r.info.dirty){const {response}=await dialog.showMessageBox(this.owner(),{type:'warning',title:t('dialog.reload.title'),buttons:[t('dialog.reload.keep'),t('dialog.reload.discard')],defaultId:0,cancelId:0,message:t('dialog.reload.message')});if(response===0)return this.info(id)}
   if(r.info.kind==='csv'){const size=(await stat(r.info.path)).size;const before=size<=50*1024*1024?await digest(r.info.path):undefined;await this.table.call('open',id,r.info.path,{encoding:r.info.encoding,delimiter:r.info.delimiter});await this.syncTable(id);if(!r.info.readonly&&before!==await digest(r.info.path))throw new Error('El archivo cambió durante la recarga. Vuelve a intentarlo.')}
   else {r.info.readonly=(await stat(r.info.path)).size>10*1024*1024;let data:Buffer;if(r.info.readonly){const handle=await openFile(r.info.path,'r');try{data=Buffer.alloc(1024*1024);const result=await handle.read(data,0,data.length,0);data=data.subarray(0,result.bytesRead)}finally{await handle.close()}}else data=await readFile(r.info.path);const nextText=data.toString('utf8');if(!r.info.readonly&&!Buffer.from(nextText).equals(data))throw new Error('El archivo externo no es UTF-8 válido.');r.text=nextText;r.info.warning=r.info.readonly?'Muestra de solo lectura: primer MiB. El archivo supera 10 MiB.':undefined;r.info.revision++;r.info.dirty=false}
   r.hash=r.info.readonly?undefined:await digest(r.info.path);r.undo=[];r.redo=[];clearTimeout(r.timer);await this.discardRecovery(id);return this.info(id)

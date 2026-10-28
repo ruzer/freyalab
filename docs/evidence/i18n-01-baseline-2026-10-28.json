@@ -1,0 +1,371 @@
+{
+  "version": 1,
+  "capturedAt": "2026-10-28T19:24:33.992Z",
+  "purpose": "Fotografía inicial explícita de fuentes preexistentes. Después solo se retiran rutas; no se reservan archivos futuros. Las historias en curso no se reescriben.",
+  "detector": "AST de Svelte/TypeScript: texto/atributos visibles, valores de expresiones de plantilla y sinks conocidos de mensaje/diálogo. No demuestra ausencia de mensajes construidos mediante flujo arbitrario.",
+  "sources": [
+    {
+      "label": "main",
+      "revision": "33a5dfda628ecd9a389f1bf4a33358176c017df0",
+      "files": [
+        {
+          "path": "src/main/analysis-source.ts",
+          "sha256": "0e6aa6ab5b127847b178f0fc3b324d89818d9da023afcd77daa1970fec579b72",
+          "detectedLiterals": 10
+        },
+        {
+          "path": "src/main/chart-presets.ts",
+          "sha256": "70cd776909528f26a5123d84789ff9aa16b1b4557c8e8a411ec38390c635a793",
+          "detectedLiterals": 9
+        },
+        {
+          "path": "src/main/chart-result-export.ts",
+          "sha256": "8ccc7610ba66f43e94a3935b05fed5eeceea29d5726ee447e932927c26582e74",
+          "detectedLiterals": 1
+        },
+        {
+          "path": "src/main/chart-result.ts",
+          "sha256": "3a3506b5ee3335f54ca28cbabe5550d06d993e6e605be35701701363f9393207",
+          "detectedLiterals": 1
+        },
+        {
+          "path": "src/main/documents.ts",
+          "sha256": "af1105f35a9ec0c409675a4e58e012d80760a6fcb15055863b31c54dc012c1d7",
+          "detectedLiterals": 32
+        },
+        {
+          "path": "src/main/export.ts",
+          "sha256": "7ac7ad77cb898f56f3a6113ec4956b92906eb31920d73b7f0c8e76a8f9429840",
+          "detectedLiterals": 16
+        },
+        {
+          "path": "src/main/extract.ts",
+          "sha256": "c81539ce93416159c16a3431883c8de2887e6f1f55df4025fc5af705e5360bb0",
+          "detectedLiterals": 7
+        },
+        {
+          "path": "src/main/files.ts",
+          "sha256": "7ebb78656e08e31e8d50c24bd264abdd5546f7bb48f82c9ca24f8226bac63c70",
+          "detectedLiterals": 2
+        },
+        {
+          "path": "src/main/index.ts",
+          "sha256": "09e75efbb305b9cff2835142bb5b609b0dbbf556d7234ae611e91536a21a9967",
+          "detectedLiterals": 12
+        },
+        {
+          "path": "src/main/job-queue.ts",
+          "sha256": "cdecd6ede2559440156d57a9e5f198fce8806daa65b41fe20db5ab26f0cc409d",
+          "detectedLiterals": 1
+        },
+        {
+          "path": "src/main/operations.ts",
+          "sha256": "56c6ae8db0b2c3586983920e34d7ed2f083e0721d82c5fa514885e103b12cd2b",
+          "detectedLiterals": 5
+        },
+        {
+          "path": "src/main/sql-service.ts",
+          "sha256": "175b5f7eb197b3ea148650bfa6c333a648134894f7fbf94c0cf75b49b772f049",
+          "detectedLiterals": 9
+        },
+        {
+          "path": "src/main/table-analysis.ts",
+          "sha256": "1a7f15021be0492a5dcdc4ead464f8c6d6ec09f4a3a76a61613b514079b223a5",
+          "detectedLiterals": 4
+        },
+        {
+          "path": "src/main/table-client.ts",
+          "sha256": "91d2558ff9844aeb34a4f7b9749ebb3dd9128770c2b1ed429b805b927eeb019f",
+          "detectedLiterals": 1
+        },
+        {
+          "path": "src/main/table-engine.ts",
+          "sha256": "9ec332b259cc998874834e15f6cb14410cf0bfcec0cdf137beac1a74929dc535",
+          "detectedLiterals": 88
+        },
+        {
+          "path": "src/main/table-query.ts",
+          "sha256": "e4ae0c13228315630588b2d4caceb0394f4511e15638c0cafddcfa334ccd4975",
+          "detectedLiterals": 10
+        },
+        {
+          "path": "src/main/table-worker.ts",
+          "sha256": "3a0476b0fdd671d8430507e109b85c4615dbdabcf12955432d8a3bd96c35ea01",
+          "detectedLiterals": 2
+        },
+        {
+          "path": "src/renderer/App.svelte",
+          "sha256": "83b9dbb3a90ca02ed24a233b98f41bba2c3798f6da275b082dad73d758c980f1",
+          "detectedLiterals": 121
+        },
+        {
+          "path": "src/renderer/analytics.ts",
+          "sha256": "3680e5230253298b44a6fd9f4fa548b7fed4defd14797d764653050bb4467254",
+          "detectedLiterals": 2
+        },
+        {
+          "path": "src/renderer/chart-option.ts",
+          "sha256": "6433930f0f670fd33f00ccfc13a367b3a9ef771d3a43058efd08af6b7d95d820",
+          "detectedLiterals": 4
+        },
+        {
+          "path": "src/renderer/components/AnalysisDock.svelte",
+          "sha256": "9f7fe58616cf70fcdd3a07779da0fd8884653c3e599b7785e9bd52390fa5f42b",
+          "detectedLiterals": 11
+        },
+        {
+          "path": "src/renderer/components/ChartPresets.svelte",
+          "sha256": "c7685ece6959e8d21cf925178505579a1d2e753da0c6edce8558d0adad65ad48",
+          "detectedLiterals": 15
+        },
+        {
+          "path": "src/renderer/components/CsvCharts.svelte",
+          "sha256": "3e90ad42eec1917c553c8012326017af610e9b9bc670232cba8bc5cdd9c62e59",
+          "detectedLiterals": 123
+        },
+        {
+          "path": "src/renderer/components/CsvColumnAnalysis.svelte",
+          "sha256": "5ec6dac63df2c8c5d0ef7f7db3e26a02f97ed45cf24b877e632edff929722452",
+          "detectedLiterals": 53
+        },
+        {
+          "path": "src/renderer/components/CsvColumnsOverview.svelte",
+          "sha256": "0123375d09c0970a84736a25d5404d7151bd3bacf0f8e06690a34f3568118503",
+          "detectedLiterals": 43
+        },
+        {
+          "path": "src/renderer/components/CsvCommands.svelte",
+          "sha256": "99c9be110b25cd48087fcab96beea2d412dbf74d4488d5b606cf9199a7380b4d",
+          "detectedLiterals": 8
+        },
+        {
+          "path": "src/renderer/components/CsvExtract.svelte",
+          "sha256": "952f49940a82e31aabb55a01e456c32584c5b05c8ed6c55bd3319d5b6e7fb7a2",
+          "detectedLiterals": 36
+        },
+        {
+          "path": "src/renderer/components/CsvQueryTools.svelte",
+          "sha256": "b9a05afa462f761fea6a4430b80bc181d2d90b114151013fc70f6e169b1dab4d",
+          "detectedLiterals": 29
+        },
+        {
+          "path": "src/renderer/components/CsvRangePreview.svelte",
+          "sha256": "fe9de91922ba71e0a23e4ca1affbb478c99461d021bad82fe6bc7639f14272ea",
+          "detectedLiterals": 25
+        },
+        {
+          "path": "src/renderer/components/CsvSql.svelte",
+          "sha256": "1b78cf7eaf112deb4ce406572b80157497c03cdc7c66f6d821838a93669bd1ad",
+          "detectedLiterals": 65
+        },
+        {
+          "path": "src/renderer/components/CsvStatistics.svelte",
+          "sha256": "b401535b3a072ce51e64c209afc4c0007e82284bec079904e0ac3dd7e4022536",
+          "detectedLiterals": 31
+        },
+        {
+          "path": "src/renderer/components/CsvTable.svelte",
+          "sha256": "fd386ca1b521671ac1d335097d149b7f8bdf108d6a4adf532e6d779ca12df389",
+          "detectedLiterals": 144
+        },
+        {
+          "path": "src/renderer/components/CsvTransform.svelte",
+          "sha256": "bb9a4ef5713eeeeafcdd3dc6c508f906d11306298b339bdc72253d6148e2f556",
+          "detectedLiterals": 61
+        },
+        {
+          "path": "src/renderer/components/Diagram.svelte",
+          "sha256": "4276d4c8581fe046ab5275b1d38b92080bfcef35f82439ac2fb95a0b402ff717",
+          "detectedLiterals": 20
+        },
+        {
+          "path": "src/renderer/components/Editor.svelte",
+          "sha256": "1ca4b05846618eb416e066b52caad9927bfdaa03fe4504b0f6c220f1ab6e2a45",
+          "detectedLiterals": 1
+        },
+        {
+          "path": "src/renderer/components/MarkdownToolbar.svelte",
+          "sha256": "589b66b77d7fd25462915d860cc0564365b90163486de6b0c8320aad10f520ed",
+          "detectedLiterals": 34
+        },
+        {
+          "path": "src/renderer/components/Outline.svelte",
+          "sha256": "08de5bf005dc93ba2ae1970c452b4109f46bdf9a1b8ea0672d3d9aae7e2fd8f7",
+          "detectedLiterals": 2
+        },
+        {
+          "path": "src/renderer/components/Preview.svelte",
+          "sha256": "9de94ec4224dc10b0fa5ce1bc1070237ab92f2423536954cebde76a056b7f746",
+          "detectedLiterals": 8
+        },
+        {
+          "path": "src/renderer/components/TextStats.svelte",
+          "sha256": "9a4477352dcf563d35cf58e2480ce0cebbd1b3d619a9273cd78680f80a366b30",
+          "detectedLiterals": 1
+        },
+        {
+          "path": "src/renderer/lib/diagram-errors.ts",
+          "sha256": "02d9f43fede10634088b30f3795e733cffac1c262db4f9d57630712e7d4413d6",
+          "detectedLiterals": 23
+        },
+        {
+          "path": "src/renderer/lib/render.ts",
+          "sha256": "1da6903e0ec509b7187435d5873ad096fd1f9416957393de586d85817bfcb673",
+          "detectedLiterals": 1
+        },
+        {
+          "path": "src/renderer/lib/sql-report.ts",
+          "sha256": "15f4bb07e552b8876d9a2be15d3668d72b3ce41a1cc0b0a1305092067e421314",
+          "detectedLiterals": 1
+        },
+        {
+          "path": "src/renderer/lib/statistics-report.ts",
+          "sha256": "3bb3d0fe7e272ed1b7c77ce605acae2830457293e59f0fc72dadd91866a01cb2",
+          "detectedLiterals": 1
+        },
+        {
+          "path": "src/renderer/lib/text-stats.worker.ts",
+          "sha256": "83b96f11ef0b7bf83e9a1be6faccd00f168ec22ac1899cb6c35c91c904d63d4f",
+          "detectedLiterals": 1
+        },
+        {
+          "path": "src/shared/charts.ts",
+          "sha256": "3c899ad3b11a53e036f07798356fbaed557936f70cb49a2d8aead8ca5a8643a8",
+          "detectedLiterals": 18
+        },
+        {
+          "path": "src/shared/sql-assist.ts",
+          "sha256": "40554dd890d42e955df02c2b4014df52a086d648021900986d82ba786e32f29b",
+          "detectedLiterals": 5
+        }
+      ]
+    },
+    {
+      "label": "A0 · PR86",
+      "revision": "c1763df017b1b2158494a70c4cb4d90025903d06",
+      "files": [
+        {
+          "path": "src/main/document-assets.ts",
+          "sha256": "54cd42144e9e8579e088e1863ffebcb7ac1c802b1d11aff9b670dff089472119",
+          "detectedLiterals": 29
+        },
+        {
+          "path": "src/renderer/components/AssetWarnings.svelte",
+          "sha256": "6e4d9c1764e59e6335d497e9bb3d5bd9f656f8b15d8187105940ad16599bf26a",
+          "detectedLiterals": 4
+        }
+      ]
+    },
+    {
+      "label": "C1 · PR85",
+      "revision": "be5a49a71a488c5fe27433d5e40fc9e399218cac",
+      "files": [
+        {
+          "path": "src/main/pandoc.ts",
+          "sha256": "38f63572dd5329ed6efe1f8815cda813a850e24666d163e8b6965180eb4049a6",
+          "detectedLiterals": 3
+        }
+      ]
+    },
+    {
+      "label": "A1 · AC01",
+      "revision": "0391a9b67370fe5a3f03850c3a95075ae67db6ab",
+      "files": [
+        {
+          "path": "src/renderer/lib/remark-numbering.ts",
+          "sha256": "f36d1e0b4a00feb03cfb7feda064694017adf9423e4c646bce7df9ee90c9bf6b",
+          "detectedLiterals": 2
+        }
+      ]
+    },
+    {
+      "label": "B1 · fotografía de archivos existentes en su worktree antes de adopción",
+      "revision": "6122ac6b388db75eb557504f913d4866c0841b87",
+      "uncommittedSnapshot": true,
+      "files": [
+        {
+          "path": "src/main/large-matches.ts",
+          "sha256": "02c7dbb622a24d29173e0df4d2f93be9320a4859f27b72ce4a66ba956118bf99",
+          "detectedLiterals": 2
+        },
+        {
+          "path": "src/main/large-search-scan.ts",
+          "sha256": "688dbbece2984b9eb064e13831bbefa1d9eeb86c92acadf38ad7017fcec57991",
+          "detectedLiterals": 4
+        },
+        {
+          "path": "src/main/large-search-worker.ts",
+          "sha256": "4796981981577ab9bbb3073b6640b714997c44e3b7e87cb49c79d9362411ac7e",
+          "detectedLiterals": 1
+        },
+        {
+          "path": "src/main/large-table.ts",
+          "sha256": "05d51e27a631e83fe1070efde5f135d57ddb5e087e9552aa2326eab2711cc0e5",
+          "detectedLiterals": 3
+        },
+        {
+          "path": "src/main/large-view.ts",
+          "sha256": "f40b36f3e9a3b1004c15825d5ee1dc384ad10141a15c6dd174135ceefb9663f9",
+          "detectedLiterals": 4
+        }
+      ]
+    }
+  ],
+  "initialPending": [
+    "src/main/analysis-source.ts",
+    "src/main/chart-presets.ts",
+    "src/main/chart-result-export.ts",
+    "src/main/chart-result.ts",
+    "src/main/document-assets.ts",
+    "src/main/documents.ts",
+    "src/main/export.ts",
+    "src/main/extract.ts",
+    "src/main/files.ts",
+    "src/main/index.ts",
+    "src/main/job-queue.ts",
+    "src/main/large-matches.ts",
+    "src/main/large-search-scan.ts",
+    "src/main/large-search-worker.ts",
+    "src/main/large-table.ts",
+    "src/main/large-view.ts",
+    "src/main/operations.ts",
+    "src/main/pandoc.ts",
+    "src/main/sql-service.ts",
+    "src/main/table-analysis.ts",
+    "src/main/table-client.ts",
+    "src/main/table-engine.ts",
+    "src/main/table-query.ts",
+    "src/main/table-worker.ts",
+    "src/renderer/App.svelte",
+    "src/renderer/analytics.ts",
+    "src/renderer/chart-option.ts",
+    "src/renderer/components/AnalysisDock.svelte",
+    "src/renderer/components/AssetWarnings.svelte",
+    "src/renderer/components/ChartPresets.svelte",
+    "src/renderer/components/CsvCharts.svelte",
+    "src/renderer/components/CsvColumnAnalysis.svelte",
+    "src/renderer/components/CsvColumnsOverview.svelte",
+    "src/renderer/components/CsvCommands.svelte",
+    "src/renderer/components/CsvExtract.svelte",
+    "src/renderer/components/CsvQueryTools.svelte",
+    "src/renderer/components/CsvRangePreview.svelte",
+    "src/renderer/components/CsvSql.svelte",
+    "src/renderer/components/CsvStatistics.svelte",
+    "src/renderer/components/CsvTable.svelte",
+    "src/renderer/components/CsvTransform.svelte",
+    "src/renderer/components/Diagram.svelte",
+    "src/renderer/components/Editor.svelte",
+    "src/renderer/components/MarkdownToolbar.svelte",
+    "src/renderer/components/Outline.svelte",
+    "src/renderer/components/Preview.svelte",
+    "src/renderer/components/TextStats.svelte",
+    "src/renderer/lib/diagram-errors.ts",
+    "src/renderer/lib/remark-numbering.ts",
+    "src/renderer/lib/render.ts",
+    "src/renderer/lib/sql-report.ts",
+    "src/renderer/lib/statistics-report.ts",
+    "src/renderer/lib/text-stats.worker.ts",
+    "src/shared/charts.ts",
+    "src/shared/sql-assist.ts"
+  ]
+}
