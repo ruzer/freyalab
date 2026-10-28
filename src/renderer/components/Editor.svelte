@@ -111,7 +111,7 @@
  $effect(()=>{const locked=readonly;if(view)view.dispatch({effects:permission.reconfigure([EditorState.readOnly.of(locked),EditorView.editable.of(!locked)])})})
  $effect(()=>{const value=text;if(view&&!mountedSession&&value!==view.state.sliceDoc()){applying=true;view.dispatch({changes:{from:0,to:view.state.doc.length,insert:value}});applying=false}})
 </script>
-<span class:sr-only={!generalDiagramError} class="diagram-editor-notice" role="status" aria-label="Diagnósticos de diagramas" aria-live="polite">{diagnosticSummary}</span>
+{#if kind==='markdown'||kind==='mermaid'}<span class:sr-only={!generalDiagramError} class="diagram-editor-notice" role="status" aria-label="Diagnósticos de diagramas" aria-live="polite">{diagnosticSummary}</span>{/if}
 <div class="code-editor" bind:this={host} aria-label="Editor de texto"></div>
 
 <style>
