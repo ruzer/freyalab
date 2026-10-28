@@ -4,7 +4,7 @@ Origen (el propietario, 2026-10-28): «preparemos multilengua, opciones de confi
 
 | ID | Contenido | Tamaño | Depende de | Estado |
 |---|---|---|---|---|
-| **I18N-01** | Infraestructura de idiomas (catálogos `es` y `en`, `t()`, formato regional, cambio en caliente) y piloto con lo que crean APP-01 a APP-04 | S a M | — | **Lista** (abajo) |
+| **I18N-01** | Infraestructura de idiomas (catálogos `es` y `en`, `t()`, formato regional, cambio en caliente) y piloto con lo que crean APP-01 a APP-04 | S a M | — | **Lista** (abajo); D1–D12 aprobadas el 2026-10-28 |
 | **APP-01** | Menú nativo de la aplicación (macOS, Windows y Linux) con Archivo, Edición, Ver, Ir, Ventana y Ayuda | M | I18N-01 | **Lista** (abajo) |
 | **APP-02** | «Acerca de FreyaLab» con versión real, compilación, versiones de Electron/Chromium/Node, avisos de terceros y copiar información para un informe | S | I18N-01 | **Lista** (abajo) |
 | **APP-03** | Ajustes (⌘,): modelo versionado, migración de lo que hoy vive en `localStorage` y ventana de ajustes | M a L | I18N-01 | **Lista** (abajo) |
@@ -28,9 +28,9 @@ Evidencia y método en [`docs/evidence/app-auditoria-2026-10-28.md`](../evidence
 | Actualizaciones | No existe nada. Repositorio público; una versión publicada, `v0.1.0-alpha.1`, **pre-release** con instaladores por plataforma, `SHA256SUMS.txt` y `VERIFICATION.json`. La API `releases/latest` de GitHub **no devuelve pre-releases**. Sin firma ni notarización: la actualización automática dentro de la aplicación **no es viable** en macOS hoy. |
 | Política | `AGENTS.md`: «sin telemetría ni cargas remotas». `SECURITY.md`: «sin telemetría, cuentas o servicios remotos **obligatorios**». CSP del renderer: `connect-src 'self'`. |
 
-## 2. Decisiones por confirmar (propuestas, con mi recomendación)
+## 2. Decisiones del propietario (D1 a D12 aprobadas el 2026-10-28, tal como se recomiendan; D7 se confirmó antes)
 
-| ID | Decisión | Recomendación |
+| ID | Decisión | Resolución (aprobada) |
 |---|---|---|
 | **D1** | Idiomas iniciales | **Español (base, es-MX) e inglés.** Otros después, con el mismo catálogo. Claude redacta el inglés; el propietario lo revisa. |
 | **D2** | Idioma por omisión | **«Sistema»**: si el sistema está en español → español; en inglés → inglés; cualquier otro → inglés. La persona puede fijarlo en Ajustes. |
@@ -44,6 +44,13 @@ Evidencia y método en [`docs/evidence/app-auditoria-2026-10-28.md`](../evidence
 | **D10** | Idioma de lo que la aplicación genera (informes de estadísticas, texto de exportaciones) | **El idioma de la interfaz en el momento de generarlo**; el contenido del documento del usuario nunca se traduce. |
 | **D11** | «Informar de un problema» | **Abre la página de incidencias de GitHub** en el navegador; la aplicación no envía nada. «Copiar información del sistema» es manual y sin datos personales. |
 | **D12** | Barra de menús en Windows y Linux | **Visible**, como en cualquier aplicación de escritorio de esas plataformas (no autoocultar). |
+
+Notas sobre lo aprobado:
+
+- **D3:** el selector de idioma se muestra desde I18N-02 con el rótulo «(parcial)» hasta cerrar I18N-03; antes de I18N-02 permanece oculto.
+- **D7:** el texto exacto de la excepción en `AGENTS.md` y `SECURITY.md` está en el criterio U14 y se aplica en el PR que implemente APP-04.
+- **D9:** ⌘1, ⌘2 y ⌘3 se adoptan **solo si** la prueba de conflictos (M6) no encuentra ningún atajo existente en esas teclas; si lo encuentra, Codex se detiene y pregunta.
+- **Orden de entrega:** I18N-01 va **primero y como PR propio** para que el resto de las historias en curso (L4a, L5a, A1 a A4…) escriban sus cadenas nuevas con `t()` (criterio I12); después APP-01 + APP-02 + APP-03 en un bloque; APP-04 aparte.
 
 ## 3. Diseño UX común
 
