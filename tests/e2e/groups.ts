@@ -6,6 +6,8 @@ export const mdFiles=[
  'mermaid-errors.spec.ts',
  'mermaid-export-theme.spec.ts',
  'mermaid-fit.spec.ts',
+ 'mermaid-diagnostics.spec.ts',
+ 'mermaid-expanded.spec.ts',
  'missing-resources.spec.ts',
  'preview-edit.spec.ts',
  'preview-progressive.spec.ts',
@@ -16,4 +18,6 @@ export const mdFiles=[
  'markdown-sidebar.spec.ts',
  'outline.spec.ts',
  'markdown-tags.spec.ts',
+ 'markdown-assets.spec.ts',
+ 'academic-report.spec.ts',
 ] as const

@@ -1,16 +1,61 @@
 <script lang="ts">
  import {tick,onMount,onDestroy} from 'svelte'
+ import Diagram from './Diagram.svelte'
+ import type {DiagramError} from '../lib/diagram-errors'
+ import {matchDiagramBlocks,diagramDocumentLine,type DiagramBlock} from '../lib/diagram-diagnostics'
+ import type {DiagramDiagnostics,DiagramMark} from '../lib/diagram-marks'
  import {explainDiagramError} from '../lib/diagram-errors'
- import {markdownHTML,diagramSVG,standaloneHTML,decodeFragment,type Heading} from '../lib/render'
+ import {markdownHTML,diagramSVG,validateDiagram,standaloneHTML,decodeFragment,type Heading} from '../lib/render'
  import {currentHeading,type HeadingMetric} from '../lib/outline'
  import {parseTags} from '../../shared/front-matter'
  import type {TaskReference} from '../lib/markdown-tasks'
- let {text,id,dark=false,readonly=true,renderEnabled=true,ontask,onheadings,onerror,oncurrent,onfiltertag}:{text:string;id:string;dark?:boolean;readonly?:boolean;renderEnabled?:boolean;ontask?:(id:string,snapshot:string,reference:TaskReference)=>boolean;onfiltertag?:(tag:string)=>void;oncurrent?:(id:string|undefined)=>void;onheadings:(headings:Heading[],source:string)=>void;onerror:(message:string)=>void}=$props()
+ let {text,id,path=null,dark=false,readonly=true,renderEnabled=true,ontask,onheadings,onerror,oncurrent,onfiltertag,candidates,ondiagnostics,onlocateimage}:{path?:string|null;onlocateimage?:(id:string,snapshot:string,source:string)=>void|Promise<void>;candidates?:{source:string;blocks:DiagramBlock[];complete:boolean};ondiagnostics?:(value:DiagramDiagnostics)=>void;text:string;id:string;dark?:boolean;readonly?:boolean;renderEnabled?:boolean;ontask?:(id:string,snapshot:string,reference:TaskReference)=>boolean;onfiltertag?:(tag:string)=>void;oncurrent?:(id:string|undefined)=>void;onheadings:(headings:Heading[],source:string)=>void;onerror:(message:string)=>void}=$props()
  let busy=$state(false),announcement=$state(''),container:HTMLElement,article:HTMLElement
  let renderForExport=$state(false)
- let frontMatter=$state<string|undefined>(undefined)
+ // Cambiar el estado de guardado no vuelve a preparar contenido y recursos idénticos.
+ const renderText=$derived(text),renderId=$derived(id),renderPath=$derived(path),renderTheme=$derived(dark),shouldRender=$derived(renderEnabled||renderForExport)
+ let frontMatter=$state<string|undefined>(undefined),documentWarnings=$state<string[]>([])
  const tags=$derived(parseTags(frontMatter))
- let diagramBlocks:{source:string;dark:boolean;node:HTMLElement}[]=[]
+ let diagramBlocks:{source:string;documentSource:string;dark:boolean;node:HTMLElement}[]=[]
+ let renderDiagnostics=$state<{source:string;results:{source:string;error?:DiagramError}[]}|undefined>(),diagnosticGeneration=0
+ $effect(()=>{
+  const source=renderText,theme=renderTheme,enabled=shouldRender,token=++diagnosticGeneration
+  const blocks=candidates?.source===source&&candidates.complete?candidates.blocks:undefined,rendered=renderDiagnostics
+  const publish=(results:{source:string;error?:DiagramError}[],matches:(DiagramBlock|undefined)[])=>{
+   if(token!==diagnosticGeneration||disposed)return
+   const marks:DiagramMark[]=[]
+   results.forEach((result,index)=>{const line=result.error&&result.error.kind!=='tipo'&&matches[index]?diagramDocumentLine(matches[index]!,result.error.line):undefined;if(line&&result.error)marks.push({line,error:result.error})})
+   ondiagnostics?.({source,generation:token,marks,errors:results.flatMap(result=>result.error?[result.error]:[])})
+  }
+  if(enabled){if(rendered?.source===source)publish(rendered.results,matchDiagramBlocks(rendered.results.map(result=>result.source),blocks??[]));return}
+  if(!blocks)return
+  const timer=setTimeout(async()=>{
+   const results:{source:string;error?:DiagramError}[]=[]
+   for(const [index,block] of blocks.entries()){
+    if(token!==diagnosticGeneration||disposed)return
+    try{await validateDiagram(block.source,theme);results.push({source:block.source})}
+    catch(error){results.push({source:block.source,error:explainDiagramError(error instanceof Error?error.message:String(error),block.source)})}
+    if(token!==diagnosticGeneration||disposed)return
+    if(index<blocks.length-1)await new Promise<void>(resolve=>setTimeout(resolve,0))
+   }
+   publish(results,blocks)
+  },150)
+  return()=>clearTimeout(timer)
+ })
+ let expanded=$state<{source:string;documentSource:string;index:number;type:string}|undefined>(),modal=$state<HTMLDialogElement>()
+ const expandedChanged=$derived(!!expanded&&expanded.documentSource!==text)
+ function diagramType(node:HTMLElement){const type=node.querySelector('svg')?.getAttribute('aria-roledescription')??'Mermaid';return type.startsWith('flowchart')?'flujo':type.startsWith('sequence')?'secuencia':type}
+ function closeExpanded(){const previous=expanded;expanded=undefined;if(previous)void tick().then(()=>diagramBlocks[previous.index]?.node.querySelector<HTMLButtonElement>('.diagram-expand')?.focus({preventScroll:true}))}
+ function expandDiagram(event:MouseEvent){
+  const button=(event.target as Element).closest<HTMLButtonElement>('.diagram-expand');if(!button)return
+  const index=Number(button.dataset.diagramIndex),block=diagramBlocks[index]
+  if(!block||!block.node.contains(button)||!block.node.querySelector('svg'))return
+  expanded={source:block.source,documentSource:block.documentSource,index,type:diagramType(block.node)}
+ }
+ $effect(()=>{if(expanded)void tick().then(()=>{if(modal?.isConnected&&!modal.open)modal.showModal()})})
+ let imageTargets=new WeakMap<HTMLButtonElement,{id:string;snapshot:string;source:string}>()
+ export function focus(){container?.focus({preventScroll:true})}
+ function locateMissingImage(event:MouseEvent){const button=(event.target as Element).closest<HTMLButtonElement>('.image-locate'),target=button&&imageTargets.get(button);if(!button||!target)return;event.preventDefault();event.stopPropagation();if(!button.disabled)void onlocateimage?.(target.id,target.snapshot,target.source)}
  let taskTargets=new WeakMap<HTMLInputElement,{id:string;source:string;reference:TaskReference}>()
  let generation=0,completion:Promise<void>=Promise.resolve(),renderError='',missing=0,disposed=false
  let headingNodes:HTMLElement[]=[],metrics:HeadingMetric[]=[],metricFrame=0,viewportHeight=0,scrollHeight=0,lastCurrent:string|undefined|null=null
@@ -60,13 +105,21 @@
     }
    }
    for(const details of copy?.querySelectorAll<HTMLDetailsElement>('details[data-freya-open]')??[]){details.open=details.dataset.freyaOpen==='1';details.removeAttribute('data-freya-open')}
+   for(const button of copy?.querySelectorAll('.image-locate')??[])button.remove()
    for(const input of copy?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')??[])input.disabled=true
    for(const item of copy?.querySelectorAll('[data-line]')??[])item.removeAttribute('data-line')
    return standaloneHTML(copy?.innerHTML??'','Documento FreyaLab')
   }finally{renderForExport=false}
  }
  $effect(()=>{
-  const source=text,docId=id,theme=dark,locked=readonly,enabled=renderEnabled||renderForExport,token=++generation
+  const locked=readonly
+  for(const input of article?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')??[])if(taskTargets.has(input))input.disabled=locked||!ontask
+  for(const button of article?.querySelectorAll<HTMLButtonElement>('.image-locate')??[])if(imageTargets.has(button))button.disabled=locked
+ })
+ $effect(()=>{
+  // Guardar como cambia la base de imágenes aunque el texto siga igual.
+  void renderPath
+  const source=renderText,docId=renderId,theme=renderTheme,enabled=shouldRender,token=++generation
   if(!enabled){busy=false;return}
   busy=true;renderError='';missing=0
   let finish:()=>void=()=>{};completion=new Promise<void>(resolve=>finish=resolve)
@@ -74,19 +127,20 @@
    try{
     const result=await markdownHTML(source)
     if(token!==generation)return
-    frontMatter=result.frontMatter
+    frontMatter=result.frontMatter;documentWarnings=result.warnings
     const staged=document.createElement('template');staged.innerHTML=result.html
     for(const details of staged.content.querySelectorAll('details'))details.dataset.freyaOpen=details.open?'1':'0'
     const images=Array.from(staged.content.querySelectorAll('img'),image=>{const src=image.getAttribute('src')??'';image.removeAttribute('src');return{image,src}})
+    const documentSource=source
     const diagrams=Array.from(staged.content.querySelectorAll('code.language-mermaid'),(code,index)=>{
      const source=code.textContent??'',previous=diagramBlocks[index]
      const node=previous?.source===source&&previous.dark===theme?previous.node:document.createElement('div')
      if(node!==previous?.node){node.className='mermaid-render';node.textContent='Preparando diagrama…'}
-     code.parentElement?.replaceWith(node);return{source,dark:theme,node}
+     code.parentElement?.replaceWith(node);return{source,documentSource,dark:theme,node}
     })
     // El article tiene un único dueño DOM: publica texto saneado sin serializar otra vez imágenes base64.
     const focusedTask=document.activeElement instanceof HTMLInputElement?taskTargets.get(document.activeElement):undefined
-    article.replaceChildren(staged.content);diagramBlocks=diagrams
+    article.replaceChildren(staged.content);diagramBlocks=diagrams;imageTargets=new WeakMap()
     const ids=new Set(result.headings.map(heading=>heading.id))
     headingNodes=Array.from(article.querySelectorAll<HTMLElement>('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]')).filter(heading=>ids.has(heading.id))
     onheadings(result.headings,source);scheduleMetrics()
@@ -97,21 +151,23 @@
      const label=item.cloneNode(true) as HTMLElement
      for(const nested of label.querySelectorAll('ul,ol'))nested.remove()
      input.setAttribute('aria-label',`Marcar tarea: ${label.textContent?.trim().replace(/\s+/g,' ')??''}`)
-     input.disabled=locked||!ontask;taskTargets.set(input,{id:docId,source,reference})
+     input.disabled=readonly||!ontask;taskTargets.set(input,{id:docId,source,reference})
      if(focusedTask?.id===docId&&focusedTask.reference.from===reference.from&&!input.disabled)input.focus({preventScroll:true})
     }
-    const errors:string[]=[]
+    const errors:string[]=[],diagnosticResults:{source:string;error?:DiagramError}[]=[]
     const loadImages=async()=>{for(const {image,src} of images){
      const data=await window.freya.image(docId,src).catch(()=>null)
      if(token!==generation)return
-     if(data){image.addEventListener('load',scheduleMetrics,{once:true});image.src=data}else{image.removeAttribute('src');image.alt=`Imagen no disponible: ${image.alt||src}`;missing++}
+     if(data){image.addEventListener('load',scheduleMetrics,{once:true});image.src=data}else{image.removeAttribute('src');const label=image.alt||src;image.alt=`Imagen no disponible: ${label}`;missing++
+      if(onlocateimage&&!/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(src)){const wrapper=document.createElement('span'),button=document.createElement('button');wrapper.className='missing-image';button.className='image-locate';button.textContent='Buscar…';button.setAttribute('aria-label',`Buscar imagen: ${label}`);button.disabled=readonly;const anchor=image.closest('a');if(anchor){anchor.after(wrapper);wrapper.append(button)}else{image.replaceWith(wrapper);wrapper.append(image,button)}imageTargets.set(button,{id:docId,snapshot:source,source:src})}}
      scheduleMetrics()
     }}
     const loadDiagrams=async()=>{for(const [index,diagram] of diagrams.entries()){
-     try{const svg=await diagramSVG(diagram.source,theme);if(token!==generation)return;const block=document.createElement('div');block.className='mermaid-render';block.innerHTML=svg;diagram.node.replaceWith(block);diagram.node=block;scheduleMetrics()}
+     try{const svg=await diagramSVG(diagram.source,theme);if(token!==generation)return;const block=document.createElement('div');block.className='mermaid-render';block.innerHTML=svg;const button=document.createElement('button');button.className='diagram-expand';button.dataset.diagramIndex=String(index);button.textContent='⤢ Ampliar';button.setAttribute('aria-label',`Ampliar diagrama de ${diagramType(block)}`);block.append(button);diagram.node.replaceWith(block);diagram.node=block;scheduleMetrics();diagnosticResults.push({source:diagram.source})}
      catch(error){
       if(token!==generation)return
       const explanation=explainDiagramError(error instanceof Error?error.message:String(error),diagram.source)
+      diagnosticResults.push({source:diagram.source,error:explanation})
       const block=document.createElement('div');block.className=explanation.kind==='vacio'?'diagram-notice diagram-empty':'diagram-error diagram-notice'
       const title=document.createElement('strong');title.textContent=explanation.title
       const hint=document.createElement('p');hint.textContent=explanation.hint
@@ -125,20 +181,20 @@
       diagram.node.replaceWith(block);diagram.node=block;scheduleMetrics()
       errors.push(`Diagrama ${index+1}. ${explanation.title} ${explanation.hint} ${location}`)
      }
-    };if(token===generation)announcement=errors.join(' ')}
+    };if(token===generation){announcement=errors.join(' ');renderDiagnostics={source,results:diagnosticResults}}}
     await Promise.all([loadImages(),loadDiagrams()])
    }catch(error){if(token===generation){renderError=error instanceof Error?error.message:String(error);onerror(renderError)}}
    finally{if(token===generation)busy=false;finish()}
   },150)
   return()=>{clearTimeout(timer);finish()}
  })
- onDestroy(()=>{disposed=true;generation++;cancelAnimationFrame(metricFrame)})
+ onDestroy(()=>{disposed=true;generation++;diagnosticGeneration++;cancelAnimationFrame(metricFrame)})
  onMount(()=>{
   const observer=new ResizeObserver(scheduleMetrics);observer.observe(container);observer.observe(article)
   container.addEventListener('scroll',publishCurrent,{passive:true});container.addEventListener('toggle',scheduleMetrics,true)
   document.fonts.addEventListener('loadingdone',scheduleMetrics);void document.fonts.ready.then(scheduleMetrics)
-  container.addEventListener('click',linkClick);article.addEventListener('change',taskChanged);article.addEventListener('keydown',taskKeydown)
-  return()=>{observer.disconnect();container.removeEventListener('scroll',publishCurrent);container.removeEventListener('toggle',scheduleMetrics,true);document.fonts.removeEventListener('loadingdone',scheduleMetrics);container.removeEventListener('click',linkClick);article.removeEventListener('change',taskChanged);article.removeEventListener('keydown',taskKeydown)}
+  container.addEventListener('click',linkClick);article.addEventListener('click',expandDiagram);article.addEventListener('click',locateMissingImage);article.addEventListener('change',taskChanged);article.addEventListener('keydown',taskKeydown)
+  return()=>{observer.disconnect();container.removeEventListener('scroll',publishCurrent);container.removeEventListener('toggle',scheduleMetrics,true);document.fonts.removeEventListener('loadingdone',scheduleMetrics);container.removeEventListener('click',linkClick);article.removeEventListener('click',expandDiagram);article.removeEventListener('click',locateMissingImage);article.removeEventListener('change',taskChanged);article.removeEventListener('keydown',taskKeydown)}
  })
  function taskChanged(event:Event){
   const input=event.target;if(!(input instanceof HTMLInputElement))return
@@ -149,13 +205,51 @@
  function taskKeydown(event:KeyboardEvent){if(event.key==='Enter'&&event.target instanceof HTMLInputElement&&taskTargets.has(event.target)){event.preventDefault();if(!event.target.disabled)event.target.click()}}
  function linkClick(event:MouseEvent){const anchor=(event.target as Element).closest('a,.enlace-roto');if(!anchor)return;event.preventDefault();if(anchor.classList.contains('enlace-roto')){onerror(`No encontré la sección “${anchor.getAttribute('data-seccion-faltante')??''}” en este documento`);return}const href=anchor.getAttribute('href')??'';if(href.startsWith('#')){scrollToHeading(href.slice(1));return}window.freya.openLink(href).catch(error=>onerror(String(error)))}
 </script>
-<section class="preview" bind:this={container} aria-label="Vista previa del documento" role="document">
+<section class="preview" bind:this={container} aria-label="Vista previa del documento" role="document" tabindex="-1">
  {#if busy}<span class="render-progress">Actualizando vista previa…</span>{/if}
  <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</span>
  {#if frontMatter!==undefined}<div class="document-properties-row"><details class="document-properties"><summary>Propiedades del documento</summary><pre>{frontMatter}</pre></details>{#if tags.length}<div class="document-tags">{#each tags as tag}<button aria-label={`Filtrar archivos por la etiqueta ${tag}`} title={tag} disabled={!onfiltertag} onclick={()=>onfiltertag?.(tag)}>{tag}</button>{/each}</div>{/if}</div>{/if}
+ {#if documentWarnings.length}<details class="document-warnings" aria-label="Advertencias del documento"><summary>{documentWarnings.length===1?'Una advertencia del documento':`${documentWarnings.length} advertencias del documento`}</summary><ul>{#each documentWarnings as warning}<li>{warning}</li>{/each}</ul></details>{/if}
  <article class="markdown-body" bind:this={article}></article>
 </section>
+{#if expanded}
+ <dialog class="diagram-modal" bind:this={modal} aria-modal="true" aria-label={`Vista ampliada: diagrama de ${expanded.type}`} oncancel={closeExpanded}>
+  <header><strong>Diagrama de {expanded.type}</strong><button onclick={closeExpanded} aria-label="Cerrar vista ampliada">Cerrar · Esc</button></header>
+  {#if expandedChanged}<p class="expanded-warning" role="status">El documento cambió. Cierra esta vista y vuelve a ampliar el diagrama actualizado.</p>{/if}
+  <Diagram text={expanded.source} {dark} {onerror}/>
+ </dialog>
+{/if}
 <style>
+ :global(.markdown-body .report-cover){padding:40px 24px;text-align:center;border-bottom:1px solid var(--border)}
+ :global(.markdown-body .report-cover h1){font-size:32px}
+ :global(.markdown-body .report-cover p){margin:12px 0}
+ :global(.markdown-body .report-subtitle){font-size:22px}
+ :global(.markdown-body .report-abstract){text-align:left;margin-top:36px;white-space:pre-line}
+ :global(.markdown-body .report-index){margin:24px 0}
+ :global(.markdown-body .report-index ol){list-style:none;padding:0}
+ :global(.markdown-body .report-index li){margin:5px 0}
+ :global(.markdown-body .report-level-2){margin-left:16px!important}
+ :global(.markdown-body .report-level-3){margin-left:32px!important}
+ :global(.markdown-body .report-level-4){margin-left:48px!important}
+ :global(.markdown-body .report-level-5){margin-left:64px!important}
+ :global(.markdown-body .report-level-6){margin-left:80px!important}
+ :global(.markdown-body figure){margin:24px 0;break-inside:avoid}
+ :global(.markdown-body figcaption){margin-top:8px;font-size:13px;line-height:1.6;color:var(--text)}
+ :global(.markdown-body figure img){display:block;margin:auto}
+ .document-warnings{margin:10px 14px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--panel);color:var(--text);font-size:12px}
+ .document-warnings summary{cursor:pointer}
+ .document-warnings ul{margin-bottom:0;padding-left:18px}
+ :global(.markdown-body .missing-image){display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px;border:1px dashed var(--border);border-radius:6px}
+ :global(.markdown-body .image-locate){font-size:12px}
+ .diagram-modal[open]{display:flex;flex-direction:column;width:calc(100vw - 32px);height:calc(100dvh - 32px);max-width:none;max-height:none;padding:0;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text)}
+ .diagram-modal::backdrop{background:#0008}
+ .diagram-modal header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);gap:12px}
+ .expanded-warning{padding:8px 12px;margin:0;background:var(--panel);font-size:12px}
+ :global(.markdown-body .mermaid-render){position:relative}
+ :global(.markdown-body .diagram-expand){position:absolute;right:8px;top:8px;opacity:0}
+ :global(.markdown-body .mermaid-render:hover .diagram-expand),:global(.markdown-body .mermaid-render:focus-within .diagram-expand){opacity:1}
+ @media(hover:none){:global(.markdown-body .diagram-expand){opacity:1}}
+ @media print{.diagram-modal[open]{display:none}.diagram-modal::backdrop{display:none}:global(.markdown-body .diagram-expand){display:none}}
  :global(.markdown-body input[type="checkbox"]:not(:disabled)){cursor:pointer}
  :global(.markdown-body input[type="checkbox"]:focus-visible){outline:2px solid var(--accent);outline-offset:3px}
  :global(.markdown-body .enlace-roto){color:var(--muted);text-decoration:underline dotted;cursor:help}
