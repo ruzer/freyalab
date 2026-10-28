@@ -54,6 +54,9 @@ describe('AC-00 · detección externa y opcional',()=>{
   expect(paths).toContain('C:\\Users\\Freya\\AppData\\Local\\Pandoc\\pandoc.exe')
   expect(paths.every(path=>win32.isAbsolute(path)&&path.endsWith('pandoc.exe'))).toBe(true)
  })
+ it('Windows detecta un directorio portátil entrecomillado con espacios en PATH',()=>{
+  expect(pandocPaths('win32',{Path:'"C:\\Portable Tools\\Pandoc";C:\\Windows'})[0]).toBe('C:\\Portable Tools\\Pandoc\\pandoc.exe')
+ })
  it('no busca en carpetas relativas o entradas vacías del PATH',()=>{
   expect(pandocPaths('linux',{PATH:':.:relative:/safe/bin:'})).not.toEqual(expect.arrayContaining(['pandoc','relative/pandoc']))
   expect(pandocPaths('linux',{PATH:':.:relative:/safe/bin:'})[0]).toBe('/safe/bin/pandoc')

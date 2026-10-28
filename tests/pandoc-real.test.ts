@@ -67,12 +67,12 @@ describe.skipIf(!pandoc.available)('AC-00 · P4 con Pandoc real',()=>{
   expect(zipFiles(await pandocToDocx(executable,source)).get('word/document.xml')?.toString()).not.toMatch(/<w:(?:fldChar|instrText)/)
  })
  it('hallazgos 3/4: no incrusta imágenes por ruta, pero admite la imagen data ya autorizada',async()=>{
-  const image=join(folder,'fuera.png');await writeFile(image,png)
-  const control=zipFiles(await unsafe(`![externa](${image.replaceAll('\\','/')})`))
+  const image=join(folder,'fuera con espacios.png');await writeFile(image,png)
+  const control=zipFiles(await unsafe(`![externa](${image.replaceAll('\\','/')})`,['-f','markdown-raw_attribute-raw_html-raw_tex-yaml_metadata_block']))
   expect([...control.keys()].filter(path=>path.startsWith('word/media/'))).toHaveLength(1)
   const files=zipFiles(await pandocToDocx(executable,`![externa](${image.replaceAll('\\','/')})\n\n![interna](fuera.png)\n\n![autorizada](data:image/png;base64,${png.toString('base64')})`))
   expect([...files.keys()].filter(path=>path.startsWith('word/media/'))).toHaveLength(1)
-  expect(files.get('word/_rels/document.xml.rels')?.toString()).not.toContain('fuera.png')
+  expect(files.get('word/_rels/document.xml.rels')?.toString()).not.toContain('fuera con espacios.png')
  })
  it('un documento no carga filtros nombrados en el YAML',async()=>{
   const filter=join(folder,'filtro.lua'),marker=join(folder,'filtro-ejecutado')

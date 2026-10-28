@@ -11,7 +11,7 @@ export type PandocStatus={available:true;path:string;version:string;license:'GPL
 export function pandocPaths(platform:NodeJS.Platform,environment:NodeJS.ProcessEnv):string[] {
  const windows=platform==='win32',path=windows?win32:posix,executable=windows?'pandoc.exe':'pandoc'
  const pathValue=Object.entries(environment).find(([key])=>windows?key.toLowerCase()==='path':key==='PATH')?.[1]??''
- const folders=pathValue.split(windows?';':':').filter(folder=>folder&&path.isAbsolute(folder))
+ const folders=pathValue.split(windows?';':':').map(folder=>windows?folder.replace(/^"(.*)"$/,'$1'):folder).filter(folder=>folder&&path.isAbsolute(folder))
  if(windows){
   for(const folder of [environment.LOCALAPPDATA,environment.ProgramFiles,environment['ProgramFiles(x86)']])if(folder)folders.push(path.join(folder,'Pandoc'))
   if(environment.ProgramData)folders.push(path.join(environment.ProgramData,'chocolatey','bin'))
