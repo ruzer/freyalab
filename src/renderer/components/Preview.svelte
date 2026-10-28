@@ -220,6 +220,19 @@
  </dialog>
 {/if}
 <style>
+ :global(.markdown-body .report-cover){padding:40px 24px;text-align:center;border-bottom:1px solid var(--border)}
+ :global(.markdown-body .report-cover h1){font-size:32px}
+ :global(.markdown-body .report-cover p){margin:12px 0}
+ :global(.markdown-body .report-subtitle){font-size:22px}
+ :global(.markdown-body .report-abstract){text-align:left;margin-top:36px;white-space:pre-line}
+ :global(.markdown-body .report-index){margin:24px 0}
+ :global(.markdown-body .report-index ol){list-style:none;padding:0}
+ :global(.markdown-body .report-index li){margin:5px 0}
+ :global(.markdown-body .report-level-2){margin-left:16px!important}
+ :global(.markdown-body .report-level-3){margin-left:32px!important}
+ :global(.markdown-body .report-level-4){margin-left:48px!important}
+ :global(.markdown-body .report-level-5){margin-left:64px!important}
+ :global(.markdown-body .report-level-6){margin-left:80px!important}
  :global(.markdown-body figure){margin:24px 0;break-inside:avoid}
  :global(.markdown-body figcaption){margin-top:8px;font-size:13px;line-height:1.6;color:var(--text)}
  :global(.markdown-body figure img){display:block;margin:auto}

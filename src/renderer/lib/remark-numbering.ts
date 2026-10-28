@@ -1,11 +1,11 @@
 type Node={type:string;value?:string;alt?:string;identifier?:string;label?:string;url?:string;children?:Node[];position?:{start:{offset?:number};end:{offset?:number}};data?:{hName?:string;hProperties?:Record<string,unknown>}}
 export interface NumberedItem {key:string;id:string;number:number;label:string;caption:string}
-export interface Numbering {figures:NumberedItem[];tables:NumberedItem[];warnings:string[];targets:Map<string,{tag:string;properties:Record<string,unknown>}>;labels:{fig:string;tbl:string}}
+export interface Numbering {language:string;figures:NumberedItem[];tables:NumberedItem[];warnings:string[];targets:Map<string,{tag:string;properties:Record<string,unknown>;caption?:NumberedItem}>;labels:{fig:string;tbl:string}}
 export function numberingFor(frontMatter?:string):Numbering {
  const language=/^lang[ \t]*:[ \t]*["']?([a-z]{2})(?:[-_\s"']|$)/im.exec(frontMatter??'')?.[1].toLowerCase()??'es'
  const labels:Record<string,[string,string]>={es:['Figura','Tabla'],en:['Figure','Table'],fr:['Figure','Tableau'],pt:['Figura','Tabela'],de:['Abbildung','Tabelle'],it:['Figura','Tabella']}
  const [fig,tbl]=labels[language]??labels.es
- return{figures:[],tables:[],warnings:[],targets:new Map(),labels:{fig,tbl}}
+ return{language,figures:[],tables:[],warnings:[],targets:new Map(),labels:{fig,tbl}}
 }
 const keyPattern='[\\p{L}\\p{N}][\\p{L}\\p{N}_.:-]*'
 const imageId=new RegExp(`^\\s*\\{#(fig:${keyPattern})\\}\\s*$`,'u')
@@ -28,7 +28,7 @@ export default function remarkNumbering(this:{parse:(source:string)=>Node},numbe
    if(known.has(key))numbering.warnings.push(`El identificador «${key}» está repetido. La referencia lleva a su primera aparición.`)
    else known.set(key,item)
    numbering.targets.set(`user-content-freya-${id}`,{tag:'figure',properties:{id,className:[kind==='fig'?'academic-figure':'academic-table']}})
-   numbering.targets.set(`user-content-freya-caption-${id}`,{tag:'figcaption',properties:{}})
+   numbering.targets.set(`user-content-freya-caption-${id}`,{tag:'figcaption',properties:{},caption:item})
    return{type:'academicFigure',data:{hName:'div',hProperties:{id:`freya-${id}`}},children:[content,{type:'paragraph',data:{hProperties:{id:`freya-caption-${id}`}},children:[{type:'text',value:`${label}. `},...caption]}]}
   }
   function blocks(parent:Node){

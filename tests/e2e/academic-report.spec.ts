@@ -61,3 +61,41 @@ test('AC-01 N2,N7 · repetidos y ausentes son comprensibles; las etiquetas hosti
  const missing=article().locator('.enlace-roto');await expect(missing).not.toHaveAttribute('tabindex');await missing.click();await expect(page.locator('.toast')).toContainText('tbl:ausente')
  expect((await state())?.text).toBe(text);expect(await readFile(path,'utf8')).toBe(text)
 })
+
+test('AC-02 C1–C5 · portada e índices optativos llegan a HTML y PDF sin contaminar el índice lateral',async()=>{
+ const metadata='portada: true\ntitle: Informe académico 2026\nsubtitle: Evidencia local\nauthor: ["Ana Pérez", "Luis Chen"]\ndate: 2026-10-28\ninstitution: Universidad de prueba\nabstract: |\n  Un reporte reproducible.\n  Conserva sus datos originales.\ntoc: true\nlof: true\nlot: true\nprivado: CANARIO_NO_EXPORTAR'
+ const text=`---\n${metadata}\n---\n\n${source}`
+ await open(text)
+ await expect(article().locator('.report-cover')).toBeVisible();await expect(article().locator('.report-cover h1')).toHaveText('Informe académico 2026')
+ await expect(article().locator('.report-author')).toHaveText('Ana Pérez, Luis Chen')
+ await page.locator('.document-tools').getByRole('button',{name:'Índice',exact:true}).click()
+ await expect(page.getByRole('tabpanel',{name:'Índice del documento',exact:true}).locator('.sidebar-heading')).toHaveText(['Informe de prueba'])
+ await expect(article().locator('.report-toc a')).toHaveText(['Informe de prueba'])
+ await expect(article().locator('.report-figures a')).toHaveText(['Figura 1. Primer resultado','Figura 2. Segundo resultado'])
+ await expect(article().locator('.report-tables a')).toHaveText(['Tabla 1. Datos revisados']);await anchors()
+ for(const theme of ['light','dark']){
+  await page.getByLabel('Tema',{exact:true}).selectOption(theme);await settled();await page.locator('.preview').evaluate(node=>node.scrollTop=0)
+  if(process.env.FREYALAB_AC_EVIDENCE==='1')await page.screenshot({path:`docs/evidence/ac-02-${theme}-1440x900.png`,animations:'disabled'})
+ }
+ const htmlPath=await exportFile('html'),html=await readFile(htmlPath,'utf8');await test.info().attach('reporte-html',{body:Buffer.from(html),contentType:'text/html'});if(process.env.FREYALAB_AC_EVIDENCE==='1')await writeFile(resolve('docs/evidence/ac-02-informe.html'),html);expect(html).toContain('Informe académico 2026');expect(html).toContain('report-figures');expect(html).not.toContain('CANARIO_NO_EXPORTAR')
+ const opened=app.waitForEvent('window');await app.evaluate(async({BrowserWindow},path)=>{const window=new BrowserWindow({show:true,width:1000,height:800,webPreferences:{sandbox:true,contextIsolation:true,nodeIntegration:false,javascript:false,partition:`ac02-export-${Date.now()}`}});await window.loadFile(path)},htmlPath)
+ const external=await opened;await external.waitForLoadState();expect(await external.evaluate(()=>typeof window.freya)).toBe('undefined');await expect(external.locator('script')).toHaveCount(0);await expect(external.locator('.report-cover h1')).toHaveText('Informe académico 2026');await anchors(external);await external.close()
+ const pdf=await readFile(await exportFile('pdf'));await test.info().attach('reporte-pdf',{body:pdf,contentType:'application/pdf'});if(process.env.FREYALAB_AC_EVIDENCE==='1')await writeFile(resolve('docs/evidence/ac-02-informe.pdf'),pdf)
+ const{getDocument}=await import('pdfjs-dist/legacy/build/pdf.mjs'),loading=getDocument({data:new Uint8Array(pdf),useSystemFonts:true})
+ try{
+  const pdf=await loading.promise;expect(pdf.numPages).toBeGreaterThanOrEqual(2)
+  const pages:string[]=[];for(let index=1;index<=pdf.numPages;index++)pages.push((await(await pdf.getPage(index)).getTextContent()).items.map(item=>'str'in item?item.str:'').join(' ').replace(/\s+/g,' '))
+  expect(pages[0]).toContain('Informe académico 2026');expect(pages[0]).toContain('Ana Pérez, Luis Chen');expect(pages[0]).not.toContain('Informe de prueba');expect(pages.slice(1).join(' ')).toContain('Informe de prueba');expect(pages.join(' ')).not.toContain('CANARIO_NO_EXPORTAR')
+  await test.info().attach('pdf-portada',{body:Buffer.from(JSON.stringify({pages:pdf.numPages,firstPage:pages[0],remainingPages:pages.slice(1)})),contentType:'application/json'})
+ }finally{await loading.destroy()}
+ expect((await state())?.text).toBe(text);expect((await state())?.dirty).toBe(false);expect(await readFile(path,'utf8')).toBe(text)
+})
+test('AC-02 C4 · los metadatos hostiles son texto y las opciones desactivadas no generan secciones',async()=>{
+ const text='---\nportada: true\ntitle: <script>window.__AC02=1</script>\nauthor: <img src=x onerror=CANARIO>\nabstract: </section><iframe src=CANARIO>\n---\n\n# Cuerpo seguro'
+ await open(text);await expect(article().locator('.report-cover')).toBeVisible();await expect(article().locator('.report-cover h1')).toHaveText('<script>window.__AC02=1</script>');await expect(article().locator('script,iframe,[onclick],[onerror]')).toHaveCount(0)
+ expect(await page.evaluate(()=>(window as typeof window&{__AC02?:number}).__AC02)).toBeUndefined()
+ const html=await readFile(await exportFile('html'),'utf8');expect(html).toContain('&lt;script&gt;');expect(html).not.toContain('<iframe')
+ const changed=text.replace('portada: true','portada: false')
+ await page.locator('.cm-content').click();await page.keyboard.press('ControlOrMeta+A');await page.keyboard.insertText(changed)
+ await expect(article().locator('.report-cover,.report-index')).toHaveCount(0);await expect(article().getByRole('heading',{name:'Cuerpo seguro'})).toBeVisible();expect(await readFile(path,'utf8')).toBe(text)
+})
