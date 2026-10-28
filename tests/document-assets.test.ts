@@ -149,7 +149,7 @@ it('traversal y referencias fuera de assets no se copian, permanecen intactas y 
 
 for(const scenario of [{name:'ausente',file:'no.png',images:{} as Record<string,Uint8Array>,error:/No se encontró/},{name:'mayor de 8 MiB',file:'grande.png',images:{'grande.png':Buffer.alloc(8*1024*1024+1)},error:/8 MiB/}])it(`un activo propio ${scenario.name} aborta sin guardar un documento incompleto`,async()=>{
  const source=`![x](a.assets/${scenario.file})`,{doc,path}=await original(source,scenario.images)
- await expect(docs.save(doc.id,true)).rejects.toThrow(scenario.error)
+ const saving=docs.save(doc.id,true);await expect(saving).rejects.toThrow(scenario.error);await expect(saving).rejects.toThrow(scenario.file)
  expect(docs.info(doc.id)).toMatchObject({path,text:source});expect(await readFile(path,'utf8')).toBe(source);expect(await readdir(dirname(state.target))).toEqual([])
 })
 

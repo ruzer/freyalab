@@ -66,7 +66,7 @@
  let opening=$state<{id:string;phase:string}|null>(null)
  async function cancelOpening(){const id=opening?.id;if(id)await window.freya.cancelOpen(id).catch(()=>{})}
  let toastTimer:ReturnType<typeof setTimeout>
- function error(message:string){opening=null;toastKind='error';toast=message.replace(/^Error:\s*/,'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',7000)}
+ function error(message:string){opening=null;toastKind='error';toast=message.replace(/^Error:\s*/,'').replace(/^Error invoking remote method '[^']+':\s*(?:Error:\s*)?/,'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',7000)}
  function notify(message:string){toastKind='info';status=message;toast=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',3500)}
  function toggleSidebar(){sidebar=!sidebar;remember('freya-sidebar',String(sidebar))}
  async function selectSidebarTab(tab:SidebarTab,focus=false){

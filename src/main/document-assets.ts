@@ -166,7 +166,7 @@ export async function saveMarkdownCopy(source:string,previousPath:string|null,de
    }catch(error){assets.warnings.push(`${url}: ${error instanceof Error?error.message:'No se pudo interpretar la referencia.'}`);continue}
    let file=files.get(path)
    if(!file){
-    const bytes=await imageBytes(previousRoot,path)
+    const bytes=await imageBytes(previousRoot,path).catch(error=>{throw new Error(`${basename(path)}: ${assetError(error).message}`,{cause:error})})
     const local=relative(previousRoot,path),key=folded(local)
     if(names.has(key))throw new Error('Hay una colisión entre nombres de activos que solo cambian en mayúsculas o acentos Unicode.')
     names.add(key)

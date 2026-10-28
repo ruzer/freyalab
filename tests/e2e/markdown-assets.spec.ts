@@ -105,3 +105,12 @@ test('A4 · Guardar como avisa de la imagen externa y refresca su resolución de
  await expect(article().locator('img')).toHaveAttribute('alt','Imagen no disponible: Fuera');await expect(article().getByRole('button',{name:/Buscar imagen.*Fuera/})).toBeVisible()
  expect(await readFile(path,'utf8')).toBe(source);expect(await readFile(target,'utf8')).toBe(source);expect(await readdir(join(folder,'destino'))).toEqual(['Copia á.md'])
 })
+
+test('U1 · Guardar como nombra el activo propio ausente sin mostrar el prefijo remoto',async()=>{
+ const source='![Perdida](a.assets/foto%20%C3%A1.png)\n',{path,doc}=await open(source)
+ await page.getByRole('button',{name:'Guardar como',exact:true}).click()
+ const toast=page.locator('.toast.error');await expect(toast).toContainText('foto á.png');await expect(toast).toContainText('No se encontró')
+ const message=await toast.innerText();expect(message).not.toContain('Error invoking remote method');expect(message).not.toContain('Error:')
+ expect((await current(doc.id))?.path).toBe(path);expect(await readFile(path,'utf8')).toBe(source);expect(await readdir(join(folder,'destino'))).toEqual([])
+})
+
