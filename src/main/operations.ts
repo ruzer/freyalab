@@ -24,8 +24,9 @@ async function freeBytes(dir:string){try{const s=await statfs(dir);return Number
 
 const eolName=(eol:string)=>eol==='\r\n'?'CRLF':eol==='\n'?'LF':eol==='\r'?'CR':JSON.stringify(eol)
 const bomBytes=(encoding:Encoding)=>encoding==='utf16le'?Buffer.from([0xff,0xfe]):Buffer.from([0xef,0xbb,0xbf])
-const decoderUtf8=new TextDecoder('utf-8',{fatal:true})
-function decode(bytes:Buffer,encoding:Encoding){return encoding==='utf8'?decoderUtf8.decode(bytes):iconv.decode(bytes,encoding)}
+// File signatures have already been skipped; preserve literal U+FEFF at batch boundaries.
+const decoderUtf8=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true})
+function decode(bytes:Buffer,encoding:Encoding){return encoding==='utf8'?decoderUtf8.decode(bytes):iconv.decode(bytes,encoding,{stripBOM:false})}
 const recordNumber=(ordinal:number)=>(ordinal+1).toLocaleString('es')
 function parseRecords(text:string,state:OperationSourceState){
  return parseSync(text,{delimiter:state.delimiter,bom:false,relax_column_count:true,skip_empty_lines:false,record_delimiter:RECORD_DELIMITERS}) as string[][]

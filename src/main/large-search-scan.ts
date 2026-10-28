@@ -1,6 +1,5 @@
 import {isUtf8} from 'node:buffer'
-import iconv from 'iconv-lite'
-import {recordBatches,splitFields,validateRecordQuotes,type LargeIndex} from './large-table'
+import {recordBatches,splitFields,validateRecordQuotes,decodeRecord,type LargeIndex} from './large-table'
 import {compileTableQuery} from './table-query'
 import type {LargeViewQuery} from '../shared/types'
 
@@ -31,7 +30,7 @@ export async function scanSearch(task:SearchTask,send:(chunk:SearchChunk)=>void|
    if(header&&ordinal===0)continue
    scanned++
    if(!candidate||(folded&&!folded.subarray(from,cursor).includes(needle!)))continue
-   const text=(utf8?raw.toString('utf8'):iconv.decode(raw,index.encoding)).replace(/(\r\n|\n|\r)$/,'')
+   const text=decodeRecord(raw,index.encoding).replace(/(\r\n|\n|\r)$/,'')
    if(compiled.matches(splitFields(text,delimiter,through))){rows.push(ordinal+(header?0:1));positions.push(start);lengths.push(raw.length)}
   }
   if(rows.length||performance.now()-lastProgress>=250){await send({rows:Float64Array.from(rows),positions:Float64Array.from(positions),lengths:Uint32Array.from(lengths),scanned,position});lastProgress=performance.now()}

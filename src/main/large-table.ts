@@ -133,7 +133,8 @@ async function bounds(handle: Awaited<ReturnType<typeof open>>, index: LargeInde
  return out.slice(0, count)
 }
 
-const decode = (bytes: Buffer, encoding: Encoding) => encoding === 'utf8' ? bytes.toString('utf8') : iconv.decode(bytes, encoding)
+// The index already skips the file signature. A leading U+FEFF in a record is data.
+export const decodeRecord = (bytes: Buffer, encoding: Encoding) => encoding === 'utf8' ? bytes.toString('utf8') : iconv.decode(bytes, encoding,{stripBOM:false})
 
 // Texto de `count` registros desde `from` (sin su salto de línea final). Lee solo los bytes necesarios.
 export async function readRecords(index: LargeIndex, from: number, count: number): Promise<string[]> {
@@ -143,7 +144,7 @@ export async function readRecords(index: LargeIndex, from: number, count: number
   const limits = await bounds(handle, index, from, Math.min(count, index.records - from)); if (!limits.length) return []
   const first = limits[0][0], last = limits[limits.length - 1][1], bytes = Buffer.alloc(last - first)
   let read = 0; while (read < bytes.length) { const {bytesRead} = await handle.read(bytes, read, bytes.length - read, first + read); if (!bytesRead) break; read += bytesRead }
-  return limits.map(([start, end]) => decode(bytes.subarray(start - first, end - first), index.encoding).replace(/(\r\n|\n|\r)$/, ''))
+  return limits.map(([start, end]) => decodeRecord(bytes.subarray(start - first, end - first), index.encoding).replace(/(\r\n|\n|\r)$/, ''))
  } finally { await handle.close() }
 }
 
@@ -168,7 +169,7 @@ export function splitFields(record: string, delimiter: string, through?:number):
 
 // Read-only searches still reject invalid quote boundaries, including records discarded by a byte prefilter.
 export function validateRecordQuotes(raw:Buffer,index:Pick<LargeIndex,'encoding'|'unit'>,delimiter:string){
- const bytes=index.unit===2?Buffer.from(decode(raw,index.encoding).replace(/(\r\n|\n|\r)$/,'')):raw
+ const bytes=index.unit===2?Buffer.from(decodeRecord(raw,index.encoding).replace(/(\r\n|\n|\r)$/,'')):raw
  let end=bytes.length
  if(bytes[end-1]===10){end--;if(bytes[end-1]===13)end--}else if(bytes[end-1]===13)end--
  let next=0
