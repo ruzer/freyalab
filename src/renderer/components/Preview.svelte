@@ -1,16 +1,42 @@
 <script lang="ts">
  import {tick,onMount,onDestroy} from 'svelte'
+ import type {DiagramError} from '../lib/diagram-errors'
+ import {matchDiagramBlocks,diagramDocumentLine,type DiagramBlock} from '../lib/diagram-diagnostics'
+ import type {DiagramDiagnostics,DiagramMark} from '../lib/diagram-marks'
  import {explainDiagramError} from '../lib/diagram-errors'
- import {markdownHTML,diagramSVG,standaloneHTML,decodeFragment,type Heading} from '../lib/render'
+ import {markdownHTML,diagramSVG,validateDiagram,standaloneHTML,decodeFragment,type Heading} from '../lib/render'
  import {currentHeading,type HeadingMetric} from '../lib/outline'
  import {parseTags} from '../../shared/front-matter'
  import type {TaskReference} from '../lib/markdown-tasks'
- let {text,id,dark=false,readonly=true,renderEnabled=true,ontask,onheadings,onerror,oncurrent,onfiltertag}:{text:string;id:string;dark?:boolean;readonly?:boolean;renderEnabled?:boolean;ontask?:(id:string,snapshot:string,reference:TaskReference)=>boolean;onfiltertag?:(tag:string)=>void;oncurrent?:(id:string|undefined)=>void;onheadings:(headings:Heading[],source:string)=>void;onerror:(message:string)=>void}=$props()
+ let {text,id,dark=false,readonly=true,renderEnabled=true,ontask,onheadings,onerror,oncurrent,onfiltertag,candidates,ondiagnostics}:{candidates?:{source:string;blocks:DiagramBlock[];complete:boolean};ondiagnostics?:(value:DiagramDiagnostics)=>void;text:string;id:string;dark?:boolean;readonly?:boolean;renderEnabled?:boolean;ontask?:(id:string,snapshot:string,reference:TaskReference)=>boolean;onfiltertag?:(tag:string)=>void;oncurrent?:(id:string|undefined)=>void;onheadings:(headings:Heading[],source:string)=>void;onerror:(message:string)=>void}=$props()
  let busy=$state(false),announcement=$state(''),container:HTMLElement,article:HTMLElement
  let renderForExport=$state(false)
  let frontMatter=$state<string|undefined>(undefined)
  const tags=$derived(parseTags(frontMatter))
  let diagramBlocks:{source:string;dark:boolean;node:HTMLElement}[]=[]
+ let renderDiagnostics=$state<{source:string;results:{source:string;error?:DiagramError}[]}|undefined>(),diagnosticGeneration=0
+ $effect(()=>{
+  const source=text,theme=dark,enabled=renderEnabled||renderForExport,token=++diagnosticGeneration
+  const blocks=candidates?.source===source&&candidates.complete?candidates.blocks:undefined,rendered=renderDiagnostics
+  const publish=(results:{source:string;error?:DiagramError}[],matches:(DiagramBlock|undefined)[])=>{
+   if(token!==diagnosticGeneration||disposed)return
+   const marks:DiagramMark[]=[]
+   results.forEach((result,index)=>{const line=result.error&&result.error.kind!=='tipo'&&matches[index]?diagramDocumentLine(matches[index]!,result.error.line):undefined;if(line&&result.error)marks.push({line,error:result.error})})
+   ondiagnostics?.({source,generation:token,marks,errors:results.flatMap(result=>result.error?[result.error]:[])})
+  }
+  if(enabled){if(rendered?.source===source)publish(rendered.results,matchDiagramBlocks(rendered.results.map(result=>result.source),blocks??[]));return}
+  if(!blocks)return
+  const timer=setTimeout(async()=>{
+   const results:{source:string;error?:DiagramError}[]=[]
+   for(const block of blocks){
+    try{await validateDiagram(block.source,theme);results.push({source:block.source})}
+    catch(error){results.push({source:block.source,error:explainDiagramError(error instanceof Error?error.message:String(error),block.source)})}
+    if(token!==diagnosticGeneration||disposed)return
+   }
+   publish(results,blocks)
+  },150)
+  return()=>clearTimeout(timer)
+ })
  let taskTargets=new WeakMap<HTMLInputElement,{id:string;source:string;reference:TaskReference}>()
  let generation=0,completion:Promise<void>=Promise.resolve(),renderError='',missing=0,disposed=false
  let headingNodes:HTMLElement[]=[],metrics:HeadingMetric[]=[],metricFrame=0,viewportHeight=0,scrollHeight=0,lastCurrent:string|undefined|null=null
@@ -100,7 +126,7 @@
      input.disabled=locked||!ontask;taskTargets.set(input,{id:docId,source,reference})
      if(focusedTask?.id===docId&&focusedTask.reference.from===reference.from&&!input.disabled)input.focus({preventScroll:true})
     }
-    const errors:string[]=[]
+    const errors:string[]=[],diagnosticResults:{source:string;error?:DiagramError}[]=[]
     const loadImages=async()=>{for(const {image,src} of images){
      const data=await window.freya.image(docId,src).catch(()=>null)
      if(token!==generation)return
@@ -108,10 +134,11 @@
      scheduleMetrics()
     }}
     const loadDiagrams=async()=>{for(const [index,diagram] of diagrams.entries()){
-     try{const svg=await diagramSVG(diagram.source,theme);if(token!==generation)return;const block=document.createElement('div');block.className='mermaid-render';block.innerHTML=svg;diagram.node.replaceWith(block);diagram.node=block;scheduleMetrics()}
+     try{const svg=await diagramSVG(diagram.source,theme);if(token!==generation)return;const block=document.createElement('div');block.className='mermaid-render';block.innerHTML=svg;diagram.node.replaceWith(block);diagram.node=block;scheduleMetrics();diagnosticResults.push({source:diagram.source})}
      catch(error){
       if(token!==generation)return
       const explanation=explainDiagramError(error instanceof Error?error.message:String(error),diagram.source)
+      diagnosticResults.push({source:diagram.source,error:explanation})
       const block=document.createElement('div');block.className=explanation.kind==='vacio'?'diagram-notice diagram-empty':'diagram-error diagram-notice'
       const title=document.createElement('strong');title.textContent=explanation.title
       const hint=document.createElement('p');hint.textContent=explanation.hint
@@ -125,14 +152,14 @@
       diagram.node.replaceWith(block);diagram.node=block;scheduleMetrics()
       errors.push(`Diagrama ${index+1}. ${explanation.title} ${explanation.hint} ${location}`)
      }
-    };if(token===generation)announcement=errors.join(' ')}
+    };if(token===generation){announcement=errors.join(' ');renderDiagnostics={source,results:diagnosticResults}}}
     await Promise.all([loadImages(),loadDiagrams()])
    }catch(error){if(token===generation){renderError=error instanceof Error?error.message:String(error);onerror(renderError)}}
    finally{if(token===generation)busy=false;finish()}
   },150)
   return()=>{clearTimeout(timer);finish()}
  })
- onDestroy(()=>{disposed=true;generation++;cancelAnimationFrame(metricFrame)})
+ onDestroy(()=>{disposed=true;generation++;diagnosticGeneration++;cancelAnimationFrame(metricFrame)})
  onMount(()=>{
   const observer=new ResizeObserver(scheduleMetrics);observer.observe(container);observer.observe(article)
   container.addEventListener('scroll',publishCurrent,{passive:true});container.addEventListener('toggle',scheduleMetrics,true)

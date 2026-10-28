@@ -18,6 +18,8 @@
  import Icon from './components/Icon.svelte'
  import {kindIcon,fileKind} from './lib/icons'
  import type {Heading} from './lib/render'
+ import type {DiagramBlock} from './lib/diagram-diagnostics'
+ import type {DiagramDiagnostics} from './lib/diagram-marks'
  import {normalizeTag} from '../shared/front-matter'
  import {tokensFileQuery,tagQueryToken} from '../shared/tag-query'
  import {matchHeadings,currentHeading as headingAtPosition,type EditorHeading} from './lib/outline'
@@ -50,6 +52,11 @@
  const editorHeading=$derived(headingAtPosition(editorPositions,editorLine,0,Infinity))
  let markdownState=$state(lineFormatState('',0)),textSelection=$state<TextSelection|null>(null)
  let editor=$state<Editor>(),preview=$state<Preview>(),diagram=$state<Diagram>(),csv=$state<CsvTable>()
+ let diagramCandidates=$state<{id:string;source:string;blocks:DiagramBlock[];complete:boolean}|undefined>()
+ let diagnostics=$state<{id:string;value:DiagramDiagnostics}|undefined>()
+ function receiveBlocks(id:string){return(blocks:DiagramBlock[],source:string,complete:boolean)=>{if(id===activeId&&source===active?.text)diagramCandidates={id,source,blocks,complete}}}
+ function receiveDiagnostics(id:string){return(value:DiagramDiagnostics)=>{if(id!==activeId||value.source!==active?.text)return;diagnostics={id,value}}}
+ $effect(()=>{const current=diagnostics,owner=editor;if(current?.id===activeId&&current.value.source===active?.text)owner?.setDiagnostics(current.value)})
  const pending=new Map<string,Promise<unknown>>()
  const textSessions=new Map<string,MarkdownSession>()
  // Apertura de un archivo grande en curso (se indexa de una pasada): progreso y botón para cancelar.
@@ -93,7 +100,7 @@
   const from=headingPositions.get(heading.id)
   if(from===undefined||!editor?.goToHeading(from,headingsSource))notify('Ese título no se puede localizar en el editor')
  }
- function activate(id:string){if(activeId===id)return;activeId=id;headings=[];headingDocument='';previewHeading=undefined;headingsSource='';editorSource='';editorHeadings=[];editorLine=0;editorDocument=''}
+ function activate(id:string){if(activeId===id)return;activeId=id;diagramCandidates=undefined;diagnostics=undefined;headings=[];headingDocument='';previewHeading=undefined;headingsSource='';editorSource='';editorHeadings=[];editorLine=0;editorDocument=''}
  $effect(()=>{
   const tab=effectiveSidebarTab,shown=sidebar,target=tab==='files'?filesScroll:indexScroll
   if(shown&&target)void tick().then(()=>{if(sidebar&&effectiveSidebarTab===tab&&target.isConnected)target.scrollTop=sidebarScroll[tab]})
@@ -200,8 +207,8 @@
       <div class="document-tools"><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div>{#if active.kind==='markdown'&&mode!=='preview'}<MarkdownToolbar readonly={active.readonly} formatState={markdownState} onformat={(action,language)=>editor?.format(action,language)}/>{/if}<span class="spacer"></span><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> Buscar</button>{#if active.kind==='markdown'}<button class="text-button" class:active={indexVisible} aria-pressed={indexVisible} onclick={toggleIndex}><Icon name="table-of-contents" size={14}/> Índice</button>{/if}</div>
       {#if active.warning}<div class="warning-banner">{active.warning}</div>{/if}
       <div class="document-panes">
-       {#if active.kind!=='markdown'||mode!=='preview'}<div class:hidden={mode==='preview'&&active.kind!=='text'} class="editor-pane" style:width={mode==='split'&&active.kind!=='text'?`${split}%`:'100%'}><div class="pane-caption">{active.kind==='mermaid'?'DEFINICIÓN MERMAID':active.kind==='text'?'TEXTO':'MARKDOWN'}{#if active.readonly}<span>Solo lectura</span>{/if}</div><Editor bind:this={editor} session={active.kind==='markdown'?textSession(active):undefined} ontransactions={active.kind==='markdown'?receiveText(active.id):undefined} text={active.text??''} readonly={active.readonly} kind={active.kind} onformatstate={state=>markdownState=state} onselection={selection=>textSelection=selection} onchange={text=>updateText(active!.id,text)} onscroll={ratio=>{if(mode==='split')preview?.scrollRatio(ratio)}} outlineEnabled={active.kind==='markdown'&&mode==='edit'&&indexVisible} onoutline={receiveEditorHeadings(active.id)} oncurrentline={receiveEditorLine(active.id)}/></div>{/if}
-       {#if active.kind!=='text'}<button class:hidden={mode!=='split'} class="resize-handle split-handle" aria-valuenow={split} aria-valuemin="20" aria-valuemax="80" role="slider" aria-label="Ancho del editor" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSplit} onkeydown={e=>{if(e.key==='ArrowRight')split=Math.min(80,split+2);if(e.key==='ArrowLeft')split=Math.max(20,split-2)}}></button><div class:hidden={mode==='edit'} class="preview-pane"><div class="pane-caption">VISTA PREVIA <span>{active.kind==='mermaid'?'SVG':'Renderizado local'}</span></div>{#if active.kind==='mermaid'}<Diagram bind:this={diagram} text={active.text??''} {dark} onerror={error}/>{:else}<Preview bind:this={preview} text={active.text??''} id={active.id} renderEnabled={mode!=='edit'||indexVisible} {dark} readonly={active.readonly} ontask={toggleTask} onheadings={receiveHeadings(active.id)} oncurrent={receiveCurrent(active.id)} onfiltertag={filterByTag} onerror={error}/>{/if}</div>{/if}
+       {#if active.kind!=='markdown'||mode!=='preview'}<div class:hidden={mode==='preview'&&active.kind!=='text'} class="editor-pane" style:width={mode==='split'&&active.kind!=='text'?`${split}%`:'100%'}><div class="pane-caption">{active.kind==='mermaid'?'DEFINICIÓN MERMAID':active.kind==='text'?'TEXTO':'MARKDOWN'}{#if active.readonly}<span>Solo lectura</span>{/if}</div><Editor bind:this={editor} session={active.kind==='markdown'?textSession(active):undefined} ontransactions={active.kind==='markdown'?receiveText(active.id):undefined} text={active.text??''} readonly={active.readonly} kind={active.kind} onformatstate={state=>markdownState=state} onselection={selection=>textSelection=selection} onchange={text=>updateText(active!.id,text)} onscroll={ratio=>{if(mode==='split')preview?.scrollRatio(ratio)}} outlineEnabled={active.kind==='markdown'&&mode==='edit'&&indexVisible} onoutline={receiveEditorHeadings(active.id)} oncurrentline={receiveEditorLine(active.id)} onblocks={active.kind==='markdown'?receiveBlocks(active.id):undefined}/></div>{/if}
+       {#if active.kind!=='text'}<button class:hidden={mode!=='split'} class="resize-handle split-handle" aria-valuenow={split} aria-valuemin="20" aria-valuemax="80" role="slider" aria-label="Ancho del editor" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSplit} onkeydown={e=>{if(e.key==='ArrowRight')split=Math.min(80,split+2);if(e.key==='ArrowLeft')split=Math.max(20,split-2)}}></button><div class:hidden={mode==='edit'} class="preview-pane"><div class="pane-caption">VISTA PREVIA <span>{active.kind==='mermaid'?'SVG':'Renderizado local'}</span></div>{#if active.kind==='mermaid'}<Diagram bind:this={diagram} text={active.text??''} {dark} onerror={error} ondiagnostics={receiveDiagnostics(active.id)}/>{:else}<Preview bind:this={preview} text={active.text??''} id={active.id} renderEnabled={mode!=='edit'||indexVisible} candidates={diagramCandidates?.id===active.id?diagramCandidates:undefined} ondiagnostics={receiveDiagnostics(active.id)} {dark} readonly={active.readonly} ontask={toggleTask} onheadings={receiveHeadings(active.id)} oncurrent={receiveCurrent(active.id)} onfiltertag={filterByTag} onerror={error}/>{/if}</div>{/if}
       </div>
      {/if}
     {/key}
