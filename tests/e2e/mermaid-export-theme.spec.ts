@@ -244,7 +244,7 @@ test('cerrar la pestaña mientras espera el render cancela la salida de la vista
   for(let i=0;i<4;i++)await Promise.resolve()
   document.querySelector<HTMLButtonElement>(`.tab-close[aria-label=${JSON.stringify('Cerrar '+name)}]`)!.click()
  },doc.name)
- await expect(page.getByRole('tab')).toHaveCount(0)
+ await expect(page.getByRole('tablist',{name:'Documentos abiertos',exact:true}).getByRole('tab')).toHaveCount(0)
  await expect(page.locator('.toast')).toContainText('Corrige el diagrama antes de exportar.')
  expect(await readdir(join(directory,'exports'))).toEqual([])
 })

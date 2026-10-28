@@ -96,7 +96,7 @@ test(`cerrar una pestaña limpia ${scenario.name} mientras espera exportar cance
  },{name:doc.name,label:scenario.label})
  await test.info().attach('cierre-durante-exportacion',{body:Buffer.from(JSON.stringify(result)),contentType:'application/json'})
  expect(result.waiting).toBe(true)
- await expect(page.getByRole('tab')).toHaveCount(0);await expect(page.locator('.toast')).toContainText(scenario.message)
+ await expect(page.getByRole('tablist',{name:'Documentos abiertos',exact:true}).getByRole('tab')).toHaveCount(0);await expect(page.locator('.toast')).toContainText(scenario.message)
  expect(await readdir(join(folder,'exports'))).toEqual([]);expect(await readFile(path,'utf8')).toBe(scenario.text)
 })
 }

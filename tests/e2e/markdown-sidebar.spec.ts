@@ -153,7 +153,7 @@ test('P7: alternar conserva árbol expandido, búsqueda, resultados y desplazami
  const tree=sidebar().locator('.tree-scroll'),treeTop=await scroll(tree,240);expect(treeTop).toBeGreaterThan(0)
  await indexTab().click();await expect(indexPanel()).toContainText('Apartado 80');const indexTop=await scroll(indexPanel(),220);expect(indexTop).toBeGreaterThan(0)
  await filesTab().click();await expect(branch).toHaveAttribute('aria-expanded','true');await expect.poll(()=>scroll(tree)).toBe(treeTop)
- await page.getByLabel('Buscar archivo',{exact:true}).fill('objetivo');await expect(sidebar().getByRole('status')).toHaveText('40 archivos encontrados');const names=await sidebar().locator('.file-search-result').allTextContents(),searchTop=await scroll(tree,180);expect(searchTop).toBeGreaterThan(0)
+ await page.getByLabel('Buscar archivo',{exact:true}).fill('objetivo');await expect(sidebar().locator('.file-search-status')).toHaveText('40 archivos encontrados');const names=await sidebar().locator('.file-search-result').allTextContents(),searchTop=await scroll(tree,180);expect(searchTop).toBeGreaterThan(0)
  await indexTab().click();await expect.poll(()=>scroll(indexPanel())).toBe(indexTop);await filesTab().click();await expect(page.getByLabel('Buscar archivo',{exact:true})).toHaveValue('objetivo');expect(await sidebar().locator('.file-search-result').allTextContents()).toEqual(names);await expect.poll(()=>scroll(tree)).toBe(searchTop)
 })
 
