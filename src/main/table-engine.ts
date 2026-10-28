@@ -55,7 +55,7 @@ function recordBytes(record:string[],encoding:Encoding,delimiter:string){return 
 
 export class TableEngine {
  // `largeBytes` e `indexChunk` solo los cambian las pruebas: fuerzan el modo grande con archivos pequeños.
- constructor(private progress:(event:SqlProgress)=>void=()=>{},private options:{largeBytes?:number;indexChunk?:number;extractBatch?:number;extractDelayMs?:number;freeBytes?:(dir:string)=>Promise<number>;viewWorkers?:number;viewWorkerPath?:URL|string;viewBatch?:number;viewChunk?:number;viewDelayMs?:number;viewLimit?:number;viewBytes?:number}={}){this.diskViews=new LargeViews({workers:options.viewWorkers,workerPath:options.viewWorkerPath,batchRecords:options.viewBatch,chunk:options.viewChunk,delayMs:options.viewDelayMs,limit:options.viewLimit,bytes:options.viewBytes})}
+ constructor(private progress:(event:SqlProgress)=>void=()=>{},private options:{largeBytes?:number;indexChunk?:number;extractBatch?:number;extractDelayMs?:number;freeBytes?:(dir:string)=>Promise<number>;viewWorkers?:number;viewWorkerPath?:URL|string;viewBatch?:number;viewChunk?:number;viewDelayMs?:number;viewLimit?:number;viewBytes?:number;viewPrefilter?:boolean;viewPartial?:boolean}={}){this.diskViews=new LargeViews({workers:options.viewWorkers,workerPath:options.viewWorkerPath,batchRecords:options.viewBatch,chunk:options.viewChunk,delayMs:options.viewDelayMs,limit:options.viewLimit,bytes:options.viewBytes,prefilter:options.viewPrefilter,partial:options.viewPartial})}
  private diskViews:LargeViews
  private states = new Map<string, State>()
  private queries = new Map<string, number>()

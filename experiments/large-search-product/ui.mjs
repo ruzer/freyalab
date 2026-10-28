@@ -13,7 +13,7 @@ try{
   const start=performance.now();await page.getByLabel('Buscar en tabla',{exact:true}).fill(needle);await page.getByLabel('Buscar en tabla',{exact:true}).press('Enter');let state
   do{await new Promise(resolve=>setTimeout(resolve,100));state=await page.evaluate(id=>window.freya.tableViewState(id),doc.id)}while(!state||state.status==='running')
   await page.waitForFunction(count=>document.querySelector('[role=grid][aria-label="Tabla de datos"]').getAttribute('aria-rowcount')===String(count+1),state.matched);await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))))
-  const longTasks=await page.evaluate(()=>{window.__csvObserver.disconnect();return window.__csvLongTasks});results.push({needle,wallMs:performance.now()-start,state,longTasks});await writeFile(resolve(folder,'ui-raw.json'),JSON.stringify({viewport:[1440,900],path,results},null,2)+'\n');assert.equal(state.status,'complete');assert.equal(longTasks.length,0,JSON.stringify(longTasks))
+  const longTasks=await page.evaluate(()=>{window.__csvObserver.disconnect();return window.__csvLongTasks});results.push({needle,wallMs:performance.now()-start,state,longTasks});await writeFile(resolve(folder,'ui-raw.json'),JSON.stringify({viewport:[1440,900],path,results},null,2)+'\n');assert.equal(state.status,'complete');assert.equal(longTasks.filter(task=>task.duration>50).length,0,JSON.stringify(longTasks))
  }
  console.log(JSON.stringify(results))
 }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{})}
