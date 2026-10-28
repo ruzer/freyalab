@@ -26,3 +26,5 @@ Además: 1/2/4/8 workers con todas las coincidencias; una coincidencia; páginas
 `build.mjs` congela SHA de fuente y bundle/mapa; `verify.mjs` exige igualdad al terminar. No ejecutarlo en CI. El observador de tareas de interfaz se mide por separado en la aplicación real; este banco no prueba la respuesta del renderer.
 
 El resumen se genera con `node experiments/large-search-product/summarize.mjs <carpeta>` y conserva por separado O3/O0 (ganancia total) y O3/O2 (sólo paralelismo), sin atribuir a O3 las otras palancas. Un manifiesto incompleto no recibe veredicto de cierre.
+
+Antes de la matriz final se puede derivar el diagnóstico O0 con `node experiments/large-search-product/baseline.mjs <carpeta>`: 18 muestras de búsqueda global (100 MiB y ancho irregular, tres series). Se usa `baseline.json` en el lanzador y en `summarize.mjs <carpeta> baseline.json`. Su raw y bundles se conservan por separado si una optimización exige otra fuente congelada.
