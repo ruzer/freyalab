@@ -80,7 +80,7 @@ describe('AC-00 · frontera de invocación',()=>{
   const result=await pandocToDocx(process.execPath,'---\nlua-filter: /secret.lua\n---\n# Informe')
   expect(result.subarray(0,4)).toEqual(Buffer.from('PK\x03\x04'))
   const call=invoked.execFile.mock.calls.find(([,args])=>args.includes('--sandbox'))!
-  expect(call[1]).toEqual(['--sandbox','--data-dir',expect.any(String),'-f','markdown-raw_attribute-raw_html-raw_tex-yaml_metadata_block','-t','docx'])
+  expect(call[1]).toEqual(['--sandbox','--data-dir',expect.any(String),'-f','markdown-raw_attribute-raw_html-raw_tex-yaml_metadata_block','-t','docx','-o','-'])
   expect(call[1].join(' ')).not.toMatch(/--(?:lua-filter|filter|defaults|metadata-file|pdf-engine)/)
   expect(call[2]).toMatchObject({shell:false,timeout:10_000,maxBuffer:64*1024*1024,windowsHide:true,cwd:call[1][2]})
   expect(invoked.input).toHaveBeenLastCalledWith('# Informe')
@@ -90,6 +90,11 @@ describe('AC-00 · frontera de invocación',()=>{
   const result=await testPandoc(process.execPath)
   expect(result).toMatchObject({ok:true,bytes:expect.any(Number)})
   expect(invoked.input).toHaveBeenLastCalledWith(expect.stringContaining('FreyaLab'))
+ })
+ it('fuerza stdout explícito para que Pandoc Windows no trate la salida DOCX como terminal',async()=>{
+  await pandocToDocx(process.execPath,'# Informe')
+  const args=invoked.execFile.mock.calls.find(([,args])=>args.includes('--sandbox'))![1]
+  expect(args.slice(-2)).toEqual(['-o','-'])
  })
  it('Probar Pandoc rechaza una salida que no es un DOCX',async()=>{
   invoked.execFile.mockImplementation((_path:string,args:string[],_options:unknown,done:(error:Error|null,stdout:Buffer,stderr:Buffer)=>void)=>{

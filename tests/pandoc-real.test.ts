@@ -41,7 +41,7 @@ describe.skipIf(!pandoc.available)('AC-00 · P4 con Pandoc real',()=>{
   vi.unstubAllEnvs()
  })
  async function unsafe(source:string,args:string[]=[]):Promise<Buffer> {
-  const child=execFile(executable,['-f','markdown','-t','docx',...args],{encoding:'buffer',timeout:10_000,maxBuffer:64*1024*1024})
+  const child=execFile(executable,['-f','markdown','-t','docx','-o','-',...args],{encoding:'buffer',timeout:10_000,maxBuffer:64*1024*1024})
   child.stdin?.end(source)
   return new Promise((resolve,reject)=>{const parts:Buffer[]=[];child.stdout?.on('data',chunk=>parts.push(chunk));child.on('error',reject);child.on('close',code=>code===0?resolve(Buffer.concat(parts)):reject(new Error(`Pandoc de control terminó con ${code}`)))})
  }
@@ -86,7 +86,7 @@ describe.skipIf(!pandoc.available)('AC-00 · P4 con Pandoc real',()=>{
  it('un servidor local verificado recibe cero peticiones de la conversión protegida',async()=>{
   const source=`![remota](http://127.0.0.1:${port}/canary.png)`
   hits=0;const response=await fetch(`http://127.0.0.1:${port}/control.png`);await response.arrayBuffer();expect(hits).toBe(1)
-  hits=0;const control=run(executable,['-f','markdown','-t','docx'],{encoding:'buffer',timeout:10_000})
+  hits=0;const control=run(executable,['-f','markdown','-t','docx','-o','-'],{encoding:'buffer',timeout:10_000})
   control.child.stdin?.end(source)
   const{stderr}=await control,hasHTTP=!stderr.toString().includes('compiled without HTTP support')
   expect(hits).toBe(hasHTTP?1:0)

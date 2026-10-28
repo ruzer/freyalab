@@ -77,7 +77,7 @@ export async function pandocToDocx(executablePath:string,source:string):Promise<
  const directory=await mkdtemp(join(tmpdir(),'freyalab-pandoc-'))
  try{
   // El lector también veta YAML intermedio: Pandoc lo reconoce fuera del encabezado.
-  return await runPandoc(pandoc.path,['--sandbox','--data-dir',directory,'-f','markdown-raw_attribute-raw_html-raw_tex-yaml_metadata_block','-t','docx'],body,directory)
+  return await runPandoc(pandoc.path,['--sandbox','--data-dir',directory,'-f','markdown-raw_attribute-raw_html-raw_tex-yaml_metadata_block','-t','docx','-o','-'],body,directory)
  }finally{await rm(directory,{recursive:true,force:true})}
 }
 
