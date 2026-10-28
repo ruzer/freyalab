@@ -1,0 +1,85 @@
+name: Pandoc real P4
+on:
+  pull_request:
+    paths:
+      - .github/workflows/pandoc-real.yml
+      - src/main/pandoc.ts
+      - tests/pandoc-real.test.ts
+      - package-lock.json
+permissions:
+  contents: read
+jobs:
+  pandoc-p4:
+    name: Pandoc P4 ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            asset: pandoc-3.10.2-linux-amd64.tar.gz
+            sha256: c7edd535941c48be6a362081a748272837de81ae11777202d9c341d3d8261c9a
+          - os: windows-2025
+            asset: pandoc-3.10.2-windows-x86_64.zip
+            sha256: 52487faaa63f8cef5363d5a771097da001228d61c6f44f32ed41b27a98c0278c
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Preparar Pandoc 3.10.2 temporal con SHA256 fijado
+        env:
+          PANDOC_ASSET: ${{ matrix.asset }}
+          PANDOC_EXPECTED_SHA256: ${{ matrix.sha256 }}
+        run: |
+          $pandocRoot = Join-Path $env:RUNNER_TEMP 'pandoc-p4'
+          $pandocUnpacked = Join-Path $pandocRoot 'unpacked'
+          $pandocArchive = Join-Path $pandocRoot $env:PANDOC_ASSET
+          New-Item -ItemType Directory -Force $pandocUnpacked | Out-Null
+          Invoke-WebRequest -Uri "https://github.com/jgm/pandoc/releases/download/3.10.2/$env:PANDOC_ASSET" -OutFile $pandocArchive
+          $pandocDigest = (Get-FileHash -LiteralPath $pandocArchive -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($pandocDigest -ne $env:PANDOC_EXPECTED_SHA256) { throw 'SHA256 de Pandoc incorrecto; no se extrae ni ejecuta' }
+          if ($IsWindows) {
+            Expand-Archive -LiteralPath $pandocArchive -DestinationPath $pandocUnpacked
+            $pandocName = 'pandoc.exe'
+          } else {
+            tar -xzf $pandocArchive -C $pandocUnpacked
+            if ($LASTEXITCODE -ne 0) { throw 'No se pudo extraer Pandoc' }
+            $pandocName = 'pandoc'
+          }
+          $pandocCandidates = @(Get-ChildItem -LiteralPath $pandocUnpacked -Recurse -File -Filter $pandocName)
+          if ($pandocCandidates.Count -ne 1) { throw 'El archivo de Pandoc no contiene un único ejecutable esperado' }
+          $pandocExecutable = $pandocCandidates[0].FullName
+          $pandocVersion = & $pandocExecutable --version
+          if ($LASTEXITCODE -ne 0 -or $pandocVersion[0] -ne 'pandoc 3.10.2') { throw 'Versión de Pandoc distinta de 3.10.2' }
+          "FREYALAB_PANDOC_TEST_PATH=$pandocExecutable" | Out-File -LiteralPath $env:GITHUB_ENV -Append -Encoding utf8
+          @{ sourceSha = (git rev-parse HEAD); runner = '${{ matrix.os }}'; version = $pandocVersion[0]; path = $pandocExecutable; sha256 = $pandocDigest; node = (node --version) } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP 'pandoc-environment.json') -Encoding utf8
+      - name: Ejecutar solamente las seis pruebas P4 existentes sin omisiones
+        run: |
+          $pandocReport = Join-Path $env:RUNNER_TEMP 'pandoc-real.json'
+          $pandocLog = Join-Path $env:RUNNER_TEMP 'pandoc-real.log'
+          npx --no-install vitest run tests/pandoc-real.test.ts --retry=0 --reporter=default --reporter=json "--outputFile=$pandocReport" 2>&1 | Tee-Object -FilePath $pandocLog
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $pandocResults = Get-Content -LiteralPath $pandocReport -Raw | ConvertFrom-Json
+          $pandocAssertions = @($pandocResults.testResults | ForEach-Object { $_.assertionResults })
+          if (-not $pandocResults.success -or $pandocAssertions.Count -ne 6 -or @($pandocAssertions | Where-Object { $_.status -ne 'passed' }).Count -ne 0) { throw 'P4 requiere seis pruebas aprobadas y cero omisiones' }
+          $pandocOutput = Get-Content -LiteralPath $pandocLog -Raw
+          if (-not $pandocOutput.Contains('AC-00 P4 real:') -or -not $pandocOutput.Contains('"version":"3.10.2"')) { throw 'Falta identidad del Pandoc real ejecutado' }
+          if (-not $pandocOutput.Contains('control Pandoc con HTTP: 1 petición')) { throw 'El binario no demuestra el control positivo HTTP requerido' }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pandoc-p4-${{ matrix.os }}
+          path: |
+            ${{ runner.temp }}/pandoc-real.json
+            ${{ runner.temp }}/pandoc-real.log
+            ${{ runner.temp }}/pandoc-environment.json
+          if-no-files-found: warn
