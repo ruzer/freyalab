@@ -2,8 +2,9 @@
  import {onMount,onDestroy,tick} from 'svelte'
  import Icon from './Icon.svelte'
  import {diagramSVG,standaloneHTML} from '../lib/render'
+ import type {DiagramDiagnostics} from '../lib/diagram-marks'
  import {explainDiagramError,type DiagramError} from '../lib/diagram-errors'
- let {text,dark,onerror}:{text:string;dark:boolean;onerror:(message:string)=>void}=$props()
+ let {text,dark,onerror,ondiagnostics}:{text:string;dark:boolean;onerror:(message:string)=>void;ondiagnostics?:(value:DiagramDiagnostics)=>void}=$props()
  let svg=$state(''),failure=$state<DiagramError|null>(null),busy=$state(false),zoom=$state(1),host:HTMLDivElement,generation=0,completion:Promise<void>=Promise.resolve()
  let disposed=false,validSource:string|undefined,validTheme:boolean|undefined
  let fitted=$state(true),natural=$state({width:1,height:1}),available=$state({width:1,height:1})
@@ -37,7 +38,7 @@
   const timer=setTimeout(async()=>{
    try{const result=await diagramSVG(source,theme);if(token!==generation)return;svg=result;validSource=source;validTheme=theme;failure=null}
    catch(error){if(token===generation)failure=explainDiagramError(error instanceof Error?error.message:String(error),source)}
-   finally{if(token===generation)busy=false;finish()}
+   finally{if(token===generation){busy=false;ondiagnostics?.({source,generation:token,marks:failure?.line&&failure.kind!=='tipo'?[{line:failure.line,error:failure}]:[],errors:failure?[failure]:[]})}finish()}
   },150)
   return()=>{clearTimeout(timer);finish()}
  })

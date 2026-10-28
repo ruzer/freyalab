@@ -2,9 +2,10 @@
  import {onMount,tick} from 'svelte'
  import {Transaction} from '@codemirror/state'
  import {undo as undoText,redo as redoText} from '@codemirror/commands'
+ import {assetTransaction} from './lib/asset-changes'
  import {createMarkdownSession,taskTransaction,type TaskReference,type MarkdownSession} from './lib/markdown-tasks'
  import appIcon from '../../build/icon.png'
- import type {DocumentInfo,Kind,TreeEntry,RecoveryEntry,ExportRequest} from '../shared/types'
+ import type {DocumentInfo,Kind,TreeEntry,RecoveryEntry,ExportRequest,AssetChange} from '../shared/types'
  import Editor from './components/Editor.svelte'
  import MarkdownToolbar from './components/MarkdownToolbar.svelte'
  import TextStats from './components/TextStats.svelte'
@@ -18,6 +19,8 @@
  import Icon from './components/Icon.svelte'
  import {kindIcon,fileKind} from './lib/icons'
  import type {Heading} from './lib/render'
+ import type {DiagramBlock} from './lib/diagram-diagnostics'
+ import type {DiagramDiagnostics} from './lib/diagram-marks'
  import {normalizeTag} from '../shared/front-matter'
  import {tokensFileQuery,tagQueryToken} from '../shared/tag-query'
  import {matchHeadings,currentHeading as headingAtPosition,type EditorHeading} from './lib/outline'
@@ -38,6 +41,8 @@
  let theme=$state(preference('freya-theme','system')),systemDark=$state(matchMedia('(prefers-color-scheme: dark)').matches)
  const dark=$derived(theme==='system'?systemDark:theme==='dark')
  const active=$derived(documents.find(doc=>doc.id===activeId))
+ let assetBusy=$state<Record<string,string>>({})
+ const editingLocked=$derived(!active||active.readonly||!!assetBusy[active.id])
  const effectiveSidebarTab=$derived(active?.kind==='markdown'?sidebarTab:'files')
  const indexVisible=$derived(sidebar&&effectiveSidebarTab==='outline'&&active?.kind==='markdown')
  const outlineHeadings=$derived(headingDocument===activeId?headings:[])
@@ -50,6 +55,11 @@
  const editorHeading=$derived(headingAtPosition(editorPositions,editorLine,0,Infinity))
  let markdownState=$state(lineFormatState('',0)),textSelection=$state<TextSelection|null>(null)
  let editor=$state<Editor>(),preview=$state<Preview>(),diagram=$state<Diagram>(),csv=$state<CsvTable>()
+ let diagramCandidates=$state<{id:string;source:string;blocks:DiagramBlock[];complete:boolean}|undefined>()
+ let diagnostics=$state<{id:string;value:DiagramDiagnostics}|undefined>()
+ function receiveBlocks(id:string){return(blocks:DiagramBlock[],source:string,complete:boolean)=>{if(id===activeId&&source===active?.text)diagramCandidates={id,source,blocks,complete}}}
+ function receiveDiagnostics(id:string){return(value:DiagramDiagnostics)=>{if(id!==activeId||value.source!==active?.text)return;diagnostics={id,value}}}
+ $effect(()=>{const current=diagnostics,owner=editor;if(current?.id===activeId&&current.value.source===active?.text)owner?.setDiagnostics(current.value)})
  const pending=new Map<string,Promise<unknown>>()
  const textSessions=new Map<string,MarkdownSession>()
  // Apertura de un archivo grande en curso (se indexa de una pasada): progreso y botón para cancelar.
@@ -93,7 +103,7 @@
   const from=headingPositions.get(heading.id)
   if(from===undefined||!editor?.goToHeading(from,headingsSource))notify('Ese título no se puede localizar en el editor')
  }
- function activate(id:string){if(activeId===id)return;activeId=id;headings=[];headingDocument='';previewHeading=undefined;headingsSource='';editorSource='';editorHeadings=[];editorLine=0;editorDocument=''}
+ function activate(id:string){if(activeId===id)return;activeId=id;diagramCandidates=undefined;diagnostics=undefined;headings=[];headingDocument='';previewHeading=undefined;headingsSource='';editorSource='';editorHeadings=[];editorLine=0;editorDocument=''}
  $effect(()=>{
   const tab=effectiveSidebarTab,shown=sidebar,target=tab==='files'?filesScroll:indexScroll
   if(shown&&target)void tick().then(()=>{if(sidebar&&effectiveSidebarTab===tab&&target.isConnected)target.scrollTop=sidebarScroll[tab]})
@@ -116,15 +126,15 @@
  }}
  function toggleTask(id:string,snapshot:string,reference:TaskReference){
   const doc=documents.find(value=>value.id===id)
-  if(!doc||id!==activeId||doc.kind!=='markdown'||doc.readonly)return false
+  if(!doc||id!==activeId||doc.kind!=='markdown'||doc.readonly||assetBusy[id])return false
   const session=textSession(doc),transaction=doc.text===snapshot?taskTransaction(session.state,snapshot,reference):undefined
   if(!transaction){notify('La lista cambió. Espera a que se actualice la vista previa y vuelve a intentarlo.');return false}
   receiveText(id)([transaction]);return true
  }
  async function searchText(){if(active?.kind==='markdown'&&mode==='preview'){mode='edit';await tick()}editor?.search()}
- function merge(doc:DocumentInfo,focus=false){
+ function merge(doc:DocumentInfo,focus=false,assetUpdate?:{source:string;changes:AssetChange[];undoable:boolean}){
   const session=textSessions.get(doc.id)
-  if(session&&doc.text!==undefined&&doc.text!==session.state.sliceDoc()){const transaction=session.state.update({changes:{from:0,to:session.state.doc.length,insert:doc.text},annotations:Transaction.addToHistory.of(false)});session.state=transaction.state;session.receive?.([transaction])}
+  if(session&&doc.text!==undefined&&doc.text!==session.state.sliceDoc()){const transaction=assetUpdate?assetTransaction(session.state,assetUpdate.source,assetUpdate.changes,doc.text,assetUpdate.undoable):session.state.update({changes:{from:0,to:session.state.doc.length,insert:doc.text},annotations:Transaction.addToHistory.of(false)});if(!transaction)throw new Error('El documento cambió durante la operación. Se conserva tu edición; revisa la copia guardada antes de continuar.');session.state=transaction.state;session.receive?.([transaction])}
   if(opening?.id===doc.id)opening=null;documents=documents.some(d=>d.id===doc.id)?documents.map(d=>d.id===doc.id?doc:d):[...documents,doc];if(focus||!activeId)activate(doc.id)}
  async function action<T>(operation:()=>Promise<T>):Promise<T|undefined>{try{return await operation()}catch(e){error(e instanceof Error?e.message:String(e))}}
  async function open(){await action(async()=>{for(const doc of await window.freya.open())merge(doc,true);recent=await window.freya.recents()})}
@@ -134,11 +144,34 @@
  function updateText(id:string,text:string){documents=documents.map(d=>d.id===id?{...d,text,dirty:true}:d);const previous=pending.get(id)??Promise.resolve();const task=previous.catch(()=>{}).then(()=>window.freya.update(id,text)).then(doc=>{const current=documents.find(d=>d.id===id);if(current?.text===text)merge(doc)}).catch(e=>{error(String(e));throw e});pending.set(id,task);void task.catch(()=>{}).finally(()=>{if(pending.get(id)===task)pending.delete(id)})}
  async function openStatisticsReport(text:string){await action(async()=>{if(new TextEncoder().encode(text).byteLength>10*1024*1024)throw new Error('El informe supera el límite de edición de 10 MiB. Reduce el alcance del análisis.');const doc=await window.freya.newDocument('markdown');merge(doc,true);updateText(doc.id,text);await pending.get(doc.id)})}
  // Las rutas del diálogo y del documento pueden usar alias distintos del sistema.
- async function save(as=false){if(!active)return;const id=active.id;await action(async()=>{await pending.get(id);const doc=await window.freya.save(id,as);if(doc){merge(doc);external=external.filter(value=>value!==id);if(doc.kind==='markdown')tagsRefresh++;notify('Archivo guardado')}})}
- async function reload(id:string){await action(async()=>{merge(await window.freya.reload(id));external=external.filter(value=>value!==id)})}
- async function close(id:string){await action(async()=>{await pending.get(id);if(await window.freya.close(id)){const index=documents.findIndex(d=>d.id===id);documents=documents.filter(d=>d.id!==id);textSessions.delete(id);delete collapsedByDocument[id];if(activeId===id)activate(documents[Math.max(0,index-1)]?.id??'')}})}
- async function undo(redo=false){if(!active||active.readonly)return;if(active.kind==='csv')await csv?.undoEdit(redo);else if(active.kind==='markdown'){const id=active.id,session=textSession(active);(redo?redoText:undoText)({state:session.state,dispatch:transaction=>receiveText(id)([transaction])})}else if(redo)editor?.redoEdit();else editor?.undoEdit()}
- async function exportDocument(format:ExportRequest['format']){if(!active)return;exportMenu=false;busy=true;await action(async()=>{await pending.get(active!.id);const request:ExportRequest={format};if(active!.kind==='csv'){request.table=csv?.exportOptions(exportScope)}else if(active!.kind==='mermaid'){if(format==='svg'||format==='png')request.svg=await diagram?.exportSVG();else request.html=await diagram?.exportHTML()}else request.html=await preview?.exportHTML();const missing=active!.kind==='markdown'?preview?.missingImages()??0:0;const path=await window.freya.export(active!.id,request);if(path)notify(`Exportado: ${path}`+(missing?` · ${missing===1?'1 imagen no se encontró':`${missing} imágenes no se encontraron`}; se exportó con su texto alternativo`:''))});busy=false}
+ async function save(as=false){
+  if(!active||editingLocked)return
+  const id=active.id,markdown=active.kind==='markdown'
+  if(markdown&&editor?.isComposing()){notify('Termina de escribir antes de guardar el documento.');return}
+  if(markdown)assetBusy[id]='Guardando…'
+  try{await action(async()=>{
+   await pending.get(id);const snapshot=documents.find(doc=>doc.id===id)?.text??'',saved=await window.freya.save(id,as)
+   if(saved){const {assets,...doc}=saved;merge(doc,false,assets?{source:snapshot,changes:assets.changes,undoable:false}:undefined);external=external.filter(value=>value!==id);if(doc.kind==='markdown')tagsRefresh++
+    notify(['Archivo guardado',...(assets?.copied?[`${assets.copied===1?'Se copió':'Se copiaron'} ${assets.copied} ${assets.copied===1?'imagen':'imágenes'}`]:[]),...(assets?.warnings??[])].join(' · '))
+   }
+  })}finally{delete assetBusy[id]}
+ }
+ async function locateImage(id:string,snapshot:string,source:string){
+  const doc=documents.find(doc=>doc.id===id)
+  if(!doc||id!==activeId||doc.readonly||assetBusy[id])return
+  if(doc.text!==snapshot){notify('La vista previa cambió. Espera a que termine de actualizarse y vuelve a buscar la imagen.');return}
+  if(!doc.path){notify('Guarda el documento para poder insertar imágenes');return}
+  if(editor?.isComposing()){notify('Termina de escribir antes de buscar la imagen.');return}
+  assetBusy[id]='Buscando imagen…'
+  try{await action(async()=>{
+   await pending.get(id);const found=await window.freya.locateImage(id,source)
+   if(found){const {assets,...updated}=found;merge(updated,false,assets?{source:snapshot,changes:assets.changes,undoable:true}:undefined);notify('Imagen copiada. Guarda el documento para conservar la nueva referencia.')}
+  })}finally{delete assetBusy[id];if(activeId===id){await tick();if(mode==='preview')preview?.focus();else editor?.focus()}}
+ }
+ async function reload(id:string){if(assetBusy[id])return;await action(async()=>{merge(await window.freya.reload(id));external=external.filter(value=>value!==id)})}
+ async function close(id:string){if(assetBusy[id])return;await action(async()=>{await pending.get(id);if(await window.freya.close(id)){const index=documents.findIndex(d=>d.id===id);documents=documents.filter(d=>d.id!==id);textSessions.delete(id);delete collapsedByDocument[id];if(activeId===id)activate(documents[Math.max(0,index-1)]?.id??'')}})}
+ async function undo(redo=false){if(!active||editingLocked)return;if(active.kind==='csv')await csv?.undoEdit(redo);else if(active.kind==='markdown'){const id=active.id,session=textSession(active);(redo?redoText:undoText)({state:session.state,dispatch:transaction=>receiveText(id)([transaction])})}else if(redo)editor?.redoEdit();else editor?.undoEdit()}
+ async function exportDocument(format:ExportRequest['format']){if(!active||assetBusy[active.id])return;exportMenu=false;busy=true;await action(async()=>{await pending.get(active!.id);const request:ExportRequest={format};if(active!.kind==='csv'){request.table=csv?.exportOptions(exportScope)}else if(active!.kind==='mermaid'){if(format==='svg'||format==='png')request.svg=await diagram?.exportSVG();else request.html=await diagram?.exportHTML()}else request.html=await preview?.exportHTML();const missing=active!.kind==='markdown'?preview?.missingImages()??0:0;const path=await window.freya.export(active!.id,request);if(path)notify(`Exportado: ${path}`+(missing?` · ${missing===1?'1 imagen no se encontró':`${missing} imágenes no se encontraron`}; se exportó con su texto alternativo`:''))});busy=false}
  async function recover(id:string){await action(async()=>{merge(await window.freya.recover(id),true);recoveries=await window.freya.recoveries()})}
  async function discard(id:string){await action(async()=>{await window.freya.discardRecovery(id);recoveries=await window.freya.recoveries()})}
  function keydown(event:KeyboardEvent){if(event.defaultPrevented||!(event.metaKey||event.ctrlKey))return;const key=event.key.toLowerCase();if(active?.kind==='markdown'&&!event.altKey&&(mode==='preview'||event.target instanceof Element&&!!event.target.closest('.preview'))&&(key==='z'||key==='y'&&!event.metaKey&&!event.shiftKey)){event.preventDefault();void undo(key==='y'||event.shiftKey)}else if(key==='o'){event.preventDefault();void(event.shiftKey?openFolder():open())}else if(key==='s'){event.preventDefault();void save(event.shiftKey)}else if(key==='n'){event.preventDefault();void create(event.shiftKey?'mermaid':event.altKey?'csv':'markdown')}else if(key==='b'){event.preventDefault();toggleSidebar()}else if(key==='w'&&active){event.preventDefault();void close(active.id)}}
@@ -175,7 +208,7 @@
  <header class="toolbar">
   <div class="toolbar-left"><button class="icon-button" aria-label="Mostrar u ocultar explorador" title="Explorador · Ctrl/Cmd B" onclick={toggleSidebar}><Icon name="panel-left"/></button><span class="separator"></span><button title="Abrir archivo · Ctrl/Cmd O" onclick={open}><Icon name="file"/> Abrir</button><button title="Abrir carpeta · Ctrl/Cmd Mayús O" aria-label="Abrir carpeta" onclick={openFolder}><Icon name="folder-open"/></button><div class="menu-anchor"><button title="Nuevo · Ctrl/Cmd N" onclick={()=>newMenu=!newMenu}><Icon name="plus"/> Nuevo <Icon name="chevron-down" size={12}/></button>{#if newMenu}<div class="dropdown">{#each [{kind:'markdown',label:'Documento Markdown'},{kind:'csv',label:'Tabla CSV'},{kind:'mermaid',label:'Diagrama Mermaid'},{kind:'text',label:'Texto plano'}] as item}<button onclick={()=>create(item.kind as Kind)}><span class="kind-{item.kind}"><Icon name={kindIcon[item.kind as Kind]}/></span> {item.label}</button>{/each}</div>{/if}</div></div>
   <div class="document-title">{#if active}<span class="tag">{active.kind==='markdown'?'MD':active.kind==='csv'?'CSV':active.kind==='mermaid'?'MMD':'TXT'}</span><strong class="truncate" title={active.path??active.name}>{active.name}</strong>{#if active.dirty}<span class="dirty-badge">● Editado</span>{/if}{:else}<img class="brand-mark small" src={appIcon} alt=""/><strong>FreyaLab</strong>{/if}</div>
-  <div class="toolbar-right"><button class="icon-button" title="Deshacer · Ctrl/Cmd Z" aria-label="Deshacer" disabled={!active||active.readonly} onclick={()=>undo()}><Icon name="undo-2"/></button><button class="icon-button" title="Rehacer · Ctrl/Cmd Mayús Z" aria-label="Rehacer" disabled={!active||active.readonly} onclick={()=>undo(true)}><Icon name="redo-2"/></button><button disabled={!active||active.readonly} title="Guardar · Ctrl/Cmd S" onclick={()=>save()}><Icon name="save"/> Guardar</button><button disabled={!active||active.readonly} title="Guardar como… · Ctrl/Cmd Mayús S" aria-label="Guardar como" onclick={()=>save(true)}><Icon name="save-all"/></button><div class="menu-anchor"><button class="primary" disabled={!active||active.readonly||busy||active.kind==='text'} title="Exportar una copia" onclick={()=>exportMenu=!exportMenu}><Icon name="upload"/> {busy?'Exportando…':'Exportar'} <Icon name="chevron-down" size={12}/></button>{#if exportMenu&&active}<div class="dropdown export-dropdown"><div class="dropdown-label">Exportar una copia</div>{#if active.kind==='csv'}<label>Contenido<select bind:value={exportScope}><option value="all">Documento completo</option><option value="filtered">Filas filtradas</option><option value="selection">Selección</option></select></label><button onclick={()=>exportDocument('csv')}>CSV</button><button onclick={()=>exportDocument('tsv')}>TSV</button>{:else}<button onclick={()=>exportDocument('pdf')}>Documento PDF</button>{#if active.kind==='mermaid'}<button onclick={()=>exportDocument('svg')}>Imagen SVG</button><button onclick={()=>exportDocument('png')}>Imagen PNG</button>{/if}<button onclick={()=>exportDocument('html')}>HTML autónomo</button><p style="max-width:240px;margin:8px 12px;font-size:11px;line-height:1.4;color:var(--muted);white-space:normal">Se exporta con colores claros para que se lea en papel y en cualquier pantalla</p>{/if}</div>{/if}</div></div>
+  <div class="toolbar-right"><button class="icon-button" title="Deshacer · Ctrl/Cmd Z" aria-label="Deshacer" disabled={editingLocked} onclick={()=>undo()}><Icon name="undo-2"/></button><button class="icon-button" title="Rehacer · Ctrl/Cmd Mayús Z" aria-label="Rehacer" disabled={editingLocked} onclick={()=>undo(true)}><Icon name="redo-2"/></button><button disabled={editingLocked} title="Guardar · Ctrl/Cmd S" onclick={()=>save()}><Icon name="save"/> Guardar</button><button disabled={editingLocked} title="Guardar como… · Ctrl/Cmd Mayús S" aria-label="Guardar como" onclick={()=>save(true)}><Icon name="save-all"/></button><div class="menu-anchor"><button class="primary" disabled={editingLocked||busy||active?.kind==='text'} title="Exportar una copia" onclick={()=>exportMenu=!exportMenu}><Icon name="upload"/> {busy?'Exportando…':'Exportar'} <Icon name="chevron-down" size={12}/></button>{#if exportMenu&&active}<div class="dropdown export-dropdown"><div class="dropdown-label">Exportar una copia</div>{#if active.kind==='csv'}<label>Contenido<select bind:value={exportScope}><option value="all">Documento completo</option><option value="filtered">Filas filtradas</option><option value="selection">Selección</option></select></label><button onclick={()=>exportDocument('csv')}>CSV</button><button onclick={()=>exportDocument('tsv')}>TSV</button>{:else}<button onclick={()=>exportDocument('pdf')}>Documento PDF</button>{#if active.kind==='mermaid'}<button onclick={()=>exportDocument('svg')}>Imagen SVG</button><button onclick={()=>exportDocument('png')}>Imagen PNG</button>{/if}<button onclick={()=>exportDocument('html')}>HTML autónomo</button><p style="max-width:240px;margin:8px 12px;font-size:11px;line-height:1.4;color:var(--muted);white-space:normal">Se exporta con colores claros para que se lea en papel y en cualquier pantalla</p>{/if}</div>{/if}</div></div>
  </header>
  <div class="workspace">
   {#if sidebar}<aside class="sidebar" style:width={`${sidebarWidth}px`}>
@@ -197,11 +230,11 @@
     {#key active.id}
      {#if active.kind==='csv'}<CsvTable bind:this={csv} doc={active} onchange={doc=>merge(doc)} onerror={error} onstatus={value=>status=value} onreport={openStatisticsReport}/>
      {:else}
-      <div class="document-tools"><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div>{#if active.kind==='markdown'&&mode!=='preview'}<MarkdownToolbar readonly={active.readonly} formatState={markdownState} onformat={(action,language)=>editor?.format(action,language)}/>{/if}<span class="spacer"></span><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> Buscar</button>{#if active.kind==='markdown'}<button class="text-button" class:active={indexVisible} aria-pressed={indexVisible} onclick={toggleIndex}><Icon name="table-of-contents" size={14}/> Índice</button>{/if}</div>
+      <div class="document-tools"><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div>{#if active.kind==='markdown'&&mode!=='preview'}<MarkdownToolbar readonly={editingLocked} formatState={markdownState} onformat={(action,language)=>editor?.format(action,language)}/>{/if}<span class="spacer"></span><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> Buscar</button>{#if active.kind==='markdown'}<button class="text-button" class:active={indexVisible} aria-pressed={indexVisible} onclick={toggleIndex}><Icon name="table-of-contents" size={14}/> Índice</button>{/if}</div>
       {#if active.warning}<div class="warning-banner">{active.warning}</div>{/if}
       <div class="document-panes">
-       {#if active.kind!=='markdown'||mode!=='preview'}<div class:hidden={mode==='preview'&&active.kind!=='text'} class="editor-pane" style:width={mode==='split'&&active.kind!=='text'?`${split}%`:'100%'}><div class="pane-caption">{active.kind==='mermaid'?'DEFINICIÓN MERMAID':active.kind==='text'?'TEXTO':'MARKDOWN'}{#if active.readonly}<span>Solo lectura</span>{/if}</div><Editor bind:this={editor} session={active.kind==='markdown'?textSession(active):undefined} ontransactions={active.kind==='markdown'?receiveText(active.id):undefined} text={active.text??''} readonly={active.readonly} kind={active.kind} onformatstate={state=>markdownState=state} onselection={selection=>textSelection=selection} onchange={text=>updateText(active!.id,text)} onscroll={ratio=>{if(mode==='split')preview?.scrollRatio(ratio)}} outlineEnabled={active.kind==='markdown'&&mode==='edit'&&indexVisible} onoutline={receiveEditorHeadings(active.id)} oncurrentline={receiveEditorLine(active.id)}/></div>{/if}
-       {#if active.kind!=='text'}<button class:hidden={mode!=='split'} class="resize-handle split-handle" aria-valuenow={split} aria-valuemin="20" aria-valuemax="80" role="slider" aria-label="Ancho del editor" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSplit} onkeydown={e=>{if(e.key==='ArrowRight')split=Math.min(80,split+2);if(e.key==='ArrowLeft')split=Math.max(20,split-2)}}></button><div class:hidden={mode==='edit'} class="preview-pane"><div class="pane-caption">VISTA PREVIA <span>{active.kind==='mermaid'?'SVG':'Renderizado local'}</span></div>{#if active.kind==='mermaid'}<Diagram bind:this={diagram} text={active.text??''} {dark} onerror={error}/>{:else}<Preview bind:this={preview} text={active.text??''} id={active.id} renderEnabled={mode!=='edit'||indexVisible} {dark} readonly={active.readonly} ontask={toggleTask} onheadings={receiveHeadings(active.id)} oncurrent={receiveCurrent(active.id)} onfiltertag={filterByTag} onerror={error}/>{/if}</div>{/if}
+       {#if active.kind!=='markdown'||mode!=='preview'}<div class:hidden={mode==='preview'&&active.kind!=='text'} class="editor-pane" style:width={mode==='split'&&active.kind!=='text'?`${split}%`:'100%'}><div class="pane-caption">{active.kind==='mermaid'?'DEFINICIÓN MERMAID':active.kind==='text'?'TEXTO':'MARKDOWN'}{#if assetBusy[active.id]}<span role="status">{assetBusy[active.id]}</span>{:else if active.readonly}<span>Solo lectura</span>{/if}</div><Editor bind:this={editor} session={active.kind==='markdown'?textSession(active):undefined} ontransactions={active.kind==='markdown'?receiveText(active.id):undefined} text={active.text??''} readonly={editingLocked} kind={active.kind} onformatstate={state=>markdownState=state} onselection={selection=>textSelection=selection} onchange={text=>updateText(active!.id,text)} onscroll={ratio=>{if(mode==='split')preview?.scrollRatio(ratio)}} outlineEnabled={active.kind==='markdown'&&mode==='edit'&&indexVisible} onoutline={receiveEditorHeadings(active.id)} oncurrentline={receiveEditorLine(active.id)} onblocks={active.kind==='markdown'?receiveBlocks(active.id):undefined}/></div>{/if}
+       {#if active.kind!=='text'}<button class:hidden={mode!=='split'} class="resize-handle split-handle" aria-valuenow={split} aria-valuemin="20" aria-valuemax="80" role="slider" aria-label="Ancho del editor" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSplit} onkeydown={e=>{if(e.key==='ArrowRight')split=Math.min(80,split+2);if(e.key==='ArrowLeft')split=Math.max(20,split-2)}}></button><div class:hidden={mode==='edit'} class="preview-pane"><div class="pane-caption">VISTA PREVIA <span>{active.kind==='mermaid'?'SVG':'Renderizado local'}</span></div>{#if active.kind==='mermaid'}<Diagram bind:this={diagram} text={active.text??''} {dark} onerror={error} ondiagnostics={receiveDiagnostics(active.id)}/>{:else}<Preview bind:this={preview} text={active.text??''} id={active.id} path={active.path} renderEnabled={mode!=='edit'||indexVisible} candidates={diagramCandidates?.id===active.id?diagramCandidates:undefined} ondiagnostics={receiveDiagnostics(active.id)} {dark} readonly={editingLocked} ontask={toggleTask} onheadings={receiveHeadings(active.id)} oncurrent={receiveCurrent(active.id)} onfiltertag={filterByTag} onlocateimage={locateImage} onerror={error}/>{/if}</div>{/if}
       </div>
      {/if}
     {/key}
