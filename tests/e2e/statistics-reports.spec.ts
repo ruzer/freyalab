@@ -37,6 +37,6 @@ test('informes del explorador: perfil, distribución, Pearson y página parcial 
  expect((await page.evaluate(()=>window.freya.documents())).find(d=>d.id===doc.id)).toEqual(before[0]);expect(await readFile(path,'utf8')).toBe(source)
 })
 
-test('informe de muestra exportable con alcance explícito sin habilitar la exportación del CSV parcial',async()=>{
+test('informe de muestra exportable con alcance explícito sin habilitar la exportación del CSV parcial',{tag:'@perf'},async()=>{
  const path=join(folder,'data.csv');await writeFile(path,'ID,N\n'+'00123,4\n'.repeat(250));await truncate(path,50*1024*1024+1);const before=await stat(path);await page.evaluate(path=>window.freya.openPaths([path]),path);const explorer=await explore('1');const output=await report(explorer);expect(output.text).toContain('MUESTRA LIMITADA');expect(output.text).not.toContain('Documento completo');await page.getByRole('button',{name:'Exportar',exact:true}).click();await page.getByRole('button',{name:'HTML autónomo',exact:true}).click();await expect(page.locator('.toast')).toContainText('Exportado:');await csvTab();await expect(page.getByRole('button',{name:'Exportar',exact:true})).toBeDisabled();expect((await stat(path)).size).toBe(before.size);expect((await stat(path)).mtimeMs).toBe(before.mtimeMs)
 })

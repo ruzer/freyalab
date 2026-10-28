@@ -86,7 +86,7 @@ test('F8: código y front matter reciben texto literal sin transformar el resto 
  ]){await open(item.text);await cursorAt(item.from);await insert('Fecha y hora');await expect.poll(source).toBe(item.expected);await page.keyboard.press('ControlOrMeta+Z');await expect.poll(source).toBe(item.text)}
 })
 
-test('F6: muestra Markdown de solo lectura deshabilita las fechas y TXT/Mermaid no ofrecen estas acciones',async()=>{
+test('F6: muestra Markdown de solo lectura deshabilita las fechas y TXT/Mermaid no ofrecen estas acciones',{tag:'@perf'},async()=>{
  const line='Fuente sin modificar. '.repeat(35)+'\n',bytes=10*1024*1024+1,original=Buffer.alloc(bytes,32);original.write(line.repeat(Math.floor(bytes/line.length)),0,'ascii')
  const path=join(directory,'solo-lectura.md');await writeFile(path,original)
  const [document]=await page.evaluate(path=>window.freya.openPaths([path]),path);documentId=document.id;expect(document.readonly).toBe(true)

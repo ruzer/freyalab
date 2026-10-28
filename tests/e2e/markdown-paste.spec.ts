@@ -124,7 +124,7 @@ test('P5: HTML rico del portapapeles no se ejecuta ni provoca red y se usa su ú
  expect(requests).toEqual([])
 })
 
-test('P6: documento Markdown de solo lectura no cambia al pegar sobre su muestra',async()=>{
+test('P6: documento Markdown de solo lectura no cambia al pegar sobre su muestra',{tag:'@perf'},async()=>{
  const line='texto '.repeat(140)+'\n',bytes=10*1024*1024+1,original=Buffer.alloc(bytes,32);original.write(line.repeat(Math.floor(bytes/line.length)),0,'ascii')
  const path=join(directory,'solo-lectura.md');await writeFile(path,original)
  const [document]=await page.evaluate(path=>window.freya.openPaths([path]),path);documentId=document.id

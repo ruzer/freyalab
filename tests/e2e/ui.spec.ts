@@ -262,7 +262,7 @@ test('estadísticas CSV: cancelar descarta respuestas tardías y permite volver 
  expect(await readFile(path,'utf8')).toBe('A,B\n1,2\n3,4\n')
 })
 
-test('estadísticas CSV: muestra rotulada e IPC inválido rechazado',async()=>{
+test('estadísticas CSV: muestra rotulada e IPC inválido rechazado',{tag:'@perf'},async()=>{
  const path=join(directory,'muestra.csv');await writeFile(path,'A,B\n'+'001,2\n'.repeat(250));await truncate(path,50*1024*1024+1)
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
  expect(doc.readonly).toBe(true)
@@ -530,7 +530,7 @@ test('exploración CSV: perfil, frecuencias, distribución y Pearson conservan d
  await explorer.getByLabel('Filas para explorar',{exact:true}).focus();await page.keyboard.press('Escape');await expect(explorer).toHaveCount(0);await expect(analyzeButton(page)).toBeFocused()
 })
 
-test('exploración CSV: paginación, cancelación, muestra e IPC inválido',async()=>{
+test('exploración CSV: paginación, cancelación, muestra e IPC inválido',{tag:'@perf'},async()=>{
  const path=join(directory,'frecuencias.csv');await writeFile(path,'Valor\n'+Array.from({length:80},(_,i)=>String(i).padStart(5,'0')).join('\n')+'\n<svg onload=globalThis.__csvAnalysisXss=true>\n')
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
  await showPanel(page,'Estadísticas');await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click()

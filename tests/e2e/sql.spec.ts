@@ -58,7 +58,7 @@ test('SQL: aislamiento de Chromium, bloqueo de red/disco y cancelación real con
  expect((await query(doc,'SELECT * FROM datos')).rows).toEqual([['001'],['002']]);expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false);expect(await readFile(canary,'utf8')).toBe('CANARY_PRIVATE')
 })
 
-test('SQL: mide fuentes completas hasta un millón por cuatro columnas y distingue la muestra',async()=>{
+test('SQL: mide fuentes completas hasta un millón por cuatro columnas y distingue la muestra',{tag:'@perf'},async()=>{
  test.setTimeout(120000)
  const block=Array.from({length:1000},(_,i)=>`${String(i).padStart(5,'0')},Ciudad ${i%10},${i%100},nota`),measurements:unknown[]=[]
  for(const count of [100,3000,100000,1000000]){
@@ -108,7 +108,7 @@ test('informe SQL rotula las 10 000 filas conservadas y rechaza resultados cance
  await next.getByRole('button',{name:'Ejecutar consulta',exact:true}).click();await expect(next.getByRole('status')).toContainText('Consulta completa',{timeout:30000});await page.evaluate(id=>window.freya.tableEdit(id,{type:'cell',rowId:'1',column:0,value:'00042'}),doc.id);await next.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();await expect(next.getByRole('status')).toContainText('cambió');expect((await page.evaluate(()=>window.freya.documents())).filter(value=>value.kind==='markdown')).toHaveLength(1);expect(await readFile(path,'utf8')).toBe(source)
 })
 
-test('informe SQL desde un CSV mayor de 50 MiB identifica la fuente completa sin habilitar guardar su muestra',async()=>{
+test('informe SQL desde un CSV mayor de 50 MiB identifica la fuente completa sin habilitar guardar su muestra',{tag:'@perf'},async()=>{
  test.setTimeout(120000)
  const source='ID,N,Nota\n'+Array.from({length:2400},(_,i)=>`${String(i).padStart(5,'0')},${i},${'x'.repeat(23000)}`).join('\n')+'\n',{doc,path}=await open('fuente-completa.csv',source),before=await stat(path),hash=createHash('sha256').update(source).digest('hex')
  expect(before.size).toBeGreaterThan(50*1024*1024);expect(doc).toMatchObject({readonly:true,large:true,rowCount:2400})

@@ -43,7 +43,7 @@ test('percentiles: columnas marcadas, controles progresivos y rango comparten m�
  await advanced.uncheck();const output=await report(panel,'# Informe de estadísticas CSV');expect(output.text).toContain('Celdas del rango');expect(output.text).toContain('| Varianza poblacional (n) | 68.75 |');expect(output.text).toContain('| P25 (percentil 25) | 0 |');expect(output.text).toContain('| P75 (percentil 75) | 12.5 |');expect(output.text).toContain('tipo 7');expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toEqual(before);expect(await readFile(path,'utf8')).toBe(source)
 })
 
-test('percentiles: vacío, un solo número y muestra limitada no inventan población completa',async()=>{
+test('percentiles: vacío, un solo número y muestra limitada no inventan población completa',{tag:'@perf'},async()=>{
  for(const [name,text,values] of [['vacio.csv','Valor\n',[null,null,null,null,null,null]],['unico.csv','Valor\n7\n',[0,null,7,7,7,7]]] as const){
   const {doc,path}=await open(text,name),panel=await explorer();await explore(panel);await panel.getByText('Varianza y percentiles',{exact:true}).click();await profileValues(panel,[...values]);expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)?.dirty).toBe(false);expect(await readFile(path,'utf8')).toBe(text)
  }

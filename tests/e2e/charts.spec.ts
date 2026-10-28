@@ -54,7 +54,7 @@ test('gráficos distinguen vacío, constante, límite de puntos y etiquetas no e
  await showPanel(page,'Gráficos');const panel=page.getByRole('region',{name:'Gráficos del CSV',exact:true});await panel.getByRole('button',{name:'Generar gráfico',exact:true}).click();await panel.getByRole('button',{name:'Cancelar gráfico',exact:true}).click();await expect(panel.getByRole('status')).toContainText('cancelado');await expect(panel.locator('.plot svg path')).toHaveCount(0)
 })
 
-test('histograma agrega un millón de filas completo aunque la tabla sea de solo lectura',async()=>{
+test('histograma agrega un millón de filas completo aunque la tabla sea de solo lectura',{tag:'@perf'},async()=>{
  test.setTimeout(120000)
  const block=Array.from({length:1000},(_,i)=>`${String(i).padStart(5,'0')},Grupo ${i%10},${i%100},nota`).join('\n')+'\n'
  const {doc,path}=await open('Código,Grupo,N,Nota\n'+block.repeat(1000),'million.csv');expect(doc).toMatchObject({readonly:true,large:true,rowCount:1000000})
@@ -67,7 +67,7 @@ test('histograma agrega un millón de filas completo aunque la tabla sea de solo
  await writeFile(test.info().outputPath('chart-million-profile.json'),JSON.stringify({recordedAt:new Date().toISOString(),...machine,cpu:(await import('node:os')).cpus()[0]?.model,rows:result.total,bins:10,durationMs,maxRendererGapMs,sourceBytes:(await stat(path)).size},null,2)+'\n')
 })
 
-test('gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial',async()=>{
+test('gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial',{tag:'@perf'},async()=>{
  test.setTimeout(120000)
  const text='ID,N,Nota\n'+Array.from({length:2400},(_,i)=>`${String(i).padStart(5,'0')},${i%100},${'x'.repeat(23000)}`).join('\n')+'\n',{doc,path}=await open(text,'large.csv'),before=await stat(path),beforeDocuments=await page.evaluate(()=>window.freya.documents())
  const {createHash}=await import('node:crypto'),originalHash=createHash('sha256').update(text).digest('hex');expect(before.size).toBeGreaterThan(50*1024*1024);expect(doc).toMatchObject({readonly:true,large:true,rowCount:2400,dirty:false})
@@ -291,7 +291,7 @@ test('resultados exportados: filtros independientes, fechas, límite de diez mil
  const limited=JSON.parse(await readFile(join(folder,'exports','export-calendar.analisis.json'),'utf8'));expect(limited.metadata).toMatchObject({partial:true,exportedElements:10000,totalElements:(Date.parse('9999-12-31T00:00:00Z')-Date.parse('0001-01-01T00:00:00Z'))/86400000+1});expect(limited.rows).toHaveLength(10000);expect(limited.rows[0]).toEqual(['0001-01-01','1.0']);expect(limited.rows.slice(1).every((row:(string|null)[])=>row[1]===null)).toBe(true);expect(await readFile(path,'utf8')).toBe(content)
 })
 
-test('resultados exportados: muestra lee la fuente completa sin permitir guardar el CSV parcial',async()=>{
+test('resultados exportados: muestra lee la fuente completa sin permitir guardar el CSV parcial',{tag:'@perf'},async()=>{
  test.setTimeout(120000)
  const content='ID,Total,Nota\n'+Array.from({length:2400},(_,i)=>`${String(i).padStart(5,'0')},${i%100},${'x'.repeat(23000)}`).join('\n')+'\n',{doc,path}=await open(content,'export-sample.csv'),before=await page.evaluate(()=>window.freya.documents());expect(doc.readonly).toBe(true)
  await page.evaluate(({doc,options})=>window.freya.exportChartResult(doc.id,{requestId:crypto.randomUUID(),revision:doc.revision,configuration:{headers:doc.headers!,options,where:{conditions:[{column:0,op:'equals',value:'02399'}],filterMode:'all'}},format:'json',protectFormulas:true}),{doc,options:{...options,kind:'bar' as const,x:0,y:1,aggregate:'sum' as const}})

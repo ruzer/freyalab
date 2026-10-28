@@ -45,7 +45,7 @@ test('panorámica: cancelar o cambiar revisión descarta respuestas tardías y n
  await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(panel.getByRole('status')).toContainText('Datos o alcance actualizados');await explore(panel);await expect(panel.locator('tbody tr')).toHaveCount(5);const current=(await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)!;expect(current.revision).toBeGreaterThan(doc.revision);expect((await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:1,requestId:1000}),doc.id)).rows[0].cells[2]).toBe('99')
 })
 
-test('panorámica: una solicitud reemplazada con igual revisión aborta; una cardinalidad alta solo limita esa columna',async()=>{
+test('panorámica: una solicitud reemplazada con igual revisión aborta; una cardinalidad alta solo limita esa columna',{tag:'@perf'},async()=>{
  test.setTimeout(120000)
  const text='Valor\n'+'2\n'.repeat(1000000),{doc,path}=await open(text),panel=await overview()
  await panel.evaluate((element,doc)=>{const observer=new MutationObserver(()=>{if(!element.querySelector('[role=status]')?.textContent?.startsWith('Explorando columna 1 de'))return;observer.disconnect();void window.freya.analyzeColumn(doc.id,{column:0,revision:doc.revision,requestId:crypto.randomUUID(),frequencyOffset:0,duplicatesOnly:false,bins:10}).then(()=>Reflect.set(window,'overviewReplacementSettled',true),error=>{Reflect.set(window,'overviewReplacementError',String(error));Reflect.set(window,'overviewReplacementSettled',true)})});observer.observe(element,{subtree:true,childList:true,characterData:true})},doc)
@@ -54,7 +54,7 @@ test('panorámica: una solicitud reemplazada con igual revisión aborta; una car
  const file=join(folder,'cardinalidad.csv'),large='Inicio,ID,Final\n'+Array.from({length:100001},(_,i)=>`2,${i},texto`).join('\n')+'\n';await writeFile(file,large);await page.evaluate(path=>window.freya.openPaths([path]),file);const next=await overview();await next.getByRole('button',{name:'Explorar columnas',exact:true}).click();await expect(next.getByRole('status')).toHaveText('Exploración terminada: 2 columnas analizadas; 1 no disponibles.',{timeout:90000});await expect(next.locator('tbody tr')).toHaveCount(3);await expect(next.locator('tbody tr').nth(1)).toContainText('No disponible');await expect(next.locator('.scope')).toContainText('cobertura parcial');const output=await report(next);expect(output.text).toContain('COBERTURA PARCIAL');expect(output.text).toContain('Columnas solicitadas: 3. Analizadas: 2. No disponibles: 1.');expect(await readFile(file,'utf8')).toBe(large)
 })
 
-test('panorámica: muestra etiquetada incluso durante el cálculo y presupuesto sin totales inventados',async()=>{
+test('panorámica: muestra etiquetada incluso durante el cálculo y presupuesto sin totales inventados',{tag:'@perf'},async()=>{
  const path=join(folder,'muestra.csv');await writeFile(path,'ID,Valor\n'+'00123,2\n'.repeat(250));await truncate(path,50*1024*1024+1);const before=await stat(path),[doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);expect(doc.readonly).toBe(true);const panel=await overview()
  await panel.evaluate(element=>{const observer=new MutationObserver(()=>{if(element.querySelectorAll('tbody tr').length!==1||!element.querySelector('[role=status]')?.textContent?.startsWith('Explorando columna'))return;Reflect.set(window,'overviewProvisionalSampleScope',element.querySelector('.scope')?.textContent);observer.disconnect()});observer.observe(element,{subtree:true,childList:true,characterData:true})})
  await explore(panel);const provisional=await page.evaluate(()=>Reflect.get(window,'overviewProvisionalSampleScope'));expect(provisional).toContain('Muestra completa');expect(provisional).not.toContain('Documento completo');expect(provisional).toContain('resultados provisionales');const output=await report(panel);expect(output.text).toContain('MUESTRA LIMITADA');expect((await stat(path)).size).toBe(before.size);expect((await stat(path)).mtimeMs).toBe(before.mtimeMs)
@@ -62,7 +62,7 @@ test('panorámica: muestra etiquetada incluso durante el cálculo y presupuesto 
  const wide=join(folder,'ancho.csv');await writeFile(wide,Array.from({length:2000},(_,i)=>'C'+i).join(',')+'\n'+'1\n'.repeat(1001));await page.evaluate(path=>window.freya.openPaths([path]),wide);const limited=await overview();await limited.getByRole('button',{name:'Explorar columnas',exact:true}).click();await expect(limited.getByRole('status')).toContainText('dos millones de posiciones');await expect(limited.locator('tbody tr')).toHaveCount(0);await expect(limited.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true})).toBeDisabled()
 })
 
-test('panorámica: mide 3 000, 100 000 y un millón de filas completas con una columna',async()=>{
+test('panorámica: mide 3 000, 100 000 y un millón de filas completas con una columna',{tag:'@perf'},async()=>{
  test.setTimeout(120000);const measurements:unknown[]=[]
  for(const count of [3000,100000,1000000]){
   const text='Valor\n'+(Array.from({length:1000},(_,i)=>String(i)).join('\n')+'\n').repeat(count/1000),begin=performance.now(),{doc,path}=await open(text),openMs=performance.now()-begin;expect(doc.readonly).toBe(false)
@@ -73,7 +73,7 @@ test('panorámica: mide 3 000, 100 000 y un millón de filas completas con una c
  await writeFile(test.info().outputPath('column-overview-profile.json'),JSON.stringify({recordedAt:new Date().toISOString(),platform:process.platform,arch:process.arch,os:release(),cpu:cpus()[0]?.model,logicalCpus:cpus().length,totalMemoryBytes:totalmem(),node:process.versions.node,electron:await app.evaluate(()=>process.versions.electron),measurements},null,2)+'\n')
 })
 
-test('panorámica: abrir un millón de filas y explorar inmediatamente no compite con la carga inicial de la grilla',async()=>{
+test('panorámica: abrir un millón de filas y explorar inmediatamente no compite con la carga inicial de la grilla',{tag:'@perf'},async()=>{
  test.setTimeout(120000)
  const text='Valor\n'+'2\n'.repeat(1000000),path=join(folder,'apertura-fria.csv');await writeFile(path,text)
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);expect(doc.readonly).toBe(false)

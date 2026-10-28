@@ -80,13 +80,13 @@ test('C4: dos clics rápidos sobre un render no repiten la escritura ni alteran 
  await expect.poll(source).toBe('- [x] Igual\n- [ ] Igual\n');await expect(page.getByRole('status').filter({hasText:'La lista cambió'})).toBeVisible();await page.clock.resume();await settled();await expect(boxes().first()).toBeChecked();await expect(boxes().last()).not.toBeChecked()
 })
 
-test('C5: solo lectura no habilita casillas ni escribe mediante teclado o eventos sintéticos',async()=>{
+test('C5: solo lectura no habilita casillas ni escribe mediante teclado o eventos sintéticos',{tag:'@perf'},async()=>{
  const text='# Muestra\n\n- [ ] No modificar\n\n'+'Texto. '.repeat(Math.ceil(10*1024*1024/7)),{path,doc}=await open(text);expect(doc.readonly).toBe(true);const before=await source()
  await expect(boxes().first()).toBeDisabled();await boxes().first().evaluate(node=>{(node as HTMLInputElement).click();node.dispatchEvent(new Event('change',{bubbles:true}));node.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}))})
  expect(await source()).toBe(before);expect((await info())?.dirty).toBe(false);expect(await readFile(path,'utf8')).toBe(text)
 })
 
-test('C5: recargar una muestra que pasa a editable no deja bloqueado el estado compartido',async()=>{
+test('C5: recargar una muestra que pasa a editable no deja bloqueado el estado compartido',{tag:'@perf'},async()=>{
  const large='- [ ] Antes\n\n'+'Texto. '.repeat(Math.ceil(10*1024*1024/7)),{path,doc}=await open(large);expect(doc.readonly).toBe(true);await expect(boxes().first()).toBeDisabled();await page.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(page.locator('.cm-editor')).toHaveCount(0)
  const next='- [ ] Editable tras recargar\n';await writeFile(path,next);await expect(page.locator('.external-banner')).toBeVisible();await page.getByRole('button',{name:'Recargar',exact:true}).click();await expect.poll(source).toBe(next);await settled();expect((await info())?.readonly).toBe(false)
  await expect(boxes().first()).toBeEnabled();await boxes().first().click();await expect.poll(source).toBe('- [x] Editable tras recargar\n');expect(await readFile(path,'utf8')).toBe(next)

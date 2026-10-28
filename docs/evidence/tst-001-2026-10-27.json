@@ -1,0 +1,4750 @@
+{
+  "date": "2026-10-27",
+  "recordedAtUtc": "2026-10-28T03:58:08.743313+00:00",
+  "story": "FL-TST-001",
+  "state": "LOCAL_SERIES307_ALL7_COMPLETE_PARENT77_CI4_NEW78_CI_PENDING",
+  "draftOnly": false,
+  "repositoryDocsModifiedByThisDraft": false,
+  "branch": "codex/tst-001-grupos-e2e",
+  "baseCommit": "971c55f9b762e7065a486033a11deadf904c8d25",
+  "gitHeadAtCapture": "455df4266a052faed688b30c89736f0f3774634e",
+  "finalTstCommit": null,
+  "sourceReferenceRole": "PUBLISHED_PARENT_PR77_NOT_MAIN",
+  "referenceParent": {
+    "pullRequest": 77,
+    "branch": "claude/ac-escritura-academica",
+    "head": "971c55f9b762e7065a486033a11deadf904c8d25",
+    "publishedParent": true,
+    "isMainClaimed": false,
+    "dependencyOrder": [
+      77,
+      78
+    ],
+    "githubBaseBranches": {
+      "77": "main",
+      "78": "main"
+    },
+    "newPushOf78WaitingFor77CiGate": false,
+    "parent77CiGateSatisfied": true,
+    "newPushOf78AwaitingOwnLocalEvidenceAndReview": true
+  },
+  "worktreeState": {
+    "path": "/private/tmp/freyalab-lote/tst-001",
+    "head": "455df4266a052faed688b30c89736f0f3774634e",
+    "workingStatusAtMeasurementCapture": "M tests/e2e-groups.test.ts\n M tests/e2e/groups.ts",
+    "note": "Dos modificaciones de grupos/guarda semántica presentes durante la medición, congeladas por hash. No son cambios realizados por esta preparación."
+  },
+  "scope": {
+    "applicationSourceChangedByTstRelativeToParent971": false,
+    "inheritedParentFix": "Preview Markdown oculto difiere del source antiguo498; no atribuir a TST el cambio de producto heredado.",
+    "workflowChanged": false,
+    "lockfileChanged": false,
+    "newDependencies": false,
+    "packageOnlyFourNewScripts": true,
+    "allPriorPackageScriptsUnchanged": true,
+    "newScreenshots": false,
+    "docs6And7AbsentByParentInheritanceNotDeletedByOwnCommit": [
+      "docs/stories/6-proyectos.md",
+      "docs/stories/7-csv-texto.md"
+    ],
+    "notClaimingTreeEqualityToMainFcf": true
+  },
+  "functionalSnapshot": {
+    "sha256": "04587fbf7efbb8896ce6ed9f31036040fe500a76ed3d0bf237ef1ddb5c832f96",
+    "fileCount": 174,
+    "files": [
+      {
+        "file": "build/README.md",
+        "bytes": 732,
+        "sha256": "06436141e990fb3771edea74152e0540e432ef61bc59b5b9deece1b72e6f3945"
+      },
+      {
+        "file": "build/icon.png",
+        "bytes": 1449279,
+        "sha256": "b688d7796d06d8c7ceffdb89cd8a798c7639e37c2e66371be74e93d6b2e5dda3"
+      },
+      {
+        "file": "electron.vite.config.ts",
+        "bytes": 683,
+        "sha256": "cd2ad1c76afc80e7ebd5262f6c543d7324a6997ee36d846a66b396b77c1d285a"
+      },
+      {
+        "file": "package-lock.json",
+        "bytes": 230036,
+        "sha256": "7008658adc0a5b0c85073de556f4f249fc2853005bedcaec64f777fe684ee3d9"
+      },
+      {
+        "file": "package.json",
+        "bytes": 3839,
+        "sha256": "c97ebae3d9ea0222f6029a1c89129624fb62e1175c1f65a109fd42a600272eb0"
+      },
+      {
+        "file": "playwright.config.ts",
+        "bytes": 686,
+        "sha256": "9265fd66f84dd704e0b87f0379d88c065832caca40b459eb8a77fb63279d34d5"
+      },
+      {
+        "file": "scripts/checksums.mjs",
+        "bytes": 970,
+        "sha256": "f3515acdb240b64c224a46c528edbbbca03438067c92baa3a6057c22c7e5d39d"
+      },
+      {
+        "file": "scripts/licenses.mjs",
+        "bytes": 3250,
+        "sha256": "b4c9f4a6695067d59ac7dd13e1327cadc29c074a55f1f659fc0715c532142d41"
+      },
+      {
+        "file": "scripts/package-smoke.mjs",
+        "bytes": 4378,
+        "sha256": "cdb7cee653c8870e849b8c52d50e8c45d9bf97d169d01d6388fdd63c31c9603b"
+      },
+      {
+        "file": "scripts/performance.mjs",
+        "bytes": 4076,
+        "sha256": "3cc88d19c0f38a7c071e0f5d949c070650f3957b3a07e284ce668d76038ed222"
+      },
+      {
+        "file": "src/main/analysis-source.ts",
+        "bytes": 4214,
+        "sha256": "0e6aa6ab5b127847b178f0fc3b324d89818d9da023afcd77daa1970fec579b72"
+      },
+      {
+        "file": "src/main/assets.d.ts",
+        "bytes": 45,
+        "sha256": "864b4293d340c31b74887972655cdae400c3682b6ec3055a1bbeded2ea01c7ed"
+      },
+      {
+        "file": "src/main/chart-presets.ts",
+        "bytes": 4786,
+        "sha256": "70cd776909528f26a5123d84789ff9aa16b1b4557c8e8a411ec38390c635a793"
+      },
+      {
+        "file": "src/main/chart-result-export.ts",
+        "bytes": 1661,
+        "sha256": "8ccc7610ba66f43e94a3935b05fed5eeceea29d5726ee447e932927c26582e74"
+      },
+      {
+        "file": "src/main/chart-result.ts",
+        "bytes": 4643,
+        "sha256": "3a3506b5ee3335f54ca28cbabe5550d06d993e6e605be35701701363f9393207"
+      },
+      {
+        "file": "src/main/documents.ts",
+        "bytes": 17752,
+        "sha256": "5bb6728e03fb71edf314d8791b23f494c7f98c22543fe23aaed3f35b41516bff"
+      },
+      {
+        "file": "src/main/export.ts",
+        "bytes": 12947,
+        "sha256": "7ac7ad77cb898f56f3a6113ec4956b92906eb31920d73b7f0c8e76a8f9429840"
+      },
+      {
+        "file": "src/main/extract.ts",
+        "bytes": 3382,
+        "sha256": "c81539ce93416159c16a3431883c8de2887e6f1f55df4025fc5af705e5360bb0"
+      },
+      {
+        "file": "src/main/files.ts",
+        "bytes": 1804,
+        "sha256": "7ebb78656e08e31e8d50c24bd264abdd5546f7bb48f82c9ca24f8226bac63c70"
+      },
+      {
+        "file": "src/main/index.ts",
+        "bytes": 14239,
+        "sha256": "b186d2846858606644162ad4443bab800ea885af8f7aee7430e7c672ca7b63ab"
+      },
+      {
+        "file": "src/main/job-queue.ts",
+        "bytes": 2710,
+        "sha256": "cdecd6ede2559440156d57a9e5f198fce8806daa65b41fe20db5ab26f0cc409d"
+      },
+      {
+        "file": "src/main/large-table.ts",
+        "bytes": 10295,
+        "sha256": "eecf816f91057f7d2507bf37dfee0d59cab8d94e47985310b2f01d21454b4653"
+      },
+      {
+        "file": "src/main/operation-schema.ts",
+        "bytes": 881,
+        "sha256": "30e43a6dffb6a15dc57d174d5032a2324d05dc4fbcc1fb9a6022abe731324e22"
+      },
+      {
+        "file": "src/main/operations.ts",
+        "bytes": 8412,
+        "sha256": "56c6ae8db0b2c3586983920e34d7ed2f083e0721d82c5fa514885e103b12cd2b"
+      },
+      {
+        "file": "src/main/query-schema.ts",
+        "bytes": 1001,
+        "sha256": "53c114c199086e6d1f57fee5d117402d0e5dbce589c13ddfaad19468de6242b1"
+      },
+      {
+        "file": "src/main/sql-service.ts",
+        "bytes": 8657,
+        "sha256": "175b5f7eb197b3ea148650bfa6c333a648134894f7fbf94c0cf75b49b772f049"
+      },
+      {
+        "file": "src/main/table-analysis.ts",
+        "bytes": 6899,
+        "sha256": "1a7f15021be0492a5dcdc4ead464f8c6d6ec09f4a3a76a61613b514079b223a5"
+      },
+      {
+        "file": "src/main/table-client.ts",
+        "bytes": 1445,
+        "sha256": "91d2558ff9844aeb34a4f7b9749ebb3dd9128770c2b1ed429b805b927eeb019f"
+      },
+      {
+        "file": "src/main/table-engine.ts",
+        "bytes": 54864,
+        "sha256": "9ec332b259cc998874834e15f6cb14410cf0bfcec0cdf137beac1a74929dc535"
+      },
+      {
+        "file": "src/main/table-query.ts",
+        "bytes": 4224,
+        "sha256": "e4ae0c13228315630588b2d4caceb0394f4511e15638c0cafddcfa334ccd4975"
+      },
+      {
+        "file": "src/main/table-worker.ts",
+        "bytes": 1865,
+        "sha256": "3a0476b0fdd671d8430507e109b85c4615dbdabcf12955432d8a3bd96c35ea01"
+      },
+      {
+        "file": "src/preload/index.ts",
+        "bytes": 3285,
+        "sha256": "022dcfb5de10fa8bfeac59dec32aab6740e59d128d40e15b11a0a686bd4de728"
+      },
+      {
+        "file": "src/renderer/App.svelte",
+        "bytes": 26174,
+        "sha256": "694ab1345c99d074602d595d9a4108c28085602abdd11c26946a7a9f521262d2"
+      },
+      {
+        "file": "src/renderer/analytics.html",
+        "bytes": 351,
+        "sha256": "252094c8023fd8975243c9a886e656538d02dc0e6452b0eb50dc0d2a4e4170e1"
+      },
+      {
+        "file": "src/renderer/analytics.ts",
+        "bytes": 3361,
+        "sha256": "3680e5230253298b44a6fd9f4fa548b7fed4defd14797d764653050bb4467254"
+      },
+      {
+        "file": "src/renderer/chart-option.ts",
+        "bytes": 6354,
+        "sha256": "6433930f0f670fd33f00ccfc13a367b3a9ef771d3a43058efd08af6b7d95d820"
+      },
+      {
+        "file": "src/renderer/components/AnalysisDock.svelte",
+        "bytes": 6467,
+        "sha256": "9f7fe58616cf70fcdd3a07779da0fd8884653c3e599b7785e9bd52390fa5f42b"
+      },
+      {
+        "file": "src/renderer/components/ChartPresets.svelte",
+        "bytes": 4497,
+        "sha256": "c7685ece6959e8d21cf925178505579a1d2e753da0c6edce8558d0adad65ad48"
+      },
+      {
+        "file": "src/renderer/components/CsvCharts.svelte",
+        "bytes": 25793,
+        "sha256": "3e90ad42eec1917c553c8012326017af610e9b9bc670232cba8bc5cdd9c62e59"
+      },
+      {
+        "file": "src/renderer/components/CsvColumnAnalysis.svelte",
+        "bytes": 11953,
+        "sha256": "5ec6dac63df2c8c5d0ef7f7db3e26a02f97ed45cf24b877e632edff929722452"
+      },
+      {
+        "file": "src/renderer/components/CsvColumnsOverview.svelte",
+        "bytes": 11656,
+        "sha256": "0123375d09c0970a84736a25d5404d7151bd3bacf0f8e06690a34f3568118503"
+      },
+      {
+        "file": "src/renderer/components/CsvCommands.svelte",
+        "bytes": 4067,
+        "sha256": "99c9be110b25cd48087fcab96beea2d412dbf74d4488d5b606cf9199a7380b4d"
+      },
+      {
+        "file": "src/renderer/components/CsvExtract.svelte",
+        "bytes": 9643,
+        "sha256": "952f49940a82e31aabb55a01e456c32584c5b05c8ed6c55bd3319d5b6e7fb7a2"
+      },
+      {
+        "file": "src/renderer/components/CsvQueryTools.svelte",
+        "bytes": 5787,
+        "sha256": "b9a05afa462f761fea6a4430b80bc181d2d90b114151013fc70f6e169b1dab4d"
+      },
+      {
+        "file": "src/renderer/components/CsvRangePreview.svelte",
+        "bytes": 7229,
+        "sha256": "fe9de91922ba71e0a23e4ca1affbb478c99461d021bad82fe6bc7639f14272ea"
+      },
+      {
+        "file": "src/renderer/components/CsvSql.svelte",
+        "bytes": 13783,
+        "sha256": "1b78cf7eaf112deb4ce406572b80157497c03cdc7c66f6d821838a93669bd1ad"
+      },
+      {
+        "file": "src/renderer/components/CsvStatistics.svelte",
+        "bytes": 10559,
+        "sha256": "b401535b3a072ce51e64c209afc4c0007e82284bec079904e0ac3dd7e4022536"
+      },
+      {
+        "file": "src/renderer/components/CsvTable.svelte",
+        "bytes": 61321,
+        "sha256": "fd386ca1b521671ac1d335097d149b7f8bdf108d6a4adf532e6d779ca12df389"
+      },
+      {
+        "file": "src/renderer/components/CsvTransform.svelte",
+        "bytes": 13631,
+        "sha256": "bb9a4ef5713eeeeafcdd3dc6c508f906d11306298b339bdc72253d6148e2f556"
+      },
+      {
+        "file": "src/renderer/components/Diagram.svelte",
+        "bytes": 7252,
+        "sha256": "4276d4c8581fe046ab5275b1d38b92080bfcef35f82439ac2fb95a0b402ff717"
+      },
+      {
+        "file": "src/renderer/components/Editor.svelte",
+        "bytes": 7733,
+        "sha256": "f94ae5833f1f906cffd22a1f6420a6fa15c50f618ccae7ff9ccedaa093942539"
+      },
+      {
+        "file": "src/renderer/components/Icon.svelte",
+        "bytes": 525,
+        "sha256": "c3ceb00cb09fcb7f98920ccd2be86c4062826b86bcd2ff1f079bd7fdf79e6620"
+      },
+      {
+        "file": "src/renderer/components/MarkdownToolbar.svelte",
+        "bytes": 4441,
+        "sha256": "589b66b77d7fd25462915d860cc0564365b90163486de6b0c8320aad10f520ed"
+      },
+      {
+        "file": "src/renderer/components/Preview.svelte",
+        "bytes": 10783,
+        "sha256": "46f434dcb0b9fda192e8966c134c00d64d97817f593ac3ef99ca14c8fd8e84e2"
+      },
+      {
+        "file": "src/renderer/components/TextStats.svelte",
+        "bytes": 3037,
+        "sha256": "9a4477352dcf563d35cf58e2480ce0cebbd1b3d619a9273cd78680f80a366b30"
+      },
+      {
+        "file": "src/renderer/components/Tree.svelte",
+        "bytes": 1565,
+        "sha256": "3efece551752537b9dfdfffac91fa8ab2fb3cf30dd9c4444cf2cecbe415e60e4"
+      },
+      {
+        "file": "src/renderer/global.d.ts",
+        "bytes": 114,
+        "sha256": "71287abcee995f2f639a0c6011055ec7119949641d5f4e970530e4d1466a0c5b"
+      },
+      {
+        "file": "src/renderer/index.html",
+        "bytes": 470,
+        "sha256": "0b6a9789a24836b53b5d5da69a7300fc61cd9ca297f14b06a6a0856a52535c84"
+      },
+      {
+        "file": "src/renderer/lib/diagram-errors.ts",
+        "bytes": 4296,
+        "sha256": "02d9f43fede10634088b30f3795e733cffac1c262db4f9d57630712e7d4413d6"
+      },
+      {
+        "file": "src/renderer/lib/icons.ts",
+        "bytes": 7022,
+        "sha256": "a0777199635480bd580c1afe0abd9acc30d84b22176ce25f74f8210fd50e9708"
+      },
+      {
+        "file": "src/renderer/lib/markdown-commands.ts",
+        "bytes": 15293,
+        "sha256": "7383d546891da286c46f45bdd362aa149558f9f54f904f6c4405b678c6a1000b"
+      },
+      {
+        "file": "src/renderer/lib/markdown-paste.ts",
+        "bytes": 2291,
+        "sha256": "20e30ebe0a5d6c984b836aa3ea1ece4fbc89b99347d70708f243a288c2a26028"
+      },
+      {
+        "file": "src/renderer/lib/markdown-tasks.ts",
+        "bytes": 2053,
+        "sha256": "3fca943f88883a9971138e7901bcfc5899795cc23dfab3b3404f28096e5d7607"
+      },
+      {
+        "file": "src/renderer/lib/remark-details.ts",
+        "bytes": 8559,
+        "sha256": "9046245cb63e988fcfa0b57833745b2f5eb6a8f6535fe5b4ce889922ca2d88d1"
+      },
+      {
+        "file": "src/renderer/lib/render.ts",
+        "bytes": 8957,
+        "sha256": "1da6903e0ec509b7187435d5873ad096fd1f9416957393de586d85817bfcb673"
+      },
+      {
+        "file": "src/renderer/lib/sql-report.ts",
+        "bytes": 3082,
+        "sha256": "15f4bb07e552b8876d9a2be15d3668d72b3ce41a1cc0b0a1305092067e421314"
+      },
+      {
+        "file": "src/renderer/lib/statistics-report.ts",
+        "bytes": 9502,
+        "sha256": "3bb3d0fe7e272ed1b7c77ce605acae2830457293e59f0fc72dadd91866a01cb2"
+      },
+      {
+        "file": "src/renderer/lib/text-stats.ts",
+        "bytes": 2936,
+        "sha256": "fa85218c353577b0202abcc68aca89cdfae0e8336af4e812e346b4b923684f9a"
+      },
+      {
+        "file": "src/renderer/lib/text-stats.worker.ts",
+        "bytes": 1687,
+        "sha256": "83b96f11ef0b7bf83e9a1be6faccd00f168ec22ac1899cb6c35c91c904d63d4f"
+      },
+      {
+        "file": "src/renderer/lib/virtual-scroll.ts",
+        "bytes": 1291,
+        "sha256": "9a4362f7dde2a5d8bef9338eb6c27182d040326dbfb2f7fd113fb07cba5c8dab"
+      },
+      {
+        "file": "src/renderer/lib/workspace-layout.ts",
+        "bytes": 3336,
+        "sha256": "871301d8fe12edf2b62a0d6f87e0f93b9ece9d04584a017d913c3d76f3097315"
+      },
+      {
+        "file": "src/renderer/lib/workspace.svelte.ts",
+        "bytes": 1362,
+        "sha256": "b1a9af519192774bf214a42b348c78d968d8687a01530e2f22caa6a5b1888ac1"
+      },
+      {
+        "file": "src/renderer/main.ts",
+        "bytes": 410,
+        "sha256": "cdf41b56b45bd9682bad1b1f4a297c92e2d4ffaf784c119be809737507693109"
+      },
+      {
+        "file": "src/renderer/style.css",
+        "bytes": 25658,
+        "sha256": "d444b83b837b91ebcc88a1cd6f296ab7d222e5697868cebcc46358f0a5da9d05"
+      },
+      {
+        "file": "src/shared/chart-presets.ts",
+        "bytes": 877,
+        "sha256": "d83366be310e84aed480f7300e9c5b231d2eacdaffac7a47b48b57094bb5dc3a"
+      },
+      {
+        "file": "src/shared/charts.ts",
+        "bytes": 11247,
+        "sha256": "3c899ad3b11a53e036f07798356fbaed557936f70cb49a2d8aead8ca5a8643a8"
+      },
+      {
+        "file": "src/shared/column-profile.ts",
+        "bytes": 2078,
+        "sha256": "f71bb9386242ffb776609447e39166f4e4386d1cd41a8c4d2417b9a41879f9fd"
+      },
+      {
+        "file": "src/shared/front-matter.ts",
+        "bytes": 745,
+        "sha256": "659ac7b2f6fe6ca7b5a0bd71efb87f31b6f769163e85d7a73d1e0b4615b35af6"
+      },
+      {
+        "file": "src/shared/markdown-table.ts",
+        "bytes": 412,
+        "sha256": "7da559cbcf9afa649cb2cb5d51da97e138785bc84a7566464fc3bf715b49116d"
+      },
+      {
+        "file": "src/shared/operations.ts",
+        "bytes": 2416,
+        "sha256": "1c31bbced565fdc8337fa514d94aec1614668c7a5365b0bf93d82c9d1c6e6a4e"
+      },
+      {
+        "file": "src/shared/sql-assist.ts",
+        "bytes": 2412,
+        "sha256": "40554dd890d42e955df02c2b4014df52a086d648021900986d82ba786e32f29b"
+      },
+      {
+        "file": "src/shared/sql-helpers.ts",
+        "bytes": 403,
+        "sha256": "6f963e6a24edb5d0602b56c0195f19cc4dca04912e4b3e26b67bb458c7695abe"
+      },
+      {
+        "file": "src/shared/table-conditions.ts",
+        "bytes": 1064,
+        "sha256": "b767cb9026d301aa23c6d8323297323ce43cf3f94b1b73f2d9d0d36d2c052d86"
+      },
+      {
+        "file": "src/shared/types.ts",
+        "bytes": 9500,
+        "sha256": "f4f6dec81e51479ae12c2320871c1f0e24949034c52b49a002d46f6253475978"
+      },
+      {
+        "file": "tests/chart-presets.test.ts",
+        "bytes": 6576,
+        "sha256": "fbe683ebc59079d8b368e46980e72757464418ee18cea7cf7f610dea0c7f6162"
+      },
+      {
+        "file": "tests/chart-result.test.ts",
+        "bytes": 4975,
+        "sha256": "b8ae7fe4071e7446ebde3d0ba68e66a07076edb0756e1faa1cdf8fdb4cd198d2"
+      },
+      {
+        "file": "tests/charts.test.ts",
+        "bytes": 9703,
+        "sha256": "82ecf0c99559789e0a6f456d4e8549ffa2b87e21135a5cf3d3fe11d1ce1c2dc6"
+      },
+      {
+        "file": "tests/column-analysis.test.ts",
+        "bytes": 13434,
+        "sha256": "bd1fbbcb1a6922d6957a531ae7459a561d673bb19527c725c6b7b803c131fa9b"
+      },
+      {
+        "file": "tests/column-overview-report.test.ts",
+        "bytes": 6587,
+        "sha256": "39e1b43d1da9b947b14ee2b992f04916013597f5bbaa1d34fe5f428b79ca69d8"
+      },
+      {
+        "file": "tests/descriptive-statistics.test.ts",
+        "bytes": 2440,
+        "sha256": "096f07e5be862753f54bc8bffce503cef287e1fe457c14290322eea3baa6dc92"
+      },
+      {
+        "file": "tests/diagram-errors.test.ts",
+        "bytes": 6571,
+        "sha256": "e3546bcd84c2f57cbed22fed87283c210d1bde24014db1977351ca85f100fdec"
+      },
+      {
+        "file": "tests/document-images.test.ts",
+        "bytes": 1878,
+        "sha256": "06ea95895d438d0e6936964ae232e3d5b934086a11d64c4bbfc21333ccdea72a"
+      },
+      {
+        "file": "tests/document-opening.test.ts",
+        "bytes": 3099,
+        "sha256": "0de284df6ee0159165d5e03a22c3c190888bcbba3beb948627177e79aa402834"
+      },
+      {
+        "file": "tests/document-transactions.test.ts",
+        "bytes": 2810,
+        "sha256": "889b2030e24c440ddd938e8f158069b12c741067ca89121d9588b511d1462d73"
+      },
+      {
+        "file": "tests/e2e-groups.test.ts",
+        "bytes": 5162,
+        "sha256": "4cd30af05819ef10e725f0b121804481fa0e5092b8bbdae48b343dc75f647c32"
+      },
+      {
+        "file": "tests/e2e/analysis-dock.spec.ts",
+        "bytes": 9092,
+        "sha256": "10ea0dd6a02251d97c687831915e22a0e40186a912f2a15d45e5b496ff5cda0b"
+      },
+      {
+        "file": "tests/e2e/app.spec.ts",
+        "bytes": 16489,
+        "sha256": "db5d340b9a8f9b367b19088a9cf62af502ee30eb355dd66a75b489e03907f8bc"
+      },
+      {
+        "file": "tests/e2e/charts.spec.ts",
+        "bytes": 72619,
+        "sha256": "fb53cac3b32abdfe3c2fd7c2e96e4dffa7779015fea54a101b7539498f81bc7e"
+      },
+      {
+        "file": "tests/e2e/column-menu.spec.ts",
+        "bytes": 10771,
+        "sha256": "dafeb1eb6a8289e8ac91be5f5cfafecd4ec2c13ada3f7ad6e3c75d89762f94bc"
+      },
+      {
+        "file": "tests/e2e/columns-overview.spec.ts",
+        "bytes": 18819,
+        "sha256": "f85acab4f45307b4e85e1d174731eabb24864dfa6447a1c224f43d88a56e2ec0"
+      },
+      {
+        "file": "tests/e2e/commands.spec.ts",
+        "bytes": 10308,
+        "sha256": "96f00cab489b1dc3aef950bcb9fa61559b53eb468b4226a4c4b8b2234f089da9"
+      },
+      {
+        "file": "tests/e2e/compact-toolbar.spec.ts",
+        "bytes": 7356,
+        "sha256": "51cbfa177591e552d98980826a5774358c1c5de405ea913ce5b2d124023e5c4e"
+      },
+      {
+        "file": "tests/e2e/descriptive-percentiles.spec.ts",
+        "bytes": 9638,
+        "sha256": "e4f528d85debd6aa33a0a502586362cecf38fe27c03e44d2dcb76c7fbd914c79"
+      },
+      {
+        "file": "tests/e2e/dock-expanded.spec.ts",
+        "bytes": 10007,
+        "sha256": "31031d81a561302b90ddc73b7d0df3ba265a7eab529493b499f3452e4516a201"
+      },
+      {
+        "file": "tests/e2e/dock-resize.spec.ts",
+        "bytes": 8965,
+        "sha256": "772efae8186a41941e2e3f15ee8d12c19538aafa93474b361d37de6e009f0a95"
+      },
+      {
+        "file": "tests/e2e/dock-startup.spec.ts",
+        "bytes": 4423,
+        "sha256": "d4be236ca36bd09542afdfba62d2437ff335b1a9cd79f4cf53f4d9115c764326"
+      },
+      {
+        "file": "tests/e2e/extract.spec.ts",
+        "bytes": 10574,
+        "sha256": "2807b3af6805aca6a4cb6809e34942d2f5fc3456d8ebeda5c1036840f084d005"
+      },
+      {
+        "file": "tests/e2e/groups.ts",
+        "bytes": 444,
+        "sha256": "614467c05ab42a82dc6ec85694ac49046e84e3fd8df26a66cdfc376fa6f7bf41"
+      },
+      {
+        "file": "tests/e2e/icons.spec.ts",
+        "bytes": 4103,
+        "sha256": "eb1d22e4eca36307543fff7233dd6459eefbbc9bad2a66e61a1e789b64f5a2d3"
+      },
+      {
+        "file": "tests/e2e/large-file.spec.ts",
+        "bytes": 6163,
+        "sha256": "306f6a5a3731499e7d9fcb45620d0cb7628d430095c94f6e5ae78e902898a2fc"
+      },
+      {
+        "file": "tests/e2e/markdown-date.spec.ts",
+        "bytes": 12108,
+        "sha256": "e95b66138f86a4e52f5c262877e5863ad4ba5d338fb6790189f09b1dc084622e"
+      },
+      {
+        "file": "tests/e2e/markdown-paste.spec.ts",
+        "bytes": 13052,
+        "sha256": "3b3199e0bf71cf1f56d87817a8fa0eb1df059f0cb06758630313a7b01af97c20"
+      },
+      {
+        "file": "tests/e2e/markdown-render.spec.ts",
+        "bytes": 17946,
+        "sha256": "eb61248aeb46017f7d660f10dddc8a69ea80abd6aa7417af7bbe63f6dcc37159"
+      },
+      {
+        "file": "tests/e2e/markdown-tasks.spec.ts",
+        "bytes": 15460,
+        "sha256": "d17527950b520cb2538ab53dc03490ebfe34b1af30662fa683ea7dfe993199ba"
+      },
+      {
+        "file": "tests/e2e/markdown-toolbar.spec.ts",
+        "bytes": 17952,
+        "sha256": "21723674ce6bcef3abf40289ff30ab541b85560abdc0b3dc813d2aca3f6af9e7"
+      },
+      {
+        "file": "tests/e2e/mermaid-errors.spec.ts",
+        "bytes": 20236,
+        "sha256": "51484b04accb5c5cef4acbc0d6ba348e15392473238ed420c2f89553867d9876"
+      },
+      {
+        "file": "tests/e2e/mermaid-export-theme.spec.ts",
+        "bytes": 20325,
+        "sha256": "aba62b6424eccaff2d510eeab987c515f263d5016a31b7229bc9d3eaf8b4d98b"
+      },
+      {
+        "file": "tests/e2e/mermaid-fit.spec.ts",
+        "bytes": 14396,
+        "sha256": "8f6987ac5d07924accebb29c7ab71ad0ca2da6276c7a783da41326d0c6a5af6c"
+      },
+      {
+        "file": "tests/e2e/missing-resources.spec.ts",
+        "bytes": 3708,
+        "sha256": "edc972da15669a21168795a96a6ee7a3aa8a9fbd08bbb32d7983f92b0341293b"
+      },
+      {
+        "file": "tests/e2e/ordering.spec.ts",
+        "bytes": 12842,
+        "sha256": "0ce1f071a577aca40733d8c00abac17bc14cc25f34a2a59218259841c49d6f39"
+      },
+      {
+        "file": "tests/e2e/panel.ts",
+        "bytes": 1743,
+        "sha256": "6a19f53ad0b99b6a0b5c014a9424bf44b7a3253236483eaa4a383605de70f447"
+      },
+      {
+        "file": "tests/e2e/preview-edit.spec.ts",
+        "bytes": 7208,
+        "sha256": "056b671fb2c8b4ddd3224cfe42ffd6faef7430323812f239d441b054886c7e0e"
+      },
+      {
+        "file": "tests/e2e/preview-progressive.spec.ts",
+        "bytes": 2445,
+        "sha256": "c57ef9dfdc4015a6a3598de4d8640de002b79bd33fdaf43c8ee8e8510a58efc2"
+      },
+      {
+        "file": "tests/e2e/range-cancellation.spec.ts",
+        "bytes": 9368,
+        "sha256": "d148639f2c89dab28552cfba33f3c0a6fa631acab1cb85c20883de927b4cbb5d"
+      },
+      {
+        "file": "tests/e2e/search.spec.ts",
+        "bytes": 8137,
+        "sha256": "e6ce064ed11e03264cf9fa850af8db6fdcee8416b5c34814b069c4a4025966e0"
+      },
+      {
+        "file": "tests/e2e/selection-statistics.spec.ts",
+        "bytes": 10245,
+        "sha256": "598e7962cf81632eac4b57d83b2a95d60a2b4d6d45f03ac85c1a03c8c4b8d1c6"
+      },
+      {
+        "file": "tests/e2e/sql-queue.spec.ts",
+        "bytes": 9843,
+        "sha256": "db4925f7c6e3409033f140a73eda1d178bb774d395acf32904eda27deff3514e"
+      },
+      {
+        "file": "tests/e2e/sql.spec.ts",
+        "bytes": 24469,
+        "sha256": "81587e3d84215f91c34626d14aa131d951deb5db8f3ad1437c59f8a9b44cdc81"
+      },
+      {
+        "file": "tests/e2e/statistics-reports.spec.ts",
+        "bytes": 11666,
+        "sha256": "7b9b5b78fec1c2435a217ac6cb31e6cd58be166b1d3f0e27ed3bdf4607e07311"
+      },
+      {
+        "file": "tests/e2e/structural-context.spec.ts",
+        "bytes": 10726,
+        "sha256": "f22873f83d24a80b6b40df1fb6cd0893a0356b4d5a7fd941e8e5ae0d5b2b5e23"
+      },
+      {
+        "file": "tests/e2e/structure.spec.ts",
+        "bytes": 12348,
+        "sha256": "b8bffd845e9f5b7ded33280a1b4ed990ed1ebcaf9e515db081f587db1e64c520"
+      },
+      {
+        "file": "tests/e2e/text-stats.spec.ts",
+        "bytes": 17521,
+        "sha256": "2968e688c5d2177c4554217717fa7666051ed067636269b71963b3502b97f7ba"
+      },
+      {
+        "file": "tests/e2e/ui.spec.ts",
+        "bytes": 55877,
+        "sha256": "6128e59dfffb1d7bae883c3b2db5062dd35aada0cda769f1f3610dadb3f4d059"
+      },
+      {
+        "file": "tests/e2e/virtual-scroll-columns.spec.ts",
+        "bytes": 6067,
+        "sha256": "4cdee2f9039d0e394603de91bba17c9606621629c05fb65f1be1a550c5b565b7"
+      },
+      {
+        "file": "tests/e2e/virtual-scroll.spec.ts",
+        "bytes": 8982,
+        "sha256": "ee7065559f3ffb7fb0270c8a3683c5c0d763d7cc584dcd8e1e98744f8c958bb9"
+      },
+      {
+        "file": "tests/export.test.ts",
+        "bytes": 4132,
+        "sha256": "44d99d197cb0f0dc0236d1f8eff614b26e2b94e713a3adc456533abb38501427"
+      },
+      {
+        "file": "tests/files.test.ts",
+        "bytes": 3066,
+        "sha256": "3f029d403883583af5e4079e52d4674841565bbe711a7260f6c48941bc9ee04c"
+      },
+      {
+        "file": "tests/fixtures/README.md",
+        "bytes": 463,
+        "sha256": "7da444f0342a26233c5ed1940286d9dab6c193765976b991e7a01dacee9c4c8a"
+      },
+      {
+        "file": "tests/fixtures/diagram-errors.json",
+        "bytes": 4287,
+        "sha256": "82af487a8c5187969605fc056e3099d359b9c1ea883fe01a5cdb2875ccd30e88"
+      },
+      {
+        "file": "tests/fixtures/markdown-corpus/a-properties.md",
+        "bytes": 315,
+        "sha256": "1466e3d7272aa3bc30fbf126ce027e507c69ca311e50f7d1545e78120c64353f"
+      },
+      {
+        "file": "tests/fixtures/markdown-corpus/b-links.md",
+        "bytes": 1017,
+        "sha256": "f5d09e8e4709d9499d6785912def040fdbd627d956fff7ca0fba64d76fd22e29"
+      },
+      {
+        "file": "tests/fixtures/markdown-corpus/c-notes.md",
+        "bytes": 441,
+        "sha256": "653a76b11e96fc5970c6e32e07f00a78b257b5a6990e607391d80fca3ebf0422"
+      },
+      {
+        "file": "tests/fixtures/markdown-corpus/d-details.md",
+        "bytes": 839,
+        "sha256": "6701c0ed3af661174a082c893e911104989ffee5b026d46d8c5b979126d6ec2b"
+      },
+      {
+        "file": "tests/fixtures/markdown-corpus/d-hostile.md",
+        "bytes": 838,
+        "sha256": "41456d3a3b5129dc31a9458c977615f8eecbe63e86e1dcc748c2c0601ebbcdfe"
+      },
+      {
+        "file": "tests/fixtures/markdown-corpus/mixed.md",
+        "bytes": 956,
+        "sha256": "997ab8a36804281da0ee8f9b35f894dc32c37055f5c4472c867ef8cef115441e"
+      },
+      {
+        "file": "tests/fixtures/recovery-csv-v1.json",
+        "bytes": 1545,
+        "sha256": "10e5e7e77c1eb3bd50f6b47d35f3c785cda5c5fa2b19bbf3b41cd03c012842fa"
+      },
+      {
+        "file": "tests/graphic-export.test.ts",
+        "bytes": 10324,
+        "sha256": "e9e197cc3f36ba14518093857b71058d0847ce017a95df480f56b1d75a90be89"
+      },
+      {
+        "file": "tests/helpers/markdown-invariants.ts",
+        "bytes": 606,
+        "sha256": "c0c8b3b35745e474b06a26d520cf32eb5fca4c3bdfecfcd01a05ec9a80a33543"
+      },
+      {
+        "file": "tests/icons.test.ts",
+        "bytes": 1109,
+        "sha256": "777552f1c8cdab69af335ded7142622d36333ebf1c425304b985611f1a6bf5bd"
+      },
+      {
+        "file": "tests/job-queue.test.ts",
+        "bytes": 7046,
+        "sha256": "d77352b4f2c9b334fec5727311855b6a3e5c37cb5ccfb07028d5e7142e74abef"
+      },
+      {
+        "file": "tests/large-table.test.ts",
+        "bytes": 11162,
+        "sha256": "210b15af51a30cece35e299d524a1cdac0d250802771e11be6baf7268b6c2dda"
+      },
+      {
+        "file": "tests/markdown-commands.test.ts",
+        "bytes": 14229,
+        "sha256": "cb1a6c2c1ea0ea7952d5eb11d7ccd95fa306a19589717d18af2a4990cec2eb59"
+      },
+      {
+        "file": "tests/markdown-paste.test.ts",
+        "bytes": 5699,
+        "sha256": "918b3d5ea75adc61bcb47860f840f9e5e51d43b891418cdff2cc7638aef526eb"
+      },
+      {
+        "file": "tests/markdown-task-render.test.ts",
+        "bytes": 5633,
+        "sha256": "2655676ba4467bb2cd252995991126995ee9ab1601ae50dc2b93bbc5bbc74c1f"
+      },
+      {
+        "file": "tests/markdown-tasks.test.ts",
+        "bytes": 10548,
+        "sha256": "5b1b3f3757f047f00bf6f150ffb904923d998af1f2d0eab9c19763b43bb068b6"
+      },
+      {
+        "file": "tests/operations.test.ts",
+        "bytes": 15517,
+        "sha256": "c98ff649ba91d44a481892930586c731b30cc32abe35fee0a010a960acc5b6f5"
+      },
+      {
+        "file": "tests/remark-details-context.test.ts",
+        "bytes": 4559,
+        "sha256": "8f6f9e53c0c6a7a2431b1f3530275c4c68b2912c0bf440890eb9d4e1894fb101"
+      },
+      {
+        "file": "tests/remark-details.test.ts",
+        "bytes": 6236,
+        "sha256": "649c68615a1ebc3aedd0e3ecfeff56021789e239d794c3a272651481f374a562"
+      },
+      {
+        "file": "tests/render.test.ts",
+        "bytes": 19238,
+        "sha256": "bb40eac42bf2b820efa4040f11fbd577ef55c56cd4b3ac635e4472e18d7aeaf1"
+      },
+      {
+        "file": "tests/sql-report.test.ts",
+        "bytes": 4139,
+        "sha256": "8b1de06d8b90b749c0cea09f8d3d5352d581d95edb72467758e9e953acdea533"
+      },
+      {
+        "file": "tests/sql-source.test.ts",
+        "bytes": 11002,
+        "sha256": "9206c2485e47719ee04218d107a68edbccade73f552f57e76d8f35a3f85c31a5"
+      },
+      {
+        "file": "tests/statistics-report.test.ts",
+        "bytes": 8738,
+        "sha256": "508d0de73ca115a467538045bcf0cae359a841b85270e380dffc9dcd0eb047b6"
+      },
+      {
+        "file": "tests/table-engine.test.ts",
+        "bytes": 25393,
+        "sha256": "7b4cab54313c936f6d4cf11192fefa94fb4c98a061b4d822d6f146f8928419fe"
+      },
+      {
+        "file": "tests/table-ordering.test.ts",
+        "bytes": 12576,
+        "sha256": "0a5ca4bbbcc67453d82bac1b50acdf26aa141a93660e713fcda43623ce6d2efd"
+      },
+      {
+        "file": "tests/table-range-cancellation.test.ts",
+        "bytes": 6650,
+        "sha256": "48bdb087036766837c5d6d1d4d507487679cc21942e305eff393c47088ea56ac"
+      },
+      {
+        "file": "tests/table-range.test.ts",
+        "bytes": 6707,
+        "sha256": "64b6c149a1d790f928835eb752ea71833208ec6ef9d6effdb1b9520e5a424526"
+      },
+      {
+        "file": "tests/table-selection-statistics.test.ts",
+        "bytes": 9386,
+        "sha256": "348c8f0c084a4ac0924d0a23c56e44c9a97cd1cb4725c1eb62ad030adce4f369"
+      },
+      {
+        "file": "tests/table-structure.test.ts",
+        "bytes": 8952,
+        "sha256": "85c3c5a2d45701aa541f5608c49e837fc712dc057174f0a9830eafb8633e4a81"
+      },
+      {
+        "file": "tests/text-stats.test.ts",
+        "bytes": 6575,
+        "sha256": "012fa4b0d5ff3a0b05700a3b19138e6b5171244f321247b8c35c0c9d21057422"
+      },
+      {
+        "file": "tests/virtual-scroll.test.ts",
+        "bytes": 3298,
+        "sha256": "c6a1ca7e55e8511c50f2baea451a03add624e2c33f18c93fec6040585bb522d9"
+      },
+      {
+        "file": "tests/workspace-layout.test.ts",
+        "bytes": 5747,
+        "sha256": "c61b2ac9b6cf83509244b6992e0e4e161f40a8cc2b9bf31958fc29ce282cfd8d"
+      },
+      {
+        "file": "tsconfig.json",
+        "bytes": 346,
+        "sha256": "5f8790a841c1f7f1be0a708c19e73e47c9fd005019db3920eadd4e651e1adc44"
+      },
+      {
+        "file": "tsconfig.node.json",
+        "bytes": 342,
+        "sha256": "63c5b6595d4d8f86f88d368e76f224b09da7abebc761d7940ed9bdcf262ce459"
+      },
+      {
+        "file": "vitest.config.ts",
+        "bytes": 168,
+        "sha256": "0e22eae6b63e9dfad457c9c1a35c00ea98eefeefb0bcb8589e1fc2a31d16c232"
+      }
+    ],
+    "sourceGuardEvidence": "0b-parent77-971-suite-source-guard.json",
+    "productionProtectedFiles": 85,
+    "productionAndCIAndLockUnchangedRelativeToParent": true,
+    "algorithm": "SHA256 de file + NUL + sha256 + LF en el orden del guard."
+  },
+  "environment": {
+    "node": "v24.22.1",
+    "electronPackage": "44.9.2",
+    "playwright": "1.64.1",
+    "vitest": "5.0.5",
+    "hardwareObservedInEarlierSameHostSeries": {
+      "cpu": "Apple M2 Max",
+      "architecture": "arm64",
+      "memoryBytes": 34359738368,
+      "osRelease": "27.0.0"
+    },
+    "currentMeasuredRunEnvironment": {
+      "platform": "darwin",
+      "arch": "arm64",
+      "osRelease": "27.0.0",
+      "cpu": "Apple M2 Max",
+      "ramBytes": 34359738368,
+      "node": "24.22.1",
+      "electron": "44.9.2",
+      "playwright": "1.64.1",
+      "runnerSha256": "8ba1a9b8b05fd8c3fcb16e6fe6f88431d13926ebcecb01bfccfcdb81650458bf"
+    }
+  },
+  "verification": {
+    "check": {
+      "command": "npm run check",
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 0
+    },
+    "unitFull": {
+      "command": "npm test",
+      "exitCode": 0,
+      "passed": 776,
+      "total": 776,
+      "files": 37,
+      "runnerDurationSeconds": 6.37
+    },
+    "unitFocal": {
+      "passed": 13,
+      "total": 13,
+      "runnerDurationMs": 543,
+      "newItCount": 0
+    },
+    "currentSemanticRed": {
+      "failed": 1,
+      "passed": 12,
+      "total": 13,
+      "runnerDurationMs": 586,
+      "reason": "El it existente exige preview-edit.spec.ts en md antes de añadir su registro."
+    },
+    "initialBuild": {
+      "command": "npm run build",
+      "exitCode": 0,
+      "wholeCommandDurationMeasured": false
+    },
+    "integrity": {
+      "exitCode": 0,
+      "allSpecBytesRestoredByRemovingOnlyTags": true,
+      "specs": 38,
+      "tags": 33,
+      "taggedFiles": 16
+    }
+  },
+  "collection": {
+    "beforeTotal": 307,
+    "afterTotal": 307,
+    "specFiles": 38,
+    "identitySha256": "cfec8a1a51b4007a9cf24f8bd0f77030dec7d2f18f321b569994e3cfabc6d7bb",
+    "identityDiffBytes": 0,
+    "counts": {
+      "full": {
+        "total": 307,
+        "files": 38,
+        "byProject": {
+          "shell": 38,
+          "md": 117,
+          "csv": 152
+        },
+        "identitySha256": "cfec8a1a51b4007a9cf24f8bd0f77030dec7d2f18f321b569994e3cfabc6d7bb",
+        "resultsArraysAllEmpty": true
+      },
+      "md": {
+        "total": 155,
+        "files": 15,
+        "byProject": {
+          "shell": 38,
+          "md": 117
+        },
+        "identitySha256": "c8eafcdc973c64f67a40cb3599657f617798697fcef21a9ffc6925ea340c63d4",
+        "resultsArraysAllEmpty": true
+      },
+      "csv": {
+        "total": 190,
+        "files": 26,
+        "byProject": {
+          "shell": 38,
+          "csv": 152
+        },
+        "identitySha256": "352cc2fe8fdb6f241d76529fbbfb04f3bb92a090880c54bb6172dc3d3e34ecc3",
+        "resultsArraysAllEmpty": true
+      },
+      "fast": {
+        "total": 274,
+        "files": 37,
+        "byProject": {
+          "shell": 36,
+          "md": 110,
+          "csv": 128
+        },
+        "identitySha256": "4f51a7b00473c9f4a4d8827703b2aec136e0cf6cde861c6fbd24175439a4102d",
+        "resultsArraysAllEmpty": true
+      },
+      "perf": {
+        "total": 33,
+        "files": 16,
+        "byProject": {
+          "shell": 2,
+          "md": 7,
+          "csv": 24
+        },
+        "identitySha256": "d20929141169339bda202f9dce6ee40f6bae65276fb11d3aa647eeeb9f73e9f8",
+        "resultsArraysAllEmpty": true
+      },
+      "packaged": {
+        "total": 61,
+        "files": 10,
+        "byProject": {
+          "csv": 61
+        },
+        "identitySha256": "a5af82ba093484ca8612f649b714fece63c617c1249bf5e51dd2084a978e8d01",
+        "resultsArraysAllEmpty": true
+      }
+    },
+    "checks": {
+      "identitiesBeforeAfterEqual": true,
+      "eachIdentityOneProject": true,
+      "mdEqualsShellPlusMd": true,
+      "csvEqualsShellPlusCsv": true,
+      "mdCsvIntersectionEqualsShell": true,
+      "fastPerfDisjoint": true,
+      "fastPerfUnionEqualsFull": true,
+      "packagedExactExistingFileSubset": true,
+      "packagedOnlyCsv": true,
+      "emptyShellAndMdUnderPackagedFilterDoNotFail": true,
+      "allResultArraysEmpty": true,
+      "sourcesUnchanged": true
+    },
+    "onlyCollection": true,
+    "allResultArraysEmpty": true,
+    "deltaFrom304": {
+      "previousHead": "49817b62454e90db8c9fbe807d6438c2f5d3219f",
+      "unchanged": 304,
+      "added": 3,
+      "removed": 0,
+      "onlyNewSpec": "tests/e2e/preview-edit.spec.ts"
+    },
+    "sourceStatusBeforeAfterUnchanged": true
+  },
+  "scripts": {
+    "test:e2e": "npm run build && playwright test",
+    "test:e2e:md": "npm run build && playwright test --project=shell --project=md",
+    "test:e2e:csv": "npm run build && playwright test --project=shell --project=csv",
+    "test:e2e:fast": "npm run build && playwright test --grep-invert \"@perf\"",
+    "test:e2e:perf": "npm run build && playwright test --grep \"@perf\""
+  },
+  "annotations": {
+    "selectedCalls": 33,
+    "selectedFiles": 16,
+    "specsChecked": 38,
+    "allRestoredBytesEqualParent": true,
+    "selectedCallsSha256": "d20929141169339bda202f9dce6ee40f6bae65276fb11d3aa647eeeb9f73e9f8",
+    "allSpecHashesSha256": "581929a4868f6dfdd1d327bc2fc31dec3efd89590243f195065a12acc5e6daf4",
+    "previewEditByteExactAndUntagged": {
+      "file": "tests/e2e/preview-edit.spec.ts",
+      "annotations": 0,
+      "beforeSha256": "056b671fb2c8b4ddd3224cfe42ffd6faef7430323812f239d441b054886c7e0e",
+      "afterSha256": "056b671fb2c8b4ddd3224cfe42ffd6faef7430323812f239d441b054886c7e0e",
+      "strippedSha256": "056b671fb2c8b4ddd3224cfe42ffd6faef7430323812f239d441b054886c7e0e"
+    },
+    "unselectedMulticolumnFastCases": 12
+  },
+  "perfCases": [
+    {
+      "file": "tests/e2e/charts.spec.ts",
+      "title": "histograma agrega un millón de filas completo aunque la tabla sea de solo lectura",
+      "line": 57,
+      "suites": [],
+      "reason": "Tabla de 1.000.000 de filas; histograma sobre la fuente completa.",
+      "caseRuntimeMs": 6744,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 7142,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 7142,
+              "startTime": "2026-10-28T03:24:33.479Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 7035,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 7035,
+              "startTime": "2026-10-28T03:37:19.305Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 6782,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 6782,
+              "startTime": "2026-10-28T03:46:04.706Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 6744,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 6744,
+              "startTime": "2026-10-28T03:50:57.489Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/charts.spec.ts",
+      "title": "gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial",
+      "line": 70,
+      "suites": [],
+      "reason": "CSV >50 MiB: 2.400 registros con un campo de 23.000 caracteres; exportación e integridad.",
+      "caseRuntimeMs": 12130,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 12120,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 12120,
+              "startTime": "2026-10-28T03:24:40.627Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 12116,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 12116,
+              "startTime": "2026-10-28T03:37:26.357Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 12105,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 12105,
+              "startTime": "2026-10-28T03:46:11.506Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 12130,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 12130,
+              "startTime": "2026-10-28T03:51:04.238Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/charts.spec.ts",
+      "title": "resultados exportados: muestra lee la fuente completa sin permitir guardar el CSV parcial",
+      "line": 294,
+      "suites": [],
+      "reason": "CSV >50 MiB: misma dimensión densa, exportación de resultados desde la fuente completa.",
+      "caseRuntimeMs": 2545,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 2584,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2584,
+              "startTime": "2026-10-28T03:25:56.030Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 2576,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2576,
+              "startTime": "2026-10-28T03:37:38.479Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 2561,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2561,
+              "startTime": "2026-10-28T03:46:23.618Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 2545,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2545,
+              "startTime": "2026-10-28T03:52:19.367Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/columns-overview.spec.ts",
+      "title": "panorámica: una solicitud reemplazada con igual revisión aborta; una cardinalidad alta solo limita esa columna",
+      "line": 48,
+      "suites": [],
+      "reason": "Tabla de 1.000.000 de filas para reemplazo/cancelación de análisis; también prueba cardinalidad.",
+      "caseRuntimeMs": 1789,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1826,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1826,
+              "startTime": "2026-10-28T03:26:13.079Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1866,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1866,
+              "startTime": "2026-10-28T03:37:41.136Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1738,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1738,
+              "startTime": "2026-10-28T03:46:26.246Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1789,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1789,
+              "startTime": "2026-10-28T03:52:36.239Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/columns-overview.spec.ts",
+      "title": "panorámica: muestra etiquetada incluso durante el cálculo y presupuesto sin totales inventados",
+      "line": 57,
+      "suites": [],
+      "reason": "Archivo de muestra de 50 MiB + 1 byte (tamaño lógico) y límites de exploración.",
+      "caseRuntimeMs": 1060,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1039,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1039,
+              "startTime": "2026-10-28T03:26:14.910Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1064,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1064,
+              "startTime": "2026-10-28T03:37:43.008Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1064,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1064,
+              "startTime": "2026-10-28T03:46:27.990Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1060,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1060,
+              "startTime": "2026-10-28T03:52:38.033Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/columns-overview.spec.ts",
+      "title": "panorámica: mide 3 000, 100 000 y un millón de filas completas con una columna",
+      "line": 65,
+      "suites": [],
+      "reason": "Recorre 3.000, 100.000 y 1.000.000 de filas completas.",
+      "caseRuntimeMs": 1906,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1934,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1934,
+              "startTime": "2026-10-28T03:26:15.955Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1897,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1897,
+              "startTime": "2026-10-28T03:37:44.081Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1872,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1872,
+              "startTime": "2026-10-28T03:46:29.062Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1906,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1906,
+              "startTime": "2026-10-28T03:52:39.097Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/columns-overview.spec.ts",
+      "title": "panorámica: abrir un millón de filas y explorar inmediatamente no compite con la carga inicial de la grilla",
+      "line": 76,
+      "suites": [],
+      "reason": "Apertura y exploración inmediata de 1.000.000 de filas.",
+      "caseRuntimeMs": 1359,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1390,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1390,
+              "startTime": "2026-10-28T03:26:17.894Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1400,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1400,
+              "startTime": "2026-10-28T03:37:45.984Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1342,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1342,
+              "startTime": "2026-10-28T03:46:30.939Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1359,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1359,
+              "startTime": "2026-10-28T03:52:41.008Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/commands.spec.ts",
+      "title": "paleta CSV: muestra bloquea edición y copia, conserva análisis y navegación en ambos temas",
+      "line": 29,
+      "suites": [],
+      "reason": "Archivo de muestra de 50 MiB + 1 byte (tamaño lógico); bloqueo de edición.",
+      "caseRuntimeMs": 989,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 991,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 991,
+              "startTime": "2026-10-28T03:26:22.430Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1042,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1042,
+              "startTime": "2026-10-28T03:37:47.394Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 999,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 999,
+              "startTime": "2026-10-28T03:46:32.291Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 989,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 989,
+              "startTime": "2026-10-28T03:52:45.566Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/descriptive-percentiles.spec.ts",
+      "title": "percentiles: vacío, un solo número y muestra limitada no inventan población completa",
+      "line": 46,
+      "suites": [],
+      "reason": "Archivo de muestra de 50 MiB + 1 byte (tamaño lógico); alcance de percentiles.",
+      "caseRuntimeMs": 1087,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1098,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1098,
+              "startTime": "2026-10-28T03:26:31.333Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1137,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1137,
+              "startTime": "2026-10-28T03:37:48.447Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1080,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1080,
+              "startTime": "2026-10-28T03:46:33.300Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1087,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1087,
+              "startTime": "2026-10-28T03:52:54.351Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/markdown-date.spec.ts",
+      "title": "F6: muestra Markdown de solo lectura deshabilita las fechas y TXT/Mermaid no ofrecen estas acciones",
+      "line": 89,
+      "suites": [],
+      "reason": "Fuente Markdown de 10 MiB + 1 byte; las acciones de fecha se deshabilitan sobre su muestra.",
+      "caseRuntimeMs": 765,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "md1",
+          "project": "md",
+          "durationMs": 795,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 795,
+              "startTime": "2026-10-28T03:20:45.326Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "md",
+          "durationMs": 850,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 850,
+              "startTime": "2026-10-28T03:37:08.038Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "md",
+          "durationMs": 794,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 794,
+              "startTime": "2026-10-28T03:45:53.843Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "md",
+          "durationMs": 765,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 765,
+              "startTime": "2026-10-28T03:48:03.083Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/markdown-paste.spec.ts",
+      "title": "P6: documento Markdown de solo lectura no cambia al pegar sobre su muestra",
+      "line": 127,
+      "suites": [],
+      "reason": "Fuente Markdown de 10 MiB + 1 byte; el pegado no debe modificar una muestra de solo lectura.",
+      "caseRuntimeMs": 793,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "md1",
+          "project": "md",
+          "durationMs": 773,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 773,
+              "startTime": "2026-10-28T03:20:55.323Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "md",
+          "durationMs": 831,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 831,
+              "startTime": "2026-10-28T03:37:08.912Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "md",
+          "durationMs": 721,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 721,
+              "startTime": "2026-10-28T03:45:54.660Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "md",
+          "durationMs": 793,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 793,
+              "startTime": "2026-10-28T03:48:12.823Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/markdown-tasks.spec.ts",
+      "title": "C5: solo lectura no habilita casillas ni escribe mediante teclado o eventos sintéticos",
+      "line": 83,
+      "suites": [],
+      "reason": "Fuente Markdown mayor de 10 MiB; las casillas de la muestra no pueden escribir por teclado ni eventos.",
+      "caseRuntimeMs": 1412,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "md1",
+          "project": "md",
+          "durationMs": 1465,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1465,
+              "startTime": "2026-10-28T03:21:16.853Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "md",
+          "durationMs": 1458,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1458,
+              "startTime": "2026-10-28T03:37:09.756Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "md",
+          "durationMs": 1431,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1431,
+              "startTime": "2026-10-28T03:45:55.392Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "md",
+          "durationMs": 1412,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1412,
+              "startTime": "2026-10-28T03:48:33.895Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/markdown-tasks.spec.ts",
+      "title": "C5: recargar una muestra que pasa a editable no deja bloqueado el estado compartido",
+      "line": 89,
+      "suites": [],
+      "reason": "Fuente Markdown inicialmente mayor de 10 MiB; recargarla como pequeña debe recuperar la edición sin facet de solo lectura residual.",
+      "caseRuntimeMs": 1785,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "md1",
+          "project": "md",
+          "durationMs": 1813,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1813,
+              "startTime": "2026-10-28T03:21:18.324Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "md",
+          "durationMs": 1798,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1798,
+              "startTime": "2026-10-28T03:37:11.221Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "md",
+          "durationMs": 1777,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1777,
+              "startTime": "2026-10-28T03:45:56.834Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "md",
+          "durationMs": 1785,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1785,
+              "startTime": "2026-10-28T03:48:35.315Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/markdown-toolbar.spec.ts",
+      "title": "solo lectura deshabilita todos los controles y vista previa oculta la barra",
+      "line": 110,
+      "suites": [],
+      "reason": "Markdown de 12.600.019 bytes, superior al límite de edición de 10 MiB; solo lectura.",
+      "caseRuntimeMs": 1008,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "md1",
+          "project": "md",
+          "durationMs": 985,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 985,
+              "startTime": "2026-10-28T03:21:35.297Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "md",
+          "durationMs": 1009,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1009,
+              "startTime": "2026-10-28T03:37:13.032Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "md",
+          "durationMs": 932,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 932,
+              "startTime": "2026-10-28T03:45:58.622Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "md",
+          "durationMs": 1008,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1008,
+              "startTime": "2026-10-28T03:48:51.988Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/markdown-toolbar.spec.ts",
+      "title": "documento de 10 MiB: el estado sigue al cursor sin bloquear la navegación",
+      "line": 152,
+      "suites": [],
+      "reason": "Markdown de exactamente 10 MiB; navegación y estado del cursor.",
+      "caseRuntimeMs": 3922,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "md1",
+          "project": "md",
+          "durationMs": 3980,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 3980,
+              "startTime": "2026-10-28T03:21:38.338Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "md",
+          "durationMs": 4031,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 4031,
+              "startTime": "2026-10-28T03:37:14.047Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "md",
+          "durationMs": 3957,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 3957,
+              "startTime": "2026-10-28T03:45:59.560Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "md",
+          "durationMs": 3922,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 3922,
+              "startTime": "2026-10-28T03:48:55.026Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/search.spec.ts",
+      "title": "buscar muestra CSV no habilita reemplazo ni pierde la marca de alcance parcial",
+      "line": 31,
+      "suites": [],
+      "reason": "Archivo de muestra de 50 MiB + 1 byte (tamaño lógico); reemplazo bloqueado.",
+      "caseRuntimeMs": 850,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 929,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 929,
+              "startTime": "2026-10-28T03:27:18.491Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 905,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 905,
+              "startTime": "2026-10-28T03:37:49.594Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 858,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 858,
+              "startTime": "2026-10-28T03:46:34.389Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 850,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 850,
+              "startTime": "2026-10-28T03:53:40.661Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/selection-statistics.spec.ts",
+      "title": "estadísticas del rango: muestra limitada, campos nuevos y validación IPC sin atribuir totales globales",
+      "line": 36,
+      "suites": [],
+      "reason": "Archivo de muestra de 50 MiB + 1 byte (tamaño lógico); estadísticas parciales.",
+      "caseRuntimeMs": 911,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 922,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 922,
+              "startTime": "2026-10-28T03:27:22.133Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 949,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 949,
+              "startTime": "2026-10-28T03:37:50.511Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 960,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 960,
+              "startTime": "2026-10-28T03:46:35.272Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 911,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 911,
+              "startTime": "2026-10-28T03:53:44.193Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/sql.spec.ts",
+      "title": "SQL: mide fuentes completas hasta un millón por cuatro columnas y distingue la muestra",
+      "line": 61,
+      "suites": [],
+      "reason": "Escala hasta 1.000.000 de filas × 4 columnas, con alcance completo explícito.",
+      "caseRuntimeMs": 9032,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 9272,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 9272,
+              "startTime": "2026-10-28T03:28:05.674Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 9250,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 9250,
+              "startTime": "2026-10-28T03:37:51.473Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 8966,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 8966,
+              "startTime": "2026-10-28T03:46:36.246Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 9032,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 9032,
+              "startTime": "2026-10-28T03:54:26.906Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/sql.spec.ts",
+      "title": "informe SQL desde un CSV mayor de 50 MiB identifica la fuente completa sin habilitar guardar su muestra",
+      "line": 111,
+      "suites": [],
+      "reason": "CSV denso >50 MiB; informe desde la fuente completa, sin habilitar guardar una muestra.",
+      "caseRuntimeMs": 4896,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 4922,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 4922,
+              "startTime": "2026-10-28T03:28:23.275Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 4918,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 4918,
+              "startTime": "2026-10-28T03:38:00.728Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 4891,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 4891,
+              "startTime": "2026-10-28T03:46:45.217Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 4896,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 4896,
+              "startTime": "2026-10-28T03:54:44.211Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/statistics-reports.spec.ts",
+      "title": "informe de muestra exportable con alcance explícito sin habilitar la exportación del CSV parcial",
+      "line": 40,
+      "suites": [],
+      "reason": "Archivo de muestra de 50 MiB + 1 byte (tamaño lógico); informe exportable.",
+      "caseRuntimeMs": 1062,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1128,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1128,
+              "startTime": "2026-10-28T03:28:36.430Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1150,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1150,
+              "startTime": "2026-10-28T03:38:05.657Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1080,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1080,
+              "startTime": "2026-10-28T03:46:50.119Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1062,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1062,
+              "startTime": "2026-10-28T03:54:57.338Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/structural-context.spec.ts",
+      "title": "menús estructurales: muestras bloquean cambios y conservan orden de vista, temas y foco",
+      "line": 32,
+      "suites": [],
+      "reason": "Archivo de muestra de 50 MiB + 1 byte (tamaño lógico); bloquea cambios estructurales.",
+      "caseRuntimeMs": 1179,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1179,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1179,
+              "startTime": "2026-10-28T03:28:40.421Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1214,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1214,
+              "startTime": "2026-10-28T03:38:06.818Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1172,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1172,
+              "startTime": "2026-10-28T03:46:51.209Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1179,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1179,
+              "startTime": "2026-10-28T03:55:01.153Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/text-stats.spec.ts",
+      "title": "una muestra TXT de solo lectura cuenta el primer MiB y lo identifica sin presentar el total del archivo",
+      "line": 204,
+      "suites": [],
+      "reason": "Fuente TXT de 10 MiB + 1 byte; la app cuenta el primer MiB de muestra y debe identificarlo. Es un límite funcional de tamaño, no un benchmark de edición de 10 MiB.",
+      "caseRuntimeMs": 915,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "md1",
+          "project": "md",
+          "durationMs": 1525,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1525,
+              "startTime": "2026-10-28T03:23:19.011Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "md",
+          "durationMs": 970,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 970,
+              "startTime": "2026-10-28T03:37:18.090Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "md",
+          "durationMs": 935,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 935,
+              "startTime": "2026-10-28T03:46:03.528Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "md",
+          "durationMs": 915,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 915,
+              "startTime": "2026-10-28T03:50:33.225Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/ui.spec.ts",
+      "title": "estadísticas CSV: muestra rotulada e IPC inválido rechazado",
+      "line": 265,
+      "suites": [],
+      "reason": "Archivo de muestra de 50 MiB + 1 byte (tamaño lógico); alcance e IPC.",
+      "caseRuntimeMs": 699,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "md1",
+          "project": "shell",
+          "durationMs": 712,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 712,
+              "startTime": "2026-10-28T03:20:23.516Z"
+            }
+          ]
+        },
+        {
+          "label": "csv1",
+          "project": "shell",
+          "durationMs": 719,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 719,
+              "startTime": "2026-10-28T03:23:54.416Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "shell",
+          "durationMs": 815,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 815,
+              "startTime": "2026-10-28T03:37:05.957Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "shell",
+          "durationMs": 738,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 738,
+              "startTime": "2026-10-28T03:45:51.889Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "shell",
+          "durationMs": 699,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 699,
+              "startTime": "2026-10-28T03:47:41.829Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/ui.spec.ts",
+      "title": "exploración CSV: paginación, cancelación, muestra e IPC inválido",
+      "line": 533,
+      "suites": [],
+      "reason": "Incluye muestra de 50 MiB + 1 byte (tamaño lógico), además de exploración funcional.",
+      "caseRuntimeMs": 914,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "md1",
+          "project": "shell",
+          "durationMs": 963,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 963,
+              "startTime": "2026-10-28T03:20:38.618Z"
+            }
+          ]
+        },
+        {
+          "label": "csv1",
+          "project": "shell",
+          "durationMs": 1006,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1006,
+              "startTime": "2026-10-28T03:24:09.307Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "shell",
+          "durationMs": 1016,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1016,
+              "startTime": "2026-10-28T03:37:06.790Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "shell",
+          "durationMs": 968,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 968,
+              "startTime": "2026-10-28T03:45:52.645Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "shell",
+          "durationMs": 914,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 914,
+              "startTime": "2026-10-28T03:47:56.597Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/virtual-scroll.spec.ts",
+      "title": "se llega a la última fila de un millón de filas sin un elemento más alto que el límite de Chromium",
+      "line": 31,
+      "suites": [],
+      "reason": "Fixture común de 1.000.000 de filas: navegación, continuidad y techo de altura de Chromium.",
+      "caseRuntimeMs": 1540,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1580,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1580,
+              "startTime": "2026-10-28T03:29:10.553Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1580,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1580,
+              "startTime": "2026-10-28T03:38:08.044Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1523,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1523,
+              "startTime": "2026-10-28T03:46:52.392Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1540,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1540,
+              "startTime": "2026-10-28T03:55:29.805Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/virtual-scroll.spec.ts",
+      "title": "Ctrl/⌘ + Fin lleva el foco a la última fila y la deja a la vista",
+      "line": 39,
+      "suites": [],
+      "reason": "Fixture común de 1.000.000 de filas: navegación, continuidad y techo de altura de Chromium.",
+      "caseRuntimeMs": 1551,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1600,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1600,
+              "startTime": "2026-10-28T03:29:12.202Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1600,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1600,
+              "startTime": "2026-10-28T03:38:09.692Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1552,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1552,
+              "startTime": "2026-10-28T03:46:53.982Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1551,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1551,
+              "startTime": "2026-10-28T03:55:31.412Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/virtual-scroll.spec.ts",
+      "title": "a mitad del recorrido las filas son contiguas, están separadas 32 px y la posición es proporcional",
+      "line": 48,
+      "suites": [],
+      "reason": "Fixture común de 1.000.000 de filas: navegación, continuidad y techo de altura de Chromium.",
+      "caseRuntimeMs": 1543,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1567,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1567,
+              "startTime": "2026-10-28T03:29:13.807Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1548,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1548,
+              "startTime": "2026-10-28T03:38:11.297Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1567,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1567,
+              "startTime": "2026-10-28T03:46:55.540Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1543,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1543,
+              "startTime": "2026-10-28T03:55:32.969Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/virtual-scroll.spec.ts",
+      "title": "la selección sigue en su fila al alejarse y volver",
+      "line": 56,
+      "suites": [],
+      "reason": "Fixture común de 1.000.000 de filas: navegación, continuidad y techo de altura de Chromium.",
+      "caseRuntimeMs": 1603,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1671,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1671,
+              "startTime": "2026-10-28T03:29:15.382Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1612,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1612,
+              "startTime": "2026-10-28T03:38:12.849Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1584,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1584,
+              "startTime": "2026-10-28T03:46:57.112Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1603,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1603,
+              "startTime": "2026-10-28T03:55:34.520Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/virtual-scroll.spec.ts",
+      "title": "una muesca de la rueda mueve las filas que dice la rueda, no miles",
+      "line": 66,
+      "suites": [],
+      "reason": "Fixture común de 1.000.000 de filas: navegación, continuidad y techo de altura de Chromium.",
+      "caseRuntimeMs": 1568,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1602,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1602,
+              "startTime": "2026-10-28T03:29:17.059Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1604,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1604,
+              "startTime": "2026-10-28T03:38:14.466Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1577,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1577,
+              "startTime": "2026-10-28T03:46:58.700Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1568,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1568,
+              "startTime": "2026-10-28T03:55:36.128Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/virtual-scroll.spec.ts",
+      "title": "con un filtro o un orden la tabla sigue siendo correcta",
+      "line": 76,
+      "suites": [],
+      "reason": "Fixture común de 1.000.000 de filas: navegación, continuidad y techo de altura de Chromium.",
+      "caseRuntimeMs": 5151,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 5234,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 5234,
+              "startTime": "2026-10-28T03:29:18.666Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 5230,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 5230,
+              "startTime": "2026-10-28T03:38:16.076Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 5158,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 5158,
+              "startTime": "2026-10-28T03:47:00.282Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 5151,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 5151,
+              "startTime": "2026-10-28T03:55:37.702Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/virtual-scroll.spec.ts",
+      "title": "recorrer el archivo entero deja ver todas las filas en orden y sin huecos",
+      "line": 88,
+      "suites": [],
+      "reason": "Fixture común de 1.000.000 de filas: navegación, continuidad y techo de altura de Chromium.",
+      "caseRuntimeMs": 1757,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1780,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1780,
+              "startTime": "2026-10-28T03:29:23.905Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1799,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1799,
+              "startTime": "2026-10-28T03:38:21.311Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1847,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1847,
+              "startTime": "2026-10-28T03:47:05.445Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1757,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1757,
+              "startTime": "2026-10-28T03:55:42.857Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/virtual-scroll.spec.ts",
+      "title": "al cambiar el alto de la ventana con la barra escalada la última fila sigue alcanzable",
+      "line": 100,
+      "suites": [],
+      "reason": "Fixture común de 1.000.000 de filas: navegación, continuidad y techo de altura de Chromium.",
+      "caseRuntimeMs": 1688,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1621,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1621,
+              "startTime": "2026-10-28T03:29:25.691Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1725,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1725,
+              "startTime": "2026-10-28T03:38:23.115Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1577,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1577,
+              "startTime": "2026-10-28T03:47:07.297Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1688,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1688,
+              "startTime": "2026-10-28T03:55:44.619Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/virtual-scroll.spec.ts",
+      "title": "al agrandar la ventana estando al final la última fila se queda a la vista sin volver a desplazar",
+      "line": 107,
+      "suites": [],
+      "reason": "Fixture común de 1.000.000 de filas: navegación, continuidad y techo de altura de Chromium.",
+      "caseRuntimeMs": 1541,
+      "caseRuntimeStatus": "MEASURED_PARENT_PR77_SERIES307_FULL1",
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 1963,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1963,
+              "startTime": "2026-10-28T03:29:27.317Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 1758,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1758,
+              "startTime": "2026-10-28T03:38:24.845Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 1922,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1922,
+              "startTime": "2026-10-28T03:47:08.879Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 1541,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1541,
+              "startTime": "2026-10-28T03:55:46.312Z"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "measurements": [
+    {
+      "label": "md1",
+      "script": "test:e2e:md",
+      "command": "npm run test:e2e:md",
+      "plannedRepetition": 1,
+      "collectedCases": 155,
+      "status": "PASSED_CURRENT_PARENT_PR77_SERIES307",
+      "passed": 155,
+      "failed": 0,
+      "flaky": 0,
+      "skipped": 0,
+      "retryAttempts": 0,
+      "wallClockMs": 210515.397792,
+      "playwrightDurationMs": 208376.058,
+      "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+      "startUtc": "2026-10-28T03:19:51.553Z",
+      "endUtc": "2026-10-28T03:23:22.070Z",
+      "sourceUnchanged": true,
+      "head": "455df4266a052faed688b30c89736f0f3774634e",
+      "sourceHash": "04587fbf7efbb8896ce6ed9f31036040fe500a76ed3d0bf237ef1ddb5c832f96",
+      "bundleHash": "97600b0f7c7d76a409fea20b1aa9722e2116042564f49ab2ad0989958bde96b1"
+    },
+    {
+      "label": "csv1",
+      "script": "test:e2e:csv",
+      "command": "npm run test:e2e:csv",
+      "plannedRepetition": 1,
+      "collectedCases": 190,
+      "status": "PASSED_CURRENT_PARENT_PR77_SERIES307",
+      "passed": 190,
+      "failed": 0,
+      "flaky": 0,
+      "skipped": 0,
+      "retryAttempts": 0,
+      "wallClockMs": 366941.242583,
+      "playwrightDurationMs": 364907.24299999996,
+      "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+      "startUtc": "2026-10-28T03:23:22.481Z",
+      "endUtc": "2026-10-28T03:29:29.425Z",
+      "sourceUnchanged": true,
+      "head": "455df4266a052faed688b30c89736f0f3774634e",
+      "sourceHash": "04587fbf7efbb8896ce6ed9f31036040fe500a76ed3d0bf237ef1ddb5c832f96",
+      "bundleHash": "97600b0f7c7d76a409fea20b1aa9722e2116042564f49ab2ad0989958bde96b1"
+    },
+    {
+      "label": "fast1",
+      "script": "test:e2e:fast",
+      "command": "npm run test:e2e:fast",
+      "plannedRepetition": 1,
+      "collectedCases": 274,
+      "status": "PASSED_CURRENT_PARENT_PR77_SERIES307",
+      "passed": 274,
+      "failed": 0,
+      "flaky": 0,
+      "skipped": 0,
+      "retryAttempts": 0,
+      "wallClockMs": 453789.347208,
+      "playwrightDurationMs": 451767.442,
+      "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+      "startUtc": "2026-10-28T03:29:29.764Z",
+      "endUtc": "2026-10-28T03:37:03.554Z",
+      "sourceUnchanged": true,
+      "head": "455df4266a052faed688b30c89736f0f3774634e",
+      "sourceHash": "04587fbf7efbb8896ce6ed9f31036040fe500a76ed3d0bf237ef1ddb5c832f96",
+      "bundleHash": "97600b0f7c7d76a409fea20b1aa9722e2116042564f49ab2ad0989958bde96b1"
+    },
+    {
+      "label": "perf1",
+      "script": "test:e2e:perf",
+      "command": "npm run test:e2e:perf",
+      "plannedRepetition": 1,
+      "collectedCases": 33,
+      "status": "PASSED_CURRENT_PARENT_PR77_SERIES307",
+      "passed": 33,
+      "failed": 0,
+      "flaky": 0,
+      "skipped": 0,
+      "retryAttempts": 0,
+      "wallClockMs": 82884.688458,
+      "playwrightDurationMs": 81116.99399999999,
+      "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+      "startUtc": "2026-10-28T03:37:03.813Z",
+      "endUtc": "2026-10-28T03:38:26.698Z",
+      "sourceUnchanged": true,
+      "head": "455df4266a052faed688b30c89736f0f3774634e",
+      "sourceHash": "04587fbf7efbb8896ce6ed9f31036040fe500a76ed3d0bf237ef1ddb5c832f96",
+      "bundleHash": "97600b0f7c7d76a409fea20b1aa9722e2116042564f49ab2ad0989958bde96b1"
+    },
+    {
+      "label": "fast2",
+      "script": "test:e2e:fast",
+      "command": "npm run test:e2e:fast",
+      "plannedRepetition": 2,
+      "collectedCases": 274,
+      "status": "PASSED_CURRENT_PARENT_PR77_SERIES307",
+      "passed": 274,
+      "failed": 0,
+      "flaky": 0,
+      "skipped": 0,
+      "retryAttempts": 0,
+      "wallClockMs": 442337.564584,
+      "playwrightDurationMs": 440316.437,
+      "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+      "startUtc": "2026-10-28T03:38:26.907Z",
+      "endUtc": "2026-10-28T03:45:49.248Z",
+      "sourceUnchanged": true,
+      "head": "455df4266a052faed688b30c89736f0f3774634e",
+      "sourceHash": "04587fbf7efbb8896ce6ed9f31036040fe500a76ed3d0bf237ef1ddb5c832f96",
+      "bundleHash": "97600b0f7c7d76a409fea20b1aa9722e2116042564f49ab2ad0989958bde96b1"
+    },
+    {
+      "label": "perf2",
+      "script": "test:e2e:perf",
+      "command": "npm run test:e2e:perf",
+      "plannedRepetition": 2,
+      "collectedCases": 33,
+      "status": "PASSED_CURRENT_PARENT_PR77_SERIES307",
+      "passed": 33,
+      "failed": 0,
+      "flaky": 0,
+      "skipped": 0,
+      "retryAttempts": 0,
+      "wallClockMs": 81270.532125,
+      "playwrightDurationMs": 79375.56000000001,
+      "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+      "startUtc": "2026-10-28T03:45:49.629Z",
+      "endUtc": "2026-10-28T03:47:10.900Z",
+      "sourceUnchanged": true,
+      "head": "455df4266a052faed688b30c89736f0f3774634e",
+      "sourceHash": "04587fbf7efbb8896ce6ed9f31036040fe500a76ed3d0bf237ef1ddb5c832f96",
+      "bundleHash": "97600b0f7c7d76a409fea20b1aa9722e2116042564f49ab2ad0989958bde96b1"
+    },
+    {
+      "label": "full1",
+      "script": "test:e2e",
+      "command": "npm run test:e2e",
+      "plannedRepetition": 1,
+      "collectedCases": 307,
+      "status": "PASSED_CURRENT_PARENT_PR77_SERIES307",
+      "passed": 307,
+      "failed": 0,
+      "flaky": 0,
+      "skipped": 0,
+      "retryAttempts": 0,
+      "wallClockMs": 516957.515083,
+      "playwrightDurationMs": 514932.125,
+      "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+      "startUtc": "2026-10-28T03:47:11.103Z",
+      "endUtc": "2026-10-28T03:55:48.061Z",
+      "sourceUnchanged": true,
+      "head": "455df4266a052faed688b30c89736f0f3774634e",
+      "sourceHash": "04587fbf7efbb8896ce6ed9f31036040fe500a76ed3d0bf237ef1ddb5c832f96",
+      "bundleHash": "97600b0f7c7d76a409fea20b1aa9722e2116042564f49ab2ad0989958bde96b1"
+    }
+  ],
+  "measurementPlan": {
+    "order": [
+      "md1",
+      "csv1",
+      "fast1",
+      "perf1",
+      "fast2",
+      "perf2",
+      "full1"
+    ],
+    "rootStartedSevenCommandQueue": true,
+    "rootDriverSession": 22605,
+    "outputDirectory": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs",
+    "allSevenTerminalConfirmed": true,
+    "partialOutputsNotUsed": true,
+    "secondFastPerfArePlannedReplicasNotRetries": true,
+    "allActualNpmCommandsIncludeBuild": true,
+    "perCaseDurationsAndSlowOver10SecondsReview": "VERIFIED_CURRENT_SERIES307",
+    "completedCommandsObserved": 7,
+    "completedSubsetDoesNotCloseT8": false,
+    "runningCommandPartialOutputsUsed": false,
+    "completedIndividualResultsRecorded": true,
+    "rootTerminal22605Confirmed": true
+  },
+  "historicalLocalSeries": [
+    {
+      "series": "main636_local270",
+      "sourceHead": "6362e2db22d614dbdc3c1cd39fbf2cd1a04d2b44",
+      "sourceHash": "69e99b3e8bb0cfc48eccab68c7906c5f0553e7a0bbf83167286300efeb7bb4ed",
+      "counts": {
+        "full": 270,
+        "md": 118,
+        "csv": 190,
+        "fast": 241,
+        "perf": 29,
+        "packaged": 61
+      },
+      "allSevenLocalCommandsPassed": true,
+      "measurements": [
+        {
+          "label": "md1",
+          "script": "test:e2e:md",
+          "command": "npm run test:e2e:md",
+          "plannedRepetition": 1,
+          "collectedCases": 118,
+          "status": "PASSED_HISTORICAL_SERIES_MAIN6362",
+          "passed": 118,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "retryAttempts": 0,
+          "wallClockMs": 274681.329666,
+          "playwrightDurationMs": 272939.163,
+          "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+          "startUtc": "2026-10-27T20:09:40.723Z",
+          "endUtc": "2026-10-27T20:14:15.405Z",
+          "nativeStarted": true,
+          "sourceUnchanged": true,
+          "head": "6362e2db22d614dbdc3c1cd39fbf2cd1a04d2b44",
+          "sourceHash": "69e99b3e8bb0cfc48eccab68c7906c5f0553e7a0bbf83167286300efeb7bb4ed",
+          "bundleHash": "212dfc45c1a87d260bbab725325620fd4135b265c4e8b32cfc7a3f92692ff3bb",
+          "result": {
+            "path": "/private/tmp/freyalab-lote/0b-main636-suite-runs/md1/result.json",
+            "sha256": "fde098b017daa48b67423511d4a903a3ab0814dc219c50bb7ffd6971c1d87df5"
+          }
+        },
+        {
+          "label": "csv1",
+          "script": "test:e2e:csv",
+          "command": "npm run test:e2e:csv",
+          "plannedRepetition": 1,
+          "collectedCases": 190,
+          "status": "PASSED_HISTORICAL_SERIES_MAIN6362",
+          "passed": 190,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "retryAttempts": 0,
+          "wallClockMs": 372131.598333,
+          "playwrightDurationMs": 370197.016,
+          "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+          "startUtc": "2026-10-27T20:14:15.769Z",
+          "endUtc": "2026-10-27T20:20:27.901Z",
+          "nativeStarted": true,
+          "sourceUnchanged": true,
+          "head": "6362e2db22d614dbdc3c1cd39fbf2cd1a04d2b44",
+          "sourceHash": "69e99b3e8bb0cfc48eccab68c7906c5f0553e7a0bbf83167286300efeb7bb4ed",
+          "bundleHash": "212dfc45c1a87d260bbab725325620fd4135b265c4e8b32cfc7a3f92692ff3bb",
+          "result": {
+            "path": "/private/tmp/freyalab-lote/0b-main636-suite-runs/csv1/result.json",
+            "sha256": "3291fca6779d09d37add5b74b90dfb945d2fc062499c267fc236d4cf290469e4"
+          }
+        },
+        {
+          "label": "fast1",
+          "script": "test:e2e:fast",
+          "command": "npm run test:e2e:fast",
+          "plannedRepetition": 1,
+          "collectedCases": 241,
+          "status": "PASSED_HISTORICAL_SERIES_MAIN6362",
+          "passed": 241,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "retryAttempts": 0,
+          "wallClockMs": 422514.333375,
+          "playwrightDurationMs": 420534.554,
+          "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+          "startUtc": "2026-10-27T20:20:28.232Z",
+          "endUtc": "2026-10-27T20:27:30.752Z",
+          "nativeStarted": true,
+          "sourceUnchanged": true,
+          "head": "6362e2db22d614dbdc3c1cd39fbf2cd1a04d2b44",
+          "sourceHash": "69e99b3e8bb0cfc48eccab68c7906c5f0553e7a0bbf83167286300efeb7bb4ed",
+          "bundleHash": "212dfc45c1a87d260bbab725325620fd4135b265c4e8b32cfc7a3f92692ff3bb",
+          "result": {
+            "path": "/private/tmp/freyalab-lote/0b-main636-suite-runs/fast1/result.json",
+            "sha256": "52ccda63637968233394032be1d9130c7b59667ce6e9098f421efcde87010e64"
+          }
+        },
+        {
+          "label": "perf1",
+          "script": "test:e2e:perf",
+          "command": "npm run test:e2e:perf",
+          "plannedRepetition": 1,
+          "collectedCases": 29,
+          "status": "PASSED_HISTORICAL_SERIES_MAIN6362",
+          "passed": 29,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "retryAttempts": 0,
+          "wallClockMs": 175992.843333,
+          "playwrightDurationMs": 174059.22499999998,
+          "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+          "startUtc": "2026-10-27T20:27:31.087Z",
+          "endUtc": "2026-10-27T20:30:27.080Z",
+          "nativeStarted": true,
+          "sourceUnchanged": true,
+          "head": "6362e2db22d614dbdc3c1cd39fbf2cd1a04d2b44",
+          "sourceHash": "69e99b3e8bb0cfc48eccab68c7906c5f0553e7a0bbf83167286300efeb7bb4ed",
+          "bundleHash": "212dfc45c1a87d260bbab725325620fd4135b265c4e8b32cfc7a3f92692ff3bb",
+          "result": {
+            "path": "/private/tmp/freyalab-lote/0b-main636-suite-runs/perf1/result.json",
+            "sha256": "4226c72933d2fb1a4989b16ad7b3cdb42eddfd27e361e69a5f70d0cabfd850e2"
+          }
+        },
+        {
+          "label": "fast2",
+          "script": "test:e2e:fast",
+          "command": "npm run test:e2e:fast",
+          "plannedRepetition": 2,
+          "collectedCases": 241,
+          "status": "PASSED_HISTORICAL_SERIES_MAIN6362",
+          "passed": 241,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "retryAttempts": 0,
+          "wallClockMs": 428214.653083,
+          "playwrightDurationMs": 426240.99700000003,
+          "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+          "startUtc": "2026-10-27T20:30:27.299Z",
+          "endUtc": "2026-10-27T20:37:35.514Z",
+          "nativeStarted": true,
+          "sourceUnchanged": true,
+          "head": "6362e2db22d614dbdc3c1cd39fbf2cd1a04d2b44",
+          "sourceHash": "69e99b3e8bb0cfc48eccab68c7906c5f0553e7a0bbf83167286300efeb7bb4ed",
+          "bundleHash": "212dfc45c1a87d260bbab725325620fd4135b265c4e8b32cfc7a3f92692ff3bb",
+          "result": {
+            "path": "/private/tmp/freyalab-lote/0b-main636-suite-runs/fast2/result.json",
+            "sha256": "78bdd921245fcaba435db0c962edea9babacdb08de6ae6b0444b04a4b6a7ad28"
+          }
+        },
+        {
+          "label": "perf2",
+          "script": "test:e2e:perf",
+          "command": "npm run test:e2e:perf",
+          "plannedRepetition": 2,
+          "collectedCases": 29,
+          "status": "PASSED_HISTORICAL_SERIES_MAIN6362",
+          "passed": 29,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "retryAttempts": 0,
+          "wallClockMs": 161069.089917,
+          "playwrightDurationMs": 159141.501,
+          "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+          "startUtc": "2026-10-27T20:37:35.835Z",
+          "endUtc": "2026-10-27T20:40:16.904Z",
+          "nativeStarted": true,
+          "sourceUnchanged": true,
+          "head": "6362e2db22d614dbdc3c1cd39fbf2cd1a04d2b44",
+          "sourceHash": "69e99b3e8bb0cfc48eccab68c7906c5f0553e7a0bbf83167286300efeb7bb4ed",
+          "bundleHash": "212dfc45c1a87d260bbab725325620fd4135b265c4e8b32cfc7a3f92692ff3bb",
+          "result": {
+            "path": "/private/tmp/freyalab-lote/0b-main636-suite-runs/perf2/result.json",
+            "sha256": "b254c46734fe0f0887d762bec27ec9437292a5015bb4c1d2de3bbdf281957bbe"
+          }
+        },
+        {
+          "label": "full1",
+          "script": "test:e2e",
+          "command": "npm run test:e2e",
+          "plannedRepetition": 1,
+          "collectedCases": 270,
+          "status": "PASSED_HISTORICAL_SERIES_MAIN6362",
+          "passed": 270,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "retryAttempts": 0,
+          "wallClockMs": 592637.91875,
+          "playwrightDurationMs": 590665.02,
+          "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+          "startUtc": "2026-10-27T20:40:17.124Z",
+          "endUtc": "2026-10-27T20:50:09.769Z",
+          "nativeStarted": true,
+          "sourceUnchanged": true,
+          "head": "6362e2db22d614dbdc3c1cd39fbf2cd1a04d2b44",
+          "sourceHash": "69e99b3e8bb0cfc48eccab68c7906c5f0553e7a0bbf83167286300efeb7bb4ed",
+          "bundleHash": "212dfc45c1a87d260bbab725325620fd4135b265c4e8b32cfc7a3f92692ff3bb",
+          "result": {
+            "path": "/private/tmp/freyalab-lote/0b-main636-suite-runs/full1/result.json",
+            "sha256": "d5ebe7630b5b1ea092a461f9b8e4d0f5a670a620f11bd215f03a61961eb85fac"
+          }
+        }
+      ],
+      "replicas": {
+        "fast": {
+          "samples": 2,
+          "wallMs": [
+            422514.333375,
+            428214.653083
+          ],
+          "minMs": 422514.333375,
+          "maxMs": 428214.653083,
+          "medianMs": 425364.493229
+        },
+        "perf": {
+          "samples": 2,
+          "wallMs": [
+            161069.089917,
+            175992.843333
+          ],
+          "minMs": 161069.089917,
+          "maxMs": 175992.843333,
+          "medianMs": 168530.966625
+        }
+      },
+      "bundleHash": "212dfc45c1a87d260bbab725325620fd4135b265c4e8b32cfc7a3f92692ff3bb",
+      "currentSourceEvidence": false,
+      "oldFilesPreserved": true,
+      "evidenceDirectory": "/private/tmp/freyalab-lote/0b-main636-docs-draft"
+    },
+    {
+      "series": "main498_local304",
+      "sourceHead": "49817b62454e90db8c9fbe807d6438c2f5d3219f",
+      "sourceHash": "ed2009578f2642d69d3ee05ecd3de8120196d531f03f90776762992715641bd1",
+      "counts": {
+        "full": 304,
+        "md": 152,
+        "csv": 190,
+        "fast": 271,
+        "perf": 33,
+        "packaged": 61
+      },
+      "allSevenLocalCommandsPassed": true,
+      "measurements": [
+        {
+          "label": "md1",
+          "script": "test:e2e:md",
+          "command": "npm run test:e2e:md",
+          "npmScript": "npm run build && playwright test --project=shell --project=md",
+          "plannedRepetition": 1,
+          "collectedCases": 152,
+          "status": "PASSED_CURRENT_SERIES_MAIN498",
+          "passed": 152,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "retryAttempts": 0,
+          "wallClockMs": 292324.69325,
+          "playwrightDurationMs": 290549.989,
+          "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+          "startUtc": "2026-10-27T21:04:06.327Z",
+          "endUtc": "2026-10-27T21:08:58.653Z",
+          "nativeStarted": true,
+          "sourceUnchanged": true,
+          "head": "49817b62454e90db8c9fbe807d6438c2f5d3219f",
+          "sourceHash": "ed2009578f2642d69d3ee05ecd3de8120196d531f03f90776762992715641bd1",
+          "bundleHash": "daf355f8ea747e0b8b8b7aef556bba9eb8df2617ac0ce0344219ac6af934b210",
+          "result": {
+            "path": "/private/tmp/freyalab-lote/0b-main498-suite-runs/md1/result.json",
+            "bytes": 83256,
+            "sha256": "ee7b7944350f8abb00711bcd1e7d91b73aefa0186ba8cb0429a2764b78a68e9d"
+          },
+          "individualTests": {
+            "path": "/private/tmp/freyalab-lote/0b-main498-suite-runs/md1/individual-tests.json",
+            "bytes": 63803,
+            "sha256": "7d4313c029e1ecab8b05492efb7d1121acc1180ab671b9b931bb595e6cf40699"
+          }
+        },
+        {
+          "label": "csv1",
+          "script": "test:e2e:csv",
+          "command": "npm run test:e2e:csv",
+          "npmScript": "npm run build && playwright test --project=shell --project=csv",
+          "plannedRepetition": 1,
+          "collectedCases": 190,
+          "status": "PASSED_CURRENT_SERIES_MAIN498",
+          "passed": 190,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "retryAttempts": 0,
+          "wallClockMs": 366085.536,
+          "playwrightDurationMs": 364172.147,
+          "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+          "startUtc": "2026-10-27T21:08:59.059Z",
+          "endUtc": "2026-10-27T21:15:05.152Z",
+          "nativeStarted": true,
+          "sourceUnchanged": true,
+          "head": "49817b62454e90db8c9fbe807d6438c2f5d3219f",
+          "sourceHash": "ed2009578f2642d69d3ee05ecd3de8120196d531f03f90776762992715641bd1",
+          "bundleHash": "daf355f8ea747e0b8b8b7aef556bba9eb8df2617ac0ce0344219ac6af934b210",
+          "result": {
+            "path": "/private/tmp/freyalab-lote/0b-main498-suite-runs/csv1/result.json",
+            "bytes": 90574,
+            "sha256": "bdbcb669c62215412e2e8f9d20665b3a86a245fa7c046df7ea84ca2e7daff337"
+          },
+          "individualTests": {
+            "path": "/private/tmp/freyalab-lote/0b-main498-suite-runs/csv1/individual-tests.json",
+            "bytes": 80819,
+            "sha256": "05efc55bce74be9a45d9ae731ca9521136af45ecf2a0b9825769f8b50462d0ea"
+          }
+        },
+        {
+          "label": "fast1",
+          "script": "test:e2e:fast",
+          "command": "npm run test:e2e:fast",
+          "npmScript": "npm run build && playwright test --grep-invert \"@perf\"",
+          "plannedRepetition": 1,
+          "collectedCases": 271,
+          "status": "PASSED_CURRENT_SERIES_MAIN498",
+          "passed": 271,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "retryAttempts": 0,
+          "wallClockMs": 450369.7245,
+          "playwrightDurationMs": 448407.08400000003,
+          "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+          "startUtc": "2026-10-27T21:15:05.483Z",
+          "endUtc": "2026-10-27T21:22:35.855Z",
+          "nativeStarted": true,
+          "sourceUnchanged": true,
+          "head": "49817b62454e90db8c9fbe807d6438c2f5d3219f",
+          "sourceHash": "ed2009578f2642d69d3ee05ecd3de8120196d531f03f90776762992715641bd1",
+          "bundleHash": "daf355f8ea747e0b8b8b7aef556bba9eb8df2617ac0ce0344219ac6af934b210",
+          "result": {
+            "path": "/private/tmp/freyalab-lote/0b-main498-suite-runs/fast1/result.json",
+            "bytes": 79586,
+            "sha256": "cb27c1edcdd58fd43970ff26ef1527d80977dff7c2a2ef196e2826af02390ace"
+          },
+          "individualTests": {
+            "path": "/private/tmp/freyalab-lote/0b-main498-suite-runs/fast1/individual-tests.json",
+            "bytes": 114821,
+            "sha256": "e7ba06c7603c2d388b13439c8f856863ccc9cad6a5242f58228adcb80d4d7efb"
+          }
+        },
+        {
+          "label": "perf1",
+          "script": "test:e2e:perf",
+          "command": "npm run test:e2e:perf",
+          "npmScript": "npm run build && playwright test --grep \"@perf\"",
+          "plannedRepetition": 1,
+          "collectedCases": 33,
+          "status": "PASSED_CURRENT_SERIES_MAIN498",
+          "passed": 33,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "retryAttempts": 0,
+          "wallClockMs": 161292.608,
+          "playwrightDurationMs": 159396.008,
+          "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+          "startUtc": "2026-10-27T21:22:36.221Z",
+          "endUtc": "2026-10-27T21:25:17.514Z",
+          "nativeStarted": true,
+          "sourceUnchanged": true,
+          "head": "49817b62454e90db8c9fbe807d6438c2f5d3219f",
+          "sourceHash": "ed2009578f2642d69d3ee05ecd3de8120196d531f03f90776762992715641bd1",
+          "bundleHash": "daf355f8ea747e0b8b8b7aef556bba9eb8df2617ac0ce0344219ac6af934b210",
+          "result": {
+            "path": "/private/tmp/freyalab-lote/0b-main498-suite-runs/perf1/result.json",
+            "bytes": 93471,
+            "sha256": "024e2bb9337e413821df5bc0736f34c09e433f98ad40ff304c5d7fd514871f9d"
+          },
+          "individualTests": {
+            "path": "/private/tmp/freyalab-lote/0b-main498-suite-runs/perf1/individual-tests.json",
+            "bytes": 14508,
+            "sha256": "4d7a02696fb8c46b5506f34315769c61aec551afa7e7c63b7eac82f2345d1d93"
+          }
+        },
+        {
+          "label": "fast2",
+          "script": "test:e2e:fast",
+          "command": "npm run test:e2e:fast",
+          "npmScript": "npm run build && playwright test --grep-invert \"@perf\"",
+          "plannedRepetition": 2,
+          "collectedCases": 271,
+          "status": "PASSED_CURRENT_SERIES_MAIN498",
+          "passed": 271,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "retryAttempts": 0,
+          "wallClockMs": 451308.780417,
+          "playwrightDurationMs": 449293.945,
+          "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+          "startUtc": "2026-10-27T21:25:17.729Z",
+          "endUtc": "2026-10-27T21:32:49.039Z",
+          "nativeStarted": true,
+          "sourceUnchanged": true,
+          "head": "49817b62454e90db8c9fbe807d6438c2f5d3219f",
+          "sourceHash": "ed2009578f2642d69d3ee05ecd3de8120196d531f03f90776762992715641bd1",
+          "bundleHash": "daf355f8ea747e0b8b8b7aef556bba9eb8df2617ac0ce0344219ac6af934b210",
+          "result": {
+            "path": "/private/tmp/freyalab-lote/0b-main498-suite-runs/fast2/result.json",
+            "bytes": 79580,
+            "sha256": "3341538d06b35799540845cd171adfcc7a963fc834e3e3efe9a280729867deb3"
+          },
+          "individualTests": {
+            "path": "/private/tmp/freyalab-lote/0b-main498-suite-runs/fast2/individual-tests.json",
+            "bytes": 114825,
+            "sha256": "07a7c9af1a3c92df9e9caa05e2dd3629634fbab44e40184f1f31236d704e008b"
+          }
+        },
+        {
+          "label": "perf2",
+          "script": "test:e2e:perf",
+          "command": "npm run test:e2e:perf",
+          "npmScript": "npm run build && playwright test --grep \"@perf\"",
+          "plannedRepetition": 2,
+          "collectedCases": 33,
+          "status": "PASSED_CURRENT_SERIES_MAIN498",
+          "passed": 33,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "retryAttempts": 0,
+          "wallClockMs": 162888.897917,
+          "playwrightDurationMs": 160955.629,
+          "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+          "startUtc": "2026-10-27T21:32:49.370Z",
+          "endUtc": "2026-10-27T21:35:32.259Z",
+          "nativeStarted": true,
+          "sourceUnchanged": true,
+          "head": "49817b62454e90db8c9fbe807d6438c2f5d3219f",
+          "sourceHash": "ed2009578f2642d69d3ee05ecd3de8120196d531f03f90776762992715641bd1",
+          "bundleHash": "daf355f8ea747e0b8b8b7aef556bba9eb8df2617ac0ce0344219ac6af934b210",
+          "result": {
+            "path": "/private/tmp/freyalab-lote/0b-main498-suite-runs/perf2/result.json",
+            "bytes": 93472,
+            "sha256": "b5710ac43474f4ebee0b5807dcba28f6dec723b8ed1d13d17c9da9660650bced"
+          },
+          "individualTests": {
+            "path": "/private/tmp/freyalab-lote/0b-main498-suite-runs/perf2/individual-tests.json",
+            "bytes": 14506,
+            "sha256": "3eee99e7929c1e7a45a1c000064bcd352f3ab6ba64d8575bff81cfa0b76a2885"
+          }
+        },
+        {
+          "label": "full1",
+          "script": "test:e2e",
+          "command": "npm run test:e2e",
+          "npmScript": "npm run build && playwright test",
+          "plannedRepetition": 1,
+          "collectedCases": 304,
+          "status": "PASSED_CURRENT_SERIES_MAIN498",
+          "passed": 304,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "retryAttempts": 0,
+          "wallClockMs": 606133.304542,
+          "playwrightDurationMs": 604067.664,
+          "wallClockScope": "Comando npm completo, incluido su build; excluye copia y lectura posterior de artefactos",
+          "startUtc": "2026-10-27T21:35:32.477Z",
+          "endUtc": "2026-10-27T21:45:38.615Z",
+          "nativeStarted": true,
+          "sourceUnchanged": true,
+          "head": "49817b62454e90db8c9fbe807d6438c2f5d3219f",
+          "sourceHash": "ed2009578f2642d69d3ee05ecd3de8120196d531f03f90776762992715641bd1",
+          "bundleHash": "daf355f8ea747e0b8b8b7aef556bba9eb8df2617ac0ce0344219ac6af934b210",
+          "result": {
+            "path": "/private/tmp/freyalab-lote/0b-main498-suite-runs/full1/result.json",
+            "bytes": 93664,
+            "sha256": "7e1ea06025b5f808346d517253f1de3ae3f04643e95b01b2edcce83752966fad"
+          },
+          "individualTests": {
+            "path": "/private/tmp/freyalab-lote/0b-main498-suite-runs/full1/individual-tests.json",
+            "bytes": 129322,
+            "sha256": "a30136bea03413a26f1d6056ba0a2df958d35e99ad99f861445d493a001fcdb6"
+          }
+        }
+      ],
+      "replicas": {
+        "fast": {
+          "samples": 2,
+          "wallMs": [
+            450369.7245,
+            451308.780417
+          ],
+          "minMs": 450369.7245,
+          "maxMs": 451308.780417,
+          "medianMs": 450839.2524585
+        },
+        "perf": {
+          "samples": 2,
+          "wallMs": [
+            161292.608,
+            162888.897917
+          ],
+          "minMs": 161292.608,
+          "maxMs": 162888.897917,
+          "medianMs": 162090.7529585
+        }
+      },
+      "bundleHash": "daf355f8ea747e0b8b8b7aef556bba9eb8df2617ac0ce0344219ac6af934b210",
+      "currentSourceEvidence": false,
+      "oldFilesPreserved": true,
+      "evidenceDirectory": "/private/tmp/freyalab-lote/0b-main498-docs-draft"
+    }
+  ],
+  "historicalCiIncidents": [
+    {
+      "label": "superseded_cancelled_head6d75",
+      "head": "6d75ebf0c5c48ab3af88810e3bb69fd026db7856",
+      "base": "49817b62454e90db8c9fbe807d6438c2f5d3219f",
+      "run": 40590495847,
+      "conclusion": "cancelled",
+      "gateSatisfied": false,
+      "platformsSuccess": null,
+      "incidents": [
+        {
+          "platform": "ubuntu-24.04",
+          "suite": "global_e2e",
+          "file": "tests/e2e/columns-overview.spec.ts",
+          "caseLine": 38,
+          "failureLocation": "41:215",
+          "requestId": 999,
+          "error": "Consulta cancelada por una solicitud más reciente.",
+          "passed": 303,
+          "flaky": 1,
+          "failed": 0,
+          "automaticRetry": 1,
+          "retryOutcome": "passed",
+          "cause": "unknown",
+          "packaged": {
+            "status": "cancelled",
+            "successfulCasesObservedBeforeCancellation": 4,
+            "finalTotal": null,
+            "claimed61Passed": false
+          },
+          "notTheLater647RequestId": 1000
+        }
+      ],
+      "currentHeadEvidence": false,
+      "otherThreeGlobalSuites": "cancelled_without_final_summary",
+      "unitCompletedOnAllFourPlatforms": {
+        "passed": 776,
+        "total": 776
+      },
+      "sourceSnapshot": {
+        "path": "/private/tmp/freyalab-lote/0b-main498-ci/summary-first-head-cancelled.json",
+        "sha256": "99d25945d05e82cc5b1061dcb9083744b6c56981253bb41e01bfb52bfe8e10c2"
+      },
+      "ubuntuLog": {
+        "path": "/private/tmp/freyalab-lote/0b-main498-ci/first-ubuntu-job.log",
+        "sha256": "665d693e3fb2ec48c32d655de005dff0e1b15b7bf9774b0c9291054c07a3dd83"
+      }
+    },
+    {
+      "label": "head647_failed_readonly_intel",
+      "head": "647566dfa954c4999c4a99464e51cf6a04eee85c",
+      "base": "fcf972057ea71539a6348ca7bb74dbdf23238782",
+      "run": 40592392260,
+      "conclusion": "failure",
+      "gateSatisfied": false,
+      "platformsSuccess": 3,
+      "incidents": [
+        {
+          "platform": "macos-15-intel",
+          "kind": "final_failure",
+          "test": "tests/e2e/markdown-toolbar.spec.ts:110",
+          "location": "helper open:21 called by test:112",
+          "error": "locator.click Editar timeout30000ms on initial attempt and retry1",
+          "attribution": "Unconfirmed; same failing point was separately reported for PR77, not proof of cause"
+        },
+        {
+          "platform": "macos-15-intel",
+          "kind": "flaky_recovered",
+          "test": "tests/e2e/markdown-toolbar.spec.ts:152",
+          "location": "163:ArrowUp",
+          "error": "Test timeout300000ms; keyboard Target page/context/browser closed",
+          "recovery": "automatic retry1 passed",
+          "attribution": "Unconfirmed"
+        },
+        {
+          "platform": "macos-15-intel",
+          "kind": "flaky_recovered",
+          "test": "tests/e2e/columns-overview.spec.ts:38",
+          "location": "45:399, tablePage requestId1000",
+          "error": "Consulta cancelada por una solicitud más reciente.",
+          "recovery": "automatic retry1 passed",
+          "distinction": "Old Ubuntu cancelled run failed at line41 requestId999; do not conflate the two locations",
+          "attribution": "Unconfirmed"
+        }
+      ],
+      "currentHeadEvidence": false
+    }
+  ],
+  "parent77CiSnapshotAtGeneration": {
+    "observed_at_utc": "2026-10-28T03:26:17.115Z",
+    "head": "971c55f9b762e7065a486033a11deadf904c8d25",
+    "run_id": 40623349372,
+    "run_number": 202,
+    "run_attempt": 1,
+    "merge_candidate": "b216274ad6fc2be6d3ea3970d92c8892b41a3f19",
+    "observed_main": "fcf972057ea71539a6348ca7bb74dbdf23238782",
+    "api_reported_base": "49817b62454e90db8c9fbe807d6438c2f5d3219f",
+    "platforms_completed": 3,
+    "platforms_success": 3,
+    "gate_satisfied": false,
+    "incidents": [
+      {
+        "platform": "macos-15",
+        "test": "tests/e2e/markdown-render.spec.ts:87",
+        "location": "92:250",
+        "kind": "flaky_recovered",
+        "error": "expect.poll preview.scrollTop expected>0 received0 after15000ms",
+        "recovery": "automatic retry1 passed",
+        "attribution": "Unconfirmed",
+        "excerpt": "mac-flaky-excerpt.log"
+      }
+    ],
+    "log_sha256": {
+      "mac-job.log": "4da378ad35a844fda9ca656be44e438d4b13daaf36f412fadfbd4eedfe9f7027",
+      "ubuntu-job.log": "7e29329bb3dbe2812a64ed79ffad8ba107010b8e99ce853b57408125f43adef5",
+      "windows-job.log": "a0555b237025e85a39d1be7dcb2bda525a8c88683b0164c5ddea6ef1d6c4d331"
+    },
+    "head_to_merge_difference": {
+      "base": "971c55f9b762e7065a486033a11deadf904c8d25",
+      "merge_base": "971c55f9b762e7065a486033a11deadf904c8d25",
+      "status": "ahead",
+      "total_commits": 5,
+      "ahead_by": 5,
+      "behind_by": 0,
+      "files": [
+        {
+          "filename": "docs/stories/6-proyectos.md",
+          "status": "added",
+          "sha": "ff33c519e8f52c6788687258ff3bed7d7005bfd9",
+          "additions": 234,
+          "deletions": 0
+        },
+        {
+          "filename": "docs/stories/7-csv-texto.md",
+          "status": "added",
+          "sha": "974193052db7e2ecc5a4addac212c89a32974a05",
+          "additions": 151,
+          "deletions": 0
+        }
+      ]
+    }
+  },
+  "ciAtEvidenceGeneration": {
+    "status": "PENDING_NEW_78_HEAD_NOT_PUSHED",
+    "new78Run": null,
+    "parent77Gate": "CI4/4 with two recovered automatic flakes; original errors preserved, not CI78.",
+    "closure": "Verificar checks sobre cada head final en sus PR, sin editar solo este documento para cambiar un estado de generación a verde."
+  },
+  "criteria": {
+    "T1": "verified_collection307_preserved_bijection_and_zero_duplicates",
+    "T2": "verified_33_reasons_full1_durations_and_slow_candidates",
+    "T3": "verified_seven_actual_npm_commands_build_included",
+    "T4": "38_specs_bytes_restored_only33_annotations",
+    "T5": "workflow_unchanged_new78_ci_pending",
+    "T6": "new_semantic_red1failed12passed_to13green_same_it_count",
+    "T7": "docs_policy_inherited",
+    "T8": "verified_current_parent77_series307_all7",
+    "T9": "package_only_four_scripts_no_dependencies"
+  },
+  "publicEvidence": {
+    "tst-001-lista-antes-2026-10-27.txt": {
+      "bytes": 38947,
+      "sha256": "6954d63f525b7b0a89dc332e58678f4ab6800b2054348e5595f09fde266b0d24"
+    },
+    "tst-001-lista-despues-2026-10-27.txt": {
+      "bytes": 38947,
+      "sha256": "6954d63f525b7b0a89dc332e58678f4ab6800b2054348e5595f09fde266b0d24"
+    },
+    "tst-001-identidades-2026-10-27.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "localEvidence": {
+    "0b-parent77-971-list-before.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-list-before.log",
+      "bytes": 37594,
+      "sha256": "5f52ca329f164b2614759d81ffc310ff62849836ab0fa7c5418dca99d013033e"
+    },
+    "0b-parent77-971-list-before.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-list-before.json",
+      "bytes": 199436,
+      "sha256": "2e7a061ca50a55ee14b5fff19ce1004e36963a2f8d74e8e171eac66fc1fc4698"
+    },
+    "0b-parent77-971-list-before-identities.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-list-before-identities.json",
+      "bytes": 96002,
+      "sha256": "8a7467d61e7b06d86ae9227fc89069a3b2510f5a74280bcd5f492f496bb79032"
+    },
+    "0b-parent77-971-list-before-manifest.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-list-before-manifest.json",
+      "bytes": 21611,
+      "sha256": "d4fdaf2ca2eaffd2626da7a0c9e2e07716893f5ff0cdd79fcc7c696da3917638"
+    },
+    "0b-parent77-971-list-before-delta.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-list-before-delta.json",
+      "bytes": 1242,
+      "sha256": "53440fec8fe4d62949096dec8165247b65ebd1998f5f37bf8d5e224f9ac85bfb"
+    },
+    "0b-parent77-971-list-after.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-list-after.log",
+      "bytes": 40623,
+      "sha256": "777a5e951c20efd1b0f674c97b54482b2abe6320c4f1232225cbc987d35ef5c8"
+    },
+    "0b-parent77-971-list-after.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-list-after.json",
+      "bytes": 206425,
+      "sha256": "66b7a22e86b215c2e1379b813b15bce771d1c5f3ba1a43f185d953dd402c9c0f"
+    },
+    "0b-parent77-971-list-after-md.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-list-after-md.json",
+      "bytes": 104344,
+      "sha256": "e6d2736c8905fcd60f344d363648941a5b2360af922949f52de07794b48d6620"
+    },
+    "0b-parent77-971-list-after-csv.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-list-after-csv.json",
+      "bytes": 129906,
+      "sha256": "58623028793d604796a85db70eaaa9e160b3e001fb5eef420962ae11697882d7"
+    },
+    "0b-parent77-971-list-after-fast.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-list-after-fast.json",
+      "bytes": 184751,
+      "sha256": "19457bc80a93f5de80d92bab03c8d00c02ddd88dfc7dbaa9b9905b2ebbfd9463"
+    },
+    "0b-parent77-971-list-after-perf.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-list-after-perf.json",
+      "bytes": 30561,
+      "sha256": "98c0ee588072aefacdc67760c8ce172578f70ec8138222f163eda896a1d7fbc0"
+    },
+    "0b-parent77-971-list-after-packaged.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-list-after-packaged.json",
+      "bytes": 47191,
+      "sha256": "418b2e9c89c6ae6da53ed7f8dd8dd7e1bd66228c8f828431f9253e0aa9d8a99d"
+    },
+    "0b-parent77-971-list-after-summary.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-list-after-summary.json",
+      "bytes": 353244,
+      "sha256": "174883c52540404e7cf5534c5bb800f83c0cdeb2e9bcfb7c673d1aba7dd69916"
+    },
+    "0b-parent77-971-list-after-identities.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-list-after-identities.json",
+      "bytes": 91850,
+      "sha256": "679f6428f28b6126f4b0c424bf0e86f0899d920d993ac3085c98061f1c8e2a76"
+    },
+    "0b-parent77-971-t6-red.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-t6-red.log",
+      "bytes": 1085,
+      "sha256": "32be1afd4e7436625c4d0620097d818ac18f2bab014578f3aaadf18a2e076e11"
+    },
+    "0b-parent77-971-t6-green.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-t6-green.log",
+      "bytes": 186,
+      "sha256": "f1ae44faf677907502fe1fe57d1363257b785f20460eeac06c7d6c5b91607bfe"
+    },
+    "0b-parent77-971-check.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-check.log",
+      "bytes": 257,
+      "sha256": "6ae0fd2228bdab1fd25d20510dfb6f1025c85608a05b43145edf23c4e5b6cbf7"
+    },
+    "0b-parent77-971-unit.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-unit.log",
+      "bytes": 234,
+      "sha256": "8fe1e0d2d17f780c84e2fa721f5bf8f57416f38da7414bb1180dff60aa235a41"
+    },
+    "0b-parent77-971-build-focal.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-build-focal.log",
+      "bytes": 21410,
+      "sha256": "5bf7d95ff2092738b80a694b996cb29c65104c004a82b3e76649ab26e984f068"
+    },
+    "0b-parent77-971-integrity.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-integrity.json",
+      "bytes": 1527,
+      "sha256": "437c1500e5d9ce4ffd4c128eed048f5673ad8bbddf0c9c4d66df8e57b274f8dd"
+    },
+    "0b-parent77-971-integrity.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-integrity.log",
+      "bytes": 126,
+      "sha256": "e8a64526b29ab1c95857a328b8e774d25c92d7ee9e3464f2c83a26a3601f491a"
+    },
+    "0b-parent77-971-suite-source-guard.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-source-guard.json",
+      "bytes": 29268,
+      "sha256": "82ddc288c287d4c415685b5fc03c4d42275389360d427e02efc23086be09884e"
+    },
+    "0b-parent77-971-runner-preparation.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-runner-preparation.json",
+      "bytes": 2029,
+      "sha256": "81dc5f0b6db28a7e27ae2e050ea1462cfd98511333d216880512b581673f2c37"
+    },
+    "pr77-ci/new-ci/summary-snapshot-before-intel-completion.json": {
+      "path": "/private/tmp/freyalab-lote/pr77-ci/new-ci/summary-snapshot-before-intel-completion.json",
+      "bytes": 27790,
+      "sha256": "03eb82e415aded06fb7f1c6865262669a2ca74607753fa633ec0282896f517e2"
+    },
+    "0b-main498-ci/summary-first-head-cancelled.json": {
+      "path": "/private/tmp/freyalab-lote/0b-main498-ci/summary-first-head-cancelled.json",
+      "bytes": 19488,
+      "sha256": "99d25945d05e82cc5b1061dcb9083744b6c56981253bb41e01bfb52bfe8e10c2"
+    },
+    "0b-main498-ci/summary-second-head-failed.json": {
+      "path": "/private/tmp/freyalab-lote/0b-main498-ci/summary-second-head-failed.json",
+      "bytes": 26223,
+      "sha256": "78d2c758143c0be7c58aa3e399b5176b340e3dceb031eafa4f6f4cc204b14bad"
+    },
+    "0b-main636-docs-draft/tst-001-2026-10-27.json": {
+      "path": "/private/tmp/freyalab-lote/0b-main636-docs-draft/tst-001-2026-10-27.json",
+      "bytes": 125743,
+      "sha256": "ae3c5bb5f5ccc7025cde89dbf91d235a03ee692374c63024d5d356901590ef8b"
+    },
+    "0b-main498-docs-draft/tst-001-2026-10-27.json": {
+      "path": "/private/tmp/freyalab-lote/0b-main498-docs-draft/tst-001-2026-10-27.json",
+      "bytes": 200557,
+      "sha256": "80387938ab232ee360fecec03922fae20b41d6bf3102717599083652e48e590d"
+    },
+    "0b-parent77-971-suite-runs/md1/result.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/md1/result.json",
+      "bytes": 83392,
+      "sha256": "2cd3b1cfdc65e2517e5f1994c24ac721adcdab7a3dfc0336780774126743930c"
+    },
+    "0b-parent77-971-suite-runs/md1/individual-tests.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/md1/individual-tests.json",
+      "bytes": 65104,
+      "sha256": "5649d465cc05d07b0f8836da7efbea2b9c24294176c1b95594d2c22c082840d3"
+    },
+    "0b-parent77-971-suite-runs/csv1/result.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/csv1/result.json",
+      "bytes": 90957,
+      "sha256": "de61f2268c91766873b225b408eaeb573038e69ed7120625c6117ff0558a9140"
+    },
+    "0b-parent77-971-suite-runs/csv1/individual-tests.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/csv1/individual-tests.json",
+      "bytes": 80815,
+      "sha256": "55c2a1bbc4a4be3ebaae2c0e3298299be8bdf3df6a426f0343422cf1bd153191"
+    },
+    "0b-parent77-971-suite-runs/fast1/result.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/fast1/result.json",
+      "bytes": 79954,
+      "sha256": "bb92b7edae1c2349e177703ef97ff99c0ffcdcb967726d43cd9d2f1ad9d1e795"
+    },
+    "0b-parent77-971-suite-runs/fast1/individual-tests.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/fast1/individual-tests.json",
+      "bytes": 116134,
+      "sha256": "044964395b7fa4283c1e80eed68f8c5b2555c41e9d4baee50e17b6686e250c30"
+    },
+    "0b-parent77-971-suite-runs/perf1/result.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/perf1/result.json",
+      "bytes": 93619,
+      "sha256": "b67f42b99256bafac293afa67aa3aef23f24d3797cdddb9b609dd57d9527a38d"
+    },
+    "0b-parent77-971-suite-runs/perf1/individual-tests.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/perf1/individual-tests.json",
+      "bytes": 14504,
+      "sha256": "5eb1eb133e68db0f62e933314d1f4a79e7b0b2670ae659185b0f94fca7829723"
+    },
+    "0b-parent77-971-suite-runs/fast2/result.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/fast2/result.json",
+      "bytes": 79954,
+      "sha256": "1e14d9ebfdda4b2f12473a5dc953a85e34dd127886aedd0e6a6ec0483f0ac037"
+    },
+    "0b-parent77-971-suite-runs/fast2/individual-tests.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/fast2/individual-tests.json",
+      "bytes": 116114,
+      "sha256": "830433c4f8888cae847d8b40b816218df065300500bd74809ffc16ddf49ef514"
+    },
+    "0b-parent77-971-suite-runs/perf2/result.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/perf2/result.json",
+      "bytes": 93613,
+      "sha256": "35d5a5eb261cbfab303bc21ac4997adecee1d165e10a2966506ae5358a92e2c0"
+    },
+    "0b-parent77-971-suite-runs/perf2/individual-tests.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/perf2/individual-tests.json",
+      "bytes": 14498,
+      "sha256": "fe3dc21b7e97d0d0d806117907fd333cf22f3b909cbe4f6a4d4173170c465cde"
+    },
+    "pr77-ci/new-ci/summary-final-compact.json": {
+      "path": "/private/tmp/freyalab-lote/pr77-ci/new-ci/summary-final-compact.json",
+      "bytes": 4054,
+      "sha256": "c6bd976e0b8ed6d501bd6053503106069c34327ee17058b81049baabf411d641"
+    },
+    "0b-parent77-971-suite-runs/md1/raw.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/md1/raw.log",
+      "bytes": 45950,
+      "sha256": "150cde2b23abfdb82f2e6cfcc9b6ed50afad8e8cd13485c06f57108d6a7ec4a3"
+    },
+    "0b-parent77-971-suite-runs/md1/report-summary.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/md1/report-summary.json",
+      "bytes": 123162,
+      "sha256": "5e02e0dd7e1fc37fbcbccb1ad187cf07acebdb31834177b18b86aa2e851900b1"
+    },
+    "0b-parent77-971-suite-runs/md1/artifact-manifest.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/md1/artifact-manifest.json",
+      "bytes": 31296,
+      "sha256": "55ef53ef9815c4cc2ceb60fb3b3f768cf58b746bb4bda75b1de7c23cb593ff4f"
+    },
+    "0b-parent77-971-suite-runs/csv1/raw.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/csv1/raw.log",
+      "bytes": 51963,
+      "sha256": "bb7dfa2815430361c5dd9a677a77d527c2c8d341f1d52806ad99861da5581f56"
+    },
+    "0b-parent77-971-suite-runs/csv1/report-summary.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/csv1/report-summary.json",
+      "bytes": 140728,
+      "sha256": "e0237255fd38627449580c6a354274fcb32736cbcc585bb4cb4d95cf3feeb8b8"
+    },
+    "0b-parent77-971-suite-runs/csv1/artifact-manifest.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/csv1/artifact-manifest.json",
+      "bytes": 29200,
+      "sha256": "b59e7292c58d7834a6783b0b9d0f5f8c894949ff2c49e5bf01fea31dd493d252"
+    },
+    "0b-parent77-971-suite-runs/fast1/raw.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/fast1/raw.log",
+      "bytes": 65604,
+      "sha256": "b664e6ab52f715c758a974888774c42e25cb8c39dfcd2e289b8d2717d9941a95"
+    },
+    "0b-parent77-971-suite-runs/fast1/report-summary.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/fast1/report-summary.json",
+      "bytes": 212665,
+      "sha256": "6b87b7882cb8200a66f5019ec67c3b56d113caf0da816aa93e0a4cdaabfc01e9"
+    },
+    "0b-parent77-971-suite-runs/fast1/artifact-manifest.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/fast1/artifact-manifest.json",
+      "bytes": 42757,
+      "sha256": "434eafe555ce1b6b52701020aa25d89ab9bb9d45c8e87813952af9648e04f347"
+    },
+    "0b-parent77-971-suite-runs/perf1/raw.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/perf1/raw.log",
+      "bytes": 27335,
+      "sha256": "7291491814589d33c33bdf0817825245c282a5d3267c0c72ce30d8261e54a58e"
+    },
+    "0b-parent77-971-suite-runs/perf1/report-summary.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/perf1/report-summary.json",
+      "bytes": 28826,
+      "sha256": "0502f309e5af976ce466eb2beb15fad7e847e8bc142ce709cb9b9a340f824a8f"
+    },
+    "0b-parent77-971-suite-runs/perf1/artifact-manifest.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/perf1/artifact-manifest.json",
+      "bytes": 23356,
+      "sha256": "77d5b37c812bc0c2970b1f830b85bc663f480185be592aac1f8439082bd88826"
+    },
+    "0b-parent77-971-suite-runs/fast2/raw.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/fast2/raw.log",
+      "bytes": 65614,
+      "sha256": "9e214146f3e79bce58c9a729f27fe964d28e220544efaa254bfac31af36f7fa3"
+    },
+    "0b-parent77-971-suite-runs/fast2/report-summary.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/fast2/report-summary.json",
+      "bytes": 212655,
+      "sha256": "e742c72914a1f1e275c96925cb1e4a51e100779fe225467bc5e33b843fdb9059"
+    },
+    "0b-parent77-971-suite-runs/fast2/artifact-manifest.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/fast2/artifact-manifest.json",
+      "bytes": 24017,
+      "sha256": "f0059a1c7b478f9642304fa93ae82e7b049bc1e228b3f1801f098da0218eac87"
+    },
+    "0b-parent77-971-suite-runs/perf2/raw.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/perf2/raw.log",
+      "bytes": 27338,
+      "sha256": "94b97c3475d74eecb22e1205adb5f2ae43ae70e0730ea63002a2ef5d81771e77"
+    },
+    "0b-parent77-971-suite-runs/perf2/report-summary.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/perf2/report-summary.json",
+      "bytes": 28823,
+      "sha256": "e0e56c5c79fd3958be3f46d72347568e63cd09fe520a73a8838861efff454198"
+    },
+    "0b-parent77-971-suite-runs/perf2/artifact-manifest.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/perf2/artifact-manifest.json",
+      "bytes": 23356,
+      "sha256": "1797d041e0dbcbedb925e7ec9b0d43129de4d87b6fe8a260b77138e731a8d57f"
+    },
+    "0b-parent77-971-suite-runs/full1/result.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/full1/result.json",
+      "bytes": 93801,
+      "sha256": "275cfa2f9fbb8860646b7d8cc25b437cb59956d72dc164c5f45c49696dbd572b"
+    },
+    "0b-parent77-971-suite-runs/full1/individual-tests.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/full1/individual-tests.json",
+      "bytes": 130605,
+      "sha256": "df2b15c126ab59d0e95af91d894fe44fa82bf3875e4c8f419fd4c3b8f3758b43"
+    },
+    "0b-parent77-971-suite-runs/full1/raw.log": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/full1/raw.log",
+      "bytes": 70913,
+      "sha256": "fb01cac8cca96442e7889d7c749e16d7cad50674e06fc93cc621bf3539adce31"
+    },
+    "0b-parent77-971-suite-runs/full1/report-summary.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/full1/report-summary.json",
+      "bytes": 237000,
+      "sha256": "74c7257d72608a1677d0d7d1ccbb99aca1992fbc837d418865bae0be15ffdf00"
+    },
+    "0b-parent77-971-suite-runs/full1/artifact-manifest.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/full1/artifact-manifest.json",
+      "bytes": 27137,
+      "sha256": "0cdcfed2f3544689dee6d16396be29edf41050c9950d1846c23f5b6ddb823f7f"
+    },
+    "0b-parent77-971-suite-runs/summary.json": {
+      "path": "/private/tmp/freyalab-lote/0b-parent77-971-suite-runs/summary.json",
+      "bytes": 34804,
+      "sha256": "f4928be626e6600b1301417adf8e4201ad763dc18056b3e0ae5de83032b9746c"
+    }
+  },
+  "limits": [
+    "Los cinco documentos finales permanecen externos; copiarlos al worktree requiere el handoff y autorización de Root.",
+    "971 es el padre del PR77 publicado, no main. El código corregido de ese padre ya forma parte de la referencia.",
+    "Las series270/304 son locales e históricas; no prueban el tiempo actual de307 ni una mejora atribuible solo a agrupar.",
+    "Las incidencias CI de los heads 6d75/647 y los dos flakes recuperados ARM/Intel del padre77 se conservan separadas de la nueva CI78.",
+    "El filtro61 empaquetado solo se enumeró en esta colección; no acredita abrir paquetes o instalarlos.",
+    "Sin release, merge ni actualización de app instalada; no instaladores, otras plataformas nativas o IME físico acreditados por estos datos."
+  ],
+  "markdown": {
+    "file": "tst-001-2026-10-27.md",
+    "sha256": "b22c6e79136578431d53bc0192b8f50bfb5645e14e5fcc8e6a8ea50973089710"
+  },
+  "parent77FinalCi": {
+    "verified_at_utc": "2026-10-28T03:40:56.894Z",
+    "pr": 77,
+    "head": "971c55f9b762e7065a486033a11deadf904c8d25",
+    "checkout": "b216274ad6fc2be6d3ea3970d92c8892b41a3f19",
+    "actual_base": "fcf972057ea71539a6348ca7bb74dbdf23238782",
+    "current_main": "fcf972057ea71539a6348ca7bb74dbdf23238782",
+    "draft": true,
+    "merged": false,
+    "run_id": 40623349372,
+    "run_attempt": 1,
+    "status": "success",
+    "platforms_success": 4,
+    "gate_satisfied": true,
+    "all_global_cases_clean_without_retry": false,
+    "five_key_cases_clean_on_all_platforms": true,
+    "platforms": [
+      {
+        "name": "Verify windows-2025",
+        "job_id": 122602358610,
+        "url": "https://github.com/ruzer/freyalab/actions/runs/40623349372/job/122602358610",
+        "unit_passed": 763,
+        "unit_files": 36,
+        "e2e_passed": 307,
+        "e2e_flaky": 0,
+        "e2e_failed": 0,
+        "packaged_csv_passed": 61,
+        "integrity": {
+          "tests": 41,
+          "pass": 40,
+          "fail": 0,
+          "skipped": 1
+        }
+      },
+      {
+        "name": "Verify macos-15-intel",
+        "job_id": 122602358863,
+        "url": "https://github.com/ruzer/freyalab/actions/runs/40623349372/job/122602358863",
+        "unit_passed": 763,
+        "unit_files": 36,
+        "e2e_passed": 306,
+        "e2e_flaky": 1,
+        "e2e_failed": 0,
+        "packaged_csv_passed": 61,
+        "integrity": {
+          "tests": 41,
+          "pass": 41,
+          "fail": 0,
+          "skipped": 0
+        }
+      },
+      {
+        "name": "Verify ubuntu-24.04",
+        "job_id": 122602358866,
+        "url": "https://github.com/ruzer/freyalab/actions/runs/40623349372/job/122602358866",
+        "unit_passed": 763,
+        "unit_files": 36,
+        "e2e_passed": 307,
+        "e2e_flaky": 0,
+        "e2e_failed": 0,
+        "packaged_csv_passed": 61,
+        "integrity": {
+          "tests": 41,
+          "pass": 41,
+          "fail": 0,
+          "skipped": 0
+        }
+      },
+      {
+        "name": "Verify macos-15",
+        "job_id": 122602358883,
+        "url": "https://github.com/ruzer/freyalab/actions/runs/40623349372/job/122602358883",
+        "unit_passed": 763,
+        "unit_files": 36,
+        "e2e_passed": 306,
+        "e2e_flaky": 1,
+        "e2e_failed": 0,
+        "packaged_csv_passed": 61,
+        "integrity": {
+          "tests": 41,
+          "pass": 41,
+          "fail": 0,
+          "skipped": 0
+        }
+      }
+    ],
+    "incidents": [
+      {
+        "platform": "macos-15",
+        "test": "tests/e2e/markdown-render.spec.ts:87",
+        "location": "92:250",
+        "kind": "flaky_recovered",
+        "error": "expect.poll preview.scrollTop expected>0 received0 after15000ms",
+        "recovery": "automatic retry1 passed",
+        "attribution": "Unconfirmed",
+        "excerpt": "mac-flaky-excerpt.log"
+      },
+      {
+        "platform": "macos-15-intel",
+        "test": "tests/e2e/charts.spec.ts:208",
+        "location": "216:303",
+        "kind": "flaky_recovered",
+        "error": "Expected status \"Gráfico listo\"; received \"Opciones o datos actualizados. Pulsa Generar gráfico.\" after30000ms following filtered-scope generation",
+        "recovery": "automatic retry1 passed",
+        "attribution": "Unconfirmed",
+        "excerpt": "intel-flaky-excerpt.log"
+      }
+    ],
+    "head_to_checkout_diff": [
+      {
+        "filename": "docs/stories/6-proyectos.md",
+        "status": "added",
+        "sha": "ff33c519e8f52c6788687258ff3bed7d7005bfd9",
+        "additions": 234,
+        "deletions": 0
+      },
+      {
+        "filename": "docs/stories/7-csv-texto.md",
+        "status": "added",
+        "sha": "974193052db7e2ecc5a4addac212c89a32974a05",
+        "additions": 151,
+        "deletions": 0
+      }
+    ],
+    "log_sha256": {
+      "intel-job.log": "e8003e00ce499c66779cebec9c152faf12e843eeb2a370e4162243b177976a47",
+      "mac-job.log": "4da378ad35a844fda9ca656be44e438d4b13daaf36f412fadfbd4eedfe9f7027",
+      "ubuntu-job.log": "7e29329bb3dbe2812a64ed79ffad8ba107010b8e99ce853b57408125f43adef5",
+      "windows-job.log": "a0555b237025e85a39d1be7dcb2bda525a8c88683b0164c5ddea6ef1d6c4d331"
+    },
+    "scope": "Four GitHub CI jobs on generated PR77 merge only; not PR78, resulting-main CI, release or installation"
+  },
+  "replicas": {
+    "fast": {
+      "samples": 2,
+      "wallMs": [
+        442337.564584,
+        453789.347208
+      ],
+      "minMs": 442337.564584,
+      "maxMs": 453789.347208,
+      "medianMs": 448063.455896
+    },
+    "perf": {
+      "samples": 2,
+      "wallMs": [
+        81270.532125,
+        82884.688458
+      ],
+      "minMs": 81270.532125,
+      "maxMs": 82884.688458,
+      "medianMs": 82077.6102915
+    }
+  },
+  "observedSlowCasesOver10Seconds": [
+    {
+      "file": "charts.spec.ts",
+      "suites": [],
+      "title": "gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial",
+      "tags": [
+        "@perf"
+      ],
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 12120,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 12120,
+              "startTime": "2026-10-28T03:24:40.627Z"
+            }
+          ]
+        },
+        {
+          "label": "perf1",
+          "project": "csv",
+          "durationMs": 12116,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 12116,
+              "startTime": "2026-10-28T03:37:26.357Z"
+            }
+          ]
+        },
+        {
+          "label": "perf2",
+          "project": "csv",
+          "durationMs": 12105,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 12105,
+              "startTime": "2026-10-28T03:46:11.506Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 12130,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 12130,
+              "startTime": "2026-10-28T03:51:04.238Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "charts.spec.ts",
+      "suites": [],
+      "title": "constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones",
+      "tags": [],
+      "samples": [
+        {
+          "label": "csv1",
+          "project": "csv",
+          "durationMs": 10713,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 10713,
+              "startTime": "2026-10-28T03:24:53.427Z"
+            }
+          ]
+        },
+        {
+          "label": "fast1",
+          "project": "csv",
+          "durationMs": 10638,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 10638,
+              "startTime": "2026-10-28T03:33:08.864Z"
+            }
+          ]
+        },
+        {
+          "label": "fast2",
+          "project": "csv",
+          "durationMs": 10579,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 10579,
+              "startTime": "2026-10-28T03:42:04.816Z"
+            }
+          ]
+        },
+        {
+          "label": "full1",
+          "project": "csv",
+          "durationMs": 10576,
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 10576,
+              "startTime": "2026-10-28T03:51:17.078Z"
+            }
+          ]
+        }
+      ],
+      "sizeDecision": {
+        "action": "RETAIN_FAST_NO_PERF_TAG",
+        "sourceFile": "tests/e2e/charts.spec.ts",
+        "sourceLines": [
+          10,
+          94,
+          95,
+          97
+        ],
+        "sourceSha256": "fb53cac3b32abdfe3c2fd7c2e96e4dffa7779015fea54a101b7539498f81bc7e",
+        "fixtures": [
+          {
+            "name": "plots.csv",
+            "dataRows": 10,
+            "utf8BytesCalculatedFromLiteral": 124
+          },
+          {
+            "name": "ids.csv",
+            "dataRows": 5,
+            "utf8BytesCalculatedFromLiteral": 106
+          }
+        ],
+        "reason": "Verifica cálculos, selección de ejes, identificadores, filtros, temas y exportación con 10 y 5 filas (124 y 106 bytes UTF-8 calculados de los literales). No es un límite de tamaño y la lentitud por sí sola no autoriza @perf. Estos tamaños derivan del código, no de una medición stat separada durante esta serie."
+      }
+    }
+  ],
+  "bundleAcrossSeven": {
+    "sha256": "97600b0f7c7d76a409fea20b1aa9722e2116042564f49ab2ad0989958bde96b1",
+    "sameAcrossAllSeven": true
+  },
+  "postMeasurementMainSync": {
+    "baseMain": "41a01a4a894f405edca462618ab858c163ceb4c5",
+    "previousPublishedHead": "fd6a09d9719c19ce9572e56c698363204fa2a97c",
+    "rebaseCheckpointBeforeThisNote": "2472b4189c45beb0150cb59d4fbca020a31bc4dd",
+    "mainAddedFilesOnly": [
+      "docs/stories/6-proyectos.md",
+      "docs/stories/7-csv-texto.md"
+    ],
+    "functionalFiles": 174,
+    "functionalSha256": "04587fbf7efbb8896ce6ed9f31036040fe500a76ed3d0bf237ef1ddb5c832f96",
+    "bundleFiles": 247,
+    "bundleSha256": "97600b0f7c7d76a409fea20b1aa9722e2116042564f49ab2ad0989958bde96b1",
+    "measurementsRetainedByFunctionalIdentity": true,
+    "oldCiRun": 40630603068,
+    "oldCiHead": "fd6a09d9719c19ce9572e56c698363204fa2a97c",
+    "oldCiObserved": "3/4 terminal success; Intel pending at synchronization; not a new-head gate",
+    "newCi": "PENDING_NEW_HEAD"
+  }
+}
