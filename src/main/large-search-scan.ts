@@ -10,7 +10,9 @@ export interface SearchTask {taskId:number;index:LargeIndex;range:SearchRange;qu
 export async function scanSearch(task:SearchTask,send:(chunk:SearchChunk)=>void|Promise<void>){
  const {index,range,query,delimiter,header,width}=task,flag=new Int32Array(task.cancel),stop=new Int32Array(task.stop),cancelled=()=>Atomics.load(flag,0)!==0||Atomics.load(stop,0)!==0,compiled=compileTableQuery({...query,offset:0,limit:1,requestId:0},width)
  const necessary=query.search??(query.conditions?.length&&((query.filterMode??'all')==='all'||query.conditions.length===1)?query.conditions.find(rule=>rule.op==='contains'&&rule.value)?.value:undefined)
- const lower=necessary?.toLocaleLowerCase(),prefilter=task.prefilter!==false&&!!lower&&index.unit===1&&/^[\x00-\x7f]+$/.test(necessary!)&&/^[\x00-\x7f]+$/.test(lower)&&![delimiter,'"','\r','\n'].some(value=>necessary!.includes(value)),needle=lower?Buffer.from(lower):undefined
+ // Lithuanian casing can fold accented capitals to ASCII i plus marks; byte exclusion is then unsafe.
+ const regionalAscii='ÌÍĨ'.toLocaleLowerCase().includes('i')
+ const lower=necessary?.toLocaleLowerCase(),prefilter=task.prefilter!==false&&!regionalAscii&&!!lower&&index.unit===1&&/^[\x00-\x7f]+$/.test(necessary!)&&/^[\x00-\x7f]+$/.test(lower)&&![delimiter,'"','\r','\n'].some(value=>necessary!.includes(value)),needle=lower?Buffer.from(lower):undefined
  const through=task.partial!==false&&!query.search&&query.conditions?.length?Math.max(...query.conditions.map(rule=>rule.column)):undefined
  let scanned=0,position=range.from,lastProgress=0
  try{for await(const batch of recordBatches(index,{...range,batchRecords:task.batchRecords??512,batchBytes:1024*1024,chunk:task.chunk??1024*1024,cancelled})){
