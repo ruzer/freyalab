@@ -101,7 +101,9 @@ test('Buscar SVG conserva sus bytes y lo muestra como imagen sin ejecutar conten
 test('A4 · Guardar como avisa de la imagen externa y refresca su resolución desde la carpeta nueva',async()=>{
  await writeFile(join(folder,'origen','fuera.png'),png)
  const source='![Fuera](fuera.png)\n',{path}=await open(source);await loaded()
- await page.getByRole('button',{name:'Guardar como',exact:true}).click();await expect(page.locator('.toast')).toContainText('fuera de la carpeta de activos')
+ await page.getByRole('button',{name:'Guardar como',exact:true}).click();await expect(page.locator('.toast')).toContainText('1 imagen no se copió')
+ const warning=page.getByRole('region',{name:'Imágenes no copiadas'});await expect(warning).toContainText('1 imagen no se copió');await expect(warning.getByRole('list')).not.toBeVisible()
+ await warning.locator('summary').click();await expect(warning.getByRole('list')).toContainText('fuera.png: La referencia está fuera de la carpeta de activos')
  await expect(article().locator('img')).toHaveAttribute('alt','Imagen no disponible: Fuera');await expect(article().getByRole('button',{name:/Buscar imagen.*Fuera/})).toBeVisible()
  expect(await readFile(path,'utf8')).toBe(source);expect(await readFile(target,'utf8')).toBe(source);expect(await readdir(join(folder,'destino'))).toEqual(['Copia á.md'])
 })
@@ -114,3 +116,16 @@ test('U1 · Guardar como nombra el activo propio ausente sin mostrar el prefijo 
  expect((await current(doc.id))?.path).toBe(path);expect(await readFile(path,'utf8')).toBe(source);expect(await readdir(join(folder,'destino'))).toEqual([])
 })
 
+test('U2 · el resumen conserva el detalle de cada imagen hasta cerrarlo y sobrevive a otro aviso',async()=>{
+ const source='![Uno](fuera.png)\n![Dos](https://example.invalid/remota.png)\n',{doc}=await open(source)
+ await page.clock.install()
+ await page.getByRole('button',{name:'Guardar como',exact:true}).click()
+ const warning=page.getByRole('region',{name:'Imágenes no copiadas'});await expect(warning).toContainText('2 imágenes no se copiaron')
+ await page.clock.runFor(4000);await expect(warning).toBeVisible()
+ await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect(page.locator('.toast')).toContainText('Archivo guardado');await expect(warning).toBeVisible()
+ await open('# Otro documento\n','otro.md');await expect(warning).toHaveCount(0)
+ await page.getByRole('tab',{name:'Copia á.md',exact:true}).click();await expect(warning).toBeVisible();expect((await current(doc.id))?.path).toBe(target)
+ await warning.locator('summary').focus();await page.keyboard.press('Enter')
+ await expect(warning.getByRole('listitem')).toHaveCount(2);await expect(warning.getByRole('list')).toContainText('fuera.png:');await expect(warning.getByRole('list')).toContainText('https://example.invalid/remota.png:')
+ await warning.getByRole('button',{name:'Cerrar aviso de imágenes'}).click();await expect(warning).toHaveCount(0);await expect(page.locator('.cm-content')).toBeFocused()
+})

@@ -16,6 +16,7 @@
  import Diagram from './components/Diagram.svelte'
  import CsvTable from './components/CsvTable.svelte'
  import Tree from './components/Tree.svelte'
+ import AssetWarnings from './components/AssetWarnings.svelte'
  import Icon from './components/Icon.svelte'
  import {kindIcon,fileKind} from './lib/icons'
  import type {Heading} from './lib/render'
@@ -42,6 +43,7 @@
  const dark=$derived(theme==='system'?systemDark:theme==='dark')
  const active=$derived(documents.find(doc=>doc.id===activeId))
  let assetBusy=$state<Record<string,string>>({})
+ let assetWarnings=$state<Record<string,string[]>>({})
  const editingLocked=$derived(!active||active.readonly||!!assetBusy[active.id])
  const effectiveSidebarTab=$derived(active?.kind==='markdown'?sidebarTab:'files')
  const indexVisible=$derived(sidebar&&effectiveSidebarTab==='outline'&&active?.kind==='markdown')
@@ -152,7 +154,8 @@
   try{await action(async()=>{
    await pending.get(id);const snapshot=documents.find(doc=>doc.id===id)?.text??'',saved=await window.freya.save(id,as)
    if(saved){const {assets,...doc}=saved;merge(doc,false,assets?{source:snapshot,changes:assets.changes,undoable:false}:undefined);external=external.filter(value=>value!==id);if(doc.kind==='markdown')tagsRefresh++
-    notify(['Archivo guardado',...(assets?.copied?[`${assets.copied===1?'Se copió':'Se copiaron'} ${assets.copied} ${assets.copied===1?'imagen':'imágenes'}`]:[]),...(assets?.warnings??[])].join(' · '))
+    if(assets){if(assets.warnings.length)assetWarnings[id]=assets.warnings;else delete assetWarnings[id]}
+    notify(['Archivo guardado',...(assets?.copied?[`${assets.copied===1?'Se copió':'Se copiaron'} ${assets.copied} ${assets.copied===1?'imagen':'imágenes'}`]:[]),...(assets?.warnings.length?[assets.warnings.length===1?'1 imagen no se copió':`${assets.warnings.length} imágenes no se copiaron`]:[])].join(' · '))
    }
   })}finally{delete assetBusy[id]}
  }
@@ -169,7 +172,7 @@
   })}finally{delete assetBusy[id];if(activeId===id){await tick();if(mode==='preview')preview?.focus();else editor?.focus()}}
  }
  async function reload(id:string){if(assetBusy[id])return;await action(async()=>{merge(await window.freya.reload(id));external=external.filter(value=>value!==id)})}
- async function close(id:string){if(assetBusy[id])return;await action(async()=>{await pending.get(id);if(await window.freya.close(id)){const index=documents.findIndex(d=>d.id===id);documents=documents.filter(d=>d.id!==id);textSessions.delete(id);delete collapsedByDocument[id];if(activeId===id)activate(documents[Math.max(0,index-1)]?.id??'')}})}
+ async function close(id:string){if(assetBusy[id])return;await action(async()=>{await pending.get(id);if(await window.freya.close(id)){const index=documents.findIndex(d=>d.id===id);documents=documents.filter(d=>d.id!==id);textSessions.delete(id);delete collapsedByDocument[id];delete assetWarnings[id];if(activeId===id)activate(documents[Math.max(0,index-1)]?.id??'')}})}
  async function undo(redo=false){if(!active||editingLocked)return;if(active.kind==='csv')await csv?.undoEdit(redo);else if(active.kind==='markdown'){const id=active.id,session=textSession(active);(redo?redoText:undoText)({state:session.state,dispatch:transaction=>receiveText(id)([transaction])})}else if(redo)editor?.redoEdit();else editor?.undoEdit()}
  async function exportDocument(format:ExportRequest['format']){if(!active||assetBusy[active.id])return;exportMenu=false;busy=true;await action(async()=>{await pending.get(active!.id);const request:ExportRequest={format};if(active!.kind==='csv'){request.table=csv?.exportOptions(exportScope)}else if(active!.kind==='mermaid'){if(format==='svg'||format==='png')request.svg=await diagram?.exportSVG();else request.html=await diagram?.exportHTML()}else request.html=await preview?.exportHTML();const missing=active!.kind==='markdown'?preview?.missingImages()??0:0;const path=await window.freya.export(active!.id,request);if(path)notify(`Exportado: ${path}`+(missing?` · ${missing===1?'1 imagen no se encontró':`${missing} imágenes no se encontraron`}; se exportó con su texto alternativo`:''))});busy=false}
  async function recover(id:string){await action(async()=>{merge(await window.freya.recover(id),true);recoveries=await window.freya.recoveries()})}
@@ -227,6 +230,7 @@
    {#if documents.length}<div class="tabs" role="tablist" aria-label="Documentos abiertos">{#each documents as doc (doc.id)}<div class="tab" class:active={activeId===doc.id}><button role="tab" aria-selected={activeId===doc.id} onclick={()=>activate(doc.id)} title={doc.path??doc.name}><span class="tab-icon kind-{doc.kind}"><Icon name={kindIcon[doc.kind]} size={14}/></span>{doc.name}{#if doc.dirty}<span class="dirty-dot">●</span>{/if}</button><button class="tab-close" aria-label={`Cerrar ${doc.name}`} onclick={()=>close(doc.id)}><Icon name="x" size={14}/></button></div>{/each}</div>{/if}
    {#if active}
     {#if external.includes(active.id)}<div class="warning-banner external-banner"><span>Este archivo cambió fuera de FreyaLab.</span><button onclick={()=>reload(active!.id)}>Recargar</button><button onclick={()=>save(true)}>Guardar copia</button><button onclick={()=>external=external.filter(value=>value!==active!.id)}>Conservar mi edición</button></div>{/if}
+    {#if assetWarnings[active.id]}<AssetWarnings warnings={assetWarnings[active.id]} ondismiss={()=>{delete assetWarnings[active!.id];if(mode==='preview')preview?.focus();else editor?.focus()}}/>{/if}
     {#key active.id}
      {#if active.kind==='csv'}<CsvTable bind:this={csv} doc={active} onchange={doc=>merge(doc)} onerror={error} onstatus={value=>status=value} onreport={openStatisticsReport}/>
      {:else}
