@@ -360,5 +360,30 @@
     "No segunda suite local completa verde; la corrección solo cambia tres selectores y se verificó con cuatro focales.",
     "Los 247 binarios y los otros 182 archivos guardados no cambiaron.",
     "No se verificó la instalación manual ni se actualizó la app instalada."
-  ]
+  ],
+  "ci209WindowsFixtureCorrection": {
+    "run": 40654934662,
+    "number": 209,
+    "head": "50db6f0202b5b8758e9cc87e4820a7226f52e1b9",
+    "candidateMerge": "69d3552cfa53b701c4533c77bed182d3b23c0d7d",
+    "platform": "windows-2025",
+    "job": 122703562556,
+    "unit": {
+      "passed": 956,
+      "failed": 1,
+      "skipped": 2
+    },
+    "e2e": "not_run",
+    "packaged": "not_run",
+    "causeObserved": "ENOENT al crear informe \"final\".txt; nombre de fixture no admitido en Windows, antes de ejecutar la búsqueda.",
+    "correction": "Nombre portable con comillas simples y comprobación adicional de consulta literal con comillas dobles; producto intacto.",
+    "localFocused": {
+      "file": "tests/document-tags.test.ts",
+      "passed": 55,
+      "durationSeconds": 3.03,
+      "platform": "darwin-arm64"
+    },
+    "newCI": "pending",
+    "logSha256": "870b7e5be00f7ee7dea92c4c580cd9f713ae764f8f8a8420526e5733b2b4cb46"
+  }
 }

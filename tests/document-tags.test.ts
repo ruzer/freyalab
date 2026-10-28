@@ -39,9 +39,10 @@ const names=(result:{entries:{name:string}[]})=>result.entries.map(entry=>entry.
 
 describe('FL-MD-009 C · búsqueda por etiquetas',()=>{
  it('mantiene la consulta completa por nombre, incluidos espacios y comillas, sin leer contenido',async()=>{
-  await file('informe final.md');await file('final informe.md');await file('informe "final".txt','texto')
+  await file('informe final.md');await file('final informe.md');await file("informe 'final'.txt",'texto')
   expect(names(await docs.findFiles(root,'informe final'))).toEqual(['informe final.md'])
-  expect(names(await docs.findFiles(root,'informe "final"'))).toEqual(['informe "final".txt'])
+  expect(names(await docs.findFiles(root,"informe 'final'"))).toEqual(["informe 'final'.txt"])
+  expect(names(await docs.findFiles(root,'informe "final"'))).toEqual([])
   expect(io.opens).toEqual([])
  })
  it('el # aislado sigue siendo búsqueda por nombre',async()=>{await file('#nota.md');expect(names(await docs.findFiles(root,'#'))).toEqual(['#nota.md']);expect(io.opens).toEqual([])})

@@ -927,5 +927,30 @@
     "exact5000Boundary": "En las seis muestras candidatas con fixture5000 la marca limited fue true; cuentas verificadas contra la fixture conocida, sin prometer exhaustividad arbitraria."
   },
   "rawLogsNotShipped": "Logs de ejecución externos conservados; este manifiesto publica nombres y SHA, no enlaces a archivos ausentes del repositorio.",
-  "publicMeasurementsSha256": "d5dcd4a231c15dde1900f60b92dc0c175ed7ff9c721cfe9f0f3079e4f1d84f30"
+  "publicMeasurementsSha256": "d5dcd4a231c15dde1900f60b92dc0c175ed7ff9c721cfe9f0f3079e4f1d84f30",
+  "ci209WindowsFixtureCorrection": {
+    "run": 40654934662,
+    "number": 209,
+    "head": "50db6f0202b5b8758e9cc87e4820a7226f52e1b9",
+    "candidateMerge": "69d3552cfa53b701c4533c77bed182d3b23c0d7d",
+    "platform": "windows-2025",
+    "job": 122703562556,
+    "unit": {
+      "passed": 956,
+      "failed": 1,
+      "skipped": 2
+    },
+    "e2e": "not_run",
+    "packaged": "not_run",
+    "causeObserved": "ENOENT al crear informe \"final\".txt; nombre de fixture no admitido en Windows, antes de ejecutar la búsqueda.",
+    "correction": "Nombre portable con comillas simples y comprobación adicional de consulta literal con comillas dobles; producto intacto.",
+    "localFocused": {
+      "file": "tests/document-tags.test.ts",
+      "passed": 55,
+      "durationSeconds": 3.03,
+      "platform": "darwin-arm64"
+    },
+    "newCI": "pending",
+    "logSha256": "870b7e5be00f7ee7dea92c4c580cd9f713ae764f8f8a8420526e5733b2b4cb46"
+  }
 }
