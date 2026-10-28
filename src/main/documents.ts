@@ -8,6 +8,7 @@ import {tokensFileQuery} from '../shared/tag-query'
 import { watch, type FSWatcher } from 'chokidar'
 import iconv from 'iconv-lite'
 import { atomicWrite, contained, digest } from './files'
+import type {DocumentAssets} from './document-assets'
 import { TableClient } from './table-client'
 import type {AppEvent,DocumentInfo,Kind,RecoveryEntry,TableOptions,TableEdit,TableExport,TreeEntry} from '../shared/types'
 interface RecordDoc { info:DocumentInfo; hash?:string; text:string; undo:string[]; redo:string[]; root:string; saving:boolean; timer?:ReturnType<typeof setTimeout>; watcher?:FSWatcher }
@@ -65,7 +66,52 @@ export class Documents {
  private async undoNow(id:string,redo=false){const r=this.get(id);if(r.info.readonly)return this.info(id);if(r.info.kind==='csv'){await this.table.call('undo',id,redo);await this.syncTable(id)}else{const from=redo?r.redo:r.undo,to=redo?r.undo:r.redo;const text=from.pop();if(text===undefined)return this.info(id);to.push(r.text);r.text=text;r.info.dirty=true;r.info.revision++}this.schedule(id);return this.info(id)}
  private async saveDestination(r:RecordDoc){if(process.env.FREYALAB_TEST==='1'&&(process.env.FREYALAB_TEST_SAVE_PATH||process.env.FREYALAB_TEST_SAVE_DIR))return process.env.FREYALAB_TEST_SAVE_PATH??join(process.env.FREYALAB_TEST_SAVE_DIR!,r.info.name.replace('Sin título','documento'));const result=await dialog.showSaveDialog(this.owner(),{defaultPath:r.info.path??r.info.name});return result.canceled?null:result.filePath??null}
  async save(id:string,as=false){return this.serial(id,()=>this.saveNow(id,as))}
- private async saveNow(id:string,as=false){const r=this.get(id);if(r.info.readonly)throw new Error('La muestra es de solo lectura.');const dest=as||!r.info.path?await this.saveDestination(r):r.info.path;if(!dest)return null;const canonical=await realpath(dest).catch(()=>resolve(dest));if([...this.records.values()].some(other=>other!==r&&other.info.path===canonical))throw new Error('El destino corresponde a otro documento abierto. Guarda una copia con otro nombre.');if((await lstat(dest).catch(()=>null))?.isSymbolicLink())throw new Error('No se sobrescriben enlaces simbólicos.');const revision=r.info.revision;const data=r.info.kind==='csv'?Buffer.from(await this.table.call('serialize',id)):Buffer.from(r.text,'utf8');const same=r.info.path===dest;r.saving=true;try{await atomicWrite(dest,data,same?r.hash:undefined);r.hash=createHash('sha256').update(data).digest('hex');if(revision===r.info.revision){if(r.info.kind==='csv'){const marked=await this.table.call('markSaved',id,revision);if(marked.revision>=r.info.revision)Object.assign(r.info,marked)}else r.info.dirty=false;if(!r.info.dirty){clearTimeout(r.timer);await this.recoveryTasks.get(id);if(!r.info.dirty)await this.discardRecovery(id)}}r.info.path=dest;r.info.name=basename(dest);r.root=dirname(dest);await r.watcher?.close();r.watcher=watch(dest,{ignoreInitial:true}).on('change',()=>{if(!r.saving)this.emit({type:'external',id})});await this.addRecent(dest);return this.info(id)}finally{setTimeout(()=>{r.saving=false},300)}}
+ private async saveNow(id:string,as=false){
+  const r=this.get(id);if(r.info.readonly)throw new Error('La muestra es de solo lectura.')
+  const dest=as||!r.info.path?await this.saveDestination(r):r.info.path;if(!dest)return null
+  const canonical=await realpath(dest).catch(()=>resolve(dest))
+  if([...this.records.values()].some(other=>other!==r&&other.info.path===canonical))throw new Error('El destino corresponde a otro documento abierto. Guarda una copia con otro nombre.')
+  if((await lstat(dest).catch(()=>null))?.isSymbolicLink())throw new Error('No se sobrescriben enlaces simbólicos.')
+  const revision=r.info.revision,same=r.info.path===dest||r.info.path===canonical
+  let data=r.info.kind==='csv'?Buffer.from(await this.table.call('serialize',id)):Buffer.from(r.text,'utf8'),assets:DocumentAssets|undefined
+  r.saving=true
+  try{
+   if(r.info.kind==='markdown'&&!same){
+    const {saveMarkdownCopy}=await import('./document-assets')
+    const result=await saveMarkdownCopy(r.text,r.info.path,dest);data=Buffer.from(result.text,'utf8');assets=result.assets
+    if(result.text!==r.text){r.text=result.text;r.info.revision++}
+   }else await atomicWrite(dest,data,same?r.hash:undefined)
+   r.hash=createHash('sha256').update(data).digest('hex')
+   if(revision===r.info.revision||assets){
+    if(r.info.kind==='csv'){const marked=await this.table.call('markSaved',id,revision);if(marked.revision>=r.info.revision)Object.assign(r.info,marked)}else r.info.dirty=false
+    if(!r.info.dirty){clearTimeout(r.timer);await this.recoveryTasks.get(id);if(!r.info.dirty)await this.discardRecovery(id)}
+   }
+   r.info.path=dest;r.info.name=basename(dest);r.root=dirname(dest);await r.watcher?.close();r.watcher=watch(dest,{ignoreInitial:true}).on('change',()=>{if(!r.saving)this.emit({type:'external',id})});await this.addRecent(dest)
+   return{...this.info(id),...(assets?{assets}:{})}
+  }finally{setTimeout(()=>{r.saving=false},300)}
+ }
+
+ async locateImage(id:string,missingURL:string){return this.serial(id,()=>this.locateImageNow(id,missingURL))}
+ private async locateImageNow(id:string,missingURL:string){
+  const r=this.get(id)
+  if(r.info.kind!=='markdown')throw new Error('Buscar imágenes está disponible en documentos Markdown.')
+  if(r.info.readonly)throw new Error('La muestra es de solo lectura.')
+  if(!r.info.path)throw new Error('Guarda el documento para poder insertar imágenes')
+  const source=r.text,path=r.info.path,revision=r.info.revision
+  const {hasImageReference,locateMarkdownImage}=await import('./document-assets')
+  if(!hasImageReference(source,missingURL))throw new Error('La referencia de imagen debe ser relativa y seguir presente en el documento.')
+  let selected:string|undefined
+  if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_IMAGE_PATH!==undefined)selected=process.env.FREYALAB_TEST_IMAGE_PATH||undefined
+  else{
+   const result=await dialog.showOpenDialog(this.owner(),{properties:['openFile'],filters:[{name:'Imágenes',extensions:['png','jpg','jpeg','gif','webp','svg']}]})
+   if(!result.canceled)selected=result.filePaths[0]
+  }
+  if(!selected)return null
+  const assertCurrent=()=>{if(this.records.get(id)!==r||r.info.path!==path||r.info.readonly||r.text!==source||r.info.revision!==revision)throw new Error('El documento cambió mientras elegías la imagen. Vuelve a intentarlo.')}
+  assertCurrent()
+  const result=await locateMarkdownImage(source,path,missingURL,selected,assertCurrent)
+  return{...await this.updateNow(id,result.text),assets:result.assets}
+ }
  async close(id:string){return this.serial(id,()=>this.closeNow(id))}
  private async closeNow(id:string){const r=this.get(id);if(r.info.dirty){const {response}=await dialog.showMessageBox(this.owner(),{type:'question',buttons:['Guardar','Cancelar','Descartar cambios'],defaultId:0,cancelId:1,message:`¿Guardar los cambios de ${r.info.name}?`});if(response===1)return false;if(response===0&&!(await this.saveNow(id)))return false}clearTimeout(r.timer);await r.watcher?.close();if(r.info.kind==='csv')await this.table.call('close',id);this.records.delete(id);await this.discardRecovery(id);return true}
  async reload(id:string){return this.reinterpret(id,()=>this.reloadNow(id))}

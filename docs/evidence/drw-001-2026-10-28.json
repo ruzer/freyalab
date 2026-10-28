@@ -1,0 +1,390 @@
+{
+  "story": "FL-DRW-001",
+  "date": "2026-10-28",
+  "status": "LOCAL_COMPLETE_WITH_SCOPED_POST_FULL_MESSAGE_CHANGE_CI_PENDING",
+  "worktree": "/private/tmp/freyalab-lote/drw-001",
+  "branch": "codex/drw-001-activos",
+  "head": "e30237a4b16e95757f07b82d0fc883fc45e957cc",
+  "parent": "2acb0af",
+  "parentPullRequest": 81,
+  "commits": {
+    "backend": "cbf8192",
+    "uiBeforeRebase": "193d937",
+    "uiRebased": "f0e0b457fcc3e9698c462f7bfe90e2ab2e51fef2",
+    "postFullMessage": "e30237a4b16e95757f07b82d0fc883fc45e957cc"
+  },
+  "sourceGuardAtFullLaunch": {
+    "manifest": "11-before-full.json",
+    "manifestSha256": "ad024ca4c33b9378995fa9dd2d9a426df2b584c054eee62e3397db3c0c44a2e1",
+    "head": "f0e0b457fcc3e9698c462f7bfe90e2ab2e51fef2",
+    "fileCount": 195,
+    "sha256": "b024fdc1b8ebac39b1f639ed4541722d449ed9b747382811dd928d663a5c50a7"
+  },
+  "criteria": {
+    "A1": "Backend + focal UI: 0/1/3 activos, tres imágenes reabiertas desde la copia y bytes/originales conservados.",
+    "A2": "Activo propio inválido aborta, staging y rollback de lo creado; hashes y alias protegidos; cola y bloqueo temporal.",
+    "A3": "Buscar UI y API guardadas: recuperado/sin ruta no abre selector ni escribe activos en Documentos temporal.",
+    "A4": "Fuera de assets no se copia, se avisa y Preview refresca la raíz al cambiar path aunque no cambie texto.",
+    "A5": "data:/relativa/bloqueada conservadas; UUID de selección nativa; SVG exacto como img sin ejecutar contenido; sin dependencia nueva."
+  },
+  "redGreen": {
+    "backend": {
+      "firstF05Red": {
+        "failed": 1,
+        "file": "11-assets-f05-red.log"
+      },
+      "aliasRed": {
+        "failed": 2,
+        "file": "11-assets-save-alias-red.log"
+      },
+      "finalFocused": {
+        "passed": 49,
+        "files": 4,
+        "newTests": 41,
+        "durationPrintedSeconds": 1.48,
+        "file": "11-assets-save-alias-final-unit.log"
+      }
+    },
+    "adapter": {
+      "red": "Módulo ausente: 0 casos ejecutados; no afirmar 12 rojos.",
+      "greenPassed": 12,
+      "greenFile": "11-asset-changes-green.log"
+    },
+    "uiSequence": [
+      {
+        "file": "11-ui-red.json",
+        "stats": {
+          "startTime": "2026-10-28T09:29:33.250Z",
+          "duration": 33521.909,
+          "expected": 0,
+          "skipped": 0,
+          "unexpected": 2,
+          "flaky": 0
+        },
+        "attemptCount": 2,
+        "retryAttempts": 0
+      },
+      {
+        "file": "11-ui-edge-red.json",
+        "stats": {
+          "startTime": "2026-10-28T09:45:54.357Z",
+          "duration": 17526.557,
+          "expected": 0,
+          "skipped": 0,
+          "unexpected": 2,
+          "flaky": 0
+        },
+        "attemptCount": 2,
+        "retryAttempts": 0
+      },
+      {
+        "file": "11-ui-first-green.json",
+        "stats": {
+          "startTime": "2026-10-28T09:51:34.036Z",
+          "duration": 56192.44300000001,
+          "expected": 5,
+          "skipped": 0,
+          "unexpected": 2,
+          "flaky": 0
+        },
+        "attemptCount": 7,
+        "retryAttempts": 0
+      },
+      {
+        "file": "11-ui-derived-focal.json",
+        "stats": {
+          "startTime": "2026-10-28T10:00:26.823Z",
+          "duration": 20669.23,
+          "expected": 2,
+          "skipped": 0,
+          "unexpected": 1,
+          "flaky": 0
+        },
+        "attemptCount": 3,
+        "retryAttempts": 0
+      },
+      {
+        "file": "11-ui-second-green.json",
+        "stats": {
+          "startTime": "2026-10-28T10:06:28.675Z",
+          "duration": 11793.475,
+          "expected": 8,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "attemptCount": 8,
+        "retryAttempts": 0
+      }
+    ],
+    "incidents": [
+      "Primeros rojos UI: Buscar inexistente y editor seguía editable durante selector.",
+      "Dos rojos adicionales: identidad img/DOM perdida y botón anidado dentro del enlace.",
+      "Primer focal 5/7: selector exacto del recuperado omitía indicador dirty; corregido el selector, no producto. El otro fallo de DOM era real.",
+      "Sacar readonly del efecto no bastaba: active como objeto Svelte recreaba props; valores primitivos derivados evitan reparse por permisos.",
+      "Focal de tres: 2 pasan/1 A4 falla; se añadió path como recurso de Preview para refrescar imágenes al cambiar raíz.",
+      "Focal 8/8 antes de un ajuste solo del mensaje singular «Se copió». El head final tiene check/unit comunes; full en curso."
+    ]
+  },
+  "commonChecks": {
+    "check": {
+      "head": "e30237a4b16e95757f07b82d0fc883fc45e957cc",
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 0,
+      "file": "11-after-copy-warning-check.log"
+    },
+    "unit": {
+      "head": "e30237a4b16e95757f07b82d0fc883fc45e957cc",
+      "passed": 1070,
+      "files": 44,
+      "durationPrintedSeconds": 6.04,
+      "file": "11-after-copy-warning-unit.log"
+    },
+    "e2eFull": {
+      "state": "completed",
+      "measuredHead": "f0e0b457fcc3e9698c462f7bfe90e2ab2e51fef2",
+      "passed": 382,
+      "attempts": 382,
+      "durationMs": 593257.53,
+      "retryAttempts": 0,
+      "flaky": 0,
+      "skipped": 0,
+      "log": "11-full.log",
+      "json": "11-full.json",
+      "same195SourcesBeforeAfter": true,
+      "beforeAfterSourceSha256": "b024fdc1b8ebac39b1f639ed4541722d449ed9b747382811dd928d663a5c50a7",
+      "currentCodeHeadRerun": false,
+      "note": "No hubo segunda suite local tras un literal de aviso y su aserción. No presentar este full como ejecutado sobre e302."
+    },
+    "buildFinalSeparate": {
+      "state": "completed",
+      "head": "e30237a4b16e95757f07b82d0fc883fc45e957cc",
+      "exitCode": 0,
+      "file": "11-after-copy-warning-build.log"
+    },
+    "postDocumentationBuild": {
+      "required": false,
+      "reason": "Solo se agregan evidencias; la CI compila de nuevo el head final."
+    }
+  },
+  "gates": {
+    "pullRequestC": "pending",
+    "ciFourPlatforms": "pending_on_final_head",
+    "packagedApp": "pending",
+    "manualCritical": "pending"
+  },
+  "screenshots": [
+    {
+      "path": "drw-001-missing-light-1440x900.png",
+      "source": "f0e0b457fcc3e9698c462f7bfe90e2ab2e51fef2:docs/evidence/drw-001-missing-light-1440x900.png",
+      "sha256": "a68f3862307094ecdaa2435fc74ab0bb47445cf75fcd76428c15f35ca5fefe39",
+      "bytes": 60393,
+      "width": 1440,
+      "height": 900,
+      "captureRun": "11-ui-second-green.json",
+      "copiedFromGitBlob": true
+    },
+    {
+      "path": "drw-001-missing-dark-1440x900.png",
+      "source": "f0e0b457fcc3e9698c462f7bfe90e2ab2e51fef2:docs/evidence/drw-001-missing-dark-1440x900.png",
+      "sha256": "c0c43802fec0499c954ffd20ee9812260020f4215873f9163c5d52503646f95b",
+      "bytes": 61531,
+      "width": 1440,
+      "height": 900,
+      "captureRun": "11-ui-second-green.json",
+      "copiedFromGitBlob": true
+    }
+  ],
+  "limits": [
+    "Capturas de control Buscar, no prueba de asentamiento: la oscura muestra Actualizando vista previa y ambas Contando en el footer.",
+    "Sin benchmark nuevo de memoria/latencia ni medición de 10 MiB; el límite de texto se simula con byteLength.",
+    "No Windows/Linux local, rutas largas o apagón real; symlinks de archivo excluidos en Windows por permisos.",
+    "Rollback en proceso, no diario transaccional ante caída de energía; limpieza residual de temporales de mejor esfuerzo.",
+    "SVG se conserva como activo editable y se presenta como img; no es aún editor de dibujos.",
+    "No publicación/release ni actualización de la app instalada."
+  ],
+  "logs": {
+    "11-assets-f05-red.log": {
+      "sha256": "5d1db42ad63e18e85033e7b3f5519029a1aa3e38e77aad06586db40db341815d",
+      "bytes": 1287
+    },
+    "11-assets-save-alias-red.log": {
+      "sha256": "443831fd4f768eff2caf3b418920af2dc261ecb0f9604b0ce541bdc588f91fe9",
+      "bytes": 2758
+    },
+    "11-assets-save-alias-final-unit.log": {
+      "sha256": "3376fea3cf68fdd27a040c502b423c6c124cdbb0d62b2f8f8ef1373fde1c4525",
+      "bytes": 345
+    },
+    "11-assets-owned-read-red.log": {
+      "sha256": "20131d298681e01741e4af6eb391c0ca75fb9c20b5c8c7b9b212d7c233d26bff",
+      "bytes": 1898
+    },
+    "11-assets-locate-red.log": {
+      "sha256": "c7473b2a2f535ddc0cb9532057aa1c0ca85715655ba2eb5283686d4fbd833447",
+      "bytes": 7606
+    },
+    "11-assets-size-rollback-red.log": {
+      "sha256": "2e28ca59543e8ae0a9eb29556cd96c739089adeeeb5bae47a7ebc67540be33c3",
+      "bytes": 1981
+    },
+    "11-asset-changes-red.log": {
+      "sha256": "b45bcca76a6bdbe6fddcfe8c947fc315d23584e7ebcb17ad0d5ca8f72b6f5c87",
+      "bytes": 988
+    },
+    "11-asset-changes-green.log": {
+      "sha256": "9ef3c886ed4ef91bf3255c73abd7793cc36e3ab80554d3165cc887e50c9e58d1",
+      "bytes": 196
+    },
+    "11-ui-red.log": {
+      "sha256": "ee2e7971d1c0cb0afc1c7d552f157765c8c3c9760a800edfb2d6c6a7b63c2aeb",
+      "bytes": 6478
+    },
+    "11-ui-edge-red.log": {
+      "sha256": "ce4c0f0e5695ddcd276f950e6aaea77d3c183571885b473503a258c013468ad6",
+      "bytes": 5272
+    },
+    "11-ui-first-green.log": {
+      "sha256": "5dd317abbac0851b8cf5cf01ac5e601842d931502d869e2e2b545e4f13bb0608",
+      "bytes": 6787
+    },
+    "11-ui-derived-focal.log": {
+      "sha256": "bd48025a1d449b7bfe1f49d1799b0d1066509237ea2778e278e433157e9194ef",
+      "bytes": 3332
+    },
+    "11-ui-second-green.log": {
+      "sha256": "9f248ff6e37bd82ae683515e770afc5a2151f3e6adef3e4ad76892869d182cc8",
+      "bytes": 1532
+    },
+    "11-ui-second-green.json": {
+      "sha256": "d95271ff449d7d63dccddbc3ab7de36a2807812de3c3e075972afd61e8638d4e",
+      "bytes": 16736
+    },
+    "11-final-check.log": {
+      "sha256": "076455110fd360d32233d1fdaab570a6661d63bc9f9634a4f8dffab826014ab7",
+      "bytes": 257
+    },
+    "11-final-unit.log": {
+      "sha256": "cf073d98c8dfefd9c3e21c10a307949e2a9ec65adaee84647ef73dc306dc210f",
+      "bytes": 236
+    },
+    "11-full.log": {
+      "sha256": "a361b6248225ca5360fd1ec098e38b1246eb6d04a276abac126ef598c25d934c",
+      "bytes": 82520
+    },
+    "11-full.json": {
+      "sha256": "bf6617f9fd34f9a894705c87d25c6c1fabc19423c5ef3fb31f5609cde87bdcb4",
+      "bytes": 957653
+    },
+    "11-after-full.json": {
+      "sha256": "d03620e80076c7fbe36aea0862256d7c7e32c29fa1dc3177722d4aeceed2d8c2",
+      "bytes": 20769
+    },
+    "11-copy-warning-scope-proof.json": {
+      "sha256": "3cc64f7f6f332fd4c9cfa013522b5fda2b25ea099719709a3b43bb9a1f7d1efd",
+      "bytes": 21053
+    },
+    "11-copy-warning-red.log": {
+      "sha256": "2e96f008ad6e818335827776582105aa49fb66b91b33492018152423dda020a8",
+      "bytes": 951
+    },
+    "11-copy-warning-green.log": {
+      "sha256": "4514aeb0d960cfd9a063a4386e1332c17d3e6e3d171c114c65fdb2ac9d28084c",
+      "bytes": 208
+    },
+    "11-after-copy-warning-check.log": {
+      "sha256": "076455110fd360d32233d1fdaab570a6661d63bc9f9634a4f8dffab826014ab7",
+      "bytes": 257
+    },
+    "11-after-copy-warning-unit.log": {
+      "sha256": "809e2e501af1b29c5fc24a049f953c8fa1fa3e16f36b9d72abb51ad2d21c5454",
+      "bytes": 236
+    },
+    "11-after-copy-warning-build.log": {
+      "sha256": "6d0cf128083bff21d65efabf311922868c4b370d9cc472dadfff1599becaeb2b",
+      "bytes": 21483
+    }
+  },
+  "historicalBackendProof": {
+    "path": "11-assets-backend-manifest.json",
+    "sha256": "7dd6ff6fcc8932961be1941cd6cabf7bae99a866f1220a6fe4677795af264a12",
+    "note": "Pruebas del frente backend aislado anteriores a la integración/rebase; no reemplazan el head/gates actuales."
+  },
+  "fullMeasurementHead": "f0e0b457fcc3e9698c462f7bfe90e2ab2e51fef2",
+  "sourceFilesAtFullHeadSha256": {
+    "src/main/document-assets.ts": "4d92ad3f78a8c49b5e2d7403b2f59576475e5b7595008be7a74c0a2920e7216b",
+    "src/main/documents.ts": "5fca4867ad124e7145ad9db1baac33f75a9bee0209aadff9301091d684b3c86c",
+    "src/main/index.ts": "4b5780114f27daaf6b3d16c4f88d30bc32d390e71e53119a7d80aaaa43389ce5",
+    "src/preload/index.ts": "d3da2c943cc367761f6ad774d470d9cbf87959581c2f4d3ab2a6f90a99194c96",
+    "src/shared/types.ts": "e0c1d3c8a67edc70c4eb9be0fd6e2bc58070dca5d89fb9d7133996529c17d910",
+    "src/renderer/App.svelte": "848db0ddb578b1ff3aa30fb6a6d19f828116df9e9f731d5f00935b24252dabc8",
+    "src/renderer/components/Editor.svelte": "66891ca48158efc74b03a34f567b623a9fc000d896545620c9e5612b018d2020",
+    "src/renderer/components/Preview.svelte": "30174b5be7825669a74d89aa3294d8c2868b83bf27789acee865c797dab19a2a",
+    "src/renderer/lib/asset-changes.ts": "cc6ff003e4c4405e0e6276dcd969200a097cce661bdf1c91b5d3bd7af8a9589d",
+    "tests/document-assets.test.ts": "b83de0888faa8cdb3b38343ff214c409f74f03ffb254b833c20fba9fa9969e6e",
+    "tests/asset-changes.test.ts": "d401b5909b8d76e8a30d6475b7d2905cf8ff5cef562c9ccd28f17675db84b9bf",
+    "tests/e2e/markdown-assets.spec.ts": "be92ff357f08332c22b1c26461df3b2c32f4bef065ea80a98294e1ef5f56ef00",
+    "tests/e2e/groups.ts": "faf74978a5143d70c23db6338135ffd4aa78a370c75e41e0f53f5e974f2b64c8"
+  },
+  "sourceFilesAtCodeHeadSha256": {
+    "src/main/document-assets.ts": "ce22c7dc9a2fc8ef4be015fa55eab75fc4afdfe7b4ea354b3afdf8292c4c4080",
+    "src/main/documents.ts": "5fca4867ad124e7145ad9db1baac33f75a9bee0209aadff9301091d684b3c86c",
+    "src/main/index.ts": "4b5780114f27daaf6b3d16c4f88d30bc32d390e71e53119a7d80aaaa43389ce5",
+    "src/preload/index.ts": "d3da2c943cc367761f6ad774d470d9cbf87959581c2f4d3ab2a6f90a99194c96",
+    "src/shared/types.ts": "e0c1d3c8a67edc70c4eb9be0fd6e2bc58070dca5d89fb9d7133996529c17d910",
+    "src/renderer/App.svelte": "848db0ddb578b1ff3aa30fb6a6d19f828116df9e9f731d5f00935b24252dabc8",
+    "src/renderer/components/Editor.svelte": "66891ca48158efc74b03a34f567b623a9fc000d896545620c9e5612b018d2020",
+    "src/renderer/components/Preview.svelte": "30174b5be7825669a74d89aa3294d8c2868b83bf27789acee865c797dab19a2a",
+    "src/renderer/lib/asset-changes.ts": "cc6ff003e4c4405e0e6276dcd969200a097cce661bdf1c91b5d3bd7af8a9589d",
+    "tests/document-assets.test.ts": "dac5bbbe0784444be6ecbbd3980068882ec10399fe93b947bfa663641e5be11b",
+    "tests/asset-changes.test.ts": "d401b5909b8d76e8a30d6475b7d2905cf8ff5cef562c9ccd28f17675db84b9bf",
+    "tests/e2e/markdown-assets.spec.ts": "be92ff357f08332c22b1c26461df3b2c32f4bef065ea80a98294e1ef5f56ef00",
+    "tests/e2e/groups.ts": "faf74978a5143d70c23db6338135ffd4aa78a370c75e41e0f53f5e974f2b64c8"
+  },
+  "historicalChecksAtFullHead": {
+    "check": {
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 0,
+      "file": "11-final-check.log"
+    },
+    "unit": {
+      "passed": 1070,
+      "files": 44,
+      "durationPrintedSeconds": 6.25,
+      "file": "11-final-unit.log"
+    }
+  },
+  "postFullChange": {
+    "commit": "e30237a4b16e95757f07b82d0fc883fc45e957cc",
+    "scope": "Un literal de aviso al guardar un documento que antes no tenía ubicación y una aserción del test existente; ninguna rama de comportamiento.",
+    "newMessage": "No se copiaron imágenes porque el documento no tenía una ubicación propia; sus referencias se conservaron.",
+    "beforeLocateGuardUnchanged": "Guarda el documento para poder insertar imágenes",
+    "red": {
+      "failed": 1,
+      "skippedByFilter": 40,
+      "log": "11-copy-warning-red.log"
+    },
+    "green": {
+      "passed": 1,
+      "skippedByFilter": 40,
+      "log": "11-copy-warning-green.log"
+    },
+    "proof": "11-copy-warning-scope-proof.json",
+    "inverseRestoresAll195Sources": true,
+    "changedFiles": [
+      "src/main/document-assets.ts",
+      "tests/document-assets.test.ts"
+    ],
+    "ciFinalHeadRequired": true
+  },
+  "sourceGuardAfterFull": {
+    "manifest": "11-after-full.json",
+    "manifestSha256": "d03620e80076c7fbe36aea0862256d7c7e32c29fa1dc3177722d4aeceed2d8c2",
+    "head": "f0e0b457fcc3e9698c462f7bfe90e2ab2e51fef2",
+    "fileCount": 195,
+    "sha256": "b024fdc1b8ebac39b1f639ed4541722d449ed9b747382811dd928d663a5c50a7",
+    "unchanged": true
+  }
+}
