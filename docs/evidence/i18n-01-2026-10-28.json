@@ -1,0 +1,165 @@
+{
+  "featureHead": "e5aee7c88a1a974fe38757a6311fdac00ff82da3",
+  "requiredAncestor": "c1763df017b1b2158494a70c4cb4d90025903d06",
+  "baseMain": "33a5dfda628ecd9a389f1bf4a33358176c017df0",
+  "scope": "I18N-01 infraestructura y piloto; menú y Ajustes de I5/I7 continúan en D2",
+  "versionsInstalled": {
+    "electron": "44.9.2",
+    "svelte": "5.57.2",
+    "typescript": "6.0.3",
+    "@playwright/test": "1.64.1"
+  },
+  "nodeBuild": "24.22.1",
+  "platform": "Darwin",
+  "architecture": "arm64",
+  "sourceSHA256": {
+    "src/shared/i18n/index.ts": "9eb75bf53f21437a56419d78545bbd8d7385301e794205b5d8cc10c84e16e810",
+    "src/main/language.ts": "8112000a747bf19c946f00aef019aadd380103a597adad91074c5a27adebaaa6",
+    "src/preload/invoke-error.ts": "ea7da2958781a4e5b975e41feb244d4a89f92227009e243e1a6f7c874283496a",
+    "src/preload/index.ts": "44657a49c95d44dc624ea8c9cff65b586395cb5b1742361870c7e4ba9d1bd497",
+    "src/main/index.ts": "7ee041f0aabd3fd92c457b09d80197de6fa51aee22551257cb22de776ff8df8a",
+    "src/main/documents.ts": "e761fc4da2ecf4f6eda9bcc76f1ed4d938b739f04cb46b9a79a2f125ba0d7bd5",
+    "src/main/export.ts": "175c4f3905b6aa010777010bdf3b729d13db777aeddcfbde9364423045b9b9b0",
+    "src/shared/types.ts": "79db528f06380db5a2c328738218874a17b2ac0ecb2b6bc26d5a9a6371d5f77b",
+    "src/renderer/App.svelte": "0d11d0da18c8adff069378cd9732c48a88718f803804be76cfa40b39dc2d2ca1",
+    "src/renderer/lib/i18n.svelte.ts": "ccfba52a02a50f6f20a1430433c9ab5c0e1bd97d4e645a8d3125c6d526245366"
+  },
+  "focusedE2E": {
+    "startTime": "2026-10-28T20:06:01.550Z",
+    "duration": 5181.592000000001,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "redTests": {
+    "core": "módulos/catálogos ausentes",
+    "bridge": "dos módulos ausentes, no14 aserciones ejecutadas",
+    "pluralLarge": {
+      "failed": 3,
+      "passed": 27
+    },
+    "a0Prefix": {
+      "failed": 1,
+      "passed": 5
+    }
+  },
+  "focusedUnit": {
+    "passed": 107,
+    "files": 7,
+    "log": "d1-a0-focused-unit-green.log"
+  },
+  "rebase": {
+    "from": "33a5dfd",
+    "onto": "c1763df",
+    "count": 1,
+    "onlyConflict": "src/renderer/App.svelte, toolbar-right; conserva editingLocked",
+    "oldCommits": [
+      "ee8d3d0",
+      "e543615",
+      "35811cb",
+      "7d2e646"
+    ],
+    "newCommits": [
+      "8f3ee05",
+      "85b6d25",
+      "924cab3",
+      "70f4d54"
+    ],
+    "prefixFix": "e5aee7c"
+  },
+  "pendingBaseline": {
+    "files": 55,
+    "manifestSHA256": "2b92d993e5dad9b18860282db9db1c0b99eabf791cab51a8b9791db0be775835",
+    "detectorLimit": "AST de salidas visibles conocidas; no análisis semántico completo de flujos arbitrarios"
+  },
+  "screenshots": [
+    {
+      "file": "i18n-01-en-XA-dark-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "52e567fa656c6f34860d4284e9e956378e0fb686cc90d3fa721f85b8d6aec02e"
+    },
+    {
+      "file": "i18n-01-en-XA-dark-720x600.png",
+      "width": 720,
+      "height": 600,
+      "sha256": "5cd2db0f389e60cc73404effc63499a07e8ea4db16931d893b8f0f8c4242a40b"
+    },
+    {
+      "file": "i18n-01-en-XA-light-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "114bf93e41731a959863f2a314337ad0b588dd027a4e5cdbea6f79c6aefd717d"
+    },
+    {
+      "file": "i18n-01-en-XA-light-720x600.png",
+      "width": 720,
+      "height": 600,
+      "sha256": "0a45271075f22a183e449763bcdfda84c0fad39c630512aff6df769df53ac403"
+    },
+    {
+      "file": "i18n-01-en-dark-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "fd7cf0ed3d02b2a974c4264aaf2d540fae245b8de6550b4afaf6a0ec5d865591"
+    },
+    {
+      "file": "i18n-01-en-dark-720x600.png",
+      "width": 720,
+      "height": 600,
+      "sha256": "bb0de4af54ad0f435d0cf62c19a872bb9070ab5d0fe539b2aee37dd46acf197f"
+    },
+    {
+      "file": "i18n-01-en-light-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "fc2fc12292d36b6a4261f15141327328a39e293814f38d70e13ec625e4cac2db"
+    },
+    {
+      "file": "i18n-01-en-light-720x600.png",
+      "width": 720,
+      "height": 600,
+      "sha256": "0a4448d890b1bef9e6be2876e7ec3f37ad5ff48e9b28cb6876405703fde7f7d2"
+    },
+    {
+      "file": "i18n-01-es-dark-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "795e6462003c512b9c1f5e09f5ce47f7dab7e96460f68dec0fa2e1d033c080e0"
+    },
+    {
+      "file": "i18n-01-es-dark-720x600.png",
+      "width": 720,
+      "height": 600,
+      "sha256": "d087a97cc9d531acb4542b83e18108576dded0cf293a11a189876b6c1ed653bc"
+    },
+    {
+      "file": "i18n-01-es-light-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "fdcc30b49efd26997bfd001d91062cc338c80bebc927c2da708df419c7f0c152"
+    },
+    {
+      "file": "i18n-01-es-light-720x600.png",
+      "width": 720,
+      "height": 600,
+      "sha256": "86399168e36802f3519627f37ce1d441219e352f968fc5de8a17a892231a9306"
+    }
+  ],
+  "closure": {
+    "check": "pendiente sobre head final congelado",
+    "unitFull": "pendiente, incluye CSV",
+    "e2eFull": "pendiente; listado387casos",
+    "build": "build enfocado correcto; cierre final pendiente",
+    "ci4andPackage": "pendiente del PR D1"
+  },
+  "notVerified": [
+    "Menú propio y ajustes de D2",
+    "Persistencia del idioma de APP-03",
+    "Windows/Linux manuales y DMG instalado",
+    "Lector/IME/táctil físicos",
+    "Textos propios del sistema en diálogos nativos",
+    "Migración completa I18N-02/03/04"
+  ]
+}

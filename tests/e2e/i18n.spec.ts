@@ -32,6 +32,7 @@ test('I5/I6 · cambiar de idioma actualiza el piloto y los diálogos, sin tocar 
  const[doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
  await expect(page.locator('.cm-content')).toBeVisible();await page.locator('.cm-content').click();await page.keyboard.press('ControlOrMeta+End');await page.keyboard.insertText('\nCambio sin guardar')
  const snapshot=await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),doc.id)
+ expect(snapshot?.text).toBe(source+'\nCambio sin guardar');expect(snapshot?.dirty).toBe(true)
  await screenshots('es')
  await language('en');await expect(page.locator('html')).toHaveAttribute('lang','en');await expect(page.getByRole('button',{name:'Open',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Save',exact:true})).toBeEnabled();await screenshots('en')
  await app.evaluate(({dialog})=>{
