@@ -78,3 +78,15 @@ test('B3 E9/E24: sin carpeta el chip avisa y no cambia filtro, pestaña, documen
  await expect(search()).toHaveValue('consulta previa');await expect(tags()).toHaveCount(0);expect(await info(doc.id)).toEqual(before);await intact(doc.id,path,text)
 })
 
+
+test('B2 E9/E12: un chip abre Archivos desde Índice oculto, enfoca la consulta y conserva una etiqueta con espacios sin duplicarla',async()=>{
+ const text=markdown('["informe final", proyecto]'),{path,doc}=await open(text,'primero.md')
+ await writeFile(join(fixtures,'segundo.md'),markdown('["informe final"]'));await writeFile(join(fixtures,'parecido.md'),markdown('["informe finales"]'))
+ await openFolder();await page.getByRole('tab',{name:'Índice',exact:true}).click();await expect(page.getByRole('tabpanel',{name:'Índice del documento',exact:true})).toBeVisible()
+ await page.getByRole('button',{name:'Mostrar u ocultar explorador',exact:true}).click();await expect(page.locator('aside.sidebar')).toHaveCount(0)
+ await chip('informe final').focus();await page.keyboard.press('Enter')
+ await expect(page.getByRole('tab',{name:'Archivos',exact:true})).toHaveAttribute('aria-selected','true');await expect(search()).toHaveValue('#"informe final"');await expect(search()).toBeFocused()
+ await results([path,join(fixtures,'segundo.md')]);await chip('informe final').focus();await page.keyboard.press('Space');await expect(search()).toHaveValue('#"informe final"');await results([path,join(fixtures,'segundo.md')])
+ await search().fill('#proy');await results([]);await search().fill('#PROYECTO');await results([path]);await intact(doc.id,path,text)
+})
+

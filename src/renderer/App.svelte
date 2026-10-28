@@ -148,7 +148,7 @@
   fileMatches=[];fileSearchLimited=false;fileSearchBusy=!!root&&!!query
   if(!root||!query)return
   const timer=setTimeout(async()=>{try{const result=await window.freya.findFiles(root,query);if(token!==fileSearchGeneration)return;fileMatches=result.entries;fileSearchLimited=result.limited}catch(e){if(token===fileSearchGeneration)error(String(e))}finally{if(token===fileSearchGeneration)fileSearchBusy=false}},150)
-  return()=>clearTimeout(timer)
+  return()=>{clearTimeout(timer);void window.freya.cancelFileSearch().catch(()=>{})}
  })
  $effect(()=>{document.documentElement.classList.toggle('dark',dark)})
 </script>

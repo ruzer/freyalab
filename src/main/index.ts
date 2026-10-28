@@ -39,6 +39,7 @@ async function handle(operation:string,args:unknown[]){
  case'folder':{if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_FOLDER){const folder=resolve(process.env.FREYALAB_TEST_FOLDER);docs.roots.add(folder);return folder}const result=await dialog.showOpenDialog(window!,{properties:['openDirectory']});if(result.canceled)return null;docs.roots.add(result.filePaths[0]);return result.filePaths[0]}
  case'tree':return docs.tree(path.parse(a))
  case'findFiles':return docs.findFiles(path.parse(a),z.string().min(1).max(500).parse(b))
+ case'cancelFileSearch':return docs.cancelFileSearch()
  case'documents':return[...docs.records.keys()].map(key=>docs.info(key))
  case'update':return docs.update(id.parse(a),text.parse(b))
  case'save':return docs.save(id.parse(a),z.boolean().optional().parse(b))
