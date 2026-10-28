@@ -1,0 +1,398 @@
+{
+  "scope": "A0 aterrizaje de4358d91 sobre main33a5dfd, R1/R2/U1/U2/U3",
+  "date": "2026-10-28",
+  "baseline": "4358d91de20e0cefa6037aad266680a6bd834f52",
+  "mainBase": "33a5dfda628ecd9a389f1bf4a33358176c017df0",
+  "implementationCommits": {
+    "import": "ddf078c",
+    "R1": "e3fa33c",
+    "R2": "fadee0f",
+    "U1": "1c8026e",
+    "U2": "fed008e",
+    "U3": "6faef1f"
+  },
+  "currentSourceSHA256": {
+    "src/renderer/lib/render.ts": "8108b88d3c915851e1720cee2bd3997d198292fdb332cc9306792cfeaff4dbec",
+    "src/renderer/components/Preview.svelte": "b02c3460a866abad4a75359155e5ac2960c1f3ce3312182c2aa9ae8f8a0a3b01",
+    "package-lock.json": "7008658adc0a5b0c85073de556f4f249fc2853005bedcaec64f777fe684ee3d9"
+  },
+  "runtime": {
+    "node": "24.22.0",
+    "acorn": "8.18.0",
+    "ada": "4.0.0",
+    "amaro": "1.1.11",
+    "ares": "1.34.8",
+    "brotli": "1.2.0",
+    "cldr": "48.0",
+    "icu": "78.2",
+    "llhttp": "9.4.3",
+    "merve": "1.2.2",
+    "modules": "149",
+    "napi": "10",
+    "nbytes": "0.1.4",
+    "ncrypto": "0.0.1",
+    "nghttp2": "1.70.0",
+    "nghttp3": "",
+    "ngtcp2": "",
+    "openssl": "0.0.0",
+    "simdjson": "4.6.11",
+    "simdutf": "7.7.0",
+    "sqlite": "3.53.4",
+    "tz": "2026d",
+    "undici": "7.29.1",
+    "unicode": "17.0",
+    "uv": "1.52.1",
+    "uvwasi": "0.0.23",
+    "v8": "15.2.124.43-electron.0",
+    "zlib": "1.3.2.1-motley",
+    "zstd": "1.6.0",
+    "electron": "44.9.2",
+    "chrome": "152.0.7977.167"
+  },
+  "realRace": {
+    "before": {
+      "sourceSHA256": "b45a99def55d6e33f9070c049143e5e703ec6c90c331dca1297666eadec47e4b",
+      "cases": [
+        {
+          "kind": "render-render",
+          "lightMinimumContrast": {
+            "text": 1.6059285649300714,
+            "edge": 1.4969939561114844,
+            "marker": 1.4969939561114844
+          },
+          "serialLightMinimumContrast": {
+            "text": 12.63465434445799,
+            "edge": 12.63465434445799,
+            "marker": 12.63465434445799
+          },
+          "lightMatchesControl": false,
+          "darkMatchesControl": true,
+          "cachedMatchesControl": false,
+          "cacheExact": true
+        },
+        {
+          "kind": "render-validate",
+          "lightMinimumContrast": {
+            "text": 1.6059285649300714,
+            "edge": 1.4969939561114844,
+            "marker": 1.4969939561114844
+          },
+          "serialLightMinimumContrast": {
+            "text": 12.63465434445799,
+            "edge": 12.63465434445799,
+            "marker": 12.63465434445799
+          },
+          "lightMatchesControl": false,
+          "darkMatchesControl": null,
+          "cachedMatchesControl": false,
+          "cacheExact": true
+        }
+      ]
+    },
+    "after": {
+      "sourceSHA256": "8108b88d3c915851e1720cee2bd3997d198292fdb332cc9306792cfeaff4dbec",
+      "cases": [
+        {
+          "kind": "render-render",
+          "lightMinimumContrast": {
+            "text": 12.63465434445799,
+            "edge": 12.63465434445799,
+            "marker": 12.63465434445799
+          },
+          "serialLightMinimumContrast": {
+            "text": 12.63465434445799,
+            "edge": 12.63465434445799,
+            "marker": 12.63465434445799
+          },
+          "lightMatchesControl": true,
+          "darkMatchesControl": true,
+          "cachedMatchesControl": true,
+          "cacheExact": true
+        },
+        {
+          "kind": "render-validate",
+          "lightMinimumContrast": {
+            "text": 12.63465434445799,
+            "edge": 12.63465434445799,
+            "marker": 12.63465434445799
+          },
+          "serialLightMinimumContrast": {
+            "text": 12.63465434445799,
+            "edge": 12.63465434445799,
+            "marker": 12.63465434445799
+          },
+          "lightMatchesControl": true,
+          "darkMatchesControl": null,
+          "cachedMatchesControl": true,
+          "cacheExact": true
+        }
+      ]
+    }
+  },
+  "validationMeasurements": [
+    {
+      "phase": "5-cold",
+      "blocks": 5,
+      "beforeWallMs": 64.89999997615814,
+      "afterWallMs": 71.70000004768372,
+      "beforeMaximumLongTaskMs": 65,
+      "afterMaximumLongTaskMs": 0,
+      "beforeHeartbeats": [
+        0
+      ],
+      "afterHeartbeats": [
+        2
+      ]
+    },
+    {
+      "phase": "5-paragraph-1",
+      "blocks": 5,
+      "beforeWallMs": 92.10000002384186,
+      "afterWallMs": 1.0999999046325684,
+      "beforeMaximumLongTaskMs": 92,
+      "afterMaximumLongTaskMs": 0,
+      "beforeHeartbeats": [
+        0
+      ],
+      "afterHeartbeats": [
+        0
+      ]
+    },
+    {
+      "phase": "5-paragraph-2",
+      "blocks": 5,
+      "beforeWallMs": 87.19999992847443,
+      "afterWallMs": 0.7000000476837158,
+      "beforeMaximumLongTaskMs": 87,
+      "afterMaximumLongTaskMs": 0,
+      "beforeHeartbeats": [
+        0
+      ],
+      "afterHeartbeats": [
+        0
+      ]
+    },
+    {
+      "phase": "5-dark-cold",
+      "blocks": 5,
+      "beforeWallMs": 84.80000007152557,
+      "afterWallMs": 66.20000004768372,
+      "beforeMaximumLongTaskMs": 84,
+      "afterMaximumLongTaskMs": 0,
+      "beforeHeartbeats": [
+        0
+      ],
+      "afterHeartbeats": [
+        2
+      ]
+    },
+    {
+      "phase": "5-dark-paragraph",
+      "blocks": 5,
+      "beforeWallMs": 83.19999992847443,
+      "afterWallMs": 0.7999999523162842,
+      "beforeMaximumLongTaskMs": 83,
+      "afterMaximumLongTaskMs": 0,
+      "beforeHeartbeats": [
+        0
+      ],
+      "afterHeartbeats": [
+        0
+      ]
+    },
+    {
+      "phase": "40-cold",
+      "blocks": 40,
+      "beforeWallMs": 447.10000002384186,
+      "afterWallMs": 642.8000000715256,
+      "beforeMaximumLongTaskMs": 447,
+      "afterMaximumLongTaskMs": 0,
+      "beforeHeartbeats": [
+        0
+      ],
+      "afterHeartbeats": [
+        48
+      ]
+    },
+    {
+      "phase": "40-paragraph-1",
+      "blocks": 40,
+      "beforeWallMs": 454.60000002384186,
+      "afterWallMs": 158.10000002384186,
+      "beforeMaximumLongTaskMs": 454,
+      "afterMaximumLongTaskMs": 0,
+      "beforeHeartbeats": [
+        0
+      ],
+      "afterHeartbeats": [
+        16
+      ]
+    },
+    {
+      "phase": "40-paragraph-2",
+      "blocks": 40,
+      "beforeWallMs": 462.8000000715256,
+      "afterWallMs": 157.29999995231628,
+      "beforeMaximumLongTaskMs": 462,
+      "afterMaximumLongTaskMs": 0,
+      "beforeHeartbeats": [
+        0
+      ],
+      "afterHeartbeats": [
+        15
+      ]
+    },
+    {
+      "phase": "40-dark-cold",
+      "blocks": 40,
+      "beforeWallMs": 457.60000002384186,
+      "afterWallMs": 660.7999999523163,
+      "beforeMaximumLongTaskMs": 457,
+      "afterMaximumLongTaskMs": 0,
+      "beforeHeartbeats": [
+        0
+      ],
+      "afterHeartbeats": [
+        47
+      ]
+    },
+    {
+      "phase": "40-dark-paragraph",
+      "blocks": 40,
+      "beforeWallMs": 457.10000002384186,
+      "afterWallMs": 160.69999992847443,
+      "beforeMaximumLongTaskMs": 457,
+      "afterMaximumLongTaskMs": 0,
+      "beforeHeartbeats": [
+        0
+      ],
+      "afterHeartbeats": [
+        16
+      ]
+    }
+  ],
+  "unitTests": {
+    "R1": {
+      "red": 3,
+      "green": 3
+    },
+    "R2": {
+      "redCache": 3,
+      "green": 7
+    },
+    "assets": {
+      "red": 3,
+      "green": 41
+    }
+  },
+  "e2e": {
+    "firstFocused": {
+      "startTime": "2026-10-28T17:31:50.427Z",
+      "duration": 72184.29999999999,
+      "expected": 42,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "firstFailure": "U1 fixture compared /var alias with canonical /private/var; production result and data guards were correct. Assert now compares original doc.path.",
+    "u1Focal": {
+      "startTime": "2026-10-28T17:35:10.008Z",
+      "duration": 983.006,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "optinInitial": {
+      "startTime": "2026-10-28T17:57:19.682Z",
+      "duration": 2887.649,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "optinSettled": {
+      "startTime": "2026-10-28T18:19:31.578Z",
+      "duration": 2695.71,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "trackedPngBefore": {
+      "docs/evidence/mer-007-light-1440x900.png": "8667b98e8541acc265fec64101f81a55877aea5818dd47f72610c070a41012cb",
+      "docs/evidence/mer-007-dark-1440x900.png": "6fe1e77889f439320831ad73c7b4da8af8f9433e8c4388de27683e78a9aa8715",
+      "docs/evidence/drw-001-missing-light-1440x900.png": "a68f3862307094ecdaa2435fc74ab0bb47445cf75fcd76428c15f35ca5fefe39",
+      "docs/evidence/drw-001-missing-dark-1440x900.png": "c0c43802fec0499c954ffd20ee9812260020f4215873f9163c5d52503646f95b"
+    },
+    "trackedPngAfter": {
+      "docs/evidence/mer-007-light-1440x900.png": {
+        "mtime_utc": "2026-10-28T16:42:22.334049+00:00",
+        "mtime_predates_test": true
+      },
+      "docs/evidence/mer-007-dark-1440x900.png": {
+        "mtime_utc": "2026-10-28T16:42:22.333552+00:00",
+        "mtime_predates_test": true
+      },
+      "docs/evidence/drw-001-missing-light-1440x900.png": {
+        "mtime_utc": "2026-10-28T16:42:22.332373+00:00",
+        "mtime_predates_test": true
+      },
+      "docs/evidence/drw-001-missing-dark-1440x900.png": {
+        "mtime_utc": "2026-10-28T16:42:22.331875+00:00",
+        "mtime_predates_test": true
+      }
+    }
+  },
+  "screenshots": [
+    {
+      "file": "a0-error-activo-light-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a55f17ba1563524cd9fd5968c1889b843583a5f8f2e3241f222a9f37e1c31815"
+    },
+    {
+      "file": "a0-error-activo-dark-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ce76fc5dfd2722e0ead2dd0fe095ead4a5e54d019e2f240309dd9b7dc1d0bde4"
+    },
+    {
+      "file": "a0-avisos-activos-light-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "666c01df21cee03daf3d380393a76a3f2ffd54480dc21d4b497ce00cd936f0be"
+    },
+    {
+      "file": "a0-avisos-activos-dark-1440x900.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "75df6304b06b1c533bca9ac63431b8d1fd653c57aa07b36ba79c39e6ae08609a"
+    }
+  ],
+  "closure": {
+    "check": "pending after final source freeze",
+    "fullUnit": "pending",
+    "fullE2E": "pending",
+    "build": "focused source build passed; closure build pending",
+    "ci4": "pending",
+    "packaged": "pending"
+  },
+  "openIncidents": [
+    {
+      "id": "Windows dock-resize.spec.ts:30",
+      "state": "not reproduced or fixed; nullable boundingBox read observed in oldCI; no Windows local experiment",
+      "evidence": "C1 full on identical dock source passed its dock cases, which is macOS evidence only."
+    },
+    {
+      "id": "Intel mermaid-export-theme.spec.ts:164",
+      "state": "R1 reproduces exact1.60592856 signature and wrong cached SVG with real engine; fixed experiment and unit tests pass; oldInteltrace not inspected."
+    }
+  ],
+  "limits": [
+    "Single machine and one measurement per phase; cold means uncached diagram keys after warming the Mermaid module, not filesystem cold cache.",
+    "First40-block validation takes longer wall time while allowing heartbeats; repeated paragraphs benefit from cache.",
+    "No physical reader, IME, touch, manualWindows/Linux or printer/installer verification.",
+    "No dependencies, CI, minimumWindowWidth, policy of absent own assets or installed app changed."
+  ]
+}
