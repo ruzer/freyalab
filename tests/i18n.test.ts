@@ -13,6 +13,7 @@ describe('I18N-01 · catálogos y traducción',()=>{
    const markers=(text:string)=>Array.from(text.matchAll(/\{([^}]+)\}/g),match=>match[1]).sort()
    expect(markers(en[key as keyof typeof en])).toEqual(markers(value))
    if(key.endsWith('.one'))expect(Object.hasOwn(en,key.slice(0,-4)+'.other')).toBe(true)
+   if(key.endsWith('.other'))expect(Object.hasOwn(en,key.slice(0,-6)+'.one')).toBe(true)
   }
  })
  it('comparte el idioma activo y permite un cambio inmediato',()=>{
@@ -57,6 +58,7 @@ describe('I18N-01 · resolución del idioma',()=>{
 })
 describe('I18N-01 · plural y formato regional',()=>{
  it.each([['es',0,'0 filas'],['es',1,'1 fila'],['es',2,'2 filas'],['en',0,'0 rows'],['en',1,'1 row'],['en',2,'2 rows']] as const)('%s / %d',(language,count,expected)=>{setLanguage(language);expect(plural('filas',count)).toBe(expected)})
+ it.each([['es',1234,'1,234 filas'],['es',1000000,'1,000,000 filas'],['en',1000000,'1,000,000 rows']] as const)('miles/millones %s/%d usan plural y formato regional',(language,count,expected)=>{setLanguage(language);expect(plural('filas',count)).toBe(expected)})
  it('no usa el idioma del sistema para números, fechas o listas',()=>{
   const value=new Date('2026-10-28T12:30:00Z'),options={dateStyle:'long',timeZone:'UTC'} as const
   setLanguage('es');expect(formatNumber(1234.56)).toBe(new Intl.NumberFormat('es-MX').format(1234.56));expect(formatDate(value,options)).toBe(new Intl.DateTimeFormat('es-MX',options).format(value));expect(formatList(['a','b'])).toBe('a y b')

@@ -26,7 +26,9 @@ export function t(key:string,parameters:TranslationParameters={},locale:Language
  return message.replace(/\{([^}]+)\}/g,(marker,name)=>Object.hasOwn(parameters,name)?String(parameters[name]):marker)
 }
 export function plural(key:string,count:number,parameters:TranslationParameters={},locale:Language=language):string {
- return t(`${key}.${new Intl.PluralRules(locales[locale]).select(count)}`,{...parameters,count},locale)
+ // shortcut: es/en usan other para toda categoría no singular; revisar al añadir idiomas.
+ const form=new Intl.PluralRules(locales[locale]).select(count)==='one'?'one':'other'
+ return t(`${key}.${form}`,{...parameters,count:formatNumber(count,undefined,locale)},locale)
 }
 export function formatNumber(value:number,options?:Intl.NumberFormatOptions,locale:Language=language):string {return new Intl.NumberFormat(locales[locale],options).format(value)}
 export function formatDate(value:Date|number,options?:Intl.DateTimeFormatOptions,locale:Language=language):string {return new Intl.DateTimeFormat(locales[locale],options).format(value)}
