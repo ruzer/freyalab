@@ -1,0 +1,19 @@
+{
+ "dialog.open.title": "Abrir archivos",
+ "dialog.open.filter": "Documentos",
+ "dialog.folder.title": "Abrir carpeta",
+ "dialog.save.title": "Guardar archivo",
+ "dialog.saveAs.title": "Guardar como",
+ "dialog.export.title": "Exportar una copia",
+ "dialog.save": "Guardar",
+ "dialog.cancel": "Cancelar",
+ "dialog.discard": "Descartar cambios",
+ "dialog.close.message": "¿Guardar los cambios de {nombre}?",
+ "dialog.reload.title": "Cambios externos",
+ "dialog.reload.message": "El archivo cambió fuera de FreyaLab. Recargar reemplazará tus cambios locales.",
+ "dialog.reload.keep": "Conservar mis cambios",
+ "dialog.reload.discard": "Recargar y descartar cambios",
+ "error.invalidOperation": "Datos de operación no válidos.",
+ "filas.one": "{count} fila",
+ "filas.other": "{count} filas"
+}

@@ -1,0 +1,19 @@
+{
+ "dialog.open.title": "Open files",
+ "dialog.open.filter": "Documents",
+ "dialog.folder.title": "Open folder",
+ "dialog.save.title": "Save file",
+ "dialog.saveAs.title": "Save as",
+ "dialog.export.title": "Export a copy",
+ "dialog.save": "Save",
+ "dialog.cancel": "Cancel",
+ "dialog.discard": "Discard changes",
+ "dialog.close.message": "Save changes to {nombre}?",
+ "dialog.reload.title": "External changes",
+ "dialog.reload.message": "The file changed outside FreyaLab. Reloading will replace your local changes.",
+ "dialog.reload.keep": "Keep my changes",
+ "dialog.reload.discard": "Reload and discard changes",
+ "error.invalidOperation": "Invalid operation data.",
+ "filas.one": "{count} row",
+ "filas.other": "{count} rows"
+}
