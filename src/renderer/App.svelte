@@ -18,6 +18,8 @@
  import Icon from './components/Icon.svelte'
  import {kindIcon,fileKind} from './lib/icons'
  import type {Heading} from './lib/render'
+ import {normalizeTag} from '../shared/front-matter'
+ import {tokensFileQuery,tagQueryToken} from '../shared/tag-query'
  import {matchHeadings,currentHeading as headingAtPosition,type EditorHeading} from './lib/outline'
  type SidebarTab='files'|'outline'
  function preference(key:string,fallback:string){try{return localStorage.getItem(key)??fallback}catch{return fallback}}
@@ -67,6 +69,12 @@
   void selectSidebarTab(active?.kind==='markdown'?tab:'files',true)
  }
  function toggleIndex(){if(indexVisible)void selectSidebarTab('files');else{sidebar=true;remember('freya-sidebar','true');void selectSidebarTab('outline')}}
+ async function filterByTag(tag:string){
+  if(!folderPath){notify('Abre una carpeta para filtrar por etiqueta');return}
+  sidebar=true;remember('freya-sidebar','true');await selectSidebarTab('files')
+  if(!tokensFileQuery(filterFiles).some(token=>token.tag&&normalizeTag(token.value)===normalizeTag(tag)))filterFiles=[filterFiles.trim(),tagQueryToken(tag)].filter(Boolean).join(' ')
+  await tick();document.querySelector<HTMLInputElement>('.sidebar-search input')?.focus()
+ }
  function receiveCurrent(docId:string){return(value:string|undefined)=>{if(activeId===docId)previewHeading=value}}
  function receiveHeadings(docId:string){return(value:Heading[],source:string)=>{if(activeId===docId){headings=value;headingDocument=docId;headingsSource=source}}}
  function receiveEditorHeadings(id:string){return(value:EditorHeading[],source:string)=>{if(activeId===id){editorHeadings=value;editorSource=source;editorDocument=id}}}
@@ -175,7 +183,7 @@
       {#if active.warning}<div class="warning-banner">{active.warning}</div>{/if}
       <div class="document-panes">
        {#if active.kind!=='markdown'||mode!=='preview'}<div class:hidden={mode==='preview'&&active.kind!=='text'} class="editor-pane" style:width={mode==='split'&&active.kind!=='text'?`${split}%`:'100%'}><div class="pane-caption">{active.kind==='mermaid'?'DEFINICIÓN MERMAID':active.kind==='text'?'TEXTO':'MARKDOWN'}{#if active.readonly}<span>Solo lectura</span>{/if}</div><Editor bind:this={editor} session={active.kind==='markdown'?textSession(active):undefined} ontransactions={active.kind==='markdown'?receiveText(active.id):undefined} text={active.text??''} readonly={active.readonly} kind={active.kind} onformatstate={state=>markdownState=state} onselection={selection=>textSelection=selection} onchange={text=>updateText(active!.id,text)} onscroll={ratio=>{if(mode==='split')preview?.scrollRatio(ratio)}} outlineEnabled={active.kind==='markdown'&&mode==='edit'&&indexVisible} onoutline={receiveEditorHeadings(active.id)} oncurrentline={receiveEditorLine(active.id)}/></div>{/if}
-       {#if active.kind!=='text'}<button class:hidden={mode!=='split'} class="resize-handle split-handle" aria-valuenow={split} aria-valuemin="20" aria-valuemax="80" role="slider" aria-label="Ancho del editor" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSplit} onkeydown={e=>{if(e.key==='ArrowRight')split=Math.min(80,split+2);if(e.key==='ArrowLeft')split=Math.max(20,split-2)}}></button><div class:hidden={mode==='edit'} class="preview-pane"><div class="pane-caption">VISTA PREVIA <span>{active.kind==='mermaid'?'SVG':'Renderizado local'}</span></div>{#if active.kind==='mermaid'}<Diagram bind:this={diagram} text={active.text??''} {dark} onerror={error}/>{:else}<Preview bind:this={preview} text={active.text??''} id={active.id} renderEnabled={mode!=='edit'||indexVisible} {dark} readonly={active.readonly} ontask={toggleTask} onheadings={receiveHeadings(active.id)} oncurrent={receiveCurrent(active.id)} onerror={error}/>{/if}</div>{/if}
+       {#if active.kind!=='text'}<button class:hidden={mode!=='split'} class="resize-handle split-handle" aria-valuenow={split} aria-valuemin="20" aria-valuemax="80" role="slider" aria-label="Ancho del editor" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSplit} onkeydown={e=>{if(e.key==='ArrowRight')split=Math.min(80,split+2);if(e.key==='ArrowLeft')split=Math.max(20,split-2)}}></button><div class:hidden={mode==='edit'} class="preview-pane"><div class="pane-caption">VISTA PREVIA <span>{active.kind==='mermaid'?'SVG':'Renderizado local'}</span></div>{#if active.kind==='mermaid'}<Diagram bind:this={diagram} text={active.text??''} {dark} onerror={error}/>{:else}<Preview bind:this={preview} text={active.text??''} id={active.id} renderEnabled={mode!=='edit'||indexVisible} {dark} readonly={active.readonly} ontask={toggleTask} onheadings={receiveHeadings(active.id)} oncurrent={receiveCurrent(active.id)} onfiltertag={filterByTag} onerror={error}/>{/if}</div>{/if}
       </div>
      {/if}
     {/key}

@@ -51,7 +51,7 @@ export function parseTags(frontMatter?:string):string[] {
   }else if(/^[&*!|>]|[\[\]{}]|:[ \t]|^(?:null|~|true|false)$/i.test(tag))return[]
   tag=tag.trim().replace(/^#/,'').trim()
   if(!tag||Array.from(tag).length>64)continue
-  const key=tag.normalize('NFD').replace(/\p{M}/gu,'').toLowerCase()
+  const key=normalizeTag(tag)
   if(!seen.has(key)&&tags.length<50){seen.add(key);tags.push(tag)}
  }
  return tags
@@ -82,3 +82,5 @@ function tagParts(text:string,split:boolean):string[]|undefined {
  parts.push(text.slice(start,end))
  return parts
 }
+
+export function normalizeTag(tag:string):string {return tag.normalize('NFD').replace(/\p{M}/gu,'').toLowerCase()}

@@ -3,11 +3,13 @@
  import {explainDiagramError} from '../lib/diagram-errors'
  import {markdownHTML,diagramSVG,standaloneHTML,decodeFragment,type Heading} from '../lib/render'
  import {currentHeading,type HeadingMetric} from '../lib/outline'
+ import {parseTags} from '../../shared/front-matter'
  import type {TaskReference} from '../lib/markdown-tasks'
- let {text,id,dark=false,readonly=true,renderEnabled=true,ontask,onheadings,onerror,oncurrent}:{text:string;id:string;dark?:boolean;readonly?:boolean;renderEnabled?:boolean;ontask?:(id:string,snapshot:string,reference:TaskReference)=>boolean;oncurrent?:(id:string|undefined)=>void;onheadings:(headings:Heading[],source:string)=>void;onerror:(message:string)=>void}=$props()
+ let {text,id,dark=false,readonly=true,renderEnabled=true,ontask,onheadings,onerror,oncurrent,onfiltertag}:{text:string;id:string;dark?:boolean;readonly?:boolean;renderEnabled?:boolean;ontask?:(id:string,snapshot:string,reference:TaskReference)=>boolean;onfiltertag?:(tag:string)=>void;oncurrent?:(id:string|undefined)=>void;onheadings:(headings:Heading[],source:string)=>void;onerror:(message:string)=>void}=$props()
  let busy=$state(false),announcement=$state(''),container:HTMLElement,article:HTMLElement
  let renderForExport=$state(false)
  let frontMatter=$state<string|undefined>(undefined)
+ const tags=$derived(parseTags(frontMatter))
  let diagramBlocks:{source:string;dark:boolean;node:HTMLElement}[]=[]
  let taskTargets=new WeakMap<HTMLInputElement,{id:string;source:string;reference:TaskReference}>()
  let generation=0,completion:Promise<void>=Promise.resolve(),renderError='',missing=0,disposed=false
@@ -150,14 +152,17 @@
 <section class="preview" bind:this={container} aria-label="Vista previa del documento" role="document">
  {#if busy}<span class="render-progress">Actualizando vista previa…</span>{/if}
  <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</span>
- {#if frontMatter!==undefined}<details class="document-properties"><summary>Propiedades del documento</summary><pre>{frontMatter}</pre></details>{/if}
+ {#if frontMatter!==undefined}<div class="document-properties-row"><details class="document-properties"><summary>Propiedades del documento</summary><pre>{frontMatter}</pre></details>{#if tags.length}<div class="document-tags">{#each tags as tag}<button aria-label={`Filtrar archivos por la etiqueta ${tag}`} title={tag} disabled={!onfiltertag} onclick={()=>onfiltertag?.(tag)}>{tag}</button>{/each}</div>{/if}</div>{/if}
  <article class="markdown-body" bind:this={article}></article>
 </section>
 <style>
  :global(.markdown-body input[type="checkbox"]:not(:disabled)){cursor:pointer}
  :global(.markdown-body input[type="checkbox"]:focus-visible){outline:2px solid var(--accent);outline-offset:3px}
  :global(.markdown-body .enlace-roto){color:var(--muted);text-decoration:underline dotted;cursor:help}
- .document-properties{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;color:var(--muted)}
+ .document-properties-row{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border)}
+ .document-tags{display:flex;flex-wrap:wrap;gap:5px;max-width:60%}
+ .document-tags button{font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;padding:2px 7px;border-radius:12px}
+ .document-properties{flex:1;min-width:0;font-size:12px;color:var(--muted)}
  .document-properties summary{cursor:pointer;width:fit-content}
  .document-properties pre{font:12px/1.6 'JetBrains Mono',monospace;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text);padding:12px;background:var(--panel);border:1px solid var(--border);border-radius:6px}
 </style>

@@ -15,4 +15,5 @@ export const mdFiles=[
  'markdown-tasks.spec.ts',
  'markdown-sidebar.spec.ts',
  'outline.spec.ts',
+ 'markdown-tags.spec.ts',
 ] as const
