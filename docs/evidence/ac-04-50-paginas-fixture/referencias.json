@@ -1,0 +1,41 @@
+[
+  {
+    "id": "garcia2020",
+    "type": "book",
+    "title": "Fuente local verificable",
+    "author": [
+      {
+        "family": "García",
+        "given": "Ana"
+      }
+    ],
+    "issued": {
+      "date-parts": [
+        [
+          2020
+        ]
+      ]
+    }
+  },
+  {
+    "id": "chen2021",
+    "type": "article-journal",
+    "title": "Revisión reproducible de datos sintéticos",
+    "author": [
+      {
+        "family": "Chen",
+        "given": "Luis"
+      }
+    ],
+    "issued": {
+      "date-parts": [
+        [
+          2021
+        ]
+      ]
+    },
+    "container-title": "Revista sintética",
+    "volume": "1",
+    "page": "10-20"
+  }
+]

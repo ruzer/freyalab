@@ -1,0 +1,22 @@
+{
+  "sourceHead": "c6427714a8a93d2230363ceed59143090cbee39b",
+  "PDFPagesMeasured": 50,
+  "extraParagraphs": 175,
+  "files": {
+    "informe.md": {
+      "bytes": 129350,
+      "sha256": "94612317baaa4628b8853ce8972984b2cd8d69a3a30a1245add9c4c63c24bfeb"
+    },
+    "referencias.json": {
+      "bytes": 658,
+      "sha256": "7d92c1d4b5b1a76a0853bffdb2df20e359e720a31c9a1ad7b4c4e42205bc4fce"
+    },
+    "grafico.svg": {
+      "bytes": 396,
+      "sha256": "2b2496ffbebb61b554e921f1a55ed891edc3634f1edeccdcdd6e40bf8f165c26"
+    }
+  },
+  "generator": "experiments/academic-export/generate.mjs",
+  "notMicrosoftWordPagination": true,
+  "sameFixtureBytesAs6d980cb": true
+}
