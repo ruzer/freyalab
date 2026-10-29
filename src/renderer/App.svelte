@@ -284,7 +284,8 @@
  function applicationState():ApplicationUiState{
   const target=focusedElement();let capabilities=applicationEditingState(target)
   if(previewEditing(target)&&active){const state=textSession(active).state;capabilities={focus:'editor',editable:!editingLocked,canUndo:undoDepth(state)>0,canRedo:redoDepth(state)>0,hasSelection:window.getSelection()?.isCollapsed===false}}
-  return{activeId:active?.id??null,mode,focus:capabilities.focus,...(active?.kind==='csv'?{csvView:active.csvView??'table'}:{}),inCodeMirror:!!target?.closest('.cm-editor'),locked:applicationClosing||busy||!!assetBusy[activeId],modal:!!appDialog||!!document.querySelector('dialog[open]'),canEdit:capabilities.editable??(capabilities.focus==='grid'&&!editingLocked),...(capabilities.canUndo!==undefined?{canUndo:capabilities.canUndo}:{}),...(capabilities.canRedo!==undefined?{canRedo:capabilities.canRedo}:{}),...(capabilities.hasSelection!==undefined?{hasSelection:capabilities.hasSelection}:{})}
+  // El visor pertenece a la pestaña; los diálogos de formulario siguen bloqueando el menú.
+  return{activeId:active?.id??null,mode,focus:capabilities.focus,...(active?.kind==='csv'?{csvView:active.csvView??'table'}:{}),inCodeMirror:!!target?.closest('.cm-editor'),locked:applicationClosing||busy||!!assetBusy[activeId],modal:!!appDialog||!!document.querySelector('dialog[open]:not(.diagram-modal)'),canEdit:capabilities.editable??(capabilities.focus==='grid'&&!editingLocked),...(capabilities.canUndo!==undefined?{canUndo:capabilities.canUndo}:{}),...(capabilities.canRedo!==undefined?{canRedo:capabilities.canRedo}:{}),...(capabilities.hasSelection!==undefined?{hasSelection:capabilities.hasSelection}:{})}
  }
  function refreshShortcuts(){void window.freya.applicationShortcuts().then(value=>shortcutInfo=value).catch(()=>{})}
  function queueApplicationState(){
