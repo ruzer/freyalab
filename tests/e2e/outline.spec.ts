@@ -330,8 +330,9 @@ test('C3: la sección actual sigue la primera línea realmente visible, no el ma
  await open(original);await editMode();await expect(current()).toHaveCount(0)
  const headings=original.split('\n').flatMap((text,index)=>text.startsWith('# ')?[{line:index+1,text:text.slice(2)}]:[]),samples=[]
  for(let index=0;index<4;index++){
+  const previousScroll=(await editorSnapshot()).scrollTop
   await page.locator('.cm-scroller').hover();await page.mouse.wheel(0,700);await frames()
-  await expect.poll(async()=>{const view=await editorSnapshot(),wanted=headings.filter(heading=>heading.line<=(view.firstLine??0)).at(-1)?.text??'',actual=await current().count()?await current().textContent():'';return actual===wanted}).toBe(true)
+  await expect.poll(async()=>{const view=await editorSnapshot(),wanted=headings.filter(heading=>heading.line<=(view.firstLine??0)).at(-1)?.text??'',actual=await current().count()?await current().textContent():'';return view.scrollTop>previousScroll&&(view.firstLine??0)>1&&actual===wanted}).toBe(true)
   const view=await editorSnapshot();expect(view.firstLine).toBeGreaterThan(1);samples.push({...view,current:await current().count()?await current().textContent():''})
  }
  await page.locator('.cm-content').focus();await page.keyboard.press('PageDown');await frames()
