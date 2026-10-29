@@ -1,0 +1,13 @@
+{
+  "platform": "darwin",
+  "arch": "arm64",
+  "version": "0.1.0-alpha.1",
+  "build": "b605baf",
+  "dirtyBefore": false,
+  "action": "quit",
+  "closed": true,
+  "promptCount": 0,
+  "sourceUnchanged": true,
+  "pendingValue": "BORRADOR_NO_CONFIRMADO",
+  "expected": "El borrador debe prepararse antes de preguntar/cerrar; Cancelar conserva la ventana."
+}

@@ -3,7 +3,7 @@
  import appIcon from '../../../build/icon.png'
  import {t,getUILanguage} from '../lib/i18n.svelte'
  import {platformName,type ApplicationInfo} from '../../shared/app-info'
- let{onclose}:{onclose:()=>void}=$props()
+ let{onclose,initialLicenses=false}:{onclose:()=>void;initialLicenses?:boolean}=$props()
  let dialog:HTMLDialogElement,info=$state<ApplicationInfo>(),message=$state(''),copying=$state(false),showNotices=$state(false),notices=$state<string>(),generation=0
  $effect(()=>{
   getUILanguage();const token=++generation
@@ -12,6 +12,7 @@
  onMount(()=>{
   const origin=document.activeElement instanceof HTMLElement?document.activeElement:null
   dialog.showModal()
+  if(initialLicenses)void licenses()
   return()=>{generation++;void tick().then(()=>{if(origin?.isConnected)origin.focus({preventScroll:true})})}
  })
  async function copy(){

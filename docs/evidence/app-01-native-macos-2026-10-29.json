@@ -1,0 +1,41 @@
+{
+  "status": "native-menu-captures-only",
+  "automatedSystemApi": true,
+  "humanKeyboard": false,
+  "permissionRequested": false,
+  "locales": [
+    {
+      "locale": "es",
+      "menu": {
+        "menu": "native",
+        "rectangle": "112,34,270,272",
+        "target": "parent"
+      },
+      "screenshot": "app-01-menu-native-es-2026-10-29.png"
+    },
+    {
+      "locale": "en",
+      "menu": {
+        "menu": "native",
+        "rectangle": "112,34,251,272",
+        "target": "parent"
+      },
+      "screenshot": "app-01-menu-native-en-2026-10-29.png"
+    }
+  ],
+  "permissions": {
+    "accessibility": true,
+    "screen": "granted"
+  },
+  "info": {
+    "version": "0.1.0-alpha.1",
+    "build": "2dcff2a",
+    "channel": "alpha",
+    "electron": "44.9.2",
+    "chromium": "152.0.7977.167",
+    "node": "24.22.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "language": "es"
+  }
+}

@@ -17,7 +17,7 @@ const preview=()=>page.locator('.preview')
 const article=()=>preview().locator('article.markdown-body')
 const mode=(name:string)=>page.getByRole('group',{name:'Modo de edición',exact:true}).getByRole('button',{name,exact:true})
 const source=(id:string)=>page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id)?.text,id)
-const storedTab=()=>page.evaluate(()=>localStorage.getItem('freya-sidebar-tab'))
+const storedTab=()=>page.evaluate(async()=>(await window.freya.settings()).values.barraLateral.pestana)
 const layoutSource='# Manual de FreyaLab\n\n'+Array.from({length:22},(_,i)=>`${i%2?'###':'##'} Sección ${i+1}\n\nTexto de la sección para consultar el índice.\n\n`).join('')
 
 async function launch(open:string[]=[]){
@@ -27,7 +27,7 @@ async function launch(open:string[]=[]){
  await expect(page.locator('.app-shell .toolbar')).toBeVisible()
  await expect.poll(()=>app!.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].webContents.isLoading())).toBe(false)
 }
-async function quit(){if(!app)return;await app.evaluate(async({session,app})=>{await session.defaultSession.flushStorageData();app.exit(0)}).catch(()=>{});await app.close().catch(()=>{});app=undefined}
+async function quit(){if(!app)return;await page.evaluate(()=>window.freya.settings()).catch(()=>{});await app.evaluate(async({session,app})=>{await session.defaultSession.flushStorageData();app.exit(0)}).catch(()=>{});await app.close().catch(()=>{});app=undefined}
 test.beforeEach(async()=>{
  directory=await mkdtemp(join(tmpdir(),'freya-md007-sidebar-'));fixtures=join(directory,'files')
  await mkdir(fixtures);await mkdir(join(directory,'exports'));await launch()
@@ -45,16 +45,23 @@ async function reload(){
  const documents=await page.evaluate(()=>window.freya.documents());expect(documents.every(doc=>doc.path&&!doc.dirty),'El reinicio de prueba no debe descartar cambios sin guardar.').toBe(true)
  await quit();await launch(documents.map(doc=>doc.path!))
 }
-async function preferences(values:Record<string,string|null>){await page.evaluate(values=>{for(const[key,value]of Object.entries(values))if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)},values);await reload()}
+async function preferences(changes:Record<string,string|null>){
+ // Perfil anterior sintético: conserva los demás valores, migra sólo las cinco claves.
+ const values=(await page.evaluate(()=>window.freya.settings())).values,previous={'freya-theme':values.tema,'freya-sidebar':String(values.barraLateral.visible),'freya-sidebar-width':String(values.barraLateral.ancho),'freya-sidebar-tab':values.barraLateral.pestana,'freya-split':String(values.division)}
+ await page.evaluate(({previous,changes})=>{for(const[key,value]of Object.entries(previous))localStorage.setItem(key,value);for(const[key,value]of Object.entries(changes))if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)},{previous,changes})
+ await app!.evaluate(async({app})=>{const fs=process.getBuiltinModule('node:fs').promises,path=process.getBuiltinModule('node:path');await fs.rm(path.join(app.getPath('userData'),'settings.json'),{force:true})})
+ await reload()
+}
 async function showPreview(){await mode('Dividido').click();await expect(preview()).toBeVisible();await settled()}
 async function replace(id:string,text:string){await page.locator('.cm-content').click();await page.keyboard.press('ControlOrMeta+A');await page.keyboard.insertText(text);await expect.poll(()=>source(id)).toBe(text);await settled()}
 async function evidence(name:string,value:unknown){
  const body=JSON.stringify(value,null,2);await test.info().attach(name,{body:Buffer.from(body),contentType:'application/json'})
  if(process.env.FREYALAB_SIDEBAR_EVIDENCE_DIR){await mkdir(process.env.FREYALAB_SIDEBAR_EVIDENCE_DIR,{recursive:true});await writeFile(join(process.env.FREYALAB_SIDEBAR_EVIDENCE_DIR,`${name}.json`),body+'\n')}
 }
-async function layout(){return page.evaluate(()=>{
+async function layout(){return page.evaluate(async()=>{
+ const values=(await window.freya.settings()).values
  const rect=(selector:string)=>{const node=document.querySelector<HTMLElement>(selector);if(!node)return null;const box=node.getBoundingClientRect();return{x:box.x,y:box.y,width:box.width,height:box.height,visible:node.checkVisibility(),clientWidth:node.clientWidth,scrollWidth:node.scrollWidth}}
- return{viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio},preferences:Object.fromEntries(['freya-sidebar','freya-sidebar-width','freya-split','freya-theme'].map(key=>[key,localStorage.getItem(key)])),sidebar:rect('aside.sidebar'),editor:rect('.editor-pane'),preview:rect('.preview-pane'),previewDocument:rect('.preview'),rightOutline:rect('aside.outline')}
+ return{viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio},preferences:{'freya-sidebar':String(values.barraLateral.visible),'freya-sidebar-width':String(values.barraLateral.ancho),'freya-split':String(values.division),'freya-theme':values.tema},sidebar:rect('aside.sidebar'),editor:rect('.editor-pane'),preview:rect('.preview-pane'),previewDocument:rect('.preview'),rightOutline:rect('aside.outline')}
 })}
 async function scroll(panel:Locator,top:number|null=null){return panel.evaluate((node,top)=>{
  const root=node as HTMLElement,target=[root,...root.querySelectorAll<HTMLElement>('*')].find(element=>element.clientHeight>0&&element.scrollHeight>element.clientHeight+1&&/(auto|scroll)/.test(getComputedStyle(element).overflowY))
@@ -64,7 +71,7 @@ async function scroll(panel:Locator,top:number|null=null){return panel.evaluate(
 },top)}
 
 test('P1/P2/P9: pestañas accesibles por teclado y ancho recuperado sin panel derecho',async()=>{
- await page.evaluate(()=>{for(const[key,value]of Object.entries({'freya-sidebar':'true','freya-sidebar-width':'240','freya-split':'50','freya-sidebar-tab':'files'}))localStorage.setItem(key,value)})
+ await preferences({'freya-sidebar':'true','freya-sidebar-width':'240','freya-split':'50','freya-sidebar-tab':'files'})
  await page.getByRole('combobox',{name:'Tema',exact:true}).selectOption('light')
  const{path,doc}=await open(layoutSource);await showPreview()
  const sourceHashes=Object.fromEntries(await Promise.all(['src/renderer/App.svelte','src/renderer/style.css','src/renderer/components/Tree.svelte','out/main/index.js','out/renderer/index.html'].map(async name=>[name,createHash('sha256').update(await readFile(resolve(name))).digest('hex')])))

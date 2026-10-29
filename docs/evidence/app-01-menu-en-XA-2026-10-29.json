@@ -1,0 +1,714 @@
+[
+  {
+    "label": "FreyaLab",
+    "enabled": true,
+    "checked": false,
+    "accelerator": null,
+    "role": null,
+    "submenu": [
+      {
+        "id": "app.about",
+        "label": "[Áböüt FrëyáLáb~~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "app.updates",
+        "label": "[Chëck för üpdátës…~~~~~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "label": "",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "app.settings",
+        "label": "[Sëttïngs…~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "CommandOrControl+,",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "label": "",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "app.services",
+        "label": "[Sërvïcës~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": "services",
+        "submenu": []
+      },
+      {
+        "label": "",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "app.hide",
+        "label": "[Hïdë FrëyáLáb~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "Command+H",
+        "role": "hide",
+        "submenu": []
+      },
+      {
+        "id": "app.hideOthers",
+        "label": "[Hïdë Öthërs~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "Alt+Command+H",
+        "role": "hideothers",
+        "submenu": []
+      },
+      {
+        "id": "app.showAll",
+        "label": "[Shöw Áll~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": "unhide",
+        "submenu": []
+      },
+      {
+        "label": "",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "app.quit",
+        "label": "[Qüït FrëyáLáb~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "CommandOrControl+Q",
+        "role": "quit",
+        "submenu": []
+      }
+    ]
+  },
+  {
+    "label": "[Fïlë~~]",
+    "enabled": true,
+    "checked": false,
+    "accelerator": null,
+    "role": null,
+    "submenu": [
+      {
+        "id": "file.newMarkdown",
+        "label": "[Nëw Márkdöwn döcümënt~~~~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "CommandOrControl+N",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "file.newMermaid",
+        "label": "[Nëw Mërmáïd dïágrám~~~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "CommandOrControl+Shift+N",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "file.newCsv",
+        "label": "[Nëw CSV táblë~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "CommandOrControl+Alt+N",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "label": "",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "file.open",
+        "label": "[Öpën…~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "CommandOrControl+O",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "file.openFolder",
+        "label": "[Öpën földër…~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "CommandOrControl+Shift+O",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "file.recents",
+        "label": "[Öpën rëcënt~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": [
+          {
+            "id": "file.clearRecents",
+            "label": "[Clëár lïst~~~]",
+            "enabled": false,
+            "checked": false,
+            "accelerator": null,
+            "role": null,
+            "submenu": []
+          }
+        ]
+      },
+      {
+        "label": "",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "file.close",
+        "label": "[Clösë táb~~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": "CommandOrControl+W",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "file.save",
+        "label": "[Sávë~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": "CommandOrControl+S",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "file.saveAs",
+        "label": "[Sávë ás…~~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": "CommandOrControl+Shift+S",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "file.exports",
+        "label": "[Ëxpört~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      }
+    ]
+  },
+  {
+    "label": "[Ëdït~~]",
+    "enabled": true,
+    "checked": false,
+    "accelerator": null,
+    "role": null,
+    "submenu": [
+      {
+        "id": "edit.undo",
+        "label": "[Ündö~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": "CommandOrControl+Z",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "edit.redo",
+        "label": "[Rëdö~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": "CommandOrControl+Shift+Z",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "label": "",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "edit.cut",
+        "label": "[Cüt~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": "CommandOrControl+X",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "edit.copy",
+        "label": "[Cöpy~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": "CommandOrControl+C",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "edit.paste",
+        "label": "[Pástë~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": "CommandOrControl+V",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "edit.pastePlain",
+        "label": "[Pástë ás pláïn tëxt~~~~~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": "CommandOrControl+Alt+Shift+V",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "edit.selectAll",
+        "label": "[Sëlëct áll~~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": "CommandOrControl+A",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "edit.commandPalette",
+        "label": "[Fïnd CSV áctïön…~~~~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "label": "",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "edit.search",
+        "label": "[Fïnd~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": [
+          {
+            "id": "search.document",
+            "label": "[Ïn döcümënt…~~~~]",
+            "enabled": false,
+            "checked": false,
+            "accelerator": "CommandOrControl+F",
+            "role": null,
+            "submenu": []
+          },
+          {
+            "id": "search.replace",
+            "label": "[Rëplácë…~~~]",
+            "enabled": false,
+            "checked": false,
+            "accelerator": "CommandOrControl+Shift+F",
+            "role": null,
+            "submenu": []
+          },
+          {
+            "id": "search.folder",
+            "label": "[Fïlë ïn földër…~~~~~]",
+            "enabled": true,
+            "checked": false,
+            "accelerator": null,
+            "role": null,
+            "submenu": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "[Vïëw~~]",
+    "enabled": true,
+    "checked": false,
+    "accelerator": null,
+    "role": null,
+    "submenu": [
+      {
+        "id": "view.mode",
+        "label": "[Mödë~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": [
+          {
+            "id": "view.mode.edit",
+            "label": "[Ëdït~~]",
+            "enabled": false,
+            "checked": false,
+            "accelerator": null,
+            "role": null,
+            "submenu": []
+          },
+          {
+            "id": "view.mode.split",
+            "label": "[Splït~~]",
+            "enabled": false,
+            "checked": true,
+            "accelerator": null,
+            "role": null,
+            "submenu": []
+          },
+          {
+            "id": "view.mode.preview",
+            "label": "[Prëvïëw~~~]",
+            "enabled": false,
+            "checked": false,
+            "accelerator": null,
+            "role": null,
+            "submenu": []
+          }
+        ]
+      },
+      {
+        "id": "view.sidebar",
+        "label": "[Sïdëbár~~~]",
+        "enabled": true,
+        "checked": true,
+        "accelerator": "CommandOrControl+B",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "view.outline",
+        "label": "[Döcümënt öütlïnë~~~~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "view.theme",
+        "label": "[Thëmë~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": [
+          {
+            "id": "view.theme.system",
+            "label": "[Systëm~~]",
+            "enabled": true,
+            "checked": true,
+            "accelerator": null,
+            "role": null,
+            "submenu": []
+          },
+          {
+            "id": "view.theme.light",
+            "label": "[Lïght~~]",
+            "enabled": true,
+            "checked": false,
+            "accelerator": null,
+            "role": null,
+            "submenu": []
+          },
+          {
+            "id": "view.theme.dark",
+            "label": "[Dárk~~]",
+            "enabled": true,
+            "checked": false,
+            "accelerator": null,
+            "role": null,
+            "submenu": []
+          }
+        ]
+      },
+      {
+        "label": "",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "view.actualSize",
+        "label": "[Áctüál sïzë~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "CommandOrControl+0",
+        "role": "resetzoom",
+        "submenu": []
+      },
+      {
+        "id": "view.zoomIn",
+        "label": "[Zööm ïn~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "CommandOrControl+Plus",
+        "role": "zoomin",
+        "submenu": []
+      },
+      {
+        "id": "view.zoomOut",
+        "label": "[Zööm öüt~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "CommandOrControl+-",
+        "role": "zoomout",
+        "submenu": []
+      },
+      {
+        "id": "view.fullscreen",
+        "label": "[Füll scrëën~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "Control+Command+F",
+        "role": "togglefullscreen",
+        "submenu": []
+      },
+      {
+        "label": "",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "view.reload",
+        "label": "[Rëlöád~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "CommandOrControl+R",
+        "role": "reload",
+        "submenu": []
+      },
+      {
+        "id": "view.devTools",
+        "label": "[Dëvëlöpër tööls~~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "Alt+CommandOrControl+I",
+        "role": "toggledevtools",
+        "submenu": []
+      }
+    ]
+  },
+  {
+    "label": "[Gö~]",
+    "enabled": true,
+    "checked": false,
+    "accelerator": null,
+    "role": null,
+    "submenu": [
+      {
+        "id": "go.row",
+        "label": "[Gö tö röw…~~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "go.nextTab",
+        "label": "[Nëxt táb~~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": "Control+Tab",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "go.previousTab",
+        "label": "[Prëvïöüs táb~~~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": "Control+Shift+Tab",
+        "role": null,
+        "submenu": []
+      },
+      {
+        "label": "",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "go.files",
+        "label": "[Shöw Fïlës~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "go.outline",
+        "label": "[Shöw Öütlïnë~~~~]",
+        "enabled": false,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      }
+    ]
+  },
+  {
+    "label": "[Wïndöw~~]",
+    "enabled": true,
+    "checked": false,
+    "accelerator": null,
+    "role": null,
+    "submenu": [
+      {
+        "id": "window.minimize",
+        "label": "[Mïnïmïzë~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": "CommandOrControl+M",
+        "role": "minimize",
+        "submenu": []
+      },
+      {
+        "id": "window.zoom",
+        "label": "[Zööm~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": "zoom",
+        "submenu": []
+      },
+      {
+        "id": "window.front",
+        "label": "[Brïng áll tö frönt~~~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": "front",
+        "submenu": []
+      }
+    ]
+  },
+  {
+    "label": "[Hëlp~~]",
+    "enabled": true,
+    "checked": false,
+    "accelerator": null,
+    "role": null,
+    "submenu": [
+      {
+        "id": "help.documentation",
+        "label": "[Döcümëntátïön~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "help.shortcuts",
+        "label": "[Këyböárd shörtcüts~~~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "help.releaseNotes",
+        "label": "[Rëlëásë nötës~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "help.issue",
+        "label": "[Rëpört án ïssüë~~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "label": "",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "help.licenses",
+        "label": "[Thïrd-párty lïcënsës~~~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      },
+      {
+        "id": "help.security",
+        "label": "[Sëcürïty pölïcy~~~~~]",
+        "enabled": true,
+        "checked": false,
+        "accelerator": null,
+        "role": null,
+        "submenu": []
+      }
+    ]
+  }
+]

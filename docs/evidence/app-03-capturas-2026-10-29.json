@@ -1,0 +1,338 @@
+[
+  {
+    "file": "app-03-en-dark-1440x900-advanced-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 74566,
+    "sha256": "de98779d2bf41b0ee85bbb4457100fa376d9b666a5b1e4e81955d269006d35f3"
+  },
+  {
+    "file": "app-03-en-dark-1440x900-appearance-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 70130,
+    "sha256": "6364e353a1ff164a9dee16440e6456a7323eead3578354b113ea2b5e107dcc48"
+  },
+  {
+    "file": "app-03-en-dark-1440x900-files-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 68081,
+    "sha256": "5dd19acaa1046188b8c05fc64eea3125aace345e17c1ee0768514fe0173d20f7"
+  },
+  {
+    "file": "app-03-en-dark-1440x900-general-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 72370,
+    "sha256": "57f6645842efc63e287494458d46310000e0487ddb5f8560a90888ea3e61db01"
+  },
+  {
+    "file": "app-03-en-dark-1440x900-privacy-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 75684,
+    "sha256": "cf9e4f04da654ac99ef2bcff3df7175d64bf08523be7232e659c005501fba55b"
+  },
+  {
+    "file": "app-03-en-dark-1440x900-updates-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 75593,
+    "sha256": "b9f5a1df3ab0b15b4a615a66a031b2ce6b75a773f6f68ff60a7768eae885736c"
+  },
+  {
+    "file": "app-03-en-dark-720x600-advanced-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 47811,
+    "sha256": "35f573208b43775556f39ec517ca161adecfa04596f91b398741239f29212d8b"
+  },
+  {
+    "file": "app-03-en-dark-720x600-appearance-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 38891,
+    "sha256": "26f27ec1f90f42fdd2fc2bff2f3984e1cc84ea98b99ab751a6399ec0625c3a67"
+  },
+  {
+    "file": "app-03-en-dark-720x600-files-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 44339,
+    "sha256": "4169c9bafe60724428529dfad6f5c007cae4a9fcdb5ca7672fe54f077c8c1de7"
+  },
+  {
+    "file": "app-03-en-dark-720x600-general-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 48372,
+    "sha256": "1690824bdd4ab98274ed34ae8474e17e799603211f7ca104b91206496b04465b"
+  },
+  {
+    "file": "app-03-en-dark-720x600-privacy-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 52240,
+    "sha256": "67d3b3b408c5e65d534bd2fb92324dbadde1f3ace765066adb645c595ff0af8b"
+  },
+  {
+    "file": "app-03-en-dark-720x600-updates-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 50433,
+    "sha256": "da19d444fe039a79bfdd11fef5644ea499a4c4a9da191d57c669d0f5161bc65d"
+  },
+  {
+    "file": "app-03-en-light-1440x900-advanced-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 81116,
+    "sha256": "f8c44dcffcbbb75e8c9ce7b37d0b1d337b9ee7d32aafa4a00fe81255c1e6b3ad"
+  },
+  {
+    "file": "app-03-en-light-1440x900-appearance-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 76565,
+    "sha256": "cd042062bd869068cff3d3f577cf27a3640a5e4b3c65087e2b663b33690bd060"
+  },
+  {
+    "file": "app-03-en-light-1440x900-files-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 74097,
+    "sha256": "9c00116f4dddd8cf790777bfb9df48865bb72e0495879be55a9721e178d166fe"
+  },
+  {
+    "file": "app-03-en-light-1440x900-general-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 78306,
+    "sha256": "a82dee2d7d42e4b01415f68da8d5d07e94cb117e2c9a5a0938d27ebc05779ed6"
+  },
+  {
+    "file": "app-03-en-light-1440x900-privacy-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 81795,
+    "sha256": "6e4e39a488a1325bfd58aa930d90a426be1d3738fa12d95144463dfc51cd3496"
+  },
+  {
+    "file": "app-03-en-light-1440x900-updates-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 81850,
+    "sha256": "d39038288f895fd89169518ca25b0cee924313799e86915817663d5d60ae774d"
+  },
+  {
+    "file": "app-03-en-light-720x600-advanced-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 51303,
+    "sha256": "aa499ef0a87543420992c12ca82599acc139e69d092993d50e41ef4c7cbbe6d5"
+  },
+  {
+    "file": "app-03-en-light-720x600-appearance-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 40528,
+    "sha256": "0067f9840fa8d322c4ef452c6db40a49cf6d8649c3b9032755f3f43e765a8b1c"
+  },
+  {
+    "file": "app-03-en-light-720x600-files-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 47721,
+    "sha256": "d082b389a098abbe6d0209248e237f9022520aeb252ed1691cdace84c6a5ed1c"
+  },
+  {
+    "file": "app-03-en-light-720x600-general-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 51515,
+    "sha256": "6801c201773ac1d9598678b73953f3e5fc569dca492cdc4cbeb63d644b870712"
+  },
+  {
+    "file": "app-03-en-light-720x600-privacy-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 55532,
+    "sha256": "b01fd45afa3de8599e5a6810f594f0fc5caf20a8f92a38184009f1d05b0f6d6a"
+  },
+  {
+    "file": "app-03-en-light-720x600-updates-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 53822,
+    "sha256": "a516cc12b8fbfd1c8f3353073f4e7b9e9be2428d153a6a00980513525b8b78e7"
+  },
+  {
+    "file": "app-03-es-dark-1440x900-advanced-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 77795,
+    "sha256": "04298b859156ea6aaed2527d1dc1ab476b556695ab455ab75304625967ee9706"
+  },
+  {
+    "file": "app-03-es-dark-1440x900-appearance-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 73254,
+    "sha256": "dcc3a9ca1c72ece6b93e939e124e5778e6fba0867d6f73de33a19f1c5b13d939"
+  },
+  {
+    "file": "app-03-es-dark-1440x900-files-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 70431,
+    "sha256": "c6e6854938ae37af4d6e41165548bd8dffdf4ffdc10142ff1d2b66e3ce77c475"
+  },
+  {
+    "file": "app-03-es-dark-1440x900-general-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 72989,
+    "sha256": "dc37e1000778ee288303ce66d70f04b38161070c1a4f512f85d8e59de8e48fe9"
+  },
+  {
+    "file": "app-03-es-dark-1440x900-privacy-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 78667,
+    "sha256": "dedc3f31635aa8f5c2b40b9bc617776e02d4096b31446db08d801fcfc66bf1a2"
+  },
+  {
+    "file": "app-03-es-dark-1440x900-updates-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 79460,
+    "sha256": "f7a1e3b1a4f0ce82697840ca04db4c29be37d3b82dda7f117ebf7e37c22f071c"
+  },
+  {
+    "file": "app-03-es-dark-720x600-advanced-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 50575,
+    "sha256": "32e8e179a2f23670b4e86198ea92827900216a5dc76287677dcec733a337613f"
+  },
+  {
+    "file": "app-03-es-dark-720x600-appearance-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 42135,
+    "sha256": "1a37212269a9948e4a089dc295b46ae62c1cbcdbc973f20069f92b200379ce34"
+  },
+  {
+    "file": "app-03-es-dark-720x600-files-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 46614,
+    "sha256": "dd18e8d5151b51cb869b2b26a40f8da79e71a7daa2f9cd691ff30c94bd0165e6"
+  },
+  {
+    "file": "app-03-es-dark-720x600-general-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 48947,
+    "sha256": "420be5b3f4f979b68608957c6e2bf49d44afce7f37bfdbf380107152ff39aa80"
+  },
+  {
+    "file": "app-03-es-dark-720x600-privacy-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 55036,
+    "sha256": "e2b7a4c76fecc106f341115fb694a276d169e2ff16d2013d97674a95e0cce4d3"
+  },
+  {
+    "file": "app-03-es-dark-720x600-updates-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 54165,
+    "sha256": "192e48a2b542313e7b6eaf85e01a84fc44776b78e1445df1fd2ae3536906335e"
+  },
+  {
+    "file": "app-03-es-light-1440x900-advanced-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 84291,
+    "sha256": "099cd60fcc916459f869cbaa3911e40a5f8ef4ee17fe39ac8861db08b1557bf5"
+  },
+  {
+    "file": "app-03-es-light-1440x900-appearance-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 79391,
+    "sha256": "9dfe173622b8316efe94293377e72796784033eda004b1ac69824109d0ca028a"
+  },
+  {
+    "file": "app-03-es-light-1440x900-files-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 76777,
+    "sha256": "adabdfb8f46c980f9fad0f3fa8275c50b42bfad1ac4849338069af5bc27605a0"
+  },
+  {
+    "file": "app-03-es-light-1440x900-general-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 78954,
+    "sha256": "0891ce7ddfbd82faf6003d9a047b1301a64216a6df57433f47f4f37c83fbe24b"
+  },
+  {
+    "file": "app-03-es-light-1440x900-privacy-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 84572,
+    "sha256": "0a103efe27e7e627d73fb6e397a144396eee18be5b26de47970cb490becbb272"
+  },
+  {
+    "file": "app-03-es-light-1440x900-updates-2026-10-29.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 85679,
+    "sha256": "ed69f14de83273c79a292f4a13faafbc8a2f901778fc959556c8e0492496f21e"
+  },
+  {
+    "file": "app-03-es-light-720x600-advanced-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 54075,
+    "sha256": "8367be5f209b3e72a2d38b0ecdfa76b1f8780fa6fa8cd4d823b89e39d3d850c9"
+  },
+  {
+    "file": "app-03-es-light-720x600-appearance-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 43708,
+    "sha256": "dec33e551775eb5223d40f763b0f843317425f439a60a7bd54dc61f2c1bd3e20"
+  },
+  {
+    "file": "app-03-es-light-720x600-files-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 50225,
+    "sha256": "aca301ab2ac8bdf02ecd233940bd1986843761514680dd6308a444a0486e8fd6"
+  },
+  {
+    "file": "app-03-es-light-720x600-general-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 52156,
+    "sha256": "bde51f3f771d71a57875c6cdd656fbfec5c2b793444edb593fb179d73429dd89"
+  },
+  {
+    "file": "app-03-es-light-720x600-privacy-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 58103,
+    "sha256": "97c43c8d9a659a8b02fae780c6d0be8bb7fe39aed5dee3c78132a6d4f19496fd"
+  },
+  {
+    "file": "app-03-es-light-720x600-updates-2026-10-29.png",
+    "width": 720,
+    "height": 600,
+    "bytes": 57411,
+    "sha256": "beeb73fb516cce9d6bf02ef308a287156cff778c955c14ad33320dfa16cd0f56"
+  }
+]

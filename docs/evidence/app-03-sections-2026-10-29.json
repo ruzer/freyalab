@@ -1,0 +1,482 @@
+[
+  {
+    "locale": "es",
+    "theme": "light",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "general",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "appearance",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "files",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "updates",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "privacy",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "advanced",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "general",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "appearance",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "files",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "updates",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "privacy",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "advanced",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "general",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "appearance",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "files",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "updates",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "privacy",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "advanced",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "general",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "appearance",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "files",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "updates",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "privacy",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "advanced",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "general",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "appearance",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "files",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "updates",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "privacy",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "advanced",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "general",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "appearance",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "files",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "updates",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "privacy",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "advanced",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "general",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "appearance",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "files",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "updates",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "privacy",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "section": "advanced",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "general",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "appearance",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "files",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "updates",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "privacy",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "viewport": {
+      "width": 720,
+      "height": 600
+    },
+    "section": "advanced",
+    "minimum": 4.755235656130839
+  }
+]
