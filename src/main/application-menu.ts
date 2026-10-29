@@ -11,10 +11,10 @@ export interface ApplicationMenuContext {
  canUndo?:boolean;canRedo?:boolean;canEdit?:boolean;hasSelection?:boolean;inCodeMirror?:boolean;modal?:boolean;showDevTools?:boolean;updatesReady?:boolean;docxAvailable?:boolean
 }
 interface Command {
- id:string;label:string;group:Group;accelerator?:string;requires:Requirement;separator?:boolean;macOnly?:boolean
+ id:string;labelKey:string;group:Group;accelerator?:string;requires:Requirement;separator?:boolean;macOnly?:boolean
  role?:MenuItemConstructorOptions['role'];submenu?:'recent'|'export'|'search'|'mode'|'theme';developer?:boolean;format?:string
 }
-const command=(id:string,group:Group,accelerator?:string,requires:Requirement='always',extra:Partial<Command>={}):Command=>({id,label:`menu.${id}`,group,accelerator,requires,...extra})
+const command=(id:string,group:Group,accelerator?:string,requires:Requirement='always',extra:Partial<Command>={}):Command=>({id,labelKey:`menu.${id}`,group,accelerator,requires,...extra})
 
 // Única tabla de acciones: menú, validación de ID y ayuda consumen estas entradas.
 export const applicationCommands:readonly Command[]=[
@@ -100,7 +100,7 @@ export function applicationMenu(context:ApplicationMenuContext,dispatch:(id:stri
  const definitions=new Map(applicationCommands.map(item=>[item.id,item]))
  const label=(name:string)=>mac?name:name.replaceAll('&','&&')
  function item(definition:Command):MenuItemConstructorOptions{
-  const result:MenuItemConstructorOptions={id:definition.id,label:t(definition.label),enabled:available(definition,context),accelerator:accelerator(definition,context,platform)}
+  const result:MenuItemConstructorOptions={id:definition.id,label:t(definition.labelKey),enabled:available(definition,context),accelerator:accelerator(definition,context,platform)}
   if(definition.submenu){
    if(definition.submenu==='recent'){
     result.submenu=context.recents.slice(0,10).map((path,index)=>({id:`recent.${index}`,label:label((platform==='win32'?win32.basename:basename)(path)),enabled:!context.locked,click:()=>dispatch('file.openRecent',index)}))
@@ -127,7 +127,7 @@ export function applicationMenu(context:ApplicationMenuContext,dispatch:(id:stri
  if(!mac){file.push({type:'separator'},item(definitions.get('app.settings')!),item(definitions.get('app.quit')!));help.push({type:'separator'},item(definitions.get('app.about')!),item(definitions.get('app.updates')!))}
  if(context.documents.length){window.push({type:'separator'},...context.documents.map(document=>({id:`document.${document.id}`,label:label(document.name),type:'checkbox' as const,checked:document.id===context.activeId,enabled:!context.locked,click:()=>dispatch('window.document',document.id)})))}
  return[
-  ...(mac?[{label:'FreyaLab',submenu:group('app')}]:[]),
+  ...(mac?[{label:t('about.product'),submenu:group('app')}]:[]),
   {label:t('menu.file'),submenu:file},{label:t('menu.edit'),submenu:group('edit')},
   {label:t('menu.view'),submenu:group('view')},{label:t('menu.go'),submenu:group('go')},
   {label:t('menu.window'),submenu:window},{label:t('menu.help'),submenu:help},
@@ -135,5 +135,5 @@ export function applicationMenu(context:ApplicationMenuContext,dispatch:(id:stri
 }
 
 export function applicationShortcutHelp(context:ApplicationMenuContext,platform:NodeJS.Platform=process.platform){
- return applicationCommands.filter(item=>!item.submenu&&item.group!=='dynamic'&&(!item.macOnly||platform==='darwin')&&(!item.developer||context.development||context.showDevTools)).map(item=>({id:item.id,label:t(item.label),accelerator:accelerator(item,context,platform)??null,enabled:available(item,context)}))
+ return applicationCommands.filter(item=>!item.submenu&&item.group!=='dynamic'&&(!item.macOnly||platform==='darwin')&&(!item.developer||context.development||context.showDevTools)).map(item=>({id:item.id,label:t(item.labelKey),accelerator:accelerator(item,context,platform)??null,enabled:available(item,context)}))
 }
