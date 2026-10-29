@@ -10,10 +10,12 @@ for(const flag of ['busy','modal','composing'] as const)it(`rechaza ${flag} con 
  snapshot[flag]=true;expect(await flow.prepare()).toBe(false);expect(prepare).not.toHaveBeenCalled();expect(notice).toHaveBeenLastCalledWith(expect.objectContaining({kind:'error',message:expect.stringContaining('Tus documentos siguen abiertos')}));expect(snapshot.documents[0].text).toBe(document.text)
 })
 for(const locale of ['es','en'] as const)it(`el rechazo de texto conserva nombre y límite10MiB en ${locale}`,async()=>{
+ snapshot.documents[0].kind='markdown';snapshot.documents[0].csvView=undefined
  setLanguage(locale);vi.spyOn(TextEncoder.prototype,'encode').mockReturnValue({byteLength:10*1024*1024+1} as ReturnType<TextEncoder['encode']>)
  expect(await flow.prepare()).toBe(false);expect(prepare).not.toHaveBeenCalled();const message=notice.mock.calls.at(-1)![0]!.message as string;expect(message).toContain('datos.csv');expect(message).toContain('10 MiB');expect(message).toContain(locale==='es'?'Recórtalo':'Shorten');expect(snapshot.documents[0].text).toBe(document.text)
 })
 it('acepta el límite exacto y no convierte valores ni contenido',async()=>{
+ snapshot.documents[0].kind='markdown';snapshot.documents[0].csvView=undefined
  vi.spyOn(TextEncoder.prototype,'encode').mockReturnValue({byteLength:10*1024*1024} as ReturnType<TextEncoder['encode']>);expect(await flow.prepare()).toBe(true);expect(prepare).toHaveBeenCalledExactlyOnceWith(document.id);expect(snapshot.documents[0].text).toBe('A\n00123\n');expect(locked).toHaveBeenLastCalledWith(true)
 })
 it('el error de una actualización se explica sin exponer detalle técnico ni guardar anterior',async()=>{
