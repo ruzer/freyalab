@@ -101,3 +101,23 @@ test('C: una edición rechazada por tamaño no permite guardar, cerrar ni cambia
  for(const command of ['save','close','table']){if(command==='save')await page.getByRole('button',{name:'Guardar',exact:true}).click();else if(command==='close')await page.getByRole('button',{name:'Cerrar datos.csv',exact:true}).click();else await views().getByRole('button',{name:'Tabla',exact:true}).click();await expect(editor()).toBeVisible();await expect(page.locator('.cm-line').first()).toHaveText(marker);expect(await readFile(join(files,'datos.csv'),'utf8')).toBe(source);expect((await page.evaluate(()=>window.freya.documents()))[0]).toMatchObject({id:doc.id,csvView:'text',text:source})}
  await editor().focus();await editor().press('ControlOrMeta+z');await expect(page.locator('.cm-line').first()).toHaveText('ID,Nombre');await editor().press('ControlOrMeta+a');const corrected=source.replace('Ana','Válida');await page.keyboard.insertText(corrected);await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false);expect(await readFile(join(files,'datos.csv'),'utf8')).toBe(corrected)
 })
+
+test('C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar',async()=>{
+ const doc=await openCsv(),original=await readFile(join(files,'datos.csv')),draft='x'.repeat(10001)
+ await page.getByRole('button',{name:'Editar encabezado 2',exact:true}).click()
+ const input=page.getByRole('textbox',{name:'Nombre del encabezado',exact:true});await input.fill(draft);await expect(input).toBeFocused()
+ // El comando activa Texto sin provocar antes un blur que esconda el borrador.
+ await views().getByRole('button',{name:'Texto',exact:true}).evaluate(button=>(button as HTMLButtonElement).click())
+ await expect(page.locator('.toast')).toContainText('Datos de operación no válidos')
+ expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toMatchObject({csvView:'table',headers:['ID','Nombre'],dirty:false})
+ expect((await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:1}),doc.id)).rows.map(row=>row.cells)).toEqual([['001','Ana'],['9007199254740993','dos\nlíneas']])
+ expect((await readFile(join(files,'datos.csv'))).equals(original)).toBe(true)
+ await expect(input).toHaveValue(draft)
+ await input.fill('Apellido')
+ await views().getByRole('button',{name:'Texto',exact:true}).evaluate(button=>(button as HTMLButtonElement).click())
+ const dialog=page.getByRole('dialog',{name:'Cambiar vista del CSV',exact:true});await expect(dialog).toBeVisible()
+ await dialog.getByRole('button',{name:'Cancelar',exact:true}).click()
+ await expect(page.getByRole('button',{name:'Apellido',exact:true})).toBeVisible()
+ expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toMatchObject({csvView:'table',headers:['ID','Apellido'],dirty:true})
+ expect((await readFile(join(files,'datos.csv'))).equals(original)).toBe(true)
+})
