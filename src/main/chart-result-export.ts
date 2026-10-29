@@ -1,3 +1,4 @@
+import {isTableDocument} from '../shared/types'
 import type {Documents} from './documents'
 import type {SqlService} from './sql-service'
 import type {ChartResultRequest} from '../shared/types'
@@ -8,7 +9,7 @@ import {validateChartConfiguration} from './chart-presets'
 import {exportResult} from './export'
 export async function exportChartResult(docs:Documents,analytics:SqlService,id:string,request:ChartResultRequest){
  const record=docs.get(id),config=request.configuration
- if(record.info.kind!=='csv'||record.info.revision!==request.revision||!matchingChartHeaders(config.headers,record.info.headers??[]))throw new Error('La fuente cambió. Genera de nuevo el gráfico antes de exportar.')
+ if(!isTableDocument(record.info)||record.info.revision!==request.revision||!matchingChartHeaders(config.headers,record.info.headers??[]))throw new Error('La fuente cambió. Genera de nuevo el gráfico antes de exportar.')
  validateChartConfiguration(config)
  const dirty=record.info.dirty,sql=chartSQL(config.headers,config.options,chartResultLimit)
  try{

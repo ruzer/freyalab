@@ -14,12 +14,14 @@ import { exportDocument,exportGraphic } from './export'
 import { operateDocument } from './extract'
 import { operationRequest } from './operation-schema'
 import {viewRequest} from './large-view-schema'
+import {isTableDocument} from '../shared/types'
 import type { Kind,TableEdit,TableOptions,TableExport,TableQuery,ExportRequest,TableRange,TableRangeEdit,TableTransformEdit } from '../shared/types'
 const here=dirname(fileURLToPath(import.meta.url))
 if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FREYALAB_USER_DATA))
 let window:BrowserWindow|undefined,docs:Documents,analytics:SqlService,presets:ChartPresets,quitting=false
 const waiting:string[]=[]
 const id=z.uuid(),path=z.string().min(1).max(32768), text=z.string().max(20*1024*1024), rows=z.array(z.string().max(100)).max(2000000)
+const csvView=z.enum(['table','text'])
 const range=z.object({top:z.number().int().nonnegative(),bottom:z.number().int().nonnegative(),left:col,right:col,query,revision:z.number().int().nonnegative()})
 const rangeEdit=z.object({type:z.literal('range'),requestId:z.uuid().optional(),range,operation:z.enum(['fill','clear','trim','upper','lower','replace','paste']),value:z.string().max(1024*1024).optional(),find:z.string().max(10000).optional(),values:z.array(z.array(z.string().max(1024*1024)).max(100000)).max(100000).optional()})
 const structureEdit=z.object({type:z.literal('structure'),operation:z.enum(['split','combine','deduplicate','normalize','headers','moveRows','moveColumns','commitOrder']),columns:z.array(col).max(200),revision:z.number().int().nonnegative(),requestId:z.uuid(),separator:z.string().max(64).optional(),name:z.string().max(10000).optional(),rowIds:rows.optional(),range:range.optional(),destination:z.number().int().nonnegative().optional(),query:query.optional()})
@@ -40,6 +42,9 @@ async function handle(operation:string,args:unknown[]){
  case'setLanguage':{const language=changeLanguage(z.enum(['sistema','es','en']).parse(a));window?.webContents.send('freya:event',{type:'language',language});return language}
  case'open':{const result=await dialog.showOpenDialog(window!,{title:t('dialog.open.title'),buttonLabel:t('dialog.open.button'),properties:['openFile','multiSelections'],filters:[{name:t('dialog.open.filter'),extensions:['md','markdown','txt','mmd','mermaid','csv','tsv']}]});for(const p of result.filePaths)docs.grants.add(resolve(p));return result.canceled?[]:openPaths(result.filePaths)}
  case'openPaths':return openPaths(z.array(path).max(100).parse(a))
+ case'csvOpen':{const target=path.parse(a),view=csvView.parse(b);if(!await docs.allowed(target))throw new Error(t('csvText.openAuthorized'));const previous=new Map([...docs.records].map(([key,record])=>[key,record.info.csvView??'table'])),document=await docs.open(target,view);if(previous.has(document.id)&&previous.get(document.id)!==document.csvView)analytics.forget(document.id);window?.webContents.send('freya:event',{type:'opened',document});return document}
+ case'csvView':{const key=id.parse(a),before=docs.info(key).csvView,document=await docs.setCsvView(key,csvView.parse(b),z.enum(['save','discard']).optional().parse(c));if(before!==document.csvView)analytics.forget(key);return document}
+ case'csvViewInfo':{const target=path.parse(a);if(!await docs.allowed(target))throw new Error(t('csvText.openAuthorized'));return docs.csvViewInfo(target)}
  case'new':return docs.create(z.enum(['markdown','text','mermaid','csv']).parse(a) as Kind)
  case'folder':{if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_FOLDER){const folder=resolve(process.env.FREYALAB_TEST_FOLDER);docs.roots.add(folder);return folder}const result=await dialog.showOpenDialog(window!,{title:t('dialog.folder.title'),buttonLabel:t('dialog.open.button'),properties:['openDirectory']});if(result.canceled)return null;docs.roots.add(result.filePaths[0]);return result.filePaths[0]}
  case'tree':return docs.tree(path.parse(a))
@@ -52,32 +57,32 @@ async function handle(operation:string,args:unknown[]){
  case'save':return docs.save(id.parse(a),z.boolean().optional().parse(b))
  case'close':{const key=id.parse(a),closed=await docs.close(key);if(closed)analytics.forget(key);return closed}
  case'reload':return docs.reload(id.parse(a))
- case'copyTable':{docs.get(id.parse(a));const options=tableExport.parse(b),format=z.enum(['tsv','markdown']).parse(c),output=await docs.table.call<string>(format==='markdown'?'markdown':'clipboard',a,options);if(Buffer.byteLength(output,'utf8')>8*1024*1024)throw new Error('La copia supera 8 MiB. Reduce la selección o expórtala.');await clipboard.writeText(output);return}
- case'pasteTable':{docs.get(id.parse(a));const selected=range.parse(b);await docs.table.call('rangePreview',a,{type:'range',range:selected,operation:'clear'});const content=await clipboard.readText();if(Buffer.byteLength(content,'utf8')>8*1024*1024)throw new Error('El portapapeles supera 8 MiB. Pega un bloque menor.');return content}
- case'transformPreview':docs.get(id.parse(a));return docs.table.call('transformPreview',a,structureEdit.parse(b) as TableTransformEdit)
- case'rangePreview':docs.get(id.parse(a));return docs.table.call('rangePreview',a,rangeEdit.parse(b) as TableRangeEdit)
- case'rangeClipboard':docs.get(id.parse(a));return docs.table.call('rangeClipboard',a,range.parse(b) as TableRange)
- case'page':docs.get(id.parse(a));return docs.table.call('page',a,query.parse(b) as TableQuery)
- case'viewStart':docs.get(id.parse(a));return docs.table.call('viewStart',a,viewRequest.parse(b))
- case'viewState':docs.get(id.parse(a));return docs.table.call('viewState',a)
- case'viewCancel':docs.get(id.parse(a));return docs.table.call('viewCancel',a,z.uuid().parse(b))
- case'viewClear':docs.get(id.parse(a));return docs.table.call('viewClear',a)
+ case'copyTable':{docs.requireTable(id.parse(a));const options=tableExport.parse(b),format=z.enum(['tsv','markdown']).parse(c),output=await docs.table.call<string>(format==='markdown'?'markdown':'clipboard',a,options);if(Buffer.byteLength(output,'utf8')>8*1024*1024)throw new Error('La copia supera 8 MiB. Reduce la selección o expórtala.');await clipboard.writeText(output);return}
+ case'pasteTable':{docs.requireTable(id.parse(a));const selected=range.parse(b);await docs.table.call('rangePreview',a,{type:'range',range:selected,operation:'clear'});const content=await clipboard.readText();if(Buffer.byteLength(content,'utf8')>8*1024*1024)throw new Error('El portapapeles supera 8 MiB. Pega un bloque menor.');return content}
+ case'transformPreview':docs.requireTable(id.parse(a));return docs.table.call('transformPreview',a,structureEdit.parse(b) as TableTransformEdit)
+ case'rangePreview':docs.requireTable(id.parse(a));return docs.table.call('rangePreview',a,rangeEdit.parse(b) as TableRangeEdit)
+ case'rangeClipboard':docs.requireTable(id.parse(a));return docs.table.call('rangeClipboard',a,range.parse(b) as TableRange)
+ case'page':docs.requireTable(id.parse(a));return docs.table.call('page',a,query.parse(b) as TableQuery)
+ case'viewStart':docs.requireTable(id.parse(a));return docs.table.call('viewStart',a,viewRequest.parse(b))
+ case'viewState':docs.requireTable(id.parse(a));return docs.table.call('viewState',a)
+ case'viewCancel':docs.requireTable(id.parse(a));return docs.table.call('viewCancel',a,z.uuid().parse(b))
+ case'viewClear':docs.requireTable(id.parse(a));return docs.table.call('viewClear',a)
  case'edit':return docs.tableEdit(id.parse(a),edits.parse(b) as TableEdit)
  case'options':return docs.tableOptions(id.parse(a),z.object({encoding:z.enum(['utf8','utf16le','win1252']).optional(),delimiter:z.enum([',',';','\t','|']).optional(),header:z.boolean().optional()}).parse(b) as TableOptions)
  case'undo':return docs.undo(id.parse(a),z.boolean().optional().parse(b))
  case'chartPresets':return presets.list()
- case'saveChartPreset':{const document=docs.info(id.parse(a));if(document.kind!=='csv')throw new Error('Abre un CSV para guardar el gráfico.');return presets.save(b,document.headers??[])}
+ case'saveChartPreset':{const document=docs.info(id.parse(a));if(!isTableDocument(document))throw new Error('Abre un CSV para guardar el gráfico.');return presets.save(b,document.headers??[])}
  case'deleteChartPreset':return presets.delete(id.parse(a))
  case'sqlRun':return analytics.run(z.object({requestId:z.uuid(),sources:z.array(z.object({id,revision:z.number().int().nonnegative(),query:query.optional(),where:conditionGroup.optional()})).min(1).max(4),sql:z.string().trim().min(1).max(100000)}).parse(a))
  case'sqlPage':return analytics.page(id.parse(a),z.number().int().min(0).max(9999).parse(b))
  case'sqlCancel':return analytics.cancel(id.parse(a))
- case'analyzeColumn':docs.get(id.parse(a));return docs.table.call('analyzeColumn',a,z.object({column:col,otherColumn:col.optional(),query:query.optional(),revision:z.number().int().nonnegative(),requestId:z.uuid(),frequencyOffset:z.number().int().min(0).max(2000000),duplicatesOnly:z.boolean(),bins:z.number().int().min(1).max(30)}).parse(b))
- case'cancelAnalysis':docs.get(id.parse(a));return docs.table.call('cancelAnalysis',a,z.uuid().parse(b))
+ case'analyzeColumn':docs.requireTable(id.parse(a));return docs.table.call('analyzeColumn',a,z.object({column:col,otherColumn:col.optional(),query:query.optional(),revision:z.number().int().nonnegative(),requestId:z.uuid(),frequencyOffset:z.number().int().min(0).max(2000000),duplicatesOnly:z.boolean(),bins:z.number().int().min(1).max(30)}).parse(b))
+ case'cancelAnalysis':docs.requireTable(id.parse(a));return docs.table.call('cancelAnalysis',a,z.uuid().parse(b))
  case'operation':{const key=id.parse(a),outcome=await operateDocument(docs,key,operationRequest.parse(b));if(outcome?.document)window?.webContents.send('freya:event',{type:'opened',document:outcome.document});return outcome}
- case'cancelOperation':docs.get(id.parse(a));return docs.table.call('cancelOperation',z.uuid().parse(b))
+ case'cancelOperation':docs.requireTable(id.parse(a));return docs.table.call('cancelOperation',z.uuid().parse(b))
  case'cancelOpen':return docs.table.call('cancelOpen',id.parse(a)) // el documento aún no está en `records`: se está abriendo
- case'stats':docs.get(id.parse(a));return docs.table.call('stats',a,rows.nullable().parse(b),z.array(col).max(100000).parse(c),z.object({requestId:z.uuid(),revision:z.number().int().nonnegative(),range:range.optional()}).optional().parse(d))
- case'markdown':docs.get(id.parse(a));return docs.table.call('markdown',a,tableExport.parse(b) as TableExport)
+ case'stats':docs.requireTable(id.parse(a));return docs.table.call('stats',a,rows.nullable().parse(b),z.array(col).max(100000).parse(c),z.object({requestId:z.uuid(),revision:z.number().int().nonnegative(),range:range.optional()}).optional().parse(d))
+ case'markdown':docs.requireTable(id.parse(a));return docs.table.call('markdown',a,tableExport.parse(b) as TableExport)
  case'exportChartResult':return exportChartResult(docs,analytics,id.parse(a),z.object({requestId:id,revision:z.number().int().nonnegative(),configuration:chartConfiguration,format:z.enum(['csv','json','md']),protectFormulas:z.boolean()}).strict().parse(b))
  case'exportGraphic':return exportGraphic(docs,id.parse(a),z.object({format:z.enum(['svg','png','pdf']),svg:text.min(1),revision:z.number().int().nonnegative()}).strict().parse(b))
  case'export':return exportDocument(docs,id.parse(a),z.object({format:z.enum(['pdf','html','svg','png','csv','tsv']),html:text.optional(),svg:text.optional(),table:tableExport.optional()}).parse(b) as ExportRequest)

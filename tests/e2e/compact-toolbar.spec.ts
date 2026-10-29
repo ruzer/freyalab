@@ -37,6 +37,7 @@ test('una sola fila de herramientas deja la tabla a 110 px del borde superior o 
   expect(result.bars,`franjas de controles a ${width}×${height}`).toBe(1)
   expect(result.gridTop,`inicio de la tabla a ${width}×${height}`).toBeLessThanOrEqual(110)
   expect(result.rows,`filas visibles a ${width}×${height}`).toBeGreaterThanOrEqual(minRows)
+  if(process.env.FREYALAB_TXT_EVIDENCE==='1'){await test.info().attach(`distribución-${width}`,{body:JSON.stringify(result),contentType:'application/json'});for(const [theme,name]of [['light','claro'],['dark','oscuro']] as const){await page.getByRole('combobox',{name:'Tema',exact:true}).selectOption(theme);await page.screenshot({animations:'disabled',path:`docs/evidence/txt-01-tabla-${name}-${width}.png`})}}
  }
 })
 

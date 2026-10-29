@@ -1,3 +1,4 @@
+import {isTableDocument} from '../shared/types'
 import {app,BrowserWindow,session,net,protocol} from 'electron'
 import {z} from 'zod'
 import {randomUUID} from 'node:crypto'
@@ -35,7 +36,7 @@ export class SqlService {
  private trim(){const finished=[...this.jobs.values()].filter(job=>job.result).sort((a,b)=>a.used-b.used);for(const old of finished.slice(0,Math.max(0,finished.length-retained)))this.jobs.delete(old.id)}
  async run(request:SqlRequest,priority:Priority='interactive'):Promise<SqlResult>{
   if(app.commandLine.hasSwitch('no-sandbox'))throw new Error('El análisis SQL requiere el aislamiento de Chromium. Inicia FreyaLab sin la opción --no-sandbox.')
-  for(const source of request.sources){const record=this.docs.get(source.id);if(record.info.kind!=='csv'||record.info.revision!==source.revision)throw new Error('Una fuente no es CSV o cambió de revisión.')}
+  for(const source of request.sources){const record=this.docs.get(source.id);if(!isTableDocument(record.info)||record.info.revision!==source.revision)throw new Error('Una fuente no es CSV o cambió de revisión.')}
   this.cancel(request.requestId);const job:Job={id:request.requestId,documents:request.sources.map(source=>source.id),sources:[],used:0,disk:new Map()};this.jobs.set(job.id,job)
   const start=()=>{job.timer=setTimeout(()=>{job.error='El análisis superó dos minutos. Reduce las fuentes o la consulta.';this.cancel(job.id)},120000);return this.execute(job,request)}
   const dispose=()=>{clearTimeout(job.timer);const owner=job.window;job.window=undefined;owner?.destroy()}
@@ -52,7 +53,7 @@ export class SqlService {
   await owner.webContents.executeJavaScript('new Promise(resolve=>{const timer=setInterval(()=>{if(globalThis.freyaSQL){clearInterval(timer);resolve(true)}},10)})')
   let cells=0
   for(const [index,input] of request.sources.entries()){
-   this.check(job);const record=this.docs.get(input.id);if(record.info.kind!=='csv'||record.info.revision!==input.revision)throw new Error('Una fuente no es CSV o cambió de revisión.')
+   this.check(job);const record=this.docs.get(input.id);if(!isTableDocument(record.info)||record.info.revision!==input.revision)throw new Error('Una fuente no es CSV o cambió de revisión.')
    const ticket=randomUUID(),table=index===0?'datos':`tabla_${index+1}`
    try{
     const meta=await this.docs.table.call<{headers:string[];revision:number;readonly:boolean;large?:boolean}>('analysisStart',input.id,ticket,input.revision,record.info.path,input.query,input.where)
