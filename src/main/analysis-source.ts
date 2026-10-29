@@ -7,6 +7,7 @@ import {parse} from 'csv-parse'
 import iconv from 'iconv-lite'
 import {Table,vectorFromArray,Utf8,tableToIPC} from 'apache-arrow'
 import {digest} from './files'
+import {RECORD_DELIMITERS} from './large-table'
 import type {Encoding} from '../shared/types'
 
 export const ANALYSIS_LIMITS={bytes:256*1024*1024,rows:2_000_000,cells:8_000_000,columns:200,batchRows:1000,batchBytes:1024*1024}
@@ -14,7 +15,7 @@ export function validateUtf8(){const decoder=new TextDecoder('utf-8',{fatal:true
 
 export async function* fileRecords(path:string,format:{encoding:Encoding;delimiter:string;header:boolean;headerWidth:number;headers:string[]},ensure:()=>void){
  const before=await stat(path);if(before.size>ANALYSIS_LIMITS.bytes)throw new Error('El análisis admite archivos de hasta 256 MiB por fuente.')
- const hash=createHash('sha256'),input=createReadStream(path,{highWaterMark:65536}),tap=new Transform({transform(chunk,_encoding,callback){hash.update(chunk);callback(null,chunk)}}),validator=format.encoding==='utf8'?validateUtf8():new Transform({transform(chunk,_encoding,callback){callback(null,chunk)}}),decoder=iconv.decodeStream(format.encoding),parser=parse({delimiter:format.delimiter,bom:true,relax_column_count:true,max_record_size:1024*1024})
+ const hash=createHash('sha256'),input=createReadStream(path,{highWaterMark:65536}),tap=new Transform({transform(chunk,_encoding,callback){hash.update(chunk);callback(null,chunk)}}),validator=format.encoding==='utf8'?validateUtf8():new Transform({transform(chunk,_encoding,callback){callback(null,chunk)}}),decoder=iconv.decodeStream(format.encoding),parser=parse({delimiter:format.delimiter,bom:true,relax_column_count:true,max_record_size:1024*1024,record_delimiter:RECORD_DELIMITERS})
  for(const stream of [input,tap,validator])stream.on('error',error=>parser.destroy(error))
  decoder.on('error',(error:Error)=>parser.destroy(error))
  input.pipe(tap).pipe(validator).pipe(decoder).pipe(parser)

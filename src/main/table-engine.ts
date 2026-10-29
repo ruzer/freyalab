@@ -10,12 +10,13 @@ import { stringify } from 'csv-stringify/sync'
 import iconv from 'iconv-lite'
 import {ANALYSIS_LIMITS,arrowBatches,fileRecords,validateUtf8} from './analysis-source'
 import {compileTableQuery} from './table-query'
-import {buildIndex,readRecords,splitFields,LargeFormatError,type LargeIndex} from './large-table'
+import {buildIndex,readRecords,splitFields,indexUnchanged,LargeFormatError,RECORD_DELIMITERS,type LargeIndex} from './large-table'
 import {runOperation,OperationCancelled} from './operations'
+import {LargeViews} from './large-view'
 import type {EngineOperation,OperationResult} from '../shared/operations'
 import {analyzeColumn,numeric,descriptive} from './table-analysis'
 import type {ColumnAnalysisRequest,ColumnAnalysis,TableTransformEdit,TableTransformPreview,SqlProgress} from '../shared/types'
-import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableConditionGroup, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview,TableStatsOptions } from '../shared/types'
+import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableConditionGroup, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview,TableStatsOptions,LargeViewRequest } from '../shared/types'
 
 export const TABLE_LIMITS = { bytes: 50 * 1024 * 1024, cells: 2_000_000, record: 1024 * 1024, sampleBytes: 8 * 1024 * 1024, sampleRows: 200 }
 interface Metadata { encoding: Encoding; delimiter: string; eol: string; bom: boolean; header: boolean; finalEol: boolean; headerWidth: number }
@@ -32,12 +33,13 @@ function metadata(bytes: Buffer, options: TableOptions, path = ''): Metadata {
  const encoding = options.encoding ?? detectEncoding(bytes)
  const text = iconv.decode(bytes, encoding)
  const counts = [',', ';', '\t', '|'].map(delimiter => {
-  try { const first = parseSync(text, {delimiter, bom:true, to:1, relax_column_count:true}) as string[][]; return {delimiter,count:(first[0]?.length??1)-1} }
+  try { const first = parseSync(text, {delimiter, bom:true, to:1, relax_column_count:true,record_delimiter:RECORD_DELIMITERS}) as string[][]; return {delimiter,count:(first[0]?.length??1)-1} }
   catch { return {delimiter,count:0} }
  })
  counts.sort((a,b) => b.count-a.count)
  const delimiter = validDelimiter(options.delimiter ?? (path.endsWith('.tsv') ? '\t' : (counts[0].count ? counts[0].delimiter : ',')))
- const eol = text.match(/\r\n|\n|\r/)?.[0] ?? '\n'
+ let eol='\n',inQuotes=false
+ for(let i=0;i<text.length;i++){if(text[i]==='"')inQuotes=!inQuotes;else if(!inQuotes&&(text[i]==='\r'||text[i]==='\n')){eol=text.startsWith('\r\n',i)?'\r\n':text[i];break}}
  const bom = encoding === 'utf8' ? bytes.subarray(0, 3).equals(Buffer.from([0xef,0xbb,0xbf])) : encoding === 'utf16le' && bytes[0] === 0xff && bytes[1] === 0xfe
  return { encoding, delimiter, eol, bom, header: options.header ?? true, finalEol:/[\r\n]$/.test(text), headerWidth:0 }
 }
@@ -53,7 +55,8 @@ function recordBytes(record:string[],encoding:Encoding,delimiter:string){return 
 
 export class TableEngine {
  // `largeBytes` e `indexChunk` solo los cambian las pruebas: fuerzan el modo grande con archivos pequeños.
- constructor(private progress:(event:SqlProgress)=>void=()=>{},private options:{largeBytes?:number;indexChunk?:number;extractBatch?:number;extractDelayMs?:number;freeBytes?:(dir:string)=>Promise<number>}={}){}
+ constructor(private progress:(event:SqlProgress)=>void=()=>{},private options:{largeBytes?:number;indexChunk?:number;extractBatch?:number;extractDelayMs?:number;freeBytes?:(dir:string)=>Promise<number>;viewWorkers?:number;viewWorkerPath?:URL|string;viewBatch?:number;viewChunk?:number;viewDelayMs?:number;viewLimit?:number;viewBytes?:number;viewPrefilter?:boolean;viewPartial?:boolean}={}){this.diskViews=new LargeViews({workers:options.viewWorkers,workerPath:options.viewWorkerPath,batchRecords:options.viewBatch,chunk:options.viewChunk,delayMs:options.viewDelayMs,limit:options.viewLimit,bytes:options.viewBytes,prefilter:options.viewPrefilter,partial:options.viewPartial})}
+ private diskViews:LargeViews
  private states = new Map<string, State>()
  private queries = new Map<string, number>()
  private openings = new Map<string, number>()
@@ -62,19 +65,20 @@ export class TableEngine {
  private streams=new Map<string,{id:string;iterator:AsyncGenerator<{data:Buffer;rows:number},void>}>()
  private serial = 0
  // Un archivo grande no tiene `rows` en memoria: todo lo que lea o cambie datos debe rechazarlo (solo `info` y `page` lo admiten).
- private get(id: string, allowLarge = false): State { const s = this.states.get(id); if (!s) throw new Error('La tabla ya no está abierta.'); if (s.large && !allowLarge) throw new Error('Esta función aún no está disponible en archivos grandes (solo lectura): la búsqueda, los filtros, las estadísticas y la edición llegan en fases posteriores.'); return s }
+ private get(id: string, allowLarge = false): State { const s = this.states.get(id); if (!s) throw new Error('La tabla ya no está abierta.'); if (s.large && !allowLarge) throw new Error('Esta función aún no está disponible en archivos grandes (solo lectura): el orden, las estadísticas y la edición llegan en fases posteriores.'); return s }
  private editable(id: string): State { const s = this.get(id); if (s.readonly) throw new Error('La muestra es de solo lectura.'); return s }
- async create(id: string) { this.openings.set(id,++this.serial);this.views.delete(id);this.queries.delete(id);const revision=(this.states.get(id)?.revision??-1)+1;this.states.set(id, { encoding:'utf8', delimiter:',',eol:'\n',bom:false,header:true,finalEol:true,headerWidth:1,rows:[],headers:['Columna 1'],readonly:false,revision,nextId:1,token:0,savedToken:-1,history:[],future:[] }); return this.info(id) }
+ async create(id: string) { await this.diskViews.clear(id);this.openings.set(id,++this.serial);this.views.delete(id);this.queries.delete(id);const revision=(this.states.get(id)?.revision??-1)+1;this.states.set(id, { encoding:'utf8', delimiter:',',eol:'\n',bom:false,header:true,finalEol:true,headerWidth:1,rows:[],headers:['Columna 1'],readonly:false,revision,nextId:1,token:0,savedToken:-1,history:[],future:[] }); return this.info(id) }
  async open(id: string, path: string, options: TableOptions = {}) {
+  await this.diskViews.clear(id)
   const generation=++this.serial;this.openings.set(id,generation);this.views.delete(id);this.queries.delete(id)
   const bytes = (await stat(path)).size
-  const meta = metadata(await prefix(path, Math.min(bytes,65536)), options, path)
+  const meta = metadata(await prefix(path, Math.min(bytes,TABLE_LIMITS.record+4)), options, path)
   meta.finalEol=await endsWithEol(path,bytes,meta.encoding)
   // Por encima del umbral no se carga el archivo: se indexa por posición y se lee por páginas (modo grande, solo lectura).
   let records: string[][] = []; let toLarge = bytes > (this.options.largeBytes ?? TABLE_LIMITS.bytes); let readonly = false; let reason = bytes > TABLE_LIMITS.bytes ? 'El archivo supera 50 MiB.' : ''
   if (!toLarge) {
    const input = createReadStream(path, {highWaterMark:65536}); const validator=meta.encoding==='utf8'?validateUtf8():new Transform({transform(chunk,_encoding,callback){callback(null,chunk)}}); const decoder = iconv.decodeStream(meta.encoding)
-   const parser = parse({delimiter:meta.delimiter,bom:true,relax_column_count:true,max_record_size:TABLE_LIMITS.record})
+   const parser = parse({delimiter:meta.delimiter,bom:true,relax_column_count:true,max_record_size:TABLE_LIMITS.record,record_delimiter:RECORD_DELIMITERS})
    input.on('error', error => parser.destroy(error)); validator.on('error',error=>parser.destroy(error)); decoder.on('error', error => parser.destroy(error)); input.pipe(validator).pipe(decoder).pipe(parser)
    try { let cells = 0; for await (const row of parser) { const record=row as string[];const bytesInRecord=recordBytes(record,meta.encoding,meta.delimiter);if(bytesInRecord>TABLE_LIMITS.record)throw new LimitError('Un registro supera 1 MiB.');records.push(record); cells += row.length; if (cells > TABLE_LIMITS.cells) throw new LimitError('El archivo supera dos millones de celdas.'); if (records.length % 2000 === 0) await yieldTurn() } }
    catch (error) { if (error instanceof LimitError) { toLarge = true; reason = error.message; records = [] } else if ((error as {code?:string}).code === 'CSV_MAX_RECORD_SIZE') { readonly = true; reason = 'Un registro supera 1 MiB.'; records = [] } else throw new Error(`CSV no válido: ${(error as Error).message}`) }
@@ -87,7 +91,7 @@ export class TableEngine {
   if (readonly) {
    const sample = await prefix(path,TABLE_LIMITS.sampleBytes); const complete = sample.length === bytes
    const text = meta.encoding==='utf8'?new TextDecoder('utf-8',{fatal:true}).decode(sample,{stream:!complete}):iconv.decode(sample,meta.encoding)
-   const parser = parse({delimiter:meta.delimiter,bom:true,relax_column_count:true,max_record_size:TABLE_LIMITS.record,raw:true,to:TABLE_LIMITS.sampleRows+(meta.header?1:0)})
+   const parser = parse({delimiter:meta.delimiter,bom:true,relax_column_count:true,max_record_size:TABLE_LIMITS.record,raw:true,to:TABLE_LIMITS.sampleRows+(meta.header?1:0),record_delimiter:RECORD_DELIMITERS})
    parser.end(text)
    try { for await (const item of parser) { if (complete || /[\r\n]$/.test(item.raw)) records.push(item.record as string[]); if (records.length >= TABLE_LIMITS.sampleRows+(meta.header ? 1:0)) break } }
    catch (error) { if (complete && (error as {code?:string}).code !== 'CSV_MAX_RECORD_SIZE') reason += ` El CSV contiene errores: ${(error as Error).message}` }
@@ -104,15 +108,15 @@ export class TableEngine {
   s.revision=(this.states.get(id)?.revision??-1)+1;this.views.delete(id);this.queries.delete(id);this.states.set(id,s); return this.info(id)
  }
   private async openLarge(id: string, path: string, meta: Metadata, generation: number, reason: string) {
-  const index = await buildIndex(path, {encoding: meta.encoding, bomLength: meta.bom ? (meta.encoding === 'utf16le' ? 2 : 3) : 0, maxRecord: TABLE_LIMITS.record, chunk: this.options.indexChunk,
+  const index = await buildIndex(path, {encoding: meta.encoding, bomLength: meta.bom ? (meta.encoding === 'utf16le' ? 2 : 3) : 0, maxRecord: TABLE_LIMITS.record, chunk: this.options.indexChunk,delimiter:meta.delimiter,
    onProgress: fraction => this.progress({requestId: 'open:' + id, phase: `Indexando archivo grande… ${Math.round(fraction * 100)} %`, rows: Math.round(fraction * 100)}), // `rows` lleva el porcentaje
    cancelled: () => this.openings.get(id) !== generation})
   const first = await readRecords(index, 0, Math.min(index.records, 201)), start = meta.header ? 1 : 0
   const rawHeaders = meta.header && first.length ? splitFields(first[0], meta.delimiter) : []; meta.headerWidth = rawHeaders.length
-  const width = Math.max(rawHeaders.length, ...first.slice(start).map(text => splitFields(text, meta.delimiter).length), 1)
+  const width = Math.max(rawHeaders.length,index.width??0,...first.slice(start).map(text => splitFields(text, meta.delimiter).length), 1)
   const headers = Array.from({length: width}, (_, i) => meta.header ? rawHeaders[i] ?? '' : `Columna ${i + 1}`)
   const rowCount = Math.max(index.records - start, 0)
-  const warning = `${reason ? reason + ' ' : ''}Archivo grande: ${rowCount.toLocaleString()} filas en solo lectura. Se lee por páginas directamente del archivo; la búsqueda, los filtros, las estadísticas y la edición llegan en fases posteriores.`
+  const warning = `${reason ? reason + ' ' : ''}Archivo grande: ${rowCount.toLocaleString()} filas en solo lectura. Buscar y Filtrar recorren el archivo completo; el orden, las estadísticas y la edición aún no están disponibles.`
   if (this.openings.get(id) !== generation) throw new Error('Apertura cancelada por una solicitud más reciente.')
   const s: State = {...meta, rows: [], headers, readonly: true, warning, revision: (this.states.get(id)?.revision ?? -1) + 1, nextId: 1, token: 0, savedToken: 0, history: [], future: [], large: {index, rowCount}}
   this.views.delete(id); this.queries.delete(id); this.states.set(id, s); return this.info(id)
@@ -122,6 +126,7 @@ export class TableEngine {
  async operation(id: string, request: EngineOperation): Promise<OperationResult> {
   const s = this.get(id, true)
   if (!s.large) throw new Error('Esta operación solo se ofrece para archivos grandes (solo lectura); en una tabla editable usa los filtros y la exportación.')
+  if(!await indexUnchanged(s.large.index))throw new Error('El archivo cambió. Vuelve a abrirlo antes de extraer sus filas.')
   if (request.source.revision !== s.revision) throw new Error('El documento cambió mientras tanto: vuelve a abrir el cuadro.')
   if (request.operation === 'filter_extract') { const [a, b] = await Promise.all([realpath(request.output).catch(() => resolve(request.output)), realpath(s.large.index.path).catch(() => resolve(s.large!.index.path))]); if (a === b) throw new Error('El destino no puede ser el archivo original: la extracción nunca lo modifica.') }
   const control = {cancelled: false}; this.running.set(request.requestId, control)
@@ -135,9 +140,17 @@ export class TableEngine {
  async cancelOperation(requestId: string) { const control = this.running.get(requestId); if (control) control.cancelled = true }
  async cancelOpen(id: string) { this.openings.set(id, ++this.serial) } // la apertura en curso lo nota en su siguiente bloque
  async info(id: string) { const s=this.get(id,true); return {headers:[...s.headers],rowCount:s.large?s.large.rowCount:s.rows.length,readonly:s.readonly,warning:s.warning,encoding:s.encoding,delimiter:s.delimiter,revision:s.revision,dirty:s.token!==s.savedToken,large:s.large?true:undefined} }
+ async viewStart(id:string,request:LargeViewRequest){const s=this.get(id,true);if(!s.large)throw new Error('Esta búsqueda se ofrece para archivos grandes.');if(request.revision!==s.revision)throw new Error('El documento cambió. Vuelve a aplicar la búsqueda.');return this.diskViews.start(id,{index:s.large.index,delimiter:s.delimiter,header:s.header,width:s.headers.length,revision:s.revision,alive:()=>this.states.get(id)===s},request)}
+ async viewState(id:string){this.get(id,true);return this.diskViews.state(id)}
+ async viewCancel(id:string,requestId:string){this.get(id,true);return this.diskViews.cancel(id,requestId)}
+ async viewClear(id:string){this.get(id,true);await this.diskViews.clear(id)}
  private async largePage(id: string, s: State, query: TableQuery): Promise<TablePage> {
+  if(query.viewId){const page=await this.diskViews.page(id,query.viewId,query.offset,query.limit);return {...page,total:s.large!.rowCount,matched:page.view.matched,revision:s.revision,requestId:query.requestId,sample:false,large:true}}
   if (query.search || Object.values(query.filters ?? {}).some(Boolean) || query.sort || query.order?.length || query.conditions?.length) throw new Error('En archivos grandes todavía no hay búsqueda, filtros ni orden.')
-  const {index, rowCount} = s.large!, texts = await readRecords(index, query.offset + (s.header ? 1 : 0), query.limit)
+  const {index,rowCount}=s.large!
+  if(!await indexUnchanged(index))throw new Error('El archivo cambió. Vuelve a abrirlo antes de consultar sus filas.')
+  const texts=await readRecords(index,query.offset+(s.header?1:0),query.limit)
+  if(!await indexUnchanged(index))throw new Error('El archivo cambió mientras se leían las filas. Vuelve a abrirlo.')
   if (this.states.get(id) !== s) throw new Error('Consulta cancelada porque cambió la tabla.')
   return {rows: texts.map((text, i) => ({id: String(query.offset + i + 1), cells: splitFields(text, s.delimiter)})), total: rowCount, matched: rowCount, revision: s.revision, requestId: query.requestId, sample: false, large: true}
  }
@@ -148,7 +161,7 @@ export class TableEngine {
   const key=JSON.stringify([revision,search,filters,query.sort,query.order,query.conditions,query.filterMode]); const cached=this.views.get(id);if(cached?.key===key){guard?.();return cached.indices}
   const indices:number[]=[]
   const ensure=()=>{guard?.();if((!guard&&this.queries.get(id)!==ticket) || this.states.get(id)!==s || s.revision!==revision) throw new Error('Consulta cancelada por una solicitud más reciente.')}
-  for(let i=0;i<s.rows.length;i++){const row=s.rows[i]; if((!search||row.cells.some(value=>value.toLocaleLowerCase().includes(search)))&&filters.every(([column,value])=>(row.cells[column]??'').toLocaleLowerCase().includes(value))&&compiled.matches(row.cells))indices.push(i); if(i%2048===0){await yieldTurn();ensure()} }
+  for(let i=0;i<s.rows.length;i++){const row=s.rows[i]; if(filters.every(([column,value])=>(row.cells[column]??'').toLocaleLowerCase().includes(value))&&compiled.matches(row.cells))indices.push(i); if(i%2048===0){await yieldTurn();ensure()} }
   if(compiled.ordered){
    const compare=(a:number,b:number)=>compiled.compare(s.rows[a].cells,s.rows[b].cells)||a-b
    // Bottom-up merge sort yields between blocks so cancel messages remain actionable.
@@ -427,13 +440,14 @@ export class TableEngine {
  async markdown(id:string,options:TableExport){const {rows,headers}=await this.selected(id,options);const escape=(v:string)=>v.replace(/\\/g,'\\\\').replace(/\|/g,'\\|').replace(/\r\n|\r|\n/g,'<br>');return[headers,headers.map(()=>'---'),...rows].map(row=>'| '+row.map(escape).join(' | ')+' |').join('\n')}
  async serialize(id:string,options?:TableExport):Promise<Buffer>{const s=this.editable(id),revision=s.revision;let records:string[][];if(options){const selection=await this.selected(id,options);records=s.header?[selection.headers,...selection.rows]:selection.rows}else records=s.header?[s.headers.slice(0,s.headerWidth),...s.rows.map(row=>row.cells)]:s.rows.map(row=>row.cells)
   if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.');
-  const text=stringify(records,{delimiter:validDelimiter(options?.delimiter??s.delimiter),record_delimiter:s.eol,eof:options?true:s.finalEol})
+  const text=stringify(records,{delimiter:validDelimiter(options?.delimiter??s.delimiter),record_delimiter:s.eol,eof:options?true:s.finalEol,quoted_match:/[\r\n]/})
   if(!options&&Buffer.byteLength(text,s.encoding==='utf16le'?'utf16le':'utf8')>TABLE_LIMITS.bytes)throw new Error('El resultado supera 50 MiB; reduce la tabla antes de guardarla.')
   const result=iconv.encode(text,s.encoding,{addBOM:s.bom});if(iconv.decode(result,s.encoding)!==text)throw new Error('La codificación seleccionada no representa todos los caracteres. Guarda una copia en UTF-8.');return result
  }
  async markSaved(id:string,expectedRevision?:number){const s=this.get(id);if(expectedRevision===undefined||s.revision===expectedRevision)s.savedToken=s.token;return this.info(id)}
  async snapshot(id:string){const s=this.get(id);return structuredClone({version:2,state:s})}
  async restore(id:string,snapshot:unknown){
+  await this.diskViews.clear(id)
   const data=snapshot as {version?:number;state?:State}
   if(![1,2].includes(data?.version??0)||!data.state||!Array.isArray(data.state.rows)||!Array.isArray(data.state.headers))throw new Error('Formato de recuperación no compatible. El archivo se conserva.')
   const s=structuredClone(data.state),allowed=new Set(['cell','header','rows','column',...data.version===2?['rowOrder','columnOrder']:[]])
@@ -443,5 +457,5 @@ export class TableEngine {
   if(!Array.isArray(s.history)||!Array.isArray(s.future)||[...s.history,...s.future].some(change=>!change||!Array.isArray(change.forward)||!Array.isArray(change.backward)||[...change.forward,...change.backward].some(mutation=>!mutation||!allowed.has(mutation.type))))throw new Error('Historial de recuperación no compatible. El archivo se conserva.')
   s.savedToken=-1;s.readonly=false;s.warning=undefined;this.serial=Math.max(this.serial,s.token,s.nextId);this.openings.set(id,++this.serial);this.queries.delete(id);this.views.delete(id);s.revision=Math.max(s.revision,this.states.get(id)?.revision??-1)+1;this.states.set(id,s);return this.info(id)
  }
- async close(id:string){for(const [ticket,source] of this.streams)if(source.id===id)await this.analysisClose(ticket);this.analyses.delete(id);this.states.delete(id);this.queries.delete(id);this.views.delete(id);this.openings.delete(id)}
+ async close(id:string){await this.diskViews.clear(id);for(const [ticket,source] of this.streams)if(source.id===id)await this.analysisClose(ticket);this.analyses.delete(id);this.states.delete(id);this.queries.delete(id);this.views.delete(id);this.openings.delete(id);if(!this.states.size)await this.diskViews.stop()}
 }

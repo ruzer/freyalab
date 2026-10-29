@@ -32,6 +32,7 @@ export async function operateDocument(docs: Documents, id: string, request: Oper
  const document = await docs.open(output).catch(error => { throw new Error(`El extracto se guardó en ${output}, pero no se pudo abrir: ${(error as Error).message}`) })
  const record = docs.get(document.id)
  const headers = source.info.headers ?? []
- record.info.extract = {sourceName: source.info.name, sourcePath: source.info.path ?? '', matched: result.matched, total: result.scanned, conditions: request.conditions?.conditions.length ? describeConditions(headers, request.conditions) : null, columns: request.columns?.map(index => headers[index] ?? `Columna ${index + 1}`) ?? null, fidelity: result.fidelity, normalization: result.normalization, irregularRows: result.irregularRows}
+ const conditions=[request.search?'Búsqueda global aplicada':null,request.conditions?.conditions.length?describeConditions(headers,request.conditions):null].filter(Boolean).join(' · ')
+ record.info.extract = {sourceName: source.info.name, sourcePath: source.info.path ?? '', matched: result.matched, total: result.scanned, conditions: conditions||null, columns: request.columns?.map(index => headers[index] ?? `Columna ${index + 1}`) ?? null, fidelity: result.fidelity, normalization: result.normalization, irregularRows: result.irregularRows}
  return {result, document: docs.info(document.id)}
 }
