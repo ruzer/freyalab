@@ -84,3 +84,5 @@ function tagParts(text:string,split:boolean):string[]|undefined {
 }
 
 export function normalizeTag(tag:string):string {return tag.normalize('NFD').replace(/\p{M}/gu,'').toLowerCase()}
+
+export {tagParts as yamlParts}

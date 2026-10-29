@@ -14,7 +14,7 @@
  let renderForExport=$state(false)
  // Cambiar el estado de guardado no vuelve a preparar contenido y recursos idénticos.
  const renderText=$derived(text),renderId=$derived(id),renderPath=$derived(path),renderTheme=$derived(dark),shouldRender=$derived(renderEnabled||renderForExport)
- let frontMatter=$state<string|undefined>(undefined)
+ let frontMatter=$state<string|undefined>(undefined),documentWarnings=$state<string[]>([])
  const tags=$derived(parseTags(frontMatter))
  let diagramBlocks:{source:string;documentSource:string;dark:boolean;node:HTMLElement}[]=[]
  let renderDiagnostics=$state<{source:string;results:{source:string;error?:DiagramError}[]}|undefined>(),diagnosticGeneration=0
@@ -127,7 +127,7 @@
    try{
     const result=await markdownHTML(source)
     if(token!==generation)return
-    frontMatter=result.frontMatter
+    frontMatter=result.frontMatter;documentWarnings=result.warnings
     const staged=document.createElement('template');staged.innerHTML=result.html
     for(const details of staged.content.querySelectorAll('details'))details.dataset.freyaOpen=details.open?'1':'0'
     const images=Array.from(staged.content.querySelectorAll('img'),image=>{const src=image.getAttribute('src')??'';image.removeAttribute('src');return{image,src}})
@@ -209,6 +209,7 @@
  {#if busy}<span class="render-progress">Actualizando vista previa…</span>{/if}
  <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</span>
  {#if frontMatter!==undefined}<div class="document-properties-row"><details class="document-properties"><summary>Propiedades del documento</summary><pre>{frontMatter}</pre></details>{#if tags.length}<div class="document-tags">{#each tags as tag}<button aria-label={`Filtrar archivos por la etiqueta ${tag}`} title={tag} disabled={!onfiltertag} onclick={()=>onfiltertag?.(tag)}>{tag}</button>{/each}</div>{/if}</div>{/if}
+ {#if documentWarnings.length}<details class="document-warnings" aria-label="Advertencias del documento"><summary>{documentWarnings.length===1?'Una advertencia del documento':`${documentWarnings.length} advertencias del documento`}</summary><ul>{#each documentWarnings as warning}<li>{warning}</li>{/each}</ul></details>{/if}
  <article class="markdown-body" bind:this={article}></article>
 </section>
 {#if expanded}
@@ -219,6 +220,25 @@
  </dialog>
 {/if}
 <style>
+ :global(.markdown-body .report-cover){padding:40px 24px;text-align:center;border-bottom:1px solid var(--border)}
+ :global(.markdown-body .report-cover h1){font-size:32px}
+ :global(.markdown-body .report-cover p){margin:12px 0}
+ :global(.markdown-body .report-subtitle){font-size:22px}
+ :global(.markdown-body .report-abstract){text-align:left;margin-top:36px;white-space:pre-line}
+ :global(.markdown-body .report-index){margin:24px 0}
+ :global(.markdown-body .report-index ol){list-style:none;padding:0}
+ :global(.markdown-body .report-index li){margin:5px 0}
+ :global(.markdown-body .report-level-2){margin-left:16px!important}
+ :global(.markdown-body .report-level-3){margin-left:32px!important}
+ :global(.markdown-body .report-level-4){margin-left:48px!important}
+ :global(.markdown-body .report-level-5){margin-left:64px!important}
+ :global(.markdown-body .report-level-6){margin-left:80px!important}
+ :global(.markdown-body figure){margin:24px 0;break-inside:avoid}
+ :global(.markdown-body figcaption){margin-top:8px;font-size:13px;line-height:1.6;color:var(--text)}
+ :global(.markdown-body figure img){display:block;margin:auto}
+ .document-warnings{margin:10px 14px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--panel);color:var(--text);font-size:12px}
+ .document-warnings summary{cursor:pointer}
+ .document-warnings ul{margin-bottom:0;padding-left:18px}
  :global(.markdown-body .missing-image){display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px;border:1px dashed var(--border);border-radius:6px}
  :global(.markdown-body .image-locate){font-size:12px}
  .diagram-modal[open]{display:flex;flex-direction:column;width:calc(100vw - 32px);height:calc(100dvh - 32px);max-width:none;max-height:none;padding:0;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text)}

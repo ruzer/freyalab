@@ -1,0 +1,56 @@
+{
+  "phase": "AC-01 funcional; medición N8 y cierre conjunto AC-01/02 pendientes",
+  "base": "33a5dfd",
+  "prerequisite": "c1763df017b1b2158494a70c4cb4d90025903d06",
+  "e2eRed": {
+    "startTime": "2026-10-28T18:51:40.680Z",
+    "duration": 33982.419,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  },
+  "e2eGreen": {
+    "startTime": "2026-10-28T19:00:42.935Z",
+    "duration": 4925.6230000000005,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "unitRed": {
+    "failed": 22,
+    "passed": 6,
+    "total": 28
+  },
+  "captionEdgeRed": {
+    "failed": 2,
+    "passed": 28,
+    "total": 30
+  },
+  "unitGreen": {
+    "passed": 95,
+    "files": 2,
+    "academicCases": 30,
+    "unchangedRenderCases": 65
+  },
+  "files": {
+    "src/renderer/lib/remark-numbering.ts": "f36d1e0b4a00feb03cfb7feda064694017adf9423e4c646bce7df9ee90c9bf6b",
+    "src/renderer/lib/render.ts": "fe2fa97258e858b160a542b1edf536a944ac06d03e86483a2cbae462f4857d25",
+    "src/renderer/components/Preview.svelte": "3a8b1ae2f8482824f636a24a898cfc4ba412d0242c5a9060eb4d0757d760b928",
+    "tests/academic-numbering.test.ts": "961842e62bd0a8d703c63ae5576b9ad402350a767fa0fa7d77ae2b5e46d58067",
+    "tests/e2e/academic-report.spec.ts": "e8851b629a61216514160fe4081d7bea7aef4ca7b2e7b186c4b92a7234fdd0dd"
+  },
+  "screenshots": {
+    "ac-01-light-1440x900.png": {
+      "sha256": "18c74af77cbb9fd93dce4394733b16062cd74719246ebba5657f0a0227c90252",
+      "width": 1440,
+      "height": 900
+    },
+    "ac-01-dark-1440x900.png": {
+      "sha256": "30b774996a795ff1060b9a00571a25d2c34acce5569cdad6a717ce5b109205ee",
+      "width": 1440,
+      "height": 900
+    }
+  }
+}
