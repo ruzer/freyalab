@@ -10,6 +10,7 @@ window.addEventListener('keydown',event=>{
  ipcRenderer.send('freya:paste-plain')
 },true)
 const api:FreyaAPI={
+ appInfo:()=>invoke('appInfo'),copyAppInfo:()=>invoke('copyAppInfo'),thirdPartyNotices:()=>invoke('thirdPartyNotices'),
  language:()=>invoke('language'),setLanguage:preference=>invoke('setLanguage',preference),
  open:()=>invoke('open'),openPaths:paths=>invoke('openPaths',paths),newDocument:kind=>invoke('new',kind),folder:()=>invoke('folder'),tree:path=>invoke('tree',path),findFiles:(root,query)=>invoke('findFiles',root,query),cancelFileSearch:()=>invoke('cancelFileSearch'),listTags:root=>invoke('listTags',root),cancelTagList:()=>invoke('cancelTagList'),
  update:(id,text)=>invoke('update',id,text),save:(id,as)=>invoke('save',id,as),close:id=>invoke('close',id),reload:id=>invoke('reload',id),documents:()=>invoke('documents'),

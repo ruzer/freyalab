@@ -78,7 +78,7 @@ test('P1/P2/P9: pestañas accesibles por teclado y ancho recuperado sin panel de
  await page.keyboard.press('Home');await expect(filesTab()).toBeFocused();await expect(filesTab()).toHaveAttribute('aria-selected','true')
  await page.keyboard.press('End');await expect(indexTab()).toBeFocused();await page.keyboard.press('ArrowLeft');await expect(filesTab()).toBeFocused()
  await indexTab().click();await expect(indexPanel()).toContainText('Sección 22');await expect(page.locator('aside.outline')).toHaveCount(0)
- await expect(sidebar().getByRole('combobox',{name:'Tema',exact:true})).toBeVisible();await expect(sidebar().getByRole('button',{name:'FreyaLab alfa',exact:true})).toBeVisible()
+ await expect(sidebar().getByRole('combobox',{name:'Tema',exact:true})).toBeVisible();await expect(sidebar().getByRole('button',{name:'Acerca de FreyaLab',exact:true})).toBeVisible()
  const after={sourceSha256:before.sourceSha256,sourceHashes,mode:'split',theme:'light',...await layout()};await evidence('md007-p-index-visible-layout',after)
  const referencePath=process.env.FREYALAB_SIDEBAR_BASELINE_JSON
  if(referencePath&&process.env.FREYALAB_SIDEBAR_BASELINE!=='1'){

@@ -3,14 +3,80 @@ import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,rm,truncate,stat} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
+import {execFileSync} from 'node:child_process'
 import {} from './panel'
 let app:ElectronApplication,page:Page,folder:string
 const palette=()=>page.getByRole('dialog',{name:'Comandos CSV',exact:true})
-test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-commands-e2e-'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
+test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-commands-e2e-'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('.')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function open(source:string){const path=join(folder,'data.csv');await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible();return{doc,path}}
 async function show(query=''){await page.getByRole('button',{name:'Buscar acción',exact:true}).click();const dialog=palette();await expect(dialog.getByLabel('Buscar comando CSV',{exact:true})).toBeFocused();await dialog.getByLabel('Buscar comando CSV',{exact:true}).fill(query);return dialog}
 function command(dialog:Locator,name:string){return dialog.getByRole('button',{name,exact:false})}
+
+test('APP-02: Acerca de muestra versión real, copia sólo diagnóstico y lee licencias del paquete',async()=>{
+ const path=join(folder,'CANARIO_DOCUMENTO_PRIVADO.md'),source='# CANARIO_CONTENIDO_PRIVADO\n';await writeFile(path,source);await page.evaluate(path=>window.freya.openPaths([path]),path)
+ const metadata=await app.evaluate(({app})=>({version:app.getVersion(),electron:process.versions.electron,chromium:process.versions.chrome,node:process.versions.node,arch:process.arch}))
+ expect(metadata.version).toBe((JSON.parse(await readFile('package.json','utf8')) as {version:string}).version)
+ const build=execFileSync('git',['rev-parse','--short=7','HEAD'],{encoding:'utf8',timeout:2000}).trim()
+ const notices=await readFile('THIRD_PARTY_NOTICES.txt','utf8'),opener=page.locator('.sidebar-bottom .text-button')
+ const contrasts:{locale:string;theme:string;minimum:number}[]=[]
+ let intercepted=false
+ try{
+  for(const locale of ['es','en'] as const){
+   await page.evaluate(locale=>window.freya.setLanguage(locale),locale)
+   for(const theme of ['light','dark'] as const){
+    await page.getByLabel('Tema',{exact:true}).selectOption(theme);await opener.focus();await page.keyboard.press('Enter')
+    const labels=locale==='es'?{dialog:'Acerca de FreyaLab',copy:'Copiar información',licenses:'Licencias de terceros',updates:'Buscar actualizaciones',copied:'Información copiada.',failed:'No pude copiar la información.'}:{dialog:'About FreyaLab',copy:'Copy information',licenses:'Third-party licenses',updates:'Check for updates',copied:'Information copied.',failed:'Could not copy the information.'}
+    const dialog=page.getByRole('dialog'),copy=dialog.getByRole('button',{name:labels.copy,exact:true})
+    await expect(copy).toBeVisible();await expect(dialog).toHaveAccessibleName(labels.dialog);await expect(dialog.locator('#about-version')).toHaveText(metadata.version)
+    await expect(dialog.locator('[data-info="build"]')).toHaveText(build)
+    for(const key of ['electron','chromium','node','arch'] as const)await expect(dialog.locator(`[data-info="${key}"]`)).toHaveText(metadata[key]!)
+    await expect(dialog.getByRole('button',{name:labels.updates,exact:true})).toBeDisabled()
+    if(!intercepted){
+     await app.evaluate(({clipboard})=>{
+      const state=globalThis as typeof globalThis&{__freyaAboutClipboard?:{original:typeof clipboard.writeText;values:string[];fail:boolean}}
+      state.__freyaAboutClipboard={original:clipboard.writeText,values:[],fail:false}
+      clipboard.writeText=async(value:string)=>{const captured=state.__freyaAboutClipboard!;if(captured.fail)throw new Error('CANARIO_ERROR_PRIVADO');captured.values.push(value)}
+     });intercepted=true
+    }
+    await copy.click();await expect(dialog.getByRole('status')).toContainText(labels.copied)
+    const copied=await app.evaluate(()=>(globalThis as typeof globalThis&{__freyaAboutClipboard:{values:string[]}}).__freyaAboutClipboard.values.at(-1)!)
+    for(const value of Object.values(metadata))expect(copied).toContain(value)
+    expect(copied).toContain(build)
+    expect(copied).toContain(locale==='es'?'Idioma: es':'Language: en');expect(copied).not.toContain('CANARIO');expect(copied).not.toContain(folder)
+    const ratios=await dialog.evaluate(node=>{
+     function luminance(color:string){const [r,g,b]=color.match(/[\d.]+/g)!.slice(0,3).map(value=>{const channel=Number(value)/255;return channel<=.04045?channel/12.92:((channel+.055)/1.055)**2.4});return .2126*r+.7152*g+.0722*b}
+     return Array.from(node.querySelectorAll<HTMLElement>('h2,p,dt,dd,button:not(:disabled)')).filter(element=>element.textContent?.trim()).map(element=>{
+      let background:Element|null=element,color=getComputedStyle(element).backgroundColor
+      while((color==='rgba(0, 0, 0, 0)'||color==='transparent')&&background?.parentElement){background=background.parentElement;color=getComputedStyle(background).backgroundColor}
+      const foreground=luminance(getComputedStyle(element).color),surface=luminance(color)
+      return(Math.max(foreground,surface)+.05)/(Math.min(foreground,surface)+.05)
+     })
+    })
+    const minimum=Math.min(...ratios);expect(minimum).toBeGreaterThanOrEqual(4.5);contrasts.push({locale,theme,minimum})
+    for(const size of [{width:1440,height:900},{width:720,height:600}]){
+     await page.setViewportSize(size);expect(await dialog.evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true)
+     const box=await dialog.boundingBox();expect(box).not.toBeNull();expect(Math.abs(box!.x+box!.width/2-size.width/2)).toBeLessThanOrEqual(2);expect(Math.abs(box!.y+box!.height/2-size.height/2)).toBeLessThanOrEqual(2)
+     if(process.env.FREYALAB_APP02_EVIDENCE==='1')await page.screenshot({path:`docs/evidence/app-02-${locale}-${theme}-${size.width}x${size.height}.png`,animations:'disabled'})
+    }
+    await page.setViewportSize({width:1440,height:900})
+    await app.evaluate(()=>{(globalThis as typeof globalThis&{__freyaAboutClipboard:{fail:boolean}}).__freyaAboutClipboard.fail=true})
+    await copy.click();await expect(dialog.getByRole('status')).toContainText(labels.failed);await expect(dialog.getByRole('status')).not.toContainText('CANARIO')
+    await app.evaluate(()=>{(globalThis as typeof globalThis&{__freyaAboutClipboard:{fail:boolean}}).__freyaAboutClipboard.fail=false})
+    await dialog.getByRole('button',{name:labels.licenses,exact:true}).click();expect(await page.evaluate(()=>window.freya.thirdPartyNotices())).toBe(notices);await expect(dialog.getByRole('textbox',{name:labels.licenses,exact:true})).toHaveValue(notices.replace(/\r\n?/g,'\n'))
+    for(let index=0;index<12;index++){await page.keyboard.press('Tab');expect(await dialog.evaluate(node=>node.contains(document.activeElement))).toBe(true)}
+    await page.setViewportSize({width:720,height:600});expect(await dialog.evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true)
+    await copy.click();await expect(dialog.getByRole('status')).toContainText(labels.copied);await expect(dialog.getByRole('status')).toBeInViewport({ratio:1})
+    await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(opener).toBeFocused();await page.setViewportSize({width:1440,height:900})
+   }
+  }
+  expect(await readFile(path,'utf8')).toBe(source)
+  const diagnostic=test.info().outputPath('app-02-diagnostic.json');await writeFile(diagnostic,JSON.stringify({metadata,noticesBytes:Buffer.byteLength(notices),contrasts,packaged:!!process.env.FREYALAB_EXECUTABLE},null,2));await test.info().attach('diagnóstico-sin-datos-personales',{path:diagnostic,contentType:'application/json'})
+ }finally{
+  if(intercepted)await app.evaluate(({clipboard})=>{const state=globalThis as typeof globalThis&{__freyaAboutClipboard?:{original:typeof clipboard.writeText}};if(state.__freyaAboutClipboard){clipboard.writeText=state.__freyaAboutClipboard.original;delete state.__freyaAboutClipboard}}).catch(()=>{})
+ }
+})
+
 
 test('paleta CSV: búsqueda sin acentos, teclado, rango, foco y vista previa comparten edición y deshacer',async()=>{
  const source='ID,Texto\n00123,ábol\n9007199254740993,otro\n',{path}=await open(source),before=await page.evaluate(()=>window.freya.documents()),first=page.getByRole('gridcell',{name:'Fila 1, Texto',exact:true}),last=page.getByRole('gridcell',{name:'Fila 2, Texto',exact:true})

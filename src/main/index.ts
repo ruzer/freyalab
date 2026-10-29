@@ -10,6 +10,7 @@ import appIcon from '../../build/icon.png?asset'
 import { Documents } from './documents'
 import {initializeLanguage,languageState,changeLanguage} from './language'
 import {t} from '../shared/i18n'
+import {applicationInfo,copyApplicationInfo,thirdPartyNotices} from './app-info'
 import { exportDocument,exportGraphic } from './export'
 import { operateDocument } from './extract'
 import { operationRequest } from './operation-schema'
@@ -36,6 +37,9 @@ async function handle(operation:string,args:unknown[]){
  const [a,b,c,d]=args
  switch(operation){
  case'language':return languageState()
+ case'appInfo':z.tuple([]).parse(args);return applicationInfo()
+ case'copyAppInfo':z.tuple([]).parse(args);return copyApplicationInfo()
+ case'thirdPartyNotices':z.tuple([]).parse(args);return thirdPartyNotices()
  case'setLanguage':{const language=changeLanguage(z.enum(['sistema','es','en']).parse(a));window?.webContents.send('freya:event',{type:'language',language});return language}
  case'open':{const result=await dialog.showOpenDialog(window!,{title:t('dialog.open.title'),buttonLabel:t('dialog.open.button'),properties:['openFile','multiSelections'],filters:[{name:t('dialog.open.filter'),extensions:['md','markdown','txt','mmd','mermaid','csv','tsv']}]});for(const p of result.filePaths)docs.grants.add(resolve(p));return result.canceled?[]:openPaths(result.filePaths)}
  case'openPaths':return openPaths(z.array(path).max(100).parse(a))

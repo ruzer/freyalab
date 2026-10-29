@@ -1,5 +1,6 @@
 import type {ChartConfiguration,ChartPreset} from './chart-presets'
 import type {LanguagePreference,LanguageState} from './i18n'
+import type {ApplicationInfo} from './app-info'
 import type {ExtractOrigin,OperationRequest,OperationOutcome} from './operations'
 export type Kind = 'markdown' | 'text' | 'mermaid' | 'csv'
 export type Encoding = 'utf8' | 'utf16le' | 'win1252'
@@ -47,6 +48,7 @@ export interface GraphicExportRequest {format:'svg'|'png'|'pdf';svg:string;revis
 export interface RecoveryEntry { id:string; name:string; savedAt:string }
 export interface AppEvent { type:'opened'|'changed'|'external'|'error'|'analysis'|'language';language?:LanguageState;progress?:SqlProgress; document?:DocumentInfo; id?:string; message?:string }
 export interface FreyaAPI {
+ appInfo():Promise<ApplicationInfo>;copyAppInfo():Promise<void>;thirdPartyNotices():Promise<string>;
  language():Promise<LanguageState>;setLanguage(preference:LanguagePreference):Promise<LanguageState>;
  open():Promise<DocumentInfo[]>; openPaths(paths:string[]):Promise<DocumentInfo[]>; newDocument(kind:Kind):Promise<DocumentInfo>; folder():Promise<string|null>; tree(path:string):Promise<TreeEntry[]>; findFiles(root:string,query:string):Promise<{entries:TreeEntry[];limited:boolean}>; cancelFileSearch():Promise<void>; listTags(root:string):Promise<{tags:{tag:string;count:number}[];limited:boolean}>; cancelTagList():Promise<void>;
  update(id:string,text:string):Promise<DocumentInfo>; save(id:string,as?:boolean):Promise<SaveOutcome|null>; locateImage(id:string,source:string):Promise<SaveOutcome|null>; close(id:string):Promise<boolean>; reload(id:string):Promise<DocumentInfo>; documents():Promise<DocumentInfo[]>;
