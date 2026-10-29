@@ -48,3 +48,9 @@ Los catálogos planos `es.json` y `en.json` deben tener las mismas claves y marc
 `src/shared/i18n/pending-files.json` es la lista de fuentes anteriores a la adopción que todavía no están completamente traducidas. Su fotografía inicial documenta `main` y los carriles que ya estaban en curso; no reserva archivos futuros. Solo se retiran rutas: no se añaden para saltarse la comprobación. Al terminar de migrar un archivo, retíralo y comprueba que no vuelvan los literales visibles. Los archivos nuevos nacen traducibles.
 
 El guard usa los AST de Svelte y TypeScript instalados: texto y atributos visibles, expresiones de plantilla, variables locales simples y puntos de salida conocidos de mensajes, errores y diálogos. No trata los identificadores, CSS ni unidades técnicas como frases; los datos no vinculados a una salida visible conocida no se catalogan. No hace análisis semántico de flujos arbitrarios: las cadenas construidas mediante funciones ajenas o accesos dinámicos, los nombres sombreados y los valores reutilizados como dato y etiqueta requieren también revisión de código. Esta limitación no permite añadir literales nuevos ni ampliar la lista pendiente.
+
+## Ajustes
+
+Un ajuste nuevo requiere una entrada en el esquema versionado de `src/shared/settings.ts`, su valor por omisión en la tabla `defaultSettings()`, una fila accesible y traducida en el diálogo y una prueba de su comportamiento y persistencia. No añadas opciones sin un comportamiento que las respalde ni otra fuente permanente de preferencias en el renderer.
+
+El proceso principal valida y guarda `settings.json`; los componentes solicitan parches mediante el puente limitado. No incluyas rutas de documentos, nombres de usuario ni contenido. Conserva los archivos de una versión futura en modo de sólo lectura y las copias de recuperación existentes; una migración debe comprobarse con un perfil anterior.

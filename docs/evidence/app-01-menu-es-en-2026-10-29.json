@@ -1,0 +1,1430 @@
+{
+  "es": [
+    {
+      "label": "FreyaLab",
+      "enabled": true,
+      "checked": false,
+      "accelerator": null,
+      "role": null,
+      "submenu": [
+        {
+          "id": "app.about",
+          "label": "Acerca de FreyaLab",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "app.updates",
+          "label": "Buscar actualizaciones…",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "app.settings",
+          "label": "Ajustes…",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+,",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "app.services",
+          "label": "Servicios",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": "services",
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "app.hide",
+          "label": "Ocultar FreyaLab",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "Command+H",
+          "role": "hide",
+          "submenu": []
+        },
+        {
+          "id": "app.hideOthers",
+          "label": "Ocultar otros",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "Alt+Command+H",
+          "role": "hideothers",
+          "submenu": []
+        },
+        {
+          "id": "app.showAll",
+          "label": "Mostrar todo",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": "unhide",
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "app.quit",
+          "label": "Salir de FreyaLab",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+Q",
+          "role": "quit",
+          "submenu": []
+        }
+      ]
+    },
+    {
+      "label": "Archivo",
+      "enabled": true,
+      "checked": false,
+      "accelerator": null,
+      "role": null,
+      "submenu": [
+        {
+          "id": "file.newMarkdown",
+          "label": "Nuevo documento Markdown",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+N",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.newMermaid",
+          "label": "Nuevo diagrama Mermaid",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+Shift+N",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.newCsv",
+          "label": "Nueva tabla CSV",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+Alt+N",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.open",
+          "label": "Abrir…",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+O",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.openFolder",
+          "label": "Abrir carpeta…",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+Shift+O",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.recents",
+          "label": "Abrir reciente",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": [
+            {
+              "id": "file.clearRecents",
+              "label": "Borrar lista",
+              "enabled": false,
+              "checked": false,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            }
+          ]
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.close",
+          "label": "Cerrar pestaña",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+W",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.save",
+          "label": "Guardar",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+S",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.saveAs",
+          "label": "Guardar como…",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+Shift+S",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.exports",
+          "label": "Exportar",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        }
+      ]
+    },
+    {
+      "label": "Edición",
+      "enabled": true,
+      "checked": false,
+      "accelerator": null,
+      "role": null,
+      "submenu": [
+        {
+          "id": "edit.undo",
+          "label": "Deshacer",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+Z",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.redo",
+          "label": "Rehacer",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+Shift+Z",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.cut",
+          "label": "Cortar",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+X",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.copy",
+          "label": "Copiar",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+C",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.paste",
+          "label": "Pegar",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+V",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.pastePlain",
+          "label": "Pegar sin formato",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+Alt+Shift+V",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.selectAll",
+          "label": "Seleccionar todo",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+A",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.commandPalette",
+          "label": "Buscar acción CSV…",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.search",
+          "label": "Buscar",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": [
+            {
+              "id": "search.document",
+              "label": "En el documento…",
+              "enabled": false,
+              "checked": false,
+              "accelerator": "CommandOrControl+F",
+              "role": null,
+              "submenu": []
+            },
+            {
+              "id": "search.replace",
+              "label": "Reemplazar…",
+              "enabled": false,
+              "checked": false,
+              "accelerator": "CommandOrControl+Shift+F",
+              "role": null,
+              "submenu": []
+            },
+            {
+              "id": "search.folder",
+              "label": "Archivo en la carpeta…",
+              "enabled": true,
+              "checked": false,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Ver",
+      "enabled": true,
+      "checked": false,
+      "accelerator": null,
+      "role": null,
+      "submenu": [
+        {
+          "id": "view.mode",
+          "label": "Modo",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": [
+            {
+              "id": "view.mode.edit",
+              "label": "Editar",
+              "enabled": false,
+              "checked": false,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            },
+            {
+              "id": "view.mode.split",
+              "label": "Dividido",
+              "enabled": false,
+              "checked": true,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            },
+            {
+              "id": "view.mode.preview",
+              "label": "Vista previa",
+              "enabled": false,
+              "checked": false,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            }
+          ]
+        },
+        {
+          "id": "view.sidebar",
+          "label": "Barra lateral",
+          "enabled": true,
+          "checked": true,
+          "accelerator": "CommandOrControl+B",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "view.outline",
+          "label": "Índice del documento",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "view.theme",
+          "label": "Tema",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": [
+            {
+              "id": "view.theme.system",
+              "label": "Sistema",
+              "enabled": true,
+              "checked": true,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            },
+            {
+              "id": "view.theme.light",
+              "label": "Claro",
+              "enabled": true,
+              "checked": false,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            },
+            {
+              "id": "view.theme.dark",
+              "label": "Oscuro",
+              "enabled": true,
+              "checked": false,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            }
+          ]
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "view.actualSize",
+          "label": "Tamaño real",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+0",
+          "role": "resetzoom",
+          "submenu": []
+        },
+        {
+          "id": "view.zoomIn",
+          "label": "Acercar",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+Plus",
+          "role": "zoomin",
+          "submenu": []
+        },
+        {
+          "id": "view.zoomOut",
+          "label": "Alejar",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+-",
+          "role": "zoomout",
+          "submenu": []
+        },
+        {
+          "id": "view.fullscreen",
+          "label": "Pantalla completa",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "Control+Command+F",
+          "role": "togglefullscreen",
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "view.reload",
+          "label": "Recargar",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+R",
+          "role": "reload",
+          "submenu": []
+        },
+        {
+          "id": "view.devTools",
+          "label": "Herramientas de desarrollo",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "Alt+CommandOrControl+I",
+          "role": "toggledevtools",
+          "submenu": []
+        }
+      ]
+    },
+    {
+      "label": "Ir",
+      "enabled": true,
+      "checked": false,
+      "accelerator": null,
+      "role": null,
+      "submenu": [
+        {
+          "id": "go.row",
+          "label": "Ir a la fila…",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "go.nextTab",
+          "label": "Pestaña siguiente",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "Control+Tab",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "go.previousTab",
+          "label": "Pestaña anterior",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "Control+Shift+Tab",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "go.files",
+          "label": "Mostrar Archivos",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "go.outline",
+          "label": "Mostrar Índice",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        }
+      ]
+    },
+    {
+      "label": "Ventana",
+      "enabled": true,
+      "checked": false,
+      "accelerator": null,
+      "role": null,
+      "submenu": [
+        {
+          "id": "window.minimize",
+          "label": "Minimizar",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+M",
+          "role": "minimize",
+          "submenu": []
+        },
+        {
+          "id": "window.zoom",
+          "label": "Zoom",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": "zoom",
+          "submenu": []
+        },
+        {
+          "id": "window.front",
+          "label": "Traer todo al frente",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": "front",
+          "submenu": []
+        }
+      ]
+    },
+    {
+      "label": "Ayuda",
+      "enabled": true,
+      "checked": false,
+      "accelerator": null,
+      "role": null,
+      "submenu": [
+        {
+          "id": "help.documentation",
+          "label": "Documentación",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "help.shortcuts",
+          "label": "Atajos de teclado",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "help.releaseNotes",
+          "label": "Notas de la versión",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "help.issue",
+          "label": "Informar de un problema",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "help.licenses",
+          "label": "Licencias de terceros",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "help.security",
+          "label": "Política de seguridad",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        }
+      ]
+    }
+  ],
+  "en": [
+    {
+      "label": "FreyaLab",
+      "enabled": true,
+      "checked": false,
+      "accelerator": null,
+      "role": null,
+      "submenu": [
+        {
+          "id": "app.about",
+          "label": "About FreyaLab",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "app.updates",
+          "label": "Check for updates…",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "app.settings",
+          "label": "Settings…",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+,",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "app.services",
+          "label": "Services",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": "services",
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "app.hide",
+          "label": "Hide FreyaLab",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "Command+H",
+          "role": "hide",
+          "submenu": []
+        },
+        {
+          "id": "app.hideOthers",
+          "label": "Hide Others",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "Alt+Command+H",
+          "role": "hideothers",
+          "submenu": []
+        },
+        {
+          "id": "app.showAll",
+          "label": "Show All",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": "unhide",
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "app.quit",
+          "label": "Quit FreyaLab",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+Q",
+          "role": "quit",
+          "submenu": []
+        }
+      ]
+    },
+    {
+      "label": "File",
+      "enabled": true,
+      "checked": false,
+      "accelerator": null,
+      "role": null,
+      "submenu": [
+        {
+          "id": "file.newMarkdown",
+          "label": "New Markdown document",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+N",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.newMermaid",
+          "label": "New Mermaid diagram",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+Shift+N",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.newCsv",
+          "label": "New CSV table",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+Alt+N",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.open",
+          "label": "Open…",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+O",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.openFolder",
+          "label": "Open folder…",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+Shift+O",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.recents",
+          "label": "Open recent",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": [
+            {
+              "id": "file.clearRecents",
+              "label": "Clear list",
+              "enabled": false,
+              "checked": false,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            }
+          ]
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.close",
+          "label": "Close tab",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+W",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.save",
+          "label": "Save",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+S",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.saveAs",
+          "label": "Save as…",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+Shift+S",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "file.exports",
+          "label": "Export",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        }
+      ]
+    },
+    {
+      "label": "Edit",
+      "enabled": true,
+      "checked": false,
+      "accelerator": null,
+      "role": null,
+      "submenu": [
+        {
+          "id": "edit.undo",
+          "label": "Undo",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+Z",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.redo",
+          "label": "Redo",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+Shift+Z",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.cut",
+          "label": "Cut",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+X",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.copy",
+          "label": "Copy",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+C",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.paste",
+          "label": "Paste",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+V",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.pastePlain",
+          "label": "Paste as plain text",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+Alt+Shift+V",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.selectAll",
+          "label": "Select all",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "CommandOrControl+A",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.commandPalette",
+          "label": "Find CSV action…",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "edit.search",
+          "label": "Find",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": [
+            {
+              "id": "search.document",
+              "label": "In document…",
+              "enabled": false,
+              "checked": false,
+              "accelerator": "CommandOrControl+F",
+              "role": null,
+              "submenu": []
+            },
+            {
+              "id": "search.replace",
+              "label": "Replace…",
+              "enabled": false,
+              "checked": false,
+              "accelerator": "CommandOrControl+Shift+F",
+              "role": null,
+              "submenu": []
+            },
+            {
+              "id": "search.folder",
+              "label": "File in folder…",
+              "enabled": true,
+              "checked": false,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "View",
+      "enabled": true,
+      "checked": false,
+      "accelerator": null,
+      "role": null,
+      "submenu": [
+        {
+          "id": "view.mode",
+          "label": "Mode",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": [
+            {
+              "id": "view.mode.edit",
+              "label": "Edit",
+              "enabled": false,
+              "checked": false,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            },
+            {
+              "id": "view.mode.split",
+              "label": "Split",
+              "enabled": false,
+              "checked": true,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            },
+            {
+              "id": "view.mode.preview",
+              "label": "Preview",
+              "enabled": false,
+              "checked": false,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            }
+          ]
+        },
+        {
+          "id": "view.sidebar",
+          "label": "Sidebar",
+          "enabled": true,
+          "checked": true,
+          "accelerator": "CommandOrControl+B",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "view.outline",
+          "label": "Document outline",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "view.theme",
+          "label": "Theme",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": [
+            {
+              "id": "view.theme.system",
+              "label": "System",
+              "enabled": true,
+              "checked": true,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            },
+            {
+              "id": "view.theme.light",
+              "label": "Light",
+              "enabled": true,
+              "checked": false,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            },
+            {
+              "id": "view.theme.dark",
+              "label": "Dark",
+              "enabled": true,
+              "checked": false,
+              "accelerator": null,
+              "role": null,
+              "submenu": []
+            }
+          ]
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "view.actualSize",
+          "label": "Actual size",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+0",
+          "role": "resetzoom",
+          "submenu": []
+        },
+        {
+          "id": "view.zoomIn",
+          "label": "Zoom in",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+Plus",
+          "role": "zoomin",
+          "submenu": []
+        },
+        {
+          "id": "view.zoomOut",
+          "label": "Zoom out",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+-",
+          "role": "zoomout",
+          "submenu": []
+        },
+        {
+          "id": "view.fullscreen",
+          "label": "Full screen",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "Control+Command+F",
+          "role": "togglefullscreen",
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "view.reload",
+          "label": "Reload",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+R",
+          "role": "reload",
+          "submenu": []
+        },
+        {
+          "id": "view.devTools",
+          "label": "Developer tools",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "Alt+CommandOrControl+I",
+          "role": "toggledevtools",
+          "submenu": []
+        }
+      ]
+    },
+    {
+      "label": "Go",
+      "enabled": true,
+      "checked": false,
+      "accelerator": null,
+      "role": null,
+      "submenu": [
+        {
+          "id": "go.row",
+          "label": "Go to row…",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "go.nextTab",
+          "label": "Next tab",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "Control+Tab",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "go.previousTab",
+          "label": "Previous tab",
+          "enabled": false,
+          "checked": false,
+          "accelerator": "Control+Shift+Tab",
+          "role": null,
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "go.files",
+          "label": "Show Files",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "go.outline",
+          "label": "Show Outline",
+          "enabled": false,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        }
+      ]
+    },
+    {
+      "label": "Window",
+      "enabled": true,
+      "checked": false,
+      "accelerator": null,
+      "role": null,
+      "submenu": [
+        {
+          "id": "window.minimize",
+          "label": "Minimize",
+          "enabled": true,
+          "checked": false,
+          "accelerator": "CommandOrControl+M",
+          "role": "minimize",
+          "submenu": []
+        },
+        {
+          "id": "window.zoom",
+          "label": "Zoom",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": "zoom",
+          "submenu": []
+        },
+        {
+          "id": "window.front",
+          "label": "Bring all to front",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": "front",
+          "submenu": []
+        }
+      ]
+    },
+    {
+      "label": "Help",
+      "enabled": true,
+      "checked": false,
+      "accelerator": null,
+      "role": null,
+      "submenu": [
+        {
+          "id": "help.documentation",
+          "label": "Documentation",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "help.shortcuts",
+          "label": "Keyboard shortcuts",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "help.releaseNotes",
+          "label": "Release notes",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "help.issue",
+          "label": "Report an issue",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "label": "",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "help.licenses",
+          "label": "Third-party licenses",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        },
+        {
+          "id": "help.security",
+          "label": "Security policy",
+          "enabled": true,
+          "checked": false,
+          "accelerator": null,
+          "role": null,
+          "submenu": []
+        }
+      ]
+    }
+  ]
+}

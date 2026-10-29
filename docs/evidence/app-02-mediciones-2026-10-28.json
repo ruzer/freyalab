@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "version": "0.1.0-alpha.1",
+    "electron": "44.9.2",
+    "chromium": "152.0.7977.167",
+    "node": "24.22.0",
+    "arch": "arm64"
+  },
+  "noticesBytes": 727650,
+  "contrasts": [
+    {
+      "locale": "es",
+      "theme": "light",
+      "minimum": 4.755235656130839
+    },
+    {
+      "locale": "es",
+      "theme": "dark",
+      "minimum": 4.755235656130839
+    },
+    {
+      "locale": "en",
+      "theme": "light",
+      "minimum": 4.755235656130839
+    },
+    {
+      "locale": "en",
+      "theme": "dark",
+      "minimum": 4.755235656130839
+    }
+  ],
+  "packaged": false
+}
