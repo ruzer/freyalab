@@ -51,11 +51,11 @@
   "snapshots": {
     "src/renderer/components/Editor.svelte": "2d020031539564b3b88cbca405035108b9a30e28dccffe032dd56991675a1b75",
     "src/renderer/lib/markdown-tasks.ts": "72ef76e6b5a09161c3d6ee11f62da5cc2a462558930e9fd2af5af5de03d86875",
-    "src/renderer/lib/markdown-editing.ts": "28f9b2c1d7c0cb7832bbbcfa237e360dc4ed07dbde1325e74ca9cb6adf0e28a0",
+    "src/renderer/lib/markdown-editing.ts": "783108c794059df17f029fcc5c0de90487f30548c21a0023c6b3f1aaf51f3d8c",
     "package.json": "c97ebae3d9ea0222f6029a1c89129624fb62e1175c1f65a109fd42a600272eb0",
     "package-lock.json": "7008658adc0a5b0c85073de556f4f249fc2853005bedcaec64f777fe684ee3d9",
     "out/main/index.js": "049b8855dd6412723ff5b6b7d290ad25f461f5e8d8ac385586f8c8ec495eef51",
-    "out/renderer/index.html": "fe300762d5d00d725426ed3adb8ba1cee3b679ef980a63eada1e531f5782c04d",
+    "out/renderer/index.html": "32e27a7815ba54bd747ece9e430896b4fc6a30cf3ae3019251260aaa9cf4ddf4",
     "out/renderer/assets/CsvCharts-pai990F-.js": "8cb3d3b5db9e662ecd9f25e0fbc77260c1218405be0931fec8b2cb05e3942d95",
     "out/renderer/assets/CsvQueryTools-6YHHkZ87.js": "611941270c76a4abcaff09422117a6670ce9a0e8a29d85407267828d6794a8cf",
     "out/renderer/assets/abnfDiagram-WEYOIA3C-BetQ78J7.js": "311ab3e65c193cde42f83ebe0d64b6028c7ef4bf4ddc0e2604239890cfb7a4e4",
@@ -132,7 +132,7 @@
     "out/renderer/assets/gitGraph-VSP46ZUC-B1tMB7wQ.js": "b1cc0cd9ad27fc3a59861743cb9d23ff036bc4a675047a70376f4ee50dbb8d9d",
     "out/renderer/assets/gitGraphDiagram-PDYL7XHY-CbzyEfb2.js": "7d7cd5e28109c33826a27873146e6cffb061da23a827ae30deea68c49bcfde36",
     "out/renderer/assets/graphlib-CoAzpIqe.js": "b09d00ba63036c796b71d4812cd7ef2ee9100ed5bab398e474cd46b082983c03",
-    "out/renderer/assets/index-DqRbFKZf.js": "79b07d8de58d6f6c549833564b5933a4dee72d99b1795e7e8af0d3ee7e00f640",
+    "out/renderer/assets/index-CUzBY_vr.js": "574d040a880bce4e7360570d586e00bf45075c40ed89b72244a892173f641ec4",
     "out/renderer/assets/info-OHQRW6UA-gEV1zejs.js": "208cac665c651a64a938e67d99905e797daed388df60c4f093335101d0914cd2",
     "out/renderer/assets/infoDiagram-MVDRKAX5-B-5VN6mk.js": "9d540d8902cd242d019443ae29a1b23bcf2cca8e6ff190f967edf21bab2911d7",
     "out/renderer/assets/init-DHdG6DHP.js": "33d946e95207c8b7b7656bf326530c2561f69265125b9c0c6c8b6b9e68eb1d83",
@@ -187,19 +187,19 @@
       "label": "PEQUENO",
       "bytes": 6396,
       "sourceSHA256": "f916cbbb213a82542221f1d7438a0f7e75fbf88086b160d3321ffde9e47a939a",
-      "prepareMs": 312.6939999999995,
+      "prepareMs": 328.9652909999968,
       "navigationAttempts": 1,
       "astPreparation": "Navegar al encabezado final desde el índice enfocó el editor en esa línea; goToHeading exige syntaxTreeAvailable completo y fuente exacta. Índice cerrado antes de medir.",
       "rangeVerified": "Tras plegar el primer encabezado, el encabezado final se vuelve visible; tras desplegar, el cuerpo vuelve a aparecer.",
       "first": {
         "fold": {
-          "elapsedMs": 39.70000000298023,
+          "elapsedMs": 40.099999997764826,
           "folded": true,
           "lastHeadingVisible": true,
           "bodyVisible": false
         },
         "unfold": {
-          "elapsedMs": 41.099999997764826,
+          "elapsedMs": 40.19999999925494,
           "folded": false,
           "lastHeadingVisible": true,
           "bodyVisible": true
@@ -208,13 +208,13 @@
       "samples": [
         {
           "fold": {
-            "elapsedMs": 40,
+            "elapsedMs": 37.80000000074506,
             "folded": true,
             "lastHeadingVisible": true,
             "bodyVisible": false
           },
           "unfold": {
-            "elapsedMs": 40.100000001490116,
+            "elapsedMs": 40.099999997764826,
             "folded": false,
             "lastHeadingVisible": true,
             "bodyVisible": true
@@ -222,13 +222,13 @@
         },
         {
           "fold": {
-            "elapsedMs": 40.5,
+            "elapsedMs": 40.599999997764826,
             "folded": true,
             "lastHeadingVisible": true,
             "bodyVisible": false
           },
           "unfold": {
-            "elapsedMs": 40.100000001490116,
+            "elapsedMs": 48.19999999925494,
             "folded": false,
             "lastHeadingVisible": true,
             "bodyVisible": true
@@ -236,13 +236,27 @@
         },
         {
           "fold": {
-            "elapsedMs": 40.80000000074506,
+            "elapsedMs": 40.20000000298023,
             "folded": true,
             "lastHeadingVisible": true,
             "bodyVisible": false
           },
           "unfold": {
-            "elapsedMs": 39.30000000074506,
+            "elapsedMs": 40.19999999925494,
+            "folded": false,
+            "lastHeadingVisible": true,
+            "bodyVisible": true
+          }
+        },
+        {
+          "fold": {
+            "elapsedMs": 39.899999998509884,
+            "folded": true,
+            "lastHeadingVisible": true,
+            "bodyVisible": false
+          },
+          "unfold": {
+            "elapsedMs": 40.100000001490116,
             "folded": false,
             "lastHeadingVisible": true,
             "bodyVisible": true
@@ -256,29 +270,15 @@
             "bodyVisible": false
           },
           "unfold": {
-            "elapsedMs": 39,
-            "folded": false,
-            "lastHeadingVisible": true,
-            "bodyVisible": true
-          }
-        },
-        {
-          "fold": {
-            "elapsedMs": 40.19999999925494,
-            "folded": true,
-            "lastHeadingVisible": true,
-            "bodyVisible": false
-          },
-          "unfold": {
-            "elapsedMs": 39.899999998509884,
+            "elapsedMs": 38.80000000074506,
             "folded": false,
             "lastHeadingVisible": true,
             "bodyVisible": true
           }
         }
       ],
-      "medianFoldMs": 40.5,
-      "medianUnfoldMs": 39.899999998509884,
+      "medianFoldMs": 40.20000000298023,
+      "medianUnfoldMs": 40.100000001490116,
       "textUnchanged": true,
       "dirty": false,
       "originalFileUnchanged": true
@@ -287,19 +287,19 @@
       "label": "GRANDE",
       "bytes": 10485760,
       "sourceSHA256": "5029267a71042ca6db2e8638140daa3d82e4d687e5027459dd2487653b8a7e32",
-      "prepareMs": 4388.057165999999,
+      "prepareMs": 4456.007249999999,
       "navigationAttempts": 3,
       "astPreparation": "Navegar al encabezado final desde el índice enfocó el editor en esa línea; goToHeading exige syntaxTreeAvailable completo y fuente exacta. Índice cerrado antes de medir.",
       "rangeVerified": "Tras plegar el primer encabezado, el encabezado final se vuelve visible; tras desplegar, el cuerpo vuelve a aparecer.",
       "first": {
         "fold": {
-          "elapsedMs": 65.69999999925494,
+          "elapsedMs": 58.19999999925494,
           "folded": true,
           "lastHeadingVisible": true,
           "bodyVisible": false
         },
         "unfold": {
-          "elapsedMs": 55.399999998509884,
+          "elapsedMs": 55.5,
           "folded": false,
           "lastHeadingVisible": false,
           "bodyVisible": true
@@ -308,13 +308,13 @@
       "samples": [
         {
           "fold": {
-            "elapsedMs": 58.5,
+            "elapsedMs": 66.19999999925494,
             "folded": true,
             "lastHeadingVisible": true,
             "bodyVisible": false
           },
           "unfold": {
-            "elapsedMs": 48.400000002235174,
+            "elapsedMs": 48.599999997764826,
             "folded": false,
             "lastHeadingVisible": false,
             "bodyVisible": true
@@ -328,7 +328,7 @@
             "bodyVisible": false
           },
           "unfold": {
-            "elapsedMs": 48.30000000074506,
+            "elapsedMs": 48.600000001490116,
             "folded": false,
             "lastHeadingVisible": false,
             "bodyVisible": true
@@ -336,13 +336,13 @@
         },
         {
           "fold": {
-            "elapsedMs": 57.69999999925494,
+            "elapsedMs": 56.900000002235174,
             "folded": true,
             "lastHeadingVisible": true,
             "bodyVisible": false
           },
           "unfold": {
-            "elapsedMs": 46.80000000074506,
+            "elapsedMs": 57.100000001490116,
             "folded": false,
             "lastHeadingVisible": false,
             "bodyVisible": true
@@ -350,13 +350,13 @@
         },
         {
           "fold": {
-            "elapsedMs": 58.5,
+            "elapsedMs": 56.899999998509884,
             "folded": true,
             "lastHeadingVisible": true,
             "bodyVisible": false
           },
           "unfold": {
-            "elapsedMs": 48.5,
+            "elapsedMs": 57.19999999925494,
             "folded": false,
             "lastHeadingVisible": false,
             "bodyVisible": true
@@ -364,29 +364,29 @@
         },
         {
           "fold": {
-            "elapsedMs": 57,
+            "elapsedMs": 57.399999998509884,
             "folded": true,
             "lastHeadingVisible": true,
             "bodyVisible": false
           },
           "unfold": {
-            "elapsedMs": 48.30000000074506,
+            "elapsedMs": 48.599999997764826,
             "folded": false,
             "lastHeadingVisible": false,
             "bodyVisible": true
           }
         }
       ],
-      "medianFoldMs": 57.69999999925494,
-      "medianUnfoldMs": 48.30000000074506,
+      "medianFoldMs": 57.399999998509884,
+      "medianUnfoldMs": 48.600000001490116,
       "textUnchanged": true,
       "dirty": false,
       "originalFileUnchanged": true
     }
   ],
   "largeVersusSmall": {
-    "foldRatio": 1.4246913580062948,
-    "unfoldRatio": 1.2105263158533555
+    "foldRatio": 1.4278606963744906,
+    "unfoldRatio": 1.2119700748050908
   },
   "notVerified": [
     "rendimiento universal",

@@ -1,0 +1,396 @@
+{
+  "main": {
+    "folding": "no disponible en la interfaz",
+    "foldMs": null,
+    "unfoldMs": null,
+    "comparison": "N/D, aprobado por el propietario; no se inventa una operación ni 0 ms."
+  },
+  "method": "Latencia observable desde clic real hasta dos requestAnimationFrame; primera operación y cinco muestras posteriores por separado; preparación del AST excluida.",
+  "hardware": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "27.0.0",
+    "cpu": "Apple M2 Max",
+    "logicalCpus": 12,
+    "memoryBytes": 34359738368,
+    "node": "v24.22.1",
+    "electron": {
+      "node": "24.22.0",
+      "acorn": "8.18.0",
+      "ada": "4.0.0",
+      "amaro": "1.1.11",
+      "ares": "1.34.8",
+      "brotli": "1.2.0",
+      "cldr": "48.0",
+      "icu": "78.2",
+      "llhttp": "9.4.3",
+      "merve": "1.2.2",
+      "modules": "149",
+      "napi": "10",
+      "nbytes": "0.1.4",
+      "ncrypto": "0.0.1",
+      "nghttp2": "1.70.0",
+      "nghttp3": "",
+      "ngtcp2": "",
+      "openssl": "0.0.0",
+      "simdjson": "4.6.11",
+      "simdutf": "7.7.0",
+      "sqlite": "3.53.4",
+      "tz": "2026d",
+      "undici": "7.29.1",
+      "unicode": "17.0",
+      "uv": "1.52.1",
+      "uvwasi": "0.0.23",
+      "v8": "15.2.124.43-electron.0",
+      "zlib": "1.3.2.1-motley",
+      "zstd": "1.6.0",
+      "electron": "44.9.2",
+      "chrome": "152.0.7977.167"
+    }
+  },
+  "snapshots": {
+    "src/renderer/components/Editor.svelte": "2d020031539564b3b88cbca405035108b9a30e28dccffe032dd56991675a1b75",
+    "src/renderer/lib/markdown-tasks.ts": "72ef76e6b5a09161c3d6ee11f62da5cc2a462558930e9fd2af5af5de03d86875",
+    "src/renderer/lib/markdown-editing.ts": "28f9b2c1d7c0cb7832bbbcfa237e360dc4ed07dbde1325e74ca9cb6adf0e28a0",
+    "package.json": "c97ebae3d9ea0222f6029a1c89129624fb62e1175c1f65a109fd42a600272eb0",
+    "package-lock.json": "7008658adc0a5b0c85073de556f4f249fc2853005bedcaec64f777fe684ee3d9",
+    "out/main/index.js": "049b8855dd6412723ff5b6b7d290ad25f461f5e8d8ac385586f8c8ec495eef51",
+    "out/renderer/index.html": "fe300762d5d00d725426ed3adb8ba1cee3b679ef980a63eada1e531f5782c04d",
+    "out/renderer/assets/CsvCharts-pai990F-.js": "8cb3d3b5db9e662ecd9f25e0fbc77260c1218405be0931fec8b2cb05e3942d95",
+    "out/renderer/assets/CsvQueryTools-6YHHkZ87.js": "611941270c76a4abcaff09422117a6670ce9a0e8a29d85407267828d6794a8cf",
+    "out/renderer/assets/abnfDiagram-WEYOIA3C-BetQ78J7.js": "311ab3e65c193cde42f83ebe0d64b6028c7ef4bf4ddc0e2604239890cfb7a4e4",
+    "out/renderer/assets/analytics-BsskGkQh.js": "ff5ef8fbb4321ebd5d15025b3334eca63ed3ee8a89a52df145b091fc32eb9022",
+    "out/renderer/assets/arc-D_ePAAFz.js": "ce815d5e6ab8ae132e0ee52bb668d4c2c49a12135d3a2fc7b24722a5a31f2dc1",
+    "out/renderer/assets/architecture-WOLXFQ4H-DZicg3_9.js": "7cf08bc33f4ac084b2fd2a36507b9ca21a9686914f9f9e8bec7febd6c261b5f5",
+    "out/renderer/assets/architectureDiagram-ZHVYKT53-mHkDWZm0.js": "8d5b1427e2bea5ddc1398be9c9f53534b0bc49dc043508f2a48d7fac0635335f",
+    "out/renderer/assets/array-75Ih5Qg4.js": "ae6099a52dc079eeeba9df80edbbe013998488dcd2e21452358b93867e391227",
+    "out/renderer/assets/blockDiagram-RJAE7QA3-rtEj_5sL.js": "34d8d2afa3ebff9fbc240bbf37ed7ad8e884edc9342690f2b9cc4b782bd19f3e",
+    "out/renderer/assets/c4Diagram-XDPPPE54-ik-nDnsF.js": "07ab9bc9a41145a566dd9cf1a086b6c8c723fb9a4e4ad5b85f9954ef55c41bc9",
+    "out/renderer/assets/channel-BHnPGYNG.js": "7de12052124d2107aed85ab4a32f1deabcd990b6df526f3253474797e9637c23",
+    "out/renderer/assets/chunk-24IY7LWP-CwC8wI88.js": "dede9c5a6d5172311b2cf03c12e33278bb88236bf23ee05b59f6c6f514be4cfc",
+    "out/renderer/assets/chunk-2E7WHVMD-Dq0VnCcq.js": "ba6ef3ba1103dff0d778fe6b3fc849e6e7044fcd4ef2a34ecb40412184461c4d",
+    "out/renderer/assets/chunk-2Q5K7J3B-BBOGhvIe.js": "dcf56fcc7f512abfa6f0629bd20ea54ff2eae5d7ff3ad1efdcae0b14fc8a4c02",
+    "out/renderer/assets/chunk-3M4EKCLJ-BgE1Sqjk.js": "18cd972cff2e8dbb0d7dbec300d9db9ace5ff78ff8997f0bdf9f435320dce765",
+    "out/renderer/assets/chunk-4EMNKR2T--2D2PJkN.js": "ce7c4ad6f774bf67133238f3c2d2c7417ccb8f8c29460733701a52f84db7c3c0",
+    "out/renderer/assets/chunk-4S7OKTRW-CHR1KNPa.js": "5b3da714c27a141a7874e5190fcaffaaaa2b982eb14b816201fe87ed168f5455",
+    "out/renderer/assets/chunk-53FOQ5SW-BfuXGaus.js": "8ee663ddea0b6181c39e91e71052db3739e46963fb56a035c6a68d52f3235d09",
+    "out/renderer/assets/chunk-55XCU76K-CeW0lqj1.js": "b641bf6b2ae7c0853c378b80bf9e5b2e5aba753e2d8e0faa6330fb34d0f06547",
+    "out/renderer/assets/chunk-5VM5RSS4-D50WUAUX.js": "c32e3de68ed0ec448d54e84bfe5113db896fd92959d314eafabe4cc816db3ccf",
+    "out/renderer/assets/chunk-7S6XSTFO-DXJnZd5J.js": "923617126e16207d30ad758461a209ee41f06a1047b9bb5aa3b14cc80ad3e08b",
+    "out/renderer/assets/chunk-AQDTSKZB-BLC3vmLn.js": "9cf3571dbfeb9eca57f38586a47b0022ceb4cbb16396191dbe7d192b15a00bdb",
+    "out/renderer/assets/chunk-BP2KR52E-CkORqI5g.js": "bca3ce1f15ad7507ae26f3fe0b184bb1267b09dbb276a7efaf2a5e300a0aac5a",
+    "out/renderer/assets/chunk-DSNLSHJZ-DNeZSIjg.js": "c438d9c15b2c5f0b901eba01fb038b9a7b459d1768a499de39d533c769ade286",
+    "out/renderer/assets/chunk-DUW6YSOI-DlYxg74G.js": "3a22c1893985427e3741a2700e0e459de3f184b743199966c58b5f7e9607fb99",
+    "out/renderer/assets/chunk-EJLWFMJV-DSfgRcIb.js": "0e0e15671421a24afc53cd69f0647d067056220b5d63cd5c0bd74154cf47189b",
+    "out/renderer/assets/chunk-F6S3BTY2-Dj5140J2.js": "096a10c8d1b12a827546ddd47c6c6aaff4207052b7dc3848ef0bb3dd62de06cd",
+    "out/renderer/assets/chunk-HAGFOTED-CKgnnSxS.js": "1c0d073a0b7aab2d583c9cf6f64ccb5c3a96ddfee011e536f471e910262c6713",
+    "out/renderer/assets/chunk-HNE4Q36P-CZU_ZHb5.js": "1ba35ed1b2f090839c7daf32433a1f80bcdb0602e61fe532cbb42104a19f253e",
+    "out/renderer/assets/chunk-J5ZVWO5B-B9vpyeuw.js": "832702fdc71342d8b557a2d35eb677422dea754c82645ca8632c0441d7fdd4a2",
+    "out/renderer/assets/chunk-JWPE2WC7-BWmaSNkB.js": "f127a148038f310c8b2219a52d4778c99ebca44101b485d15609aaefd3a41f62",
+    "out/renderer/assets/chunk-KPI5JJXK-DeXNwlOn.js": "97d43eb0bba7e53acdd6f568b5cc2515a10563c3b8f38b33406d77b910abac55",
+    "out/renderer/assets/chunk-LNGE3PJU-Imzk1uLQ.js": "5ed390e2b132f654ab7ea907362b265933bd4eab48e187892b27fe39827d4884",
+    "out/renderer/assets/chunk-NGNAAXSQ-BrJzwqKJ.js": "69fc1313250cc4137fda51f2995b290ecf8451ff98c5302ed537e26faf0d6d63",
+    "out/renderer/assets/chunk-NQOKRVIF-BWv4nHva.js": "fa4339ba0733903d8d165fa7431e24bab9f955a81bcda1357632aa372aeb533d",
+    "out/renderer/assets/chunk-OD3NTWWA-CPFDk4g-.js": "0c177ec4fc5368ae73c5d58b68bf9f37c008c1b51ffd64da8599838b2972a93b",
+    "out/renderer/assets/chunk-OYAV6JZA-DOhl7CVC.js": "f5719f4094c8b7063d507aec8bd73705d207b24e1dcc4ce6dd419a8b4d492b94",
+    "out/renderer/assets/chunk-QNH66VMT-BNIYTn7d.js": "8b8c3683870116546840da80bf842011fdf5b43315b8f5be427be1e4f1411cf0",
+    "out/renderer/assets/chunk-TPMEZKFX-C4SUjz3f.js": "436f4bc67b727506bb225270c808c1519b14008cf34d3c5460771addcdeaa929",
+    "out/renderer/assets/chunk-UHW7PFBP-DDyh5FrQ.js": "1924aad346226b705e276290480d96aa2ec6c71a51b89c4e6b0f79cdaa572532",
+    "out/renderer/assets/chunk-VPELOWWC-Be3XvsVM.js": "8170064125cb8409e37aaa028c3733980ab84c879c15d286e132e2c2a843784b",
+    "out/renderer/assets/chunk-VQ5W62QI-DBkIilzD.js": "cb31938f92af0910d625e67ed109ac0a36cf19517c474a934c0cb32601a31b74",
+    "out/renderer/assets/chunk-VTWWFHGB-sHmL-9kX.js": "089d96bd8eed127690d8aae16842aaf09dbe8f817e7412399376bd4b88b09021",
+    "out/renderer/assets/chunk-VZTHESGH-CmI5m6E0.js": "3396934d781f5748133732869f400021249e5377c0e604626f8463729c53ae7b",
+    "out/renderer/assets/chunk-WQQL4CDK-CzcFdQZU.js": "91716b17a6703e4e4716cfecf3e56f2de6d0dee0afd28a0f551712106e0a93be",
+    "out/renderer/assets/chunk-XXDRQBXY-C3sUuFMG.js": "13027a2f0a12fa661e804c6d42ac8ccc0bf8e877e4e650521ffdc20b74f55d92",
+    "out/renderer/assets/chunk-Y2CYZVJY-CrOJDJJy.js": "049ae2773a6e5d75bad7c144054f9b8ae022957a97d576cef35958c91a13bfc3",
+    "out/renderer/assets/chunk-YK26KJH5-CGnUeZPo.js": "f68be2e800aa4f61702c50ec64dc7c2afdaaed4e2e60b45871b305228bf43ff6",
+    "out/renderer/assets/chunk-YZO67HFG-IjKRkS2m.js": "3cd4641cfe8e1f7c6a0066fd22aa348cc685f6ef6aa8f5ec2d896be88ddadafd",
+    "out/renderer/assets/chunk-ZAUX2LTX-DOAimr8i.js": "11bccb51ee0476b3b6fbad37a4aa8f9d8a42fd48e33b18db3c4370612d477237",
+    "out/renderer/assets/chunk-ZCHMQSOR-ClI4bcXT.js": "f7f5c540abe7d1cbae45ca49ee52fafe8f38d99eafb5e5c40e0a2898ea5faf5b",
+    "out/renderer/assets/chunk-ZO67DCNQ-Bby80di8.js": "9ad696440290a7acaaf1d72e2071f1f56c27516f635b827d290b9f0b6c18bea4",
+    "out/renderer/assets/classDiagram-v2-4MYWR3UA-nqikYcUD.js": "61ba1794e0bbf89afe3decd46fc2cf73552c748060f7dc69c086655135d51536",
+    "out/renderer/assets/cose-bilkent-JH36ORCC-BRQU1qls.js": "f88279f16830963e42b393572ffca0ebf62190b29983f2aac459d71c2b5ab294",
+    "out/renderer/assets/cynefin-EF2NZ3EQ-Db8iwUkq.js": "07f681817f11e8d06c8f074bb1acd6a2d61f985e09d3895690d8ae902f1d03e7",
+    "out/renderer/assets/cynefinDiagram-WF24UDRP-DsjUpMF2.js": "be8bd68ce447f3709eedc2e38a25650d27e30505d5fa79292619f6c8dbc5c367",
+    "out/renderer/assets/cytoscape.esm-60rPTwMl.js": "45940b655fe16a0d8cc8e52fe6587073d08af42d1d827e90c2ed04073f234a1a",
+    "out/renderer/assets/dagre-NK4GIZVX-sH1YxIst.js": "03b3d6e646cfdd2b095ee804134ff27d2a7d593784533e3adf926292d528520e",
+    "out/renderer/assets/defaultLocale-QNqK0iCN.js": "76a05542968f9a96c1b8d2b7c02458e69e621cb59fb31c55e602968f02bd0ef1",
+    "out/renderer/assets/diagram-CBK3MWTC-B2Xj7sU9.js": "34215b4d7cf45b55afa29e38eb46bc3fd8231100f0d144e353670dba33b777d7",
+    "out/renderer/assets/diagram-I5XIIV2D-RhQBFMtu.js": "72161883a5e0e9b5ef8f8b0199232b0a5ecdfdcd8f20482474cd7ae553132afc",
+    "out/renderer/assets/diagram-ODIL2UCW-CPHcLJEd.js": "6a3ccb90f3ce67f848a0100b92a28b759f5a11bd2562100b6fcbf698a02d32b3",
+    "out/renderer/assets/diagram-PFBEJUXE-Z49Os0rL.js": "de7a5ce9c610a1f30ddd6684f4048681ecbbf3fe28abf9e5871a4da1797baa9a",
+    "out/renderer/assets/diagram-RJA3I4VV-CFfoEmoi.js": "added5af7283e70534042642800c697502b0f75d89c300de398ebb1bf3912606",
+    "out/renderer/assets/diagram-TYUNFSNR-C79hQYvo.js": "06aadd040f6c134237111dbfb59e257a714ae798cd7d63f8c53c82c6696aaa9b",
+    "out/renderer/assets/dist-DNPS7LEn.js": "8f01c4d2a3b00d0a8b9ee74db5e2c7f1b70cb25ea2a779545ea3d318422c67e8",
+    "out/renderer/assets/duckdb-browser-eh.worker-CwdVMcbT.js": "fa889e6068c40426dea67c08cf16ce0cad7404eae94f6a2522adcabb5898eb93",
+    "out/renderer/assets/ebnfDiagram-V4P3TTPT-CU2ZBEMH.js": "7abe05396d5ff0bf45eca4087a58d403b00a9eaaf7da71e77c647c02959bed9d",
+    "out/renderer/assets/elk-QONTBCTQ-CJtOxWx_.js": "db81f6f76b3c74bda56bacbe80bc0e9d42f0b7cd8633b5d3a1da36c78bc67362",
+    "out/renderer/assets/erDiagram-KYQIGQAA-DGIpERLW.js": "ff37ab6d605d8bb133bb6ce469afcd4e972d96d45b222868113f4f27d4953cf7",
+    "out/renderer/assets/eventmodeling-K75KTNOO-BcthmUAJ.js": "f6986e0d849c657600625ee038351b7e0567e5ba3a4bca76bb8c21eab98e16b3",
+    "out/renderer/assets/flowDiagram-IUGLLWBU-B4nN5pxU.js": "359e9c30d5c4429e82d286ae5f1ea0648fe2e990aad57d84818723f478e34e41",
+    "out/renderer/assets/ganttDiagram-R7GPNTJY-B4x970i4.js": "deeb3573f544f2c4c5b865c8812d79c9722b206d83a184b0df177ed11f57e41c",
+    "out/renderer/assets/gitGraph-VSP46ZUC-B1tMB7wQ.js": "b1cc0cd9ad27fc3a59861743cb9d23ff036bc4a675047a70376f4ee50dbb8d9d",
+    "out/renderer/assets/gitGraphDiagram-PDYL7XHY-CbzyEfb2.js": "7d7cd5e28109c33826a27873146e6cffb061da23a827ae30deea68c49bcfde36",
+    "out/renderer/assets/graphlib-CoAzpIqe.js": "b09d00ba63036c796b71d4812cd7ef2ee9100ed5bab398e474cd46b082983c03",
+    "out/renderer/assets/index-DqRbFKZf.js": "79b07d8de58d6f6c549833564b5933a4dee72d99b1795e7e8af0d3ee7e00f640",
+    "out/renderer/assets/info-OHQRW6UA-gEV1zejs.js": "208cac665c651a64a938e67d99905e797daed388df60c4f093335101d0914cd2",
+    "out/renderer/assets/infoDiagram-MVDRKAX5-B-5VN6mk.js": "9d540d8902cd242d019443ae29a1b23bcf2cca8e6ff190f967edf21bab2911d7",
+    "out/renderer/assets/init-DHdG6DHP.js": "33d946e95207c8b7b7656bf326530c2561f69265125b9c0c6c8b6b9e68eb1d83",
+    "out/renderer/assets/ishikawaDiagram-HPEHV2GE-BgrSXzFG.js": "d049f3824241a8b015607085622717f0ac88688c82c881f1aa3f3752f74036fd",
+    "out/renderer/assets/journeyDiagram-BOSHW7O7-J3NSXSc6.js": "b6125237e45905fd9b4e5f5e0d0be429d24e50f605f7b1b4f1ec1059edd559ba",
+    "out/renderer/assets/kanban-definition-FNSA4HC5-BgqLcrYV.js": "a4d38ab10812c6d7345d02a097e4e883be9b6ad4a8d3181f33a6263406d2c6b8",
+    "out/renderer/assets/katex-CcU_XpP_.js": "db1957a7f93f95d97e50ecd296eaff2e5f5226d65c12e838acaf9ec09868c40e",
+    "out/renderer/assets/line-bCslTS1G.js": "7245ab45e2a9231fa0fb99659c7734998c80d41fd56e0e68baf73b4955e301cd",
+    "out/renderer/assets/linear-16KHe2WU.js": "2b76e7fe4a242d4e99ee765b42ac041fdbef61abb5c14b2e99dccb7f406a10af",
+    "out/renderer/assets/mermaid-parser.core-L0KhnJth.js": "d5bf1955df9fa27357cf7b099d602a5f3db7976236a7fac66d6f67caceb67558",
+    "out/renderer/assets/mermaid.core-C40znVaU.js": "238d67a1e87fbed30ce84b863e5574cfde4f3b89db9ec0cbb7f159625ab0454e",
+    "out/renderer/assets/mindmap-definition-6OY57UG3-CaY12AAi.js": "c8dcc7e89c5fbadddb031edbdda1c5b60d993368a5e9525f9700002adf21bd51",
+    "out/renderer/assets/ordinal-CmpyCcm_.js": "5d6b30f2bb3960f5065578cf57e93825cdd711ac7dcc5a80a6309cc81b4acdbb",
+    "out/renderer/assets/packet-JDAUHWVQ-1fDUfyyq.js": "c7d31c635c49699d16c823b5003f33e70fb349160a4a3f60cbd944ef95ed5305",
+    "out/renderer/assets/path-CSWwviF2.js": "10a720164a71dde8a67f809744728e99ef7b20944e456fdc02cc13e64544061e",
+    "out/renderer/assets/pegDiagram-ECIUJNBX-BVEmwN3n.js": "539c39d1bed5d4b6b8839a9ab2c80158f59e3696c1f7d2e1a9125083aedc0eb4",
+    "out/renderer/assets/pie-XZMESJXO-DdXdzNE0.js": "26f8b2d51f7772a8890d3e2d2ddd4eb3457be452a86d5b8560b29cf38c7d7d52",
+    "out/renderer/assets/pieDiagram-GNMPY74T-LFLmXQQR.js": "b8fba556107571def40f51df92af2cdad973b745c9b7d2dddc0cd07197ba7c19",
+    "out/renderer/assets/preload-helper-CRqqVDM6.js": "1bb4798e14050b12caa43ac65a9ffeedad48c5d45fd7fba7dbd926410c1827ed",
+    "out/renderer/assets/purify.es-CYQbyTCf.js": "70e9ab4ed2d375a488e3eea71e24bf4e87a3caee663baccdc8e89b61cc9c352f",
+    "out/renderer/assets/purify.es-folBYTNv.js": "4072946c8f292516a03cc86ffb32e203e102f424fb54cd2de7ef150a2123ca3f",
+    "out/renderer/assets/quadrantDiagram-D57K4MC3-CyibtY9T.js": "9de4ab2546a9e0a196de1113105073ea191bd459c1631ab2e06b0484762643b8",
+    "out/renderer/assets/radar-ABXABTNO-Cq9IAY65.js": "16a85f54fbffee83d76418b0ff32f361127892ef202a8b5cdaae27073eefaa7d",
+    "out/renderer/assets/railroad-I3PHUGI6-BIvNS-fI.js": "2a1eaa48d95e61f022f89a1b454ac9f4b3545a2d15bc8a3704813cb1a3e6d3cf",
+    "out/renderer/assets/railroad-abnf-LNEFI6M7-xXkFOfu3.js": "256f70a0d9d67d01a0f545e601ea53d99bba3ec1fb071aeb604677e92a11ddf9",
+    "out/renderer/assets/railroad-ebnf-DWYD2UWJ-B1VZf1WY.js": "ab2d5c03f4029bd522b0d8317158d1a7055b930e79bd04105999149304b83797",
+    "out/renderer/assets/railroad-peg-JR7BVNR7-rM3VZyG8.js": "978f6cc8ea890d316883607dfb04ab61ae219c03fb2fc3b53739f334970c983e",
+    "out/renderer/assets/railroadDiagram-Y72NRBL7-CwhljZpc.js": "7ca576b8beaeea889a5eb319456add3419ae04978f65d7d09b5a00a15d196a35",
+    "out/renderer/assets/requirementDiagram-EQYSW5RA-DaL5s907.js": "f418f90f7a27999c9fb5137f4fd39b7431da113c889bead24a57b2e937d0fa53",
+    "out/renderer/assets/rolldown-runtime-DbVrKiKs.js": "b3dae4ef52ea539ffcb07c6a8933fd4860891094bfc007ef365ebededb605cd3",
+    "out/renderer/assets/rough.esm-BX5QqLti.js": "96baf13b3621a6fbd3d899281bcc7b05adc54418b9560077fde4f9ca7eb8f631",
+    "out/renderer/assets/sankeyDiagram-SY24JHO5-vFJ8iYVd.js": "5e8926b5db77b7d708b54f1c80954f6d6a03396848dabb192a0c7ff70c61fb1b",
+    "out/renderer/assets/sequenceDiagram-BLEHNHQU-BYDQKFVa.js": "d7e2b2a39f81d60a00e389a4fbea2649a8cf9a00ef8d88a0802efd9f2e033015",
+    "out/renderer/assets/sizeCapture-INFHLROL-CCEMv_MJ.js": "cbbace44c86134832c08757b52c1a729569c3847db79a565f525fc1d2a7b6253",
+    "out/renderer/assets/sql-helpers-6cTd0PUp.js": "f593f1ccb9b41367a8e2cba46bbe0a57060f49a8c0d71b32172834fc5d59566f",
+    "out/renderer/assets/src-B7kTrJr0.js": "417a40094e9e850392f0679aa45fe79f588b57b17f6f63bdf79228e87e94eaee",
+    "out/renderer/assets/stateDiagram-v2-A6IESKWZ-BJalWba5.js": "40508716b4ea5040d743d9bd2302fc0208e2289b8a1c766ec67155fa069c78b4",
+    "out/renderer/assets/swimlanes-B3ENRKFQ-Cb9U4txd.js": "7ca174cc78bdeb0dd86e4477fbeb9f60442f6f1b696b5829ca8c744d045087ec",
+    "out/renderer/assets/swimlanesDiagram-AYQRV4AK-DPy7pFPb.js": "590b81885f44574916bc8befe472b1c3cedcac5990b03eb7ec6287b3fb38fe8e",
+    "out/renderer/assets/text-stats.worker-D21v8VlD.js": "e3ec3f8c402aedc5fd0a8bdb02d8bf292e91666c04bbdd56e8f77f3511f1e970",
+    "out/renderer/assets/timeline-definition-JXYKGLGB-D9m1BYZU.js": "aedb096fb7aa497502dec5ea1158aae20690ff888a2ff69d62e05e5e335ee896",
+    "out/renderer/assets/treeView-D4JQ5SDB-DPCnlDQz.js": "9ca60c526f43961522b7305c21cf3ad57df286442b8a1e6e77e4dbf626c037be",
+    "out/renderer/assets/treemap-SAJKECNS-CIU95kWh.js": "a792a831d18f9c93ed6c2885e202fe85c67a555eadb7a4c2a5e05c636cdea809",
+    "out/renderer/assets/usecaseDiagram-WPOLBNNX-CIkE3hPy.js": "32c405278c3ec80873897f854cde6f8abc74c740a141a52913853c4e67a8c102",
+    "out/renderer/assets/vennDiagram-Q3Y3IDCW-BvSVfZ1L.js": "f7d05288f72ae3a13dc8c8e7a5665112abc9ccb1cf82e70eecd9c3c4bdc90467",
+    "out/renderer/assets/wardley-7MLQ67FV-ChAmwxM_.js": "e46de447e9225a3b5be3cedd8fdbc78e6b39f642b660c1455b481144b3585fa3",
+    "out/renderer/assets/wardleyDiagram-IVAIDKWA-BdTvjB1z.js": "614a0b88d4d0b76c56835a7f17bac01d78210617af05eeb8cdc27db91fd74841",
+    "out/renderer/assets/xychartDiagram-4URNHDU4-Estya0IR.js": "878ddad55d7963acb47787b793d9ecf0540284cf27ab3eb352441605381ee5c9"
+  },
+  "results": [
+    {
+      "label": "PEQUENO",
+      "bytes": 6396,
+      "sourceSHA256": "f916cbbb213a82542221f1d7438a0f7e75fbf88086b160d3321ffde9e47a939a",
+      "prepareMs": 312.6939999999995,
+      "navigationAttempts": 1,
+      "astPreparation": "Navegar al encabezado final desde el índice enfocó el editor en esa línea; goToHeading exige syntaxTreeAvailable completo y fuente exacta. Índice cerrado antes de medir.",
+      "rangeVerified": "Tras plegar el primer encabezado, el encabezado final se vuelve visible; tras desplegar, el cuerpo vuelve a aparecer.",
+      "first": {
+        "fold": {
+          "elapsedMs": 39.70000000298023,
+          "folded": true,
+          "lastHeadingVisible": true,
+          "bodyVisible": false
+        },
+        "unfold": {
+          "elapsedMs": 41.099999997764826,
+          "folded": false,
+          "lastHeadingVisible": true,
+          "bodyVisible": true
+        }
+      },
+      "samples": [
+        {
+          "fold": {
+            "elapsedMs": 40,
+            "folded": true,
+            "lastHeadingVisible": true,
+            "bodyVisible": false
+          },
+          "unfold": {
+            "elapsedMs": 40.100000001490116,
+            "folded": false,
+            "lastHeadingVisible": true,
+            "bodyVisible": true
+          }
+        },
+        {
+          "fold": {
+            "elapsedMs": 40.5,
+            "folded": true,
+            "lastHeadingVisible": true,
+            "bodyVisible": false
+          },
+          "unfold": {
+            "elapsedMs": 40.100000001490116,
+            "folded": false,
+            "lastHeadingVisible": true,
+            "bodyVisible": true
+          }
+        },
+        {
+          "fold": {
+            "elapsedMs": 40.80000000074506,
+            "folded": true,
+            "lastHeadingVisible": true,
+            "bodyVisible": false
+          },
+          "unfold": {
+            "elapsedMs": 39.30000000074506,
+            "folded": false,
+            "lastHeadingVisible": true,
+            "bodyVisible": true
+          }
+        },
+        {
+          "fold": {
+            "elapsedMs": 40.69999999925494,
+            "folded": true,
+            "lastHeadingVisible": true,
+            "bodyVisible": false
+          },
+          "unfold": {
+            "elapsedMs": 39,
+            "folded": false,
+            "lastHeadingVisible": true,
+            "bodyVisible": true
+          }
+        },
+        {
+          "fold": {
+            "elapsedMs": 40.19999999925494,
+            "folded": true,
+            "lastHeadingVisible": true,
+            "bodyVisible": false
+          },
+          "unfold": {
+            "elapsedMs": 39.899999998509884,
+            "folded": false,
+            "lastHeadingVisible": true,
+            "bodyVisible": true
+          }
+        }
+      ],
+      "medianFoldMs": 40.5,
+      "medianUnfoldMs": 39.899999998509884,
+      "textUnchanged": true,
+      "dirty": false,
+      "originalFileUnchanged": true
+    },
+    {
+      "label": "GRANDE",
+      "bytes": 10485760,
+      "sourceSHA256": "5029267a71042ca6db2e8638140daa3d82e4d687e5027459dd2487653b8a7e32",
+      "prepareMs": 4388.057165999999,
+      "navigationAttempts": 3,
+      "astPreparation": "Navegar al encabezado final desde el índice enfocó el editor en esa línea; goToHeading exige syntaxTreeAvailable completo y fuente exacta. Índice cerrado antes de medir.",
+      "rangeVerified": "Tras plegar el primer encabezado, el encabezado final se vuelve visible; tras desplegar, el cuerpo vuelve a aparecer.",
+      "first": {
+        "fold": {
+          "elapsedMs": 65.69999999925494,
+          "folded": true,
+          "lastHeadingVisible": true,
+          "bodyVisible": false
+        },
+        "unfold": {
+          "elapsedMs": 55.399999998509884,
+          "folded": false,
+          "lastHeadingVisible": false,
+          "bodyVisible": true
+        }
+      },
+      "samples": [
+        {
+          "fold": {
+            "elapsedMs": 58.5,
+            "folded": true,
+            "lastHeadingVisible": true,
+            "bodyVisible": false
+          },
+          "unfold": {
+            "elapsedMs": 48.400000002235174,
+            "folded": false,
+            "lastHeadingVisible": false,
+            "bodyVisible": true
+          }
+        },
+        {
+          "fold": {
+            "elapsedMs": 57.399999998509884,
+            "folded": true,
+            "lastHeadingVisible": true,
+            "bodyVisible": false
+          },
+          "unfold": {
+            "elapsedMs": 48.30000000074506,
+            "folded": false,
+            "lastHeadingVisible": false,
+            "bodyVisible": true
+          }
+        },
+        {
+          "fold": {
+            "elapsedMs": 57.69999999925494,
+            "folded": true,
+            "lastHeadingVisible": true,
+            "bodyVisible": false
+          },
+          "unfold": {
+            "elapsedMs": 46.80000000074506,
+            "folded": false,
+            "lastHeadingVisible": false,
+            "bodyVisible": true
+          }
+        },
+        {
+          "fold": {
+            "elapsedMs": 58.5,
+            "folded": true,
+            "lastHeadingVisible": true,
+            "bodyVisible": false
+          },
+          "unfold": {
+            "elapsedMs": 48.5,
+            "folded": false,
+            "lastHeadingVisible": false,
+            "bodyVisible": true
+          }
+        },
+        {
+          "fold": {
+            "elapsedMs": 57,
+            "folded": true,
+            "lastHeadingVisible": true,
+            "bodyVisible": false
+          },
+          "unfold": {
+            "elapsedMs": 48.30000000074506,
+            "folded": false,
+            "lastHeadingVisible": false,
+            "bodyVisible": true
+          }
+        }
+      ],
+      "medianFoldMs": 57.69999999925494,
+      "medianUnfoldMs": 48.30000000074506,
+      "textUnchanged": true,
+      "dirty": false,
+      "originalFileUnchanged": true
+    }
+  ],
+  "largeVersusSmall": {
+    "foldRatio": 1.4246913580062948,
+    "unfoldRatio": 1.2105263158533555
+  },
+  "notVerified": [
+    "rendimiento universal",
+    "lector de pantalla físico",
+    "caché fría del sistema operativo"
+  ]
+}
