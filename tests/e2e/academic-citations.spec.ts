@@ -32,6 +32,8 @@ test('AC-03 · citas, problemas y recarga bibliográfica conservan el archivo',a
   const current=await page.evaluate(async id=>(await window.freya.documents()).find(document=>document.id===id),document.id)
   expect(current?.text).toBe(source+'\n\nTexto nuevo.');expect(current?.dirty).toBe(true)
   const before=source+'\n\nTexto nuevo.'
+  // Enter debe aceptar la opción visible aunque no haya avanzado el reloj.
+  await page.evaluate(()=>{const now=Date.now();Date.now=()=>now})
   for(const theme of ['light','dark']){
    await page.getByLabel('Tema',{exact:true}).selectOption(theme)
    await page.locator('.cm-content').click();await page.keyboard.press('ControlOrMeta+End');await page.keyboard.insertText('\n\n[@gar')

@@ -123,7 +123,7 @@
   let session=textSessions.get(doc.id)
   if(!session){
    session=createMarkdownSession(doc.text??'')
-   session.state=session.state.update({effects:StateEffect.appendConfig.of(autocompletion({override:[context=>completeCitations(context,async()=>{
+   session.state=session.state.update({effects:StateEffect.appendConfig.of(autocompletion({interactionDelay:0,override:[context=>completeCitations(context,async()=>{
     const source=context.state.sliceDoc();await pending.get(doc.id)
     if(context.aborted)return[]
     const library=await window.freya.bibliography(doc.id,source)
