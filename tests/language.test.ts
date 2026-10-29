@@ -18,4 +18,13 @@ describe('I18N-01 · estado en memoria y entorno de pruebas',()=>{
   expect(changeLanguage('es')).toEqual({preference:'es',language:'es'})
   expect(changeLanguage('sistema')).toEqual({preference:'sistema',language:'en'})
  })
+ it('APP-03 · restaura la preferencia persistida al iniciar sin perder la resolución Sistema',()=>{
+  expect(initializeLanguage(['es-MX'],{},'en')).toEqual({preference:'en',language:'en'})
+  expect(initializeLanguage(['en-US'],{},'es')).toEqual({preference:'es',language:'es'})
+  expect(initializeLanguage(['es-MX'],{},'sistema')).toEqual({preference:'sistema',language:'es'})
+ })
+ it('APP-03 · la preferencia persistida conserva el entorno de pruebas sin convertirlo en ajuste',()=>{
+  expect(initializeLanguage(['en-US'],{FREYALAB_TEST:'1',FREYALAB_LANG:'en-XA'},'es')).toEqual({preference:'es',language:'en-XA'})
+ })
+
 })
