@@ -1,0 +1,12 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/updates.test.ts -t cancelar durante|cancelar aborta
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-lote2/actualizaciones
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed | 25 skipped (27)
+   Start at  12:37:57
+   Duration  151ms (import 54%, transform 25%, tests 19%, worker 2%)

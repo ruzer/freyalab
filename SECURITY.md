@@ -5,6 +5,7 @@ La alfa está en desarrollo y todavía no dispone de una auditoría independient
 ## Diseño
 
 - Contenido y recursos de la app incluidos localmente; sin telemetría, cuentas o servicios remotos obligatorios.
+- La única conexión de red de la aplicación es la comprobación de actualizaciones: una petición HTTPS `GET` a `api.github.com` desde el proceso principal, que la persona inicia o activa en Ajustes (desactivada por omisión). No envía identificadores ni datos de documentos, no descarga ni instala nada, y el renderer sigue sin acceso a la red (`connect-src 'self'`).
 - Renderer aislado, sandbox activo e integración de Node desactivada. El puente expone operaciones concretas y valida los mensajes en ejecución.
 - Markdown saneado, Mermaid en modo estricto y recursos remotos bloqueados por defecto.
 - Los documentos exportados se generan en una ventana sin el puente de archivos.

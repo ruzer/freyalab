@@ -1,0 +1,386 @@
+[
+  {
+    "locale": "es",
+    "theme": "light",
+    "width": 1440,
+    "height": 900,
+    "state": "held",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "width": 1440,
+    "height": 900,
+    "state": "available",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "width": 1440,
+    "height": 900,
+    "state": "current",
+    "minimum": 13.65530438837685
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "width": 1440,
+    "height": 900,
+    "state": "error",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "width": 720,
+    "height": 600,
+    "state": "held",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "width": 720,
+    "height": 600,
+    "state": "available",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "width": 720,
+    "height": 600,
+    "state": "current",
+    "minimum": 13.65530438837685
+  },
+  {
+    "locale": "es",
+    "theme": "light",
+    "width": 720,
+    "height": 600,
+    "state": "error",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "width": 1440,
+    "height": 900,
+    "state": "held",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "width": 1440,
+    "height": 900,
+    "state": "available",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "width": 1440,
+    "height": 900,
+    "state": "current",
+    "minimum": 12.65036310287001
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "width": 1440,
+    "height": 900,
+    "state": "error",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "width": 720,
+    "height": 600,
+    "state": "held",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "width": 720,
+    "height": 600,
+    "state": "available",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "width": 720,
+    "height": 600,
+    "state": "current",
+    "minimum": 12.65036310287001
+  },
+  {
+    "locale": "es",
+    "theme": "dark",
+    "width": 720,
+    "height": 600,
+    "state": "error",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "width": 1440,
+    "height": 900,
+    "state": "held",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "width": 1440,
+    "height": 900,
+    "state": "available",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "width": 1440,
+    "height": 900,
+    "state": "current",
+    "minimum": 13.65530438837685
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "width": 1440,
+    "height": 900,
+    "state": "error",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "width": 720,
+    "height": 600,
+    "state": "held",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "width": 720,
+    "height": 600,
+    "state": "available",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "width": 720,
+    "height": 600,
+    "state": "current",
+    "minimum": 13.65530438837685
+  },
+  {
+    "locale": "en",
+    "theme": "light",
+    "width": 720,
+    "height": 600,
+    "state": "error",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "width": 1440,
+    "height": 900,
+    "state": "held",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "width": 1440,
+    "height": 900,
+    "state": "available",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "width": 1440,
+    "height": 900,
+    "state": "current",
+    "minimum": 12.65036310287001
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "width": 1440,
+    "height": 900,
+    "state": "error",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "width": 720,
+    "height": 600,
+    "state": "held",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "width": 720,
+    "height": 600,
+    "state": "available",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "width": 720,
+    "height": 600,
+    "state": "current",
+    "minimum": 12.65036310287001
+  },
+  {
+    "locale": "en",
+    "theme": "dark",
+    "width": 720,
+    "height": 600,
+    "state": "error",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en-XA",
+    "theme": "light",
+    "width": 1440,
+    "height": 900,
+    "state": "held",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en-XA",
+    "theme": "light",
+    "width": 1440,
+    "height": 900,
+    "state": "available",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en-XA",
+    "theme": "light",
+    "width": 1440,
+    "height": 900,
+    "state": "current",
+    "minimum": 13.65530438837685
+  },
+  {
+    "locale": "en-XA",
+    "theme": "light",
+    "width": 1440,
+    "height": 900,
+    "state": "error",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en-XA",
+    "theme": "light",
+    "width": 720,
+    "height": 600,
+    "state": "held",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en-XA",
+    "theme": "light",
+    "width": 720,
+    "height": 600,
+    "state": "available",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en-XA",
+    "theme": "light",
+    "width": 720,
+    "height": 600,
+    "state": "current",
+    "minimum": 13.65530438837685
+  },
+  {
+    "locale": "en-XA",
+    "theme": "light",
+    "width": 720,
+    "height": 600,
+    "state": "error",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en-XA",
+    "theme": "dark",
+    "width": 1440,
+    "height": 900,
+    "state": "held",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en-XA",
+    "theme": "dark",
+    "width": 1440,
+    "height": 900,
+    "state": "available",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en-XA",
+    "theme": "dark",
+    "width": 1440,
+    "height": 900,
+    "state": "current",
+    "minimum": 12.65036310287001
+  },
+  {
+    "locale": "en-XA",
+    "theme": "dark",
+    "width": 1440,
+    "height": 900,
+    "state": "error",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en-XA",
+    "theme": "dark",
+    "width": 720,
+    "height": 600,
+    "state": "held",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en-XA",
+    "theme": "dark",
+    "width": 720,
+    "height": 600,
+    "state": "available",
+    "minimum": 4.755235656130839
+  },
+  {
+    "locale": "en-XA",
+    "theme": "dark",
+    "width": 720,
+    "height": 600,
+    "state": "current",
+    "minimum": 12.65036310287001
+  },
+  {
+    "locale": "en-XA",
+    "theme": "dark",
+    "width": 720,
+    "height": 600,
+    "state": "error",
+    "minimum": 4.755235656130839
+  }
+]

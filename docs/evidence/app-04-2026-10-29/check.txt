@@ -1,0 +1,8 @@
+
+> freyalab@0.1.0-alpha.1 check
+> svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json --noEmit
+
+Loading svelte-check in workspace: /private/tmp/freyalab-lote2/actualizaciones
+Getting Svelte diagnostics...
+
+svelte-check found 0 errors and 0 warnings

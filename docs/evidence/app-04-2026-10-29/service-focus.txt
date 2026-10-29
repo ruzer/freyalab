@@ -1,0 +1,12 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/updates.test.ts tests/updates-preload.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-lote2/actualizaciones
+
+
+ Test Files  2 passed (2)
+      Tests  27 passed (27)
+   Start at  12:29:08
+   Duration  10.26s (tests 99%, import 1%)
