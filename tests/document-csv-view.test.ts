@@ -43,3 +43,15 @@ it('si falla recordar la nueva vista conserva la representación anterior utiliz
  const {CsvViewStore}=await import('../src/main/csv-view-store'),table=await docs.open(path),failure=vi.spyOn(CsvViewStore.prototype,'remember').mockRejectedValueOnce(new Error('Preferencia no disponible'))
  try{await expect(docs.setCsvView(table.id,'text')).rejects.toThrow('Preferencia no disponible');expect(docs.info(table.id).csvView).toBe('table');expect((await docs.table.call('page',table.id,{offset:0,limit:10,requestId:1})).rows).toHaveLength(2);expect(docs.records.size).toBe(1);expect(await readFile(path,'utf8')).toBe(source)}finally{failure.mockRestore()}
 })
+
+it.each(['utf8','utf16le','win1252'] as const)('Texto conserva codificación, BOM y terminadores al guardar (%s)',async encoding=>{
+ const iconv=(await import('iconv-lite')).default,raw='ID,Nombre\r\n"001","á\nñ"\r9007199254740993,conservar\n',bom=encoding==='utf16le'?Buffer.from([0xff,0xfe]):encoding==='utf8'?Buffer.from([0xef,0xbb,0xbf]):Buffer.alloc(0),bytes=Buffer.concat([bom,iconv.encode(raw,encoding)])
+ await writeFile(path,bytes);const doc=await docs.open(path,'text');expect(doc.text).toBe(raw);expect(doc.encoding).toBe(encoding);expect(doc.readonly).toBe(false)
+ await docs.save(doc.id);expect(await readFile(path)).toEqual(bytes);await docs.update(doc.id,raw.replace('conservar','editado'));await docs.save(doc.id);expect(await readFile(path)).toEqual(Buffer.concat([bom,iconv.encode(raw.replace('conservar','editado'),encoding)]))
+})
+it('Texto abre una codificación con sustitución en solo lectura y no toca el original',async()=>{
+ const bytes=Buffer.from([0x49,0x44,0x0a,0x81,0x0a]);await writeFile(path,bytes);const doc=await docs.open(path,'text');expect(doc.readonly).toBe(true);expect(doc.warning).toMatch(/solo lectura/i);await expect(docs.save(doc.id)).rejects.toThrow(/solo lectura/i);expect(await readFile(path)).toEqual(bytes)
+})
+it('Texto rechaza guardar un carácter fuera de Windows-1252 sin escribir',async()=>{
+ const iconv=(await import('iconv-lite')).default,raw='ID,Nombre\r\n1,ñ\r\n',bytes=iconv.encode(raw,'win1252');await writeFile(path,bytes);const doc=await docs.open(path,'text');await docs.update(doc.id,raw+'2,😀\r\n');await expect(docs.save(doc.id)).rejects.toThrow(/línea 3/);expect(docs.info(doc.id).dirty).toBe(true);expect(await readFile(path)).toEqual(bytes)
+})

@@ -12,8 +12,9 @@ import { atomicWrite, contained, digest } from './files'
 import type {DocumentAssets} from './document-assets'
 import { TableClient } from './table-client'
 import {CsvViewStore} from './csv-view-store'
+import {decodeCsvText,encodeCsvText,type CsvTextFormat} from './csv-text-codec'
 import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type AppEvent,type DocumentInfo,type Kind,type RecoveryEntry,type TableOptions,type TableEdit,type TableExport,type TreeEntry} from '../shared/types'
-interface RecordDoc { info:DocumentInfo; hash?:string; text:string; undo:string[]; redo:string[]; root:string; saving:boolean; timer?:ReturnType<typeof setTimeout>; watcher?:FSWatcher }
+interface RecordDoc { info:DocumentInfo; hash?:string; text:string; csvTextFormat?:CsvTextFormat;undo:string[]; redo:string[]; root:string; saving:boolean; timer?:ReturnType<typeof setTimeout>; watcher?:FSWatcher }
 const extensions:Record<string,Kind>={'.md':'markdown','.markdown':'markdown','.txt':'text','.mmd':'mermaid','.mermaid':'mermaid','.csv':'csv','.tsv':'csv'}
 export class Documents {
  records=new Map<string,RecordDoc>(); roots=new Set<string>(); grants=new Set<string>(); table=new TableClient(progress=>this.emit({type:'analysis',progress}))
@@ -34,6 +35,9 @@ export class Documents {
  async authorize(path:string){const canonical=await realpath(path);if((await lstat(path)).isSymbolicLink())throw new Error('Los enlaces simbólicos no se abren para editar en esta alfa.');return canonical}
  private opening=new Map<string,Promise<DocumentInfo>>()
  async open(path:string,view?:CsvView):Promise<DocumentInfo>{
+  return this.serial(`open:${resolve(path)}`,()=>this.openAuthorized(path,view))
+ }
+ private async openAuthorized(path:string,view?:CsvView):Promise<DocumentInfo>{
   const canonical=await this.authorize(path)
   if(view&&extensions[extname(canonical).toLowerCase()]!=='csv')throw new Error(t('csvText.chooseFileForView'))
   const existing=[...this.records.values()].find(r=>r.info.path===canonical);if(existing)return view?this.setCsvView(existing.info.id,view):this.info(existing.info.id)
@@ -50,7 +54,7 @@ export class Documents {
   try {
    if(isTableDocument(record.info)){const before=size<=50*1024*1024?await digest(canonical):undefined;await this.table.call('open',id,canonical,{delimiter:extname(canonical)==='.tsv'?'\t':undefined});Object.assign(record.info,await this.table.call('info',id));if(!record.info.readonly){const after=await digest(canonical);if(before!==after)throw new Error('El archivo cambió durante la apertura. Vuelve a abrirlo.');record.hash=after}}
    else if(size>10*1024*1024){const h=await import('node:fs/promises').then(m=>m.open(canonical,'r'));try{const b=Buffer.alloc(1024*1024);const {bytesRead}=await h.read(b,0,b.length,0);record.text=b.subarray(0,bytesRead).toString('utf8')}finally{await h.close()};record.info.readonly=true;record.info.warning='Muestra de solo lectura: primer MiB. El archivo supera 10 MiB.'}
-   else{const bytes=await readFile(canonical);record.hash=createHash('sha256').update(bytes).digest('hex');const text=bytes.toString('utf8');if(!Buffer.from(text).equals(bytes))throw new Error('Este documento no es UTF-8 válido. Convierte su codificación antes de editarlo.');record.text=text}
+   else{const bytes=await readFile(canonical);record.hash=createHash('sha256').update(bytes).digest('hex');if(view==='text'){if(bytes.length>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'));const decoded=decodeCsvText(bytes);record.text=decoded.text;record.csvTextFormat=decoded.format;record.info.encoding=decoded.format.encoding;record.info.readonly=decoded.readonly;record.info.warning=decoded.warning;record.info.byteLength=bytes.length}else{const text=bytes.toString('utf8');if(!Buffer.from(text).equals(bytes))throw new Error('Este documento no es UTF-8 válido. Convierte su codificación antes de editarlo.');record.text=text}}
    record.watcher=watch(canonical,{ignoreInitial:true,awaitWriteFinish:{stabilityThreshold:150,pollInterval:50}}).on('change',()=>{if(!record.saving)this.emit({type:'external',id})}).on('unlink',()=>this.emit({type:'external',id}))
    await this.addRecent(canonical);if(requested)await this.csvViews.remember(canonical,requested)
    if(previous){await previous.watcher?.close();if(isTableDocument(previous.info)&&!isTableDocument(record.info))await this.table.call('close',id)}
@@ -84,7 +88,7 @@ export class Documents {
   if([...this.records.values()].some(other=>other!==r&&other.info.path===canonical))throw new Error('El destino corresponde a otro documento abierto. Guarda una copia con otro nombre.')
   if((await lstat(dest).catch(()=>null))?.isSymbolicLink())throw new Error('No se sobrescriben enlaces simbólicos.')
   const revision=r.info.revision,same=r.info.path===dest||r.info.path===canonical
-  let data=isTableDocument(r.info)?Buffer.from(await this.table.call('serialize',id)):Buffer.from(r.text,'utf8'),assets:DocumentAssets|undefined
+  let data=isTableDocument(r.info)?Buffer.from(await this.table.call('serialize',id)):r.csvTextFormat?encodeCsvText(r.text,r.csvTextFormat):Buffer.from(r.text,'utf8'),assets:DocumentAssets|undefined
   r.saving=true
   try{
    if(r.info.kind==='markdown'&&!same){
