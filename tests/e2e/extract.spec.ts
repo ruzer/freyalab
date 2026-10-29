@@ -80,7 +80,7 @@ test('un extracto grande se abre en modo grande y lo dice',async()=>{
  await openPanel()
  await page.getByRole('button',{name:'Extraer a un archivo nuevo…',exact:true}).click() // sin condiciones: todo el archivo
  await expect(page.locator('.extract-banner')).toContainText(/3\.?000 de 3\.?000 filas/);await expect(page.locator('.warning-banner').filter({hasText:'Archivo grande'})).toBeVisible() // supera los límites de edición: se abre en modo grande
- await expect(page.getByLabel('Buscar en tabla',{exact:true})).toBeDisabled()
+ await expect(page.getByLabel('Buscar en tabla',{exact:true})).toBeEnabled()
  expect(await readFile(join(extracts,'ventas.extracto.csv'),'utf8')).toBe(csv(3000))
 })
 

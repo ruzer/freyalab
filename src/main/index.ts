@@ -15,6 +15,7 @@ import {citationStyleIds} from '../shared/bibliography'
 import { exportDocument,exportGraphic } from './export'
 import { operateDocument } from './extract'
 import { operationRequest } from './operation-schema'
+import {viewRequest} from './large-view-schema'
 import type { Kind,TableEdit,TableOptions,TableExport,TableQuery,ExportRequest,TableRange,TableRangeEdit,TableTransformEdit } from '../shared/types'
 const here=dirname(fileURLToPath(import.meta.url))
 if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FREYALAB_USER_DATA))
@@ -69,6 +70,10 @@ async function handle(operation:string,args:unknown[]){
  case'rangePreview':docs.get(id.parse(a));return docs.table.call('rangePreview',a,rangeEdit.parse(b) as TableRangeEdit)
  case'rangeClipboard':docs.get(id.parse(a));return docs.table.call('rangeClipboard',a,range.parse(b) as TableRange)
  case'page':docs.get(id.parse(a));return docs.table.call('page',a,query.parse(b) as TableQuery)
+ case'viewStart':docs.get(id.parse(a));return docs.table.call('viewStart',a,viewRequest.parse(b))
+ case'viewState':docs.get(id.parse(a));return docs.table.call('viewState',a)
+ case'viewCancel':docs.get(id.parse(a));return docs.table.call('viewCancel',a,z.uuid().parse(b))
+ case'viewClear':docs.get(id.parse(a));return docs.table.call('viewClear',a)
  case'edit':return docs.tableEdit(id.parse(a),edits.parse(b) as TableEdit)
  case'options':return docs.tableOptions(id.parse(a),z.object({encoding:z.enum(['utf8','utf16le','win1252']).optional(),delimiter:z.enum([',',';','\t','|']).optional(),header:z.boolean().optional()}).parse(b) as TableOptions)
  case'undo':return docs.undo(id.parse(a),z.boolean().optional().parse(b))

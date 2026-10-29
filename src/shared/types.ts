@@ -11,9 +11,12 @@ export interface TableSort {column:number;descending:boolean;numeric:boolean}
 export type FilterOperator='contains'|'equals'|'notEquals'|'starts'|'ends'|'empty'|'notEmpty'|'greater'|'greaterEqual'|'less'|'lessEqual'|'dateBefore'|'dateOn'|'dateAfter'|'regex'
 export interface TableFilter {column:number;op:FilterOperator;value?:string;caseSensitive?:boolean}
 export interface TableConditionGroup {conditions:TableFilter[];filterMode:'all'|'any'}
-export interface TableQuery {conditions?:TableFilter[];filterMode?:'all'|'any';order?:TableSort[]; search?:string; filters?:Record<string,string>; sort?:{column:number; descending:boolean; numeric:boolean}; offset:number; limit:number; requestId:number }
+export interface LargeViewQuery {search?:string;conditions?:TableFilter[];filterMode?:'all'|'any'}
+export interface LargeViewRequest extends LargeViewQuery {requestId:string;revision:number}
+export interface LargeViewState {requestId:string;revision:number;query:LargeViewQuery;status:'running'|'complete'|'cancelled'|'limit'|'invalidated'|'error';total:number;scanned:number;matched:number;fraction:number;elapsedMs:number;error?:string;limitReason?:'matches'|'memory'}
+export interface TableQuery {viewId?:string;conditions?:TableFilter[];filterMode?:'all'|'any';order?:TableSort[]; search?:string; filters?:Record<string,string>; sort?:{column:number; descending:boolean; numeric:boolean}; offset:number; limit:number; requestId:number }
 export interface TableRow { id:string; cells:string[] }
-export interface TablePage { rows:TableRow[]; total:number; matched:number; revision:number; requestId:number; sample:boolean; large?:boolean }
+export interface TablePage { rows:TableRow[]; total:number; matched:number; revision:number; requestId:number; sample:boolean; large?:boolean;view?:LargeViewState }
 export type TableViewMeta=Pick<TablePage,'matched'|'revision'|'requestId'|'sample'>&{query:TableQuery}
 export interface TableRange {top:number;bottom:number;left:number;right:number;query:TableQuery;revision:number}
 export interface TableRangeEdit {type:'range';requestId?:string;range:TableRange;operation:'fill'|'clear'|'trim'|'upper'|'lower'|'replace'|'paste';value?:string;find?:string;values?:string[][]}
@@ -56,6 +59,7 @@ export interface FreyaAPI {
  transformPreview(id:string,edit:TableTransformEdit):Promise<TableTransformPreview>;
  rangePreview(id:string,edit:TableRangeEdit):Promise<TableRangePreview>; rangeClipboard(id:string,range:TableRange):Promise<string>;
  tablePage(id:string,query:TableQuery):Promise<TablePage>; tableEdit(id:string,edit:TableEdit):Promise<DocumentInfo>; tableOptions(id:string,options:TableOptions):Promise<DocumentInfo>;
+ tableViewStart(id:string,request:LargeViewRequest):Promise<LargeViewState>;tableViewState(id:string):Promise<LargeViewState|null>;tableViewCancel(id:string,requestId:string):Promise<LargeViewState|null>;tableViewClear(id:string):Promise<void>;
  chartPresets():Promise<ChartPreset[]>;saveChartPreset(id:string,input:{name:string;configuration:ChartConfiguration}):Promise<ChartPreset>;deleteChartPreset(id:string):Promise<void>;
  sqlRun(request:SqlRequest):Promise<SqlResult>;sqlPage(requestId:string,offset:number):Promise<SqlResult>;sqlCancel(requestId:string):Promise<void>;
  operation(id:string,request:OperationRequest):Promise<OperationOutcome>; cancelOperation(id:string,requestId:string):Promise<void>;

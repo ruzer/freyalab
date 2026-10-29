@@ -5,7 +5,7 @@ import {setTimeout as sleep} from 'node:timers/promises'
 import {parse as parseSync} from 'csv-parse/sync'
 import {stringify} from 'csv-stringify/sync'
 import iconv from 'iconv-lite'
-import {recordBatches,LargeFormatError,type LargeIndex} from './large-table'
+import {recordBatches,indexUnchanged,LargeFormatError,RECORD_DELIMITERS,type LargeIndex} from './large-table'
 import {compileTableQuery} from './table-query'
 import type {Encoding} from '../shared/types'
 import type {EngineOperation,OperationResult,Fidelity} from '../shared/operations'
@@ -24,11 +24,12 @@ async function freeBytes(dir:string){try{const s=await statfs(dir);return Number
 
 const eolName=(eol:string)=>eol==='\r\n'?'CRLF':eol==='\n'?'LF':eol==='\r'?'CR':JSON.stringify(eol)
 const bomBytes=(encoding:Encoding)=>encoding==='utf16le'?Buffer.from([0xff,0xfe]):Buffer.from([0xef,0xbb,0xbf])
-const decoderUtf8=new TextDecoder('utf-8',{fatal:true})
-function decode(bytes:Buffer,encoding:Encoding){return encoding==='utf8'?decoderUtf8.decode(bytes):iconv.decode(bytes,encoding)}
+// File signatures have already been skipped; preserve literal U+FEFF at batch boundaries.
+const decoderUtf8=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true})
+function decode(bytes:Buffer,encoding:Encoding){return encoding==='utf8'?decoderUtf8.decode(bytes):iconv.decode(bytes,encoding,{stripBOM:false})}
 const recordNumber=(ordinal:number)=>(ordinal+1).toLocaleString('es')
 function parseRecords(text:string,state:OperationSourceState){
- return parseSync(text,{delimiter:state.delimiter,bom:false,relax_column_count:true,skip_empty_lines:false,record_delimiter:state.index.terminator===0x0d?['\r']:['\r\n','\n']}) as string[][]
+ return parseSync(text,{delimiter:state.delimiter,bom:false,relax_column_count:true,skip_empty_lines:false,record_delimiter:RECORD_DELIMITERS}) as string[][]
 }
 // Valida y separa en campos un lote de registros (bytes exactos). Si el lote falla, se localiza el primer registro culpable para dar su posición.
 function fieldsOf(raws:Buffer[],first:number,state:OperationSourceState):string[][]{
@@ -48,7 +49,7 @@ export async function runOperation(state:OperationSourceState,request:EngineOper
  const started=performance.now(),width=state.headers.length,total=state.index.records-(state.header?1:0)
  const columns=request.operation==='count'?undefined:request.columns
  if(columns?.some(column=>column>=width))throw new Error('Una de las columnas elegidas no existe en este archivo.')
- const compiled=compileTableQuery({conditions:request.conditions?.conditions,filterMode:request.conditions?.filterMode,offset:0,limit:1,requestId:0},width)
+ const compiled=compileTableQuery({search:request.search,conditions:request.conditions?.conditions,filterMode:request.conditions?.filterMode,offset:0,limit:1,requestId:0},width)
  const project=(fields:string[],ordinal:number)=>{
   if(!columns)return fields
   return columns.map(column=>{ if(column>=fields.length)throw new StrictRecordError(`El registro ${recordNumber(ordinal)} solo tiene ${fields.length} campos y falta la columna ${column+1}: no se rellena en silencio.`); return fields[column] })
@@ -88,10 +89,11 @@ export async function runOperation(state:OperationSourceState,request:EngineOper
     else if(request.operation==='filter_extract'){ if(wholeRecords)copied.push(batch.records[i]); else projected.push(project(fields,ordinal)) }
    }
    if(copied.length)await write(Buffer.concat(copied))
-   if(request.operation==='filter_extract'&&!wholeRecords&&projected.length)await write(encode(stringify(projected,{delimiter:state.delimiter,record_delimiter:eol})))
+   if(request.operation==='filter_extract'&&!wholeRecords&&projected.length)await write(encode(stringify(projected,{delimiter:state.delimiter,record_delimiter:eol,quoted_match:/[\r\n]/})))
    hooks.progress?.(Math.min(99,Math.floor(batch.position/state.index.size*100)))
    if(hooks.delayMs)await sleep(hooks.delayMs)
   }
+  if(!await indexUnchanged(state.index))throw new StrictRecordError('El archivo cambió durante la operación. Vuelve a abrirlo; no se completó el extracto.')
   hooks.progress?.(100)
   if(request.operation==='count')return {operation:'count',matched,scanned}
   if(request.operation==='preview'){
