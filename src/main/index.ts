@@ -22,6 +22,7 @@ import {WindowClosePreparation,closePreparedArguments} from './application-close
 import {ApplicationWindowClose} from './application-window-close'
 import type {ApplicationUiState} from '../shared/application'
 import {detectPandoc,testPandoc} from './pandoc'
+import {MenuPandocAvailability} from './menu-pandoc'
 import {citationStyleIds} from '../shared/bibliography'
 import { exportDocument,exportGraphic } from './export'
 import { operateDocument } from './extract'
@@ -33,6 +34,8 @@ const here=dirname(fileURLToPath(import.meta.url))
 if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FREYALAB_USER_DATA))
 let window:BrowserWindow|undefined,windowReady:Promise<void>|undefined,docs:Documents,analytics:SqlService,presets:ChartPresets,settings:SettingsStore,settingsStartupNotice:string|undefined,quitting=false,quitRequested=false,closingWindow=false
 let menuState:ApplicationUiState={activeId:null,mode:'split',focus:'none',locked:false,canEdit:false},menuSettings:SettingsState,menuRecents:string[]=[],menuSignature=''
+let menuPandocAvailable=false
+const menuPandoc=new MenuPandocAvailability(detectPandoc,()=>docs?.pandocPath,value=>{docs.pandocPath=value},value=>{menuPandocAvailable=value;refreshApplicationMenu()})
 const nativeEdits=new MenuNativeEdits()
 const closePreparation=new WindowClosePreparation(),applicationClose=new ApplicationWindowClose(closePreparation)
 const waiting:string[]=[]
@@ -53,7 +56,7 @@ async function openPaths(paths:string[]){const result=[];for(const p of paths){i
 function assertSender(event:Electron.IpcMainInvokeEvent|Electron.IpcMainEvent){if(!window||event.sender!==window.webContents||event.senderFrame!==window.webContents.mainFrame)throw new Error('Origen no autorizado.')}
 function applicationContext():ApplicationMenuContext {
  const documents=docs?[...docs.records.values()].map(({info:{id,name,kind,readonly,dirty,csvView}})=>({id,name,kind,readonly,dirty,...(kind==='csv'?{csvView:csvView??'table'}:{})})):[]
- return{...menuState,documents,recents:menuRecents,theme:menuSettings.values.tema,sidebar:menuSettings.values.barraLateral.visible,development:!app.isPackaged,showDevTools:menuSettings.values.avanzado.herramientasDeDesarrollo}
+ return{...menuState,documents,recents:menuRecents,theme:menuSettings.values.tema,sidebar:menuSettings.values.barraLateral.visible,development:!app.isPackaged,showDevTools:menuSettings.values.avanzado.herramientasDeDesarrollo,docxAvailable:menuPandocAvailable}
 }
 function refreshApplicationMenu(){
  const context=applicationContext(),signature=languageState().language+'\n'+menuFingerprint(context)
@@ -101,15 +104,14 @@ async function handle(operation:string,args:unknown[]){
  case'recents:clear':z.tuple([]).parse(args);return clearRecents(window)
  case'settings:showDataFolder':z.tuple([]).parse(args);return showDataFolder()
  case'setLanguage':{const [preference]=z.tuple([z.enum(['sistema','es','en'])]).parse(args);changedSettings(await settings.set({idioma:preference}),true);settingsStartupNotice=undefined;return languageState()}
- case'pandocStatus':z.tuple([]).parse(args);return detectPandoc(docs.pandocPath)
+ case'pandocStatus':z.tuple([]).parse(args);return menuPandoc.refresh()
  case'pandocChoose':{
   z.tuple([]).parse(args)
   const selected=await dialog.showOpenDialog(window!,{title:t('pandoc.dialog.choose'),buttonLabel:t('dialog.open.button'),properties:['openFile']})
-  if(selected.canceled)return detectPandoc(docs.pandocPath)
-  const status=await detectPandoc(selected.filePaths[0]);if(status.available)docs.pandocPath=status.path
-  return status
+  if(selected.canceled)return menuPandoc.refresh()
+  return menuPandoc.choose(selected.filePaths[0])
  }
- case'pandocTest':{z.tuple([]).parse(args);const status=await detectPandoc(docs.pandocPath);if(!status.available)throw new Error(status.reason);return testPandoc(status.path)}
+ case'pandocTest':{z.tuple([]).parse(args);const status=await menuPandoc.refresh();if(!status.available)throw new Error(status.reason);return testPandoc(status.path)}
  case'open':{const result=await dialog.showOpenDialog(window!,{title:t('dialog.open.title'),buttonLabel:t('dialog.open.button'),properties:['openFile','multiSelections'],filters:[{name:t('dialog.open.filter'),extensions:['md','markdown','txt','mmd','mermaid','csv','tsv']}]});for(const p of result.filePaths)docs.grants.add(resolve(p));return result.canceled?[]:openPaths(result.filePaths)}
  case'openPaths':return openPaths(z.array(path).max(100).parse(a))
  case'csvOpen':{const target=path.parse(a),view=csvView.parse(b);if(!await docs.allowed(target))throw new Error(t('csvText.openAuthorized'));const previous=new Map([...docs.records].map(([key,record])=>[key,record.info.csvView??'table'])),document=await docs.open(target,view);if(previous.has(document.id)&&previous.get(document.id)!==document.csvView)analytics.forget(document.id);window?.webContents.send('freya:event',{type:'opened',document});return document}
@@ -185,6 +187,7 @@ app.whenReady().then(async()=>{
  initializeLanguage(app.getPreferredSystemLanguages(),process.env,initialSettings.values.idioma)
  docs=new Documents(event=>{window?.webContents.send('freya:event',event);refreshApplicationMenu()})
  if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_PANDOC_PATH)docs.pandocPath=process.env.FREYALAB_TEST_PANDOC_PATH
+ void menuPandoc.refresh().catch(error=>window?.webContents.send('freya:event',{type:'error',message:error.message}))
  presets=new ChartPresets(join(app.getPath('userData'),'chart-presets.json'))
  analytics=new SqlService(docs,progress=>window?.webContents.send('freya:event',{type:'analysis',progress}))
  ipcMain.handle('freya',async(event,operation,...args)=>{assertSender(event);try{const result=await handle(z.string().max(100).parse(operation),args);if(['open','openPaths','save','recover','recents:clear'].includes(operation)){await refreshMenuRecents();if(operation==='recents:clear')window?.webContents.send('freya:event',{type:'recents'})}else if(['new','close','reload'].includes(operation))refreshApplicationMenu();return result}catch(e){throw new Error(e instanceof z.ZodError?t('error.invalidOperation'):(e as Error).message)}})

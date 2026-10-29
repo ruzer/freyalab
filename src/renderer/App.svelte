@@ -368,6 +368,7 @@
     case'help.releaseNotes':{const info=await window.freya.appInfo();await window.freya.openLink(`https://github.com/ruzer/freyalab/releases/tag/v${encodeURIComponent(info.version)}`);return}
     case'export.pdf':await exportDocument('pdf');return
     case'export.html':await exportDocument('html');return
+    case'export.docx':await exportDocument('docx');return
     case'export.svg':await exportDocument('svg');return
     case'export.png':await exportDocument('png');return
     case'export.csv':await exportDocument('csv');return

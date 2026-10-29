@@ -1,0 +1,39 @@
+
+Running 1 test using 1 worker
+
+(node:60391) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [shell] › tests/e2e/commands.spec.ts:45:1 › APP-01 M4: Word se descubre al iniciar y el menú exporta un DOCX real sin abrir la barra (15.3s)
+
+
+  1) [shell] › tests/e2e/commands.spec.ts:45:1 › APP-01 M4: Word se descubre al iniciar y el menú exporta un DOCX real sin abrir la barra 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: undefined
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      49 |  await expect(page.locator('.preview article')).toContainText('Informe desde el menú nativo')
+      50 |  // No abrir Exportar ni consultar pandocStatus: se prueba el descubrimiento de Main.
+    > 51 |  await expect.poll(async()=>(await applicationMenuItem('export.docx'))?.enabled).toBe(true)
+         |                                                                                  ^
+      52 |  await app.evaluate(({dialog,BrowserWindow},output)=>{
+      53 |   Object.defineProperty(dialog,'showSaveDialog',{configurable:true,value:async()=>({canceled:false,filePath:output})})
+      54 |   const contents=BrowserWindow.getAllWindows()[0].webContents,send=contents.send.bind(contents),state=globalThis as unknown as {nativeWordDispatches:number};state.nativeWordDispatches=0
+        at /private/tmp/freyalab-lote2/aplicacion/tests/e2e/commands.spec.ts:51:82
+
+    Error Context: test-results/commands-APP-01-M4-Word-se-5bb30-OCX-real-sin-abrir-la-barra-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/commands-APP-01-M4-Word-se-5bb30-OCX-real-sin-abrir-la-barra-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/commands-APP-01-M4-Word-se-5bb30-OCX-real-sin-abrir-la-barra-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [shell] › tests/e2e/commands.spec.ts:45:1 › APP-01 M4: Word se descubre al iniciar y el menú exporta un DOCX real sin abrir la barra 
