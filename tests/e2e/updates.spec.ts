@@ -65,6 +65,40 @@ test('APP-04 U13 · el idioma cambia durante la petición sin reiniciarla',async
  await expect(updateDialog().getByRole('heading',{name:'A new version is available',exact:true})).toBeVisible();await expect(updateDialog()).toContainText('October 28, 2026');expect(requests).toBe(1)
 })
 
+for(const action of [{operation:'updates:skip',label:'Omitir esta versión'},{operation:'updates:remind',label:'Recordármelo después'}]){
+ test(`APP-04 U10/U15 · respuesta anterior de ${action.operation} no cierra un diálogo nuevo`,async()=>{
+  await runApplicationMenu(app!,'app.updates');await expect(updateDialog().getByRole('heading',{name:'Hay una versión nueva',exact:true})).toBeVisible()
+  // Retener la respuesta real después de persistir; no se sustituye la operación ni el dato.
+  await app!.evaluate(({ipcMain},operation)=>{
+   type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
+   const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')
+   if(!original)throw new Error('No existe el manejador real de freya')
+   const state=globalThis as typeof globalThis&{__updateReplyGate?:{held:boolean;release?:()=>void;restore:()=>void}}
+   state.__updateReplyGate={held:false,restore:()=>handlers.set('freya',original)}
+   handlers.set('freya',async(event,...args)=>{
+    const result=await original(event,...args)
+    if(args[0]===operation){state.__updateReplyGate!.held=true;await new Promise<void>(resolve=>state.__updateReplyGate!.release=resolve)}
+    return result
+   })
+  },action.operation)
+  try{
+   await updateDialog().getByRole('button',{name:action.label,exact:true}).click()
+   await expect.poll(()=>app!.evaluate(()=>(globalThis as typeof globalThis&{__updateReplyGate?:{held:boolean}}).__updateReplyGate?.held)).toBe(true)
+   await page.keyboard.press('Escape');await expect(updateDialog()).toHaveCount(0)
+   await runApplicationMenu(app!,'app.updates');await expect(updateDialog().getByRole('heading',{name:'Hay una versión nueva',exact:true})).toBeVisible()
+   const next=await updateDialog().elementHandle();expect(next).not.toBeNull()
+   await app!.evaluate(()=>{const state=globalThis as typeof globalThis&{__updateReplyGate?:{release?:()=>void}};state.__updateReplyGate!.release!()})
+   // Drenar la respuesta genuina y las reacciones de render, sin temporizadores arbitrarios.
+   await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))))
+   expect(await next!.evaluate(node=>node.isConnected&&(node as HTMLDialogElement).open)).toBe(true)
+   await expect(updateDialog().getByRole('heading',{name:'Hay una versión nueva',exact:true})).toBeVisible()
+   await test.info().attach('respuesta-de-accion-anterior',{body:Buffer.from(JSON.stringify({operation:action.operation,requests,newDialogStillOpen:true})),contentType:'application/json'})
+  }finally{
+   await app!.evaluate(()=>{const state=globalThis as typeof globalThis&{__updateReplyGate?:{release?:()=>void;restore:()=>void}};state.__updateReplyGate?.release?.();state.__updateReplyGate?.restore();delete state.__updateReplyGate}).catch(()=>{})
+  }
+ })
+}
+
 test('APP-04 U13/U15/U16 · cuatro estados sin desbordes y con contraste en es, en y en-XA',async()=>{
  const reports:{locale:string;theme:string;width:number;height:number;state:string;minimum:number}[]=[]
  const directory=process.env.FREYALAB_APP04_EVIDENCE_DIR

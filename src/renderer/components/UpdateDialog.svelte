@@ -17,8 +17,8 @@
  }
  function close(){generation++;if(result.status==='checking')void window.freya.cancelUpdates().catch(()=>{});onclose()}
  async function run(operation:()=>Promise<unknown>,dismiss=false){
-  busy=true;message=''
-  try{await operation();if(dismiss)onclose()}catch{message=t('updates.error.action')}finally{busy=false}
+  const token=++generation;busy=true;message=''
+  try{await operation();if(token===generation&&dismiss)onclose()}catch{if(token===generation)message=t('updates.error.action')}finally{if(token===generation)busy=false}
  }
  function installer(assets:string[]){return assets.some(name=>platform==='darwin'?/\.(dmg|zip)$/i.test(name):platform==='win32'?/\.exe$/i.test(name):/\.(AppImage|deb|rpm)$/i.test(name))}
 </script>
