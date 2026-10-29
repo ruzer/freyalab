@@ -227,7 +227,6 @@ async function closeApplicationWindow(){
   cancelled:saved=>{quitRequested=false;closingNotice(owner,'notice',saved.length===1?t('menu.close.cancelledSaved',{name:saved[0]}):saved.length?t('menu.close.cancelledSavedMany',{names:formatList(saved.map(name=>`«${name}»`))}):t('menu.close.cancelled'))},
   finish:async ids=>{
    for(const id of ids)analytics.forget(id)
-   if(process.platform==='darwin'&&!quitRequested){owner?.destroy();return}
    analytics.stop();await docs.shutdown()
    if(window!==owner||owner?.isDestroyed())throw new Error(t('menu.close.changed'))
    quitting=true;owner?.destroy();app.quit()
@@ -236,5 +235,5 @@ async function closeApplicationWindow(){
  if(!closed)quitRequested=false
 }
 app.on('activate',()=>{if(docs&&!window&&!quitting&&!quitRequested&&!closingWindow)void createApplicationWindow().catch(error=>dialog.showErrorBox(t('dialog.close.error'),error.message))})
-app.on('window-all-closed',()=>{if(process.platform!=='darwin'&&!quitting)app.quit()})
+app.on('window-all-closed',()=>{if(!quitting)app.quit()})
 app.on('before-quit',event=>{if(quitting||!docs)return;event.preventDefault();quitRequested=true;if(window&&!window.isDestroyed())window.close();else requestWindowClose()})

@@ -1,0 +1,297 @@
+{
+  "before": 460,
+  "after": 460,
+  "duplicates": 0,
+  "lost": 0,
+  "moved": 45,
+  "movedFiles": {
+    "application-close.spec.ts": 12,
+    "commands.spec.ts": 33
+  },
+  "fast": 427,
+  "perf": 33,
+  "intersection": 0,
+  "union": 460,
+  "projectsBefore": {
+    "shell": 41,
+    "md": 198,
+    "csv": 221
+  },
+  "projectsAfter": {
+    "shell": 86,
+    "md": 198,
+    "csv": 176
+  },
+  "identities": [
+    {
+      "file": "application-close.spec.ts",
+      "title": "X prepara la celda activa y Cancelar conserva el documento completo",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "application-close.spec.ts",
+      "title": "Salir prepara el encabezado activo y Cancelar conserva datos y cambios",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "application-close.spec.ts",
+      "title": "close: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en es",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "application-close.spec.ts",
+      "title": "close: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en en",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "application-close.spec.ts",
+      "title": "quit: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en es",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "application-close.spec.ts",
+      "title": "quit: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en en",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "application-close.spec.ts",
+      "title": "Guardar A y Cancelar B conserva ambos y anuncia el guardado ya realizado",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "application-close.spec.ts",
+      "title": "un diálogo abierto rechaza el cierre con aviso accesible dentro del diálogo y sin perder foco",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "application-close.spec.ts",
+      "title": "una composición activa rechaza el cierre sin descartar el texto ni mover el foco",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "application-close.spec.ts",
+      "title": "una apertura SO durante el cierre espera y se reanuda al cancelar",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "application-close.spec.ts",
+      "title": "una apertura SO durante el cierre espera y se ignora al confirmar Salir",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "application-close.spec.ts",
+      "title": "un ACK retenido anuncia preparación, vence a30s reales e ignora respuestas tardías antes de reintentar",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-02: Acerca de muestra versión real, copia sólo diagnóstico y lee licencias del paquete",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01: menú nativo traducido ofrece acciones de documentos y ayuda",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01: menú cambia de idioma y de documento, conserva Mermaid y la ayuda usa el mismo catálogo",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01: acciones de archivo y barra lateral se despachan una sola vez",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01: reciente eliminado se quita de la lista y avisa sin tocar otros archivos",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01: elementos de archivo, búsqueda y navegación conservan sus acciones",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01: Ayuda sólo abre enlaces HTTPS fijos y no envía información",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 M5: edición markdown usa el historial CodeMirror y no el nativo",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 M5: edición mermaid usa el historial CodeMirror y no el nativo",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 M5: edición sql usa el historial CodeMirror y no el nativo",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 M5: campos nativos y celda CSV editan su campo, la rejilla usa el historial CSV",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 M5: copiar, cortar y pegar sólo delegan el comando nativo elegido",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: Guardar aplica la celda activa antes de escribir el CSV",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: Guardar aplica el encabezado activo antes de escribir el CSV",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: cambiar de documento desde Ventana conserva la celda activa",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: la última elección de pestaña prevalece mientras se prepara la celda",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: Guardar como conserva la fuente y copia el borrador de celda",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: Cerrar prepara el borrador y permite cancelar la confirmación existente",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: Exportar incluye la celda preparada sin guardar el original",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: navegar siguiente y anterior prepara la celda en ambos sentidos",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: un encabezado rechazado bloquea Guardar, Cerrar y navegar aunque pierda foco",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: si preparar la celda falla, no guarda ni descarta el borrador",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-03: el menú abre Ajustes y Escape devuelve el foco",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-03: Ajustes usa teclado, aplica apariencia y restablece sólo su sección",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-03: Archivos y Avanzado confirman sus acciones y conservan los documentos",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-03 S15-S16: todas las secciones conservan contraste, foco y espacio en es y en",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-03: versión futura deja los ajustes de solo lectura y conserva todos sus bytes",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01: menú y ayuda conservan los identificadores en pseudolocalización",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-03: migra el perfil anterior una vez y conserva ajustes sin modificar documentos",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "paleta CSV: búsqueda sin acentos, teclado, rango, foco y vista previa comparten edición y deshacer",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "paleta CSV: estructura usa filas y columnas marcadas, consulta y restauración sin mutar originales",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "paleta CSV: muestra bloquea edición y copia, conserva análisis y navegación en ambos temas",
+      "from": "csv",
+      "to": "shell"
+    },
+    {
+      "file": "commands.spec.ts",
+      "title": "paleta CSV: paginar deshabilita el rango sin perder foco y mantiene disponible Transformar",
+      "from": "csv",
+      "to": "shell"
+    }
+  ]
+}

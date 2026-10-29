@@ -318,16 +318,6 @@ test('APP-01 integridad: si preparar la celda falla, no guarda ni descarta el bo
  await expect(page.getByRole('tab',{name:'data.csv',exact:true})).toBeVisible()
 })
 
-test('APP-01: macOS conserva Nuevo y Abrir sin ventana y vuelve a crearla',async()=>{
- test.skip(process.platform!=='darwin','Caso propio del ciclo de ventanas de macOS.')
- await expect(page.locator('.welcome')).toBeVisible();await expect.poll(()=>page.evaluate(async()=>(await window.freya.settings()).migrationPending)).toBe(false)
- await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].close())
- await expect.poll(()=>app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows().length)).toBe(0)
- expect((await applicationMenuItem('file.newMarkdown'))?.enabled).toBe(true)
- const nextWindow=app.waitForEvent('window');await app.evaluate(({Menu})=>{const item=Menu.getApplicationMenu()!.getMenuItemById('file.newMarkdown')!;item.click(item,undefined,{} as Electron.KeyboardEvent)})
- page=await nextWindow;await page.waitForFunction(()=>!!window.freya);await expect(page.getByRole('tab',{name:'Sin título.md',exact:true})).toBeVisible()
-})
-
 test('APP-03: el menú abre Ajustes y Escape devuelve el foco',async()=>{
  const origin=page.getByRole('button',{name:'Mostrar u ocultar explorador',exact:true});await origin.focus()
  await clickApplicationMenu('app.settings')
@@ -363,6 +353,7 @@ test('APP-03: Archivos y Avanzado confirman sus acciones y conservan los documen
   Object.defineProperty(shell,'openPath',{configurable:true,value:async(path:string)=>{state.settingsFolders.push(path);return''}})
  })
  await clickApplicationMenu('app.settings');const dialog=page.getByRole('dialog',{name:'Ajustes',exact:true})
+ await expect.poll(async()=>(await applicationMenuItem('file.close'))?.enabled).toBe(false)
  await dialog.getByRole('tab',{name:'Archivos',exact:true}).click();const clear=dialog.getByRole('button',{name:'Borrar lista de archivos recientes',exact:true})
  await clear.click();await expect(dialog).toHaveAttribute('aria-busy','false');expect(await page.evaluate(()=>window.freya.recents())).toEqual(before)
  await clear.click();await expect.poll(()=>page.evaluate(()=>window.freya.recents())).toEqual([])

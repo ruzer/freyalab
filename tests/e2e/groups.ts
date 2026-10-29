@@ -1,4 +1,4 @@
-export const shellFiles=['app.spec.ts','icons.spec.ts','ui.spec.ts','i18n.spec.ts','updates.spec.ts'] as const
+export const shellFiles=['app.spec.ts','icons.spec.ts','ui.spec.ts','i18n.spec.ts','commands.spec.ts','application-close.spec.ts','updates.spec.ts'] as const
 
 export const mdFiles=[
  'markdown-render.spec.ts',

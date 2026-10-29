@@ -1,0 +1,42 @@
+
+Running 1 test using 1 worker
+
+(node:52178) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [md] › tests/e2e/mermaid-expanded.spec.ts:165:1 › V5: cerrar la pestaña limpia elimina el diálogo y permite editar el siguiente documento (1.8s)
+
+
+  1) [md] › tests/e2e/mermaid-expanded.spec.ts:165:1 › V5: cerrar la pestaña limpia elimina el diálogo y permite editar el siguiente documento 
+
+    Error: expect(received).toMatchObject(expected)
+
+    - Expected  - 1
+    + Received  + 1
+
+      Object {
+        "accelerator": "CommandOrControl+W",
+    -   "enabled": true,
+    +   "enabled": false,
+      }
+
+      166 |  const {path}=await open();await openExpanded()
+      167 |  const closeItem=await app.evaluate(({Menu})=>{const item=Menu.getApplicationMenu()!.getMenuItemById('file.close')!;return{enabled:item.enabled,accelerator:item.accelerator}})
+    > 168 |  expect(closeItem).toMatchObject({enabled:true,accelerator:'CommandOrControl+W'})
+          |                    ^
+      169 |  await page.keyboard.press('ControlOrMeta+W')
+      170 |  await expect(dialog()).toHaveCount(0);await expect(page.locator('dialog .diagram-panel')).toHaveCount(0)
+      171 |  await expect(page.getByRole('tablist',{name:'Documentos abiertos',exact:true}).getByRole('tab')).toHaveCount(0)
+        at /private/tmp/freyalab-lote2/aplicacion/tests/e2e/mermaid-expanded.spec.ts:168:20
+
+    Error Context: test-results/mermaid-expanded-V5-cerrar-058b2-itar-el-siguiente-documento-md/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/mermaid-expanded-V5-cerrar-058b2-itar-el-siguiente-documento-md/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/mermaid-expanded-V5-cerrar-058b2-itar-el-siguiente-documento-md/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [md] › tests/e2e/mermaid-expanded.spec.ts:165:1 › V5: cerrar la pestaña limpia elimina el diálogo y permite editar el siguiente documento 
