@@ -1,0 +1,48 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-lote2/aplicacion
+
+ ❯ tests/application-closing-encoding.test.ts (2 tests | 2 failed) 96ms
+   × el cierre respeta los bytes canónicos de CSVTexto win1252, sin convertirlo aUTF8 89ms
+   × el cierre respeta los bytes canónicos de CSVTexto utf16le, sin convertirlo aUTF8 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/application-closing-encoding.test.ts > el cierre respeta los bytes canónicos de CSVTexto win1252, sin convertirlo aUTF8
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/application-closing-encoding.test.ts:20:32
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/application-closing-encoding.test.ts > el cierre respeta los bytes canónicos de CSVTexto utf16le, sin convertirlo aUTF8
+AssertionError: expected last "vi.fn()" call to have been called with [ ObjectContaining{…} ]
+
+- Expected
++ Received
+
+  [
+    {
+      "kind": "error",
+-     "message": StringContaining "10 MiB",
++     "message": "No pude preparar los cambios de «datos.csv». Corrígelos o deshaz los últimos cambios y vuelve a intentarlo. Tus documentos siguen abiertos.",
+    },
+  ]
+
+ ❯ tests/application-closing-encoding.test.ts:21:43
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  14:14:15
+   Duration  197ms (tests 76%, transform 15%, import 7%, worker 2%)
+

@@ -1,0 +1,21 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-lote2/aplicacion
+
+ ❯ tests/pandoc-real.test.ts (6 tests | 6 skipped) 11ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/pandoc-real.test.ts > AC-00 · P4 con Pandoc real
+Error: listen EPERM: operation not permitted 127.0.0.1
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 92 passed (93)
+      Tests  1751 passed | 6 skipped (1757)
+   Start at  13:52:13
+   Duration  16.23s (tests 87%, import 9%, transform 4%)
+

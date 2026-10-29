@@ -1,0 +1,21 @@
+
+Running 10 tests using 1 worker
+
+(node:52591) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [shell] › tests/e2e/application-close.spec.ts:23:1 › X prepara la celda activa y Cancelar conserva el documento completo (1.5s)
+  ✓   2 [shell] › tests/e2e/application-close.spec.ts:28:1 › Salir prepara el encabezado activo y Cancelar conserva datos y cambios (1.2s)
+  ✓   3 [shell] › tests/e2e/application-close.spec.ts:34:88 › close: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en es (2.7s)
+  ✓   4 [shell] › tests/e2e/application-close.spec.ts:34:88 › close: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en en (2.6s)
+  ✓   5 [shell] › tests/e2e/application-close.spec.ts:34:88 › quit: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en es (2.6s)
+  ✓   6 [shell] › tests/e2e/application-close.spec.ts:34:88 › quit: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en en (2.6s)
+  ✓   7 [shell] › tests/e2e/commands.spec.ts:347:1 › APP-03: Archivos y Avanzado confirman sus acciones y conservan los documentos (1.0s)
+(node:52654) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   8 [md] › tests/e2e/markdown-tasks.spec.ts:53:1 › C2: Vista previa sin CodeMirror conserva teclado local e historial mediante el menú nativo (1.3s)
+  ✓   9 [md] › tests/e2e/mermaid-expanded.spec.ts:165:1 › V5: cerrar la pestaña limpia elimina el diálogo y permite editar el siguiente documento (1.9s)
+(node:52669) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  10 [csv] › tests/e2e/sql-queue.spec.ts:80:1 › cerrar la aplicación con un análisis en curso y otro en cola termina sin motores huérfanos (953ms)
+
+  10 passed (19.4s)
