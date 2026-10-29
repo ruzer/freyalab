@@ -1,0 +1,60 @@
+{
+  "phase": "AC-02 funcional; cierre integral y CI pendientes",
+  "prerequisiteA0": "c1763df017b1b2158494a70c4cb4d90025903d06",
+  "prerequisiteAC01": "0391a9b67370fe5a3f03850c3a95075ae67db6ab",
+  "unitRed": {
+    "failed": 14,
+    "passed": 5,
+    "total": 19
+  },
+  "captionReferenceRed": true,
+  "focusedGreen": {
+    "files": 4,
+    "passed": 182
+  },
+  "e2eRed": {
+    "startTime": "2026-10-28T19:28:41.647Z",
+    "duration": 32240.473,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  },
+  "e2eFinal": {
+    "startTime": "2026-10-28T19:46:49.225Z",
+    "duration": 6893.272,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "anchorsExportedHTML": {
+    "ids": 4,
+    "links": 6,
+    "missing": 0,
+    "duplicates": 0
+  },
+  "pdf": {
+    "pages": 2,
+    "firstPageBodyAbsent": true,
+    "reader": "pdfjs-dist + pdftoppm, dos páginas inspeccionadas visualmente"
+  },
+  "evidence": {
+    "ac-02-light-1440x900.png": {
+      "sha256": "da3c61d61b90c47cf83d69b7ebfa174cf4477e5910a3dbf492fd90dd83791fcb",
+      "bytes": 142480
+    },
+    "ac-02-dark-1440x900.png": {
+      "sha256": "2e2f5dc7e8e7e61b7508f4c34c5866047149cb2969ff0b050d34ddd1ade35662",
+      "bytes": 144824
+    },
+    "ac-02-informe.html": {
+      "sha256": "a059e0eee9d3f2f18279344669d993b57af76c919248c1cf743a1206193c84f0",
+      "bytes": 1557260
+    },
+    "ac-02-informe.pdf": {
+      "sha256": "c903c1e9627116dee7d3571cc8358b1a88f33e05043bcb8bcc9ccf665825b672",
+      "bytes": 15478
+    }
+  }
+}
