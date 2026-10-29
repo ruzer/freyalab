@@ -114,8 +114,10 @@ test('C: el encabezado rechazado conserva su borrador y permite corregirlo antes
  expect((await readFile(join(files,'datos.csv'))).equals(original)).toBe(true)
  await expect(input).toHaveValue(draft)
  await expect(input).not.toBeFocused()
+ await page.getByRole('button',{name:'Cerrar aviso',exact:true}).click();await expect(page.locator('.toast')).toHaveCount(0)
  // Repetir el comando también debe validar el borrador que dejó de tener foco.
  await views().getByRole('button',{name:'Texto',exact:true}).evaluate(button=>(button as HTMLButtonElement).click())
+ await expect(page.locator('.toast')).toContainText('Datos de operación no válidos')
  await expect(input).toHaveValue(draft)
  await input.fill('Apellido')
  await views().getByRole('button',{name:'Texto',exact:true}).evaluate(button=>(button as HTMLButtonElement).click())
