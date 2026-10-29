@@ -40,6 +40,9 @@ test('E4: barra y atajos formatean sólo la principal y conservan la secundaria 
   const original='Freya uno\nFreya dos';await open(original);await selectTwo();await toolbar().getByRole('button',{name:action,exact:true}).click();await expect.poll(source).toBe(expected);await expect(toolbar().getByRole('button',{name:action,exact:true})).toHaveAttribute('aria-pressed','true');await expect(page.locator('.cm-selectionBackground')).toHaveCount(2)
   await page.keyboard.insertText('Luna');await expect.poll(source).toContain('Luna dos');await page.keyboard.press('ControlOrMeta+Z');await expect.poll(source).toBe(expected);await page.keyboard.press('ControlOrMeta+Z');await sameSource(original);await page.keyboard.press(key);await expect.poll(source).toBe(expected);await expect(page.locator('.cm-selectionBackground')).toHaveCount(2)
  }
+ const original='**Freya Luna**',{path}=await open(original);await clickAt(0,3);await clickAt(0,9,true);await expect(page.locator('.cm-cursor')).toHaveCount(2);await toolbar().getByRole('button',{name:'Negrita',exact:true}).click();await sameSource('Freya Luna')
+ await page.keyboard.insertText('!');await sameSource('F!reya L!una');await page.keyboard.press('ControlOrMeta+Z');await sameSource('Freya Luna');await page.keyboard.press('ControlOrMeta+Z');await sameSource(original)
+ await page.keyboard.press(process.platform==='darwin'?'Meta+Shift+Z':'Control+Y');await sameSource('Freya Luna');expect(await readFile(path,'utf8')).toBe(original)
 })
 test('E4: título y estado activo siguen a la principal sin convertir la segunda línea',async()=>{
  const original='Freya uno\nFreya dos';await open(original);await selectTwo();await page.keyboard.press('ControlOrMeta+Alt+2');await expect.poll(source).toBe('## Freya uno\nFreya dos');await expect(toolbar().getByRole('combobox',{name:'Tipo de bloque',exact:true})).toHaveValue('heading2');await expect(page.locator('.cm-selectionBackground')).toHaveCount(2)
