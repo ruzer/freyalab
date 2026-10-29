@@ -89,6 +89,7 @@ export class Documents {
   if([...this.records.values()].some(other=>other!==r&&other.info.path===canonical))throw new Error('El destino corresponde a otro documento abierto. Guarda una copia con otro nombre.')
   if((await lstat(dest).catch(()=>null))?.isSymbolicLink())throw new Error('No se sobrescriben enlaces simbólicos.')
   const revision=r.info.revision,same=r.info.path===dest||r.info.path===canonical
+  if(same&&dirname(canonical)!==r.root)throw new Error(t('file.error.changedLocation'))
   let data=r.info.kind==='csv'?Buffer.from(await this.table.call('serialize',id)):Buffer.from(r.text,'utf8'),assets:DocumentAssets|undefined
   r.saving=true
   try{
@@ -102,7 +103,7 @@ export class Documents {
     if(r.info.kind==='csv'){const marked=await this.table.call('markSaved',id,revision);if(marked.revision>=r.info.revision)Object.assign(r.info,marked)}else r.info.dirty=false
     if(!r.info.dirty){clearTimeout(r.timer);await this.recoveryTasks.get(id);if(!r.info.dirty)await this.discardRecovery(id)}
    }
-   r.info.path=dest;r.info.name=basename(dest);r.root=dirname(await realpath(dest));await r.watcher?.close();r.watcher=watch(dest,{ignoreInitial:true}).on('change',()=>{if(!r.saving)this.emit({type:'external',id})});await this.addRecent(dest)
+   r.info.path=dest;r.info.name=basename(dest);if(!same)r.root=dirname(await realpath(dest));await r.watcher?.close();r.watcher=watch(dest,{ignoreInitial:true}).on('change',()=>{if(!r.saving)this.emit({type:'external',id})});await this.addRecent(dest)
    return{...this.info(id),...(assets?{assets}:{})}
   }finally{setTimeout(()=>{r.saving=false},300)}
  }

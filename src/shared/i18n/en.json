@@ -46,6 +46,7 @@
  "citations.noAuthor": "Unknown author",
  "bibliography.error.saveFirst": "Save the document before choosing a relative bibliography.",
  "bibliography.error.changedDocument": "The document changed while loading references. Please try again.",
+ "file.error.changedLocation": "The file location changed outside FreyaLab. Save a copy to preserve your changes.",
  "bibliography.error.pandocRequired": "Reading a BibTeX bibliography requires Pandoc. Install it or choose CSL JSON: {url}",
  "pandoc.conversionFailed": "Pandoc could not convert the document. Check the installation or try a smaller document.",
  "pandoc.installation": "Install Pandoc for {system} and try again: {url}",

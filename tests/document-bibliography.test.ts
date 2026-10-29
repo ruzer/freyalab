@@ -1,5 +1,5 @@
 import {it,expect,vi,beforeEach,afterEach} from 'vitest'
-import {mkdtemp,writeFile,readFile,rm,mkdir,rename,symlink,realpath} from 'node:fs/promises'
+import {mkdtemp,writeFile,readFile,rm,mkdir,rename,symlink,realpath,stat} from 'node:fs/promises'
 import {join} from 'node:path'
 import {tmpdir} from 'node:os'
 const state=vi.hoisted(()=>({folder:''}))
@@ -58,4 +58,21 @@ it('guardar una fuente nueva conserva una autoridad canónica y permite su bibli
   expect(await documents.bibliography(document.id,source)).toMatchObject({ok:true,entries:[{title:'Fuente local'}]})
   expect(await readFile(path,'utf8')).toBe(source)
  }finally{vi.unstubAllEnvs()}
+})
+it('guardar normalmente no escribe ni reautoriza una carpeta sustituida por un enlace externo',async()=>{
+ const allowed=join(state.folder,'autorizado'),outside=join(state.folder,'externo'),source='---\nbibliography: refs.json\n---\n\n[@uno]'
+ await mkdir(allowed);await mkdir(outside)
+ for(const folder of [allowed,outside])await writeFile(join(folder,'a.md'),source)
+ await writeFile(join(allowed,'refs.json'),'[{"id":"uno","type":"book","title":"Autorizada"}]')
+ await writeFile(join(outside,'refs.json'),'[{"id":"uno","type":"book","title":"CANARIO EXTERNO"}]')
+ const document=await documents.open(join(allowed,'a.md')),root=documents.get(document.id).root,before=await stat(join(outside,'a.md'),{bigint:true})
+ await rename(allowed,join(state.folder,'autorizado-anterior'));await symlink(outside,allowed,process.platform==='win32'?'junction':'dir')
+ let error:unknown
+ try{await documents.save(document.id)}catch(cause){error=cause}
+ expect.soft(await documents.bibliography(document.id,source)).toMatchObject({ok:false,error:{code:'outside'}})
+ expect.soft(error).toBeInstanceOf(Error)
+ expect.soft(documents.get(document.id).root).toBe(root)
+ const after=await stat(join(outside,'a.md'),{bigint:true})
+ expect.soft({ino:after.ino,mtime:after.mtimeNs}).toEqual({ino:before.ino,mtime:before.mtimeNs})
+ expect(await readFile(join(outside,'a.md'),'utf8')).toBe(source)
 })
