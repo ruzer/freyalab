@@ -83,6 +83,8 @@ test('E2/E7: aspecto claro y oscuro conserva nombres de plegado y foco',async()=
  for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect.poll(()=>page.locator('html').evaluate(node=>node.classList.contains('dark'))).toBe(theme==='dark');await expect(page.locator('.cm-foldPlaceholder')).toBeVisible();if(process.env.FREYALAB_ED01_EVIDENCE==='1')await page.screenshot({path:`docs/evidence/ed-01-${theme}-1440x900.png`,animations:'disabled'})}
 })
 test('E2/E4: sólo lectura permite plegar sin aceptar ediciones ni formato',{tag:'@perf'},async()=>{
+ await open('# Preparar lectura\n\nEditor.','preparar-lectura.md')
+ await expect(page.getByRole('button',{name:'Editar',exact:true})).toHaveClass(/\bactive\b/)
  const full='# Fuente protegida\n\n'+('Texto sin modificar.\n'.repeat(600000)),{path,doc}=await open(full,'protegido.md');expect(doc.readonly).toBe(true);const visible=await source();await readyToFold();await clickAt(0,2)
  await test.info().attach('readonly-foco',{body:Buffer.from(JSON.stringify(await content().evaluate(node=>({focused:node===document.activeElement,tabindex:node.getAttribute('tabindex'),editable:node.getAttribute('contenteditable')})))),contentType:'application/json'})
  await expect(content()).toBeFocused();await page.keyboard.press(foldKey);await expect(page.locator('.cm-foldPlaceholder')).toHaveCount(1);await page.keyboard.press(unfoldKey);await page.keyboard.press('ControlOrMeta+B');await page.keyboard.insertText('X');await page.keyboard.press('Enter');await expect.poll(source).toBe(visible);await expect.poll(async()=>(await info())?.dirty).toBe(false);expect(await readFile(path,'utf8')).toBe(full)
