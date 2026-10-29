@@ -113,6 +113,10 @@ test('C: el encabezado rechazado conserva su borrador y permite corregirlo antes
  expect((await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:1}),doc.id)).rows.map(row=>row.cells)).toEqual([['001','Ana'],['9007199254740993','dos\nlíneas']])
  expect((await readFile(join(files,'datos.csv'))).equals(original)).toBe(true)
  await expect(input).toHaveValue(draft)
+ await expect(input).not.toBeFocused()
+ // Repetir el comando también debe validar el borrador que dejó de tener foco.
+ await views().getByRole('button',{name:'Texto',exact:true}).evaluate(button=>(button as HTMLButtonElement).click())
+ await expect(input).toHaveValue(draft)
  await input.fill('Apellido')
  await views().getByRole('button',{name:'Texto',exact:true}).evaluate(button=>(button as HTMLButtonElement).click())
  const dialog=page.getByRole('dialog',{name:'Cambiar vista del CSV',exact:true});await expect(dialog).toBeVisible()
