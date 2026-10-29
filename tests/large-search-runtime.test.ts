@@ -5,6 +5,7 @@ import {tmpdir} from 'node:os'
 import {build} from 'rolldown'
 import {parse} from 'csv-parse/sync'
 import {LargeViews} from '../src/main/large-view'
+import {waitForView} from './helpers/view-state'
 import {buildIndex} from '../src/main/large-table'
 import {compileTableQuery} from '../src/main/table-query'
 let folder:string,path:string,workerPath:string,source:string,index:Awaited<ReturnType<typeof buildIndex>>,rows:string[][]
@@ -15,10 +16,11 @@ beforeAll(async()=>{
 })
 afterAll(async()=>{await rm(folder,{recursive:true,force:true})})
 for(const workers of [1,2,4,8])for(const batchRecords of [1,3,2000])it(`${workers} rangos reales, lote ${batchRecords}: Unicode y separación parcial conservan todas las filas en orden`,async()=>{
+ const deadline=performance.now()+29000 // El caso conserva sus 30 s exteriores; se reserva 1 s para cerrar hilos.
  const views=new LargeViews({workers,workerPath,batchRecords,chunk:30,prefilter:batchRecords!==3,partial:batchRecords!==2000}),queries=[{search:'k'},{search:'i'},{conditions:[{column:2,op:'contains' as const,value:'k'}],filterMode:'all' as const},{conditions:[{column:4,op:'empty' as const}],filterMode:'any' as const}]
  try{
   for(const query of queries){const requestId=crypto.randomUUID(),compiled=compileTableQuery({...query,offset:0,limit:1,requestId:0},5),expected=rows.flatMap((cells,i)=>compiled.matches(cells)?[{id:String(i+1),cells}]:[]);await views.start('a',{index,delimiter:',',header:true,width:5,revision:0,alive:()=>true},{...query,requestId,revision:0})
-   for(let i=0;(await views.state('a'))?.status==='running';i++){if(i>3000)throw new Error('No terminó');await new Promise(resolve=>setTimeout(resolve,2))}expect(await views.state('a')).toMatchObject({status:'complete',matched:expected.length,scanned:13500});const actual=[];for(let offset=0;offset<expected.length;offset+=1000)actual.push(...(await views.page('a',requestId,offset,1000)).rows);expect(actual).toEqual(expected)
+   await waitForView(()=>views.state('a'),deadline);expect(await views.state('a')).toMatchObject({status:'complete',matched:expected.length,scanned:13500});const actual=[];for(let offset=0;offset<expected.length;offset+=1000)actual.push(...(await views.page('a',requestId,offset,1000)).rows);expect(actual).toEqual(expected)
   }
   expect(await readFile(path,'utf8')).toBe(source)
  }finally{await views.stop()}
