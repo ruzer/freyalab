@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 let app:ElectronApplication,page:Page,folder:string,id:string,serial=0
 const content=()=>page.locator('.cm-content'),toolbar=()=>page.getByRole('group',{name:'Formato Markdown',exact:true})
-const foldKey=process.platform==='darwin'?'Meta+Alt+[':'Control+Shift+[',unfoldKey=process.platform==='darwin'?'Meta+Alt+]':'Control+Shift+]'
+const foldKey=process.platform==='darwin'?'Meta+Alt+[':'Control+Shift+BracketLeft',unfoldKey=process.platform==='darwin'?'Meta+Alt+]':'Control+Shift+BracketRight'
 const source=()=>page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id)?.text,id)
 const info=()=>page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),id)
 test.beforeEach(async()=>{
@@ -23,6 +23,7 @@ async function point(line:number,offset:number){return content().locator('.cm-li
 async function clickAt(line:number,offset:number,add=false){const coordinate=await point(line,offset);if(add)await page.keyboard.down('Alt');try{await page.mouse.click(coordinate.x,coordinate.y)}finally{if(add)await page.keyboard.up('Alt')}}
 async function selectTwo(){await clickAt(0,2);await page.keyboard.press('ControlOrMeta+D');await page.keyboard.press('ControlOrMeta+D');await expect(page.locator('.cm-selectionBackground')).toHaveCount(2)}
 async function sameSource(text:string,dirty?:boolean){await expect.poll(source).toBe(text);if(dirty!==undefined)await expect.poll(async()=>(await info())?.dirty).toBe(dirty)}
+async function readyToFold(){await expect(page.locator('.cm-foldGutter [title="Plegar sección"]').first()).toBeVisible()}
 async function watchAnnouncements(){await page.evaluate(()=>{const messages:string[]=[],node=document.querySelector('.cm-announced')!;new MutationObserver(()=>{if(node.textContent?.trim())messages.push(node.textContent)}).observe(node,{childList:true,subtree:true,characterData:true});(window as typeof window&{ed01Announcements:string[]}).ed01Announcements=messages})}
 const announcements=()=>page.evaluate(()=>(window as typeof window&{ed01Announcements:string[]}).ed01Announcements.join('\n'))
 
@@ -49,7 +50,7 @@ test('E4: pasar por vista previa y otra pestaña conserva múltiples selecciones
  await open('Otro documento','segundo.md');await page.getByRole('tab',{name:'primero.md',exact:true}).click();id=first.doc.id;await content().focus();await expect(page.locator('.cm-selectionBackground')).toHaveCount(2);await page.keyboard.insertText('Luna');await expect.poll(source).toBe('Luna uno\nLuna dos')
 })
 test('E2/E7: plegar y desplegar con teclado anuncia en español sin cambiar fuente ni dirty',async()=>{
- const original='# Uno\n\nCuerpo de la primera sección.\n\n# Dos\n\nFinal',{path}=await open(original);await watchAnnouncements();await clickAt(0,2);await page.keyboard.press(foldKey)
+ const original='# Uno\n\nCuerpo de la primera sección.\n\n# Dos\n\nFinal',{path}=await open(original);await watchAnnouncements();await readyToFold();await clickAt(0,2);await page.keyboard.press(foldKey)
  const placeholder=page.locator('.cm-foldPlaceholder');await expect(placeholder).toHaveCount(1);await expect(placeholder).toHaveAttribute('aria-label','Sección plegada');await expect(placeholder).toHaveAccessibleName('Sección plegada');await test.info().attach('plegado-arbol-accesible',{body:Buffer.from(await placeholder.ariaSnapshot()),contentType:'text/plain'});await expect.poll(announcements).toContain('Líneas plegadas');await sameSource(original,false);await expect(content()).toContainText('# Dos')
  await page.keyboard.press(unfoldKey);await expect(placeholder).toHaveCount(0);await expect.poll(announcements).toContain('Líneas desplegadas');await sameSource(original,false);expect(await readFile(path,'utf8')).toBe(original)
 })
@@ -58,7 +59,7 @@ test('E2: flecha y widget de plegado no consumen el deshacer de una edición ant
  await expect.poll(async()=>(await info())?.dirty).toBe(true);await page.locator('.cm-foldGutter [title="Plegar sección"]').first().click();await expect(page.locator('.cm-foldPlaceholder')).toHaveCount(1);await expect.poll(async()=>(await info())?.dirty).toBe(true);await page.locator('.cm-foldPlaceholder').click();await expect(page.locator('.cm-foldPlaceholder')).toHaveCount(0);await expect.poll(async()=>(await info())?.dirty).toBe(true);await content().focus();await page.keyboard.press('ControlOrMeta+Z');await sameSource(original)
 })
 test('E2: CRLF y encabezados aparentes en código/details conservan la fuente exacta',async()=>{
- const original='# Uno\r\n\r\n```md\r\n# No es una sección\r\n```\r\n\r\n<details>\r\n# Tampoco es sección\r\n</details>\r\n\r\n# Dos\r\n\r\nFinal',{path}=await open(original);await clickAt(0,2);await page.keyboard.press(foldKey);await expect(page.locator('.cm-foldPlaceholder')).toHaveCount(1);await expect(content()).toContainText('# Dos');await page.keyboard.press(unfoldKey);await expect(content()).toContainText('No es una sección');await sameSource(original,false);expect(await readFile(path,'utf8')).toBe(original)
+ const original='# Uno\r\n\r\n```md\r\n# No es una sección\r\n```\r\n\r\n<details>\r\n# Tampoco es sección\r\n</details>\r\n\r\n# Dos\r\n\r\nFinal',{path}=await open(original);await readyToFold();await clickAt(0,2);await page.keyboard.press(foldKey);await expect(page.locator('.cm-foldPlaceholder')).toHaveCount(1);await expect(content()).toContainText('# Dos');await page.keyboard.press(unfoldKey);await expect(content()).toContainText('No es una sección');await sameSource(original,false);expect(await readFile(path,'utf8')).toBe(original)
 })
 for(const [label,original,expected]of [['viñetas','- Uno','- Uno\n- '],['numeración','1. Uno','1. Uno\n2. '],['tareas','- [x] Lista','- [x] Lista\n- [ ] '],['citas','> Texto','> Texto\n> '],['vacío','- ',''],['segundo vacío','- Uno\n- ','- Uno\n'],['no compactas','- Uno\n\n- Dos','- Uno\n\n- Dos\n\n- ']]as const)test(`E3 existente: Intro en ${label}`,async()=>{
  await open(original);await content().focus();await page.keyboard.press('ControlOrMeta+End');await page.keyboard.press('Enter');await expect.poll(source).toBe(expected);await page.keyboard.press('ControlOrMeta+Z');await sameSource(original)
@@ -75,11 +76,11 @@ test('E5: CSV-texto conserva su multicursor instalado y sus finales mixtos, sin 
  await content().focus();await page.keyboard.press('ControlOrMeta+Home');await page.keyboard.press('ArrowDown');for(let i=0;i<5;i++)await page.keyboard.press('ArrowRight');await page.keyboard.press('ControlOrMeta+D');await page.keyboard.press('ControlOrMeta+D');await page.keyboard.insertText('dos');await expect.poll(source).toBe('id,valor\r\n001,dos\n002,dos\r003,fin\r\n');await page.keyboard.press('ControlOrMeta+Z');await sameSource(original);expect(await readFile(path,'utf8')).toBe(original)
 })
 test('E2/E7: aspecto claro y oscuro conserva nombres de plegado y foco',async()=>{
- await open('# Documento de Freya\n\nUn párrafo que se pliega.\n\n# Otra sección\n\nTexto final.');await clickAt(0,2);await page.keyboard.press(foldKey);await expect(page.locator('.cm-foldPlaceholder')).toHaveAttribute('aria-label','Sección plegada')
+ await open('# Documento de Freya\n\nUn párrafo que se pliega.\n\n# Otra sección\n\nTexto final.');await readyToFold();await clickAt(0,2);await page.keyboard.press(foldKey);await expect(page.locator('.cm-foldPlaceholder')).toHaveAttribute('aria-label','Sección plegada')
  for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect.poll(()=>page.locator('html').evaluate(node=>node.classList.contains('dark'))).toBe(theme==='dark');await expect(page.locator('.cm-foldPlaceholder')).toBeVisible();if(process.env.FREYALAB_ED01_EVIDENCE==='1')await page.screenshot({path:`docs/evidence/ed-01-${theme}-1440x900.png`,animations:'disabled'})}
 })
 test('E2/E4: sólo lectura permite plegar sin aceptar ediciones ni formato',{tag:'@perf'},async()=>{
- const full='# Fuente protegida\n\n'+('Texto sin modificar.\n'.repeat(600000)),{path,doc}=await open(full,'protegido.md');expect(doc.readonly).toBe(true);const visible=await source();await expect(page.locator('.cm-foldGutter [title="Plegar sección"]').first()).toBeVisible();await clickAt(0,2)
+ const full='# Fuente protegida\n\n'+('Texto sin modificar.\n'.repeat(600000)),{path,doc}=await open(full,'protegido.md');expect(doc.readonly).toBe(true);const visible=await source();await readyToFold();await clickAt(0,2)
  await test.info().attach('readonly-foco',{body:Buffer.from(JSON.stringify(await content().evaluate(node=>({focused:node===document.activeElement,tabindex:node.getAttribute('tabindex'),editable:node.getAttribute('contenteditable')})))),contentType:'application/json'})
  await expect(content()).toBeFocused();await page.keyboard.press(foldKey);await expect(page.locator('.cm-foldPlaceholder')).toHaveCount(1);await page.keyboard.press(unfoldKey);await page.keyboard.press('ControlOrMeta+B');await page.keyboard.insertText('X');await page.keyboard.press('Enter');await expect.poll(source).toBe(visible);await expect.poll(async()=>(await info())?.dirty).toBe(false);expect(await readFile(path,'utf8')).toBe(full)
 })
