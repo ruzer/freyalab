@@ -34,3 +34,8 @@ it('D conserva en HTML autónomo todos los destinos internos del corpus',async()
  }
  if(process.env.FREYALAB_MD_EVIDENCE==='1')await writeFile('/private/tmp/md002-export-anchors.json',JSON.stringify(report,null,2))
 })
+it.each(['marker-end','clip-path','fill'])('conserva las referencias SVG internas %s al incrustar fuentes para exportar',async attribute=>{
+ const html=await autonomousHTML(`<svg viewBox="0 0 100 100"><defs><marker id="punta"><path d="M0 0L10 5L0 10z"/></marker></defs><path d="M0 0L80 80" ${attribute}="url(#punta)"/></svg>`)
+ expect(html).toContain(`${attribute}="url(#punta)"`)
+ expect(html).not.toContain(`${attribute}="url('')"`)
+})

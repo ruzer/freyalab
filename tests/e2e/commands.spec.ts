@@ -466,6 +466,30 @@ test('APP-03: migra el perfil anterior una vez y conserva ajustes sin modificar 
 })
 
 
+test('AC-03/04: el paquete lee los cinco CSL y el DOCX interno con sus hashes oficiales',async()=>{
+  const manifest=JSON.parse(await readFile('src/main/csl/manifest.json','utf8')) as {styles:{file:string;bytes:number;sha256:string}[]}
+  const reference=JSON.parse(await readFile('src/main/docx-reference/manifest.json','utf8')) as {sha256:string}
+  expect(manifest.styles.map(style=>style.file)).toEqual(['apa.csl','ieee.csl','nlm-citation-sequence.csl','chicago-author-date.csl','modern-language-association.csl'])
+  const expected=[...manifest.styles.map(({file,bytes,sha256})=>({file,bytes,sha256})),{file:'docx-reference.docx',bytes:(await stat('src/main/docx-reference.docx')).size,sha256:reference.sha256}]
+  const actual=await app.evaluate(({app},{expected,developmentMain})=>{
+    const fs=process.getBuiltinModule('node:fs') as typeof import('node:fs'),path=process.getBuiltinModule('node:path') as typeof import('node:path'),crypto=process.getBuiltinModule('node:crypto') as typeof import('node:crypto')
+    // En desarrollo getAppPath() ya puede ser out/main; no volver a añadirlo.
+    const mainDirectory=app.isPackaged?path.join(app.getAppPath(),'out','main'):developmentMain,directory=path.join(mainDirectory,'chunks'),names=fs.readdirSync(directory)
+    const resources=expected.map(resource=>{
+      const extension=path.extname(resource.file),stem=resource.file.slice(0,-extension.length),matches=names.filter(name=>name===resource.file||(name.startsWith(stem+'-')&&name.endsWith(extension)))
+      if(matches.length!==1)throw new Error(`Se esperaba un recurso compilado para ${resource.file}; se encontraron ${matches.length}.`)
+      const file=path.join(directory,matches[0]),bytes=fs.readFileSync(file)
+      return{file:resource.file,bytes:bytes.byteLength,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),compiled:path.relative(mainDirectory,file),unpacked:app.isPackaged&&fs.existsSync(path.join(app.getAppPath()+'.unpacked',path.relative(app.getAppPath(),file)))}
+    })
+    return{packaged:app.isPackaged,mainDirectory,resources}
+  },{expected,developmentMain:resolve('out/main')})
+  await test.info().attach('recursos-academicos-leidos-por-electron',{body:Buffer.from(JSON.stringify({expected,...actual},null,2)),contentType:'application/json'})
+  expect(actual.packaged).toBe(!!process.env.FREYALAB_EXECUTABLE)
+  expect(actual.resources).toMatchObject(expected)
+  expect(actual.mainDirectory.replaceAll('\\','/')).not.toContain('/out/main/out/main')
+  if(process.env.FREYALAB_EXECUTABLE){expect(actual.mainDirectory.replaceAll('\\','/')).toMatch(/\.asar\/out\/main$/);expect(actual.resources.some(resource=>resource.unpacked)).toBe(false)}
+})
+
 test('paleta CSV: búsqueda sin acentos, teclado, rango, foco y vista previa comparten edición y deshacer',async()=>{
  const source='ID,Texto\n00123,ábol\n9007199254740993,otro\n',{path}=await open(source),before=await page.evaluate(()=>window.freya.documents()),first=page.getByRole('gridcell',{name:'Fila 1, Texto',exact:true}),last=page.getByRole('gridcell',{name:'Fila 2, Texto',exact:true})
  await first.click();await page.keyboard.press('Shift+ArrowDown');await clickApplicationMenu('edit.commandPalette');const dialog=palette();await expect(dialog).toContainText('Rango: filas 1–2, columnas 2–2.');await expect(dialog.getByLabel('Buscar comando CSV',{exact:true})).toBeFocused();await dialog.getByLabel('Buscar comando CSV',{exact:true}).fill('mayusculas rango');await expect(dialog.locator('.command-list button')).toHaveCount(1);await expect(command(dialog,'Mayúsculas en el rango')).toBeEnabled();await dialog.getByLabel('Buscar comando CSV',{exact:true}).press('ArrowDown');await expect(command(dialog,'Mayúsculas en el rango')).toBeFocused();await page.keyboard.press('Enter');const preview=page.getByRole('dialog',{name:'Mayúsculas en el rango',exact:true});await expect(preview.getByRole('button',{name:'Aplicar cambio',exact:true})).toBeEnabled();expect(await page.evaluate(()=>window.freya.documents())).toEqual(before);await preview.getByRole('button',{name:'Cancelar',exact:true}).click();await expect(last).toBeFocused()

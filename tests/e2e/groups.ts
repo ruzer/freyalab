@@ -20,4 +20,6 @@ export const mdFiles=[
  'markdown-tags.spec.ts',
  'markdown-assets.spec.ts',
  'academic-report.spec.ts',
+ 'academic-citations.spec.ts','academic-word.spec.ts',
+ 'pandoc-export.spec.ts',
 ] as const
