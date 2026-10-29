@@ -16,7 +16,6 @@
   "src/main/large-table.ts",
   "src/main/large-view.ts",
   "src/main/operations.ts",
-  "src/main/pandoc.ts",
   "src/main/sql-service.ts",
   "src/main/table-analysis.ts",
   "src/main/table-client.ts",

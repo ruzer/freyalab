@@ -6,9 +6,10 @@ import {join,resolve} from 'node:path'
 import {execFileSync} from 'node:child_process'
 import {showPanel} from './panel'
 import {runApplicationMenu} from './application-menu'
+import {zipFiles} from '../docx'
 let app:ElectronApplication,page:Page,folder:string
 const palette=()=>page.getByRole('dialog',{name:'Comandos CSV',exact:true})
-test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-commands-e2e-'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('.')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
+test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-commands-e2e-'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('.')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),...(process.env.FREYALAB_PANDOC_TEST_PATH?{FREYALAB_TEST_PANDOC_PATH:process.env.FREYALAB_PANDOC_TEST_PATH}:{})},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function open(source:string){const path=join(folder,'data.csv');await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible();return{doc,path}}
 async function show(query=''){await page.getByRole('button',{name:'Buscar acción',exact:true}).click();const dialog=palette();await expect(dialog.getByLabel('Buscar comando CSV',{exact:true})).toBeFocused();await dialog.getByLabel('Buscar comando CSV',{exact:true}).fill(query);return dialog}
@@ -40,6 +41,27 @@ async function applicationMenuTree():Promise<ApplicationMenuEntry[]>{return app.
 function flatApplicationMenu(items:ApplicationMenuEntry[]):ApplicationMenuEntry[]{return items.flatMap(item=>[item,...flatApplicationMenu(item.submenu)])}
 async function applicationMenuItem(id:string){return flatApplicationMenu(await applicationMenuTree()).find(item=>item.id===id)}
 async function clickApplicationMenu(id:string){await runApplicationMenu(app,id)}
+
+test('APP-01 M4: Word se descubre al iniciar y el menú exporta un DOCX real sin abrir la barra',async()=>{
+ test.skip(!process.env.FREYALAB_PANDOC_TEST_PATH,'Requiere Pandoc real externo explícito; no se instala ni se empaqueta.')
+ const source='# Informe desde el menú nativo\n\nContenido verificable: Freya, 00123 y México.\n',path=join(folder,'menu-word.md'),output=join(folder,'menu-word.docx')
+ await writeFile(path,source);const fileBefore=await stat(path),[doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
+ await expect(page.locator('.preview article')).toContainText('Informe desde el menú nativo')
+ // No abrir Exportar ni consultar pandocStatus: se prueba el descubrimiento de Main.
+ await expect.poll(async()=>(await applicationMenuItem('export.docx'))?.enabled).toBe(true)
+ await app.evaluate(({dialog,BrowserWindow},output)=>{
+  Object.defineProperty(dialog,'showSaveDialog',{configurable:true,value:async()=>({canceled:false,filePath:output})})
+  const contents=BrowserWindow.getAllWindows()[0].webContents,send=contents.send.bind(contents),state=globalThis as unknown as {nativeWordDispatches:number};state.nativeWordDispatches=0
+  contents.send=(channel:string,...args:unknown[])=>{if(channel==='freya:command'&&(args[0]as{id?:string})?.id==='export.docx')state.nativeWordDispatches++;return send(channel,...args)}
+ },output)
+ await clickApplicationMenu('export.docx')
+ await expect.poll(async()=>{try{return(await readFile(output)).subarray(0,2).toString()}catch{return''}},{timeout:30000}).toBe('PK')
+ const files=zipFiles(await readFile(output)),xml=files.get('word/document.xml')?.toString()??'',text=xml.replace(/<[^>]*>/g,'')
+ expect(text).toContain('Informe desde el menú nativo');expect(text).toContain('Freya, 00123 y México.');expect(xml).not.toMatch(/INCLUDETEXT|INCLUDEPICTURE/)
+ expect(await app.evaluate(()=>(globalThis as unknown as {nativeWordDispatches:number}).nativeWordDispatches)).toBe(1)
+ expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toMatchObject({text:source,revision:doc.revision,dirty:doc.dirty})
+ expect(await readFile(path,'utf8')).toBe(source);expect((await stat(path)).mtimeMs).toBe(fileBefore.mtimeMs)
+})
 
 test('APP-02: Acerca de muestra versión real, copia sólo diagnóstico y lee licencias del paquete',async()=>{
  const path=join(folder,'CANARIO_DOCUMENTO_PRIVADO.md'),source='# CANARIO_CONTENIDO_PRIVADO\n';await writeFile(path,source);await page.evaluate(path=>window.freya.openPaths([path]),path)
@@ -465,6 +487,30 @@ test('APP-03: migra el perfil anterior una vez y conserva ajustes sin modificar 
  expect(await readFile(settingsPath,'utf8')).toBe(raw);expect(await readFile(first,'utf8')).toBe(source)
 })
 
+
+test('AC-03/04: el paquete lee los cinco CSL y el DOCX interno con sus hashes oficiales',async()=>{
+  const manifest=JSON.parse(await readFile('src/main/csl/manifest.json','utf8')) as {styles:{file:string;bytes:number;sha256:string}[]}
+  const reference=JSON.parse(await readFile('src/main/docx-reference/manifest.json','utf8')) as {sha256:string}
+  expect(manifest.styles.map(style=>style.file)).toEqual(['apa.csl','ieee.csl','nlm-citation-sequence.csl','chicago-author-date.csl','modern-language-association.csl'])
+  const expected=[...manifest.styles.map(({file,bytes,sha256})=>({file,bytes,sha256})),{file:'docx-reference.docx',bytes:(await stat('src/main/docx-reference.docx')).size,sha256:reference.sha256}]
+  const actual=await app.evaluate(({app},{expected,developmentMain})=>{
+    const fs=process.getBuiltinModule('node:fs') as typeof import('node:fs'),path=process.getBuiltinModule('node:path') as typeof import('node:path'),crypto=process.getBuiltinModule('node:crypto') as typeof import('node:crypto')
+    // En desarrollo getAppPath() ya puede ser out/main; no volver a añadirlo.
+    const mainDirectory=app.isPackaged?path.join(app.getAppPath(),'out','main'):developmentMain,directory=path.join(mainDirectory,'chunks'),names=fs.readdirSync(directory)
+    const resources=expected.map(resource=>{
+      const extension=path.extname(resource.file),stem=resource.file.slice(0,-extension.length),matches=names.filter(name=>name===resource.file||(name.startsWith(stem+'-')&&name.endsWith(extension)))
+      if(matches.length!==1)throw new Error(`Se esperaba un recurso compilado para ${resource.file}; se encontraron ${matches.length}.`)
+      const file=path.join(directory,matches[0]),bytes=fs.readFileSync(file)
+      return{file:resource.file,bytes:bytes.byteLength,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),compiled:path.relative(mainDirectory,file),unpacked:app.isPackaged&&fs.existsSync(path.join(app.getAppPath()+'.unpacked',path.relative(app.getAppPath(),file)))}
+    })
+    return{packaged:app.isPackaged,mainDirectory,resources}
+  },{expected,developmentMain:resolve('out/main')})
+  await test.info().attach('recursos-academicos-leidos-por-electron',{body:Buffer.from(JSON.stringify({expected,...actual},null,2)),contentType:'application/json'})
+  expect(actual.packaged).toBe(!!process.env.FREYALAB_EXECUTABLE)
+  expect(actual.resources).toMatchObject(expected)
+  expect(actual.mainDirectory.replaceAll('\\','/')).not.toContain('/out/main/out/main')
+  if(process.env.FREYALAB_EXECUTABLE){expect(actual.mainDirectory.replaceAll('\\','/')).toMatch(/\.asar\/out\/main$/);expect(actual.resources.some(resource=>resource.unpacked)).toBe(false)}
+})
 
 test('paleta CSV: búsqueda sin acentos, teclado, rango, foco y vista previa comparten edición y deshacer',async()=>{
  const source='ID,Texto\n00123,ábol\n9007199254740993,otro\n',{path}=await open(source),before=await page.evaluate(()=>window.freya.documents()),first=page.getByRole('gridcell',{name:'Fila 1, Texto',exact:true}),last=page.getByRole('gridcell',{name:'Fila 2, Texto',exact:true})

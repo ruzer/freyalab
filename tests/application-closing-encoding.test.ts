@@ -24,7 +24,7 @@ for(const encoding of ['win1252','utf16le'] as const)it(`el cierre respeta los b
 })
 
 it('el rechazo previo del límite de cadena IPC conserva el aviso nombrado de10MiB',async()=>{
- setLanguage('es');const text='x'.repeat(10*MiB+1),notice=vi.fn(),document={id,name:'cadena.csv',kind:'csv' as const,csvView:'text' as const,text,readonly:false}
+ setLanguage('es');const text='x'.repeat(20*MiB+1),notice=vi.fn(),document={id,name:'cadena.csv',kind:'csv' as const,csvView:'text' as const,text,readonly:false}
  const flow=new ApplicationClosing({snapshot:()=>({documents:[document],activeId:id,busy:false,modal:false,composing:false}),prepare:async()=>{throw new Error('Datos de operación no válidos.')},notice,locked:()=>{}})
  try{expect(await flow.prepare()).toBe(false);expect(notice).toHaveBeenLastCalledWith(expect.objectContaining({kind:'error',message:expect.stringContaining('10 MiB')}));expect(notice.mock.calls.at(-1)![0].message).toContain('cadena.csv');expect(document.text).toBe(text)}finally{flow.abort()}
 })
