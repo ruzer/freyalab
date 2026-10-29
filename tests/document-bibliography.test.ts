@@ -1,5 +1,5 @@
 import {it,expect,vi,beforeEach,afterEach} from 'vitest'
-import {mkdtemp,writeFile,rm} from 'node:fs/promises'
+import {mkdtemp,writeFile,readFile,rm,mkdir,rename,symlink,realpath} from 'node:fs/promises'
 import {join} from 'node:path'
 import {tmpdir} from 'node:os'
 const state=vi.hoisted(()=>({folder:''}))
@@ -31,4 +31,31 @@ it('un documento nuevo explica que hay que guardarlo sin leer rutas por omisión
 it('sin declaración devuelve un catálogo vacío y no cambia el documento',async()=>{
  const document=await documents.create('markdown'),result=await documents.bibliography(document.id,'')
  expect(result).toMatchObject({ok:true,entries:[]});expect(documents.info(document.id).dirty).toBe(false)
+})
+it('conserva la carpeta autorizada al abrir aunque su directorio se sustituya por un enlace externo',async()=>{
+ const allowed=join(state.folder,'autorizado'),outside=join(state.folder,'externo'),source='---\nbibliography: refs.json\n---\n\n[@uno]'
+ await mkdir(allowed);await mkdir(outside)
+ for(const folder of [allowed,outside])await writeFile(join(folder,'a.md'),source)
+ const original='[{"id":"uno","type":"book","title":"Fuente autorizada"}]',canary='[{"id":"uno","type":"book","title":"CANARIO EXTERNO"}]'
+ await writeFile(join(allowed,'refs.json'),original);await writeFile(join(outside,'refs.json'),canary)
+ const document=await documents.open(join(allowed,'a.md'))
+ await rename(allowed,join(state.folder,'autorizado-anterior'));await symlink(outside,allowed,process.platform==='win32'?'junction':'dir')
+ const result=await documents.bibliography(document.id,source)
+ expect(result).toMatchObject({ok:false,error:{code:'outside'}})
+ expect(result.ok&&result.entries[0]?.title).not.toBe('CANARIO EXTERNO')
+ expect(await readFile(join(outside,'refs.json'),'utf8')).toBe(canary)
+ expect(await readFile(join(state.folder,'autorizado-anterior','refs.json'),'utf8')).toBe(original)
+ expect(documents.info(document.id)).toMatchObject({text:source,dirty:false})
+})
+it('guardar una fuente nueva conserva una autoridad canónica y permite su biblioteca local',async()=>{
+ const source='---\nbibliography: refs.json\n---\n\n[@uno]',path=join(state.folder,'guardado.md')
+ await writeFile(join(state.folder,'refs.json'),'[{"id":"uno","type":"book","title":"Fuente local"}]')
+ const document=await documents.create('markdown');await documents.update(document.id,source)
+ vi.stubEnv('FREYALAB_TEST','1');vi.stubEnv('FREYALAB_TEST_SAVE_PATH',path)
+ try{
+  await documents.save(document.id)
+  expect(documents.get(document.id).root).toBe(await realpath(state.folder))
+  expect(await documents.bibliography(document.id,source)).toMatchObject({ok:true,entries:[{title:'Fuente local'}]})
+  expect(await readFile(path,'utf8')).toBe(source)
+ }finally{vi.unstubAllEnvs()}
 })

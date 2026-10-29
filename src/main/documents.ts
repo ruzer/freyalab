@@ -64,7 +64,7 @@ export class Documents {
   const library=bibliographyPath(frontMatterOf(source).frontMatter)
   if(!library)return{ok:true,entries:[],bytes:0,sha256:''}
   if(!path)return{ok:false,error:{code:'invalid-path',message:t('bibliography.error.saveFirst')}}
-  const result=await loadBibliography({documentPath:path,bibliographyPath:library,pandocPath:this.pandocPath});assertCurrent()
+  const result=await loadBibliography({documentPath:path,documentRoot:record.root,bibliographyPath:library,pandocPath:this.pandocPath});assertCurrent()
   if(!result.ok)return result
   return{ok:true,entries:result.entries,bytes:result.bytes,sha256:result.sha256}
  }
@@ -102,7 +102,7 @@ export class Documents {
     if(r.info.kind==='csv'){const marked=await this.table.call('markSaved',id,revision);if(marked.revision>=r.info.revision)Object.assign(r.info,marked)}else r.info.dirty=false
     if(!r.info.dirty){clearTimeout(r.timer);await this.recoveryTasks.get(id);if(!r.info.dirty)await this.discardRecovery(id)}
    }
-   r.info.path=dest;r.info.name=basename(dest);r.root=dirname(dest);await r.watcher?.close();r.watcher=watch(dest,{ignoreInitial:true}).on('change',()=>{if(!r.saving)this.emit({type:'external',id})});await this.addRecent(dest)
+   r.info.path=dest;r.info.name=basename(dest);r.root=dirname(await realpath(dest));await r.watcher?.close();r.watcher=watch(dest,{ignoreInitial:true}).on('change',()=>{if(!r.saving)this.emit({type:'external',id})});await this.addRecent(dest)
    return{...this.info(id),...(assets?{assets}:{})}
   }finally{setTimeout(()=>{r.saving=false},300)}
  }

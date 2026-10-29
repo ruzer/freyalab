@@ -8,7 +8,7 @@ import {t,formatNumber} from '../shared/i18n'
 
 // Bibliotecas profesionales: lectura acotada a 10 MiB, incluida una posible BOM.
 export const MAX_BIBLIOGRAPHY_BYTES=10*1024*1024
-export interface BibliographyRequest {documentPath:string;bibliographyPath:string;pandocPath?:string}
+export interface BibliographyRequest {documentPath:string;bibliographyPath:string;pandocPath?:string;documentRoot?:string}
 // Sólo main: Documents publica entradas/bytes/sha256, nunca este contenido o ruta.
 export interface AuthorizedBibliographySnapshot {readonly format:'csl-json'|'bibtex';readonly content:Buffer;readonly sha256:string}
 export type BibliographyResult={ok:true;path:string;bytes:number;sha256:string;entries:BibliographyEntry[];snapshot:AuthorizedBibliographySnapshot}|{ok:false;error:BibliographyError}
@@ -92,7 +92,9 @@ export async function loadBibliography(request:BibliographyRequest):Promise<Bibl
   if(!request||typeof request.documentPath!=='string'||typeof request.bibliographyPath!=='string'||!isAbsolute(request.documentPath)||!request.bibliographyPath.trim()||request.documentPath.includes('\0')||request.bibliographyPath.includes('\0')||!isAbsolute(request.bibliographyPath)&&/^[a-z][a-z0-9+.-]*:/i.test(request.bibliographyPath))return failure('invalid-path')
   const document=await realpath(request.documentPath)
   if(!(await stat(document)).isFile())return failure('invalid-path')
-  const root=dirname(document),candidate=resolve(root,request.bibliographyPath)
+  // La autoridad de un documento abierto no sigue enlaces añadidos después.
+  const root=request.documentRoot??dirname(document),candidate=resolve(root,request.bibliographyPath)
+  if(!inside(root,document))return failure('outside')
   if(!isAbsolute(request.bibliographyPath)&&!inside(root,candidate))return failure('outside')
   const path=await realpath(candidate)
   if(!inside(root,path))return failure('outside')

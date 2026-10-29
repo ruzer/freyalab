@@ -64,7 +64,7 @@ async function wordImage(window:BrowserWindow,svg:string):Promise<string>{
 async function academicExport(docs:Documents,id:string,request:ExportRequest,destination:string,validate:()=>void):Promise<{html?:string;word?:Buffer}>{
  const record=docs.get(id),source=record.text,{frontMatter}=frontMatterOf(source),values=reportMetadataOf(frontMatter??''),reference=bibliographyPath(frontMatter)
  if(request.format!=='docx'&&!reference)return{html:request.html}
- const library=reference&&record.info.path?await loadBibliography({documentPath:record.info.path,bibliographyPath:reference,pandocPath:docs.pandocPath}):undefined
+ const library=reference&&record.info.path?await loadBibliography({documentPath:record.info.path,documentRoot:record.root,bibliographyPath:reference,pandocPath:docs.pandocPath}):undefined
  validate()
  if(reference&&!record.info.path)throw new Error(t('bibliography.error.saveFirst'))
  if(library&&!library.ok)throw new Error(library.error.message)
@@ -122,7 +122,7 @@ async function academicExport(docs:Documents,id:string,request:ExportRequest,des
    })()`)
   }
   validate()
-  if(library?.ok&&reference&&record.info.path){const current=await loadBibliography({documentPath:record.info.path,bibliographyPath:reference,pandocPath:docs.pandocPath});validate();if(!current.ok||current.sha256!==library.sha256)throw new Error(t('bibliography.error.changed'))}
+  if(library?.ok&&reference&&record.info.path){const current=await loadBibliography({documentPath:record.info.path,documentRoot:record.root,bibliographyPath:reference,pandocPath:docs.pandocPath});validate();if(!current.ok||current.sha256!==library.sha256)throw new Error(t('bibliography.error.changed'))}
   return word?{word}:{html:await window.webContents.executeJavaScript('document.documentElement.outerHTML')}
  }finally{window.destroy()}
 }
