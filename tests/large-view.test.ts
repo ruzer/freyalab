@@ -1,6 +1,6 @@
 import {it,expect,beforeAll,afterAll,vi} from 'vitest'
 import {mkdtemp,writeFile,readFile,rm,symlink,open} from 'node:fs/promises'
-import {join,resolve} from 'node:path'
+import {join,resolve,isAbsolute} from 'node:path'
 import {tmpdir} from 'node:os'
 import {build} from 'rolldown'
 import {parse} from 'csv-parse/sync'
@@ -11,7 +11,7 @@ let workerFolder:string,workerPath:string
 beforeAll(async()=>{
  workerFolder=await mkdtemp(join(tmpdir(),'freya-view-worker-'));workerPath=join(workerFolder,'worker.mjs')
  await symlink(resolve('node_modules'),join(workerFolder,'node_modules'),'junction')
- await build({input:'src/main/large-search-worker.ts',platform:'node',external:id=>!id.startsWith('.')&&!id.startsWith('/'),output:{file:workerPath,format:'esm'}})
+ await build({input:'src/main/large-search-worker.ts',platform:'node',external:id=>!id.startsWith('.')&&!isAbsolute(id),output:{file:workerPath,format:'esm'}})
 })
 afterAll(async()=>{await rm(workerFolder,{recursive:true,force:true})})
 async function finished(engine:TableEngine,id='a'){for(let i=0;i<300;i++){const state=await engine.viewState(id);if(state?.status!=='running')return state;await new Promise(resolve=>setTimeout(resolve,5))}throw new Error('La búsqueda no terminó')}

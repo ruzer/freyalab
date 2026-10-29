@@ -1,13 +1,13 @@
 import {it,expect,beforeAll,afterAll} from 'vitest'
 import {mkdtemp,writeFile,readFile,rm,symlink} from 'node:fs/promises'
-import {join,resolve} from 'node:path'
+import {join,resolve,isAbsolute} from 'node:path'
 import {tmpdir} from 'node:os'
 import {build} from 'rolldown'
 import {parse} from 'csv-parse/sync'
 import iconv from 'iconv-lite'
 import {TableEngine} from '../src/main/table-engine'
 let workerFolder:string,workerPath:string
-beforeAll(async()=>{workerFolder=await mkdtemp(join(tmpdir(),'freya-bom-worker-'));workerPath=join(workerFolder,'worker.mjs');await symlink(resolve('node_modules'),join(workerFolder,'node_modules'),'junction');await build({input:'src/main/large-search-worker.ts',platform:'node',external:id=>!id.startsWith('.')&&!id.startsWith('/'),output:{file:workerPath,format:'esm'}})})
+beforeAll(async()=>{workerFolder=await mkdtemp(join(tmpdir(),'freya-bom-worker-'));workerPath=join(workerFolder,'worker.mjs');await symlink(resolve('node_modules'),join(workerFolder,'node_modules'),'junction');await build({input:'src/main/large-search-worker.ts',platform:'node',external:id=>!id.startsWith('.')&&!isAbsolute(id),output:{file:workerPath,format:'esm'}})})
 afterAll(async()=>{await rm(workerFolder,{recursive:true,force:true})})
 for(const encoding of ['utf8','utf16le'] as const)for(const batch of [1,3,2000])it(`${encoding}/lote${batch}: U+FEFF dentro de los datos no se confunde con el BOM del archivo al buscar, paginar y extraer`,async()=>{
  const folder=await mkdtemp(join(tmpdir(),'freya-bom-data-')),path=join(folder,'data.csv'),rows=[['\uFEFF0001','alpha'],['0002','\uFEFFbeta'],['\uFEFF0003','gamma']],text='id,text\r\n'+rows.map(row=>row.join(',')).join('\r\n')+'\r\n',data=iconv.encode(text,encoding,{addBOM:true}),small=new TableEngine(),large=new TableEngine(()=>{},{largeBytes:1,viewWorkerPath:workerPath,viewWorkers:1,viewBatch:batch,extractBatch:batch})
