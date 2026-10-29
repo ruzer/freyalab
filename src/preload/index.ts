@@ -22,6 +22,7 @@ const api:FreyaAPI={
  transformPreview:(id,edit)=>invoke('transformPreview',id,edit),
  rangePreview:(id,edit)=>invoke('rangePreview',id,edit),rangeClipboard:(id,range)=>invoke('rangeClipboard',id,range),
  tablePage:(id,query)=>invoke('page',id,query),tableEdit:(id,edit)=>invoke('edit',id,edit),tableOptions:(id,options)=>invoke('options',id,options),undo:(id,redo)=>invoke('undo',id,redo),stats:(id,rows,columns,options)=>invoke('stats',id,rows,columns,options),tableMarkdown:(id,options)=>invoke('markdown',id,options),
+ tableViewStart:(id,request)=>invoke('viewStart',id,request),tableViewState:id=>invoke('viewState',id),tableViewCancel:(id,requestId)=>invoke('viewCancel',id,requestId),tableViewClear:id=>invoke('viewClear',id),
  exportChartResult:(id,request)=>invoke('exportChartResult',id,request),
  exportGraphic:(id,request)=>invoke('exportGraphic',id,request),
  export:(id,request)=>invoke('export',id,request),locateImage:(id,src)=>invoke('locateImage',id,src),image:async(id,src)=>{if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_IMAGE_DELAY_MS)await new Promise(resolve=>setTimeout(resolve,Number(process.env.FREYALAB_TEST_IMAGE_DELAY_MS)));return invoke('image',id,src)},openLink:url=>invoke('link',url),

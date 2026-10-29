@@ -43,14 +43,15 @@ test('«Ir a la fila»: botón y Ctrl/⌘ + G, validación, foco y Escape',async
 
 test('lo que aún no existe en archivos grandes está deshabilitado y el documento no cambia',async()=>{
  const {doc,path}=await open(csv(3000)),before=await readFile(path,'utf8'),bar=page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true})
- await expect(page.getByLabel('Buscar en tabla',{exact:true})).toBeDisabled()
+ await expect(page.getByLabel('Buscar en tabla',{exact:true})).toBeEnabled()
+ await expect(page.getByLabel('Buscar en tabla',{exact:true})).toHaveAttribute('placeholder','Buscar en el archivo completo (Enter)')
  await expect(bar.getByRole('button',{name:'Reemplazar',exact:true})).toBeDisabled()
- await expect(bar.getByLabel('Filtrar',{exact:true})).toHaveAttribute('aria-disabled','true')
- await bar.getByLabel('Filtrar',{exact:true}).click();await expect(bar.locator('details[open]')).toHaveCount(0) // el menú de filtros no se abre
+ await expect(bar.getByLabel('Filtrar',{exact:true})).toHaveAttribute('aria-disabled','false')
+ await bar.getByLabel('Filtrar',{exact:true}).click();await expect(page.getByRole('heading',{name:'Filtrar archivo completo',exact:true})).toBeVisible();await page.getByLabel('Cerrar filtros',{exact:true}).click()
  await expect(page.locator('.sort-button').first()).toBeDisabled() // la cabecera ya no ordena
  await page.getByRole('button',{name:'Acciones de la columna id',exact:true}).click()
  const menu=page.getByRole('menu',{name:'Acciones de columnas',exact:true});await expect(menu).toBeVisible()
- for(const item of await menu.getByRole('menuitem').all())await expect(item).toBeDisabled()
+ for(const item of await menu.getByRole('menuitem').all())if(await item.textContent()==='Filtrar esta columna')await expect(item).toBeEnabled();else await expect(item).toBeDisabled()
  await page.keyboard.press('Escape');await expect(menu).toHaveCount(0)
  await cell(2).dblclick();await expect(page.getByLabel('Editar celda',{exact:true})).toHaveCount(0)
  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click();await expect(page.getByRole('alert')).toHaveCount(0) // sin error por pedir estadísticas

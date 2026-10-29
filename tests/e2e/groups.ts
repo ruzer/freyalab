@@ -19,4 +19,5 @@ export const mdFiles=[
  'outline.spec.ts',
  'markdown-tags.spec.ts',
  'markdown-assets.spec.ts',
+ 'academic-report.spec.ts',
 ] as const

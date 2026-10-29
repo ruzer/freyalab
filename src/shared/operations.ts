@@ -5,7 +5,7 @@ import type {TableConditionGroup,DocumentInfo} from './types'
 // (docs/design/EXTERNAL-ENGINES.md).
 export type Fidelity = 'bytes' | 'values'
 export interface OperationSource {revision:number}
-interface Base {requestId:string;source:OperationSource;conditions?:TableConditionGroup}
+interface Base {requestId:string;source:OperationSource;conditions?:TableConditionGroup;search?:string}
 export interface CountRequest extends Base {operation:'count'}
 export interface PreviewRequest extends Base {operation:'preview';columns?:number[];limit:number}
 export interface ExtractRequest extends Base {operation:'filter_extract';columns?:number[]}
