@@ -1,0 +1,9 @@
+
+Running 2 tests using 1 worker
+
+(node:42195) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/application-close-fixture-probe.spec.ts:24:1 › diagnóstico aislado del texto exacto ANTES de cerrar A y B (1.7s)
+  ✓  2 [csv] › tests/e2e/application-close.spec.ts:103:1 › un ACK retenido anuncia preparación, vence a30s reales e ignora respuestas tardías antes de reintentar (31.4s)
+
+  2 passed (33.4s)

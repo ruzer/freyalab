@@ -1,0 +1,14 @@
+{
+  "startedUTC": "2026-10-29T19:44:24.256Z",
+  "finishedUTC": "2026-10-29T19:44:54.451Z",
+  "progressMs": 1436.7822500000002,
+  "elapsedMs": 30194.549082999998,
+  "received": 1,
+  "lateAndReusedACK": "sin cierre ni diálogo",
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v24.22.1"
+  },
+  "scope": "Flujo real de Electron con ACK retenido en el proceso de prueba; no garantiza tiempos en otros equipos"
+}

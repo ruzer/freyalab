@@ -10,6 +10,7 @@
  import {openSearchPanel} from '@codemirror/search'
  import {applicationEditingState,routeApplicationEdit} from './lib/application-editing'
  import {formatApplicationShortcut,type ApplicationCommand,type ApplicationShortcuts,type ApplicationUiState} from '../shared/application'
+ import {ApplicationClosing,type ClosingNotice} from './lib/application-closing'
  import {assetTransaction} from './lib/asset-changes'
  import {createMarkdownSession,taskTransaction,type TaskReference,type MarkdownSession} from './lib/markdown-tasks'
  import appIcon from '../../build/icon.png'
@@ -75,7 +76,8 @@
  let csvFailure=$state<CsvOpenIssue|null>(null),csvOpening=$state(false),csvFailureOrigin:HTMLElement|undefined
  let assetBusy=$state<Record<string,string>>({})
  let assetWarnings=$state<Record<string,string[]>>({})
- const editingLocked=$derived(!active||active.readonly||!!assetBusy[active.id]||!!csvChange)
+ let applicationClosing=$state(false),closingNotice=$state<ClosingNotice|null>(null),compositionActive=false
+ const editingLocked=$derived(applicationClosing||!active||active.readonly||!!assetBusy[active.id]||!!csvChange)
  const effectiveSidebarTab=$derived(active?.kind==='markdown'?sidebarTab:'files')
  const indexVisible=$derived(sidebar&&effectiveSidebarTab==='outline'&&active?.kind==='markdown')
  const outlineHeadings=$derived(headingDocument===activeId?headings:[])
@@ -146,6 +148,15 @@
   await owner?.flushEditing();await pending.get(id)
   const after=documents.find(document=>document.id===id)
   if(!after||before.csvView!==after.csvView||wasActive&&activeId!==id||owner&&csv!==owner)throw new Error(t('document.actionChanged'))
+ }
+ const closingFlow=new ApplicationClosing({
+  snapshot:()=>({documents,activeId,busy:busy||csvOpening||!!csvChange||Object.values(assetBusy).some(Boolean),modal:!!appDialog||!!document.querySelector('dialog[open]'),composing:compositionActive||!!editor?.isComposing()}),
+  prepare:prepareDocumentAction,locked:value=>applicationClosing=value,notice:value=>{if(value?.kind==='error')toast='';closingNotice=value}
+ })
+ function placeClosingNotice(node:HTMLElement){
+  const focused=document.activeElement instanceof Element?document.activeElement.closest('dialog[open]'):null
+  const parent=focused??Array.from(document.querySelectorAll('dialog[open]')).at(-1)??document.body
+  parent.appendChild(node);return{destroy:()=>node.remove()}
  }
  function activate(id:string){
   const generation=++activationGeneration
@@ -273,7 +284,7 @@
  function applicationState():ApplicationUiState{
   const target=focusedElement();let capabilities=applicationEditingState(target)
   if(previewEditing(target)&&active){const state=textSession(active).state;capabilities={focus:'editor',editable:!editingLocked,canUndo:undoDepth(state)>0,canRedo:redoDepth(state)>0,hasSelection:window.getSelection()?.isCollapsed===false}}
-  return{activeId:active?.id??null,mode,focus:capabilities.focus,...(active?.kind==='csv'?{csvView:active.csvView??'table'}:{}),inCodeMirror:!!target?.closest('.cm-editor'),locked:busy||!!assetBusy[activeId],modal:!!appDialog||!!document.querySelector('dialog[open]'),canEdit:capabilities.editable??(capabilities.focus==='grid'&&!editingLocked),...(capabilities.canUndo!==undefined?{canUndo:capabilities.canUndo}:{}),...(capabilities.canRedo!==undefined?{canRedo:capabilities.canRedo}:{}),...(capabilities.hasSelection!==undefined?{hasSelection:capabilities.hasSelection}:{})}
+  return{activeId:active?.id??null,mode,focus:capabilities.focus,...(active?.kind==='csv'?{csvView:active.csvView??'table'}:{}),inCodeMirror:!!target?.closest('.cm-editor'),locked:applicationClosing||busy||!!assetBusy[activeId],modal:!!appDialog||!!document.querySelector('dialog[open]'),canEdit:capabilities.editable??(capabilities.focus==='grid'&&!editingLocked),...(capabilities.canUndo!==undefined?{canUndo:capabilities.canUndo}:{}),...(capabilities.canRedo!==undefined?{canRedo:capabilities.canRedo}:{}),...(capabilities.hasSelection!==undefined?{hasSelection:capabilities.hasSelection}:{})}
  }
  function refreshShortcuts(){void window.freya.applicationShortcuts().then(value=>shortcutInfo=value).catch(()=>{})}
  function queueApplicationState(){
@@ -348,12 +359,14 @@
   settingsReady=(async()=>{let storage:Storage|undefined;try{storage=window.localStorage}catch{}applySettings(await loadSettings(window.freya,storage));setUILanguage((await window.freya.language()).language)})()
   void settingsReady.then(()=>{applicationReady=true;queueApplicationState()}).catch(()=>{})
   const unsubscribeCommand=window.freya.onCommand(applicationCommand)
+  const unsubscribeClose=window.freya.onPrepareClose({prepare:()=>closingFlow.prepare(),aborted:()=>{closingFlow.abort();if(closingNotice?.kind==='progress')closingNotice=null}})
+
   const contextEvents=['focusin','focusout','input','keyup','pointerup','selectionchange'] as const
   for(const event of contextEvents)document.addEventListener(event,queueApplicationState)
   void settingsReady.catch(value=>error(value instanceof Error?value.message:String(value)))
   void action(async()=>{await settingsReady;documents=await window.freya.documents();activate(documents[0]?.id??'');recent=await window.freya.recents();recoveries=await window.freya.recoveries()})
-  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='language'&&event.language){setUILanguage(event.language.language);refreshShortcuts()}else if(event.type==='recents'){void window.freya.recents().then(value=>recent=value).catch(value=>error(String(value)))}else if(event.type==='settings'&&event.settings)applySettings(event.settings);else if(event.type==='csv-open-error'&&event.csvOpenError)receiveCsvError(event.csvOpenError);else if(event.type==='opened'&&event.document){const document=event.document;void action(async()=>{await settingsReady;merge(document,true)})}else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];notify(event.message??'El archivo cambió en otra aplicación. Al guardar se comprobarán los cambios.')}})
-  return()=>{applicationReady=false;for(const event of contextEvents)document.removeEventListener(event,queueApplicationState);unsubscribeCommand();mq.removeEventListener('change',change);unsubscribe();clearTimeout(toastTimer)}
+  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='language'&&event.language){setUILanguage(event.language.language);refreshShortcuts()}else if(event.type==='recents'){void window.freya.recents().then(value=>recent=value).catch(value=>error(String(value)))}else if(event.type==='settings'&&event.settings)applySettings(event.settings);else if(event.type==='csv-open-error'&&event.csvOpenError)receiveCsvError(event.csvOpenError);else if(event.type==='opened'&&event.document){const document=event.document;void action(async()=>{await settingsReady;merge(document,true)})}else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='close-status'&&event.message)closingNotice={kind:event.closingKind??'notice',message:event.message};else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];notify(event.message??'El archivo cambió en otra aplicación. Al guardar se comprobarán los cambios.')}})
+  return()=>{applicationReady=false;for(const event of contextEvents)document.removeEventListener(event,queueApplicationState);unsubscribeCommand();unsubscribeClose();closingFlow.abort();mq.removeEventListener('change',change);unsubscribe();clearTimeout(toastTimer)}
  })
  $effect(()=>{
   const root=folderPath,query=filterFiles.trim(),token=++fileSearchGeneration
@@ -373,10 +386,10 @@
  })
  $effect(()=>{document.documentElement.classList.toggle('dark',dark)})
  $effect(()=>{document.documentElement.lang=getUILanguage()})
- $effect(()=>{active?.id;active?.readonly;mode;busy;assetBusy[activeId];appDialog;getUILanguage();preferencesState.values.avanzado.herramientasDeDesarrollo;queueApplicationState()})
+ $effect(()=>{active?.id;active?.readonly;mode;busy;applicationClosing;assetBusy[activeId];appDialog;getUILanguage();preferencesState.values.avanzado.herramientasDeDesarrollo;queueApplicationState()})
 </script>
-<svelte:window onkeydown={keydown} ondragover={event=>event.preventDefault()} ondrop={drop}/>
-<div class="app-shell" class:dark>
+<svelte:window oncompositionstart={()=>compositionActive=true} oncompositionend={()=>compositionActive=false} onkeydown={keydown} ondragover={event=>event.preventDefault()} ondrop={drop}/>
+<div class="app-shell" class:dark inert={applicationClosing}>
  <header class="toolbar">
   <div class="toolbar-left"><button class="icon-button" aria-label="Mostrar u ocultar explorador" title={commandTitle('view.sidebar',t('menu.view.sidebar'))} onclick={toggleSidebar}><Icon name="panel-left"/></button><span class="separator"></span><button title={commandTitle('file.open',t('toolbar.open'))} onclick={open}><Icon name="file"/> {t('toolbar.open')}</button><button title={commandTitle('file.openFolder',t('dialog.folder.title'))} aria-label={t('dialog.folder.title')} onclick={openFolder}><Icon name="folder-open"/></button><div class="menu-anchor"><button title={commandTitle('file.newMarkdown',t('menu.file.newMarkdown'))} onclick={()=>newMenu=!newMenu}><Icon name="plus"/> Nuevo <Icon name="chevron-down" size={12}/></button>{#if newMenu}<div class="dropdown">{#each [{kind:'markdown',label:'Documento Markdown'},{kind:'csv',label:'Tabla CSV'},{kind:'mermaid',label:'Diagrama Mermaid'},{kind:'text',label:'Texto plano'}] as item}<button onclick={()=>create(item.kind as Kind)}><span class="kind-{item.kind}"><Icon name={kindIcon[item.kind as Kind]}/></span> {item.label}</button>{/each}</div>{/if}</div></div>
   <div class="document-title">{#if active}<span class="tag">{active.kind==='markdown'?'MD':active.kind==='csv'?'CSV':active.kind==='mermaid'?'MMD':'TXT'}</span><strong class="truncate" title={active.path??active.name}>{active.name}</strong>{#if active.dirty}<span class="dirty-badge">● Editado</span>{/if}{:else}<img class="brand-mark small" src={appIcon} alt=""/><strong>FreyaLab</strong>{/if}</div>
@@ -427,7 +440,9 @@
  {#if toast}<div class="toast {toastKind}" role="status"><Icon name={toastKind==='error'?'triangle-alert':'circle-check'} size={16}/><span>{toast}</span><button onclick={()=>toast=''} aria-label="Cerrar aviso"><Icon name="x" size={14}/></button></div>{/if}
  {#if appDialog==='about'||appDialog==='licenses'}<AboutDialog initialLicenses={appDialog==='licenses'} onclose={()=>appDialog=null}/>{:else if appDialog==='settings'}<SettingsDialog settings={preferencesState} onsave={savePreferences} onreset={resetPreferences} onclearrecents={clearRecentList} onshowdata={()=>window.freya.showDataFolder()} onclose={()=>appDialog=null}/>{:else if appDialog==='shortcuts'}<ShortcutsDialog onclose={()=>appDialog=null}/>{/if}
 </div>
+{#if closingNotice}<div use:placeClosingNotice class="toast close-notice {closingNotice.kind==='error'?'error':'info'}" role={closingNotice.kind==='error'?'alert':'status'} aria-live={closingNotice.kind==='error'?'assertive':'polite'} aria-atomic="true"><span>{closingNotice.message}</span>{#if closingNotice.kind!=='progress'}<button onclick={()=>closingNotice=null} aria-label={t('menu.close.dismiss')}><Icon name="x" size={14}/></button>{/if}</div>{/if}
 
 <style>
  .csv-text-options>.dropdown{left:auto;right:0}
+ .close-notice{max-width:min(600px,calc(100vw - 32px));color:var(--text)}.close-notice.error{border-color:var(--accent)}
 </style>

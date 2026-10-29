@@ -1,0 +1,55 @@
+
+Running 12 tests using 1 worker
+
+(node:39678) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/application-close.spec.ts:34:88 › close: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en es (3.0s)
+  ✓   2 [csv] › tests/e2e/application-close.spec.ts:34:88 › close: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en en (2.7s)
+  ✓   3 [csv] › tests/e2e/application-close.spec.ts:34:88 › quit: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en es (2.5s)
+  ✓   4 [csv] › tests/e2e/application-close.spec.ts:34:88 › quit: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en en (2.6s)
+  ✘   5 [csv] › tests/e2e/application-close.spec.ts:48:1 › Guardar A y Cancelar B conserva ambos y anuncia el guardado ya realizado (861ms)
+(node:39766) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   6 [csv] › tests/e2e/application-close.spec.ts:60:1 › un diálogo abierto rechaza el cierre con aviso accesible dentro del diálogo y sin perder foco (772ms)
+  ✓   7 [csv] › tests/e2e/application-close.spec.ts:67:1 › una composición activa rechaza el cierre sin descartar el texto ni mover el foco (1.0s)
+  ✓   8 [csv] › tests/e2e/application-close.spec.ts:77:48 › una apertura SO durante el cierre espera y se reanuda al cancelar (1.4s)
+  ✓   9 [csv] › tests/e2e/application-close.spec.ts:77:48 › una apertura SO durante el cierre espera y se ignora al confirmar Salir (1.3s)
+  ✓  10 [csv] › tests/e2e/commands.spec.ts:232:1 › APP-01 integridad: Guardar aplica la celda activa antes de escribir el CSV (959ms)
+  ✓  11 [csv] › tests/e2e/commands.spec.ts:239:1 › APP-01 integridad: Guardar aplica el encabezado activo antes de escribir el CSV (820ms)
+  ✓  12 [csv] › tests/e2e/commands.spec.ts:422:1 › APP-01: menú y ayuda conservan los identificadores en pseudolocalización (1.6s)
+
+
+  1) [csv] › tests/e2e/application-close.spec.ts:48:1 › Guardar A y Cancelar B conserva ambos y anuncia el guardado ya realizado 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      # A original
+      A pendiente
+    -
+    + e
+
+      55 |  await expect(page.getByRole('status').filter({hasText:'Se canceló el cierre. Se guardó «A.md».'})).toBeVisible()
+      56 |  const docs=await page.evaluate(()=>window.freya.documents());expect(docs).toHaveLength(2);expect(docs.find(doc=>doc.name==='A.md')?.dirty).toBe(false);expect(docs.find(doc=>doc.name==='B.md')?.dirty).toBe(true)
+    > 57 |  await expect(page.getByRole('tab',{name:'A.md',exact:true})).toBeVisible();await expect(page.getByRole('tab',{name:/B.md/})).toBeVisible();expect(await readFile(A,'utf8')).toBe('# A original\nA pendiente\n');expect(await readFile(B,'utf8')).toBe('# B original\n')
+         |                                                                                                                                                                              ^
+      58 | })
+      59 |
+      60 | test('un diálogo abierto rechaza el cierre con aviso accesible dentro del diálogo y sin perder foco',async()=>{
+        at /private/tmp/freyalab-lote2/aplicacion/tests/e2e/application-close.spec.ts:57:174
+
+    Error Context: test-results/application-close-Guardar--7fdad-ia-el-guardado-ya-realizado-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/application-close-Guardar--7fdad-ia-el-guardado-ya-realizado-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/application-close-Guardar--7fdad-ia-el-guardado-ya-realizado-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/application-close.spec.ts:48:1 › Guardar A y Cancelar B conserva ambos y anuncia el guardado ya realizado 
+  11 passed (20.3s)

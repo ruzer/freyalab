@@ -272,5 +272,18 @@
  "shortcuts.error": "No pude cargar los atajos. Cierra esta ventana y vuelve a intentarlo.",
  "menu.file.missingRecent": "No encontré «{name}». Lo quité de la lista de archivos recientes.",
  "menu.file.missingRecentUnchanged": "No encontré «{name}» y no pude actualizar la lista de recientes. La lista se conserva.",
- "document.actionChanged": "El documento cambió durante la acción. Revisa la pestaña activa y vuelve a intentarlo."
+ "document.actionChanged": "El documento cambió durante la acción. Revisa la pestaña activa y vuelve a intentarlo.",
+ "menu.close.busy": "Espera a que termine la acción en curso. Tus documentos siguen abiertos.",
+ "menu.close.modal": "Cierra el diálogo abierto antes de salir. Tus documentos siguen abiertos.",
+ "menu.close.ime": "Termina la palabra que estás escribiendo antes de cerrar. Tus documentos siguen abiertos.",
+ "menu.close.textTooLarge": "El texto de «{name}» supera 10 MiB. No se guardó una versión anterior. Recórtalo o deshaz los últimos cambios y vuelve a intentarlo. Tus documentos siguen abiertos.",
+ "menu.close.updateFailed": "No pude preparar los cambios de «{name}». Corrígelos o deshaz los últimos cambios y vuelve a intentarlo. Tus documentos siguen abiertos.",
+ "menu.close.changed": "El documento o la ventana cambió durante el cierre. Vuelve a intentarlo. Tus documentos siguen abiertos.",
+ "menu.close.timeout": "El editor no respondió en 30 segundos. Vuelve a intentarlo. Tus documentos siguen abiertos.",
+ "menu.close.unavailable": "No pude comunicarme con el editor para preparar el cierre. Vuelve a intentarlo. Tus documentos siguen abiertos.",
+ "menu.close.preparing": "Preparando el cierre…",
+ "menu.close.cancelled": "Se canceló el cierre. Tus documentos siguen abiertos.",
+ "menu.close.cancelledSaved": "Se canceló el cierre. Se guardó «{name}». Tus documentos siguen abiertos.",
+ "menu.close.cancelledSavedMany": "Se canceló el cierre. Se guardaron {names}. Tus documentos siguen abiertos.",
+ "menu.close.dismiss": "Cerrar aviso de cierre"
 }

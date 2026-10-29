@@ -272,5 +272,18 @@
  "shortcuts.error": "Could not load shortcuts. Close this dialog and try again.",
  "menu.file.missingRecent": "Could not find “{name}”. It was removed from recent files.",
  "menu.file.missingRecentUnchanged": "Could not find “{name}” or update recent files. The list is unchanged.",
- "document.actionChanged": "The document changed during this action. Check the active tab and try again."
+ "document.actionChanged": "The document changed during this action. Check the active tab and try again.",
+ "menu.close.busy": "Wait for the current action to finish. Your documents are still open.",
+ "menu.close.modal": "Close the open dialog before quitting. Your documents are still open.",
+ "menu.close.ime": "Finish composing the word before closing. Your documents are still open.",
+ "menu.close.textTooLarge": "The text in “{name}” exceeds 10 MiB. An earlier version was not saved. Shorten the text or undo the latest changes, then try again. Your documents are still open.",
+ "menu.close.updateFailed": "The changes in “{name}” could not be prepared. Correct them or undo the latest changes, then try again. Your documents are still open.",
+ "menu.close.changed": "The document or window changed while closing. Try again. Your documents are still open.",
+ "menu.close.timeout": "The editor did not respond within 30 seconds. Try again. Your documents are still open.",
+ "menu.close.unavailable": "The editor could not be reached to prepare closing. Try again. Your documents are still open.",
+ "menu.close.preparing": "Preparing to close…",
+ "menu.close.cancelled": "Closing was cancelled. Your documents are still open.",
+ "menu.close.cancelledSaved": "Closing was cancelled. “{name}” was saved. Your documents are still open.",
+ "menu.close.cancelledSavedMany": "Closing was cancelled. {names} were saved. Your documents are still open.",
+ "menu.close.dismiss": "Dismiss closing notice"
 }

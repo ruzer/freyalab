@@ -9,7 +9,7 @@ import { SqlService } from './sql-service'
 import appIcon from '../../build/icon.png?asset'
 import { Documents } from './documents'
 import {initializeLanguage,languageState,changeLanguage} from './language'
-import {t} from '../shared/i18n'
+import {t,formatList} from '../shared/i18n'
 import {applicationInfo,copyApplicationInfo,thirdPartyNotices} from './app-info'
 import {SettingsStore} from './settings'
 import {resetSettings,clearRecents,showDataFolder} from './settings-actions'
@@ -18,6 +18,8 @@ import {applicationMenu,applicationShortcutHelp,type ApplicationMenuContext} fro
 import {applicationUiStateSchema,applicationCommandSchema,menuFingerprint} from './application-state'
 import {MenuNativeEdits,nativeEditArguments} from './menu-native-edit'
 import {removeMissingRecent} from './application-recents'
+import {WindowClosePreparation,closePreparedArguments} from './application-close'
+import {ApplicationWindowClose} from './application-window-close'
 import type {ApplicationUiState} from '../shared/application'
 import { exportDocument,exportGraphic } from './export'
 import { operateDocument } from './extract'
@@ -30,6 +32,7 @@ if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FRE
 let window:BrowserWindow|undefined,windowReady:Promise<void>|undefined,docs:Documents,analytics:SqlService,presets:ChartPresets,settings:SettingsStore,settingsStartupNotice:string|undefined,quitting=false,quitRequested=false,closingWindow=false
 let menuState:ApplicationUiState={activeId:null,mode:'split',focus:'none',locked:false,canEdit:false},menuSettings:SettingsState,menuRecents:string[]=[],menuSignature=''
 const nativeEdits=new MenuNativeEdits()
+const closePreparation=new WindowClosePreparation(),applicationClose=new ApplicationWindowClose(closePreparation)
 const waiting:string[]=[]
 const id=z.uuid(),path=z.string().min(1).max(32768), text=z.string().max(20*1024*1024), rows=z.array(z.string().max(100)).max(2000000)
 const csvView=z.enum(['table','text'])
@@ -152,9 +155,16 @@ async function handle(operation:string,args:unknown[]){
  default:throw new Error('Operación no compatible.')
  }
 }
-app.on('open-file',(event,path)=>{event.preventDefault();if(!docs){waiting.push(path);return}docs.grants.add(resolve(path));void createApplicationWindow().then(()=>openPaths([path])).then(()=>refreshMenuRecents()).catch(e=>window?.webContents.send('freya:event',{type:'error',message:e.message}))})
+function openSystemPaths(paths:string[],focus=false){
+ if(quitting)return
+ if(!docs||closingWindow){waiting.push(...paths);return}
+ for(const path of paths)docs.grants.add(resolve(path))
+ void createApplicationWindow().then(target=>{if(focus){target.show();target.focus()}return openPaths(paths)}).then(()=>refreshMenuRecents()).catch(error=>{try{window?.webContents.send('freya:event',{type:'error',message:error.message})}catch{}})
+}
+function resumeSystemPaths(){if(!quitting&&!closingWindow&&waiting.length)openSystemPaths(waiting.splice(0),true)}
+app.on('open-file',(event,path)=>{event.preventDefault();openSystemPaths([path])})
 if(!app.requestSingleInstanceLock()&&process.env.FREYALAB_TEST!=='1')app.quit()
-app.on('second-instance',(_event,argv)=>{const paths=argv.filter(p=>/\.(md|markdown|csv|tsv|mmd|mermaid|txt)$/i.test(p)&&!p.startsWith('-'));if(!docs){waiting.push(...paths);return}for(const p of paths)docs.grants.add(resolve(p));void createApplicationWindow().then(target=>{target.show();target.focus();return openPaths(paths)}).then(()=>refreshMenuRecents()).catch(e=>window?.webContents.send('freya:event',{type:'error',message:e.message}))})
+app.on('second-instance',(_event,argv)=>{openSystemPaths(argv.filter(p=>/\.(md|markdown|csv|tsv|mmd|mermaid|txt)$/i.test(p)&&!p.startsWith('-')),true)})
 app.whenReady().then(async()=>{
  app.setName('FreyaLab')
  initializeLanguage(app.getPreferredSystemLanguages(),process.env)
@@ -171,16 +181,17 @@ app.whenReady().then(async()=>{
   catch{if(window&&!window.isDestroyed())window.webContents.send('freya:event',{type:'error',message:'No pude pegar sin formato.'})}
  })
  ipcMain.on('freya:menu-native',(event,...args)=>{try{assertSender(event);const[nonce]=nativeEditArguments.parse(args),method=nativeEdits.take(event.sender.id,nonce);if(method)event.sender[method]()}catch{window?.webContents.send('freya:event',{type:'error',message:t('menu.edit.error')})}})
+ ipcMain.on('freya:close-prepared',(event,...args)=>{try{assertSender(event);const[nonce,ready]=closePreparedArguments.parse(args);closePreparation.complete(event.sender.id,nonce,ready)}catch{}})
  ipcMain.on('freya:menu-native-done',(event,...args)=>{try{assertSender(event);const[nonce]=nativeEditArguments.parse(args);nativeEdits.finish(event.sender.id,nonce)}catch{}})
  await refreshMenuRecents();await createApplicationWindow()
  const initial=process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_OPEN?JSON.parse(process.env.FREYALAB_TEST_OPEN):process.argv.slice(1).filter(p=>/\.(md|markdown|csv|tsv|mmd|mermaid|txt)$/i.test(p))
- for(const p of [...waiting,...initial]){docs.grants.add(resolve(p));await openPaths([p]).catch(e=>window?.webContents.send('freya:event',{type:'error',message:e.message}))}
+ for(const p of [...waiting.splice(0),...initial]){docs.grants.add(resolve(p));await openPaths([p]).catch(e=>window?.webContents.send('freya:event',{type:'error',message:e.message}))}
  await refreshMenuRecents()
 }).catch(e=>{console.error(e);app.exit(1)})
 async function createApplicationWindow():Promise<BrowserWindow>{
  if(window&&!window.isDestroyed()){await windowReady;return window}
  window=new BrowserWindow({icon:appIcon,width:1440,height:900,minWidth:720,minHeight:600,title:'FreyaLab',backgroundColor:'#18181b',autoHideMenuBar:false,titleBarStyle:process.platform==='darwin'?'hiddenInset':'default',webPreferences:{preload:join(here,'../preload/index.cjs'),sandbox:true,contextIsolation:true,nodeIntegration:false}})
- const target=window,contents=target.webContents.id;target.on('closed',()=>{nativeEdits.clear(contents);if(window===target){window=undefined;windowReady=undefined;menuState={activeId:null,mode:menuState.mode,focus:'none',locked:false,canEdit:false};refreshApplicationMenu()}})
+ const target=window,contents=target.webContents.id;target.on('closed',()=>{closePreparation.clear(contents);nativeEdits.clear(contents);if(window===target){window=undefined;windowReady=undefined;menuState={activeId:null,mode:menuState.mode,focus:'none',locked:false,canEdit:false};refreshApplicationMenu()}})
  if(process.platform!=='darwin')window.setMenuBarVisibility(true)
  window.webContents.setWindowOpenHandler(()=>({action:'deny'}))
  window.webContents.on('will-navigate',(event)=>event.preventDefault())
@@ -194,16 +205,28 @@ async function createApplicationWindow():Promise<BrowserWindow>{
  return window
 }
 function requestWindowClose(){void closeApplicationWindow().catch(error=>{quitRequested=false;dialog.showErrorBox(t('dialog.close.error'),error.message)})}
+function closingNotice(owner:BrowserWindow|undefined,kind:'error'|'notice',message:string){
+ try{if(owner&&!owner.isDestroyed()){owner.webContents.send('freya:event',{type:'close-status',closingKind:kind,message});return}}catch{}
+ try{if(kind==='error')dialog.showErrorBox(t('dialog.close.error'),message);else void dialog.showMessageBox({type:'info',message}).catch(()=>{})}catch{}
+}
 async function closeApplicationWindow(){
  if(closingWindow||quitting)return
- closingWindow=true;const wasLocked=menuState.locked;menuState={...menuState,locked:true};refreshApplicationMenu()
- try{
-  for(const key of [...docs.records.keys()]){if(!await docs.close(key)){quitRequested=false;return}analytics.forget(key)}
-  await settings.flush()
-  if(process.platform==='darwin'&&!quitRequested){window?.destroy();return}
-  analytics.stop();await docs.shutdown();quitting=true;window?.destroy();app.quit()
- }finally{closingWindow=false;if(window&&!window.isDestroyed()){menuState={...menuState,locked:wasLocked};refreshApplicationMenu()}}
+ const owner=window,wasLocked=menuState.locked
+ const closed=await applicationClose.close({owner,currentWindow:()=>window,documents:docs,settings,
+  started:()=>{closingWindow=true;menuState={...menuState,locked:true};refreshApplicationMenu()},
+  ended:()=>{closingWindow=false;try{if(window===owner&&owner&&!owner.isDestroyed()){menuState={...menuState,locked:wasLocked};refreshApplicationMenu()}}catch{}finally{if(!quitting)resumeSystemPaths()}},
+  failed:message=>{quitRequested=false;closingNotice(owner,'error',message)},
+  cancelled:saved=>{quitRequested=false;closingNotice(owner,'notice',saved.length===1?t('menu.close.cancelledSaved',{name:saved[0]}):saved.length?t('menu.close.cancelledSavedMany',{names:formatList(saved.map(name=>`«${name}»`))}):t('menu.close.cancelled'))},
+  finish:async ids=>{
+   for(const id of ids)analytics.forget(id)
+   if(process.platform==='darwin'&&!quitRequested){owner?.destroy();return}
+   analytics.stop();await docs.shutdown()
+   if(window!==owner||owner?.isDestroyed())throw new Error(t('menu.close.changed'))
+   quitting=true;owner?.destroy();app.quit()
+  },
+ })
+ if(!closed)quitRequested=false
 }
-app.on('activate',()=>{if(docs&&!window&&!quitting&&!quitRequested)void createApplicationWindow().catch(error=>dialog.showErrorBox(t('dialog.close.error'),error.message))})
+app.on('activate',()=>{if(docs&&!window&&!quitting&&!quitRequested&&!closingWindow)void createApplicationWindow().catch(error=>dialog.showErrorBox(t('dialog.close.error'),error.message))})
 app.on('window-all-closed',()=>{if(process.platform!=='darwin'&&!quitting)app.quit()})
 app.on('before-quit',event=>{if(quitting||!docs)return;event.preventDefault();quitRequested=true;if(window&&!window.isDestroyed())window.close();else requestWindowClose()})

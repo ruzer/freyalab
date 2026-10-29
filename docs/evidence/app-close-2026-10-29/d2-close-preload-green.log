@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-lote2/aplicacion
+
+
+ Test Files  2 passed (2)
+      Tests  21 passed (21)
+   Start at  12:33:06
+   Duration  625ms (tests 96%, import 2%, transform 1%, worker 1%)
+

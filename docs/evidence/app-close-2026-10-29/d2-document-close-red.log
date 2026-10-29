@@ -1,0 +1,90 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-lote2/aplicacion
+
+ ❯ tests/application-document-close.test.ts (9 tests | 9 failed) 261ms
+   × A limpio y B sucio: Cancelar no dispone ningún registro, recurso ni cambio 45ms
+   × Guardar A y Cancelar B conserva ambos, reconoce A guardado y no altera B 40ms
+   × Descartar A no se ejecuta si después se cancela B 38ms
+   × sólo dispone después de confirmar todos y release es idempotente 38ms
+   × un dueño cambiado antes de confirmar no pregunta ni dispone 20ms
+   × un dueño cambiado durante la confirmación conserva todos y cero disposiciones 30ms
+   × una apertura o edición llegada durante el await de disposición no puede entrar tras revalidar 27ms
+   × espera una creación del modelo ya iniciada, sin esperar lecturas SQL ajenas 1ms
+   × al abortar libera la barrera para corregir el documento y reintentar 20ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/application-document-close.test.ts > A limpio y B sucio: Cancelar no dispone ningún registro, recurso ni cambio
+TypeError: docs.holdForApplicationClose is not a function
+ ❯ tests/application-document-close.test.ts:20:19
+     18| it('A limpio y B sucio: Cancelar no dispone ningún registro, recurso n…
+     19|  const A=await opened('A.md'),B=await opened('B.md');await docs.update…
+     20|  const lease=docs.holdForApplicationClose();try{
+       |                   ^
+     21|   await lease.ready;expect(await lease.closeAll(owner)).toEqual({close…
+     22|   expect([...docs.records.keys()]).toEqual([A.id,B.id]);expect(state.c…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  tests/application-document-close.test.ts > Guardar A y Cancelar B conserva ambos, reconoce A guardado y no altera B
+TypeError: docs.holdForApplicationClose is not a function
+ ❯ tests/application-document-close.test.ts:28:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  tests/application-document-close.test.ts > Descartar A no se ejecuta si después se cancela B
+TypeError: docs.holdForApplicationClose is not a function
+ ❯ tests/application-document-close.test.ts:35:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  tests/application-document-close.test.ts > sólo dispone después de confirmar todos y release es idempotente
+TypeError: docs.holdForApplicationClose is not a function
+ ❯ tests/application-document-close.test.ts:39:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  tests/application-document-close.test.ts > un dueño cambiado antes de confirmar no pregunta ni dispone
+TypeError: docs.holdForApplicationClose is not a function
+ ❯ tests/application-document-close.test.ts:42:80
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  tests/application-document-close.test.ts > un dueño cambiado durante la confirmación conserva todos y cero disposiciones
+TypeError: docs.holdForApplicationClose is not a function
+ ❯ tests/application-document-close.test.ts:46:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  tests/application-document-close.test.ts > una apertura o edición llegada durante el await de disposición no puede entrar tras revalidar
+TypeError: docs.holdForApplicationClose is not a function
+ ❯ tests/application-document-close.test.ts:50:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+ FAIL  tests/application-document-close.test.ts > espera una creación del modelo ya iniciada, sin esperar lecturas SQL ajenas
+TypeError: docs.holdForApplicationClose is not a function
+ ❯ tests/application-document-close.test.ts:54:181
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯
+
+ FAIL  tests/application-document-close.test.ts > al abortar libera la barrera para corregir el documento y reintentar
+TypeError: docs.holdForApplicationClose is not a function
+ ❯ tests/application-document-close.test.ts:58:84
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  9 failed (9)
+   Start at  12:36:12
+   Duration  425ms (tests 73%, transform 20%, import 6%, worker 1%)
+

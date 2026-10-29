@@ -1,0 +1,25 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-lote2/aplicacion
+
+ ❯ tests/application-closing.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/application-closing.test.ts [ tests/application-closing.test.ts ]
+Error: Cannot find module '../src/renderer/lib/application-closing' imported from /private/tmp/freyalab-lote2/aplicacion/tests/application-closing.test.ts
+ ❯ tests/application-closing.test.ts:3:1
+      1| import {afterEach,beforeEach,expect,it,vi} from 'vitest'
+      2| import {setLanguage} from '../src/shared/i18n'
+      3| import {ApplicationClosing,type ClosingSnapshot} from '../src/renderer…
+       | ^
+      4| const document={id:'12345678-1234-4234-8234-123456789abc',name:'datos.…
+      5| let snapshot:ClosingSnapshot,locked:ReturnType<typeof vi.fn>,notice:Re…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  12:51:11
+   Duration  93ms (worker 96%, environment 4%)
+

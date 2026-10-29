@@ -25,8 +25,17 @@ export class Documents {
  private tagReaders=0
  private tagReadQueue:{check:()=>void;resolve:()=>void;reject:(error:unknown)=>void}[]=[]
  private operations=new Map<string,Promise<unknown>>()
+ private applicationClose=false
+ get isClosing(){return this.applicationClose}
+ holdForApplicationClose(){
+  if(this.applicationClose)throw new Error(t('menu.close.busy'))
+  this.applicationClose=true;let released=false,closing:Promise<{closed:boolean;saved:string[]}>|undefined
+  const ready=Promise.all([...this.operations.values()]).then(()=>{})
+  return{ready,closeAll:(ownerIsCurrent:()=>boolean)=>closing??=ready.then(()=>{if(released)throw new Error(t('menu.close.busy'));return this.confirmAndDisposeAll(ownerIsCurrent)}),release:()=>{if(!released){released=true;this.applicationClose=false}}}
+ }
+
  private reloading=new Set<string>()
- private serial<T>(id:string,operation:()=>Promise<T>):Promise<T>{const task=(this.operations.get(id)??Promise.resolve()).catch(()=>{}).then(operation);this.operations.set(id,task);void task.finally(()=>{if(this.operations.get(id)===task)this.operations.delete(id)}).catch(()=>{});return task}
+ private serial<T>(id:string,operation:()=>Promise<T>):Promise<T>{if(this.applicationClose)return Promise.reject(new Error(t('menu.close.busy')));const task=(this.operations.get(id)??Promise.resolve()).catch(()=>{}).then(operation);this.operations.set(id,task);void task.finally(()=>{if(this.operations.get(id)===task)this.operations.delete(id)}).catch(()=>{});return task}
  private rejectDuringReload(id:string){if(this.reloading.has(id))throw new Error('Espera a que termine la recarga antes de editar.')}
  private reinterpret<T>(id:string,operation:()=>Promise<T>){this.rejectDuringReload(id);this.reloading.add(id);return this.serial(id,operation).finally(()=>this.reloading.delete(id))}
  private recoveryTasks=new Map<string,Promise<void>>()
@@ -75,7 +84,8 @@ export class Documents {
   return document
  })}
  async csvViewInfo(path:string){const canonical=await this.authorize(path);if(extensions[extname(canonical).toLowerCase()]!=='csv')throw new Error(t('csvText.chooseFile'));const info=await stat(canonical);if(!info.isFile())throw new Error(t('csvText.selectFile'));return{byteLength:info.size,textAllowed:info.size<=CSV_TEXT_LIMIT}}
- async create(kind:Kind,csvView:CsvView='table'){const id=randomUUID();const extension=kind==='csv'?'csv':kind==='mermaid'?'mmd':kind==='text'?'txt':'md';const r:RecordDoc={info:{id,name:`Sin título.${extension}`,path:null,kind,csvView:kind==='csv'?csvView:undefined,byteLength:kind==='csv'?0:undefined,dirty:false,readonly:false,revision:0,encoding:'utf8',delimiter:','},text:'',undo:[],redo:[],root:app.getPath('documents'),saving:false};if(isTableDocument(r.info)){await this.table.call('create',id);Object.assign(r.info,await this.table.call('info',id))}this.records.set(id,r);return this.info(id)}
+ async create(kind:Kind,csvView:CsvView='table'){return this.serial('create',()=>this.createNow(kind,csvView))}
+ private async createNow(kind:Kind,csvView:CsvView='table'){const id=randomUUID();const extension=kind==='csv'?'csv':kind==='mermaid'?'mmd':kind==='text'?'txt':'md';const r:RecordDoc={info:{id,name:`Sin título.${extension}`,path:null,kind,csvView:kind==='csv'?csvView:undefined,byteLength:kind==='csv'?0:undefined,dirty:false,readonly:false,revision:0,encoding:'utf8',delimiter:','},text:'',undo:[],redo:[],root:app.getPath('documents'),saving:false};if(isTableDocument(r.info)){await this.table.call('create',id);Object.assign(r.info,await this.table.call('info',id))}this.records.set(id,r);return this.info(id)}
  get(id:string){const r=this.records.get(id);if(!r)throw new Error('El documento ya no está abierto.');return r}
  requireTable(id:string){const record=this.get(id);if(!isTableDocument(record.info))throw new Error(t('csvText.tableOnly'));return record}
  info(id:string){const r=this.get(id);return {...r.info,...(!isTableDocument(r.info)?{text:r.text}:{})}}
@@ -140,7 +150,34 @@ export class Documents {
   return{...await this.updateNow(id,result.text),assets:result.assets}
  }
  async close(id:string){return this.serial(id,()=>this.closeNow(id))}
- private async closeNow(id:string){const r=this.get(id);if(r.info.dirty){const {response}=await dialog.showMessageBox(this.owner(),{type:'question',buttons:[t('dialog.save'),t('dialog.cancel'),t('dialog.discard')],defaultId:0,cancelId:1,message:t('dialog.close.message',{nombre:r.info.name})});if(response===1)return false;if(response===0&&!(await this.saveNow(id)))return false}clearTimeout(r.timer);await r.watcher?.close();if(isTableDocument(r.info))await this.table.call('close',id);this.records.delete(id);await this.discardRecovery(id);return true}
+ private async confirmCloseNow(id:string):Promise<'clean'|'saved'|'discard'|'cancel'>{
+  const record=this.get(id);if(!record.info.dirty)return'clean'
+  const{response}=await dialog.showMessageBox(this.owner(),{type:'question',buttons:[t('dialog.save'),t('dialog.cancel'),t('dialog.discard')],defaultId:0,cancelId:1,message:t('dialog.close.message',{nombre:record.info.name})})
+  if(response===1)return'cancel'
+  if(response===0)return await this.saveNow(id)?'saved':'cancel'
+  return'discard'
+ }
+ private async disposeNow(id:string){
+  const record=this.get(id);clearTimeout(record.timer)
+  // Un checkpoint anterior todavía usa el registro y, si cambió la revisión,
+  // puede reprogramar recuperación. Se espera con sus recursos aún abiertos.
+  await this.discardRecovery(id);clearTimeout(record.timer)
+  await record.watcher?.close();if(isTableDocument(record.info))await this.table.call('close',id);this.records.delete(id)
+ }
+ private async closeNow(id:string){if(await this.confirmCloseNow(id)==='cancel')return false;await this.disposeNow(id);return true}
+ private async confirmAndDisposeAll(ownerIsCurrent:()=>boolean):Promise<{closed:boolean;saved:string[]}>{
+  const ids=[...this.records.keys()],saved:string[]=[],confirmed:{id:string;record:RecordDoc;revision:number}[]=[]
+  for(const id of ids){
+   if(!ownerIsCurrent())return{closed:false,saved}
+   const decision=await this.confirmCloseNow(id);if(decision==='cancel')return{closed:false,saved}
+   const record=this.get(id);if(decision==='saved')saved.push(record.info.name);confirmed.push({id,record,revision:record.info.revision})
+  }
+  if(!ownerIsCurrent())return{closed:false,saved}
+  if(ids.length!==this.records.size||confirmed.some(({id,record,revision})=>this.records.get(id)!==record||record.info.revision!==revision))throw new Error(t('document.actionChanged'))
+  for(const id of ids)await this.disposeNow(id)
+  return{closed:true,saved}
+ }
+
  async reload(id:string){return this.reinterpret(id,()=>this.reloadNow(id))}
  private async reloadNow(id:string){
   const r=this.get(id);if(!r.info.path)throw new Error('El documento no tiene un archivo original.')
@@ -259,7 +296,8 @@ export class Documents {
  async recents():Promise<string[]>{try{return JSON.parse(await readFile(join(app.getPath('userData'),'recents.json'),'utf8'))}catch{return[]}}
  private async addRecent(path:string){const list=[path,...(await this.recents()).filter(p=>p!==path)].slice(0,15);await mkdir(app.getPath('userData'),{recursive:true});await atomicWrite(join(app.getPath('userData'),'recents.json'),JSON.stringify(list))}
  async listRecoveries():Promise<RecoveryEntry[]>{await mkdir(this.recoveryDir,{recursive:true,mode:0o700});const entries=await readdir(this.recoveryDir);const result:RecoveryEntry[]=[];for(const f of entries.filter(f=>/^[a-f0-9-]+\.json$/.test(f))){try{const d=JSON.parse(await readFile(join(this.recoveryDir,f),'utf8'));if(d.version===1)result.push({id:f.slice(0,-5),name:d.info.name,savedAt:d.savedAt})}catch{}}return result}
- async recover(id:string){
+ async recover(id:string){return this.serial(`recover:${id}`,()=>this.recoverNow(id))}
+ private async recoverNow(id:string){
   const data=JSON.parse(await readFile(join(this.recoveryDir,`${id}.json`),'utf8'))
   if(data.version!==1)throw new Error('Versión de recuperación no compatible. El archivo se conserva.')
   const csvText=data.info.kind==='csv'&&data.info.csvView==='text',format=csvText?(data.snapshot?.format===undefined?{encoding:'utf8',bom:false}:data.snapshot.format):undefined

@@ -425,6 +425,17 @@ test('APP-01: menú y ayuda conservan los identificadores en pseudolocalización
  expect((await applicationMenuItem('file.open'))?.accelerator).toBeTruthy()
  await clickApplicationMenu('help.shortcuts');await expect(page.locator('dialog')).toBeVisible();expect((await page.evaluate(()=>window.freya.applicationShortcuts())).commands.some(command=>command.id==='file.save')).toBe(true)
  if(process.env.FREYALAB_APP01_EVIDENCE==='1')await writeFile('docs/evidence/app-01-menu-en-XA-2026-10-29.json',JSON.stringify(tree,null,2)+'\n')
+ await page.keyboard.press('Escape');await clickApplicationMenu('app.settings');const dialog=page.getByRole('dialog'),tab=dialog.getByRole('tab',{selected:true})
+ for(const theme of ['light','dark'] as const){
+  await page.evaluate(theme=>window.freya.setSettings({tema:theme}),theme);await expect.poll(()=>page.locator('html').evaluate(element=>element.classList.contains('dark'))).toBe(theme==='dark')
+  for(const viewport of [{width:1440,height:900},{width:720,height:600}]){
+   await page.setViewportSize(viewport);expect(await dialog.evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true);expect(await dialog.getByRole('tabpanel').evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true)
+   const box=await dialog.boundingBox();expect(box).not.toBeNull();expect(box!.x).toBeGreaterThanOrEqual(0);expect(box!.y).toBeGreaterThanOrEqual(0);expect(box!.x+box!.width).toBeLessThanOrEqual(viewport.width);expect(box!.y+box!.height).toBeLessThanOrEqual(viewport.height)
+   const close=dialog.locator('footer button');await close.focus();await page.keyboard.press('Tab');await expect(tab).toBeFocused();await page.keyboard.press('Shift+Tab');await expect(close).toBeFocused()
+   expect(Math.min(...await textContrast(dialog,'h2,h3,p,label,button:not(:disabled),select:not(:disabled)'))).toBeGreaterThanOrEqual(4.5)
+   if(process.env.FREYALAB_APP01_EVIDENCE==='1')await page.screenshot({path:`docs/evidence/app-03-en-XA-${theme}-${viewport.width}x${viewport.height}-general-2026-10-29.png`,animations:'disabled'})
+  }
+ }
 })
 
 
