@@ -1,6 +1,6 @@
 import {beforeAll,afterAll,it,expect} from 'vitest'
 import {mkdtemp,writeFile,readFile,rm,symlink} from 'node:fs/promises'
-import {join,resolve} from 'node:path'
+import {join,resolve,isAbsolute} from 'node:path'
 import {tmpdir} from 'node:os'
 import {build} from 'rolldown'
 import {parse} from 'csv-parse/sync'
@@ -10,7 +10,7 @@ import {compileTableQuery} from '../src/main/table-query'
 let folder:string,path:string,workerPath:string,source:string,index:Awaited<ReturnType<typeof buildIndex>>,rows:string[][]
 beforeAll(async()=>{
  folder=await mkdtemp(join(tmpdir(),'freya-search-runtime-'));path=join(folder,'hostile.csv');workerPath=join(folder,'worker.mjs');await symlink(resolve('node_modules'),join(folder,'node_modules'),'junction')
- await build({input:'src/main/large-search-worker.ts',platform:'node',external:id=>!id.startsWith('.')&&!id.startsWith('/'),output:{file:workerPath,format:'esm'}})
+ await build({input:'src/main/large-search-worker.ts',platform:'node',external:id=>!id.startsWith('.')&&!isAbsolute(id),output:{file:workerPath,format:'esm'}})
  const examples=['0001,Kelvin,İSTANBUL,"a\r\nb"','0002,ASCII K,ASCII I,','0003,ñ,"dice ""hola""",fin','0004,,,','0005,corto','0006,extra,k,a,b'],data=Array.from({length:13500},(_,i)=>examples[i%examples.length]+['\r\n','\n','\r'][i%3]);source='id,name,text,extra\r\n'+data.join('');await writeFile(path,source);index=await buildIndex(path,{encoding:'utf8',bomLength:0,maxRecord:1048576,delimiter:','});rows=parse(source,{record_delimiter:['\r\n','\n','\r'],relax_column_count:true}).slice(1);expect(index.offsets.length).toBeGreaterThanOrEqual(8)
 })
 afterAll(async()=>{await rm(folder,{recursive:true,force:true})})

@@ -80,7 +80,7 @@ test('una vista se recupera al volver a su pestaña sin iniciar otro recorrido',
 })
 
 test('cancelar conserva un parcial honesto y una búsqueda nueva no recibe resultados anteriores',async()=>{
- await quit();await launch({FREYALAB_VIEW_BATCH:'25',FREYALAB_VIEW_DELAY_MS:'50'})
+ await quit();await launch({FREYALAB_VIEW_WORKERS:'2',FREYALAB_VIEW_BATCH:'25',FREYALAB_VIEW_DELAY_MS:'50'})
  const {doc,path,source}=await open(10000);await find('Cliente')
  const progress=page.getByRole('progressbar',{name:'Avance de la búsqueda',exact:true});await expect(progress).toBeVisible()
  await expect.poll(async()=>Number(await progress.getAttribute('value'))).toBeGreaterThan(0)
