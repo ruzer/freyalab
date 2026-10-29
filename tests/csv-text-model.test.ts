@@ -2,7 +2,7 @@ import {expect,it} from 'vitest'
 import {EditorState,EditorSelection,Transaction} from '@codemirror/state'
 import {history,undo,redo,isolateHistory} from '@codemirror/commands'
 import {csvTextDocument,csvTextValue,csvTextRange,csvLineEndings,replaceCsvText,insertCsvText} from '../src/renderer/lib/csv-text-model'
-const create=(text:string)=>{const source=csvTextDocument(text);return EditorState.create({doc:source.doc,extensions:[history(),EditorState.allowMultipleSelections.of(true),...source.extensions]})}
+const create=(text:string)=>{const source=csvTextDocument(text);return EditorState.create({doc:source.doc,extensions:[history(),...source.extensions]})}
 function command(state:EditorState,run:typeof undo){let next=state;const done=run({state,dispatch:transaction=>{next=transaction.state}});return{done,state:next}}
 const mixed='ID,Nombre\r\n001,"á\nñ"\r9007199254740993,conservar\n'
 it('muestra líneas físicas LF/CRLF/CR y serializa exactamente sin inventar normalización',()=>{
@@ -49,3 +49,5 @@ it('preserva bytes y líneas en 600 ediciones y sus historiales frente al texto 
   for(let step=1;step<versions.length;step++){state=command(state,redo).state;expect(csvTextValue(state)).toBe(versions[step])}
  }
 })
+
+it('la configuración de producción de CSV permite varios rangos sin ayuda del fixture',()=>{const initial=create('uno\r\ndos\rfin');const state=initial.update({selection:EditorSelection.create([EditorSelection.range(0,3),EditorSelection.range(4,7)])}).state;expect(state.selection.ranges).toHaveLength(2)})

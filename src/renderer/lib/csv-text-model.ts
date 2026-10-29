@@ -78,7 +78,7 @@ function canonical(tr:Transaction):Transaction|readonly TransactionSpec[]{
 }
 export function csvTextDocument(raw:string):{doc:string;extensions:Extension[]}{
  const value=parse(raw)
- return{doc:value.doc,extensions:[csvLineEndings.init(()=>({types:value.types,preferred:value.types[0]??0})),invertedEffects.of(inverse),EditorState.transactionFilter.of(canonical)]}
+ return{doc:value.doc,extensions:[EditorState.allowMultipleSelections.of(true),csvLineEndings.init(()=>({types:value.types,preferred:value.types[0]??0})),invertedEffects.of(inverse),EditorState.transactionFilter.of(canonical)]}
 }
 export function csvTextRange(state:EditorState,from:number,to:number):string{
  const {types}=state.field(csvLineEndings);let index=state.doc.lineAt(from).number-1
