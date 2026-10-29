@@ -15307,3 +15307,47 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+==============================================================================
+Citation Style Language (CSL) project
+Project: https://citationstyles.org/
+Source: https://github.com/citation-style-language/styles
+Revision: 7bf7ec05bc31509d640c9a3ccf8f561f2b3d748b (v1.0.2), 2026-10-28T11:38:59Z
+License: Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
+License URI: https://creativecommons.org/licenses/by-sa/3.0/
+Legal code: https://creativecommons.org/licenses/by-sa/3.0/legalcode
+
+The five CSL files are redistributed unchanged. Original author, contributor,
+title, license and rights metadata are preserved in each file.
+No endorsement by the authors or CSL project is implied.
+
+apa.csl — APA Style 7th edition
+Authors: Brenton M. Wiernik, Andrew Dunning
+Contributors: Jay Pfaffman
+Updated: 2026-10-02T16:29:11-04:00
+SHA256: 41b4f3c9c61b58b7428ab21d653891995db7b4648d2f0a906eabcb8b2742e7ae
+
+ieee.csl — IEEE Reference Guide version 11.29.2023
+Authors: Michael Berkowitz
+Contributors: Julian Onions, Rintze Zelle, Stephen Frank, Sebastian Karcher, Giuseppe Silano, Patrick O'Brien, Brenton M. Wiernik, Oliver Couch, Andrew Dunning
+Updated: 2026-01-07T09:36:59-06:00
+SHA256: 6dee2b87ce90a7ab86f232d78a9216f47adc6193f13b6307b4a83c65594e721a
+
+nlm-citation-sequence.csl — NLM/Vancouver: Citing Medicine 2nd edition (citation-sequence)
+Authors: Michael Berkowitz, Andrew Dunning
+Contributors: Petr Hlustik, Sebastian Karcher, Charles Parnot, Sean Takats
+Updated: 2026-03-31T16:56:12+02:00
+SHA256: 42759650b00306c02aa5786db843c8ed67128a86b2ec0a1825a1f4e6387d51cc
+
+chicago-author-date.csl — Chicago Manual of Style 18th edition (author-date)
+Authors: Andrew Dunning
+Contributors: none listed
+Updated: 2026-04-14T12:28:00+02:00
+SHA256: 635db8db1d0feca7fae37999470f0b56b51c208a71482e5ff4c45c30bdfb32bf
+
+modern-language-association.csl — MLA Handbook 9th edition (in-text citations)
+Authors: Sebastian Karcher, Andrew Dunning
+Contributors: Patrick O'Brien
+Updated: 2026-02-09T16:43:35-05:00
+SHA256: ad5398ee478760737ad04ec6f95ead6dfbea7d2ae5252fc21f337110dd564b58

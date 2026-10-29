@@ -1,7 +1,9 @@
 <script lang="ts">
  import {onMount,tick} from 'svelte'
  import {t,setUILanguage,getUILanguage} from './lib/i18n.svelte'
- import {Transaction} from '@codemirror/state'
+ import {Transaction,StateEffect} from '@codemirror/state'
+ import {autocompletion} from '@codemirror/autocomplete'
+ import {completeCitations} from './lib/citation-completion'
  import {undo as undoText,redo as redoText} from '@codemirror/commands'
  import {assetTransaction} from './lib/asset-changes'
  import {createMarkdownSession,taskTransaction,type TaskReference,type MarkdownSession} from './lib/markdown-tasks'
@@ -18,6 +20,11 @@
  import CsvTable from './components/CsvTable.svelte'
  import Tree from './components/Tree.svelte'
  import AssetWarnings from './components/AssetWarnings.svelte'
+ import PandocDialog from './components/PandocDialog.svelte'
+ import type {PandocStatus} from '../shared/pandoc'
+ import type {CitationStyleId} from '../shared/bibliography'
+ import {frontMatterOf} from '../shared/front-matter'
+ import {bibliographyPath} from '../shared/bibliography-source'
  import Icon from './components/Icon.svelte'
  import {kindIcon,fileKind} from './lib/icons'
  import type {Heading} from './lib/render'
@@ -50,6 +57,7 @@
  const indexVisible=$derived(sidebar&&effectiveSidebarTab==='outline'&&active?.kind==='markdown')
  const outlineHeadings=$derived(headingDocument===activeId?headings:[])
  let newMenu=$state(false),exportMenu=$state(false),about=$state(false),exportScope=$state<'all'|'filtered'|'selection'>('all')
+ let pandocOpen=$state(false),pandocStatus=$state<PandocStatus>(),citationStyle=$state<CitationStyleId>('apa'),pandocGeneration=0
  let collapsedByDocument=$state<Record<string,Set<string>>>({})
  let previewHeading=$state<string|undefined>()
  let headingsSource=$state(''),editorSource=$state(''),editorHeadings=$state<EditorHeading[]>([]),editorLine=$state(0),editorDocument=$state('')
@@ -113,7 +121,16 @@
  })
  function textSession(doc:DocumentInfo){
   let session=textSessions.get(doc.id)
-  if(!session){session=createMarkdownSession(doc.text??'');textSessions.set(doc.id,session)}
+  if(!session){
+   session=createMarkdownSession(doc.text??'')
+   session.state=session.state.update({effects:StateEffect.appendConfig.of(autocompletion({override:[context=>completeCitations(context,async()=>{
+    const source=context.state.sliceDoc();await pending.get(doc.id)
+    if(context.aborted)return[]
+    const library=await window.freya.bibliography(doc.id,source)
+    return library.ok?library.entries:[]
+   })]}))}).state
+   textSessions.set(doc.id,session)
+  }
   return session
  }
  $effect(()=>{
@@ -175,7 +192,27 @@
  async function reload(id:string){if(assetBusy[id])return;await action(async()=>{merge(await window.freya.reload(id));external=external.filter(value=>value!==id)})}
  async function close(id:string){if(assetBusy[id])return;await action(async()=>{await pending.get(id);if(await window.freya.close(id)){const index=documents.findIndex(d=>d.id===id);documents=documents.filter(d=>d.id!==id);textSessions.delete(id);delete collapsedByDocument[id];delete assetWarnings[id];if(activeId===id)activate(documents[Math.max(0,index-1)]?.id??'')}})}
  async function undo(redo=false){if(!active||editingLocked)return;if(active.kind==='csv')await csv?.undoEdit(redo);else if(active.kind==='markdown'){const id=active.id,session=textSession(active);(redo?redoText:undoText)({state:session.state,dispatch:transaction=>receiveText(id)([transaction])})}else if(redo)editor?.redoEdit();else editor?.undoEdit()}
- async function exportDocument(format:ExportRequest['format']){if(!active||assetBusy[active.id])return;exportMenu=false;busy=true;await action(async()=>{await pending.get(active!.id);const request:ExportRequest={format};if(active!.kind==='csv'){request.table=csv?.exportOptions(exportScope)}else if(active!.kind==='mermaid'){if(format==='svg'||format==='png')request.svg=await diagram?.exportSVG();else request.html=await diagram?.exportHTML()}else request.html=await preview?.exportHTML();const missing=active!.kind==='markdown'?preview?.missingImages()??0:0;const path=await window.freya.export(active!.id,request);if(path)notify(`Exportado: ${path}`+(missing?` · ${missing===1?'1 imagen no se encontró':`${missing} imágenes no se encontraron`}; se exportó con su texto alternativo`:''))});busy=false}
+ async function toggleExport(){
+  exportMenu=!exportMenu
+  if(!exportMenu||active?.kind!=='markdown')return
+  const token=++pandocGeneration;pandocStatus=undefined
+  try{const status=await window.freya.pandocStatus();if(token===pandocGeneration)pandocStatus=status}catch(cause){if(token===pandocGeneration)error(cause instanceof Error?cause.message:String(cause))}
+ }
+ async function exportDocument(format:ExportRequest['format']){
+  if(!active||assetBusy[active.id])return
+  const id=active.id,kind=active.kind;exportMenu=false;busy=true
+  try{await action(async()=>{
+   await pending.get(id)
+   if(active?.id!==id)throw new Error(t('bibliography.error.changedDocument'))
+   const current=documents.find(doc=>doc.id===id)!,request:ExportRequest={format}
+   if(kind==='csv')request.table=csv?.exportOptions(exportScope)
+   else if(kind==='mermaid'){if(format==='svg'||format==='png')request.svg=await diagram?.exportSVG();else request.html=await diagram?.exportHTML()}
+   else{request.revision=current.revision;request.citationStyle=citationStyle;request.html=await preview?.exportHTML()}
+   if(active?.id!==id)throw new Error(t('bibliography.error.changedDocument'))
+   const missing=kind==='markdown'?preview?.missingImages()??0:0,path=await window.freya.export(id,request)
+   if(path)notify(`Exportado: ${path}`+(missing?` · ${missing===1?'1 imagen no se encontró':`${missing} imágenes no se encontraron`}; se exportó con su texto alternativo`:''))
+  })}finally{busy=false}
+ }
  async function recover(id:string){await action(async()=>{merge(await window.freya.recover(id),true);recoveries=await window.freya.recoveries()})}
  async function discard(id:string){await action(async()=>{await window.freya.discardRecovery(id);recoveries=await window.freya.recoveries()})}
  function keydown(event:KeyboardEvent){if(event.defaultPrevented||!(event.metaKey||event.ctrlKey))return;const key=event.key.toLowerCase();if(active?.kind==='markdown'&&!event.altKey&&(mode==='preview'||event.target instanceof Element&&!!event.target.closest('.preview'))&&(key==='z'||key==='y'&&!event.metaKey&&!event.shiftKey)){event.preventDefault();void undo(key==='y'||event.shiftKey)}else if(key==='o'){event.preventDefault();void(event.shiftKey?openFolder():open())}else if(key==='s'){event.preventDefault();void save(event.shiftKey)}else if(key==='n'){event.preventDefault();void create(event.shiftKey?'mermaid':event.altKey?'csv':'markdown')}else if(key==='b'){event.preventDefault();toggleSidebar()}else if(key==='w'&&active){event.preventDefault();void close(active.id)}}
@@ -214,7 +251,7 @@
  <header class="toolbar">
   <div class="toolbar-left"><button class="icon-button" aria-label="Mostrar u ocultar explorador" title="Explorador · Ctrl/Cmd B" onclick={toggleSidebar}><Icon name="panel-left"/></button><span class="separator"></span><button title={t('toolbar.open.title')} onclick={open}><Icon name="file"/> {t('toolbar.open')}</button><button title={t('toolbar.folder.title')} aria-label={t('dialog.folder.title')} onclick={openFolder}><Icon name="folder-open"/></button><div class="menu-anchor"><button title="Nuevo · Ctrl/Cmd N" onclick={()=>newMenu=!newMenu}><Icon name="plus"/> Nuevo <Icon name="chevron-down" size={12}/></button>{#if newMenu}<div class="dropdown">{#each [{kind:'markdown',label:'Documento Markdown'},{kind:'csv',label:'Tabla CSV'},{kind:'mermaid',label:'Diagrama Mermaid'},{kind:'text',label:'Texto plano'}] as item}<button onclick={()=>create(item.kind as Kind)}><span class="kind-{item.kind}"><Icon name={kindIcon[item.kind as Kind]}/></span> {item.label}</button>{/each}</div>{/if}</div></div>
   <div class="document-title">{#if active}<span class="tag">{active.kind==='markdown'?'MD':active.kind==='csv'?'CSV':active.kind==='mermaid'?'MMD':'TXT'}</span><strong class="truncate" title={active.path??active.name}>{active.name}</strong>{#if active.dirty}<span class="dirty-badge">● Editado</span>{/if}{:else}<img class="brand-mark small" src={appIcon} alt=""/><strong>FreyaLab</strong>{/if}</div>
-  <div class="toolbar-right"><button class="icon-button" title="Deshacer · Ctrl/Cmd Z" aria-label="Deshacer" disabled={editingLocked} onclick={()=>undo()}><Icon name="undo-2"/></button><button class="icon-button" title="Rehacer · Ctrl/Cmd Mayús Z" aria-label="Rehacer" disabled={editingLocked} onclick={()=>undo(true)}><Icon name="redo-2"/></button><button disabled={editingLocked} title={t('toolbar.save.title')} onclick={()=>save()}><Icon name="save"/> {t('toolbar.save')}</button><button disabled={editingLocked} title={t('toolbar.saveAs.title')} aria-label={t('toolbar.saveAs')} onclick={()=>save(true)}><Icon name="save-all"/></button><div class="menu-anchor"><button class="primary" disabled={editingLocked||busy||active?.kind==='text'} title="Exportar una copia" onclick={()=>exportMenu=!exportMenu}><Icon name="upload"/> {busy?'Exportando…':'Exportar'} <Icon name="chevron-down" size={12}/></button>{#if exportMenu&&active}<div class="dropdown export-dropdown"><div class="dropdown-label">Exportar una copia</div>{#if active.kind==='csv'}<label>Contenido<select bind:value={exportScope}><option value="all">Documento completo</option><option value="filtered">Filas filtradas</option><option value="selection">Selección</option></select></label><button onclick={()=>exportDocument('csv')}>CSV</button><button onclick={()=>exportDocument('tsv')}>TSV</button>{:else}<button onclick={()=>exportDocument('pdf')}>Documento PDF</button>{#if active.kind==='mermaid'}<button onclick={()=>exportDocument('svg')}>Imagen SVG</button><button onclick={()=>exportDocument('png')}>Imagen PNG</button>{/if}<button onclick={()=>exportDocument('html')}>HTML autónomo</button><p style="max-width:240px;margin:8px 12px;font-size:11px;line-height:1.4;color:var(--muted);white-space:normal">Se exporta con colores claros para que se lea en papel y en cualquier pantalla</p>{/if}</div>{/if}</div></div>
+  <div class="toolbar-right"><button class="icon-button" title="Deshacer · Ctrl/Cmd Z" aria-label="Deshacer" disabled={editingLocked} onclick={()=>undo()}><Icon name="undo-2"/></button><button class="icon-button" title="Rehacer · Ctrl/Cmd Mayús Z" aria-label="Rehacer" disabled={editingLocked} onclick={()=>undo(true)}><Icon name="redo-2"/></button><button disabled={editingLocked} title={t('toolbar.save.title')} onclick={()=>save()}><Icon name="save"/> {t('toolbar.save')}</button><button disabled={editingLocked} title={t('toolbar.saveAs.title')} aria-label={t('toolbar.saveAs')} onclick={()=>save(true)}><Icon name="save-all"/></button><div class="menu-anchor"><button class="primary" disabled={editingLocked||busy||active?.kind==='text'} title="Exportar una copia" onclick={toggleExport}><Icon name="upload"/> {busy?'Exportando…':'Exportar'} <Icon name="chevron-down" size={12}/></button>{#if exportMenu&&active}<div class="dropdown export-dropdown"><div class="dropdown-label">Exportar una copia</div>{#if active.kind==='csv'}<label>Contenido<select bind:value={exportScope}><option value="all">Documento completo</option><option value="filtered">Filas filtradas</option><option value="selection">Selección</option></select></label><button onclick={()=>exportDocument('csv')}>CSV</button><button onclick={()=>exportDocument('tsv')}>TSV</button>{:else}<button onclick={()=>exportDocument('pdf')}>Documento PDF</button>{#if active.kind==='markdown'}<button disabled={!pandocStatus?.available} title={!pandocStatus?.available?t('pandoc.export.require'):undefined} onclick={()=>exportDocument('docx')}>{t('pandoc.export.docx')}</button>{#if bibliographyPath(frontMatterOf(active.text??'').frontMatter)}<label>{t('pandoc.export.style')}<select aria-label={t('pandoc.export.style')} disabled={!pandocStatus?.available} title={!pandocStatus?.available?t('pandoc.export.styleRequire'):undefined} bind:value={citationStyle}><option value="apa">APA 7</option><option value="ieee">IEEE</option><option value="vancouver">Vancouver (NLM)</option><option value="chicago">Chicago 18</option><option value="mla">MLA 9</option></select></label>{/if}<button onclick={()=>{exportMenu=false;pandocOpen=true}}>{t('pandoc.dialog.title')}</button>{/if}{#if active.kind==='mermaid'}<button onclick={()=>exportDocument('svg')}>Imagen SVG</button><button onclick={()=>exportDocument('png')}>Imagen PNG</button>{/if}<button onclick={()=>exportDocument('html')}>HTML autónomo</button><p style="max-width:240px;margin:8px 12px;font-size:11px;line-height:1.4;color:var(--muted);white-space:normal">Se exporta con colores claros para que se lea en papel y en cualquier pantalla</p>{/if}</div>{/if}</div></div>
  </header>
  <div class="workspace">
   {#if sidebar}<aside class="sidebar" style:width={`${sidebarWidth}px`}>
@@ -252,5 +289,6 @@
  </div>
  <footer class="statusbar"><span class="status-dot"></span><span class="truncate">{status}</span>{#if opening}<span role="status">{opening.phase}</span><button onclick={cancelOpening}>Cancelar apertura</button>{/if}<span class="spacer"></span><div id="document-status"></div>{#if active&&(active.kind==='markdown'||active.kind==='text')}<TextStats id={active.id} name={active.name} text={active.text??''} markdown={active.kind==='markdown'} partial={active.readonly} selection={textSelection}/>{/if}{#if active}{#if active.kind!=='csv'}<span>{active.encoding.toUpperCase()}</span>{/if}<span>{active.readonly?'Solo lectura':!active.path?'Sin guardar':active.dirty?'Cambios pendientes':'Guardado'}</span>{/if}<span>Local</span></footer>
  {#if toast}<div class="toast {toastKind}" role="status"><Icon name={toastKind==='error'?'triangle-alert':'circle-check'} size={16}/><span>{toast}</span><button onclick={()=>toast=''} aria-label="Cerrar aviso"><Icon name="x" size={14}/></button></div>{/if}
+ {#if pandocOpen}<PandocDialog onstatus={status=>{pandocGeneration++;pandocStatus=status}} onclose={()=>{pandocOpen=false;void tick().then(()=>editor?.focus())}}/>{/if}
  {#if about}<div class="modal-backdrop" role="presentation"><div class="modal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="about-title"><img class="brand-mark" src={appIcon} alt=""/><h2 id="about-title">FreyaLab</h2><p>Documentos, tablas y diagramas.<br/>Una herramienta local, de código abierto.</p><p>Para Freya. 🐾</p><p class="muted">v0.1.0-alpha.1 · Licencia MIT</p><button class="primary" onclick={()=>about=false}>Cerrar</button></div></div>{/if}
 </div>

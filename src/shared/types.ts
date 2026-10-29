@@ -41,12 +41,14 @@ export interface SqlResult {requestId:string;sources:SqlSource[];version:string;
 export interface SqlProgress {requestId:string;phase:string;rows:number}
 export interface TableOptions { encoding?:Encoding; delimiter?:string; header?:boolean }
 export interface TableExport { range?:TableRange; scope:'all'|'filtered'|'selection'; query?:TableQuery; rowIds?:string[]; columns?:number[]; delimiter?:string }
-export interface ExportRequest { format:'pdf'|'html'|'svg'|'png'|'csv'|'tsv'; html?:string; svg?:string; table?:TableExport }
+export interface ExportRequest { format:'pdf'|'html'|'svg'|'png'|'csv'|'tsv'|'docx'; html?:string; svg?:string; table?:TableExport;revision?:number;citationStyle?:import('./bibliography').CitationStyleId }
 export interface ChartResultRequest {requestId:string;revision:number;configuration:ChartConfiguration;format:'csv'|'json'|'md';protectFormulas:boolean}
 export interface GraphicExportRequest {format:'svg'|'png'|'pdf';svg:string;revision:number}
 export interface RecoveryEntry { id:string; name:string; savedAt:string }
 export interface AppEvent { type:'opened'|'changed'|'external'|'error'|'analysis'|'language';language?:LanguageState;progress?:SqlProgress; document?:DocumentInfo; id?:string; message?:string }
 export interface FreyaAPI {
+ pandocStatus():Promise<import('./pandoc').PandocStatus>;pandocChoose():Promise<import('./pandoc').PandocStatus>;pandocTest():Promise<{ok:true;bytes:number}>;
+ bibliography(id:string,source:string):Promise<import('./bibliography').DocumentBibliography>;
  language():Promise<LanguageState>;setLanguage(preference:LanguagePreference):Promise<LanguageState>;
  open():Promise<DocumentInfo[]>; openPaths(paths:string[]):Promise<DocumentInfo[]>; newDocument(kind:Kind):Promise<DocumentInfo>; folder():Promise<string|null>; tree(path:string):Promise<TreeEntry[]>; findFiles(root:string,query:string):Promise<{entries:TreeEntry[];limited:boolean}>; cancelFileSearch():Promise<void>; listTags(root:string):Promise<{tags:{tag:string;count:number}[];limited:boolean}>; cancelTagList():Promise<void>;
  update(id:string,text:string):Promise<DocumentInfo>; save(id:string,as?:boolean):Promise<SaveOutcome|null>; locateImage(id:string,source:string):Promise<SaveOutcome|null>; close(id:string):Promise<boolean>; reload(id:string):Promise<DocumentInfo>; documents():Promise<DocumentInfo[]>;

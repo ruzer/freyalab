@@ -2,7 +2,9 @@ import {yamlParts} from '../../shared/front-matter'
 import type {Heading} from './render'
 import type {Numbering,NumberedItem} from './remark-numbering'
 export const escapeDocumentText=(value:string)=>value.replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]!))
-const fields=new Set(['title','subtitle','author','date','institution','abstract','portada','toc','lof','lot'])
+const labels:Record<string,[string,string,string,string,string]>={es:['Documento','Contenido','Índice de figuras','Índice de tablas','Resumen'],en:['Document','Contents','List of figures','List of tables','Abstract'],fr:['Document','Sommaire','Liste des figures','Liste des tableaux','Résumé'],pt:['Documento','Sumário','Lista de figuras','Lista de tabelas','Resumo'],de:['Dokument','Inhalt','Abbildungsverzeichnis','Tabellenverzeichnis','Zusammenfassung'],it:['Documento','Indice','Elenco delle figure','Elenco delle tabelle','Sommario']}
+export function reportTOCTitle(language:string):string{return(labels[language.split(/[-_]/)[0].toLowerCase()]??labels.es)[1]}
+const fields=new Set(['title','subtitle','author','date','institution','abstract','portada','toc','lof','lot','lang'])
 function scalar(value:string):string {
  value=(yamlParts(value,false)?.[0]??value).trim()
  if(value.startsWith('"')&&value.endsWith('"'))try{const parsed:unknown=JSON.parse(value);if(typeof parsed==='string')return parsed}catch{}
@@ -10,7 +12,7 @@ function scalar(value:string):string {
  return value
 }
 // shortcut: los escalares/listas de este reporte; YAML estructural requiere ampliar el contrato.
-function metadataOf(frontMatter:string):Map<string,string|string[]> {
+export function reportMetadataOf(frontMatter:string):Map<string,string|string[]> {
  const values=new Map<string,string|string[]>(),lines=frontMatter.split(/\r?\n/)
  for(let index=0;index<lines.length;index++){
   const match=/^([a-z]+)[ \t]*:[ \t]*(.*)$/.exec(lines[index]);if(!match||!fields.has(match[1]))continue
@@ -36,9 +38,8 @@ function metadataOf(frontMatter:string):Map<string,string|string[]> {
 }
 export function reportHeader(frontMatter:string|undefined,headings:Heading[],numbering:Numbering):string {
  if(frontMatter===undefined)return''
- const values=metadataOf(frontMatter),enabled=(key:string)=>values.get(key)==='true'
+ const values=reportMetadataOf(frontMatter),enabled=(key:string)=>values.get(key)==='true'
  const text=(key:string)=>{const value=values.get(key);return escapeDocumentText(Array.isArray(value)?value.join(', '):value??'')}
- const labels:Record<string,[string,string,string,string,string]>={es:['Documento','Contenido','Índice de figuras','Índice de tablas','Resumen'],en:['Document','Contents','List of figures','List of tables','Abstract'],fr:['Document','Sommaire','Liste des figures','Liste des tableaux','Résumé'],pt:['Documento','Sumário','Lista de figuras','Lista de tabelas','Resumo'],de:['Dokument','Inhalt','Abbildungsverzeichnis','Tabellenverzeichnis','Zusammenfassung'],it:['Documento','Indice','Elenco delle figure','Elenco delle tabelle','Sommario']}
  const[document,toc,figures,tables,abstract]=(labels[numbering.language]??labels.es).map(escapeDocumentText)
  let html=''
  if(enabled('portada')){

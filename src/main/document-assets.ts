@@ -97,6 +97,7 @@ function images(source:string):{url:string;from:number;to:number}[]{
  }
  return result.sort((a,b)=>a.from-b.from)
 }
+export {images as markdownImageReferences}
 async function noSymlinks(root:string,path:string){
  const parts=relative(root,path).split(sep).filter(Boolean);let current=root
  for(const part of ['',...parts]){

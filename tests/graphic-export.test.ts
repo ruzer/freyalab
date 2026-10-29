@@ -7,7 +7,7 @@ import {randomUUID} from 'node:crypto'
 const state=vi.hoisted(()=>({folder:'',destination:'',cancelled:false,onDialog:()=>{},onPrint:()=>{},destroy:vi.fn(),table:vi.fn(),saveDialog:vi.fn()}))
 vi.mock('electron',()=>({app:{getPath:()=>state.folder},dialog:{showSaveDialog:async()=>{state.saveDialog();state.onDialog();return{canceled:state.cancelled,filePath:state.destination}}},BrowserWindow:class{
  static getFocusedWindow(){return undefined}static getAllWindows(){return[]}
- webContents={session:{webRequest:{onBeforeRequest:()=>{}}},executeJavaScript:async()=>true,printToPDF:async()=>{state.onPrint();return Buffer.from('%PDF-fixture')}}
+ webContents={session:{webRequest:{onBeforeRequest:()=>{}},setPermissionRequestHandler:()=>{}},setWindowOpenHandler:()=>{},executeJavaScript:async()=>true,printToPDF:async()=>{state.onPrint();return Buffer.from('%PDF-fixture')}}
  async loadURL(){}destroy(){state.destroy()}
 }}))
 vi.mock('../src/main/table-client',()=>({TableClient:class{call=state.table;stop(){}}}))
