@@ -1,0 +1,14 @@
+{
+  "authorship": "Original FreyaLab OOXML and styles; project MIT license.",
+  "compression": "ZIP_STORED",
+  "zipDate": "2026-10-28T00:00:00",
+  "sha256": "8557dea1c67095d2df33743d4749a3a2d6783bcf33594acbb740a2054d90a8c4",
+  "parts": {
+    "[Content_Types].xml": "3d664cb41795a4ce0c28ee845883c04877aae2be9c10d30290e1b97b30ed3adb",
+    "_rels/.rels": "1104289b64bf84db58c1f0ea58c8c261565e6fb2bc89cee6ac3d5d7d63c04f63",
+    "word/_rels/document.xml.rels": "609ff4e9a4a192fdffe88608f6d84cf1a44293dda3abf7952900f7333611f1bb",
+    "word/document.xml": "d9187016ba9961d92ca3ab64456c99e5f6759b293468b7eae12b001a2b571778",
+    "word/settings.xml": "a3fb46ee314d4c5e321b6c0db8742ecbb5865ee658957e052407e7a8fc514445",
+    "word/styles.xml": "84d1f25a78fbb5b109bd05a86e11a19b2a8d7c20b8aaf8eec709e24f405b794b"
+  }
+}

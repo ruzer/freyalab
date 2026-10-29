@@ -1,0 +1,20 @@
+{
+  "anchors": {
+    "ids": 28,
+    "links": 8,
+    "missing": [],
+    "duplicates": []
+  },
+  "markers": [
+    {
+      "value": "url(#freya-diagram-1_flowchart-v2-pointEnd-margin)",
+      "exists": true
+    }
+  ],
+  "pages": 3,
+  "text": [
+    "Reporte académico exportable Evidencia sintética Ana García, Luis Chen 2026-10-28 Instituto FreyaLab Sintético Resumen Un reporte con datos, fuentes y referencias.",
+    "2 / 3 Contenido Resultados Método Índice de figuras Figura 1. Ventas locales Índice de tablas Tabla 1. Ventas verificadas Resultados Véase Figura 1 y Tabla 1. Fuente: (García, 2020, p. 10). Ventas: 12 Figura 1. Ventas locales",
+    "3 / 3 Ciudad Ventas Oaxaca 12 Tabla 1. Ventas verificadas Método Una nota 1 y una ecuación . Datos Reporte Referencias García, A. (2020). Fuente local verificable. Notas al pie 1. La misma fuente (García, 2020). ↩ x 2"
+  ]
+}

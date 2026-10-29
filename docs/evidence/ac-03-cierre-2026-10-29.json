@@ -1,0 +1,158 @@
+{
+  "sourceHead": "0870c46dffae83f22be75a44007e0b58360cbc6d",
+  "fullResult": {
+    "exit": 1,
+    "passed": 407,
+    "failed": 1,
+    "minutes": 16.1,
+    "retries": 0,
+    "skipped": 0
+  },
+  "contextWallProjected": "2026-10-29T02:58:25.546-06:00",
+  "testConfiguredTimeoutMs": 90000,
+  "clockGranularity": "pmset seconds; trace milliseconds projected from initial wallTime/monotonicTime",
+  "pmsetLiteral": "Extracto literal de la salida observada de /usr/bin/pmset -g log, filtrada por fechas y transiciones de sueño. Conserva precisión de un segundo del registro del SO.\n\n2026-10-29 02:58:28 -0600 Sleep               \tEntering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=active Using AC (Charge:100%) 309 secs    \n2026-10-29 03:03:37 -0600 DarkWake            \tDarkWake from Deep Idle [CDNPB] : due to smc.sysState.Wake(0x70070000) wifibt SMC.OutboxNotEmpty/ Using AC (Charge:100%)           \n",
+  "baselineBlobs": [
+    {
+      "path": "tests/e2e/charts.spec.ts",
+      "mainBlob": "0016dc4da1cdf309db2f5988bfdce494d39edcb1",
+      "workingBlob": "0016dc4da1cdf309db2f5988bfdce494d39edcb1",
+      "same": true
+    },
+    {
+      "path": "src/renderer/components/CsvCharts.svelte",
+      "mainBlob": "096929b1e39e5b1b869384ab9ddbbc90a2c31d55",
+      "workingBlob": "096929b1e39e5b1b869384ab9ddbbc90a2c31d55",
+      "same": true
+    },
+    {
+      "path": "src/renderer/components/CsvQueryTools.svelte",
+      "mainBlob": "d2ee0a8b172bc7839642657c41ed5cbc3d22ad38",
+      "workingBlob": "d2ee0a8b172bc7839642657c41ed5cbc3d22ad38",
+      "same": true
+    },
+    {
+      "path": "src/main/sql-service.ts",
+      "mainBlob": "35a8c2658c8171ab46a4b49bcc263747a06474b2",
+      "workingBlob": "35a8c2658c8171ab46a4b49bcc263747a06474b2",
+      "same": true
+    },
+    {
+      "path": "src/main/job-queue.ts",
+      "mainBlob": "c65df104f03a2368d9798673e151e440c49ff5c3",
+      "workingBlob": "c65df104f03a2368d9798673e151e440c49ff5c3",
+      "same": true
+    },
+    {
+      "path": "src/main/analysis-source.ts",
+      "mainBlob": "def5ffe0088cd928e7ab1778472d55c9a262d3bc",
+      "workingBlob": "def5ffe0088cd928e7ab1778472d55c9a262d3bc",
+      "same": true
+    },
+    {
+      "path": "src/main/table-query.ts",
+      "mainBlob": "9d348ebea783079974ff30fd11e822146ba965f3",
+      "workingBlob": "9d348ebea783079974ff30fd11e822146ba965f3",
+      "same": true
+    },
+    {
+      "path": "src/renderer/analytics.ts",
+      "mainBlob": "c642357164c5eeccc2d4d15664a8853f5a85f566",
+      "workingBlob": "c642357164c5eeccc2d4d15664a8853f5a85f566",
+      "same": true
+    },
+    {
+      "path": "src/renderer/App.svelte",
+      "mainBlob": "210ed9baa7697173c97c57f95d983d029d5cef35",
+      "workingBlob": "52ddf75e117403a9d9a8559c5af1c21021854d4f",
+      "same": false
+    },
+    {
+      "path": "src/preload/index.ts",
+      "mainBlob": "73c44e56045bf2592552d0732b19e6239d9088d9",
+      "workingBlob": "8e4ddc8bbd29e937677d357e3236f766c0243f44",
+      "same": false
+    }
+  ],
+  "traceSourceMatchesWorkingChartsSpec": true,
+  "baselineFocals": [
+    {
+      "source": "main a44",
+      "logSHA256": "0126eed1e29ecf8b388e3fcf4f3daf1516ced3617d6cb5cb71ebfb5dc692de16",
+      "summary": [
+        "[1/1] [csv] › tests/e2e/charts.spec.ts:222:1 › filtros propios: editor reutilizado, borradores, Escape, alcance y exportación sin cambiar la tabla",
+        "  1 passed (5.4s)"
+      ]
+    },
+    {
+      "source": "fuente0870",
+      "logSHA256": "1141b9e54d259a5c6c23da49f87c177856f39b4516e0ca50c3b20456e9061f91",
+      "summary": [
+        "[1/1] [csv] › tests/e2e/charts.spec.ts:222:1 › filtros propios: editor reutilizado, borradores, Escape, alcance y exportación sin cambiar la tabla",
+        "  1 passed (5.3s)"
+      ]
+    }
+  ],
+  "conclusion": "El bloqueo temporal coincide con Maintenance Sleep309s del host; evidencia ambiental fuerte, sin base para ampliar límites o atribuir un defectoWASM. La suite407/1 sigue fallida; dos focos verdes no la convierten en fullverde.",
+  "notVerified": [
+    "No se observó el punto exacto interno de engine inicialización/analysisStart; la fase Preparando cubre ambos.",
+    "Sin red/DOM/consola en el ZIP; no se puede demostrar una avería de DuckDB ni un problema de App.",
+    "No se ejecutó Native/build ni se cambió código para este diagnóstico."
+  ],
+  "lastAssertion": {
+    "title": "Expect \"toContainText\"",
+    "durationMs": 307389.70300000004,
+    "wallStartProjected": "2026-10-29T02:58:29.691-06:00",
+    "wallEndProjected": "2026-10-29T03:03:37.081-06:00",
+    "failed": true
+  },
+  "rawArtifacts": [
+    {
+      "name": "trace.zip",
+      "bytes": 29393,
+      "sha256": "ec2843be4a6f7f01e401eab89a37e63be79638cf86709790b347d9d2032300d5"
+    },
+    {
+      "name": "error-context.md",
+      "bytes": 47185,
+      "sha256": "38ee4daa81d8c0c08badaa8a69f43cd37957195a93227525446d183f6a9d1a90"
+    },
+    {
+      "name": "pmset-observed.txt",
+      "bytes": 498,
+      "sha256": "9c7bdbdee3a4ddf0417db22c847deda633035a013b687e853a741f6559c26b82"
+    },
+    {
+      "name": "a3-interaction-final-e2e.log",
+      "bytes": 92225,
+      "sha256": "a434e2ac93c78805607420bab74f5d032f87bc5b2892733f9a308b8b4fa906a2"
+    }
+  ],
+  "closure": {
+    "source": 272,
+    "PNGs": 134,
+    "changedPNGs": [],
+    "e2e": {
+      "exit": 1,
+      "passed": 407,
+      "failed": 1,
+      "minutes": 16.1,
+      "retries": 0,
+      "skipped": 0
+    },
+    "unit": {
+      "exit": 0,
+      "passed": 1481,
+      "files": 78,
+      "seconds": 13.64
+    },
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0
+    },
+    "buildExit": 0,
+    "head": "0870c46dffae83f22be75a44007e0b58360cbc6d",
+    "changedSource": []
+  }
+}

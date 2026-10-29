@@ -21,6 +21,8 @@ import {removeMissingRecent} from './application-recents'
 import {WindowClosePreparation,closePreparedArguments} from './application-close'
 import {ApplicationWindowClose} from './application-window-close'
 import type {ApplicationUiState} from '../shared/application'
+import {detectPandoc,testPandoc} from './pandoc'
+import {citationStyleIds} from '../shared/bibliography'
 import { exportDocument,exportGraphic } from './export'
 import { operateDocument } from './extract'
 import { operationRequest } from './operation-schema'
@@ -99,6 +101,15 @@ async function handle(operation:string,args:unknown[]){
  case'recents:clear':z.tuple([]).parse(args);return clearRecents(window)
  case'settings:showDataFolder':z.tuple([]).parse(args);return showDataFolder()
  case'setLanguage':{const [preference]=z.tuple([z.enum(['sistema','es','en'])]).parse(args);changedSettings(await settings.set({idioma:preference}),true);settingsStartupNotice=undefined;return languageState()}
+ case'pandocStatus':z.tuple([]).parse(args);return detectPandoc(docs.pandocPath)
+ case'pandocChoose':{
+  z.tuple([]).parse(args)
+  const selected=await dialog.showOpenDialog(window!,{title:t('pandoc.dialog.choose'),buttonLabel:t('dialog.open.button'),properties:['openFile']})
+  if(selected.canceled)return detectPandoc(docs.pandocPath)
+  const status=await detectPandoc(selected.filePaths[0]);if(status.available)docs.pandocPath=status.path
+  return status
+ }
+ case'pandocTest':{z.tuple([]).parse(args);const status=await detectPandoc(docs.pandocPath);if(!status.available)throw new Error(status.reason);return testPandoc(status.path)}
  case'open':{const result=await dialog.showOpenDialog(window!,{title:t('dialog.open.title'),buttonLabel:t('dialog.open.button'),properties:['openFile','multiSelections'],filters:[{name:t('dialog.open.filter'),extensions:['md','markdown','txt','mmd','mermaid','csv','tsv']}]});for(const p of result.filePaths)docs.grants.add(resolve(p));return result.canceled?[]:openPaths(result.filePaths)}
  case'openPaths':return openPaths(z.array(path).max(100).parse(a))
  case'csvOpen':{const target=path.parse(a),view=csvView.parse(b);if(!await docs.allowed(target))throw new Error(t('csvText.openAuthorized'));const previous=new Map([...docs.records].map(([key,record])=>[key,record.info.csvView??'table'])),document=await docs.open(target,view);if(previous.has(document.id)&&previous.get(document.id)!==document.csvView)analytics.forget(document.id);window?.webContents.send('freya:event',{type:'opened',document});return document}
@@ -112,6 +123,7 @@ async function handle(operation:string,args:unknown[]){
  case'listTags':return docs.listTags(path.parse(a))
  case'cancelTagList':return docs.cancelTagList()
  case'documents':return[...docs.records.keys()].map(key=>docs.info(key))
+ case'bibliography':return docs.bibliography(id.parse(a),text.parse(b))
  case'update':return docs.update(id.parse(a),text.parse(b))
  case'save':return docs.save(id.parse(a),z.boolean().optional().parse(b))
  case'close':{const key=id.parse(a),closed=await docs.close(key);if(closed)analytics.forget(key);return closed}
@@ -144,7 +156,7 @@ async function handle(operation:string,args:unknown[]){
  case'markdown':docs.requireTable(id.parse(a));return docs.table.call('markdown',a,tableExport.parse(b) as TableExport)
  case'exportChartResult':return exportChartResult(docs,analytics,id.parse(a),z.object({requestId:id,revision:z.number().int().nonnegative(),configuration:chartConfiguration,format:z.enum(['csv','json','md']),protectFormulas:z.boolean()}).strict().parse(b))
  case'exportGraphic':return exportGraphic(docs,id.parse(a),z.object({format:z.enum(['svg','png','pdf']),svg:text.min(1),revision:z.number().int().nonnegative()}).strict().parse(b))
- case'export':return exportDocument(docs,id.parse(a),z.object({format:z.enum(['pdf','html','svg','png','csv','tsv']),html:text.optional(),svg:text.optional(),table:tableExport.optional()}).parse(b) as ExportRequest)
+ case'export':return exportDocument(docs,id.parse(a),z.object({format:z.enum(['pdf','html','svg','png','csv','tsv','docx']),html:text.optional(),svg:text.optional(),table:tableExport.optional(),revision:z.number().int().nonnegative().optional(),citationStyle:z.enum(citationStyleIds).optional()}).parse(b) as ExportRequest)
  case'locateImage':return docs.locateImage(id.parse(a),z.string().min(1).max(16*1024*1024).parse(b))
  case'image':return docs.image(id.parse(a),z.string().max(16*1024*1024).parse(b))
  case'link':{const url=z.url().parse(a),target=new URL(url);if(!['https:','http:','mailto:'].includes(target.protocol))throw new Error('Solo se permiten enlaces web o de correo.');if(target.protocol==='mailto:'&&[...target.searchParams.keys()].some(key=>['attach','attachment'].includes(key.toLowerCase())))throw new Error('No se permiten adjuntos en enlaces de correo.');await shell.openExternal(url);return}
@@ -172,6 +184,7 @@ app.whenReady().then(async()=>{
  const initialSettings=await settings.get();settingsStartupNotice=initialSettings.notice;menuSettings=initialSettings
  initializeLanguage(app.getPreferredSystemLanguages(),process.env,initialSettings.values.idioma)
  docs=new Documents(event=>{window?.webContents.send('freya:event',event);refreshApplicationMenu()})
+ if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_PANDOC_PATH)docs.pandocPath=process.env.FREYALAB_TEST_PANDOC_PATH
  presets=new ChartPresets(join(app.getPath('userData'),'chart-presets.json'))
  analytics=new SqlService(docs,progress=>window?.webContents.send('freya:event',{type:'analysis',progress}))
  ipcMain.handle('freya',async(event,operation,...args)=>{assertSender(event);try{const result=await handle(z.string().max(100).parse(operation),args);if(['open','openPaths','save','recover','recents:clear'].includes(operation)){await refreshMenuRecents();if(operation==='recents:clear')window?.webContents.send('freya:event',{type:'recents'})}else if(['new','close','reload'].includes(operation))refreshApplicationMenu();return result}catch(e){throw new Error(e instanceof z.ZodError?t('error.invalidOperation'):(e as Error).message)}})

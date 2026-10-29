@@ -1,12 +1,28 @@
 import {execFile} from 'node:child_process'
 import {constants} from 'node:fs'
-import {access,mkdtemp,realpath,rm,stat} from 'node:fs/promises'
+import {access,mkdtemp,realpath,rm,stat,mkdir,writeFile} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {isAbsolute,join,posix,win32} from 'node:path'
+import {createHash} from 'node:crypto'
+import {z} from 'zod'
+import {citationStyleIds,type CitationStyleId} from '../shared/bibliography'
+import type {AuthorizedBibliographySnapshot} from './bibliography'
+import type {PandocStatus} from '../shared/pandoc'
+export type {PandocStatus} from '../shared/pandoc'
+import {t} from '../shared/i18n'
+import {cleanExportMarkup} from './export-markup'
 
 // shortcut: 3.10.2 es la menor versión probada; ampliar compatibilidad exige repetir P4.
 export const minimumPandocVersion='3.10.2'
-export type PandocStatus={available:true;path:string;version:string;license:'GPL-2.0-or-later'}|{available:false;reason:string;installation:string}
+export interface PandocCitationOptions {style:CitationStyleId;bibliography:AuthorizedBibliographySnapshot;metadata?:Pick<PandocReportMetadata,'lang'>}
+export interface PandocReportMetadata {title?:string;subtitle?:string;author?:readonly string[];date?:string;lang?:string;institution?:string;abstract?:string;tocTitle?:string}
+export interface PandocReportOptions {style?:CitationStyleId;bibliography?:AuthorizedBibliographySnapshot;metadata?:PandocReportMetadata;toc?:boolean;lof?:boolean;lot?:boolean;cover?:boolean}
+const snapshot=z.strictObject({format:z.enum(['csl-json','bibtex']),content:z.instanceof(Buffer),sha256:z.string().regex(/^[a-f0-9]{64}$/)})
+const language=z.string().refine(value=>{try{return Intl.getCanonicalLocales(value).length===1}catch{return false}})
+const metadata=z.strictObject({title:z.string().optional(),subtitle:z.string().optional(),author:z.array(z.string()).optional(),date:z.string().optional(),lang:language.optional(),institution:z.string().optional(),abstract:z.string().optional(),tocTitle:z.string().optional()})
+const reportOptions=z.strictObject({style:z.enum(citationStyleIds).optional(),bibliography:snapshot.optional(),metadata:metadata.optional(),toc:z.boolean().optional(),lof:z.boolean().optional(),lot:z.boolean().optional(),cover:z.boolean().optional()})
+const citationOptions=z.strictObject({style:z.enum(citationStyleIds),bibliography:snapshot,metadata:metadata.pick({lang:true}).optional()})
+const reader='markdown-raw_attribute-raw_html-raw_tex-yaml_metadata_block'
 
 export function pandocPaths(platform:NodeJS.Platform,environment:NodeJS.ProcessEnv):string[] {
  const windows=platform==='win32',path=windows?win32:posix,executable=windows?'pandoc.exe':'pandoc'
@@ -26,7 +42,7 @@ export function pandocPaths(platform:NodeJS.Platform,environment:NodeJS.ProcessE
 function runPandoc(path:string,args:string[],source?:string,cwd?:string):Promise<Buffer> {
  return new Promise((resolve,reject)=>{
   const child=execFile(path,args,{shell:false,timeout:10_000,maxBuffer:64*1024*1024,windowsHide:true,encoding:'buffer',cwd},(error,stdout)=>{
-   if(error)reject(new Error('Pandoc no pudo convertir el documento. Comprueba la instalación o prueba con un documento más pequeño.'))
+   if(error)reject(new Error(t('pandoc.conversionFailed')))
    else resolve(stdout)
   })
   child.stdin?.on('error',()=>{}) // EPIPE también llega al callback cuando falla el proceso.
@@ -36,11 +52,11 @@ function runPandoc(path:string,args:string[],source?:string,cwd?:string):Promise
 
 function unavailable(reason:string):PandocStatus {
  const system=process.platform==='win32'?'Windows':process.platform==='darwin'?'macOS':'Linux'
- return{available:false,reason,installation:`Instala Pandoc para ${system} y vuelve a probar: https://pandoc.org/installing.html`}
+ return{available:false,reason,installation:t('pandoc.installation',{system,url:'https://pandoc.org/installing.html'})}
 }
 
 export async function detectPandoc(chosenPath?:string):Promise<PandocStatus> {
- let reason='No se encontró Pandoc. DOCX y el formateo final de citas requieren una instalación externa.'
+ let reason=t('pandoc.missing')
  for(const candidate of chosenPath===undefined?pandocPaths(process.platform,process.env):[chosenPath]){
   if(!isAbsolute(candidate)||candidate.includes('\0')||(process.platform==='win32'&&!/\.exe$/i.test(candidate)))continue
   try{
@@ -49,11 +65,11 @@ export async function detectPandoc(chosenPath?:string):Promise<PandocStatus> {
    await access(path,process.platform==='win32'?constants.F_OK:constants.X_OK)
    const output=(await runPandoc(path,['--version'])).toString('utf8')
    const version=/^pandoc (\d+(?:\.\d+){1,3})\r?\n/.exec(output)?.[1]
-   if(!version){reason='No se pudo verificar la versión de Pandoc.';continue}
+   if(!version){reason=t('pandoc.versionUnknown');continue}
    const actual=version.split('.').map(Number),minimum=minimumPandocVersion.split('.').map(Number)
    let comparison=0
    for(let index=0;index<Math.max(actual.length,minimum.length);index++)if((actual[index]??0)!==(minimum[index]??0)){comparison=(actual[index]??0)-(minimum[index]??0);break}
-   if(comparison<0){reason=`Pandoc requiere la versión mínima ${minimumPandocVersion}; se encontró ${version}.`;continue}
+   if(comparison<0){reason=t('pandoc.minimum',{minimum:minimumPandocVersion,version});continue}
    return{available:true,path,version,license:'GPL-2.0-or-later'}
   }catch{ /* Un candidato ausente o no ejecutable no impide probar los demás. */ }
  }
@@ -67,22 +83,56 @@ export function stripPandocMetadata(source:string):string {
  const lines=source.slice(opening[0].length,end?opening[0].length+end.index:source.length).split(/\r?\n/)
  if(!lines.some(line=>/^(?:[\p{L}\p{N}_-]+|"[^"\r\n]+"|'[^'\r\n]+')[ \t]*:/u.test(line)))return source
  if(lines.some(line=>!/^(?:\s*$|\s*#|[ \t]+|-[ \t]|(?:[\p{L}\p{N}_-]+|"[^"\r\n]+"|'[^'\r\n]+')[ \t]*:)/u.test(line)))return source
- if(!end)throw new Error('Los metadatos del documento no tienen cierre. Añade --- antes de exportar.')
+ if(!end)throw new Error(t('pandoc.metadataUnclosed'))
  return source.slice(opening[0].length+end.index+end[0].length)
 }
 
-export async function pandocToDocx(executablePath:string,source:string):Promise<Buffer> {
- const body=stripPandocMetadata(source),pandoc=await detectPandoc(executablePath)
+async function convertReport(executablePath:string,source:string,format:'docx'|'html5',options:unknown):Promise<Buffer>{
+ const checked=(format==='docx'?reportOptions:citationOptions).safeParse(options??{})
+ if(!checked.success)throw new Error(t('pandoc.invalidOptions'))
+ const selected=checked.data as PandocReportOptions,bibliography=selected.bibliography
+ if(bibliography&&createHash('sha256').update(bibliography.content).digest('hex')!==bibliography.sha256)throw new Error(t('pandoc.invalidBibliography'))
+ const body=(selected.cover?'::: {custom-style="FreyaPageBreak"}\n\n\u200b\n\n:::\n\n':'')+stripPandocMetadata(source),pandoc=await detectPandoc(executablePath)
  if(!pandoc.available)throw new Error(pandoc.reason)
  const directory=await mkdtemp(join(tmpdir(),'freyalab-pandoc-'))
  try{
-  // El lector también veta YAML intermedio: Pandoc lo reconoce fuera del encabezado.
-  return await runPandoc(pandoc.path,['--sandbox','--data-dir',directory,'-f','markdown-raw_attribute-raw_html-raw_tex-yaml_metadata_block','-t','docx','-o','-'],body,directory)
- }finally{await rm(directory,{recursive:true,force:true})}
+  let data=directory
+  if(bibliography||selected.cover){data=join(directory,'data');await mkdir(data)}
+  const args=['--sandbox','--data-dir',data,'-f',reader,'-t',format,'-o','-']
+  if(selected.cover){
+   const {reportReferenceBytes}=await import('./report-reference'),referencePath=join(directory,'reference.docx')
+   await writeFile(referencePath,await reportReferenceBytes(selected.metadata?.institution))
+   args.push('--reference-doc',referencePath)
+  }
+  if(bibliography){
+   const bibliographyPath=join(directory,bibliography.format==='bibtex'?'bibliography.bib':'bibliography.json'),stylePath=join(directory,'style.csl')
+   const {citationStyleBytes}=await import('./citation-styles')
+   await writeFile(bibliographyPath,bibliography.content);await writeFile(stylePath,await citationStyleBytes(selected.style??'apa'))
+   // Pandoc conserva csl en las propiedades DOCX; el nombre local evita filtrar el directorio temporal.
+   args.push('--citeproc','--bibliography',bibliographyPath,'--csl','style.csl')
+  }
+  for(const flag of ['toc','lof','lot'] as const)if(selected[flag])args.push('--'+flag)
+  for(const [key,value] of Object.entries(selected.metadata??{}))if(value!==undefined){
+   // --metadata recibe MetaString literal; repetir author crea la lista de autores.
+   for(const scalar of Array.isArray(value)?value:[value])args.push('--metadata',(key==='tocTitle'?'toc-title':key)+'='+scalar)
+  }
+  return await runPandoc(pandoc.path,args,body,directory)
+ }finally{await rm(directory,{recursive:true,force:true,maxRetries:3,retryDelay:100})}
+}
+export function pandocToDocx(executablePath:string,source:string,options?:PandocReportOptions):Promise<Buffer>{return convertReport(executablePath,source,'docx',options)}
+export async function pandocCitationsToHtml(executablePath:string,source:string,options:PandocCitationOptions):Promise<string>{return cleanExportMarkup((await convertReport(executablePath,source,'html5',options)).toString('utf8'))}
+export async function bibtexToCslJson(chosenPath:string|undefined,source:string):Promise<{available:false}|{available:true;json:string}>{
+ const pandoc=await detectPandoc(chosenPath)
+ if(!pandoc.available)return{available:false}
+ const directory=await mkdtemp(join(tmpdir(),'freyalab-pandoc-bib-'))
+ try{
+  const result=await runPandoc(pandoc.path,['--sandbox','--data-dir',directory,'-f','bibtex','-t','csljson','-o','-'],source,directory)
+  return{available:true,json:new TextDecoder('utf-8',{fatal:true}).decode(result)}
+ }finally{await rm(directory,{recursive:true,force:true,maxRetries:3,retryDelay:100})}
 }
 
 export async function testPandoc(executablePath:string):Promise<{ok:true;bytes:number}> {
  const output=await pandocToDocx(executablePath,'# FreyaLab\n\nPrueba de Pandoc: **documento local** con acentos y ñ.')
- if(!output.subarray(0,4).equals(Buffer.from('PK\x03\x04')))throw new Error('Pandoc no produjo un archivo DOCX válido.')
+ if(!output.subarray(0,4).equals(Buffer.from('PK\x03\x04')))throw new Error(t('pandoc.invalidDocx'))
  return{ok:true,bytes:output.length}
 }
