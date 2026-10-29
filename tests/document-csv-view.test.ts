@@ -92,3 +92,14 @@ it('C: una recuperación con formato desconocido se conserva sin crear otro docu
 it('C: cambiar de vista conserva una copia de recuperación de versión futura',async()=>{
  const doc=await docs.open(path,'text');await docs.update(doc.id,source.replace('Ana','Pendiente'));await docs.checkpoint(doc.id);const recovery=join(state.folder,'recovery',`${doc.id}.json`),data=JSON.parse(await readFile(recovery,'utf8'));data.version=99;await writeFile(recovery,JSON.stringify(data));await docs.setCsvView(doc.id,'table','discard');expect(JSON.parse(await readFile(recovery,'utf8')).version).toBe(99);expect(docs.info(doc.id).csvView).toBe('table')
 })
+
+it.each([
+ {raw:'ID,Nombre\n1,"abc\n2,fin\n',line:3},
+ {raw:'ID,Nombre\n1,5" de largo\n',line:2},
+ {raw:'ID,Nombre\n1,"abc"def\n',line:2}
+])('D: un CSV mal formado conserva el error real y permite la salida a Texto ($line)',async({raw,line})=>{
+ await docs.shutdown();const events:import('../src/shared/types').AppEvent[]=[];docs=new Documents(event=>events.push(event));const previous=join(state.folder,'previo.txt');await writeFile(previous,'Documento previo intacto');const before=await docs.open(previous);await writeFile(path,raw);const failure=await docs.open(path).then(()=>null,error=>error as Error);expect(failure?.message).toMatch(/CSV no válido/);expect(events).toHaveLength(1);expect(events[0]).toMatchObject({type:'csv-open-error',csvOpenError:{path,name:'datos.csv',message:failure!.message,reportedLine:line,byteLength:Buffer.byteLength(raw),textAllowed:true}});expect(docs.records.size).toBe(1);expect(docs.info(before.id).text).toBe('Documento previo intacto');expect(await readFile(path,'utf8')).toBe(raw)
+})
+it('C: Guardar una Tabla y cambiar a Texto usa su serializador real',async()=>{
+ const doc=await docs.open(path,'table');await docs.tableEdit(doc.id,{type:'cell',rowId:'1',column:1,value:'Desde tabla'});const expected=await docs.table.call<Buffer>('serialize',doc.id);const changed=await docs.setCsvView(doc.id,'text','save');expect(changed).toMatchObject({id:doc.id,csvView:'text',dirty:false,text:expected.toString('utf8')});expect(await readFile(path)).toEqual(expected);expect(changed.text).toContain('001,Desde tabla');expect(changed.text).toContain('9007199254740993');expect(docs.records.size).toBe(1)
+})

@@ -7,7 +7,7 @@
  import {assetTransaction} from './lib/asset-changes'
  import {createMarkdownSession,taskTransaction,type TaskReference,type MarkdownSession} from './lib/markdown-tasks'
  import appIcon from '../../build/icon.png'
- import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type CsvViewDecision,type DocumentInfo,type Kind,type TreeEntry,type RecoveryEntry,type ExportRequest,type AssetChange} from '../shared/types'
+ import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type CsvViewDecision,type CsvOpenError as CsvOpenIssue,type DocumentInfo,type Kind,type TreeEntry,type RecoveryEntry,type ExportRequest,type AssetChange} from '../shared/types'
  import Editor from './components/Editor.svelte'
  import MarkdownToolbar from './components/MarkdownToolbar.svelte'
  import TextStats from './components/TextStats.svelte'
@@ -19,6 +19,7 @@
  import CsvTable from './components/CsvTable.svelte'
  import CsvFileMenu from './components/CsvFileMenu.svelte'
  import CsvViewDialog from './components/CsvViewDialog.svelte'
+ import CsvOpenError from './components/CsvOpenError.svelte'
  import Tree from './components/Tree.svelte'
  import AssetWarnings from './components/AssetWarnings.svelte'
  import Icon from './components/Icon.svelte'
@@ -53,6 +54,7 @@
  function textOption(action:'wrap'|'spaces'|'line'){if(action==='wrap')csvWrap=!csvWrap;else if(action==='spaces')csvSpaces=!csvSpaces;if(csvOptions)csvOptions.open=false;if(action==='line')editor?.goToLine();else editor?.focus()}
  let csvFileMenu=$state<{path:string;x:number;y:number;origin:HTMLElement}|null>(null)
  let csvChange=$state<{id:string;name:string;view:CsvView;busy:boolean;message:string}|null>(null)
+ let csvFailure=$state<CsvOpenIssue|null>(null),csvOpening=$state(false),csvFailureOrigin:HTMLElement|undefined
  let assetBusy=$state<Record<string,string>>({})
  let assetWarnings=$state<Record<string,string[]>>({})
  const editingLocked=$derived(!active||active.readonly||!!assetBusy[active.id]||!!csvChange)
@@ -79,7 +81,7 @@
  let opening=$state<{id:string;phase:string}|null>(null)
  async function cancelOpening(){const id=opening?.id;if(id)await window.freya.cancelOpen(id).catch(()=>{})}
  let toastTimer:ReturnType<typeof setTimeout>
- function error(message:string){opening=null;toastKind='error';toast=message.replace(/^Error:\s*/,'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',7000)}
+ function error(message:string){opening=null;const clean=message.replace(/^Error:\s*/,'');if(csvFailure?.message===clean)return;toastKind='error';toast=clean;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',7000)}
  function notify(message:string){toastKind='info';status=message;toast=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',3500)}
  function toggleSidebar(){sidebar=!sidebar;remember('freya-sidebar',String(sidebar))}
  async function selectSidebarTab(tab:SidebarTab,focus=false){
@@ -167,6 +169,14 @@
   try{await pending.get(request.id);const doc=await window.freya.csvView(request.id,request.view,decision);csvChange=null;await finishCsvView(doc)}
   catch(error){csvChange={...request,busy:false,message:error instanceof Error?error.message:String(error)}}
  }
+ function receiveCsvError(issue:CsvOpenIssue){csvFailureOrigin=document.activeElement instanceof HTMLElement?document.activeElement:undefined;csvFailure=issue;opening=null;if(toast===issue.message)toast=''}
+ async function dismissCsvError(){csvFailure=null;await tick();if(csvFailureOrigin?.isConnected)csvFailureOrigin.focus();else document.querySelector<HTMLButtonElement>('.tabs [role="tab"][aria-selected="true"]')?.focus()}
+ async function openFailedCsv(){
+  const issue=csvFailure;if(!issue||csvOpening)return
+  csvOpening=true
+  try{const doc=await window.freya.csvOpen(issue.path,'text');await finishCsvView(doc);if(csvFailure===issue)csvFailure=null;await tick();if(issue.reportedLine){if(editor?.goToPhysicalLine(issue.reportedLine))notify(t('csvText.error.openedLine',{line:issue.reportedLine}));else{editor?.focus();notify(t('csvText.error.noLine'))}}else editor?.focus()}
+  catch(failure){error(failure instanceof Error?failure.message:String(failure))}finally{csvOpening=false}
+ }
  function csvContext(event:MouseEvent|KeyboardEvent,path:string){if(!/\.(csv|tsv)$/i.test(path))return;event.preventDefault();const origin=event.currentTarget as HTMLElement,rect=origin.getBoundingClientRect();csvFileMenu={path,origin,x:event instanceof MouseEvent?event.clientX:rect.left,y:event instanceof MouseEvent?event.clientY:rect.bottom}}
  function closeCsvContext(restoreFocus:boolean){const origin=csvFileMenu?.origin;csvFileMenu=null;if(restoreFocus)origin?.focus()}
  async function openFolder(){await action(async()=>{const path=await window.freya.folder();if(path){folderPath=path;entries=await window.freya.tree(path);sidebar=true}})}
@@ -214,7 +224,7 @@
   const mq=matchMedia('(prefers-color-scheme: dark)'),change=()=>systemDark=mq.matches;mq.addEventListener('change',change)
   void action(async()=>setUILanguage((await window.freya.language()).language))
   void action(async()=>{documents=await window.freya.documents();activate(documents[0]?.id??'');recent=await window.freya.recents();recoveries=await window.freya.recoveries()})
-  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='language'&&event.language)setUILanguage(event.language.language);else if(event.type==='opened'&&event.document)merge(event.document,true);else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];notify(event.message??'El archivo cambió en otra aplicación. Al guardar se comprobarán los cambios.')}})
+  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='language'&&event.language)setUILanguage(event.language.language);else if(event.type==='csv-open-error'&&event.csvOpenError)receiveCsvError(event.csvOpenError);else if(event.type==='opened'&&event.document)merge(event.document,true);else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];notify(event.message??'El archivo cambió en otra aplicación. Al guardar se comprobarán los cambios.')}})
   return()=>{mq.removeEventListener('change',change);unsubscribe();clearTimeout(toastTimer)}
  })
  $effect(()=>{
@@ -257,6 +267,7 @@
    <div class="sidebar-bottom"><img class="brand-mark small" src={appIcon} alt=""/><button class="text-button" onclick={()=>about=true}>FreyaLab <span class="muted">alfa</span></button><span class="spacer"></span><select aria-label="Tema" value={theme} onchange={e=>themeChange(e.currentTarget.value)}><option value="system">Sistema</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></div>
   </aside><button class="resize-handle sidebar-handle" aria-valuenow={sidebarWidth} aria-valuemin="180" aria-valuemax="420" role="slider" aria-label="Ancho del explorador" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSidebar} onkeydown={e=>{if(e.key==='ArrowRight')sidebarWidth=Math.min(420,sidebarWidth+10);if(e.key==='ArrowLeft')sidebarWidth=Math.max(180,sidebarWidth-10);if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();remember('freya-sidebar-width',String(sidebarWidth))}}}></button>{/if}
   <main class="main-area">
+   {#if csvFailure}<CsvOpenError issue={csvFailure} busy={csvOpening} onopen={()=>void openFailedCsv()} onclose={()=>void dismissCsvError()}/>{/if}
    {#if documents.length}<div class="tabs" role="tablist" aria-label="Documentos abiertos">{#each documents as doc (doc.id)}<div class="tab" class:active={activeId===doc.id}><button role="tab" aria-selected={activeId===doc.id} onclick={()=>activate(doc.id)} title={doc.path??doc.name}><span class="tab-icon kind-{doc.kind}"><Icon name={kindIcon[doc.kind]} size={14}/></span>{doc.name}{#if doc.dirty}<span class="dirty-dot">●</span>{/if}</button><button class="tab-close" aria-label={`Cerrar ${doc.name}`} onclick={()=>close(doc.id)}><Icon name="x" size={14}/></button></div>{/each}</div>{/if}
    {#if active}
     {#if external.includes(active.id)}<div class="warning-banner external-banner"><span>Este archivo cambió fuera de FreyaLab.</span><button onclick={()=>reload(active!.id)}>Recargar</button><button onclick={()=>save(true)}>Guardar copia</button><button onclick={()=>external=external.filter(value=>value!==active!.id)}>Conservar mi edición</button></div>{/if}

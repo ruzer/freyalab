@@ -14,6 +14,7 @@ import { TableClient } from './table-client'
 import {CsvViewStore} from './csv-view-store'
 import {decodeCsvText,encodeCsvText,type CsvTextFormat} from './csv-text-codec'
 import {isCsvTextFormat} from '../shared/csv-text'
+import {csvOpenError} from './csv-open-error'
 import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type CsvViewDecision,type AppEvent,type DocumentInfo,type Kind,type RecoveryEntry,type TableOptions,type TableEdit,type TableExport,type TreeEntry} from '../shared/types'
 interface RecordDoc { info:DocumentInfo; hash?:string; text:string; csvTextFormat?:CsvTextFormat;undo:string[]; redo:string[]; root:string; saving:boolean; timer?:ReturnType<typeof setTimeout>; watcher?:FSWatcher }
 const extensions:Record<string,Kind>={'.md':'markdown','.markdown':'markdown','.txt':'text','.mmd':'mermaid','.mermaid':'mermaid','.csv':'csv','.tsv':'csv'}
@@ -60,7 +61,7 @@ export class Documents {
    await this.addRecent(canonical);if(requested)await this.csvViews.remember(canonical,requested)
    if(previous){await previous.watcher?.close();if(isTableDocument(previous.info)&&!isTableDocument(record.info))await this.table.call('close',id)}
    this.records.set(id,record);return this.info(id)
-  }catch(e){await record.watcher?.close();if(!previous)this.records.delete(id);if(isTableDocument(record.info)&&(!previous||!isTableDocument(previous.info)))await this.table.call('close',id).catch(()=>{});throw e}
+  }catch(e){await record.watcher?.close();if(!previous)this.records.delete(id);if(isTableDocument(record.info)&&(!previous||!isTableDocument(previous.info)))await this.table.call('close',id).catch(()=>{});const failure=isTableDocument(record.info)?csvOpenError(canonical,size,e):undefined;if(failure)this.emit({type:'csv-open-error',csvOpenError:failure});throw e}
  }
  async setCsvView(id:string,view:CsvView,decision?:CsvViewDecision){return this.reinterpret(id,async()=>{
   const record=this.get(id)

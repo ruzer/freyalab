@@ -91,5 +91,14 @@
  "csvText.change.history": "Undo history resets when you switch views.",
  "csvText.change.busy": "Preparing to switch views…",
  "csvText.change.save": "Save and switch",
- "csvText.change.discard": "Discard changes and switch"
+ "csvText.change.discard": "Discard changes and switch",
+ "csvText.error.label": "CSV format problem",
+ "csvText.error.title": "We could not open “{nombre}” as a table.",
+ "csvText.error.location": "The parser reported line {line}. The cause may be earlier, such as an unclosed quote.",
+ "csvText.error.locationUnknown": "The cause may be earlier than where the parser found the problem. Open the text to inspect it.",
+ "csvText.error.detail": "CSV technical details",
+ "csvText.error.dismiss": "Dismiss CSV format warning",
+ "csvText.error.opening": "Opening text…",
+ "csvText.error.openedLine": "Text opened at line {line}.",
+ "csvText.error.noLine": "The text is open. The reported error location does not exist in this version of the document."
 }

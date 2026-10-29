@@ -101,6 +101,11 @@
  export function focus(){view?.focus()}
  export function search(){if(view) openSearchPanel(view)}
  export function goToLine(){if(view)gotoLine(view)}
+ export function goToPhysicalLine(line:number){
+  if(!view||!Number.isSafeInteger(line)||line<1||line>view.state.doc.lines||isComposing())return false
+  const position=view.state.doc.line(line).from
+  view.dispatch({selection:EditorSelection.cursor(position),effects:EditorView.scrollIntoView(position,{y:'center'}),annotations:Transaction.addToHistory.of(false)});view.focus();return true
+ }
  function clipboard(event:ClipboardEvent,cut=false){
   if(kind!=='csv-text'||!view||!event.clipboardData)return false
   const state=view.state,ranges=state.selection.ranges.filter(range=>!range.empty)

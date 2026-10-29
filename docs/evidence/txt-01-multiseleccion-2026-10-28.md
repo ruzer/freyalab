@@ -7,3 +7,5 @@ La prueba ahora crea el estado con las mismas extensiones que producción y sin 
 Verde `txt-b-multiselection-real-green.txt`: **11/11**; también conserva el diferencial de 600 ediciones y sus historiales. La validación de interfaz de Buscar → Todas → edición de dos rangos → undo se añade al cierre enfocado de D; todavía no se atribuye un verde nativo a este commit aislado.
 
 No cambian dependencias, lockfile, motor CSV, permisos ni CI. Es una corrección propia, sin reescribir los commits B y C ya registrados.
+
+Validación posterior en la app: el primer montaje cancelaba las selecciones con Escape enfocado en el editor. La sonda de estados/eventos distingue ese gesto de las entradas y confirma la causa en defaultKeymap. Al cerrar Buscar con su botón nativo, `txt-d-x7-verified.txt` verifica dos rangos visibles, ambas sustituciones y undo de un paso, tanto con teclas normales como con insertText. No se modificó el producto para acomodar el montaje.

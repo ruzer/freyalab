@@ -91,5 +91,14 @@
  "csvText.change.history": "El historial de deshacer se reinicia al cambiar de vista.",
  "csvText.change.busy": "Preparando el cambio de vista…",
  "csvText.change.save": "Guardar y cambiar",
- "csvText.change.discard": "Descartar cambios y cambiar"
+ "csvText.change.discard": "Descartar cambios y cambiar",
+ "csvText.error.label": "Problema de formato CSV",
+ "csvText.error.title": "No pudimos abrir “{nombre}” como tabla.",
+ "csvText.error.location": "El motor señaló la línea {line}. La causa puede estar antes, por ejemplo una comilla sin cerrar.",
+ "csvText.error.locationUnknown": "La causa puede estar antes del punto donde el motor detectó el problema. Abre el texto para revisarlo.",
+ "csvText.error.detail": "Detalle técnico del CSV",
+ "csvText.error.dismiss": "Cerrar aviso de formato CSV",
+ "csvText.error.opening": "Abriendo el texto…",
+ "csvText.error.openedLine": "Texto abierto en la línea {line}.",
+ "csvText.error.noLine": "El texto está abierto. La ubicación del error no existe en esta versión del documento."
 }
