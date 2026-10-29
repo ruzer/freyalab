@@ -83,5 +83,13 @@
  "csvText.cm.replacedLine": "Coincidencia reemplazada en la línea $",
  "csvText.cm.replacedCount": "$ coincidencias reemplazadas",
  "csvText.cm.current": "Coincidencia actual",
- "csvText.cm.onLine": "en la línea"
+ "csvText.cm.onLine": "en la línea",
+ "csvText.invalidRecovery": "Formato de recuperación de texto no compatible. El archivo se conserva.",
+ "csvText.recoveryCleanup": "No se pudo retirar una copia de recuperación anterior. El documento actual sigue abierto.",
+ "csvText.change.title": "Cambiar vista del CSV",
+ "csvText.change.description": "Conserva los cambios de “{nombre}” antes de cambiar de vista.",
+ "csvText.change.history": "El historial de deshacer se reinicia al cambiar de vista.",
+ "csvText.change.busy": "Preparando el cambio de vista…",
+ "csvText.change.save": "Guardar y cambiar",
+ "csvText.change.discard": "Descartar cambios y cambiar"
 }

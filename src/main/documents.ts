@@ -13,7 +13,8 @@ import type {DocumentAssets} from './document-assets'
 import { TableClient } from './table-client'
 import {CsvViewStore} from './csv-view-store'
 import {decodeCsvText,encodeCsvText,type CsvTextFormat} from './csv-text-codec'
-import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type AppEvent,type DocumentInfo,type Kind,type RecoveryEntry,type TableOptions,type TableEdit,type TableExport,type TreeEntry} from '../shared/types'
+import {isCsvTextFormat} from '../shared/csv-text'
+import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type CsvViewDecision,type AppEvent,type DocumentInfo,type Kind,type RecoveryEntry,type TableOptions,type TableEdit,type TableExport,type TreeEntry} from '../shared/types'
 interface RecordDoc { info:DocumentInfo; hash?:string; text:string; csvTextFormat?:CsvTextFormat;undo:string[]; redo:string[]; root:string; saving:boolean; timer?:ReturnType<typeof setTimeout>; watcher?:FSWatcher }
 const extensions:Record<string,Kind>={'.md':'markdown','.markdown':'markdown','.txt':'text','.mmd':'mermaid','.mermaid':'mermaid','.csv':'csv','.tsv':'csv'}
 export class Documents {
@@ -61,9 +62,19 @@ export class Documents {
    this.records.set(id,record);return this.info(id)
   }catch(e){await record.watcher?.close();if(!previous)this.records.delete(id);if(isTableDocument(record.info)&&(!previous||!isTableDocument(previous.info)))await this.table.call('close',id).catch(()=>{});throw e}
  }
- async setCsvView(id:string,view:CsvView){return this.reinterpret(id,async()=>{const record=this.get(id);if(record.info.kind!=='csv')throw new Error(t('csvText.chooseFileForView'));if(view!=='table'&&view!=='text')throw new Error(t('csvText.invalidView'));if(!record.info.path)throw new Error(t('csvText.saveBeforeView'));if((record.info.csvView??'table')===view){await this.csvViews.remember(record.info.path,view);return this.info(id)}if(record.info.dirty)throw new Error(t('csvText.pendingChanges'));return this.openNew(record.info.path,view,record)})}
+ async setCsvView(id:string,view:CsvView,decision?:CsvViewDecision){return this.reinterpret(id,async()=>{
+  const record=this.get(id)
+  if(record.info.kind!=='csv')throw new Error(t('csvText.chooseFileForView'))
+  if(view!=='table'&&view!=='text'||decision!==undefined&&decision!=='save'&&decision!=='discard')throw new Error(t('csvText.invalidView'))
+  if(!record.info.path)throw new Error(t('csvText.saveBeforeView'))
+  if((record.info.csvView??'table')===view){await this.csvViews.remember(record.info.path,view);return this.info(id)}
+  if(record.info.dirty){if(!decision)throw new Error(t('csvText.pendingChanges'));if(decision==='save'&&!await this.saveNow(id))return this.info(id)}
+  const document=await this.openNew(record.info.path,view,record)
+  clearTimeout(record.timer);await this.removeCsvRecovery(id)
+  return document
+ })}
  async csvViewInfo(path:string){const canonical=await this.authorize(path);if(extensions[extname(canonical).toLowerCase()]!=='csv')throw new Error(t('csvText.chooseFile'));const info=await stat(canonical);if(!info.isFile())throw new Error(t('csvText.selectFile'));return{byteLength:info.size,textAllowed:info.size<=CSV_TEXT_LIMIT}}
- async create(kind:Kind){const id=randomUUID();const extension=kind==='csv'?'csv':kind==='mermaid'?'mmd':kind==='text'?'txt':'md';const r:RecordDoc={info:{id,name:`Sin título.${extension}`,path:null,kind,csvView:kind==='csv'?'table':undefined,byteLength:kind==='csv'?0:undefined,dirty:false,readonly:false,revision:0,encoding:'utf8',delimiter:','},text:'',undo:[],redo:[],root:app.getPath('documents'),saving:false};if(kind==='csv'){await this.table.call('create',id);Object.assign(r.info,await this.table.call('info',id))}this.records.set(id,r);return this.info(id)}
+ async create(kind:Kind,csvView:CsvView='table'){const id=randomUUID();const extension=kind==='csv'?'csv':kind==='mermaid'?'mmd':kind==='text'?'txt':'md';const r:RecordDoc={info:{id,name:`Sin título.${extension}`,path:null,kind,csvView:kind==='csv'?csvView:undefined,byteLength:kind==='csv'?0:undefined,dirty:false,readonly:false,revision:0,encoding:'utf8',delimiter:','},text:'',undo:[],redo:[],root:app.getPath('documents'),saving:false};if(isTableDocument(r.info)){await this.table.call('create',id);Object.assign(r.info,await this.table.call('info',id))}this.records.set(id,r);return this.info(id)}
  get(id:string){const r=this.records.get(id);if(!r)throw new Error('El documento ya no está abierto.');return r}
  requireTable(id:string){const record=this.get(id);if(!isTableDocument(record.info))throw new Error(t('csvText.tableOnly'));return record}
  info(id:string){const r=this.get(id);return {...r.info,...(!isTableDocument(r.info)?{text:r.text}:{})}}
@@ -72,7 +83,7 @@ export class Documents {
  private async updateNow(id:string,text:string){const r=this.get(id);if(r.info.readonly||isTableDocument(r.info))throw new Error('El documento no permite edición de texto.');if(Buffer.byteLength(text)>10*1024*1024)throw new Error('El documento supera el límite de edición de 10 MiB.');if(text!==r.text){r.undo.push(r.text);while(r.undo.length>1&&(r.undo.length>100||r.undo.reduce((n,t)=>n+Buffer.byteLength(t),0)>20*1024*1024))r.undo.shift();r.redo=[];r.text=text;r.info.dirty=true;r.info.revision++;this.schedule(id)}return this.info(id)}
  schedule(id:string){const r=this.get(id);clearTimeout(r.timer);r.timer=setTimeout(()=>{this.checkpoint(id).catch(e=>this.emit({type:'error',message:`No se pudo guardar recuperación: ${(e as Error).message}`}))},2000)}
  checkpoint(id:string):Promise<void>{const pending=this.recoveryTasks.get(id);if(pending)return pending;const task=this.checkpointNow(id).finally(()=>this.recoveryTasks.delete(id));this.recoveryTasks.set(id,task);return task}
- private async checkpointNow(id:string){const r=this.get(id);if(!r.info.dirty||r.info.readonly)return;await mkdir(this.recoveryDir,{recursive:true,mode:0o700});const revision=r.info.revision;const data=isTableDocument(r.info)?await this.table.call<string>('checkpoint',id,{...r.info}):JSON.stringify({version:1,info:r.info,savedAt:new Date().toISOString(),snapshot:{text:r.text}});await atomicWrite(join(this.recoveryDir,`${id}.json`),data);if(revision!==r.info.revision)this.schedule(id)}
+ private async checkpointNow(id:string){const r=this.get(id);if(!r.info.dirty||r.info.readonly)return;await mkdir(this.recoveryDir,{recursive:true,mode:0o700});const revision=r.info.revision;const data=isTableDocument(r.info)?await this.table.call<string>('checkpoint',id,{...r.info}):JSON.stringify({version:1,info:r.info,savedAt:new Date().toISOString(),snapshot:{text:r.text,...(r.csvTextFormat?{format:r.csvTextFormat}:{})}});await atomicWrite(join(this.recoveryDir,`${id}.json`),data);if(revision!==r.info.revision)this.schedule(id)}
  async tableEdit(id:string,edit:TableEdit){this.rejectDuringReload(id);if((edit.type==='structure'||edit.type==='range')&&this.operations.has(id))throw new Error('Espera a que termine el guardado o la edición anterior antes de preparar el cambio.');return this.serial(id,()=>this.tableEditNow(id,edit))}
  private async tableEditNow(id:string,edit:TableEdit){this.requireTable(id);await this.table.call('edit',id,edit);await this.syncTable(id);this.schedule(id);return this.info(id)}
  async tableOptions(id:string,options:TableOptions){return this.reinterpret(id,()=>this.tableOptionsNow(id,options))}
@@ -132,10 +143,15 @@ export class Documents {
  async reload(id:string){return this.reinterpret(id,()=>this.reloadNow(id))}
  private async reloadNow(id:string){
   const r=this.get(id);if(!r.info.path)throw new Error('El documento no tiene un archivo original.')
+  const csvText=r.info.kind==='csv'&&r.info.csvView==='text'
   if(r.info.dirty){const {response}=await dialog.showMessageBox(this.owner(),{type:'warning',title:t('dialog.reload.title'),buttons:[t('dialog.reload.keep'),t('dialog.reload.discard')],defaultId:0,cancelId:0,message:t('dialog.reload.message')});if(response===0)return this.info(id)}
   if(isTableDocument(r.info)){const size=(await stat(r.info.path)).size;const before=size<=50*1024*1024?await digest(r.info.path):undefined;await this.table.call('open',id,r.info.path,{encoding:r.info.encoding,delimiter:r.info.delimiter});await this.syncTable(id);if(!r.info.readonly&&before!==await digest(r.info.path))throw new Error('El archivo cambió durante la recarga. Vuelve a intentarlo.')}
-  else {r.info.readonly=(await stat(r.info.path)).size>10*1024*1024;let data:Buffer;if(r.info.readonly){const handle=await openFile(r.info.path,'r');try{data=Buffer.alloc(1024*1024);const result=await handle.read(data,0,data.length,0);data=data.subarray(0,result.bytesRead)}finally{await handle.close()}}else data=await readFile(r.info.path);const nextText=data.toString('utf8');if(!r.info.readonly&&!Buffer.from(nextText).equals(data))throw new Error('El archivo externo no es UTF-8 válido.');r.text=nextText;r.info.warning=r.info.readonly?'Muestra de solo lectura: primer MiB. El archivo supera 10 MiB.':undefined;r.info.revision++;r.info.dirty=false}
-  r.hash=r.info.readonly?undefined:await digest(r.info.path);r.undo=[];r.redo=[];clearTimeout(r.timer);await this.discardRecovery(id);return this.info(id)
+  else if(csvText){
+   if((await stat(r.info.path)).size>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'))
+   const bytes=await readFile(r.info.path);if(bytes.length>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'))
+   const decoded=decodeCsvText(bytes);r.text=decoded.text;r.csvTextFormat=decoded.format;r.info.encoding=decoded.format.encoding;r.info.readonly=decoded.readonly;r.info.warning=decoded.warning;r.info.byteLength=bytes.length;r.hash=decoded.readonly?undefined:createHash('sha256').update(bytes).digest('hex');r.info.revision++;r.info.dirty=false
+  }else {r.info.readonly=(await stat(r.info.path)).size>10*1024*1024;let data:Buffer;if(r.info.readonly){const handle=await openFile(r.info.path,'r');try{data=Buffer.alloc(1024*1024);const result=await handle.read(data,0,data.length,0);data=data.subarray(0,result.bytesRead)}finally{await handle.close()}}else data=await readFile(r.info.path);const nextText=data.toString('utf8');if(!r.info.readonly&&!Buffer.from(nextText).equals(data))throw new Error('El archivo externo no es UTF-8 válido.');r.text=nextText;r.info.warning=r.info.readonly?'Muestra de solo lectura: primer MiB. El archivo supera 10 MiB.':undefined;r.info.revision++;r.info.dirty=false}
+  if(!csvText)r.hash=r.info.readonly?undefined:await digest(r.info.path);r.undo=[];r.redo=[];clearTimeout(r.timer);if(csvText)await this.removeCsvRecovery(id);else await this.discardRecovery(id);return this.info(id)
  }
  async tree(path:string):Promise<TreeEntry[]>{if(!await this.allowed(path))throw new Error('Carpeta no autorizada.');const entries=await readdir(path,{withFileTypes:true});return entries.filter(e=>!e.name.startsWith('.')&&e.name!=='node_modules'&&!e.isSymbolicLink()&&(e.isDirectory()||extensions[extname(e.name).toLowerCase()])).sort((a,b)=>Number(b.isDirectory())-Number(a.isDirectory())||a.name.localeCompare(b.name)).map(e=>({name:e.name,path:join(path,e.name),directory:e.isDirectory()}))}
  cancelFileSearch(){this.fileSearch++;this.cancelQueuedTagReads()}
@@ -242,8 +258,25 @@ export class Documents {
  async recents():Promise<string[]>{try{return JSON.parse(await readFile(join(app.getPath('userData'),'recents.json'),'utf8'))}catch{return[]}}
  private async addRecent(path:string){const list=[path,...(await this.recents()).filter(p=>p!==path)].slice(0,15);await mkdir(app.getPath('userData'),{recursive:true});await atomicWrite(join(app.getPath('userData'),'recents.json'),JSON.stringify(list))}
  async listRecoveries():Promise<RecoveryEntry[]>{await mkdir(this.recoveryDir,{recursive:true,mode:0o700});const entries=await readdir(this.recoveryDir);const result:RecoveryEntry[]=[];for(const f of entries.filter(f=>/^[a-f0-9-]+\.json$/.test(f))){try{const d=JSON.parse(await readFile(join(this.recoveryDir,f),'utf8'));if(d.version===1)result.push({id:f.slice(0,-5),name:d.info.name,savedAt:d.savedAt})}catch{}}return result}
- async recover(id:string){const data=JSON.parse(await readFile(join(this.recoveryDir,`${id}.json`),'utf8'));if(data.version!==1)throw new Error('Versión de recuperación no compatible. El archivo se conserva.');const info=await this.create(data.info.kind);const r=this.get(info.id);if(info.kind==='csv'){try{await this.table.call('restore',info.id,data.snapshot);await this.syncTable(info.id)}catch(error){await this.table.call('close',info.id).catch(()=>{});this.records.delete(info.id);throw error}}else r.text=data.snapshot.text;r.info.name=`Recuperado-${data.info.name}`;r.info.path=null;r.info.dirty=true;r.root=app.getPath('documents');this.schedule(info.id);return this.info(info.id)}
+ async recover(id:string){
+  const data=JSON.parse(await readFile(join(this.recoveryDir,`${id}.json`),'utf8'))
+  if(data.version!==1)throw new Error('Versión de recuperación no compatible. El archivo se conserva.')
+  const csvText=data.info.kind==='csv'&&data.info.csvView==='text',format=csvText?(data.snapshot?.format===undefined?{encoding:'utf8',bom:false}:data.snapshot.format):undefined
+  if(csvText&&(typeof data.snapshot?.text!=='string'||!isCsvTextFormat(format)))throw new Error(t('csvText.invalidRecovery'))
+  const info=await this.create(data.info.kind,csvText?'text':'table'),r=this.get(info.id)
+  if(isTableDocument(info)){try{await this.table.call('restore',info.id,data.snapshot);await this.syncTable(info.id)}catch(error){await this.table.call('close',info.id).catch(()=>{});this.records.delete(info.id);throw error}}
+  else{r.text=data.snapshot.text;if(csvText){r.csvTextFormat=format;r.info.encoding=format.encoding}}
+  r.info.name=`Recuperado-${data.info.name}`;r.info.path=null;r.info.dirty=true;r.root=app.getPath('documents');this.schedule(info.id);return this.info(info.id)
+ }
  async discardRecovery(id:string){await this.recoveryTasks.get(id);await unlink(join(this.recoveryDir,`${id}.json`)).catch(e=>{if(e.code!=='ENOENT')throw e})}
+ private async removeCsvRecovery(id:string){
+  try{
+   await this.recoveryTasks.get(id)
+   const data=JSON.parse(await readFile(join(this.recoveryDir,`${id}.json`),'utf8'))
+   if(data.version!==1||data.info?.id!==id||data.info.csvView==='text'&&data.snapshot?.format!==undefined&&!isCsvTextFormat(data.snapshot.format))throw new Error(t('csvText.invalidRecovery'))
+   await this.discardRecovery(id)
+  }catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')this.emit({type:'error',message:t('csvText.recoveryCleanup')})}
+ }
  async image(id:string,source:string){if(source.startsWith('data:image/')&&source.length<16*1024*1024)return source;if(/^[a-z]+:/i.test(source)||source.startsWith('//'))return null;const r=this.get(id);try{const file=resolve(r.root,decodeURIComponent(source.split(/[?#]/)[0]));if(!await contained(r.root,file))return null;const mime:Record<string,string>={'.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.gif':'image/gif','.webp':'image/webp','.svg':'image/svg+xml'};const type=mime[extname(file).toLowerCase()];if(!type||(await stat(file)).size>8*1024*1024)return null;return `data:${type};base64,${(await readFile(file)).toString('base64')}`}catch{return null}}
  async shutdown(){for(const [id,r] of this.records){clearTimeout(r.timer);await this.checkpoint(id);await r.watcher?.close()}this.table.stop()}
 }

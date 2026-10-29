@@ -83,5 +83,13 @@
  "csvText.cm.replacedLine": "Replaced match on line $",
  "csvText.cm.replacedCount": "Replaced $ matches",
  "csvText.cm.current": "Current match",
- "csvText.cm.onLine": "on line"
+ "csvText.cm.onLine": "on line",
+ "csvText.invalidRecovery": "Unsupported text recovery format. The file has been kept.",
+ "csvText.recoveryCleanup": "A previous recovery copy could not be removed. The current document remains open.",
+ "csvText.change.title": "Switch CSV view",
+ "csvText.change.description": "Keep your changes to “{nombre}” before switching views.",
+ "csvText.change.history": "Undo history resets when you switch views.",
+ "csvText.change.busy": "Preparing to switch views…",
+ "csvText.change.save": "Save and switch",
+ "csvText.change.discard": "Discard changes and switch"
 }

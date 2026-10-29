@@ -7,7 +7,7 @@
  import {assetTransaction} from './lib/asset-changes'
  import {createMarkdownSession,taskTransaction,type TaskReference,type MarkdownSession} from './lib/markdown-tasks'
  import appIcon from '../../build/icon.png'
- import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type DocumentInfo,type Kind,type TreeEntry,type RecoveryEntry,type ExportRequest,type AssetChange} from '../shared/types'
+ import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type CsvViewDecision,type DocumentInfo,type Kind,type TreeEntry,type RecoveryEntry,type ExportRequest,type AssetChange} from '../shared/types'
  import Editor from './components/Editor.svelte'
  import MarkdownToolbar from './components/MarkdownToolbar.svelte'
  import TextStats from './components/TextStats.svelte'
@@ -18,6 +18,7 @@
  import Diagram from './components/Diagram.svelte'
  import CsvTable from './components/CsvTable.svelte'
  import CsvFileMenu from './components/CsvFileMenu.svelte'
+ import CsvViewDialog from './components/CsvViewDialog.svelte'
  import Tree from './components/Tree.svelte'
  import AssetWarnings from './components/AssetWarnings.svelte'
  import Icon from './components/Icon.svelte'
@@ -51,9 +52,10 @@
  $effect(()=>{activeId;csvText;csvWrap=false;csvSpaces=false})
  function textOption(action:'wrap'|'spaces'|'line'){if(action==='wrap')csvWrap=!csvWrap;else if(action==='spaces')csvSpaces=!csvSpaces;if(csvOptions)csvOptions.open=false;if(action==='line')editor?.goToLine();else editor?.focus()}
  let csvFileMenu=$state<{path:string;x:number;y:number;origin:HTMLElement}|null>(null)
+ let csvChange=$state<{id:string;name:string;view:CsvView;busy:boolean;message:string}|null>(null)
  let assetBusy=$state<Record<string,string>>({})
  let assetWarnings=$state<Record<string,string[]>>({})
- const editingLocked=$derived(!active||active.readonly||!!assetBusy[active.id])
+ const editingLocked=$derived(!active||active.readonly||!!assetBusy[active.id]||!!csvChange)
  const effectiveSidebarTab=$derived(active?.kind==='markdown'?sidebarTab:'files')
  const indexVisible=$derived(sidebar&&effectiveSidebarTab==='outline'&&active?.kind==='markdown')
  const outlineHeadings=$derived(headingDocument===activeId?headings:[])
@@ -151,7 +153,20 @@
  async function action<T>(operation:()=>Promise<T>):Promise<T|undefined>{try{return await operation()}catch(e){error(e instanceof Error?e.message:String(e))}}
  async function open(){await action(async()=>{for(const doc of await window.freya.open())merge(doc,true);recent=await window.freya.recents()})}
  async function openPath(path:string){await action(async()=>{for(const doc of await window.freya.openPaths([path]))merge(doc,true)})}
- async function chooseCsvView(view:CsvView,path?:string){await action(async()=>{const existing=path?documents.find(doc=>doc.path===path):active;if(existing)await pending.get(existing.id);const doc=path?await window.freya.csvOpen(path,view):await window.freya.csvView(existing!.id,view);merge(doc,true);notify(t('csvText.viewAnnouncement',{view:t(view==='text'?'csvText.text':'csvText.table')}));await tick();document.querySelector<HTMLButtonElement>('[data-csv-view] button[aria-pressed="true"]')?.focus()})}
+ async function finishCsvView(doc:DocumentInfo){merge(doc,true);notify(t('csvText.viewAnnouncement',{view:t(doc.csvView==='text'?'csvText.text':'csvText.table')}));await tick();document.querySelector<HTMLButtonElement>('[data-csv-view] button[aria-pressed="true"]')?.focus()}
+ async function chooseCsvView(view:CsvView,path?:string){await action(async()=>{
+  const existing=path?documents.find(doc=>doc.path===path):active;if(existing)await pending.get(existing.id)
+  const current=existing?documents.find(doc=>doc.id===existing.id):undefined
+  if(current?.dirty&&(current.csvView??'table')!==view){csvChange={id:current.id,name:current.name,view,busy:false,message:''};return}
+  const doc=current?await window.freya.csvView(current.id,view):await window.freya.csvOpen(path!,view);await finishCsvView(doc)
+ })}
+ async function resolveCsvChange(decision:CsvViewDecision|'cancel'){
+  const request=csvChange;if(!request||request.busy)return
+  if(decision==='cancel'){csvChange=null;await tick();document.querySelector<HTMLButtonElement>('[data-csv-view] button[aria-pressed="true"]')?.focus();return}
+  csvChange={...request,busy:true,message:''}
+  try{await pending.get(request.id);const doc=await window.freya.csvView(request.id,request.view,decision);csvChange=null;await finishCsvView(doc)}
+  catch(error){csvChange={...request,busy:false,message:error instanceof Error?error.message:String(error)}}
+ }
  function csvContext(event:MouseEvent|KeyboardEvent,path:string){if(!/\.(csv|tsv)$/i.test(path))return;event.preventDefault();const origin=event.currentTarget as HTMLElement,rect=origin.getBoundingClientRect();csvFileMenu={path,origin,x:event instanceof MouseEvent?event.clientX:rect.left,y:event instanceof MouseEvent?event.clientY:rect.bottom}}
  function closeCsvContext(restoreFocus:boolean){const origin=csvFileMenu?.origin;csvFileMenu=null;if(restoreFocus)origin?.focus()}
  async function openFolder(){await action(async()=>{const path=await window.freya.folder();if(path){folderPath=path;entries=await window.freya.tree(path);sidebar=true}})}
@@ -190,7 +205,7 @@
  async function exportDocument(format:ExportRequest['format']){if(!active||assetBusy[active.id])return;exportMenu=false;busy=true;await action(async()=>{await pending.get(active!.id);const request:ExportRequest={format};if(active!.kind==='csv'){request.table=csv?.exportOptions(exportScope)}else if(active!.kind==='mermaid'){if(format==='svg'||format==='png')request.svg=await diagram?.exportSVG();else request.html=await diagram?.exportHTML()}else request.html=await preview?.exportHTML();const missing=active!.kind==='markdown'?preview?.missingImages()??0:0;const path=await window.freya.export(active!.id,request);if(path)notify(`Exportado: ${path}`+(missing?` · ${missing===1?'1 imagen no se encontró':`${missing} imágenes no se encontraron`}; se exportó con su texto alternativo`:''))});busy=false}
  async function recover(id:string){await action(async()=>{merge(await window.freya.recover(id),true);recoveries=await window.freya.recoveries()})}
  async function discard(id:string){await action(async()=>{await window.freya.discardRecovery(id);recoveries=await window.freya.recoveries()})}
- function keydown(event:KeyboardEvent){if(!event.defaultPrevented&&event.key==='Escape'&&csvOptions?.open&&event.target instanceof Node&&csvOptions.contains(event.target)){event.preventDefault();csvOptions.open=false;editor?.focus();return}if(event.defaultPrevented||!(event.metaKey||event.ctrlKey))return;const key=event.key.toLowerCase();if(active?.kind==='markdown'&&!event.altKey&&(mode==='preview'||event.target instanceof Element&&!!event.target.closest('.preview'))&&(key==='z'||key==='y'&&!event.metaKey&&!event.shiftKey)){event.preventDefault();void undo(key==='y'||event.shiftKey)}else if(key==='o'){event.preventDefault();void(event.shiftKey?openFolder():open())}else if(key==='s'){event.preventDefault();void save(event.shiftKey)}else if(key==='n'){event.preventDefault();void create(event.shiftKey?'mermaid':event.altKey?'csv':'markdown')}else if(key==='b'){event.preventDefault();toggleSidebar()}else if(key==='w'&&active){event.preventDefault();void close(active.id)}}
+ function keydown(event:KeyboardEvent){if(csvChange&&(event.metaKey||event.ctrlKey)&&['o','s','n','b','w','z','y'].includes(event.key.toLowerCase())){event.preventDefault();return}if(!event.defaultPrevented&&event.key==='Escape'&&csvOptions?.open&&event.target instanceof Node&&csvOptions.contains(event.target)){event.preventDefault();csvOptions.open=false;editor?.focus();return}if(event.defaultPrevented||!(event.metaKey||event.ctrlKey))return;const key=event.key.toLowerCase();if(active?.kind==='markdown'&&!event.altKey&&(mode==='preview'||event.target instanceof Element&&!!event.target.closest('.preview'))&&(key==='z'||key==='y'&&!event.metaKey&&!event.shiftKey)){event.preventDefault();void undo(key==='y'||event.shiftKey)}else if(key==='o'){event.preventDefault();void(event.shiftKey?openFolder():open())}else if(key==='s'){event.preventDefault();void save(event.shiftKey)}else if(key==='n'){event.preventDefault();void create(event.shiftKey?'mermaid':event.altKey?'csv':'markdown')}else if(key==='b'){event.preventDefault();toggleSidebar()}else if(key==='w'&&active){event.preventDefault();void close(active.id)}}
  function themeChange(value:string){theme=value;remember('freya-theme',value)}
  function drop(event:DragEvent){event.preventDefault();const files=Array.from(event.dataTransfer?.files??[]);if(files.length)void action(async()=>{for(const doc of await window.freya.openPaths(window.freya.droppedPaths(files)))merge(doc,true)})}
  function resizeSidebar(event:PointerEvent){const start=event.clientX,width=sidebarWidth;const move=(e:PointerEvent)=>sidebarWidth=Math.min(420,Math.max(180,width+e.clientX-start));const stop=()=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',stop);remember('freya-sidebar-width',String(sidebarWidth))};window.addEventListener('pointermove',move);window.addEventListener('pointerup',stop)}
@@ -249,7 +264,7 @@
     {#key `${active.id}:${active.csvView??'table'}`}
      {#if active.kind==='csv'}
       <div class="document-tools"><div class="mode-switch" role="group" data-csv-view aria-label={t('csvText.viewGroup')}><button class:active={!csvText} aria-pressed={!csvText} onclick={()=>chooseCsvView('table')}><Icon name="table" size={14}/> {t('csvText.table')}</button><button class:active={csvText} aria-pressed={csvText} disabled={(active.byteLength??0)>CSV_TEXT_LIMIT} title={(active.byteLength??0)>CSV_TEXT_LIMIT?t('csvText.limit'):undefined} onclick={()=>chooseCsvView('text')}><Icon name="file-text" size={14}/> {t('csvText.text')}</button></div>{#if csvText}<span class="spacer"></span><details class="insert-menu csv-text-options" bind:this={csvOptions}><summary>{t('csvText.options')}</summary><div class="dropdown"><button class:primary={csvWrap} aria-pressed={csvWrap} onclick={()=>textOption('wrap')}>{t('csvText.wrap')}</button><button class:primary={csvSpaces} aria-pressed={csvSpaces} onclick={()=>textOption('spaces')}>{t('csvText.spaces')}</button><button onclick={()=>textOption('line')} title={t('csvText.goto.title')}>{t('csvText.goto')}</button></div></details><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> {t('csvText.search')}</button>{/if}</div>
-      {#if csvText}{#if active.warning}<div class="warning-banner" style="color:var(--text)">{active.warning}</div>{/if}<div class="document-panes"><div class="editor-pane" style:width="100%"><div class="pane-caption">{t('csvText.caption')}{#if active.readonly}<span>{t('csvText.readonly')}</span>{/if}</div><Editor bind:this={editor} text={active.text??''} readonly={active.readonly} kind="csv-text" label={t('csvText.editorLabel')} wrapLines={csvWrap} showWhitespace={csvSpaces} onchange={text=>updateText(active!.id,text)}/></div></div>
+      {#if csvText}{#if active.warning}<div class="warning-banner" style="color:var(--text)">{active.warning}</div>{/if}<div class="document-panes"><div class="editor-pane" style:width="100%"><div class="pane-caption">{t('csvText.caption')}{#if active.readonly}<span>{t('csvText.readonly')}</span>{/if}</div><Editor bind:this={editor} text={active.text??''} readonly={editingLocked} kind="csv-text" label={t('csvText.editorLabel')} wrapLines={csvWrap} showWhitespace={csvSpaces} onchange={text=>updateText(active!.id,text)}/></div></div>
       {:else}<CsvTable bind:this={csv} doc={active} onchange={doc=>merge(doc)} onerror={error} onstatus={value=>status=value} onreport={openStatisticsReport}/>{/if}
      {:else}
       <div class="document-tools"><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div>{#if active.kind==='markdown'&&mode!=='preview'}<MarkdownToolbar readonly={editingLocked} formatState={markdownState} onformat={(action,language)=>editor?.format(action,language)}/>{/if}<span class="spacer"></span><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> Buscar</button>{#if active.kind==='markdown'}<button class="text-button" class:active={indexVisible} aria-pressed={indexVisible} onclick={toggleIndex}><Icon name="table-of-contents" size={14}/> Índice</button>{/if}</div>
@@ -266,6 +281,7 @@
   </main>
  </div>
  <footer class="statusbar"><span class="status-dot"></span><span class="truncate">{status}</span>{#if opening}<span role="status">{opening.phase}</span><button onclick={cancelOpening}>Cancelar apertura</button>{/if}<span class="spacer"></span><div id="document-status"></div>{#if active&&(active.kind==='markdown'||active.kind==='text')}<TextStats id={active.id} name={active.name} text={active.text??''} markdown={active.kind==='markdown'} partial={active.readonly} selection={textSelection}/>{/if}{#if active}{#if csvText&&csvTextInfo}<span role="status" aria-label={t('csvText.format')} aria-live="polite">{t(`csvText.encoding.${active.encoding}`)} · {t(`csvText.eol.${csvTextInfo.eol}`)} · {plural('csvText.lines',csvTextInfo.lines)}</span>{:else if active.kind!=='csv'}<span>{active.encoding.toUpperCase()}</span>{/if}<span>{active.readonly?'Solo lectura':!active.path?'Sin guardar':active.dirty?'Cambios pendientes':'Guardado'}</span>{/if}<span>Local</span></footer>
+ {#if csvChange}<CsvViewDialog name={csvChange.name} busy={csvChange.busy} message={csvChange.message} onchoose={decision=>void resolveCsvChange(decision)}/>{/if}
  {#if csvFileMenu}<CsvFileMenu path={csvFileMenu.path} x={csvFileMenu.x} y={csvFileMenu.y} onopen={(path,view)=>void chooseCsvView(view,path)} onclose={closeCsvContext} onerror={error}/>{/if}
  {#if toast}<div class="toast {toastKind}" role="status"><Icon name={toastKind==='error'?'triangle-alert':'circle-check'} size={16}/><span>{toast}</span><button onclick={()=>toast=''} aria-label="Cerrar aviso"><Icon name="x" size={14}/></button></div>{/if}
  {#if about}<div class="modal-backdrop" role="presentation"><div class="modal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="about-title"><img class="brand-mark" src={appIcon} alt=""/><h2 id="about-title">FreyaLab</h2><p>Documentos, tablas y diagramas.<br/>Una herramienta local, de código abierto.</p><p>Para Freya. 🐾</p><p class="muted">v0.1.0-alpha.1 · Licencia MIT</p><button class="primary" onclick={()=>about=false}>Cerrar</button></div></div>{/if}
