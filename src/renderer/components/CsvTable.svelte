@@ -352,7 +352,7 @@
  // También sirve a comandos/accesibilidad que activan Texto sin trasladar el foco.
  export async function flushEditing(){
   const waiting=await pendingEdit;if(waiting)throw new Error(waiting)
-  const focused=document.activeElement,input=editing?scrollElement?.querySelector<HTMLInputElement>('.cell-input'):editingHeader&&focused instanceof HTMLInputElement&&scrollElement?.contains(focused)?focused:null
+  const input=editing?scrollElement?.querySelector<HTMLInputElement>('.cell-input'):editingHeader?scrollElement?.querySelector<HTMLInputElement>('.column-filter:not([data-column-filter])'):null
   if(input){input.focus({preventScroll:true});input.blur();const failure=await pendingEdit;if(failure)throw new Error(failure)}
  }
  export function exportOptions(scope:'all'|'filtered'|'selection'='all'):TableExport{
