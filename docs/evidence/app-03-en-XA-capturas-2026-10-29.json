@@ -1,0 +1,29 @@
+{
+  "scope": "General de Ajustes en en-XA: foco, overflow, geometr\u00eda y contraste >=4.5 verificados por el E2E; inspecci\u00f3n visual de las dos capturas720x600",
+  "captures": [
+    {
+      "file": "docs/evidence/app-03-en-XA-dark-1440x900-general-2026-10-29.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "3b3415da3f10a92e9808e12ccbf290dda51bc0dff103bca60656821d8412e0ee"
+    },
+    {
+      "file": "docs/evidence/app-03-en-XA-dark-720x600-general-2026-10-29.png",
+      "width": 720,
+      "height": 600,
+      "sha256": "d4964197cade189cf3b2cd837dc6af843d0f9c99b021c7e9ec7903b004ff809f"
+    },
+    {
+      "file": "docs/evidence/app-03-en-XA-light-1440x900-general-2026-10-29.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "be87ae2dffb6ee2c78e54c78b3c0e02d66fa2b1f0675778297b3ab44c89d3e2f"
+    },
+    {
+      "file": "docs/evidence/app-03-en-XA-light-720x600-general-2026-10-29.png",
+      "width": 720,
+      "height": 600,
+      "sha256": "6e04c02fc29d07b193005e555330e63e801f397af1fe5370f6a4e7642c56f1d4"
+    }
+  ]
+}

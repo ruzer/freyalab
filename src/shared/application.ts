@@ -10,3 +10,7 @@ export function formatApplicationShortcut(accelerator:string,platform:string):st
  const mac=platform==='darwin',tokens:Record<string,string>={CommandOrControl:mac?'⌘':'Ctrl',Command:mac?'⌘':'Cmd',Control:mac?'⌃':'Ctrl',Alt:mac?'⌥':'Alt',Shift:mac?'⇧':'Shift',Plus:'+'}
  return accelerator.split('+').map(token=>tokens[token]??token).join(mac?'':'+')
 }
+
+export const closePrepareCommand='app.prepareClose' as const
+export const closeAbortCommand='app.closeAborted' as const
+export interface ApplicationCloseHandlers {prepare:()=>Promise<boolean>;aborted:()=>void}

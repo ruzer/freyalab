@@ -32,6 +32,22 @@ test('APP-04 U1/U2 · sesión sin red y las tres entradas abren el mismo flujo',
  expect(requests).toBe(3);expect((await page.evaluate(()=>window.freya.documents()))[0].text).toBe('DOCUMENTO_SIN_CAMBIOS_POR_ACTUALIZAR')
 })
 
+test('APP-04 consumidor del cierre · el diálogo abierto bloquea X sin descartar el documento ni abortar la búsqueda',async()=>{
+ const path=join(folder,'conservado.md'),original='# Original conservado\n',draft='# Borrador conservado\n';await writeFile(path,original)
+ const[document]=await page.evaluate(path=>window.freya.openPaths([path]),path);await page.locator('.cm-content').fill(draft)
+ await expect.poll(()=>page.evaluate(async id=>(await window.freya.documents()).find(document=>document.id===id)?.text,document.id)).toBe(draft)
+ await app!.evaluate(({dialog})=>{const state=globalThis as typeof globalThis&{__updatesCloseQuestions?:number};state.__updatesCloseQuestions=0;Object.defineProperty(dialog,'showMessageBox',{configurable:true,value:async()=>{state.__updatesCloseQuestions!++;return{response:1,checkboxChecked:false}}})})
+ mode='held';await runApplicationMenu(app!,'app.updates');await expect(updateDialog().getByRole('heading',{name:'Buscando…',exact:true})).toBeVisible();await expect.poll(()=>held.length).toBe(1)
+ const cancel=updateDialog().getByRole('button',{name:'Cancelar',exact:true});await cancel.focus()
+ const owner=await app!.evaluate(({BrowserWindow})=>{const owner=BrowserWindow.getAllWindows()[0];owner.close();return owner.id})
+ await expect(updateDialog().getByRole('alert')).toContainText('Cierra el diálogo abierto');await expect(cancel).toBeFocused();expect(page.isClosed()).toBe(false)
+ expect(await app!.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows().map(window=>window.id))).toEqual([owner])
+ expect(await app!.evaluate(()=>(globalThis as typeof globalThis&{__updatesCloseQuestions?:number}).__updatesCloseQuestions)).toBe(0)
+ expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===document.id)).toMatchObject({dirty:true,text:draft});expect(await readFile(path,'utf8')).toBe(original)
+ held.splice(0).forEach(response=>response.end(JSON.stringify([release])))
+ await expect(updateDialog().getByRole('heading',{name:'Hay una versión nueva',exact:true})).toBeVisible();expect(requests).toBe(1)
+})
+
 test('APP-04 U1/U7/U9/U15 · estados, enlaces limitados, reintentar y Esc cancela',async()=>{
  mode='held';await runApplicationMenu(app!,'app.updates');await expect(updateDialog().getByRole('heading',{name:'Buscando…',exact:true})).toBeVisible();await page.keyboard.press('Escape');await expect(updateDialog()).toHaveCount(0)
  mode='error';await runApplicationMenu(app!,'app.updates');await expect(updateDialog().getByRole('heading',{name:'No se pudo comprobar',exact:true})).toBeVisible();mode='current';await updateDialog().getByRole('button',{name:'Reintentar',exact:true}).click();await expect(updateDialog().getByRole('heading',{name:'Estás al día',exact:true})).toBeVisible();await updateDialog().getByRole('button',{name:'Cerrar',exact:true}).click()
