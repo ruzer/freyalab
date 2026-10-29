@@ -157,7 +157,7 @@
  async function openPath(path:string){await action(async()=>{for(const doc of await window.freya.openPaths([path]))merge(doc,true)})}
  async function finishCsvView(doc:DocumentInfo){merge(doc,true);notify(t('csvText.viewAnnouncement',{view:t(doc.csvView==='text'?'csvText.text':'csvText.table')}));await tick();document.querySelector<HTMLButtonElement>('[data-csv-view] button[aria-pressed="true"]')?.focus()}
  async function chooseCsvView(view:CsvView,path?:string){await action(async()=>{
-  const existing=path?documents.find(doc=>doc.path===path):active;if(existing)await pending.get(existing.id)
+  const existing=path?documents.find(doc=>doc.path===path):active;if(existing?.id===active?.id&&existing&&isTableDocument(existing))await csv?.flushEditing();if(existing)await pending.get(existing.id)
   const current=existing?documents.find(doc=>doc.id===existing.id):undefined
   if(current?.dirty&&(current.csvView??'table')!==view){csvChange={id:current.id,name:current.name,view,busy:false,message:''};return}
   const doc=current?await window.freya.csvView(current.id,view):await window.freya.csvOpen(path!,view);await finishCsvView(doc)

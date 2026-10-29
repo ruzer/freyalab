@@ -330,7 +330,9 @@
   rangeDialog={documentScope:true,edit:{type:'range',operation:'replace',find:replaceFind,value:replaceWith,range:{top:0,bottom:doc.rowCount-1,left,right,revision:doc.revision,query:{offset:0,limit:200,requestId:0}}}}
  }
  function update(updated:DocumentInfo){if(updated.headers?.length!==doc.headers?.length){filters={};sort=undefined;conditions=[];order=[];showQuery=false;selectedColumns=[]}onchange(updated)}
- async function edit(change:TableEdit){if(locked)return 'La vista no permite editar.';try{update(await window.freya.tableEdit(doc.id,$state.snapshot(change)));editing=null;await load(pageOffset);await stats();return null}catch(error){const message=String(error).replace(/^.*Error: /,'');onerror(message);return message}}
+ let pendingEdit:Promise<string|null>|null=null
+ function edit(change:TableEdit){const task=editNow(change);pendingEdit=task;void task.finally(()=>{if(pendingEdit===task)pendingEdit=null}).catch(()=>{});return task}
+ async function editNow(change:TableEdit){if(locked)return 'La vista no permite editar.';try{update(await window.freya.tableEdit(doc.id,$state.snapshot(change)));editing=null;await load(pageOffset);await stats();return null}catch(error){const message=String(error).replace(/^.*Error: /,'');onerror(message);return message}}
  async function stats(){if(large||!selectedRows.length){selectionStats=null;return}try{selectionStats=await window.freya.stats(doc.id,$state.snapshot(selectedRows),selectedColumns.length?$state.snapshot(selectedColumns):(doc.headers??[]).map((_,i)=>i))}catch(error){onerror(String(error))}}
  function selectRow(id:string,add:boolean){selection=null;context=null;selectedRows=add?(selectedRows.includes(id)?selectedRows.filter(x=>x!==id):[...selectedRows,id]):[id];void stats()}
  function selectColumn(index:number,replace=false){selection=null;context=null;selectedColumns=replace?[index]:selectedColumns.includes(index)?selectedColumns.filter(x=>x!==index):[...selectedColumns,index];void stats()}
@@ -346,6 +348,12 @@
  const openMenus=()=>document.querySelectorAll<HTMLDetailsElement>('.csv-toolbar details[open],.statusbar details[open]')
  function closeMenus(target?:Node){for(const menu of openMenus())if(!target||!menu.contains(target))menu.removeAttribute('open')}
  function closeMenu(event:KeyboardEvent){if(event.key!=='Escape')return false;const menu=openMenus()[0];if(!menu)return false;event.preventDefault();menu.removeAttribute('open');menu.querySelector('summary')?.focus();return true}
+ // También sirve a comandos/accesibilidad que activan Texto sin trasladar el foco.
+ export async function flushEditing(){
+  const waiting=await pendingEdit;if(waiting)throw new Error(waiting)
+  const focused=document.activeElement,input=editing?scrollElement?.querySelector<HTMLInputElement>('.cell-input'):editingHeader&&focused instanceof HTMLInputElement&&scrollElement?.contains(focused)?focused:null
+  if(input){input.focus({preventScroll:true});input.blur();const failure=await pendingEdit;if(failure)throw new Error(failure)}
+ }
  export function exportOptions(scope:'all'|'filtered'|'selection'='all'):TableExport{
   return{scope,range:scope==='selection'&&cellRange?$state.snapshot(cellRange):undefined,query:query(),rowIds:scope==='selection'?$state.snapshot(selectedRows):undefined,columns:scope==='selection'&&selectedColumns.length?$state.snapshot(selectedColumns):undefined}
  }
