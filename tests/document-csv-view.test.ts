@@ -103,3 +103,11 @@ it.each([
 it('C: Guardar una Tabla y cambiar a Texto usa su serializador real',async()=>{
  const doc=await docs.open(path,'table');await docs.tableEdit(doc.id,{type:'cell',rowId:'1',column:1,value:'Desde tabla'});const expected=await docs.table.call<Buffer>('serialize',doc.id);const changed=await docs.setCsvView(doc.id,'text','save');expect(changed).toMatchObject({id:doc.id,csvView:'text',dirty:false,text:expected.toString('utf8')});expect(await readFile(path)).toEqual(expected);expect(changed.text).toContain('001,Desde tabla');expect(changed.text).toContain('9007199254740993');expect(docs.records.size).toBe(1)
 })
+
+it.each(['utf16le','win1252'] as const)('X9/X13: permite editar y guardar menos de 10 MiB reales en %s aunque UTF-8 sea mayor',async encoding=>{
+ const iconv=(await import('iconv-lite')).default,raw='ID,Nombre\n00123,'+(encoding==='utf16le'?'中'.repeat(4*1024*1024):'é'.repeat(6*1024*1024))+'\n',prefix=encoding==='utf16le'?Buffer.from([0xff,0xfe]):Buffer.alloc(0),bytes=Buffer.concat([prefix,iconv.encode(raw,encoding)]);expect(bytes.length).toBeLessThan(10*1024*1024);expect(Buffer.byteLength(raw)).toBeGreaterThan(10*1024*1024);await writeFile(path,bytes);const doc=await docs.open(path,'text');expect(doc).toMatchObject({encoding,readonly:false,csvView:'text'});const edited=raw.replace('00123','00124');await docs.update(doc.id,edited);await docs.save(doc.id);expect((await readFile(path)).equals(Buffer.concat([prefix,iconv.encode(edited,encoding)]))).toBe(true)
+})
+
+it.each(['utf8','utf16le'] as const)('X13: cuenta el BOM en el límite exacto de 10 MiB de %s',async encoding=>{
+ const prefix=encoding==='utf8'?Buffer.from([0xef,0xbb,0xbf]):Buffer.from([0xff,0xfe]),bytes=Buffer.concat([prefix,Buffer.from('ID,Nombre\n1,Ana\n',encoding)]);await writeFile(path,bytes);const doc=await docs.open(path,'text'),exact='x'.repeat((10*1024*1024-prefix.length)/(encoding==='utf16le'?2:1));await docs.update(doc.id,exact);await expect(docs.update(doc.id,exact+'x')).rejects.toThrow(/10 MiB/);expect(docs.info(doc.id).text).toBe(exact);expect(await readFile(path)).toEqual(bytes)
+})

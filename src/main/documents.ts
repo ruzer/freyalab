@@ -12,7 +12,7 @@ import { atomicWrite, contained, digest } from './files'
 import type {DocumentAssets} from './document-assets'
 import { TableClient } from './table-client'
 import {CsvViewStore} from './csv-view-store'
-import {decodeCsvText,encodeCsvText,type CsvTextFormat} from './csv-text-codec'
+import {decodeCsvText,encodeCsvText,csvTextByteLength,type CsvTextFormat} from './csv-text-codec'
 import {isCsvTextFormat} from '../shared/csv-text'
 import {csvOpenError} from './csv-open-error'
 import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type CsvViewDecision,type AppEvent,type DocumentInfo,type Kind,type RecoveryEntry,type TableOptions,type TableEdit,type TableExport,type TreeEntry} from '../shared/types'
@@ -81,7 +81,7 @@ export class Documents {
  info(id:string){const r=this.get(id);return {...r.info,...(!isTableDocument(r.info)?{text:r.text}:{})}}
  async syncTable(id:string){const r=this.get(id);Object.assign(r.info,await this.table.call('info',id));return this.info(id)}
  async update(id:string,text:string){this.rejectDuringReload(id);return this.serial(id,()=>this.updateNow(id,text))}
- private async updateNow(id:string,text:string){const r=this.get(id);if(r.info.readonly||isTableDocument(r.info))throw new Error('El documento no permite edición de texto.');if(Buffer.byteLength(text)>10*1024*1024)throw new Error('El documento supera el límite de edición de 10 MiB.');if(text!==r.text){r.undo.push(r.text);while(r.undo.length>1&&(r.undo.length>100||r.undo.reduce((n,t)=>n+Buffer.byteLength(t),0)>20*1024*1024))r.undo.shift();r.redo=[];r.text=text;r.info.dirty=true;r.info.revision++;this.schedule(id)}return this.info(id)}
+ private async updateNow(id:string,text:string){const r=this.get(id);if(r.info.readonly||isTableDocument(r.info))throw new Error('El documento no permite edición de texto.');if((r.info.kind==='csv'&&r.info.csvView==='text'&&r.csvTextFormat?csvTextByteLength(text,r.csvTextFormat):Buffer.byteLength(text))>10*1024*1024)throw new Error('El documento supera el límite de edición de 10 MiB.');if(text!==r.text){r.undo.push(r.text);while(r.undo.length>1&&(r.undo.length>100||r.undo.reduce((n,t)=>n+Buffer.byteLength(t),0)>20*1024*1024))r.undo.shift();r.redo=[];r.text=text;r.info.dirty=true;r.info.revision++;this.schedule(id)}return this.info(id)}
  schedule(id:string){const r=this.get(id);clearTimeout(r.timer);r.timer=setTimeout(()=>{this.checkpoint(id).catch(e=>this.emit({type:'error',message:`No se pudo guardar recuperación: ${(e as Error).message}`}))},2000)}
  checkpoint(id:string):Promise<void>{const pending=this.recoveryTasks.get(id);if(pending)return pending;const task=this.checkpointNow(id).finally(()=>this.recoveryTasks.delete(id));this.recoveryTasks.set(id,task);return task}
  private async checkpointNow(id:string){const r=this.get(id);if(!r.info.dirty||r.info.readonly)return;await mkdir(this.recoveryDir,{recursive:true,mode:0o700});const revision=r.info.revision;const data=isTableDocument(r.info)?await this.table.call<string>('checkpoint',id,{...r.info}):JSON.stringify({version:1,info:r.info,savedAt:new Date().toISOString(),snapshot:{text:r.text,...(r.csvTextFormat?{format:r.csvTextFormat}:{})}});await atomicWrite(join(this.recoveryDir,`${id}.json`),data);if(revision!==r.info.revision)this.schedule(id)}

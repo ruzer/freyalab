@@ -25,6 +25,9 @@ export function decodeCsvText(bytes:Buffer):{text:string;format:CsvTextFormat;re
  return{text,format,readonly,...(readonly?{warning:t('csvText.codec.lossyWarning')}:{})}
 }
 
+// Cuenta en el formato original; representar cada carácter se valida al guardar.
+export function csvTextByteLength(text:string,format:CsvTextFormat){return withBom(iconv.encode(text,format.encoding,{addBOM:false}),format).length}
+
 export function encodeCsvText(text:string,format:CsvTextFormat):Buffer{
  const body=iconv.encode(text,format.encoding,{addBOM:false}),decoded=iconv.decode(body,format.encoding,{stripBOM:false})
  const substituted=format.encoding==='win1252'?text.indexOf('\uFFFD'):-1
