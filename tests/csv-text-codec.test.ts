@@ -49,7 +49,8 @@ it.each([0x81,0x8d,0x8f,0x90,0x9d])('abre el byte Windows-1252 indefinido %i en 
 
 it('detecta con el mismo prefijo y permite una secuencia UTF-8 incompleta al borde del prefijo',()=>{
  const prefix=1024*1024+4,bytes=Buffer.concat([Buffer.alloc(prefix-1,0x61),Buffer.from('€\n')]),decoded=decodeCsvText(bytes)
- expect(decoded.format).toEqual({encoding:'utf8',bom:false});expect(decoded.readonly).toBe(false);expect(encodeCsvText(decoded.text,decoded.format)).toEqual(bytes)
+ // Buffer.equals compara todos los bytes sin enumerar un millón de propiedades en el matcher.
+ expect(decoded.format).toEqual({encoding:'utf8',bom:false});expect(decoded.readonly).toBe(false);expect(encodeCsvText(decoded.text,decoded.format).equals(bytes)).toBe(true)
 })
 
 it('no cambia a Windows-1252 por bytes inválidos posteriores al prefijo; protege el original',()=>{
