@@ -7,6 +7,7 @@ vi.mock('electron',()=>({app:{getPath:()=>state.folder},dialog:{},BrowserWindow:
 vi.mock('chokidar',()=>({watch:()=>{const watcher={on:()=>watcher,close:async()=>{}};return watcher}}))
 vi.mock('../src/main/table-client',async()=>{const {TableEngine}=await import('../src/main/table-engine');return{TableClient:class{engine=new TableEngine();async call(method:string,...args:unknown[]){state.calls.push(method);if(method==='checkpoint')return JSON.stringify({version:1,info:args[1],savedAt:new Date().toISOString(),snapshot:await this.engine.snapshot(String(args[0]))});return(this.engine as unknown as Record<string,(...values:unknown[])=>unknown>)[method](...args)}stop(){}}}})
 import {Documents} from '../src/main/documents'
+import {isTextEditLimitError,visibleEditError} from '../src/shared/text-edit-error'
 let docs:Documents,path:string
 const source='ID,Nombre\n"001","Ana"\n9007199254740993,"dos\nlíneas"\n'
 beforeEach(async()=>{state.folder=await realpath(await mkdtemp(join(tmpdir(),'freya-csv-text-')));path=join(state.folder,'datos.csv');await writeFile(path,source);state.calls=[];docs=new Documents(()=>{})})
@@ -109,5 +110,5 @@ it.each(['utf16le','win1252'] as const)('X9/X13: permite editar y guardar menos 
 })
 
 it.each(['utf8','utf16le'] as const)('X13: cuenta el BOM en el límite exacto de 10 MiB de %s',async encoding=>{
- const prefix=encoding==='utf8'?Buffer.from([0xef,0xbb,0xbf]):Buffer.from([0xff,0xfe]),bytes=Buffer.concat([prefix,Buffer.from('ID,Nombre\n1,Ana\n',encoding)]);await writeFile(path,bytes);const doc=await docs.open(path,'text'),exact='x'.repeat((10*1024*1024-prefix.length)/(encoding==='utf16le'?2:1));await docs.update(doc.id,exact);await expect(docs.update(doc.id,exact+'x')).rejects.toThrow(/10 MiB/);expect(docs.info(doc.id).text).toBe(exact);expect(await readFile(path)).toEqual(bytes)
+ const prefix=encoding==='utf8'?Buffer.from([0xef,0xbb,0xbf]):Buffer.from([0xff,0xfe]),bytes=Buffer.concat([prefix,Buffer.from('ID,Nombre\n1,Ana\n',encoding)]);await writeFile(path,bytes);const doc=await docs.open(path,'text'),exact='x'.repeat((10*1024*1024-prefix.length)/(encoding==='utf16le'?2:1));await docs.update(doc.id,exact);const before=docs.info(doc.id),rejected=docs.update(doc.id,exact+'x');await expect(rejected).rejects.toThrow(/10 MiB/);const failure=await rejected.catch(error=>error);expect(isTextEditLimitError(failure)).toBe(true);expect(visibleEditError(failure.message)).toBe('El documento supera el límite de edición de 10 MiB.');expect(docs.info(doc.id)).toEqual(before);expect(docs.info(doc.id).text).toBe(exact);expect(await readFile(path)).toEqual(bytes)
 })

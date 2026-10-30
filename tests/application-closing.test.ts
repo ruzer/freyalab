@@ -1,5 +1,5 @@
 import {afterEach,beforeEach,expect,it,vi,type Mock} from 'vitest'
-import {setLanguage} from '../src/shared/i18n'
+import {setLanguage,t} from '../src/shared/i18n'
 import {ApplicationClosing,type ClosingSnapshot,type ClosingNotice} from '../src/renderer/lib/application-closing'
 const document={id:'12345678-1234-4234-8234-123456789abc',name:'datos.csv',kind:'csv' as const,csvView:'text' as const,text:'A\n00123\n',readonly:false}
 let snapshot:ClosingSnapshot,locked:Mock<(value:boolean)=>void>,notice:Mock<(value:ClosingNotice|null)=>void>,prepare:Mock<(id:string)=>Promise<void>>,flow:ApplicationClosing
@@ -20,6 +20,16 @@ it('acepta el límite exacto y no convierte valores ni contenido',async()=>{
 })
 it('el error de una actualización se explica sin exponer detalle técnico ni guardar anterior',async()=>{
  prepare.mockRejectedValue(new Error('RAW_ERROR_PRIVATE'));expect(await flow.prepare()).toBe(false);expect(locked).toHaveBeenLastCalledWith(false);const message=notice.mock.calls.at(-1)![0]!.message as string;expect(message).toContain('datos.csv');expect(message).not.toContain('RAW_ERROR_PRIVATE');expect(snapshot.documents[0].text).toBe(document.text)
+})
+for(const locale of ['en','en-XA'] as const)it(`S4: el código del límite conserva el aviso específico con mensaje no español en ${locale}`,async()=>{
+ setLanguage(locale);prepare.mockRejectedValue(new Error('[freya:TEXT_EDIT_LIMIT] Encoded buffer rejected; keep the local draft.'))
+ expect(await flow.prepare()).toBe(false);expect(prepare).toHaveBeenCalledExactlyOnceWith(document.id);expect(locked).toHaveBeenLastCalledWith(false)
+ expect(notice).toHaveBeenLastCalledWith({kind:'error',message:t('menu.close.textTooLarge',{name:document.name})});expect(snapshot.documents[0].text).toBe(document.text)
+})
+for(const locale of ['en','en-XA'] as const)it(`S4: una frase española sin código no clasifica el rechazo en ${locale}`,async()=>{
+ setLanguage(locale);prepare.mockRejectedValue(new Error('El documento supera el límite de edición de 10 MiB.'))
+ expect(await flow.prepare()).toBe(false);expect(prepare).toHaveBeenCalledExactlyOnceWith(document.id);expect(locked).toHaveBeenLastCalledWith(false)
+ expect(notice).toHaveBeenLastCalledWith({kind:'error',message:t('menu.close.updateFailed',{name:document.name})});expect(snapshot.documents[0].text).toBe(document.text)
 })
 it('anuncia progreso al cumplir1s, una sola vez, con reloj controlado',async()=>{
  vi.useFakeTimers();const wait=deferred();prepare.mockReturnValue(wait.promise);const result=flow.prepare();await vi.advanceTimersByTimeAsync(999);expect(notice.mock.calls.filter(([value])=>value?.kind==='progress')).toHaveLength(0)

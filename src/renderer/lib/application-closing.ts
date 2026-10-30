@@ -1,5 +1,6 @@
 import {t} from '../../shared/i18n'
 import {isTableDocument,type DocumentInfo} from '../../shared/types'
+import {isTextEditLimitError} from '../../shared/text-edit-error'
 export type ClosingNotice={kind:'progress'|'error'|'notice';message:string}
 type ClosingDocument=Pick<DocumentInfo,'id'|'name'|'kind'|'csvView'|'text'|'readonly'>
 export interface ClosingSnapshot {documents:ClosingDocument[];activeId:string;busy:boolean;modal:boolean;composing:boolean}
@@ -31,7 +32,7 @@ export class ApplicationClosing {
    if(current.activeId!==snapshot.activeId||current.documents.length!==ids.length||ids.some((id,index)=>current.documents[index]?.id!==id))return reject('menu.close.changed')
    return generation===this.generation
   }catch(error){
-   const sizeRejected=preparing?.kind==='csv'&&preparing.csvView==='text'&&/supera el límite de edición de 10 MiB/.test(error instanceof Error?error.message:String(error))
+   const sizeRejected=preparing?.kind==='csv'&&preparing.csvView==='text'&&isTextEditLimitError(error)
    return reject(sizeRejected?'menu.close.textTooLarge':'menu.close.updateFailed',preparing?.name)
   }
  }
