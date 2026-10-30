@@ -1,0 +1,74 @@
+diff --git a/tests/diagram-concurrency.test.ts b/tests/diagram-concurrency.test.ts
+index d386a06..915a555 100644
+--- a/tests/diagram-concurrency.test.ts
++++ b/tests/diagram-concurrency.test.ts
+@@ -1,12 +1,18 @@
+-import {beforeEach,describe,expect,it,vi} from 'vitest'
++import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest'
+ 
+-const engine=vi.hoisted(()=>({theme:'default',renders:[] as {source:string;theme:string}[],initializations:[] as Record<string,unknown>[],parses:0,fail:false}))
+-vi.mock('mermaid',()=>({default:{
++const engine=vi.hoisted(()=>({theme:'default',renders:[] as {source:string;theme:string}[],initializations:[] as Record<string,unknown>[],parses:0,fail:false,queue:Promise.resolve(),holdSource:'',release:undefined as undefined|(()=>void),entered:undefined as undefined|((source:string)=>void)}))
++vi.mock('mermaid',()=>{
++ // Mermaid 12.2.0 encola tanto parse como render y espera el trabajo anterior:
++ // dist/mermaid.core.mjs:1613–1670. Un timeout ajeno no libera esa cola interna.
++ function enqueue<T>(run:()=>Promise<T>):Promise<T>{const pending=engine.queue.then(run);engine.queue=pending.then(()=>{},()=>{});return pending}
++ async function hold(source:string){engine.entered?.(source);if(source===engine.holdSource)await new Promise<void>(resolve=>engine.release=resolve)}
++ return{default:{
+  initialize:(config:Record<string,unknown>)=>{engine.theme=String(config.theme);engine.initializations.push(config)},
+  mermaidAPI:{getConfig:()=>({maxTextSize:50_000})},
+- render:async(_id:string,source:string)=>{engine.renders.push({source,theme:engine.theme});return{svg:`<svg>${engine.theme}:${source}</svg>`}},
+- parse:async()=>{engine.parses++;if(engine.fail)throw new Error('Parse error on line 2: falta un cierre')},
+-}}))
++ render:(_id:string,source:string)=>enqueue(async()=>{engine.renders.push({source,theme:engine.theme});await hold(source);return{svg:`<svg>${engine.theme}:${source}</svg>`}}),
++ parse:(source:string)=>enqueue(async()=>{engine.parses++;await hold(source);if(engine.fail)throw new Error('Parse error on line 2: falta un cierre')}),
++ }}
++})
+ vi.mock('dompurify',async original=>{
+  const module=await original<typeof import('dompurify')>()
+  // Conserva la identidad de la factory de Node durante imports concurrentes del runner.
+@@ -14,9 +20,10 @@ vi.mock('dompurify',async original=>{
+  return{default:purify,sanitize:purify.sanitize}
+ })
+ beforeEach(async()=>{
+- vi.resetModules();engine.theme='default';engine.renders=[];engine.initializations=[];engine.parses=0;engine.fail=false
++ vi.resetModules();engine.theme='default';engine.renders=[];engine.initializations=[];engine.parses=0;engine.fail=false;engine.queue=Promise.resolve();engine.holdSource='';engine.release=undefined;engine.entered=undefined
+  expect(typeof(await import('dompurify')).default.sanitize).toBe('function')
+ })
++afterEach(()=>vi.useRealTimers())
+ 
+ describe('A0 R1 · configuración por operación Mermaid',()=>{
+  it('conserva el tema de dos renders claro y oscuro concurrentes',async()=>{
+@@ -38,3 +45,32 @@ describe('A0 R1 · configuración por operación Mermaid',()=>{
+   expect(first).toContain('<svg>default:');expect(engine.renders).toHaveLength(2)
+  })
+ })
++
++describe('SEG-S5a · plazo propuesto y continuidad del motor',()=>{
++ // Propuesta de aceptación, pendiente de decisión de recuperación/aislamiento.
++ // La puerta nunca termina durante la comprobación; finally sólo la libera
++ // para drenar el mock y no dejar trabajo de otro test vivo.
++ for(const operation of ['render','parse'] as const)it(`${operation}: un trabajo retenido se explica al vencer los 30 s propuestos`,async()=>{
++  vi.useFakeTimers();const {diagramSVG,validateDiagram}=await import('../src/renderer/lib/render'),source='flowchart LR\n A[Retenido] --> B[Fin]'
++  engine.holdSource=source;let entered!:()=>void;const started=new Promise<void>(resolve=>entered=resolve);engine.entered=value=>{if(value===source)entered()}
++  const state:{status:'pending'|'fulfilled'|'rejected';error?:unknown}={status:'pending'},request=(operation==='render'?diagramSVG(source,false):validateDiagram(source,false)).then(()=>{state.status='fulfilled'},error=>{state.status='rejected';state.error=error})
++  try{
++   await started;await vi.advanceTimersByTimeAsync(29_999);expect(state.status).toBe('pending')
++   await vi.advanceTimersByTimeAsync(1);expect(state.status).toBe('rejected');expect(state.error).toBeInstanceOf(Error);expect((state.error as Error).message).toMatch(/diagrama|tiempo|tard|plazo/i)
++  }finally{engine.release?.();await request;await engine.queue}
++ })
++ it('el siguiente render debe terminar sin liberar el trabajo anterior ni cambiar su tema',async()=>{
++  vi.useFakeTimers();const {diagramSVG}=await import('../src/renderer/lib/render'),firstSource='flowchart LR\n A[Retenido] --> B[Claro]',nextSource='flowchart LR\n A[Siguiente] --> B[Oscuro]'
++  engine.holdSource=firstSource;let entered!:()=>void;const started=new Promise<void>(resolve=>entered=resolve);engine.entered=value=>{if(value===firstSource)entered()}
++  const first=diagramSVG(firstSource,false).then(()=>{},()=>{}),nextState:{status:'pending'|'fulfilled'|'rejected';svg?:string}={status:'pending'};let next:Promise<void>|undefined
++  try{
++   await started;await vi.advanceTimersByTimeAsync(30_000)
++   next=diagramSVG(nextSource,true).then(svg=>{nextState.status='fulfilled';nextState.svg=svg},()=>{nextState.status='rejected'})
++   await vi.advanceTimersByTimeAsync(0)
++   expect(nextState.status).toBe('fulfilled');expect(nextState.svg).toContain('<svg>dark:');expect(engine.renders.map(item=>item.source)).toEqual([firstSource,nextSource])
++   const result=nextState.svg;engine.release?.();await first;await next;await engine.queue
++   expect(nextState.svg).toBe(result);expect(await diagramSVG(nextSource,true)).toBe(result)
++   for(const config of engine.initializations)expect(config).toMatchObject({securityLevel:'strict',htmlLabels:false,flowchart:{htmlLabels:false}})
++  }finally{engine.release?.();await first;await next;await engine.queue}
++ })
++})

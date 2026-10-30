@@ -32,6 +32,32 @@ test('APP-04 U1/U2 · sesión sin red y las tres entradas abren el mismo flujo',
  expect(requests).toBe(3);expect((await page.evaluate(()=>window.freya.documents()))[0].text).toBe('DOCUMENTO_SIN_CAMBIOS_POR_ACTUALIZAR')
 })
 
+for(const locale of ['es','en'] as const)test(`SEG-S5b · consulta manual con ajustes futuros, resultado y cancelación en ${locale}`,async()=>{
+ await app!.evaluate(({app})=>app.exit(0));await app!.close();app=undefined
+ const settingsPath=join(folder,'profile','settings.json'),future=JSON.stringify({version:2,futureOnlyValue:'CONSERVAR_EL_ARCHIVO_ORIGINAL'},null,2)+'\n';await writeFile(settingsPath,future)
+ await launch(locale);await expect(page.locator('html')).toHaveAttribute('lang',locale);expect(requests).toBe(0)
+ const path=join(folder,'conservado.md'),original='# Documento conservado\n';await writeFile(path,original)
+ const[document]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('tab',{name:'conservado.md',exact:true})).toHaveAttribute('aria-selected','true')
+ const warning=locale==='es'?'No se guardó la fecha de comprobación: los ajustes son de solo lectura.':'The check date was not saved: settings are read-only.'
+ const dialog=()=>page.locator('dialog.update-dialog'),close=locale==='es'?'Cerrar':'Close',outcomes:Record<string,number>={}
+ for(const state of ['available','current','error'] as const){
+  mode=state;const before=requests;await runApplicationMenu(app!,'app.updates');await expect(dialog()).toBeVisible()
+  const title=state==='available'?(locale==='es'?'Hay una versión nueva':'A new version is available'):state==='current'?(locale==='es'?'Estás al día':"You're up to date"):(locale==='es'?'No se pudo comprobar':'Could not check for updates')
+  await expect(dialog().getByRole('heading',{name:title,exact:true})).toBeVisible();await expect(dialog().locator('[data-update-settings-warning]')).toHaveText(warning)
+  expect(requests).toBe(before+1);expect(await readFile(settingsPath,'utf8')).toBe(future);await expect(dialog()).not.toContainText(folder);await expect(dialog()).not.toContainText('lastCheckNotSaved')
+  if(state==='error')await expect(dialog()).toContainText(locale==='es'?'GitHub ha limitado las peticiones':'GitHub has limited requests')
+  outcomes[state]=requests;await dialog().getByRole('button',{name:close,exact:true}).click()
+ }
+ mode='held';await runApplicationMenu(app!,'app.updates');await expect(dialog().getByRole('heading',{name:locale==='es'?'Buscando…':'Checking…',exact:true})).toBeVisible();await expect.poll(()=>held.length).toBe(1);await expect(dialog().locator('[data-update-settings-warning]')).toHaveCount(0)
+ await page.keyboard.press('Escape');await expect(dialog()).toHaveCount(0);await expect(page.locator('[data-update-settings-warning]')).toHaveCount(0)
+ mode='available';await runApplicationMenu(app!,'app.updates');await expect(dialog().getByRole('heading',{name:locale==='es'?'Hay una versión nueva':'A new version is available',exact:true})).toBeVisible();await expect(dialog().locator('[data-update-settings-warning]')).toHaveText(warning)
+ held.splice(0).forEach(response=>response.end(JSON.stringify([release])));await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))))
+ await expect(dialog()).toBeVisible();await expect(dialog().locator('[data-update-settings-warning]')).toHaveText(warning);expect(requests).toBe(5)
+ expect(await readFile(settingsPath,'utf8')).toBe(future);expect(await readFile(path,'utf8')).toBe(original);expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===document.id)).toMatchObject({text:original,dirty:false})
+ await test.info().attach('ajustes-futuros-y-consultas',{body:Buffer.from(JSON.stringify({locale,requests,outcomes,futureSettingsPreserved:true,documentPreserved:true,cancelledDialogStayedClosed:true})),contentType:'application/json'})
+ await dialog().getByRole('button',{name:close,exact:true}).click();await expect(page.getByRole('tab',{name:'conservado.md',exact:true})).toHaveAttribute('aria-selected','true')
+})
+
 test('APP-04 consumidor del cierre · el diálogo abierto bloquea X sin descartar el documento ni abortar la búsqueda',async()=>{
  const path=join(folder,'conservado.md'),original='# Original conservado\n',draft='# Borrador conservado\n';await writeFile(path,original)
  const[document]=await page.evaluate(path=>window.freya.openPaths([path]),path);await page.locator('.cm-content').fill(draft)
