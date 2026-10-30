@@ -4,6 +4,14 @@ on:
     paths:
       - .github/workflows/pandoc-real.yml
       - src/main/pandoc.ts
+      - src/main/export.ts
+      - src/main/bibliography.ts
+      - src/main/report-markdown.ts
+      - src/main/report-reference.ts
+      - src/main/citation-styles.ts
+      - src/main/docx-reference.docx
+      - src/main/docx-reference/**
+      - src/main/csl/**
       - tests/pandoc-real.test.ts
       - package-lock.json
 permissions:
@@ -62,7 +70,7 @@ jobs:
           if ($LASTEXITCODE -ne 0 -or $pandocVersion[0] -ne 'pandoc 3.10.2') { throw 'Versión de Pandoc distinta de 3.10.2' }
           "FREYALAB_PANDOC_TEST_PATH=$pandocExecutable" | Out-File -LiteralPath $env:GITHUB_ENV -Append -Encoding utf8
           @{ sourceSha = (git rev-parse HEAD); runner = '${{ matrix.os }}'; version = $pandocVersion[0]; path = $pandocExecutable; sha256 = $pandocDigest; node = (node --version) } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP 'pandoc-environment.json') -Encoding utf8
-      - name: Ejecutar solamente las seis pruebas P4 existentes sin omisiones
+      - name: Ejecutar las nueve pruebas P4 y del pipeline DOCX sin omisiones
         run: |
           $pandocReport = Join-Path $env:RUNNER_TEMP 'pandoc-real.json'
           $pandocLog = Join-Path $env:RUNNER_TEMP 'pandoc-real.log'
@@ -70,7 +78,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $pandocResults = Get-Content -LiteralPath $pandocReport -Raw | ConvertFrom-Json
           $pandocAssertions = @($pandocResults.testResults | ForEach-Object { $_.assertionResults })
-          if (-not $pandocResults.success -or $pandocAssertions.Count -ne 6 -or @($pandocAssertions | Where-Object { $_.status -ne 'passed' }).Count -ne 0) { throw 'P4 requiere seis pruebas aprobadas y cero omisiones' }
+          if (-not $pandocResults.success -or $pandocAssertions.Count -ne 9 -or @($pandocAssertions | Where-Object { $_.status -ne 'passed' }).Count -ne 0) { throw 'P4 requiere nueve pruebas aprobadas y cero omisiones' }
           $pandocOutput = Get-Content -LiteralPath $pandocLog -Raw
           if (-not $pandocOutput.Contains('AC-00 P4 real:') -or -not $pandocOutput.Contains('"version":"3.10.2"')) { throw 'Falta identidad del Pandoc real ejecutado' }
           if (-not $pandocOutput.Contains('control Pandoc con HTTP: 1 petición')) { throw 'El binario no demuestra el control positivo HTTP requerido' }
