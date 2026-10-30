@@ -84,7 +84,7 @@
  function textOption(action:'wrap'|'spaces'|'line'){if(action==='wrap')csvWrap=!csvWrap;else if(action==='spaces')csvSpaces=!csvSpaces;if(csvOptions)csvOptions.open=false;if(action==='line')editor?.goToLine();else editor?.focus()}
  let csvFileMenu=$state<{path:string;x:number;y:number;origin:HTMLElement}|null>(null)
  let csvChange=$state<{id:string;name:string;view:CsvView;busy:boolean;message:string}|null>(null)
- let csvFailure=$state<CsvOpenIssue|null>(null),csvOpening=$state(false),csvFailureOrigin:HTMLElement|undefined
+ let csvFailure=$state<(CsvOpenIssue&{saved?:boolean})|null>(null),csvOpening=$state(false),csvFailureOrigin:HTMLElement|undefined
  let assetBusy=$state<Record<string,string>>({})
  let assetWarnings=$state<Record<string,string[]>>({})
  let applicationClosing=$state(false),closingNotice=$state<ClosingNotice|null>(null),compositionActive=false
@@ -176,7 +176,7 @@
   const generation=++activationGeneration
   if(activeId===id)return
   const previous=activeId
-  void action(async()=>{
+  return action(async()=>{
    if(previous&&documents.some(document=>document.id===previous))await prepareDocumentAction(previous)
    if(generation!==activationGeneration||activeId!==previous||id&&!documents.some(document=>document.id===id))return
    activeId=id;if(documents.find(document=>document.id===id)?.kind==='markdown'&&nextMarkdownMode!==undefined){mode=nextMarkdownMode;nextMarkdownMode=undefined}diagramCandidates=undefined;diagnostics=undefined;headings=[];headingDocument='';previewHeading=undefined;headingsSource='';editorSource='';editorHeadings=[];editorLine=0;editorDocument=''
@@ -232,17 +232,25 @@
   const id=path?(await window.freya.csvViewInfo(path)).id:active?.id,existing=documents.find(doc=>doc.id===id);if(existing?.id===active?.id&&existing&&isTableDocument(existing))await csv?.flushEditing();if(existing)await pending.get(existing.id)
   const current=existing?documents.find(doc=>doc.id===existing.id):undefined
   if(current?.dirty&&(current.csvView??'table')!==view){csvChange={id:current.id,name:current.name,view,busy:false,message:''};return}
+  clearCsvError()
   const doc=current?await window.freya.csvView(current.id,view):await window.freya.csvOpen(path!,view);await finishCsvView(doc)
  })}
  async function resolveCsvChange(decision:CsvViewDecision|'cancel'){
   const request=csvChange;if(!request||request.busy)return
   if(decision==='cancel'){csvChange=null;await tick();document.querySelector<HTMLButtonElement>('[data-csv-view] button[aria-pressed="true"]')?.focus();return}
   csvChange={...request,busy:true,message:''}
+  clearCsvError()
   try{await pending.get(request.id);const doc=await window.freya.csvView(request.id,request.view,decision);csvChange=null;await finishCsvView(doc)}
-  catch(error){csvChange={...request,busy:false,message:error instanceof Error?error.message:String(error)}}
+  catch(error){
+   const document=await window.freya.documents().then(values=>values.find(value=>value.id===request.id),()=>undefined)
+   if(document)merge(document)
+   if(decision==='save'&&document?.csvView==='text'&&!document.dirty&&csvFailure?.path===document.path){csvFailure={...csvFailure,saved:true};csvChange=null;await activate(document.id);await tick();if(activeId===document.id)editor?.focus();return}
+   csvChange={...request,busy:false,message:error instanceof Error?error.message:String(error)}
+  }
  }
+ function clearCsvError(){csvFailure=null}
  function receiveCsvError(issue:CsvOpenIssue){csvFailureOrigin=document.activeElement instanceof HTMLElement?document.activeElement:undefined;csvFailure=issue;opening=null;if(toast===issue.message)toast=''}
- async function dismissCsvError(){csvFailure=null;await tick();if(csvFailureOrigin?.isConnected)csvFailureOrigin.focus();else document.querySelector<HTMLButtonElement>('.tabs [role="tab"][aria-selected="true"]')?.focus()}
+ async function dismissCsvError(){clearCsvError();await tick();if(csvFailureOrigin?.isConnected)csvFailureOrigin.focus();else document.querySelector<HTMLButtonElement>('.tabs [role="tab"][aria-selected="true"]')?.focus()}
  async function openFailedCsv(){
   const issue=csvFailure;if(!issue||csvOpening)return
   csvOpening=true
@@ -451,7 +459,7 @@
    <div class="sidebar-bottom"><img class="brand-mark small" src={appIcon} alt=""/><button class="text-button" aria-label={t('about.title')} onclick={()=>appDialog='about'}>{t('about.product')}</button><span class="spacer"></span><select aria-label="Tema" value={theme} onchange={e=>themeChange(e.currentTarget.value)}><option value="system">Sistema</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></div>
   </aside><button class="resize-handle sidebar-handle" aria-valuenow={sidebarWidth} aria-valuemin="180" aria-valuemax="420" role="slider" aria-label="Ancho del explorador" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSidebar} onkeydown={e=>{if(e.key==='ArrowRight')sidebarWidth=Math.min(420,sidebarWidth+10);if(e.key==='ArrowLeft')sidebarWidth=Math.max(180,sidebarWidth-10);if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();remember({barraLateral:{ancho:sidebarWidth}})}}}></button>{/if}
   <main class="main-area">
-   {#if csvFailure}<CsvOpenError issue={csvFailure} busy={csvOpening} onopen={()=>void openFailedCsv()} onclose={()=>void dismissCsvError()}/>{/if}
+   {#if csvFailure&&!csvChange}<CsvOpenError issue={csvFailure} saved={csvFailure.saved} textOpen={documents.some(document=>document.path===csvFailure?.path&&document.csvView==='text')} busy={csvOpening} onopen={()=>void openFailedCsv()} onclose={()=>void dismissCsvError()}/>{/if}
    {#if documents.length}<div class="tabs" role="tablist" aria-label="Documentos abiertos">{#each documents as doc (doc.id)}<div class="tab" class:active={activeId===doc.id}><button role="tab" aria-selected={activeId===doc.id} onclick={()=>activate(doc.id)} title={doc.path??doc.name}><span class="tab-icon kind-{doc.kind}"><Icon name={kindIcon[doc.kind]} size={14}/></span>{doc.name}{#if doc.dirty}<span class="dirty-dot">●</span>{/if}</button><button class="tab-close" aria-label={`Cerrar ${doc.name}`} onclick={()=>close(doc.id)}><Icon name="x" size={14}/></button></div>{/each}</div>{/if}
    {#if active}
     {#if external.includes(active.id)}<div class="warning-banner external-banner"><span>Este archivo cambió fuera de FreyaLab.</span><button onclick={()=>reload(active!.id)}>Recargar</button><button onclick={()=>save(true)}>Guardar copia</button><button onclick={()=>external=external.filter(value=>value!==active!.id)}>Conservar mi edición</button></div>{/if}
