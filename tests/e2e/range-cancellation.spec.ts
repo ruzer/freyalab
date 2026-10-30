@@ -34,7 +34,7 @@ test('rangos: cancelar trabajo iniciado, rechazar edición en cola y validar req
  const invalid=await page.evaluate(async doc=>{try{await window.freya.rangePreview(doc.id,{type:'range',requestId:'no-es-uuid',operation:'clear',range:{top:0,bottom:1,left:0,right:1,query:{offset:0,limit:100,requestId:1},revision:doc.revision}});return false}catch{return true}},doc);expect(invalid).toBe(true);expect(await readFile(path,'utf8')).toBe(source)
 })
 
-test('rangos: cancelar o cerrar durante copiar impide el borrado; espera la respuesta y conserva el portapapeles válido',async()=>{
+test('rangos: cancelar o cerrar durante copiar impide el borrado; espera la respuesta y conserva el portapapeles válido',{tag:'@solo'},async()=>{
  const source='ID,Nota\r\n00123,"á\r\nñ"\r\n9007199254740993,conservar\r\n',{doc,path}=await open(source)
  for(const close of [false,true]){
   await page.getByRole('gridcell',{name:'Fila 1, ID',exact:true}).click();await page.keyboard.press('ControlOrMeta+A');await page.keyboard.press('ControlOrMeta+X');const panel=page.getByRole('dialog',{name:'Cortar rango',exact:true});await expect(panel.getByRole('status')).toContainText('4 de 4')

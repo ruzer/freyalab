@@ -46,7 +46,7 @@ async function paste(text:string,plain=false){
  await content().focus();await page.keyboard.press(plain?'ControlOrMeta+Shift+V':'ControlOrMeta+V')
 }
 
-test('P1: una URL con espacio se pega normalmente en vez de convertirse en enlace',async()=>{
+test('P1: una URL con espacio se pega normalmente en vez de convertirse en enlace',{tag:'@solo'},async()=>{
  const {path}=await open('texto'),url='https://example.com/una ruta';await selectAll();await paste(url)
  await expect.poll(source).not.toBe('texto');await expect(page.locator('.preview .render-progress')).toHaveCount(0)
  const actual={source:await source(),preview:await page.locator('.markdown-body').innerHTML(),selection:await page.evaluate(()=>getSelection()?.toString())}
@@ -56,7 +56,7 @@ test('P1: una URL con espacio se pega normalmente en vez de convertirse en enlac
  expect(await readFile(path,'utf8')).toBe('texto')
 })
 
-test('P3: una URL válida crea el enlace; un deshacer restaura texto y selección y rehacer recupera el resultado',async()=>{
+test('P3: una URL válida crea el enlace; un deshacer restaura texto y selección y rehacer recupera el resultado',{tag:'@solo'},async()=>{
  const original='texto',url='https://example.com/recurso';await open(original);await selectAll();expect(await selection()).toBe(original)
  await paste(url);await expect.poll(source).toBe(`[texto](${url})`);expect(await selection()).toBe('')
  await settled();await expect(page.locator('.markdown-body a')).toHaveAttribute('href',url)
@@ -65,7 +65,7 @@ test('P3: una URL válida crea el enlace; un deshacer restaura texto y selecció
  await page.keyboard.press(process.platform==='darwin'?'ControlOrMeta+Shift+Z':'ControlOrMeta+Y');await expect.poll(source).toBe(`[texto](${url})`);expect(await selection()).toBe(`[texto](${url})`)
 })
 
-test('P4: paréntesis y corchetes se escapan sin cambiar el texto visible ni el destino del enlace',async()=>{
+test('P4: paréntesis y corchetes se escapan sin cambiar el texto visible ni el destino del enlace',{tag:'@solo'},async()=>{
  const text='Freya (demo)',url='https://example.com/wiki/A_(B)[C]';await open(text);await selectAll();await paste(url)
  await expect.poll(source).toBe('[Freya \\(demo\\)](https://example.com/wiki/A_\\(B\\)\\[C\\])')
  await settled();const anchor=page.locator('.markdown-body a');await expect(anchor).toHaveText(text)
@@ -73,7 +73,7 @@ test('P4: paréntesis y corchetes se escapan sin cambiar el texto visible ni el 
  expect(await anchor.getAttribute('href')).toBe('https://example.com/wiki/A_(B)%5BC%5D')
 })
 
-test('P1: esquemas no admitidos, controles, varias URLs, selección multilínea y selección vacía conservan el pegado normal',async()=>{
+test('P1: esquemas no admitidos, controles, varias URLs, selección multilínea y selección vacía conservan el pegado normal',{tag:'@solo'},async()=>{
  for(const value of ['xmpp:freya@example.com','www.example.com','javascript:alert(1)','data:text/plain,nota','https://example.com/a\nhttps://example.com/b','https://example.com/a\tfin','https://example.com/a ']){
   await open('texto');await selectAll();await paste(value);await expect.poll(source).toBe(value)
  }
@@ -82,7 +82,7 @@ test('P1: esquemas no admitidos, controles, varias URLs, selección multilínea 
  await expect.poll(source).toBe('textohttps://example.com')
 })
 
-test('P2: código en línea, bloque, enlace existente y URL literal no se convierten en enlaces anidados',async()=>{
+test('P2: código en línea, bloque, enlace existente y URL literal no se convierten en enlaces anidados',{tag:'@solo'},async()=>{
  const url='https://example.com/nuevo'
  for(const item of [
   {text:'`Freya`',from:1,length:5,expected:`\`${url}\``},
@@ -94,7 +94,7 @@ test('P2: código en línea, bloque, enlace existente y URL literal no se convie
  }
 })
 
-test('se puede enlazar texto dentro de negrita y dentro de un título conservando sus marcadores',async()=>{
+test('se puede enlazar texto dentro de negrita y dentro de un título conservando sus marcadores',{tag:'@solo'},async()=>{
  const url='mailto:freya@example.com'
  for(const item of [{text:'**Freya**',from:2,expected:`**[Freya](${url})**`},{text:'# Freya',from:2,expected:`# [Freya](${url})`}]){
   await open(item.text);await selectRange(item.from,5);await paste(url);await expect.poll(source).toBe(item.expected)
@@ -102,7 +102,7 @@ test('se puede enlazar texto dentro de negrita y dentro de un título conservand
  }
 })
 
-test('pegar sin formato mediante Ctrl/Cmd Mayús V conserva la URL literal y no el texto seleccionado',async()=>{
+test('pegar sin formato mediante Ctrl/Cmd Mayús V conserva la URL literal y no el texto seleccionado',{tag:'@solo'},async()=>{
  const url='https://example.com/plano';await open('texto');await selectAll()
  await app.evaluate(({ipcMain})=>{const state=globalThis as typeof globalThis&{freyaPasteMessages?:number};state.freyaPasteMessages=0;ipcMain.on('freya:paste-plain',()=>{state.freyaPasteMessages=(state.freyaPasteMessages??0)+1})})
  const trusted=await content().evaluate((node,mac)=>{const event=new KeyboardEvent('keydown',{key:'V',code:'KeyV',metaKey:mac,ctrlKey:!mac,shiftKey:true,bubbles:true,cancelable:true});node.dispatchEvent(event);return event.isTrusted},process.platform==='darwin')
@@ -113,7 +113,7 @@ test('pegar sin formato mediante Ctrl/Cmd Mayús V conserva la URL literal y no 
  await page.keyboard.press('ControlOrMeta+Z');await expect.poll(source).toBe('texto');expect(await selection()).toBe('texto')
 })
 
-test('P5: HTML rico del portapapeles no se ejecuta ni provoca red y se usa su única URL de texto plano',async()=>{
+test('P5: HTML rico del portapapeles no se ejecuta ni provoca red y se usa su única URL de texto plano',{tag:'@solo'},async()=>{
  const url='https://example.com/seguro',requests:string[]=[];await open('texto');await selectAll()
  page.on('request',request=>{if(/^https?:/.test(request.url()))requests.push(request.url())})
  await page.evaluate(()=>{(window as typeof window&{pasteExecuted?:boolean}).pasteExecuted=false})
@@ -124,7 +124,7 @@ test('P5: HTML rico del portapapeles no se ejecuta ni provoca red y se usa su ú
  expect(requests).toEqual([])
 })
 
-test('P6: documento Markdown de solo lectura no cambia al pegar sobre su muestra',{tag:'@perf'},async()=>{
+test('P6: documento Markdown de solo lectura no cambia al pegar sobre su muestra',{tag:['@perf','@solo']},async()=>{
  const line='texto '.repeat(140)+'\n',bytes=10*1024*1024+1,original=Buffer.alloc(bytes,32);original.write(line.repeat(Math.floor(bytes/line.length)),0,'ascii')
  const path=join(directory,'solo-lectura.md');await writeFile(path,original)
  const [document]=await page.evaluate(path=>window.freya.openPaths([path]),path);documentId=document.id
@@ -134,7 +134,7 @@ test('P6: documento Markdown de solo lectura no cambia al pegar sobre su muestra
  expect(await source()).toBe(before);expect((await readFile(path)).equals(original)).toBe(true)
 })
 
-test('IME sintético: no transforma en enlace durante composición y no acredita un IME físico',async()=>{
+test('IME sintético: no transforma en enlace durante composición y no acredita un IME físico',{tag:'@solo'},async()=>{
  const url='https://example.com';await open('texto');await selectAll()
  const event=await content().evaluate((node,url)=>{
   node.dispatchEvent(new CompositionEvent('compositionstart',{data:'',bubbles:true}))
@@ -146,7 +146,7 @@ test('IME sintético: no transforma en enlace durante composición y no acredita
  await test.info().attach('ime-sintetico',{body:Buffer.from(JSON.stringify({event:'ClipboardEvent + CompositionEvent sintéticos',physicalIME:false})),contentType:'application/json'})
 })
 
-test('enlace pegado y vista previa se conservan en claro y oscuro a 1440×900',async()=>{
+test('enlace pegado y vista previa se conservan en claro y oscuro a 1440×900',{tag:'@solo'},async()=>{
  const url='https://example.com/freya';await open('Freya');await selectAll();await paste(url);await expect.poll(source).toBe(`[Freya](${url})`)
  for(const theme of ['light','dark']){
   await page.getByRole('combobox',{name:'Tema',exact:true}).selectOption(theme);await settled()

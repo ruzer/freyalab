@@ -418,7 +418,7 @@ test('consulta CSV: condiciones O, errores visibles, limpiar y ordenar con Mayú
  expect(await readFile(path,'utf8')).toBe(source)
 })
 
-test('rangos CSV: selección por teclado, vista previa, filas ocultas, deshacer y exportar',async()=>{
+test('rangos CSV: selección por teclado, vista previa, filas ocultas, deshacer y exportar',{tag:'@solo'},async()=>{
  const path=join(directory,'rangos.csv'),source='ID,Grupo,Nota,Valor\n001,A,  uno  ,1\n002,B,intacto,2\n003,A,  tres  ,3\n004,A,  cuatro  ,4\n'
  await writeFile(path,source)
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
@@ -447,7 +447,7 @@ test('rangos CSV: selección por teclado, vista previa, filas ocultas, deshacer 
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 1, Nota',exact:true})).toContainText('cuatro')
  expect((await page.evaluate(id=>window.freya.documents().then(d=>d.find(x=>x.id===id)),doc.id))!.dirty).toBe(false)
 })
-test('rangos CSV: arrastrar, contexto por teclado, cortar y pegar con revisión previa',async()=>{
+test('rangos CSV: arrastrar, contexto por teclado, cortar y pegar con revisión previa',{tag:'@solo'},async()=>{
  const path=join(directory,'portapapeles.csv');await writeFile(path,'A,B,C\n001,uno,x\n002,dos,y\n003,tres,z\n')
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
  const from=page.getByRole('gridcell',{name:'Fila 1, A',exact:true}),to=page.getByRole('gridcell',{name:'Fila 2, B',exact:true});await expect(from).toBeVisible()
@@ -463,7 +463,7 @@ test('rangos CSV: arrastrar, contexto por teclado, cortar y pegar con revisión 
  rows=await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:911}),doc.id);expect(rows.rows[0].cells).toEqual(['0007','Línea 1','x']);expect(rows.rows[1].cells).toEqual(['0008','Árbol','y']);expect(rows.rows[2].cells).toEqual(['003','tres','z'])
  const rejected=await page.evaluate(async id=>{try{await window.freya.rangeClipboard(id,{top:-1,bottom:0,left:0,right:0,revision:0,query:{offset:0,limit:10,requestId:912}});return false}catch{return true}},doc.id);expect(rejected).toBe(true)
 })
-test('rangos CSV: teclado atraviesa páginas virtuales y una revisión nueva invalida la selección',async()=>{
+test('rangos CSV: teclado atraviesa páginas virtuales y una revisión nueva invalida la selección',{tag:'@solo'},async()=>{
  const path=join(directory,'paginado.csv');await writeFile(path,'ID,Valor\n'+Array.from({length:500},(_,i)=>String(i).padStart(5,'0')+',x').join('\n')+'\n')
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await page.getByRole('gridcell',{name:'Fila 1, Valor',exact:true}).click();await page.keyboard.press('ControlOrMeta+Shift+End')
  await expect(page.getByRole('gridcell',{name:'Fila 500, Valor',exact:true})).toBeFocused();await expect(page.locator('footer')).toContainText('500 celdas')
@@ -475,7 +475,7 @@ test('rangos CSV: teclado atraviesa páginas virtuales y una revisión nueva inv
  await dialog.getByRole('button',{name:'Cancelar'}).click()
 })
 
-test('rangos CSV: si falla el portapapeles, cortar no vacía ni modifica el documento',async()=>{
+test('rangos CSV: si falla el portapapeles, cortar no vacía ni modifica el documento',{tag:'@solo'},async()=>{
  const path=join(directory,'copia-fallida.csv'),source='ID,Nota\n001,conservar\n';await writeFile(path,source)
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await page.getByRole('gridcell',{name:'Fila 1, Nota',exact:true}).click();await page.keyboard.press('ControlOrMeta+X')
  const dialog=page.getByRole('dialog',{name:'Cortar rango',exact:true});await expect(dialog.getByRole('status')).toContainText('1 de 1')
@@ -485,7 +485,7 @@ test('rangos CSV: si falla el portapapeles, cortar no vacía ni modifica el docu
  expect((await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:930}),doc.id)).rows[0].cells).toEqual(['001','conservar'])
 })
 
-test('rangos CSV: arrastre desplaza el borde y conserva el rango al cargar otra página',async()=>{
+test('rangos CSV: arrastre desplaza el borde y conserva el rango al cargar otra página',{tag:'@solo'},async()=>{
  const path=join(directory,'arrastre.csv');await writeFile(path,'ID,Valor\n'+Array.from({length:500},(_,i)=>String(i).padStart(5,'0')+',v'+i).join('\n')+'\n')
  await page.evaluate(path=>window.freya.openPaths([path]),path)
  const from=page.getByRole('gridcell',{name:'Fila 1, Valor',exact:true});await expect(from).toBeVisible();const start=await from.boundingBox(),grid=await page.locator('.csv-scroll').boundingBox()
