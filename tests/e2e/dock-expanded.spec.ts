@@ -32,6 +32,8 @@ test('ampliar y volver a la tabla conserva búsqueda, selección y posición de 
  await launch();await page.setViewportSize({width:1920,height:1080});await openDock()
  await page.getByRole('textbox',{name:'Buscar en tabla'}).fill('C1')
  await expect.poll(()=>page.locator('[role=gridcell][data-column="0"]').count()).toBeGreaterThan(5)
+ await expect(grid()).toHaveAttribute('aria-rowcount','41') // filtro C1 realmente aplicado: 40 de 200 filas
+ await expect(page.locator('.csv-status')).not.toContainText('Procesando…')
  await page.locator('[role=gridcell][data-row="1"][data-column="1"]').click()
  const selection=await page.locator('.csv-status').textContent();expect(selection).toContain('Rango') // solo la parte del documento: el mensaje de la ventana («N de M filas») cambia con la búsqueda
  await grid().evaluate(element=>{element.scrollTop=300});const top=await grid().evaluate(element=>element.scrollTop);expect(top).toBeGreaterThan(100)
