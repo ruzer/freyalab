@@ -1,0 +1,116 @@
+{
+  "atUTC": "2026-10-29T13:36:32.221285+00:00",
+  "testedSourceHead": "b9ee0cbe0e54afe582fb9e5bf46304585b2a48a2",
+  "productSource": "6babfd8d80439ef3faccb0b1c9f2a4f0ddd151f3",
+  "historicalRemote": "aae59b3167494acc9fced85261aa65634a1d1265",
+  "mainObserved": "a44eb895c7f6518106898af256dd7cff8ae88275",
+  "checks": {
+    "check": {
+      "exit": 0,
+      "svelteErrors": 0,
+      "svelteWarnings": 0,
+      "wallSeconds": 5.79
+    },
+    "unit": {
+      "exit": 0,
+      "passed": 1496,
+      "files": 77,
+      "durationSeconds": 13.07,
+      "wallSeconds": 13.39
+    },
+    "build": {
+      "exit": 0,
+      "wallSeconds": 1.39
+    },
+    "productConfigOutGuard": {
+      "before": 365,
+      "after": 365,
+      "differences": 0
+    },
+    "focusedRuntimeAndHelper": {
+      "passed": 17,
+      "files": 2,
+      "durationSeconds": 9.52
+    },
+    "focusedReadonlyNative": {
+      "passed": 1,
+      "durationSeconds": 1.6,
+      "retries": 0
+    }
+  },
+  "historicalFullE2E": {
+    "passed": 439,
+    "wallSeconds": 731.04,
+    "retries": 0,
+    "skipped": 0,
+    "sameProductHashes": true,
+    "rerunOnThisHead": false
+  },
+  "pending": [
+    "CI4 and package on new exact head",
+    "Three functional budgets await authorization",
+    "Cold Split sample opening",
+    "P7/D1 historical intermittent",
+    "Local Pandoc HTTP efficacy"
+  ],
+  "budgetAndConfigurationFilesIdenticalToRemote": {
+    "tests/large-view.test.ts": true,
+    "tests/large-view-order.test.ts": true,
+    "tests/sql-source.test.ts": true,
+    "vitest.config.ts": true,
+    "package.json": true,
+    "package-lock.json": true
+  },
+  "artifacts": [
+    {
+      "name": "test-only-b9-check.log",
+      "sha256": "cee4f54aa49dda6317e0afadc0fcae2fbf84230a37351c9599ac158d129b284d",
+      "bytes": 286
+    },
+    {
+      "name": "test-only-b9-unit.log",
+      "sha256": "ce8e9f8a253783b9fd96b40824030940e2fa3d8df25ecb206940b38b508df728",
+      "bytes": 502
+    },
+    {
+      "name": "test-only-b9-build.log",
+      "sha256": "1763984e4f792fe1cb06ae926bc2364db791f53696f8f80cb327bf21653cc655",
+      "bytes": 21682
+    },
+    {
+      "name": "runtime-deadline-helper-focused.log",
+      "sha256": "83ede3981fbaa9e1a55ab5221673bb2434648db98442c9d1486329ecdc29be4c",
+      "bytes": 189
+    },
+    {
+      "name": "readonly-pre-edit-native.log",
+      "sha256": "b6bfd802cf83de8d1d64929f2e5637d904ced3d342e093231de541629cd467bd",
+      "bytes": 378
+    },
+    {
+      "name": "view-state-wait-red.log",
+      "sha256": "299228aa5b5fb46b26dac7159b16cdd71f1ff2d8cab2a55de9b24cd539beb8dd",
+      "bytes": 1081
+    },
+    {
+      "name": "view-state-wait-green.log",
+      "sha256": "0df6c976669228afda1e9ccccaadba5c0c390f79f4bc3616d08c1be59cb0b40d",
+      "bytes": 193
+    },
+    {
+      "name": "guard-b9ee0cb-closure-before.json",
+      "sha256": "ef82ac6a13c9df355edc3c1c19ffdf09f9072e151c608d9a75feeaa5d7d924d5",
+      "bytes": 848
+    },
+    {
+      "name": "guard-b9ee0cb-closure-after.json",
+      "sha256": "e40a2f0fc02e00ba8138441b0b5c8e3ced9286e1ec008dc25e808d47f09260de",
+      "bytes": 848
+    },
+    {
+      "name": "ci243-final.json",
+      "sha256": "bdc3d442647796ffa2f3f55cc6e09b71e32f9f364f7c7ffa18674100e5aababd",
+      "bytes": 4373
+    }
+  ]
+}

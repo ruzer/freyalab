@@ -367,5 +367,11 @@
  "pandoc.export.require": "Instala Pandoc para exportar a DOCX.",
  "pandoc.referenceUnavailable": "No pude cargar el formato DOCX incluido. Vuelve a abrir la aplicación.",
  "pandoc.export.styleRequire": "Instala Pandoc para aplicar un estilo final a las citas.",
- "report.invalidInstitution": "La institución contiene un carácter que Word no puede representar. Revísala antes de exportar."
+ "report.invalidInstitution": "La institución contiene un carácter que Word no puede representar. Revísala antes de exportar.",
+ "editor.foldedSection": "Sección plegada",
+ "editor.foldSection": "Plegar sección",
+ "editor.unfoldSection": "Desplegar sección",
+ "editor.foldedLines": "Líneas plegadas",
+ "editor.unfoldedLines": "Líneas desplegadas",
+ "editor.rangeTo": "a"
 }

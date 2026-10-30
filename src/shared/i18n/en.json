@@ -367,5 +367,11 @@
  "pandoc.export.require": "Install Pandoc to export to DOCX.",
  "pandoc.referenceUnavailable": "Could not load the included DOCX format. Reopen the application.",
  "pandoc.export.styleRequire": "Install Pandoc to apply a final citation style.",
- "report.invalidInstitution": "The institution contains a character Word cannot represent. Review it before exporting."
+ "report.invalidInstitution": "The institution contains a character Word cannot represent. Review it before exporting.",
+ "editor.foldedSection": "Folded section",
+ "editor.foldSection": "Fold section",
+ "editor.unfoldSection": "Unfold section",
+ "editor.foldedLines": "Folded lines",
+ "editor.unfoldedLines": "Unfolded lines",
+ "editor.rangeTo": "to"
 }
