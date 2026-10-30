@@ -1,6 +1,29 @@
 import {it,expect} from 'vitest'
 import {prepareReportMarkdown,citationMarkdown} from '../src/main/report-markdown'
+import {getLanguage,setLanguage} from '../src/shared/i18n'
 const data='data:image/png;base64,aGVsbG8='
+it.each([
+ ['carpeta/x.png','x.png'],
+ ['/carpeta/privada/x.png','x.png'],
+ ['carpeta/foto%20%C3%A1.png?version=2#vista','foto á.png'],
+ ['C:%5Ccarpeta%5Cprivada%5Cx.png','x.png'],
+ ['carpeta/inv%C3%A1lido%ZZ.png','inv%C3%A1lido%ZZ.png'],
+ ['C:%5Ccarpeta%5Cprivada%5Cinv%C3%A1lido%ZZ.png','inv%C3%A1lido%ZZ.png'],
+ ['%2Fcarpeta%2Fprivada%2Finv%C3%A1lido%ZZ.png','inv%C3%A1lido%ZZ.png'],
+])('S2c: imagen ausente %s sólo muestra el nombre, sin revelar rutas',async(url,name)=>{
+ const source=`![Imagen](<${url}>)`,request=prepareReportMarkdown(source,{diagrams:[],image:async()=>null})
+ await expect(request).rejects.toEqual(new Error(`La imagen «${name}» no está disponible. Localízala antes de exportar a DOCX.`))
+})
+for(const language of ['es','en'] as const)it.each([
+ 'https://usuario:clave@example.invalid',
+ 'https://usuario:clave@example.invalid/?token=secreto#vista',
+ '//usuario:clave@example.invalid',
+])(`S2c: URI sin archivo no expone credenciales (${language}): %s`,async url=>{
+ const previous=getLanguage();setLanguage(language)
+ try{
+  await expect(prepareReportMarkdown(`![Imagen](<${url}>)`,{diagrams:[],image:async()=>null})).rejects.toEqual(new Error(language==='es'?'Una imagen no está disponible. Localízala antes de exportar a DOCX.':'An image is unavailable. Locate it before exporting to DOCX.'))
+ }finally{setLanguage(previous)}
+})
 it('resuelve los mismos números y referencias que la vista previa, conservando la fuente',async()=>{
  const source='---\nportada: true\ntitle: Informe\n---\n\n![Un *resultado*](figura.png){#fig:uno}\n\n| A |\n| - |\n| B |\n\n: Datos {#tbl:uno}\n\nVéase [@fig:uno] y [@tbl:uno], además de [@garcia2020].'
  const result=await prepareReportMarkdown(source,{image:async()=>data,diagrams:[]})
