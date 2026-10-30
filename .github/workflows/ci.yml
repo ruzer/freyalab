@@ -48,6 +48,8 @@ jobs:
           - os: macos-15-intel
             executable: release/mac/FreyaLab.app/Contents/MacOS/FreyaLab
     runs-on: ${{ matrix.os }}
+    env:
+      FREYALAB_E2E_FAST_WORKERS: '2'
     # Intel agotó 45 min tras aprobar 43/61 pruebas del paquete; conserva el resto del gate.
     timeout-minutes: ${{ matrix.os == 'macos-15-intel' && 60 || 45 }}
     steps:
@@ -68,12 +70,28 @@ jobs:
       - name: Large-file editor experiments (correctness on small hostile fixtures)
         run: node --test experiments/large-file-editor/tests/overlay.test.mjs
       - run: npm run licenses
-      - name: E2E Linux
+      - name: E2E fast (Linux)
+        id: e2e_fast_linux
         if: runner.os == 'Linux'
-        run: xvfb-run -a npm run test:e2e
-      - name: E2E macOS and Windows
+        env:
+          PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-fast
+        run: xvfb-run -a npm run test:e2e:fast -- --workers=${{ env.FREYALAB_E2E_FAST_WORKERS }} --output=test-results-fast
+      - name: E2E fast (macOS and Windows)
+        id: e2e_fast_desktop
         if: runner.os != 'Linux'
-        run: npm run test:e2e
+        env:
+          PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-fast
+        run: npm run test:e2e:fast -- --workers=${{ env.FREYALAB_E2E_FAST_WORKERS }} --output=test-results-fast
+      - name: E2E perf and solo (Linux)
+        if: ${{ !cancelled() && runner.os == 'Linux' && (steps.e2e_fast_linux.outcome == 'success' || steps.e2e_fast_linux.outcome == 'failure') }}
+        env:
+          PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo
+        run: xvfb-run -a npm run test:e2e:perf -- --workers=1 --output=test-results-solo
+      - name: E2E perf and solo (macOS and Windows)
+        if: ${{ !cancelled() && runner.os != 'Linux' && (steps.e2e_fast_desktop.outcome == 'success' || steps.e2e_fast_desktop.outcome == 'failure') }}
+        env:
+          PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo
+        run: npm run test:e2e:perf -- --workers=1 --output=test-results-solo
       - name: Package application directory
         run: npx electron-builder --dir
       - name: Prepare packaged sandbox helper (Linux)
@@ -94,9 +112,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: evidence-${{ matrix.os }}
+          name: evidence-${{ matrix.os }}-${{ github.run_attempt }}
           path: |
             playwright-report/
             test-results/
+            playwright-report-fast/
+            playwright-report-solo/
+            test-results-fast/
+            test-results-solo/
             packaged-test-results/
           if-no-files-found: warn
