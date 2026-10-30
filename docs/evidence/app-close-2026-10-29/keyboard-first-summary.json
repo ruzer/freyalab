@@ -1,0 +1,60 @@
+{
+  "productHead": "a98d4f973b6eb650b46d9c0c85c8a60c27754705",
+  "commandExit": 1,
+  "originalFlowFailures": [
+    "cdp: Undo changes source exactly",
+    "sendInputEvent: Undo changes source exactly"
+  ],
+  "undoEnabledBeforeBoth": true,
+  "cdpBeforeInputEvents": 0,
+  "cdpDomUndo": 1,
+  "nativeBeforeInputUndo": 1,
+  "nativeDomUndo": 1,
+  "freyaCommandUndoRedo": 0,
+  "nativeWindowFocusedBeforeUndo": false,
+  "redoNotVerified": "Original text remained after failed Undo; zero redo dispatches. A passing equality is a no-op, not evidence of redo.",
+  "finalToolbarUndoPassedBoth": true,
+  "productOutAndOriginalTestHashGuard": true,
+  "temporaryTestRemoved": true,
+  "electronProcessesAfter": 0,
+  "processInspection": "Escalated ps -axo pid,ppid,comm filtered ownPID51612/children and Electron.app/Contents: exit0, zero rows.",
+  "notProven": [
+    "Cause of OS-window focus loss",
+    "Equivalence to physical OS menu accelerator",
+    "Whether focused sendInputEvent would dispatch native menu",
+    "Availability of private canEdit/canUndo flags"
+  ],
+  "noChanges": [
+    "production",
+    "permanent tests",
+    "Git",
+    "CI",
+    "dependencies"
+  ],
+  "artifacts": {
+    "result.json": {
+      "bytes": 7988,
+      "sha256": "6f5049437d6cb24cf154a7e9bc8d1b932fe2986c0a46456c4093e17cdba698bb"
+    },
+    "rawBrowserTrace.zip": {
+      "bytes": 2786317,
+      "sha256": "415c8186203bd68d3341cfa66d53bfe444e1f3c2aae5d912958872bb435e32aa"
+    },
+    "run.log": {
+      "bytes": 2750,
+      "sha256": "c5e1341b000b963937f2e27222441e65ad94a3d25771c2835ae87c7c7ad99f71"
+    },
+    "d2-key-probe.spec.ts": {
+      "bytes": 7538,
+      "sha256": "80332e42fef84eef26d1db2b3affa2992f7685c5e9a0bf2eec21dd36cab029c7"
+    },
+    "manifest-before.json": {
+      "bytes": 378,
+      "sha256": "03a6eacbbb4538aaf4815c4b52be61d6bb8d5bc89a5817126f08b8f5ce89a60d"
+    },
+    "manifest-after.json": {
+      "bytes": 294,
+      "sha256": "f78553435bc46eaf937984ac6bd7317767de2e733ecf4526a78c19c6f7c8e17f"
+    }
+  }
+}

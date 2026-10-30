@@ -1,0 +1,15 @@
+{
+  "startedUTC": "2026-10-29T19:37:22.479Z",
+  "finishedUTC": "2026-10-29T19:37:52.483Z",
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v24.22.1"
+  },
+  "scope": "Coordinador real aislado, reloj real; no es medición de GUI ni garantía de rendimiento",
+  "sourceSHA256": "cf97392f75047ae8f94542789b0bf09c71864d264deba24b4fde7c2038a7dbc5",
+  "requests": 1,
+  "elapsedMs": 30003.174333,
+  "message": "El editor no respondió en 30 segundos. Vuelve a intentarlo. Tus documentos siguen abiertos.",
+  "lateAckAccepted": false
+}

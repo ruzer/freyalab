@@ -163,9 +163,17 @@ test('V5: ampliar el SVG anterior durante el debounce avisa del snapshot obsolet
 })
 
 test('V5: cerrar la pestaña limpia elimina el diálogo y permite editar el siguiente documento',async()=>{
- const {path}=await open();await openExpanded();await page.keyboard.press('ControlOrMeta+W')
+ const {path}=await open();await openExpanded()
+ const closeItem=await app.evaluate(({Menu})=>{const item=Menu.getApplicationMenu()!.getMenuItemById('file.close')!;return{enabled:item.enabled,accelerator:item.accelerator}})
+ expect(closeItem).toMatchObject({enabled:true,accelerator:'CommandOrControl+W'})
+ await app.evaluate(({Menu,BrowserWindow})=>{
+  const contents=BrowserWindow.getAllWindows()[0].webContents,send=contents.send.bind(contents),state=globalThis as unknown as {closeTabDispatches:number};state.closeTabDispatches=0
+  contents.send=(channel:string,...args:unknown[])=>{if(channel==='freya:command'&&(args[0]as{id?:string})?.id==='file.close')state.closeTabDispatches++;return send(channel,...args)}
+  const item=Menu.getApplicationMenu()!.getMenuItemById('file.close')!;item.click(item,undefined,{}as Electron.KeyboardEvent)
+ })
  await expect(dialog()).toHaveCount(0);await expect(page.locator('dialog .diagram-panel')).toHaveCount(0)
  await expect(page.getByRole('tablist',{name:'Documentos abiertos',exact:true}).getByRole('tab')).toHaveCount(0)
+ expect(await app.evaluate(()=>(globalThis as unknown as {closeTabDispatches:number}).closeTabDispatches)).toBe(1)
  const next=join(directory,'siguiente.md');await writeFile(next,'Texto editable después del visor.\n');const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),next)
  await page.getByRole('button',{name:'Editar',exact:true}).click();await page.locator('.cm-content').click();await page.keyboard.press('ControlOrMeta+End');await page.keyboard.insertText('Continuación')
  await expect.poll(async()=>(await documentState(doc.id))?.text).toContain('Continuación');expect(await readFile(path,'utf8')).toBe(fixture)

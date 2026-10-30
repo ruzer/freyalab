@@ -50,12 +50,22 @@ test('C1: mezcla LF/CRLF y un plegable compacto con marcador literal previo no e
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect.poll(source).toBe(original)
 })
 
-test('C2: Vista previa sin CodeMirror montado usa el mismo historial y permite teclado',async()=>{
+test('C2: Vista previa sin CodeMirror conserva teclado local e historial mediante el menú nativo',async()=>{
  const original='- [ ] Teclado\n';await open(original);await page.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(page.locator('.cm-editor')).toHaveCount(0)
  await boxes().first().focus();await page.keyboard.press('Space');await expect.poll(source).toBe('- [x] Teclado\n');await settled();await expect(boxes().first()).toBeFocused()
  await page.keyboard.press('Enter');await expect.poll(source).toBe(original);await settled();await expect(boxes().first()).toBeFocused()
- await page.keyboard.press('ControlOrMeta+Z');await expect.poll(source).toBe('- [x] Teclado\n')
- await page.keyboard.press(process.platform==='darwin'?'ControlOrMeta+Shift+Z':'ControlOrMeta+Y');await expect.poll(source).toBe(original)
+ // En el macOS medido, CDP/sendInputEvent no activaron NSMenu. Se
+ // comprueban estado, acelerador y despacho real; no se simula una tecla del SO.
+ for(const [command,expected]of [['edit.undo','- [x] Teclado\n'],['edit.redo',original]]as const){
+  const observed=await app.evaluate(({Menu,BrowserWindow},id)=>{
+   const item=Menu.getApplicationMenu()!.getMenuItemById(id)!,contents=BrowserWindow.getAllWindows()[0].webContents,send=contents.send.bind(contents)
+   const state=globalThis as unknown as {taskMenuDispatches:number};state.taskMenuDispatches=0
+   contents.send=(channel:string,...args:unknown[])=>{if(channel==='freya:command'&&(args[0]as{id?:string})?.id===id)state.taskMenuDispatches++;return send(channel,...args)}
+   const snapshot={enabled:item.enabled,accelerator:item.accelerator};item.click(item,undefined,{}as Electron.KeyboardEvent);return snapshot
+  },command)
+  expect(observed.enabled).toBe(true);expect(observed.accelerator).toBe(command==='edit.undo'?'CommandOrControl+Z':process.platform==='win32'?'Control+Y':'CommandOrControl+Shift+Z')
+  await expect.poll(source).toBe(expected);expect(await app.evaluate(()=>(globalThis as unknown as {taskMenuDispatches:number}).taskMenuDispatches)).toBe(1)
+ }
  await page.getByRole('button',{name:'Dividido',exact:true}).click();await expect(content()).toBeVisible();await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect.poll(source).toBe('- [x] Teclado\n')
 })
 

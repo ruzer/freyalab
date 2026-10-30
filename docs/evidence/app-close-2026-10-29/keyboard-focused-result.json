@@ -1,0 +1,181 @@
+{
+  "started": "2026-10-29T22:37:54.457Z",
+  "platform": "darwin",
+  "results": [
+    {
+      "label": "sendInputEvent-focused: Undo changes source exactly",
+      "passed": false
+    }
+  ],
+  "assertionFailures": [
+    {
+      "label": "sendInputEvent-focused: Undo changes source exactly",
+      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[32m- - [\u001b[7mx\u001b[27m] Teclado\u001b[39m\n\u001b[31m+ - [\u001b[7m \u001b[27m] Teclado\u001b[39m\n\u001b[2m  ↵\u001b[22m\n\nCall Log:\n- Timeout 15000ms exceeded while waiting on the predicate"
+    }
+  ],
+  "instrumentation": "Passive DOM keydown and before-input-event; outgoing wc.send spy preserves original this/arguments/result. Does not subscribe freya.onCommand (ACK side effect). No content or nonce logging.",
+  "build": {
+    "mainSHA": "ecdd8d0d8bb94f1e1ed3ef4213cc08ac26dca6c0e147d04e92ef301ab38196a9"
+  },
+  "electronPid": 51901,
+  "snapshots": [
+    {
+      "label": "sendInputEvent-focused: immediately before Undo; no wait for enabled",
+      "main": {
+        "at": 1793313475768,
+        "focusedWindow": 1,
+        "isHidden": false,
+        "windows": [
+          {
+            "id": 1,
+            "focused": true,
+            "visible": true,
+            "contentsFocused": true
+          }
+        ],
+        "items": [
+          {
+            "id": "edit.undo",
+            "exists": true,
+            "enabled": true,
+            "accelerator": "CommandOrControl+Z"
+          },
+          {
+            "id": "edit.redo",
+            "exists": true,
+            "enabled": false,
+            "accelerator": "CommandOrControl+Shift+Z"
+          }
+        ]
+      },
+      "dom": {
+        "at": 1793313475772,
+        "documentFocused": true,
+        "activeTag": "INPUT",
+        "activeRole": null,
+        "activeType": "checkbox",
+        "checked": false
+      }
+    },
+    {
+      "label": "sendInputEvent-focused: after Undo assertion",
+      "main": {
+        "at": 1793313490766,
+        "focusedWindow": null,
+        "isHidden": false,
+        "windows": [
+          {
+            "id": 1,
+            "focused": false,
+            "visible": true,
+            "contentsFocused": false
+          }
+        ],
+        "items": [
+          {
+            "id": "edit.undo",
+            "exists": true,
+            "enabled": true,
+            "accelerator": "CommandOrControl+Z"
+          },
+          {
+            "id": "edit.redo",
+            "exists": true,
+            "enabled": false,
+            "accelerator": "CommandOrControl+Shift+Z"
+          }
+        ]
+      },
+      "dom": {
+        "at": 1793313490768,
+        "documentFocused": true,
+        "activeTag": "INPUT",
+        "activeRole": null,
+        "activeType": "checkbox",
+        "checked": false
+      }
+    }
+  ],
+  "error": "Error: electronApplication.evaluate: Error: El foco SO no se mantuvo: probe inviable antes del envío.\n    at eval (eval at evaluate (:370:30), <anonymous>:30:65)\n    at UtilityScript.evaluate (<anonymous>:372:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+  "finished": "2026-10-29T22:38:10.772Z",
+  "mainObserved": {
+    "input": [
+      {
+        "at": 1793313475775,
+        "type": "keyDown",
+        "key": "z",
+        "code": "KeyZ",
+        "meta": true,
+        "control": false,
+        "shift": false,
+        "alt": false,
+        "isAutoRepeat": false
+      },
+      {
+        "at": 1793313475775,
+        "type": "keyUp",
+        "key": "z",
+        "code": "KeyZ",
+        "meta": true,
+        "control": false,
+        "shift": false,
+        "alt": false,
+        "isAutoRepeat": false
+      }
+    ],
+    "commands": [],
+    "immediate": [
+      {
+        "at": 1793313475775,
+        "redo": false,
+        "focusedWindow": 1,
+        "windowFocused": true,
+        "contentsFocused": true,
+        "items": [
+          {
+            "id": "edit.undo",
+            "enabled": true,
+            "accelerator": "CommandOrControl+Z"
+          },
+          {
+            "id": "edit.redo",
+            "enabled": false,
+            "accelerator": "CommandOrControl+Shift+Z"
+          }
+        ]
+      },
+      {
+        "at": 1793313490771,
+        "redo": true,
+        "focusedWindow": null,
+        "windowFocused": false,
+        "contentsFocused": false,
+        "items": [
+          {
+            "id": "edit.undo",
+            "enabled": true,
+            "accelerator": "CommandOrControl+Z"
+          },
+          {
+            "id": "edit.redo",
+            "enabled": false,
+            "accelerator": "CommandOrControl+Shift+Z"
+          }
+        ]
+      }
+    ]
+  },
+  "domObserved": [
+    {
+      "at": 1793313475775,
+      "key": "z",
+      "code": "KeyZ",
+      "meta": true,
+      "control": false,
+      "shift": false,
+      "alt": false,
+      "defaultPrevented": false,
+      "isTrusted": true
+    }
+  ]
+}

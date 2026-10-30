@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { FreyaAPI, AppEvent } from '../shared/types'
+import {closePrepareCommand,closeAbortCommand,type ApplicationCommand} from '../shared/application'
 import {invocationMessage} from './invoke-error'
 const invoke=async(operation:string,...args:unknown[])=>{try{return await ipcRenderer.invoke('freya',operation,...args)}catch(error){throw new Error(invocationMessage(error))}}
 // El atajo requiere una pulsación real; el puente no ofrece lectura del portapapeles.
@@ -10,6 +11,33 @@ window.addEventListener('keydown',event=>{
  ipcRenderer.send('freya:paste-plain')
 },true)
 const api:FreyaAPI={
+ setApplicationState:state=>invoke('application:state',state),applicationShortcuts:()=>invoke('application:shortcuts'),
+ onCommand(callback){
+  const listener=(_:unknown,event:ApplicationCommand&{nonce?:string})=>{
+   if(event.id===closePrepareCommand||event.id===closeAbortCommand)return
+   let active=true,used=false
+   const delegate=()=>{if(!active||used||!event.nonce)return;used=true;if(event.id==='edit.pastePlain')window.dispatchEvent(new Event('freya-paste-plain'));ipcRenderer.send('freya:menu-native',event.nonce)}
+   try{callback({id:event.id,...(event.argument!==undefined?{argument:event.argument}:{})},delegate)}finally{active=false;if(event.nonce)ipcRenderer.send('freya:menu-native-done',event.nonce)}
+  }
+  ipcRenderer.on('freya:command',listener);return()=>ipcRenderer.removeListener('freya:command',listener)
+ },
+ onPrepareClose(handlers){
+  let current:string|undefined,live=true
+  const listener=(_:unknown,event:unknown)=>{
+   if(!event||typeof event!=='object'||Array.isArray(event))return
+   const value=event as {id?:unknown;nonce?:unknown}
+   if(Object.keys(value).length!==2||typeof value.nonce!=='string'||!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value.nonce))return
+   if(value.id===closeAbortCommand){if(value.nonce===current){current=undefined;handlers.aborted()}return}
+   if(value.id!==closePrepareCommand||value.nonce===current)return
+   const nonce=current=value.nonce
+   const acknowledge=(ready:boolean)=>{if(live&&current===nonce)ipcRenderer.send('freya:close-prepared',nonce,ready===true)}
+   try{void Promise.resolve(handlers.prepare()).then(ready=>acknowledge(ready===true),()=>acknowledge(false))}catch{acknowledge(false)}
+  }
+  ipcRenderer.on('freya:command',listener);return()=>{live=false;current=undefined;ipcRenderer.removeListener('freya:command',listener)}
+ },
+ appInfo:()=>invoke('appInfo'),copyAppInfo:()=>invoke('copyAppInfo'),thirdPartyNotices:()=>invoke('thirdPartyNotices'),
+ settings:()=>invoke('settings:get'),setSettings:patch=>invoke('settings:set',patch),migrateSettings:values=>invoke('settings:migrate',values),
+ resetSettings:()=>invoke('settings:reset'),clearRecents:()=>invoke('recents:clear'),showDataFolder:()=>invoke('settings:showDataFolder'),
  language:()=>invoke('language'),setLanguage:preference=>invoke('setLanguage',preference),
  open:()=>invoke('open'),openPaths:paths=>invoke('openPaths',paths),newDocument:kind=>invoke('new',kind),folder:()=>invoke('folder'),tree:path=>invoke('tree',path),findFiles:(root,query)=>invoke('findFiles',root,query),cancelFileSearch:()=>invoke('cancelFileSearch'),listTags:root=>invoke('listTags',root),cancelTagList:()=>invoke('cancelTagList'),
  csvOpen:(path,view)=>invoke('csvOpen',path,view),csvView:(id,view,decision)=>invoke('csvView',id,view,decision),csvViewInfo:path=>invoke('csvViewInfo',path),

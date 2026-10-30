@@ -1,0 +1,33 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-lote2/aplicacion
+
+ ❯ tests/application-closing-encoding.test.ts (3 tests | 1 failed) 135ms
+   × el rechazo previo del límite de cadena IPC conserva el aviso nombrado de10MiB 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/application-closing-encoding.test.ts > el rechazo previo del límite de cadena IPC conserva el aviso nombrado de10MiB
+AssertionError: expected last "vi.fn()" call to have been called with [ ObjectContaining{…} ]
+
+- Expected
++ Received
+
+  [
+    {
+      "kind": "error",
+-     "message": StringContaining "10 MiB",
++     "message": "No pude preparar los cambios de «cadena.csv». Corrígelos o deshaz los últimos cambios y vuelve a intentarlo. Tus documentos siguen abiertos.",
+    },
+  ]
+
+ ❯ tests/application-closing-encoding.test.ts:29:62
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  16:40:30
+   Duration  260ms (tests 76%, transform 15%, import 7%, worker 2%)
+

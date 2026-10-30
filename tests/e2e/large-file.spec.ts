@@ -1,3 +1,4 @@
+import {runApplicationMenu} from './application-menu'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises'
@@ -28,13 +29,13 @@ test('un CSV por encima del umbral se abre como archivo grande: aviso, recuento 
  await expect(cell(1)).toHaveText('000001')
 })
 
-test('«Ir a la fila»: botón y Ctrl/⌘ + G, validación, foco y Escape',async()=>{
+test('«Ir a la fila»: botón, menú, validación, foco y Escape',async()=>{
  await open(csv(3000))
  const button=page.getByRole('button',{name:'Ir a la fila',exact:true}),input=page.getByRole('spinbutton',{name:'Número de fila',exact:true})
  await button.click();await expect(input).toBeFocused()
  await input.fill('2500');await input.press('Enter')
  await expect(cell(2500)).toHaveText('002500');await expect(cell(2500)).toBeFocused();await expect(page.locator('#dock-announcement')).toHaveText('Fila 2,500 de 3,000') // lo anuncia el lector de pantalla
- await page.keyboard.press('ControlOrMeta+G');await expect(input).toBeFocused()
+ await runApplicationMenu(app,'go.row');await expect(input).toBeFocused()
  await input.fill('9999');await input.press('Enter');await expect(page.getByRole('alert')).toContainText('Escribe un número entre 1 y 3,000.');await expect(input).toBeFocused()
  await input.fill('0');await input.press('Enter');await expect(page.getByRole('alert')).toContainText('entre 1 y 3,000')
  await input.press('Escape');await expect(input).toHaveCount(0);await expect(button).toBeFocused()
