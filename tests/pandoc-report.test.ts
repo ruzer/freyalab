@@ -5,10 +5,10 @@ import {createHash} from 'node:crypto'
 import {relative,isAbsolute,join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
 import {zipFiles} from './docx'
-import {xmlControlBatches} from './xml-controls'
 import {getLanguage,setLanguage} from '../src/shared/i18n'
+import {xmlControlBatches} from './xml-controls'
 
-const invoked=vi.hoisted(()=>({execFile:vi.fn(),input:vi.fn(),conversions:[] as {args:string[];cwd:string;files:Record<string,Buffer>;dataFiles:string[]}[]}))
+const invoked=vi.hoisted(()=>({execFile:vi.fn(),input:vi.fn(),stderr:'',conversions:[] as {args:string[];cwd:string;files:Record<string,Buffer>;dataFiles:string[]}[]}))
 vi.mock('node:child_process',()=>({execFile:invoked.execFile}))
 import * as pandoc from '../src/main/pandoc'
 const content=Buffer.from('[{"id":"approved","type":"book","title":"Fuente aprobada"}]')
@@ -20,7 +20,7 @@ async function convert(format:'docx'|'html',source:string,value:unknown=options)
  return fn(process.execPath,source,value)
 }
 beforeEach(()=>{
- vi.clearAllMocks();invoked.conversions.splice(0)
+ vi.clearAllMocks();invoked.conversions.splice(0);invoked.stderr=''
  invoked.execFile.mockImplementation((_path:string,args:string[],settings:{cwd:string},done:(error:Error|null,stdout:Buffer,stderr:Buffer)=>void)=>{
   void(async()=>{
    if(args[0]==='--version'){done(null,Buffer.from('pandoc 3.10.2\n'),Buffer.alloc(0));return}
@@ -28,10 +28,21 @@ beforeEach(()=>{
    for(const flag of ['--bibliography','--csl','--reference-doc'])if(args.includes(flag))files[flag]=await readFile(resolve(settings.cwd,args[args.indexOf(flag)+1]))
    invoked.conversions.push({args,cwd:settings.cwd,files,dataFiles:await readdir(args[args.indexOf('--data-dir')+1])})
    const format=args[args.indexOf('-t')+1]
-   done(null,Buffer.from(format==='html5'?'<p>Cita final</p>':format==='csljson'?'[]':'PK\x03\x04docx'),Buffer.alloc(0))
+   done(null,Buffer.from(format==='html5'?'<p>Cita final</p>':format==='csljson'?'[]':'PK\x03\x04docx'),Buffer.from(invoked.stderr))
   })().catch(error=>done(error,Buffer.alloc(0),Buffer.alloc(0)))
   return{stdin:{on:vi.fn().mockReturnThis(),end:invoked.input}}
  })
+})
+
+it('S2d: sólo cuenta avisos Pandoc de conversión TeX, sin devolver stderr ni mezclar exportaciones',async()=>{
+ const first=vi.fn(),second=vi.fn()
+ invoked.stderr='[WARNING] Could not convert TeX math \\mathbbm{R}, rendering as TeX:\n  unknown command /private/no-exponer\n[WARNING] Imagen ausente\nCould not convert TeX math fuera de un aviso\n[WARNING] Could not convert TeX mathematics no es el aviso\n[WARNING] Could not convert TeX math \\otra{R}, rendering as TeX:\r\n  más detalle privado\r\n'
+ const bytes=await pandoc.pandocToDocx(process.execPath,'# Cuerpo',{},first)
+ expect(Buffer.isBuffer(bytes)).toBe(true);expect(first.mock.calls).toEqual([[2]])
+ expect(bytes.toString()).not.toContain('no-exponer')
+ invoked.stderr='[WARNING] Aviso distinto que menciona TeX math\n[WARNING] Otra cosa: Could not convert TeX math\n'
+ await pandoc.pandocToDocx(process.execPath,'# Segundo',{},second)
+ expect(second.mock.calls).toEqual([[0]]);expect(first.mock.calls).toEqual([[2]])
 })
 
 const metadataLimits=[

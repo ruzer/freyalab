@@ -203,3 +203,33 @@ test('SEG-S2b · límites nombran el campo en español e inglés sin DOCX parcia
   await test.info().attach('word-metadata-8000.docx',{path:artifact,contentType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})
  }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
 })
+
+test('SEG-S2d · Pandoc real avisa del TeX degradado y el control limpio conserva el resultado habitual',async()=>{
+ test.skip(!pandoc,'Requiere Pandoc externo elegido; no se instala ni se empaqueta.')
+ const directory=await mkdtemp(join(tmpdir(),'freya-word-math-'))
+ const {ELECTRON_RUN_AS_NODE:_,...environment}=process.env
+ const app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[process.env.FREYALAB_AC_TEST_ENTRY??resolve('out/main/index.js')],env:{...environment as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_TEST_PANDOC_PATH:pandoc!,FREYALAB_USER_DATA:join(directory,'profile'),FREYALAB_TEST_EXPORT_DIR:directory}})
+ try{
+  const page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya)
+  const results:{name:string;count:number;xmlParts:number}[]=[]
+  for(const[name,equation,count]of [['degradada','\\mathbbm{R}',1],['limpia','x^2',0]] as const){
+   const path=join(directory,name+'.md'),source='# Fuente de ecuación\n\nResultado $'+equation+'$.\n';await writeFile(path,source)
+   const[doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('tab',{name:name+'.md',exact:true})).toHaveAttribute('aria-selected','true')
+   const result=await page.evaluate(doc=>window.freya.export(doc.id,{format:'docx',revision:doc.revision,html:'<article><p>Vista sintética.</p></article>'}),doc),output=join(directory,name+'.docx')
+   expect(result).toEqual(count?{path:output,mathWarnings:count}:output)
+   const bytes=await readFile(output),parts=[...zipFiles(bytes)].filter(([name])=>/\.(?:xml|rels)$/.test(name)).map(([name,data])=>({name,xml:data.toString('utf8')}))
+   const checked=await page.evaluate(parts=>parts.map(({name,xml})=>{const parsed=new DOMParser().parseFromString(xml,'application/xml');return{name,error:parsed.querySelector('parsererror')?.textContent??null,text:parsed.documentElement.textContent??''}}),parts)
+   expect(checked.filter(part=>part.error)).toEqual([]);expect(checked.find(part=>part.name==='word/document.xml')!.text).toContain('Fuente de ecuación')
+   if(count)expect(checked.find(part=>part.name==='word/document.xml')!.text).toContain('\\mathbbm{R}')
+   await page.getByRole('button',{name:'Exportar',exact:true}).click();const button=page.getByRole('button',{name:'Documento Word (DOCX)',exact:true});await expect(button).toBeEnabled();await button.click()
+   await expect(page.locator('.toast')).toContainText('Exportado: '+output)
+   if(count)await expect(page.locator('.toast')).toContainText('1 ecuación se muestra como TeX en el DOCX.')
+   else await expect(page.locator('.toast')).not.toContainText('se muestra como TeX')
+   await expect(page.locator('.toast')).not.toContainText('Could not convert TeX math');await expect(page.locator('.toast')).not.toContainText('\\mathbbm')
+   expect(await readFile(path,'utf8')).toBe(source);expect((await page.evaluate(()=>window.freya.documents())).find(current=>current.id===doc.id)).toMatchObject({text:source,dirty:false})
+   const artifact=test.info().outputPath('word-math-'+name+'.docx');await writeFile(artifact,bytes)
+   results.push({name,count,xmlParts:parts.length});await test.info().attach('word-math-'+name+'.docx',{path:artifact,contentType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})
+  }
+  await test.info().attach('word-math-resultados',{body:Buffer.from(JSON.stringify({pandoc:await page.evaluate(()=>window.freya.pandocStatus()),results})),contentType:'application/json'})
+ }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+})

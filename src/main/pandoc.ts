@@ -57,11 +57,11 @@ export function pandocPaths(platform:NodeJS.Platform,environment:NodeJS.ProcessE
  return[...new Set(folders.filter(folder=>path.isAbsolute(folder)).map(folder=>path.join(folder,executable)))]
 }
 
-function runPandoc(path:string,args:string[],source?:string,cwd?:string):Promise<Buffer> {
+function runPandoc(path:string,args:string[],source?:string,cwd?:string,onMathWarnings?:(count:number)=>void):Promise<Buffer> {
  return new Promise((resolve,reject)=>{
-  const child=execFile(path,args,{shell:false,timeout:10_000,maxBuffer:64*1024*1024,windowsHide:true,encoding:'buffer',cwd},(error,stdout)=>{
+  const child=execFile(path,args,{shell:false,timeout:10_000,maxBuffer:64*1024*1024,windowsHide:true,encoding:'buffer',cwd},(error,stdout,stderr)=>{
    if(error)reject(new Error(t('pandoc.conversionFailed')))
-   else resolve(stdout)
+   else{onMathWarnings?.((stderr?.toString('utf8').match(/^\[WARNING\] Could not convert TeX math\b/gm)??[]).length);resolve(stdout)}
   })
   child.stdin?.on('error',()=>{}) // EPIPE también llega al callback cuando falla el proceso.
   child.stdin?.end(source)
@@ -105,7 +105,7 @@ export function stripPandocMetadata(source:string):string {
  return source.slice(opening[0].length+end.index+end[0].length)
 }
 
-async function convertReport(executablePath:string,source:string,format:'docx'|'html5',options:unknown):Promise<Buffer>{
+async function convertReport(executablePath:string,source:string,format:'docx'|'html5',options:unknown,onMathWarnings?:(count:number)=>void):Promise<Buffer>{
  const checked=(format==='docx'?reportOptions:citationOptions).safeParse(options??{})
  if(!checked.success)throw new Error(t('pandoc.invalidOptions'))
  const selected=checked.data as PandocReportOptions,bibliography=selected.bibliography
@@ -138,10 +138,10 @@ async function convertReport(executablePath:string,source:string,format:'docx'|'
     args.push('--metadata',(key==='tocTitle'?'toc-title':key)+'='+literal)
    }
   }
-  return await runPandoc(pandoc.path,args,body,directory)
+  return await runPandoc(pandoc.path,args,body,directory,format==='docx'?onMathWarnings:undefined)
  }finally{await rm(directory,{recursive:true,force:true,maxRetries:3,retryDelay:100})}
 }
-export function pandocToDocx(executablePath:string,source:string,options?:PandocReportOptions):Promise<Buffer>{return convertReport(executablePath,source,'docx',options)}
+export function pandocToDocx(executablePath:string,source:string,options?:PandocReportOptions,onMathWarnings?:(count:number)=>void):Promise<Buffer>{return convertReport(executablePath,source,'docx',options,onMathWarnings)}
 export async function pandocCitationsToHtml(executablePath:string,source:string,options:PandocCitationOptions):Promise<string>{return cleanExportMarkup((await convertReport(executablePath,source,'html5',options)).toString('utf8'))}
 export async function bibtexToCslJson(chosenPath:string|undefined,source:string):Promise<{available:false}|{available:true;json:string}>{
  const pandoc=await detectPandoc(chosenPath)

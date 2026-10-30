@@ -387,5 +387,7 @@
  "editor.unfoldSection": "Unfold section",
  "editor.foldedLines": "Folded lines",
  "editor.unfoldedLines": "Unfolded lines",
- "editor.rangeTo": "to"
+ "editor.rangeTo": "to",
+ "report.mathWarnings.one": "{count} equation is displayed as TeX in the DOCX.",
+ "report.mathWarnings.other": "{count} equations are displayed as TeX in the DOCX."
 }

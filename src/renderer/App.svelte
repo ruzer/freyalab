@@ -302,8 +302,8 @@
    else if(kind==='mermaid'){if(format==='svg'||format==='png')request.svg=await documentDiagram?.exportSVG();else request.html=await documentDiagram?.exportHTML()}
    else{request.revision=current.revision;request.citationStyle=citationStyle;request.html=await documentPreview?.exportHTML()}
    if(active?.id!==id)throw new Error(t('bibliography.error.changedDocument'))
-   const missing=kind==='markdown'?documentPreview?.missingImages()??0:0,path=await window.freya.export(id,request)
-   if(path)notify(`Exportado: ${path}`+(missing?` · ${missing===1?'1 imagen no se encontró':`${missing} imágenes no se encontraron`}; se exportó con su texto alternativo`:''))
+   const missing=kind==='markdown'?documentPreview?.missingImages()??0:0,result=await window.freya.export(id,request),path=typeof result==='string'?result:result?.path,mathWarnings=typeof result==='object'&&result?result.mathWarnings:0
+   if(path)notify(`Exportado: ${path}`+(missing?` · ${missing===1?'1 imagen no se encontró':`${missing} imágenes no se encontraron`}; se exportó con su texto alternativo`:'')+(mathWarnings?' · '+plural('report.mathWarnings',mathWarnings):''))
   })}finally{busy=false}
  }
  async function recover(id:string){await action(async()=>{merge(await window.freya.recover(id),true);recoveries=await window.freya.recoveries()})}
