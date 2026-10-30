@@ -1,12 +1,13 @@
 import {EditorState,Compartment,type Transaction} from '@codemirror/state'
 import {history,isolateHistory} from '@codemirror/commands'
+import {markdownMultipleSelections} from './markdown-editing'
 
 export type MarkdownSession={state:EditorState;ui:Compartment;receive?:(transactions:readonly Transaction[])=>void}
 export type TaskReference={line:number;from:number;expectedLine:string;marker:'[ ]'|'[x]'|'[X]'}
 
 export function createMarkdownSession(source:string):MarkdownSession{
  const ui=new Compartment()
- return{ui,state:EditorState.create({doc:source,extensions:[history(),ui.of([]),...(source.includes('\r\n')?[EditorState.lineSeparator.of('\r\n')]:[])]})}
+ return{ui,state:EditorState.create({doc:source,extensions:[history(),markdownMultipleSelections,ui.of([]),...(source.includes('\r\n')?[EditorState.lineSeparator.of('\r\n')]:[])]})}
 }
 
 export function taskChange(source:string,ref:TaskReference):{from:number;to:number;insert:string}|undefined{

@@ -12,6 +12,10 @@ Los controles son accesibles con Tab, Enter y los controles nativos del selector
 
 La vista previa oculta la barra. Los documentos de solo lectura desactivan todos sus controles. Se conservan los saltos CRLF o LF del documento Markdown.
 
+**Edición avanzada Markdown.** Alt+clic añade un cursor y Ctrl/⌘+D selecciona la siguiente coincidencia. Escribir afecta a las selecciones y se deshace en un paso. La barra sigue la selección principal y aplica el formato solamente a ella; las secundarias conservan sus posiciones. Se mantienen al cambiar de pestaña o pasar por la vista previa.
+
+Las flechas de los encabezados permiten plegar secciones sin cambiar el texto ni el estado de guardado. Con el cursor en el encabezado, usa Ctrl+Mayús+[ / Ctrl+Mayús+] en Windows/Linux, o ⌘+Alt+[ / ⌘+Alt+] en macOS para plegar/desplegar. El widget indica «Sección plegada» y el editor anuncia las líneas afectadas. Intro continúa listas, tareas y citas; en un elemento vacío sale de la lista. Retroceso elimina el marcador vacío. CSV-texto y texto plano mantienen su comportamiento propio.
+
 ## CSV y TSV
 
 Selecciona una fila pulsando su número. Ctrl/⌘ o Mayús añade o retira filas individuales; Mayús no selecciona un rango. Las casillas de encabezado seleccionan columnas.

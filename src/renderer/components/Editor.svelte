@@ -1,6 +1,6 @@
 <script lang="ts">
  import {onMount} from 'svelte'
- import {EditorState,EditorSelection,Compartment,Text,Transaction} from '@codemirror/state'
+ import {EditorState,EditorSelection,Compartment,Transaction} from '@codemirror/state'
  import {EditorView,keymap,lineNumbers,highlightActiveLine,drawSelection,scrollPastEnd,highlightWhitespace} from '@codemirror/view'
  import {defaultKeymap,history,historyKeymap,undo,redo,isolateHistory} from '@codemirror/commands'
  import {searchKeymap,highlightSelectionMatches,openSearchPanel,gotoLine} from '@codemirror/search'
@@ -15,6 +15,7 @@
  import {markdownCommands,lineFormatState,type MarkdownAction,type CodeLanguage} from '../lib/markdown-commands'
  import type {TextSelection} from '../lib/text-stats'
  import {markdownLinkOnPaste} from '../lib/markdown-paste'
+ import {markdownEditingExtensions,markdownFormatChange} from '../lib/markdown-editing'
  let {text='',readonly=false,kind='markdown',label='Editor de texto',wrapLines=true,showWhitespace=false,onchange,onscroll,onformatstate,onselection,session,ontransactions,outlineEnabled=false,onoutline,oncurrentline,onblocks}: {onblocks?:(blocks:DiagramBlock[],source:string,complete:boolean)=>void;outlineEnabled?:boolean;onoutline?:(headings:EditorHeading[],source:string)=>void;oncurrentline?:(from:number)=>void;session?:MarkdownSession;ontransactions?:(transactions:readonly Transaction[])=>void;text:string;label?:string;readonly?:boolean;kind?:string;wrapLines?:boolean;showWhitespace?:boolean;onchange:(text:string)=>void;onscroll?:(ratio:number)=>void;onformatstate?:(state:ReturnType<typeof lineFormatState>)=>void;onselection?:(selection:TextSelection|null)=>void}=$props()
  let host:HTMLDivElement
  let view:EditorView|undefined
@@ -29,6 +30,10 @@
    'Find':t('csvText.cm.find'),'Replace':t('csvText.cm.replaceField'),'next':t('csvText.cm.next'),'previous':t('csvText.cm.previous'),'all':t('csvText.cm.all'),
    'match case':t('csvText.cm.case'),'regexp':t('csvText.cm.regexp'),'by word':t('csvText.cm.word'),'replace':t('csvText.cm.replace'),'replace all':t('csvText.cm.replaceAll'),'close':t('csvText.cm.close'),
    'Go to line':t('csvText.goto'),'go':t('csvText.cm.go'),'replaced match on line $':t('csvText.cm.replacedLine'),'replaced $ matches':t('csvText.cm.replacedCount'),'current match':t('csvText.cm.current'),'on line':t('csvText.cm.onLine')
+  })]:[]),
+  ...(kind==='markdown'?[EditorState.phrases.of({
+   'folded code':t('editor.foldedSection'),'unfold':t('editor.unfoldSection'),'Fold line':t('editor.foldSection'),'Unfold line':t('editor.unfoldSection'),
+   'Folded lines':t('editor.foldedLines'),'Unfolded lines':t('editor.unfoldedLines'),'to':t('editor.rangeTo')
   })]:[])
  ]}
  // El margen del documento también necesita espacio para alinear su última línea.
@@ -92,7 +97,7 @@
   if(!view||kind!=='markdown'||readonly||view.state.readOnly||view.composing||view.compositionStarted)return
   const now=action==='date'||action==='datetime'?new Date():undefined
   const result=markdownCommands[action](view.state.doc.toString(),view.state.selection.main,language,now)
-  view.dispatch({changes:result.changes.map(change=>({...change,insert:Text.of(change.insert.split('\n'))})),selection:EditorSelection.range(result.selection.anchor,result.selection.head),annotations:isolateHistory.of('full'),scrollIntoView:true,userEvent:'input'})
+  view.dispatch({...markdownFormatChange(view.state,result),annotations:isolateHistory.of('full'),scrollIntoView:true,userEvent:'input'})
   view.focus()
  }
  function shortcut(action:MarkdownAction){return()=>{if(kind!=='markdown'||!view)return false;if(!view.composing&&!view.compositionStarted)format(action);return true}}
@@ -126,7 +131,7 @@
  onMount(()=>{
   const sessionAtMount=session,dispatch=ontransactions;mountedSession=sessionAtMount
   const csv=kind==='csv-text'?csvTextDocument(text):undefined
-  const extensions=[...(csv?.extensions??[]),textDisplay.of(displayExtensions(wrapLines,showWhitespace)),...((kind==='markdown'||kind==='mermaid')&&text.includes('\r\n')&&!sessionAtMount?[EditorState.lineSeparator.of('\r\n')]:[]),EditorView.contentAttributes.of({'aria-label':label}),lineNumbers(),(['markdown','mermaid'].includes(kind)?diagramMarkExtensions:[]),outlinePadding.of(outlineEnabled?[scrollPastEnd(),EditorView.theme({'.cm-scroller':{paddingBottom:'1lh'}})]:[]),highlightActiveLine(),drawSelection(),...(!sessionAtMount?[history()]:[]),highlightSelectionMatches(),keymap.of([{key:'Mod-b',run:shortcut('bold')},{key:'Mod-i',run:shortcut('italic')},{key:'Mod-Shift-x',run:shortcut('strike')},...(['paragraph','heading1','heading2','heading3'] as const).map((action,index)=>({key:`Mod-Alt-${index}`,run:shortcut(action)})),...defaultKeymap,...historyKeymap,...searchKeymap]),syntaxHighlighting(defaultHighlightStyle),...(kind==='markdown'?[markdown({pasteURLAsLink:false})]:[]),permission.of([EditorState.readOnly.of(readonly),EditorView.editable.of(!readonly)]),EditorView.theme({'&':{height:'100%',fontSize:'13px'},'.cm-scroller':{fontFamily:'"JetBrains Mono", monospace',lineHeight:'1.8'},'.cm-content':{padding:'20px 0'},'.cm-gutters':{backgroundColor:'transparent',color:'var(--muted)',borderRight:'1px solid var(--border)'},'.cm-activeLine':{backgroundColor:'var(--hover)'},'.cm-activeLineGutter':{backgroundColor:'var(--hover)'},'.cm-cursor':{borderLeftColor:'var(--text)'},'.cm-selectionBackground, &.cm-focused .cm-selectionBackground':{backgroundColor:'#007aff35'},'.cm-panels':{backgroundColor:'var(--panel)',color:'var(--text)'},'.cm-search input':{color:'var(--text)'}}),EditorView.updateListener.of(update=>{if(update.docChanged){diagnosticSummary='';generalDiagramError=false;cancelOutline();if(!applying&&!sessionAtMount)onchange(csv?csvTextValue(update.state):update.state.sliceDoc())}publishFormat(update.state);if(update.docChanged||update.selectionSet)publishSelection(update.state);if(update.docChanged||syntaxTree(update.startState)!==syntaxTree(update.state))publishOutline();if(update.geometryChanged||update.viewportChanged)publishVisibleLine()}),EditorView.domEventHandlers({paste,copy:event=>clipboard(event),cut:event=>clipboard(event,true),keydown:()=>{plainPaste=false},blur:()=>{plainPaste=false},scroll:()=>{const el=view!.scrollDOM;onscroll?.(el.scrollTop/Math.max(1,el.scrollHeight-el.clientHeight));publishVisibleLine()},compositionstart:()=>{cancelOutline()},compositionend:()=>{queueMicrotask(publishOutline)}})]
+  const extensions=[...(csv?.extensions??[]),textDisplay.of(displayExtensions(wrapLines,showWhitespace)),...((kind==='markdown'||kind==='mermaid')&&text.includes('\r\n')&&!sessionAtMount?[EditorState.lineSeparator.of('\r\n')]:[]),EditorView.contentAttributes.of({'aria-label':label}),lineNumbers(),(['markdown','mermaid'].includes(kind)?diagramMarkExtensions:[]),outlinePadding.of(outlineEnabled?[scrollPastEnd(),EditorView.theme({'.cm-scroller':{paddingBottom:'1lh'}})]:[]),highlightActiveLine(),drawSelection(),...(!sessionAtMount?[history()]:[]),highlightSelectionMatches(),keymap.of([{key:'Mod-b',run:shortcut('bold')},{key:'Mod-i',run:shortcut('italic')},{key:'Mod-Shift-x',run:shortcut('strike')},...(['paragraph','heading1','heading2','heading3'] as const).map((action,index)=>({key:`Mod-Alt-${index}`,run:shortcut(action)})),...defaultKeymap,...historyKeymap,...searchKeymap]),syntaxHighlighting(defaultHighlightStyle),...(kind==='markdown'?[markdown({pasteURLAsLink:false,addKeymap:false}),markdownEditingExtensions]:[]),permission.of([EditorState.readOnly.of(readonly),EditorView.editable.of(!readonly)]),EditorView.theme({'&':{height:'100%',fontSize:'13px'},'.cm-scroller':{fontFamily:'"JetBrains Mono", monospace',lineHeight:'1.8'},'.cm-content':{padding:'20px 0'},'.cm-gutters':{backgroundColor:'transparent',color:'var(--muted)',borderRight:'1px solid var(--border)'},'.cm-activeLine':{backgroundColor:'var(--hover)'},'.cm-activeLineGutter':{backgroundColor:'var(--hover)'},'.cm-cursor':{borderLeftColor:'var(--text)'},'.cm-selectionBackground, &.cm-focused .cm-selectionBackground':{backgroundColor:'#007aff35'},'.cm-panels':{backgroundColor:'var(--panel)',color:'var(--text)'},'.cm-search input':{color:'var(--text)'}}),EditorView.updateListener.of(update=>{if(update.docChanged){diagnosticSummary='';generalDiagramError=false;cancelOutline();if(!applying&&!sessionAtMount)onchange(csv?csvTextValue(update.state):update.state.sliceDoc())}publishFormat(update.state);if(update.docChanged||update.selectionSet)publishSelection(update.state);if(update.docChanged||syntaxTree(update.startState)!==syntaxTree(update.state))publishOutline();if(update.geometryChanged||update.viewportChanged)publishVisibleLine()}),EditorView.domEventHandlers({paste,copy:event=>clipboard(event),cut:event=>clipboard(event,true),keydown:()=>{plainPaste=false},blur:()=>{plainPaste=false},scroll:()=>{const el=view!.scrollDOM;onscroll?.(el.scrollTop/Math.max(1,el.scrollHeight-el.clientHeight));publishVisibleLine()},compositionstart:()=>{cancelOutline()},compositionend:()=>{queueMicrotask(publishOutline)}})]
   if(sessionAtMount&&dispatch)dispatch([sessionAtMount.state.update({effects:sessionAtMount.ui.reconfigure(extensions)})])
   view=new EditorView({parent:host,state:sessionAtMount?.state??EditorState.create({doc:csv?.doc??text,extensions}),...(sessionAtMount&&dispatch?{dispatchTransactions:dispatch}:{})})
   if(sessionAtMount)sessionAtMount.receive=transactions=>view?.update(transactions)
@@ -146,5 +151,7 @@
 <style>
  .diagram-editor-notice:not(.sr-only){padding:6px 10px;font-size:12px;background:var(--panel);color:var(--text);border-bottom:1px solid var(--border)}
  .code-editor{--diagram-error-bg:#fff0eb;--diagram-error-ink:#8a240b}
+ .code-editor :global(.cm-foldPlaceholder){color:var(--text);background:var(--hover);border-color:var(--border)}
+ .code-editor :global(.cm-foldGutter){color:var(--text)}
  :global(.dark) .code-editor{--diagram-error-bg:#44251e;--diagram-error-ink:#ffd0c1}
 </style>
