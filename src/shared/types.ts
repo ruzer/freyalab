@@ -70,7 +70,7 @@ export interface FreyaAPI {
  bibliography(id:string,source:string):Promise<import('./bibliography').DocumentBibliography>;
  language():Promise<LanguageState>;setLanguage(preference:LanguagePreference):Promise<LanguageState>;
  open():Promise<DocumentInfo[]>; openPaths(paths:string[]):Promise<DocumentInfo[]>; newDocument(kind:Kind):Promise<DocumentInfo>; folder():Promise<string|null>; tree(path:string):Promise<TreeEntry[]>; findFiles(root:string,query:string):Promise<{entries:TreeEntry[];limited:boolean}>; cancelFileSearch():Promise<void>; listTags(root:string):Promise<{tags:{tag:string;count:number}[];limited:boolean}>; cancelTagList():Promise<void>;
- csvOpen(path:string,view:CsvView):Promise<DocumentInfo>;csvView(id:string,view:CsvView,decision?:CsvViewDecision):Promise<DocumentInfo>;csvViewInfo(path:string):Promise<{byteLength:number;textAllowed:boolean}>;
+ csvOpen(path:string,view:CsvView):Promise<DocumentInfo>;csvView(id:string,view:CsvView,decision?:CsvViewDecision):Promise<DocumentInfo>;csvViewInfo(path:string):Promise<{byteLength:number;textAllowed:boolean;id?:string}>;
  update(id:string,text:string):Promise<DocumentInfo>; save(id:string,as?:boolean):Promise<SaveOutcome|null>; locateImage(id:string,source:string):Promise<SaveOutcome|null>; close(id:string):Promise<boolean>; reload(id:string):Promise<DocumentInfo>; documents():Promise<DocumentInfo[]>;
  tableCopy(id:string,options:TableExport,format:'tsv'|'markdown'):Promise<void>; tablePaste(id:string,range:TableRange):Promise<string>;
  transformPreview(id:string,edit:TableTransformEdit):Promise<TableTransformPreview>;
