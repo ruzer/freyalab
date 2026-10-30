@@ -1,0 +1,39 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/updates.test.ts -t cancelar durante
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-lote2/actualizaciones
+
+ ❯ tests/updates.test.ts (27 tests | 1 failed | 26 skipped) 11ms
+   ❯ APP-04 · versiones y frontera de confianza (27)
+     × U1/U15 · cancelar durante la persistencia no cancela una nueva búsqueda inmediata 10ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U1/U15 · cancelar durante la persistencia no cancela una nueva búsqueda inmediata
+AssertionError: expected { status: 'cancelled' } to match object { status: 'available' }
+
+- Expected
++ Received
+
+  {
+-   "status": "available",
++   "status": "cancelled",
+  }
+
+ ❯ tests/updates.test.ts:90:76
+     88|   const service=new UpdatesService({get:async()=>state,set:async()=>{i…
+     89|   const cancelled=service.check();service.cancel();const next=service.…
+     90|   expect(await cancelled).toEqual({status:'cancelled'});expect(await n…
+       |                                                                            ^
+     91|  })
+     92| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 26 skipped (27)
+   Start at  12:37:47
+   Duration  152ms (import 56%, transform 29%, tests 13%, worker 2%)

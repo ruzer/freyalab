@@ -1,0 +1,66 @@
+
+Running 2 tests using 1 worker
+
+(node:38538) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [shell] › tests/e2e/updates.spec.ts:69:2 › APP-04 U10/U15 · respuesta anterior de updates:skip no cierra un diálogo nuevo (1.2s)
+(node:38567) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [shell] › tests/e2e/updates.spec.ts:69:2 › APP-04 U10/U15 · respuesta anterior de updates:remind no cierra un diálogo nuevo (878ms)
+
+
+  1) [shell] › tests/e2e/updates.spec.ts:69:2 › APP-04 U10/U15 · respuesta anterior de updates:skip no cierra un diálogo nuevo
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      91 |    // Drenar la respuesta genuina y las reacciones de render, sin temporizadores arbitrarios.
+      92 |    await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))))
+    > 93 |    expect(await next!.evaluate(node=>node.isConnected&&(node as HTMLDialogElement).open)).toBe(true)
+         |                                                                                           ^
+      94 |    await expect(updateDialog().getByRole('heading',{name:'Hay una versión nueva',exact:true})).toBeVisible()
+      95 |    await test.info().attach('respuesta-de-accion-anterior',{body:Buffer.from(JSON.stringify({operation:action.operation,requests,newDialogStillOpen:true})),contentType:'application/json'})
+      96 |   }finally{
+        at /private/tmp/freyalab-lote2/actualizaciones/tests/e2e/updates.spec.ts:93:91
+
+    Error Context: ../../freyalab-app04-red-late-action/updates-APP-04-U10-U15-·-r-f8598--no-cierra-un-diálogo-nuevo-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../freyalab-app04-red-late-action/updates-APP-04-U10-U15-·-r-f8598--no-cierra-un-diálogo-nuevo-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../freyalab-app04-red-late-action/updates-APP-04-U10-U15-·-r-f8598--no-cierra-un-diálogo-nuevo-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [shell] › tests/e2e/updates.spec.ts:69:2 › APP-04 U10/U15 · respuesta anterior de updates:remind no cierra un diálogo nuevo
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      91 |    // Drenar la respuesta genuina y las reacciones de render, sin temporizadores arbitrarios.
+      92 |    await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))))
+    > 93 |    expect(await next!.evaluate(node=>node.isConnected&&(node as HTMLDialogElement).open)).toBe(true)
+         |                                                                                           ^
+      94 |    await expect(updateDialog().getByRole('heading',{name:'Hay una versión nueva',exact:true})).toBeVisible()
+      95 |    await test.info().attach('respuesta-de-accion-anterior',{body:Buffer.from(JSON.stringify({operation:action.operation,requests,newDialogStillOpen:true})),contentType:'application/json'})
+      96 |   }finally{
+        at /private/tmp/freyalab-lote2/actualizaciones/tests/e2e/updates.spec.ts:93:91
+
+    Error Context: ../../freyalab-app04-red-late-action/updates-APP-04-U10-U15-·-r-0845c--no-cierra-un-diálogo-nuevo-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../freyalab-app04-red-late-action/updates-APP-04-U10-U15-·-r-0845c--no-cierra-un-diálogo-nuevo-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../freyalab-app04-red-late-action/updates-APP-04-U10-U15-·-r-0845c--no-cierra-un-diálogo-nuevo-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [shell] › tests/e2e/updates.spec.ts:69:2 › APP-04 U10/U15 · respuesta anterior de updates:skip no cierra un diálogo nuevo
+    [shell] › tests/e2e/updates.spec.ts:69:2 › APP-04 U10/U15 · respuesta anterior de updates:remind no cierra un diálogo nuevo

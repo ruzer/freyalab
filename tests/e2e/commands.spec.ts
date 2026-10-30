@@ -84,7 +84,7 @@ test('APP-02: Acerca de muestra versión real, copia sólo diagnóstico y lee li
     await expect(copy).toBeVisible();await expect(dialog).toHaveAccessibleName(labels.dialog);await expect(dialog.locator('#about-version')).toHaveText(metadata.version)
     await expect(dialog.locator('[data-info="build"]')).toHaveText(build)
     for(const key of ['electron','chromium','node','arch'] as const)await expect(dialog.locator(`[data-info="${key}"]`)).toHaveText(metadata[key]!)
-    await expect(dialog.getByRole('button',{name:labels.updates,exact:true})).toBeDisabled()
+    await expect(dialog.getByRole('button',{name:labels.updates,exact:true})).toBeEnabled()
     if(!intercepted){
      await app.evaluate(({clipboard})=>{
       const state=globalThis as typeof globalThis&{__freyaAboutClipboard?:{original:typeof clipboard.writeText;values:string[];fail:boolean}}

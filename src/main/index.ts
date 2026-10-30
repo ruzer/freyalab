@@ -12,6 +12,7 @@ import {initializeLanguage,languageState,changeLanguage} from './language'
 import {t,formatList} from '../shared/i18n'
 import {applicationInfo,copyApplicationInfo,thirdPartyNotices} from './app-info'
 import {SettingsStore} from './settings'
+import {UpdatesService,releaseUrl} from './updates'
 import {resetSettings,clearRecents,showDataFolder} from './settings-actions'
 import {legacySettingsInputSchema,type SettingsState} from '../shared/settings'
 import {applicationMenu,applicationShortcutHelp,type ApplicationMenuContext} from './application-menu'
@@ -32,7 +33,7 @@ import {isTableDocument} from '../shared/types'
 import type { Kind,TableEdit,TableOptions,TableExport,TableQuery,ExportRequest,TableRange,TableRangeEdit,TableTransformEdit } from '../shared/types'
 const here=dirname(fileURLToPath(import.meta.url))
 if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FREYALAB_USER_DATA))
-let window:BrowserWindow|undefined,windowReady:Promise<void>|undefined,docs:Documents,analytics:SqlService,presets:ChartPresets,settings:SettingsStore,settingsStartupNotice:string|undefined,quitting=false,quitRequested=false,closingWindow=false
+let window:BrowserWindow|undefined,windowReady:Promise<void>|undefined,docs:Documents,analytics:SqlService,presets:ChartPresets,settings:SettingsStore,updates:UpdatesService,settingsStartupNotice:string|undefined,quitting=false,quitRequested=false,closingWindow=false
 let menuState:ApplicationUiState={activeId:null,mode:'split',focus:'none',locked:false,canEdit:false},menuSettings:SettingsState,menuRecents:string[]=[],menuSignature=''
 let menuPandocAvailable=false
 const menuPandoc=new MenuPandocAvailability(detectPandoc,()=>docs?.pandocPath,value=>{docs.pandocPath=value},value=>{menuPandocAvailable=value;refreshApplicationMenu()})
@@ -56,7 +57,7 @@ async function openPaths(paths:string[]){const result=[];for(const p of paths){i
 function assertSender(event:Electron.IpcMainInvokeEvent|Electron.IpcMainEvent){if(!window||event.sender!==window.webContents||event.senderFrame!==window.webContents.mainFrame)throw new Error('Origen no autorizado.')}
 function applicationContext():ApplicationMenuContext {
  const documents=docs?[...docs.records.values()].map(({info:{id,name,kind,readonly,dirty,csvView}})=>({id,name,kind,readonly,dirty,...(kind==='csv'?{csvView:csvView??'table'}:{})})):[]
- return{...menuState,documents,recents:menuRecents,theme:menuSettings.values.tema,sidebar:menuSettings.values.barraLateral.visible,development:!app.isPackaged,showDevTools:menuSettings.values.avanzado.herramientasDeDesarrollo,docxAvailable:menuPandocAvailable}
+ return{...menuState,documents,recents:menuRecents,theme:menuSettings.values.tema,sidebar:menuSettings.values.barraLateral.visible,development:!app.isPackaged,showDevTools:menuSettings.values.avanzado.herramientasDeDesarrollo,updatesReady:true,docxAvailable:menuPandocAvailable}
 }
 function refreshApplicationMenu(){
  const context=applicationContext(),signature=languageState().language+'\n'+menuFingerprint(context)
@@ -97,6 +98,11 @@ async function handle(operation:string,args:unknown[]){
  case'appInfo':z.tuple([]).parse(args);return applicationInfo()
  case'copyAppInfo':z.tuple([]).parse(args);return copyApplicationInfo()
  case'thirdPartyNotices':z.tuple([]).parse(args);return thirdPartyNotices()
+ case'updates:check':{z.tuple([]).parse(args);const result=await updates.check();changedSettings(await settings.get());return result}
+ case'updates:cancel':z.tuple([]).parse(args);updates.cancel();return
+ case'updates:skip':{const[version]=z.tuple([z.string().max(256)]).parse(args);return changedSettings(await updates.skip(version))}
+ case'updates:remind':z.tuple([]).parse(args);return changedSettings(await updates.remind())
+ case'updates:open':{const[url]=z.tuple([z.string().max(2048)]).parse(args);if(!releaseUrl(url))throw new Error(t('updates.error.invalid'));await shell.openExternal(url);return}
  case'settings:get':{z.tuple([]).parse(args);const state=await settings.get();return changedSettings(settingsStartupNotice&&!state.notice?{...state,notice:settingsStartupNotice}:state)}
  case'settings:set':{const [patch]=z.tuple([z.unknown()]).parse(args),state=await settings.set(patch);settingsStartupNotice=undefined;return changedSettings(state,typeof patch==='object'&&patch!==null&&Object.hasOwn(patch,'idioma'))}
  case'settings:migrate':{const [previous]=z.tuple([legacySettingsInputSchema]).parse(args);return changedSettings(await settings.migrate(previous))}
@@ -183,6 +189,7 @@ app.whenReady().then(async()=>{
  app.setName('FreyaLab')
  initializeLanguage(app.getPreferredSystemLanguages(),process.env)
  settings=new SettingsStore(join(app.getPath('userData'),'settings.json'))
+ updates=new UpdatesService(settings,app.getVersion())
  const initialSettings=await settings.get();settingsStartupNotice=initialSettings.notice;menuSettings=initialSettings
  initializeLanguage(app.getPreferredSystemLanguages(),process.env,initialSettings.values.idioma)
  docs=new Documents(event=>{window?.webContents.send('freya:event',event);refreshApplicationMenu()})
@@ -200,6 +207,7 @@ app.whenReady().then(async()=>{
  ipcMain.on('freya:close-prepared',(event,...args)=>{try{assertSender(event);const[nonce,ready]=closePreparedArguments.parse(args);closePreparation.complete(event.sender.id,nonce,ready)}catch{}})
  ipcMain.on('freya:menu-native-done',(event,...args)=>{try{assertSender(event);const[nonce]=nativeEditArguments.parse(args);nativeEdits.finish(event.sender.id,nonce)}catch{}})
  await refreshMenuRecents();await createApplicationWindow()
+ void updates.startup().then(async result=>{changedSettings(await settings.get());if(result)window?.webContents.send('freya:event',{type:'updates',update:result})}).catch(()=>{})
  const initial=process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_OPEN?JSON.parse(process.env.FREYALAB_TEST_OPEN):process.argv.slice(1).filter(p=>/\.(md|markdown|csv|tsv|mmd|mermaid|txt)$/i.test(p))
  for(const p of [...waiting.splice(0),...initial]){docs.grants.add(resolve(p));await openPaths([p]).catch(e=>window?.webContents.send('freya:event',{type:'error',message:e.message}))}
  await refreshMenuRecents()

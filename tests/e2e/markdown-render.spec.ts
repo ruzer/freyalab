@@ -22,6 +22,7 @@ async function open(source:string){
  await expect(page.locator('.cm-content')).toBeVisible();await expect(article()).not.toBeEmpty();await settled()
 }
 async function settled(){await expect(preview().locator('.render-progress')).toHaveCount(0)}
+async function scrollIdle(){await preview().evaluate(node=>new Promise<void>(resolve=>{let previous=(node as HTMLElement).scrollTop,equal=0;function sample(){const next=(node as HTMLElement).scrollTop;equal=Math.abs(next-previous)<.01?equal+1:0;previous=next;if(equal>=3)resolve();else requestAnimationFrame(sample)}requestAnimationFrame(sample)}))}
 async function intact(source:string){
  expect(await readFile(documentPath,'utf8')).toBe(source)
  const state=await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),documentId)
@@ -89,7 +90,7 @@ test('B: enlaces con acentos, mayúsculas y porcentaje navegan y enfocan; huérf
  await open(source)
  const target=article().locator('#heading-instalacion')
  for(const label of ['ir','mayúsculas','codificado']){
-  const link=article().getByRole('link',{name:label,exact:true});await expect(link).toHaveAttribute('href','#heading-instalacion');await link.click();await expect(target).toBeFocused();await expect.poll(()=>preview().evaluate(node=>node.scrollTop)).toBeGreaterThan(0)
+  const link=article().getByRole('link',{name:label,exact:true});await expect(link).toHaveAttribute('href','#heading-instalacion');await link.click();await expect(target).toBeFocused();await expect.poll(()=>preview().evaluate(node=>node.scrollTop)).toBeGreaterThan(0);await scrollIdle();await expect(target).toBeInViewport()
  }
  await article().getByRole('link',{name:'primer Uno',exact:true}).click();await expect(article().locator('#heading-uno')).toBeFocused()
  const broken=article().locator('.enlace-roto');await expect(broken).toHaveText('perdido');await expect(broken).toHaveAttribute('data-seccion-faltante','ausente');await expect(broken).not.toHaveAttribute('href');expect(await broken.evaluate(node=>(node as HTMLElement).tabIndex)).toBe(-1)

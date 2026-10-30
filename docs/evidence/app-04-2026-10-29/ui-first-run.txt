@@ -1,0 +1,50 @@
+
+Running 5 tests using 1 worker
+
+(node:34271) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [shell] › tests/e2e/updates.spec.ts:26:1 › APP-04 U1/U2 · sesión sin red y las tres entradas abren el mismo flujo (1.4s)
+  ✘  2 [shell] › tests/e2e/updates.spec.ts:35:1 › APP-04 U1/U7/U9/U15 · estados, enlaces limitados, reintentar y Esc cancela (15.6s)
+(node:34308) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [shell] › tests/e2e/updates.spec.ts:46:1 › APP-04 U10/U11/U12 · aviso automático conserva el foco y omitir sobrevive al reinicio (2.5s)
+  ✓  4 [shell] › tests/e2e/updates.spec.ts:61:1 › APP-04 U13 · el idioma cambia durante la petición sin reiniciarla (754ms)
+  ✓  5 [shell] › tests/e2e/updates.spec.ts:68:1 › APP-04 U13/U15/U16 · cuatro estados sin desbordes y con contraste en es, en y en-XA (7.7s)
+
+
+  1) [shell] › tests/e2e/updates.spec.ts:35:1 › APP-04 U1/U7/U9/U15 · estados, enlaces limitados, reintentar y Esc cancela
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('dialog', { name: /Buscar actualizaciones|Check for updates/ }).getByRole('heading', { name: 'No se pudo comprobar', exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('dialog', { name: /Buscar actualizaciones|Check for updates/ }).getByRole('heading', { name: 'No se pudo comprobar', exact: true }) with timeout 15000ms
+      - waiting for getByRole('dialog', { name: /Buscar actualizaciones|Check for updates/ }).getByRole('heading', { name: 'No se pudo comprobar', exact: true })
+
+
+      35 | test('APP-04 U1/U7/U9/U15 · estados, enlaces limitados, reintentar y Esc cancela',async()=>{
+      36 |  mode='held';await runApplicationMenu(app!,'app.updates');await expect(updateDialog().getByRole('heading',{name:'Buscando…',exact:true})).toBeVisible();await page.keyboard.press('Escape');await expect(updateDialog()).toHaveCount(0)
+    > 37 |  mode='error';await runApplicationMenu(app!,'app.updates');await expect(updateDialog().getByRole('heading',{name:'No se pudo comprobar',exact:true})).toBeVisible();mode='current';await updateDialog().getByRole('button',{name:'Reintentar',exact:true}).click();await expect(updateDialog().getByRole('heading',{name:'Estás al día',exact:true})).toBeVisible();await updateDialog().getByRole('button',{name:'Cerrar',exact:true}).click()
+         |                                                                                                                                                       ^
+      38 |  mode='available';await runApplicationMenu(app!,'app.updates');await expect(updateDialog().getByRole('heading',{name:'Hay una versión nueva',exact:true})).toBeVisible()
+      39 |  await expect(page.evaluate(()=>window.freya.openUpdate('https://evil.invalid/asset.dmg'))).rejects.toThrow()
+      40 |  await app!.evaluate(({shell})=>{const state=globalThis as typeof globalThis&{__updateLinks?:string[]};state.__updateLinks=[];shell.openExternal=async url=>{state.__updateLinks!.push(url)}})
+        at /private/tmp/freyalab-lote2/actualizaciones/tests/e2e/updates.spec.ts:37:151
+
+    Error Context: ../../freyalab-app04-green-ui/updates-APP-04-U1-U7-U9-U1-ca829-os-reintentar-y-Esc-cancela-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../freyalab-app04-green-ui/updates-APP-04-U1-U7-U9-U1-ca829-os-reintentar-y-Esc-cancela-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../freyalab-app04-green-ui/updates-APP-04-U1-U7-U9-U1-ca829-os-reintentar-y-Esc-cancela-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [shell] › tests/e2e/updates.spec.ts:35:1 › APP-04 U1/U7/U9/U15 · estados, enlaces limitados, reintentar y Esc cancela
+  4 passed (28.7s)

@@ -36,6 +36,7 @@ const api:FreyaAPI={
   ipcRenderer.on('freya:command',listener);return()=>{live=false;current=undefined;ipcRenderer.removeListener('freya:command',listener)}
  },
  appInfo:()=>invoke('appInfo'),copyAppInfo:()=>invoke('copyAppInfo'),thirdPartyNotices:()=>invoke('thirdPartyNotices'),
+ checkUpdates:()=>invoke('updates:check'),cancelUpdates:()=>invoke('updates:cancel'),skipUpdate:version=>invoke('updates:skip',version),remindUpdate:()=>invoke('updates:remind'),openUpdate:url=>invoke('updates:open',url),
  settings:()=>invoke('settings:get'),setSettings:patch=>invoke('settings:set',patch),migrateSettings:values=>invoke('settings:migrate',values),
  resetSettings:()=>invoke('settings:reset'),clearRecents:()=>invoke('recents:clear'),showDataFolder:()=>invoke('settings:showDataFolder'),
  language:()=>invoke('language'),setLanguage:preference=>invoke('setLanguage',preference),

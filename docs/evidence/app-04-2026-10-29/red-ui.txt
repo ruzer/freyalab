@@ -1,0 +1,43 @@
+
+Running 1 test using 1 worker
+
+(node:31369) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [shell] › tests/e2e/updates.spec.ts:26:1 › APP-04 U1/U2 · sesión sin red y las tres entradas abren el mismo flujo (16.1s)
+
+
+  1) [shell] › tests/e2e/updates.spec.ts:26:1 › APP-04 U1/U2 · sesión sin red y las tres entradas abren el mismo flujo
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('dialog', { name: /Buscar actualizaciones|Check for updates/ })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('dialog', { name: /Buscar actualizaciones|Check for updates/ }) with timeout 15000ms
+      - waiting for getByRole('dialog', { name: /Buscar actualizaciones|Check for updates/ })
+
+
+      27 |  await page.getByRole('button',{name:'Nuevo archivo',exact:false}).click();await page.locator('.cm-content').fill('DOCUMENTO_SIN_CAMBIOS_POR_ACTUALIZAR')
+      28 |  await expect.poll(()=>page.evaluate(()=>window.freya.documents())).toMatchObject([{text:'DOCUMENTO_SIN_CAMBIOS_POR_ACTUALIZAR'}]);expect(requests).toBe(0)
+    > 29 |  await runApplicationMenu(app!,'app.updates');await expect(updateDialog()).toBeVisible();await expect(updateDialog().getByRole('heading',{name:'Hay una versión nueva',exact:true})).toBeVisible();await updateDialog().getByRole('button',{name:'Cerrar',exact:true}).click()
+         |                                                                            ^
+      30 |  await runApplicationMenu(app!,'app.about');await page.getByRole('dialog',{name:'Acerca de FreyaLab',exact:true}).getByRole('button',{name:'Buscar actualizaciones',exact:true}).click();await expect(updateDialog()).toBeVisible();await updateDialog().getByRole('button',{name:'Cerrar',exact:true}).click();await page.getByRole('dialog',{name:'Acerca de FreyaLab',exact:true}).getByRole('button',{name:'Cerrar',exact:true}).click()
+      31 |  await runApplicationMenu(app!,'app.settings');await page.getByRole('tab',{name:'Actualizaciones',exact:true}).click();await page.getByRole('dialog',{name:'Ajustes',exact:true}).getByRole('button',{name:'Buscar actualizaciones',exact:true}).click();await expect(updateDialog()).toBeVisible();await updateDialog().getByRole('button',{name:'Cerrar',exact:true}).click()
+      32 |  expect(requests).toBe(3);expect((await page.evaluate(()=>window.freya.documents()))[0].text).toBe('DOCUMENTO_SIN_CAMBIOS_POR_ACTUALIZAR')
+        at /private/tmp/freyalab-lote2/actualizaciones/tests/e2e/updates.spec.ts:29:76
+
+    Error Context: ../../freyalab-app04-red-ui/updates-APP-04-U1-U2-·-ses-ef1a0-tradas-abren-el-mismo-flujo-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../freyalab-app04-red-ui/updates-APP-04-U1-U2-·-ses-ef1a0-tradas-abren-el-mismo-flujo-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../freyalab-app04-red-ui/updates-APP-04-U1-U2-·-ses-ef1a0-tradas-abren-el-mismo-flujo-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [shell] › tests/e2e/updates.spec.ts:26:1 › APP-04 U1/U2 · sesión sin red y las tres entradas abren el mismo flujo

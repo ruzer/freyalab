@@ -33,6 +33,9 @@
  import AssetWarnings from './components/AssetWarnings.svelte'
  import AboutDialog from './components/AboutDialog.svelte'
  import SettingsDialog from './components/SettingsDialog.svelte'
+ import UpdateDialog from './components/UpdateDialog.svelte'
+ import UpdateNotice from './components/UpdateNotice.svelte'
+ import type {UpdateResult} from '../shared/updates'
  import ShortcutsDialog from './components/ShortcutsDialog.svelte'
  import PandocDialog from './components/PandocDialog.svelte'
  import type {PandocStatus} from '../shared/pandoc'
@@ -90,6 +93,8 @@
  const indexVisible=$derived(sidebar&&effectiveSidebarTab==='outline'&&active?.kind==='markdown')
  const outlineHeadings=$derived(headingDocument===activeId?headings:[])
  let appDialog=$state<'about'|'licenses'|'settings'|'shortcuts'|null>(null)
+ let updatesOpen=$state(false),updateInitial=$state<UpdateResult|undefined>(),updateNotice=$state<Extract<UpdateResult,{status:'available'}>|null>(null)
+ function openUpdates(initial?:UpdateResult){updateInitial=initial;updatesOpen=true;updateNotice=null}
  let shortcutInfo=$state<ApplicationShortcuts>(),applicationReady=false,applicationQueued=false,applicationSignature='',shortcutContext=''
  let newMenu=$state(false),exportMenu=$state(false),exportScope=$state<'all'|'filtered'|'selection'>('all')
  let pandocOpen=$state(false),pandocStatus=$state<PandocStatus>(),citationStyle=$state<CitationStyleId>('apa'),pandocGeneration=0
@@ -335,6 +340,7 @@
   void action(async()=>{
    switch(id){
     case'app.about':appDialog='about';return
+    case'app.updates':openUpdates();return
     case'help.licenses':appDialog='licenses';return
     case'app.settings':appDialog='settings';return
     case'help.shortcuts':appDialog='shortcuts';return
@@ -401,7 +407,7 @@
    }finally{closedDuringStartup=undefined}
    recent=await window.freya.recents();recoveries=await window.freya.recoveries()
   })
-  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='language'&&event.language){setUILanguage(event.language.language);refreshShortcuts()}else if(event.type==='recents'){void window.freya.recents().then(value=>recent=value).catch(value=>error(String(value)))}else if(event.type==='settings'&&event.settings)applySettings(event.settings);else if(event.type==='csv-open-error'&&event.csvOpenError)receiveCsvError(event.csvOpenError);else if(event.type==='opened'&&event.document){const document=event.document;void action(async()=>{await settingsReady;merge(document,true)})}else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='close-status'&&event.message)closingNotice={kind:event.closingKind??'notice',message:event.message};else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];notify(event.message??'El archivo cambió en otra aplicación. Al guardar se comprobarán los cambios.')}})
+  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='updates'&&event.update?.status==='available'){if(!updatesOpen)updateNotice=event.update}else if(event.type==='language'&&event.language){setUILanguage(event.language.language);refreshShortcuts()}else if(event.type==='recents'){void window.freya.recents().then(value=>recent=value).catch(value=>error(String(value)))}else if(event.type==='settings'&&event.settings)applySettings(event.settings);else if(event.type==='csv-open-error'&&event.csvOpenError)receiveCsvError(event.csvOpenError);else if(event.type==='opened'&&event.document){const document=event.document;void action(async()=>{await settingsReady;merge(document,true)})}else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='close-status'&&event.message)closingNotice={kind:event.closingKind??'notice',message:event.message};else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];notify(event.message??'El archivo cambió en otra aplicación. Al guardar se comprobarán los cambios.')}})
   return()=>{applicationReady=false;for(const event of contextEvents)document.removeEventListener(event,queueApplicationState);unsubscribeCommand();unsubscribeClose();closingFlow.abort();mq.removeEventListener('change',change);unsubscribe();clearTimeout(toastTimer)}
  })
  $effect(()=>{
@@ -422,7 +428,7 @@
  })
  $effect(()=>{document.documentElement.classList.toggle('dark',dark)})
  $effect(()=>{document.documentElement.lang=getUILanguage()})
- $effect(()=>{active?.id;active?.readonly;mode;busy;applicationClosing;assetBusy[activeId];appDialog;getUILanguage();preferencesState.values.avanzado.herramientasDeDesarrollo;queueApplicationState()})
+ $effect(()=>{active?.id;active?.readonly;mode;busy;applicationClosing;assetBusy[activeId];appDialog;updatesOpen;getUILanguage();preferencesState.values.avanzado.herramientasDeDesarrollo;queueApplicationState()})
 </script>
 <svelte:window oncompositionstart={()=>compositionActive=true} oncompositionend={()=>compositionActive=false} onkeydown={keydown} ondragover={event=>event.preventDefault()} ondrop={drop}/>
 <div class="app-shell" class:dark inert={applicationClosing}>
@@ -474,7 +480,9 @@
  {#if csvChange}<CsvViewDialog name={csvChange.name} busy={csvChange.busy} message={csvChange.message} onchoose={decision=>void resolveCsvChange(decision)}/>{/if}
  {#if csvFileMenu}<CsvFileMenu path={csvFileMenu.path} x={csvFileMenu.x} y={csvFileMenu.y} onopen={(path,view)=>void chooseCsvView(view,path)} onclose={closeCsvContext} onerror={error}/>{/if}
  {#if toast}<div class="toast {toastKind}" role="status"><Icon name={toastKind==='error'?'triangle-alert':'circle-check'} size={16}/><span>{toast}</span><button onclick={()=>toast=''} aria-label="Cerrar aviso"><Icon name="x" size={14}/></button></div>{/if}
- {#if appDialog==='about'||appDialog==='licenses'}<AboutDialog initialLicenses={appDialog==='licenses'} onclose={()=>appDialog=null}/>{:else if appDialog==='settings'}<SettingsDialog settings={preferencesState} onsave={savePreferences} onreset={resetPreferences} onclearrecents={clearRecentList} onshowdata={()=>window.freya.showDataFolder()} onclose={()=>appDialog=null}/>{:else if appDialog==='shortcuts'}<ShortcutsDialog onclose={()=>appDialog=null}/>{/if}
+ {#if appDialog==='about'||appDialog==='licenses'}<AboutDialog initialLicenses={appDialog==='licenses'} onupdates={()=>openUpdates()} onclose={()=>appDialog=null}/>{:else if appDialog==='settings'}<SettingsDialog settings={preferencesState} onsave={savePreferences} onreset={resetPreferences} onclearrecents={clearRecentList} onshowdata={()=>window.freya.showDataFolder()} onupdates={()=>openUpdates()} onclose={()=>appDialog=null}/>{:else if appDialog==='shortcuts'}<ShortcutsDialog onclose={()=>appDialog=null}/>{/if}
+ {#if updateNotice}<UpdateNotice release={updateNotice.release} onview={()=>openUpdates(updateNotice!)} ondismiss={()=>updateNotice=null}/>{/if}
+ {#if updatesOpen}<UpdateDialog initialResult={updateInitial} onclose={()=>updatesOpen=false}/>{/if}
  {#if pandocOpen}<PandocDialog onstatus={status=>{pandocGeneration++;pandocStatus=status}} onclose={()=>{pandocOpen=false;void tick().then(()=>editor?.focus())}}/>{/if}
 </div>
 {#if closingNotice}<div use:placeClosingNotice class="toast close-notice {closingNotice.kind==='error'?'error':'info'}" role={closingNotice.kind==='error'?'alert':'status'} aria-live={closingNotice.kind==='error'?'assertive':'polite'} aria-atomic="true"><span>{closingNotice.message}</span>{#if closingNotice.kind!=='progress'}<button onclick={()=>closingNotice=null} aria-label={t('menu.close.dismiss')}><Icon name="x" size={14}/></button>{/if}</div>{/if}

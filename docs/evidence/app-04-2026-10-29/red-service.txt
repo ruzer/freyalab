@@ -1,0 +1,28 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/updates.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-lote2/actualizaciones
+
+ ❯ tests/updates.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/updates.test.ts [ tests/updates.test.ts ]
+Error: Cannot find module '../src/main/updates' imported from /private/tmp/freyalab-lote2/actualizaciones/tests/updates.test.ts
+ ❯ tests/updates.test.ts:6:1
+      4| import {tmpdir} from 'node:os'
+      5| import {join} from 'node:path'
+      6| import {compareVersions,selectRelease,releaseUrl,updatesEndpoint,check…
+       | ^
+      7| import {SettingsStore} from '../src/main/settings'
+      8|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  12:17:16
+   Duration  127ms (worker 98%, environment 2%)

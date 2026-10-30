@@ -2,7 +2,7 @@
  import {onMount,tick} from 'svelte'
  import {t,formatNumber,formatDate} from '../lib/i18n.svelte'
  import {defaultSettings,type Settings,type SettingsPatch,type SettingsState} from '../../shared/settings'
- let{settings,onsave,onreset,onclearrecents,onshowdata,onclose}:{settings:SettingsState;onsave:(patch:SettingsPatch)=>Promise<void>;onreset:()=>Promise<boolean>;onclearrecents:()=>Promise<boolean>;onshowdata:()=>Promise<void>;onclose:()=>void}=$props()
+ let{settings,onsave,onreset,onclearrecents,onshowdata,onupdates,onclose}:{settings:SettingsState;onsave:(patch:SettingsPatch)=>Promise<void>;onreset:()=>Promise<boolean>;onclearrecents:()=>Promise<boolean>;onshowdata:()=>Promise<void>;onupdates:()=>void;onclose:()=>void}=$props()
  const sections=['general','appearance','files','updates','privacy','advanced'] as const
  type Section=typeof sections[number]
  let section=$state<Section>('general'),dialog:HTMLDialogElement,busy=$state(false),message=$state('')
@@ -25,6 +25,7 @@
   const values=defaultSettings()
   if(section==='general')void save({idioma:values.idioma})
   else if(section==='appearance')void save({tema:values.tema,barraLateral:values.barraLateral,markdown:values.markdown,division:values.division})
+  else if(section==='updates')void save({actualizaciones:values.actualizaciones})
   else if(section==='advanced')void save({avanzado:values.avanzado})
  }
  async function security(){await run(()=>window.freya.openLink('https://github.com/ruzer/freyalab/blob/main/SECURITY.md'),'')}
@@ -55,11 +56,12 @@
     <p>{t('settings.recents.help')}</p>
     <button disabled={busy} onclick={()=>run(onclearrecents,'settings.recentsCleared')}>{t('settings.clearRecents')}</button>
    {:else if section==='updates'}
-    <p>{t('about.updatesPending')}</p>
-    <button disabled>{t('about.checkUpdates')}</button>
-    <label class="check"><input type="checkbox" disabled checked={settings.values.actualizaciones.buscarAlIniciar}/>{t('settings.updates.atStartup')}</label>
+    <button disabled={busy} onclick={onupdates}>{t('about.checkUpdates')}</button>
+    <fieldset disabled={busy||settings.readonly}><label class="check"><input type="checkbox" checked={settings.values.actualizaciones.buscarAlIniciar} onchange={event=>save({actualizaciones:{buscarAlIniciar:event.currentTarget.checked}})}/>{t('settings.updates.atStartup')}</label></fieldset>
     <p>{t('settings.updates.last',{value:settings.values.actualizaciones.ultimaComprobacion?formatDate(new Date(settings.values.actualizaciones.ultimaComprobacion)):t('settings.updates.never')})}</p>
     <p>{t('settings.updates.skipped',{count:formatNumber(settings.values.actualizaciones.versionesOmitidas.length)})}</p>
+    {#if settings.values.actualizaciones.versionesOmitidas.length}<ul class="skipped-versions">{#each settings.values.actualizaciones.versionesOmitidas as version}<li>{version}</li>{/each}</ul>{/if}
+    <button disabled={busy||settings.readonly||!settings.values.actualizaciones.versionesOmitidas.length} onclick={()=>save({actualizaciones:{versionesOmitidas:[]}})}>{t('updates.forget')}</button>
    {:else if section==='privacy'}
     <p>{t('settings.privacy.local')}</p><p>{t('settings.privacy.updates')}</p>
     <button disabled={busy} onclick={security}>{t('menu.help.security')}</button>
@@ -70,12 +72,13 @@
     <p>{t('settings.reset.help')}</p>
     <button disabled={busy||settings.readonly} onclick={()=>run(onreset,'settings.resetDone')}>{t('settings.resetAll')}</button>
    {/if}
-   {#if section==='general'||section==='appearance'||section==='advanced'}<button class="reset-section" disabled={busy||settings.readonly} onclick={resetSection}>{t('settings.resetSection')}</button>{/if}
+   {#if section==='general'||section==='appearance'||section==='updates'||section==='advanced'}<button class="reset-section" disabled={busy||settings.readonly} onclick={resetSection}>{t('settings.resetSection')}</button>{/if}
   </div>
  </div>
  <footer><p role="status" aria-live="polite">{message}</p><button class="primary" disabled={busy} onclick={onclose}>{t('about.close')}</button></footer>
 </dialog>
 
 <style>
+ .skipped-versions{padding-left:20px;overflow-wrap:anywhere}
  dialog{width:900px;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px);margin:auto;padding:20px;border:1px solid var(--border);border-radius:14px;background:var(--panel);color:var(--text);box-shadow:0 16px 70px #0006}dialog[open]{display:flex;flex-direction:column;gap:16px}dialog::backdrop{background:#0007}h2{font-size:22px;font-weight:600;line-height:1.3;margin:0}h3{font-size:16px;font-weight:600;margin:0 0 16px}.settings-content{display:flex;gap:20px;min-height:0;overflow:hidden}.settings-nav{display:flex;flex-direction:column;gap:4px;flex:0 0 160px;overflow:auto}.settings-nav button{border-color:transparent;background:transparent;text-align:left;white-space:normal;min-height:32px}.settings-nav button[aria-selected=true]{background:var(--hover);border-color:var(--border);font-weight:600}.settings-panel{flex:1;min-width:0;min-height:0;overflow:auto;padding:2px 8px 8px}.settings-panel:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}fieldset{border:0;padding:0;margin:0;min-width:0}label{display:flex;flex-direction:column;align-items:stretch;gap:8px;margin:0 0 16px;font-weight:500}label.check{flex-direction:row;align-items:center;font-weight:400}label.check input{flex:none}input[type=range]{width:100%;padding:0;accent-color:var(--accent)}select{width:min(100%,280px)}p{margin:0 0 16px;line-height:1.6;overflow-wrap:anywhere}.notice{padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:7px}.reset-section{display:block;margin-top:24px}footer{display:flex;flex:none;gap:12px;align-items:center;border-top:1px solid var(--border);padding-top:12px}footer p{flex:1;min-width:0;min-height:20px;margin:0}footer button{flex:none}@media(max-width:760px){.settings-nav{flex-basis:132px}.settings-content{gap:12px}dialog{padding:16px}}
 </style>

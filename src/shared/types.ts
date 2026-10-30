@@ -3,6 +3,7 @@ import type {LanguagePreference,LanguageState} from './i18n'
 import type {ApplicationInfo} from './app-info'
 import type {ApplicationUiState,ApplicationCommand,ApplicationShortcuts,ApplicationCloseHandlers} from './application'
 import type {LegacySettings,SettingsPatch,SettingsState} from './settings'
+import type {UpdateResult} from './updates'
 import type {ExtractOrigin,OperationRequest,OperationOutcome} from './operations'
 export type Kind = 'markdown' | 'text' | 'mermaid' | 'csv'
 export type Encoding = 'utf8' | 'utf16le' | 'win1252'
@@ -56,12 +57,13 @@ export interface ExportRequest { format:'pdf'|'html'|'svg'|'png'|'csv'|'tsv'|'do
 export interface ChartResultRequest {requestId:string;revision:number;configuration:ChartConfiguration;format:'csv'|'json'|'md';protectFormulas:boolean}
 export interface GraphicExportRequest {format:'svg'|'png'|'pdf';svg:string;revision:number}
 export interface RecoveryEntry { id:string; name:string; savedAt:string }
-export interface AppEvent { type:'opened'|'changed'|'external'|'error'|'analysis'|'language'|'csv-open-error'|'settings'|'recents'|'close-status';closingKind?:'error'|'notice';csvOpenError?:CsvOpenError;settings?:SettingsState;language?:LanguageState;progress?:SqlProgress; document?:DocumentInfo; id?:string; message?:string }
+export interface AppEvent { type:'opened'|'changed'|'external'|'error'|'analysis'|'language'|'csv-open-error'|'settings'|'recents'|'updates'|'close-status';update?:UpdateResult;closingKind?:'error'|'notice';csvOpenError?:CsvOpenError;settings?:SettingsState;language?:LanguageState;progress?:SqlProgress; document?:DocumentInfo; id?:string; message?:string }
 export interface FreyaAPI {
  setApplicationState(state:ApplicationUiState):Promise<void>;applicationShortcuts():Promise<ApplicationShortcuts>;
  onCommand(callback:(command:ApplicationCommand,delegate:()=>void)=>void):()=>void;
  onPrepareClose(handlers:ApplicationCloseHandlers):()=>void;
  appInfo():Promise<ApplicationInfo>;copyAppInfo():Promise<void>;thirdPartyNotices():Promise<string>;
+ checkUpdates():Promise<UpdateResult>;cancelUpdates():Promise<void>;skipUpdate(version:string):Promise<SettingsState>;remindUpdate():Promise<SettingsState>;openUpdate(url:string):Promise<void>;
  settings():Promise<SettingsState>;setSettings(patch:SettingsPatch):Promise<SettingsState>;migrateSettings(values:LegacySettings):Promise<SettingsState>;
  resetSettings():Promise<SettingsState|null>;clearRecents():Promise<boolean>;showDataFolder():Promise<void>;
  pandocStatus():Promise<import('./pandoc').PandocStatus>;pandocChoose():Promise<import('./pandoc').PandocStatus>;pandocTest():Promise<{ok:true;bytes:number}>;
