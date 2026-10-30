@@ -2,7 +2,31 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '*.md'
+      - 'docs/*.md'
+      - 'docs/audit/**'
+      - 'docs/stories/**'
+      - 'docs/design/*.md'
+      - 'docs/design/*.html'
+      - 'docs/evidence/**/*.md'
+      - 'docs/evidence/**/*.png'
+      - 'docs/evidence/**/*.html'
+      - 'docs/evidence/**/*.pdf'
+      - 'docs/evidence/**/*.docx'
   pull_request:
+    paths-ignore:
+      - '*.md'
+      - 'docs/*.md'
+      - 'docs/audit/**'
+      - 'docs/stories/**'
+      - 'docs/design/*.md'
+      - 'docs/design/*.html'
+      - 'docs/evidence/**/*.md'
+      - 'docs/evidence/**/*.png'
+      - 'docs/evidence/**/*.html'
+      - 'docs/evidence/**/*.pdf'
+      - 'docs/evidence/**/*.docx'
 permissions:
   contents: read
 concurrency:
