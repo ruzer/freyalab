@@ -23,7 +23,7 @@ Al cierre de la rama de integración y de la última tarea del lote: `npm run ch
 
 Congela el SHA enviado a CI. Mientras se califica, continúa el código en otra rama y worktree; no cambies el head evaluado ni sus fuentes de medición. Un nuevo SHA o una integración diferente necesita su propia calificación. Registra el resultado de CI en el PR sin crear un commit solo para cambiar su estado en la evidencia.
 
-`npm run test:e2e:fast` ejecuta todo salvo `@perf`; sirve para una comprobación amplia, pero no sustituye los límites de tamaño cuando corresponden. `npm run test:e2e:perf` ejecuta esos límites. La CI conserva la suite completa en cada PR, en macOS Apple silicon e Intel, Windows y Linux. Un verde de otra base o head es histórico, no el cierre de la entrega actual.
+`npm run test:e2e:fast` ejecuta todo salvo `@perf` y `@solo`; sirve para una comprobación amplia, pero no sustituye la fase serial. `npm run test:e2e:perf` ejecuta los límites de tamaño y los casos `@solo`, con un único worker. La CI ejecuta ambas fases consecutivamente: fast con dos workers y después perf/solo aislados; conserva la suite completa en macOS Apple silicon e Intel, Windows y Linux cuando cambian entradas del producto, pruebas o construcción. Los PR sólo documentales pueden omitirla según los filtros auditados de `ci.yml`. Un verde de otra base o head es histórico, no el cierre de la entrega actual.
 
 Los grupos están en `tests/e2e/groups.ts`. `shell` y `md` enumeran archivos; `csv` contiene los demás. Cada prueba pertenece a un único proyecto en la ejecución completa. Registra los archivos nuevos en su área; un archivo sin registrar cae en `csv` y sigue protegido en CI. Cambiar de grupo no permite borrar ni debilitar aserciones.
 
@@ -31,7 +31,7 @@ Marca con `{tag:'@perf'}` solo pruebas cuyo propósito sea un límite de tamaño
 
 Reserva el literal `@perf` en nombres de archivo, títulos y bloques `describe`: Playwright lo interpreta como etiqueta dentro del nombre, aunque no aparezca en el objeto de metadatos. Usa la anotación del caso; no añadas un filtrador alternativo ni renombres casos existentes para segmentarlos.
 
-Al cambiar grupos o etiquetas, conserva el listado previo y compara las identidades completas (archivo, suites y título), sin el prefijo nuevo del proyecto: misma cantidad, ninguna pérdida ni duplicado. Comprueba también que `fast` y `perf` son disjuntos y su unión es el completo. Una cifra histórica nunca autoriza quitar casos del baseline actual.
+Al cambiar grupos o etiquetas, conserva el listado previo y compara las identidades completas (proyecto, archivo, suites y título): misma cantidad, ninguna pérdida ni duplicado ni traslado entre proyectos. Comprueba también que `fast` y `perf/solo` son disjuntos y su unión es el completo. `@solo` se añade como metadata, conservando el nombre, sólo para recursos globales que no toleran instancias concurrentes; no significa omitir la prueba. Una cifra histórica nunca autoriza quitar casos del baseline actual.
 
 La CI obligatoria debe pasar sobre el commit que se integra. Que compile no demuestra que el paquete abra ni que su instalador funcione. Si una comprobación no está disponible, indícalo; no la marques como aprobada. Una CI obligatoria ausente bloquea la publicación.
 
