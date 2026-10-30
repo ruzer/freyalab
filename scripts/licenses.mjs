@@ -26,8 +26,10 @@ for (const [location, entry] of Object.entries(lock.packages).sort(([a], [b]) =>
 const packages = sections.length - 1
 // Iconos copiados como arte SVG (src/renderer/lib/icons.ts); no son una dependencia, así que no salen del lockfile.
 sections.push(`\n${'='.repeat(78)}\nLucide icons (SVG artwork copied into src/renderer/lib/icons.ts)\nLicense: ISC; icons derived from Feather: MIT\nSource: https://github.com/lucide-icons/lucide (lucide-static@1.61.0)\n\n${(await readFile(join(root, 'docs/licenses/lucide-ISC-MIT.txt'), 'utf8')).replace(/\r\n/g, '\n').replace(/[ \t]+$/gm, '')}`)
+// Estilos CSL copiados sin modificar; sus avisos no provienen del lockfile.
+sections.push(`\n${'='.repeat(78)}\n${(await readFile(join(root, 'docs/licenses/csl-CC-BY-SA-3.0.txt'), 'utf8')).replace(/\r\n/g, '\n').replace(/[ \t]+$/gm, '')}`)
 await writeFile(join(root, 'THIRD_PARTY_NOTICES.txt'), sections.join('\n'), 'utf8')
-console.log(`Wrote notices for ${packages} production package installations and the bundled Lucide icons.`)
+console.log(`Wrote notices for ${packages} production package installations and the bundled Lucide icons and CSL styles.`)
 if (missing.length) {
   console.error(`Manual license review required:\n${missing.join('\n')}`)
   process.exitCode = 1

@@ -1,0 +1,33 @@
+[
+  {
+    "name": "ac-04-informe.docx",
+    "currentSHA256": "e55cb8cbaf8e37e4800c3ee4be48db22136bbcc2d231391fce8cf52cd7c7b356",
+    "sameAsIndependentlyReviewed": true
+  },
+  {
+    "name": "ac-04-informe.pdf",
+    "currentSHA256": "134922e7488ff97001fdca25e3637e20f862c03f5656c25709c6e1c1ef2e1eb6",
+    "sameAsIndependentlyReviewed": false,
+    "identicalExceptCreationAndModificationDates": true
+  },
+  {
+    "name": "ac-04-informe.html",
+    "currentSHA256": "9302b29b40bd198418aa19f3eb18e01f61392df3cd7276992f1cad35488ae899",
+    "sameAsIndependentlyReviewed": true
+  },
+  {
+    "name": "ac-04-invariantes.json",
+    "currentSHA256": "618842907f81c2d823d55eab497191581f9d9a09269b8b52088a1b076d89cae0",
+    "sameAsIndependentlyReviewed": true
+  },
+  {
+    "name": "ac-04-light-1440x900.png",
+    "currentSHA256": "7d82874597b42894e5c664ac4ed19ccc4dfde81060e9a6e56abe9a6a6764f736",
+    "sameAsIndependentlyReviewed": false
+  },
+  {
+    "name": "ac-04-dark-1440x900.png",
+    "currentSHA256": "96177a059b96ec95716f34c9ca8b1bb4dc4126cb25e5a6130eb794af2a026c28",
+    "sameAsIndependentlyReviewed": false
+  }
+]

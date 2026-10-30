@@ -9,6 +9,9 @@
  import {currentHeading,type HeadingMetric} from '../lib/outline'
  import {parseTags} from '../../shared/front-matter'
  import type {TaskReference} from '../lib/markdown-tasks'
+ import {bibliographyPath} from '../../shared/bibliography-source'
+ import {presentCitations} from '../lib/remark-citations'
+ import {t} from '../lib/i18n.svelte'
  let {text,id,path=null,dark=false,readonly=true,renderEnabled=true,ontask,onheadings,onerror,oncurrent,onfiltertag,candidates,ondiagnostics,onlocateimage}:{path?:string|null;onlocateimage?:(id:string,snapshot:string,source:string)=>void|Promise<void>;candidates?:{source:string;blocks:DiagramBlock[];complete:boolean};ondiagnostics?:(value:DiagramDiagnostics)=>void;text:string;id:string;dark?:boolean;readonly?:boolean;renderEnabled?:boolean;ontask?:(id:string,snapshot:string,reference:TaskReference)=>boolean;onfiltertag?:(tag:string)=>void;oncurrent?:(id:string|undefined)=>void;onheadings:(headings:Heading[],source:string)=>void;onerror:(message:string)=>void}=$props()
  let busy=$state(false),announcement=$state(''),container:HTMLElement,article:HTMLElement
  let renderForExport=$state(false)
@@ -182,7 +185,32 @@
       errors.push(`Diagrama ${index+1}. ${explanation.title} ${explanation.hint} ${location}`)
      }
     };if(token===generation){announcement=errors.join(' ');renderDiagnostics={source,results:diagnosticResults}}}
-    await Promise.all([loadImages(),loadDiagrams()])
+    const loadReferences=async()=>{
+     if(!bibliographyPath(result.frontMatter))return
+     const library=await window.freya.bibliography(docId,source)
+     if(token!==generation||disposed)return
+     if(!library.ok){documentWarnings=[...result.warnings,library.error.message];return}
+     const presentation=presentCitations(result.citations,library.entries)
+     for(const group of presentation.groups){
+      const previous=article.querySelector<HTMLElement>(`#${CSS.escape(group.id)}`);if(!previous)continue
+      const node=document.createElement(group.href?'a':'span');node.id=group.id;node.className=group.missing?'citation-missing':'document-citation';node.textContent=group.text
+      if(group.href)node.setAttribute('href',group.href)
+      previous.replaceWith(node)
+     }
+     const references=article.querySelector('#document-bibliography')
+     if(references){
+      references.replaceChildren()
+      if(presentation.references.length){const title=document.createElement('p'),label=document.createElement('strong');label.textContent=t('citations.references');title.append(label);references.append(title)}
+      for(const reference of presentation.references){const paragraph=document.createElement('p');paragraph.id=reference.id;paragraph.textContent=reference.text;references.append(paragraph)}
+     }
+     for(const link of article.querySelectorAll('.report-figures a,.report-tables a')){
+      const target=article.querySelector(`#${CSS.escape(link.getAttribute('href')!.slice(1))}`),caption=target?.querySelector('figcaption')
+      if(caption)link.textContent=caption.textContent
+     }
+     documentWarnings=[...result.warnings,...presentation.warnings,...(result.citations.length?[t('citations.noFinalStyle')]:[])]
+     scheduleMetrics()
+    }
+    await Promise.all([loadImages(),loadDiagrams(),loadReferences()])
    }catch(error){if(token===generation){renderError=error instanceof Error?error.message:String(error);onerror(renderError)}}
    finally{if(token===generation)busy=false;finish()}
   },150)
@@ -253,6 +281,8 @@
  :global(.markdown-body input[type="checkbox"]:not(:disabled)){cursor:pointer}
  :global(.markdown-body input[type="checkbox"]:focus-visible){outline:2px solid var(--accent);outline-offset:3px}
  :global(.markdown-body .enlace-roto){color:var(--muted);text-decoration:underline dotted;cursor:help}
+ :global(.markdown-body .citation-missing){text-decoration:underline dotted}
+ :global(.markdown-body .document-bibliography){margin-top:32px;border-top:1px solid var(--border);padding-top:12px}
  .document-properties-row{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border)}
  .document-tags{display:flex;flex-wrap:wrap;gap:5px;max-width:60%}
  .document-tags button{font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;padding:2px 7px;border-radius:12px}

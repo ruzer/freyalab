@@ -5,6 +5,9 @@ import { randomUUID, createHash } from 'node:crypto'
 import {constants} from 'node:fs'
 import {frontMatterOf,parseTags,normalizeTag} from '../shared/front-matter'
 import {t} from '../shared/i18n'
+import {bibliographyPath} from '../shared/bibliography-source'
+import {loadBibliography} from './bibliography'
+import type {DocumentBibliography} from '../shared/bibliography'
 import {tokensFileQuery} from '../shared/tag-query'
 import { watch, type FSWatcher } from 'chokidar'
 import iconv from 'iconv-lite'
@@ -19,6 +22,7 @@ import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type CsvViewDecision,type Ap
 interface RecordDoc { info:DocumentInfo; hash?:string; text:string; csvTextFormat?:CsvTextFormat;undo:string[]; redo:string[]; root:string; saving:boolean; timer?:ReturnType<typeof setTimeout>; watcher?:FSWatcher }
 const extensions:Record<string,Kind>={'.md':'markdown','.markdown':'markdown','.txt':'text','.mmd':'mermaid','.mermaid':'mermaid','.csv':'csv','.tsv':'csv'}
 export class Documents {
+ pandocPath?:string
  records=new Map<string,RecordDoc>(); roots=new Set<string>(); grants=new Set<string>(); table=new TableClient(progress=>this.emit({type:'analysis',progress}))
  private fileSearch=0
  private tagList=0
@@ -79,6 +83,17 @@ export class Documents {
  get(id:string){const r=this.records.get(id);if(!r)throw new Error('El documento ya no está abierto.');return r}
  requireTable(id:string){const record=this.get(id);if(!isTableDocument(record.info))throw new Error(t('csvText.tableOnly'));return record}
  info(id:string){const r=this.get(id);return {...r.info,...(!isTableDocument(r.info)?{text:r.text}:{})}}
+ async bibliography(id:string,source:string):Promise<DocumentBibliography>{
+  const record=this.get(id),path=record.info.path,revision=record.info.revision
+  const assertCurrent=()=>{if(this.records.get(id)!==record||record.text!==source||record.info.path!==path||record.info.revision!==revision)throw new Error(t('bibliography.error.changedDocument'))}
+  assertCurrent()
+  const library=bibliographyPath(frontMatterOf(source).frontMatter)
+  if(!library)return{ok:true,entries:[],bytes:0,sha256:''}
+  if(!path)return{ok:false,error:{code:'invalid-path',message:t('bibliography.error.saveFirst')}}
+  const result=await loadBibliography({documentPath:path,documentRoot:record.root,bibliographyPath:library,pandocPath:this.pandocPath});assertCurrent()
+  if(!result.ok)return result
+  return{ok:true,entries:result.entries,bytes:result.bytes,sha256:result.sha256}
+ }
  async syncTable(id:string){const r=this.get(id);Object.assign(r.info,await this.table.call('info',id));return this.info(id)}
  async update(id:string,text:string){this.rejectDuringReload(id);return this.serial(id,()=>this.updateNow(id,text))}
  private async updateNow(id:string,text:string){const r=this.get(id);if(r.info.readonly||isTableDocument(r.info))throw new Error('El documento no permite edición de texto.');if((r.info.kind==='csv'&&r.info.csvView==='text'&&r.csvTextFormat?csvTextByteLength(text,r.csvTextFormat):Buffer.byteLength(text))>10*1024*1024)throw new Error('El documento supera el límite de edición de 10 MiB.');if(text!==r.text){r.undo.push(r.text);while(r.undo.length>1&&(r.undo.length>100||r.undo.reduce((n,t)=>n+Buffer.byteLength(t),0)>20*1024*1024))r.undo.shift();r.redo=[];r.text=text;r.info.dirty=true;r.info.revision++;this.schedule(id)}return this.info(id)}
@@ -100,6 +115,7 @@ export class Documents {
   if([...this.records.values()].some(other=>other!==r&&other.info.path===canonical))throw new Error('El destino corresponde a otro documento abierto. Guarda una copia con otro nombre.')
   if((await lstat(dest).catch(()=>null))?.isSymbolicLink())throw new Error('No se sobrescriben enlaces simbólicos.')
   const revision=r.info.revision,same=r.info.path===dest||r.info.path===canonical
+  if(same&&dirname(canonical)!==r.root)throw new Error(t('file.error.changedLocation'))
   let data=isTableDocument(r.info)?Buffer.from(await this.table.call('serialize',id)):r.csvTextFormat?encodeCsvText(r.text,r.csvTextFormat):Buffer.from(r.text,'utf8'),assets:DocumentAssets|undefined
   r.saving=true
   try{
@@ -113,7 +129,7 @@ export class Documents {
     if(isTableDocument(r.info)){const marked=await this.table.call('markSaved',id,revision);if(marked.revision>=r.info.revision)Object.assign(r.info,marked)}else r.info.dirty=false
     if(!r.info.dirty){clearTimeout(r.timer);await this.recoveryTasks.get(id);if(!r.info.dirty)await this.discardRecovery(id)}
    }
-   r.info.path=dest;r.info.name=basename(dest);r.root=dirname(dest);await r.watcher?.close();r.watcher=watch(dest,{ignoreInitial:true}).on('change',()=>{if(!r.saving)this.emit({type:'external',id})});await this.addRecent(dest)
+   r.info.path=dest;r.info.name=basename(dest);if(!same)r.root=dirname(await realpath(dest));await r.watcher?.close();r.watcher=watch(dest,{ignoreInitial:true}).on('change',()=>{if(!r.saving)this.emit({type:'external',id})});await this.addRecent(dest)
    return{...this.info(id),...(assets?{assets}:{})}
   }finally{setTimeout(()=>{r.saving=false},300)}
  }

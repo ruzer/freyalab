@@ -16,7 +16,8 @@ const source=()=>page.evaluate(async id=>(await window.freya.documents()).find(d
 test.beforeEach(async()=>{
  directory=await mkdtemp(join(tmpdir(),'freya-md007-'));await mkdir(join(directory,'exports'))
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
- app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(directory,'profile'),FREYALAB_TEST_EXPORT_DIR:join(directory,'exports'),...(test.info().title.includes('recursos tardíos')?{FREYALAB_TEST_IMAGE_DELAY_MS:'1500'}:{})}})
+ const resourceGate=!process.env.FREYALAB_EXECUTABLE&&test.info().title.includes('recursos tardíos')
+ app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve(resourceGate?'tests/e2e/outline-image-gate.cjs':'out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(directory,'profile'),FREYALAB_TEST_EXPORT_DIR:join(directory,'exports'),...(resourceGate?{FREYALAB_TEST_OUTLINE_GATE:'1',FREYALAB_TEST_OUTLINE_MAIN:resolve('out/main/index.js'),FREYALAB_TEST_OUTLINE_ROOT:resolve('.')} :test.info().title.includes('recursos tardíos')?{FREYALAB_TEST_IMAGE_DELAY_MS:'1500'}:{})}})
  page=await app.firstWindow();await page.waitForLoadState('load');await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900});await expect(page.locator('.app-shell .toolbar')).toBeVisible();await expect.poll(()=>app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].webContents.isLoading())).toBe(false)
 })
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
@@ -109,8 +110,10 @@ test('A5: recursos tardíos recalculan posiciones sin retrasar el texto saneado'
  const diagram='flowchart TD\n'+Array.from({length:22},(_,i)=>` A${i} --> A${i+1}`).join('\n')
  await open('# Inicio\n\n'+paragraphs(8)+'![Imagen alta](alta.svg)\n\n## Después de imagen\n\n```mermaid\n'+diagram+'\n```\n\n## Después de diagrama\n\n'+paragraphs(25),false)
  await expect(page.locator('.markdown-body')).toContainText('Después de imagen');await expect(preview().locator('.render-progress')).toBeVisible()
+ if(!process.env.FREYALAB_EXECUTABLE)await expect.poll(()=>app.evaluate(()=>((globalThis as typeof globalThis&{__freyaA5Gate:{state:()=>{waiting:number}}}).__freyaA5Gate.state().waiting))).toBeGreaterThan(0)
  expect(await page.locator('.markdown-body img').getAttribute('src')).toBeNull()
  const before=await geometry();await threshold('Después de imagen');await expect(current()).toHaveText('Después de imagen')
+ if(!process.env.FREYALAB_EXECUTABLE)await app.evaluate(()=>((globalThis as typeof globalThis&{__freyaA5Gate:{release:()=>void}}).__freyaA5Gate.release()))
  await expect(page.locator('.markdown-body img')).toHaveAttribute('src',/^data:/);await expect(page.locator('.mermaid-render svg')).toBeVisible({timeout:40_000});await settled()
  const after=await geometry();expect(after.headings.find(h=>h.text==='Después de imagen')!.top-before.headings.find(h=>h.text==='Después de imagen')!.top).toBeGreaterThan(500)
  await expect(current()).toHaveText(await expected());await threshold('Después de diagrama');await expect(current()).toHaveText('Después de diagrama')
@@ -330,8 +333,9 @@ test('C3: la sección actual sigue la primera línea realmente visible, no el ma
  await open(original);await editMode();await expect(current()).toHaveCount(0)
  const headings=original.split('\n').flatMap((text,index)=>text.startsWith('# ')?[{line:index+1,text:text.slice(2)}]:[]),samples=[]
  for(let index=0;index<4;index++){
+  const previousScroll=(await editorSnapshot()).scrollTop
   await page.locator('.cm-scroller').hover();await page.mouse.wheel(0,700);await frames()
-  await expect.poll(async()=>{const view=await editorSnapshot(),wanted=headings.filter(heading=>heading.line<=(view.firstLine??0)).at(-1)?.text??'',actual=await current().count()?await current().textContent():'';return actual===wanted}).toBe(true)
+  await expect.poll(async()=>{const view=await editorSnapshot(),wanted=headings.filter(heading=>heading.line<=(view.firstLine??0)).at(-1)?.text??'',actual=await current().count()?await current().textContent():'';return view.scrollTop>previousScroll&&(view.firstLine??0)>1&&actual===wanted}).toBe(true)
   const view=await editorSnapshot();expect(view.firstLine).toBeGreaterThan(1);samples.push({...view,current:await current().count()?await current().textContent():''})
  }
  await page.locator('.cm-content').focus();await page.keyboard.press('PageDown');await frames()

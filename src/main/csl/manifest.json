@@ -1,0 +1,117 @@
+{
+  "repository": "citation-style-language/styles",
+  "ref": "v1.0.2",
+  "commit": "7bf7ec05bc31509d640c9a3ccf8f561f2b3d748b",
+  "commitDate": "2026-10-28T11:38:59Z",
+  "retrieved": "2026-10-28",
+  "styles": [
+    {
+      "file": "apa.csl",
+      "bytes": 85817,
+      "blobSHA1": "5ba26ebddef20a9e41d2456b916c14ce88647050",
+      "sha256": "41b4f3c9c61b58b7428ab21d653891995db7b4648d2f0a906eabcb8b2742e7ae",
+      "title": "APA Style 7th edition",
+      "updated": "2026-10-02T16:29:11-04:00",
+      "authors": [
+        "Brenton M. Wiernik",
+        "Andrew Dunning"
+      ],
+      "contributors": [
+        "Jay Pfaffman"
+      ],
+      "license": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "licenseText": "This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License",
+      "independentParent": [],
+      "citation": true,
+      "bibliography": true
+    },
+    {
+      "file": "ieee.csl",
+      "bytes": 17587,
+      "blobSHA1": "72cb1491864a388edf086b35d04071f5b2ce84a4",
+      "sha256": "6dee2b87ce90a7ab86f232d78a9216f47adc6193f13b6307b4a83c65594e721a",
+      "title": "IEEE Reference Guide version 11.29.2023",
+      "updated": "2026-01-07T09:36:59-06:00",
+      "authors": [
+        "Michael Berkowitz"
+      ],
+      "contributors": [
+        "Julian Onions",
+        "Rintze Zelle",
+        "Stephen Frank",
+        "Sebastian Karcher",
+        "Giuseppe Silano",
+        "Patrick O'Brien",
+        "Brenton M. Wiernik",
+        "Oliver Couch",
+        "Andrew Dunning"
+      ],
+      "license": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "licenseText": "This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License",
+      "independentParent": [],
+      "citation": true,
+      "bibliography": true
+    },
+    {
+      "file": "nlm-citation-sequence.csl",
+      "bytes": 18126,
+      "blobSHA1": "cbfcc8212dd71a4a0b4faf0cdb20a89307902ed2",
+      "sha256": "42759650b00306c02aa5786db843c8ed67128a86b2ec0a1825a1f4e6387d51cc",
+      "title": "NLM/Vancouver: Citing Medicine 2nd edition (citation-sequence)",
+      "updated": "2026-03-31T16:56:12+02:00",
+      "authors": [
+        "Michael Berkowitz",
+        "Andrew Dunning"
+      ],
+      "contributors": [
+        "Petr Hlustik",
+        "Sebastian Karcher",
+        "Charles Parnot",
+        "Sean Takats"
+      ],
+      "license": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "licenseText": "This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License",
+      "independentParent": [],
+      "citation": true,
+      "bibliography": true
+    },
+    {
+      "file": "chicago-author-date.csl",
+      "bytes": 167761,
+      "blobSHA1": "44a177b9cfbeeb61db38bd78616e87e1dcdee4eb",
+      "sha256": "635db8db1d0feca7fae37999470f0b56b51c208a71482e5ff4c45c30bdfb32bf",
+      "title": "Chicago Manual of Style 18th edition (author-date)",
+      "updated": "2026-04-14T12:28:00+02:00",
+      "authors": [
+        "Andrew Dunning"
+      ],
+      "contributors": [],
+      "license": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "licenseText": "This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License",
+      "independentParent": [],
+      "citation": true,
+      "bibliography": true
+    },
+    {
+      "file": "modern-language-association.csl",
+      "bytes": 44381,
+      "blobSHA1": "698263eb2dd88fdbee3a16021465c2e3bc78dcb1",
+      "sha256": "ad5398ee478760737ad04ec6f95ead6dfbea7d2ae5252fc21f337110dd564b58",
+      "title": "MLA Handbook 9th edition (in-text citations)",
+      "updated": "2026-02-09T16:43:35-05:00",
+      "authors": [
+        "Sebastian Karcher",
+        "Andrew Dunning"
+      ],
+      "contributors": [
+        "Patrick O'Brien"
+      ],
+      "license": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "licenseText": "This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License",
+      "independentParent": [],
+      "citation": true,
+      "bibliography": true
+    }
+  ],
+  "totalBytes": 333672
+}
