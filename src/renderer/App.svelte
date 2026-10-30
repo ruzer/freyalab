@@ -5,6 +5,7 @@
  import {loadSettings} from './lib/settings-client'
  import {Transaction,StateEffect} from '@codemirror/state'
  import {csvTextStatistics} from '../shared/csv-text'
+ import {visibleEditError} from '../shared/text-edit-error'
  import {undo as undoText,redo as redoText,undoDepth,redoDepth} from '@codemirror/commands'
  import {EditorView} from '@codemirror/view'
  import {openSearchPanel} from '@codemirror/search'
@@ -117,7 +118,7 @@
  let opening=$state<{id:string;phase:string}|null>(null)
  async function cancelOpening(){const id=opening?.id;if(id)await window.freya.cancelOpen(id).catch(()=>{})}
  let toastTimer:ReturnType<typeof setTimeout>
- function error(message:string){opening=null;const clean=message.replace(/^Error:\s*/,'');if(csvFailure?.message===clean)return;toastKind='error';toast=clean;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',7000)}
+ function error(message:string){opening=null;const clean=visibleEditError(message.replace(/^Error:\s*/,''));if(csvFailure?.message===clean)return;toastKind='error';toast=clean;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',7000)}
  function notify(message:string){toastKind='info';status=message;toast=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',3500)}
  function toggleSidebar(){sidebar=!sidebar;remember({barraLateral:{visible:sidebar}})}
  async function selectSidebarTab(tab:SidebarTab,focus=false){

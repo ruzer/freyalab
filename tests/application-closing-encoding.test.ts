@@ -2,6 +2,7 @@ import {afterEach,expect,it,vi} from 'vitest'
 import {ApplicationClosing} from '../src/renderer/lib/application-closing'
 import {decodeCsvText,encodeCsvText,csvTextByteLength} from '../src/main/csv-text-codec'
 import {setLanguage} from '../src/shared/i18n'
+import {textEditLimitError} from '../src/shared/text-edit-error'
 const MiB=1024*1024,id='12345678-1234-4234-8234-123456789abc'
 afterEach(()=>setLanguage('es'))
 for(const encoding of ['win1252','utf16le'] as const)it(`el cierre respeta los bytes canónicos de CSVTexto ${encoding}, sin convertirlo aUTF8`,async()=>{
@@ -14,7 +15,7 @@ for(const encoding of ['win1252','utf16le'] as const)it(`el cierre respeta los b
  const document={id,name:'datos.csv',kind:'csv' as const,csvView:'text' as const,encoding:decoded.format.encoding,text,readonly:false},notice=vi.fn()
  // Mismo helper y error que usa Documents.updateNow; Main conserva la autoridad
  // sobre codificación+BOM. El coordinador no vuelve a calcular otro formato.
- const prepare=vi.fn(async()=>{if(bytes>10*MiB)throw new Error('El documento supera el límite de edición de 10 MiB.')})
+ const prepare=vi.fn(async()=>{if(bytes>10*MiB)throw textEditLimitError('El documento supera el límite de edición de 10 MiB.')})
  const flow=new ApplicationClosing({snapshot:()=>({documents:[document],activeId:id,busy:false,modal:false,composing:false}),prepare,notice,locked:()=>{}})
  try{
   expect(await flow.prepare()).toBe(encoding==='win1252');expect(prepare).toHaveBeenCalledExactlyOnceWith(id)

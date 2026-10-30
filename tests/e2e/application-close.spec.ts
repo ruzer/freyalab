@@ -1,14 +1,16 @@
-import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import {test as base,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,rm,stat} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
+import {isTextEditLimitError,visibleEditError} from '../../src/shared/text-edit-error'
+const test=base.extend<{freyaLanguage:'es'|'en'|'en-XA'}>({freyaLanguage:['es',{option:true}]})
 let app:ElectronApplication,page:Page,folder:string,questions:string
 const original='id,nombre\n00123,Freya\n'
-test.beforeEach(async()=>{
+test.beforeEach(async({freyaLanguage})=>{
  folder=await mkdtemp(join(tmpdir(),'freya-close-e2e-'));questions=join(folder,'questions.json');await writeFile(questions,'[]')
  const{ELECTRON_RUN_AS_NODE:_,...environment}=process.env
- app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('.')],env:{...environment as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:'es',FREYALAB_USER_DATA:join(folder,'profile')},timeout:60000})
+ app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('.')],env:{...environment as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:freyaLanguage,FREYALAB_USER_DATA:join(folder,'profile')},timeout:60000})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await expect(page.locator('.welcome')).toBeVisible()
  await app.evaluate(({dialog},file)=>{const fs=process.getBuiltinModule('node:fs'),records:string[]=[];Object.defineProperty(dialog,'showMessageBox',{configurable:true,value:async(...args:unknown[])=>{records.push((args.at(-1) as {message:string}).message);fs.writeFileSync(file,JSON.stringify(records));return{response:1,checkboxChecked:false}}})},questions)
 })
@@ -43,6 +45,29 @@ for(const action of ['close','quit'] as const)for(const locale of ['es','en'] as
  await editor.press('ControlOrMeta+End');await expect.poll(async()=>(await editor.locator('.cm-line').last().textContent())?.includes(marker)).toBe(true)
  await page.getByRole('button',{name:locale==='es'?'Cerrar aviso de cierre':'Dismiss closing notice',exact:true}).click();await editor.press('ControlOrMeta+z');await expect(editor.locator('.cm-line').first()).toHaveText('id,nombre')
  await app.evaluate(({app,BrowserWindow},action)=>{if(action==='quit')app.quit();else BrowserWindow.getAllWindows()[0].close()},action).catch(()=>{});await expect.poll(()=>page.isClosed()).toBe(true);expect(await readFile(path,'utf8')).toBe(original)
+})
+
+for(const locale of ['en','en-XA'] as const)test.describe(`S4 · código de rechazo en ${locale}`,()=>{
+ test.use({freyaLanguage:locale})
+ for(const action of ['close','quit'] as const)test(`${action}: cruza el puente real y conserva el borrador`,{tag:'@perf'},async()=>{
+  await expect(page.locator('html')).toHaveAttribute('lang',locale)
+  const{path,doc}=await openCsv(),before=await stat(path)
+  await page.locator('[data-csv-view]').getByRole('button',{name:locale==='en'?'Text':/^\[Tëxt~+\]$/,exact:true}).click();const editor=page.locator('.editor-pane .cm-content');await expect(editor).toBeVisible()
+  const marker='S4_LOCAL_DRAFT_RETAINED',oversized='id,nombre\n00123,'+'x'.repeat(10*1024*1024)+marker
+  // API real: el error cruza Main, invoke y contextBridge; no simulamos el preload.
+  const rejection=await page.evaluate(async({id,text})=>{try{await window.freya.update(id,text);return{rejected:false,message:''}}catch(error){return{rejected:true,message:error instanceof Error?error.message:String(error)}}},{id:doc.id,text:oversized})
+  expect(rejection.rejected).toBe(true);expect(isTextEditLimitError(rejection.message)).toBe(true);expect(visibleEditError(rejection.message)).toBe('El documento supera el límite de edición de 10 MiB.')
+  await editor.focus();await editor.press('ControlOrMeta+a');await page.keyboard.insertText(oversized)
+  await expect(page.locator('.toast')).toHaveText(visibleEditError(rejection.message));await expect(page.locator('.toast')).not.toContainText('TEXT_EDIT_LIMIT')
+  await app.evaluate(({app,BrowserWindow},action)=>{if(action==='quit')app.quit();else BrowserWindow.getAllWindows()[0].close()},action).catch(()=>{})
+  const alert=page.getByRole('alert');await expect(alert).toContainText('datos.csv');await expect(alert).toContainText(locale==='en'?'10 MiB':'10 MïB');await expect(alert).toContainText(locale==='en'?'Shorten':'Shörtën');await expect(alert).toContainText(locale==='en'?'Your documents are still open':'Yöür döcümënts árë stïll öpën');await expect(alert).not.toContainText('TEXT_EDIT_LIMIT')
+  expect(page.isClosed()).toBe(false);expect(JSON.parse(await readFile(questions,'utf8'))).toEqual([]);expect(await readFile(path,'utf8')).toBe(original);expect((await stat(path)).mtimeMs).toBe(before.mtimeMs)
+  expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)?.text).toBe(original)
+  await page.getByRole('button',{name:locale==='en'?'Dismiss closing notice':/Dïsmïss clösïng nötïcë/,exact:true}).click()
+  await editor.press('ControlOrMeta+End');await expect.poll(async()=>(await editor.locator('.cm-line').last().textContent())?.includes(marker)).toBe(true)
+  await editor.press('ControlOrMeta+z');await expect(editor.locator('.cm-line').first()).toHaveText('id,nombre')
+  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].close()).catch(()=>{});await expect.poll(()=>page.isClosed()).toBe(true);expect(await readFile(path,'utf8')).toBe(original)
+ })
 })
 
 test('Guardar A y Cancelar B conserva ambos y anuncia el guardado ya realizado',async()=>{
