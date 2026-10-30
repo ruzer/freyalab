@@ -154,5 +154,11 @@
  "csvText.error.dismiss": "Cerrar aviso de formato CSV",
  "csvText.error.opening": "Abriendo el texto…",
  "csvText.error.openedLine": "Texto abierto en la línea {line}.",
- "csvText.error.noLine": "El texto está abierto. La ubicación del error no existe en esta versión del documento."
+ "csvText.error.noLine": "El texto está abierto. La ubicación del error no existe en esta versión del documento.",
+ "editor.foldedSection": "Sección plegada",
+ "editor.foldSection": "Plegar sección",
+ "editor.unfoldSection": "Desplegar sección",
+ "editor.foldedLines": "Líneas plegadas",
+ "editor.unfoldedLines": "Líneas desplegadas",
+ "editor.rangeTo": "a"
 }

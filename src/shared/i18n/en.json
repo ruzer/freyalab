@@ -154,5 +154,11 @@
  "csvText.error.dismiss": "Dismiss CSV format warning",
  "csvText.error.opening": "Opening text…",
  "csvText.error.openedLine": "Text opened at line {line}.",
- "csvText.error.noLine": "The text is open. The reported error location does not exist in this version of the document."
+ "csvText.error.noLine": "The text is open. The reported error location does not exist in this version of the document.",
+ "editor.foldedSection": "Folded section",
+ "editor.foldSection": "Fold section",
+ "editor.unfoldSection": "Unfold section",
+ "editor.foldedLines": "Folded lines",
+ "editor.unfoldedLines": "Unfolded lines",
+ "editor.rangeTo": "to"
 }
