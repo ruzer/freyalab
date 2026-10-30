@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto'
 import {relative,isAbsolute,join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
 import {zipFiles} from './docx'
+import {xmlControlBatches} from './xml-controls'
 
 const invoked=vi.hoisted(()=>({execFile:vi.fn(),input:vi.fn(),conversions:[] as {args:string[];cwd:string;files:Record<string,Buffer>;dataFiles:string[]}[]}))
 vi.mock('node:child_process',()=>({execFile:invoked.execFile}))
@@ -91,6 +92,27 @@ it('cada autor se entrega como un valor escalar de metadata, sin una lista JSON 
  await convert('docx','# Informe',{metadata:{author:['Elena García','José López']}})
  const args=invoked.conversions.at(-1)!.args
  expect(args.filter(value=>value.startsWith('author='))).toEqual(['author=Elena García','author=José López'])
+})
+it('S2a: DOCX sustituye todo carácter XML imposible de metadatos por espacio, sin mutar las opciones',async()=>{
+ for(const {value,expected,label}of xmlControlBatches){
+  const metadata={title:value,subtitle:value,author:[value,'Autora ñ🐕'],date:value,tocTitle:value,abstract:'Resumen\u000b intacto',institution:'Institución intacta',lang:'es-MX'},original=structuredClone(metadata)
+  await convert('docx','# Cuerpo',{metadata})
+  const args=invoked.conversions.at(-1)!.args
+  for(const key of ['title','subtitle','author','date','toc-title'])expect(args,`${key}: ${label}`).toContain(key+'='+expected)
+  expect(args).toContain('author=Autora ñ🐕');expect(args).toContain('abstract=Resumen\u000b intacto');expect(args).toContain('institution=Institución intacta')
+  expect(metadata).toEqual(original)
+ }
+})
+it('S2a: conserva cuerpo, ejemplos custom-style, resumen y los caracteres XML legales',async()=>{
+ const valid='Texto\tcon\nCR\r ñ🐕\ud7ff\ue000\ufffd\u{10000}\u{10ffff}',source='# Cuerpo\u0001 intacto\n\n```markdown\n::: {custom-style="ejemplo\u0001"}\n```\n\n`[literal]{custom-style="otro\u0001"}`'
+ await convert('docx',source,{metadata:{title:valid,subtitle:valid,author:[valid],date:valid,tocTitle:valid,abstract:'Resumen\u000b intacto'}})
+ const args=invoked.conversions.at(-1)!.args
+ for(const key of ['title','subtitle','author','date','toc-title'])expect(args).toContain(key+'='+valid)
+ expect(args).toContain('abstract=Resumen\u000b intacto');expect(invoked.input).toHaveBeenLastCalledWith(source)
+})
+it('S2a: mantiene el rechazo de la institución inválida de portada',async()=>{
+ for(const institution of ['Nombre\0 imposible','Nombre\ud800 imposible','Nombre\uffff imposible'])await expect(convert('docx','# Cuerpo',{cover:true,metadata:{institution}})).rejects.toThrow(/instituci[oó]n|institution/i)
+ expect(invoked.conversions).toHaveLength(0)
 })
 it('ambas salidas conservan el idioma BCP 47 sin comillas ni escapes de Markdown',async()=>{
  for(const format of ['docx','html'] as const){

@@ -4,6 +4,7 @@ import {mkdtemp,writeFile,readFile,readdir,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {zipFiles} from '../docx'
+import {xmlControlBatches} from '../xml-controls'
 const pandoc=process.env.FREYALAB_PANDOC_TEST_PATH
 const source=`---
 portada: true
@@ -90,5 +91,76 @@ test('AC-04 D1/D2 · reporte real en DOCX, HTML y PDF con fuentes, índices, fig
   expect(await readFile(path,'utf8')).toBe(source);expect((await page.evaluate(()=>window.freya.documents())).find(current=>current.id===doc.id)).toMatchObject({text:source,dirty:false})
   await test.info().attach('reporte-html',{body:Buffer.from(html),contentType:'text/html'})
   if(process.env.FREYALAB_AC_EVIDENCE==='1'){await writeFile('docs/evidence/ac-04-informe.docx',docx);await writeFile('docs/evidence/ac-04-informe.html',html);await writeFile('docs/evidence/ac-04-informe.pdf',pdfBytes);for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect(page.locator('.render-progress')).toHaveCount(0);await page.screenshot({path:`docs/evidence/ac-04-${theme}-1440x900.png`,animations:'disabled'})}}
+ }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+})
+
+for(const customStyles of [false,true])test(`SEG-S2a · ${customStyles?'estilos y metadatos':'metadatos'} XML imposibles conservan el documento`,async()=>{
+ test.skip(!pandoc,'Requiere Pandoc externo elegido; no se instala ni se empaqueta.')
+ const directory=await mkdtemp(join(tmpdir(),'freya-word-xml-')),path=join(directory,'controles.md'),original='# Documento original sin guardar cambios\n'
+ await writeFile(path,original)
+ const {ELECTRON_RUN_AS_NODE:_,...environment}=process.env
+ const app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[process.env.FREYALAB_AC_TEST_ENTRY??resolve('out/main/index.js')],env:{...environment as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_TEST_PANDOC_PATH:pandoc!,FREYALAB_USER_DATA:join(directory,'profile'),FREYALAB_TEST_EXPORT_DIR:directory}})
+ try{
+  const page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya)
+  const[doc]=await page.evaluate(path=>window.freya.openPaths([path]),path),summaries:{codes:number[];parts:number}[]=[]
+  for(const[index,{codes,value,expected}]of xmlControlBatches.entries()){
+   const text='---\nportada: true\ntitle: '+JSON.stringify('Título '+value)+'\nsubtitle: '+JSON.stringify('Subtítulo '+value)+'\nauthor: ['+JSON.stringify('Autor '+value)+', "Segunda autora ñ🐕"]\ndate: '+JSON.stringify('Fecha '+value)+'\ninstitution: Instituto válido\nabstract: Resumen válido sin transformar\nlang: es\n---\n\n'+(customStyles?'::: {custom-style="Estilo '+value+'"}\n\nPárrafo con estilo.\n\n:::\n\n[Texto con estilo]{custom-style="Carácter '+value+'"}\n\n':'Párrafo con estilo.\n\nTexto con estilo\n\n')+'```markdown\n::: {custom-style="Ejemplo literal"}\n```\n'
+   // La actualización conserva incluso sustitutos sueltos en memoria; escribir el fixture como UTF-8 los convertiría antes de probar la frontera.
+   const result=await page.evaluate(async({id,text})=>{const updated=await window.freya.update(id,text);return window.freya.export(id,{format:'docx',revision:updated.revision,html:'<article><p>Vista sintética del documento.</p></article>'})},{id:doc.id,text}),output=join(directory,'controles.docx')
+   expect(result).toBe(output)
+   const bytes=await readFile(output!),files=zipFiles(bytes),parts=[...files].filter(([name])=>/\.(?:xml|rels)$/.test(name)).map(([name,data])=>({name,xml:data.toString('utf8')}))
+   const artifact=test.info().outputPath(`word-xml-batch-${index+1}.docx`);await writeFile(artifact,bytes)
+   await test.info().attach(`word-xml-batch-${index+1}.docx`,{path:artifact,contentType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})
+   expect(parts.some(part=>part.name==='word/document.xml')).toBe(true);expect(parts.some(part=>part.name==='docProps/core.xml')).toBe(true)
+   const checked=await page.evaluate(parts=>parts.map(({name,xml})=>{
+    const parsed=new DOMParser().parseFromString(xml,'application/xml'),word='http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+    return{name,error:parsed.querySelector('parsererror')?.textContent??null,text:parsed.documentElement.textContent??'',styles:Array.from(parsed.getElementsByTagNameNS(word,'name'),node=>node.getAttributeNS(word,'val'))}
+   }),parts)
+   if(customStyles){
+    expect(parts.filter(part=>/[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff]/u.test(part.xml)).map(part=>part.name).sort()).toEqual(['word/document.xml','word/styles.xml'])
+    expect(checked.filter(part=>part.error).map(part=>part.name).sort()).toEqual(['word/document.xml','word/styles.xml'])
+    expect((await page.evaluate(()=>window.freya.documents())).find(current=>current.id===doc.id)).toMatchObject({text,dirty:true})
+    expect(await readFile(path,'utf8')).toBe(original)
+    // SEG-S2e: conservar y ejecutar el oráculo rojo; un verde inesperado obliga a revisar este límite.
+    test.fail(true,'SEG-S2e diferido por el propietario: custom-style todavía produce XML inválido; no se omite la prueba.')
+   }
+   expect(checked.filter(part=>part.error),codes.map(code=>code.toString(16)).join(',')).toEqual([])
+   const body=checked.find(part=>part.name==='word/document.xml')!.text
+   for(const field of ['Título','Subtítulo','Autor','Fecha'])expect(body).toContain(field+' '+expected)
+   expect(checked.find(part=>part.name==='docProps/core.xml')!.text).toContain('Título '+expected)
+   const styles=checked.find(part=>part.name==='word/styles.xml')!.styles
+   if(customStyles){expect(styles).toContain('Estilo '+expected);expect(styles).toContain('Carácter '+expected)}
+   expect(styles).not.toContain('Ejemplo literal')
+   expect(body).toContain('Resumen válido sin transformar');expect(body).toContain('Párrafo con estilo.');expect(body).toContain('Texto con estilo')
+   expect((await page.evaluate(()=>window.freya.documents())).find(current=>current.id===doc.id)).toMatchObject({text,dirty:true})
+   expect(await readFile(path,'utf8')).toBe(original)
+   summaries.push({codes,parts:parts.length})
+  }
+  expect(summaries.flatMap(value=>value.codes)).toHaveLength(2079)
+  await test.info().attach('word-xml-controles',{body:Buffer.from(JSON.stringify(summaries)),contentType:'application/json'})
+ }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+})
+
+test('SEG-S2a · sustitutos sueltos de custom-style se exportan como U+FFFD sin alterar el original',async()=>{
+ test.skip(!pandoc,'Requiere Pandoc externo elegido; no se instala ni se empaqueta.')
+ const directory=await mkdtemp(join(tmpdir(),'freya-word-surrogates-')),path=join(directory,'sustitutos.md'),original='# Original conservado\n'
+ await writeFile(path,original)
+ const {ELECTRON_RUN_AS_NODE:_,...environment}=process.env
+ const app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[process.env.FREYALAB_AC_TEST_ENTRY??resolve('out/main/index.js')],env:{...environment as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_TEST_PANDOC_PATH:pandoc!,FREYALAB_USER_DATA:join(directory,'profile'),FREYALAB_TEST_EXPORT_DIR:directory}})
+ try{
+  const page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya)
+  const[doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
+  const text='::: {custom-style="Estilo \ud800"}\n\nPárrafo con ñ🐕.\n\n:::\n\n[Texto con estilo]{custom-style="Carácter \udfff"}\n'
+  const result=await page.evaluate(async({id,text})=>{const updated=await window.freya.update(id,text);return window.freya.export(id,{format:'docx',revision:updated.revision,html:'<article><p>Vista sintética.</p></article>'})},{id:doc.id,text}),output=join(directory,'sustitutos.docx')
+  expect(result).toBe(output)
+  const bytes=await readFile(output!),parts=[...zipFiles(bytes)].filter(([name])=>/\.(?:xml|rels)$/.test(name)).map(([name,data])=>({name,xml:data.toString('utf8')}))
+  const checked=await page.evaluate(parts=>parts.map(({name,xml})=>{const parsed=new DOMParser().parseFromString(xml,'application/xml');return{name,error:parsed.querySelector('parsererror')?.textContent??null,text:parsed.documentElement.textContent??'',styles:Array.from(parsed.getElementsByTagNameNS('http://schemas.openxmlformats.org/wordprocessingml/2006/main','name'),node=>node.getAttributeNS('http://schemas.openxmlformats.org/wordprocessingml/2006/main','val'))}}),parts)
+  expect(checked.filter(part=>part.error)).toEqual([])
+  expect(checked.find(part=>part.name==='word/styles.xml')!.styles).toEqual(expect.arrayContaining(['Estilo �','Carácter �']))
+  expect(checked.find(part=>part.name==='word/document.xml')!.text).toContain('Párrafo con ñ🐕.')
+  expect((await page.evaluate(()=>window.freya.documents())).find(current=>current.id===doc.id)).toMatchObject({text,dirty:true})
+  expect(await readFile(path,'utf8')).toBe(original)
+  const artifact=test.info().outputPath('word-surrogates.docx');await writeFile(artifact,bytes)
+  await test.info().attach('word-surrogates.docx',{path:artifact,contentType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})
  }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
 })

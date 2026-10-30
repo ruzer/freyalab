@@ -114,7 +114,10 @@ async function convertReport(executablePath:string,source:string,format:'docx'|'
   for(const flag of ['toc','lof','lot'] as const)if(selected[flag])args.push('--'+flag)
   for(const [key,value] of Object.entries(selected.metadata??{}))if(value!==undefined){
    // --metadata recibe MetaString literal; repetir author crea la lista de autores.
-   for(const scalar of Array.isArray(value)?value:[value])args.push('--metadata',(key==='tocTitle'?'toc-title':key)+'='+scalar)
+   for(const scalar of Array.isArray(value)?value:[value]){
+    const literal=format==='docx'&&key!=='abstract'&&key!=='institution'?scalar.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff\ud800-\udfff]/gu,' '):scalar
+    args.push('--metadata',(key==='tocTitle'?'toc-title':key)+'='+literal)
+   }
   }
   return await runPandoc(pandoc.path,args,body,directory)
  }finally{await rm(directory,{recursive:true,force:true,maxRetries:3,retryDelay:100})}
