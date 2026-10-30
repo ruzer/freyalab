@@ -7,7 +7,7 @@ import sanitize from 'sanitize-html'
 import {createHash} from 'node:crypto'
 import {t} from '../shared/i18n'
 import {svgTags,cleanExportMarkup} from './export-markup'
-import {detectPandoc,pandocToDocx,pandocCitationsToHtml,type PandocReportOptions} from './pandoc'
+import {detectPandoc,pandocToDocx,pandocCitationsToHtml,validateReportMetadata,type PandocReportOptions} from './pandoc'
 import {loadBibliography} from './bibliography'
 import {bibliographyPath} from '../shared/bibliography-source'
 import {frontMatterOf} from '../shared/front-matter'
@@ -65,6 +65,15 @@ async function wordImage(window:BrowserWindow,svg:string):Promise<string>{
 async function academicExport(docs:Documents,id:string,request:ExportRequest,destination:string,validate:()=>void):Promise<{html?:string;word?:Buffer}>{
  const record=docs.get(id),source=record.text,{frontMatter}=frontMatterOf(source),values=reportMetadataOf(frontMatter??''),reference=bibliographyPath(frontMatter)
  if(request.format!=='docx'&&!reference)return{html:request.html}
+ const language=typeof values.get('lang')==='string'?values.get('lang') as string:'es',style=request.citationStyle??'apa'
+ const metadata:NonNullable<PandocReportOptions['metadata']>={lang:language,tocTitle:reportTOCTitle(language)},cover=values.get('portada')==='true'
+ if(request.format==='docx'){
+  if(cover){
+   for(const key of ['title','subtitle','date','institution','abstract'] as const){const value=values.get(key);if(typeof value==='string')metadata[key]=value}
+   const authors=values.get('author');if(authors)metadata.author=Array.isArray(authors)?authors:[authors]
+  }
+  validateReportMetadata(metadata)
+ }
  const library=reference&&record.info.path?await loadBibliography({documentPath:record.info.path,documentRoot:record.root,bibliographyPath:reference,pandocPath:docs.pandocPath}):undefined
  validate()
  if(reference&&!record.info.path)throw new Error(t('bibliography.error.saveFirst'))
@@ -76,7 +85,6 @@ async function academicExport(docs:Documents,id:string,request:ExportRequest,des
  try{
   await loadExportPage(window,request.html??'<article></article>');validate()
   let word:Buffer|undefined
-  const language=typeof values.get('lang')==='string'?values.get('lang') as string:'es',style=request.citationStyle??'apa'
   if(request.format==='docx'){
    const svgs:string[]=await window.webContents.executeJavaScript(`Array.from(document.querySelectorAll('.mermaid-render svg'),svg=>svg.outerHTML)`),diagrams:string[]=[]
    for(const svg of svgs){diagrams.push(await wordImage(window,svg));validate()}
@@ -86,11 +94,6 @@ async function academicExport(docs:Documents,id:string,request:ExportRequest,des
     const comma=image.indexOf(','),header=image.slice(0,comma),content=image.slice(comma+1)
     return wordImage(window,/;base64$/i.test(header)?Buffer.from(content,'base64').toString('utf8'):decodeURIComponent(content))
    }});validate()
-   const metadata:NonNullable<PandocReportOptions['metadata']>={lang:language,tocTitle:reportTOCTitle(language)},cover=values.get('portada')==='true'
-   if(cover){
-    for(const key of ['title','subtitle','date','institution','abstract'] as const){const value=values.get(key);if(typeof value==='string')metadata[key]=value}
-    const authors=values.get('author');if(authors)metadata.author=Array.isArray(authors)?authors:[authors]
-   }
    word=await pandocToDocx(pandoc.available?pandoc.path:'',resolved,{cover,metadata,toc:values.get('toc')==='true',lof:values.get('lof')==='true',lot:values.get('lot')==='true',...(library?.ok?{style,bibliography:library.snapshot}:{})})
    if(!word.subarray(0,4).equals(Buffer.from('PK\x03\x04')))throw new Error(t('pandoc.invalidDocx'))
   }else if(pandoc.available&&library?.ok){

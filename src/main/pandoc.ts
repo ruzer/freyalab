@@ -23,6 +23,24 @@ const metadata=z.strictObject({title:z.string().optional(),subtitle:z.string().o
 const reportOptions=z.strictObject({style:z.enum(citationStyleIds).optional(),bibliography:snapshot.optional(),metadata:metadata.optional(),toc:z.boolean().optional(),lof:z.boolean().optional(),lot:z.boolean().optional(),cover:z.boolean().optional()})
 const citationOptions=z.strictObject({style:z.enum(citationStyleIds),bibliography:snapshot,metadata:metadata.pick({lang:true}).optional()})
 const reader='markdown-raw_attribute-raw_html-raw_tex-yaml_metadata_block'
+function exceedsCharacters(value:string,limit:number){let count=0;for(const character of value){if(++count>limit)return true}return false}
+export function validateReportMetadata(fields:PandocReportMetadata){
+  const combinedMessages=[
+   ['title','report.metadataLimit.title'],['subtitle','report.metadataLimit.subtitle'],['author','report.metadataLimit.author'],
+   ['date','report.metadataLimit.date'],['lang','report.metadataLimit.lang'],['institution','report.metadataLimit.institution'],
+   ['abstract','report.metadataLimit.abstract'],['tocTitle','report.metadataLimit.tocTitle'],
+  ] as const
+  let total=0,crossing:(typeof combinedMessages)[number][1]|undefined
+  for(const [field,key]of combinedMessages){
+   const value=fields[field];if(value===undefined)continue
+   for(const scalar of Array.isArray(value)?value:[value])total+=scalar.length
+   if(total>8000&&crossing===undefined)crossing=key
+  }
+  for(const [field,key] of [['title','report.titleLimit'],['subtitle','report.subtitleLimit'],['institution','report.institutionLimit']] as const)if(fields[field]!==undefined&&exceedsCharacters(fields[field],1000))throw new Error(t(key,{limit:1000}))
+  if(fields.author&&fields.author.length>100)throw new Error(t('report.authorsLimit',{limit:100}))
+  if(fields.author?.some(author=>exceedsCharacters(author,200)))throw new Error(t('report.authorLimit',{limit:200}))
+  if(crossing!==undefined)throw new Error(t(crossing,{limit:8000,excess:total-8000}))
+}
 
 export function pandocPaths(platform:NodeJS.Platform,environment:NodeJS.ProcessEnv):string[] {
  const windows=platform==='win32',path=windows?win32:posix,executable=windows?'pandoc.exe':'pandoc'
@@ -91,6 +109,7 @@ async function convertReport(executablePath:string,source:string,format:'docx'|'
  const checked=(format==='docx'?reportOptions:citationOptions).safeParse(options??{})
  if(!checked.success)throw new Error(t('pandoc.invalidOptions'))
  const selected=checked.data as PandocReportOptions,bibliography=selected.bibliography
+ if(format==='docx'&&selected.metadata)validateReportMetadata(selected.metadata)
  if(bibliography&&createHash('sha256').update(bibliography.content).digest('hex')!==bibliography.sha256)throw new Error(t('pandoc.invalidBibliography'))
  const body=(selected.cover?'::: {custom-style="FreyaPageBreak"}\n\n\u200b\n\n:::\n\n':'')+stripPandocMetadata(source),pandoc=await detectPandoc(executablePath)
  if(!pandoc.available)throw new Error(pandoc.reason)

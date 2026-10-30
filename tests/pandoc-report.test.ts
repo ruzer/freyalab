@@ -6,6 +6,7 @@ import {relative,isAbsolute,join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
 import {zipFiles} from './docx'
 import {xmlControlBatches} from './xml-controls'
+import {getLanguage,setLanguage} from '../src/shared/i18n'
 
 const invoked=vi.hoisted(()=>({execFile:vi.fn(),input:vi.fn(),conversions:[] as {args:string[];cwd:string;files:Record<string,Buffer>;dataFiles:string[]}[]}))
 vi.mock('node:child_process',()=>({execFile:invoked.execFile}))
@@ -31,6 +32,81 @@ beforeEach(()=>{
   })().catch(error=>done(error,Buffer.alloc(0),Buffer.alloc(0)))
   return{stdin:{on:vi.fn().mockReturnThis(),end:invoked.input}}
  })
+})
+
+const metadataLimits=[
+ {metadata:{title:'x'.repeat(1001)},es:'El título admite hasta 1000 caracteres.',en:'The title allows up to 1000 characters.'},
+ {metadata:{subtitle:'x'.repeat(1001)},es:'El subtítulo admite hasta 1000 caracteres.',en:'The subtitle allows up to 1000 characters.'},
+ {metadata:{institution:'x'.repeat(2*1024*1024)},es:'La institución admite hasta 1000 caracteres.',en:'The institution allows up to 1000 characters.'},
+ {metadata:{author:['x'.repeat(201)]},es:'Cada autor admite hasta 200 caracteres.',en:'Each author allows up to 200 characters.'},
+ {metadata:{author:Array.from({length:101},()=> 'Autor')},es:'Puedes incluir hasta 100 autores.',en:'You can include up to 100 authors.'},
+]
+for(const language of ['es','en'] as const)it.each(metadataLimits)(`S2b: rechaza el campo excesivo antes de invocar Pandoc (${language}): $es`,async example=>{
+ const previous=getLanguage();setLanguage(language)
+ try{await expect(convert('docx','# Cuerpo',{metadata:example.metadata})).rejects.toThrow(example[language]);expect(invoked.execFile).not.toHaveBeenCalled()}finally{setLanguage(previous)}
+})
+const combinedBoundary={title:'t'.repeat(1000),subtitle:'s'.repeat(1000),author:Array.from({length:20},()=> 'a'.repeat(200)),date:'d'.repeat(1000),lang:'es-MX',institution:'i'.repeat(500),abstract:'r'.repeat(490),tocTitle:'í'.repeat(5)}
+const combinedLimits=[
+ {name:'resumen ASCII',metadata:{abstract:'x'.repeat(8001)},es:'el resumen',en:'the abstract',excess:1},
+ {name:'resumen no BMP',metadata:{abstract:'🐕'.repeat(4000)+'x'},es:'el resumen',en:'the abstract',excess:1},
+ {name:'comillas y barras alternadas',metadata:{abstract:String.fromCharCode(92,34).repeat(4000)+'x'},es:'el resumen',en:'the abstract',excess:1},
+ {name:'fecha tras autores',metadata:{author:Array.from({length:40},()=> 'a'.repeat(200)),date:'d'},es:'la fecha',en:'the date',excess:1},
+ {name:'institución tras autores',metadata:{author:Array.from({length:40},()=> 'a'.repeat(200)),institution:'ñ'},es:'la institución',en:'the institution',excess:1},
+ {name:'idioma con exceso total posterior',metadata:{author:Array.from({length:40},()=> 'a'.repeat(200)),lang:'es-MX',abstract:'r'.repeat(7)},es:'el idioma',en:'the language',excess:12},
+ {name:'título del índice y los ocho campos',metadata:{...combinedBoundary,tocTitle:'í'.repeat(6)},es:'el título del índice',en:'the table of contents title',excess:1},
+ {name:'autores con exceso total posterior',metadata:{title:'t'.repeat(1000),subtitle:'s'.repeat(1000),author:Array.from({length:31},()=> 'a'.repeat(200)),abstract:'r'.repeat(300)},es:'los autores',en:'the authors',excess:500},
+]
+for(const language of ['es','en'] as const)it.each(combinedLimits)(`S2b: rechaza más de 8000 unidades UTF-16 antes de iniciar Pandoc (${language}): $name`,async example=>{
+ const previous=getLanguage(),original=structuredClone(example.metadata);setLanguage(language)
+ const message=language==='es'?`Revisa ${example.es}: los metadatos superan el límite conjunto de 8000 unidades UTF-16. Exceso: ${example.excess}.`:`Review ${example.en}: metadata exceeds the combined limit of 8000 UTF-16 units. Excess: ${example.excess}.`
+ try{await expect(convert('docx','# Cuerpo',{metadata:example.metadata})).rejects.toThrow(message);expect(invoked.execFile).not.toHaveBeenCalled();expect(example.metadata).toEqual(original)}finally{setLanguage(previous)}
+})
+it('S2b: el antiguo conjunto de máximos se rechaza por su total, sin truncarlo',async()=>{
+ const metadata={title:'🐕'.repeat(1000),subtitle:'x'.repeat(1000),institution:'ñ'.repeat(1000),author:Array.from({length:100},()=> '🐕'.repeat(200)),abstract:'ñ'.repeat(32768)},original=structuredClone(metadata)
+ await expect(convert('docx','# Cuerpo',{metadata})).rejects.toThrow('Revisa los autores: los metadatos superan el límite conjunto de 8000 unidades UTF-16. Exceso: 68768.')
+ expect(invoked.execFile).not.toHaveBeenCalled();expect(metadata).toEqual(original)
+})
+it('S2b: acepta topes individuales exactos, contando codepoints sin partir pares',async()=>{
+ const metadata={title:'🐕'.repeat(1000),subtitle:'x'.repeat(1000),institution:'ñ'.repeat(1000),author:['🐕'.repeat(200)]}
+ await expect(convert('docx','# Cuerpo',{metadata})).resolves.toBeInstanceOf(Buffer)
+ const args=invoked.conversions.at(-1)!.args
+ expect(args).toContain('title='+metadata.title);expect(args).toContain('subtitle='+metadata.subtitle);expect(args).toContain('institution='+metadata.institution);expect(args).toContain('author='+metadata.author[0])
+})
+it.each([
+ {name:'ASCII',metadata:{abstract:'x'.repeat(8000)}},
+ {name:'no BMP',metadata:{abstract:'🐕'.repeat(4000)}},
+ {name:'comillas y barras alternadas',metadata:{abstract:String.fromCharCode(92,34).repeat(4000)}},
+ {name:'los ocho campos',metadata:combinedBoundary},
+])('S2b: acepta exactamente 8000 unidades UTF-16 ($name), con valores y cuerpo intactos',async({metadata})=>{
+ const original=structuredClone(metadata),source='# Fuente original\r\n\r\nTexto ñ🐕.'
+ await expect(convert('docx',source,{metadata})).resolves.toBeInstanceOf(Buffer)
+ const args=invoked.conversions.at(-1)!.args
+ for(const [field,value]of Object.entries(metadata)){
+  const key=field==='tocTitle'?'toc-title':field,values=Array.isArray(value)?value:[value]
+  expect(args.filter(arg=>arg.startsWith(key+'='))).toEqual(values.map(value=>key+'='+value))
+ }
+ expect(args).not.toContain('--defaults');expect(args).not.toContain('--metadata-file');expect(metadata).toEqual(original);expect(invoked.input).toHaveBeenLastCalledWith(source)
+})
+it('S2b: calcula el presupuesto Windows con cien autores, comillas, barras y todas las opciones fijas',async()=>{
+ const pair=String.fromCharCode(92,34),author=Array.from({length:100},(_,index)=>index===0?pair.repeat(37)+String.fromCharCode(92):pair.repeat(40)),metadata={title:'',subtitle:'',author,date:'',lang:'es-MX',institution:'',abstract:'',tocTitle:''}
+ await convert('docx','# Cuerpo',{...options,cover:true,toc:true,lof:true,lot:true,metadata})
+ const call=invoked.conversions.at(-1)!,values=Object.values(metadata).flat(),units=values.reduce((sum,value)=>sum+value.length,0)
+ // Modelo conservador: entrecomilla cada argumento con las reglas de escape de Windows.
+ const quotedUnits=(argument:string)=>{
+  let units=2,slashes=0
+  for(const character of argument){
+   if(character===String.fromCharCode(92)){slashes++;continue}
+   units+=slashes*(character==='"'?2:1)+character.length+(character==='"'?1:0);slashes=0
+  }
+  return units+slashes*2
+ }
+ expect(units).toBe(8000);expect(quotedUnits(pair.repeat(4000))).toBe(16002);expect(quotedUnits('🐕'.repeat(4000))).toBe(8002)
+ const quotedCommand=quotedUnits(process.execPath)+call.args.reduce((sum,arg)=>sum+quotedUnits(arg)+1,0)+1,content=values.reduce((sum,value)=>sum+quotedUnits(value)-2,0),overhead=quotedCommand-content,bound=units*2+overhead
+ expect(content).toBeLessThanOrEqual(16000);expect(units*2*2).toBe(32000) // bytes del contenido, no unidades UTF-16.
+ expect(quotedCommand).toBeLessThanOrEqual(bound);expect(bound).toBeLessThan(32767)
+ expect(call.args.filter(value=>value==='--metadata')).toHaveLength(107)
+ for(const flag of ['--sandbox','--citeproc','--reference-doc','--toc','--lof','--lot'])expect(call.args).toContain(flag)
+ expect(call.args).not.toContain('--defaults');expect(call.args).not.toContain('--metadata-file')
 })
 
 it.each(['docx','html'] as const)('%s conserva sandbox/lector fijo y usa sólo las copias temporales de bibliografía y CSL',async format=>{

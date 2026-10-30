@@ -164,3 +164,42 @@ test('SEG-S2a · sustitutos sueltos de custom-style se exportan como U+FFFD sin 
   await test.info().attach('word-surrogates.docx',{path:artifact,contentType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})
  }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
 })
+
+test('SEG-S2b · límites nombran el campo en español e inglés sin DOCX parcial ni pérdida de texto',async()=>{
+ test.skip(!pandoc,'Requiere Pandoc externo elegido; no se instala ni se empaqueta.')
+ const directory=await mkdtemp(join(tmpdir(),'freya-word-limits-')),path=join(directory,'limites.md'),original='# Documento original\n'
+ await writeFile(path,original)
+ const {ELECTRON_RUN_AS_NODE:_,...environment}=process.env
+ const app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[process.env.FREYALAB_AC_TEST_ENTRY??resolve('out/main/index.js')],env:{...environment as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_TEST_PANDOC_PATH:pandoc!,FREYALAB_USER_DATA:join(directory,'profile'),FREYALAB_TEST_EXPORT_DIR:directory}})
+ try{
+  const page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);const[doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
+  const cases=[
+   {key:'title',value:'x'.repeat(1001),es:'El título admite hasta 1000 caracteres.',en:'The title allows up to 1000 characters.'},
+   {key:'subtitle',value:'x'.repeat(1001),es:'El subtítulo admite hasta 1000 caracteres.',en:'The subtitle allows up to 1000 characters.'},
+   {key:'institution',value:'x'.repeat(2*1024*1024),es:'La institución admite hasta 1000 caracteres.',en:'The institution allows up to 1000 characters.'},
+   {key:'author',value:['x'.repeat(201)],es:'Cada autor admite hasta 200 caracteres.',en:'Each author allows up to 200 characters.'},
+   {key:'author',value:Array.from({length:101},()=> 'Autor'),es:'Puedes incluir hasta 100 autores.',en:'You can include up to 100 authors.'},
+   ...['x'.repeat(7987),'🐕'.repeat(3993)+'x','"\\'.repeat(3993)+'x'].map(value=>({key:'abstract',value,es:'Revisa el título del índice: los metadatos superan el límite conjunto de 8000 unidades UTF-16. Exceso: 1.',en:'Review the table of contents title: metadata exceeds the combined limit of 8000 UTF-16 units. Excess: 1.'})),
+   {key:'abstract',value:'x'.repeat(8001),es:'Revisa el resumen: los metadatos superan el límite conjunto de 8000 unidades UTF-16. Exceso: 15.',en:'Review the abstract: metadata exceeds the combined limit of 8000 UTF-16 units. Excess: 15.'},
+  ]
+  for(const language of ['es','en'] as const){
+   await page.evaluate(language=>window.freya.setLanguage(language),language)
+   for(const example of cases){
+    const text='---\nportada: true\nlang: es-MX\n'+example.key+': '+JSON.stringify(example.value)+'\n---\n\n# Fuente conservada\n'
+    const failure=await page.evaluate(async({id,text})=>{const updated=await window.freya.update(id,text);try{await window.freya.export(id,{format:'docx',revision:updated.revision,html:'<article><p>Vista sintética.</p></article>'});return null}catch(error){return error instanceof Error?error.message:String(error)}},{id:doc.id,text})
+    expect(failure).toBe(example[language]);expect((await page.evaluate(()=>window.freya.documents())).find(current=>current.id===doc.id)).toMatchObject({text,dirty:true})
+    expect((await readdir(directory)).filter(file=>file.endsWith('.docx'))).toEqual([]);expect(await readFile(path,'utf8')).toBe(original)
+   }
+  }
+  const abstract='"\\'.repeat(3992)+'🐕',text='---\nportada: true\nlang: es-MX\nabstract: '+JSON.stringify(abstract)+'\n---\n\n# Fuente conservada\n'
+  expect(abstract.length+5+9).toBe(8000)
+  const result=await page.evaluate(async({id,text})=>{const updated=await window.freya.update(id,text);return window.freya.export(id,{format:'docx',revision:updated.revision,html:'<article><p>Vista sintética.</p></article>'})},{id:doc.id,text}),output=join(directory,'limites.docx')
+  expect(result).toBe(output)
+  const bytes=await readFile(output!),parts=[...zipFiles(bytes)].filter(([name])=>/\.(?:xml|rels)$/.test(name)).map(([name,data])=>({name,xml:data.toString('utf8')}))
+  const checked=await page.evaluate(parts=>parts.map(({name,xml})=>{const parsed=new DOMParser().parseFromString(xml,'application/xml');return{name,error:parsed.querySelector('parsererror')?.textContent??null,text:parsed.documentElement.textContent??''}}),parts)
+  expect(checked.filter(part=>part.error)).toEqual([]);expect(checked.find(part=>part.name==='word/document.xml')!.text).toContain(abstract)
+  expect((await page.evaluate(()=>window.freya.documents())).find(current=>current.id===doc.id)).toMatchObject({text,dirty:true});expect(await readFile(path,'utf8')).toBe(original)
+  const artifact=test.info().outputPath('word-metadata-8000.docx');await writeFile(artifact,bytes)
+  await test.info().attach('word-metadata-8000.docx',{path:artifact,contentType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})
+ }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+})
