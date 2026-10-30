@@ -1,3 +1,4 @@
+# Prueba desechable CI-T1: los cambios del workflow ejecutan Verify.
 name: CI
 on:
   push:

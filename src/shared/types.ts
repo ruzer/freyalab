@@ -88,5 +88,3 @@ export interface FreyaAPI {
  recents():Promise<string[]>; recoveries():Promise<RecoveryEntry[]>; recover(id:string):Promise<DocumentInfo>; discardRecovery(id:string):Promise<void>;
  onEvent(callback:(event:AppEvent)=>void):()=>void; droppedPaths(files:File[]):string[]
 }
-
-// CI-T1: comentario temporal para comprobar que código y documentación activan Verify.
