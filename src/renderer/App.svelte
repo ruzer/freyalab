@@ -62,6 +62,7 @@
  async function clearRecentList(){const cleared=await window.freya.clearRecents();if(cleared)recent=[];return cleared}
  let external=$state<string[]>([])
  let documents=$state<DocumentInfo[]>([]),activeId=$state(''),folderPath=$state(''),entries=$state<TreeEntry[]>([]),recent=$state<string[]>([]),recoveries=$state<RecoveryEntry[]>([])
+ let closedDuringStartup:Set<string>|undefined=new Set()
  let sidebar=$state(initialSettings.barraLateral.visible),sidebarWidth=$state(initialSettings.barraLateral.ancho),split=$state(initialSettings.division),filterFiles=$state('')
  let sidebarTab=$state<SidebarTab>(initialSettings.barraLateral.pestana)
  let filesScroll=$state<HTMLDivElement>(),indexScroll=$state<HTMLDivElement>()
@@ -276,7 +277,7 @@
   })}finally{delete assetBusy[id];if(activeId===id){await tick();if(mode==='preview')preview?.focus();else editor?.focus()}}
  }
  async function reload(id:string){if(assetBusy[id])return;await action(async()=>{merge(await window.freya.reload(id));external=external.filter(value=>value!==id)})}
- async function close(id:string){if(assetBusy[id])return;await action(async()=>{await prepareDocumentAction(id);if(await window.freya.close(id)){const index=documents.findIndex(d=>d.id===id);documents=documents.filter(d=>d.id!==id);textSessions.delete(id);delete collapsedByDocument[id];delete assetWarnings[id];if(activeId===id)activate(documents[Math.max(0,index-1)]?.id??'')}})}
+ async function close(id:string){if(assetBusy[id])return;await action(async()=>{await prepareDocumentAction(id);if(await window.freya.close(id)){closedDuringStartup?.add(id);const index=documents.findIndex(d=>d.id===id);documents=documents.filter(d=>d.id!==id);textSessions.delete(id);delete collapsedByDocument[id];delete assetWarnings[id];if(activeId===id)activate(documents[Math.max(0,index-1)]?.id??'')}})}
  async function undo(redo=false){if(!active||editingLocked)return;if(isTableDocument(active))await csv?.undoEdit(redo);else if(active.kind==='markdown'){const id=active.id,session=textSession(active);(redo?redoText:undoText)({state:session.state,dispatch:transaction=>receiveText(id)([transaction])})}else if(redo)editor?.redoEdit();else editor?.undoEdit()}
  async function toggleExport(){
   exportMenu=!exportMenu
@@ -390,7 +391,16 @@
   const contextEvents=['focusin','focusout','input','keyup','pointerup','selectionchange'] as const
   for(const event of contextEvents)document.addEventListener(event,queueApplicationState)
   void settingsReady.catch(value=>error(value instanceof Error?value.message:String(value)))
-  void action(async()=>{await settingsReady;documents=await window.freya.documents();activate(documents[0]?.id??'');recent=await window.freya.recents();recoveries=await window.freya.recoveries()})
+  void action(async()=>{
+   await settingsReady
+   try{
+    const initial=await window.freya.documents(),current=new Set(documents.map(document=>document.id))
+    // El inventario puede ser anterior a una apertura, edición o cierre ya recibidos.
+    documents=[...initial.filter(document=>!current.has(document.id)&&!closedDuringStartup?.has(document.id)),...documents]
+    if(!activeId)activate(documents[0]?.id??'')
+   }finally{closedDuringStartup=undefined}
+   recent=await window.freya.recents();recoveries=await window.freya.recoveries()
+  })
   const unsubscribe=window.freya.onEvent(event=>{if(event.type==='language'&&event.language){setUILanguage(event.language.language);refreshShortcuts()}else if(event.type==='recents'){void window.freya.recents().then(value=>recent=value).catch(value=>error(String(value)))}else if(event.type==='settings'&&event.settings)applySettings(event.settings);else if(event.type==='csv-open-error'&&event.csvOpenError)receiveCsvError(event.csvOpenError);else if(event.type==='opened'&&event.document){const document=event.document;void action(async()=>{await settingsReady;merge(document,true)})}else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='close-status'&&event.message)closingNotice={kind:event.closingKind??'notice',message:event.message};else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];notify(event.message??'El archivo cambió en otra aplicación. Al guardar se comprobarán los cambios.')}})
   return()=>{applicationReady=false;for(const event of contextEvents)document.removeEventListener(event,queueApplicationState);unsubscribeCommand();unsubscribeClose();closingFlow.abort();mq.removeEventListener('change',change);unsubscribe();clearTimeout(toastTimer)}
  })
