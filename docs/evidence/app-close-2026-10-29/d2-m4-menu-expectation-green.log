@@ -1,0 +1,8 @@
+
+Running 1 test using 1 worker
+
+(node:68180) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [shell] › tests/e2e/commands.spec.ts:128:1 › APP-01: menú cambia de idioma y de documento, conserva Mermaid y la ayuda usa el mismo catálogo (2.3s)
+
+  1 passed (2.7s)
