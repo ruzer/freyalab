@@ -300,6 +300,7 @@
  "updates.error.timeout": "The check exceeded 10 seconds. Try again.",
  "updates.error.size": "The update response exceeds the 1 MiB limit.",
  "updates.error.action": "Could not complete this action. Try again.",
+ "updates.settingsWarning": "The check date was not saved: settings are read-only.",
  "updates.noInstaller": "This release has no installer for your platform. Check the release page.",
  "menu.close.busy": "Wait for the current action to finish. Your documents are still open.",
  "menu.close.modal": "Close the open dialog before quitting. Your documents are still open.",

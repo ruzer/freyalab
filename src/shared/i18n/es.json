@@ -300,6 +300,7 @@
  "updates.error.timeout": "La comprobación superó los 10 segundos. Vuelve a intentarlo.",
  "updates.error.size": "La respuesta de actualizaciones supera el límite de 1 MiB.",
  "updates.error.action": "No pude completar la acción. Vuelve a intentarlo.",
+ "updates.settingsWarning": "No se guardó la fecha de comprobación: los ajustes son de solo lectura.",
  "updates.noInstaller": "Esta versión no incluye un instalador para tu plataforma. Revisa la página de la versión.",
  "menu.close.busy": "Espera a que termine la acción en curso. Tus documentos siguen abiertos.",
  "menu.close.modal": "Cierra el diálogo abierto antes de salir. Tus documentos siguen abiertos.",
