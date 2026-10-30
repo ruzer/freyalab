@@ -1,0 +1,547 @@
+{
+  "scope": "Diagnóstico externo, no calificación del producto/versión ni prueba causal exclusiva de CI245",
+  "durableDirectory": "/Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/a5-gate-2026-10-29",
+  "sourceComparisonToD6AndD2": {
+    "src/renderer/components/Preview.svelte": "4cb09f670c7de48842424d9e2f618b3be079f6effe39c7f606da5251247eb704",
+    "src/renderer/lib/outline.ts": "3298ee6db82d5388bf6f6808666b5ecb0af525419e5563c0575902322dca4e5e",
+    "A5-block-before-adaptation": "6cf27c23a5e487de293481662c0e3ad4700613d2f29fc297ece3b734dea65b35"
+  },
+  "race": {
+    "mode": "race",
+    "scope": "Diagnóstico de orden de eventos; no prueba causal exclusiva de CI245.",
+    "worktree": "/private/tmp/freyalab-lote2/aplicacion",
+    "main": "/private/tmp/freyalab-lote2/aplicacion/out/main/index.js",
+    "expectedBuild": "9310576",
+    "startedAt": "2026-10-30T03:29:02.507Z",
+    "stages": [
+      {
+        "label": "G1-image-held",
+        "at": 543.1000000014901,
+        "top": 0,
+        "height": 727,
+        "max": 975,
+        "headings": [
+          {
+            "id": "heading-inicio",
+            "text": "Inicio",
+            "top": 28
+          },
+          {
+            "id": "heading-despues-de-imagen",
+            "text": "Después de imagen",
+            "top": 457.7421875
+          },
+          {
+            "id": "heading-despues-de-diagrama",
+            "text": "Después de diagrama",
+            "top": 599.875
+          }
+        ],
+        "image": {
+          "srcSet": false,
+          "complete": true,
+          "naturalHeight": 0,
+          "rectHeight": 25.1953125
+        },
+        "current": "Inicio",
+        "gate": {
+          "released": false,
+          "arrivals": 1,
+          "finished": 0,
+          "waiting": 1,
+          "events": [
+            {
+              "type": "image-arrived",
+              "at": 773.479292,
+              "arrivals": 1,
+              "finished": 0
+            }
+          ]
+        }
+      },
+      {
+        "label": "G2-image-loaded-before-old-scroll",
+        "at": 698.6000000014901,
+        "top": 0,
+        "height": 727,
+        "max": 3621,
+        "headings": [
+          {
+            "id": "heading-inicio",
+            "text": "Inicio",
+            "top": 28
+          },
+          {
+            "id": "heading-despues-de-imagen",
+            "text": "Después de imagen",
+            "top": 1232.546875
+          },
+          {
+            "id": "heading-despues-de-diagrama",
+            "text": "Después de diagrama",
+            "top": 3245.984375
+          }
+        ],
+        "image": {
+          "srcSet": true,
+          "complete": true,
+          "naturalHeight": 800,
+          "rectHeight": 800
+        },
+        "current": "Inicio",
+        "gate": {
+          "released": true,
+          "arrivals": 1,
+          "finished": 1,
+          "waiting": 0,
+          "events": [
+            {
+              "type": "image-arrived",
+              "at": 773.479292,
+              "arrivals": 1,
+              "finished": 0
+            },
+            {
+              "type": "release",
+              "at": 850.903167,
+              "arrivals": 1,
+              "finished": 0
+            },
+            {
+              "type": "image-returned",
+              "at": 851.604167,
+              "arrivals": 1,
+              "finished": 1
+            }
+          ]
+        }
+      },
+      {
+        "label": "G3-old-threshold-applied",
+        "at": 723.5,
+        "top": 240.5,
+        "height": 727,
+        "max": 3621,
+        "headings": [
+          {
+            "id": "heading-inicio",
+            "text": "Inicio",
+            "top": 28
+          },
+          {
+            "id": "heading-despues-de-imagen",
+            "text": "Después de imagen",
+            "top": 1232.546875
+          },
+          {
+            "id": "heading-despues-de-diagrama",
+            "text": "Después de diagrama",
+            "top": 3245.984375
+          }
+        ],
+        "image": {
+          "srcSet": true,
+          "complete": true,
+          "naturalHeight": 800,
+          "rectHeight": 800
+        },
+        "current": "Inicio",
+        "gate": {
+          "released": true,
+          "arrivals": 1,
+          "finished": 1,
+          "waiting": 0,
+          "events": [
+            {
+              "type": "image-arrived",
+              "at": 773.479292,
+              "arrivals": 1,
+              "finished": 0
+            },
+            {
+              "type": "release",
+              "at": 850.903167,
+              "arrivals": 1,
+              "finished": 0
+            },
+            {
+              "type": "image-returned",
+              "at": 851.604167,
+              "arrivals": 1,
+              "finished": 1
+            }
+          ]
+        }
+      },
+      {
+        "label": "G4-all-resources-settled",
+        "at": 739.4000000059605,
+        "top": 240.5,
+        "height": 727,
+        "max": 3621,
+        "headings": [
+          {
+            "id": "heading-inicio",
+            "text": "Inicio",
+            "top": 28
+          },
+          {
+            "id": "heading-despues-de-imagen",
+            "text": "Después de imagen",
+            "top": 1232.546875
+          },
+          {
+            "id": "heading-despues-de-diagrama",
+            "text": "Después de diagrama",
+            "top": 3245.984375
+          }
+        ],
+        "image": {
+          "srcSet": true,
+          "complete": true,
+          "naturalHeight": 800,
+          "rectHeight": 800
+        },
+        "current": "Inicio",
+        "gate": {
+          "released": true,
+          "arrivals": 1,
+          "finished": 1,
+          "waiting": 0,
+          "events": [
+            {
+              "type": "image-arrived",
+              "at": 773.479292,
+              "arrivals": 1,
+              "finished": 0
+            },
+            {
+              "type": "release",
+              "at": 850.903167,
+              "arrivals": 1,
+              "finished": 0
+            },
+            {
+              "type": "image-returned",
+              "at": 851.604167,
+              "arrivals": 1,
+              "finished": 1
+            }
+          ]
+        }
+      },
+      {
+        "label": "G5-after-diagram-threshold",
+        "at": 767,
+        "top": 3029,
+        "height": 727,
+        "max": 3621,
+        "headings": [
+          {
+            "id": "heading-inicio",
+            "text": "Inicio",
+            "top": 28
+          },
+          {
+            "id": "heading-despues-de-imagen",
+            "text": "Después de imagen",
+            "top": 1232.546875
+          },
+          {
+            "id": "heading-despues-de-diagrama",
+            "text": "Después de diagrama",
+            "top": 3245.984375
+          }
+        ],
+        "image": {
+          "srcSet": true,
+          "complete": true,
+          "naturalHeight": 800,
+          "rectHeight": 800
+        },
+        "current": "Después de diagrama",
+        "gate": {
+          "released": true,
+          "arrivals": 1,
+          "finished": 1,
+          "waiting": 0,
+          "events": [
+            {
+              "type": "image-arrived",
+              "at": 773.479292,
+              "arrivals": 1,
+              "finished": 0
+            },
+            {
+              "type": "release",
+              "at": 850.903167,
+              "arrivals": 1,
+              "finished": 0
+            },
+            {
+              "type": "image-returned",
+              "at": 851.604167,
+              "arrivals": 1,
+              "finished": 1
+            }
+          ]
+        }
+      }
+    ],
+    "head": "a0d5f8f495fca92a06814b768675aeca6241f964",
+    "dirty": " M src/renderer/App.svelte\n M tests/e2e/groups.ts\n?? tests/e2e/bootstrap-documents.spec.ts\n",
+    "mainSHA256": "b14dff33832c1ab0051dfe95b27888adc0c8a0551a6773e7782a89f2b0106fca",
+    "application": {
+      "version": "44.9.2",
+      "build": "9310576",
+      "channel": "stable",
+      "electron": "44.9.2",
+      "chromium": "152.0.7977.167",
+      "node": "24.22.0",
+      "platform": "darwin",
+      "arch": "arm64",
+      "language": "es"
+    },
+    "oldThreshold": 240.6421875,
+    "releaseRequestedAt": 1793330943425,
+    "oldExpected": "Después de imagen",
+    "actualExpected": "Inicio",
+    "oldExpectationInvalid": true,
+    "fixtureSHA256": "6fd1435e7adfc8394c5f7a44f38c8c5e3c3f925c8f51711dd5b413e753245658",
+    "result": "passed",
+    "finishedAt": "2026-10-30T03:29:03.778Z"
+  },
+  "gated": {
+    "mode": "gated",
+    "scope": "Diagnóstico de orden de eventos; no prueba causal exclusiva de CI245.",
+    "worktree": "/private/tmp/freyalab-lote2/aplicacion",
+    "main": "/private/tmp/freyalab-lote2/aplicacion/out/main/index.js",
+    "expectedBuild": "9310576",
+    "startedAt": "2026-10-30T03:29:37.177Z",
+    "stages": [
+      {
+        "label": "G1-image-held",
+        "at": 677.3000000044703,
+        "top": 0,
+        "height": 727,
+        "max": 2846,
+        "headings": [
+          {
+            "id": "heading-inicio",
+            "text": "Inicio",
+            "top": 28
+          },
+          {
+            "id": "heading-despues-de-imagen",
+            "text": "Después de imagen",
+            "top": 457.7421875
+          },
+          {
+            "id": "heading-despues-de-diagrama",
+            "text": "Después de diagrama",
+            "top": 2471.1796875
+          }
+        ],
+        "image": {
+          "srcSet": false,
+          "complete": true,
+          "naturalHeight": 0,
+          "rectHeight": 25.1953125
+        },
+        "current": "Inicio",
+        "gate": {
+          "released": false,
+          "arrivals": 1,
+          "finished": 0,
+          "waiting": 1,
+          "events": [
+            {
+              "type": "image-arrived",
+              "at": 756.078542,
+              "arrivals": 1,
+              "finished": 0
+            }
+          ]
+        }
+      },
+      {
+        "label": "G1-asserted-before-release",
+        "at": 705.2000000029802,
+        "top": 240.5,
+        "height": 727,
+        "max": 2846,
+        "headings": [
+          {
+            "id": "heading-inicio",
+            "text": "Inicio",
+            "top": 28
+          },
+          {
+            "id": "heading-despues-de-imagen",
+            "text": "Después de imagen",
+            "top": 457.7421875
+          },
+          {
+            "id": "heading-despues-de-diagrama",
+            "text": "Después de diagrama",
+            "top": 2471.1796875
+          }
+        ],
+        "image": {
+          "srcSet": false,
+          "complete": true,
+          "naturalHeight": 0,
+          "rectHeight": 25.1953125
+        },
+        "current": "Después de imagen",
+        "gate": {
+          "released": false,
+          "arrivals": 1,
+          "finished": 0,
+          "waiting": 1,
+          "events": [
+            {
+              "type": "image-arrived",
+              "at": 756.078542,
+              "arrivals": 1,
+              "finished": 0
+            }
+          ]
+        }
+      },
+      {
+        "label": "G4-all-resources-settled",
+        "at": 734.6000000014901,
+        "top": 240.5,
+        "height": 727,
+        "max": 3621,
+        "headings": [
+          {
+            "id": "heading-inicio",
+            "text": "Inicio",
+            "top": 28
+          },
+          {
+            "id": "heading-despues-de-imagen",
+            "text": "Después de imagen",
+            "top": 1232.546875
+          },
+          {
+            "id": "heading-despues-de-diagrama",
+            "text": "Después de diagrama",
+            "top": 3245.984375
+          }
+        ],
+        "image": {
+          "srcSet": true,
+          "complete": true,
+          "naturalHeight": 800,
+          "rectHeight": 800
+        },
+        "current": "Inicio",
+        "gate": {
+          "released": true,
+          "arrivals": 1,
+          "finished": 1,
+          "waiting": 0,
+          "events": [
+            {
+              "type": "image-arrived",
+              "at": 756.078542,
+              "arrivals": 1,
+              "finished": 0
+            },
+            {
+              "type": "release",
+              "at": 991.816292,
+              "arrivals": 1,
+              "finished": 0
+            },
+            {
+              "type": "image-returned",
+              "at": 992.595917,
+              "arrivals": 1,
+              "finished": 1
+            }
+          ]
+        }
+      },
+      {
+        "label": "G5-after-diagram-threshold",
+        "at": 760.6000000014901,
+        "top": 3029,
+        "height": 727,
+        "max": 3621,
+        "headings": [
+          {
+            "id": "heading-inicio",
+            "text": "Inicio",
+            "top": 28
+          },
+          {
+            "id": "heading-despues-de-imagen",
+            "text": "Después de imagen",
+            "top": 1232.546875
+          },
+          {
+            "id": "heading-despues-de-diagrama",
+            "text": "Después de diagrama",
+            "top": 3245.984375
+          }
+        ],
+        "image": {
+          "srcSet": true,
+          "complete": true,
+          "naturalHeight": 800,
+          "rectHeight": 800
+        },
+        "current": "Después de diagrama",
+        "gate": {
+          "released": true,
+          "arrivals": 1,
+          "finished": 1,
+          "waiting": 0,
+          "events": [
+            {
+              "type": "image-arrived",
+              "at": 756.078542,
+              "arrivals": 1,
+              "finished": 0
+            },
+            {
+              "type": "release",
+              "at": 991.816292,
+              "arrivals": 1,
+              "finished": 0
+            },
+            {
+              "type": "image-returned",
+              "at": 992.595917,
+              "arrivals": 1,
+              "finished": 1
+            }
+          ]
+        }
+      }
+    ],
+    "head": "a0d5f8f495fca92a06814b768675aeca6241f964",
+    "dirty": " M src/renderer/App.svelte\n M tests/e2e/groups.ts\n?? tests/e2e/bootstrap-documents.spec.ts\n",
+    "mainSHA256": "b14dff33832c1ab0051dfe95b27888adc0c8a0551a6773e7782a89f2b0106fca",
+    "application": {
+      "version": "44.9.2",
+      "build": "9310576",
+      "channel": "stable",
+      "electron": "44.9.2",
+      "chromium": "152.0.7977.167",
+      "node": "24.22.0",
+      "platform": "darwin",
+      "arch": "arm64",
+      "language": "es"
+    },
+    "oldThreshold": 240.6421875,
+    "releaseRequestedAt": 1793330978234,
+    "fixtureSHA256": "6fd1435e7adfc8394c5f7a44f38c8c5e3c3f925c8f51711dd5b413e753245658",
+    "result": "passed",
+    "finishedAt": "2026-10-30T03:29:38.413Z"
+  }
+}
