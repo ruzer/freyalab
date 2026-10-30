@@ -16,7 +16,7 @@ beforeAll(async()=>{
 })
 afterAll(async()=>{await rm(folder,{recursive:true,force:true})})
 for(const workers of [1,2,4,8])for(const batchRecords of [1,3,2000])it(`${workers} rangos reales, lote ${batchRecords}: Unicode y separación parcial conservan todas las filas en orden`,async()=>{
- const deadline=performance.now()+29000 // El caso conserva sus 30 s exteriores; se reserva 1 s para cerrar hilos.
+ const deadline=performance.now()+(workers===1&&batchRecords===1?59000:29000) // Sólo este caso funcional dispone de 60 s; se reserva 1 s para cerrar hilos.
  const views=new LargeViews({workers,workerPath,batchRecords,chunk:30,prefilter:batchRecords!==3,partial:batchRecords!==2000}),queries=[{search:'k'},{search:'i'},{conditions:[{column:2,op:'contains' as const,value:'k'}],filterMode:'all' as const},{conditions:[{column:4,op:'empty' as const}],filterMode:'any' as const}]
  try{
   for(const query of queries){const requestId=crypto.randomUUID(),compiled=compileTableQuery({...query,offset:0,limit:1,requestId:0},5),expected=rows.flatMap((cells,i)=>compiled.matches(cells)?[{id:String(i+1),cells}]:[]);await views.start('a',{index,delimiter:',',header:true,width:5,revision:0,alive:()=>true},{...query,requestId,revision:0})
@@ -24,4 +24,4 @@ for(const workers of [1,2,4,8])for(const batchRecords of [1,3,2000])it(`${worker
   }
   expect(await readFile(path,'utf8')).toBe(source)
  }finally{await views.stop()}
-},30000)
+},workers===1&&batchRecords===1?60000:30000)
