@@ -1,0 +1,641 @@
+{
+  "status": "medición local del producto congelado en 8ac6f68; CI se informa por separado",
+  "head": "8ac6f68d193b2a4287e8a7c55c65bf93f1c40cdd",
+  "scriptSHA": "e9b0cc1b6b6e865f359b9eff8f5ea21deb5caf425c1b54378ba923a9f1206c12",
+  "host": {
+    "date": "2026-10-29T03:50:13.689Z",
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M2 Max",
+    "ramBytes": 34359738368,
+    "node": "v24.22.1"
+  },
+  "versions": {
+    "electron": "44.9.2",
+    "node": "24.22.0",
+    "chrome": "152.0.7977.167",
+    "arch": "arm64"
+  },
+  "protocol": "3 repeticiones, app/perfil nuevo, 250 ms de reposo antes y después, contenido real + doble RAF; memoria=sum workingSetSize KiB de app.getAppMetrics ×1024 menos reposo; sin GC forzado",
+  "limitations": [
+    "Filesystem caliente por validación de fingerprint antes del cronómetro; no mide arranque.",
+    "Working set sumado puede contar páginas compartidas; no es USS ni pico.",
+    "Equipo compartido; no se cerraron las apps del propietario."
+  ],
+  "built": {
+    "out/renderer/index.html": "5a81108bbe0e88da81ed720475088393b9bd1639584f3c1f6bc2d1277ca4b3af",
+    "out/preload/index.cjs": "364de0e107c5391759b63aa2ee83f2b654adfcbd1f8ecfe2c42c7f00df41eed6",
+    "out/main/index.js": "0203d145ab1e72f20fbb4f604cd9459a7b98013b7a08659a8effb76c7cfdaeee",
+    "out/main/large-search-worker.js": "61d9b91137a5711b1b436b03fe0bc501c195fcb997c4735e95bf56fb39b43425",
+    "out/main/table-worker.js": "c945c83fe77ce3e61a3e12e3048776539f8c85ae68de59d10e2040b36e4d5de3",
+    "out/renderer/assets/index-BAk2eUd8.css": "5662882f4735a1f8456290a81880b496ff33f75044f8e62d986a358bb219b4bb",
+    "out/renderer/assets/index-C1-BuNYw.js": "1d6e901da398d2e76bcc806bcf570ae4ce755c09f01e39883d0ee445f2424a08"
+  },
+  "fixtures": [
+    {
+      "name": "2MiB",
+      "path": "2MiB.csv",
+      "rows": 116508,
+      "fingerprint": {
+        "sha256": "a270e878bdb429311b9f6cecbdb3bf5830fa31a9191c08f838bc7bf183cabded",
+        "size": "2097152",
+        "mtimeNs": "1793245813691391326"
+      }
+    },
+    {
+      "name": "5MiB",
+      "path": "5MiB.csv",
+      "rows": 291270,
+      "fingerprint": {
+        "sha256": "c8029761f589c41b1461d6e4b73539772bf3b6d05eeaa74df4920e210f8fd19f",
+        "size": "5242880",
+        "mtimeNs": "1793245813695788922"
+      }
+    },
+    {
+      "name": "9MiB",
+      "path": "9MiB.csv",
+      "rows": 524287,
+      "fingerprint": {
+        "sha256": "7f28b20723b1eead49d265ba61c5c0e5e04ecb11d88f390a0f6142151beb2e6b",
+        "size": "9437184",
+        "mtimeNs": "1793245813704607198"
+      }
+    },
+    {
+      "name": "linea-1000000-bytes",
+      "path": "linea-1000000.csv",
+      "rows": 1,
+      "fingerprint": {
+        "sha256": "efb9a67bf80318abf0a86a45d47edcb8797cb028874b4d0fe1ae519e8ccda885",
+        "size": "1000011",
+        "mtimeNs": "1793245813710261797"
+      }
+    }
+  ],
+  "summary": [
+    {
+      "fixture": "2MiB",
+      "view": "table",
+      "visibleMs": 498.5115829999995,
+      "extraMiB": 168.828125,
+      "samples": [
+        {
+          "visibleMs": 499.24199999999985,
+          "extraMiB": 169.953125
+        },
+        {
+          "visibleMs": 498.5115829999995,
+          "extraMiB": 168.828125
+        },
+        {
+          "visibleMs": 497.6468329999989,
+          "extraMiB": 168.109375
+        }
+      ]
+    },
+    {
+      "fixture": "2MiB",
+      "view": "text",
+      "visibleMs": 124.92324999999983,
+      "extraMiB": 55.359375,
+      "samples": [
+        {
+          "visibleMs": 114.52595900000006,
+          "extraMiB": 55.359375
+        },
+        {
+          "visibleMs": 124.92324999999983,
+          "extraMiB": 55.546875
+        },
+        {
+          "visibleMs": 130.93245799999931,
+          "extraMiB": 54.8125
+        }
+      ]
+    },
+    {
+      "fixture": "5MiB",
+      "view": "table",
+      "visibleMs": 665.2772089999999,
+      "extraMiB": 253.46875,
+      "samples": [
+        {
+          "visibleMs": 653.2741670000005,
+          "extraMiB": 256.890625
+        },
+        {
+          "visibleMs": 745.5362920000007,
+          "extraMiB": 253.46875
+        },
+        {
+          "visibleMs": 665.2772089999999,
+          "extraMiB": 240.03125
+        }
+      ]
+    },
+    {
+      "fixture": "5MiB",
+      "view": "text",
+      "visibleMs": 152.7791670000006,
+      "extraMiB": 92.4375,
+      "samples": [
+        {
+          "visibleMs": 148.32983299999978,
+          "extraMiB": 92.15625
+        },
+        {
+          "visibleMs": 153.56516600000032,
+          "extraMiB": 92.4375
+        },
+        {
+          "visibleMs": 152.7791670000006,
+          "extraMiB": 92.5
+        }
+      ]
+    },
+    {
+      "fixture": "9MiB",
+      "view": "table",
+      "visibleMs": 868.666459,
+      "extraMiB": 327.1875,
+      "samples": [
+        {
+          "visibleMs": 868.666459,
+          "extraMiB": 330.09375
+        },
+        {
+          "visibleMs": 888.7103749999987,
+          "extraMiB": 325.34375
+        },
+        {
+          "visibleMs": 866.5740420000002,
+          "extraMiB": 327.1875
+        }
+      ]
+    },
+    {
+      "fixture": "9MiB",
+      "view": "text",
+      "visibleMs": 214.97158399999898,
+      "extraMiB": 181.84375,
+      "samples": [
+        {
+          "visibleMs": 210.41295799999898,
+          "extraMiB": 181.84375
+        },
+        {
+          "visibleMs": 214.97158399999898,
+          "extraMiB": 173.25
+        },
+        {
+          "visibleMs": 219.6463330000006,
+          "extraMiB": 182.03125
+        }
+      ]
+    },
+    {
+      "fixture": "linea-1000000-bytes",
+      "view": "text",
+      "visibleMs": 80.92620799999713,
+      "extraMiB": 20.125,
+      "samples": [
+        {
+          "visibleMs": 83.47220899999957,
+          "extraMiB": 19.671875
+        },
+        {
+          "visibleMs": 70.4989170000008,
+          "extraMiB": 20.1875
+        },
+        {
+          "visibleMs": 80.92620799999713,
+          "extraMiB": 20.125
+        }
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "fixture": "2MiB",
+      "view": "table",
+      "repetition": 1,
+      "visibleMs": 499.24199999999985,
+      "idleBytes": 508608512,
+      "loadedBytes": 686817280,
+      "extraBytes": 178208768,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        2.72119140625,
+        2.21240234375,
+        2.5361328125
+      ]
+    },
+    {
+      "fixture": "2MiB",
+      "view": "text",
+      "repetition": 1,
+      "visibleMs": 114.52595900000006,
+      "idleBytes": 509362176,
+      "loadedBytes": 567410688,
+      "extraBytes": 58048512,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        2.72119140625,
+        2.21240234375,
+        2.5361328125
+      ]
+    },
+    {
+      "fixture": "5MiB",
+      "view": "table",
+      "repetition": 1,
+      "visibleMs": 653.2741670000005,
+      "idleBytes": 508723200,
+      "loadedBytes": 778092544,
+      "extraBytes": 269369344,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        2.72119140625,
+        2.21240234375,
+        2.5361328125
+      ]
+    },
+    {
+      "fixture": "5MiB",
+      "view": "text",
+      "repetition": 1,
+      "visibleMs": 148.32983299999978,
+      "idleBytes": 514801664,
+      "loadedBytes": 611434496,
+      "extraBytes": 96632832,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        3.2236328125,
+        2.32470703125,
+        2.57373046875
+      ]
+    },
+    {
+      "fixture": "9MiB",
+      "view": "table",
+      "repetition": 1,
+      "visibleMs": 868.666459,
+      "idleBytes": 509181952,
+      "loadedBytes": 855310336,
+      "extraBytes": 346128384,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        3.2236328125,
+        2.32470703125,
+        2.57373046875
+      ]
+    },
+    {
+      "fixture": "9MiB",
+      "view": "text",
+      "repetition": 1,
+      "visibleMs": 210.41295799999898,
+      "idleBytes": 509181952,
+      "loadedBytes": 699858944,
+      "extraBytes": 190676992,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        3.2236328125,
+        2.32470703125,
+        2.57373046875
+      ]
+    },
+    {
+      "fixture": "2MiB",
+      "view": "text",
+      "repetition": 2,
+      "visibleMs": 124.92324999999983,
+      "idleBytes": 509935616,
+      "loadedBytes": 568180736,
+      "extraBytes": 58245120,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        3.04541015625,
+        2.30224609375,
+        2.564453125
+      ]
+    },
+    {
+      "fixture": "2MiB",
+      "view": "table",
+      "repetition": 2,
+      "visibleMs": 498.5115829999995,
+      "idleBytes": 509607936,
+      "loadedBytes": 686637056,
+      "extraBytes": 177029120,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        3.04541015625,
+        2.30224609375,
+        2.564453125
+      ]
+    },
+    {
+      "fixture": "5MiB",
+      "view": "text",
+      "repetition": 2,
+      "visibleMs": 153.56516600000032,
+      "idleBytes": 508985344,
+      "loadedBytes": 605913088,
+      "extraBytes": 96927744,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        3.04541015625,
+        2.30224609375,
+        2.564453125
+      ]
+    },
+    {
+      "fixture": "5MiB",
+      "view": "table",
+      "repetition": 2,
+      "visibleMs": 745.5362920000007,
+      "idleBytes": 508231680,
+      "loadedBytes": 774012928,
+      "extraBytes": 265781248,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        3.04150390625,
+        2.3134765625,
+        2.56689453125
+      ]
+    },
+    {
+      "fixture": "9MiB",
+      "view": "text",
+      "repetition": 2,
+      "visibleMs": 214.97158399999898,
+      "idleBytes": 508477440,
+      "loadedBytes": 690143232,
+      "extraBytes": 181665792,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        3.04150390625,
+        2.3134765625,
+        2.56689453125
+      ]
+    },
+    {
+      "fixture": "9MiB",
+      "view": "table",
+      "repetition": 2,
+      "visibleMs": 888.7103749999987,
+      "idleBytes": 509181952,
+      "loadedBytes": 850329600,
+      "extraBytes": 341147648,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        3.04150390625,
+        2.3134765625,
+        2.56689453125
+      ]
+    },
+    {
+      "fixture": "2MiB",
+      "view": "table",
+      "repetition": 3,
+      "visibleMs": 497.6468329999989,
+      "idleBytes": 509657088,
+      "loadedBytes": 685932544,
+      "extraBytes": 176275456,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        3.04150390625,
+        2.3134765625,
+        2.56689453125
+      ]
+    },
+    {
+      "fixture": "2MiB",
+      "view": "text",
+      "repetition": 3,
+      "visibleMs": 130.93245799999931,
+      "idleBytes": 509394944,
+      "loadedBytes": 566870016,
+      "extraBytes": 57475072,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        3.1181640625,
+        2.34130859375,
+        2.5751953125
+      ]
+    },
+    {
+      "fixture": "5MiB",
+      "view": "table",
+      "repetition": 3,
+      "visibleMs": 665.2772089999999,
+      "idleBytes": 508887040,
+      "loadedBytes": 760578048,
+      "extraBytes": 251691008,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        3.1181640625,
+        2.34130859375,
+        2.5751953125
+      ]
+    },
+    {
+      "fixture": "5MiB",
+      "view": "text",
+      "repetition": 3,
+      "visibleMs": 152.7791670000006,
+      "idleBytes": 511000576,
+      "loadedBytes": 607993856,
+      "extraBytes": 96993280,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        3.1181640625,
+        2.34130859375,
+        2.5751953125
+      ]
+    },
+    {
+      "fixture": "9MiB",
+      "view": "table",
+      "repetition": 3,
+      "visibleMs": 866.5740420000002,
+      "idleBytes": 508526592,
+      "loadedBytes": 851607552,
+      "extraBytes": 343080960,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        2.9482421875,
+        2.31884765625,
+        2.56591796875
+      ]
+    },
+    {
+      "fixture": "9MiB",
+      "view": "text",
+      "repetition": 3,
+      "visibleMs": 219.6463330000006,
+      "idleBytes": 509362176,
+      "loadedBytes": 700235776,
+      "extraBytes": 190873600,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        2.9482421875,
+        2.31884765625,
+        2.56591796875
+      ]
+    },
+    {
+      "fixture": "linea-1000000-bytes",
+      "view": "text",
+      "repetition": 1,
+      "visibleMs": 83.47220899999957,
+      "idleBytes": 509198336,
+      "loadedBytes": 529825792,
+      "extraBytes": 20627456,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        2.9482421875,
+        2.31884765625,
+        2.56591796875
+      ]
+    },
+    {
+      "fixture": "linea-1000000-bytes",
+      "view": "text",
+      "repetition": 2,
+      "visibleMs": 70.4989170000008,
+      "idleBytes": 509493248,
+      "loadedBytes": 530661376,
+      "extraBytes": 21168128,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        2.9482421875,
+        2.31884765625,
+        2.56591796875
+      ]
+    },
+    {
+      "fixture": "linea-1000000-bytes",
+      "view": "text",
+      "repetition": 3,
+      "visibleMs": 80.92620799999713,
+      "idleBytes": 509345792,
+      "loadedBytes": 530448384,
+      "extraBytes": 21102592,
+      "versions": {
+        "electron": "44.9.2",
+        "node": "24.22.0",
+        "chrome": "152.0.7977.167",
+        "arch": "arm64"
+      },
+      "loadAverage": [
+        3.5126953125,
+        2.4462890625,
+        2.609375
+      ]
+    }
+  ]
+}

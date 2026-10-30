@@ -1,3 +1,4 @@
+import {isTableDocument} from '../shared/types'
 import {BrowserWindow, dialog} from 'electron'
 import {basename, extname, join, resolve} from 'node:path'
 import {lstat, realpath} from 'node:fs/promises'
@@ -23,7 +24,7 @@ async function validateDestination(docs: Documents, destination: string) {
 
 export async function operateDocument(docs: Documents, id: string, request: OperationRequest): Promise<OperationOutcome> {
  const source = docs.get(id)
- if (source.info.kind !== 'csv' || !source.info.large) throw new Error('Esta operación solo se ofrece para archivos grandes (solo lectura).')
+ if (!isTableDocument(source.info) || !source.info.large) throw new Error('Esta operación solo se ofrece para archivos grandes (solo lectura).')
  if (request.operation !== 'filter_extract') return {result: await docs.table.call('operation', id, request)}
  const output = await destinationFor(source.info.name)
  if (!output) return null
