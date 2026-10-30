@@ -11,6 +11,12 @@ let docs:Documents,path:string
 const source='ID,Nombre\n"001","Ana"\n9007199254740993,"dos\nlíneas"\n'
 beforeEach(async()=>{state.folder=await realpath(await mkdtemp(join(tmpdir(),'freya-csv-text-')));path=join(state.folder,'datos.csv');await writeFile(path,source);state.calls=[];docs=new Documents(()=>{})})
 afterEach(async()=>{await docs.shutdown();await rm(state.folder,{recursive:true,force:true})})
+it('S1a: la consulta de vista identifica el documento abierto por su ruta canónica sin alterar cambios',async()=>{
+ expect(await docs.csvViewInfo(path)).not.toHaveProperty('id')
+ const document=await docs.open(path);await docs.tableEdit(document.id,{type:'cell',rowId:'1',column:1,value:'Pendiente'})
+ expect(await docs.csvViewInfo(`${state.folder}/./datos.csv`)).toMatchObject({id:document.id,byteLength:Buffer.byteLength(source),textAllowed:true})
+ expect(docs.info(document.id)).toMatchObject({id:document.id,csvView:'table',dirty:true});expect(docs.records.size).toBe(1);expect(await readFile(path,'utf8')).toBe(source)
+})
 it('abre CSV como Texto con el mismo contenido y sin crear el motor de tabla',async()=>{
  const doc=await docs.open(path,'text');expect(doc.kind).toBe('csv');expect(doc.csvView).toBe('text');expect(doc.text).toBe(source);expect(doc.byteLength).toBe(Buffer.byteLength(source));expect(state.calls).not.toContain('open');expect(docs.records.size).toBe(1);expect(await readFile(path,'utf8')).toBe(source)
 })
