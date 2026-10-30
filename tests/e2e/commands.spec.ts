@@ -2,11 +2,14 @@ import {test,expect,_electron as electron,type ElectronApplication,type Page,typ
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,rm,truncate,stat,realpath} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
-import {join,resolve} from 'node:path'
+import {basename,join,resolve} from 'node:path'
 import {execFileSync} from 'node:child_process'
 import {showPanel} from './panel'
 import {runApplicationMenu} from './application-menu'
 import {zipFiles} from '../docx'
+import es from '../../src/shared/i18n/es.json' with {type:'json'}
+import en from '../../src/shared/i18n/en.json' with {type:'json'}
+import {defaultSettings} from '../../src/shared/settings'
 let app:ElectronApplication,page:Page,folder:string
 const palette=()=>page.getByRole('dialog',{name:'Comandos CSV',exact:true})
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-commands-e2e-'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('.')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),...(process.env.FREYALAB_PANDOC_TEST_PATH?{FREYALAB_TEST_PANDOC_PATH:process.env.FREYALAB_PANDOC_TEST_PATH}:{})},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
@@ -188,7 +191,7 @@ test('APP-01: elementos de archivo, búsqueda y navegación conservan sus accion
   Object.defineProperty(dialog,'showOpenDialog',{configurable:true,value:async(...args:unknown[])=>{const options=args.at(-1) as {properties:string[]};state.openRequests.push(options.properties);return{canceled:false,filePaths:[options.properties.includes('openDirectory')?input.folder:input.source]}}})
  },{source,copy,folder})
  await clickApplicationMenu('file.open');await expect(page.getByRole('tab',{name:'abrir.md',exact:true})).toHaveCount(1)
- await clickApplicationMenu('file.openFolder');await expect(page.locator('aside.sidebar')).toContainText(folder.split('/').at(-1)!)
+ await clickApplicationMenu('file.openFolder');await expect(page.locator('aside.sidebar')).toContainText(basename(folder))
  expect(await app.evaluate(()=>(globalThis as unknown as {openRequests:string[][]}).openRequests)).toEqual([['openFile','multiSelections'],['openDirectory']])
  await clickApplicationMenu('file.saveAs');await expect.poll(()=>readFile(copy,'utf8').catch(()=>null)).toBe('# Documento abierto\n')
  await page.locator('.cm-content').focus();await clickApplicationMenu('search.document');await expect(page.locator('.cm-search input[name="search"]')).toBeFocused()
@@ -386,7 +389,12 @@ test('APP-03: Archivos y Avanzado confirman sus acciones y conservan los documen
  await dialog.getByRole('button',{name:'Mostrar la carpeta de datos',exact:true}).click();await expect(dialog).toHaveAttribute('aria-busy','false')
  const data=await app.evaluate(({app})=>app.getPath('userData'));expect(await app.evaluate(()=>(globalThis as unknown as {settingsFolders:string[]}).settingsFolders)).toEqual([data])
  const reset=dialog.getByRole('button',{name:'Restablecer todos los ajustes',exact:true});await reset.click();await expect(dialog).toHaveAttribute('aria-busy','false');expect((await page.evaluate(()=>window.freya.settings())).values.avanzado.herramientasDeDesarrollo).toBe(true)
- await reset.click();await expect(dialog.getByRole('checkbox',{name:'Mostrar herramientas de desarrollo',exact:true})).not.toBeChecked()
+ await reset.click()
+ const systemLanguages=await app.evaluate(({app})=>app.getPreferredSystemLanguages()),language=/^es(?:-|$)/i.test(systemLanguages[0]??'')?'es':'en'
+ await expect.poll(()=>page.evaluate(()=>window.freya.language())).toEqual({preference:'sistema',language})
+ const labels=language==='es'?es:en,restored=page.getByRole('dialog',{name:labels['settings.title'],exact:true})
+ await expect(restored.getByRole('checkbox',{name:labels['settings.devTools'],exact:true})).not.toBeChecked()
+ expect((await page.evaluate(()=>window.freya.settings())).values).toEqual(defaultSettings())
  expect(await app.evaluate(()=>(globalThis as unknown as {settingsQuestions:number}).settingsQuestions)).toBe(4)
  expect(await page.evaluate(()=>window.freya.recents())).toEqual([]);expect(await readFile(path,'utf8')).toBe(source)
  if(await app.evaluate(({app})=>app.isPackaged))await expect.poll(async()=>await applicationMenuItem('view.devTools')).toBeUndefined()
