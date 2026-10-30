@@ -313,7 +313,7 @@ test('APP-01 integridad: Exportar incluye la celda preparada sin guardar el orig
 })
 
 test('APP-01 integridad: navegar siguiente y anterior prepara la celda en ambos sentidos',async()=>{
- const source='id,nombre\n00123,Freya\n',{doc,path}=await open(source);await clickApplicationMenu('file.newMarkdown');await clickApplicationMenu(`document.${doc.id}`)
+ const source='id,nombre\n00123,Freya\n',{doc,path}=await open(source);await clickApplicationMenu('file.newMarkdown');await expect(page.getByRole('tab',{name:'Sin título.md',exact:true})).toHaveAttribute('aria-selected','true');await clickApplicationMenu(`document.${doc.id}`)
  for(const[leave,back,value]of [['go.nextTab','go.previousTab','Freya siguiente'],['go.previousTab','go.nextTab','Freya anterior']]){
   await page.getByRole('gridcell',{name:'Fila 1, nombre',exact:true}).dblclick();await page.getByRole('textbox',{name:'Editar celda',exact:true}).fill(value)
   await clickApplicationMenu(leave);await expect(page.getByRole('tab',{name:'Sin título.md',exact:true})).toHaveAttribute('aria-selected','true')
