@@ -27,12 +27,14 @@ Resultado: código0, **1 caso pasado en 1.330 ms**,11 casos no seleccionados por
 | Plataforma | Evidencia | Estado |
 |---|---|---|
 | macOS Apple silicon local | Foco con 13.500 filas y todas las aserciones: 1.330 ms | Comprobado localmente |
-| macOS Intel remoto | Nuevo head con este commit | Pendiente |
-| Windows remoto | Nuevo head con este commit | Pendiente |
-| Ubuntu remoto | Nuevo head con este commit | Pendiente |
-| macOS Apple silicon remoto | Nuevo head con este commit | Pendiente |
+| macOS Intel remoto | CI254, job123883615510: **23.458 ms** | Aprobado en head2a70 |
+| Windows remoto | CI254, job123883615560: **8.354 ms** | Aprobado en head2a70 |
+| Ubuntu remoto | CI254, job123883615428: **6.476 ms** | Aprobado en head2a70 |
+| macOS Apple silicon remoto | CI254, job123883615135: **2.083 ms** | Aprobado en head2a70 |
 
-Los números remotos se añadirán al cuerpo de los PR sin commits de estado, una vez que sus jobs terminen y permitan descargar los logs. No se declara aprobado un caso no ejecutado.
+Los cuatro tiempos se extrajeron de los logs terminales de [CI254, run41000529006](https://github.com/ruzer/freyalab/actions/runs/41000529006), head `2a70d2b1fc26a141825fbcbe0c3fe3746ac7aa94`. Se conservan los cuatro logs completos y sus SHA256 en la evidencia durable de la sesión, `recovery/ci91-2a70d2b/`. El caso mantiene las mismas filas, consultas, páginas y aserciones en las cuatro plataformas. Los tiempos son observaciones de esos ejecutores, **no una promesa de rendimiento** ni una explicación de la variación histórica.
+
+Esta actualización documental se incorpora antes de congelar/publicar la siguiente unión con main912, para que su CI califique un head final sin otro commit posterior de evidencia. No transfiere el verde de2a70 a esa unión. Intel registró149.059ms para el archivo de12casos y219.74s para la unidad completa. Los otros ocho fallos históricos de CI250 pasaron aquí sin relajar sus límites; su causa sigue sin demostrar. El E2E Intel tuvo439aprobados+1intermitente en dock-expanded.spec.ts:31; se conserva separado y no se presenta como440a la primera.
 
 ## Seguimiento de rendimiento
 
@@ -40,4 +42,4 @@ Se conservan las mediciones S0/producto L4a y experiments/large-search-product/b
 
 ## Límites
 
-Aún no se han ejecutado aquí check, unidad completa, E2E completo ni build para este commit de pruebas. No se repite una suite de interfaz para obtener un verde artificial: este cambio no modifica la fuente del producto. Las ramas de integración mantendrán su evidencia local de fuente y deberán obtener CI de las cuatro plataformas y prueba del paquete sobre sus heads finales que incorporen el ajuste. Ninguna instalación, publicación o fusión de PR forma parte de este cambio.
+El alcance inicial del commit propio de esta excepción fue el foco local descrito arriba; no incluyó por sí solo check, unidad completa, E2E o build. Las ramas de integración mantienen su evidencia independiente de fuente y deberán obtener CI de las cuatro plataformas y prueba del paquete sobre sus heads finales que incorporen el ajuste. Los logs de2a70 no califican una fuente nueva. Esta actualización no cambia ningún plazo adicional, configuración, workflow ni comportamiento del producto. El seguimiento @perf específico de throughput permanece pendiente. Ninguna instalación, publicación o fusión de PR forma parte de este cambio.
