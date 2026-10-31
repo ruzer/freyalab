@@ -1,9 +1,10 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
 import electronPath from 'electron'
-import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises'
+import {mkdtemp,mkdir,writeFile,readFile,rm,realpath} from 'node:fs/promises'
 import {createHash} from 'node:crypto'
 import {tmpdir} from 'node:os'
-import {join,resolve} from 'node:path'
+import {basename,join,resolve} from 'node:path'
+import {pathToFileURL} from 'node:url'
 
 let app:ElectronApplication|undefined,page:Page,directory:string,fixtures:string,serial=0
 const sidebar=()=>page.locator('aside.sidebar')
@@ -20,12 +21,17 @@ const source=(id:string)=>page.evaluate(async id=>(await window.freya.documents(
 const storedTab=()=>page.evaluate(async()=>(await window.freya.settings()).values.barraLateral.pestana)
 const layoutSource='# Manual de FreyaLab\n\n'+Array.from({length:22},(_,i)=>`${i%2?'###':'##'} Sección ${i+1}\n\nTexto de la sección para consultar el índice.\n\n`).join('')
 
-async function launch(open:string[]=[]){
+async function launch(open:string[]=[],entry=resolve('out/main/index.js')){
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
- app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(directory,'profile'),FREYALAB_TEST_FOLDER:fixtures,FREYALAB_TEST_EXPORT_DIR:join(directory,'exports'),...open.length?{FREYALAB_TEST_OPEN:JSON.stringify(open)}:{}}})
+ app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[entry],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(directory,'profile'),FREYALAB_TEST_FOLDER:fixtures,FREYALAB_TEST_EXPORT_DIR:join(directory,'exports'),...open.length?{FREYALAB_TEST_OPEN:JSON.stringify(open)}:{}}})
  page=await app.firstWindow();await page.waitForLoadState('load');await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
  await expect(page.locator('.app-shell .toolbar')).toBeVisible()
  await expect.poll(()=>app!.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].webContents.isLoading())).toBe(false)
+ if(open.length){
+  const paths=await Promise.all(open.map(path=>realpath(path)))
+  await expect.poll(()=>page.evaluate(async()=>(await window.freya.documents()).map(doc=>doc.path))).toEqual(paths)
+  await expect(page.getByRole('tab',{name:basename(paths[paths.length-1]),exact:true})).toHaveAttribute('aria-selected','true')
+ }
 }
 async function quit(){if(!app)return;await page.evaluate(()=>window.freya.settings()).catch(()=>{});await app.evaluate(async({session,app})=>{await session.defaultSession.flushStorageData();app.exit(0)}).catch(()=>{});await app.close().catch(()=>{});app=undefined}
 test.beforeEach(async()=>{
@@ -106,10 +112,39 @@ test('P4/P8: Índice abre la barra oculta, alterna a Archivos y recuerda la pest
 })
 
 test('P5: preferencia ausente o inválida usa Archivos y una elección válida sobrevive a recargar',async()=>{
- await open(layoutSource)
+ const{path}=await open(layoutSource);await quit()
+ const canonical=await realpath(path)
+ const entry=join(directory,'p5-controlled-start.cjs')
+ // Sólo el proceso de prueba: retener la lectura hasta una consulta de documentos posterior a la carga visible.
+ await writeFile(entry,`
+ const fs=require('node:fs/promises'),{app,ipcMain}=require('electron');
+ const nativeRead=fs.readFile.bind(fs),nativeHandle=ipcMain.handle.bind(ipcMain);
+ let armed=false,held=false,released=false,release;
+ let started;globalThis.__p5ReadStarted=new Promise(resolve=>{started=resolve});
+ globalThis.__p5DelayedSnapshot=undefined;
+ fs.readFile=async function(path,...args){
+  if(String(path)===${JSON.stringify(canonical)}&&!released){held=true;started();await new Promise(resolve=>{release=resolve});held=false}
+  return nativeRead(path,...args);
+ };
+ require('node:module').syncBuiltinESMExports();
+ app.on('web-contents-created',(_event,contents)=>{
+  const loading=contents.isLoading.bind(contents);
+  contents.isLoading=()=>{const result=loading();if(!result)armed=true;return result};
+ });
+ ipcMain.handle=function(channel,listener){return nativeHandle(channel,async(...args)=>{
+  const result=await listener(...args);
+  if(channel==='freya'&&args[1]==='documents'&&armed&&held){globalThis.__p5DelayedSnapshot=result.length;released=true;release()}
+  return result;
+ })};
+ import(${JSON.stringify(pathToFileURL(resolve('out/main/index.js')).href)});
+ `)
+ await launch([path],entry)
+ await app!.evaluate(async()=>{await(globalThis as typeof globalThis&{__p5ReadStarted:Promise<void>}).__p5ReadStarted})
+ const delayedSnapshot=await app!.evaluate(()=>(globalThis as typeof globalThis&{__p5DelayedSnapshot?:number}).__p5DelayedSnapshot)
  for(const value of[null,'no-es-una-pestana','OUTLINE']){await preferences({'freya-sidebar-tab':value});await expect(filesTab()).toHaveAttribute('aria-selected','true')}
  await indexTab().click();await expect.poll(storedTab).toBe('outline');await reload();await expect(indexTab()).toHaveAttribute('aria-selected','true');await expect(indexPanel()).toBeVisible()
  await filesTab().click();await expect.poll(storedTab).toBe('files');await reload();await expect(filesTab()).toHaveAttribute('aria-selected','true')
+ expect(delayedSnapshot,'La lectura retenida debe haber devuelto una lista vacía antes de completarse.').toBe(0)
 })
 
 test('P5: almacenamiento bloqueado no impide abrir el documento ni alternar las pestañas',async()=>{
