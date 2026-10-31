@@ -1,4 +1,5 @@
 import {unified} from 'unified'
+import {win32} from 'node:path'
 import remarkParse from 'remark-parse'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
@@ -52,7 +53,14 @@ export async function prepareReportMarkdown(source:string,resources:{image:(url:
   let image=loaded.get(reference.url)
   if(!image){
    const data=reference.url.startsWith('data:image/')?reference.url:await resources.image(reference.url)
-   if(!data?.startsWith('data:image/'))throw new Error(t('report.imageUnavailable'))
+   if(!data?.startsWith('data:image/')){
+    let name=reference.url.split(/[?#]/,1)[0]
+    if(/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(name))try{name=new URL(name,'file:///').pathname}catch{name=''}
+    name=name.replace(/%(?:2f|5c)/gi,'/');try{name=decodeURIComponent(name)}catch{}
+    // Las referencias pueden usar ambos separadores, independientemente del SO.
+    name=win32.basename(name)
+    throw new Error(name?t('report.imageUnavailable',{nombre:name}):t('report.imageUnavailableUnnamed'))
+   }
    image=data.replace(/[()<>\s"\\]/g,encodeURIComponent);loaded.set(reference.url,image)
   }
   changes.push({...reference,insert:image})
