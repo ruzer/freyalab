@@ -87,7 +87,7 @@ export class Documents {
   clearTimeout(record.timer);await this.removeCsvRecovery(id)
   return document
  })}
- async csvViewInfo(path:string){const canonical=await this.authorize(path);if(extensions[extname(canonical).toLowerCase()]!=='csv')throw new Error(t('csvText.chooseFile'));const info=await stat(canonical);if(!info.isFile())throw new Error(t('csvText.selectFile'));return{byteLength:info.size,textAllowed:info.size<=CSV_TEXT_LIMIT}}
+ async csvViewInfo(path:string){const canonical=await this.authorize(path);if(extensions[extname(canonical).toLowerCase()]!=='csv')throw new Error(t('csvText.chooseFile'));const info=await stat(canonical);if(!info.isFile())throw new Error(t('csvText.selectFile'));const document=[...this.records.values()].find(record=>record.info.path===canonical);return{byteLength:info.size,textAllowed:info.size<=CSV_TEXT_LIMIT,...(document?{id:document.info.id}:{})}}
  async create(kind:Kind,csvView:CsvView='table'){return this.serial('create',()=>this.createNow(kind,csvView))}
  private async createNow(kind:Kind,csvView:CsvView='table'){const id=randomUUID();const extension=kind==='csv'?'csv':kind==='mermaid'?'mmd':kind==='text'?'txt':'md';const r:RecordDoc={info:{id,name:`Sin título.${extension}`,path:null,kind,csvView:kind==='csv'?csvView:undefined,byteLength:kind==='csv'?0:undefined,dirty:false,readonly:false,revision:0,encoding:'utf8',delimiter:','},text:'',undo:[],redo:[],root:app.getPath('documents'),saving:false};if(isTableDocument(r.info)){await this.table.call('create',id);Object.assign(r.info,await this.table.call('info',id))}this.records.set(id,r);return this.info(id)}
  get(id:string){const r=this.records.get(id);if(!r)throw new Error('El documento ya no está abierto.');return r}

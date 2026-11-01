@@ -2,13 +2,13 @@
  import {t} from '../lib/i18n.svelte'
  import type {CsvOpenError} from '../../shared/types'
  import Icon from './Icon.svelte'
- let {issue,busy=false,onopen,onclose}:{issue:CsvOpenError;busy?:boolean;onopen:()=>void;onclose:()=>void}=$props()
+ let {issue,busy=false,saved=false,textOpen=false,onopen,onclose}:{issue:CsvOpenError;busy?:boolean;saved?:boolean;textOpen?:boolean;onopen:()=>void;onclose:()=>void}=$props()
 </script>
 <section class="csv-open-error" role="alert" aria-label={t('csvText.error.label')}>
  <header><strong>{t('csvText.error.title',{nombre:issue.name})}</strong><button class="icon-button" disabled={busy} aria-label={t('csvText.error.dismiss')} onclick={onclose}><Icon name="x" size={14}/></button></header>
- <p>{issue.reportedLine?t('csvText.error.location',{line:issue.reportedLine}):t('csvText.error.locationUnknown')}</p>
+ <p>{saved?(issue.reportedLine?t('csvText.error.savedLine',{line:issue.reportedLine}):t('csvText.error.saved')):issue.reportedLine?t('csvText.error.location',{line:issue.reportedLine}):textOpen?t('csvText.error.inText'):t('csvText.error.locationUnknown')}</p>
  <details><summary>{t('csvText.error.detail')}</summary><pre>{issue.message}</pre></details>
- <button class="primary" disabled={busy||!issue.textAllowed} title={!issue.textAllowed?t('csvText.limit'):undefined} onclick={onopen}>{busy?t('csvText.error.opening'):t('csvText.openText')}</button>
+ {#if !textOpen}<button class="primary" disabled={busy||!issue.textAllowed} title={!issue.textAllowed?t('csvText.limit'):undefined} onclick={onopen}>{busy?t('csvText.error.opening'):t('csvText.openText')}</button>{/if}
 </section>
 <style>
  .csv-open-error{padding:12px 16px;color:var(--text);background:var(--panel);border-bottom:1px solid var(--border);font-size:12px;max-height:45vh;overflow:auto}
