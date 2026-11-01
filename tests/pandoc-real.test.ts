@@ -67,17 +67,6 @@ describe.skipIf(!pandoc.available)('AC-00 · P4 con Pandoc real',()=>{
   expect(await testPandoc(executable)).toMatchObject({ok:true,bytes:expect.any(Number)})
   const files=zipFiles(await pandocToDocx(executable,'# Informe\n\nAcentos: áéíóú, ñ y 中文.'))
   expect(files.get('word/document.xml')?.toString('utf8').replace(/<[^>]*>/g,'')).toContain('áéíóú, ñ y 中文')
-  for(const style of citationStyleIds){
-   const options={...approved[0],style},docx=zipFiles(await pandocToDocx(executable,'[@approved]',options)),html=await pandocCitationsToHtml(executable,'[@approved]',options)
-   expect(docx.get('word/document.xml')?.toString().replace(/<[^>]*>/g,'').toLocaleLowerCase()).toContain('fuente bibliográfica aprobada')
-   expect(html.replace(/<[^>]*>/g,'').toLocaleLowerCase()).toContain('fuente bibliográfica aprobada')
-  }
-  await finalCheck('el estilo no filtra la ruta temporal del equipo en el DOCX',async()=>{
-   const files=zipFiles(await pandocToDocx(executable,'[@approved]',approved[0]))
-   const properties=files.get('docProps/custom.xml')?.toString()??''
-   expect(properties).toContain('>style.csl<')
-   expect(properties).not.toContain('freyalab-pandoc-')
-  })
   await finalCheck('el cuerpo no se interpreta como una segunda cabecera YAML',async()=>{
    const {prepareReportMarkdown,citationMarkdown}=await import('../src/main/report-markdown')
    const source='---\ntitle: Reporte\n---\n---\nclave: dato literal\n---\n\nCuerpo [@approved].'
@@ -86,15 +75,6 @@ describe.skipIf(!pandoc.available)('AC-00 · P4 con Pandoc real',()=>{
    expect(files.get('word/document.xml')?.toString().replace(/<[^>]*>/g,'')).toContain('clave: dato literal')
    const html=await pandocCitationsToHtml(executable,citationMarkdown(source),approved[0])
    expect(html.replace(/<[^>]*>/g,'')).toContain('clave: dato literal')
-  })
-  await finalCheck('institución literal visible en la cabecera de portada, sin campo pendiente',async()=>{
-   const files=zipFiles(await pandocToDocx(executable,'# Cuerpo',{cover:true,metadata:{title:'Reporte',institution:'Universidad & <Instituto> Ñ',lang:'es-MX'}}))
-   const headers=[...files].filter(([name])=>/^word\/header[^/]*\.xml$/.test(name))
-   expect(headers).toHaveLength(1)
-   expect(headers[0][1].toString()).toContain('Universidad &amp; &lt;Instituto&gt; Ñ')
-   expect(headers[0][1].toString()).not.toMatch(/DOCPROPERTY|fldSimple|instrText/)
-   expect(files.get('word/document.xml')?.toString()).toContain('w:type="first"')
-   expect(files.get('word/_rels/document.xml.rels')?.toString()).toContain('/header')
   })
   await finalCheck('metadatos literales y autores múltiples',async()=>{
    for(const cover of [false,true]){
@@ -169,6 +149,28 @@ describe.skipIf(!pandoc.available)('AC-00 · P4 con Pandoc real',()=>{
    expect(richHtml).not.toMatch(/<(?:script|iframe)\b|<img\b[^>]*src=["'](?:https?:|file:|\/)/i)
    expect(hits).toBe(0)
   })
+ })
+ it('citeproc usa los cinco estilos aprobados con CSL JSON en DOCX y HTML',async()=>{
+  for(const style of citationStyleIds){
+   const options={...approved[0],style},docx=zipFiles(await pandocToDocx(executable,'[@approved]',options)),html=await pandocCitationsToHtml(executable,'[@approved]',options)
+   expect(docx.get('word/document.xml')?.toString().replace(/<[^>]*>/g,'').toLocaleLowerCase()).toContain('fuente bibliográfica aprobada')
+   expect(html.replace(/<[^>]*>/g,'').toLocaleLowerCase()).toContain('fuente bibliográfica aprobada')
+  }
+ })
+ it('el estilo no filtra la ruta temporal del equipo en el DOCX',async()=>{
+  const files=zipFiles(await pandocToDocx(executable,'[@approved]',approved[0]))
+  const properties=files.get('docProps/custom.xml')?.toString()??''
+  expect(properties).toContain('>style.csl<')
+  expect(properties).not.toContain('freyalab-pandoc-')
+ })
+ it('institución literal visible en la cabecera de portada, sin campo pendiente',async()=>{
+  const files=zipFiles(await pandocToDocx(executable,'# Cuerpo',{cover:true,metadata:{title:'Reporte',institution:'Universidad & <Instituto> Ñ',lang:'es-MX'}}))
+  const headers=[...files].filter(([name])=>/^word\/header[^/]*\.xml$/.test(name))
+  expect(headers).toHaveLength(1)
+  expect(headers[0][1].toString()).toContain('Universidad &amp; &lt;Instituto&gt; Ñ')
+  expect(headers[0][1].toString()).not.toMatch(/DOCPROPERTY|fldSimple|instrText/)
+  expect(files.get('word/document.xml')?.toString()).toContain('w:type="first"')
+  expect(files.get('word/_rels/document.xml.rels')?.toString()).toContain('/header')
  })
  it('hallazgo 1: el YAML no incorpora una bibliografía externa, ni con encabezados largos o YAML intermedio',async()=>{
   const secret=join(folder,'externa.bib')

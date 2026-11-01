@@ -2,6 +2,7 @@ import {request as httpRequest} from 'node:http'
 import {request as httpsRequest} from 'node:https'
 import {z} from 'zod'
 import type {SettingsStore} from './settings'
+import type {SettingsState} from '../shared/settings'
 import type {UpdateRelease,UpdateResult} from '../shared/updates'
 import {t} from '../shared/i18n'
 
@@ -86,21 +87,34 @@ export class UpdatesService {
  private pending?:Promise<UpdateResult>
  constructor(private settings:Pick<SettingsStore,'get'|'set'>,private version:string,private env:NodeJS.ProcessEnv=process.env,private now=()=>Date.now()){}
  cancel(){this.controller?.abort();this.controller=undefined;this.pending=undefined}
- async check():Promise<UpdateResult>{
-  if(this.pending)return this.pending
+ private startupAllowed(state:SettingsState){
+  const updates=state.values.actualizaciones,last=updates.ultimaComprobacion?Date.parse(updates.ultimaComprobacion):null
+  return!(state.readonly||!updates.buscarAlIniciar||last!==null&&this.now()-last<day)
+ }
+ async check(manual=true):Promise<UpdateResult>{
+  const running=this.pending
+  if(running){if(!manual&&!this.startupAllowed(await this.settings.get()))return{status:'cancelled'};return running}
   const controller=new AbortController(),signal=controller.signal
   this.controller=controller
-  const pending=(async()=>{
-   try{await this.settings.set({actualizaciones:{ultimaComprobacion:new Date(this.now()).toISOString()}})}catch{return{status:'error',code:'service'} as UpdateResult}
-   return checkUpdates(this.version,signal,this.env)
+  const pending=(async():Promise<UpdateResult>=>{
+   let state=await this.settings.get()
+   if(signal.aborted||!manual&&!this.startupAllowed(state))return{status:'cancelled'}
+   if(!state.readonly)try{await this.settings.set({actualizaciones:{ultimaComprobacion:new Date(this.now()).toISOString()}})}catch{
+    if(signal.aborted)return{status:'cancelled'}
+    if(!manual)return{status:'error',code:'service'}
+    try{state=await this.settings.get()}catch{return signal.aborted?{status:'cancelled'}:{status:'error',code:'service'}}
+    if(signal.aborted)return{status:'cancelled'}
+    if(!state.readonly)return{status:'error',code:'service'}
+   }
+   const result=await checkUpdates(this.version,signal,this.env)
+   return state.readonly&&result.status!=='cancelled'?{...result,settingsWarning:'lastCheckNotSaved'}:result
   })()
   this.pending=pending
   try{return await pending}finally{if(this.pending===pending){this.pending=undefined;this.controller=undefined}}
  }
  async startup():Promise<UpdateResult|null>{
-  const state=await this.settings.get(),updates=state.values.actualizaciones,last=updates.ultimaComprobacion?Date.parse(updates.ultimaComprobacion):null
-  if(state.readonly||!updates.buscarAlIniciar||last!==null&&this.now()-last<day)return null
-  const result=await this.check()
+  if(!this.startupAllowed(await this.settings.get()))return null
+  const result=await this.check(false)
   if(result.status!=='available'||(await this.settings.get()).values.actualizaciones.versionesOmitidas.includes(result.release.version))return null
   return result
  }

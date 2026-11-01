@@ -39,6 +39,7 @@
   {:else if result.status==='error'}
    <h3>{t('updates.failed')}</h3><p>{t(`updates.error.${result.code}`)}</p>
   {/if}
+  {#if 'settingsWarning' in result&&result.settingsWarning==='lastCheckNotSaved'}<p data-update-settings-warning>{t('updates.settingsWarning')}</p>{/if}
  </section>
  <p role="status" aria-live="polite">{message}</p>
  <footer>
