@@ -394,5 +394,19 @@
  "editor.unfoldedLines": "Líneas desplegadas",
  "editor.rangeTo": "a",
  "report.mathWarnings.one": "{count} ecuación se muestra como TeX en el DOCX.",
- "report.mathWarnings.other": "{count} ecuaciones se muestran como TeX en el DOCX."
+ "report.mathWarnings.other": "{count} ecuaciones se muestran como TeX en el DOCX.",
+ "charts.suggest.chooseColumn": "Añade una columna al eje X o al eje Y para recibir una sugerencia.",
+ "charts.suggest.noColumns": "No hay columnas disponibles para sugerir un gráfico.",
+ "charts.suggest.unavailableColumn": "Una columna seleccionada ya no está disponible o no tiene una posición válida. Vuelve a elegirla.",
+ "charts.suggest.textNumber": "La columna {xPosition} «{x}» agrupa los datos y la columna {yPosition} «{y}» tiene perfil numérico. Propongo barras con suma.",
+ "charts.suggest.dateNumber": "La columna {xPosition} «{x}» contiene fechas ISO y la columna {yPosition} «{y}» es numérica. Propongo una línea con la suma de cada mes.",
+ "charts.suggest.twoNumbers": "Las columnas {xPosition} «{x}» y {yPosition} «{y}» tienen perfil numérico. La dispersión muestra cada par sin sumar registros.",
+ "charts.suggest.textOnly": "La columna {xPosition} «{x}» se conserva como texto. Propongo contar las filas por cada valor.",
+ "charts.suggest.numberOnly": "La columna {xPosition} «{x}» tiene perfil numérico. El histograma muestra la frecuencia por intervalos.",
+ "charts.suggest.twoTexts": "Propongo contar las combinaciones de las columnas {xPosition} «{x}» y {yPosition} «{y}» usando sus valores exactos como etiquetas.",
+ "charts.suggest.conservative": "El perfil de la columna {fieldPosition} «{field}» no permite usarla automáticamente como medida numérica. Conservo sus valores exactos como etiquetas y ofrezco alternativas.",
+ "charts.suggest.distribution": "Con la confirmación aportada de varios valores por grupo, propongo una caja para comparar la distribución de la columna {yPosition} «{y}» por la columna {xPosition} «{x}».",
+ "charts.suggest.distributionNeedsEvidence": "Para proponer una caja hace falta confirmar varios valores numéricos por grupo. Los perfiles individuales no lo prueban. Mantengo barras y ofrezco un histograma sin agrupar.",
+ "charts.suggest.distributionTooFew": "No hay varios valores numéricos por grupo confirmados para una caja. Mantengo barras y ofrezco un histograma sin agrupar.",
+ "charts.suggest.distributionIncompatible": "Una caja necesita etiquetas en X y una medida numérica en Y. Conservo una sugerencia compatible con los perfiles; revisa los campos antes de elegir una distribución por grupo."
 }

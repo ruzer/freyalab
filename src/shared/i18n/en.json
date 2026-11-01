@@ -394,5 +394,19 @@
  "editor.unfoldedLines": "Unfolded lines",
  "editor.rangeTo": "to",
  "report.mathWarnings.one": "{count} equation is displayed as TeX in the DOCX.",
- "report.mathWarnings.other": "{count} equations are displayed as TeX in the DOCX."
+ "report.mathWarnings.other": "{count} equations are displayed as TeX in the DOCX.",
+ "charts.suggest.chooseColumn": "Add a column to the X or Y axis to receive a suggestion.",
+ "charts.suggest.noColumns": "There are no columns available to suggest a chart.",
+ "charts.suggest.unavailableColumn": "A selected column is no longer available or does not have a valid position. Choose it again.",
+ "charts.suggest.textNumber": "Column {xPosition} “{x}” groups the data and column {yPosition} “{y}” has a numeric profile. I suggest bars showing the sum.",
+ "charts.suggest.dateNumber": "Column {xPosition} “{x}” contains ISO dates and column {yPosition} “{y}” is numeric. I suggest a line showing the sum for each month.",
+ "charts.suggest.twoNumbers": "Columns {xPosition} “{x}” and {yPosition} “{y}” have numeric profiles. A scatter plot shows each pair without aggregating records.",
+ "charts.suggest.textOnly": "Column {xPosition} “{x}” stays as text. I suggest counting rows for each value.",
+ "charts.suggest.numberOnly": "Column {xPosition} “{x}” has a numeric profile. A histogram shows the frequency across intervals.",
+ "charts.suggest.twoTexts": "I suggest counting combinations of columns {xPosition} “{x}” and {yPosition} “{y}”, using their exact values as labels.",
+ "charts.suggest.conservative": "The profile of column {fieldPosition} “{field}” does not allow using it as a numeric measure automatically. I keep its exact values as labels and offer alternatives.",
+ "charts.suggest.distribution": "With the supplied confirmation of multiple values per group, I suggest a box plot to compare the distribution of column {yPosition} “{y}” by column {xPosition} “{x}”.",
+ "charts.suggest.distributionNeedsEvidence": "A box plot needs confirmation of multiple numeric values per group. Individual profiles do not establish that. I keep bars and offer an ungrouped histogram.",
+ "charts.suggest.distributionTooFew": "Multiple numeric values per group have not been confirmed for a box plot. I keep bars and offer an ungrouped histogram.",
+ "charts.suggest.distributionIncompatible": "A box plot needs labels on X and a numeric measure on Y. I keep a suggestion compatible with the profiles; review the fields before choosing a grouped distribution."
 }
