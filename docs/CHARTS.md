@@ -42,7 +42,7 @@ Las etiquetas del archivo no se insertan como HTML. ECharts usa SVG y tooltips d
 - `tests/e2e/charts.spec.ts`: seis consultas reales DuckDB con resultados conocidos; seis SVG en la interfaz, temas, teclado, PNG con píxeles de dibujo y PDF, invalidación por edición, cancelación, datos vacíos/constantes, etiquetas hostiles, paginación/límite de puntos y un millón de filas con muestra de 200 en el editor. Comprueba que el CSV original permanece intacto.
 - `tests/graphic-export.test.ts`: el guardián original de muestras sigue rechazando todos los formatos del documento; la operación gráfica no serializa la tabla y protege revisión, tipo de fuente, cancelación y destinos.
 - La suite E2E añade un CSV válido mayor de 50 MiB con 2 400 filas: exporta tres formatos, conserva un gráfico parcial de 2 000 puntos, rechaza peticiones tabulares/HTML/revisiones antiguas y comprueba SHA-256 y estado del original.
-- La CI ejecuta la suite y después vuelve a ejecutar SQL/gráficos desde la app empaquetada en macOS ARM/Intel, Windows y Ubuntu. No equivale a probar instaladores manualmente.
+- La CI ejecuta la suite y después vuelve a ejecutar SQL/gráficos desde la app empaquetada en macOS ARM, Windows y Ubuntu en PR; añade Intel en push a `main` y en una ejecución nocturna sólo de Intel. Un PR verde no acredita Intel. No equivale a probar instaladores manualmente.
 
 Referencias: [importaciones modulares ECharts](https://echarts.apache.org/handbook/en/basics/import/), [accesibilidad ECharts](https://echarts.apache.org/handbook/en/best-practices/aria/), [cuantiles DuckDB](https://duckdb.org/docs/stable/sql/functions/aggregates.html#quantile_contx-pos).
 

@@ -27,26 +27,28 @@ on:
       - 'docs/evidence/**/*.html'
       - 'docs/evidence/**/*.pdf'
       - 'docs/evidence/**/*.docx'
+  schedule:
+    - cron: '23 7 * * *' # 01:23 en Ciudad de México (UTC−6).
 permissions:
   contents: read
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   verify:
     name: Verify ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-24.04
-            executable: release/linux-unpacked/freyalab
-          - os: windows-2025
-            executable: release/win-unpacked/FreyaLab.exe
-          - os: macos-15
-            executable: release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab
-          - os: macos-15-intel
-            executable: release/mac/FreyaLab.app/Contents/MacOS/FreyaLab
+        # Intel se valida en main y de noche; no se crea su job en los PR.
+        include: >-
+          ${{ fromJSON(
+            github.event_name == 'schedule' &&
+            '[{"os":"macos-15-intel","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
+            github.event_name == 'pull_request' &&
+            '[{"os":"ubuntu-24.04","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"macos-15","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
+            '[{"os":"ubuntu-24.04","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"macos-15","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"},{"os":"macos-15-intel","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]'
+          ) }}
     runs-on: ${{ matrix.os }}
     env:
       FREYALAB_E2E_FAST_WORKERS: ${{ matrix.os == 'macos-15' && '2' || '1' }}
