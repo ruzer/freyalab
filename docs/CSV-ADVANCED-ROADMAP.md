@@ -93,7 +93,7 @@ Importación/exportación se entrega por formatos entre fases 2 y 6: delimitados
 - Seguridad: aislamiento renderer; IPC inválido; rutas/recursos; clipboard como texto; SQL futuro con archivos/red/extensiones bloqueados. Regex necesita motor o límite eficaz, no solo una longitud máxima.
 - UX: flujos reales Playwright, atajos, foco, Escape, claro/oscuro, errores y tamaños. Lectores de pantalla requieren evidencia específica, no solo ARIA estático.
 - Rendimiento: una observación local por tamaño es exploratoria; separar motor/UI/paquete. Un millón de filas no equivale a un millón de filas de cualquier anchura. El límite de celdas incluye el encabezado.
-- Gates: `npm run check`, `npm test`, `npm run test:e2e` (incluye build), CI Linux/Windows/macOS ARM/Intel sobre el mismo commit. PR revisable sin fusión automática; no nueva publicación ni instaladores aquí.
+- Gates: `npm run check`, `npm test`, `npm run test:e2e` (incluye build), CI Linux/Windows/macOS ARM en PR; Intel adicional en push a `main` y ejecución nocturna de Intel. Verificar el SHA de cada ejecución: el verde del PR no acredita Intel. PR revisable sin fusión automática; no nueva publicación ni instaladores aquí.
 
 ## 7. Primera iteración recomendada
 

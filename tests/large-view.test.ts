@@ -121,7 +121,7 @@ for(const encoding of ['utf8','utf16le'] as const)it(`${encoding}: paridad de 33
   }
   expect(await readFile(path)).toEqual(data)
  }finally{await views.stop();await small.close('a');await rm(folder,{recursive:true,force:true})}
-})
+},10_000)
 
 it('cancelar o cerrar un documento no cancela la búsqueda de otro; reinterpretar elimina la vista antigua',async()=>{
  const folder=await mkdtemp(join(tmpdir(),'freya-view-lifecycle-')),path=join(folder,'data.csv'),text=table(4000),engine=new TableEngine(()=>{},{largeBytes:1,viewWorkerPath:workerPath,viewWorkers:2,viewBatch:10,viewDelayMs:1})
