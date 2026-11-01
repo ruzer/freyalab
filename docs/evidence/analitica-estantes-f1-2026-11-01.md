@@ -84,13 +84,15 @@ MacBook Pro M2 Max, 32GB; Node24.22.1; Pandoc externo3.12.1 para evitar omisione
 
 | Comando | Resultado real |
 | --- | --- |
-| `npx vitest run tests/chart-suggest.test.ts tests/chart-suggest-sql.test.ts` | 153/153, 2 archivos, cero omisiones; última ejecución 886ms |
+| `npx vitest run tests/chart-suggest.test.ts tests/chart-suggest-sql.test.ts` | 153/153, 2 archivos, cero omisiones; observaciones entre 883 y 886ms |
 | `npm run check` | Exit0, cero errores/advertencias |
 | `FREYALAB_PANDOC_TEST_PATH=/opt/homebrew/bin/pandoc npm test` | 2258/2258, 115 archivos, cero omisiones,16.63s |
 | `npm run build` | Exit0; renderer1.04s |
-| `npm run test:e2e -- --workers=1 --retries=0` | Pendiente al congelar este commit; resultado y SHA se registran en el PR sin generar commits cosméticos |
+| `FREYALAB_PANDOC_TEST_PATH=/opt/homebrew/bin/pandoc npm run test:e2e -- --workers=1 --retries=0` | Exit0;515 correctas +1 fallo conocido esperado SEG-S2e,516 totales,14.3min; cero omisiones/retry/flaky |
 
-SHA y resultado final de cada CI se registran en el PR sobre el head congelado; un verde anterior no se transfiere. Sin cambios en `src/renderer`, `charts.ts`, límites, exportaciones, dependencias, workflows ni pruebas anteriores.
+Código/fixtures E2E congelados en `4389206ffda640332e035363851f1dfad69f49c2`. Las comprobaciones de tipos, unitarias y build inmediatamente anteriores probaron exactamente las mismas fuentes/tests que ese commit; E2E volvió a construir sobre ese SHA y ejecutó una sola suite completa. Árbol `src=d7cce6e65e241951420dd4a6ea7c38b02b37973a`, `tests=00adac4907a5b10dc022637129325b0d3ff7d202`. El commit posterior sólo completa esta evidencia: no modifica fuentes, pruebas ni configuración. La CI calificará su propio head final, que se registrará en el PR; no se transfiere un verde anterior.
+
+El runner dice `516 passed` porque el defecto del estilo tiene expectativa `failed`. El resultado real de ese caso es fallido, conocido y diferido a SEG-S2e por el propietario; **no se declara corregido ni se omite**. No hubo otro fallo y no se repitió la suite. Sin cambios en `src/renderer`, `charts.ts`, límites, exportaciones, dependencias, workflows ni pruebas anteriores.
 
 ## Lo no verificado / límites
 
