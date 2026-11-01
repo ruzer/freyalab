@@ -5,8 +5,10 @@ import {createHash} from 'node:crypto'
 import {relative,isAbsolute,join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
 import {zipFiles} from './docx'
+import {getLanguage,setLanguage} from '../src/shared/i18n'
+import {xmlControlBatches} from './xml-controls'
 
-const invoked=vi.hoisted(()=>({execFile:vi.fn(),input:vi.fn(),conversions:[] as {args:string[];cwd:string;files:Record<string,Buffer>;dataFiles:string[]}[]}))
+const invoked=vi.hoisted(()=>({execFile:vi.fn(),input:vi.fn(),stderr:'',conversions:[] as {args:string[];cwd:string;files:Record<string,Buffer>;dataFiles:string[]}[]}))
 vi.mock('node:child_process',()=>({execFile:invoked.execFile}))
 import * as pandoc from '../src/main/pandoc'
 const content=Buffer.from('[{"id":"approved","type":"book","title":"Fuente aprobada"}]')
@@ -18,7 +20,7 @@ async function convert(format:'docx'|'html',source:string,value:unknown=options)
  return fn(process.execPath,source,value)
 }
 beforeEach(()=>{
- vi.clearAllMocks();invoked.conversions.splice(0)
+ vi.clearAllMocks();invoked.conversions.splice(0);invoked.stderr=''
  invoked.execFile.mockImplementation((_path:string,args:string[],settings:{cwd:string},done:(error:Error|null,stdout:Buffer,stderr:Buffer)=>void)=>{
   void(async()=>{
    if(args[0]==='--version'){done(null,Buffer.from('pandoc 3.10.2\n'),Buffer.alloc(0));return}
@@ -26,10 +28,96 @@ beforeEach(()=>{
    for(const flag of ['--bibliography','--csl','--reference-doc'])if(args.includes(flag))files[flag]=await readFile(resolve(settings.cwd,args[args.indexOf(flag)+1]))
    invoked.conversions.push({args,cwd:settings.cwd,files,dataFiles:await readdir(args[args.indexOf('--data-dir')+1])})
    const format=args[args.indexOf('-t')+1]
-   done(null,Buffer.from(format==='html5'?'<p>Cita final</p>':format==='csljson'?'[]':'PK\x03\x04docx'),Buffer.alloc(0))
+   done(null,Buffer.from(format==='html5'?'<p>Cita final</p>':format==='csljson'?'[]':'PK\x03\x04docx'),Buffer.from(invoked.stderr))
   })().catch(error=>done(error,Buffer.alloc(0),Buffer.alloc(0)))
   return{stdin:{on:vi.fn().mockReturnThis(),end:invoked.input}}
  })
+})
+
+it('S2d: sólo cuenta avisos Pandoc de conversión TeX, sin devolver stderr ni mezclar exportaciones',async()=>{
+ const first=vi.fn(),second=vi.fn()
+ invoked.stderr='[WARNING] Could not convert TeX math \\mathbbm{R}, rendering as TeX:\n  unknown command /private/no-exponer\n[WARNING] Imagen ausente\nCould not convert TeX math fuera de un aviso\n[WARNING] Could not convert TeX mathematics no es el aviso\n[WARNING] Could not convert TeX math \\otra{R}, rendering as TeX:\r\n  más detalle privado\r\n'
+ const bytes=await pandoc.pandocToDocx(process.execPath,'# Cuerpo',{},first)
+ expect(Buffer.isBuffer(bytes)).toBe(true);expect(first.mock.calls).toEqual([[2]])
+ expect(bytes.toString()).not.toContain('no-exponer')
+ invoked.stderr='[WARNING] Aviso distinto que menciona TeX math\n[WARNING] Otra cosa: Could not convert TeX math\n'
+ await pandoc.pandocToDocx(process.execPath,'# Segundo',{},second)
+ expect(second.mock.calls).toEqual([[0]]);expect(first.mock.calls).toEqual([[2]])
+})
+
+const metadataLimits=[
+ {metadata:{title:'x'.repeat(1001)},es:'El título admite hasta 1000 caracteres.',en:'The title allows up to 1000 characters.'},
+ {metadata:{subtitle:'x'.repeat(1001)},es:'El subtítulo admite hasta 1000 caracteres.',en:'The subtitle allows up to 1000 characters.'},
+ {metadata:{institution:'x'.repeat(2*1024*1024)},es:'La institución admite hasta 1000 caracteres.',en:'The institution allows up to 1000 characters.'},
+ {metadata:{author:['x'.repeat(201)]},es:'Cada autor admite hasta 200 caracteres.',en:'Each author allows up to 200 characters.'},
+ {metadata:{author:Array.from({length:101},()=> 'Autor')},es:'Puedes incluir hasta 100 autores.',en:'You can include up to 100 authors.'},
+]
+for(const language of ['es','en'] as const)it.each(metadataLimits)(`S2b: rechaza el campo excesivo antes de invocar Pandoc (${language}): $es`,async example=>{
+ const previous=getLanguage();setLanguage(language)
+ try{await expect(convert('docx','# Cuerpo',{metadata:example.metadata})).rejects.toThrow(example[language]);expect(invoked.execFile).not.toHaveBeenCalled()}finally{setLanguage(previous)}
+})
+const combinedBoundary={title:'t'.repeat(1000),subtitle:'s'.repeat(1000),author:Array.from({length:20},()=> 'a'.repeat(200)),date:'d'.repeat(1000),lang:'es-MX',institution:'i'.repeat(500),abstract:'r'.repeat(490),tocTitle:'í'.repeat(5)}
+const combinedLimits=[
+ {name:'resumen ASCII',metadata:{abstract:'x'.repeat(8001)},es:'el resumen',en:'the abstract',excess:1},
+ {name:'resumen no BMP',metadata:{abstract:'🐕'.repeat(4000)+'x'},es:'el resumen',en:'the abstract',excess:1},
+ {name:'comillas y barras alternadas',metadata:{abstract:String.fromCharCode(92,34).repeat(4000)+'x'},es:'el resumen',en:'the abstract',excess:1},
+ {name:'fecha tras autores',metadata:{author:Array.from({length:40},()=> 'a'.repeat(200)),date:'d'},es:'la fecha',en:'the date',excess:1},
+ {name:'institución tras autores',metadata:{author:Array.from({length:40},()=> 'a'.repeat(200)),institution:'ñ'},es:'la institución',en:'the institution',excess:1},
+ {name:'idioma con exceso total posterior',metadata:{author:Array.from({length:40},()=> 'a'.repeat(200)),lang:'es-MX',abstract:'r'.repeat(7)},es:'el idioma',en:'the language',excess:12},
+ {name:'título del índice y los ocho campos',metadata:{...combinedBoundary,tocTitle:'í'.repeat(6)},es:'el título del índice',en:'the table of contents title',excess:1},
+ {name:'autores con exceso total posterior',metadata:{title:'t'.repeat(1000),subtitle:'s'.repeat(1000),author:Array.from({length:31},()=> 'a'.repeat(200)),abstract:'r'.repeat(300)},es:'los autores',en:'the authors',excess:500},
+]
+for(const language of ['es','en'] as const)it.each(combinedLimits)(`S2b: rechaza más de 8000 unidades UTF-16 antes de iniciar Pandoc (${language}): $name`,async example=>{
+ const previous=getLanguage(),original=structuredClone(example.metadata);setLanguage(language)
+ const message=language==='es'?`Revisa ${example.es}: los metadatos superan el límite conjunto de 8000 unidades UTF-16. Exceso: ${example.excess}.`:`Review ${example.en}: metadata exceeds the combined limit of 8000 UTF-16 units. Excess: ${example.excess}.`
+ try{await expect(convert('docx','# Cuerpo',{metadata:example.metadata})).rejects.toThrow(message);expect(invoked.execFile).not.toHaveBeenCalled();expect(example.metadata).toEqual(original)}finally{setLanguage(previous)}
+})
+it('S2b: el antiguo conjunto de máximos se rechaza por su total, sin truncarlo',async()=>{
+ const metadata={title:'🐕'.repeat(1000),subtitle:'x'.repeat(1000),institution:'ñ'.repeat(1000),author:Array.from({length:100},()=> '🐕'.repeat(200)),abstract:'ñ'.repeat(32768)},original=structuredClone(metadata)
+ await expect(convert('docx','# Cuerpo',{metadata})).rejects.toThrow('Revisa los autores: los metadatos superan el límite conjunto de 8000 unidades UTF-16. Exceso: 68768.')
+ expect(invoked.execFile).not.toHaveBeenCalled();expect(metadata).toEqual(original)
+})
+it('S2b: acepta topes individuales exactos, contando codepoints sin partir pares',async()=>{
+ const metadata={title:'🐕'.repeat(1000),subtitle:'x'.repeat(1000),institution:'ñ'.repeat(1000),author:['🐕'.repeat(200)]}
+ await expect(convert('docx','# Cuerpo',{metadata})).resolves.toBeInstanceOf(Buffer)
+ const args=invoked.conversions.at(-1)!.args
+ expect(args).toContain('title='+metadata.title);expect(args).toContain('subtitle='+metadata.subtitle);expect(args).toContain('institution='+metadata.institution);expect(args).toContain('author='+metadata.author[0])
+})
+it.each([
+ {name:'ASCII',metadata:{abstract:'x'.repeat(8000)}},
+ {name:'no BMP',metadata:{abstract:'🐕'.repeat(4000)}},
+ {name:'comillas y barras alternadas',metadata:{abstract:String.fromCharCode(92,34).repeat(4000)}},
+ {name:'los ocho campos',metadata:combinedBoundary},
+])('S2b: acepta exactamente 8000 unidades UTF-16 ($name), con valores y cuerpo intactos',async({metadata})=>{
+ const original=structuredClone(metadata),source='# Fuente original\r\n\r\nTexto ñ🐕.'
+ await expect(convert('docx',source,{metadata})).resolves.toBeInstanceOf(Buffer)
+ const args=invoked.conversions.at(-1)!.args
+ for(const [field,value]of Object.entries(metadata)){
+  const key=field==='tocTitle'?'toc-title':field,values=Array.isArray(value)?value:[value]
+  expect(args.filter(arg=>arg.startsWith(key+'='))).toEqual(values.map(value=>key+'='+value))
+ }
+ expect(args).not.toContain('--defaults');expect(args).not.toContain('--metadata-file');expect(metadata).toEqual(original);expect(invoked.input).toHaveBeenLastCalledWith(source)
+})
+it('S2b: calcula el presupuesto Windows con cien autores, comillas, barras y todas las opciones fijas',async()=>{
+ const pair=String.fromCharCode(92,34),author=Array.from({length:100},(_,index)=>index===0?pair.repeat(37)+String.fromCharCode(92):pair.repeat(40)),metadata={title:'',subtitle:'',author,date:'',lang:'es-MX',institution:'',abstract:'',tocTitle:''}
+ await convert('docx','# Cuerpo',{...options,cover:true,toc:true,lof:true,lot:true,metadata})
+ const call=invoked.conversions.at(-1)!,values=Object.values(metadata).flat(),units=values.reduce((sum,value)=>sum+value.length,0)
+ // Modelo conservador: entrecomilla cada argumento con las reglas de escape de Windows.
+ const quotedUnits=(argument:string)=>{
+  let units=2,slashes=0
+  for(const character of argument){
+   if(character===String.fromCharCode(92)){slashes++;continue}
+   units+=slashes*(character==='"'?2:1)+character.length+(character==='"'?1:0);slashes=0
+  }
+  return units+slashes*2
+ }
+ expect(units).toBe(8000);expect(quotedUnits(pair.repeat(4000))).toBe(16002);expect(quotedUnits('🐕'.repeat(4000))).toBe(8002)
+ const quotedCommand=quotedUnits(process.execPath)+call.args.reduce((sum,arg)=>sum+quotedUnits(arg)+1,0)+1,content=values.reduce((sum,value)=>sum+quotedUnits(value)-2,0),overhead=quotedCommand-content,bound=units*2+overhead
+ expect(content).toBeLessThanOrEqual(16000);expect(units*2*2).toBe(32000) // bytes del contenido, no unidades UTF-16.
+ expect(quotedCommand).toBeLessThanOrEqual(bound);expect(bound).toBeLessThan(32767)
+ expect(call.args.filter(value=>value==='--metadata')).toHaveLength(107)
+ for(const flag of ['--sandbox','--citeproc','--reference-doc','--toc','--lof','--lot'])expect(call.args).toContain(flag)
+ expect(call.args).not.toContain('--defaults');expect(call.args).not.toContain('--metadata-file')
 })
 
 it.each(['docx','html'] as const)('%s conserva sandbox/lector fijo y usa sólo las copias temporales de bibliografía y CSL',async format=>{
@@ -91,6 +179,27 @@ it('cada autor se entrega como un valor escalar de metadata, sin una lista JSON 
  await convert('docx','# Informe',{metadata:{author:['Elena García','José López']}})
  const args=invoked.conversions.at(-1)!.args
  expect(args.filter(value=>value.startsWith('author='))).toEqual(['author=Elena García','author=José López'])
+})
+it('S2a: DOCX sustituye todo carácter XML imposible de metadatos por espacio, sin mutar las opciones',async()=>{
+ for(const {value,expected,label}of xmlControlBatches){
+  const metadata={title:value,subtitle:value,author:[value,'Autora ñ🐕'],date:value,tocTitle:value,abstract:'Resumen\u000b intacto',institution:'Institución intacta',lang:'es-MX'},original=structuredClone(metadata)
+  await convert('docx','# Cuerpo',{metadata})
+  const args=invoked.conversions.at(-1)!.args
+  for(const key of ['title','subtitle','author','date','toc-title'])expect(args,`${key}: ${label}`).toContain(key+'='+expected)
+  expect(args).toContain('author=Autora ñ🐕');expect(args).toContain('abstract=Resumen\u000b intacto');expect(args).toContain('institution=Institución intacta')
+  expect(metadata).toEqual(original)
+ }
+})
+it('S2a: conserva cuerpo, ejemplos custom-style, resumen y los caracteres XML legales',async()=>{
+ const valid='Texto\tcon\nCR\r ñ🐕\ud7ff\ue000\ufffd\u{10000}\u{10ffff}',source='# Cuerpo\u0001 intacto\n\n```markdown\n::: {custom-style="ejemplo\u0001"}\n```\n\n`[literal]{custom-style="otro\u0001"}`'
+ await convert('docx',source,{metadata:{title:valid,subtitle:valid,author:[valid],date:valid,tocTitle:valid,abstract:'Resumen\u000b intacto'}})
+ const args=invoked.conversions.at(-1)!.args
+ for(const key of ['title','subtitle','author','date','toc-title'])expect(args).toContain(key+'='+valid)
+ expect(args).toContain('abstract=Resumen\u000b intacto');expect(invoked.input).toHaveBeenLastCalledWith(source)
+})
+it('S2a: mantiene el rechazo de la institución inválida de portada',async()=>{
+ for(const institution of ['Nombre\0 imposible','Nombre\ud800 imposible','Nombre\uffff imposible'])await expect(convert('docx','# Cuerpo',{cover:true,metadata:{institution}})).rejects.toThrow(/instituci[oó]n|institution/i)
+ expect(invoked.conversions).toHaveLength(0)
 })
 it('ambas salidas conservan el idioma BCP 47 sin comillas ni escapes de Markdown',async()=>{
  for(const format of ['docx','html'] as const){

@@ -7,7 +7,7 @@ import sanitize from 'sanitize-html'
 import {createHash} from 'node:crypto'
 import {t} from '../shared/i18n'
 import {svgTags,cleanExportMarkup} from './export-markup'
-import {detectPandoc,pandocToDocx,pandocCitationsToHtml,type PandocReportOptions} from './pandoc'
+import {detectPandoc,pandocToDocx,pandocCitationsToHtml,validateReportMetadata,type PandocReportOptions} from './pandoc'
 import {loadBibliography} from './bibliography'
 import {bibliographyPath} from '../shared/bibliography-source'
 import {frontMatterOf} from '../shared/front-matter'
@@ -16,7 +16,7 @@ import {prepareReportMarkdown,citationMarkdown,reportCitationGroups} from './rep
 import {presentCitations} from '../renderer/lib/remark-citations'
 import { atomicWrite,digest } from './files'
 import type { Documents } from './documents'
-import type { ExportRequest,GraphicExportRequest } from '../shared/types'
+import type { ExportRequest,ExportOutcome,GraphicExportRequest } from '../shared/types'
 const CSP="default-src 'none'; style-src 'unsafe-inline'; img-src data:; font-src data:; object-src 'none'; base-uri 'none'"
 export function cleanSVG(svg:string){return sanitize(svg,{allowedTags:svgTags,allowedAttributes:{'*':['id','class','style','transform','fill','fill-opacity','stroke','stroke-width','stroke-dasharray','stroke-linecap','stroke-linejoin','opacity','x','y','x1','x2','y1','y2','dx','dy','width','height','viewBox','xmlns','xmlns:xlink','d','points','r','rx','ry','cx','cy','text-anchor','dominant-baseline','font-size','font-family','font-weight','marker-start','marker-end','marker-mid','orient','refX','refY','markerWidth','markerHeight','markerUnits','clip-path','preserveAspectRatio','offset','stop-color','stop-opacity','gradientUnits','gradientTransform','role','aria-labelledby','aria-roledescription','href','xlink:href']},parser:{lowerCaseTags:false,lowerCaseAttributeNames:false},allowedSchemes:['data'],allowProtocolRelative:false,allowVulnerableTags:true,transformTags:{use:(tag,attrs)=>({tagName:tag,attribs:Object.fromEntries(Object.entries(attrs).filter(([k,v])=>!['href','xlink:href'].includes(k)||v.startsWith('#')))}),image:(tag,attrs)=>({tagName:tag,attribs:Object.fromEntries(Object.entries(attrs).filter(([k,v])=>!['href','xlink:href'].includes(k)||v.startsWith('data:image/')))})}})}
 const assets=join(fileURLToPath(new URL('.',import.meta.url)),'../renderer/assets')
@@ -62,9 +62,18 @@ async function wordImage(window:BrowserWindow,svg:string):Promise<string>{
   const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;canvas.getContext('2d').drawImage(image,0,0,width,height);return canvas.toDataURL('image/png');
  })()`)
 }
-async function academicExport(docs:Documents,id:string,request:ExportRequest,destination:string,validate:()=>void):Promise<{html?:string;word?:Buffer}>{
+async function academicExport(docs:Documents,id:string,request:ExportRequest,destination:string,validate:()=>void):Promise<{html?:string;word?:Buffer;mathWarnings?:number}>{
  const record=docs.get(id),source=record.text,{frontMatter}=frontMatterOf(source),values=reportMetadataOf(frontMatter??''),reference=bibliographyPath(frontMatter)
  if(request.format!=='docx'&&!reference)return{html:request.html}
+ const language=typeof values.get('lang')==='string'?values.get('lang') as string:'es',style=request.citationStyle??'apa'
+ const metadata:NonNullable<PandocReportOptions['metadata']>={lang:language,tocTitle:reportTOCTitle(language)},cover=values.get('portada')==='true'
+ if(request.format==='docx'){
+  if(cover){
+   for(const key of ['title','subtitle','date','institution','abstract'] as const){const value=values.get(key);if(typeof value==='string')metadata[key]=value}
+   const authors=values.get('author');if(authors)metadata.author=Array.isArray(authors)?authors:[authors]
+  }
+  validateReportMetadata(metadata)
+ }
  const library=reference&&record.info.path?await loadBibliography({documentPath:record.info.path,documentRoot:record.root,bibliographyPath:reference,pandocPath:docs.pandocPath}):undefined
  validate()
  if(reference&&!record.info.path)throw new Error(t('bibliography.error.saveFirst'))
@@ -75,8 +84,7 @@ async function academicExport(docs:Documents,id:string,request:ExportRequest,des
  const window=exportWindow()
  try{
   await loadExportPage(window,request.html??'<article></article>');validate()
-  let word:Buffer|undefined
-  const language=typeof values.get('lang')==='string'?values.get('lang') as string:'es',style=request.citationStyle??'apa'
+  let word:Buffer|undefined,mathWarnings=0
   if(request.format==='docx'){
    const svgs:string[]=await window.webContents.executeJavaScript(`Array.from(document.querySelectorAll('.mermaid-render svg'),svg=>svg.outerHTML)`),diagrams:string[]=[]
    for(const svg of svgs){diagrams.push(await wordImage(window,svg));validate()}
@@ -86,12 +94,7 @@ async function academicExport(docs:Documents,id:string,request:ExportRequest,des
     const comma=image.indexOf(','),header=image.slice(0,comma),content=image.slice(comma+1)
     return wordImage(window,/;base64$/i.test(header)?Buffer.from(content,'base64').toString('utf8'):decodeURIComponent(content))
    }});validate()
-   const metadata:NonNullable<PandocReportOptions['metadata']>={lang:language,tocTitle:reportTOCTitle(language)},cover=values.get('portada')==='true'
-   if(cover){
-    for(const key of ['title','subtitle','date','institution','abstract'] as const){const value=values.get(key);if(typeof value==='string')metadata[key]=value}
-    const authors=values.get('author');if(authors)metadata.author=Array.isArray(authors)?authors:[authors]
-   }
-   word=await pandocToDocx(pandoc.available?pandoc.path:'',resolved,{cover,metadata,toc:values.get('toc')==='true',lof:values.get('lof')==='true',lot:values.get('lot')==='true',...(library?.ok?{style,bibliography:library.snapshot}:{})})
+   word=await pandocToDocx(pandoc.available?pandoc.path:'',resolved,{cover,metadata,toc:values.get('toc')==='true',lof:values.get('lof')==='true',lot:values.get('lot')==='true',...(library?.ok?{style,bibliography:library.snapshot}:{})},count=>{mathWarnings=count})
    if(!word.subarray(0,4).equals(Buffer.from('PK\x03\x04')))throw new Error(t('pandoc.invalidDocx'))
   }else if(pandoc.available&&library?.ok){
    const formatted=await pandocCitationsToHtml(pandoc.path,citationMarkdown(source),{style,bibliography:library.snapshot,metadata:{lang:language}});validate()
@@ -124,23 +127,25 @@ async function academicExport(docs:Documents,id:string,request:ExportRequest,des
   }
   validate()
   if(library?.ok&&reference&&record.info.path){const current=await loadBibliography({documentPath:record.info.path,documentRoot:record.root,bibliographyPath:reference,pandocPath:docs.pandocPath});validate();if(!current.ok||current.sha256!==library.sha256)throw new Error(t('bibliography.error.changed'))}
-  return word?{word}:{html:await window.webContents.executeJavaScript('document.documentElement.outerHTML')}
+  return word?{word,mathWarnings}:{html:await window.webContents.executeJavaScript('document.documentElement.outerHTML')}
  }finally{window.destroy()}
 }
-export async function exportDocument(docs:Documents,id:string,request:ExportRequest){
+export function exportDocument(docs:Documents,id:string,request:ExportRequest&{format:Exclude<ExportRequest['format'],'docx'>}):Promise<string|null>
+export function exportDocument(docs:Documents,id:string,request:ExportRequest):Promise<ExportOutcome>
+export async function exportDocument(docs:Documents,id:string,request:ExportRequest):Promise<ExportOutcome>{
  const record=docs.get(id);if(record.info.readonly)throw new Error('No se exporta un archivo completo desde una muestra limitada.')
  if(request.format==='docx'&&record.info.kind!=='markdown')throw new Error(t('error.invalidOperation'))
  if(record.info.kind==='markdown'){
   const revision=request.revision??record.info.revision,source=record.text,path=record.info.path
   const validate=()=>{if(docs.records.get(id)!==record||record.info.revision!==revision||record.text!==source||record.info.path!==path)throw new Error(t('bibliography.error.changedDocument'))}
-  validate();return writeExport(docs,id,request,validate)
+  validate();const result=await writeExport(docs,id,request,validate);return result?.mathWarnings?{path:result.path,mathWarnings:result.mathWarnings}:result?.path??null
  }
- return writeExport(docs,id,request)
+ return(await writeExport(docs,id,request))?.path??null
 }
 export async function exportGraphic(docs:Documents,id:string,request:GraphicExportRequest){
  const validateGraphic=()=>{const record=docs.get(id);if(!isTableDocument(record.info))throw new Error('La exportación de gráficos requiere un CSV abierto.');if(record.info.revision!==request.revision)throw new Error('La fuente cambió. Genera de nuevo el gráfico antes de exportar.')}
  validateGraphic()
- return writeExport(docs,id,request,validateGraphic)
+ return(await writeExport(docs,id,request,validateGraphic))?.path??null
 }
 async function writeExport(docs:Documents,id:string,request:ExportRequest,validateSource?:()=>void){
  const record=docs.get(id),destination=await exportDestination(record.info.name,request.format)
@@ -174,7 +179,7 @@ async function writeExport(docs:Documents,id:string,request:ExportRequest,valida
   }finally{window.destroy()}
  }
  validateSource?.()
- await atomicWrite(destination,data);return destination
+ await atomicWrite(destination,data);return{path:destination,mathWarnings:academic?.mathWarnings??0}
 }
 
 async function exportDestination(source:string,format:string,analysis=false){

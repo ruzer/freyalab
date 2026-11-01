@@ -54,6 +54,8 @@ export interface SqlProgress {requestId:string;phase:string;rows:number}
 export interface TableOptions { encoding?:Encoding; delimiter?:string; header?:boolean }
 export interface TableExport { range?:TableRange; scope:'all'|'filtered'|'selection'; query?:TableQuery; rowIds?:string[]; columns?:number[]; delimiter?:string }
 export interface ExportRequest { format:'pdf'|'html'|'svg'|'png'|'csv'|'tsv'|'docx'; html?:string; svg?:string; table?:TableExport;revision?:number;citationStyle?:import('./bibliography').CitationStyleId }
+// Sólo el DOCX guardado con ecuaciones degradadas añade un recuento; nunca stderr.
+export type ExportOutcome=string|null|{path:string;mathWarnings:number}
 export interface ChartResultRequest {requestId:string;revision:number;configuration:ChartConfiguration;format:'csv'|'json'|'md';protectFormulas:boolean}
 export interface GraphicExportRequest {format:'svg'|'png'|'pdf';svg:string;revision:number}
 export interface RecoveryEntry { id:string; name:string; savedAt:string }
@@ -84,7 +86,8 @@ export interface FreyaAPI {
  undo(id:string,redo?:boolean):Promise<DocumentInfo>; stats(id:string,rows:string[]|null,columns:number[],options?:TableStatsOptions):Promise<TableStats>; tableMarkdown(id:string,options:TableExport):Promise<string>;
  exportChartResult(id:string,request:ChartResultRequest):Promise<string|null>;
  exportGraphic(id:string,request:GraphicExportRequest):Promise<string|null>;
- export(id:string,request:ExportRequest):Promise<string|null>; image(id:string,src:string):Promise<string|null>; openLink(url:string):Promise<void>;
+ export(id:string,request:ExportRequest&{format:Exclude<ExportRequest['format'],'docx'>}):Promise<string|null>;
+ export(id:string,request:ExportRequest):Promise<ExportOutcome>; image(id:string,src:string):Promise<string|null>; openLink(url:string):Promise<void>;
  recents():Promise<string[]>; recoveries():Promise<RecoveryEntry[]>; recover(id:string):Promise<DocumentInfo>; discardRecovery(id:string):Promise<void>;
  onEvent(callback:(event:AppEvent)=>void):()=>void; droppedPaths(files:File[]):string[]
 }

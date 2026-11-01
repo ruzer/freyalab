@@ -23,6 +23,24 @@ const metadata=z.strictObject({title:z.string().optional(),subtitle:z.string().o
 const reportOptions=z.strictObject({style:z.enum(citationStyleIds).optional(),bibliography:snapshot.optional(),metadata:metadata.optional(),toc:z.boolean().optional(),lof:z.boolean().optional(),lot:z.boolean().optional(),cover:z.boolean().optional()})
 const citationOptions=z.strictObject({style:z.enum(citationStyleIds),bibliography:snapshot,metadata:metadata.pick({lang:true}).optional()})
 const reader='markdown-raw_attribute-raw_html-raw_tex-yaml_metadata_block'
+function exceedsCharacters(value:string,limit:number){let count=0;for(const character of value){if(++count>limit)return true}return false}
+export function validateReportMetadata(fields:PandocReportMetadata){
+  const combinedMessages=[
+   ['title','report.metadataLimit.title'],['subtitle','report.metadataLimit.subtitle'],['author','report.metadataLimit.author'],
+   ['date','report.metadataLimit.date'],['lang','report.metadataLimit.lang'],['institution','report.metadataLimit.institution'],
+   ['abstract','report.metadataLimit.abstract'],['tocTitle','report.metadataLimit.tocTitle'],
+  ] as const
+  let total=0,crossing:(typeof combinedMessages)[number][1]|undefined
+  for(const [field,key]of combinedMessages){
+   const value=fields[field];if(value===undefined)continue
+   for(const scalar of Array.isArray(value)?value:[value])total+=scalar.length
+   if(total>8000&&crossing===undefined)crossing=key
+  }
+  for(const [field,key] of [['title','report.titleLimit'],['subtitle','report.subtitleLimit'],['institution','report.institutionLimit']] as const)if(fields[field]!==undefined&&exceedsCharacters(fields[field],1000))throw new Error(t(key,{limit:1000}))
+  if(fields.author&&fields.author.length>100)throw new Error(t('report.authorsLimit',{limit:100}))
+  if(fields.author?.some(author=>exceedsCharacters(author,200)))throw new Error(t('report.authorLimit',{limit:200}))
+  if(crossing!==undefined)throw new Error(t(crossing,{limit:8000,excess:total-8000}))
+}
 
 export function pandocPaths(platform:NodeJS.Platform,environment:NodeJS.ProcessEnv):string[] {
  const windows=platform==='win32',path=windows?win32:posix,executable=windows?'pandoc.exe':'pandoc'
@@ -39,11 +57,11 @@ export function pandocPaths(platform:NodeJS.Platform,environment:NodeJS.ProcessE
  return[...new Set(folders.filter(folder=>path.isAbsolute(folder)).map(folder=>path.join(folder,executable)))]
 }
 
-function runPandoc(path:string,args:string[],source?:string,cwd?:string):Promise<Buffer> {
+function runPandoc(path:string,args:string[],source?:string,cwd?:string,onMathWarnings?:(count:number)=>void):Promise<Buffer> {
  return new Promise((resolve,reject)=>{
-  const child=execFile(path,args,{shell:false,timeout:10_000,maxBuffer:64*1024*1024,windowsHide:true,encoding:'buffer',cwd},(error,stdout)=>{
+  const child=execFile(path,args,{shell:false,timeout:10_000,maxBuffer:64*1024*1024,windowsHide:true,encoding:'buffer',cwd},(error,stdout,stderr)=>{
    if(error)reject(new Error(t('pandoc.conversionFailed')))
-   else resolve(stdout)
+   else{onMathWarnings?.((stderr?.toString('utf8').match(/^\[WARNING\] Could not convert TeX math\b/gm)??[]).length);resolve(stdout)}
   })
   child.stdin?.on('error',()=>{}) // EPIPE también llega al callback cuando falla el proceso.
   child.stdin?.end(source)
@@ -87,10 +105,11 @@ export function stripPandocMetadata(source:string):string {
  return source.slice(opening[0].length+end.index+end[0].length)
 }
 
-async function convertReport(executablePath:string,source:string,format:'docx'|'html5',options:unknown):Promise<Buffer>{
+async function convertReport(executablePath:string,source:string,format:'docx'|'html5',options:unknown,onMathWarnings?:(count:number)=>void):Promise<Buffer>{
  const checked=(format==='docx'?reportOptions:citationOptions).safeParse(options??{})
  if(!checked.success)throw new Error(t('pandoc.invalidOptions'))
  const selected=checked.data as PandocReportOptions,bibliography=selected.bibliography
+ if(format==='docx'&&selected.metadata)validateReportMetadata(selected.metadata)
  if(bibliography&&createHash('sha256').update(bibliography.content).digest('hex')!==bibliography.sha256)throw new Error(t('pandoc.invalidBibliography'))
  const body=(selected.cover?'::: {custom-style="FreyaPageBreak"}\n\n\u200b\n\n:::\n\n':'')+stripPandocMetadata(source),pandoc=await detectPandoc(executablePath)
  if(!pandoc.available)throw new Error(pandoc.reason)
@@ -114,12 +133,15 @@ async function convertReport(executablePath:string,source:string,format:'docx'|'
   for(const flag of ['toc','lof','lot'] as const)if(selected[flag])args.push('--'+flag)
   for(const [key,value] of Object.entries(selected.metadata??{}))if(value!==undefined){
    // --metadata recibe MetaString literal; repetir author crea la lista de autores.
-   for(const scalar of Array.isArray(value)?value:[value])args.push('--metadata',(key==='tocTitle'?'toc-title':key)+'='+scalar)
+   for(const scalar of Array.isArray(value)?value:[value]){
+    const literal=format==='docx'&&key!=='abstract'&&key!=='institution'?scalar.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff\ud800-\udfff]/gu,' '):scalar
+    args.push('--metadata',(key==='tocTitle'?'toc-title':key)+'='+literal)
+   }
   }
-  return await runPandoc(pandoc.path,args,body,directory)
+  return await runPandoc(pandoc.path,args,body,directory,format==='docx'?onMathWarnings:undefined)
  }finally{await rm(directory,{recursive:true,force:true,maxRetries:3,retryDelay:100})}
 }
-export function pandocToDocx(executablePath:string,source:string,options?:PandocReportOptions):Promise<Buffer>{return convertReport(executablePath,source,'docx',options)}
+export function pandocToDocx(executablePath:string,source:string,options?:PandocReportOptions,onMathWarnings?:(count:number)=>void):Promise<Buffer>{return convertReport(executablePath,source,'docx',options,onMathWarnings)}
 export async function pandocCitationsToHtml(executablePath:string,source:string,options:PandocCitationOptions):Promise<string>{return cleanExportMarkup((await convertReport(executablePath,source,'html5',options)).toString('utf8'))}
 export async function bibtexToCslJson(chosenPath:string|undefined,source:string):Promise<{available:false}|{available:true;json:string}>{
  const pandoc=await detectPandoc(chosenPath)
