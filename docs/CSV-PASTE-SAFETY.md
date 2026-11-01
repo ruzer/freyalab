@@ -20,6 +20,6 @@ No hay un nuevo motor de tablas, dependencias, formato de archivo ni cambios en 
 
 - Motor: filtros combinados, búsqueda y orden descendente; filas ocultas intactas; 210 registros con página de un registro; rechazo por límites de filas/columnas, fila oculta y revisión antigua; cancelación por cambio concurrente; deshacer, rehacer y restauración de recuperación.
 - Electron: pegado TSV en la tabla filtrada y ordenada; valores con ceros iniciales, comillas y campos multilínea; deshacer/rehacer desde la barra; rechazo sin cambio parcial; validación IPC; guardado CSV en orden original.
-- Comprobaciones de entrega: `npm run check`, `npm test`, `npm run test:e2e` (incluye `npm run build`). La CI debe comprobar macOS Apple silicon/Intel, Windows y Linux antes de considerar la rama validada en esas plataformas.
+- Comprobaciones de entrega: `npm run check`, `npm test`, `npm run test:e2e` (incluye `npm run build`). La CI de los PR comprueba macOS Apple silicon, Windows y Linux. Intel se comprueba adicionalmente en los push a `main` y cada noche; sólo su ejecución sobre el SHA correspondiente acredita esa plataforma.
 
 El bloque debe caber en las filas de la vista y las columnas existentes. No añade filas automáticamente. Las pruebas automatizadas no sustituyen pruebas de instalación ni mediciones de rendimiento con hardware identificado. No se generan instaladores ni una nueva publicación en esta iteración.
