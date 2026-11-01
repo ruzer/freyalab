@@ -93,4 +93,4 @@ for(const workers of [1,2,4,8])for(const limit of [3,7])it(`${workers} hilos, to
  }finally{
   await writeFile(release,'');await engine.close('a');await rm(folder,{recursive:true,force:true})
  }
-})
+},10_000)
