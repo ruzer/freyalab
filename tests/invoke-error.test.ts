@@ -6,6 +6,7 @@ it.each([
  ['Error: Mensaje propio','Error: Mensaje propio'],
  ["Error invoking remote method 'otro': Error: Mensaje", "Error invoking remote method 'otro': Error: Mensaje"],
  ['Nombre <script> y ruta a:b','Nombre <script> y ruta a:b'],
+ ["Error invoking remote method 'freya': Error: [freya:TEXT_EDIT_LIMIT] Encoded buffer rejected.",'[freya:TEXT_EDIT_LIMIT] Encoded buffer rejected.'],
 ])('limpia solamente el envoltorio de freya: %s',(message,expected)=>{
  expect(invocationMessage(new Error(message))).toBe(expected);expect(invocationMessage(message)).toBe(expected)
 })
