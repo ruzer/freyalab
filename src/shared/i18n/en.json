@@ -242,6 +242,7 @@
  "settings.markdownMode.help": "Applies to the next Markdown document. The current document keeps your chosen view.",
  "settings.split": "Editor width: {value} %",
  "settings.split.label": "Editor and preview proportions",
+ "documents.recentsUnavailable": "Could not update the list of recent files.",
  "settings.recents.help": "Manage the list of files you opened recently.",
  "settings.clearRecents": "Clear recent files list",
  "settings.recentsCleared": "Recent files list cleared.",

@@ -242,6 +242,7 @@
  "settings.markdownMode.help": "Se aplica al siguiente documento Markdown. La vista del documento actual conserva tu elección.",
  "settings.split": "Ancho del editor: {value} %",
  "settings.split.label": "Proporción entre editor y vista previa",
+ "documents.recentsUnavailable": "No se pudo actualizar la lista de archivos recientes.",
  "settings.recents.help": "Administra la lista de archivos que abriste recientemente.",
  "settings.clearRecents": "Borrar lista de archivos recientes",
  "settings.recentsCleared": "Lista de archivos recientes borrada.",
