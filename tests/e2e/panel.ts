@@ -1,7 +1,7 @@
 import {expect,type Page} from '@playwright/test'
 // Estadísticas y SQL conservan el dock; Gráficos abre la presentación hermana de Tabla.
 const tabs={'Gráficos':'Gráficos','Estadísticas':'Resumen','Análisis':'SQL'} as const
-export const analyzeButton=(page:Page)=>page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true}).getByRole('button',{name:'Analizar',exact:true})
+export const analyzeButton=(page:Page)=>page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true}).getByRole('button',{name:'Estadísticas y SQL',exact:true})
 // Deja el panel abierto en la pestaña indicada (lo abre solo si hace falta; no lo cierra nunca).
 export async function showPanel(page:Page,name:keyof typeof tabs){
  if(name==='Gráficos'){const mode=page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true});if(await mode.getAttribute('aria-pressed')!=='true')await mode.click();await expect(mode).toHaveAttribute('aria-pressed','true');await expect(page.locator('.charts-panel')).toBeVisible();return}

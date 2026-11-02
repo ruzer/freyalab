@@ -16,7 +16,7 @@ test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{})
 async function open(source:string,name='datos.csv') {const path=join(folder,name);await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible();return{path,doc}}
 async function statistics(){await showPanel(page,'Estadísticas');return page.getByRole('region',{name:'Estadísticas por columna',exact:true})}
 async function explorer(){await statistics();await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click();return page.getByRole('region',{name:'Exploración de columna',exact:true})}
-async function analyze(panel:Locator){await panel.getByRole('button',{name:'Analizar',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Análisis completo.')}
+async function analyze(panel:Locator){await panel.getByRole('button',{name:'Estadísticas y SQL',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Análisis completo.')}
 async function explore(panel:Locator){await panel.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Exploración completa.')}
 async function formatted(value:number|null){return value===null?'—':page.evaluate(value=>value.toLocaleString(undefined,{maximumSignificantDigits:12}),value)}
 async function profileValues(panel:Locator,values:(number|null)[]){const details=panel.locator('dl[aria-label="Varianza y percentiles"]');for(let i=0;i<fields.length;i++)await expect(details.getByText(fields[i],{exact:true}).locator('..').locator('dd')).toHaveText(await formatted(values[i]))}

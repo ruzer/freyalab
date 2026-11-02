@@ -55,3 +55,9 @@ Acciones puras de zonas sobre ChartOptions y perfil existente; resultado de pres
 - `src/shared/charts.ts`, chartQuery: heatmap fuerza count, no sum/average. Se consultó su presentación antes de implementar el selector en ese tipo.
 - chartLimit: bar100/heatmap400. La tabla conserva todos los grupos devueltos, no promete 842 si el motor trunca. Se mantiene aviso, y nunca Otros de un resultado truncado (§7).
 - ColumnProfile carece de muestras y de distintivo de moneda/porcentaje. La lista mostrará Texto sin inventar detector; solo se usarán valores ya disponibles si se puede explicar el aviso.
+
+### Corrección de alcance aprobada por el propietario · F2b
+
+F2b queda solo de interfaz. §3.2: Día/Mes/Año; se quita Semana. Mapa de calor: Cuenta fija; otras operaciones deshabilitadas con «El mapa de calor solo cuenta filas». No medida adicional ni cambios chartSQL. §3.3 aplica a otros tipos, conservando chartAggregates completo; distinct se muestra «Cuenta distintos». El contrato original copiado se conserva literal y esta corrección explícita prevalece.
+
+Propuestas NO aprobadas para una historia posterior del motor: (1) semanas con comienzo, etiqueta y cruce de año definidos y probados; (2) separar dos dimensiones y una medida numérica del mapa de calor, operación y totales recalculados, compatibilidad de configuraciones anteriores. No se implementan aquí. F2c y F2b-2 siguen fuera.
