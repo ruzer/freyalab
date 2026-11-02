@@ -1,0 +1,28 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-resumen-grafico-f2a
+
+ ❯ tests/chart-summary.test.ts (16 tests | 1 failed) 579ms
+   × los totales de un mapa de calor se limitan a las columnas visibles, conservando el total global 14ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-summary.test.ts > los totales de un mapa de calor se limitan a las columnas visibles, conservando el total global
+AssertionError: expected [ …(1402) ] to have a length of 402 but got 1402
+
+- Expected
++ Received
+
+- 402
++ 1402
+
+ ❯ tests/chart-summary.test.ts:42:16
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 15 passed (16)
+   Start at  00:07:31
+   Duration  758ms (tests 85%, import 12%, transform 3%)
+

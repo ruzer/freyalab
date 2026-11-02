@@ -1,0 +1,105 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-resumen-grafico-f2a
+
+ ❯ tests/chart-presentation.test.ts (4 tests | 4 failed) 7ms
+   × muestra nombres sin numeración salvo etiquetas visualmente iguales 5ms
+   × localiza descripción y accesibilidad de las marcas en inglés sin renombrar las columnas 0ms
+   × ocho series tienen contraste ≥ 3:1 y marcas con patrones; oscuro=false 0ms
+   × ocho series tienen contraste ≥ 3:1 y marcas con patrones; oscuro=true 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-presentation.test.ts > muestra nombres sin numeración salvo etiquetas visualmente iguales
+AssertionError: expected { nameLocation: 'middle', …(7) } to match object { data: [ 'Norte', 'Sur', …(2) ] }
+(15 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "data": [
+-     "Norte",
+-     "Sur",
++     "1. Norte",
++     "2. Sur",
+      "3. (campo ausente)",
+      "4. (campo ausente)",
+    ],
+  }
+
+ ❯ tests/chart-presentation.test.ts:10:49
+      8| it('muestra nombres sin numeración salvo etiquetas visualmente iguales…
+      9|  const data:ChartData={total:4,usable:4,points:4,limited:false,columns…
+     10|  expect(chartOption(data,options,colors).xAxis).toMatchObject({data:['…
+       |                                                 ^
+     11| })
+     12| it('localiza descripción y accesibilidad de las marcas en inglés sin r…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/chart-presentation.test.ts > localiza descripción y accesibilidad de las marcas en inglés sin renombrar las columnas
+AssertionError: expected { x: 'Región', …(2) } to match object { summary: 'Sum of Ventas by Región' }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "summary": "Sum of Ventas by Región",
++   "summary": "Suma de Ventas por Región",
+  }
+
+ ❯ tests/chart-presentation.test.ts:14:51
+     12| it('localiza descripción y accesibilidad de las marcas en inglés sin r…
+     13|  setLanguage('en')
+     14|  expect(chartLabels(['Región','Ventas'],options)).toMatchObject({summa…
+       |                                                   ^
+     15|  const data:ChartData={total:2,usable:2,points:2,limited:false,columns…
+     16|  expect(chartOption(data,options,colors,['Región','Ventas'],'Whole doc…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/chart-presentation.test.ts > ocho series tienen contraste ≥ 3:1 y marcas con patrones; oscuro=false
+AssertionError: #d98b43: expected 2.4363425633301294 to be greater than or equal to 3
+ ❯ tests/chart-presentation.test.ts:24:148
+     22|  const data:ChartData={total:8,usable:8,points:8,limited:false,columns…
+     23|  const plot=chartOption(data,{...options,series:2},{...colors,backgrou…
+     24|  for(const color of plot.color as string[]){const a=luminance(color),b…
+       |                                                                                                                                                    ^
+     25|  expect(plot.aria).toMatchObject({decal:{show:true}})
+     26| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/chart-presentation.test.ts > ocho series tienen contraste ≥ 3:1 y marcas con patrones; oscuro=true
+AssertionError: expected { enabled: true, label: { …(1) } } to match object { decal: { show: true } }
+(3 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "decal": {
+-     "show": true,
++   "enabled": true,
++   "label": {
++     "description": "Barras. Suma de Columna 2 por Columna 1, separado por Columna 3. Documento completo. 8 elementos de 8. La tabla de datos contiene los valores y se puede recorrer con teclado.",
+    },
+  }
+
+ ❯ tests/chart-presentation.test.ts:25:20
+     23|  const plot=chartOption(data,{...options,series:2},{...colors,backgrou…
+     24|  for(const color of plot.color as string[]){const a=luminance(color),b…
+     25|  expect(plot.aria).toMatchObject({decal:{show:true}})
+       |                    ^
+     26| })
+     27|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  23:12:05
+   Duration  143ms (transform 69%, import 16%, tests 12%, worker 3%)
+

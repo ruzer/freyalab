@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-resumen-grafico-f2a
+
+
+ Test Files  2 passed (2)
+      Tests  83 passed (83)
+   Start at  00:08:18
+   Duration  742ms (tests 83%, import 12%, transform 4%, worker 1%)
+
