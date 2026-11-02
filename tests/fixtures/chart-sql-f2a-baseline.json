@@ -1,0 +1,1016 @@
+{
+ "baseline": "05212fdb86befd40f24132e8ebc7ce7e9b4b27fe",
+ "headers": [
+  "Región \"Á🐶\"",
+  "Ventas",
+  "Canal",
+  "Fecha"
+ ],
+ "cases": [
+  {
+   "name": "1 bar count none -1",
+   "options": {
+    "kind": "bar",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "count",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "none"
+   },
+   "sha256": "de8209eef72700d2c22ca9a9684cee71d1ced37de6c077826550f1250ae53285"
+  },
+  {
+   "name": "2 bar count none 2",
+   "options": {
+    "kind": "bar",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "count",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "none"
+   },
+   "sha256": "823024780e56dfea252793a8f1682b7162c2788da2cf09c2ac048a149e3b75a5"
+  },
+  {
+   "name": "3 bar distinct none -1",
+   "options": {
+    "kind": "bar",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "distinct",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "none"
+   },
+   "sha256": "73db7e2b2d484c49738199324f898ae7c7777115017bf8aab4f06c1751be253f"
+  },
+  {
+   "name": "4 bar distinct none 2",
+   "options": {
+    "kind": "bar",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "distinct",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "none"
+   },
+   "sha256": "c57a0305e2ec9dfe0b489bfb2bc6940d5d17aabdb1832242101901f1c0bc3546"
+  },
+  {
+   "name": "5 bar sum none -1",
+   "options": {
+    "kind": "bar",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "none"
+   },
+   "sha256": "d21ae14ad9a31e680bc268abd456589f0b21dfabb685f76051e6d2f304046e0d"
+  },
+  {
+   "name": "6 bar sum none 2",
+   "options": {
+    "kind": "bar",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "none"
+   },
+   "sha256": "5727097aea7e27a7b81afadbf8d2f08c424aa4f2125379c3cd7fa809d967fcb8"
+  },
+  {
+   "name": "7 bar average none -1",
+   "options": {
+    "kind": "bar",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "average",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "none"
+   },
+   "sha256": "a08a921ae0a46c649044db24131426082bc9424deec0208d752537900cb3b816"
+  },
+  {
+   "name": "8 bar average none 2",
+   "options": {
+    "kind": "bar",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "average",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "none"
+   },
+   "sha256": "d6991693bf2b79a529c66e939eb800f012adc6568faaad8a6725e993bbe1ff23"
+  },
+  {
+   "name": "9 bar min none -1",
+   "options": {
+    "kind": "bar",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "min",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "none"
+   },
+   "sha256": "3f1dd59e00a08313dd75de3abd13063a0deedcdb992a704736c1daadbddb428b"
+  },
+  {
+   "name": "10 bar min none 2",
+   "options": {
+    "kind": "bar",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "min",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "none"
+   },
+   "sha256": "9cb8a94f0d5f35de93a4ffdd717d0b7b8f77b07df518bfb3d9b43b2c16e7b6cf"
+  },
+  {
+   "name": "11 bar max none -1",
+   "options": {
+    "kind": "bar",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "max",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "none"
+   },
+   "sha256": "c2c698f80990d31c3d43da73b1a778c66b7794555a37afb66e712ac3cda8bafb"
+  },
+  {
+   "name": "12 bar max none 2",
+   "options": {
+    "kind": "bar",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "max",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "none"
+   },
+   "sha256": "d08ce68fb23088fd2dac54c494aa95785e6e9618c3274db05e48e5f073089885"
+  },
+  {
+   "name": "13 bar median none -1",
+   "options": {
+    "kind": "bar",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "median",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "none"
+   },
+   "sha256": "6b654a0fcaaf7deabb55b95d9338e74dc1a67f6fc23abedef416e7aa0c6e4970"
+  },
+  {
+   "name": "14 bar median none 2",
+   "options": {
+    "kind": "bar",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "median",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "none"
+   },
+   "sha256": "ea9f7c5a749da67fe5ce86c1210296278c4cd3dc9a4fd81c5c01f30279b6b301"
+  },
+  {
+   "name": "15 histogram sum none -1",
+   "options": {
+    "kind": "histogram",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "none"
+   },
+   "sha256": "dee4771c2cc14a4abc18b990840d2159b235bad7b31583d1aafbde0f15980a81"
+  },
+  {
+   "name": "16 scatter sum none -1",
+   "options": {
+    "kind": "scatter",
+    "x": 1,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "none"
+   },
+   "sha256": "6f79a91806f185a7b581e74d8f6fdc90b93f352dbd06cb990f6dd9001d1f9dc6"
+  },
+  {
+   "name": "17 line sum none -1",
+   "options": {
+    "kind": "line",
+    "x": 1,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "none"
+   },
+   "sha256": "1f1ff7aa34be43f7f61e2553643dd8269dd02939f29a0a01250f93e0a2b408f7"
+  },
+  {
+   "name": "18 heatmap sum none -1",
+   "options": {
+    "kind": "heatmap",
+    "x": 0,
+    "y": 2,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "none"
+   },
+   "sha256": "33c170068f4d59ea1567e75912d5ad639d09822172a64e418d938173db6a93a3"
+  },
+  {
+   "name": "19 box sum none -1",
+   "options": {
+    "kind": "box",
+    "x": 0,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "none"
+   },
+   "sha256": "053c054de4a00bbfbe609a2dd3af020ae2c2299e19b550f48c200a70049492c1"
+  },
+  {
+   "name": "20 bar count day -1",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "count",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "day"
+   },
+   "sha256": "9a3c6814cd3aeafb2e6169532500ae6199b3b42563b7a4d4fcc98d921dcbca39"
+  },
+  {
+   "name": "21 bar count day 2",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "count",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "day"
+   },
+   "sha256": "99a11666d22884745c1b4ba6336beafc812e9ffbd8febd576a9c0514581aaf5f"
+  },
+  {
+   "name": "22 bar sum day -1",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "day"
+   },
+   "sha256": "4117deaf7ddc648d2b4c5142e842c72148e637568c5537ccaadbef8864a5fbe2"
+  },
+  {
+   "name": "23 bar sum day 2",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "day"
+   },
+   "sha256": "e30c44ccf8b884c4ac5f1f814ddf9a47aafb07b80bfcdb3298e1b2b33ddb0167"
+  },
+  {
+   "name": "24 bar average day -1",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "average",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "day"
+   },
+   "sha256": "424ffcd734072294290a1aabe1a91a212928299d30eb4f49e198949b2b9560eb"
+  },
+  {
+   "name": "25 bar average day 2",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "average",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "day"
+   },
+   "sha256": "103583262e96714c44f5f4a7c5fd162d552082132888d26f661156adbcd1df29"
+  },
+  {
+   "name": "26 bar median day -1",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "median",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "day"
+   },
+   "sha256": "f954aee57438ab872c7750a7a26e04e6085c77dbc0191638ef41799a2eacb1aa"
+  },
+  {
+   "name": "27 bar median day 2",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "median",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "day"
+   },
+   "sha256": "e49cd7dbc5b8caec81781834160ebf7cbfb40139b6c89a2d42f8ef9503599eb8"
+  },
+  {
+   "name": "28 bar count month -1",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "count",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "month"
+   },
+   "sha256": "472a06c3c4fa4739808a83b1de078ae411e26305cfa350829a63373bb4b012f6"
+  },
+  {
+   "name": "29 bar count month 2",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "count",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "month"
+   },
+   "sha256": "f93c804dcebe96dba6b08b790614ca51d818c96724153ebe5789643ddc2e0759"
+  },
+  {
+   "name": "30 bar sum month -1",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "month"
+   },
+   "sha256": "8791bce3f82e1285bddce3d68dbea3bc2d5f2dd974e5ea8a3b026a8279e5bce4"
+  },
+  {
+   "name": "31 bar sum month 2",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "month"
+   },
+   "sha256": "7264aea117fbd10a7bbc4f5c5bfe684fbf5350d4871dfde4beb4c5cf3283e676"
+  },
+  {
+   "name": "32 bar average month -1",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "average",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "month"
+   },
+   "sha256": "36651388c12afe59633a7bb88c7316d94d815a12c649e6f4656299801ce9d7d8"
+  },
+  {
+   "name": "33 bar average month 2",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "average",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "month"
+   },
+   "sha256": "f51eb73cfb1c210d40c4a8bce09ca72010568621294507521c13382069f9a955"
+  },
+  {
+   "name": "34 bar median month -1",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "median",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "month"
+   },
+   "sha256": "88c88c81165de9121a7fa2ae066393e92c2cffda665fd68f4e4adf708ca0e12f"
+  },
+  {
+   "name": "35 bar median month 2",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "median",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "month"
+   },
+   "sha256": "21ea15680437d7ce18eeb80c4a08371cd913772b0cc3d56ee4a12ae020df15fe"
+  },
+  {
+   "name": "36 bar count year -1",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "count",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "year"
+   },
+   "sha256": "cfe1ad3bce88facd8980610df5cba90bc77e483a3493e4c5321f17e0f0a9eebb"
+  },
+  {
+   "name": "37 bar count year 2",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "count",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "year"
+   },
+   "sha256": "332f81053557564f3d70d0c3bf6775d8f17183b9cb23dfd93f5873d90fb8bbaf"
+  },
+  {
+   "name": "38 bar sum year -1",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "year"
+   },
+   "sha256": "6e022b603c55d3513b89acaf957044e874acd18fa6b5617085708bb9a25bcbde"
+  },
+  {
+   "name": "39 bar sum year 2",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "year"
+   },
+   "sha256": "1f10aa88ef74a3e179970321f8b366f6adf39396e8fee97f0e26ebe7b691aabc"
+  },
+  {
+   "name": "40 bar average year -1",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "average",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "year"
+   },
+   "sha256": "ca3bcfc806b0a1de1a74c8635a8e8f9550c1966d31118836f2bd3295cf055a1d"
+  },
+  {
+   "name": "41 bar average year 2",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "average",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "year"
+   },
+   "sha256": "5d0f750b3e930496d533cf7c05cdcad207dde6f387c1a29e20c3c2d2b6879a6f"
+  },
+  {
+   "name": "42 bar median year -1",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "median",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "year"
+   },
+   "sha256": "a9a9b4007e4cd3ce1bdf5fc24d74811e80199a8747a08e1f207daa639d4a4eae"
+  },
+  {
+   "name": "43 bar median year 2",
+   "options": {
+    "kind": "bar",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "median",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "year"
+   },
+   "sha256": "0b6944e67bd1d0b460587c8bfb5f2961dfd88baf3955c53ac532b6cb20e34b52"
+  },
+  {
+   "name": "44 line count day -1",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "count",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "day"
+   },
+   "sha256": "c2b00c377e975d4c2d9f87f11822acc529b0d9aef4103ffcff127273f9bcce59"
+  },
+  {
+   "name": "45 line count day 2",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "count",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "day"
+   },
+   "sha256": "c54e5e3efd8a32e238e83dbfe623982de6c082098da24cd879dca8e387d20b79"
+  },
+  {
+   "name": "46 line sum day -1",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "day"
+   },
+   "sha256": "37a70a0202236d99693b4e654e0ab02d6bbb99511ce5d78e12d6387c46e9b648"
+  },
+  {
+   "name": "47 line sum day 2",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "day"
+   },
+   "sha256": "7fece051b25d45eca08f926367c713abd9cfe5d83073bbc6e12db483c00ed499"
+  },
+  {
+   "name": "48 line average day -1",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "average",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "day"
+   },
+   "sha256": "0d159c3a9d14bb47d489d7bf99037beba0174842d93610417e76cafe12a20a78"
+  },
+  {
+   "name": "49 line average day 2",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "average",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "day"
+   },
+   "sha256": "a40ed72641d7ec8e68d2be5fca324c5ad87477f2b9142d5e8e5dca37aedd1afe"
+  },
+  {
+   "name": "50 line median day -1",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "median",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "day"
+   },
+   "sha256": "fc94092f559872c106c5fd3cf911b34bef860a67320d208592ffa3c91a7a2c20"
+  },
+  {
+   "name": "51 line median day 2",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "median",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "day"
+   },
+   "sha256": "afac5de0486a2e295d5f0c11f6c882d0e2a74167aadfd5ea3c55cbc76fa7c54d"
+  },
+  {
+   "name": "52 line count month -1",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "count",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "month"
+   },
+   "sha256": "15844c4c72c4bfe2d08f8797b67841cf9101f424ee8041ec8954b544f9497f87"
+  },
+  {
+   "name": "53 line count month 2",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "count",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "month"
+   },
+   "sha256": "5f68be3e3679384d424b96da44da5555e16b84b13bb6a6eb9b0980e78df9f9c8"
+  },
+  {
+   "name": "54 line sum month -1",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "month"
+   },
+   "sha256": "63619b8c355c36dbc5997a139847e72b41cf660459dc2605afd70e166fa6fe36"
+  },
+  {
+   "name": "55 line sum month 2",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "month"
+   },
+   "sha256": "dcde9383357845df7c306d5bb4287f4f26b63f540a3426bd1658a6e6a5680126"
+  },
+  {
+   "name": "56 line average month -1",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "average",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "month"
+   },
+   "sha256": "ebbb54cc0d5949be814cffc36e0f2f0f7571454f29a9db3ad51a3c83762f089e"
+  },
+  {
+   "name": "57 line average month 2",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "average",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "month"
+   },
+   "sha256": "40b34a292a0914ecbe72d00dbee9f222a6631b58d7604a9f82551a0f58d83425"
+  },
+  {
+   "name": "58 line median month -1",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "median",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "month"
+   },
+   "sha256": "1e5572264a8314f3583d6790c62a77dbf278d012cd73194764ed6c2a84ad23d9"
+  },
+  {
+   "name": "59 line median month 2",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "median",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "month"
+   },
+   "sha256": "2ee8a2b4f4db482729bf7a7027f0132884d36aed5afb04eafb3a6520e733c6a3"
+  },
+  {
+   "name": "60 line count year -1",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "count",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "year"
+   },
+   "sha256": "a411ad8de802a6b0827305cd2aa2fea85b5abc4890ae94dc2450543076e7217d"
+  },
+  {
+   "name": "61 line count year 2",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "count",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "year"
+   },
+   "sha256": "9e564dc39abae663682e2477d47d672cefb2d0c3b4d198b69c85f8cd8cb7e1ab"
+  },
+  {
+   "name": "62 line sum year -1",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "year"
+   },
+   "sha256": "254845fc51de8d87d9530e657d8de24ab48b7c400d95a872414789c8675bc10b"
+  },
+  {
+   "name": "63 line sum year 2",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "sum",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "year"
+   },
+   "sha256": "f66f1ac54fa7c96e4bcdde80848b344eecad17fbc4fb57fba247c408b89db74a"
+  },
+  {
+   "name": "64 line average year -1",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "average",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "year"
+   },
+   "sha256": "64e8b14552a9c76c044b905cf552ffbc331e94487218bc6366195f4a24510a7d"
+  },
+  {
+   "name": "65 line average year 2",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "average",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "year"
+   },
+   "sha256": "2f6eb351cf3108b67529913d6205606fdbc61982a471f20bf34c6237767d20d9"
+  },
+  {
+   "name": "66 line median year -1",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "median",
+    "descending": false,
+    "measureType": "number",
+    "series": -1,
+    "time": "year"
+   },
+   "sha256": "18419bd5d80242741649cc5c1bc048b4eead8cf3d41d86450a531c6f2421b632"
+  },
+  {
+   "name": "67 line median year 2",
+   "options": {
+    "kind": "line",
+    "x": 3,
+    "y": 1,
+    "bins": 10,
+    "aggregate": "median",
+    "descending": false,
+    "measureType": "number",
+    "series": 2,
+    "time": "year"
+   },
+   "sha256": "1899e6b7777d65206d8b21066c2fe48e78cfed59e571fabe97f4557c2ef1f51a"
+  }
+ ]
+}

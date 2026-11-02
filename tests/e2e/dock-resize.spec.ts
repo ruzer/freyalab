@@ -25,7 +25,7 @@ const separator=()=>page.getByRole('separator',{name:'Ancho del panel'})
 const dockWidth=async()=>Math.round((await page.getByLabel('Panel de análisis').boundingBox())!.width)
 const area=()=>page.locator('.csv-body').evaluate(element=>element.clientWidth)
 const stored=()=>page.evaluate(key=>localStorage.getItem(key),KEY)
-async function openDock(button:'Gráficos'|'Estadísticas'|'Análisis'='Gráficos'){await showPanel(page,button);await expect(page.getByRole('tablist',{name:'Herramientas de análisis'})).toBeVisible()}
+async function openDock(button:'Gráficos'|'Estadísticas'|'Análisis'='Estadísticas'){await showPanel(page,button);await expect(page.getByRole('tablist',{name:'Herramientas de análisis'})).toBeVisible()}
 
 test('el divisor expone su estado y se mueve con el teclado dentro del rango',async()=>{
  await launch(files);await expect(page.getByRole('grid')).toBeVisible();await page.setViewportSize({width:1920,height:1080});await openDock()

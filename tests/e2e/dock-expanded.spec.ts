@@ -26,7 +26,7 @@ const separator=()=>page.getByRole('separator',{name:'Ancho del panel'})
 const back=()=>page.getByRole('button',{name:'Volver a la tabla',exact:true})
 const status=()=>page.locator('#dock-announcement')
 const width=async()=>Math.round((await dock().boundingBox())!.width)
-async function openDock(button:'Gráficos'|'Estadísticas'|'Análisis'='Gráficos'){await showPanel(page,button);await expect(tools()).toBeVisible()}
+async function openDock(button:'Gráficos'|'Estadísticas'|'Análisis'='Estadísticas'){await showPanel(page,button);await expect(tools()).toBeVisible()}
 
 test('ampliar y volver a la tabla conserva búsqueda, selección y posición de desplazamiento',async()=>{
  await launch();await page.setViewportSize({width:1920,height:1080});await openDock()
@@ -48,15 +48,15 @@ test('ampliar y volver a la tabla conserva búsqueda, selección y posición de 
  expect(Math.abs(await grid().evaluate(element=>element.scrollTop)-top)).toBeLessThanOrEqual(1)
  await expect(page.getByRole('textbox',{name:'Buscar en tabla'})).toHaveValue('C1')
  expect(Math.abs(await width()-docked)).toBeLessThanOrEqual(1);await expect(separator()).toHaveAttribute('aria-valuenow','520')
- await expect(tools().getByRole('tab',{name:'Gráficos'})).toHaveAttribute('aria-selected','true')
+ await expect(tools().getByRole('tab',{name:'Resumen'})).toHaveAttribute('aria-selected','true')
 })
 
 test('Escape en la vista ampliada vuelve a acoplar y un segundo Escape cierra el panel',async()=>{
  await launch();await page.setViewportSize({width:1920,height:1080});await openDock()
  await page.getByRole('button',{name:'Ampliar',exact:true}).click();await expect(grid()).toBeHidden()
- await page.getByRole('combobox',{name:'Columna X del gráfico'}).focus();await page.keyboard.press('Escape')
- await expect(grid()).toBeVisible();await expect(tools()).toBeVisible();await expect(page.getByLabel('Gráficos del CSV')).toBeVisible()
- await page.getByRole('combobox',{name:'Columna X del gráfico'}).focus();await page.keyboard.press('Escape')
+ await page.locator('.statistics-panel').getByRole('button',{name:'Analizar',exact:true}).focus();await page.keyboard.press('Escape')
+ await expect(grid()).toBeVisible();await expect(tools()).toBeVisible();await expect(page.locator('.statistics-panel')).toBeVisible()
+ await page.locator('.statistics-panel').getByRole('button',{name:'Analizar',exact:true}).focus();await page.keyboard.press('Escape')
  await expect(tools()).toHaveCount(0);await expect(analyzeButton(page)).toBeFocused()
 })
 
@@ -70,15 +70,15 @@ test('la vista ampliada no se guarda: tras reiniciar el panel vuelve acoplado',a
 })
 
 test('en una ventana estrecha el panel se abre ampliado con un aviso y al ensanchar vuelve a acoplarse sin perder nada',async()=>{
- await launch();await page.setViewportSize({width:1280,height:720});await openDock()
+ await launch();await page.setViewportSize({width:1280,height:720});await openDock('Análisis')
  await expect(grid()).toBeHidden();await expect(back()).toBeVisible()
  await expect(dock().getByText(/^Ventana estrecha/)).toContainText('Ventana estrecha: el panel ocupa toda el área. Oculta el explorador o amplía la ventana para verlo junto a la tabla.')
  await expect(page.getByRole('button',{name:'Ampliar',exact:true})).toHaveCount(0);await expect(page.getByRole('button',{name:'Acoplar',exact:true})).toHaveCount(0)
- const x=page.getByRole('combobox',{name:'Columna X del gráfico'});await x.selectOption({label:'2. Ciudad'});const chosen=await x.inputValue()
+ const x=page.getByRole('textbox',{name:'Consulta SQL',exact:true});await x.fill('SELECT 42 AS respuesta');const chosen=await x.textContent()
  await page.setViewportSize({width:1920,height:1080})
  await expect(grid()).toBeVisible();await expect(separator()).toBeVisible();await expect(back()).toHaveCount(0);await expect(dock().getByText(/^Ventana estrecha/)).toHaveCount(0)
- await expect(tools().getByRole('tab',{name:'Gráficos'})).toHaveAttribute('aria-selected','true');await expect(x).toHaveValue(chosen)
- await page.setViewportSize({width:1280,height:720});await expect(grid()).toBeHidden();await expect(x).toHaveValue(chosen) // y al estrechar, otra vez ampliado
+ await expect(tools().getByRole('tab',{name:'SQL'})).toHaveAttribute('aria-selected','true');await expect(x).toHaveText(chosen!)
+ await page.setViewportSize({width:1280,height:720});await expect(grid()).toBeHidden();await expect(x).toHaveText(chosen!) // y al estrechar, otra vez ampliado
 })
 
 test('en una ventana estrecha «Volver a la tabla» cierra el panel y devuelve el foco a su botón',async()=>{
@@ -89,12 +89,12 @@ test('en una ventana estrecha «Volver a la tabla» cierra el panel y devuelve e
 
 test('a 900×600 los tres paneles son utilizables en la vista ampliada',async()=>{
  await launch();await page.setViewportSize({width:900,height:600})
- const panels=[{button:'Gráficos' as const,control:()=>page.getByRole('button',{name:'Generar gráfico'})},{button:'Análisis' as const,control:()=>page.getByRole('button',{name:'Ejecutar consulta',exact:true})},{button:'Estadísticas' as const,control:()=>page.getByLabel('Panel de análisis').getByRole('button',{name:'Analizar',exact:true})}]
+ const panels=[{button:'Gráficos' as const,control:()=>page.locator('.chart-types').getByRole('button',{name:'Barras',exact:true})},{button:'Análisis' as const,control:()=>page.getByRole('button',{name:'Ejecutar consulta',exact:true})},{button:'Estadísticas' as const,control:()=>page.getByLabel('Panel de análisis').getByRole('button',{name:'Analizar',exact:true})}]
  for(const panel of panels){
-  await openDock(panel.button);await expect(grid()).toBeHidden()
+  if(panel.button==='Gráficos')await showPanel(page,'Gráficos');else await openDock(panel.button);await expect(grid()).toBeHidden()
   const control=panel.control();await control.scrollIntoViewIfNeeded();await expect(control).toBeVisible();await expect(control).toBeInViewport({ratio:1})
-  expect(await width()).toBeGreaterThanOrEqual(500) // el panel usa el área de trabajo, no los 140 px que quedaban junto a la tabla
-  await analyzeButton(page).click();await expect(tools()).toHaveCount(0)
+  expect(panel.button==='Gráficos'?(await page.locator('.charts-panel').boundingBox())!.width:await width()).toBeGreaterThanOrEqual(500) // el panel usa el área de trabajo, no los 140 px que quedaban junto a la tabla
+  if(panel.button==='Gráficos')await page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true}).click();else await analyzeButton(page).click();await expect(tools()).toHaveCount(0)
  }
 })
 

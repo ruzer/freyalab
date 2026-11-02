@@ -1,0 +1,49 @@
+
+Running 1 test using 1 worker
+
+(node:55398) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/csv-summary.spec.ts:117:1 › F2a: elegir Líneas aplica la agrupación mensual sugerida para fechas ISO (19.4s)
+
+
+  1) [csv] › tests/e2e/csv-summary.spec.ts:117:1 › F2a: elegir Líneas aplica la agrupación mensual sugerida para fechas ISO 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.charts-panel').getByRole('status')
+    Expected substring: "Gráfico listo"
+    Received string:    "No hay valores numéricos utilizables en las columnas elegidas. Elige otra columna o cuenta filas o valores únicos. · Documento completo"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" locator('.charts-panel').getByRole('status') with timeout 15000ms
+      - waiting for locator('.charts-panel').getByRole('status')
+        5 × locator resolved to <p role="status" aria-live="polite" aria-atomic="true" class="svelte-1wo6u31">…</p>
+          - unexpected value "Actualizando vista previa… · Documento completo"
+        - locator resolved to <p role="status" aria-live="polite" aria-atomic="true" class="svelte-1wo6u31">…</p>
+        - unexpected value "Preparando gráfico… · Documento completo"
+        28 × locator resolved to <p role="status" aria-live="polite" aria-atomic="true" class="svelte-1wo6u31">…</p>
+           - unexpected value "No hay valores numéricos utilizables en las columnas elegidas. Elige otra columna o cuenta filas o valores únicos. · Documento completo"
+
+
+      118 |  const file=join(folder,'fechas.csv');await writeFile(file,'Fecha,Ventas\n2026-01-01,10\n2026-01-15,20\n2026-02-01,30\n');await page.evaluate(file=>window.freya.openPaths([file]),file)
+      119 |  const panel=await summary();await panel.locator('.more-options>summary').click();await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum');await panel.getByLabel('Columna Y del gráfico').selectOption('1');await expect(panel.getByRole('status')).toContainText('Gráfico listo');await panel.locator('.more-options>summary').click()
+    > 120 |  await panel.locator('.chart-types').getByRole('button',{name:'Líneas',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Gráfico listo');await expect(panel.locator('.pivot-result tbody tr')).toHaveCount(2)
+          |                                                                                                                                     ^
+      121 |  await expect(panel.locator('.pivot-result tbody tr').first()).toContainText('2026-01');await expect(panel.locator('.pivot-result tfoot')).toContainText('60')
+      122 | })
+      123 |
+        at /private/tmp/freyalab-resumen-grafico-f2a/tests/e2e/csv-summary.spec.ts:120:133
+
+    Error Context: ../freyalab-resumen-f2a-evidence/date-red-results/csv-summary-F2a-elegir-Lín-92115-al-sugerida-para-fechas-ISO-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-resumen-f2a-evidence/date-red-results/csv-summary-F2a-elegir-Lín-92115-al-sugerida-para-fechas-ISO-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-resumen-f2a-evidence/date-red-results/csv-summary-F2a-elegir-Lín-92115-al-sugerida-para-fechas-ISO-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/csv-summary.spec.ts:117:1 › F2a: elegir Líneas aplica la agrupación mensual sugerida para fechas ISO 

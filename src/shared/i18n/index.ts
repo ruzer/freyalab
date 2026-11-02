@@ -1,5 +1,5 @@
-import es from './es.json'
-import en from './en.json'
+import es from './es.json' with {type:'json'}
+import en from './en.json' with {type:'json'}
 export type Language='es'|'en'|'en-XA'
 export type LanguagePreference='sistema'|'es'|'en'
 export type TranslationParameters=Readonly<Record<string,string|number>>

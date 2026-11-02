@@ -1,0 +1,33 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-resumen-grafico-f2a
+
+ ❯ tests/chart-summary.test.ts (3 tests | 1 failed) 528ms
+   × un diagrama de dispersión no inventa una suma ni devuelve un total por cada registro 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-summary.test.ts > un diagrama de dispersión no inventa una suma ni devuelve un total por cada registro
+AssertionError: expected [ { grand: 1, value: null }, …(3) ] to have a length of 1 but got 4
+
+- Expected
++ Received
+
+- 1
++ 4
+
+ ❯ tests/chart-summary.test.ts:25:15
+     23| it('un diagrama de dispersión no inventa una suma ni devuelve un total…
+     24|  const rows=connection.query(chartTotalSQL(headers,{...options,kind:'s…
+     25|  expect(rows).toHaveLength(1);expect(rows[0].value).toBeNull()
+       |               ^
+     26| })
+     27|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  23:24:58
+   Duration  734ms (tests 80%, import 13%, transform 6%)
+

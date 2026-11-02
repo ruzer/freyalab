@@ -1,0 +1,43 @@
+
+Running 1 test using 1 worker
+
+(node:72995) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/csv-summary.spec.ts:163:1 › F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor (21.2s)
+
+
+  1) [csv] › tests/e2e/csv-summary.spec.ts:163:1 › F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor 
+
+    Error: expect(locator).toBeAttached() failed
+
+    Locator: locator('.charts-panel').locator('.plot svg [stroke-dasharray]').first()
+    Expected: attached
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeAttached" locator('.charts-panel').locator('.plot svg [stroke-dasharray]').first() with timeout 15000ms
+      - waiting for locator('.charts-panel').locator('.plot svg [stroke-dasharray]').first()
+
+
+      164 |  const file=join(folder,'series.csv');await writeFile(file,'Paso,Valor,Serie\n0,10,A\n1,20,A\n0,15,B\n1,25,B\n0,10,A\n');await page.evaluate(file=>window.freya.openPaths([file]),file)
+      165 |  const panel=await summary();await panel.locator('.more-options>summary').click();await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum');await panel.getByLabel('Columna Y del gráfico').selectOption('1');await panel.getByLabel('Series del gráfico').selectOption('2');await expect(panel.getByRole('status')).toContainText('Gráfico listo');await panel.locator('.more-options>summary').click()
+    > 166 |  await panel.locator('.chart-types').getByRole('button',{name:'Líneas',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Gráfico listo');await expect(panel.locator('.plot svg [stroke-dasharray]').first()).toBeAttached();await page.screenshot({path:test.info().outputPath('state-line-patterns.png')})
+          |                                                                                                                                                                                                                                        ^
+      167 |  await panel.locator('.chart-types').getByRole('button',{name:'Mapa de calor',exact:true}).click();await panel.locator('.more-options>summary').click();await panel.getByLabel('Columna Y del gráfico').selectOption('2');await expect(panel.getByRole('status')).toContainText('Gráfico listo');await panel.locator('.more-options>summary').click()
+      168 |  for(const theme of ['light','dark']){
+      169 |   await page.getByLabel('Tema',{exact:true}).selectOption(theme)
+        at /private/tmp/freyalab-resumen-f2a-a11y/tests/e2e/csv-summary.spec.ts:166:232
+
+    Error Context: ../freyalab-resumen-f2a-evidence/a11y-red-results/csv-summary-F2a-series-sin-37c15-as-celdas-del-mapa-de-calor-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-resumen-f2a-evidence/a11y-red-results/csv-summary-F2a-series-sin-37c15-as-celdas-del-mapa-de-calor-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-resumen-f2a-evidence/a11y-red-results/csv-summary-F2a-series-sin-37c15-as-celdas-del-mapa-de-calor-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/csv-summary.spec.ts:163:1 › F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor 

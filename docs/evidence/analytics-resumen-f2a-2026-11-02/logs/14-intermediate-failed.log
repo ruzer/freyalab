@@ -1,0 +1,135 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-resumen-f2a-a11y
+
+ ❯ tests/charts.test.ts (10 tests | 3 failed) 22ms
+   × series categóricas: valida columnas/tipos, cita identificadores y limita sin ocultar categorías 15ms
+   × series de líneas y dispersión conservan ejes numéricos, huecos y orden sin agregar filas 1ms
+   × agrupa fechas con unidades permitidas y limita el calendario antes de materializar huecos 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/charts.test.ts > series categóricas: valida columnas/tipos, cita identificadores y limita sin ocultar categorías
+AssertionError: expected [ …(3) ] to match object [ …(3) ]
+(10 matching properties omitted from actual)
+
+- Expected
++ Received
+
+@@ -1,16 +1,16 @@
+  [
+    {
+      "data": [
+-       1,
++       null,
+        null,
+      ],
+      "name": "(campo ausente)",
+    },
+    {
+      "data": [
+-       1,
++       null,
+        null,
+      ],
+      "name": "2. (vacío)",
+    },
+    {
+
+ ❯ tests/charts.test.ts:66:22
+     64|  expect(plot.title).toMatchObject({text:'Suma de Total por Ciudad, sep…
+     65|  expect(plot.legend).toMatchObject({selected:{'(campo ausente)':true,'…
+     66|  expect(plot.series).toMatchObject([{name:'(campo ausente)',data:[1,nu…
+       |                      ^
+     67|  expect(()=>chartData('bar',columns,[['9','9','9','1','A','1','Tipo','…
+     68|  expect(()=>chartData('bar',columns,[['0','0','0',null,null,null,null,…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/charts.test.ts > series de líneas y dispersión conservan ejes numéricos, huecos y orden sin agregar filas
+AssertionError: expected [ …(2) ] to match object [ …(2) ]
+(17 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  [
+    {
+      "connectNulls": false,
+-     "data": [
+-       [
+-         1,
+-         5,
+-       ],
+-       [
+-         2,
+-         null,
+-       ],
+-     ],
++     "data": [],
+      "name": "A",
+      "type": "line",
+    },
+    {
+-     "data": [
+-       [
+-         1,
+-         7,
+-       ],
+-       [
+-         3,
+-         9,
+-       ],
+-     ],
++     "data": [],
+      "name": "B",
+      "type": "line",
+    },
+  ]
+
+ ❯ tests/charts.test.ts:75:22
+     73|  const plot=chartOption(data,{...options,kind:'line',series:2},colors)
+     74|  expect(plot.xAxis).toMatchObject({type:'value'});expect(plot.yAxis).t…
+     75|  expect(plot.series).toMatchObject([{type:'line',name:'A',connectNulls…
+       |                      ^
+     76|  const scatter=chartOption({...data,rows:data.rows.filter(row=>row[1]!…
+     77|  expect(scatter.series).toMatchObject([{type:'scatter',data:[[1,5]]},{…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/charts.test.ts > agrupa fechas con unidades permitidas y limita el calendario antes de materializar huecos
+AssertionError: expected [ { name: 'A', type: 'line', …(6) } ] to match object [ { type: 'line', …(2) } ]
+(9 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  [
+    {
+      "connectNulls": false,
+      "data": [
+-       10,
+        null,
+-       20,
++       null,
++       null,
+      ],
+      "type": "line",
+    },
+  ]
+
+ ❯ tests/charts.test.ts:95:131
+     93|  const plot=chartOption(data,{...settings,series:2},colors,['Fecha','T…
+     94|  expect(plot.title).toMatchObject({text:'Suma de Total por mes de Fech…
+     95|  expect(plot.xAxis).toMatchObject({type:'category',name:'Mes de Fecha'…
+       |                                                                                                                                   ^
+     96|  const solo=chartOption({...data,columns:['x','value'],rows:data.rows.…
+     97|  expect(solo.series).toMatchObject([{type:'line',connectNulls:false,da…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  3 failed | 15 passed (18)
+   Start at  01:04:13
+   Duration  134ms (transform 41%, tests 37%, import 19%, worker 3%)
+

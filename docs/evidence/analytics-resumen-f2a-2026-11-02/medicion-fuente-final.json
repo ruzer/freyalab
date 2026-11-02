@@ -1,0 +1,113 @@
+{
+  "hardware": "Apple M2 Max",
+  "memory": 34359738368,
+  "node": "v24.22.1",
+  "platform": "darwin",
+  "arch": "arm64",
+  "results": [
+    {
+      "rows": 100,
+      "columns": 3,
+      "bytes": 812,
+      "large": false,
+      "automatic": true,
+      "timings": [
+        1327.1642909999996,
+        1339.906833,
+        1344.471375
+      ],
+      "median": 1339.906833
+    },
+    {
+      "rows": 3000,
+      "columns": 3,
+      "bytes": 23722,
+      "large": false,
+      "automatic": true,
+      "timings": [
+        1346.2225419999995,
+        1340.6460000000006,
+        1353.1817500000016
+      ],
+      "median": 1346.2225419999995
+    },
+    {
+      "rows": 1000,
+      "columns": 200,
+      "bytes": 403788,
+      "large": false,
+      "automatic": true,
+      "timings": [
+        1842.5490409999984,
+        1853.788916999998,
+        1844.3250420000004
+      ],
+      "median": 1844.3250420000004
+    },
+    {
+      "rows": 3000,
+      "columns": 67,
+      "bytes": 408291,
+      "large": false,
+      "automatic": false,
+      "timings": [
+        1842.2462919999998,
+        1853.1882079999996,
+        1845.2708749999983
+      ],
+      "median": 1845.2708749999983
+    },
+    {
+      "rows": 3000,
+      "columns": 3,
+      "bytes": 1070722,
+      "large": false,
+      "automatic": false,
+      "timings": [
+        1318.3504999999968,
+        1331.1562080000003,
+        1329.6370409999981
+      ],
+      "median": 1329.6370409999981
+    },
+    {
+      "rows": 3000,
+      "columns": 3,
+      "bytes": 30020722,
+      "large": false,
+      "automatic": false,
+      "timings": [
+        3846.130250000002,
+        3855.588708000003,
+        3861.6717500000013
+      ],
+      "median": 3855.588708000003
+    },
+    {
+      "rows": 100000,
+      "columns": 3,
+      "bytes": 790022,
+      "large": false,
+      "automatic": false,
+      "timings": [
+        1835.702541999999,
+        1828.390124999998,
+        1837.9788340000014
+      ],
+      "median": 1835.702541999999
+    },
+    {
+      "rows": 1000000,
+      "columns": 3,
+      "bytes": 7900022,
+      "large": true,
+      "automatic": false,
+      "timings": [
+        7874.2146670000075,
+        7867.538042,
+        7885.1026249999995
+      ],
+      "median": 7874.2146670000075
+    }
+  ]
+}

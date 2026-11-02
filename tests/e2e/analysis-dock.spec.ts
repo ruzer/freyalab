@@ -45,24 +45,23 @@ test('con un panel de análisis abierto la tabla conserva las filas que tenía s
   const without=await stableRows()
   for(const panel of panels){
    await showPanel(page,panel.button);await expect(panel.ready()).toBeVisible()
-   await expect.poll(visibleRows,{message:`${panel.button} abierto en ${width}×${height} (sin panel: ${without} filas)`}).toBe(without)
-   await close();await expect(panel.ready()).toHaveCount(0)
+   if(panel.button==='Gráficos'){await expect(page.getByRole('grid')).toBeHidden();await page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true}).click();await expect.poll(visibleRows).toBe(without)}else{await expect.poll(visibleRows,{message:`${panel.button} abierto en ${width}×${height} (sin panel: ${without} filas)`}).toBe(without);await close();await expect(panel.ready()).toHaveCount(0)}
   }
  }
 })
 
 test('con el panel acoplado a 1366×768 la tabla sigue mostrando al menos tres columnas y no queda debajo del panel',async()=>{
  await page.setViewportSize({width:1366,height:768})
- await showPanel(page,'Gráficos');await expect(page.getByLabel('Gráficos del CSV')).toBeVisible()
+ await showPanel(page,'Estadísticas');await expect(page.locator('.statistics-panel')).toBeVisible()
  await expect.poll(visibleColumns).toBeGreaterThanOrEqual(3)
  const [grid,dock]=await Promise.all([page.getByRole('grid').boundingBox(),page.getByLabel('Panel de análisis').boundingBox()])
  expect(dock!.x).toBeGreaterThanOrEqual(grid!.x+grid!.width-1)
 })
 
 test('las herramientas son pestañas accesibles con activación manual por teclado',async()=>{
- await showPanel(page,'Gráficos');await expect(tools()).toBeVisible()
+ await showPanel(page,'Estadísticas');await expect(tools()).toBeVisible()
  const [resumen,graficos,sql]=['Resumen','Gráficos','SQL'].map(name=>tools().getByRole('tab',{name,exact:true}))
- await expect(graficos).toHaveAttribute('aria-selected','true');await expect(resumen).toHaveAttribute('aria-selected','false')
+ await graficos.click();await expect(graficos).toHaveAttribute('aria-selected','true');await expect(resumen).toHaveAttribute('aria-selected','false')
  await expect(graficos).toHaveAttribute('tabindex','0');await expect(sql).toHaveAttribute('tabindex','-1')
  await graficos.focus();await page.keyboard.press('ArrowRight');await expect(sql).toBeFocused();await expect(graficos).toHaveAttribute('aria-selected','true') // mover el foco no activa
  await page.keyboard.press('Enter');await expect(sql).toHaveAttribute('aria-selected','true');await expect(page.getByLabel('Análisis SQL y asistentes')).toBeVisible();await expect(page.getByLabel('Gráficos del CSV')).toBeHidden()
@@ -73,30 +72,30 @@ test('las herramientas son pestañas accesibles con activación manual por tecla
 
 test('cambiar de pestaña conserva la configuración del gráfico y el borrador SQL',async()=>{
  await showPanel(page,'Gráficos')
- const x=page.getByRole('combobox',{name:'Columna X del gráfico'});await x.selectOption({label:'2. Ciudad'});await expect(x).toHaveValue(/1/)
+ await page.locator('.charts-panel .more-options>summary').click();const x=page.getByRole('combobox',{name:'Columna X del gráfico'});await x.selectOption({label:'Ciudad'});await expect(x).toHaveValue(/1/)
  const chosen=await x.inputValue()
- await tools().getByRole('tab',{name:'SQL',exact:true}).click()
+ await showPanel(page,'Análisis')
  const editor=page.getByRole('textbox',{name:'Consulta SQL',exact:true});await editor.click();await page.keyboard.press(process.platform==='darwin'?'Meta+a':'Control+a');await page.keyboard.type('SELECT 42 AS respuesta')
- await tools().getByRole('tab',{name:'Gráficos',exact:true}).click();await expect(x).toHaveValue(chosen)
- await tools().getByRole('tab',{name:'SQL',exact:true}).click();await expect(editor).toContainText('SELECT 42 AS respuesta')
+ await showPanel(page,'Gráficos');await expect(x).toHaveValue(chosen)
+ await showPanel(page,'Análisis');await expect(editor).toContainText('SELECT 42 AS respuesta')
 })
 
 test('las pestañas visitadas siguen montadas y ocultas; cerrar el panel las desmonta y devuelve el foco',async()=>{
  const charts=page.locator('.charts-panel'),sql=page.locator('.sql-panel')
  await expect(charts).toHaveCount(0);await expect(sql).toHaveCount(0)
  await showPanel(page,'Gráficos');await expect(charts).toBeVisible();await expect(sql).toHaveCount(0) // las no visitadas no se montan
- await tools().getByRole('tab',{name:'SQL',exact:true}).click();await expect(sql).toBeVisible();await expect(charts).toHaveCount(1);await expect(charts).toBeHidden()
+ await showPanel(page,'Análisis');await expect(sql).toBeVisible();await expect(charts).toHaveCount(1);await expect(charts).toBeHidden()
  await page.getByRole('textbox',{name:'Consulta SQL',exact:true}).focus();await page.keyboard.press('Escape')
- await expect(sql).toHaveCount(0);await expect(charts).toHaveCount(0);await expect(tools()).toHaveCount(0)
+ await expect(sql).toHaveCount(0);await expect(charts).toBeHidden();await expect(tools()).toHaveCount(0)
  await expect(analyzeButton(page)).toBeFocused()
 })
 
 test('el gráfico generado en el panel acoplado no se desplaza en horizontal y queda a la vista',async()=>{
  await page.setViewportSize({width:1366,height:768})
  await showPanel(page,'Gráficos');await expect(page.getByLabel('Gráficos del CSV')).toBeVisible()
- await page.getByRole('combobox',{name:'Columna X del gráfico'}).selectOption({label:'2. Ciudad'})
+ await page.locator('.charts-panel .more-options>summary').click();await page.getByRole('combobox',{name:'Columna X del gráfico'}).selectOption({label:'Ciudad'})
  await page.getByRole('button',{name:'Generar gráfico'}).scrollIntoViewIfNeeded();await page.getByRole('button',{name:'Generar gráfico'}).click()
- await expect(page.getByText('Gráfico listo.')).toBeVisible({timeout:30_000})
+ await expect(page.locator('.charts-panel').getByRole('status')).toContainText('Gráfico listo',{timeout:30_000});await page.locator('.charts-panel .more-options>summary').click()
  const inView=()=>page.locator('.plot-scroll').evaluate(plot=>{
   let ancestor=plot.parentElement;while(ancestor&&!(ancestor.scrollHeight>ancestor.clientHeight+1&&/auto|scroll/.test(getComputedStyle(ancestor).overflowY)))ancestor=ancestor.parentElement
   const box=plot.getBoundingClientRect(),area=(ancestor??document.documentElement).getBoundingClientRect()

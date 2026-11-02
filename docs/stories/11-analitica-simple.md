@@ -36,3 +36,9 @@ Tableros guardados, nuevos tipos de gráfico, nuevo motor, edición de datos, li
 - Inferencia que sorprende → siempre mostrar el porqué y alternativas.
 - Arrastrar es inaccesible → F2 garantiza la ruta sin arrastre antes de F3.
 - Regresión del formulario → equivalencia probada y modo «Avanzado» hasta F5.
+
+## Actualización aprobada: F2a «Resumen y gráfico»
+
+El propietario sustituyó la F2 de estantes por el modelo de tabla dinámica de Excel y aprobó el boceto #105 con ajustes. El contrato vigente y sus nueve decisiones están en [Historia 11 · F2](11-analitica-excel-f2.md#decisiones-aprobadas-para-f2a--2026-11-01). F1 permanece intacta como motor de inferencia.
+
+F2a incorpora únicamente la pestaña hermana de Tabla/Texto, disposición de resultado primero, resumen tabular, vista previa desde el formulario existente, seis tipos y motivo de suggest(). Campos/zonas y conversión son F2b; Pointer Events es F2c. Las referencias visuales no son código de la aplicación. Detenerse tras cada entrega para revisión; no fusionar automáticamente.

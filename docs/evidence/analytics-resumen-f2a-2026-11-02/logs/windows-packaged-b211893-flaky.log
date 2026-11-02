@@ -1,0 +1,187 @@
+Head b21189380e93b4e09584afd326e575f47864f418
+CI https://github.com/ruzer/freyalab/actions/runs/41401809916/job/125135050419
+3 fallos iniciales del paquete Windows; pasaron al retry #1. No es una pasada limpia.
+
+  1) [csv] › tests\e2e\charts.spec.ts:95:1 › constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones 
+2026-11-02T07:21:34.9504843Z 
+2026-11-02T07:21:34.9505049Z     TimeoutError: locator.click: Timeout 30000ms exceeded.
+2026-11-02T07:21:34.9505385Z     Call log:
+2026-11-02T07:21:34.9505989Z       - waiting for locator('.charts-panel .more-options').locator(':scope>summary')
+2026-11-02T07:21:34.9506972Z         - locator resolved to <summary class="svelte-1wo6u31">Más opciones</summary>
+2026-11-02T07:21:34.9507367Z       - attempting click action
+2026-11-02T07:21:34.9507716Z         - waiting for element to be visible, enabled and stable
+2026-11-02T07:21:34.9508071Z         - element is visible, enabled and stable
+2026-11-02T07:21:34.9508381Z         - scrolling into view if needed
+2026-11-02T07:21:34.9508991Z         - done scrolling
+2026-11-02T07:21:34.9510023Z         - <div role="grid" tabindex="0" aria-rowcount="1" aria-colcount="5" class="csv-scroll" aria-label="Tabla de datos" aria-multiselectable="true">…</div> from <div class="csv-main">…</div> subtree intercepts pointer events
+2026-11-02T07:21:34.9510875Z       - retrying click action
+2026-11-02T07:21:34.9511285Z         - waiting for element to be visible, enabled and stable
+2026-11-02T07:21:34.9511615Z         - element is not visible
+2026-11-02T07:21:34.9512327Z       - retrying click action
+2026-11-02T07:21:34.9512667Z         - waiting 20ms
+2026-11-02T07:21:34.9513179Z         2 × waiting for element to be visible, enabled and stable
+2026-11-02T07:21:34.9513572Z           - element is not visible
+2026-11-02T07:21:34.9513916Z         - retrying click action
+2026-11-02T07:21:34.9514272Z           - waiting 100ms
+2026-11-02T07:21:34.9514659Z         58 × waiting for element to be visible, enabled and stable
+2026-11-02T07:21:34.9515907Z            - element is not visible
+2026-11-02T07:21:34.9516224Z          - retrying click action
+2026-11-02T07:21:34.9516477Z            - waiting 500ms
+2026-11-02T07:21:34.9516633Z 
+2026-11-02T07:21:34.9516638Z 
+2026-11-02T07:21:34.9517043Z       13 | test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-charts-'));await mkdir(join(folder,'exports'));await launch()})
+2026-11-02T07:21:34.9517869Z       14 | test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
+2026-11-02T07:21:34.9519176Z     > 15 | async function showPanel(page:Page,name:'Gráficos'){await showSummary(page,name);const more=page.locator('.charts-panel .more-options');if(await more.getAttribute('open')===null)await more.locator(':scope>summary').click()}
+2026-11-02T07:21:34.9520180Z          |                                                                                                                                                                                                                        ^
+2026-11-02T07:21:34.9521135Z       16 | async function open(text=original,name='plots.csv'){const path=join(folder,name);await writeFile(path,text);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);return{doc,path}}
+2026-11-02T07:21:34.9523200Z       17 | async function query(doc:DocumentInfo,settings:ChartOptions){const sql=chartSQL(doc.headers??[],settings),result=await page.evaluate(({doc,sql})=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id:doc.id,revision:doc.revision}],sql}),{doc,sql}),rows=[...result.rows];for(let offset=100;offset<result.returnedRows;offset+=100)rows.push(...(await page.evaluate(({id,offset})=>window.freya.sqlPage(id,offset),{id:result.requestId,offset})).rows);return chartData(settings.kind,result.columns.map(c=>c.name),rows)}
+2026-11-02T07:21:34.9524706Z       18 |
+2026-11-02T07:21:34.9525042Z         at showPanel (D:\a\freyalab\freyalab\tests\e2e\charts.spec.ts:15:216)
+2026-11-02T07:21:34.9525500Z         at D:\a\freyalab\freyalab\tests\e2e\charts.spec.ts:105:264
+2026-11-02T07:21:34.9525711Z 
+2026-11-02T07:21:34.9526235Z     Error Context: packaged-test-results\charts-constructor-explíci-5fd11-nce-filtrado-sin-mutaciones-csv\error-context.md
+2026-11-02T07:21:34.9526650Z 
+2026-11-02T07:21:34.9527031Z     attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-11-02T07:21:34.9527711Z     packaged-test-results\charts-constructor-explíci-5fd11-nce-filtrado-sin-mutaciones-csv\trace.zip
+2026-11-02T07:21:34.9528314Z     Usage:
+2026-11-02T07:21:34.9528439Z 
+2026-11-02T07:21:34.9529193Z         npx playwright show-trace packaged-test-results\charts-constructor-explíci-5fd11-nce-filtrado-sin-mutaciones-csv\trace.zip
+2026-11-02T07:21:34.9529605Z 
+2026-11-02T07:21:34.9529909Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-11-02T07:21:34.9530177Z 
+2026-11-02T07:21:34.9530681Z   2) [csv] › tests\e2e\charts.spec.ts:132:1 › ayuda y selección de valores impiden cálculos incompatibles y explican columnas sin números 
+2026-11-02T07:21:34.9531061Z 
+2026-11-02T07:21:34.9531237Z     Error: expect(locator).toHaveValue(expected) failed
+2026-11-02T07:21:34.9531452Z 
+2026-11-02T07:21:34.9531843Z     Locator: getByRole('region', { name: 'Gráficos del CSV', exact: true }).getByLabel('Tipo de medida del gráfico')
+2026-11-02T07:21:34.9532277Z     Expected: "text"
+2026-11-02T07:21:34.9532523Z     Timeout: 15000ms
+2026-11-02T07:21:34.9532784Z     Error: element(s) not found
+2026-11-02T07:21:34.9532922Z 
+2026-11-02T07:21:34.9533025Z     Call log:
+2026-11-02T07:21:34.9533622Z       - Expect "toHaveValue" getByRole('region', { name: 'Gráficos del CSV', exact: true }).getByLabel('Tipo de medida del gráfico') with timeout 15000ms
+2026-11-02T07:21:34.9534612Z       - waiting for getByRole('region', { name: 'Gráficos del CSV', exact: true }).getByLabel('Tipo de medida del gráfico')
+2026-11-02T07:21:34.9534945Z 
+2026-11-02T07:21:34.9534950Z 
+2026-11-02T07:21:34.9536896Z       135 |  await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getB
+
+  2) [csv] › tests\e2e\charts.spec.ts:132:1 › ayuda y selección de valores impiden cálculos incompatibles y explican columnas sin números 
+2026-11-02T07:21:34.9531061Z 
+2026-11-02T07:21:34.9531237Z     Error: expect(locator).toHaveValue(expected) failed
+2026-11-02T07:21:34.9531452Z 
+2026-11-02T07:21:34.9531843Z     Locator: getByRole('region', { name: 'Gráficos del CSV', exact: true }).getByLabel('Tipo de medida del gráfico')
+2026-11-02T07:21:34.9532277Z     Expected: "text"
+2026-11-02T07:21:34.9532523Z     Timeout: 15000ms
+2026-11-02T07:21:34.9532784Z     Error: element(s) not found
+2026-11-02T07:21:34.9532922Z 
+2026-11-02T07:21:34.9533025Z     Call log:
+2026-11-02T07:21:34.9533622Z       - Expect "toHaveValue" getByRole('region', { name: 'Gráficos del CSV', exact: true }).getByLabel('Tipo de medida del gráfico') with timeout 15000ms
+2026-11-02T07:21:34.9534612Z       - waiting for getByRole('region', { name: 'Gráficos del CSV', exact: true }).getByLabel('Tipo de medida del gráfico')
+2026-11-02T07:21:34.9534945Z 
+2026-11-02T07:21:34.9534950Z 
+2026-11-02T07:21:34.9536896Z       135 |  await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum');await expect(panel.getByRole('button',{name:'Generar gráfico',exact:true})).toBeDisabled();await panel.getByLabel('Columna Y del gráfico').selectOption('1');await panel.getByRole('button',{name:'Generar gráfico',exact:true}).click();await expect(panel.getByRole('status')).toContainText('No hay valores numéricos utilizables',{timeout:30000});await expect(panel.getByRole('button',{name:'Exportar gráfico SVG',exact:true})).toHaveCount(0)
+2026-11-02T07:21:34.9540148Z       136 |  await panel.getByLabel('Tipo de medida del gráfico').selectOption('text');await expect(panel.getByLabel('Resumen del gráfico')).toHaveValue('count');await panel.getByLabel('Resumen del gráfico').selectOption('distinct');await panel.getByRole('button',{name:'Generar gráfico',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Gráfico listo',{timeout:30000});await panel.getByText('Datos del gráfico: tabla accesible',{exact:true}).click();await expect(panel.locator('.more-options .table-scroll tbody tr')).toHaveCount(2)
+2026-11-02T07:21:34.9544135Z     > 137 |  await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true}).click();await page.getByRole('button',{name:'Editar encabezado 2',exact:true}).click();await page.getByRole('textbox',{name:'Nombre del encabezado',exact:true}).fill('Valor renombrado');await page.getByRole('textbox',{name:'Nombre del encabezado',exact:true}).press('Enter');await showPanel(page,'Gráficos');await expect(panel.getByLabel('Tipo de medida del gráfico')).toHaveValue('text');await expect(panel.getByLabel('Resumen del gráfico')).toHaveValue('count');await expect(panel.getByRole('status')).toContainText('Gráfico listo');await page.getByRole('button',{name:'Deshacer',exact:true}).click();await showPanel(page,'Gráficos')
+2026-11-02T07:21:34.9546867Z           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ^
+2026-11-02T07:21:34.9548521Z       138 |  await panel.getByRole('button',{name:'Generar gráfico',exact:true}).focus();await page.keyboard.press('Escape');await expect(page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true})).toBeFocused();expect(await readFile(path)).toEqual(before)
+2026-11-02T07:21:34.9549673Z       139 | })
+2026-11-02T07:21:34.9549891Z       140 |
+2026-11-02T07:21:34.9550210Z         at D:\a\freyalab\freyalab\tests\e2e\charts.spec.ts:137:531
+2026-11-02T07:21:34.9550446Z 
+2026-11-02T07:21:34.9550890Z     Error Context: packaged-test-results\charts-ayuda-y-selección-d-b8d26-plican-columnas-sin-números-csv\error-context.md
+2026-11-02T07:21:34.9551309Z 
+2026-11-02T07:21:34.9551658Z     attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-11-02T07:21:34.9552306Z     packaged-test-results\charts-ayuda-y-selección-d-b8d26-plican-columnas-sin-números-csv\trace.zip
+2026-11-02T07:21:34.9552751Z     Usage:
+2026-11-02T07:21:34.9552881Z 
+2026-11-02T07:21:34.9553346Z         npx playwright show-trace packaged-test-results\charts-ayuda-y-selección-d-b8d26-plican-columnas-sin-números-csv\trace.zip
+2026-11-02T07:21:34.9553763Z 
+2026-11-02T07:21:34.9554025Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-11-02T07:21:34.9554403Z 
+2026-11-02T07:21:34.9554836Z   3) [csv] › tests\e2e\charts.spec.ts:254:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV 
+2026-11-02T07:21:34.9555192Z 
+2026-11-02T07:21:34.9555380Z     TimeoutError: locator.click: Timeout 30000ms exceeded.
+2026-11-02T07:21:34.9555693Z     Call log:
+2026-11-02T07:21:34.9556069Z       - waiting for locator('.charts-panel .more-options').locator(':scope>summary')
+2026-11-02T07:21:34.9556614Z         - locator resolved to <summary class="svelte-1wo6u31">Más opciones</summary>
+2026-11-02T07:21:34.9557012Z       - attempting click action
+2026-11-02T07:21:34.9557421Z         2 × waiting for element to be visible, enabled and stable
+2026-11-02T07:21:34.9557752Z           - element is not visible
+2026-11-02T07:21:34.9558023Z         - retrying click action
+2026-11-02T07:21:34.9558293Z         - waiting 20ms
+2026-11-02T07:21:34.9558629Z         2 × waiting for element to be visible, enabled and stable
+2026-11-02T07:21:34.9558962Z           - element is not visible
+2026-11-02T07:21:34.9559252Z         - retrying click a
+
+  3) [csv] › tests\e2e\charts.spec.ts:254:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV 
+2026-11-02T07:21:34.9555192Z 
+2026-11-02T07:21:34.9555380Z     TimeoutError: locator.click: Timeout 30000ms exceeded.
+2026-11-02T07:21:34.9555693Z     Call log:
+2026-11-02T07:21:34.9556069Z       - waiting for locator('.charts-panel .more-options').locator(':scope>summary')
+2026-11-02T07:21:34.9556614Z         - locator resolved to <summary class="svelte-1wo6u31">Más opciones</summary>
+2026-11-02T07:21:34.9557012Z       - attempting click action
+2026-11-02T07:21:34.9557421Z         2 × waiting for element to be visible, enabled and stable
+2026-11-02T07:21:34.9557752Z           - element is not visible
+2026-11-02T07:21:34.9558023Z         - retrying click action
+2026-11-02T07:21:34.9558293Z         - waiting 20ms
+2026-11-02T07:21:34.9558629Z         2 × waiting for element to be visible, enabled and stable
+2026-11-02T07:21:34.9558962Z           - element is not visible
+2026-11-02T07:21:34.9559252Z         - retrying click action
+2026-11-02T07:21:34.9559507Z           - waiting 100ms
+2026-11-02T07:21:34.9559852Z         58 × waiting for element to be visible, enabled and stable
+2026-11-02T07:21:34.9560207Z            - element is not visible
+2026-11-02T07:21:34.9560484Z          - retrying click action
+2026-11-02T07:21:34.9560733Z            - waiting 500ms
+2026-11-02T07:21:34.9560888Z 
+2026-11-02T07:21:34.9560893Z 
+2026-11-02T07:21:34.9561298Z       13 | test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-charts-'));await mkdir(join(folder,'exports'));await launch()})
+2026-11-02T07:21:34.9562107Z       14 | test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
+2026-11-02T07:21:34.9563332Z     > 15 | async function showPanel(page:Page,name:'Gráficos'){await showSummary(page,name);const more=page.locator('.charts-panel .more-options');if(await more.getAttribute('open')===null)await more.locator(':scope>summary').click()}
+2026-11-02T07:21:34.9564298Z          |                                                                                                                                                                                                                        ^
+2026-11-02T07:21:34.9565227Z       16 | async function open(text=original,name='plots.csv'){const path=join(folder,name);await writeFile(path,text);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);return{doc,path}}
+2026-11-02T07:21:34.9569333Z       17 | async function query(doc:DocumentInfo,settings:ChartOptions){const sql=chartSQL(doc.headers??[],settings),result=await page.evaluate(({doc,sql})=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id:doc.id,revision:doc.revision}],sql}),{doc,sql}),rows=[...result.rows];for(let offset=100;offset<result.returnedRows;offset+=100)rows.push(...(await page.evaluate(({id,offset})=>window.freya.sqlPage(id,offset),{id:result.requestId,offset})).rows);return chartData(settings.kind,result.columns.map(c=>c.name),rows)}
+2026-11-02T07:21:34.9571687Z       18 |
+2026-11-02T07:21:34.9572103Z         at showPanel (D:\a\freyalab\freyalab\tests\e2e\charts.spec.ts:15:216)
+2026-11-02T07:21:34.9572675Z         at D:\a\freyalab\freyalab\tests\e2e\charts.spec.ts:256:209
+2026-11-02T07:21:34.9573030Z 
+2026-11-02T07:21:34.9573641Z     Error Context: packaged-test-results\charts-configuraciones-rei-5537a--conservan-resultados-y-CSV-csv\error-context.md
+2026-11-02T07:21:34.9574251Z 
+2026-11-02T07:21:34.9574662Z     attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-11-02T07:21:34.9575308Z     packaged-test-results\charts-configuraciones-rei-5537a--conservan-resultados-y-CSV-csv\trace.zip
+2026-11-02T07:21:34.9575754Z     Usage:
+2026-11-02T07:21:34.9575883Z 
+2026-11-02T07:21:34.9576283Z         npx playwright show-trace packaged-test-results\charts-configuraciones-rei-5537a--conservan-resultados-y-CSV-csv\trace.zip
+2026-11-02T07:21:34.9576731Z 
+2026-11-02T07:21:34.9577028Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-11-02T07:21:34.9577292Z 
+2026-11-02T07:21:34.9577375Z   3 flaky
+2026-11-02T07:21:34.9578001Z     [csv] › tests\e2e\charts.spec.ts:95:1 › constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones 
+2026-11-02T07:21:34.9578860Z     [csv] › tests\e2e\charts.spec.ts:132:1 › ayuda y selección de valores impiden cálculos incompatibles y explican columnas sin números 
+2026-11-02T07:21:34.9579648Z     [csv] › tests\e2e\charts.spec.ts:254:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV 
+2026-11-02T07:21:34.9580140Z   1 skipped
+2026-11-02T07:21:34.9580359Z   89 passed (8.7m)
+2026-11-02T07:21:35.3574979Z ##[group]Run actions/upload-artifact@v4
+2026-11-02T07:21:35.3575353Z with:
+2026-11-02T07:21:35.3575595Z   name: evidence-windows-2025-1
+2026-11-02T07:21:35.3576196Z   path: playwright-report/
+test-results/
+playwright-report-fast/
+playwright-report-solo/
+test-results-fast/
+test-results-solo/
+packaged-test-results/
+
+2026-11-02T07:21:35.3576789Z   if-no-files-found: warn
+2026-11-02T07:21:35.3577054Z   compression-level: 6
+2026-11-02T07:21:35.3577309Z   overwrite: false
+2026-11-02T07:21:35.3577538Z   include-hidden-files: false
+2026-11-02T07:21:35.3577782Z env:
+2026-11-02T07:21:35.3578015Z   FREYALAB_E2E_FAST_WORKERS: 1
+2026-11-02T07:21:35.3578281Z ##[endgroup]
+2026-11-02T07:21:35.5305177Z (node:5188) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-02T07:21:35.5305878Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-02T07:21:35.7131266Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-02T07:21:35.7134347Z The least common ancestor is D:\a\freyalab\freyalab. This will be the root directory of the artifact
+2026-11-02T07:21:35.7135380
+
+

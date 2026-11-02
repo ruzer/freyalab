@@ -1,0 +1,40 @@
+
+Running 2 tests using 1 worker
+
+(node:64637) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/csv-summary.spec.ts:148:1 › F2a: las herramientas de tabla siguen completas dentro de ambos anchos (770ms)
+(node:64667) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [csv] › tests/e2e/csv-summary.spec.ts:156:1 › F2a: desde Texto con cambios, Cancelar conserva el borrador y descartar abre Resumen sin escribir (2.8s)
+
+
+  1) [csv] › tests/e2e/csv-summary.spec.ts:148:1 › F2a: las herramientas de tabla siguen completas dentro de ambos anchos 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1440
+    Received:    1490.96875
+
+      149 |  for(const [width,height] of [[1440,900],[1280,720]]){
+      150 |   await page.setViewportSize({width,height});const bar=page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true})
+    > 151 |   const box=await bar.getByRole('button',{name:'Analizar',exact:true}).boundingBox();expect(box!.x+box!.width).toBeLessThanOrEqual(width)
+          |                                                                                                                ^
+      152 |   await expect(bar.getByRole('button',{name:'Analizar',exact:true})).toBeVisible()
+      153 |  }
+      154 | })
+        at /private/tmp/freyalab-resumen-grafico-f2a/tests/e2e/csv-summary.spec.ts:151:112
+
+    Error Context: ../freyalab-resumen-f2a-evidence/toolbar-red-results/csv-summary-F2a-las-herram-ef573-etas-dentro-de-ambos-anchos-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-resumen-f2a-evidence/toolbar-red-results/csv-summary-F2a-las-herram-ef573-etas-dentro-de-ambos-anchos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-resumen-f2a-evidence/toolbar-red-results/csv-summary-F2a-las-herram-ef573-etas-dentro-de-ambos-anchos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/csv-summary.spec.ts:148:1 › F2a: las herramientas de tabla siguen completas dentro de ambos anchos 
+  1 passed (4.2s)

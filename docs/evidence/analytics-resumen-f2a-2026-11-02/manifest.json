@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-02",
+  "source_commit": "cc716786feab20de5f29079f8240b92f58290b3a",
+  "source_tree": "e27978e9ed26e9418f241ce0152f64704e127a74",
+  "tests_tree": "03e41145ba7a08acb4be66ac695d9cb5b119e28b",
+  "main": "695d86f651bd5f9c6cca7f015813e0b2ca4616ba",
+  "reference_sha256": "a4bf365d34e295b4816075f12adf1788a61fe98e3eea580e7010c1844579e75e",
+  "ci": "See final PR report for exact head and current job results; not claimed by this snapshot.",
+  "screenshots_sha256": {
+    "state-result-limits.png": "712cc7f1237dbe90989929fc315278ac1d55365bbfb276e47a930b5874ac90a5",
+    "state-narrow-keyboard.png": "66ef8b9d1420a03afb4167f7c6e10a7b0e4797991f9264f141509fe1af0fb28a",
+    "state-line-patterns.png": "f48059a8f18f28619f2205cfffd80c7abff621cd1e0af0ae5be3919f23d53507",
+    "state-error.png": "5767cebea636d65620107f97affddfc38d27b4c9e499d71fe6bdd49f12c6dc4c",
+    "state-truncated.png": "f0e5936c35d35b9ad6c65d1877124567321d9d3b8f74cccda59ed43ca9060cb0",
+    "state-heatmap-dark.png": "bcf4c65eb6cc4df36344c5cd48e64fdc4cbe382354027cd3376d53a963ee0088",
+    "after-light-1280x720.png": "aa03d0f6e646d463ff4442c5937ddf4b2bfbf2eef6f16d44648dd6f04fea262b",
+    "state-loading.png": "87b8b128d7acd27c625f71b1906abb22c25f27c1fdd73a84821015c4a388ee2d",
+    "before-dark-1280x720.png": "59144db40e490599cd04606cb9bf97b6c2db60fb5c92bde91122fddad6dffa3e",
+    "after-dark-1280x720.png": "b99d00b730b1f5184bb5322531c03bc364479eb145fd54b97c16d81329145d07",
+    "before-light-1280x720.png": "7839347dea620551297bd0936448ae078f957bf06dbc388fd455b20a8ac51c93",
+    "state-en-XA.png": "7bfb471b26ac37451f19e4eb3f1f594ee38c5f5ddfafae3365b8e707638730c4",
+    "state-en.png": "9601698db6f5e4cc092a3e63d532667dc361e3b21ef031c38f931a3c5514a0e2",
+    "state-narrow.png": "df68e33d499891856f1a32acb11ca177f04a7aa3a3bf72aaea3e4dbe4be45c9e",
+    "after-dark-1440x900.png": "95a294c8c94a2565dfbb500ea202c7525e1d3ca49689fc378726fa8be5e77d77",
+    "before-light-1440x900.png": "95105e9bb0c33f94afc2c91867b972068e936918992baaffe99c8086f7a5e77d",
+    "after-light-1440x900.png": "c6c189d3da697431a807b0fb5d8eff6ccf3e3589038520d547590c402350e47f",
+    "state-heatmap-light.png": "94a6d0f06b06ff57434863377086f6da29602a614cec6d022dfb228668d9495f",
+    "before-dark-1440x900.png": "5216deb10ed5bbfa602692d9a3c6d6c2c62e927471af303faf2c52a0a4acb3a6",
+    "state-empty.png": "6149f7d5fc064cf95bec2068ce6fda243c4db26ad912eda2fb58de12d9452f74"
+  },
+  "ci_previous": {
+    "head": "b21189380e93b4e09584afd326e575f47864f418",
+    "run": 41401809916,
+    "ubuntu": "success",
+    "windows": "success (3 packaged flaky, retry #1)",
+    "macos_arm": "success",
+    "intel": "not run in PR"
+  }
+}

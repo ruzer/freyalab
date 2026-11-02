@@ -1,0 +1,43 @@
+
+Running 1 test using 1 worker
+
+(node:56769) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/csv-summary.spec.ts:124:1 › F2a: pocas filas con celdas grandes conservan vista previa manual y límites explicados (15.9s)
+
+
+  1) [csv] › tests/e2e/csv-summary.spec.ts:124:1 › F2a: pocas filas con celdas grandes conservan vista previa manual y límites explicados 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.charts-panel').getByText('Vista previa manual para este archivo.', { exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.charts-panel').getByText('Vista previa manual para este archivo.', { exact: true }) with timeout 15000ms
+      - waiting for locator('.charts-panel').getByText('Vista previa manual para este archivo.', { exact: true })
+
+
+      125 | })
+      126 |
+    > 127 | test('F2a: elegir Líneas aplica la agrupación mensual sugerida para fechas ISO',async()=>{
+          |                                                                                       ^
+      128 |  const file=join(folder,'fechas.csv');await writeFile(file,'Fecha,Ventas\n2026-01-01,10\n2026-01-15,20\n2026-02-01,30\n');await page.evaluate(file=>window.freya.openPaths([file]),file)
+      129 |  const panel=await summary();await panel.locator('.more-options>summary').click();await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum');await panel.getByLabel('Columna Y del gráfico').selectOption('1');await expect(panel.getByRole('status')).toContainText('Gráfico listo');await panel.locator('.more-options>summary').click()
+      130 |  await panel.locator('.chart-types').getByRole('button',{name:'Líneas',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Gráfico listo');await expect(panel.locator('.pivot-result tbody tr')).toHaveCount(2)
+        at /private/tmp/freyalab-resumen-grafico-f2a/tests/e2e/csv-summary.spec.ts:127:87
+
+    Error Context: ../freyalab-resumen-f2a-evidence/size-red-results/csv-summary-F2a-pocas-fila-55a8f-manual-y-límites-explicados-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-resumen-f2a-evidence/size-red-results/csv-summary-F2a-pocas-fila-55a8f-manual-y-límites-explicados-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-resumen-f2a-evidence/size-red-results/csv-summary-F2a-pocas-fila-55a8f-manual-y-límites-explicados-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/csv-summary.spec.ts:124:1 › F2a: pocas filas con celdas grandes conservan vista previa manual y límites explicados 

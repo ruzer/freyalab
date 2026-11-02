@@ -1,0 +1,43 @@
+
+Running 1 test using 1 worker
+
+(node:54564) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/csv-summary.spec.ts:110:1 › F2a: filtros del gráfico se pueden operar en inglés sin cambiar la tabla (19.5s)
+
+
+  1) [csv] › tests/e2e/csv-summary.spec.ts:110:1 › F2a: filtros del gráfico se pueden operar en inglés sin cambiar la tabla 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.charts-panel').getByRole('region', { name: 'Chart filters', exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.charts-panel').getByRole('region', { name: 'Chart filters', exact: true }) with timeout 15000ms
+      - waiting for locator('.charts-panel').getByRole('region', { name: 'Chart filters', exact: true })
+
+
+      110 | test('F2a: filtros del gráfico se pueden operar en inglés sin cambiar la tabla',async()=>{
+      111 |  const panel=await configureSum();await page.evaluate(()=>window.freya.setLanguage('en'));await panel.locator('.more-options>summary').click();await panel.getByRole('button',{name:'Chart filters',exact:true}).click()
+    > 112 |  const filters=panel.getByRole('region',{name:'Chart filters',exact:true});await expect(filters).toBeVisible();await filters.getByRole('button',{name:'Add condition',exact:true}).click()
+          |                                                                                                  ^
+      113 |  await filters.getByLabel('Condition column 1',{exact:true}).selectOption('0');await filters.getByLabel('Condition operator 1',{exact:true}).selectOption('equals');await filters.getByLabel('Condition value 1',{exact:true}).fill('Norte');await filters.getByRole('button',{name:'Apply chart filters',exact:true}).click()
+      114 |  await expect(panel.getByRole('status')).toContainText('Chart ready');await expect(panel.locator('.pivot-result tfoot')).toContainText('2,000');expect(await readFile(path,'utf8')).toBe(original)
+      115 | })
+        at /private/tmp/freyalab-resumen-grafico-f2a/tests/e2e/csv-summary.spec.ts:112:98
+
+    Error Context: ../freyalab-resumen-f2a-evidence/filter-red-results/csv-summary-F2a-filtros-de-fc287-inglés-sin-cambiar-la-tabla-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-resumen-f2a-evidence/filter-red-results/csv-summary-F2a-filtros-de-fc287-inglés-sin-cambiar-la-tabla-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-resumen-f2a-evidence/filter-red-results/csv-summary-F2a-filtros-de-fc287-inglés-sin-cambiar-la-tabla-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/csv-summary.spec.ts:110:1 › F2a: filtros del gráfico se pueden operar en inglés sin cambiar la tabla 

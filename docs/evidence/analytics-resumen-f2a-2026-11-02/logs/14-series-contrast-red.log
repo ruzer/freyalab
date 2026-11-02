@@ -1,0 +1,54 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-resumen-f2a-a11y
+
+ ❯ tests/chart-presentation.test.ts (8 tests | 3 failed) 16ms
+   × ocho series se distinguen sin color: trazos únicos en líneas largas y símbolos en dispersión 11ms
+   × los números del mapa de calor contrastan con todas sus celdas; oscuro=false 1ms
+   × los números del mapa de calor contrastan con todas sus celdas; oscuro=true 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-presentation.test.ts > ocho series se distinguen sin color: trazos únicos en líneas largas y símbolos en dispersión
+AssertionError: expected 1 to be 8 // Object.is equality
+
+- Expected
++ Received
+
+- 8
++ 1
+
+ ❯ tests/chart-presentation.test.ts:35:82
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/chart-presentation.test.ts > los números del mapa de calor contrastan con todas sus celdas; oscuro=false
+AssertionError: #238bfe: expected 4.495560966908783 to be greater than or equal to 4.5
+ ❯ tests/chart-presentation.test.ts:45:56
+     43|  for(let step=0;step<=32;step++){
+     44|   const fill='#'+endpoints[0].map((v,i)=>Math.round(v+(endpoints[1][i]…
+     45|   expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05),fill).toBeGreaterThan…
+       |                                                        ^
+     46|  }
+     47| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/chart-presentation.test.ts > los números del mapa de calor contrastan con todas sus celdas; oscuro=true
+AssertionError: #dfe8f7: expected 1.1329481205855023 to be greater than or equal to 4.5
+ ❯ tests/chart-presentation.test.ts:45:56
+     43|  for(let step=0;step<=32;step++){
+     44|   const fill='#'+endpoints[0].map((v,i)=>Math.round(v+(endpoints[1][i]…
+     45|   expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05),fill).toBeGreaterThan…
+       |                                                        ^
+     46|  }
+     47| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 5 passed (8)
+   Start at  01:03:42
+   Duration  155ms (transform 65%, tests 19%, import 13%, worker 2%)
+
