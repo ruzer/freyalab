@@ -1,3 +1,4 @@
+import {t} from './i18n'
 import {quoteIdentifier,sqlColumns} from './sql-helpers'
 export const chartKinds={histogram:'Histograma',bar:'Barras',line:'Líneas',scatter:'Dispersión',heatmap:'Mapa de calor',box:'Diagrama de caja'} as const
 export type ChartKind=keyof typeof chartKinds
@@ -8,7 +9,9 @@ export const chartSeriesLimit=8
 export const chartLimit=(kind:ChartKind)=>kind==='line'||kind==='scatter'?2000:kind==='heatmap'?400:100
 
 // Each query aggregates the full source in DuckDB; only bounded plot rows reach the UI.
-export function chartSQL(headers:string[],options:ChartOptions,limit=chartLimit(options.kind)){
+export function chartSQL(headers:string[],options:ChartOptions,limit=chartLimit(options.kind)){return chartQuery(headers,options,limit,false)}
+export function chartTotalSQL(headers:string[],options:ChartOptions){return chartQuery(headers,options,chartLimit(options.kind),true)}
+function chartQuery(headers:string[],options:ChartOptions,limit:number,totals:boolean):string{
  if(!Number.isInteger(limit)||limit<1||limit>10000)throw new Error('El límite del resultado debe estar entre 1 y 10 000.')
  const names=sqlColumns(headers),column=(index:number)=>{if(!Number.isInteger(index)||!names[index])throw new Error('Elige una columna válida.');return quoteIdentifier(names[index].name)}
  if(!Object.hasOwn(chartKinds,options.kind))throw new Error('Elige un tipo de gráfico válido.')
@@ -29,10 +32,18 @@ export function chartSQL(headers:string[],options:ChartOptions,limit=chartLimit(
  let cte=`raw AS (SELECT row_number() OVER () AS fila, ${x} AS x, ${y} AS y${series?`, ${series} AS series`:''} FROM datos), base AS (SELECT *, ${number('x')} AS nx, ${number('y')} AS ny FROM raw)`
  const aggregate=options.kind==='heatmap'?'count':options.aggregate
  const operation={count:'COUNT(*)',distinct:'COUNT(DISTINCT y)',sum:'SUM(ny)',average:'AVG(ny)',min:'MIN(ny)',max:'MAX(ny)',median:'MEDIAN(ny)'}[aggregate]
+ const summary=(from:string,where:string,value:string):string=>{
+  if(!aggregated&&!['heatmap','box'].includes(options.kind))return `WITH ${cte} SELECT 1 AS grand, ${value} AS value FROM ${from} WHERE ${where};`
+  const key=time==='none'?'x':`strftime(date_trunc('${time}',dx),'${{day:'%Y-%m-%d',month:'%Y-%m',year:'%Y'}[time]}')`,dimension=series?'series':options.kind==='heatmap'?'y':undefined
+  const visible=`SELECT * FROM (${chartQuery(headers,options,limit,false).replace(/;\s*$/,'')}) LIMIT ${limit}`
+  return `WITH ${cte}, summaries AS (SELECT ${key} AS x, ${dimension?`${dimension} AS series, CASE WHEN GROUPING(${key})=1 AND GROUPING(${dimension})=1 THEN 1 WHEN GROUPING(${key})=1 THEN 0 ELSE 2 END`:`CASE WHEN GROUPING(${key})=1 THEN 1 ELSE 2 END`} AS grand, ${value} AS value FROM ${from} WHERE ${where} GROUP BY GROUPING SETS ((${key}),${dimension?`(${dimension}),`:''}())) SELECT * FROM summaries s WHERE grand=1 OR EXISTS (SELECT 1 FROM (${visible}) v WHERE v.present IS NOT NULL AND ((s.grand=2 AND v.x IS NOT DISTINCT FROM s.x)${dimension?` OR (s.grand=0 AND v.${series?'series':'y'} IS NOT DISTINCT FROM s.series)`:''}));`
+ }
+
  const measureUsable=aggregate==='count'?'TRUE':aggregate==='distinct'?'y IS NOT NULL':'ny IS NOT NULL'
  if(time!=='none'){
   const format={day:'%Y-%m-%d',month:'%Y-%m',year:'%Y'}[time]
   cte+=`, dated AS (SELECT *, CASE WHEN regexp_full_match(TRIM(x), '[0-9]{4}-[0-9]{2}-[0-9]{2}') AND TRIM(x)>='0001-01-01' AND TRIM(x)<='9999-12-31' THEN TRY_CAST(TRIM(x) AS DATE) END AS dx FROM base), observed AS (SELECT CAST(date_trunc('${time}',dx) AS DATE) AS period${series?', series':''}, ${operation} AS value FROM dated WHERE dx IS NOT NULL GROUP BY period${series?', series':''}), stats AS (SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE dx IS NOT NULL AND ${measureUsable}) AS usable, COUNT(*) FILTER (WHERE dx IS NULL) AS invalid_dates FROM dated)`
+  if(totals)return summary('dated','dx IS NOT NULL',operation)
   let points=`SELECT strftime(period,'${format}') AS x, value${series?', series':''} FROM observed`,count='(SELECT COUNT(*) FROM points)'
   if(options.kind==='line'){
    cte+=`, bounds AS (SELECT MIN(period) AS lo, MAX(period) AS hi FROM observed), span AS (SELECT lo,hi,COALESCE(date_diff('${time}',lo,hi)+1,0) AS size FROM bounds)${series?`, series_values AS (SELECT DISTINCT series FROM base LIMIT ${chartSeriesLimit+1})`:''}, calendar AS (SELECT CAST(${options.descending?'hi -':'lo +'} i * INTERVAL '1 ${time}' AS DATE) AS period FROM span, range(LEAST(size,${limit+1})) t(i))`
@@ -41,6 +52,7 @@ export function chartSQL(headers:string[],options:ChartOptions,limit=chartLimit(
   }
   return `WITH ${cte}, points AS (${points}) SELECT stats.total,stats.usable,${count} AS points,p.present,p.x,p.value${series?',p.series,(SELECT COUNT(*) FROM (SELECT DISTINCT series FROM base)) AS series_count':''},stats.invalid_dates FROM stats LEFT JOIN (SELECT *,1 AS present FROM points) p ON TRUE ORDER BY p.x ${direction} NULLS FIRST${series?',p.series ASC NULLS FIRST':''} LIMIT ${limit+1};`
  }
+ if(totals)return summary('base',options.kind==='histogram'||options.kind==='box'?'ny IS NOT NULL':'TRUE',options.kind==='histogram'||options.kind==='heatmap'?'COUNT(*)':options.kind==='box'?'MEDIAN(ny)':aggregated?operation:'MAX(NULL::DOUBLE)')
  let points:string,usable:string,order='p.x ASC NULLS FIRST',extra=''
  if(options.kind==='histogram'){
   usable='ny IS NOT NULL'
@@ -67,14 +79,15 @@ export function chartSQL(headers:string[],options:ChartOptions,limit=chartLimit(
 }
 
 export function chartLabels(headers:string[],options:ChartOptions){
- const x=headers[options.x]||`Columna ${options.x+1}`,y=options.y<0?'una columna':headers[options.y]||`Columna ${options.y+1}`
- const split=options.series!==undefined&&options.series>=0?`, separado por ${headers[options.series]||`Columna ${options.series+1}`}`:''
- if(options.time&&options.time!=='none'){const period=chartTimeGroups[options.time].toLowerCase(),value=options.aggregate==='count'?'Conteo de filas':`${chartAggregates[options.aggregate]} de ${y}`;return{x:`${chartTimeGroups[options.time]} de ${x}`,y:value,summary:`${value} por ${period} de ${x}${split}`}}
- if(options.kind==='histogram')return{x:`Intervalos de ${y}`,y:'Frecuencia (filas)',summary:`Distribución de ${y}`}
- if(options.kind==='bar'){const value=options.aggregate==='count'?'Conteo de filas':`${chartAggregates[options.aggregate]} de ${y}`;return{x,y:value,summary:`${value} por ${x}${split}`}}
- if(options.kind==='heatmap')return{x,y,summary:`Conteo de filas por ${x} y ${y}`}
- if(options.kind==='box')return{x,y,summary:`Distribución de ${y} por ${x}`}
- return{x,y,summary:`${y} según ${x}${split}`}
+ const x=headers[options.x]||t('charts.ui.column',{n:options.x+1}),y=options.y<0?t('charts.labels.aColumn'):headers[options.y]||t('charts.ui.column',{n:options.y+1})
+ const split=options.series!==undefined&&options.series>=0?t('charts.labels.split',{name:headers[options.series]||t('charts.ui.column',{n:options.series+1})}):''
+ const value=options.aggregate==='count'?t('charts.aggregate.count'):t('charts.labels.value',{operation:t('charts.aggregate.'+options.aggregate),column:y})
+ if(options.time&&options.time!=='none'){const period=t('charts.time.'+options.time);return{x:t('charts.labels.period',{period,column:x}),y:value,summary:t('charts.labels.temporal',{value,period:period.toLowerCase(),column:x,split})}}
+ if(options.kind==='histogram')return{x:t('charts.labels.bins',{column:y}),y:t('charts.labels.frequency'),summary:t('charts.labels.distribution',{column:y})}
+ if(options.kind==='bar')return{x,y:value,summary:t('charts.labels.by',{value,column:x,split})}
+ if(options.kind==='heatmap')return{x,y,summary:t('charts.labels.pairs',{x,y})}
+ if(options.kind==='box')return{x,y,summary:t('charts.labels.groupDistribution',{x,y})}
+ return{x,y,summary:t('charts.labels.against',{x,y,split})}
 }
 
 export interface ChartData {total:number;usable:number;points:number;limited:boolean;rows:(string|null)[][];columns:string[];seriesCount?:number;invalidDates?:number}

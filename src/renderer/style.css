@@ -64,3 +64,6 @@
 .file-tags-scroll button small{flex:none;color:var(--muted)}
 .file-tags-scroll button[aria-pressed=true]{background:var(--hover);box-shadow:inset 2px 0 var(--accent);font-weight:600}
 .file-tag-status{flex:none;margin:4px 12px;font-size:11px;color:var(--muted)}
+
+/* Historia 11 F2a: presentación completa sin alterar la preferencia del explorador. */
+@media(max-width:899px){.workspace.summary-active>.sidebar,.workspace.summary-active>.sidebar-handle{display:none}.workspace.summary-active .csv-toolbar .tool-text{display:none}.workspace.summary-active .csv-toolbar .search-field{display:none}}

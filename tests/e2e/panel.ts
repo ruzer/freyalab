@@ -4,6 +4,8 @@ const tabs={'Gráficos':'Gráficos','Estadísticas':'Resumen','Análisis':'SQL'}
 export const analyzeButton=(page:Page)=>page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true}).getByRole('button',{name:'Analizar',exact:true})
 // Deja el panel abierto en la pestaña indicada (lo abre solo si hace falta; no lo cierra nunca).
 export async function showPanel(page:Page,name:keyof typeof tabs){
+ if(name==='Gráficos'){const mode=page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true});if(await mode.getAttribute('aria-pressed')!=='true')await mode.click();return}
+ const summary=page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true});if(await summary.getAttribute('aria-pressed')==='true')await page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true}).click()
  const button=analyzeButton(page)
  if(await button.getAttribute('aria-expanded')!=='true')await button.click()
  const tab=page.getByRole('tablist',{name:'Herramientas de análisis'}).getByRole('tab',{name:tabs[name],exact:true})

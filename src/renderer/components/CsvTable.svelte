@@ -1,5 +1,6 @@
 <script lang="ts">
  import Icon from './Icon.svelte'
+ import {t} from '../lib/i18n.svelte'
  import {createTable,tableFeatures} from '@tanstack/svelte-table'
  import {createVirtualizer,observeElementOffset} from '@tanstack/svelte-virtual'
  import {scrollScale,scrollHeight,toLogical,toPhysical,rowTop} from '../lib/virtual-scroll'
@@ -19,7 +20,7 @@
  import {dockMode,isNarrow,type DockTab} from '../lib/workspace-layout'
  import {parse} from 'csv-parse/browser/esm/sync'
  import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit,LargeViewState,LargeViewQuery} from '../../shared/types'
- let {doc,onchange,onerror,onstatus,onreport,viewControls,commandTitle=(_id:string,label:string)=>label}:{doc:DocumentInfo;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;onreport:(markdown:string)=>Promise<void>;viewControls?:Snippet;commandTitle?:(id:string,label:string)=>string}=$props()
+ let {doc,summary=false,onsummary,ontable,onchange,onerror,onstatus,onreport,viewControls,commandTitle=(_id:string,label:string)=>label}:{doc:DocumentInfo;summary?:boolean;onsummary?:()=>void;ontable?:()=>void;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;onreport:(markdown:string)=>Promise<void>;viewControls?:Snippet;commandTitle?:(id:string,label:string)=>string}=$props()
  let showExtract=$state(false),extractButton=$state<HTMLButtonElement>()
  let showCommands=$state(false),commandsButton=$state<HTMLButtonElement>(),commandReturn:HTMLElement|null=null
  let showTransform=$state(false),transformStart=$state<import('../../shared/types').TableTransformEdit['operation']>()
@@ -31,11 +32,14 @@
  let bodyWidth=$state(0),userOpened=$state(false) // userOpened: el panel lo abrió la persona en este documento (no se restauró), para que Estadísticas pueda llevar el foco a su encabezado
  // El panel no se monta hasta medir el área: así un panel restaurado que va a empezar cerrado (ventana estrecha) nunca llega a montarse.
  const dockOpen=$derived(workspace.visible&&bodyWidth>0),dockTab=$derived(workspace.tab),mode=$derived(dockMode({visible:workspace.visible,expanded:workspace.expanded,area:bodyWidth})),narrow=$derived(isNarrow(bodyWidth))
+ let summaryVisited=$state(false)
+ $effect(()=>{if(summary)summaryVisited=true})
  let announcement=$state('')
  $effect.pre(()=>{if(bodyWidth>0)untrack(()=>settleStartup(bodyWidth))})
  let analyzeButton=$state<HTMLButtonElement>()
  let interpreting=$state(false)
- function toggleDock(tab:DockTab){userOpened=true;if(workspace.visible&&workspace.tab===tab){workspace.visible=false;workspace.expanded=false}else{workspace.visible=true;workspace.tab=tab}saveWorkspace()}
+ function toggleDock(tab:DockTab){if(tab==='graficos'){onsummary?.();return}const wasSummary=summary;if(wasSummary)ontable?.();userOpened=true;if(!wasSummary&&workspace.visible&&workspace.tab===tab){workspace.visible=false;workspace.expanded=false}else{workspace.visible=true;workspace.tab=tab}saveWorkspace()}
+ async function closeSummary(){ontable?.();await tick();document.querySelector<HTMLButtonElement>('[data-csv-view] button[aria-pressed="true"]')?.focus()}
  function closeDock(button?:HTMLButtonElement){workspace.visible=false;workspace.expanded=false;saveWorkspace();button?.focus()}
  function setExpanded(value:boolean){workspace.expanded=value;announcement=value?'Panel de análisis ampliado':'Panel de análisis acoplado'}
  // Con la ventana estrecha no hay sitio para acoplar: volver a la tabla es cerrar el panel.
@@ -376,7 +380,8 @@
 </script>
 <svelte:window onblur={()=>dragging=false} onpointerup={()=>dragging=false} onpointercancel={()=>dragging=false} onkeydown={event=>{if(closeMenu(event))return;if(event.key==='Escape'&&viewRunning&&!event.defaultPrevented&&event.target instanceof HTMLElement&&!event.target.closest('.cm-editor,.query-tools,.extract-tools,.goto-popover,dialog')){event.preventDefault();void cancelView();return}if(event.key==='Tab')pendingCell=null;revealKey(event)}} onpointermove={event=>{dragPoint={x:event.clientX,y:event.clientY}}} onpointerdown={event=>{pendingCell=null;closeMenus(event.target as Node);if(context&&!(event.target as HTMLElement).closest('.range-context,.header-menu'))context=null}}/>
 {#snippet statisticsPanel()}{#if large}<section class="large-notice" aria-label="Estadísticas"><p>Las estadísticas de columna aún no están disponibles en archivos grandes: llegan en una fase posterior.</p><p>Mientras tanto, «SQL» y «Gráficos» leen el archivo completo (hasta dos millones de filas u ocho millones de celdas).</p></section>{:else}<CsvStatistics {doc} autofocus={userOpened} range={cellRange} query={query()} queryValid={!queryError} viewMeta={{matched:page.matched,revision:page.revision,requestId:page.requestId,sample:page.sample,query:pageQuery}} columns={selectedColumns} onerror={onerror} {onreport} onclose={()=>closeDock(analyzeButton)}/>{/if}{/snippet}
-{#snippet chartsPanel()}{#await import('./CsvCharts.svelte')}<p role="status">Preparando gráficos…</p>{:then module}{#key JSON.stringify(doc.headers)}<module.default {doc} query={query()} queryValid={!queryError&&!busy} {onerror} onclose={()=>closeDock(analyzeButton)}/>{/key}{:catch}<p role="alert">No se pudo cargar el panel de gráficos. Cierra el panel y vuelve a intentarlo.</p>{/await}{/snippet}
+{#snippet chartsPanel()}{#await import('./CsvCharts.svelte')}<p role="status">Preparando gráficos…</p>{:then module}{#key JSON.stringify(doc.headers)}<module.default {doc} query={query()} queryValid={!queryError&&!busy} visible={summary} {onerror} onclose={()=>summary?void closeSummary():closeDock(analyzeButton)}/>{/key}{:catch}<p role="alert">No se pudo cargar el panel de gráficos. Cierra el panel y vuelve a intentarlo.</p>{/await}{/snippet}
+{#snippet summaryLink()}<button onclick={()=>onsummary?.()}>{t('charts.ui.summaryTab')}</button>{/snippet}
 {#snippet sqlPanel()}<CsvSql {doc} {onerror} {onreport} onclose={()=>closeDock(analyzeButton)}/>{/snippet}
 {#snippet item(id:string)}{@const command=commands.find(command=>command.id===id)}<button disabled={command?.disabled??true} title={command?.detail} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand(id)}}>{command?.label}</button>{/snippet}
 {#snippet rangeButtons(menu=false)}{#each rangeCommands as command}<button role={menu?'menuitem':undefined} disabled={command.disabled||!cellRange} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand(command.id)}}>{command.label}</button>{/each}{/snippet}
@@ -414,7 +419,7 @@
   <span class="spacer"></span>
   <span class="goto-wrap"><button bind:this={gotoButton} aria-label="Ir a la fila" aria-expanded={showGoto} title={commandTitle('go.row','Ir a la fila')} disabled={!gotoTotal} onclick={()=>void runCommand('goToRow')}><Icon name="arrow-down" size={14}/><span class="tool-text">Ir a la fila</span></button>{#if showGoto}<form class="goto-popover" novalidate onsubmit={event=>{event.preventDefault();void goToRow()}}><label>Ir a la fila <input bind:this={gotoInput} onkeydown={event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeGoto()}}} type="number" min="1" max={gotoTotal} step="1" inputmode="numeric" aria-label="Número de fila" aria-invalid={!!gotoError} bind:value={gotoValue} oninput={()=>gotoError=''}/></label><span class="muted">de {gotoTotal.toLocaleString()}</span><button type="submit">Ir</button><button type="button" onclick={closeGoto}>Cerrar</button>{#if gotoError}<span role="alert" class="goto-error">{gotoError}</span>{/if}</form>{/if}</span>
   <button bind:this={commandsButton} aria-label="Buscar acción" title={commandTitle('edit.commandPalette','Comandos CSV')} onclick={openCommands}><Icon name="command" size={14}/><span class="tool-text">Buscar acción</span></button>
-  <button bind:this={analyzeButton} class="analyze" class:active={dockOpen} aria-label="Analizar" aria-expanded={dockOpen} aria-controls="analysis-dock" title="Resumen, gráficos y SQL en un panel lateral" onclick={()=>{showQuery=false;toggleDock(workspace.tab)}}><Icon name="chart-column" size={14}/><span class="tool-text">Analizar</span></button>
+  <button bind:this={analyzeButton} class="analyze" class:active={dockOpen} aria-label="Analizar" aria-expanded={dockOpen} aria-controls="analysis-dock" title="Resumen, gráficos y SQL en un panel lateral" onclick={()=>{showQuery=false;toggleDock(workspace.tab==='graficos'?'resumen':workspace.tab)}}><Icon name="chart-column" size={14}/><span class="tool-text">Analizar</span></button>
  </div>
  {#if large}<p id="large-search-help" class="large-search-help">Enter para buscar en las {number(doc.rowCount??page.total)} filas. Esc cancela el recorrido o quita la búsqueda.</p>{/if}
  {#if largeView}<section class="large-search-status" aria-label="Búsqueda en archivo grande">
@@ -430,8 +435,8 @@
  {#if doc.extract}<div class="warning-banner extract-banner" role="note"><strong>Extracto de «{doc.extract.sourceName}»</strong> · {doc.extract.matched.toLocaleString('es')} de {doc.extract.total.toLocaleString('es')} filas{#if doc.extract.conditions} · {doc.extract.conditions}{/if}{#if doc.extract.columns} · columnas: {doc.extract.columns.join(', ')}{/if} · {fidelityLabel[doc.extract.fidelity]}.{#each doc.extract.normalization as note} {note}{/each}{#if doc.extract.irregularRows} {doc.extract.irregularRows.toLocaleString('es')} filas con distinto número de campos que el encabezado se conservaron como estaban.{/if} El original no se modificó.</div>{/if}
  {#if doc.warning||doc.readonly}<div class="warning-banner">{doc.warning??'Solo lectura'}{#if page.sample} Los filtros y recuentos describen únicamente la muestra.{/if}</div>{/if}
  {#if showReplace}<form class="csv-toolbar" onsubmit={event=>{event.preventDefault();prepareReplacement()}}><input bind:this={replaceInput} aria-label="Buscar valor para reemplazar" placeholder="Buscar valor" bind:value={replaceFind}/><input aria-label="Nuevo valor" placeholder="Reemplazar por" bind:value={replaceWith}/><span class="muted">{selectedColumns.length===1?'Columna marcada':'Todas las columnas'} · documento completo, incluye filas ocultas · literal, distingue mayúsculas</span><button disabled={locked||busy||!replaceFind||!doc.rowCount||!doc.headers?.length} type="submit">Vista previa del reemplazo</button></form>{/if}
- <div class="csv-body" class:expanded={mode==='expanded'} bind:clientWidth={bodyWidth}>
-  <div class="csv-main">
+ <div class="csv-body" class:summary class:expanded={mode==='expanded'} bind:clientWidth={bodyWidth}>
+  <div class="csv-main" style:display={summary?'none':undefined}>
  <div class="csv-scroll" bind:this={scrollElement} bind:clientHeight={viewHeight} use:wheelRows role="grid" aria-label="Tabla de datos" aria-rowcount={page.matched+1} aria-colcount={(doc.headers?.length??0)+1} tabindex="0" aria-multiselectable="true" onkeydown={gridKey}>
   <div class="virtual-table" style:height={`${scrollHeight($rowsVirtual.getTotalSize())}px`} style:width={`${Math.max($columnsVirtual.getTotalSize(),scrollElement?.clientWidth??0)}px`}>
    <div class="csv-header" role="row" style:height={showFilters?'76px':'40px'}>
@@ -469,8 +474,9 @@
   <label title="Primera fila como encabezado"><input type="checkbox" aria-label="Primera fila como encabezado" bind:checked={header} disabled={doc.dirty||interpreting} onchange={()=>void options({header})}/><span class="label-text">Encabezado</span></label>
  </div>
   </div>
-  {#if mode==='expanded'}<button class="table-strip" onclick={backToTable}>Volver a la tabla</button>{/if}
-  {#if dockOpen}<AnalysisDock expanded={mode==='expanded'} {narrow} onexpand={()=>setExpanded(!workspace.expanded)} tab={dockTab} ontab={tab=>{userOpened=true;workspace.tab=tab;saveWorkspace()}} width={workspace.width} area={bodyWidth} onresize={width=>workspace.width=width} oncommit={saveWorkspace} resumen={statisticsPanel} graficos={chartsPanel} sql={sqlPanel}/>{/if}
+  {#if mode==='expanded'&&!summary}<button class="table-strip" onclick={backToTable}>Volver a la tabla</button>{/if}
+  <div class="summary-host" hidden={!summary}>{#if summaryVisited}{@render chartsPanel()}{/if}</div>
+  {#if dockOpen}<AnalysisDock expanded={mode==='expanded'} {narrow} onexpand={()=>setExpanded(!workspace.expanded)} tab={dockTab} ontab={tab=>{userOpened=true;workspace.tab=tab;saveWorkspace()}} width={workspace.width} area={bodyWidth} onresize={width=>workspace.width=width} oncommit={saveWorkspace} resumen={statisticsPanel} graficos={summaryLink} sql={sqlPanel}/>{/if}
  </div>
  <p id="dock-announcement" class="sr-only" role="status">{announcement}</p>
 </div>
@@ -481,5 +487,6 @@
 </script>
 
 <style>
+ .csv-body.summary :global(.analysis-dock){display:none}.summary-host{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column}.summary-host[hidden]{display:none}
  .csv-toolbar summary.disabled{opacity:.45;cursor:not-allowed}.large-search-help{margin:0;padding:4px 12px;font-size:10px;color:var(--muted);border-bottom:1px solid var(--border)}.large-search-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 12px;border-bottom:1px solid var(--border);font-size:11px;background:var(--panel)}.large-search-status p{margin:0;line-height:1.5}.large-search-status button{font-size:11px;padding:3px 7px}.large-search-status progress{width:110px}.large-search-scope{flex-basis:100%;color:var(--muted)}
 </style>
