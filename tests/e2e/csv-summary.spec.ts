@@ -183,3 +183,20 @@ test('F2a: series sin depender del color y cifras legibles sobre las celdas del 
   await page.screenshot({path:test.info().outputPath(`state-heatmap-${theme}.png`)})
  }
 })
+
+test('F2a: alternar Tabla y Resumen es presentación, sin reinterpretar el CSV por IPC',async()=>{
+ await summary();const before=await page.evaluate(()=>window.freya.documents())
+ // Mismo observador del manejador real que usa updates.spec.ts; no sustituye respuestas ni datos.
+ await app.evaluate(({ipcMain})=>{
+  type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
+  const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya');if(!original)throw new Error('No existe el manejador real')
+  const state=globalThis as typeof globalThis&{__csvPresentation?:{calls:number;restore:()=>void}};state.__csvPresentation={calls:0,restore:()=>handlers.set('freya',original)}
+  handlers.set('freya',async(event,...args)=>{if(args[0]==='csvView')state.__csvPresentation!.calls++;return original(event,...args)})
+ })
+ try{
+  await page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true}).click();await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()
+  await page.evaluate(()=>window.freya.documents())
+  expect(await app.evaluate(()=>(globalThis as typeof globalThis&{__csvPresentation?:{calls:number}}).__csvPresentation?.calls)).toBe(0)
+  await summary();expect(await page.evaluate(()=>window.freya.documents())).toEqual(before);expect(await readFile(path,'utf8')).toBe(original)
+ }finally{await app.evaluate(()=>(globalThis as typeof globalThis&{__csvPresentation?:{restore:()=>void}}).__csvPresentation?.restore())}
+})
