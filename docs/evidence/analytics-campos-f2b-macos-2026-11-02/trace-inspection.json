@@ -1,0 +1,36 @@
+[
+  {
+    "attempt": "initial",
+    "traceSHA256": "66b0eea92015fe23b2009a5ffc384e0b8ed464a4ca02080257390d2a10553424",
+    "traceMembers": [
+      "src/5908c6dec861086e3586f6ddb908737776a2ab0a.ts",
+      "attachments/d8ae79ad66090da90657dc18ddf5463b8df5f84f",
+      "test.trace"
+    ],
+    "assertionStartMs": 882246.511,
+    "assertionEndMs": 897257.142,
+    "elapsedMs": 15010.631,
+    "fields": 200,
+    "loading": true,
+    "suggestion": true,
+    "errorVisible": false,
+    "snapshot": "      - heading \"Organiza tu análisis\" [level=3]\n      - region \"Filas\":\n        - heading \"Filas\" [level=4]\n        - text: Campo 0\n        - button \"Quitar Campo 0 de Filas\": ×\n      - region \"Columnas\":\n        - heading \"Columnas\" [level=4]\n        - paragraph: Usa «Añadir a…»\n      - region \"Valores\":\n        - heading \"Valores\" [level=4]\n        - text: Filas del archivo\n        - combobox \"Resumir Filas del archivo por\":\n          - option \"Cuenta\" [selected]\n          - option \"Cuenta distintos\"\n          - option \"Suma\" [disabled]\n          - option \"Promedio\" [disabled]\n          - option \"Mínimo\" [disabled]\n          - option \"Máximo\" [disabled]\n          - option \"Mediana\" [disabled]\n        - button \"Quitar Filas del archivo de Valores\": ×\n        - paragraph: Por ahora un valor a la vez\n      - region \"Filtros\":\n        - heading \"Filtros\" [level=4]\n        - paragraph: Usa «Añadir a…»\n    - paragraph: Cuenta de Filas del archivo por Campo 0\n    - group\n    - paragraph: Calculando el resultado…\n    - status: Calculando el resultado…\n    - status\n    - button \"Cancelar gráfico\"\n    - progressbar \"Generación del gráfico\"\n    - group \"Formas de visualizar\":\n      - button \"Barras\" [pressed]\n      - button \"Líneas\"\n      - button \"Dispersión\"\n      - button \"Histograma\"\n      - button \"Mapa de calor\"\n      - button \"Caja\"\n    - paragraph: \"Sugerido: cuenta cuántas filas hay por «Campo 0».\"\n    - region \"Área desplazable del gráfico\":\n      - img\n    - group: Más opciones\n"
+  },
+  {
+    "attempt": "retry1",
+    "traceSHA256": "ae624601f2529c7ae90114933d6ec0a60fb00c42a2bdbc3531e0ef97f1327e0c",
+    "traceMembers": [
+      "src/5908c6dec861086e3586f6ddb908737776a2ab0a.ts",
+      "attachments/d8ae79ad66090da90657dc18ddf5463b8df5f84f",
+      "test.trace"
+    ],
+    "assertionStartMs": 904307.701,
+    "assertionEndMs": 919369.743,
+    "elapsedMs": 15062.042,
+    "fields": 200,
+    "loading": true,
+    "suggestion": true,
+    "errorVisible": false,
+    "snapshot": "      - heading \"Organiza tu análisis\" [level=3]\n      - region \"Filas\":\n        - heading \"Filas\" [level=4]\n        - text: Campo 0\n        - button \"Quitar Campo 0 de Filas\": ×\n      - region \"Columnas\":\n        - heading \"Columnas\" [level=4]\n        - paragraph: Usa «Añadir a…»\n      - region \"Valores\":\n        - heading \"Valores\" [level=4]\n        - text: Filas del archivo\n        - combobox \"Resumir Filas del archivo por\":\n          - option \"Cuenta\" [selected]\n          - option \"Cuenta distintos\"\n          - option \"Suma\" [disabled]\n          - option \"Promedio\" [disabled]\n          - option \"Mínimo\" [disabled]\n          - option \"Máximo\" [disabled]\n          - option \"Mediana\" [disabled]\n        - button \"Quitar Filas del archivo de Valores\": ×\n        - paragraph: Por ahora un valor a la vez\n      - region \"Filtros\":\n        - heading \"Filtros\" [level=4]\n        - paragraph: Usa «Añadir a…»\n    - paragraph: Cuenta de Filas del archivo por Campo 0\n    - group\n    - paragraph: Calculando el resultado…\n    - status: Calculando el resultado…\n    - status\n    - button \"Cancelar gráfico\"\n    - progressbar \"Generación del gráfico\"\n    - group \"Formas de visualizar\":\n      - button \"Barras\" [pressed]\n      - button \"Líneas\"\n      - button \"Dispersión\"\n      - button \"Histograma\"\n      - button \"Mapa de calor\"\n      - button \"Caja\"\n    - paragraph: \"Sugerido: cuenta cuántas filas hay por «Campo 0».\"\n    - region \"Área desplazable del gráfico\":\n      - img\n    - group: Más opciones\n"
+  }
+]

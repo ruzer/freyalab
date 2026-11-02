@@ -116,7 +116,10 @@ test('F2b: actualizar una celda no sustituye el resumen elegido ni guarda el CSV
 })
 test('F2b: 200 campos, nombres Unicode, idioma seudolocalizado y tamaños accesibles',async()=>{
  const file=join(folder,'campos.csv'),headers=Array.from({length:200},(_,i)=>i===198?'Crédito «México» "ñ"':'Campo '+i),content=headers.join(',').replace('Crédito «México» "ñ"','"Crédito «México» ""ñ"""')+'\n'+Array.from({length:3},()=>Array(200).fill('x').join(',')).join('\n')+'\n';await writeFile(file,content);await page.evaluate(file=>window.freya.openPaths([file]),file)
- await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();const panel=page.locator('.charts-panel');await expect(panel.locator('.pivot-result')).toBeVisible()
+ await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();const panel=page.locator('.charts-panel')
+ // En CI macOS seguía calculando a los 15 s con los 200 campos y la sugerencia ya cargados (run 41515069251).
+ const summaryWith200FieldsTimeout=30_000
+ await expect(panel.locator('.pivot-result')).toBeVisible({timeout:summaryWith200FieldsTimeout})
  const search=panel.getByRole('searchbox');await search.fill('credito');await expect(panel.getByRole('listitem')).toHaveCount(1);await expect(panel.getByRole('listitem')).toContainText('Crédito «México» "ñ"')
  await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-200-fields.png')})
  await page.evaluate(()=>window.freya.setLanguage('en'));await expect(panel.getByRole('searchbox',{name:'Search fields…',exact:true})).toBeVisible();await search.fill('');await expect(panel.getByRole('listitem')).toHaveCount(200)
