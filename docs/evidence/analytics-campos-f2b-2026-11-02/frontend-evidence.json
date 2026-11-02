@@ -1,0 +1,69 @@
+{
+  "contract": "Historia11 F2b, docs/stories/11-f2b-campos-zonas.md y corrección expresa del propietario en 11-analitica-excel-f2.md; sin motor nuevo.",
+  "targetViewports": [
+    "1440x900",
+    "1280x720",
+    "800x720"
+  ],
+  "accessibility": {
+    "status": "pass",
+    "evidence": "E2E de teclado, menu/menuitem, foco, aria-live, 200 campos y objetivos24px; contraste medido contra fondos reales, conservando series con patrones. Lector de pantalla manual no realizado."
+  },
+  "responsive": {
+    "status": "pass",
+    "evidence": "Resultado y Total visibles sin desplazar a1440x900/1280x720 en claro/oscuro; en-XA y800x720 sin desbordar, campos plegables a ancho completo."
+  },
+  "contentStates": {
+    "loading": {
+      "status": "pass",
+      "evidence": "Cálculo manual100000filas, progreso y Cancelar; reintento conserva fuente."
+    },
+    "empty": {
+      "status": "pass",
+      "evidence": "Limpiar todo vacía zonas y permite reiniciar sugerencia; se corrigió también el falso aviso de campo desaparecido detectado al revisar la captura."
+    },
+    "error": {
+      "status": "pass",
+      "evidence": "Error numérico forzado en Más opciones; mensaje llano con Reintentar y detalle en popover; archivo intacto."
+    },
+    "partial": {
+      "status": "pass",
+      "evidence": "842grupos,100recibidos, Top10 sin Otros global, tabla paginada conservada y aviso de truncado."
+    },
+    "success": {
+      "status": "pass",
+      "evidence": "CSV real sintético8filas suma7200 y cuatro regiones; totales y siete operaciones contrastados con literales independientes."
+    },
+    "permission": {
+      "status": "not-applicable",
+      "reason": "No se añadió ningún permiso ni acceso a archivos: los documentos ya abiertos se analizan por el puente existente. No se trata de una comprobación manual de instaladores."
+    }
+  },
+  "renderedEvidence": [
+    {
+      "viewport": "1440x900",
+      "artifact": "after-light-1440x900.png",
+      "observation": "Resultado primero, suma7200 y tabla completa; campos a la derecha, más opciones plegado."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after-dark-1280x720.png",
+      "observation": "Tema oscuro, cuatro filas y Total dentro del área; no se aumentó la barra."
+    },
+    {
+      "viewport": "800x720",
+      "artifact": "state-en-XA-800.png",
+      "observation": "Panel principal completo, campos plegados, Total dentro de pantalla y textos largos con tooltip."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "state-error.png",
+      "observation": "Error llano y detalle abierto deliberadamente; la prueba comprueba que estaba plegado antes."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "state-empty.png",
+      "observation": "Vacío y reinicio de sugerencia; captura actualizada tras retirar el falso aviso."
+    }
+  ]
+}

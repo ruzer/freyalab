@@ -1,0 +1,8 @@
+
+Running 1 test using 1 worker
+
+(node:3534) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/chart-fields.spec.ts:44:1 › F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones (6.4s)
+
+  1 passed (6.8s)

@@ -1,0 +1,77 @@
+
+Running 2 tests using 1 worker
+
+(node:97658) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-fields.spec.ts:89:1 › F2b: filtros reutilizados, exportación y datos originales intactos (19.5s)
+(node:97675) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/chart-fields.spec.ts:130:1 › F2b: contraste de textos y controles medido contra sus fondos reales en ambos temas (2.6s)
+
+
+  1) [csv] › tests/e2e/chart-fields.spec.ts:89:1 › F2b: filtros reutilizados, exportación y datos originales intactos 
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  locator('.charts-panel').getByRole('button', { name: 'Mover a… Región', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeFocused" locator('.charts-panel').getByRole('button', { name: 'Mover a… Región', exact: true }) with timeout 15000ms
+      - waiting for locator('.charts-panel').getByRole('button', { name: 'Mover a… Región', exact: true })
+        34 × locator resolved to <button aria-haspopup="menu" class="svelte-hqvgw9" aria-expanded="false" aria-label="Mover a… Región">Mover a…</button>
+           - unexpected value "inactive"
+
+
+      92 |  const filters=panel.getByRole('region',{name:'Filtros del gráfico',exact:true});await filters.getByLabel('Operador de condición 1',{exact:true}).selectOption('equals');await filters.getByLabel('Valor de condición 1',{exact:true}).fill('Norte');await filters.getByRole('button',{name:'Aplicar filtros del gráfico',exact:true}).click()
+      93 |  await expect(panel.locator('.pivot-result tfoot')).toContainText('2,000');await expect(panel.getByRole('region',{name:'Filtros',exact:true})).toContainText('Región')
+    > 94 |  await expect(panel.getByRole('button',{name:'Mover a… Región',exact:true})).toBeFocused()
+         |                                                                              ^
+      95 |  await panel.locator('.more-options>summary').click();await panel.getByRole('button',{name:'Exportar gráfico SVG',exact:true}).click();await expect.poll(async()=>{try{return await readFile(join(folder,'exports','ventas.svg'),'utf8')}catch{return''}}).toContain('<svg')
+      96 |  await panel.getByRole('button',{name:'Exportar gráfico PNG',exact:true}).click();await expect.poll(async()=>{try{return (await readFile(join(folder,'exports','ventas.png'))).subarray(1,4).toString()}catch{return''}}).toBe('PNG')
+      97 |  await panel.getByRole('button',{name:'Exportar gráfico PDF',exact:true}).click();await expect.poll(async()=>{try{return (await readFile(join(folder,'exports','ventas.pdf'))).subarray(0,4).toString()}catch{return''}}).toBe('%PDF')
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-fields.spec.ts:94:78
+
+    Error Context: ../freyalab-f2b-evidence/focus-red/chart-fields-F2b-filtros-r-bf45d-y-datos-originales-intactos-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/focus-red/chart-fields-F2b-filtros-r-bf45d-y-datos-originales-intactos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/focus-red/chart-fields-F2b-filtros-r-bf45d-y-datos-originales-intactos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/chart-fields.spec.ts:130:1 › F2b: contraste de textos y controles medido contra sus fondos reales en ambos temas 
+
+    Error:    Barras
+
+    expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 3
+    Received:    1
+
+      139 |   }))
+      140 |   await writeFile(test.info().outputPath(`colors-${theme}.json`),JSON.stringify(colors,null,2))
+    > 141 |   for(const color of colors){const background=color.backgrounds.find(value=>value!=='rgba(0, 0, 0, 0)')!;const a=luminance(color.color),b=luminance(background);expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05),color.label??'').toBeGreaterThanOrEqual(4.5);if(color.border){const c=luminance(color.border);expect((Math.max(c,b)+.05)/(Math.min(c,b)+.05),color.label??'').toBeGreaterThanOrEqual(3)}}
+          |                                                                                                                                                                                                                                                                                                                                                                              ^
+      142 |  }
+      143 | })
+      144 |
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-fields.spec.ts:141:366
+
+    Error Context: ../freyalab-f2b-evidence/focus-red/chart-fields-F2b-contraste-568e5-ondos-reales-en-ambos-temas-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/focus-red/chart-fields-F2b-contraste-568e5-ondos-reales-en-ambos-temas-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/focus-red/chart-fields-F2b-contraste-568e5-ondos-reales-en-ambos-temas-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/chart-fields.spec.ts:89:1 › F2b: filtros reutilizados, exportación y datos originales intactos 
+    [csv] › tests/e2e/chart-fields.spec.ts:130:1 › F2b: contraste de textos y controles medido contra sus fondos reales en ambos temas 

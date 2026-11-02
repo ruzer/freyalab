@@ -1,0 +1,9 @@
+import { _electron as electron } from '/private/tmp/freyalab-resumen-grafico-f2a/node_modules/@playwright/test/index.mjs';
+import {mkdtemp,writeFile,mkdir,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+const folder=await mkdtemp(join(tmpdir(),'freya-f2b-before-')),path=join(folder,'ventas.csv');
+await writeFile(path,'Región,Canal,Ventas,Fecha,Descuento\nNorte,Web,1200,2026-01-01,10%\nNorte,Tienda,800,2026-01-15,10%\nCentro,Web,1600,2026-02-01,10%\nCentro,Tienda,900,2026-02-15,10%\nSur,Web,900,2026-03-01,10%\nSur,Tienda,600,2026-03-15,10%\nOeste,Web,700,2026-04-01,10%\nOeste,Tienda,500,2026-04-15,10%\n');
+const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;
+const app=await electron.launch({chromiumSandbox:true,executablePath:'/private/tmp/freyalab-resumen-grafico-f2a/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron',args:['/private/tmp/freyalab-f2b-baseline/out/main/index.js'],env:{...env,FREYALAB_TEST:'1',FREYALAB_LANG:'es',FREYALAB_USER_DATA:join(folder,'profile')}});
+try{const page=await app.firstWindow();await page.emulateMedia({reducedMotion:'reduce'});await page.waitForFunction(()=>!!window.freya);await page.evaluate(file=>window.freya.openPaths([file]),path);await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();await page.locator('.charts-panel .pivot-result').waitFor();await mkdir('/private/tmp/freyalab-f2b-evidence/before-clean',{recursive:true});for(const [width,height] of [[1440,900],[1280,720]])for(const theme of ['light','dark']){await page.setViewportSize({width,height});await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.screenshot({path:`/private/tmp/freyalab-f2b-evidence/before-clean/${theme}-${width}x${height}.png`,animations:'disabled'});}}finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(folder,{recursive:true,force:true});}

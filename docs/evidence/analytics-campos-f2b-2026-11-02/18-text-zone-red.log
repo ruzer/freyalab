@@ -1,0 +1,45 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/chart-fields.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-campos-zonas-f2b
+
+ ❯ tests/chart-fields.test.ts (20 tests | 1 failed) 22ms
+   × cambiar Filas conserva un Valor textual como Cuenta, no lo mueve a Columnas 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-fields.test.ts > cambiar Filas conserva un Valor textual como Cuenta, no lo mueve a Columnas
+AssertionError: expected { kind: 'heatmap', x: 1, y: 4, …(6) } to match object { kind: 'bar', x: 1, y: 4, …(3) }
+(3 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "aggregate": "count",
+-   "kind": "bar",
++   "kind": "heatmap",
+    "measureType": "text",
+    "series": -1,
+    "x": 1,
+    "y": 4,
+  }
+
+ ❯ tests/chart-fields.test.ts:72:43
+     70| it('cambiar Filas conserva un Valor textual como Cuenta, no lo mueve a…
+     71|  const text=addToZone(initialChart(columns)!,'values',4,columns)
+     72|  expect(addToZone(text,'rows',1,columns)).toMatchObject({kind:'bar',x:…
+       |                                           ^
+     73| })
+     74|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 19 passed (20)
+   Start at  10:52:57
+   Duration  133ms (tests 38%, transform 36%, import 22%, worker 4%)
+

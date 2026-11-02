@@ -1,0 +1,13 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/chart-language-f2b.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-campos-zonas-f2b
+
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  03:40:53
+   Duration  106ms (transform 63%, import 23%, tests 9%, worker 5%)
+

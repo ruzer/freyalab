@@ -1,0 +1,94 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/chart-language-f2b.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-campos-zonas-f2b
+
+ ❯ tests/chart-language-f2b.test.ts (4 tests | 4 failed) 7ms
+   × razones legibles y traducidas en es 3ms
+   × razones legibles y traducidas en en 0ms
+   × razones legibles y traducidas en en-XA 0ms
+   × el contrato en español usa palabras de persona 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-language-f2b.test.ts > razones legibles y traducidas en es
+AssertionError: expected 'La columna {xPosition} «Región» agrup…' not to match /perfil|profile|columna \d|Column \d|…/i
+
+- Expected:
+/perfil|profile|columna \d|Column \d|\{\w+\}/i
+
++ Received:
+"La columna {xPosition} «Región» agrupa los datos y la columna {yPosition} «Ventas» tiene perfil numérico. Propongo barras con suma."
+
+ ❯ tests/chart-language-f2b.test.ts:8:23
+      6|  for(const key of Object.keys(es).filter(key=>key.startsWith('charts.s…
+      7|   const message=t(key,{x:'Región',y:'Ventas',field:'Descuento',measure…
+      8|   expect(message).not.toMatch(/perfil|profile|columna \d|Column \d|\{\…
+       |                       ^
+      9|   expect(message).not.toBe(key)
+     10|  }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/chart-language-f2b.test.ts > razones legibles y traducidas en en
+AssertionError: expected 'Column {xPosition} “Región” groups th…' not to match /perfil|profile|columna \d|Column \d|…/i
+
+- Expected:
+/perfil|profile|columna \d|Column \d|\{\w+\}/i
+
++ Received:
+"Column {xPosition} “Región” groups the data and column {yPosition} “Ventas” has a numeric profile. I suggest bars showing the sum."
+
+ ❯ tests/chart-language-f2b.test.ts:8:23
+      6|  for(const key of Object.keys(es).filter(key=>key.startsWith('charts.s…
+      7|   const message=t(key,{x:'Región',y:'Ventas',field:'Descuento',measure…
+      8|   expect(message).not.toMatch(/perfil|profile|columna \d|Column \d|\{\…
+       |                       ^
+      9|   expect(message).not.toBe(key)
+     10|  }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/chart-language-f2b.test.ts > razones legibles y traducidas en en-XA
+AssertionError: expected '[Cölümn {xPosition} “Región” gröüps t…' not to match /perfil|profile|columna \d|Column \d|…/i
+
+- Expected:
+/perfil|profile|columna \d|Column \d|\{\w+\}/i
+
++ Received:
+"[Cölümn {xPosition} “Región” gröüps thë dátá ánd cölümn {yPosition} “Ventas” hás á nümërïc pröfïlë. Ï süggëst bárs shöwïng thë süm.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~]"
+
+ ❯ tests/chart-language-f2b.test.ts:8:23
+      6|  for(const key of Object.keys(es).filter(key=>key.startsWith('charts.s…
+      7|   const message=t(key,{x:'Región',y:'Ventas',field:'Descuento',measure…
+      8|   expect(message).not.toMatch(/perfil|profile|columna \d|Column \d|\{\…
+       |                       ^
+      9|   expect(message).not.toBe(key)
+     10|  }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/chart-language-f2b.test.ts > el contrato en español usa palabras de persona
+AssertionError: expected 'La columna {xPosition} «{x}» agrupa l…' to be 'Sugerido: compara {measure} de «{y}» …' // Object.is equality
+
+Expected: "Sugerido: compara {measure} de «{y}» por «{x}»."
+Received: "La columna {xPosition} «{x}» agrupa los datos y la columna {yPosition} «{y}» tiene perfil numérico. Propongo barras con suma."
+
+ ❯ tests/chart-language-f2b.test.ts:13:42
+     11| })
+     12| it('el contrato en español usa palabras de persona',()=>{
+     13|  expect(es['charts.suggest.textNumber']).toBe('Sugerido: compara {meas…
+       |                                          ^
+     14|  expect(es['charts.suggest.textOnly']).toBe('Sugerido: cuenta cuántas …
+     15|  expect(es['charts.ui.info']).toBe('Detalles del cálculo')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  03:40:21
+   Duration  107ms (transform 44%, import 29%, tests 21%, worker 6%)
+

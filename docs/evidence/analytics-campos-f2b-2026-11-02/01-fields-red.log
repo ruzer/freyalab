@@ -1,0 +1,28 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/chart-fields.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-campos-zonas-f2b
+
+ ❯ tests/chart-fields.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-fields.test.ts [ tests/chart-fields.test.ts ]
+Error: Cannot find module '../src/shared/chart-fields' imported from /private/tmp/freyalab-campos-zonas-f2b/tests/chart-fields.test.ts
+ ❯ tests/chart-fields.test.ts:2:1
+      1| import {it,expect} from 'vitest'
+      2| import {addToZone,removeFromZone,swapZones,zoneFields,recommendedZone,…
+       | ^
+      3| import {chartSQL,type ChartOptions} from '../src/shared/charts'
+      4| import type {ChartColumn} from '../src/shared/chart-suggest'
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  03:38:12
+   Duration  92ms (worker 97%, environment 3%)
+

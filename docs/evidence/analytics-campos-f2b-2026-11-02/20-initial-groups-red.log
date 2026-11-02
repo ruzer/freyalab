@@ -1,0 +1,63 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/chart-fields.test.ts tests/chart-top.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-campos-zonas-f2b
+
+ ❯ tests/chart-fields.test.ts (21 tests | 1 failed) 21ms
+   × el arranque prefiere una categoría real antes que un identificador 4ms
+ ❯ tests/chart-top.test.ts (12 tests | 1 failed) 30ms
+   × Otros conserva cada serie y suma decimales sin redondeos binarios 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-fields.test.ts > el arranque prefiere una categoría real antes que un identificador
+AssertionError: expected { kind: 'bar', x: +0, y: 2, …(6) } to match object { x: 1, y: 2, aggregate: 'sum' }
+(6 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "aggregate": "sum",
+-   "x": 1,
++   "x": 0,
+    "y": 2,
+  }
+
+ ❯ tests/chart-fields.test.ts:76:34
+     74| it('el arranque prefiere una categoría real antes que un identificador…
+     75|  const reordered=[columns[4],columns[0],columns[2]].map((field,column)…
+     76|  expect(initialChart(reordered)).toMatchObject({x:1,y:2,aggregate:'sum…
+       |                                  ^
+     77| })
+     78|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/chart-top.test.ts > Otros conserva cada serie y suma decimales sin redondeos binarios
+AssertionError: expected 24 to be 12 // Object.is equality
+
+- Expected
++ Received
+
+- 12
++ 24
+
+ ❯ tests/chart-top.test.ts:28:24
+     26|  const rows=Array.from({length:12},(_,i)=>[['G'+i,'0.1','Web'],['G'+i,…
+     27|  const result=chartTop({...data,points:24,rows,columns:['x','value','s…
+     28|  expect(result.groups).toBe(12)
+       |                        ^
+     29|  expect(result.data.rows.slice(-2)).toEqual([['Otros','0.2','Web'],['O…
+     30| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 31 passed (33)
+   Start at  10:59:24
+   Duration  137ms (tests 41%, transform 37%, import 19%, worker 3%)
+

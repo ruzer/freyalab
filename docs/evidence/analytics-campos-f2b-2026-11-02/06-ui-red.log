@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:87296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-fields.spec.ts:17:1 › F2b: sugerencia inicial y dos acciones cambian qué se grafica sin Más opciones (18.2s)
+
+
+  1) [csv] › tests/e2e/chart-fields.spec.ts:17:1 › F2b: sugerencia inicial y dos acciones cambian qué se grafica sin Más opciones 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.charts-panel').locator('.pivot-result tfoot')
+    Expected substring: "7,200"
+    Received string:    "Total8100%"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" locator('.charts-panel').locator('.pivot-result tfoot') with timeout 15000ms
+      - waiting for locator('.charts-panel').locator('.pivot-result tfoot')
+        34 × locator resolved to <tfoot class="svelte-1wo6u31">…</tfoot>
+           - unexpected value "Total8100%"
+
+
+      22 |   await page.screenshot({path:test.info().outputPath(`layout-${theme}-${width}x${height}.png`)})
+      23 |  }
+    > 24 |  await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
+         |                                                     ^
+      25 |  const fields=panel.getByRole('complementary',{name:'Campos y zonas',exact:true})
+      26 |  await fields.getByRole('button',{name:'Mover a… Fecha',exact:true}).click()
+      27 |  await fields.getByRole('menuitem',{name:'Añadir a Filas (recomendado)',exact:true}).click()
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-fields.spec.ts:24:53
+
+    Error Context: ../freyalab-f2b-evidence/before/chart-fields-F2b-sugerenci-9c268-se-grafica-sin-Más-opciones-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/before/chart-fields-F2b-sugerenci-9c268-se-grafica-sin-Más-opciones-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/before/chart-fields-F2b-sugerenci-9c268-se-grafica-sin-Más-opciones-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-fields.spec.ts:17:1 › F2b: sugerencia inicial y dos acciones cambian qué se grafica sin Más opciones 
