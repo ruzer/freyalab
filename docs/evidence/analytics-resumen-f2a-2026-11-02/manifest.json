@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-02",
+  "source_commit": "b5c2ad2f1048fdc19a51df6e555f3515df4c1db8",
+  "source_tree": "cb1426d8693b84656778793c8b19b2244870be48",
+  "tests_tree": "56d85b79b71b2c3ddfd7d9c7f6ffdb213fdbb2ef",
+  "main": "695d86f651bd5f9c6cca7f015813e0b2ca4616ba",
+  "reference_sha256": "a4bf365d34e295b4816075f12adf1788a61fe98e3eea580e7010c1844579e75e",
+  "ci": "See final PR report for exact head and current job results; not claimed by this snapshot.",
+  "screenshots_sha256": {
+    "state-result-limits.png": "e6b86874dc6c9144c2e5eb66cead1e77cee22fa4376ee7d72ad4107a1c49151c",
+    "state-narrow-keyboard.png": "66ef8b9d1420a03afb4167f7c6e10a7b0e4797991f9264f141509fe1af0fb28a",
+    "state-error.png": "5767cebea636d65620107f97affddfc38d27b4c9e499d71fe6bdd49f12c6dc4c",
+    "state-truncated.png": "c4cb988b79b57645ad9980194e85e167ed30c559f626a18baec15e19e763ba78",
+    "after-light-1280x720.png": "061aed541d44a479991017d2338d72509f74a9ed9352c2f76adecc68b3df4b4f",
+    "state-loading.png": "634ab28da61e9dd5d0d0f93cf20eb5e68acc6450d66d9cb8b9cbb10bcbd9c77b",
+    "before-dark-1280x720.png": "59144db40e490599cd04606cb9bf97b6c2db60fb5c92bde91122fddad6dffa3e",
+    "after-dark-1280x720.png": "be0f7c78b328194f6d88a91e88ea9bd11cdfd3c375d1b9ac5d89820b4885cd42",
+    "before-light-1280x720.png": "7839347dea620551297bd0936448ae078f957bf06dbc388fd455b20a8ac51c93",
+    "state-en-XA.png": "7bfb471b26ac37451f19e4eb3f1f594ee38c5f5ddfafae3365b8e707638730c4",
+    "state-en.png": "ad4b739b44f5468cc2a9002c679f735b1eb8ee6747ac0db03e8220736448f1b2",
+    "state-narrow.png": "51f5ac0dc8dc4e3a4774998570897560d024aaf0ffed3e392e0c3767f8010541",
+    "after-dark-1440x900.png": "f34e95736203a4eb3dc5dd9726ea5068e89ddda792d541f8eab08185033062e4",
+    "before-light-1440x900.png": "95105e9bb0c33f94afc2c91867b972068e936918992baaffe99c8086f7a5e77d",
+    "after-light-1440x900.png": "e336b29f76d7e8f2f3e10168b714debfb1c3e206f80d5b2ff2632c9e83891aea",
+    "before-dark-1440x900.png": "5216deb10ed5bbfa602692d9a3c6d6c2c62e927471af303faf2c52a0a4acb3a6",
+    "state-empty.png": "6149f7d5fc064cf95bec2068ce6fda243c4db26ad912eda2fb58de12d9452f74"
+  }
+}
