@@ -44,5 +44,5 @@ export function chartOption(data:ChartData,options:ChartOptions,colors:{text:str
  }
  const outliers:number[][]=[]
  rows.forEach((row,index)=>{const values=JSON.parse(row[8]??'[]') as unknown;if(!Array.isArray(values)||values.length>20||values.some(n=>typeof n!=='number'||!Number.isFinite(n)))throw new Error('Atípicos no válidos.');for(const n of values)outliers.push([index,n])})
- return{...common,series:[{type:'boxplot',data:rows.map(r=>[number(r[4])!,number(r[2])!,number(r[1])!,number(r[3])!,number(r[5])!])},{name:'Atípicos (hasta 20 por grupo)',type:'scatter',symbolSize:6,data:outliers}]}
+ return{...common,series:[{type:'boxplot',data:rows.map(r=>[number(r[4])!,number(r[2])!,number(r[1])!,number(r[3])!,number(r[5])!])},{name:t('charts.plot.outliers'),type:'scatter',symbolSize:6,data:outliers}]}
 }

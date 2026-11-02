@@ -658,5 +658,7 @@
  "charts.filter.op.regex": "Expresión regular (RE2)",
  "charts.ui.boxButton": "Caja",
  "charts.ui.hidden.one": "{count} serie oculta (totales sin recalcular)",
- "charts.ui.hidden.other": "{count} series ocultas (totales sin recalcular)"
+ "charts.ui.hidden.other": "{count} series ocultas (totales sin recalcular)",
+ "charts.ui.loadError": "No se pudo cargar el panel de gráficos. Ciérralo y vuelve a intentarlo.",
+ "charts.plot.outliers": "Atípicos (hasta 20 por grupo)"
 }

@@ -144,3 +144,18 @@ test('F2a: cambiar desde una celda en edición confirma el borrador sin guardar 
  const panel=await summary();await expect(panel.getByRole('status')).toContainText('Gráfico listo');await page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true}).click()
  await expect(grid.getByRole('gridcell').filter({hasText:'1350'}).first()).toBeVisible();const [doc]=await page.evaluate(()=>window.freya.documents());expect(doc.dirty).toBe(true);expect(await readFile(path,'utf8')).toBe(original)
 })
+
+test('F2a: las herramientas de tabla siguen completas dentro de ambos anchos',async()=>{
+ for(const [width,height] of [[1440,900],[1280,720]]){
+  await page.setViewportSize({width,height});const bar=page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true})
+  const box=await bar.getByRole('button',{name:'Analizar',exact:true}).boundingBox();expect(box!.x+box!.width).toBeLessThanOrEqual(width)
+  await expect(bar.getByRole('button',{name:'Analizar',exact:true})).toBeVisible()
+ }
+})
+
+test('F2a: desde Texto con cambios, Cancelar conserva el borrador y descartar abre Resumen sin escribir',async()=>{
+ const mode=page.locator('[data-csv-view]');await mode.getByRole('button',{name:'Texto',exact:true}).click();const editor=page.getByRole('textbox',{name:'Editor CSV como texto',exact:true})
+ await editor.press('ControlOrMeta+End');await page.keyboard.insertText('Extra,Web,50,0%\n');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(true)
+ await mode.getByRole('button',{name:'Resumen y gráfico',exact:true}).click();let dialog=page.getByRole('dialog');await expect(dialog.getByRole('button',{name:'Guardar y cambiar',exact:true})).toBeVisible();await dialog.getByRole('button',{name:'Cancelar',exact:true}).click();await expect(editor).toContainText('Extra,Web,50,0%');await expect(mode.getByRole('button',{name:'Texto',exact:true})).toHaveAttribute('aria-pressed','true')
+ await mode.getByRole('button',{name:'Resumen y gráfico',exact:true}).click();dialog=page.getByRole('dialog');await dialog.getByRole('button',{name:'Descartar cambios y cambiar',exact:true}).click();await expect(mode.getByRole('button',{name:'Resumen y gráfico',exact:true})).toHaveAttribute('aria-pressed','true');await expect(page.locator('.charts-panel').getByRole('status')).toContainText('Gráfico listo');expect(await readFile(path,'utf8')).toBe(original)
+})

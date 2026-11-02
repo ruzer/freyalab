@@ -658,5 +658,7 @@
  "charts.filter.op.regex": "Regular expression (RE2)",
  "charts.ui.boxButton": "Box",
  "charts.ui.hidden.one": "{count} hidden series (totals not recalculated)",
- "charts.ui.hidden.other": "{count} hidden series (totals not recalculated)"
+ "charts.ui.hidden.other": "{count} hidden series (totals not recalculated)",
+ "charts.ui.loadError": "Could not load the chart panel. Close it and try again.",
+ "charts.plot.outliers": "Outliers (up to 20 per group)"
 }

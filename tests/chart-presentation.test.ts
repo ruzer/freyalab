@@ -24,3 +24,8 @@ it.each([false,true])('ocho series tienen contraste ≥ 3:1 y marcas con patrone
  for(const color of plot.color as string[]){const a=luminance(color),b=luminance(background);expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05),color).toBeGreaterThanOrEqual(3)}
  expect(plot.aria).toMatchObject({decal:{show:true}})
 })
+it('el nombre de los valores atípicos de Caja también se localiza en inglés',()=>{
+ setLanguage('en')
+ const data:ChartData={total:6,usable:6,points:1,limited:false,columns:['x','value','q1','q3','low','high','outliers','count','atypical'],rows:[['A','2','1','3','0','4','1','6','[10]']]}
+ expect(chartOption(data,{...options,kind:'box'},colors).series).toMatchObject([{type:'boxplot'},{name:'Outliers (up to 20 per group)'}])
+})
