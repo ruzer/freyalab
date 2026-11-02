@@ -40,7 +40,7 @@
  const plotData=$derived(data?chartTop(data,options,totals):null)
  const summaryTitle=$derived(options.x<0||options.y===-2?t('charts.fields.emptyTitle'):aggregated?t(options.series!==undefined&&options.series>=0?'charts.fields.titleSplit':'charts.fields.titleResult',{summary:t('charts.aggregate.'+options.aggregate),field:options.y>=0?columnLabel(options.y):t('charts.fields.rowCount'),row:columnLabel(options.x),column:columnLabel(options.series??-1)}):axes.summary)
  const pivot=$derived(data?chartPivot(data,options,totals):null)
- const suggestion=$derived(suggest(columns,{x:options.x,...options.y>=0?{y:options.y}:{}}))
+ const suggestion=$derived(suggest(columns,options.x<0||options.y===-2?{}:{x:options.x,...options.y>=0?{y:options.y}:{}}))
  const reason=$derived(options.kind!==suggestion.options?.kind&&suggestion.options?t('charts.fields.selectedType',{type:t('charts.kind.'+options.kind),suggested:t('charts.kind.'+suggestion.options.kind)}):t(suggestion.reason.key,{...suggestion.reason.parameters,measure:t('charts.measure.'+options.aggregate),period:t('charts.period.'+(options.time==='none'?'month':options.time??'month'))}))
  const typeIcons={bar:'chart-column',line:'chart-line',scatter:'chart-scatter',histogram:'chart-histogram',heatmap:'chart-heatmap',box:'chart-box'} as const
  async function cancelChart(){cancelledSignature=signature;cancelFields();cancel();message='charts.ui.cancelled';await tick();element?.closest('section')?.querySelector<HTMLButtonElement>('.chart-types button[aria-pressed="true"]')?.focus()}

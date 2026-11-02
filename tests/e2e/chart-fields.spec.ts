@@ -29,7 +29,7 @@ test('F2b: sugerencia inicial y dos acciones cambian qué se grafica sin Más op
  await expect(panel.locator('.pivot-result')).toBeVisible()
  for(const [width,height] of [[1440,900],[1280,720]])for(const theme of ['light','dark']){
   await page.setViewportSize({width,height});await page.getByLabel('Tema',{exact:true}).selectOption(theme)
-  await page.screenshot({path:test.info().outputPath(`layout-${theme}-${width}x${height}.png`)})
+  await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath(`layout-${theme}-${width}x${height}.png`)})
  }
  await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
  const fields=panel.getByRole('complementary',{name:'Campos y zonas',exact:true})
@@ -54,7 +54,8 @@ test('F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones
  await fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true}).focus();await page.keyboard.press('Enter');await expect(fields.getByRole('region',{name:'Filas',exact:true})).toContainText('Canal');await expect(live).toHaveText('Filas y columnas intercambiadas')
  await fields.getByRole('button',{name:'Limpiar todo',exact:true}).focus();await page.keyboard.press('Enter');await expect(live).toHaveText('Análisis limpiado');await expect(panel.getByRole('button',{name:'Empezar con una sugerencia',exact:true})).toBeVisible()
  await expect(panel.getByLabel('Configuración del gráfico',{exact:true})).toHaveText('¿Qué quieres ver?')
- await page.screenshot({path:test.info().outputPath('state-empty.png')});await panel.getByRole('button',{name:'Empezar con una sugerencia',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
+ await expect(panel.locator('.suggestion')).toHaveText('Elige un campo para empezar.')
+ await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-empty.png')});await panel.getByRole('button',{name:'Empezar con una sugerencia',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
  expect(await readFile(path,'utf8')).toBe(original)
 })
 test('F2b: cada Resumir por coincide con datos independientes y porcentajes solo aditivos',async()=>{
@@ -84,7 +85,7 @@ test('F2b: 842 grupos conservan truncado y tabla paginada; Otros solo sobre resu
  await expect(panel.locator('.pivot-result')).toBeVisible();await expect(panel.locator('.truncated')).toContainText('Mostrando 100 de 842 grupos');await expect(panel.locator('.top-notice')).toContainText('10 mayores');await expect(panel.locator('.top-notice')).not.toContainText('y «Otros»')
  await expect(panel.locator('.pivot-result tbody tr')).toHaveCount(5);await panel.getByLabel('Grupos por página',{exact:true}).selectOption('50');await expect(panel.locator('.pivot-result tbody tr')).toHaveCount(50)
  await panel.locator('.pivot-pages').getByRole('button',{name:'Datos siguientes',exact:true}).click();await expect(panel.locator('.pivot-result tbody tr')).toHaveCount(50)
- await page.screenshot({path:test.info().outputPath('state-842-groups.png')});expect(await readFile(file,'utf8')).toBe(content)
+ await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-842-groups.png')});expect(await readFile(file,'utf8')).toBe(content)
  const small=join(folder,'doce.csv');await writeFile(small,'Grupo,Ventas\n'+Array.from({length:12},(_,i)=>`G${i},${i+1}`).join('\n')+'\n');await page.evaluate(file=>window.freya.openPaths([file]),small);await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click()
  await expect(panel.locator('.top-notice')).toContainText('y «Otros»');await expect(panel.locator('.pivot-result tfoot')).toContainText('78')
  await panel.getByLabel('Resumir Ventas por',{exact:true}).selectOption('average');await expect(panel.locator('.top-notice')).not.toContainText('y «Otros»');await expect(panel.locator('.pivot-result tfoot')).toContainText('6.5')
@@ -104,8 +105,8 @@ test('F2b: estrecho conserva foco al editar campos, inglés natural y resultado 
  const panel=page.locator('.charts-panel');await expect(panel.locator('.pivot-result')).toBeVisible();await page.setViewportSize({width:800,height:720})
  await expect(panel.getByRole('complementary')).toBeHidden();await panel.getByRole('button',{name:'Campos y zonas',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.getByRole('complementary')).toBeVisible()
  await panel.getByRole('button',{name:'Añadir a… Fecha',exact:true}).focus();await page.keyboard.press('Enter');await page.keyboard.press('Enter');await expect(panel.locator('.chart-types button[aria-pressed=true]')).toHaveText('Líneas');await expect(panel.locator('.pivot-result')).toBeVisible();await expect(panel.getByRole('button',{name:'Mover a… Fecha',exact:true})).toBeFocused()
- await panel.getByRole('button',{name:'Campos y zonas',exact:true}).click();await expect(panel.getByRole('complementary')).toBeHidden();await page.screenshot({path:test.info().outputPath('state-narrow.png')})
- await page.evaluate(()=>window.freya.setLanguage('en'));await expect(panel.getByRole('button',{name:'Fields and zones',exact:true})).toBeVisible();await expect(panel.getByLabel('Chart configuration',{exact:true})).toContainText('Ventas');await page.screenshot({path:test.info().outputPath('state-en.png')})
+ await panel.getByRole('button',{name:'Campos y zonas',exact:true}).click();await expect(panel.getByRole('complementary')).toBeHidden();await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-narrow.png')})
+ await page.evaluate(()=>window.freya.setLanguage('en'));await expect(panel.getByRole('button',{name:'Fields and zones',exact:true})).toBeVisible();await expect(panel.getByLabel('Chart configuration',{exact:true})).toContainText('Ventas');await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-en.png')})
  const result=await panel.locator('.pivot-result').boundingBox();expect(result!.y+result!.height).toBeLessThanOrEqual(720)
 })
 test('F2b: actualizar una celda no sustituye el resumen elegido ni guarda el CSV',async()=>{
@@ -117,7 +118,7 @@ test('F2b: 200 campos, nombres Unicode, idioma seudolocalizado y tamaños accesi
  const file=join(folder,'campos.csv'),headers=Array.from({length:200},(_,i)=>i===198?'Crédito «México» "ñ"':'Campo '+i),content=headers.join(',').replace('Crédito «México» "ñ"','"Crédito «México» ""ñ"""')+'\n'+Array.from({length:3},()=>Array(200).fill('x').join(',')).join('\n')+'\n';await writeFile(file,content);await page.evaluate(file=>window.freya.openPaths([file]),file)
  await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();const panel=page.locator('.charts-panel');await expect(panel.locator('.pivot-result')).toBeVisible()
  const search=panel.getByRole('searchbox');await search.fill('credito');await expect(panel.getByRole('listitem')).toHaveCount(1);await expect(panel.getByRole('listitem')).toContainText('Crédito «México» "ñ"')
- await page.screenshot({path:test.info().outputPath('state-200-fields.png')})
+ await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-200-fields.png')})
  await page.evaluate(()=>window.freya.setLanguage('en'));await expect(panel.getByRole('searchbox',{name:'Search fields…',exact:true})).toBeVisible();await search.fill('');await expect(panel.getByRole('listitem')).toHaveCount(200)
  const controls=await panel.locator('.chart-fields button,.chart-fields select,.chart-types button').evaluateAll(nodes=>nodes.filter(node=>!node.hasAttribute('disabled')).map(node=>{const rect=node.getBoundingClientRect();return{label:node.getAttribute('aria-label')||node.textContent,width:rect.width,height:rect.height}}));for(const box of controls){expect(box.width,box.label??'').toBeGreaterThanOrEqual(24);expect(box.height,box.label??'').toBeGreaterThanOrEqual(24)}
  expect(await readFile(file,'utf8')).toBe(content)
@@ -127,7 +128,7 @@ test('F2b: en-XA real, tema oscuro y ventana estrecha no recortan el resultado',
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:'en-XA',FREYALAB_USER_DATA:join(folder,'xa')}})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.emulateMedia({reducedMotion:'reduce'});await page.setViewportSize({width:1280,height:720});await page.evaluate(path=>window.freya.openPaths([path]),path);await page.locator('[data-csv-view]').getByRole('button').filter({hasText:'Sümmáry'}).click();const panel=page.locator('.charts-panel');await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
  await page.locator('select').filter({has:page.locator('option[value=dark]')}).selectOption('dark')
- for(const [width,height] of [[1440,900],[1280,720],[800,720]]){await page.setViewportSize({width,height});const box=await panel.locator('.pivot-result').boundingBox();expect(box!.y+box!.height).toBeLessThanOrEqual(height);expect(await panel.evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true);await page.screenshot({path:test.info().outputPath(`state-en-XA-${width}.png`)})}
+ for(const [width,height] of [[1440,900],[1280,720],[800,720]]){await page.setViewportSize({width,height});const box=await panel.locator('.pivot-result').boundingBox();expect(box!.y+box!.height).toBeLessThanOrEqual(height);expect(await panel.evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true);await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath(`state-en-XA-${width}.png`)})}
  expect(await readFile(path,'utf8')).toBe(original)
 })
 test('F2b: contraste de textos y controles medido contra sus fondos reales en ambos temas',async()=>{
