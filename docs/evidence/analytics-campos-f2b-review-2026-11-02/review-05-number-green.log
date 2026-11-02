@@ -1,0 +1,11 @@
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/chart-top.test.ts tests/chart-presentation.test.ts tests/charts.test.ts tests/chart-equivalence.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-campos-zonas-f2b
+
+
+ Test Files  4 passed (4)
+      Tests  107 passed (107)
+   Start at  13:15:45
+   Duration  147ms (transform 44%, tests 33%, import 21%, worker 3%)

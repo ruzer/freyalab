@@ -82,7 +82,7 @@ test('F2b: texto no se suma, mapa solo cuenta y símbolos no se convierten',asyn
 test('F2b: 842 grupos conservan truncado y tabla paginada; Otros solo sobre resultados completos aditivos',async()=>{
  const file=join(folder,'grupos.csv'),content='Grupo,Ventas\n'+Array.from({length:842},(_,i)=>`G${i},${i+1}`).join('\n')+'\n';await writeFile(file,content);await page.evaluate(file=>window.freya.openPaths([file]),file)
  await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();const panel=page.locator('.charts-panel')
- await expect(panel.locator('.pivot-result')).toBeVisible();await expect(panel.locator('.truncated')).toContainText('Mostrando 100 de 842 grupos');await expect(panel.locator('.top-notice')).toContainText('10 mayores');await expect(panel.locator('.top-notice')).not.toContainText('y «Otros»')
+ await expect(panel.locator('.pivot-result')).toBeVisible();await expect(panel.locator('.truncated')).toContainText('Se muestran los primeros 100 de 842 grupos');await expect(panel.locator('.truncated')).not.toContainText('mayores');await expect(panel.locator('.top-notice')).toHaveCount(0)
  await expect(panel.locator('.pivot-result tbody tr')).toHaveCount(5);await panel.getByLabel('Grupos por página',{exact:true}).selectOption('50');await expect(panel.locator('.pivot-result tbody tr')).toHaveCount(50)
  await panel.locator('.pivot-pages').getByRole('button',{name:'Datos siguientes',exact:true}).click();await expect(panel.locator('.pivot-result tbody tr')).toHaveCount(50)
  await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-842-groups.png')});expect(await readFile(file,'utf8')).toBe(content)

@@ -1,0 +1,44 @@
+Running 1 test using 1 worker
+
+(node:23753) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-review.spec.ts:53:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 (19.6s)
+
+
+  1) [csv] › tests/e2e/chart-review.spec.ts:53:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 
+
+    Error: expect(locator).toBeInViewport() failed
+
+    Locator: locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true })
+    Expected: in viewport
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeInViewport" locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true }) with timeout 15000ms
+      - waiting for locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true })
+        19 × locator resolved to <section aria-label="Filtros" class="zone svelte-hqvgw9 wide">…</section>
+           - unexpected value "viewport ratio 0.04838709533214569"
+
+
+      61 |  await expect(fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true})).toBeInViewport({ratio:1})
+      62 |  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})
+    > 63 |  for(const zone of ['Filas','Columnas','Valores','Filtros'])await expect(fields.getByRole('region',{name:zone,exact:true})).toBeInViewport({ratio:1})
+         |                                                                                                                             ^
+      64 | })
+      65 |
+      66 | test('Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario',async()=>{
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-review.spec.ts:63:125
+
+    Error Context: ../freyalab-f2b-evidence/review-zones-red/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/review-zones-red/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/review-zones-red/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-review.spec.ts:53:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720

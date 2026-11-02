@@ -1,0 +1,35 @@
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/chart-top.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-campos-zonas-f2b
+
+ ❯ tests/chart-top.test.ts (14 tests | 1 failed) 31ms
+   × con resultado truncado conserva los cien grupos y su orden, sin Top10 ni Otros 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-top.test.ts > con resultado truncado conserva los cien grupos y su orden, sin Top10 ni Otros
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/chart-top.test.ts:20:86
+     18|  const limited={...data,limited:true,rows:data.rows.slice(0,100)}
+     19|  const result=chartTop(limited,options,[])
+     20|  expect(result.other).toBe(false);expect(result.groups).toBe(842);expe…
+       |                                                                                      ^
+     21|  expect(result.data).toBe(limited);expect(result.data.rows).toHaveLeng…
+     22|  expect(result.data.rows).toEqual(limited.rows)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 13 passed (14)
+   Start at  13:05:09
+   Duration  137ms (tests 47%, transform 30%, import 19%, worker 3%)

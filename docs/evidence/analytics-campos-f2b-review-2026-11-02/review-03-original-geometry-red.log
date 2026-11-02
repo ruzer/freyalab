@@ -1,0 +1,35 @@
+Running 1 test using 1 worker
+
+(node:21413) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-review.spec.ts:43:1 › Revisión108 · motivo con línea propia y sin solapes a1280×720 (4.5s)
+
+
+  1) [csv] › tests/e2e/chart-review.spec.ts:43:1 › Revisión108 · motivo con línea propia y sin solapes a1280×720 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 16
+    Received:    6.3046875
+
+      43 | test('Revisión108 · motivo con línea propia y sin solapes a1280×720',async()=>{
+      44 |  const boxes=await panel().evaluate(node=>Object.fromEntries(['.chart-types','.suggestion','.plot-scroll','.truncated'].map(selector=>{const b=node.querySelector(selector)!.getBoundingClientRect();return[selector,{top:b.top,bottom:b.bottom,height:b.height}]})))
+    > 45 |  expect(boxes['.suggestion'].height).toBeGreaterThanOrEqual(16)
+         |                                      ^
+      46 |  expect(boxes['.suggestion'].top).toBeGreaterThanOrEqual(boxes['.chart-types'].bottom)
+      47 |  expect(boxes['.suggestion'].bottom).toBeLessThanOrEqual(boxes['.plot-scroll'].top)
+      48 |  expect(boxes['.truncated'].bottom).toBeLessThanOrEqual(boxes['.chart-types'].top)
+        at /private/tmp/freyalab-f2b-cierre-consumidores/tests/e2e/chart-review.spec.ts:45:38
+
+    Error Context: ../freyalab-f2b-evidence/review-original-geometry/chart-review-Revisión108-·-0e070-pia-y-sin-solapes-a1280×720-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/review-original-geometry/chart-review-Revisión108-·-0e070-pia-y-sin-solapes-a1280×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/review-original-geometry/chart-review-Revisión108-·-0e070-pia-y-sin-solapes-a1280×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-review.spec.ts:43:1 › Revisión108 · motivo con línea propia y sin solapes a1280×720

@@ -21,7 +21,7 @@ it('distingue un resultado vacío de una vista limitada, sin confundir categorí
 it('preserva huecos en líneas y usa texto seguro en tooltips, sin HTML interpretado',()=>{
  const data={total:3,usable:2,points:3,limited:false,columns:['x','value'],rows:[['1','2'],['2',null],['3','4']]}
  const plot=chartOption(data,{...options,kind:'line'},colors)
- expect(plot.series).toEqual([{type:'line',label:{show:true,position:'top',color:'#222'},connectNulls:false,showSymbol:true,data:[[1,2],[2,null],[3,4]]}])
+ expect(plot.series).toEqual([{type:'line',label:{show:true,position:'top',color:'#222',formatter:expect.any(Function)},connectNulls:false,showSymbol:true,data:[[1,2],[2,null],[3,4]]}])
  expect(plot.tooltip).toMatchObject({renderMode:'richText'})
  expect(()=>chartOption({...data,rows:[['1','NaN']]},{...options,kind:'scatter'},colors)).toThrow('representar')
 })

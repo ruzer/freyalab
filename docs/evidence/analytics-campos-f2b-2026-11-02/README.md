@@ -1,5 +1,7 @@
 # Historia 11 F2b · Campos y zonas
 
+Este registro describe la entrega inicial. La [corrección posterior a la revisión de Claude](../analytics-campos-f2b-review-2026-11-02/README.md) sustituye la presentación Top10 de resultados truncados y documenta el pulido y sus nuevas pruebas.
+
 Fecha: 2026-11-02. PR: [#108, borrador](https://github.com/ruzer/freyalab/pull/108). Base: `c5db752`. Worktree independiente; no se modificó el checkout del propietario.
 
 Implementación consolidada: `00de74c8a253f94977c7c493b0806a83dd958e5c` (incluye la revisión6e9cea6).

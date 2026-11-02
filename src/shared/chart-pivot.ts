@@ -3,7 +3,7 @@ import Decimal from 'decimal.js'
 import {t} from './i18n'
 export function chartTop(data:ChartData,options:ChartOptions,totals:Record<string,string|null|undefined>[]){
  const labels=[...new Set(data.rows.map(row=>row[0]))],groups=data.limited?data.points:labels.length
- if(!['bar','heatmap'].includes(options.kind)||labels.length<=10)return{data,groups,top:false,other:false}
+ if(data.limited||!['bar','heatmap'].includes(options.kind)||labels.length<=10)return{data,groups,top:false,other:false}
  const valueIndex=data.columns.indexOf('value'),splitIndex=data.columns.indexOf(options.kind==='heatmap'?'y':'series')
  const additive=options.kind==='heatmap'||['count','sum'].includes(options.aggregate)
  if(!additive&&splitIndex>=0&&labels.some(label=>!totals.some(row=>row.grand==='2'&&row.x===label)))return{data,groups,top:false,other:false}

@@ -14,10 +14,12 @@ it.each(['average','median','min','max'] as const)('no inventa Otros con %s y us
  const result=chartTop(data,{...options,aggregate},totals)
  expect(result.other).toBe(false);expect(result.data.rows).toHaveLength(10);expect(result.data.rows[0][0]).toBe('G0')
 })
-it('nunca calcula Otros si el motor ha truncado el resultado',()=>{
+it('con resultado truncado conserva los cien grupos y su orden, sin Top10 ni Otros',()=>{
  const limited={...data,limited:true,rows:data.rows.slice(0,100)}
  const result=chartTop(limited,options,[])
- expect(result.other).toBe(false);expect(result.groups).toBe(842);expect(result.data.rows).toHaveLength(10)
+ expect(result.other).toBe(false);expect(result.groups).toBe(842);expect(result.top).toBe(false)
+ expect(result.data).toBe(limited);expect(result.data.rows).toHaveLength(100)
+ expect(result.data.rows).toEqual(limited.rows)
 })
 it.each(['line','scatter','histogram','box'] as const)('no aplica Top10 a %s',kind=>{
  const result=chartTop(data,{...options,kind},[]);expect(result.top).toBe(false);expect(result.data).toBe(data)

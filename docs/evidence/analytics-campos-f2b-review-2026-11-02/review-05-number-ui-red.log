@@ -1,0 +1,44 @@
+Running 1 test using 1 worker
+
+(node:21951) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-review.spec.ts:74:1 › Revisión108 · tabla, total, marcas y eje conservan el formato numérico al cambiar campo e idioma (21.7s)
+
+
+  1) [csv] › tests/e2e/chart-review.spec.ts:74:1 › Revisión108 · tabla, total, marcas y eje conservan el formato numérico al cambiar campo e idioma 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('.charts-panel').locator('.plot svg text').filter({ hasText: /^285,600$/ })
+    Expected: 1
+    Received: 0
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveCount" locator('.charts-panel').locator('.plot svg text').filter({ hasText: /^285,600$/ }) with timeout 15000ms
+      - waiting for locator('.charts-panel').locator('.plot svg text').filter({ hasText: /^285,600$/ })
+        34 × locator resolved to 0 elements
+           - unexpected value "0"
+
+
+      79 |  await filters.getByRole('button',{name:'Aplicar filtros del gráfico',exact:true}).click()
+      80 |  await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('285,600')
+    > 81 |  await expect(panel().locator('.plot svg text').filter({hasText:/^285,600$/})).toHaveCount(1)
+         |                                                                                ^
+      82 |  await expect(panel().locator('.plot svg text').filter({hasText:/^300,000$/})).toHaveCount(1)
+      83 |  for(const language of ['en','es']){
+      84 |   await page.evaluate(language=>window.freya.setLanguage(language as 'es'|'en'),language)
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-review.spec.ts:81:80
+
+    Error Context: ../freyalab-f2b-evidence/review-number-red/chart-review-Revisión108-·-22eca-o-al-cambiar-campo-e-idioma-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/review-number-red/chart-review-Revisión108-·-22eca-o-al-cambiar-campo-e-idioma-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/review-number-red/chart-review-Revisión108-·-22eca-o-al-cambiar-campo-e-idioma-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-review.spec.ts:74:1 › Revisión108 · tabla, total, marcas y eje conservan el formato numérico al cambiar campo e idioma

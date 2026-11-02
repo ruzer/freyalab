@@ -45,3 +45,31 @@ it.each([false,true])('los números del mapa de calor contrastan con todas sus c
   expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05),fill).toBeGreaterThanOrEqual(4.5)
  }
 })
+
+it.each(['es','en','en-XA'] as const)('los ejes numéricos usan separadores del idioma de interfaz: %s',language=>{
+ setLanguage(language)
+ const data:ChartData={total:1,usable:1,points:1,limited:false,columns:['x','value'],rows:[['Cliente','285600']]}
+ const plot=chartOption(data,options,colors)
+ const axis=plot.yAxis as {axisLabel:{formatter:(value:number,index:number)=>string}}
+ expect(axis.axisLabel.formatter(1146383,0)).toBe('1,146,383')
+ expect(axis.axisLabel.formatter(285600.5,0)).toBe('285,600.5')
+})
+it.each(['bar','line','histogram'] as const)('las etiquetas de %s usan el mismo formato numérico que el eje',kind=>{
+ const data:ChartData={total:1,usable:1,points:1,limited:false,columns:['x','value','upper'],rows:[['1000','285600','2000']]}
+ const plot=chartOption(data,{...options,kind},colors)
+ const [series]=plot.series as {label:{formatter:(params:{value:number|number[]})=>string}}[]
+ expect(series.label.formatter({value:kind==='line'?[1000,285600]:285600})).toBe('285,600')
+})
+it('los dos ejes de dispersión formatean números sin cambiar las coordenadas',()=>{
+ const data:ChartData={total:1,usable:1,points:1,limited:false,columns:['x','value'],rows:[['1200','285600']]}
+ const plot=chartOption(data,{...options,kind:'scatter'},colors)
+ for(const axis of [plot.xAxis,plot.yAxis] as {axisLabel:{formatter:(value:number,index:number)=>string}}[])expect(axis.axisLabel.formatter(285600,0)).toBe('285,600')
+ expect(plot.series).toMatchObject([{data:[[1200,285600]]}])
+})
+it('las etiquetas numéricas del mapa no formatean sus identificadores de categoría',()=>{
+ const data:ChartData={total:1200,usable:1200,points:1,limited:false,columns:['x','value','y'],rows:[['00123','1200','90071992547409931234']]}
+ const plot=chartOption(data,{...options,kind:'heatmap'},colors)
+ const [series]=plot.series as {label:{formatter:(params:{value:number[]})=>string}}[]
+ expect(series.label.formatter({value:[0,0,1200]})).toBe('1,200')
+ expect(plot.xAxis).toMatchObject({data:['00123']});expect(plot.yAxis).toMatchObject({data:['90071992547409931234']})
+})
