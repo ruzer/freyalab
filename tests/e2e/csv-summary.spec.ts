@@ -76,7 +76,7 @@ test('F2a: estados vacío, error numérico, truncado y ventana estrecha con capt
  await expect(page.getByText('Elige un campo para empezar en Más opciones.',{exact:true})).toBeVisible();await page.screenshot({path:test.info().outputPath('state-empty.png')})
  await page.getByRole('tab',{name:'ventas.csv',exact:true}).click();panel=await summary()
  await panel.locator('.more-options>summary').click();await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum');await panel.getByLabel('Columna Y del gráfico').selectOption('3')
- await expect(panel.getByRole('status')).toContainText('No hay valores numéricos utilizables');await page.screenshot({path:test.info().outputPath('state-error.png')})
+ await expect(panel.getByRole('status')).toContainText('No hay valores numéricos utilizables');await page.screenshot({path:test.info().outputPath('state-error.png')});await page.getByRole('button',{name:'Cerrar aviso',exact:true}).click()
  const many=join(folder,'grupos.csv');await writeFile(many,'Grupo,Valor\n'+Array.from({length:150},(_,i)=>`G${i},${i}`).join('\n')+'\n');await page.evaluate(file=>window.freya.openPaths([file]),many)
  panel=await summary();await expect(panel.getByRole('status')).toContainText('Mostrando 100 de 150 grupos');await page.screenshot({path:test.info().outputPath('state-truncated.png')})
  await page.setViewportSize({width:800,height:720});await expect(page.locator('.sidebar')).toBeHidden();await expect(page.getByRole('button',{name:'Volver a la tabla',exact:true})).toHaveCount(0)
@@ -158,4 +158,28 @@ test('F2a: desde Texto con cambios, Cancelar conserva el borrador y descartar ab
  await editor.press('ControlOrMeta+End');await page.keyboard.insertText('Extra,Web,50,0%\n');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(true)
  await mode.getByRole('button',{name:'Resumen y gráfico',exact:true}).click();let dialog=page.getByRole('dialog');await expect(dialog.getByRole('button',{name:'Guardar y cambiar',exact:true})).toBeVisible();await dialog.getByRole('button',{name:'Cancelar',exact:true}).click();await expect(editor).toContainText('Extra,Web,50,0%');await expect(mode.getByRole('button',{name:'Texto',exact:true})).toHaveAttribute('aria-pressed','true')
  await mode.getByRole('button',{name:'Resumen y gráfico',exact:true}).click();dialog=page.getByRole('dialog');await dialog.getByRole('button',{name:'Descartar cambios y cambiar',exact:true}).click();await expect(mode.getByRole('button',{name:'Resumen y gráfico',exact:true})).toHaveAttribute('aria-pressed','true');await expect(page.locator('.charts-panel').getByRole('status')).toContainText('Gráfico listo');expect(await readFile(path,'utf8')).toBe(original)
+})
+
+test('F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor',async()=>{
+ const file=join(folder,'series.csv');await writeFile(file,'Paso,Valor,Serie\n0,10,A\n1,20,A\n0,15,B\n1,25,B\n0,10,A\n');await page.evaluate(file=>window.freya.openPaths([file]),file)
+ const panel=await summary();await panel.locator('.more-options>summary').click();await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum');await panel.getByLabel('Columna Y del gráfico').selectOption('1');await panel.getByLabel('Series del gráfico').selectOption('2');await expect(panel.getByRole('status')).toContainText('Gráfico listo');await panel.locator('.more-options>summary').click()
+ await panel.locator('.chart-types').getByRole('button',{name:'Líneas',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Gráfico listo');await expect(panel.locator('.plot svg [stroke-dasharray]').first()).toBeAttached();await page.screenshot({path:test.info().outputPath('state-line-patterns.png')})
+ await panel.locator('.chart-types').getByRole('button',{name:'Mapa de calor',exact:true}).click();await panel.locator('.more-options>summary').click();await panel.getByLabel('Columna Y del gráfico').selectOption('2');await expect(panel.getByRole('status')).toContainText('Gráfico listo');await panel.locator('.more-options>summary').click()
+ for(const theme of ['light','dark']){
+  await page.getByLabel('Tema',{exact:true}).selectOption(theme)
+  const cells=await panel.locator('.plot').evaluate(root=>{
+   const shapes=[...root.querySelectorAll('svg path,svg rect')].map(node=>({fill:getComputedStyle(node).fill,box:node.getBoundingClientRect()}))
+   return [...root.querySelectorAll('svg text')].flatMap(node=>{
+    const color=getComputedStyle(node).fill;if(color!=='rgb(0, 0, 0)'||!/^\d+$/.test(node.textContent??''))return[]
+    const box=node.getBoundingClientRect(),x=box.x+box.width/2,y=box.y+box.height/2,cell=shapes.filter(shape=>shape.box.width>10&&shape.box.height>10&&shape.fill.startsWith('rgb')&&x>=shape.box.x&&x<=shape.box.right&&y>=shape.box.y&&y<=shape.box.bottom).sort((a,b)=>a.box.width*a.box.height-b.box.width*b.box.height)[0]
+    return cell?[{text:color,fill:cell.fill}]:[]
+   })
+  })
+  expect(cells).toHaveLength(4)
+  const luminance=(rgb:string)=>{const [r,g,b]=rgb.match(/[\d.]+/g)!.slice(0,3).map(Number).map(value=>{const n=value/255;return n<=.04045?n/12.92:((n+.055)/1.055)**2.4});return .2126*r+.7152*g+.0722*b}
+  for(const cell of cells){const a=luminance(cell.text),b=luminance(cell.fill);expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05)).toBeGreaterThanOrEqual(4.5)}
+  const axis=await panel.locator('.plot svg text').filter({hasText:/^Paso$/}).boundingBox(),ramp=await panel.locator('.plot svg [fill^="url("]').evaluateAll(nodes=>nodes.map(node=>{const b=node.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height}}).find(box=>box.width>=100&&box.height>=10&&box.height<=40))
+  expect(axis).not.toBeNull();expect(ramp).toBeDefined();expect(axis!.y+axis!.height).toBeLessThanOrEqual(ramp!.y-2)
+  await page.screenshot({path:test.info().outputPath(`state-heatmap-${theme}.png`)})
+ }
 })

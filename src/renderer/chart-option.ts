@@ -14,6 +14,7 @@ export function chartSeries(data:ChartData){
 export function chartOption(data:ChartData,options:ChartOptions,colors:{text:string;background:string;accent:string;dark?:boolean;compact?:boolean},headers:string[]=[],scope='Documento completo',hiddenSeries:string[]=[]):EChartsOption{
  const compact=colors.compact??false
  const palette=[colors.accent,...(colors.dark?['#efa657','#a3c66d','#ff8a91','#6fc6de','#65cba8','#fcb07a','#c294ee']:['#a05a00','#367220','#bc3447','#007f99','#00745c','#ac4c00','#8250b5'])]
+ const symbols=['circle','rect','triangle','diamond','pin','arrow','roundRect','emptyCircle'] as const
  const direct={show:data.rows.length<=20,position:'top' as const,color:colors.text}
  const labels={color:colors.text,formatter:short},axisLine={lineStyle:{color:colors.text}},splitLine={lineStyle:{color:colors.text,opacity:0.15}}
  const axes=chartLabels(headers,options),axisNames={nameLocation:'middle' as const,nameGap:compact?38:50,nameTextStyle:{color:colors.text,fontSize:11,overflow:'truncate' as const,width:250}},xName={...axisNames,name:axes.x},yName={...axisNames,name:axes.y,nameGap:60}
@@ -27,11 +28,11 @@ export function chartOption(data:ChartData,options:ChartOptions,colors:{text:str
  const groups=chartSeries(data)
  if(data.columns.includes('series')){
   const index=data.columns.indexOf('series'),xs=[...new Set(rows.map(row=>row[0]))]
-  return{...common,color:palette,legend:{type:'scroll',top:compact?0:48,left:85,right:40,textStyle:{color:colors.text},formatter:short,data:groups.map(group=>group.name),selected:Object.fromEntries(groups.map(group=>[group.name,!hiddenSeries.includes(group.name)]))},grid:{left:85,right:40,top:compact?30:90,bottom:compact?60:85},...(options.kind==='bar'||temporal?{xAxis:{...xName,type:'category',data:temporal?xs.map(label):categories(xs),axisLabel:{...labels,rotate:25},axisLine}}:{xAxis:{...xName,type:'value',scale:true,axisLabel:labels,axisLine,splitLine},yAxis:{...yName,type:'value',scale:true,axisLabel:labels,splitLine}}),series:groups.map(group=>{
+  return{...common,color:palette,legend:{type:'scroll',top:compact?0:48,left:85,right:40,textStyle:{color:colors.text},formatter:short,data:groups.map(group=>group.name),selected:Object.fromEntries(groups.map(group=>[group.name,!hiddenSeries.includes(group.name)]))},grid:{left:85,right:40,top:compact?30:90,bottom:compact?60:85},...(options.kind==='bar'||temporal?{xAxis:{...xName,type:'category',data:temporal?xs.map(label):categories(xs),axisLabel:{...labels,rotate:25},axisLine}}:{xAxis:{...xName,type:'value',scale:true,axisLabel:labels,axisLine,splitLine},yAxis:{...yName,type:'value',scale:true,axisLabel:labels,splitLine}}),series:groups.map((group,groupIndex)=>{
    const values=rows.filter(row=>row[index]===group.value)
    if(options.kind==='bar')return{name:group.name,type:'bar' as const,label:direct,data:xs.map(x=>number(values.find(row=>row[0]===x)?.[1]??null))}
    const data=temporal?xs.map(x=>number(values.find(row=>row[0]===x)?.[1]??null)):values.map(row=>[number(row[0]),number(row[1])])
-   return options.kind==='line'?{name:group.name,type:'line' as const,label:direct,connectNulls:false,showSymbol:values.length<100,data}:{name:group.name,type:'scatter' as const,symbolSize:7,data}
+   return options.kind==='line'?{name:group.name,type:'line' as const,lineStyle:{type:groupIndex===0?'solid' as const:[4+groupIndex*2,4]},symbol:symbols[groupIndex],label:direct,connectNulls:false,showSymbol:values.length<100,data}:{name:group.name,type:'scatter' as const,symbol:symbols[groupIndex],symbolSize:7,data}
   })}
  }
  if(temporal&&options.kind==='line')return{...common,series:[{type:'line',label:direct,connectNulls:false,showSymbol:rows.length<100,data:rows.map(row=>number(row[1]))}]}
@@ -39,8 +40,9 @@ export function chartOption(data:ChartData,options:ChartOptions,colors:{text:str
  if(options.kind==='bar')return{...common,series:[{type:'bar',label:direct,data:rows.map(r=>number(r[1]))}]}
  if(options.kind==='line'||options.kind==='scatter')return{...common,xAxis:{...xName,type:'value',scale:true,axisLabel:labels,axisLine,splitLine},yAxis:{...yName,type:'value',scale:true,axisLabel:labels,splitLine},series:options.kind==='line'?[{type:'line',label:direct,connectNulls:false,showSymbol:rows.length<100,data:rows.map(r=>[number(r[0]),number(r[1])])}]:[{type:'scatter',symbolSize:7,data:rows.map(r=>[number(r[0]),number(r[1])])}]}
  if(options.kind==='heatmap'){
+  // La escala de celdas es clara en ambos temas; el texto contrasta con la celda, no con el panel.
   const xs=[...new Set(rows.map(r=>r[0]))],ys=[...new Set(rows.map(r=>r[2]))],values=rows.map(r=>number(r[1])!)
-  return{...common,xAxis:{...xName,type:'category',data:categories(xs),axisLabel:{...labels,rotate:25},axisLine},yAxis:{...yName,type:'category',data:categories(ys),axisLabel:labels,axisLine},visualMap:{min:Math.min(0,...values),max:Math.max(1,...values),textStyle:{color:colors.text},calculable:false,orient:'horizontal',left:'center',bottom:0,inRange:{color:['#dfe8f7',colors.accent]}},series:[{type:'heatmap',data:rows.map(r=>[xs.indexOf(r[0]),ys.indexOf(r[2]),number(r[1])]),label:{show:rows.length<=50,color:colors.text}}]}
+  return{...common,grid:{left:85,right:40,top:compact?15:65,bottom:compact?100:120},xAxis:{...xName,type:'category',data:categories(xs),axisLabel:{...labels,rotate:25},axisLine},yAxis:{...yName,type:'category',data:categories(ys),axisLabel:labels,axisLine},visualMap:{min:Math.min(0,...values),max:Math.max(1,...values),textStyle:{color:colors.text},calculable:false,orient:'horizontal',left:'center',bottom:0,inRange:{color:['#dfe8f7',colors.accent]}},series:[{type:'heatmap',data:rows.map(r=>[xs.indexOf(r[0]),ys.indexOf(r[2]),number(r[1])]),label:{show:rows.length<=50,color:'#000000'}}]}
  }
  const outliers:number[][]=[]
  rows.forEach((row,index)=>{const values=JSON.parse(row[8]??'[]') as unknown;if(!Array.isArray(values)||values.length>20||values.some(n=>typeof n!=='number'||!Number.isFinite(n)))throw new Error('Atípicos no válidos.');for(const n of values)outliers.push([index,n])})
