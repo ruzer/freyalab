@@ -1,0 +1,23 @@
+
+Running 12 tests using 1 worker
+
+(node:76041) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/charts.spec.ts:95:1 › constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones (14.7s)
+  ✓   2 [csv] › tests/e2e/charts.spec.ts:132:1 › ayuda y selección de valores impiden cálculos incompatibles y explican columnas sin números (10.4s)
+  ✓   3 [csv] › tests/e2e/charts.spec.ts:254:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV (5.0s)
+  ✓   4 [csv] › tests/e2e/csv-summary.spec.ts:187:1 › F2a: alternar Tabla y Resumen es presentación, sin reinterpretar el CSV por IPC (2.5s)
+(node:76116) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   5 [csv] › tests/e2e/charts.spec.ts:95:1 › constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones (14.7s)
+  ✓   6 [csv] › tests/e2e/charts.spec.ts:132:1 › ayuda y selección de valores impiden cálculos incompatibles y explican columnas sin números (10.5s)
+  ✓   7 [csv] › tests/e2e/charts.spec.ts:254:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV (5.0s)
+  ✓   8 [csv] › tests/e2e/csv-summary.spec.ts:187:1 › F2a: alternar Tabla y Resumen es presentación, sin reinterpretar el CSV por IPC (2.5s)
+(node:76198) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [csv] › tests/e2e/charts.spec.ts:95:1 › constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones (14.7s)
+  ✓  10 [csv] › tests/e2e/charts.spec.ts:132:1 › ayuda y selección de valores impiden cálculos incompatibles y explican columnas sin números (10.5s)
+  ✓  11 [csv] › tests/e2e/charts.spec.ts:254:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV (5.0s)
+  ✓  12 [csv] › tests/e2e/csv-summary.spec.ts:187:1 › F2a: alternar Tabla y Resumen es presentación, sin reinterpretar el CSV por IPC (2.5s)
+
+  12 passed (1.6m)

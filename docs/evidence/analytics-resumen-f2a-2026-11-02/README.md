@@ -1,6 +1,6 @@
 # Historia 11 · F2a · Resumen y gráfico
 
-Fecha de comprobación: 2026-11-02. Rama aislada `codex/analitica-resumen-grafico-f2a-entrega`; fuente final `b5c2ad2f1048fdc19a51df6e555f3515df4c1db8`, main documental `695d86f651bd5f9c6cca7f015813e0b2ca4616ba` y base de producto `05212fdb86befd40f24132e8ebc7ce7e9b4b27fe`. No se modificó el checkout del propietario, el CSV original, el guardado, el IPC ni las dependencias.
+Fecha de comprobación: 2026-11-02. Rama aislada `codex/analitica-resumen-grafico-f2a-entrega`; fuente final `cc716786feab20de5f29079f8240b92f58290b3a`, main documental `695d86f651bd5f9c6cca7f015813e0b2ca4616ba` y base de producto `05212fdb86befd40f24132e8ebc7ce7e9b4b27fe`. No se modificó el checkout del propietario, el CSV original, el guardado, los contratos IPC ni las dependencias.
 
 **Evidencia al congelar la fuente:** este documento conserva mediciones, capturas y salidas locales reales, incluidos los fallos encontrados. El informe final del PR de continuación registra el resultado de la repetición integral y la CI por head, con sus enlaces; no se infieren del pase enfocado. No se cambia un commit solo para actualizar el estado de la CI.
 
@@ -54,16 +54,20 @@ Equipo: Apple M2 Max, 32 GiB, darwin arm64; Node 24.22.1, Electron 44.9.2, Pando
 
 | Comando | Resultado real | Registro |
 | --- | --- | --- |
-| `npm run check` | 0 errores, 0 avisos; salida 0 | `logs/verified-check.log` |
-| `FREYALAB_PANDOC_TEST_PATH=/opt/homebrew/bin/pandoc npm test` | 119 archivos, 2.350 pruebas aprobadas; salida 0 | `logs/verified-unit.log` |
+| `npm run check` | 0 errores, 0 avisos; salida 0 | `logs/head-check.log` |
+| `FREYALAB_PANDOC_TEST_PATH=/opt/homebrew/bin/pandoc npm test` | 119 archivos, 2.353 pruebas aprobadas; salida 0 | `logs/head-unit.log` |
 | E2E enfocadas finales anteriores al cierre | 12/12, sin reintentos, 1,2 min; luego se añadieron guardia por bytes/borrador y límite de totales | `logs/final-focused-e2e.log` |
 | Calidad visual/interacción enfocada intermedia | 2/3; contraste real y borrador pasan; la guardia funcionaba pero el test esperaba una frase incorrecta en la ayuda. Expectativa corregida conservando su alcance. | `logs/quality-e2e.log` |
 | Primera suite E2E completa, cero reintentos, fuente 18cfc06 | 526 aprobadas y 1 fallo de cierre del dock; 17,6 min; salida 1. Se conserva el fallo, no se declara verde. | `logs/full-e2e.log` |
 | E2E tras reparar la navegación, cero reintentos | 36/36, 1,4 min: incluye compact-toolbar **sin editar**, resumen, volver/expandir/redimensionar; además comprobación de Texto con borrador | `logs/12-navigation-green.log` |
-| Repetición integral de cierre (529 casos) | Se ejecuta con la fuente congelada; resultado real, head y CI se registran en el informe del PR, no se deducen de las 36 enfocadas | Informe del PR y artefactos de CI |
-| `npm run build` | salida 0; no equivale a probar instaladores | `logs/verified-build.log` |
+| Repetición integral en b211893, cero reintentos | **529/529**, 16,6 min, salida 0 | `logs/verified-full-e2e.log` |
+| Gráficos tras accesibilidad, cero reintentos | **37/37**, 3,3 min: controles, cálculos, exportaciones, series/fechas, estados y AA | `logs/15-series-real-green.log` |
+| Eje/escala separados y capturas de error aisladas, cero reintentos | **3/3**, 29,9 s; seis SVG/exportaciones, estados y AA | `logs/17-heatmap-axis-green.log` |
+| Navegación y casos del paquete Windows repetidos 3 veces, cero reintentos | **12/12**, 1,6 min; sin conversión al volver de Resumen a Tabla y esperas por estado real | `logs/18-presentation-ipc-green-final.log` |
+| Cierre integral de la fuente final (531 casos) | Se ejecuta con el nuevo head congelado; resultado real y CI final en el informe del PR | Informe del PR y artefactos de CI |
+| `npm run build` | salida 0; no equivale a probar instaladores | `logs/head-build.log` |
 
-Las últimas suites check/unitarias/build corresponden al contenido final de b5c2ad2. Los cherry-pick de los dos commits propios a main 695d86f no alteraron src ni tests respecto a 3cd9b20 (comparación Git sin diferencias). Los tiempos locales no se presentan como garantías de otras máquinas ni como CI.
+Las últimas suites check/unitarias/build corresponden al contenido final de cc71678. b211893 ya completó la suite integral y las tres CI; se conserva como historial, no como calificación de la última corrección. La nueva diferencia es mínima y está delimitada abajo. Los tiempos locales no se presentan como garantías de otras máquinas ni como CI.
 
 ## Calibración de la vista previa
 
@@ -119,7 +123,7 @@ Antes: capturas de main 05212fd, previamente tomadas para #105 con los mismos oc
 | Inglés | [EN](state-en.png) |
 | Pseudolocalización real | [en-XA](state-en-XA.png): relanzamiento con perfil de idioma, no evento simulado |
 
-Los tests comprueban la altura del gráfico y la posición inferior del resumen dentro de la ventana, scroll inicial cero, modo estrecho de 800×720 sin barra lateral ni tira vertical, botones nativos, Enter/disclosures, aria-pressed y aria-live. El test visual mide cada texto SVG contra el fondo CSS real (≥4,5:1), presencia de patrones y ticks redondos; ocho colores por tema se validan unitariamente (≥3:1). No sustituye una sesión con lector de pantalla.
+Los tests comprueban la altura del gráfico y la posición inferior del resumen dentro de la ventana, scroll inicial cero, modo estrecho de 800×720 sin barra lateral ni tira vertical, botones nativos, Enter/disclosures, aria-pressed y aria-live. El test visual mide cada texto SVG contra el fondo CSS real (≥4,5:1), presencia de patrones y ticks redondos; ocho colores por tema se validan unitariamente (≥3:1). No sustituye una sesión con lector de pantalla. Las líneas además tienen ocho trazos distintos y la dispersión ocho símbolos; los números del mapa de calor se contrastan contra las celdas, no contra el panel.
 
 ## Límites y lo no verificado
 
@@ -134,3 +138,21 @@ Los tests comprueban la altura del gráfico y la posición inferior del resumen 
 ## Cierre por head (fuera de este snapshot)
 
 El PR de continuación enlaza #106, #105, esta evidencia y la salida real de la repetición completa. La CI actual ejecuta Ubuntu 24.04, Windows 2025 y macOS 15 ARM en PR, con unitarias, E2E fast + perf/solo y la app empaquetada. Intel solo se ejecuta en main/nocturno por la configuración ya aprobada; su ausencia no equivale a compatibilidad Intel verificada. No se modificó ningún workflow, plazo ni reintento. Antes de integrar, consultar el resultado del **head exacto** en el informe del PR; un verde anterior no se transfiere.
+
+## Cierre de accesibilidad y navegación (antes del head final)
+
+Se mantuvo b211893 intacto durante su CI, desarrollando estas correcciones en otro worktree propio. Sin nueva dependencia ni nueva API de producto.
+
+- **Series sin depender del color.** ECharts nativo: `lineStyle.type` distinto por serie (también con símbolos ocultos en líneas largas), `symbol` distinto en dispersión; barras conservan `aria.decal`. Prueba roja: ocho estilos indistinguibles; el contraste de celdas en oscuro era 1,13:1. Verde: 85/85 de presentación, gráficos y equivalencia. Se comprueban 33 puntos de la escala en ambos temas y las celdas SVG reales.
+- **Escala del mapa de calor sin cubrir el nombre del eje.** El test geométrico falló con el texto hasta 512,62 px y la escala desde 487,5 px; solo se amplía el margen interno de ECharts. Verde con ambos temas, sin alterar la altura de panel ni los valores. [Líneas con trazos](state-line-patterns.png), [mapa claro](state-heatmap-light.png), [mapa oscuro](state-heatmap-dark.png).
+- **Capturas independientes.** Después de capturar el error se cierra su aviso global con el botón existente antes de abrir el siguiente archivo. No se alteró la política de avisos ni se ocultó el mensaje del caso de error.
+- **Navegación sin conversión innecesaria.** Al volver de Resumen a Tabla, el botón antiguo llamaba `csvView` aun estando ya en el modelo tabular. Su respuesta tardía podía deshacer una selección posterior de Resumen. La prueba observa el manejador IPC real (patrón existente de updates.spec.ts): rojo, 1 conversión; verde, 0, conservando documentos y archivo. App cambia una línea y mantiene la conversión/confirmación real desde Texto.
+- **Esperas de pruebas por estado.** El ayudante ahora espera la pestaña de documento activa y Resumen visible; tras renombrar/deshacer, espera el encabezado/opción restaurada antes de abrir Más opciones. No se subieron plazos/reintentos ni se quitaron aserciones numéricas/de preservación. Los cuatro recorridos pasan tres veces consecutivas, sin retry.
+
+Salidas: `14-series-contrast-red.log` → `14-series-contrast-green-final.log`; `15-series-real-red.log` → `15-series-real-green.log`; `17-heatmap-axis-red.log` → `17-heatmap-axis-green.log`; `18-presentation-ipc-red.log` → `18-presentation-ipc-green-final.log` (todos en logs/). Se conservan dos intentos intermedios fallidos: uno detectó el uso accidental del índice de serie como índice de columna y otro intentó esperar encabezados de una grilla virtualizada oculta. Se corrigieron; no se presentan como verdes.
+
+## CI histórica de b211893 (no se transfiere al head final)
+
+[Run 41401809916](https://github.com/ruzer/freyalab/actions/runs/41401809916): Ubuntu, Windows y macOS ARM concluyeron success, incluido paquete. **Windows tuvo tres casos flaky del paquete**, que pasaron al retry #1; no se declara una ejecución limpia. Sus trazas/estados motivaron las correcciones de arriba. Extracto real: `logs/windows-packaged-b211893-flaky.log`. Ubuntu/macOS no mostraron flaky. Se dejaron intactos plazos, reintentos y workflows.
+
+Las omisiones ambientales históricas no se atribuyen a F2a: 9 unitarias de Pandoc real sin Pandoc en los ejecutores (13 en Windows al incluir 4 pruebas de archivos no disponibles), 7 E2E fast y 1 del paquete según plataforma; se conserva la prueba con defecto esperado SEG-S2e. Localmente se aportó Pandoc 3.12.1: las 2.353 unitarias pasan, sin omisiones. El informe final del PR detalla nuevamente resultados y omisiones del SHA definitivo.

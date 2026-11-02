@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-resumen-f2a-a11y
+
+
+ Test Files  3 passed (3)
+      Tests  85 passed (85)
+   Start at  01:04:24
+   Duration  123ms (transform 44%, tests 28%, import 24%, worker 4%)
+

@@ -1,0 +1,36 @@
+
+Running 1 test using 1 worker
+
+(node:75479) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/csv-summary.spec.ts:187:1 › F2a: alternar Tabla y Resumen es presentación, sin reinterpretar el CSV por IPC (2.9s)
+
+
+  1) [csv] › tests/e2e/csv-summary.spec.ts:187:1 › F2a: alternar Tabla y Resumen es presentación, sin reinterpretar el CSV por IPC 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 1
+
+      197 |   await page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true}).click();await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()
+      198 |   await page.evaluate(()=>window.freya.documents())
+    > 199 |   expect(await app.evaluate(()=>(globalThis as typeof globalThis&{__csvPresentation?:{calls:number}}).__csvPresentation?.calls)).toBe(0)
+          |                                                                                                                                  ^
+      200 |   await summary();expect(await page.evaluate(()=>window.freya.documents())).toEqual(before);expect(await readFile(path,'utf8')).toBe(original)
+      201 |  }finally{await app.evaluate(()=>(globalThis as typeof globalThis&{__csvPresentation?:{restore:()=>void}}).__csvPresentation?.restore())}
+      202 | })
+        at /private/tmp/freyalab-resumen-f2a-a11y/tests/e2e/csv-summary.spec.ts:199:130
+
+    Error Context: ../freyalab-resumen-f2a-evidence/presentation-red-results/csv-summary-F2a-alternar-T-320d2-einterpretar-el-CSV-por-IPC-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-resumen-f2a-evidence/presentation-red-results/csv-summary-F2a-alternar-T-320d2-einterpretar-el-CSV-por-IPC-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-resumen-f2a-evidence/presentation-red-results/csv-summary-F2a-alternar-T-320d2-einterpretar-el-CSV-por-IPC-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/csv-summary.spec.ts:187:1 › F2a: alternar Tabla y Resumen es presentación, sin reinterpretar el CSV por IPC 

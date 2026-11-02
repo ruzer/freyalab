@@ -1,0 +1,36 @@
+
+Running 1 test using 1 worker
+
+(node:74431) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/csv-summary.spec.ts:163:1 › F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor (8.2s)
+
+
+  1) [csv] › tests/e2e/csv-summary.spec.ts:163:1 › F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 485.5
+    Received:    512.6209716796875
+
+      180 |   for(const cell of cells){const a=luminance(cell.text),b=luminance(cell.fill);expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05)).toBeGreaterThanOrEqual(4.5)}
+      181 |   const axis=await panel.locator('.plot svg text').filter({hasText:/^Paso$/}).boundingBox(),ramp=await panel.locator('.plot svg [fill^="url("]').evaluateAll(nodes=>nodes.map(node=>{const b=node.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height}}).find(box=>box.width>=100&&box.height>=10&&box.height<=40))
+    > 182 |   expect(axis).not.toBeNull();expect(ramp).toBeDefined();expect(axis!.y+axis!.height).toBeLessThanOrEqual(ramp!.y-2)
+          |                                                                                       ^
+      183 |   await page.screenshot({path:test.info().outputPath(`state-heatmap-${theme}.png`)})
+      184 |  }
+      185 | })
+        at /private/tmp/freyalab-resumen-f2a-a11y/tests/e2e/csv-summary.spec.ts:182:87
+
+    Error Context: ../freyalab-resumen-f2a-evidence/legend-red-results/csv-summary-F2a-series-sin-37c15-as-celdas-del-mapa-de-calor-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-resumen-f2a-evidence/legend-red-results/csv-summary-F2a-series-sin-37c15-as-celdas-del-mapa-de-calor-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-resumen-f2a-evidence/legend-red-results/csv-summary-F2a-series-sin-37c15-as-celdas-del-mapa-de-calor-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/csv-summary.spec.ts:163:1 › F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor 
