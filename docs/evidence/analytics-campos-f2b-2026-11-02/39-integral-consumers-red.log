@@ -1,0 +1,151 @@
+SHA 4eb30a244d4a44c353d90f7597461c4e7fa08393
+npm run test:e2e -- --retries=0
+Interrumpida con SIGINT tras identificar cinco fallos deterministas. Salida 130.
+Extracto literal de los errores y resumen; log integral conservado en recovery.
+
+  1) [shell] › tests/e2e/ui.spec.ts:206:1 › estadísticas CSV: columnas, alcance completo, datos pendientes, temas y teclado 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('region', { name: 'Estadísticas por columna', exact: true }).getByRole('button', { name: 'Estadísticas y SQL', exact: true })
+
+
+      219 |  await expect(panel).toContainText('incluye las filas ocultas')
+      220 |  await page.getByLabel('Columnas para estadísticas',{exact:true}).selectOption('selected')
+    > 221 |  await panel.getByRole('button',{name:'Estadísticas y SQL',exact:true}).click()
+          |                                                                         ^
+      222 |  await expect(panel.getByRole('status')).toHaveText('Análisis completo.')
+      223 |  await expect(panel.locator('tbody tr')).toHaveCount(1)
+      224 |  expect((await panel.locator('tbody tr').first().locator('th,td').allTextContents()).slice(0,9)).toEqual(['2. Valor','3','1','3','2','6','3','2','4'])
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/ui.spec.ts:221:73
+
+    Error Context: ../freyalab-f2b-evidence/integral/ui-estadísticas-CSV-column-ef462--pendientes-temas-y-teclado-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/integral/ui-estadísticas-CSV-column-ef462--pendientes-temas-y-teclado-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/integral/ui-estadísticas-CSV-column-ef462--pendientes-temas-y-teclado-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [shell] › tests/e2e/ui.spec.ts:245:1 › estadísticas CSV: cancelar descarta respuestas tardías y permite volver a analizar 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('region', { name: 'Estadísticas por columna', exact: true }).getByRole('button', { name: 'Estadísticas y SQL', exact: true })
+
+
+      257 |  await expect(panel.getByRole('status')).toHaveText('Análisis cancelado.')
+      258 |  await expect(panel.locator('tbody tr')).toHaveCount(0)
+    > 259 |  await panel.getByRole('button',{name:'Estadísticas y SQL',exact:true}).click()
+          |                                                                         ^
+      260 |  await expect(panel.getByRole('status')).toHaveText('Análisis completo.')
+      261 |  expect(await Promise.all((await panel.locator('tbody tr').all()).map(async row=>(await row.locator('th,td').allTextContents()).slice(0,9)))).toEqual([['1. A','2','0','2','2','4','2','1','3'],['2. B','2','0','2','2','6','3','2','4']])
+      262 |  expect(await readFile(path,'utf8')).toBe('A,B\n1,2\n3,4\n')
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/ui.spec.ts:259:73
+
+    Error Context: ../freyalab-f2b-evidence/integral/ui-estadísticas-CSV-cancel-298ac-y-permite-volver-a-analizar-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/integral/ui-estadísticas-CSV-cancel-298ac-y-permite-volver-a-analizar-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/integral/ui-estadísticas-CSV-cancel-298ac-y-permite-volver-a-analizar-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [shell] › tests/e2e/ui.spec.ts:265:1 › estadísticas CSV: muestra rotulada e IPC inválido rechazado @perf 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('region', { name: 'Estadísticas por columna', exact: true }).getByRole('button', { name: 'Estadísticas y SQL', exact: true })
+
+
+      270 |  const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true})
+      271 |  await expect(panel).toContainText('Solo muestra: los recuentos no describen el archivo completo.')
+    > 272 |  await panel.getByRole('button',{name:'Estadísticas y SQL',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Análisis completo.')
+          |                                                                         ^
+      273 |  expect((await panel.locator('tbody tr').nth(1).locator('th,td').allTextContents()).slice(0,9)).toEqual(['2. B','200','0','1','200','400','2','2','2'])
+      274 |  const rejected=await page.evaluate(async id=>{try{await Reflect.apply(window.freya.stats,window.freya,[id,'all',[0]]);return false}catch{return true}},doc.id)
+      275 |  expect(rejected).toBe(true)
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/ui.spec.ts:272:73
+
+    Error Context: ../freyalab-f2b-evidence/integral/ui-estadísticas-CSV-muestr-57f2b-da-e-IPC-inválido-rechazado-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/integral/ui-estadísticas-CSV-muestr-57f2b-da-e-IPC-inválido-rechazado-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/integral/ui-estadísticas-CSV-muestr-57f2b-da-e-IPC-inválido-rechazado-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [shell] › tests/e2e/ui.spec.ts:279:1 › estadísticas CSV: límite explícito y encabezados duplicados por índice 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('region', { name: 'Estadísticas por columna', exact: true }).getByRole('button', { name: 'Estadísticas y SQL', exact: true })
+
+
+      282 |  await showPanel(page,'Estadísticas')
+      283 |  const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true})
+    > 284 |  await panel.getByRole('button',{name:'Estadísticas y SQL',exact:true}).click()
+          |                                                                         ^
+      285 |  await expect(page.locator('.toast')).toContainText('hasta 100 columnas')
+      286 |  await expect(panel.locator('tbody tr')).toHaveCount(0)
+      287 |  await page.getByLabel('Seleccionar columna A',{exact:true}).nth(1).check()
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/ui.spec.ts:284:73
+
+    Error Context: ../freyalab-f2b-evidence/integral/ui-estadísticas-CSV-límite-71c9c-zados-duplicados-por-índice-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/integral/ui-estadísticas-CSV-límite-71c9c-zados-duplicados-por-índice-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/integral/ui-estadísticas-CSV-límite-71c9c-zados-duplicados-por-índice-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [csv] › tests/e2e/analysis-dock.spec.ts:93:1 › el gráfico generado en el panel acoplado no se desplaza en horizontal y queda a la vista 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.charts-panel').getByRole('status')
+    Expected substring: "Gráfico listo"
+    Error: strict mode violation: locator('.charts-panel').getByRole('status') resolved to 2 elements:
+        1) <p role="status" aria-live="polite" aria-atomic="true" class="sr-only result-announcement svelte-1wo6u31">Calculando el resultado…</p> aka getByRole('status').filter({ hasText: 'Calculando el resultado…' })
+        2) <p role="status" aria-live="polite" aria-atomic="true" class="sr-only analysis-announcement svelte-1wo6u31"></p> aka getByRole('region', { name: 'Gráficos del CSV' }).getByRole('status').filter({ hasText: /^$/ })
+
+    Call log:
+      - Expect "toContainText" locator('.charts-panel').getByRole('status') with timeout 30000ms
+      - waiting for locator('.charts-panel').getByRole('status')
+
+
+       96 |  await page.locator('.charts-panel .more-options>summary').click();await page.getByRole('combobox',{name:'Columna X del gráfico'}).selectOption({label:'Ciudad'})
+       97 |  await page.getByRole('button',{name:'Generar gráfico'}).scrollIntoViewIfNeeded();await page.getByRole('button',{name:'Generar gráfico'}).click()
+    >  98 |  await expect(page.locator('.charts-panel').getByRole('status')).toContainText('Gráfico listo',{timeout:30_000});await page.locator('.charts-panel .more-options>summary').click()
+          |                                                                  ^
+       99 |  const inView=()=>page.locator('.plot-scroll').evaluate(plot=>{
+      100 |   let ancestor=plot.parentElement;while(ancestor&&!(ancestor.scrollHeight>ancestor.clientHeight+1&&/auto|scroll/.test(getComputedStyle(ancestor).overflowY)))ancestor=ancestor.parentElement
+      101 |   const box=plot.getBoundingClientRect(),area=(ancestor??document.documentElement).getBoundingClientRect()
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/analysis-dock.spec.ts:98:66
+
+    Error Context: ../freyalab-f2b-evidence/integral/analysis-dock-el-gráfico-g-6972e-rizontal-y-queda-a-la-vista-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/integral/analysis-dock-el-gráfico-g-6972e-rizontal-y-queda-a-la-vista-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/integral/analysis-dock-el-gráfico-g-6972e-rizontal-y-queda-a-la-vista-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5 failed
+    [shell] › tests/e2e/ui.spec.ts:206:1 › estadísticas CSV: columnas, alcance completo, datos pendientes, temas y teclado 
+    [shell] › tests/e2e/ui.spec.ts:245:1 › estadísticas CSV: cancelar descarta respuestas tardías y permite volver a analizar 
+    [shell] › tests/e2e/ui.spec.ts:265:1 › estadísticas CSV: muestra rotulada e IPC inválido rechazado @perf 
+    [shell] › tests/e2e/ui.spec.ts:279:1 › estadísticas CSV: límite explícito y encabezados duplicados por índice 
+    [csv] › tests/e2e/analysis-dock.spec.ts:93:1 › el gráfico generado en el panel acoplado no se desplaza en horizontal y queda a la vista 
+  188 did not run
+  350 passed (12.9m)

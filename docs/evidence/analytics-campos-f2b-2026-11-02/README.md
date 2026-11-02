@@ -89,6 +89,14 @@ Los comandos previos a6e9cea6 que prueban sus últimas correcciones se ejecutaro
 
 La ejecución integral de543E2E, la suite completa actualizada, check/build del head definitivo y los tres sistemas de CI quedan pendientes aquí hasta el cierre real del PR. Los resultados se publican allí sobre su SHA exacto. SEG-S2e conserva su prueba de fallo esperado de Word; F2b no corrige ese defecto.
 
+## Corrección de consumidores detectada al cierre integral
+
+El head4eb30a2 pasó check y2394unitarias completas, pero la suite integral detectó cinco fallos deterministas antes de detenerse:350pasaron,5fallaron y188no se ejecutaron, salida130 porSIGINT. Se canceló la CI41494708149 de ese head; no se declara verde. [Salida roja literal](39-integral-consumers-red.log).
+
+Al renombrar el acceso superior «Analizar» por «Estadísticas y SQL» se habían renombrado también selectores del botón interno de estadísticas, que conserva «Analizar». Se restituyeron exclusivamente esas referencias en cinco specs. El gráfico ahora tiene anunciadores separados para acciones y resultado; el consumidor del dock pasa a seleccionar el del resultado y comprobar el mensaje real exacto «Resultado actualizado:5grupos» (con espacio tras los dos puntos en la app), manteniendo intactas sus aserciones de visibilidad y desplazamiento.
+
+La primera comprobación de los seis specs dio46/47; el único restante era el texto heredado «Gráfico listo» ([detalle rojo](40-status-message-red.md), [ejecución](41-consumers-46-green-1-red.log)). Tras corregirlo, los seis casos de analysis-dock pasaron6/6, cero retries ([verde](42-analysis-dock-green.log)). No cambia src, datos, expectativas numéricas, plazos, tags, grupos ni workflows. La validación integral/CI debe repetirse sobre el nuevo head y se registra en el PR, sin heredar estos resultados parciales.
+
 ## Capturas reales
 
 Mismo CSV sintético, antes compilado de mainc5db752 en un worktree desechable; después en6e9. En el antes el arranque contaba filas; en el después elige Ventas/Suma, cambio intencional del objetivo. Equivalencia de opciones explícitas se verifica aparte.

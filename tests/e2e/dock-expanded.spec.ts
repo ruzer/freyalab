@@ -54,9 +54,9 @@ test('ampliar y volver a la tabla conserva búsqueda, selección y posición de 
 test('Escape en la vista ampliada vuelve a acoplar y un segundo Escape cierra el panel',async()=>{
  await launch();await page.setViewportSize({width:1920,height:1080});await openDock()
  await page.getByRole('button',{name:'Ampliar',exact:true}).click();await expect(grid()).toBeHidden()
- await page.locator('.statistics-panel').getByRole('button',{name:'Estadísticas y SQL',exact:true}).focus();await page.keyboard.press('Escape')
+ await page.locator('.statistics-panel').getByRole('button',{name:'Analizar',exact:true}).focus();await page.keyboard.press('Escape')
  await expect(grid()).toBeVisible();await expect(tools()).toBeVisible();await expect(page.locator('.statistics-panel')).toBeVisible()
- await page.locator('.statistics-panel').getByRole('button',{name:'Estadísticas y SQL',exact:true}).focus();await page.keyboard.press('Escape')
+ await page.locator('.statistics-panel').getByRole('button',{name:'Analizar',exact:true}).focus();await page.keyboard.press('Escape')
  await expect(tools()).toHaveCount(0);await expect(analyzeButton(page)).toBeFocused()
 })
 
@@ -89,7 +89,7 @@ test('en una ventana estrecha «Volver a la tabla» cierra el panel y devuelve e
 
 test('a 900×600 los tres paneles son utilizables en la vista ampliada',async()=>{
  await launch();await page.setViewportSize({width:900,height:600})
- const panels=[{button:'Gráficos' as const,control:()=>page.locator('.chart-types').getByRole('button',{name:'Barras',exact:true})},{button:'Análisis' as const,control:()=>page.getByRole('button',{name:'Ejecutar consulta',exact:true})},{button:'Estadísticas' as const,control:()=>page.getByLabel('Panel de análisis').getByRole('button',{name:'Estadísticas y SQL',exact:true})}]
+ const panels=[{button:'Gráficos' as const,control:()=>page.locator('.chart-types').getByRole('button',{name:'Barras',exact:true})},{button:'Análisis' as const,control:()=>page.getByRole('button',{name:'Ejecutar consulta',exact:true})},{button:'Estadísticas' as const,control:()=>page.getByLabel('Panel de análisis').getByRole('button',{name:'Analizar',exact:true})}]
  for(const panel of panels){
   if(panel.button==='Gráficos')await showPanel(page,'Gráficos');else await openDock(panel.button);await expect(grid()).toBeHidden()
   const control=panel.control();await control.scrollIntoViewIfNeeded();await expect(control).toBeVisible();await expect(control).toBeInViewport({ratio:1})

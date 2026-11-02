@@ -95,7 +95,7 @@ test('el gráfico generado en el panel acoplado no se desplaza en horizontal y q
  await showPanel(page,'Gráficos');await expect(page.getByLabel('Gráficos del CSV')).toBeVisible()
  await page.locator('.charts-panel .more-options>summary').click();await page.getByRole('combobox',{name:'Columna X del gráfico'}).selectOption({label:'Ciudad'})
  await page.getByRole('button',{name:'Generar gráfico'}).scrollIntoViewIfNeeded();await page.getByRole('button',{name:'Generar gráfico'}).click()
- await expect(page.locator('.charts-panel').getByRole('status')).toContainText('Gráfico listo',{timeout:30_000});await page.locator('.charts-panel .more-options>summary').click()
+ await expect(page.locator('.charts-panel .result-announcement')).toHaveText('Resultado actualizado: 5 grupos',{timeout:30_000});await page.locator('.charts-panel .more-options>summary').click()
  const inView=()=>page.locator('.plot-scroll').evaluate(plot=>{
   let ancestor=plot.parentElement;while(ancestor&&!(ancestor.scrollHeight>ancestor.clientHeight+1&&/auto|scroll/.test(getComputedStyle(ancestor).overflowY)))ancestor=ancestor.parentElement
   const box=plot.getBoundingClientRect(),area=(ancestor??document.documentElement).getBoundingClientRect()

@@ -31,7 +31,11 @@
     "36-closure-e2e.log": "31c0ac9f2579d43b0270ffd5426c64f792327a867c56191859de929ea532bcf3",
     "37-empty-reason-red.log": "bc381ba00a023ee47ef0e16fd40be8b17d12c0d95edf599ffb71274c4603696f",
     "38-empty-reason-green.log": "1a7ebb09711ec4d977c008a111e0181baa7876d28ef3df7c298daf611ad479ce",
-    "README.md": "0938a8d220f9069c41685328962369d7d7dfe5389c8986b35ad73c88c7b55404",
+    "39-integral-consumers-red.log": "6ee370218ae7d2a6854742bcfd7287c7ee903494d39f815397dc6589f12abbcd",
+    "40-status-message-red.md": "094de9380fd2036c02c45956154edb8226bfe29de0e2d6a8ea91af83920e44d0",
+    "41-consumers-46-green-1-red.log": "89d34f5160127dd1557a4c06040c81391763e6b3b9e9ee72e0a5c0355856303d",
+    "42-analysis-dock-green.log": "636859969a8f40093fbcac7bee42371ac7080f664c60e0781554b368f748d502",
+    "README.md": "d6d9c56686aa8a989d1e1e4c752f86f06631baea23cf1337709bc137f14f06ee",
     "after-dark-1280x720.png": "b649ef49571e005704ef155d07d049ed580e3d1905da3ec4687ffe1ce1996ef8",
     "after-dark-1440x900.png": "ee6d5c7616789bba97f41df6eba09a12643374fcecc0d238e6eed68712e6e77a",
     "after-light-1280x720.png": "9b117de311e3781ed87a54de9af030123e55b0e115e47a36fa58fc13d5871206",
@@ -64,5 +68,6 @@
     "test-identities.json": "da9dabf9da2f9c26ea2587549728cfe659dd0bc8d2262143ffc9cb62b52ddaeb",
     "unit-cfd747b.log": "2fdff72979e7c5f651fb08789a370d08c8ebc4de425d3877f3e0ed7267351e85",
     "verify-colors.mjs": "0d7600415b1d804df32f058d6238b87b347ddf6c513571e32d9c3282d239154f"
-  }
+  },
+  "consumerTestsTree": "41beaf900e0ee1c1413a3d3443450361158bbe54"
 }
