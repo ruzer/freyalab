@@ -747,5 +747,7 @@
  "charts.toolbar.findAction": "Find action",
  "charts.toolbar.extract": "Extract rows",
  "charts.toolbar.clearSearch": "Clear search",
- "charts.fields.dateUnavailable": "Group dates into periods in Bars or Lines."
+ "charts.fields.dateUnavailable": "Group dates into periods in Bars or Lines.",
+ "charts.fields.busy": "Wait for the operation to finish.",
+ "charts.fields.emptyTitle": "What would you like to see?"
 }

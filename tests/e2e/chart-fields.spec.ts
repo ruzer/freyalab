@@ -53,6 +53,7 @@ test('F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones
  await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
  await fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true}).focus();await page.keyboard.press('Enter');await expect(fields.getByRole('region',{name:'Filas',exact:true})).toContainText('Canal');await expect(live).toHaveText('Filas y columnas intercambiadas')
  await fields.getByRole('button',{name:'Limpiar todo',exact:true}).focus();await page.keyboard.press('Enter');await expect(live).toHaveText('Análisis limpiado');await expect(panel.getByRole('button',{name:'Empezar con una sugerencia',exact:true})).toBeVisible()
+ await expect(panel.getByLabel('Configuración del gráfico',{exact:true})).toHaveText('¿Qué quieres ver?')
  await page.screenshot({path:test.info().outputPath('state-empty.png')});await panel.getByRole('button',{name:'Empezar con una sugerencia',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
  expect(await readFile(path,'utf8')).toBe(original)
 })
@@ -74,6 +75,8 @@ test('F2b: texto no se suma, mapa solo cuenta y símbolos no se convierten',asyn
  await panel.getByRole('button',{name:'Usar como número…',exact:true}).first().click();await expect(panel.getByRole('region',{name:'Usar como número…',exact:true})).toContainText('Todavía no se pueden convertir símbolos como $ o %. El archivo no cambia.');await panel.getByRole('button',{name:'Cerrar',exact:true}).click()
  await panel.locator('.chart-types').getByRole('button',{name:'Mapa de calor',exact:true}).click();const heat=panel.getByLabel('Resumir Filas del archivo por',{exact:true});await expect(heat).toHaveValue('count');for(const operation of ['sum','distinct','average','min','max','median'])await expect(heat.locator(`option[value=${operation}]`)).toBeDisabled()
  await expect(panel.getByText('El mapa de calor solo cuenta filas',{exact:true})).toBeVisible();expect(await readFile(path,'utf8')).toBe(original)
+ await panel.getByRole('listitem').filter({hasText:'Ventas'}).dblclick();await expect(panel.locator('.chart-types button[aria-pressed=true]')).toHaveText('Mapa de calor')
+ await panel.getByRole('button',{name:'Limpiar todo',exact:true}).click();await expect(panel.getByRole('region',{name:'Valores',exact:true}).getByRole('combobox')).toHaveCount(0)
 })
 test('F2b: 842 grupos conservan truncado y tabla paginada; Otros solo sobre resultados completos aditivos',async()=>{
  const file=join(folder,'grupos.csv'),content='Grupo,Ventas\n'+Array.from({length:842},(_,i)=>`G${i},${i+1}`).join('\n')+'\n';await writeFile(file,content);await page.evaluate(file=>window.freya.openPaths([file]),file)

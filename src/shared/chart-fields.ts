@@ -26,7 +26,7 @@ export function addToZone(options:ChartOptions,zone:ChartZone,column:number,colu
  if(proposal){next.kind=proposal.kind;next.time=proposal.time??'none'}
  if((zone==='values'&&!numeric)||(zone==='rows'&&options.kind!=='heatmap'&&next.measureType==='text')){next.kind='bar';next.time='none'}
  if(zone==='rows'&&options.kind==='heatmap')next.kind='heatmap'
- if(next.kind==='heatmap'){next.series=-1;next.measureType='text';next.aggregate='count'}
+ if(next.kind==='heatmap'){next.series=-1;next.measureType='text';next.aggregate='count';next.time='none'}
  return next
 }
 export function removeFromZone(options:ChartOptions,zone:ChartZone):ChartOptions{
@@ -36,7 +36,7 @@ export function removeFromZone(options:ChartOptions,zone:ChartZone):ChartOptions
  return{...options,y:-2,aggregate:'count',measureType:'text'}
 }
 export function swapZones(options:ChartOptions):ChartOptions{
- return options.kind==='heatmap'?{...options,x:options.y,y:options.x}:{...options,x:options.series??-1,series:options.x}
+ return options.kind==='heatmap'?{...options,x:options.y,y:options.x}:{...options,kind:'bar',time:'none',x:options.series??-1,series:options.x}
 }
 export function initialChart(columns:readonly ChartColumn[]){
  const category=['category','text','date','identifier'].map(kind=>columns.find(c=>c.profile?.kind===kind)).find(Boolean),number=columns.find(c=>c.profile?.kind==='number')

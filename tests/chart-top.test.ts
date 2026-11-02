@@ -34,3 +34,13 @@ it('mapa conserva combinaciones y distingue ausencia, vacío y nombre Otros',()=
  expect(result.other).toBe(true);expect(result.data.rows.at(-1)).toEqual(['Otros (2)','3','A'])
  expect(rows[0][0]).toBeNull();expect(rows[1][0]).toBe('')
 })
+it('un grupo sin medida no se trata como cero al ordenar valores negativos',()=>{
+ const rows=Array.from({length:12},(_,i)=>['G'+i,i<10?null:String(-(i-9))])
+ const result=chartTop({...data,points:12,rows},options,[])
+ expect(result.data.rows.slice(0,2)).toEqual([['G10','-1'],['G11','-2']])
+ expect(result.data.rows.at(-1)?.[1]).toBeNull()
+})
+it('no suma promedios por serie si no recibió el total recalculado del motor',()=>{
+ const rows=Array.from({length:12},(_,i)=>[['G'+i,'10','A'],['G'+i,'20','B']]).flat(),input={...data,points:24,rows,columns:['x','value','series']}
+ expect(chartTop(input,{...options,aggregate:'average',series:2},[])).toMatchObject({top:false,other:false,data:input})
+})

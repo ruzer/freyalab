@@ -747,5 +747,7 @@
  "charts.toolbar.findAction": "Buscar acción",
  "charts.toolbar.extract": "Extraer filas",
  "charts.toolbar.clearSearch": "Borrar búsqueda",
- "charts.fields.dateUnavailable": "Agrupa fechas por período en Barras o Líneas."
+ "charts.fields.dateUnavailable": "Agrupa fechas por período en Barras o Líneas.",
+ "charts.fields.busy": "Espera a que termine la operación.",
+ "charts.fields.emptyTitle": "¿Qué quieres ver?"
 }

@@ -75,3 +75,12 @@ it('el arranque prefiere una categoría real antes que un identificador',()=>{
  const reordered=[columns[4],columns[0],columns[2]].map((field,column)=>({...field,column}))
  expect(initialChart(reordered)).toMatchObject({x:1,y:2,aggregate:'sum'})
 })
+it('intercambiar una fecha agrupada por una categoría conserva valores sin agrupar texto como fecha',()=>{
+ const dated=addToZone(addToZone(initialChart(columns)!,'rows',3,columns),'columns',1,columns)
+ expect(swapZones(dated)).toMatchObject({kind:'bar',time:'none',x:1,series:3,y:2,aggregate:'sum'})
+})
+it('Filas de un mapa puede ser fecha, contada como etiqueta, sin agrupación temporal inválida',()=>{
+ const heat={...initialChart(columns)!,kind:'heatmap' as const,aggregate:'count' as const}
+ const result=addToZone(heat,'rows',3,columns)
+ expect(result.time).toBe('none');expect(()=>chartSQL(columns.map(c=>c.name),result)).not.toThrow()
+})

@@ -38,7 +38,7 @@
  let fieldGeneration=0,fieldRevision:string|undefined,initializedDocument:string|undefined,filterReturn:HTMLElement|null=null,conversionReturn:HTMLElement|null=null
  const columns=$derived((doc.headers??[]).map((name,column)=>({column,name:columnLabel(column),profile:profiles.find(field=>field.column===column)?.profile})))
  const plotData=$derived(data?chartTop(data,options,totals):null)
- const summaryTitle=$derived(aggregated?t(options.series!==undefined&&options.series>=0?'charts.fields.titleSplit':'charts.fields.titleResult',{summary:t('charts.aggregate.'+options.aggregate),field:options.y>=0?columnLabel(options.y):t('charts.fields.rowCount'),row:columnLabel(options.x),column:columnLabel(options.series??-1)}):axes.summary)
+ const summaryTitle=$derived(options.x<0||options.y===-2?t('charts.fields.emptyTitle'):aggregated?t(options.series!==undefined&&options.series>=0?'charts.fields.titleSplit':'charts.fields.titleResult',{summary:t('charts.aggregate.'+options.aggregate),field:options.y>=0?columnLabel(options.y):t('charts.fields.rowCount'),row:columnLabel(options.x),column:columnLabel(options.series??-1)}):axes.summary)
  const pivot=$derived(data?chartPivot(data,options,totals):null)
  const suggestion=$derived(suggest(columns,{x:options.x,...options.y>=0?{y:options.y}:{}}))
  const reason=$derived(options.kind!==suggestion.options?.kind&&suggestion.options?t('charts.fields.selectedType',{type:t('charts.kind.'+options.kind),suggested:t('charts.kind.'+suggestion.options.kind)}):t(suggestion.reason.key,{...suggestion.reason.parameters,measure:t('charts.measure.'+options.aggregate),period:t('charts.period.'+(options.time==='none'?'month':options.time??'month'))}))
@@ -88,7 +88,7 @@
    for(let offset=100;offset<summary.returnedRows;offset+=100){const page=await window.freya.sqlPage(totalId,offset);if(active!==requestId)return;totalRows.push(...page.rows)}
    totals=totalRows.map(row=>Object.fromEntries(summary.columns.map((column,index)=>[column.name,row[index]])))
    data=result;source=first.sources[0];message='charts.ui.ready';zoom=1
-  }catch(error){if(active===requestId){data=null;failed=true;message=String(error).replace(/^.*Error: /,'');onerror(message)}}
+  }catch(error){if(active===requestId){data=null;failed=true;message=String(error).replace(/^.*Error: /,'');onerror(t('charts.fields.failed'))}}
   finally{if(active===requestId){active=undefined;busy=false;void window.freya.sqlCancel(requestId).catch(()=>{});if(totalJob){void window.freya.sqlCancel(totalJob).catch(()=>{});totalJob=undefined}}}
  }
  async function exportChart(format:'svg'|'png'|'pdf'){
@@ -135,7 +135,7 @@
   announcement=t(previous>=0&&previous!==column?'charts.fields.replaced':'charts.fields.added',{field:name,previous:columnLabel(previous),zone:t('charts.fields.'+zone)})
  }
  function removeField(zone:ChartZone){const previous=zoneFields(options)[zone];options=removeFromZone($state.snapshot(options),zone);announcement=t('charts.fields.removed',{field:previous<0?t('charts.fields.rowCount'):columnLabel(previous),zone:t('charts.fields.'+zone)})}
- function clearFields(){options={...options,x:-1,y:-2,series:-1,time:'none'};where={conditions:[],filterMode:'all'};failed=false;announcement=t('charts.fields.cleared')}
+ function clearFields(){options={...options,kind:'bar',x:-1,y:-2,series:-1,time:'none'};where={conditions:[],filterMode:'all'};failed=false;announcement=t('charts.fields.cleared')}
  function startSuggestion(){const first=initialChart($state.snapshot(columns));if(first){options=first;announcement=t('charts.fields.ready',{n:0})}}
  function changeAggregate(aggregate:ChartOptions['aggregate']){if(options.kind==='heatmap')return;if(!aggregated){options.kind='bar';options.time='none'}options.aggregate=aggregate;announcement=t('charts.fields.changed',{operation:t('charts.aggregate.'+aggregate)})}
  function openFilters(column?:number){filterReturn=document.activeElement as HTMLElement;pendingFilter=column;showFilters=true}
@@ -151,7 +151,7 @@
  <div class="chart-result">
  <div class="chart-intro"><p class="chart-description" aria-label={t('charts.ui.config')} title={summaryTitle}>{summaryTitle}</p>
  <details class="chart-info"><summary aria-label={t('charts.ui.info')}><span aria-hidden="true">ⓘ</span></summary><div class="info-content"><p>{t('charts.ui.source',{name:doc.name})}</p>{#if !automatic}<p>{t('charts.fields.manualTypes')}</p>{/if}{#if fieldErrors.length}<ul>{#each fieldErrors as detail}<li>{detail}</li>{/each}</ul>{/if} <p class="help">{aggregated?(options.aggregate==='count'?t('charts.ui.countHelp'):t('charts.ui.measureHelp')):options.kind==='histogram'?t('charts.ui.histogramHelp'):options.kind==='heatmap'?t('charts.ui.heatmapHelp'):t('charts.ui.compareHelp')}</p>
- <p>{scope==='saved'?t('charts.ui.savedHelp'):scope==='filtered'?t('charts.ui.filteredHelp'):doc.readonly?t('charts.ui.sampleHelp'):t('charts.ui.allHelp')}</p>
+ <p>{scope==='saved'?t('charts.ui.savedHelp'):scope==='filtered'?t('charts.ui.filteredHelp'):doc.readonly&&!doc.large?t('charts.ui.sampleHelp'):t('charts.ui.allHelp')}</p>
  {#if aggregated&&options.measureType==='number'}<p>{t('charts.ui.numberHelp')}</p>{/if}
  {#if aggregated&&options.aggregate==='distinct'}<p>{t('charts.ui.distinctHelp')}</p>{/if}
  {#if options.series!==undefined&&options.series>=0}<p>{t('charts.ui.seriesHelp')}</p>{/if}
@@ -163,7 +163,7 @@
  {#if data&&source}<p class="scope">{source.name} · {scopeLabel} · {source.fromDisk?t('charts.ui.disk'):t('charts.ui.revision',{revision:source.revision})} · {t('charts.ui.dataStatus',{total:data.total.toLocaleString(),usable:data.usable.toLocaleString(),omitted:(data.total-data.usable).toLocaleString(),drawn:data.rows.length,points:data.points.toLocaleString()})}{#if data.invalidDates!==undefined} · {t('charts.ui.invalidDates',{n:data.invalidDates})}{/if}{#if data.seriesCount!==undefined} · {t('charts.ui.seriesCount',{drawn:series.length,total:data.seriesCount})}{/if}.</p>{/if}
  {#if hiddenSeries.length}<p>{plural('charts.ui.hidden',hiddenSeries.length)}</p>{/if}
 </div></details></div>
- <p class="result-status" title={scopeLabel}>{#if doc.readonly}{t('charts.fields.sample')} · {/if}{#if scope!=='all'}{scope==='saved'?t('charts.fields.savedScope'):t('charts.fields.filteredScope')} · {/if}{data?t('charts.fields.status',{n:data.total.toLocaleString(),g:plotData?.groups??0}):fieldsLoading?t('charts.fields.loading'):busy?t('charts.ui.prepare'):t('charts.fields.unchanged')}</p>
+ <p class="result-status" title={scopeLabel}>{#if doc.readonly&&!doc.large}{t('charts.fields.sample')} · {/if}{#if scope!=='all'}{scope==='saved'?t('charts.fields.savedScope'):t('charts.fields.filteredScope')} · {/if}{data?t('charts.fields.status',{n:data.total.toLocaleString(),g:plotData?.groups??0}):fieldsLoading?t('charts.fields.loading'):busy?t('charts.ui.prepare'):t('charts.fields.unchanged')}</p>
  <p class="sr-only result-announcement" role="status" aria-live="polite" aria-atomic="true">{resultAnnouncement}</p>
  <p class="sr-only analysis-announcement" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
  {#if data?.limited}<p class="truncated notice">{t('charts.ui.truncated',{shown:data.rows.length,total:data.points})}</p>{/if}

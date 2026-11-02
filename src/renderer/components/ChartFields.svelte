@@ -29,8 +29,9 @@
   if(next>=0){event.preventDefault();buttons[next]?.focus()}
  }
  function destinations(column:number){const recommended=recommendedZone(columns.find(field=>field.column===column)!,options);return[recommended,...(['rows','columns','values','filters'] as const).filter(zone=>zone!==recommended)]}
- function choose(zone:ChartZone|'filters',column:number){closeMenu();if(zone==='filters')onfilter(column);else onadd(zone,column)}
- function rowKey(event:KeyboardEvent,column:number){if(event.key==='Enter'&&event.target===event.currentTarget){event.preventDefault();void openMenu(column,(event.currentTarget as HTMLElement).querySelector('button')!)}}
+ function unavailable(zone:string){return disabled?'charts.fields.busy':zone==='values'&&options.kind==='heatmap'?'charts.fields.heatCount':zone==='filters'&&where.conditions.length>=20?'charts.fields.filterLimit':null}
+ function choose(zone:ChartZone|'filters',column:number){const reason=unavailable(zone);if(reason){onannounce(t(reason));return}closeMenu();if(zone==='filters')onfilter(column);else onadd(zone,column)}
+ function rowKey(event:KeyboardEvent,column:number){if(disabled)return;if(event.key==='Enter'&&event.target===event.currentTarget){event.preventDefault();void openMenu(column,(event.currentTarget as HTMLElement).querySelector('button')!)}}
  function searchChanged(){onannounce(t('charts.fields.count',{n:filtered.length}))}
  $effect(()=>{getUILanguage();if(menu!==null&&!filtered.some(field=>field.column===menu))menu=null})
 </script>
@@ -45,7 +46,7 @@
    {#if entries.length}<h4>{t('charts.fields.'+group)}</h4>
     {#each entries as field(field.column)}
      <!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions (Enter abre el menú de esta fila; todos los destinos también tienen botón nativo.) -->
-     <div class="field-entry" role="listitem" tabindex="0" title={field.name} onkeydown={event=>rowKey(event,field.column)} ondblclick={event=>{if(!(event.target instanceof Element&&event.target.closest('button'))&&!disabled)onadd(recommendedZone(field,options),field.column)}}>
+     <div class="field-entry" role="listitem" tabindex="0" title={field.name} onkeydown={event=>rowKey(event,field.column)} ondblclick={event=>{if(!(event.target instanceof Element&&event.target.closest('button'))&&!disabled){trigger=(event.currentTarget as HTMLElement).querySelector('button')!;choose(recommendedZone(field,options),field.column)}}}>
       <span class="field-name" title={field.name}>{#if used(field.column)}<span aria-hidden="true">✓ </span>{/if}{field.name||name(field.column)}</span>
       <span class="field-badge" class:amount={!!amount(field.column)} title={amount(field.column)?t('charts.fields.amountBadge'):t('charts.fields.'+group)}>{t('charts.fields.'+(group==='text'?'textBadge':group))}</span>
       <button disabled={disabled} aria-haspopup="menu" aria-expanded={menu===field.column} aria-label={t('charts.fields.action',{action:t(used(field.column)?'charts.fields.move':'charts.fields.add'),field:field.name})} onclick={event=>void openMenu(field.column,event.currentTarget)}>{t(used(field.column)?'charts.fields.move':'charts.fields.add')}</button>
@@ -84,12 +85,12 @@
 </aside>
 {#if menu!==null}
  <div class="field-menu" role="menu" tabindex="-1" aria-label={t('charts.fields.add')} bind:this={menuElement} style:top={`${menuPosition.top}px`} style:left={`${menuPosition.left}px`} onkeydown={menuKey}>
-  {#each destinations(menu) as zone,i}<button role="menuitem" tabindex="-1" disabled={disabled||zone==='filters'&&where.conditions.length>=20||zone==='values'&&options.kind==='heatmap'} title={zone==='values'&&options.kind==='heatmap'?t('charts.fields.heatCount'):zone==='filters'&&where.conditions.length>=20?t('charts.fields.filterLimit'):undefined} onclick={()=>choose(zone,menu!)}>{t('charts.fields.destination',{zone:label(zone)})}{#if !i}{' '}{t('charts.fields.recommended')}{/if}</button>{/each}
+  {#each destinations(menu) as zone,i}<button role="menuitem" tabindex="-1" disabled={!!unavailable(zone)} title={unavailable(zone)?t(unavailable(zone)!):undefined} onclick={()=>choose(zone,menu!)}>{t('charts.fields.destination',{zone:label(zone)})}{#if !i}{' '}{t('charts.fields.recommended')}{/if}</button>{/each}
  </div>
 {/if}
 <style>
  .chart-fields{grid-area:fields;min-width:0;min-height:0;overflow:auto;border-left:1px solid var(--border);background:var(--bg);padding:12px;color:var(--text);font-size:11px}h3{font-size:12px;margin:0 0 8px}h4{font-size:11px;margin:7px 0 3px;color:var(--text)}.organize{margin-top:12px}button,input,select{font:inherit;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:5px;min-height:28px;padding:4px 6px}button{cursor:pointer}button:disabled{opacity:.5;cursor:default}input{width:100%;box-sizing:border-box}.field-list{max-height:28vh;overflow:auto;margin-top:5px}.field-entry{display:flex;align-items:center;gap:4px;min-height:32px;padding:1px 0}.field-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.field-entry button{flex:0 0 auto;font-size:10px;padding:3px 5px}.field-badge{font-size:9px;padding:2px 4px;border:1px solid var(--border);border-radius:8px;max-width:54px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.amount{border-color:#986000;color:var(--text)}.zones{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}.zone{border:1px dashed var(--border);background:var(--panel);border-radius:6px;min-height:62px;padding:6px;min-width:0}.zone.wide{grid-column:1/-1}.zone p{font-size:10px;line-height:1.4;margin:3px 0}.chip{display:flex;align-items:center;flex-wrap:wrap;gap:3px;padding:3px;margin:3px 0;border:1px solid var(--border);border-radius:5px;background:var(--hover);min-width:0}.chip-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chip button{min-width:24px;padding:1px 4px;border:0}.chip select{max-width:100%;min-width:0}.zone label{display:flex;flex-wrap:wrap;gap:4px;font-size:10px}.zone-actions{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.zone-actions button{font-size:10px}.amount-notice{border:1px solid #986000;padding:7px;border-radius:6px;margin-top:8px}.amount-notice p{margin:0 0 5px;line-height:1.4}.field-menu{position:fixed;z-index:50;width:245px;padding:5px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 15px #0003}.field-menu button{display:block;width:100%;text-align:left;border:0;background:transparent;color:inherit;font:inherit;padding:8px;min-height:28px;border-radius:4px}.field-menu button:focus,.field-menu button:hover{background:var(--hover)}:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
  @media(max-width:899px){.chart-fields{border-left:0;max-height:50vh;border-bottom:1px solid var(--border)}.field-list{max-height:20vh}}
  button,input,select{appearance:none;border-color:var(--muted)}
- .field-badge{border-color:var(--muted)}
+ .field-badge:not(.amount){border-color:var(--muted)}
 </style>
