@@ -2,7 +2,7 @@
 
 Fecha: 2026-11-02. Mismo [PR108, en borrador](https://github.com/ruzer/freyalab/pull/108) y rama `codex/analitica-campos-zonas-f2b`. Revisión recibida sobre `0a79012558680bea66ee3d806e0822819f86cf1a`. Worktree independiente, sin tocar el checkout del propietario.
 
-Fuente de esta corrección: `src:6e0dc1b37b6afea1d3eee098e6b8b5a91b87c217`; pruebas: `tests:fc6be9c67129684cdcf0c056855f19eeca1c69a6`. Los resultados del cierre integral y de CI del nuevo head se registran en el cuerpo del PR, sin crear un commit solo para actualizar estados, según CONTRIBUTING. Aquí no se transfieren los checks de0a79012.
+Fuente de esta corrección: `src:6e0dc1b37b6afea1d3eee098e6b8b5a91b87c217`; pruebas finales: `tests:91a4878f128788e9c75851f0b0f82069c4886f65`. Los resultados del cierre integral y de CI del nuevo head se registran en el cuerpo del PR, sin crear un commit solo para actualizar estados, según CONTRIBUTING. Aquí no se transfieren los checks de0a79012.
 
 ## Qué se corrigió
 
@@ -41,6 +41,14 @@ La prueba roja de geometría se ejecutó contra la compilación anterior conserv
 Una ejecución intermedia de61casos dejó59aprobados y2fallos: ambos consumidores todavía exigían «Gráfico parcial», que se había perdido al retirar el aviso duplicado. Se conservó esa identificación en el aviso único, sin borrar ni relajar las aserciones. Los dos consumidores se volvieron a ejecutar junto a los cinco casos nuevos:7/7 en58,2s, sin retries. El consumidor de SVG exige ahora los mismos recuentos con separador de miles (`2,400`; `2,000 de2,400`), de acuerdo con el cambio solicitado. Fuente, fórmulas, PDF/PNG y preservación del archivo mantienen sus comprobaciones.
 
 Comandos reales durante los bloques: `npm test -- tests/chart-top.test.ts`; `npm test -- tests/chart-top.test.ts tests/chart-presentation.test.ts tests/charts.test.ts tests/chart-equivalence.test.ts`; `npm run test:e2e -- tests/e2e/chart-review.spec.ts … --retries=0`; casos enfocados directos con `npx playwright test` sobre un build de la fuente correspondiente. El log final especifica los siete títulos ejecutados. check acabó0errores/0avisos tras corregir los tipos; el cierre del nuevo SHA debe volver a ejecutar check, unitarias completas, E2E completa y build real.
+
+## Seguimiento de CI: lectura coherente del mapa de calor
+
+El head5ea3530 terminó localmente con check0/0,2.402unitarias completas y548E2E en18,3min, sin omisiones ni retries. En su CI41510205256, Ubuntu rechazó la prueba existente «F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor», tanto en el intento como en retry1: cuatro celdas y su contraste sí se verificaron, pero faltaba la escala en una lectura y el eje en la otra. [Rojo remoto](ci-heatmap-red.log), [traza conservada por GitHub](https://github.com/ruzer/freyalab/actions/runs/41510205256/artifacts/13174636285).
+
+La traza muestra la lectura de celdas unos6–7ms después del cambio de tema, y eje/escala en llamadas posteriores separadas. Esa observación es compatible con un redibujado intermedio; no demuestra por sí sola una regresión del motor. Se corrigió solo la sincronización de esa prueba consumidora: una lectura atómica reúne celdas, eje visible y escala; expect.poll espera las mismas condiciones usando el plazo ya configurado. Se conservan las cuatro celdas, contraste≥4,5:1, dimensiones de la escala y separación de2px. No se cambia src, ningún plazo, retries, workflow ni aserción de datos.
+
+La prueba final se ejecutó tres veces deliberadamente con `--repeat-each=3 --retries=0`: [3/3 en25,7s](review-heatmap-visible.log). No son reintentos ocultos. La corrida fallida de5ea3530 se canceló en sus otros ejecutores al preparar el reemplazo; no se presentan como plataformas aprobadas. El nuevo head requiere su propia CI completa. El árbol src es idéntico al validado localmente con548E2E; se conserva esa evidencia por SHA y se verifica el consumidor modificado, evitando repetir innecesariamente el mismo recorrido local del producto.
 
 ## Capturas antes / después
 

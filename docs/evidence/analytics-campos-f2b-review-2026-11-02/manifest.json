@@ -1,9 +1,9 @@
 {
   "baseHead": "0a79012558680bea66ee3d806e0822819f86cf1a",
   "srcTree": "6e0dc1b37b6afea1d3eee098e6b8b5a91b87c217",
-  "testsTree": "fc6be9c67129684cdcf0c056855f19eeca1c69a6",
+  "testsTree": "91a4878f128788e9c75851f0b0f82069c4886f65",
   "files": {
-    "README.md": "09b49bd36cee1bde037da045f1970f9c3cfe69c510f5633fd5868cd019836e93",
+    "README.md": "0c3b565e3843da757a5ba9a0af8372626461d77bb5905fde775e5d1d286a2ebe",
     "after-dark-1280x720.png": "176b2d8de3cfa983a2dc5bc623fa4567c1bf60dd267ede13550bc962b580c36d",
     "after-dark-1440x900.png": "b12748538e7b77cd25ca9774a01a86566a31b64fa4053fba650481cf2a91a0ec",
     "after-light-1280x720.png": "bc90a79b3ed18886e96c7850bb831604635c3070236e3fb68c78d743499ccda7",
@@ -12,6 +12,7 @@
     "before-dark-1440x900.png": "e4d46b06caba1efadaa4203bbb158ae64dc8261036687315fa10e805c2ffcb0d",
     "before-light-1280x720.png": "e4f893f6e13be316d63b87b003b79bda3a76cdba3d7bdd6a85c3a57802827d12",
     "before-light-1440x900.png": "3d333514792f4970cb89c7b2f0df1465da5cba09eacf383f6403c2b876a73a67",
+    "ci-heatmap-red.log": "01d1d17232c3f8100a0f45ed62cdf3a445f91b271471868e7fa25d0de3bbc775",
     "fields-visible.json": "17bae15bc5a4d57e4b6bbfdd8a6924f8375960ee030c0d21eefb8e8eb0c55a39",
     "geometry.json": "cdf77f24539e4d9d163ac3c2689a92b61a37b61e3de59acf1b5f7e7fa1b3dbb8",
     "review-01-truncated-green.log": "90267c265f2fb162fce3b249c3d9569086d9889b3ad6a88a158edaa021ed0316",
@@ -25,6 +26,7 @@
     "review-05-number-ui-red.log": "5dfe0f619595ef6e3279e7fb7014c0e7a2522effbf2a1658d84078e1ffea45b2",
     "review-06-zones-red.log": "d876aebc43a7d2de117bfced4ba81f523021dfb6097e7015eb3f0da33deeb84d",
     "review-consumers-intermediate.log": "9226df07628a80918c9d77a644f525610a437105d20e25ed28d1c35c0039ac6b",
-    "review-final-focused.log": "1c06f2763ecc8f3c3df1eda6799215781aac1bcfbcb11f0b848a53174687d4f6"
+    "review-final-focused.log": "1c06f2763ecc8f3c3df1eda6799215781aac1bcfbcb11f0b848a53174687d4f6",
+    "review-heatmap-visible.log": "7ad59bffe5810508518a918a85a13dff4130e75363bf44670cab2cf77bc80399"
   }
 }

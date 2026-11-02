@@ -166,20 +166,25 @@ test('F2a: series sin depender del color y cifras legibles sobre las celdas del 
  const panel=await summary();await panel.locator('.more-options>summary').click();await panel.getByLabel('Columna X del gráfico').selectOption('0');await panel.getByLabel('Columna Y del gráfico').selectOption('1');await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum');await panel.getByLabel('Series del gráfico').selectOption('2');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await panel.locator('.more-options>summary').click()
  await panel.locator('.chart-types').getByRole('button',{name:'Líneas',exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await expect(panel.locator('.plot svg [stroke-dasharray]').first()).toBeAttached();await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-line-patterns.png')})
  await panel.locator('.chart-types').getByRole('button',{name:'Mapa de calor',exact:true}).click();await panel.locator('.more-options>summary').click();await panel.getByLabel('Columna Y del gráfico').selectOption('2');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await panel.locator('.more-options>summary').click()
- for(const theme of ['light','dark']){
-  await page.getByLabel('Tema',{exact:true}).selectOption(theme)
-  const cells=await panel.locator('.plot').evaluate(root=>{
+ const readHeatmap=()=>panel.locator('.plot').evaluate(root=>{
    const shapes=[...root.querySelectorAll('svg path,svg rect')].map(node=>({fill:getComputedStyle(node).fill,box:node.getBoundingClientRect()}))
-   return [...root.querySelectorAll('svg text')].flatMap(node=>{
+   const cells=[...root.querySelectorAll('svg text')].flatMap(node=>{
     const color=getComputedStyle(node).fill;if(color!=='rgb(0, 0, 0)'||!/^\d+$/.test(node.textContent??''))return[]
     const box=node.getBoundingClientRect(),x=box.x+box.width/2,y=box.y+box.height/2,cell=shapes.filter(shape=>shape.box.width>10&&shape.box.height>10&&shape.fill.startsWith('rgb')&&x>=shape.box.x&&x<=shape.box.right&&y>=shape.box.y&&y<=shape.box.bottom).sort((a,b)=>a.box.width*a.box.height-b.box.width*b.box.height)[0]
     return cell?[{text:color,fill:cell.fill}]:[]
    })
+   const axis=[...root.querySelectorAll('svg text')].find(node=>node.textContent==='Paso')?.getBoundingClientRect()
+   const ramp=[...root.querySelectorAll('svg [fill^="url("]')].map(node=>{const b=node.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height}}).find(box=>box.width>=100&&box.height>=10&&box.height<=40)
+   return{cells,axis:axis&&axis.width>0&&axis.height>0?{y:axis.y,height:axis.height}:null,ramp}
   })
+ for(const theme of ['light','dark']){
+  await page.getByLabel('Tema',{exact:true}).selectOption(theme)
+  let captured:Awaited<ReturnType<typeof readHeatmap>>|undefined
+  await expect.poll(async()=>{captured=await readHeatmap();return{cells:captured.cells.length,axis:captured.axis!==null,ramp:captured.ramp!==undefined}}).toEqual({cells:4,axis:true,ramp:true})
+  const {cells,axis,ramp}=captured!
   expect(cells).toHaveLength(4)
   const luminance=(rgb:string)=>{const [r,g,b]=rgb.match(/[\d.]+/g)!.slice(0,3).map(Number).map(value=>{const n=value/255;return n<=.04045?n/12.92:((n+.055)/1.055)**2.4});return .2126*r+.7152*g+.0722*b}
   for(const cell of cells){const a=luminance(cell.text),b=luminance(cell.fill);expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05)).toBeGreaterThanOrEqual(4.5)}
-  const axis=await panel.locator('.plot svg text').filter({hasText:/^Paso$/}).boundingBox(),ramp=await panel.locator('.plot svg [fill^="url("]').evaluateAll(nodes=>nodes.map(node=>{const b=node.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height}}).find(box=>box.width>=100&&box.height>=10&&box.height<=40))
   expect(axis).not.toBeNull();expect(ramp).toBeDefined();expect(axis!.y+axis!.height).toBeLessThanOrEqual(ramp!.y-2)
   await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath(`state-heatmap-${theme}.png`)})
  }
