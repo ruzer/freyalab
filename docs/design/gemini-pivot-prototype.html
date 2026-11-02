@@ -1,0 +1,2419 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FreyaLab — Tabla dinámica + gráfico (Prototipo Interactivo)</title>
+  <style>
+    /* ==========================================================================
+       SISTEMA DE DISEÑO SOBRIO DE ESCRITORIO (100% LOCAL, SIN CDN NI FUENTES EXTERNAS)
+       ========================================================================== */
+    :root, [data-theme="light"] {
+      --bg-app: #f4f5f8;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f8f9fb;
+      --bg-muted: #eef0f4;
+      --bg-hover: #e5e8f0;
+      --border: #dfe2ea;
+      --border-strong: #c7ccd8;
+      --text-main: #1e2028;
+      --text-muted: #646977;
+      --text-faint: #8c91a0;
+      --accent: #2F6FEB;
+      --accent-hover: #215bc9;
+      --accent-soft: rgba(47, 111, 235, 0.10);
+      --accent-border: rgba(47, 111, 235, 0.38);
+      --warn-bg: #fff8eb;
+      --warn-border: #f59e0b;
+      --warn-text: #92400e;
+      --type-date-bg: #eef2ff;
+      --type-date-txt: #4338ca;
+      --type-num-bg: #ecfdf5;
+      --type-num-txt: #047857;
+      --type-txt-bg: #f3f4f6;
+      --type-txt-txt: #374151;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-pop: 0 10px 26px rgba(15, 23, 42, 0.14), 0 2px 6px rgba(15, 23, 42, 0.08);
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-app: #141519;
+      --bg-surface: #1c1d22;
+      --bg-subtle: #22242b;
+      --bg-muted: #292b33;
+      --bg-hover: #323540;
+      --border: #2e313b;
+      --border-strong: #434756;
+      --text-main: #eceef4;
+      --text-muted: #989eae;
+      --text-faint: #6d7383;
+      --accent: #4785ff;
+      --accent-hover: #5e95ff;
+      --accent-soft: rgba(71, 133, 255, 0.16);
+      --accent-border: rgba(71, 133, 255, 0.48);
+      --warn-bg: rgba(245, 158, 11, 0.14);
+      --warn-border: rgba(251, 191, 36, 0.45);
+      --warn-text: #fcd34d;
+      --type-date-bg: rgba(99, 102, 241, 0.18);
+      --type-date-txt: #a5b4fc;
+      --type-num-bg: rgba(16, 185, 129, 0.18);
+      --type-num-txt: #6ee7b7;
+      --type-txt-bg: rgba(156, 163, 175, 0.16);
+      --type-txt-txt: #d1d5db;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-pop: 0 12px 32px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      line-height: 1.4;
+      background: #0d0e11;
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Región accesible para lectores de pantalla */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ==========================================================================
+       BARRA DEL PROTOTIPO (Conmutador de Versión, Resolución y Tema)
+       ========================================================================== */
+    .proto-toolbar {
+      background: #14151a;
+      border-bottom: 1px solid #2a2c37;
+      color: #e2e5ee;
+      padding: 8px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 300;
+    }
+
+    .proto-toolbar-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .proto-seg {
+      display: inline-flex;
+      align-items: center;
+      background: #1f2129;
+      border: 1px solid #2f323f;
+      border-radius: 6px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .proto-seg-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #8f95a6;
+      padding: 0 8px;
+    }
+
+    .proto-btn {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      color: #b7bccb;
+      background: transparent;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+
+    .proto-btn:hover {
+      color: #ffffff;
+      background: #2b2e3b;
+    }
+
+    .proto-btn.active {
+      background: #2F6FEB;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    /* ==========================================================================
+       VENTANA DE ESCRITORIO FREYALAB (1440×900 | 1280×720 | <900px)
+       ========================================================================== */
+    .stage-wrap {
+      padding: 14px;
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+    }
+
+    .app-frame {
+      width: 1440px;
+      height: 860px; /* Cabe sin scroll en un monitor 1440x900 */
+      background: var(--bg-app);
+      color: var(--text-main);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+      transition: width 0.2s ease, height 0.2s ease;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .app-frame.size-1280 {
+      width: 1280px;
+      height: 690px; /* Cabe entero a 1280x720 sin hacer scroll */
+    }
+
+    .app-frame.size-narrow {
+      width: 840px; /* Ventana estrecha <900 px */
+      height: 720px;
+    }
+
+    /* ==========================================================================
+       BARRA SUPERIOR DE LA APP (Contexto discreto)
+       ========================================================================== */
+    .app-titlebar {
+      height: 38px;
+      min-height: 38px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    .titlebar-left, .titlebar-center, .titlebar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .win-dots {
+      display: flex;
+      gap: 6px;
+      margin-right: 6px;
+    }
+    .win-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--border-strong);
+    }
+    .win-dot.r { background: #ff5f57; }
+    .win-dot.y { background: #febc2e; }
+    .win-dot.g { background: #28c840; }
+
+    /* Pestañas superiores cuando se elige la Versión 2 (Pestaña de pantalla completa) */
+    .doc-mode-tabs {
+      display: inline-flex;
+      background: var(--bg-muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .doc-mode-tab {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      padding: 3px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .doc-mode-tab.active {
+      background: var(--bg-surface);
+      color: var(--accent);
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Botones genéricos de escritorio */
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.12s, border-color 0.12s;
+    }
+
+    .btn:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-strong);
+    }
+
+    .btn:focus-visible,
+    .field-pill:focus-visible,
+    .chart-thumb-btn:focus-visible,
+    .zone-chip-select:focus-visible,
+    .zone-chip-remove:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn-subtle {
+      background: transparent;
+      border-color: transparent;
+      color: var(--text-muted);
+    }
+
+    .btn-subtle:hover {
+      background: var(--bg-hover);
+      color: var(--text-main);
+    }
+
+    /* ==========================================================================
+       CUERPO DE LA APLICACIÓN: ESBOZO DE TABLA CSV + DOCK DE TABLA DINÁMICA
+       ========================================================================== */
+    .app-workspace {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* Esbozo discreto de la tabla CSV a la izquierda (solo contexto) */
+    .csv-context-pane {
+      width: 390px;
+      min-width: 320px;
+      background: var(--bg-subtle);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      opacity: 0.72;
+      user-select: none;
+      transition: opacity 0.15s;
+    }
+
+    .csv-context-pane:hover {
+      opacity: 0.92;
+    }
+
+    .app-frame.size-1280 .csv-context-pane {
+      width: 310px;
+      min-width: 280px;
+    }
+
+    /* Ocultar esbozo CSV en ventana estrecha (<900px) o en modo Pestaña Completa */
+    .app-frame.size-narrow .csv-context-pane,
+    .app-frame.mode-fulltab .csv-context-pane {
+      display: none;
+    }
+
+    .csv-context-bar {
+      height: 34px;
+      padding: 0 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .csv-sketch-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .csv-sketch-table th,
+    .csv-sketch-table td {
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      padding: 5px 8px;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .csv-sketch-table th {
+      background: var(--bg-muted);
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* ==========================================================================
+       PANEL PRINCIPAL: «TABLA DINÁMICA + GRÁFICO»
+       ========================================================================== */
+    .pivot-dock {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--bg-surface);
+      overflow: hidden;
+    }
+
+    /* Barra superior del Dock (incluye botón «‹ Volver a la tabla» en ventana <900px) */
+    .pivot-header {
+      height: 40px;
+      min-height: 40px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--bg-surface);
+    }
+
+    .back-to-table-btn {
+      display: none;
+    }
+
+    .app-frame.size-narrow .back-to-table-btn {
+      display: inline-flex;
+      font-weight: 600;
+      color: var(--accent);
+      border-color: var(--accent-border);
+      background: var(--accent-soft);
+    }
+
+    /* ==========================================================================
+        CONSTRUCTOR SUPERIOR COMPACTO: CAMPOS + 4 ZONAS DE SOLTAR (COMO EXCEL)
+       ========================================================================== */
+    .pivot-builder {
+      padding: 10px 16px;
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .app-frame.size-1280 .pivot-builder {
+      padding: 8px 14px;
+      gap: 6px;
+    }
+
+    /* 1. Tira de Campos disponibles (Arrastrables o Clicables) */
+    .fields-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .fields-strip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .strip-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-right: 2px;
+    }
+
+    .field-pill {
+      height: 28px;
+      padding: 0 9px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: grab;
+      user-select: none;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.1s, border-color 0.12s, box-shadow 0.12s;
+      position: relative;
+    }
+
+    .field-pill:hover {
+      border-color: var(--accent);
+      background: var(--bg-surface);
+    }
+
+    .field-pill:active,
+    .field-pill.dragging {
+      cursor: grabbing;
+      opacity: 0.65;
+      transform: scale(0.98);
+      box-shadow: 0 6px 16px rgba(47, 111, 235, 0.22);
+    }
+
+    .field-pill.in-use {
+      border-color: var(--accent-border);
+      background: var(--accent-soft);
+    }
+
+    .type-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 5px;
+      border-radius: 4px;
+      letter-spacing: 0.01em;
+    }
+
+    .type-date { background: var(--type-date-bg); color: var(--type-date-txt); }
+    .type-num  { background: var(--type-num-bg);  color: var(--type-num-txt); }
+    .type-txt  { background: var(--type-txt-bg);  color: var(--type-txt-txt); }
+    .type-warn { background: var(--warn-bg);      color: var(--warn-text); border: 1px solid var(--warn-border); }
+
+    /* Menú contextual «Añadir a…» al hacer clic o pulsar Enter en un campo */
+    .add-to-menu {
+      position: absolute;
+      top: 34px;
+      left: 0;
+      z-index: 120;
+      width: 210px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-pop);
+      padding: 5px;
+    }
+
+    .add-to-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 4px 8px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3px;
+    }
+
+    .add-to-item {
+      width: 100%;
+      height: 28px;
+      padding: 0 8px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .add-to-item:hover,
+    .add-to-item:focus-visible {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+      outline: none;
+    }
+
+    /* 2. Cuadrícula de las 4 zonas de soltar: Filas, Columnas, Valores, Filtros */
+    .drop-zones-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.35fr 1fr;
+      gap: 8px;
+    }
+
+    .drop-zone {
+      min-height: 42px;
+      background: var(--bg-surface);
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-sm);
+      padding: 5px 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      transition: background 0.12s, border-color 0.12s, box-shadow 0.12s;
+    }
+
+    .drop-zone.drag-over {
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .zone-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-right: 2px;
+      user-select: none;
+    }
+
+    .zone-placeholder {
+      font-size: 11px;
+      color: var(--text-faint);
+      user-select: none;
+    }
+
+    /* Chip dentro de una zona de soltar */
+    .placed-chip {
+      height: 26px;
+      padding: 0 6px 0 8px;
+      border-radius: 5px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Selector «Resumir por» en Valores o filtro en Filtros */
+    .zone-chip-select {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--bg-surface);
+      border: 1px solid var(--accent-border);
+      border-radius: 4px;
+      padding: 1px 4px;
+      cursor: pointer;
+    }
+
+    .zone-chip-remove {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .zone-chip-remove:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #dc2626;
+    }
+
+    /* ==========================================================================
+       BANNER DE AVISO PARA MONTOS CON SÍMBOLO ($1,200.50)
+       ========================================================================== */
+    .currency-warning-bar {
+      margin: 8px 16px 0;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      color: var(--warn-text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 12px;
+    }
+
+    /* ==========================================================================
+       LÍNEA EXPLICATIVA DEL TIPO DE GRÁFICO + SELECTOR DE 1 CLIC CON MINIATURAS
+       ========================================================================== */
+    .chart-reason-bar {
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: var(--bg-surface);
+    }
+
+    .reason-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .reason-text strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .chart-picker-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-subtle);
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .chart-thumb-btn {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      height: 26px;
+      padding: 0 8px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+
+    .chart-thumb-btn:hover {
+      color: var(--text-main);
+      background: var(--bg-hover);
+    }
+
+    .chart-thumb-btn.active {
+      background: var(--bg-surface);
+      color: var(--accent);
+      border-color: var(--accent-border);
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ==========================================================================
+       4. ÁREA DE RESULTADO PRINCIPAL: GRÁFICO ARRIBA + TABLA DINÁMICA ABAJO
+       Ambos visibles a la vez sin desplazarse en 1440×900 y 1280×720
+       ========================================================================== */
+    .results-stage {
+      flex: 1;
+      min-height: 0;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+      background: var(--bg-surface);
+    }
+
+    .app-frame.size-1280 .results-stage {
+      padding: 8px 14px;
+      gap: 8px;
+    }
+
+    /* Estado vacío de una sola línea */
+    .empty-state-box {
+      flex: 1;
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--text-muted);
+      font-size: 14px;
+      background: var(--bg-subtle);
+    }
+
+    /* Tarjeta del Gráfico SVG (Arriba, grande) */
+    .chart-stage-card {
+      flex: 1.25;
+      min-height: 195px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      padding: 10px 14px 6px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-frame.size-1280 .chart-stage-card {
+      min-height: 165px;
+      padding: 8px 12px 4px;
+    }
+
+    .chart-card-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .chart-main-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .chart-main-kpi {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .svg-canvas-holder {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* Tooltip flotante sobre el SVG */
+    .svg-tooltip {
+      position: fixed;
+      pointer-events: none;
+      z-index: 500;
+      background: #181920;
+      color: #f4f6fb;
+      border: 1px solid #343846;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+      display: none;
+      white-space: nowrap;
+    }
+
+    /* Tarjeta de la Tabla Dinámica (Debajo del gráfico, visible al mismo tiempo) */
+    .pivot-table-card {
+      flex: 0.95;
+      min-height: 145px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .app-frame.size-1280 .pivot-table-card {
+      min-height: 120px;
+    }
+
+    .pivot-table-scroll {
+      flex: 1;
+      overflow: auto;
+    }
+
+    table.pivot-matrix {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    table.pivot-matrix th,
+    table.pivot-matrix td {
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      text-align: left;
+    }
+
+    .app-frame.size-1280 table.pivot-matrix th,
+    .app-frame.size-1280 table.pivot-matrix td {
+      padding: 4px 8px;
+    }
+
+    table.pivot-matrix thead th {
+      position: sticky;
+      top: 0;
+      background: var(--bg-subtle);
+      font-weight: 600;
+      color: var(--text-main);
+      z-index: 5;
+    }
+
+    table.pivot-matrix td.num,
+    table.pivot-matrix th.num {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+    }
+
+    table.pivot-matrix tr.total-row td,
+    table.pivot-matrix tr.total-row th {
+      background: var(--bg-subtle);
+      font-weight: 700;
+      border-top: 1px solid var(--border-strong);
+    }
+
+    /* ==========================================================================
+       6. PIE DISCRETO: «MÁS OPCIONES» (COLAPSADO) Y «VER CONSULTA SQL»
+       ========================================================================== */
+    .pivot-footer {
+      min-height: 32px;
+      padding: 4px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-subtle);
+      display: flex;
+       flex-direction: column;
+      justify-content: center;
+    }
+
+    .footer-links-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .discreet-link {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .discreet-link:hover,
+    .discreet-link:focus-visible {
+      color: var(--accent);
+      background: var(--bg-hover);
+      outline: none;
+    }
+
+    .footer-drawer {
+      margin-top: 6px;
+      padding: 8px 10px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+    }
+
+    /* ==========================================================================
+       SECCIÓN DE DOCUMENTACIÓN DE DISEÑO (DEBAJO DEL PROTOTIPO)
+       ========================================================================== */
+    .design-notes-wrap {
+      max-width: 1440px;
+      margin: 16px auto 56px;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 1024px) {
+      .design-notes-wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .notes-card {
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 20px 24px;
+    }
+
+    .notes-card h2 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .notes-list {
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Región ARIA-LIVE para anunciar cambios a usuarios de lector de pantalla -->
+  <div id="aria-live-region" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Tooltip flotante para el gráfico SVG -->
+  <div id="svg-tooltip" class="svg-tooltip" role="tooltip"></div>
+
+  <!-- ========================================================================
+       BARRA SUPERIOR DEL ENTREGABLE (Alternar Versión, Tamaño de Ventana y Tema)
+       ======================================================================== -->
+  <header class="proto-toolbar" aria-label="Controles de vista del prototipo">
+    <div class="proto-toolbar-inner">
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <span style="font-weight:700; color:#fff; letter-spacing:0.02em;">FREYALAB · TABLA DINÁMICA + GRÁFICO</span>
+
+        <!-- Entrega 1 vs Entrega 3: Dock derecho vs Pestaña de pantalla completa -->
+        <div class="proto-seg" role="group" aria-label="Versión de arquitectura">
+          <span class="proto-seg-label">Arquitectura:</span>
+          <button class="proto-btn active" id="btn-arch-dock" onclick="setArchitecture('dock')">
+            1. Panel derecho (Dock)
+          </button>
+          <button class="proto-btn" id="btn-arch-fulltab" onclick="setArchitecture('fulltab')">
+            2. Alternativa: Pestaña completa («Tabla | Resumen y gráfico | Texto»)
+          </button>
+        </div>
+
+        <!-- Resoluciones obligatorias: 1440x900, 1280x720 y Ventana estrecha <900px -->
+        <div class="proto-seg" role="group" aria-label="Tamaño de ventana">
+          <span class="proto-seg-label">Ventana:</span>
+          <button class="proto-btn active" id="btn-sz-1440" onclick="setWindowSize('1440')">1440×900</button>
+          <button class="proto-btn" id="btn-sz-1280" onclick="setWindowSize('1280')">1280×720</button>
+          <button class="proto-btn" id="btn-sz-narrow" onclick="setWindowSize('narrow')">&lt;900 px (Estrecha)</button>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:8px;">
+        <!-- Casos rápidos de prueba -->
+        <div class="proto-seg">
+          <span class="proto-seg-label">Probar:</span>
+          <button class="proto-btn" onclick="loadPreset('initial')" title="Estado inicial: Suma de Ventas por Región">Estado inicial</button>
+          <button class="proto-btn" onclick="loadPreset('currency_warn')" title="Probar aviso de columna con símbolo $1,200.50">Aviso $ con símbolo</button>
+          <button class="proto-btn" onclick="loadPreset('empty')" title="Ver guía de una línea en estado vacío">Estado vacío</button>
+        </div>
+
+        <!-- Interruptor de tema Claro / Oscuro -->
+        <button class="proto-btn active" id="btn-theme-toggle" onclick="toggleTheme()" aria-label="Cambiar entre tema claro y oscuro">
+          ☀️ Claro / 🌙 Oscuro
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       MARCO DE LA APLICACIÓN DE ESCRITORIO FREYALAB
+       ======================================================================== -->
+  <main class="stage-wrap">
+    <div class="app-frame" id="app-frame">
+
+      <!-- BARRA SUPERIOR DE FREYALAB (Contexto de app) -->
+      <div class="app-titlebar">
+        <div class="titlebar-left">
+          <div class="win-dots" aria-hidden="true">
+            <span class="win-dot r"></span>
+            <span class="win-dot y"></span>
+            <span class="win-dot g"></span>
+          </div>
+          <span style="font-weight:600; color:var(--text-main);">ventas_2026.csv</span>
+          <span style="font-size:11px; color:var(--text-muted); background:var(--bg-muted); padding:2px 6px; border-radius:4px;">
+            60 filas · Local
+          </span>
+        </div>
+
+        <!-- Conmutador de Pestañas del documento (Visible de forma prominente en la Alternativa 2) -->
+        <div class="titlebar-center">
+          <div class="doc-mode-tabs" role="tablist" aria-label="Vistas del documento">
+            <button class="doc-mode-tab" id="doctab-table" role="tab" onclick="switchDocTab('table')">
+              Tabla (60)
+            </button>
+            <button class="doc-mode-tab active" id="doctab-pivot" role="tab" onclick="switchDocTab('pivot')">
+              Resumen y gráfico
+            </button>
+            <button class="doc-mode-tab" id="doctab-text" role="tab" onclick="switchDocTab('text')">
+              Texto (Markdown)
+            </button>
+          </div>
+        </div>
+
+        <div class="titlebar-right">
+          <button class="btn" onclick="toggleTheme()" title="Alternar tema claro u oscuro">
+            <span id="app-theme-label">🌙 Tema oscuro</span>
+          </button>
+          <button class="btn btn-primary">Guardar</button>
+        </div>
+      </div>
+
+      <!-- CUERPO PRINCIPAL -->
+      <div class="app-workspace">
+
+        <!-- IZQUIERDA: ESBOZO DISCRETO DE LA TABLA CSV (Contexto visual cuando está en modo Dock) -->
+        <aside class="csv-context-pane" id="csv-context-pane" aria-label="Vista previa de tabla origen">
+          <div class="csv-context-bar">
+            <span><strong>Datos de origen</strong> (ventas_2026.csv)</span>
+            <span>60 filas</span>
+          </div>
+          <div style="overflow:hidden; flex:1;">
+            <table class="csv-sketch-table" aria-hidden="true">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Región</th>
+                  <th>Producto</th>
+                  <th style="text-align:right;">Ventas</th>
+                </tr>
+              </thead>
+              <tbody id="csv-sketch-tbody">
+                <!-- Poblado con las primeras 18 filas del dataset JS -->
+              </tbody>
+            </table>
+          </div>
+        </aside>
+
+        <!-- DERECHA (O PANTALLA COMPLETA): TABLA DINÁMICA + GRÁFICO -->
+        <section class="pivot-dock" aria-label="Panel de tabla dinámica y gráfico">
+
+          <!-- Cabecera del panel con botón «‹ Volver a la tabla» para ventana estrecha (<900px) -->
+          <div class="pivot-header">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <button class="btn back-to-table-btn" onclick="setWindowSize('1440')" aria-label="Volver a la tabla de datos">
+                ‹ Volver a la tabla
+              </button>
+              <strong style="font-size:13px;">Tabla dinámica y gráfico</strong>
+              <span style="font-size:11px; color:var(--text-muted);">
+                Se actualiza al instante al mover campos
+              </span>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:6px;">
+              <button class="btn" onclick="swapRowsAndCols()" title="Intercambiar los campos de Filas y Columnas">
+                ⇄ Intercambiar filas y columnas
+              </button>
+              <button class="btn btn-subtle" onclick="loadPreset('empty')" title="Vaciar zonas para empezar de cero">
+                Limpiar todo
+              </button>
+            </div>
+          </div>
+
+          <!-- 1 y 2. CONSTRUCTOR ESTILO EXCEL: LISTA DE CAMPOS + 4 ZONAS DE SOLTAR -->
+          <div class="pivot-builder">
+
+            <!-- 1. Lista de campos del CSV con insignia de tipo -->
+            <div class="fields-row">
+              <div class="fields-strip" id="fields-strip" role="list" aria-label="Campos disponibles del archivo CSV">
+                <span class="strip-label">Campos (arrastra o haz clic):</span>
+                <!-- Generado dinámicamente por JS -->
+              </div>
+            </div>
+
+            <!-- 2. Cuatro zonas de soltar: Filas, Columnas, Valores, Filtros -->
+            <div class="drop-zones-grid">
+
+              <!-- Zona: FILAS -->
+              <div
+                class="drop-zone"
+                id="zone-rows"
+                data-zone="rows"
+                aria-label="Zona de Filas"
+                ondragover="onZoneDragOver(event)"
+                ondragleave="onZoneDragLeave(event)"
+                ondrop="onZoneDrop(event, 'rows')"
+              >
+                <span class="zone-label">☰ Filas:</span>
+                <div id="chips-rows" style="display:flex; gap:5px; flex-wrap:wrap; align-items:center;"></div>
+              </div>
+
+              <!-- Zona: COLUMNAS -->
+              <div
+                class="drop-zone"
+                id="zone-cols"
+                data-zone="cols"
+                aria-label="Zona de Columnas"
+                ondragover="onZoneDragOver(event)"
+                ondragleave="onZoneDragLeave(event)"
+                ondrop="onZoneDrop(event, 'cols')"
+              >
+                <span class="zone-label">☷ Columnas:</span>
+                <div id="chips-cols" style="display:flex; gap:5px; flex-wrap:wrap; align-items:center;"></div>
+              </div>
+
+              <!-- Zona: VALORES (con «Resumir por») -->
+              <div
+                class="drop-zone"
+                id="zone-vals"
+                data-zone="vals"
+                aria-label="Zona de Valores"
+                ondragover="onZoneDragOver(event)"
+                ondragleave="onZoneDragLeave(event)"
+                ondrop="onZoneDrop(event, 'vals')"
+              >
+                <span class="zone-label">∑ Valores:</span>
+                <div id="chips-vals" style="display:flex; gap:5px; flex-wrap:wrap; align-items:center;"></div>
+              </div>
+
+              <!-- Zona: FILTROS -->
+              <div
+                class="drop-zone"
+                id="zone-filters"
+                data-zone="filters"
+                aria-label="Zona de Filtros"
+                ondragover="onZoneDragOver(event)"
+                ondragleave="onZoneDragLeave(event)"
+                ondrop="onZoneDrop(event, 'filters')"
+              >
+                <span class="zone-label">▽ Filtros:</span>
+                <div id="chips-filters" style="display:flex; gap:5px; flex-wrap:wrap; align-items:center;"></div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- CASO DE AVISO: Columna de montos con símbolo ($1,200.50) -->
+          <div class="currency-warning-bar" id="currency-warning-bar" style="display:none;" role="alert">
+            <div>
+              <strong>⚠ Esta columna parece un monto con símbolo ($1,200.50); no puedo sumarla todavía.</strong>
+            </div>
+            <button class="btn btn-primary" onclick="convertCurrencyColumn()">
+              Convertir a número
+            </button>
+          </div>
+
+          <!-- 5. LÍNEA CON EL TIPO DE GRÁFICO ELEGIDO Y POR QUÉ + SELECTOR DE 1 CLIC CON MINIATURAS -->
+          <div class="chart-reason-bar" id="chart-reason-bar">
+            <div class="reason-text" id="chart-reason-text">
+              <strong>Barras:</strong> comparas una suma entre regiones
+            </div>
+
+            <!-- Selector de 1 clic con miniaturas SVG en línea -->
+            <div class="chart-picker-group" role="radiogroup" aria-label="Selector de tipo de gráfico">
+              <button class="chart-thumb-btn active" id="cbtn-bar" onclick="overrideChartType('bar')" role="radio" aria-checked="true">
+                <svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><rect x="1" y="6" width="3" height="7" rx="1" fill="currentColor"/><rect x="5.5" y="2" width="3" height="11" rx="1" fill="currentColor"/><rect x="10" y="4" width="3" height="9" rx="1" fill="currentColor"/></svg>
+                <span>Barras</span>
+              </button>
+              <button class="chart-thumb-btn" id="cbtn-line" onclick="overrideChartType('line')" role="radio" aria-checked="false">
+                <svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.8" points="1,10 5,5 9,8 13,2"/></svg>
+                <span>Líneas</span>
+              </button>
+              <button class="chart-thumb-btn" id="cbtn-scatter" onclick="overrideChartType('scatter')" role="radio" aria-checked="false">
+                <svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><circle cx="3" cy="10" r="1.7" fill="currentColor"/><circle cx="7" cy="6" r="1.7" fill="currentColor"/><circle cx="11" cy="3" r="1.7" fill="currentColor"/></svg>
+                <span>Dispersión</span>
+              </button>
+              <button class="chart-thumb-btn" id="cbtn-hist" onclick="overrideChartType('hist')" role="radio" aria-checked="false">
+                <svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><rect x="1" y="7" width="2.8" height="6" fill="currentColor"/><rect x="4.2" y="3" width="2.8" height="10" fill="currentColor"/><rect x="7.4" y="5" width="2.8" height="8" fill="currentColor"/><rect x="10.6" y="9" width="2.5" height="4" fill="currentColor"/></svg>
+                <span>Histograma</span>
+              </button>
+              <button class="chart-thumb-btn" id="cbtn-heatmap" onclick="overrideChartType('heatmap')" role="radio" aria-checked="false">
+                <svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><rect x="1" y="1" width="5" height="5" fill="currentColor" opacity="0.4"/><rect x="7" y="1" width="5" height="5" fill="currentColor"/><rect x="1" y="7" width="5" height="5" fill="currentColor"/><rect x="7" y="7" width="5" height="5" fill="currentColor" opacity="0.25"/></svg>
+                <span>Mapa de calor</span>
+              </button>
+              <button class="chart-thumb-btn" id="cbtn-box" onclick="overrideChartType('box')" role="radio" aria-checked="false">
+                <svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="1.4"/><rect x="4" y="4" width="6" height="6" fill="var(--bg-surface)" stroke="currentColor" stroke-width="1.4"/></svg>
+                <span>Caja</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. EL RESULTADO ES LO PRINCIPAL: GRÁFICO ARRIBA + TABLA DINÁMICA DEBAJO -->
+          <div class="results-stage" id="results-stage">
+
+            <!-- Estado vacío con guía de una línea -->
+            <div class="empty-state-box" id="empty-state-box" style="display:none;">
+              <span>Arrastra un campo a <strong>Filas</strong> o <strong>Valores</strong>.</span>
+              <button class="btn" onclick="loadPreset('initial')">Restaurar «Suma de Ventas por Región»</button>
+            </div>
+
+            <!-- Tarjeta superior: GRÁFICO SVG HECHO A MANO -->
+            <div class="chart-stage-card" id="chart-stage-card">
+              <div class="chart-card-top">
+                <span class="chart-main-title" id="chart-title-label">Suma de Ventas por Región</span>
+                <span class="chart-main-kpi" id="chart-kpi-label">Total: $148,920 · 60 filas</span>
+              </div>
+              <div class="svg-canvas-holder" id="svg-canvas-holder">
+                <!-- SVG inyectado dinámicamente -->
+              </div>
+            </div>
+
+            <!-- Tarjeta inferior: TABLA DINÁMICA EN VIVO -->
+            <div class="pivot-table-card" id="pivot-table-card">
+              <div class="pivot-table-scroll" id="pivot-table-scroll">
+                <!-- Tabla dinámica inyectada dinámicamente -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 6. ENLACES DISCRETOS: «MÁS OPCIONES» (COLAPSADO) Y «VER CONSULTA SQL» -->
+          <footer class="pivot-footer">
+            <div class="footer-links-row">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <button class="discreet-link" onclick="toggleFooterDrawer('options')" aria-expanded="false" id="link-more-options">
+                  ▸ Más opciones
+                </button>
+                <button class="discreet-link" onclick="toggleFooterDrawer('sql')" aria-expanded="false" id="link-view-sql">
+                  ▸ Ver consulta SQL
+                </button>
+              </div>
+              <span>Actualización instantánea · Sin botón «Generar»</span>
+            </div>
+
+            <!-- Cajón colapsado: Más opciones -->
+            <div class="footer-drawer" id="drawer-options" style="display:none;">
+              <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+                <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+                  <input type="checkbox" checked onchange="updateEverything()" id="opt-sort-desc" />
+                  <span>Ordenar de mayor a menor valor</span>
+                </label>
+                <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+                  <input type="checkbox" checked onchange="updateEverything()" id="opt-show-totals" />
+                  <span>Mostrar fila de totales en la tabla</span>
+                </label>
+                <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+                  <input type="checkbox" checked onchange="updateEverything()" id="opt-data-labels" />
+                  <span>Mostrar valores sobre las barras</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Cajón colapsado: Ver consulta SQL -->
+            <div class="footer-drawer" id="drawer-sql" style="display:none;">
+              <pre id="sql-preview-code" style="font-family:var(--font-mono); font-size:11px; color:var(--text-main); white-space:pre-wrap;"></pre>
+            </div>
+          </footer>
+
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       ENTREGAS 2 Y 3: DECISIONES DE DISEÑO (MÁX. 8 PUNTOS) Y COMPARATIVA DE VERSIÓN
+       ======================================================================== -->
+  <section class="design-notes-wrap" aria-label="Justificación de diseño UX">
+    <div class="notes-card">
+      <h2>8 decisiones de diseño que ayudan a quien ya sabe usar Excel</h2>
+      <ol class="notes-list">
+        <li>
+          <strong>Las 4 cajas universales de Excel (Filas, Columnas, Valores, Filtros):</strong> En lugar de preguntar qué es «Eje X» o «Serie de agrupación», reutilizamos el modelo mental exacto de las tablas dinámicas de Excel que millones de oficinistas ya dominan.
+        </li>
+        <li>
+          <strong>Resultado desde el primer segundo (Cero síndrome de lienzo en blanco):</strong> Al abrir el panel ya aparece dibujado <em>«Suma de Ventas por Región»</em>; el usuario entiende cómo funciona viendo sus propios datos antes de tocar nada.
+        </li>
+        <li>
+          <strong>Doble vía de interacción (Arrastrar o Clic en «Añadir a…»):</strong> Arrastrar es natural con ratón, pero hacer clic sobre un campo abre un menú directo <em>«Añadir a Filas / Columnas / Valores / Filtros»</em>, más rápido en trackpads y 100 % accesible con teclado.
+        </li>
+        <li>
+          <strong>Gráfico y tabla dinámica juntos y sincronizados:</strong> Quien viene de Excel confía en el gráfico cuando puede comprobar debajo las cifras exactas y la fila de <em>Total</em> que respaldan cada barra.
+        </li>
+        <li>
+          <strong>Elección automática de gráfico explicada en una frase humana:</strong> Al cambiar campos, FreyaLab elige el gráfico idóneo y explica por qué en lenguaje llano (p. ej. <em>«Líneas: muestras cómo cambia un valor mes a mes»</em>), manteniendo 6 miniaturas a un clic por si prefiere otro.
+        </li>
+        <li>
+          <strong>«Resumir por» integrado en el propio chip de Valor:</strong> Cambiar entre <em>Suma, Cuenta, Promedio, Mínimo, Máximo o Mediana</em> se hace en un desplegable dentro del mismo chip en <em>Valores</em>, sin formularios aparte.
+        </li>
+        <li>
+          <strong>Reparación en 1 clic de montos con símbolo (<code>$1,200.50</code>):</strong> El error más común al importar un CSV bancario o de Excel es que los importes vengan como texto con <code>$</code> y comas; en lugar de fallar en silencio, FreyaLab ofrece el botón directo <em>[Convertir a número]</em>.
+        </li>
+        <li>
+          <strong>Un solo eje limpio y cero ruido técnico:</strong> Nunca se dibujan dobles ejes engañosos, y las opciones avanzadas (ordenación o consulta SQL) quedan plegadas abajo para no intimidar al usuario de oficina.
+        </li>
+      </ol>
+    </div>
+
+    <div class="notes-card">
+      <h2>Comparativa: Panel derecho (Dock) vs. Pestaña de pantalla completa</h2>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
+        Puedes probar ambas versiones en vivo usando el conmutador <strong>«Arquitectura»</strong> de la barra negra superior:
+      </p>
+      <ul class="notes-list">
+        <li>
+          <strong>Versión 1 — Panel derecho acoplado (Dock):</strong>
+          Ideal en monitores de <code>1440×900</code> o superiores cuando la persona quiere consultar registros individuales del CSV a la izquierda mientras ve el agregado a la derecha. En ventanas estrechas (<code>&lt;900 px</code>), pasa automáticamente a ocupar toda la ventana mostrando el botón <strong>«‹ Volver a la tabla»</strong> arriba a la izquierda.
+        </li>
+        <li>
+          <strong>Versión 2 — Pestaña de pantalla completa (al lado de «Tabla» y «Texto»):</strong>
+          Al igual que hace Excel cuando inserta una Tabla Dinámica en una <em>Hoja nueva</em>, dedicar toda la anchura de la ventana elimina la sensación de encierro, permite tablas cruzadas con muchas columnas (p. ej. <em>Región × Producto</em>) sin barras de desplazamiento horizontal y da máximo aire al gráfico.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       MOTOR JAVASCRIPT AUTOCONTENIDO (60 FILAS REALISTAS, REGLAS Y SVG A MANO)
+       ======================================================================== -->
+  <script>
+    // 1. Definición de los campos del CSV con su insignia de tipo
+    // Incluye además «Precio listado ($)» con símbolos $1,200.50 para demostrar el aviso y conversión en 1 clic.
+    const FIELDS_SCHEMA = [
+      { id: 'Fecha',    label: 'Fecha',    type: 'date', badge: 'Fecha' },
+      { id: 'Region',   label: 'Región',   type: 'text', badge: 'Texto' },
+      { id: 'Producto', label: 'Producto', type: 'text', badge: 'Texto' },
+      { id: 'Vendedor', label: 'Vendedor', type: 'text', badge: 'Texto' },
+      { id: 'Ventas',   label: 'Ventas',   type: 'num',  badge: 'Número', isCurrency: true },
+      { id: 'Unidades', label: 'Unidades', type: 'num',  badge: 'Número', isCurrency: false },
+      { id: 'MontoTexto', label: 'Monto ($ texto)', type: 'dirty_currency', badge: '$ Texto', isCurrency: true }
+    ];
+
+    // 2. Generación determinista de 60 filas realistas de ventas en español
+    const REGIONES = ['Norte', 'Centro', 'Sur', 'Occidente'];
+    const PRODUCTOS = ['Portátil Pro', 'Monitor 27"', 'Teclado Mecánico', 'Soporte Ergonómico'];
+    const VENDEDORES = ['Ana Gómez', 'Carlos Ruiz', 'Elena Díaz', 'Marco Vega', 'Sofía Lara'];
+    const MESES = [
+      { key: '2026-01', label: 'Ene 2026' },
+      { key: '2026-02', label: 'Feb 2026' },
+      { key: '2026-03', label: 'Mar 2026' },
+      { key: '2026-04', label: 'Abr 2026' },
+      { key: '2026-05', label: 'May 2026' },
+      { key: '2026-06', label: 'Jun 2026' }
+    ];
+
+    const DATASET = [];
+    (function buildDataset() {
+      const baseWeights = { 'Centro': 1.35, 'Norte': 1.15, 'Occidente': 0.95, 'Sur': 0.75 };
+      for (let i = 0; i < 60; i++) {
+        const reg = REGIONES[i % REGIONES.length];
+        const prod = PRODUCTOS[(i * 3 + 1) % PRODUCTOS.length];
+        const vend = VENDEDORES[(i * 2) % VENDEDORES.length];
+        const mesObj = MESES[Math.floor(i / 10) % MESES.length];
+        const day = String(((i * 3) % 27) + 1).padStart(2, '0');
+        const unidades = ((i * 7) % 18) + 2;
+        const unitPrice = prod === 'Portátil Pro' ? 420 : (prod === 'Monitor 27"' ? 210 : (prod === 'Teclado Mecánico' ? 85 : 65));
+        const ventas = Math.round(unidades * unitPrice * baseWeights[reg] * (1 + (i % 5) * 0.06));
+        DATASET.push({
+          Fecha: mesObj.key,
+          FechaLabel: mesObj.label,
+          FechaDia: `${mesObj.key}-${day}`,
+          Region: reg,
+          Producto: prod,
+          Vendedor: vend,
+          Ventas: ventas,
+          Unidades: unidades,
+          MontoTexto: `$${(ventas * 1.16).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          MontoTextoNum: Math.round(ventas * 1.16 * 100) / 100
+        });
+      }
+    })();
+
+    // Estado de la Tabla Dinámica (Arranca con «Suma de Ventas por Región»)
+    const state = {
+      rows: ['Region'],
+      cols: [],
+      vals: [{ field: 'Ventas', agg: 'sum' }],
+      filters: [], // [{ field: 'Region', value: 'Todas' }]
+      manualChartType: null, // null = automático según reglas del brief
+      activeChartType: 'bar',
+      currencyConverted: false,
+      pendingDirtyField: null,
+      openMenuFieldId: null,
+      architecture: 'dock', // 'dock' | 'fulltab'
+      windowSize: '1440',   // '1440' | '1280' | 'narrow'
+      theme: 'light'
+    };
+
+    const AGG_LABELS = {
+      sum: 'Suma',
+      count: 'Cuenta',
+      avg: 'Promedio',
+      min: 'Mínimo',
+      max: 'Máximo',
+      median: 'Mediana'
+    };
+
+    // Anunciar acciones en la región aria-live
+    function announce(message) {
+      const region = document.getElementById('aria-live-region');
+      region.textContent = '';
+      setTimeout(() => {
+        region.textContent = message;
+      }, 20);
+    }
+
+    // Poblar el esbozo gris de la tabla CSV a la izquierda
+    function renderCsvSketch() {
+      const tbody = document.getElementById('csv-sketch-tbody');
+      tbody.innerHTML = DATASET.slice(0, 22).map(r => `
+        <tr>
+          <td>${r.FechaDia}</td>
+          <td>${r.Region}</td>
+          <td>${r.Producto}</td>
+          <td style="text-align:right; font-family:var(--font-mono);">$${r.Ventas.toLocaleString('es-MX')}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Renderizar tira de campos disponibles
+    function renderFieldsStrip() {
+      const strip = document.getElementById('fields-strip');
+      const usedSet = new Set([
+        ...state.rows,
+        ...state.cols,
+        ...state.vals.map(v => v.field),
+        ...state.filters.map(f => f.field)
+      ]);
+
+      let html = `<span class="strip-label">Campos:</span>`;
+      FIELDS_SCHEMA.forEach(f => {
+        const isDirty = f.type === 'dirty_currency' && !state.currencyConverted;
+        const badgeClass = f.type === 'date'
+          ? 'type-date'
+          : (isDirty ? 'type-warn' : (f.type === 'num' || state.currencyConverted ? 'type-num' : 'type-txt'));
+        const badgeText = isDirty ? '$ Texto' : (f.type === 'dirty_currency' && state.currencyConverted ? 'Número' : f.badge);
+        const inUseClass = usedSet.has(f.id) ? 'in-use' : '';
+
+        html += `
+          <div style="position:relative; display:inline-block;">
+            <button
+              type="button"
+              class="field-pill ${inUseClass}"
+              draggable="true"
+              ondragstart="onFieldDragStart(event, '${f.id}')"
+              ondragend="onFieldDragEnd(event)"
+              onclick="toggleAddToMenu(event, '${f.id}')"
+              aria-haspopup="true"
+              aria-expanded="${state.openMenuFieldId === f.id}"
+              aria-label="Campo ${f.label}, tipo ${badgeText}. Arrastra o pulsa Enter para añadir a una zona."
+            >
+              <span>${f.label}</span>
+              <span class="type-badge ${badgeClass}">${badgeText}</span>
+            </button>
+            ${state.openMenuFieldId === f.id ? renderAddToMenuHtml(f) : ''}
+          </div>
+        `;
+      });
+
+      strip.innerHTML = html;
+    }
+
+    function renderAddToMenuHtml(fieldObj) {
+      return `
+        <div class="add-to-menu" role="menu" aria-label="Añadir ${fieldObj.label} a zona">
+          <div class="add-to-title">Añadir «${fieldObj.label}» a…</div>
+          <button type="button" class="add-to-item" role="menuitem" onclick="addFieldToZone('${fieldObj.id}', 'rows')">
+            <span>☰ Filas</span><span>↵</span>
+          </button>
+          <button type="button" class="add-to-item" role="menuitem" onclick="addFieldToZone('${fieldObj.id}', 'cols')">
+            <span>☷ Columnas</span><span>↵</span>
+          </button>
+          <button type="button" class="add-to-item" role="menuitem" onclick="addFieldToZone('${fieldObj.id}', 'vals')">
+            <span>∑ Valores</span><span>↵</span>
+          </button>
+          <button type="button" class="add-to-item" role="menuitem" onclick="addFieldToZone('${fieldObj.id}', 'filters')">
+            <span>▽ Filtros</span><span>↵</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function toggleAddToMenu(ev, fieldId) {
+      ev.stopPropagation();
+      state.openMenuFieldId = (state.openMenuFieldId === fieldId) ? null : fieldId;
+      renderFieldsStrip();
+    }
+
+    document.addEventListener('click', () => {
+      if (state.openMenuFieldId) {
+        state.openMenuFieldId = null;
+        renderFieldsStrip();
+      }
+    });
+
+    // Drag & Drop real
+    let draggedFieldId = null;
+
+    function onFieldDragStart(ev, fieldId) {
+      draggedFieldId = fieldId;
+      state.openMenuFieldId = null;
+      ev.currentTarget.classList.add('dragging');
+      if (ev.dataTransfer) {
+        ev.dataTransfer.setData('text/plain', fieldId);
+        ev.dataTransfer.effectAllowed = 'copyMove';
+      }
+    }
+
+    function onFieldDragEnd(ev) {
+      ev.currentTarget.classList.remove('dragging');
+      document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+    }
+
+    function onZoneDragOver(ev) {
+      ev.preventDefault();
+      ev.currentTarget.classList.add('drag-over');
+    }
+
+    function onZoneDragLeave(ev) {
+      ev.currentTarget.classList.remove('drag-over');
+    }
+
+    function onZoneDrop(ev, targetZone) {
+      ev.preventDefault();
+      ev.currentTarget.classList.remove('drag-over');
+      const fId = draggedFieldId || (ev.dataTransfer ? ev.dataTransfer.getData('text/plain') : null);
+      if (fId) {
+        addFieldToZone(fId, targetZone);
+      }
+    }
+
+    // Añadir un campo a una de las 4 zonas (Filas, Columnas, Valores, Filtros)
+    function addFieldToZone(fieldId, zone) {
+      state.openMenuFieldId = null;
+      const schema = FIELDS_SCHEMA.find(f => f.id === fieldId);
+      if (!schema) return;
+
+      // Caso de aviso si se intenta sumar la columna con símbolo ($1,200.50) sin convertir
+      if (fieldId === 'MontoTexto' && !state.currencyConverted && zone === 'vals') {
+        state.pendingDirtyField = 'MontoTexto';
+        document.getElementById('currency-warning-bar').style.display = 'flex';
+        announce('Atención: Esta columna parece un monto con símbolo; no puedo sumarla todavía. Pulsa Convertir a número.');
+        renderFieldsStrip();
+        return;
+      }
+
+      state.manualChartType = null; // Volver a aplicar la regla inteligente de gráfico
+
+      if (zone === 'rows') {
+        state.cols = state.cols.filter(c => c !== fieldId);
+        if (!state.rows.includes(fieldId)) state.rows = [fieldId];
+        announce(`${schema.label} añadido a Filas`);
+      } else if (zone === 'cols') {
+        state.rows = state.rows.filter(r => r !== fieldId);
+        if (!state.cols.includes(fieldId)) state.cols = [fieldId];
+        announce(`${schema.label} añadido a Columnas`);
+      } else if (zone === 'vals') {
+        const defaultAgg = (schema.type === 'num' || (fieldId === 'MontoTexto' && state.currencyConverted)) ? 'sum' : 'count';
+        const existingIdx = state.vals.findIndex(v => v.field === fieldId);
+        if (existingIdx === -1) {
+          if (state.vals.length >= 2) state.vals.shift();
+          state.vals.push({ field: fieldId, agg: defaultAgg });
+        }
+        announce(`${schema.label} añadido a Valores resumido por ${AGG_LABELS[defaultAgg]}`);
+      } else if (zone === 'filters') {
+        if (!state.filters.some(f => f.field === fieldId)) {
+          state.filters.push({ field: fieldId, value: 'ALL' });
+        }
+        announce(`${schema.label} añadido a Filtros`);
+      }
+
+      updateEverything();
+    }
+
+    function removeFieldFromZone(fieldId, zone) {
+      const schema = FIELDS_SCHEMA.find(f => f.id === fieldId);
+      state.manualChartType = null;
+      if (zone === 'rows') state.rows = state.rows.filter(x => x !== fieldId);
+      if (zone === 'cols') state.cols = state.cols.filter(x => x !== fieldId);
+      if (zone === 'vals') state.vals = state.vals.filter(x => x.field !== fieldId);
+      if (zone === 'filters') state.filters = state.filters.filter(x => x.field !== fieldId);
+      if (schema) announce(`${schema.label} quitado de ${zone}`);
+      updateEverything();
+    }
+
+    function changeValAgg(fieldId, newAgg) {
+      const item = state.vals.find(v => v.field === fieldId);
+      if (item) {
+        item.agg = newAgg;
+        announce(`Resumen de ${fieldId} cambiado a ${AGG_LABELS[newAgg]}`);
+        updateEverything();
+      }
+    }
+
+    function changeFilterVal(fieldId, newVal) {
+      const item = state.filters.find(f => f.field === fieldId);
+      if (item) {
+        item.value = newVal;
+        announce(`Filtro ${fieldId} cambiado a ${newVal === 'ALL' ? 'Todos' : newVal}`);
+        updateEverything();
+      }
+    }
+
+    // Convertir la columna de monto con símbolo ($1,200.50) a número real
+    function convertCurrencyColumn() {
+      state.currencyConverted = true;
+      document.getElementById('currency-warning-bar').style.display = 'none';
+      state.vals = [{ field: 'MontoTexto', agg: 'sum' }];
+      if (state.rows.length === 0) state.rows = ['Region'];
+      announce('Columna Monto convertida a número y añadida a Valores como Suma.');
+      updateEverything();
+    }
+
+    // Botón «Intercambiar filas y columnas»
+    function swapRowsAndCols() {
+      const temp = [...state.rows];
+      state.rows = [...state.cols];
+      state.cols = temp;
+      state.manualChartType = null;
+      announce('Filas y columnas intercambiadas.');
+      updateEverything();
+    }
+
+    // Renderizar los chips dentro de las 4 zonas de soltar
+    function renderDropZones() {
+      // Filas
+      const rowsEl = document.getElementById('chips-rows');
+      rowsEl.innerHTML = state.rows.length === 0
+        ? `<span class="zone-placeholder">Suelta un campo aquí</span>`
+        : state.rows.map(fId => {
+            const f = FIELDS_SCHEMA.find(x => x.id === fId);
+            return `
+              <span class="placed-chip">
+                <span>${f.label}</span>
+                <button type="button" class="zone-chip-remove" onclick="removeFieldFromZone('${f.id}', 'rows')" aria-label="Quitar ${f.label} de Filas">×</button>
+              </span>
+            `;
+          }).join('');
+
+      // Columnas
+      const colsEl = document.getElementById('chips-cols');
+      colsEl.innerHTML = state.cols.length === 0
+        ? `<span class="zone-placeholder">Opcional</span>`
+        : state.cols.map(fId => {
+            const f = FIELDS_SCHEMA.find(x => x.id === fId);
+            return `
+              <span class="placed-chip">
+                <span>${f.label}</span>
+                <button type="button" class="zone-chip-remove" onclick="removeFieldFromZone('${f.id}', 'cols')" aria-label="Quitar ${f.label} de Columnas">×</button>
+              </span>
+            `;
+          }).join('');
+
+      // Valores (con selector «Resumir por»)
+      const valsEl = document.getElementById('chips-vals');
+      valsEl.innerHTML = state.vals.length === 0
+        ? `<span class="zone-placeholder">Suelta un campo a calcular</span>`
+        : state.vals.map(v => {
+            const f = FIELDS_SCHEMA.find(x => x.id === v.field);
+            return `
+              <span class="placed-chip">
+                <span>${f.label}:</span>
+                <select
+                  class="zone-chip-select"
+                  aria-label="Resumir ${f.label} por"
+                  onchange="changeValAgg('${v.field}', this.value)"
+                >
+                  <option value="sum" ${v.agg === 'sum' ? 'selected' : ''}>Suma</option>
+                  <option value="count" ${v.agg === 'count' ? 'selected' : ''}>Cuenta</option>
+                  <option value="avg" ${v.agg === 'avg' ? 'selected' : ''}>Promedio</option>
+                  <option value="min" ${v.agg === 'min' ? 'selected' : ''}>Mínimo</option>
+                  <option value="max" ${v.agg === 'max' ? 'selected' : ''}>Máximo</option>
+                  <option value="median" ${v.agg === 'median' ? 'selected' : ''}>Mediana</option>
+                </select>
+                <button type="button" class="zone-chip-remove" onclick="removeFieldFromZone('${v.field}', 'vals')" aria-label="Quitar ${f.label} de Valores">×</button>
+              </span>
+            `;
+          }).join('');
+
+      // Filtros
+      const filtersEl = document.getElementById('chips-filters');
+      filtersEl.innerHTML = state.filters.length === 0
+        ? `<span class="zone-placeholder">Ninguno</span>`
+        : state.filters.map(fl => {
+            const f = FIELDS_SCHEMA.find(x => x.id === fl.field);
+            const uniqueOpts = Array.from(new Set(DATASET.map(r => r[fl.field]))).sort();
+            return `
+              <span class="placed-chip">
+                <span>${f.label}:</span>
+                <select
+                  class="zone-chip-select"
+                  aria-label="Filtrar por ${f.label}"
+                  onchange="changeFilterVal('${fl.field}', this.value)"
+                >
+                  <option value="ALL" ${fl.value === 'ALL' ? 'selected' : ''}>Todos</option>
+                  ${uniqueOpts.map(opt => `<option value="${opt}" ${fl.value === String(opt) ? 'selected' : ''}>${opt}</option>`).join('')}
+                </select>
+                <button type="button" class="zone-chip-remove" onclick="removeFieldFromZone('${fl.field}', 'filters')" aria-label="Quitar filtro ${f.label}">×</button>
+              </span>
+            `;
+          }).join('');
+    }
+
+    // 3. REGLAS ESTRICTAS DEL TIPO DE GRÁFICO (según el brief):
+    // - fecha + número → líneas por mes
+    // - texto + número → barras con suma
+    // - solo texto → barras con conteo
+    // - solo número → histograma
+    // - dos números → dispersión
+    // - texto + texto → mapa de calor
+    function evaluateChartRule() {
+      const rowField = state.rows[0] ? FIELDS_SCHEMA.find(f => f.id === state.rows[0]) : null;
+      const colField = state.cols[0] ? FIELDS_SCHEMA.find(f => f.id === state.cols[0]) : null;
+      const val1 = state.vals[0] ? FIELDS_SCHEMA.find(f => f.id === state.vals[0].field) : null;
+      const val2 = state.vals[1] ? FIELDS_SCHEMA.find(f => f.id === state.vals[1].field) : null;
+
+      // Dos números → dispersión
+      if (val1 && val2 && isNumField(val1) && isNumField(val2)) {
+        return {
+          type: 'scatter',
+          reason: `<strong>Dispersión:</strong> relacionas dos números (${val1.label} y ${val2.label}) en cada venta`
+        };
+      }
+
+      // Texto + Texto (en Filas y Columnas) → Mapa de calor
+      if (rowField && colField && rowField.type === 'text' && colField.type === 'text') {
+        return {
+          type: 'heatmap',
+          reason: `<strong>Mapa de calor:</strong> cruzas dos textos (${rowField.label} y ${colField.label}) por intensidad`
+        };
+      }
+
+      // Fecha + Número → Líneas por mes
+      if ((rowField && rowField.type === 'date') || (colField && colField.type === 'date')) {
+        return {
+          type: 'line',
+          reason: `<strong>Líneas:</strong> muestras la evolución por mes de ${val1 ? val1.label.toLowerCase() : 'las ventas'}`
+        };
+      }
+
+      // Solo número (en Valores sin Filas ni Columnas) → Histograma
+      if (!rowField && !colField && val1 && isNumField(val1)) {
+        return {
+          type: 'hist',
+          reason: `<strong>Histograma:</strong> agrupas un solo número (${val1.label}) por tramos de frecuencia`
+        };
+      }
+
+      // Solo texto (sin Valores numéricos) → Barras con conteo
+      if (rowField && rowField.type === 'text' && !val1) {
+        return {
+          type: 'bar',
+          reason: `<strong>Barras:</strong> cuentas cuántas filas hay en cada ${rowField.label.toLowerCase()}`
+        };
+      }
+
+      // Texto + Número → Barras con suma/resumen
+      const aggName = state.vals[0] ? AGG_LABELS[state.vals[0].agg].toLowerCase() : 'suma';
+      const dimName = rowField ? rowField.label.toLowerCase() : (colField ? colField.label.toLowerCase() : 'categorías');
+      return {
+        type: 'bar',
+        reason: `<strong>Barras:</strong> comparas una ${aggName} entre ${dimName}`
+      };
+    }
+
+    function isNumField(fObj) {
+      if (!fObj) return false;
+      if (fObj.type === 'num') return true;
+      if (fObj.id === 'MontoTexto' && state.currencyConverted) return true;
+      return false;
+    }
+
+    function overrideChartType(type) {
+      state.manualChartType = type;
+      announce(`Tipo de gráfico cambiado a ${type}`);
+      updateEverything();
+    }
+
+    // Función matemática de agregación (Suma, Cuenta, Promedio, Mínimo, Máximo, Mediana)
+    function computeAggregation(records, fieldId, agg) {
+      if (!records || records.length === 0) return 0;
+      if (agg === 'count' || !fieldId) return records.length;
+
+      const actualKey = fieldId === 'MontoTexto' ? 'MontoTextoNum' : fieldId;
+      const nums = records.map(r => Number(r[actualKey])).filter(n => !isNaN(n));
+      if (nums.length === 0) return 0;
+
+      if (agg === 'sum') return nums.reduce((a, b) => a + b, 0);
+      if (agg === 'avg') return nums.reduce((a, b) => a + b, 0) / nums.length;
+      if (agg === 'min') return Math.min(...nums);
+      if (agg === 'max') return Math.max(...nums);
+      if (agg === 'median') {
+        const sorted = [...nums].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+      }
+      return 0;
+    }
+
+    function formatValue(val, fieldId, agg) {
+      if (agg === 'count') return Math.round(val).toLocaleString('es-MX');
+      const schema = FIELDS_SCHEMA.find(f => f.id === fieldId);
+      const isCurr = schema && schema.isCurrency;
+      const rounded = Math.round(val * 10) / 10;
+      return (isCurr ? '$' : '') + rounded.toLocaleString('es-MX', {
+        minimumFractionDigits: Number.isInteger(rounded) ? 0 : 1,
+        maximumFractionDigits: 1
+      });
+    }
+
+    // Recalcular datos filtrados, gráfico SVG y tabla dinámica
+    function updateEverything() {
+      renderFieldsStrip();
+      renderDropZones();
+
+      const hasAnyField = state.rows.length > 0 || state.cols.length > 0 || state.vals.length > 0;
+      document.getElementById('empty-state-box').style.display = hasAnyField ? 'none' : 'flex';
+      document.getElementById('chart-stage-card').style.display = hasAnyField ? 'flex' : 'none';
+      document.getElementById('pivot-table-card').style.display = hasAnyField ? 'flex' : 'none';
+
+      if (!hasAnyField) return;
+
+      // 1. Filtrar filas activas
+      const filteredRows = DATASET.filter(r => {
+        return state.filters.every(fl => fl.value === 'ALL' || String(r[fl.field]) === String(fl.value));
+      });
+
+      // 2. Determinar tipo de gráfico según reglas o elección manual
+      const ruleResult = evaluateChartRule();
+      const chosenType = state.manualChartType || ruleResult.type;
+      state.activeChartType = chosenType;
+
+      const reasonTextsByManual = {
+        bar: '<strong>Barras:</strong> comparas valores entre categorías de un vistazo',
+        line: '<strong>Líneas:</strong> muestras cómo evoluciona un valor en una secuencia',
+        scatter: '<strong>Dispersión:</strong> comparas dos medidas numéricas punto por punto',
+        hist: '<strong>Histograma:</strong> ves en qué tramos se concentran los valores',
+        heatmap: '<strong>Mapa de calor:</strong> cruzas dos dimensiones usando intensidad de color',
+        box: '<strong>Caja:</strong> resumes mediana, cuartiles y dispersión por grupo'
+      };
+
+      document.getElementById('chart-reason-text').innerHTML = state.manualChartType
+        ? reasonTextsByManual[chosenType]
+        : ruleResult.reason;
+
+      ['bar', 'line', 'scatter', 'hist', 'heatmap', 'box'].forEach(k => {
+        const btn = document.getElementById('cbtn-' + k);
+        const isAct = k === chosenType;
+        btn.classList.toggle('active', isAct);
+        btn.setAttribute('aria-checked', String(isAct));
+      });
+
+      // 3. Agrupar datos para el gráfico y la tabla dinámica
+      const rowDim = state.rows[0] || state.cols[0] || null;
+      const colDim = (state.rows[0] && state.cols[0]) ? state.cols[0] : null;
+      const valSpec = state.vals[0] || { field: null, agg: 'count' };
+      const valSchema = valSpec.field ? FIELDS_SCHEMA.find(f => f.id === valSpec.field) : null;
+      const rowSchema = rowDim ? FIELDS_SCHEMA.find(f => f.id === rowDim) : null;
+
+      // Título humano del resultado
+      const aggLabel = AGG_LABELS[valSpec.agg];
+      const metricName = valSchema ? valSchema.label : 'Filas';
+      const dimName = rowSchema ? ` por ${rowSchema.label}` : '';
+      document.getElementById('chart-title-label').textContent =
+        valSpec.field ? `${aggLabel} de ${metricName}${dimName}` : `Conteo de filas${dimName}`;
+
+      const grandTotal = computeAggregation(filteredRows, valSpec.field, valSpec.agg);
+      document.getElementById('chart-kpi-label').textContent =
+        `${aggLabel} general: ${formatValue(grandTotal, valSpec.field, valSpec.agg)} · ${filteredRows.length} filas`;
+
+      // Construir series por categoría de fila
+      let groups = [];
+      if (rowDim) {
+        const uniqueKeys = Array.from(new Set(filteredRows.map(r => r[rowDim])));
+        groups = uniqueKeys.map(k => {
+          const subset = filteredRows.filter(r => r[rowDim] === k);
+          const displayLabel = rowDim === 'Fecha' ? (subset[0]?.FechaLabel || k) : k;
+          const actualField = valSpec.field === 'MontoTexto' ? 'MontoTextoNum' : (valSpec.field || 'Ventas');
+          return {
+            key: k,
+            label: displayLabel,
+            value: computeAggregation(subset, valSpec.field, valSpec.agg),
+            rawNums: subset.map(r => Number(r[actualField])),
+            subset
+          };
+        });
+
+        const sortDesc = document.getElementById('opt-sort-desc')?.checked;
+        if (rowDim === 'Fecha') {
+          groups.sort((a, b) => String(a.key).localeCompare(String(b.key)));
+        } else if (sortDesc) {
+          groups.sort((a, b) => b.value - a.value);
+        } else {
+          groups.sort((a, b) => String(a.label).localeCompare(String(b.label)));
+        }
+      } else {
+        groups = [{
+          key: 'Total',
+          label: 'Total general',
+          value: grandTotal,
+          rawNums: filteredRows.map(r => Number(r[valSpec.field === 'MontoTexto' ? 'MontoTextoNum' : (valSpec.field || 'Ventas')])),
+          subset: filteredRows
+        }];
+      }
+
+      // 4. Dibujar Gráfico SVG a mano y Tabla Dinámica
+      renderHandcraftedSvg(chosenType, groups, filteredRows, rowDim, colDim, valSpec);
+      renderPivotMatrix(groups, filteredRows, rowDim, colDim, valSpec, grandTotal);
+      updateSqlPreview(rowDim, colDim, valSpec);
+    }
+
+    // Dibujar SVG limpio de una sola serie en #2F6FEB, barras redondeadas 4px, sin doble eje
+    function renderHandcraftedSvg(chartType, groups, filteredRows, rowDim, colDim, valSpec) {
+      const holder = document.getElementById('svg-canvas-holder');
+      const W = 760;
+      const H = state.windowSize === '1280' ? 140 : 175;
+      const padL = 62;
+      const padR = 24;
+      const padT = 18;
+      const padB = 28;
+      const plotW = W - padL - padR;
+      const plotH = H - padT - padB;
+      const showLabels = document.getElementById('opt-data-labels')?.checked;
+
+      // Caso 1: DISPERSIÓN (Dos números)
+      if (chartType === 'scatter') {
+        const fX = state.vals[0]?.field || 'Unidades';
+        const fY = state.vals[1]?.field || 'Ventas';
+        const keyX = fX === 'MontoTexto' ? 'MontoTextoNum' : fX;
+        const keyY = fY === 'MontoTexto' ? 'MontoTextoNum' : fY;
+        const maxX = Math.max(...filteredRows.map(r => r[keyX]), 1);
+        const maxY = Math.max(...filteredRows.map(r => r[keyY]), 1);
+
+        const circles = filteredRows.map(r => {
+          const cx = padL + (r[keyX] / maxX) * plotW;
+          const cy = padT + plotH - (r[keyY] / maxY) * plotH;
+          const tip = `${r.Region} · ${r.Producto}: ${r[keyX]} uds / $${r[keyY].toLocaleString('es-MX')}`;
+          return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="4.5" fill="var(--accent)" fill-opacity="0.78" stroke="var(--bg-surface)" stroke-width="1" onmousemove="showTip(event, '${tip}')" onmouseleave="hideTip()" />`;
+        }).join('');
+
+        holder.innerHTML = `
+          <svg viewBox="0 0 ${W} ${H}" style="width:100%; height:100%; overflow:visible;" role="img" aria-label="Gráfico de dispersión">
+            <line x1="${padL}" y1="${padT}" x2="${W - padR}" y2="${padT}" stroke="var(--border)" stroke-dasharray="3 3" stroke-width="1"/>
+            <line x1="${padL}" y1="${padT + plotH / 2}" x2="${W - padR}" y2="${padT + plotH / 2}" stroke="var(--border)" stroke-dasharray="3 3" stroke-width="1"/>
+            <line x1="${padL}" y1="${padT + plotH}" x2="${W - padR}" y2="${padT + plotH}" stroke="var(--border-strong)" stroke-width="1"/>
+            <text x="${padL - 8}" y="${padT + 4}" text-anchor="end" fill="var(--text-muted)" font-size="10">${formatValue(maxY, fY, 'sum')}</text>
+            <text x="${padL - 8}" y="${padT + plotH}" text-anchor="end" fill="var(--text-muted)" font-size="10">0</text>
+            ${circles}
+            <text x="${padL + plotW / 2}" y="${H - 4}" text-anchor="middle" fill="var(--text-muted)" font-size="11">${fX} →</text>
+          </svg>
+        `;
+        return;
+      }
+
+      // Caso 2: HISTOGRAMA (Un solo número agrupado en 5 tramos)
+      if (chartType === 'hist') {
+        const fKey = valSpec.field === 'MontoTexto' ? 'MontoTextoNum' : (valSpec.field || 'Ventas');
+        const vals = filteredRows.map(r => Number(r[fKey]));
+        const minV = Math.min(...vals, 0);
+        const maxV = Math.max(...vals, 100);
+        const binCount = 5;
+        const step = (maxV - minV) / binCount || 1;
+        const bins = Array.from({ length: binCount }, (_, idx) => {
+          const low = minV + idx * step;
+          const high = idx === binCount - 1 ? maxV + 1 : minV + (idx + 1) * step;
+          const count = vals.filter(v => v >= low && v < high).length;
+          return {
+            label: `${Math.round(low).toLocaleString('es-MX')}–${Math.round(low + step).toLocaleString('es-MX')}`,
+            value: count
+          };
+        });
+        renderBarOrLineSvg(holder, 'bar', bins, W, H, padL, padR, padT, padB, plotW, plotH, { field: null, agg: 'count' }, showLabels, true);
+        return;
+      }
+
+      // Caso 3: MAPA DE CALOR (Texto + Texto)
+      if (chartType === 'heatmap') {
+        const rField = rowDim || 'Region';
+        const cField = colDim || 'Producto';
+        const rKeys = Array.from(new Set(filteredRows.map(r => r[rField])));
+        const cKeys = Array.from(new Set(filteredRows.map(r => r[cField])));
+        const cellW = plotW / Math.max(cKeys.length, 1);
+        const cellH = plotH / Math.max(rKeys.length, 1);
+
+        let cells = [];
+        let maxCell = 1;
+        rKeys.forEach((rk, ri) => {
+          cKeys.forEach((ck, ci) => {
+            const sub = filteredRows.filter(r => r[rField] === rk && r[cField] === ck);
+            const v = computeAggregation(sub, valSpec.field, valSpec.agg);
+            if (v > maxCell) maxCell = v;
+            cells.push({ rk, ck, ri, ci, v });
+          });
+        });
+
+        const rectsHtml = cells.map(c => {
+          const alpha = (0.12 + 0.82 * (c.v / maxCell)).toFixed(2);
+          const x = padL + 30 + c.ci * ((plotW - 30) / cKeys.length);
+          const y = padT + c.ri * cellH;
+          const w = ((plotW - 30) / cKeys.length) - 4;
+          const h = cellH - 4;
+          const formatted = formatValue(c.v, valSpec.field, valSpec.agg);
+          return `
+            <g onmousemove="showTip(event, '${c.rk} × ${c.ck}: ${formatted}')" onmouseleave="hideTip()">
+              <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="4" fill="var(--accent)" fill-opacity="${alpha}"/>
+              <text x="${(x + w / 2).toFixed(1)}" y="${(y + h / 2 + 4).toFixed(1)}" text-anchor="middle" fill="${Number(alpha) > 0.55 ? '#fff' : 'var(--text-main)'}" font-size="10.5" font-weight="600">${formatted}</text>
+            </g>
+          `;
+        }).join('');
+
+        const rowLabels = rKeys.map((rk, ri) => `
+          <text x="${padL + 22}" y="${(padT + ri * cellH + cellH / 2 + 4).toFixed(1)}" text-anchor="end" fill="var(--text-main)" font-size="11">${rk}</text>
+        `).join('');
+
+        const colLabels = cKeys.map((ck, ci) => {
+          const colW = (plotW - 30) / cKeys.length;
+          return `<text x="${(padL + 30 + ci * colW + colW / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" fill="var(--text-muted)" font-size="11">${ck}</text>`;
+        }).join('');
+
+        holder.innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%; height:100%; overflow:visible;" role="img" aria-label="Mapa de calor">${rowLabels}${rectsHtml}${colLabels}</svg>`;
+        return;
+      }
+
+      // Caso 4: CAJA (Mediana y cuartiles por grupo)
+      if (chartType === 'box') {
+        const allVals = groups.flatMap(g => g.rawNums);
+        const maxV = Math.max(...allVals, 1);
+        const stepX = plotW / Math.max(groups.length, 1);
+
+        const boxesHtml = groups.map((g, idx) => {
+          const sorted = [...g.rawNums].sort((a, b) => a - b);
+          const q1 = sorted[Math.floor(sorted.length * 0.25)] || 0;
+          const med = sorted[Math.floor(sorted.length * 0.5)] || 0;
+          const q3 = sorted[Math.floor(sorted.length * 0.75)] || 0;
+          const minV = sorted[0] || 0;
+          const maxG = sorted[sorted.length - 1] || 0;
+
+          const cx = padL + idx * stepX + stepX / 2;
+          const yMin = padT + plotH - (minV / maxV) * plotH;
+          const yMax = padT + plotH - (maxG / maxV) * plotH;
+          const yQ1 = padT + plotH - (q1 / maxV) * plotH;
+          const yQ3 = padT + plotH - (q3 / maxV) * plotH;
+          const yMed = padT + plotH - (med / maxV) * plotH;
+
+          return `
+            <g onmousemove="showTip(event, '${g.label} · Mediana: $${med.toLocaleString('es-MX')}')" onmouseleave="hideTip()">
+              <line x1="${cx}" y1="${yMax}" x2="${cx}" y2="${yMin}" stroke="var(--accent)" stroke-width="1.5"/>
+              <rect x="${cx - 22}" y="${yQ3}" width="44" height="${Math.max(yQ1 - yQ3, 4)}" rx="3" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+              <line x1="${cx - 22}" y1="${yMed}" x2="${cx + 22}" y2="${yMed}" stroke="var(--accent)" stroke-width="2.5"/>
+              <text x="${cx}" y="${H - 6}" text-anchor="middle" fill="var(--text-main)" font-size="11">${g.label}</text>
+            </g>
+          `;
+        }).join('');
+
+        holder.innerHTML = `
+          <svg viewBox="0 0 ${W} ${H}" style="width:100%; height:100%; overflow:visible;" role="img" aria-label="Gráfico de cajas">
+            <line x1="${padL}" y1="${padT}" x2="${W - padR}" y2="${padT}" stroke="var(--border)" stroke-dasharray="3 3"/>
+            <line x1="${padL}" y1="${padT + plotH}" x2="${W - padR}" y2="${padT + plotH}" stroke="var(--border-strong)"/>
+            <text x="${padL - 8}" y="${padT + 4}" text-anchor="end" fill="var(--text-muted)" font-size="10">$${maxV.toLocaleString('es-MX')}</text>
+            <text x="${padL - 8}" y="${padT + plotH}" text-anchor="end" fill="var(--text-muted)" font-size="10">$0</text>
+            ${boxesHtml}
+          </svg>
+        `;
+        return;
+      }
+
+      // Caso 5 y 6: BARRAS (con radio superior 4px) o LÍNEAS
+      renderBarOrLineSvg(holder, chartType, groups, W, H, padL, padR, padT, padB, plotW, plotH, valSpec, showLabels, false);
+    }
+
+    function renderBarOrLineSvg(holder, type, groups, W, H, padL, padR, padT, padB, plotW, plotH, valSpec, showLabels, isHist) {
+      const maxVal = Math.max(...groups.map(g => g.value), 1);
+      const stepX = plotW / Math.max(groups.length, 1);
+
+      const gridHtml = `
+        <line x1="${padL}" y1="${padT}" x2="${W - padR}" y2="${padT}" stroke="var(--border)" stroke-dasharray="3 3" stroke-width="1"/>
+        <line x1="${padL}" y1="${padT + plotH / 2}" x2="${W - padR}" y2="${padT + plotH / 2}" stroke="var(--border)" stroke-dasharray="3 3" stroke-width="1"/>
+        <line x1="${padL}" y1="${padT + plotH}" x2="${W - padR}" y2="${padT + plotH}" stroke="var(--border-strong)" stroke-width="1"/>
+        <text x="${padL - 8}" y="${padT + 4}" text-anchor="end" fill="var(--text-muted)" font-size="10">${formatValue(maxVal, valSpec.field, valSpec.agg)}</text>
+        <text x="${padL - 8}" y="${padT + plotH / 2 + 3}" text-anchor="end" fill="var(--text-muted)" font-size="10">${formatValue(maxVal / 2, valSpec.field, valSpec.agg)}</text>
+        <text x="${padL - 8}" y="${padT + plotH}" text-anchor="end" fill="var(--text-muted)" font-size="10">0</text>
+      `;
+
+      if (type === 'line') {
+        const pts = groups.map((g, i) => {
+          const x = padL + i * stepX + stepX / 2;
+          const y = padT + plotH - (g.value / maxVal) * plotH;
+          return { x, y, g };
+        });
+
+        const polyPoints = pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+        const areaPath = pts.length > 1
+          ? `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)} ` +
+            pts.slice(1).map(p => `L ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ') +
+            ` L ${pts[pts.length - 1].x.toFixed(1)} ${padT + plotH} L ${pts[0].x.toFixed(1)} ${padT + plotH} Z`
+          : '';
+
+        const dotsHtml = pts.map(p => {
+          const fv = formatValue(p.g.value, valSpec.field, valSpec.agg);
+          return `
+            <g onmousemove="showTip(event, '${p.g.label}: ${fv}')" onmouseleave="hideTip()" style="cursor:pointer;">
+              <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4.5" fill="var(--accent)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+              ${showLabels ? `<text x="${p.x.toFixed(1)}" y="${(p.y - 8).toFixed(1)}" text-anchor="middle" fill="var(--text-main)" font-size="10.5" font-weight="600">${fv}</text>` : ''}
+              <text x="${p.x.toFixed(1)}" y="${H - 6}" text-anchor="middle" fill="var(--text-main)" font-size="11">${p.g.label}</text>
+            </g>
+          `;
+        }).join('');
+
+        holder.innerHTML = `
+          <svg viewBox="0 0 ${W} ${H}" style="width:100%; height:100%; overflow:visible;" role="img" aria-label="Gráfico de líneas">
+            ${gridHtml}
+            ${areaPath ? `<path d="${areaPath}" fill="var(--accent-soft)"/>` : ''}
+            <polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="${polyPoints}"/>
+            ${dotsHtml}
+          </svg>
+        `;
+        return;
+      }
+
+      // Barras con extremo superior redondeado de 4 px
+      const barW = isHist ? Math.max(stepX - 6, 18) : Math.min(Math.max(stepX * 0.48, 22), 68);
+      const barsHtml = groups.map((g, i) => {
+        const cx = padL + i * stepX + stepX / 2;
+        const bh = Math.max((g.value / maxVal) * plotH, 3);
+        const x = cx - barW / 2;
+        const y = padT + plotH - bh;
+        const fv = formatValue(g.value, valSpec.field, valSpec.agg);
+        return `
+          <g onmousemove="showTip(event, '${g.label}: ${fv}')" onmouseleave="hideTip()" style="cursor:pointer;">
+            <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${bh.toFixed(1)}" rx="4" ry="4" fill="var(--accent)"/>
+            ${showLabels ? `<text x="${cx.toFixed(1)}" y="${Math.max(y - 5, 11).toFixed(1)}" text-anchor="middle" fill="var(--text-main)" font-size="10.5" font-weight="600">${fv}</text>` : ''}
+            <text x="${cx.toFixed(1)}" y="${H - 6}" text-anchor="middle" fill="var(--text-main)" font-size="11">${g.label}</text>
+          </g>
+        `;
+      }).join('');
+
+      holder.innerHTML = `
+        <svg viewBox="0 0 ${W} ${H}" style="width:100%; height:100%; overflow:visible;" role="img" aria-label="Gráfico de barras">
+          ${gridHtml}
+          ${barsHtml}
+        </svg>
+      `;
+    }
+
+    // Renderizar la Tabla Dinámica debajo del gráfico
+    function renderPivotMatrix(groups, filteredRows, rowDim, colDim, valSpec, grandTotal) {
+      const container = document.getElementById('pivot-table-scroll');
+      const showTotals = document.getElementById('opt-show-totals')?.checked;
+      const rowHeaderLabel = rowDim ? (FIELDS_SCHEMA.find(f => f.id === rowDim)?.label || rowDim) : 'Resumen';
+      const valHeaderLabel = valSpec.field
+        ? `${AGG_LABELS[valSpec.agg]} de ${FIELDS_SCHEMA.find(f => f.id === valSpec.field)?.label}`
+        : 'Cuenta de filas';
+
+      // Si hay tanto Filas como Columnas, dibujamos una matriz cruzada tipo Excel
+      if (rowDim && colDim) {
+        const colKeys = Array.from(new Set(filteredRows.map(r => r[colDim])));
+        let thead = `<thead><tr><th>${rowHeaderLabel} \\ ${FIELDS_SCHEMA.find(f => f.id === colDim)?.label}</th>`;
+        colKeys.forEach(ck => { thead += `<th class="num">${ck}</th>`; });
+        thead += `<th class="num">Total general</th></tr></thead>`;
+
+        let tbody = `<tbody>`;
+        groups.forEach(g => {
+          tbody += `<tr><td><strong>${g.label}</strong></td>`;
+          colKeys.forEach(ck => {
+            const sub = g.subset.filter(r => r[colDim] === ck);
+            const v = computeAggregation(sub, valSpec.field, valSpec.agg);
+            tbody += `<td class="num">${formatValue(v, valSpec.field, valSpec.agg)}</td>`;
+          });
+          tbody += `<td class="num"><strong>${formatValue(g.value, valSpec.field, valSpec.agg)}</strong></td></tr>`;
+        });
+
+        if (showTotals) {
+          tbody += `<tr class="total-row"><td>Total general</td>`;
+          colKeys.forEach(ck => {
+            const sub = filteredRows.filter(r => r[colDim] === ck);
+            const v = computeAggregation(sub, valSpec.field, valSpec.agg);
+            tbody += `<td class="num">${formatValue(v, valSpec.field, valSpec.agg)}</td>`;
+          });
+          tbody += `<td class="num">${formatValue(grandTotal, valSpec.field, valSpec.agg)}</td></tr>`;
+        }
+        tbody += `</tbody>`;
+        container.innerHTML = `<table class="pivot-matrix" aria-label="Tabla dinámica cruzada">${thead}${tbody}</table>`;
+        return;
+      }
+
+      // Tabla dinámica estándar (Filas + Valor + % del total)
+      let html = `
+        <table class="pivot-matrix" aria-label="Tabla dinámica de resultados">
+          <thead>
+            <tr>
+              <th>${rowHeaderLabel}</th>
+              <th class="num">${valHeaderLabel}</th>
+              <th class="num">Filas</th>
+              <th class="num">% del total</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      groups.forEach(g => {
+        const pct = grandTotal > 0 ? ((g.value / grandTotal) * 100).toFixed(1) + '%' : '—';
+        html += `
+          <tr>
+            <td><strong>${g.label}</strong></td>
+            <td class="num">${formatValue(g.value, valSpec.field, valSpec.agg)}</td>
+            <td class="num">${g.subset.length}</td>
+            <td class="num">${pct}</td>
+          </tr>
+        `;
+      });
+
+      if (showTotals) {
+        html += `
+          <tr class="total-row">
+            <td>Total general</td>
+            <td class="num">${formatValue(grandTotal, valSpec.field, valSpec.agg)}</td>
+            <td class="num">${filteredRows.length}</td>
+            <td class="num">100.0%</td>
+          </tr>
+        `;
+      }
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    // Actualizar la vista previa de SQL
+    function updateSqlPreview(rowDim, colDim, valSpec) {
+      const sqlMap = { sum: 'SUM', count: 'COUNT', avg: 'AVG', min: 'MIN', max: 'MAX', median: 'MEDIAN' };
+      const fn = sqlMap[valSpec.agg] || 'SUM';
+      const col = valSpec.field || '*';
+      const grp = [rowDim, colDim].filter(Boolean).join(', ');
+      const whereParts = state.filters.filter(f => f.value !== 'ALL').map(f => `${f.field} = '${f.value}'`);
+      const whereClause = whereParts.length ? `\nWHERE ${whereParts.join(' AND ')}` : '';
+      const groupClause = grp ? `\nGROUP BY ${grp}\nORDER BY resultado DESC` : '';
+
+      document.getElementById('sql-preview-code').textContent =
+        `SELECT ${grp ? grp + ', ' : ''}${fn}(${col}) AS resultado\nFROM ventas_2026${whereClause}${groupClause};`;
+    }
+
+    // Mostrar y ocultar el tooltip del gráfico SVG
+    function showTip(ev, text) {
+      const tip = document.getElementById('svg-tooltip');
+      tip.textContent = text;
+      tip.style.display = 'block';
+      tip.style.left = (ev.clientX + 12) + 'px';
+      tip.style.top = (ev.clientY - 28) + 'px';
+    }
+
+    function hideTip() {
+      document.getElementById('svg-tooltip').style.display = 'none';
+    }
+
+    // Cajones discretos del pie («Más opciones» y «Ver consulta SQL»)
+    function toggleFooterDrawer(which) {
+      const optBox = document.getElementById('drawer-options');
+      const sqlBox = document.getElementById('drawer-sql');
+      if (which === 'options') {
+        const open = optBox.style.display === 'none';
+        optBox.style.display = open ? 'block' : 'none';
+        sqlBox.style.display = 'none';
+        document.getElementById('link-more-options').textContent = (open ? '▾ ' : '▸ ') + 'Más opciones';
+        document.getElementById('link-view-sql').textContent = '▸ Ver consulta SQL';
+      } else {
+        const open = sqlBox.style.display === 'none';
+        sqlBox.style.display = open ? 'block' : 'none';
+        optBox.style.display = 'none';
+        document.getElementById('link-view-sql').textContent = (open ? '▾ ' : '▸ ') + 'Ver consulta SQL';
+        document.getElementById('link-more-options').textContent = '▸ Más opciones';
+      }
+    }
+
+    // Presets para probar los casos obligatorios del brief
+    function loadPreset(name) {
+      document.getElementById('currency-warning-bar').style.display = 'none';
+      state.manualChartType = null;
+      if (name === 'initial') {
+        state.rows = ['Region'];
+        state.cols = [];
+        state.vals = [{ field: 'Ventas', agg: 'sum' }];
+        state.filters = [];
+        announce('Estado inicial cargado: Suma de Ventas por Región.');
+      } else if (name === 'empty') {
+        state.rows = [];
+        state.cols = [];
+        state.vals = [];
+        state.filters = [];
+        announce('Tabla dinámica vacía. Arrastra un campo a Filas o Valores.');
+      } else if (name === 'currency_warn') {
+        state.currencyConverted = false;
+        addFieldToZone('MontoTexto', 'vals');
+        return;
+      }
+      updateEverything();
+    }
+
+    // Conmutar entre Versión 1 (Dock derecho) y Versión 2 (Pestaña completa)
+    function setArchitecture(arch) {
+      state.architecture = arch;
+      const frame = document.getElementById('app-frame');
+      frame.classList.toggle('mode-fulltab', arch === 'fulltab');
+      document.getElementById('btn-arch-dock').classList.toggle('active', arch === 'dock');
+      document.getElementById('btn-arch-fulltab').classList.toggle('active', arch === 'fulltab');
+      announce(arch === 'fulltab' ? 'Vista cambiada a pestaña de pantalla completa' : 'Vista cambiada a panel derecho acoplado');
+    }
+
+    function switchDocTab(tab) {
+      ['table', 'pivot', 'text'].forEach(t => {
+        document.getElementById('doctab-' + t).classList.toggle('active', t === tab);
+      });
+      if (tab === 'table') {
+        setArchitecture('dock');
+      } else if (tab === 'pivot') {
+        setArchitecture('fulltab');
+      }
+    }
+
+    // Conmutar tamaños de ventana: 1440×900, 1280×720 y <900px
+    function setWindowSize(sz) {
+      state.windowSize = sz;
+      const frame = document.getElementById('app-frame');
+      frame.classList.remove('size-1280', 'size-narrow');
+      if (sz === '1280') frame.classList.add('size-1280');
+      if (sz === 'narrow') frame.classList.add('size-narrow');
+
+      document.getElementById('btn-sz-1440').classList.toggle('active', sz === '1440');
+      document.getElementById('btn-sz-1280').classList.toggle('active', sz === '1280');
+      document.getElementById('btn-sz-narrow').classList.toggle('active', sz === 'narrow');
+      updateEverything();
+    }
+
+    // Interruptor de tema Claro / Oscuro
+    function toggleTheme() {
+      state.theme = state.theme === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', state.theme);
+      document.getElementById('app-theme-label').textContent = state.theme === 'light' ? '🌙 Tema oscuro' : '☀️ Tema claro';
+    }
+
+    // Inicialización al cargar
+    renderCsvSketch();
+    updateEverything();
+  </script>
+</body>
+</html>
