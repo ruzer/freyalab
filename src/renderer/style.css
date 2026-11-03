@@ -125,8 +125,8 @@ body:has(dialog[open],.modal-backdrop) .toolbar button:is(.primary,.btn-primary)
 :root .app-shell label{font-size:var(--font-ui)}
 :root .app-shell :is(dialog,.modal,.welcome,.chart-fields) :is(h1,h2){font-size:var(--title-lg)}
 :root .app-shell :is(dialog,.modal,.welcome,.chart-fields,.analysis-dock) h3{font-size:var(--title-sm)}
-:root .app-shell :is(.csv-toolbar,.markdown-toolbar,.toolbar) button:not(.btn-primary):not(.btn-danger):not(.btn-tint):not([aria-pressed=true]):not(.active){background:transparent;border-color:transparent;box-shadow:none;min-height:var(--control-compact);border-radius:var(--radius-sm)}
-:root .app-shell :is(.csv-toolbar,.markdown-toolbar,.toolbar) button:hover:not(:disabled):not(.btn-primary):not(.btn-danger):not(.btn-tint):not([aria-pressed=true]):not(.active){background:var(--hover)}
+:root .app-shell :is(.csv-toolbar,.markdown-toolbar,.toolbar) button:not(.btn-primary):not(.btn-danger):not(.btn-tint):not([aria-pressed=true]):not(.active):not(.save-button):not(.export-button){background:transparent;border-color:transparent;box-shadow:none;min-height:var(--control-compact);border-radius:var(--radius-sm)}
+:root .app-shell :is(.csv-toolbar,.markdown-toolbar,.toolbar) button:hover:not(:disabled):not(.btn-primary):not(.btn-danger):not(.btn-tint):not([aria-pressed=true]):not(.active):not(.save-button):not(.export-button){background:var(--hover)}
 :root .app-shell :is(.csv-toolbar,.markdown-toolbar) button{min-height:var(--control-compact);padding-block:0}
 :root .app-shell :is(.chart-fields,.charts-panel){font-size:var(--font-ui)}
 :root .app-shell :is(.modal,.info-content){transition:opacity var(--motion-panel)}
@@ -151,3 +151,5 @@ body:has(dialog[open],.modal-backdrop) .toolbar button:is(.primary,.btn-primary)
 :root .app-shell .dock-handle:focus-visible{outline:2px solid var(--focus);outline-offset:2px;opacity:1}
 
 .btn-tint .busy-label::after{color:var(--accent-strong)}
+
+:root .app-shell .toolbar :is(.save-button,.export-button):not(.btn-primary){background:var(--input);color:var(--text);border-color:var(--control);box-shadow:var(--shadow-rest)}

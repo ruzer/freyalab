@@ -764,7 +764,7 @@
  "ui.reason.pandoc": "Configure Pandoc to use this export.",
  "ui.reason.loading": "The information is not available yet. Wait for loading to finish.",
  "ui.reason.selection": "Make a selection compatible with this action.",
- "ui.reason.columns": "Choose at least one column.",
+ "ui.reason.columns": "Select one or more columns to use this action.",
  "ui.reason.oneColumn": "This operation needs exactly one selected column.",
  "ui.reason.name": "Enter a name to save this configuration.",
  "ui.reason.configuration": "Choose a saved configuration.",

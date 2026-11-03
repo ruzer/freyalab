@@ -1,4 +1,4 @@
-import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm,truncate} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -19,6 +19,7 @@ test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{})
 const header=()=>page.locator('header.toolbar')
 const save=()=>header().getByRole('button',{name:'Guardar',exact:true})
 const exp=()=>header().getByRole('button',{name:'Exportar',exact:true})
+async function secondaryFill(button:Locator){return button.evaluate(node=>{const context=document.createElement('canvas').getContext('2d')!;context.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--input');const expected=context.fillStyle;context.fillStyle=getComputedStyle(node).backgroundColor;return context.fillStyle===expected})}
 async function open(file:string){await page.evaluate(file=>window.freya.openPaths([file]),file)}
 async function theme(value:string){
  const settings=page.getByRole('dialog',{name:'Ajustes',exact:true})
@@ -59,11 +60,11 @@ test('U0: capturas de estados existentes y tipografía base sin modificar archiv
 test('U0: un primario Guardar/Exportar/Abrir con cajas y nombres estables en ambos temas',async()=>{
  for(const value of ['light','dark']){
   await theme(value);await open(markdown);await expect(page.locator('.markdown-body h1')).toHaveText('Documento de Freya')
-  await expect(save()).toBeDisabled();await expect(exp()).toHaveClass(/btn-primary/)
+  await expect(save()).toBeDisabled();await expect(exp()).toHaveClass(/btn-primary/);expect(await secondaryFill(save())).toBe(true)
   const editor=page.locator('.cm-content');await editor.click();await page.keyboard.press('ControlOrMeta+End');await page.keyboard.insertText('\nNueva idea.\n')
-  await expect(save()).toHaveClass(/btn-primary/);await expect(exp()).not.toHaveClass(/btn-primary/)
+  await expect(save()).toHaveClass(/btn-primary/);await expect(exp()).not.toHaveClass(/btn-primary/);expect(await secondaryFill(exp())).toBe(true)
   await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
-  const dirty=await save().boundingBox();await save().click();await expect(save()).toBeDisabled();await expect(exp()).toHaveClass(/btn-primary/)
+  const dirty=await save().boundingBox();await save().click();await expect(save()).toBeDisabled();await expect(exp()).toHaveClass(/btn-primary/);expect(await secondaryFill(save())).toBe(true)
   const clean=await save().boundingBox();expect(clean).toEqual(dirty)
   await runApplicationMenu(app,'file.newMarkdown');await expect(save()).toHaveClass(/btn-primary/);await expect(save()).toBeEnabled();await holdSave()
   const before=await save().boundingBox();await save().click();await expect.poll(()=>app.evaluate(()=>(globalThis as typeof globalThis&{u0SavePending?:boolean}).u0SavePending)).toBe(true)

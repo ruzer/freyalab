@@ -1,5 +1,6 @@
 import {it,expect} from 'vitest'
 import {readFileSync} from 'node:fs'
+import {chartOption} from '../src/renderer/chart-option'
 const css=readFileSync(new URL('../src/renderer/style.css',import.meta.url),'utf8')
 function tokens(dark=false){
  const values:Record<string,string>={}
@@ -33,4 +34,11 @@ for(const dark of [false,true])it.each(pairs)(`contraste del CSS: %s sobre %s �
 })
 it('el azul aprobado está definido una sola vez detrás del token de acento claro',()=>{
  expect(tokens()['--accent']).toBe('#2563eb');expect(css.match(/#2563eb/gi)).toHaveLength(1)
+})
+
+for(const dark of [false,true])it(`las cifras del mapa de calor contrastan con toda la escala; oscuro=${dark}`,()=>{
+ const values=tokens(dark)
+ const plot=chartOption({total:4,usable:4,points:1,limited:false,columns:['x','value','y'],rows:[['A','4','B']]},{kind:'heatmap',x:0,y:1,bins:8,aggregate:'count',descending:false,measureType:'text'},{text:values['--text'],background:values['--panel'],accent:values['--accent'],dark})
+ const scale=plot.visualMap as {inRange:{color:string[]}},series=plot.series as {label:{color:string}}[]
+ for(const fill of scale.inRange.color)expect(contrast(series[0].label.color,fill)).toBeGreaterThanOrEqual(4.5)
 })
