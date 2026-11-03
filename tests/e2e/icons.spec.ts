@@ -1,6 +1,6 @@
 import { test, expect, _electron as electron, type ElectronApplication, type Page } from '@playwright/test'
 import electronPath from 'electron'
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, rm, writeFile, readFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import {analyzeButton} from './panel'
@@ -46,6 +46,7 @@ test('iconos: los avisos distinguen éxito y error con icono y texto, y Exportar
  expect(await exportButton.evaluate(element=>getComputedStyle(element).backgroundColor)).not.toBe('rgb(10, 108, 240)')
  const file=join(directory,'a.md');await writeFile(file,'# A\n');await page.evaluate(path=>window.freya.openPaths([path]),file)
  await expect(page.getByRole('document').getByRole('heading',{name:'A',exact:true})).toBeVisible()
+ await page.locator('.cm-content').click();await page.keyboard.press('ControlOrMeta+a');await page.keyboard.insertText('# A\n\nCambio que guardar.\n')
  await page.getByRole('button',{name:'Guardar',exact:true}).click()
- const toast=page.locator('.toast.info');await expect(toast).toContainText('Archivo guardado');await expect(toast.locator('svg.icon')).toHaveCount(2)
+ const toast=page.locator('.toast.info');await expect(toast).toContainText('Archivo guardado');await expect(toast.locator('svg.icon')).toHaveCount(2);expect(await readFile(file,'utf8')).toBe('# A\n\nCambio que guardar.\n')
 })

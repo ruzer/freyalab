@@ -118,3 +118,12 @@ test('U0: solo lectura conserva sus restricciones y Abrir como acción disponibl
  await expect.poll(()=>page.evaluate(async()=>{const docs=await window.freya.documents();return docs.find(doc=>doc.name==='muestra.csv')?.readonly})).toBe(true)
  for(const value of ['light','dark']){await theme(value);await expect(save()).toBeDisabled();await expect(exp()).toBeDisabled();await expect(header().getByRole('button',{name:'Abrir',exact:true})).toHaveClass(/btn-primary/);await expect(save()).toHaveAccessibleDescription(/lectura/);await expect(exp()).toHaveAccessibleDescription(/lectura/)}
 })
+
+test('U0: Más opciones sigue visible con resumen paginado y controles de 13 px',async()=>{
+ await open(csv);await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();await expect(page.locator('.pivot-result')).toBeVisible()
+ for(const width of [1280,1440,800]){
+  await page.setViewportSize({width,height:width===1440?900:720})
+  const summary=page.locator('.more-options>summary');await expect(summary).toBeInViewport({ratio:1})
+  await summary.focus();await page.keyboard.press('Enter');await expect(page.locator('.more-options')).toHaveAttribute('open','');await page.keyboard.press('Enter')
+ }
+})

@@ -136,3 +136,8 @@ body:has(dialog[open],.modal-backdrop) .toolbar button:is(.primary,.btn-primary)
 @media(max-width:899px){:root .app-shell .charts-panel .plot-scroll{min-height:150px}}
 /* El estado de carga conserva la acción y su explicación accesible. */
 .busy-label{position:relative;color:transparent;min-width:max-content}.busy-label::after{content:attr(data-loading);color:var(--text);position:absolute;inset:0;white-space:nowrap}.btn-primary .busy-label::after,.primary .busy-label::after{color:var(--accent-text)}
+
+/* Reservar la acción avanzada; las filas siguen disponibles en el scroll de la tabla. */
+:root .app-shell .more-options:not([open]){flex:0 0 auto;min-height:34px}
+:root .app-shell .more-options>summary{margin:4px 0;min-height:26px;line-height:26px}
+@media(max-height:760px){:root .app-shell .charts-panel .pivot-result{max-height:190px}}
