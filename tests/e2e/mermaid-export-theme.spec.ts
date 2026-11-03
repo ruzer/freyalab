@@ -223,7 +223,7 @@ test('exportar durante el debounce espera la fuente actual y no reutiliza el SVG
 test('cambiar el tema mientras se prepara la exportación mantiene la salida clara y la elección del usuario',async()=>{
  await open()
  const result=await page.evaluate(async()=>{
-  const click=(name:string)=>{const button=Array.from(document.querySelectorAll<HTMLButtonElement>('.toolbar button')).find(node=>node.textContent?.trim()===name);if(!button)throw new Error(`Falta ${name}`);button.click()}
+  const click=(name:string)=>{const button=Array.from(document.querySelectorAll<HTMLButtonElement>('.toolbar button')).find(node=>(node.getAttribute('aria-label')||node.innerText.trim())===name);if(!button)throw new Error(`Falta ${name}`);button.click()}
   click('Exportar');await Promise.resolve();click('Imagen SVG')
   const select=document.querySelector<HTMLSelectElement>('select[aria-label="Tema"]')!;select.value='light';select.dispatchEvent(new Event('change',{bubbles:true}))
   return{theme:select.value}
@@ -239,7 +239,7 @@ test('cerrar la pestaña mientras espera el render cancela la salida de la vista
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),documentPath);documentId=doc.id
  await expect(page.locator('.cm-content')).toBeVisible()
  await page.evaluate(async name=>{
-  const click=(label:string)=>{const button=Array.from(document.querySelectorAll<HTMLButtonElement>('.toolbar button')).find(node=>node.textContent?.trim()===label);if(!button)throw new Error(`Falta ${label}`);button.click()}
+  const click=(label:string)=>{const button=Array.from(document.querySelectorAll<HTMLButtonElement>('.toolbar button')).find(node=>(node.getAttribute('aria-label')||node.innerText.trim())===label);if(!button)throw new Error(`Falta ${label}`);button.click()}
   click('Exportar');await Promise.resolve();click('Imagen SVG')
   for(let i=0;i<4;i++)await Promise.resolve()
   document.querySelector<HTMLButtonElement>(`.tab-close[aria-label=${JSON.stringify('Cerrar '+name)}]`)!.click()

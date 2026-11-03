@@ -94,7 +94,9 @@ test('U0: contraste real, foco por teclado, pulsación y movimiento reducido',as
   expect(await exp().evaluate(n=>getComputedStyle(n).transform)).toBe('matrix(1, 0, 0, 1, 0, 1)');await page.mouse.move(0,0);await page.mouse.up()
   expect(await exp().evaluate(n=>getComputedStyle(n).transitionDuration)).toBe('0s')
  }
- await page.emulateMedia({forcedColors:'active'});const forced=await exp().evaluate(n=>{const s=getComputedStyle(n);return {border:s.borderTopWidth,adjust:s.forcedColorAdjust}});expect(forced).toEqual({border:'2px',adjust:'auto'})
+ const formatted=join(folder,'formato.md');await writeFile(formatted,'Freya');await open(formatted);await page.locator('.cm-content').focus();await page.keyboard.press('ControlOrMeta+a');await page.keyboard.press('ControlOrMeta+b')
+ const bold=page.getByRole('button',{name:'Negrita',exact:true});await expect(bold).toHaveAttribute('aria-pressed','true');expect(await bold.evaluate(n=>getComputedStyle(n).backgroundColor)).not.toBe('rgba(0, 0, 0, 0)')
+ await page.emulateMedia({forcedColors:'active'});const forced=await save().evaluate(n=>{const s=getComputedStyle(n);return {border:s.borderTopWidth,adjust:s.forcedColorAdjust}});expect(forced).toEqual({border:'2px',adjust:'auto'})
 })
 
 test('U0: idiomas en-XA y en conservan nombres, motivos y cajas de la barra',async()=>{

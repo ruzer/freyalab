@@ -125,8 +125,8 @@ body:has(dialog[open],.modal-backdrop) .toolbar button:is(.primary,.btn-primary)
 :root .app-shell label{font-size:var(--font-ui)}
 :root .app-shell :is(dialog,.modal,.welcome,.chart-fields) :is(h1,h2){font-size:var(--title-lg)}
 :root .app-shell :is(dialog,.modal,.welcome,.chart-fields,.analysis-dock) h3{font-size:var(--title-sm)}
-:root .app-shell :is(.csv-toolbar,.markdown-toolbar,.toolbar) button:not(.btn-primary):not(.btn-danger):not(.btn-tint){background:transparent;border-color:transparent;box-shadow:none;min-height:var(--control-compact);border-radius:var(--radius-sm)}
-:root .app-shell :is(.csv-toolbar,.markdown-toolbar,.toolbar) button:hover:not(:disabled):not(.btn-primary):not(.btn-danger):not(.btn-tint){background:var(--hover)}
+:root .app-shell :is(.csv-toolbar,.markdown-toolbar,.toolbar) button:not(.btn-primary):not(.btn-danger):not(.btn-tint):not([aria-pressed=true]):not(.active){background:transparent;border-color:transparent;box-shadow:none;min-height:var(--control-compact);border-radius:var(--radius-sm)}
+:root .app-shell :is(.csv-toolbar,.markdown-toolbar,.toolbar) button:hover:not(:disabled):not(.btn-primary):not(.btn-danger):not(.btn-tint):not([aria-pressed=true]):not(.active){background:var(--hover)}
 :root .app-shell :is(.csv-toolbar,.markdown-toolbar) button{min-height:var(--control-compact);padding-block:0}
 :root .app-shell :is(.chart-fields,.charts-panel){font-size:var(--font-ui)}
 :root .app-shell :is(.modal,.info-content){transition:opacity var(--motion-panel)}
@@ -141,3 +141,5 @@ body:has(dialog[open],.modal-backdrop) .toolbar button:is(.primary,.btn-primary)
 :root .app-shell .more-options:not([open]){flex:0 0 auto;min-height:34px}
 :root .app-shell .more-options>summary{margin:4px 0;min-height:26px;line-height:26px}
 @media(max-height:760px){:root .app-shell .charts-panel .pivot-result{max-height:190px}}
+
+:root .app-shell :is(.dropdown,.range-context,.field-menu) button{box-shadow:none}

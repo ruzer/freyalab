@@ -12,5 +12,5 @@
 <svelte:window onpointerdown={event=>{if(menu&&!menu.contains(event.target as Node))onclose(false)}}/>
 <div bind:this={menu} class="range-context" role="menu" aria-label={t('csvText.menu')} tabindex="-1" style:left={`${Math.max(8,Math.min(x,innerWidth-268))}px`} style:top={`${Math.max(8,Math.min(y,innerHeight-100))}px`} onkeydown={key}>
  <button role="menuitem" onclick={()=>choose('table')}>{t('csvText.openTable')}</button>
- <button {...controlHint(loading?'loading':!allowed?'textLimit':null, (loading?t('csvText.checkSize'):!allowed?t('csvText.limit'):undefined))} role="menuitem" disabled={loading||!allowed}  onclick={()=>choose('text')}>{t('csvText.openText')}</button>
+ <button {...controlHint(loading?'loading':!allowed?'textLimit':null)} title={loading?t('csvText.checkSize'):!allowed?t('csvText.limit'):undefined} role="menuitem" disabled={loading||!allowed}  onclick={()=>choose('text')}>{t('csvText.openText')}</button>
 </div>
