@@ -31,7 +31,7 @@ test('Revisión108 · truncado conserva cien barras en su orden y un solo aviso 
   await page.screenshot({path:test.info().outputPath(`${process.env.FREYALAB_REVIEW_PHASE||'after'}-${theme}-${width}x${height}.png`)})
  }
  const notice=panel().locator('.truncated')
- await expect(notice).toContainText('Se muestran los primeros 100 de 842 grupos, en el orden elegido.')
+ await expect(notice).toContainText('Se muestran los primeros 100 de 842 grupos, ordenados por «Suma de Ventas»; los empates, por «Cliente».')
  await expect(notice).not.toContainText('mayores');await expect(panel().locator('.top-notice')).toHaveCount(0)
  const bars=await panel().locator('.plot').evaluate(node=>node.querySelectorAll(`svg path[fill="${getComputedStyle(node).getPropertyValue('--accent').trim()}"]`).length)
  expect(bars).toBe(100)
@@ -94,5 +94,41 @@ test('Revisión108 · tabla, total, marcas y eje conservan el formato numérico 
  await assign('Ventas','Valores');await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('100')
  await assign('Coste','Valores');await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('285,600')
  await expect(panel().locator('.plot svg text').filter({hasText:/^285,600$/})).toHaveCount(1)
+ expect(await readFile(file,'utf8')).toBe(original)
+})
+
+for(const width of [1280,800])test(`Revisión108 final · Total completo dentro del área visible a${width}×720`,async()=>{
+ const measurements=[]
+ for(const theme of ['light','dark']){
+  await page.setViewportSize({width:1280,height:720});await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.setViewportSize({width,height:720})
+  const boxes=await panel().locator('.pivot-scroll').evaluate(node=>{
+   const row=node.querySelector('tfoot tr')!.getBoundingClientRect(),area=node.getBoundingClientRect(),parent=node.closest('.chart-result')!.getBoundingClientRect()
+   return{row:{top:row.top,bottom:row.bottom,height:row.height},visible:{top:Math.max(area.top+node.clientTop,parent.top),bottom:Math.min(area.top+node.clientTop+node.clientHeight,parent.bottom,innerHeight)}}
+  })
+  measurements.push({theme,...boxes});await page.mouse.move(0,0)
+  await page.screenshot({path:test.info().outputPath(`${process.env.FREYALAB_REVIEW_PHASE||'after'}-total-${theme}-${width}x720.png`)})
+ }
+ await writeFile(test.info().outputPath('total-geometry.json'),JSON.stringify(measurements,null,2))
+ for(const {theme,row,visible} of measurements){expect(row.top,`${theme}: borde superior de Total`).toBeGreaterThanOrEqual(visible.top);expect(row.bottom,`${theme}: borde inferior de Total`).toBeLessThanOrEqual(visible.bottom)}
+ await expect(panel().locator('.pivot-pages')).toBeInViewport({ratio:1})
+ await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('1,146,383')
+ expect(await readFile(file,'utf8')).toBe(original)
+})
+
+test('Revisión108 final · el aviso explica el campo de orden y los empates de Suma y Cuenta en es/en',async()=>{
+ for(const language of ['es','en'] as const){
+  await page.evaluate(language=>window.freya.setLanguage(language),language)
+  const aggregate=panel().getByRole('region',{name:language==='es'?'Valores':'Values',exact:true}).getByRole('combobox')
+  for(const [operation,measure,total,labels] of [
+   ['sum',language==='es'?'Suma de Ventas':'Sum of Ventas','1,146,383',['C0','C1','C2','C3','C4']],
+   ['count',language==='es'?'Cuenta':'Count','842',['C0','C1','C10','C100','C101']]
+  ] as const){
+   await aggregate.selectOption(operation);await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText(total)
+   await expect(panel().locator('.truncated')).toContainText(language==='es'?`ordenados por «${measure}»; los empates, por «Cliente».`:`ordered by “${measure}”; ties by “Cliente”.`)
+   await expect(panel().locator('.truncated')).not.toContainText(language==='es'?'orden elegido':'selected order')
+   await expect(panel().locator('.pivot-result tbody th')).toHaveText([...labels])
+   await expect(panel().locator('.pivot-result tfoot th')).toHaveText(language==='es'?'Total de los 842 grupos':'Total for all 842 groups')
+  }
+ }
  expect(await readFile(file,'utf8')).toBe(original)
 })
