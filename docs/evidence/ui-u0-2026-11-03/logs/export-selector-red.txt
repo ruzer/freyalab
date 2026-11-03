@@ -1,0 +1,60 @@
+
+Running 2 tests using 1 worker
+
+(node:73458) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [md] › tests/e2e/mermaid-errors.spec.ts:86:1 › cerrar una pestaña limpia Mermaid mientras espera exportar cancela la salida de su vista destruida (727ms)
+(node:73477) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [md] › tests/e2e/mermaid-errors.spec.ts:86:1 › cerrar una pestaña limpia Markdown mientras espera exportar cancela la salida de su vista destruida (679ms)
+
+
+  1) [md] › tests/e2e/mermaid-errors.spec.ts:86:1 › cerrar una pestaña limpia Mermaid mientras espera exportar cancela la salida de su vista destruida 
+
+    Error: page.evaluate: Error: Falta el control Exportar
+        at click (eval at evaluate (:370:30), <anonymous>:11:28)
+        at eval (eval at evaluate (:370:30), <anonymous>:14:7)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at click (eval at evaluate (:370:30), <anonymous>:11:28)
+        at eval (eval at evaluate (:370:30), <anonymous>:14:7)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at /private/tmp/freyalab-ui-u0-base/tests/e2e/mermaid-errors.spec.ts:88:26
+
+    Error Context: ../freyalab-u0-evidence/export-selector-red/mermaid-errors-cerrar-una--a7ae1-alida-de-su-vista-destruida-md/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-u0-evidence/export-selector-red/mermaid-errors-cerrar-una--a7ae1-alida-de-su-vista-destruida-md/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-u0-evidence/export-selector-red/mermaid-errors-cerrar-una--a7ae1-alida-de-su-vista-destruida-md/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [md] › tests/e2e/mermaid-errors.spec.ts:86:1 › cerrar una pestaña limpia Markdown mientras espera exportar cancela la salida de su vista destruida 
+
+    Error: page.evaluate: Error: Falta el control Exportar
+        at click (eval at evaluate (:370:30), <anonymous>:11:28)
+        at eval (eval at evaluate (:370:30), <anonymous>:14:7)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at click (eval at evaluate (:370:30), <anonymous>:11:28)
+        at eval (eval at evaluate (:370:30), <anonymous>:14:7)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at /private/tmp/freyalab-ui-u0-base/tests/e2e/mermaid-errors.spec.ts:88:26
+
+    Error Context: ../freyalab-u0-evidence/export-selector-red/mermaid-errors-cerrar-una--dc672-alida-de-su-vista-destruida-md/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-u0-evidence/export-selector-red/mermaid-errors-cerrar-una--dc672-alida-de-su-vista-destruida-md/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-u0-evidence/export-selector-red/mermaid-errors-cerrar-una--dc672-alida-de-su-vista-destruida-md/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [md] › tests/e2e/mermaid-errors.spec.ts:86:1 › cerrar una pestaña limpia Mermaid mientras espera exportar cancela la salida de su vista destruida 
+    [md] › tests/e2e/mermaid-errors.spec.ts:86:1 › cerrar una pestaña limpia Markdown mientras espera exportar cancela la salida de su vista destruida 

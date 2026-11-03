@@ -1,0 +1,21 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-ui-u0-base
+
+ ❯ tests/ui-tokens.test.ts (48 tests | 1 failed) 17ms
+   × las cifras del mapa de calor contrastan con toda la escala; oscuro=false 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui-tokens.test.ts > las cifras del mapa de calor contrastan con toda la escala; oscuro=false
+AssertionError: expected 4.0630307164403066 to be greater than or equal to 4.5
+ ❯ tests/ui-tokens.test.ts:43:85
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 47 passed (48)
+   Start at  01:46:50
+   Duration  128ms (transform 39%, tests 32%, import 25%, worker 4%)
+

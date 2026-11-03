@@ -1,0 +1,26 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-ui-u0-base
+
+ ❯ tests/ui-tokens.test.ts (1 test | 1 failed) 3ms
+   × el acento claro del CSS alcanza 4,5:1 con texto blanco de botón 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui-tokens.test.ts > el acento claro del CSS alcanza 4,5:1 con texto blanco de botón
+AssertionError: expected 4.016975780478911 to be greater than or equal to 4.5
+ ❯ tests/ui-tokens.test.ts:16:48
+     14| function contrast(first:string,second:string){const a=luminance(first)…
+     15| it('el acento claro del CSS alcanza 4,5:1 con texto blanco de botón',(…
+     16|  expect(contrast(tokens()['--accent'],'#fff')).toBeGreaterThanOrEqual(…
+       |                                                ^
+     17| })
+     18|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  23:31:23
+   Duration  98ms (transform 58%, import 21%, tests 12%, worker 9%)
+

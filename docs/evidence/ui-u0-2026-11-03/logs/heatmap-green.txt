@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-ui-u0-base
+
+
+ Test Files  2 passed (2)
+      Tests  58 passed (58)
+   Start at  01:50:39
+   Duration  139ms (transform 56%, tests 24%, import 17%, worker 3%)
+

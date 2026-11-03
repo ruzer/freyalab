@@ -1,0 +1,36 @@
+
+Running 1 test using 1 worker
+
+(node:83914) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [shell] › tests/e2e/ui-u0.spec.ts:84:1 › U0: contraste real, foco por teclado, pulsación y movimiento reducido (702ms)
+
+
+  1) [shell] › tests/e2e/ui-u0.spec.ts:84:1 › U0: contraste real, foco por teclado, pulsación y movimiento reducido 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 24
+
+      85 |  for(const value of ['light','dark']){
+      86 |   await theme(value);await open(markdown);await expect(exp()).toBeEnabled()
+    > 87 |   const divider=await page.getByRole('slider',{name:'Ancho del explorador',exact:true}).evaluate(node=>{const r=node.getBoundingClientRect(),pseudo=getComputedStyle(node,'::before');return {visual:r.width,target:r.width-parseFloat(pseudo.left)-parseFloat(pseudo.right),hit:document.elementFromPoint(r.x+10,r.y+100)===node}});expect(divider.visual).toBe(1);expect(divider.target).toBeGreaterThanOrEqual(24);expect(divider.hit).toBe(true)
+         |                                                                                                                                                                                                                                                                                                                                                             ^
+      88 |   const colors=await exp().evaluate(node=>{const s=getComputedStyle(node);return {ink:s.color,background:s.backgroundColor,border:s.borderColor}})
+      89 |   const lum=(rgb:string)=>rgb.match(/[\d.]+/g)!.slice(0,3).map(Number).map(c=>{c/=255;return c<=.04045?c/12.92:((c+.055)/1.055)**2.4}).reduce((v,c,i)=>v+c*[.2126,.7152,.0722][i],0)
+      90 |   const a=lum(colors.ink),b=lum(colors.background);expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05)).toBeGreaterThanOrEqual(4.5)
+        at /private/tmp/freyalab-ui-u0-base/tests/e2e/ui-u0.spec.ts:87:349
+
+    Error Context: ../freyalab-u0-evidence/divider-red/ui-u0-U0-contraste-real-fo-477df-ación-y-movimiento-reducido-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-u0-evidence/divider-red/ui-u0-U0-contraste-real-fo-477df-ación-y-movimiento-reducido-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-u0-evidence/divider-red/ui-u0-U0-contraste-real-fo-477df-ación-y-movimiento-reducido-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [shell] › tests/e2e/ui-u0.spec.ts:84:1 › U0: contraste real, foco por teclado, pulsación y movimiento reducido 

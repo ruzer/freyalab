@@ -1,0 +1,15 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-ui-u0-base
+
+AC-00 P4 real: darwin, {"available":true,"path":"/opt/homebrew/Cellar/pandoc/3.12.1/bin/pandoc","version":"3.12.1","license":"GPL-2.0-or-later"}
+AC-00 HTTP: Pandoc sin soporte HTTP; eficacia del sandbox HTTP pendiente de otro binario
+
+ Test Files  123 passed (123)
+      Tests  2450 passed (2450)
+   Start at  01:53:11
+   Duration  16.94s (tests 91%, import 8%, transform 1%)
+
