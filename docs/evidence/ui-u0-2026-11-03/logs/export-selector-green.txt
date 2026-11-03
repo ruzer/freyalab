@@ -1,0 +1,65 @@
+
+Running 30 tests using 1 worker
+
+(node:73579) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [md] › tests/e2e/mermaid-errors.spec.ts:37:1 › último dibujo válido: romper y corregir conserva SVG atenuado, aviso español y selección de fuente (1.6s)
+  ✓   2 [md] › tests/e2e/mermaid-errors.spec.ts:53:1 › el EOF fuera del texto señala la última línea existente y conserva el número técnico original (934ms)
+  ✓   3 [md] › tests/e2e/mermaid-errors.spec.ts:60:2 › exportación svg: el error bloquea la última vista válida sin crear archivos ni cambiar el texto (1.3s)
+  ✓   4 [md] › tests/e2e/mermaid-errors.spec.ts:60:2 › exportación png: el error bloquea la última vista válida sin crear archivos ni cambiar el texto (1.3s)
+  ✓   5 [md] › tests/e2e/mermaid-errors.spec.ts:60:2 › exportación pdf: el error bloquea la última vista válida sin crear archivos ni cambiar el texto (1.3s)
+  ✓   6 [md] › tests/e2e/mermaid-errors.spec.ts:68:1 › exportar inmediatamente después de romper la fuente espera el render pendiente y no guarda el dibujo anterior (1.2s)
+  ✓   7 [md] › tests/e2e/mermaid-errors.spec.ts:86:1 › cerrar una pestaña limpia Mermaid mientras espera exportar cancela la salida de su vista destruida (719ms)
+  ✓   8 [md] › tests/e2e/mermaid-errors.spec.ts:86:1 › cerrar una pestaña limpia Markdown mientras espera exportar cancela la salida de su vista destruida (736ms)
+  ✓   9 [md] › tests/e2e/mermaid-errors.spec.ts:104:1 › primer error: ejemplo mínimo seleccionable por teclado y detalle técnico plegado sin inglés visible (944ms)
+  ✓  10 [md] › tests/e2e/mermaid-errors.spec.ts:115:1 › fuente vacía y espacios: ayuda en español sin dibujo ficticio ni modificación del archivo (1.2s)
+  ✓  11 [md] › tests/e2e/mermaid-errors.spec.ts:128:1 › Markdown: varios errores, línea relativa al bloque y HTML técnico tratado como texto (1.1s)
+  ✓  12 [md] › tests/e2e/mermaid-errors.spec.ts:146:1 › Markdown sin ubicación conocida no añade un párrafo de ubicación vacío (906ms)
+  ✓  13 [md] › tests/e2e/mermaid-errors.spec.ts:154:1 › error sin parpadeo ni anuncios repetidos: el status permanece mientras cambia solo el detalle (1.4s)
+  ✓  14 [md] › tests/e2e/mermaid-errors.spec.ts:167:1 › Markdown: cambiar un párrafo o detalle conserva el anunciador y descarta renders obsoletos (2.3s)
+  ✓  15 [md] › tests/e2e/mermaid-errors.spec.ts:187:1 › debounce y generaciones: termina con la fuente más nueva sin que aparezca un error obsoleto (2.0s)
+  ✓  16 [md] › tests/e2e/mermaid-errors.spec.ts:196:1 › diagrama superior al límite real de Mermaid: no sustituye la última vista por un error SVG ni permite exportarlo (1.8s)
+  ✓  17 [md] › tests/e2e/mermaid-errors.spec.ts:212:1 › tema con error activo: conserva el dibujo, aviso accesible y contraste en claro y oscuro (1.5s)
+  ✓  18 [md] › tests/e2e/mermaid-export-theme.spec.ts:125:1 › E1/E4: SVG individual exportado desde oscuro tiene texto y flechas legibles sobre blanco (1.3s)
+  ✓  19 [md] › tests/e2e/mermaid-export-theme.spec.ts:137:1 › E1/E3: HTML, PNG blanco y PDF individual no alteran el SVG oscuro visible (3.3s)
+  ✓  20 [md] › tests/e2e/mermaid-export-theme.spec.ts:164:1 › E2/E3/E4: Markdown mixto exporta sus diagramas claros sin cambiar la vista oscura (3.0s)
+  ✓  21 [md] › tests/e2e/mermaid-export-theme.spec.ts:183:1 › más de 64 diagramas y dos bloques iguales conservan todas las fuentes y el orden al exportar (5.2s)
+  ✓  22 [md] › tests/e2e/mermaid-export-theme.spec.ts:194:1 › la directiva de tema del autor se conserva y su excepción de contraste queda medida (1.3s)
+  ✓  23 [md] › tests/e2e/mermaid-export-theme.spec.ts:203:2 › E5: svg rechaza una fuente inválida sin exportar la última versión válida (1.3s)
+  ✓  24 [md] › tests/e2e/mermaid-export-theme.spec.ts:203:2 › E5: png rechaza una fuente inválida sin exportar la última versión válida (1.4s)
+  ✓  25 [md] › tests/e2e/mermaid-export-theme.spec.ts:203:2 › E5: pdf rechaza una fuente inválida sin exportar la última versión válida (1.3s)
+  ✓  26 [md] › tests/e2e/mermaid-export-theme.spec.ts:203:2 › E5: html rechaza una fuente inválida sin exportar la última versión válida (1.3s)
+  ✓  27 [md] › tests/e2e/mermaid-export-theme.spec.ts:215:1 › exportar durante el debounce espera la fuente actual y no reutiliza el SVG viejo (1.7s)
+  ✘  28 [md] › tests/e2e/mermaid-export-theme.spec.ts:223:1 › cambiar el tema mientras se prepara la exportación mantiene la salida clara y la elección del usuario (1.0s)
+(node:73898) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  29 [md] › tests/e2e/mermaid-export-theme.spec.ts:237:1 › cerrar la pestaña mientras espera el render cancela la salida de la vista destruida (719ms)
+  ✓  30 [md] › tests/e2e/mermaid-export-theme.spec.ts:252:1 › cancelar el diálogo de destino no altera la pantalla ni crea archivos (1.2s)
+
+
+  1) [md] › tests/e2e/mermaid-export-theme.spec.ts:223:1 › cambiar el tema mientras se prepara la exportación mantiene la salida clara y la elección del usuario 
+
+    Error: page.evaluate: Error: Falta Exportar
+        at click (eval at evaluate (:370:30), <anonymous>:7:26)
+        at eval (eval at evaluate (:370:30), <anonymous>:10:5)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at click (eval at evaluate (:370:30), <anonymous>:7:26)
+        at eval (eval at evaluate (:370:30), <anonymous>:10:5)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at /private/tmp/freyalab-ui-u0-base/tests/e2e/mermaid-export-theme.spec.ts:225:26
+
+    Error Context: ../freyalab-u0-evidence/export-selector-green/mermaid-export-theme-cambi-88ecb-a-y-la-elección-del-usuario-md/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-u0-evidence/export-selector-green/mermaid-export-theme-cambi-88ecb-a-y-la-elección-del-usuario-md/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-u0-evidence/export-selector-green/mermaid-export-theme-cambi-88ecb-a-y-la-elección-del-usuario-md/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [md] › tests/e2e/mermaid-export-theme.spec.ts:223:1 › cambiar el tema mientras se prepara la exportación mantiene la salida clara y la elección del usuario 
+  29 passed (47.0s)

@@ -1,3 +1,4 @@
+import {runApplicationMenu} from './application-menu'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,readdir,rm} from 'node:fs/promises'
@@ -38,8 +39,9 @@ test('A1 A2 · Guardar como copia tres activos; cerrar y reabrir prueba que las 
 test('Buscar · el marcador permite elegir, copiar, deshacer y rehacer sin modificar el Markdown original en disco',async()=>{
  const source='# Sin imagen\n\n![Gráfico](a.assets/ausente.png "Descripción")\n',{path,doc}=await open(source)
  const locate=article().getByRole('button',{name:/Buscar imagen.*Gráfico/});await expect(locate).toBeVisible()
- for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect(locate).toBeEnabled();if(process.env.FREYALAB_ASSET_EVIDENCE)await page.screenshot({path:resolve(`docs/evidence/drw-001-missing-${theme}-1440x900.png`),animations:'disabled'})}
- await locate.focus();await page.keyboard.press('Enter')
+ // El cambio de tema sustituye el marcador; enfocar el anterior pierde el Enter al terminar el render.
+ for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect(page.locator('.preview .render-progress')).toHaveCount(0);await expect(locate).toBeEnabled();if(process.env.FREYALAB_ASSET_EVIDENCE)await page.screenshot({path:resolve(`docs/evidence/drw-001-missing-${theme}-1440x900.png`),animations:'disabled'})}
+ await locate.focus();await expect(locate).toBeFocused();await page.keyboard.press('Enter')
  await loaded();const changed=(await current(doc.id))!
  expect(changed.dirty).toBe(true);expect(changed.text).toMatch(/!\[Gráfico\]\(a\.assets\/[a-f0-9-]+\.png "Descripción"\)/);expect(await readFile(path,'utf8')).toBe(source)
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(locate).toBeVisible();expect((await current(doc.id))?.text).toBe(source)
@@ -80,7 +82,7 @@ test('Guardar sin cambiar fuente conserva las imágenes y el DOM; no vuelve a pr
  await mkdir(join(folder,'origen','a.assets'));await writeFile(join(folder,'origen','a.assets','uno.png'),png)
  await open('![Vista](a.assets/uno.png)\n\n- [ ] Tarea\n');await loaded();await expect(page.locator('.preview .render-progress')).toHaveCount(0)
  await article().locator('img').evaluate(image=>image.setAttribute('data-asset-identity','original'))
- await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect(page.locator('.toast')).toContainText('Archivo guardado');await expect(page.locator('.preview .render-progress')).toHaveCount(0)
+ await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled();await runApplicationMenu(app,'file.save');await expect(page.locator('.toast')).toContainText('Archivo guardado');await expect(page.locator('.preview .render-progress')).toHaveCount(0)
  await expect(article().locator('img')).toHaveAttribute('data-asset-identity','original');await expect(article().getByRole('checkbox')).toBeEnabled()
 })
 test('una imagen enlazada coloca Buscar fuera del enlace y conserva su destino al reparar',async()=>{
@@ -126,7 +128,7 @@ test('U2 · el resumen conserva el detalle de cada imagen hasta cerrarlo y sobre
  await page.getByRole('button',{name:'Guardar como',exact:true}).click()
  const warning=page.getByRole('region',{name:'Imágenes no copiadas'});await expect(warning).toContainText('2 imágenes no se copiaron')
  await page.clock.runFor(4000);await expect(warning).toBeVisible()
- await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect(page.locator('.toast')).toContainText('Archivo guardado');await expect(warning).toBeVisible()
+ await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled();await runApplicationMenu(app,'file.save');await expect(page.locator('.toast')).toContainText('Archivo guardado');await expect(warning).toBeVisible()
  await open('# Otro documento\n','otro.md');await expect(warning).toHaveCount(0)
  await page.getByRole('tab',{name:'Copia á.md',exact:true}).click();await expect(warning).toBeVisible();expect((await current(doc.id))?.path).toBe(target)
  await warning.locator('summary').focus();await page.keyboard.press('Enter')

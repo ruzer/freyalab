@@ -1,4 +1,6 @@
 <script lang="ts">
+ import {t} from '../lib/i18n.svelte'
+ import {controlHint} from '../lib/control-hint'
  import Icon from './Icon.svelte'
  import {onDestroy,onMount,tick} from 'svelte'
  import {STATISTICS_FIELDS,NUMERIC_DETAIL_FIELDS,NUMERIC_DETAIL_HELP,statisticsReport,type ReportContext,type StatisticsRow} from '../lib/statistics-report'
@@ -48,15 +50,15 @@
 </script>
 <svelte:window onkeydown={event=>{if(event.key==='Escape'&&event.target instanceof HTMLElement&&event.target.closest('.statistics-panel')){event.preventDefault();event.stopPropagation();onclose()}}}/>
 <section class="statistics-panel" aria-labelledby="csv-statistics-title">
- <div class="statistics-heading"><h3 id="csv-statistics-title" tabindex="-1" bind:this={heading}>Estadísticas por columna</h3><button aria-label="Cerrar estadísticas" onclick={onclose}><Icon name="x" size={14}/></button></div>
+ <div class="statistics-heading"><h3 id="csv-statistics-title" tabindex="-1" bind:this={heading}>Estadísticas por columna</h3><button title={"Cerrar estadísticas"} aria-label="Cerrar estadísticas" onclick={onclose}><Icon name="x" size={14}/></button></div>
  {#if !exploring&&!overviewing}
  <p>{doc.readonly?'Solo muestra: los recuentos no describen el archivo completo.':usingRange?'Solo el rango de la vista seleccionada; excluye filas ocultas y encabezados.':'Documento completo: incluye las filas ocultas por búsqueda o filtros; excluye encabezados.'}</p>
  <form onsubmit={event=>{event.preventDefault();void analyze()}}>
   <label>Columnas <select aria-label="Columnas para estadísticas" bind:value={scope} disabled={busy}><option value="all">Todas las columnas</option><option value="selected" disabled={!columns.length}>Columnas marcadas</option><option value="range" disabled={!range||!queryValid}>Celdas del rango</option><option value="rangeColumns" disabled={!range||!queryValid}>Rango por columnas</option></select></label>
-  <button class="primary" type="submit" disabled={busy||usingRange&&(!range||!queryValid)}>Analizar</button>
-  {#if busy}<button type="button" onclick={cancel}>Cancelar análisis</button><progress aria-label="Progreso del análisis" value={results.length} max={total}></progress>{/if}
+  <button aria-busy={busy} {...controlHint(busy?'busy':usingRange&&(!range||!queryValid)?'selection':null)} class="btn-tint" type="submit" disabled={busy||usingRange&&(!range||!queryValid)}>{#if busy}<span class="button-spinner" aria-hidden="true"></span>{/if}<span class:busy-label={busy} data-loading={t('ui.button.calculating')}>Analizar</span></button>
+  {#if busy}<button class="btn-ghost" type="button" onclick={cancel}>Cancelar análisis</button><progress aria-label="Progreso del análisis" value={results.length} max={total}></progress>{/if}
   <span role="status">{message}{busy?` ${results.length} de ${total}`:''}</span>
-  <button type="button" disabled={!reportContext||busy||reporting||doc.revision!==revision} onclick={report}>Abrir informe Markdown</button>
+  <button {...controlHint(busy||reporting?'busy':!reportContext?'result':doc.revision!==revision?'refresh':null)} type="button" disabled={!reportContext||busy||reporting||doc.revision!==revision} onclick={report}>Abrir informe Markdown</button>
  </form>
  <label><input type="checkbox" bind:checked={numericDetails}/>Varianza y percentiles</label>
  {#if numericDetails}<p>{NUMERIC_DETAIL_HELP}</p>{/if}
@@ -73,6 +75,6 @@
 <style>
  .statistics-panel{border-bottom:1px solid var(--border);background:var(--panel);padding:10px 12px;font-size:11px;max-height:310px;overflow:auto;flex-shrink:0}
  .statistics-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.statistics-heading h3{margin:0;font-size:12px}.statistics-heading button{border:0;background:transparent;font-size:18px;padding:0 6px}
- p{margin:6px 0;color:var(--muted);line-height:1.5}form{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}label{display:flex;gap:6px;align-items:center}select,button{font-size:11px;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:5px;padding:5px 8px}button{appearance:none}button.primary{color:white}button:disabled{opacity:.5}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}progress{width:90px}form span{color:var(--muted)}
- .statistics-scroll.reserved{height:140px}.statistics-scroll{overflow:auto;max-height:140px;border:1px solid var(--border);border-radius:5px}table{border-collapse:collapse;width:100%;white-space:nowrap;font-size:11px}caption{text-align:left;padding:6px;color:var(--muted)}th,td{padding:6px 9px;border-bottom:1px solid var(--border);text-align:right}th:first-child{text-align:left;position:sticky;left:0;z-index:1;background:var(--panel)}thead th:first-child{z-index:3}thead th{position:sticky;top:0;background:var(--panel)}.statistics-note{font-size:10px}
+ p{margin:6px 0;color:var(--muted);line-height:1.5}form{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}label{display:flex;gap:6px;align-items:center}select,button{font-size:11px;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:var(--radius-control);padding:5px 8px}button{appearance:none}button.primary{color:white}button:disabled{opacity:.5}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}progress{width:90px}form span{color:var(--muted)}
+ .statistics-scroll.reserved{height:140px}.statistics-scroll{overflow:auto;max-height:140px;border:1px solid var(--border);border-radius:var(--radius-control)}table{border-collapse:collapse;width:100%;white-space:nowrap;font-size:11px}caption{text-align:left;padding:6px;color:var(--muted)}th,td{padding:6px 9px;border-bottom:1px solid var(--border);text-align:right}th:first-child{text-align:left;position:sticky;left:0;z-index:1;background:var(--panel)}thead th:first-child{z-index:3}thead th{position:sticky;top:0;background:var(--panel)}.statistics-note{font-size:var(--font-meta)}
 </style>

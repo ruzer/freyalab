@@ -1,4 +1,5 @@
 <script lang="ts">
+ import {controlHint} from '../lib/control-hint'
  import {tick,onMount,onDestroy} from 'svelte'
  import Diagram from './Diagram.svelte'
  import type {DiagramError} from '../lib/diagram-errors'
@@ -236,7 +237,7 @@
 <section class="preview" bind:this={container} aria-label="Vista previa del documento" role="document" tabindex="-1">
  {#if busy}<span class="render-progress">Actualizando vista previa…</span>{/if}
  <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</span>
- {#if frontMatter!==undefined}<div class="document-properties-row"><details class="document-properties"><summary>Propiedades del documento</summary><pre>{frontMatter}</pre></details>{#if tags.length}<div class="document-tags">{#each tags as tag}<button aria-label={`Filtrar archivos por la etiqueta ${tag}`} title={tag} disabled={!onfiltertag} onclick={()=>onfiltertag?.(tag)}>{tag}</button>{/each}</div>{/if}</div>{/if}
+ {#if frontMatter!==undefined}<div class="document-properties-row"><details class="document-properties"><summary>Propiedades del documento</summary><pre>{frontMatter}</pre></details>{#if tags.length}<div class="document-tags">{#each tags as tag}<button {...controlHint(!onfiltertag?'folder':null, (tag))} aria-label={`Filtrar archivos por la etiqueta ${tag}`}  disabled={!onfiltertag} onclick={()=>onfiltertag?.(tag)}>{tag}</button>{/each}</div>{/if}</div>{/if}
  {#if documentWarnings.length}<details class="document-warnings" aria-label="Advertencias del documento"><summary>{documentWarnings.length===1?'Una advertencia del documento':`${documentWarnings.length} advertencias del documento`}</summary><ul>{#each documentWarnings as warning}<li>{warning}</li>{/each}</ul></details>{/if}
  <article class="markdown-body" bind:this={article}></article>
 </section>

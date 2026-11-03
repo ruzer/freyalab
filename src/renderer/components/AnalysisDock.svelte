@@ -56,7 +56,7 @@
  .dock-tabs{display:flex;gap:2px}
  .dock-expand{margin-bottom:4px}
  .dock-notice{margin:0;padding:8px 12px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);flex-shrink:0}
- .dock-tabs button{border:0;border-bottom:2px solid transparent;border-radius:5px 5px 0 0;background:transparent;padding:6px 12px}
+ .dock-tabs button{border:0;border-bottom:2px solid transparent;border-radius:var(--radius-control) 5px 0 0;background:transparent;padding:6px 12px}
  .dock-tabs button[aria-selected=true]{border-bottom-color:var(--accent);font-weight:600}
  .dock-panel{flex:1;min-height:0;overflow:auto}
  .dock-panel[hidden]{display:none}

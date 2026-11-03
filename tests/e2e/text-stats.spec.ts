@@ -1,3 +1,4 @@
+import {runApplicationMenu} from './application-menu'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises'
@@ -107,7 +108,7 @@ test('W4: selección CRLF al final del documento conserva offsets, Unicode y el 
  await selectionProtocol()
  expect(await readFile(path,'utf8')).toBe(source);const state=await current(document.id)
  expect(state?.text).toBe(source);expect(state?.dirty).toBe(false)
- await page.getByRole('button',{name:'Guardar',exact:true}).click();expect(await readFile(path,'utf8')).toBe(source)
+ await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled();await runApplicationMenu(app,'file.save');await expect(page.locator('.toast')).toContainText('Archivo guardado');expect(await readFile(path,'utf8')).toBe(source)
 })
 
 test('W4: una selección que cruza código usa las mismas exclusiones que el total',async()=>{

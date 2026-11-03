@@ -1,0 +1,35 @@
+
+Running 1 test using 1 worker
+
+(node:72567) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [shell] › tests/e2e/ui-u0.spec.ts:84:1 › U0: contraste real, foco por teclado, pulsación y movimiento reducido (900ms)
+
+
+  1) [shell] › tests/e2e/ui-u0.spec.ts:84:1 › U0: contraste real, foco por teclado, pulsación y movimiento reducido 
+
+    Error: expect(received).not.toBe(expected) // Object.is equality
+
+    Expected: not "rgba(0, 0, 0, 0)"
+
+       96 |  }
+       97 |  const formatted=join(folder,'formato.md');await writeFile(formatted,'Freya');await open(formatted);await page.locator('.cm-content').focus();await page.keyboard.press('ControlOrMeta+a');await page.keyboard.press('ControlOrMeta+b')
+    >  98 |  const bold=page.getByRole('button',{name:'Negrita',exact:true});await expect(bold).toHaveAttribute('aria-pressed','true');expect(await bold.evaluate(n=>getComputedStyle(n).backgroundColor)).not.toBe('rgba(0, 0, 0, 0)')
+          |                                                                                                                                                                                                    ^
+       99 |  await page.emulateMedia({forcedColors:'active'});const forced=await save().evaluate(n=>{const s=getComputedStyle(n);return {border:s.borderTopWidth,adjust:s.forcedColorAdjust}});expect(forced).toEqual({border:'2px',adjust:'auto'})
+      100 | })
+      101 |
+        at /private/tmp/freyalab-ui-u0-base/tests/e2e/ui-u0.spec.ts:98:196
+
+    Error Context: ../freyalab-u0-evidence/active-red/ui-u0-U0-contraste-real-fo-477df-ación-y-movimiento-reducido-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-u0-evidence/active-red/ui-u0-U0-contraste-real-fo-477df-ación-y-movimiento-reducido-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-u0-evidence/active-red/ui-u0-U0-contraste-real-fo-477df-ación-y-movimiento-reducido-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [shell] › tests/e2e/ui-u0.spec.ts:84:1 › U0: contraste real, foco por teclado, pulsación y movimiento reducido 

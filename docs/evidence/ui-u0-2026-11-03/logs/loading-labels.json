@@ -1,0 +1,23 @@
+[
+  {
+    "language": "en-XA",
+    "busy": "true",
+    "width": 126.2421875,
+    "needed": 126.23583984375,
+    "spinner": 12
+  },
+  {
+    "language": "en",
+    "busy": "true",
+    "width": 81.5859375,
+    "needed": 81.580078125,
+    "spinner": 12
+  },
+  {
+    "language": "es",
+    "busy": "true",
+    "width": 81.71875,
+    "needed": 81.71337890625,
+    "spinner": 12
+  }
+]

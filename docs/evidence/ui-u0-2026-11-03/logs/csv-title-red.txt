@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:74136) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/csv-text.spec.ts:27:1 › A: más de 10 MiB deshabilita Texto en la barra y el menú con ayuda explícita (16.0s)
+
+
+  1) [csv] › tests/e2e/csv-text.spec.ts:27:1 › A: más de 10 MiB deshabilita Texto en la barra y el menú con ayuda explícita 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByRole('menuitem', { name: 'Abrir como texto', exact: true })
+    Expected: "El modo Texto admite hasta 10 MiB. Usa la tabla."
+    Received: "El modo Texto admite hasta 10 MiB. Usa la tabla. · La edición de texto admite archivos de hasta 10 MiB."
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('menuitem', { name: 'Abrir como texto', exact: true }) with timeout 15000ms
+      - waiting for getByRole('menuitem', { name: 'Abrir como texto', exact: true })
+        34 × locator resolved to <button disabled role="menuitem" aria-describedby="control-reason-textLimit" title="El modo Texto admite hasta 10 MiB. Usa la tabla. · La edición de texto admite archivos de hasta 10 MiB.">Abrir como texto</button>
+           - unexpected value "El modo Texto admite hasta 10 MiB. Usa la tabla. · La edición de texto admite archivos de hasta 10 MiB."
+
+
+      26 |
+      27 | test('A: más de 10 MiB deshabilita Texto en la barra y el menú con ayuda explícita',async()=>{
+    > 28 |  const path=join(files,'grande.csv'),handle=await open(path,'w');await handle.writeFile('ID,Nombre\n1,Ana\n');await handle.truncate(10*1024*1024+1);await handle.close();await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(views()).toBeVisible();const button=views().getByRole('button',{name:'Texto',exact:true});await expect(button).toBeDisabled();await expect(button).toHaveAttribute('title','El modo Texto admite hasta 10 MiB. Usa la tabla.');await page.locator('.toolbar-left').getByRole('button',{name:'Abrir carpeta',exact:true}).click();await page.getByRole('button',{name:'grande.csv',exact:true}).click({button:'right'});const item=page.getByRole('menuitem',{name:'Abrir como texto',exact:true});await expect(item).toBeDisabled();await expect(item).toHaveAttribute('title','El modo Texto admite hasta 10 MiB. Usa la tabla.');expect(await page.evaluate(()=>window.freya.documents())).toHaveLength(1)
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ^
+      29 | })
+      30 |
+      31 | test('B: texto exacto conserva saltos mixtos, pegado, undo y opciones apagadas',async()=>{
+        at /private/tmp/freyalab-ui-u0-base/tests/e2e/csv-text.spec.ts:28:781
+
+    Error Context: ../freyalab-u0-evidence/csv-title-red/csv-text-A-más-de-10-MiB-d-e922e-el-menú-con-ayuda-explícita-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-u0-evidence/csv-title-red/csv-text-A-más-de-10-MiB-d-e922e-el-menú-con-ayuda-explícita-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-u0-evidence/csv-title-red/csv-text-A-más-de-10-MiB-d-e922e-el-menú-con-ayuda-explícita-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/csv-text.spec.ts:27:1 › A: más de 10 MiB deshabilita Texto en la barra y el menú con ayuda explícita 

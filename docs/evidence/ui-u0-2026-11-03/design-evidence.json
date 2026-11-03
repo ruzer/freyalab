@@ -1,0 +1,183 @@
+{
+  "contract": "U0: tokens y botones sobre main402151a; fuentes/CSV/editor y operaciones conservadas. Sin U1/U2/U3.",
+  "targetViewports": [
+    "1440x900",
+    "1280x720"
+  ],
+  "accessibility": {
+    "status": "pass",
+    "evidence": "48 pares reales validados con Data; pruebas de nombres, descripciones, foco2/2, min24, reduced motion, forced colors y en-XA; las limitaciones manuales están en README."
+  },
+  "responsive": {
+    "status": "pass",
+    "evidence": "47 casos enfocados aprobados, incluidos Más opciones, seis campos, cuatro zonas, total y paginación a1280/800, sin relajar aserciones. El divisor conserva1 px visual con25 px de objetivo real."
+  },
+  "contentStates": {
+    "loading": {
+      "status": "pass",
+      "evidence": "Guardar retenido en diálogo público: spinner/aria-busy y variante estable; no se finge progreso U1."
+    },
+    "empty": {
+      "status": "pass",
+      "evidence": "Bienvenida sin documento: Abrir único primario; controles indisponibles con motivo."
+    },
+    "error": {
+      "status": "pass",
+      "evidence": "Los casos de errores de Mermaid del log export-selector-green.txt pasan; el fallo de selección del botón de cambio de tema se verifica aparte en export-theme-green.txt."
+    },
+    "partial": {
+      "status": "pass",
+      "evidence": "Resumen842grupos mantiene aviso parcial, total842 y paginación visibles; conserva las pruebas #108."
+    },
+    "success": {
+      "status": "pass",
+      "evidence": "Guardar real emite aviso y escribe el texto exacto; originales de capturas sin modificaciones."
+    },
+    "permission": {
+      "status": "pass",
+      "evidence": "Caso real de CSV de más50MiB: solo lectura conserva restricciones, motivos y Abrir primario en ambos temas."
+    }
+  },
+  "renderedEvidence": [
+    {
+      "viewport": "1440x900",
+      "artifact": "after/after-vacio-light-1440x900.png",
+      "observation": "vacio, light: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1440x900",
+      "artifact": "after/after-markdown-light-1440x900.png",
+      "observation": "markdown, light: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1440x900",
+      "artifact": "after/after-csv-light-1440x900.png",
+      "observation": "csv, light: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1440x900",
+      "artifact": "after/after-resumen-light-1440x900.png",
+      "observation": "resumen, light: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1440x900",
+      "artifact": "after/after-ajustes-light-1440x900.png",
+      "observation": "ajustes, light: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1440x900",
+      "artifact": "after/after-sin-resultados-light-1440x900.png",
+      "observation": "sin-resultados, light: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1440x900",
+      "artifact": "after/after-guardando-light-1440x900.png",
+      "observation": "guardando, light: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1440x900",
+      "artifact": "after/after-vacio-dark-1440x900.png",
+      "observation": "vacio, dark: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1440x900",
+      "artifact": "after/after-markdown-dark-1440x900.png",
+      "observation": "markdown, dark: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1440x900",
+      "artifact": "after/after-csv-dark-1440x900.png",
+      "observation": "csv, dark: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1440x900",
+      "artifact": "after/after-resumen-dark-1440x900.png",
+      "observation": "resumen, dark: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1440x900",
+      "artifact": "after/after-ajustes-dark-1440x900.png",
+      "observation": "ajustes, dark: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1440x900",
+      "artifact": "after/after-sin-resultados-dark-1440x900.png",
+      "observation": "sin-resultados, dark: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1440x900",
+      "artifact": "after/after-guardando-dark-1440x900.png",
+      "observation": "guardando, dark: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after/after-vacio-light-1280x720.png",
+      "observation": "vacio, light: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after/after-markdown-light-1280x720.png",
+      "observation": "markdown, light: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after/after-csv-light-1280x720.png",
+      "observation": "csv, light: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after/after-resumen-light-1280x720.png",
+      "observation": "resumen, light: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after/after-ajustes-light-1280x720.png",
+      "observation": "ajustes, light: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after/after-sin-resultados-light-1280x720.png",
+      "observation": "sin-resultados, light: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after/after-guardando-light-1280x720.png",
+      "observation": "guardando, light: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after/after-vacio-dark-1280x720.png",
+      "observation": "vacio, dark: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after/after-markdown-dark-1280x720.png",
+      "observation": "markdown, dark: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after/after-csv-dark-1280x720.png",
+      "observation": "csv, dark: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after/after-resumen-dark-1280x720.png",
+      "observation": "resumen, dark: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after/after-ajustes-dark-1280x720.png",
+      "observation": "ajustes, dark: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after/after-sin-resultados-dark-1280x720.png",
+      "observation": "sin-resultados, dark: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    },
+    {
+      "viewport": "1280x720",
+      "artifact": "after/after-guardando-dark-1280x720.png",
+      "observation": "guardando, dark: captura de app construida; contraste y estados contrastados con pruebas, sin acreditar revisión manual en otros SO."
+    }
+  ]
+}

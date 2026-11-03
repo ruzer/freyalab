@@ -71,7 +71,7 @@ test('exportar inmediatamente después de romper la fuente espera el render pend
  const started=Date.now();await page.keyboard.insertText(broken)
  // Los clics DOM, sin esperas entre ellos, permiten pulsar antes del debounce real de 150 ms.
  const result=await page.evaluate(async started=>{
-  const click=(label:string)=>{const button=Array.from(document.querySelectorAll<HTMLButtonElement>('.toolbar button')).find(node=>node.textContent?.trim()===label);if(!button)throw new Error(`Falta el control ${label}`);button.click()}
+  const click=(label:string)=>{const button=Array.from(document.querySelectorAll<HTMLButtonElement>('.toolbar button')).find(node=>(node.getAttribute('aria-label')||node.innerText.trim())===label);if(!button)throw new Error(`Falta el control ${label}`);button.click()}
   click('Exportar');await Promise.resolve();const rendering=!!document.querySelector('.diagram-panel .render-progress');click('Imagen SVG');return{elapsedMs:Date.now()-started,rendering}
  },started)
  await test.info().attach('tiempo-hasta-exportar',{body:Buffer.from(JSON.stringify(result)),contentType:'application/json'})
@@ -87,10 +87,10 @@ test(`cerrar una pestaña limpia ${scenario.name} mientras espera exportar cance
  const {path,doc}=await open(scenario.text,scenario.extension)
  const result=await page.evaluate(async({name,label})=>{
   const started=Date.now()
-  const click=(label:string)=>{const button=Array.from(document.querySelectorAll<HTMLButtonElement>('.toolbar button')).find(node=>node.textContent?.trim()===label);if(!button)throw new Error(`Falta el control ${label}`);button.click()}
+  const click=(label:string)=>{const button=Array.from(document.querySelectorAll<HTMLButtonElement>('.toolbar button')).find(node=>(node.getAttribute('aria-label')||node.innerText.trim())===label);if(!button)throw new Error(`Falta el control ${label}`);button.click()}
   click('Exportar');await Promise.resolve();click(label)
   for(let i=0;i<4;i++)await Promise.resolve()
-  const waiting=Array.from(document.querySelectorAll<HTMLButtonElement>('.toolbar button')).some(node=>node.textContent?.includes('Exportando'))
+  const waiting=Array.from(document.querySelectorAll<HTMLButtonElement>('.toolbar button')).some(node=>node.getAttribute('aria-label')==='Exportar'&&node.getAttribute('aria-busy')==='true')
   const close=Array.from(document.querySelectorAll<HTMLButtonElement>('.tab-close')).find(node=>node.getAttribute('aria-label')===`Cerrar ${name}`);if(!close)throw new Error('Falta el botón para cerrar la pestaña');close.click()
   return{waiting,elapsedMs:Date.now()-started}
  },{name:doc.name,label:scenario.label})

@@ -1,0 +1,26 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-ui-u0-base
+
+ ❯ tests/ui-tokens.test.ts (42 tests | 1 failed) 7ms
+   × contraste del CSS: --kind-csv sobre --panel ≥ 4.5; oscuro=false 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --kind-csv sobre --panel ≥ 4.5; oscuro=false
+AssertionError: expected 4.494782960232089 to be greater than or equal to 4.5
+ ❯ tests/ui-tokens.test.ts:32:60
+     30|  const values=tokens(dark)
+     31|  function resolve(name:string):string{expect(values[name],`token ${nam…
+     32|  expect(contrast(resolve(foreground),resolve(background))).toBeGreater…
+       |                                                            ^
+     33| })
+     34| it('el azul aprobado está definido una sola vez detrás del token de ac…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 41 passed (42)
+   Start at  23:42:30
+   Duration  90ms (tests 39%, import 37%, transform 12%, worker 11%, environment 1%)
+

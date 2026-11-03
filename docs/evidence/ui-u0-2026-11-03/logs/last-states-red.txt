@@ -1,0 +1,66 @@
+
+Running 2 tests using 1 worker
+
+(node:89115) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [shell] › tests/e2e/ui-u0.spec.ts:134:1 › U0: la ayuda del gráfico se despliega debajo de su control y permite cerrarla (2.6s)
+(node:89128) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [shell] › tests/e2e/ui-u0.spec.ts:141:1 › U0: Calculando cabe en el botón real con en-XA, inglés y español (697ms)
+
+
+  1) [shell] › tests/e2e/ui-u0.spec.ts:134:1 › U0: la ayuda del gráfico se despliega debajo de su control y permite cerrarla 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 159.5
+    Received:    144
+
+      135 |  await open(csv);await page.setViewportSize({width:1440,height:900});await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();await expect(page.locator('.pivot-result')).toBeVisible()
+      136 |  const summary=page.locator('.chart-info>summary');await summary.click();await expect(page.locator('.chart-info')).toHaveAttribute('open','')
+    > 137 |  const [trigger,popup]=await Promise.all([summary.boundingBox(),page.locator('.chart-info .info-content').boundingBox()]);expect(popup!.y).toBeGreaterThanOrEqual(trigger!.y+trigger!.height)
+          |                                                                                                                                            ^
+      138 |  await summary.click();await expect(page.locator('.chart-info')).not.toHaveAttribute('open')
+      139 | })
+      140 |
+        at /private/tmp/freyalab-ui-u0-base/tests/e2e/ui-u0.spec.ts:137:140
+
+    Error Context: ../freyalab-u0-evidence/last-states-red/ui-u0-U0-la-ayuda-del-gráf-723df--control-y-permite-cerrarla-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-u0-evidence/last-states-red/ui-u0-U0-la-ayuda-del-gráf-723df--control-y-permite-cerrarla-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-u0-evidence/last-states-red/ui-u0-U0-la-ayuda-del-gráf-723df--control-y-permite-cerrarla-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [shell] › tests/e2e/ui-u0.spec.ts:141:1 › U0: Calculando cabe en el botón real con en-XA, inglés y español 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 126.23583984375
+    Received:    51.1484375
+
+      147 |   const button=page.locator('.statistics-panel button[type=submit]')
+      148 |   const measured=await button.evaluate(async node=>{(node as HTMLButtonElement).click();await Promise.resolve();await Promise.resolve();const label=node.querySelector<HTMLElement>('.busy-label')!,spinner=node.querySelector('.button-spinner')!;const context=document.createElement('canvas').getContext('2d')!,font=getComputedStyle(node);context.font=`${font.fontWeight} ${font.fontSize} ${font.fontFamily}`;return{busy:node.getAttribute('aria-busy'),width:label.getBoundingClientRect().width,needed:context.measureText(label.dataset.loading!).width,spinner:spinner.getBoundingClientRect().width}})
+    > 149 |   samples.push({language,...measured});expect(measured.busy).toBe('true');expect(measured.spinner).toBe(12);expect(measured.width+.5).toBeGreaterThanOrEqual(measured.needed)
+          |                                                                                                                                       ^
+      150 |   await expect(button).toHaveAttribute('aria-busy','false')
+      151 |  }
+      152 |  await writeFile(test.info().outputPath('loading-labels.json'),JSON.stringify(samples,null,2));expect(await readFile(csv,'utf8')).toBe(table)
+        at /private/tmp/freyalab-ui-u0-base/tests/e2e/ui-u0.spec.ts:149:135
+
+    Error Context: ../freyalab-u0-evidence/last-states-red/ui-u0-U0-Calculando-cabe-e-09e98--con-en-XA-inglés-y-español-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-u0-evidence/last-states-red/ui-u0-U0-Calculando-cabe-e-09e98--con-en-XA-inglés-y-español-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-u0-evidence/last-states-red/ui-u0-U0-Calculando-cabe-e-09e98--con-en-XA-inglés-y-español-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [shell] › tests/e2e/ui-u0.spec.ts:134:1 › U0: la ayuda del gráfico se despliega debajo de su control y permite cerrarla 
+    [shell] › tests/e2e/ui-u0.spec.ts:141:1 › U0: Calculando cabe en el botón real con en-XA, inglés y español 

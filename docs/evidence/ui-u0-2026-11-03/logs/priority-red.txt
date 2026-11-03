@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:63207) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/ui-u0.spec.ts:57:1 › U0: un primario Guardar/Exportar/Abrir con cajas y nombres estables en ambos temas (15.9s)
+
+
+  1) [csv] › tests/e2e/ui-u0.spec.ts:57:1 › U0: un primario Guardar/Exportar/Abrir con cajas y nombres estables en ambos temas 
+
+    Error: expect(locator).toBeDisabled() failed
+
+    Locator:  locator('header.toolbar').getByRole('button', { name: 'Guardar', exact: true })
+    Expected: disabled
+    Received: enabled
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeDisabled" locator('header.toolbar').getByRole('button', { name: 'Guardar', exact: true }) with timeout 15000ms
+      - waiting for locator('header.toolbar').getByRole('button', { name: 'Guardar', exact: true })
+        34 × locator resolved to <button title="Guardar · ⌘S">…</button>
+           - unexpected value "enabled"
+
+
+      58 |  for(const value of ['light','dark']){
+      59 |   await theme(value);await open(markdown);await expect(page.locator('.markdown-body h1')).toHaveText('Documento de Freya')
+    > 60 |   await expect(save()).toBeDisabled();await expect(exp()).toHaveClass(/btn-primary/)
+         |                        ^
+      61 |   const editor=page.locator('.cm-content');await editor.click();await page.keyboard.press('ControlOrMeta+End');await page.keyboard.insertText('\nNueva idea.\n')
+      62 |   await expect(save()).toHaveClass(/btn-primary/);await expect(exp()).not.toHaveClass(/btn-primary/)
+      63 |   await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+        at /private/tmp/freyalab-ui-u0-base/tests/e2e/ui-u0.spec.ts:60:24
+
+    Error Context: ../freyalab-u0-evidence/priority-red/ui-u0-U0-un-primario-Guard-800e5-res-estables-en-ambos-temas-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-u0-evidence/priority-red/ui-u0-U0-un-primario-Guard-800e5-res-estables-en-ambos-temas-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-u0-evidence/priority-red/ui-u0-U0-un-primario-Guard-800e5-res-estables-en-ambos-temas-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/ui-u0.spec.ts:57:1 › U0: un primario Guardar/Exportar/Abrir con cajas y nombres estables en ambos temas 

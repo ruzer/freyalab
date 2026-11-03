@@ -1,0 +1,36 @@
+
+Running 1 test using 1 worker
+
+(node:97596) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [shell] › tests/e2e/ui-u0.spec.ts:60:1 › U0: un primario Guardar/Exportar/Abrir con cajas y nombres estables en ambos temas (949ms)
+
+
+  1) [shell] › tests/e2e/ui-u0.spec.ts:60:1 › U0: un primario Guardar/Exportar/Abrir con cajas y nombres estables en ambos temas 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      61 |  for(const value of ['light','dark']){
+      62 |   await theme(value);await open(markdown);await expect(page.locator('.markdown-body h1')).toHaveText('Documento de Freya')
+    > 63 |   await expect(save()).toBeDisabled();await expect(exp()).toHaveClass(/btn-primary/);expect(await secondaryFill(save())).toBe(true)
+         |                                                                                                                          ^
+      64 |   const editor=page.locator('.cm-content');await editor.click();await page.keyboard.press('ControlOrMeta+End');await page.keyboard.insertText('\nNueva idea.\n')
+      65 |   await expect(save()).toHaveClass(/btn-primary/);await expect(exp()).not.toHaveClass(/btn-primary/);expect(await secondaryFill(exp())).toBe(true)
+      66 |   await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+        at /private/tmp/freyalab-ui-u0-base/tests/e2e/ui-u0.spec.ts:63:122
+
+    Error Context: ../freyalab-u0-evidence/secondary-red/ui-u0-U0-un-primario-Guard-800e5-res-estables-en-ambos-temas-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-u0-evidence/secondary-red/ui-u0-U0-un-primario-Guard-800e5-res-estables-en-ambos-temas-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-u0-evidence/secondary-red/ui-u0-U0-un-primario-Guard-800e5-res-estables-en-ambos-temas-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [shell] › tests/e2e/ui-u0.spec.ts:60:1 › U0: un primario Guardar/Exportar/Abrir con cajas y nombres estables en ambos temas 

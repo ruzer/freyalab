@@ -1,0 +1,16 @@
+{
+  "main": 551,
+  "u0": 560,
+  "removed": [],
+  "added": [
+    "[shell] › ui-u0.spec.ts › U0: Calculando cabe en el botón real con en-XA, inglés y español",
+    "[shell] › ui-u0.spec.ts › U0: Más opciones sigue visible con resumen paginado y controles de 13 px",
+    "[shell] › ui-u0.spec.ts › U0: capturas de estados existentes y tipografía base sin modificar archivos",
+    "[shell] › ui-u0.spec.ts › U0: contraste real, foco por teclado, pulsación y movimiento reducido",
+    "[shell] › ui-u0.spec.ts › U0: idiomas en-XA y en conservan nombres, motivos y cajas de la barra",
+    "[shell] › ui-u0.spec.ts › U0: la ayuda del gráfico se despliega debajo de su control y permite cerrarla",
+    "[shell] › ui-u0.spec.ts › U0: los botones deshabilitados visibles explican su motivo con title y descripción accesible",
+    "[shell] › ui-u0.spec.ts › U0: solo lectura conserva sus restricciones y Abrir como acción disponible",
+    "[shell] › ui-u0.spec.ts › U0: un primario Guardar/Exportar/Abrir con cajas y nombres estables en ambos temas"
+  ]
+}

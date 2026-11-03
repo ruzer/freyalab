@@ -1,0 +1,270 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-ui-u0-base
+
+ ❯ tests/ui-tokens.test.ts (42 tests | 30 failed) 9ms
+   × el acento claro del CSS alcanza 4,5:1 con texto blanco de botón 2ms
+   × contraste del CSS: --control sobre --bg ≥ 3; oscuro=false 1ms
+   × contraste del CSS: --control sobre --panel ≥ 3; oscuro=false 0ms
+   × contraste del CSS: --control sobre --input ≥ 3; oscuro=false 0ms
+   × contraste del CSS: --accent-strong sobre --tint ≥ 4.5; oscuro=false 0ms
+   × contraste del CSS: --danger sobre --danger-tint ≥ 4.5; oscuro=false 0ms
+   × contraste del CSS: --ok sobre --panel ≥ 4.5; oscuro=false 0ms
+   × contraste del CSS: --ok sobre --bg ≥ 4.5; oscuro=false 0ms
+   × contraste del CSS: --kind-csv sobre --panel ≥ 4.5; oscuro=false 0ms
+   × contraste del CSS: --kind-md sobre --panel ≥ 4.5; oscuro=false 0ms
+   × contraste del CSS: --kind-mermaid sobre --panel ≥ 4.5; oscuro=false 0ms
+   × contraste del CSS: --focus sobre --bg ≥ 3; oscuro=false 0ms
+   × contraste del CSS: --focus sobre --panel ≥ 3; oscuro=false 1ms
+   × contraste del CSS: --focus sobre --input ≥ 3; oscuro=false 0ms
+   × contraste del CSS: --accent-text sobre --accent ≥ 4.5; oscuro=false 0ms
+   × contraste del CSS: --control sobre --bg ≥ 3; oscuro=true 0ms
+   × contraste del CSS: --control sobre --panel ≥ 3; oscuro=true 0ms
+   × contraste del CSS: --control sobre --input ≥ 3; oscuro=true 0ms
+   × contraste del CSS: --accent-strong sobre --tint ≥ 4.5; oscuro=true 0ms
+   × contraste del CSS: --danger sobre --danger-tint ≥ 4.5; oscuro=true 0ms
+   × contraste del CSS: --ok sobre --panel ≥ 4.5; oscuro=true 0ms
+   × contraste del CSS: --ok sobre --bg ≥ 4.5; oscuro=true 0ms
+   × contraste del CSS: --kind-csv sobre --panel ≥ 4.5; oscuro=true 0ms
+   × contraste del CSS: --kind-md sobre --panel ≥ 4.5; oscuro=true 0ms
+   × contraste del CSS: --kind-mermaid sobre --panel ≥ 4.5; oscuro=true 0ms
+   × contraste del CSS: --focus sobre --bg ≥ 3; oscuro=true 0ms
+   × contraste del CSS: --focus sobre --panel ≥ 3; oscuro=true 0ms
+   × contraste del CSS: --focus sobre --input ≥ 3; oscuro=true 0ms
+   × contraste del CSS: --accent-text sobre --accent ≥ 4.5; oscuro=true 0ms
+   × el azul aprobado está definido una sola vez detrás del token de acento claro 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 30 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui-tokens.test.ts > el acento claro del CSS alcanza 4,5:1 con texto blanco de botón
+AssertionError: expected 4.016975780478911 to be greater than or equal to 4.5
+ ❯ tests/ui-tokens.test.ts:16:48
+     14| function contrast(first:string,second:string){const a=luminance(first)…
+     15| it('el acento claro del CSS alcanza 4,5:1 con texto blanco de botón',(…
+     16|  expect(contrast(tokens()['--accent'],'#fff')).toBeGreaterThanOrEqual(…
+       |                                                ^
+     17| })
+     18|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/30]⎯
+
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --control sobre --bg ≥ 3; oscuro=false
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --control sobre --panel ≥ 3; oscuro=false
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --control sobre --input ≥ 3; oscuro=false
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --control sobre --bg ≥ 3; oscuro=true
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --control sobre --panel ≥ 3; oscuro=true
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --control sobre --input ≥ 3; oscuro=true
+AssertionError: token --control: expected undefined to be truthy
+
+- Expected:
+true
+
++ Received:
+undefined
+
+ ❯ resolve tests/ui-tokens.test.ts:31:76
+     29| for(const dark of [false,true])it.each(pairs)(`contraste del CSS: %s s…
+     30|  const values=tokens(dark)
+     31|  function resolve(name:string):string{expect(values[name],`token ${nam…
+       |                                                                            ^
+     32|  expect(contrast(resolve(foreground),resolve(background))).toBeGreater…
+     33| })
+ ❯ tests/ui-tokens.test.ts:32:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/30]⎯
+
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --accent-strong sobre --tint ≥ 4.5; oscuro=false
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --accent-strong sobre --tint ≥ 4.5; oscuro=true
+AssertionError: token --accent-strong: expected undefined to be truthy
+
+- Expected:
+true
+
++ Received:
+undefined
+
+ ❯ resolve tests/ui-tokens.test.ts:31:76
+     29| for(const dark of [false,true])it.each(pairs)(`contraste del CSS: %s s…
+     30|  const values=tokens(dark)
+     31|  function resolve(name:string):string{expect(values[name],`token ${nam…
+       |                                                                            ^
+     32|  expect(contrast(resolve(foreground),resolve(background))).toBeGreater…
+     33| })
+ ❯ tests/ui-tokens.test.ts:32:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/30]⎯
+
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --danger sobre --danger-tint ≥ 4.5; oscuro=false
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --danger sobre --danger-tint ≥ 4.5; oscuro=true
+AssertionError: token --danger: expected undefined to be truthy
+
+- Expected:
+true
+
++ Received:
+undefined
+
+ ❯ resolve tests/ui-tokens.test.ts:31:76
+     29| for(const dark of [false,true])it.each(pairs)(`contraste del CSS: %s s…
+     30|  const values=tokens(dark)
+     31|  function resolve(name:string):string{expect(values[name],`token ${nam…
+       |                                                                            ^
+     32|  expect(contrast(resolve(foreground),resolve(background))).toBeGreater…
+     33| })
+ ❯ tests/ui-tokens.test.ts:32:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/30]⎯
+
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --ok sobre --panel ≥ 4.5; oscuro=false
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --ok sobre --bg ≥ 4.5; oscuro=false
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --ok sobre --panel ≥ 4.5; oscuro=true
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --ok sobre --bg ≥ 4.5; oscuro=true
+AssertionError: token --ok: expected undefined to be truthy
+
+- Expected:
+true
+
++ Received:
+undefined
+
+ ❯ resolve tests/ui-tokens.test.ts:31:76
+     29| for(const dark of [false,true])it.each(pairs)(`contraste del CSS: %s s…
+     30|  const values=tokens(dark)
+     31|  function resolve(name:string):string{expect(values[name],`token ${nam…
+       |                                                                            ^
+     32|  expect(contrast(resolve(foreground),resolve(background))).toBeGreater…
+     33| })
+ ❯ tests/ui-tokens.test.ts:32:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/30]⎯
+
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --kind-csv sobre --panel ≥ 4.5; oscuro=false
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --kind-csv sobre --panel ≥ 4.5; oscuro=true
+AssertionError: token --kind-csv: expected undefined to be truthy
+
+- Expected:
+true
+
++ Received:
+undefined
+
+ ❯ resolve tests/ui-tokens.test.ts:31:76
+     29| for(const dark of [false,true])it.each(pairs)(`contraste del CSS: %s s…
+     30|  const values=tokens(dark)
+     31|  function resolve(name:string):string{expect(values[name],`token ${nam…
+       |                                                                            ^
+     32|  expect(contrast(resolve(foreground),resolve(background))).toBeGreater…
+     33| })
+ ❯ tests/ui-tokens.test.ts:32:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/30]⎯
+
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --kind-md sobre --panel ≥ 4.5; oscuro=false
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --kind-md sobre --panel ≥ 4.5; oscuro=true
+AssertionError: token --kind-md: expected undefined to be truthy
+
+- Expected:
+true
+
++ Received:
+undefined
+
+ ❯ resolve tests/ui-tokens.test.ts:31:76
+     29| for(const dark of [false,true])it.each(pairs)(`contraste del CSS: %s s…
+     30|  const values=tokens(dark)
+     31|  function resolve(name:string):string{expect(values[name],`token ${nam…
+       |                                                                            ^
+     32|  expect(contrast(resolve(foreground),resolve(background))).toBeGreater…
+     33| })
+ ❯ tests/ui-tokens.test.ts:32:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/30]⎯
+
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --kind-mermaid sobre --panel ≥ 4.5; oscuro=false
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --kind-mermaid sobre --panel ≥ 4.5; oscuro=true
+AssertionError: token --kind-mermaid: expected undefined to be truthy
+
+- Expected:
+true
+
++ Received:
+undefined
+
+ ❯ resolve tests/ui-tokens.test.ts:31:76
+     29| for(const dark of [false,true])it.each(pairs)(`contraste del CSS: %s s…
+     30|  const values=tokens(dark)
+     31|  function resolve(name:string):string{expect(values[name],`token ${nam…
+       |                                                                            ^
+     32|  expect(contrast(resolve(foreground),resolve(background))).toBeGreater…
+     33| })
+ ❯ tests/ui-tokens.test.ts:32:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/30]⎯
+
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --focus sobre --bg ≥ 3; oscuro=false
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --focus sobre --panel ≥ 3; oscuro=false
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --focus sobre --input ≥ 3; oscuro=false
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --focus sobre --bg ≥ 3; oscuro=true
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --focus sobre --panel ≥ 3; oscuro=true
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --focus sobre --input ≥ 3; oscuro=true
+AssertionError: token --focus: expected undefined to be truthy
+
+- Expected:
+true
+
++ Received:
+undefined
+
+ ❯ resolve tests/ui-tokens.test.ts:31:76
+     29| for(const dark of [false,true])it.each(pairs)(`contraste del CSS: %s s…
+     30|  const values=tokens(dark)
+     31|  function resolve(name:string):string{expect(values[name],`token ${nam…
+       |                                                                            ^
+     32|  expect(contrast(resolve(foreground),resolve(background))).toBeGreater…
+     33| })
+ ❯ tests/ui-tokens.test.ts:32:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/30]⎯
+
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --accent-text sobre --accent ≥ 4.5; oscuro=false
+ FAIL  tests/ui-tokens.test.ts > contraste del CSS: --accent-text sobre --accent ≥ 4.5; oscuro=true
+AssertionError: token --accent-text: expected undefined to be truthy
+
+- Expected:
+true
+
++ Received:
+undefined
+
+ ❯ resolve tests/ui-tokens.test.ts:31:76
+     29| for(const dark of [false,true])it.each(pairs)(`contraste del CSS: %s s…
+     30|  const values=tokens(dark)
+     31|  function resolve(name:string):string{expect(values[name],`token ${nam…
+       |                                                                            ^
+     32|  expect(contrast(resolve(foreground),resolve(background))).toBeGreater…
+     33| })
+ ❯ tests/ui-tokens.test.ts:32:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/30]⎯
+
+ FAIL  tests/ui-tokens.test.ts > el azul aprobado está definido una sola vez detrás del token de acento claro
+AssertionError: expected '#007aff' to be '#2563eb' // Object.is equality
+
+Expected: "#2563eb"
+Received: "#007aff"
+
+ ❯ tests/ui-tokens.test.ts:35:31
+     33| })
+     34| it('el azul aprobado está definido una sola vez detrás del token de ac…
+     35|  expect(tokens()['--accent']).toBe('#2563eb');expect(css.match(/#2563e…
+       |                               ^
+     36| })
+     37|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/30]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  30 failed | 12 passed (42)
+   Start at  23:41:35
+   Duration  176ms (transform 42%, tests 31%, import 20%, worker 6%)
+
