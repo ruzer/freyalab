@@ -1,3 +1,4 @@
+import {runApplicationMenu} from './application-menu'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,readdir,rm} from 'node:fs/promises'
@@ -67,7 +68,7 @@ test('B1 E6–E8/E10: chips fuera del article, propiedades cerradas/abiertas y e
  expect(await page.evaluate(()=>Reflect.get(window,'md009Executed'))).toBe(false)
  const html=await readFile(await exportFile('propiedades','html'),'utf8'),pdf=await pdfText(await exportFile('propiedades','pdf'))
  for(const exported of [html,pdf]){expect(exported).toContain('Contenido conservado.');expect(exported).not.toContain(onlyTag);expect(exported).not.toContain('md009Executed');expect(exported).not.toContain('Propiedades del documento');expect(exported).not.toContain('Filtrar archivos por la etiqueta')}
- await intact(doc.id,path,text);await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect.poll(async()=>(await info(doc.id))?.dirty).toBe(false);await intact(doc.id,path,text)
+ await intact(doc.id,path,text);await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled();await runApplicationMenu(app,'file.save');await expect(page.locator('.toast')).toContainText('Archivo guardado');await expect.poll(async()=>(await info(doc.id))?.dirty).toBe(false);await intact(doc.id,path,text)
 })
 
 test('B3 E9/E24: sin carpeta el chip avisa y no cambia filtro, pestaña, documento ni estado guardado',async()=>{

@@ -1,3 +1,4 @@
+import {runApplicationMenu} from './application-menu'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,readdir,rm} from 'node:fs/promises'
@@ -80,7 +81,7 @@ test('Guardar sin cambiar fuente conserva las imágenes y el DOM; no vuelve a pr
  await mkdir(join(folder,'origen','a.assets'));await writeFile(join(folder,'origen','a.assets','uno.png'),png)
  await open('![Vista](a.assets/uno.png)\n\n- [ ] Tarea\n');await loaded();await expect(page.locator('.preview .render-progress')).toHaveCount(0)
  await article().locator('img').evaluate(image=>image.setAttribute('data-asset-identity','original'))
- await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect(page.locator('.toast')).toContainText('Archivo guardado');await expect(page.locator('.preview .render-progress')).toHaveCount(0)
+ await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled();await runApplicationMenu(app,'file.save');await expect(page.locator('.toast')).toContainText('Archivo guardado');await expect(page.locator('.preview .render-progress')).toHaveCount(0)
  await expect(article().locator('img')).toHaveAttribute('data-asset-identity','original');await expect(article().getByRole('checkbox')).toBeEnabled()
 })
 test('una imagen enlazada coloca Buscar fuera del enlace y conserva su destino al reparar',async()=>{
@@ -126,7 +127,7 @@ test('U2 · el resumen conserva el detalle de cada imagen hasta cerrarlo y sobre
  await page.getByRole('button',{name:'Guardar como',exact:true}).click()
  const warning=page.getByRole('region',{name:'Imágenes no copiadas'});await expect(warning).toContainText('2 imágenes no se copiaron')
  await page.clock.runFor(4000);await expect(warning).toBeVisible()
- await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect(page.locator('.toast')).toContainText('Archivo guardado');await expect(warning).toBeVisible()
+ await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled();await runApplicationMenu(app,'file.save');await expect(page.locator('.toast')).toContainText('Archivo guardado');await expect(warning).toBeVisible()
  await open('# Otro documento\n','otro.md');await expect(warning).toHaveCount(0)
  await page.getByRole('tab',{name:'Copia á.md',exact:true}).click();await expect(warning).toBeVisible();expect((await current(doc.id))?.path).toBe(target)
  await warning.locator('summary').focus();await page.keyboard.press('Enter')

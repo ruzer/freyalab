@@ -1,3 +1,4 @@
+import {runApplicationMenu} from './application-menu'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,readdir,rm} from 'node:fs/promises'
@@ -27,7 +28,7 @@ async function intact(source:string){
  expect(await readFile(documentPath,'utf8')).toBe(source)
  const state=await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),documentId)
  expect(state?.text).toBe(source);expect(state?.dirty).toBe(false)
- await page.getByRole('button',{name:'Guardar',exact:true}).click()
+ await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled();await runApplicationMenu(app,'file.save');await expect(page.locator('.toast')).toContainText('Archivo guardado')
  expect(await readFile(documentPath,'utf8')).toBe(source)
 }
 async function screenshots(block:string,prepare?:()=>Promise<void>){
