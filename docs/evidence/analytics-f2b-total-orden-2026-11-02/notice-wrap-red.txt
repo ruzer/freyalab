@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:56564) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-review.spec.ts:100:31 › Revisión108 final · Total completo dentro del área visible a800×720 (19.7s)
+
+
+  1) [csv] › tests/e2e/chart-review.spec.ts:100:31 › Revisión108 final · Total completo dentro del área visible a800×720 
+
+    Error: expect(locator).toBeInViewport() failed
+
+    Locator:  locator('.charts-panel').locator('.pivot-pages')
+    Expected: in viewport
+    Received: viewport ratio 0.5862069129943848
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeInViewport" locator('.charts-panel').locator('.pivot-pages') with timeout 15000ms
+      - waiting for locator('.charts-panel').locator('.pivot-pages')
+        33 × locator resolved to <div class="pivot-pages svelte-1wo6u31">…</div>
+           - unexpected value "viewport ratio 0.5862069129943848"
+
+
+      111 |  await writeFile(test.info().outputPath('total-geometry.json'),JSON.stringify(measurements,null,2))
+      112 |  for(const {theme,row,visible} of measurements){expect(row.top,`${theme}: borde superior de Total`).toBeGreaterThanOrEqual(visible.top);expect(row.bottom,`${theme}: borde inferior de Total`).toBeLessThanOrEqual(visible.bottom)}
+    > 113 |  await expect(panel().locator('.pivot-pages')).toBeInViewport({ratio:1})
+          |                                                ^
+      114 |  await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('1,146,383')
+      115 |  expect(await readFile(file,'utf8')).toBe(original)
+      116 | })
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-review.spec.ts:113:48
+
+    Error Context: ../freyalab-f2b-evidence/notice-wrap-red/chart-review-Revisión108-f-c8b14-o-del-área-visible-a800×720-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/notice-wrap-red/chart-review-Revisión108-f-c8b14-o-del-área-visible-a800×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/notice-wrap-red/chart-review-Revisión108-f-c8b14-o-del-área-visible-a800×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-review.spec.ts:100:31 › Revisión108 final · Total completo dentro del área visible a800×720 

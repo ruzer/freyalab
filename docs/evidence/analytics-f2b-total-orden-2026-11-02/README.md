@@ -11,7 +11,7 @@ Base de esta corrección: `29aac4c52aaa99f069533dfc22cf2d7e00d03128`, misma rama
 | Orden en es/en | El aviso decía «en el orden elegido» y no nombraba medida ni desempate | Texto por los campos que realmente ordena la consulta existente | Suma y Cuenta, dos idiomas, primeros cinco grupos comprobados contra literales independientes |
 | Espacio estrecho | Al explicar el orden con una frase larga, el paginador quedó parcialmente fuera de vista | Acortar la ayuda a «Filtra o cambia Filas» / «Filter or change Rows» | Paginador íntegro, además de Total, con `toBeInViewport({ratio:1})` |
 
-Se conservan [rojo de Total](total-red.log), [rojo de orden](order-red.log) y [regresión intermedia del aviso largo](notice-wrap-red.log). La primera prueba de 800 px intentó cambiar el tema con el explorador oculto; se corrigió el montaje para elegirlo a 1280 px antes de estrechar. Los rojos de Total publicados son los posteriores a esa corrección, ambos por geometría, no por ese montaje.
+Se conservan [rojo de Total](total-red.txt), [rojo de orden](order-red.txt) y [regresión intermedia del aviso largo](notice-wrap-red.txt). La primera prueba de 800 px intentó cambiar el tema con el explorador oculto; se corrigió el montaje para elegirlo a 1280 px antes de estrechar. Los rojos de Total publicados son los posteriores a esa corrección, ambos por geometría, no por ese montaje.
 
 ## Qué dice el aviso y por qué
 
