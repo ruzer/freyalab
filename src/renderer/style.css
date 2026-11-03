@@ -143,3 +143,9 @@ body:has(dialog[open],.modal-backdrop) .toolbar button:is(.primary,.btn-primary)
 @media(max-height:760px){:root .app-shell .charts-panel .pivot-result{max-height:190px}}
 
 :root .app-shell :is(.dropdown,.range-context,.field-menu) button{box-shadow:none}
+/* El divisor conserva 1 px de disposición y ofrece 25 px reales para el puntero. */
+:root .app-shell button.resize-handle{min-width:1px;border-radius:0;background:var(--control);box-shadow:none;z-index:2;transform:none}
+:root .app-shell button.resize-handle:is(:hover,:focus-visible){background:var(--focus)}
+:root .app-shell .resize-handle::before{inset:0 -12px}
+:root .app-shell .dock-handle::before{content:'';position:absolute;inset:0 -9px}
+:root .app-shell .dock-handle:focus-visible{outline:2px solid var(--focus);outline-offset:2px;opacity:1}

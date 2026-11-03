@@ -84,6 +84,7 @@ test('U0: los botones deshabilitados visibles explican su motivo con title y des
 test('U0: contraste real, foco por teclado, pulsación y movimiento reducido',async()=>{
  for(const value of ['light','dark']){
   await theme(value);await open(markdown);await expect(exp()).toBeEnabled()
+  const divider=await page.getByRole('slider',{name:'Ancho del explorador',exact:true}).evaluate(node=>{const r=node.getBoundingClientRect(),pseudo=getComputedStyle(node,'::before');return {visual:r.width,target:r.width-parseFloat(pseudo.left)-parseFloat(pseudo.right),hit:document.elementFromPoint(r.x+10,r.y+100)===node}});expect(divider.visual).toBe(1);expect(divider.target).toBeGreaterThanOrEqual(24);expect(divider.hit).toBe(true)
   const colors=await exp().evaluate(node=>{const s=getComputedStyle(node);return {ink:s.color,background:s.backgroundColor,border:s.borderColor}})
   const lum=(rgb:string)=>rgb.match(/[\d.]+/g)!.slice(0,3).map(Number).map(c=>{c/=255;return c<=.04045?c/12.92:((c+.055)/1.055)**2.4}).reduce((v,c,i)=>v+c*[.2126,.7152,.0722][i],0)
   const a=lum(colors.ink),b=lum(colors.background);expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05)).toBeGreaterThanOrEqual(4.5)
