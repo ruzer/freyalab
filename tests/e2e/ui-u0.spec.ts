@@ -1,0 +1,120 @@
+import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import electronPath from 'electron'
+import {mkdtemp,mkdir,writeFile,readFile,rm,truncate} from 'node:fs/promises'
+import {tmpdir} from 'node:os'
+import {join,resolve} from 'node:path'
+import {runApplicationMenu} from './application-menu'
+let app:ElectronApplication,page:Page,folder:string,markdown:string,csv:string,saveTarget:string,saveSequence=0
+const text='# Documento de Freya\n\nUna idea **clara**, una lista y un ejemplo.\n\n- Consultar\n- Editar\n- Exportar\n\n## Siguiente paso\n\n```typescript\nconst nombre = "Freya"\n```\n'
+const table='Cliente,Ventas\n'+Array.from({length:842},(_,i)=>`C${i},${100+i*3}`).join('\n')+'\n'
+test.beforeEach(async()=>{
+ saveSequence=0;folder=await mkdtemp(join(tmpdir(),'freya-u0-'));markdown=join(folder,'guia.md');csv=join(folder,'clientes.csv')
+ await mkdir(join(folder,'saved'));await writeFile(markdown,text);await writeFile(csv,table)
+ const {ELECTRON_RUN_AS_NODE:_,FREYALAB_TEST_SAVE_DIR:__,...env}=process.env
+ app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:test.info().title.includes('en-XA')?'en-XA':'es',FREYALAB_USER_DATA:join(folder,'profile')}})
+ await app.evaluate(({dialog},file)=>{dialog.showSaveDialog=async()=>({canceled:false,filePath:file})},join(folder,'saved','nuevo.md'))
+ page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.emulateMedia({reducedMotion:'reduce'});await page.setViewportSize({width:1280,height:720})
+})
+test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
+const header=()=>page.locator('header.toolbar')
+const save=()=>header().getByRole('button',{name:'Guardar',exact:true})
+const exp=()=>header().getByRole('button',{name:'Exportar',exact:true})
+async function open(file:string){await page.evaluate(file=>window.freya.openPaths([file]),file)}
+async function theme(value:string){
+ const settings=page.getByRole('dialog',{name:'Ajustes',exact:true})
+ if(await settings.isVisible()){await settings.getByRole('tab',{name:'Apariencia',exact:true}).click();await settings.locator('select').filter({has:page.locator('option[value=dark]')}).selectOption(value)}
+ else await page.getByLabel('Tema',{exact:true}).selectOption(value)
+}
+async function captures(state:string){
+ for(const [width,height]of [[1440,900],[1280,720]])for(const value of ['light','dark']){
+  await page.setViewportSize({width,height});await theme(value);await page.mouse.move(0,0)
+  await page.screenshot({path:test.info().outputPath(`${process.env.FREYALAB_U0_PHASE||'after'}-${state}-${value}-${width}x${height}.png`)})
+ }
+}
+async function holdSave(){
+ saveTarget=join(folder,'saved',`nuevo-${++saveSequence}.md`)
+ await app.evaluate(({dialog},file)=>{
+  const state=globalThis as typeof globalThis&{u0SavePending?:boolean;u0ReleaseSave?:()=>void}
+  dialog.showSaveDialog=()=>new Promise(resolve=>{state.u0SavePending=true;state.u0ReleaseSave=()=>{state.u0SavePending=false;resolve({canceled:false,filePath:file})}})
+ },saveTarget)
+}
+async function releaseSave(){await app.evaluate(()=>{(globalThis as typeof globalThis&{u0ReleaseSave?:()=>void}).u0ReleaseSave?.()});await page.waitForFunction(async file=>{const docs=await window.freya.documents();return docs.some(doc=>doc.path===file&&!doc.dirty)},saveTarget)}
+test('U0: capturas de estados existentes y tipografía base sin modificar archivos',async()=>{
+ await expect(page.getByRole('heading',{name:'Tu siguiente idea empieza aquí.'})).toBeVisible();await captures('vacio')
+ await open(markdown);await expect(page.locator('.markdown-body h1')).toHaveText('Documento de Freya');await captures('markdown')
+ const fonts=await page.locator('.cm-content').evaluate(node=>({editorFamily:getComputedStyle(node).fontFamily,editorSize:getComputedStyle(node).fontSize}))
+ await open(csv);await expect(page.getByRole('grid',{name:'Tabla de datos'})).toBeVisible();await captures('csv')
+ expect(fonts.editorSize).toBe('13px');expect(fonts.editorFamily).toContain('JetBrains Mono')
+ const cell=await page.getByRole('gridcell').first().evaluate(node=>({cellFamily:getComputedStyle(node).fontFamily,cellSize:getComputedStyle(node).fontSize}))
+ expect(cell.cellSize).toBe('11px');expect(cell.cellFamily).toContain('JetBrains Mono')
+ await writeFile(test.info().outputPath('fonts.json'),JSON.stringify({...fonts,...cell},null,2))
+ await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();await expect(page.locator('.pivot-result')).toBeVisible();await captures('resumen')
+ await runApplicationMenu(app,'app.settings');await captures('ajustes');await page.getByRole('dialog',{name:'Ajustes',exact:true}).getByRole('button',{name:'Cerrar',exact:true}).click()
+ await page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true}).click();await page.getByLabel('Buscar en tabla',{exact:true}).fill('sin-coincidencias-u0');await expect(page.locator('.statusbar')).toContainText('0 de 842 filas');await captures('sin-resultados')
+ await runApplicationMenu(app,'file.newMarkdown');await page.waitForFunction(async()=>{const docs=await window.freya.documents();return docs.some(doc=>!doc.path)})
+ await holdSave();await save().click();await expect.poll(()=>app.evaluate(()=>(globalThis as typeof globalThis&{u0SavePending?:boolean}).u0SavePending)).toBe(true)
+ await captures('guardando');await releaseSave()
+ expect(await readFile(markdown,'utf8')).toBe(text);expect(await readFile(csv,'utf8')).toBe(table)
+})
+test('U0: un primario Guardar/Exportar/Abrir con cajas y nombres estables en ambos temas',async()=>{
+ for(const value of ['light','dark']){
+  await theme(value);await open(markdown);await expect(page.locator('.markdown-body h1')).toHaveText('Documento de Freya')
+  await expect(save()).toBeDisabled();await expect(exp()).toHaveClass(/btn-primary/)
+  const editor=page.locator('.cm-content');await editor.click();await page.keyboard.press('ControlOrMeta+End');await page.keyboard.insertText('\nNueva idea.\n')
+  await expect(save()).toHaveClass(/btn-primary/);await expect(exp()).not.toHaveClass(/btn-primary/)
+  await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+  const dirty=await save().boundingBox();await save().click();await expect(save()).toBeDisabled();await expect(exp()).toHaveClass(/btn-primary/)
+  const clean=await save().boundingBox();expect(clean).toEqual(dirty)
+  await runApplicationMenu(app,'file.newMarkdown');await expect(save()).toHaveClass(/btn-primary/);await expect(save()).toBeEnabled();await holdSave()
+  const before=await save().boundingBox();await save().click();await expect.poll(()=>app.evaluate(()=>(globalThis as typeof globalThis&{u0SavePending?:boolean}).u0SavePending)).toBe(true)
+  await expect(save()).toHaveAttribute('aria-busy','true');await expect(save()).toBeDisabled();await expect(save()).toHaveClass(/btn-primary/);await expect(exp()).not.toHaveClass(/btn-primary/);expect(await save().boundingBox()).toEqual(before)
+  await expect(save()).toHaveAccessibleName('Guardar');await expect(exp()).toHaveAccessibleName('Exportar');await releaseSave();await expect(exp()).toHaveClass(/btn-primary/)
+ }
+ const plain=join(folder,'nota.txt');await writeFile(plain,'Solo texto');await open(plain);await expect(save()).toBeDisabled();await expect(exp()).toBeDisabled();await expect(header().getByRole('button',{name:'Abrir',exact:true})).toHaveClass(/btn-primary/)
+})
+
+test('U0: los botones deshabilitados visibles explican su motivo con title y descripción accesible',async()=>{
+ await open(csv);await expect(page.getByRole('grid')).toBeVisible()
+ const rows=await page.locator('button:disabled').evaluateAll(nodes=>nodes.filter(node=>node.getClientRects().length).map(node=>({label:node.getAttribute('aria-label')||node.textContent,title:node.getAttribute('title'),description:(node.getAttribute('aria-describedby')||'').split(/\s+/).filter(Boolean).map(id=>document.getElementById(id)?.textContent||'').join(' ')})))
+ expect(rows.length).toBeGreaterThan(0)
+ for(const row of rows){expect(row.title,row.label||'').toBeTruthy();expect(row.description,row.label||'').toBeTruthy()}
+})
+
+
+test('U0: contraste real, foco por teclado, pulsación y movimiento reducido',async()=>{
+ for(const value of ['light','dark']){
+  await theme(value);await open(markdown);await expect(exp()).toBeEnabled()
+  const colors=await exp().evaluate(node=>{const s=getComputedStyle(node);return {ink:s.color,background:s.backgroundColor,border:s.borderColor}})
+  const lum=(rgb:string)=>rgb.match(/[\d.]+/g)!.slice(0,3).map(Number).map(c=>{c/=255;return c<=.04045?c/12.92:((c+.055)/1.055)**2.4}).reduce((v,c,i)=>v+c*[.2126,.7152,.0722][i],0)
+  const a=lum(colors.ink),b=lum(colors.background);expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05)).toBeGreaterThanOrEqual(4.5)
+  await page.keyboard.press('Tab');await exp().focus();await page.keyboard.press('Shift+Tab');await page.keyboard.press('Tab');await expect(exp()).toBeFocused()
+  const focus=await exp().evaluate(n=>{const s=getComputedStyle(n);return {width:s.outlineWidth,offset:s.outlineOffset,style:s.outlineStyle,font:s.fontSize,height:n.getBoundingClientRect().height}})
+  expect(focus).toMatchObject({width:'2px',offset:'2px',style:'solid',font:'13px'});expect(focus.height).toBeGreaterThanOrEqual(24)
+  await page.mouse.move(...await exp().evaluate(n=>{const b=n.getBoundingClientRect();return [b.x+b.width/2,b.y+b.height/2] as [number,number]}));await page.mouse.down()
+  expect(await exp().evaluate(n=>getComputedStyle(n).transform)).toBe('matrix(1, 0, 0, 1, 0, 1)');await page.mouse.move(0,0);await page.mouse.up()
+  expect(await exp().evaluate(n=>getComputedStyle(n).transitionDuration)).toBe('0s')
+ }
+ await page.emulateMedia({forcedColors:'active'});const forced=await exp().evaluate(n=>{const s=getComputedStyle(n);return {border:s.borderTopWidth,adjust:s.forcedColorAdjust}});expect(forced).toEqual({border:'2px',adjust:'auto'})
+})
+
+test('U0: idiomas en-XA y en conservan nombres, motivos y cajas de la barra',async()=>{
+ for(const language of ['en-XA','en'] as const){
+  if(language==='en')await page.evaluate(()=>window.freya.setLanguage('en'));await expect(page.locator('html')).toHaveAttribute('lang',language)
+  for(const value of ['light','dark']){
+   await page.locator('select').filter({has:page.locator('option[value=dark]')}).selectOption(value)
+   await open(markdown);await expect(page.locator('.cm-content')).toBeVisible()
+   const buttons=header().locator('button');expect(await buttons.evaluateAll(nodes=>nodes.filter(n=>n.getClientRects().length).every(n=>n.scrollWidth<=n.clientWidth))).toBe(true)
+   const unavailable=header().locator('button:disabled');expect(await unavailable.count()).toBeGreaterThan(0)
+   for(const button of await unavailable.all()){await expect(button).toHaveAttribute('title',/\S/);await expect(button).toHaveAccessibleDescription(/\S/)}
+   await page.screenshot({path:test.info().outputPath(`after-${language}-${value}-1280x720.png`)})
+  }
+ }
+ expect(await readFile(markdown,'utf8')).toBe(text)
+})
+
+
+test('U0: solo lectura conserva sus restricciones y Abrir como acción disponible',{tag:'@perf'},async()=>{
+ const large=join(folder,'muestra.csv');await writeFile(large,'A,B\n'+'001,2\n'.repeat(250));await truncate(large,50*1024*1024+1);await open(large)
+ await expect.poll(()=>page.evaluate(async()=>{const docs=await window.freya.documents();return docs.find(doc=>doc.name==='muestra.csv')?.readonly})).toBe(true)
+ for(const value of ['light','dark']){await theme(value);await expect(save()).toBeDisabled();await expect(exp()).toBeDisabled();await expect(header().getByRole('button',{name:'Abrir',exact:true})).toHaveClass(/btn-primary/);await expect(save()).toHaveAccessibleDescription(/lectura/);await expect(exp()).toHaveAccessibleDescription(/lectura/)}
+})

@@ -1,4 +1,5 @@
 <script lang="ts">
+ import {controlHint} from '../lib/control-hint'
  import Icon from './Icon.svelte'
  import {t} from '../lib/i18n.svelte'
  import {onMount,untrack} from 'svelte'
@@ -13,7 +14,7 @@
 </script>
 <svelte:window onkeydown={event=>{if(event.key==='Escape'&&event.target instanceof HTMLElement&&region?.contains(event.target)){event.preventDefault();event.stopPropagation();onclose()}}}/>
 <section bind:this={region} class="query-tools" aria-labelledby={titleId}>
- <div class="heading"><h3 id={titleId} tabindex="-1" bind:this={title}>{label}</h3><button type="button" disabled={applying} aria-label={large?'Cerrar filtros':filtersOnly?text('Cerrar filtros del gráfico','close'):'Cerrar consulta avanzada'} onclick={onclose}><Icon name="x" size={14}/></button></div>
+ <div class="heading"><h3 id={titleId} tabindex="-1" bind:this={title}>{label}</h3><button {...controlHint(applying?'busy':null, (large?'Cerrar filtros':filtersOnly?text('Cerrar filtros del gráfico','close'):'Cerrar consulta avanzada'))} type="button" disabled={applying} aria-label={large?'Cerrar filtros':filtersOnly?text('Cerrar filtros del gráfico','close'):'Cerrar consulta avanzada'} onclick={onclose}><Icon name="x" size={14}/></button></div>
  <form novalidate={large} onsubmit={event=>{event.preventDefault();onapply($state.snapshot(conditions),large?[]:$state.snapshot(order),mode)}}>
   <div class="query-body">
   {#if large}<p>Recorre las {total.toLocaleString('es')} filas del archivo. Se aplica al pulsar Aplicar, junto con la búsqueda ya aplicada.</p>{/if}
@@ -23,24 +24,24 @@
    <select aria-label={text(`Operador de condición ${index+1}`,"operator",{n:index+1})} bind:value={rule.op}>{#each filterOperators as [value,label]}<option {value}>{filtersOnly?t('charts.filter.op.'+value):label}</option>{/each}</select>
    {#if !['empty','notEmpty'].includes(rule.op)}<input aria-label={text(`Valor de condición ${index+1}`,"input",{n:index+1})} bind:value={rule.value} required placeholder={rule.op.startsWith('date')?text('AAAA-MM-DD','date'):text('Valor','value')} type={rule.op.startsWith('date')?'date':'text'}/>{/if}
    {#if ['contains','equals','notEquals','starts','ends','regex'].includes(rule.op)}<label><input type="checkbox" bind:checked={rule.caseSensitive}/>{text('Distinguir mayúsculas','case')}</label>{/if}
-   <button type="button" aria-label={text(`Quitar condición ${index+1}`,"remove",{n:index+1})} onclick={()=>conditions=conditions.filter((_,i)=>i!==index)}><Icon name="x" size={14}/></button>
+   <button title={(text(`Quitar condición ${index+1}`,"remove",{n:index+1}))} type="button" aria-label={text(`Quitar condición ${index+1}`,"remove",{n:index+1})} onclick={()=>conditions=conditions.filter((_,i)=>i!==index)}><Icon name="x" size={14}/></button>
   </div>{/each}
-  <button type="button" disabled={conditions.length>=20||!headers.length} onclick={()=>conditions=[...conditions,{column:0,op:'contains',value:''}]}>{text('Añadir condición','add')}</button>
+  <button {...controlHint(!headers.length?'columns':conditions.length>=20?'filterLimit':null)} type="button" disabled={conditions.length>=20||!headers.length} onclick={()=>conditions=[...conditions,{column:0,op:'contains',value:''}]}>{text('Añadir condición','add')}</button>
   {#if !filtersOnly&&!large}<h4>Orden por prioridad</h4>
   {#each order as item,index}<div class="rule">
    <span>{index+1}.</span><select aria-label={`Columna de orden ${index+1}`} bind:value={item.column}>{#each headers as name,column}<option value={column}>{column+1}. {name||text('Sin encabezado','blankHeader')}</option>{/each}</select>
    <select aria-label={`Dirección de orden ${index+1}`} bind:value={item.descending}><option value={false}>Ascendente</option><option value={true}>Descendente</option></select>
    <label><input type="checkbox" aria-label={`Orden numérico ${index+1}`} bind:checked={item.numeric}/>Numérico exacto</label>
-   <button type="button" aria-label={`Quitar orden ${index+1}`} onclick={()=>order=order.filter((_,i)=>i!==index)}><Icon name="x" size={14}/></button>
+   <button title={(`Quitar orden ${index+1}`)} type="button" aria-label={`Quitar orden ${index+1}`} onclick={()=>order=order.filter((_,i)=>i!==index)}><Icon name="x" size={14}/></button>
   </div>{/each}
-  <button type="button" disabled={order.length>=20||!headers.length} onclick={()=>order=[...order,{column:0,descending:false,numeric:false}]}>Añadir orden</button>{/if}
+  <button {...controlHint(!headers.length?'columns':order.length>=20?'sortLimit':null)} type="button" disabled={order.length>=20||!headers.length} onclick={()=>order=[...order,{column:0,descending:false,numeric:false}]}>Añadir orden</button>{/if}
   {#if large}<p>Solo cambia la vista; el archivo sigue en solo lectura. Fechas AAAA-MM-DD, números con punto decimal y regex RE2. Ordenar llega con L5c.</p>{:else if filtersOnly}<p>{t('charts.filter.help')}</p>{:else}<p>Solo cambia la vista. Guardar conserva el orden del documento. Mayús + clic en un encabezado añade un criterio. Fechas ISO AAAA-MM-DD; los campos con otra fecha no coinciden. La búsqueda global y los filtros de encabezado se combinan con esta consulta mediante Y.</p>{/if}
   {#if error}<p role="alert" class="query-error">{error}</p>{/if}
   </div>
-  <div class="actions"><button type="submit" class="primary" disabled={applying}>{large?'Aplicar':filtersOnly?text('Aplicar filtros del gráfico','apply'):'Aplicar consulta'}</button><button type="button" disabled={applying} onclick={onclose}>{text('Cancelar','cancel')}</button></div>
+  <div class="actions"><button aria-busy={applying} {...controlHint(applying?'busy':null)} type="submit" class="btn-tint" disabled={applying}>{#if applying}<span class="button-spinner" aria-hidden="true"></span>{/if}<span class:busy-label={applying} data-loading={t('ui.button.calculating')}>{large?'Aplicar':filtersOnly?text('Aplicar filtros del gráfico','apply'):'Aplicar consulta'}</span></button><button {...controlHint(applying?'busy':null)} type="button" disabled={applying} onclick={onclose}>{text('Cancelar','cancel')}</button></div>
  </form>
 </section>
 <style>
- .query-tools{padding:10px 12px;border-bottom:1px solid var(--border);background:var(--panel);font-size:11px;max-height:360px;overflow:hidden;flex-shrink:0;display:flex;flex-direction:column}form{min-height:0;display:flex;flex-direction:column}.query-body{overflow:auto;max-height:250px;min-height:0}.actions{flex-shrink:0}.heading{display:flex;justify-content:space-between;align-items:center}.heading h3{font-size:12px;margin:0}.heading button{border:0;background:transparent}.rule,.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}label{display:inline-flex;align-items:center;gap:5px}.rule select{max-width:190px}.rule input[type=text],.rule input[type=date]{width:170px}h4{font-size:11px;margin:12px 0 6px}p{line-height:1.5;color:var(--muted);max-width:850px}button,select,input{font-size:11px}button{appearance:none;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:5px;padding:5px 8px}button.primary{color:white}
- .query-error{color:#c0392b}:global(:root.dark) .query-error{color:#f97066}
+ .query-tools{padding:10px 12px;border-bottom:1px solid var(--border);background:var(--panel);font-size:11px;max-height:360px;overflow:hidden;flex-shrink:0;display:flex;flex-direction:column}form{min-height:0;display:flex;flex-direction:column}.query-body{overflow:auto;max-height:250px;min-height:0}.actions{flex-shrink:0}.heading{display:flex;justify-content:space-between;align-items:center}.heading h3{font-size:12px;margin:0}.heading button{border:0;background:transparent}.rule,.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}label{display:inline-flex;align-items:center;gap:5px}.rule select{max-width:190px}.rule input[type=text],.rule input[type=date]{width:170px}h4{font-size:11px;margin:12px 0 6px}p{line-height:1.5;color:var(--muted);max-width:850px}button,select,input{font-size:11px}button{appearance:none;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:var(--radius-control);padding:5px 8px}button.primary{color:white}
+ .query-error{color:var(--danger)}:global(:root.dark) .query-error{color:var(--danger)}
 </style>

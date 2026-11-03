@@ -45,7 +45,7 @@
 <div class="document-outline" hidden={!shown} bind:this={container} onscroll={event=>{if(event.currentTarget.clientHeight)onscroll?.(event.currentTarget.scrollTop)}}>
  {#each nodes as node (node.key)}
   <div class="outline-row" data-outline-row={node.id} hidden={node.ancestors.some(key=>collapsed.has(key))} style:padding-left={`${2+node.depth*10}px`}>
-   {#if node.hasChildren}<button class="branch-toggle" onpointerdown={holdCompositionFocus} aria-expanded={!collapsed.has(node.key)} aria-label={`${collapsed.has(node.key)?'Expandir':'Contraer'} sección ${node.text}`} onclick={()=>toggle(node.key)}><Icon name={collapsed.has(node.key)?'chevron-right':'chevron-down'} size={12}/></button>{:else}<span class="branch-space" aria-hidden="true"></span>{/if}
+   {#if node.hasChildren}<button title={(`${collapsed.has(node.key)?'Expandir':'Contraer'} sección ${node.text}`)} class="branch-toggle" onpointerdown={holdCompositionFocus} aria-expanded={!collapsed.has(node.key)} aria-label={`${collapsed.has(node.key)?'Expandir':'Contraer'} sección ${node.text}`} onclick={()=>toggle(node.key)}><Icon name={collapsed.has(node.key)?'chevron-right':'chevron-down'} size={12}/></button>{:else}<span class="branch-space" aria-hidden="true"></span>{/if}
    <button class="sidebar-heading title" onpointerdown={holdCompositionFocus} data-heading-id={node.id} aria-current={visibleCurrent===node.id?'location':undefined} aria-label={node.text} title={node.text} onclick={()=>{if(canselect?.()!==false)onselect(node)}}><span>{node.text}</span></button>
   </div>
  {:else}<p class="sidebar-empty">Este documento no tiene títulos</p>{/each}

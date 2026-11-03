@@ -1,4 +1,5 @@
 <script lang="ts">
+ import {controlHint} from '../lib/control-hint'
  import {onMount,onDestroy,tick} from 'svelte'
  import Icon from './Icon.svelte'
  import {diagramSVG,standaloneHTML} from '../lib/render'
@@ -57,7 +58,7 @@
 </script>
 <!-- svelte-ignore a11y_no_static_element_interactions (Atajos locales del lienzo enfocable y de sus botones.) -->
 <div class="diagram-panel" onkeydown={keydown}>
- <div class="diagram-toolbar"><span class="tag">MERMAID</span><span class="spacer"></span><button disabled={!!failure} onclick={()=>changeZoom(scale/1.2)} aria-label="Alejar" title="Alejar · Ctrl/Cmd −"><Icon name="zoom-out" size={14}/></button><span>{percent.format(scale*100)}%</span><button disabled={!!failure} onclick={()=>changeZoom(scale*1.2)} aria-label="Acercar" title="Acercar · Ctrl/Cmd +"><Icon name="zoom-in" size={14}/></button><button disabled={!!failure} onclick={adjust} title="Ajustar · Ctrl/Cmd 0"><Icon name="maximize-2" size={14}/> Ajustar</button><button disabled={!!failure} onclick={actualSize} title="Tamaño natural · Ctrl/Cmd 1">100 %</button></div>
+ <div class="diagram-toolbar"><span class="tag">MERMAID</span><span class="spacer"></span><button {...controlHint(failure?'invalidDiagram':null, "Alejar · Ctrl/Cmd −")} disabled={!!failure} onclick={()=>changeZoom(scale/1.2)} aria-label="Alejar" ><Icon name="zoom-out" size={14}/></button><span>{percent.format(scale*100)}%</span><button {...controlHint(failure?'invalidDiagram':null, "Acercar · Ctrl/Cmd +")} disabled={!!failure} onclick={()=>changeZoom(scale*1.2)} aria-label="Acercar" ><Icon name="zoom-in" size={14}/></button><button {...controlHint(failure?'invalidDiagram':null, "Ajustar · Ctrl/Cmd 0")} disabled={!!failure} onclick={adjust} ><Icon name="maximize-2" size={14}/> Ajustar</button><button {...controlHint(failure?'invalidDiagram':null, "Tamaño natural · Ctrl/Cmd 1")} disabled={!!failure} onclick={actualSize} >100 %</button></div>
  <div class="diagram-view">
   <div class="diagram-feedback" class:diagram-notice={!!failure} class:diagram-error={!!failure&&failure.kind!=='vacio'} class:diagram-empty={failure?.kind==='vacio'}>
    <div role="status" aria-live="polite" aria-atomic="true">{#if failure}{#if svg}<p>Mostrando la última versión válida.</p>{/if}<strong>{failure.title}</strong><p>{failure.hint}</p>{#if failure.line}<p>Ubicación: línea {failure.line}{failure.column?`, columna ${failure.column}`:''}.</p>{/if}{/if}</div>

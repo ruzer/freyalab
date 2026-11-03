@@ -1,4 +1,5 @@
 <script lang="ts">
+ import {controlHint} from '../lib/control-hint'
  import {onMount,tick} from 'svelte'
  import appIcon from '../../../build/icon.png'
  import {t,getUILanguage} from '../lib/i18n.svelte'
@@ -49,14 +50,14 @@
  <footer>
   <p role="status" aria-live="polite">{message}</p>
   <button onclick={onupdates}>{t('about.checkUpdates')}</button>
-  <button disabled={!info} onclick={()=>link(`https://github.com/ruzer/freyalab/releases/tag/${encodeURIComponent('v'+info!.version)}`)}>{t('about.releaseNotes')}</button>
+  <button {...controlHint(!info?'loading':null)} disabled={!info} onclick={()=>link(`https://github.com/ruzer/freyalab/releases/tag/${encodeURIComponent('v'+info!.version)}`)}>{t('about.releaseNotes')}</button>
   <button onclick={()=>link('https://github.com/ruzer/freyalab')}>{t('about.source')}</button>
   <button aria-expanded={showNotices} aria-controls="about-notices" onclick={licenses}>{t('about.thirdParty')}</button>
-  <button disabled={!info||copying} onclick={copy}>{t('about.copy')}</button>
+  <button {...controlHint(copying?'busy':!info?'loading':null)} disabled={!info||copying} onclick={copy}>{t('about.copy')}</button>
   <button class="primary" onclick={onclose}>{t('about.close')}</button>
  </footer>
 </dialog>
 <style>
- dialog{width:600px;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px);margin:auto;padding:20px;border:1px solid var(--border);border-radius:14px;background:var(--panel);color:var(--text);box-shadow:0 16px 70px #0006}
+ dialog{width:600px;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px);margin:auto;padding:20px;border:1px solid var(--border);border-radius:14px;background:var(--panel);color:var(--text);box-shadow:var(--shadow-dialog)}
  dialog[open]{display:flex;flex-direction:column;gap:12px}dialog::backdrop{background:#0007}.content{overflow:auto;min-height:0;padding:0 4px}header{text-align:center}header img{display:block;width:64px;height:64px;margin:0 auto}h2{font-size:24px;font-weight:600;line-height:1.25;margin:8px 0}h3{font-size:14px}p{line-height:1.5;margin:8px 0}#about-description{white-space:pre-line}dl{display:grid;grid-template-columns:minmax(120px,auto) minmax(0,1fr);gap:6px 16px;margin:16px 0}dt{font-weight:600}dd{margin:0;overflow-wrap:anywhere}textarea{width:100%;height:180px;max-height:30vh;resize:vertical;white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;line-height:1.5;padding:12px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:7px}.dedication{text-align:center}p[role=status]{min-height:20px}footer{display:flex;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid var(--border);flex:none}footer p[role=status]{flex-basis:100%;margin:0}
 </style>

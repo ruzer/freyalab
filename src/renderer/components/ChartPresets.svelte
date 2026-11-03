@@ -1,4 +1,5 @@
 <script lang="ts">
+ import {controlHint} from '../lib/control-hint'
  import {t} from '../lib/i18n.svelte'
  import {onMount} from 'svelte'
  import {matchingChartHeaders,ambiguousChartHeaders,type ChartConfiguration,type ChartPreset} from '../../shared/chart-presets'
@@ -19,13 +20,13 @@
  <p>{t('charts.presets.help')}</p>
  <div class="controls">
   <label>{t('charts.presets.name')} <input aria-label={t('charts.presets.nameLabel')} maxlength="80" bind:value={name} disabled={disabled||busy}/></label>
-  <button type="button" disabled={disabled||busy||!canSave||!name.trim()} onclick={()=>void save()}>{t('charts.presets.save')}</button>
+  <button {...controlHint(disabled||busy?'busy':!canSave?'parameters':!name.trim()?'name':null)} type="button" disabled={disabled||busy||!canSave||!name.trim()} onclick={()=>void save()}>{t('charts.presets.save')}</button>
  </div>
  <div class="controls">
   <label>{t('charts.presets.restore')} <select aria-label={t('charts.presets.choice')} bind:value={selected} onchange={()=>{acknowledged=false;message=''}} disabled={busy||disabled}><option value="">{t('charts.presets.choose')}</option>{#each presets as item}<option value={item.id}>{item.name}</option>{/each}</select></label>
-  <button type="button" disabled={disabled||busy||blocked} onclick={apply}>{t('charts.presets.apply')}</button>
-  <button type="button" disabled={disabled||busy||!chosen} onclick={()=>void remove()}>{t('charts.presets.remove')}</button>
-  <button type="button" disabled={busy||disabled} onclick={()=>void refresh()}>{t('charts.presets.refresh')}</button>
+  <button {...controlHint(disabled||busy?'busy':!chosen?'configuration':!matches?'headers':ambiguous&&!acknowledged?'confirmHeaders':readonly&&!!chosen.configuration.view?'sampleView':null)} type="button" disabled={disabled||busy||blocked} onclick={apply}>{t('charts.presets.apply')}</button>
+  <button class="btn-danger" {...controlHint(disabled||busy?'busy':!chosen?'configuration':null)} type="button" disabled={disabled||busy||!chosen} onclick={()=>void remove()}>{t('charts.presets.remove')}</button>
+  <button {...controlHint(busy||disabled?'busy':null)} type="button" disabled={busy||disabled} onclick={()=>void refresh()}>{t('charts.presets.refresh')}</button>
  </div>
  {#if chosen&&!matches}<p role="alert">{t('charts.presets.changedHeaders')}</p>{/if}
  {#if chosen&&matches&&ambiguous}<label><input type="checkbox" bind:checked={acknowledged}/>{t('charts.presets.confirm')}</label>{/if}
@@ -33,5 +34,5 @@
  <p aria-live="polite" aria-label={t('charts.presets.status')}>{message}</p>
 </details>
 <style>
- .presets{border:1px solid var(--border);border-radius:6px;padding:0 8px;margin:8px 0}summary{cursor:pointer;padding:8px 0}.controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:8px 0}label{display:flex;align-items:center;gap:6px}p{color:var(--muted);line-height:1.5}input,select,button{font:inherit;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:5px;padding:5px 8px}select{max-width:240px}button:disabled{opacity:.5}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+ .presets{border:1px solid var(--border);border-radius:6px;padding:0 8px;margin:8px 0}summary{cursor:pointer;padding:8px 0}.controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:8px 0}label{display:flex;align-items:center;gap:6px}p{color:var(--muted);line-height:1.5}input,select,button{font:inherit;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:var(--radius-control);padding:5px 8px}select{max-width:240px}button:disabled{opacity:.5}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>

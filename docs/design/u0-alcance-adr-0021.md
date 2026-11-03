@@ -48,3 +48,7 @@ La regla inicial «un primario» chocaba con pedir Guardar primario al editar y 
 - Las alturas actuales compactas del panel de análisis y de las barras son parte del trabajo de F2b/Markdown. La nueva escala no debe volver a recortar Total, controles o texto; se verificará con casos consumidores y capturas.
 
 **Este primer commit y PR solo publican referencias, alcance y las siete respuestas. No hay interfaz implementada ni validación declarada completa.**
+
+## Decisión del propietario sobre tipografía
+
+La medición real de la base es 11 px en celdas y 13 px en CodeMirror. El propietario resolvió la contradicción de §2.2: conservar ambas y aplicar 13 px a los controles de interfaz. No se cambia ninguna familia tipográfica.

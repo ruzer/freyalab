@@ -19,7 +19,7 @@
    {#if !commands.length}<p>{t('shortcuts.empty')}</p>{/if}
   {/if}
  </div>
- <footer><button onclick={close}>{t('about.close')}</button></footer>
+ <footer><button class="btn-ghost" onclick={close}>{t('about.close')}</button></footer>
 </dialog>
 <style>
  .shortcuts-dialog{margin:auto;width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 32px);padding:20px;border:1px solid var(--border);border-radius:12px;color:var(--text);background:var(--panel);overflow:hidden}

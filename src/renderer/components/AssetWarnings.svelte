@@ -8,7 +8,7 @@
   <summary>{warnings.length===1?'1 imagen no se copió':`${warnings.length} imágenes no se copiaron`}</summary>
   <ul>{#each warnings as warning}<li>{warning}</li>{/each}</ul>
  </details>
- <button onclick={ondismiss} aria-label="Cerrar aviso de imágenes"><Icon name="x" size={14}/></button>
+ <button title={"Cerrar aviso de imágenes"} onclick={ondismiss} aria-label="Cerrar aviso de imágenes"><Icon name="x" size={14}/></button>
 </section>
 
 <style>

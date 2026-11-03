@@ -47,7 +47,7 @@ test('I5/I6 · cambiar de idioma actualiza el piloto y los diálogos, sin tocar 
  await expect.poll(()=>app.evaluate(()=>(globalThis as typeof globalThis&{nativeOpen?:Electron.OpenDialogOptions}).nativeOpen)).toMatchObject({title:'Open folder',buttonLabel:'Open',properties:['openDirectory']})
  await page.getByRole('button',{name:'Save as',exact:true}).click()
  await expect.poll(()=>app.evaluate(()=>(globalThis as typeof globalThis&{nativeSave?:Electron.SaveDialogOptions}).nativeSave)).toMatchObject({title:'Save file'})
- await page.getByRole('button',{name:'Exportar',exact:true}).click();await page.getByRole('button',{name:'HTML autónomo',exact:true}).click()
+ await page.getByRole('button',{name:'Export',exact:true}).click();await page.getByRole('button',{name:'HTML autónomo',exact:true}).click()
  await expect.poll(()=>app.evaluate(()=>(globalThis as typeof globalThis&{nativeSave?:Electron.SaveDialogOptions}).nativeSave)).toMatchObject({title:'Export a copy',buttonLabel:'Save'})
  await page.evaluate(id=>window.freya.reload(id),doc.id)
  expect(await app.evaluate(()=>(globalThis as typeof globalThis&{nativeClose?:Electron.MessageBoxOptions}).nativeClose)).toMatchObject({title:'External changes',buttons:['Keep my changes','Reload and discard changes']})

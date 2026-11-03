@@ -1,4 +1,5 @@
 <script lang="ts">
+ import {controlHint} from '../lib/control-hint'
  import {onMount,tick} from 'svelte'
  import {t,formatDate} from '../lib/i18n.svelte'
  import type {UpdateResult} from '../../shared/updates'
@@ -43,19 +44,19 @@
  </section>
  <p role="status" aria-live="polite">{message}</p>
  <footer>
-  {#if result.status==='checking'}<button class="primary" onclick={close}>{t('updates.cancel')}</button>
+  {#if result.status==='checking'}<button class="btn-ghost" onclick={close}>{t('updates.cancel')}</button>
   {:else}
    {#if result.status==='available'}
     {@const release=result.release}
-    <button disabled={busy} onclick={()=>run(()=>window.freya.openUpdate(release.url))}>{t('about.releaseNotes')}</button>
-    <button class="primary" disabled={busy} onclick={()=>run(()=>window.freya.openUpdate(release.url))}>{t('updates.download')}</button>
-    <button disabled={busy} onclick={()=>run(()=>window.freya.remindUpdate(),true)}>{t('updates.remind')}</button>
-    <button disabled={busy} onclick={()=>run(()=>window.freya.skipUpdate(release.version),true)}>{t('updates.skip')}</button>
+    <button {...controlHint(busy?'busy':null)} disabled={busy} onclick={()=>run(()=>window.freya.openUpdate(release.url))}>{t('about.releaseNotes')}</button>
+    <button {...controlHint(busy?'busy':null)} class="primary" disabled={busy} onclick={()=>run(()=>window.freya.openUpdate(release.url))}>{t('updates.download')}</button>
+    <button {...controlHint(busy?'busy':null)} disabled={busy} onclick={()=>run(()=>window.freya.remindUpdate(),true)}>{t('updates.remind')}</button>
+    <button {...controlHint(busy?'busy':null)} disabled={busy} onclick={()=>run(()=>window.freya.skipUpdate(release.version),true)}>{t('updates.skip')}</button>
    {:else if result.status==='error'}<button class="primary" onclick={search}>{t('updates.retry')}</button>{/if}
-   <button onclick={close}>{t('about.close')}</button>
+   <button class="btn-ghost" onclick={close}>{t('about.close')}</button>
   {/if}
  </footer>
 </dialog>
 <style>
- dialog{width:620px;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px);margin:auto;padding:24px;border:1px solid var(--border);border-radius:14px;background:var(--panel);color:var(--text);box-shadow:0 16px 70px #0006;overflow:auto}dialog::backdrop{background:#0007}h2{font-size:22px;margin:0 0 24px}h3{font-size:18px;margin:0 0 16px}p{line-height:1.6;overflow-wrap:anywhere;margin:0 0 16px}.version{font-size:17px;font-weight:600}footer{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;border-top:1px solid var(--border);padding-top:16px}button{white-space:normal;min-height:32px}p[role=status]:empty{display:none}
+ dialog{width:620px;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px);margin:auto;padding:24px;border:1px solid var(--border);border-radius:14px;background:var(--panel);color:var(--text);box-shadow:var(--shadow-dialog);overflow:auto}dialog::backdrop{background:#0007}h2{font-size:22px;margin:0 0 24px}h3{font-size:18px;margin:0 0 16px}p{line-height:1.6;overflow-wrap:anywhere;margin:0 0 16px}.version{font-size:17px;font-weight:600}footer{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;border-top:1px solid var(--border);padding-top:16px}button{white-space:normal;min-height:32px}p[role=status]:empty{display:none}
 </style>
