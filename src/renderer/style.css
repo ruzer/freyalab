@@ -133,7 +133,7 @@ body:has(dialog[open],.modal-backdrop) .toolbar button:is(.primary,.btn-primary)
 
 :root .app-shell .statusbar :is(button,input,select){min-height:24px;height:24px;padding-block:0}
 
-@media(max-width:899px){:root .app-shell .charts-panel .plot-scroll{min-height:150px}}
+@media(max-width:899px){:root .app-shell .charts-panel .plot-scroll{min-height:144px}}
 /* El estado de carga conserva la acción y su explicación accesible. */
 .busy-label{display:inline-block;font-size:0;color:transparent}.busy-label::after{content:attr(data-loading);font-size:var(--font-ui);color:var(--text);white-space:nowrap}.btn-primary .busy-label::after,.primary .busy-label::after{color:var(--accent-text)}
 
