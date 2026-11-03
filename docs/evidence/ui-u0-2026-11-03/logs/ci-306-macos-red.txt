@@ -1,0 +1,104 @@
+1) [md] › tests/e2e/markdown-assets.spec.ts:39:1 › Buscar · el marcador permite elegir, copiar, deshacer y rehacer sin modificar el Markdown original en disco 
+2026-11-03T08:33:43.5386360Z 
+2026-11-03T08:33:43.5386850Z     Error: expect(received).toBe(expected) // Object.is equality
+2026-11-03T08:33:43.5387380Z 
+2026-11-03T08:33:43.5387450Z     Expected: true
+2026-11-03T08:33:43.5388050Z     Received: false
+2026-11-03T08:33:43.5388330Z 
+2026-11-03T08:33:43.5388580Z     Call Log:
+2026-11-03T08:33:43.5389090Z     - Timeout 15000ms exceeded while waiting on the predicate
+2026-11-03T08:33:43.5389580Z 
+2026-11-03T08:33:43.5390730Z       22 |  await expect(page.locator('.cm-content')).toBeVisible();return{path,doc}
+2026-11-03T08:33:43.5391530Z       23 | }
+2026-11-03T08:33:43.5393620Z     > 24 | async function loaded(count=1){await expect(article().locator('img')).toHaveCount(count);await expect.poll(()=>article().locator('img').evaluateAll(images=>images.length>0&&images.every(image=>(image as HTMLImageElement).complete&&(image as HTMLImageElement).naturalWidth>0))).toBe(true)}
+2026-11-03T08:33:43.5396580Z          |                                                                                                                                                                                                                                                                                      ^
+2026-11-03T08:33:43.5397830Z       25 | async function fixture(){
+2026-11-03T08:33:43.5398660Z       26 |  await mkdir(join(folder,'origen','a.assets'));for(const name of ['uno.png','dos.png','tres.png'])await writeFile(join(folder,'origen','a.assets',name),png)
+2026-11-03T08:33:43.5400830Z       27 |  return '# Informe\r\n\r\n![Árbol](a.assets/uno.png)\r\n\r\n<details><summary>Más</summary>\r\n\r\n![Segundo](a.assets/dos.png)\r\n\r\n</details>\r\n\r\n![Tercero][tercero]\r\n\r\n[tercero]: a.assets/tres.png "Título"\r\n'
+2026-11-03T08:33:43.5403270Z         at loaded (/Users/runner/work/freyalab/freyalab/tests/e2e/markdown-assets.spec.ts:24:278)
+2026-11-03T08:33:43.5404370Z         at /Users/runner/work/freyalab/freyalab/tests/e2e/markdown-assets.spec.ts:44:2
+2026-11-03T08:33:43.5406090Z 
+2026-11-03T08:33:43.5409240Z     Error Context: test-results-fast/markdown-assets-Buscar-·-e-3f829--Markdown-original-en-disco-md/error-context.md
+2026-11-03T08:33:43.5411790Z 
+2026-11-03T08:33:43.5412930Z     attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-11-03T08:33:43.5414040Z     test-results-fast/markdown-assets-Buscar-·-e-3f829--Markdown-original-en-disco-md/trace.zip
+2026-11-03T08:33:43.5415370Z     Usage:
+2026-11-03T08:33:43.5418280Z 
+2026-11-03T08:33:43.5419950Z         npx playwright show-trace test-results-fast/markdown-assets-Buscar-·-e-3f829--Markdown-original-en-disco-md/trace.zip
+2026-11-03T08:33:43.5420950Z 
+2026-11-03T08:33:43.5424760Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-11-03T08:33:43.5425020Z 
+2026-11-03T08:33:43.5425490Z     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+2026-11-03T08:33:43.5425850Z 
+2026-11-03T08:33:43.5426730Z     Error: expect(received).toBe(expected) // Object.is equality
+2026-11-03T08:33:43.5429870Z 
+2026-11-03T08:33:43.5434320Z     Expected: true
+2026-11-03T08:33:43.5435380Z     Received: false
+2026-11-03T08:33:43.5436740Z 
+2026-11-03T08:33:43.5438430Z     Call Log:
+2026-11-03T08:33:43.5441540Z     - Timeout 15000ms exceeded while waiting on the predicate
+2026-11-03T08:33:43.5446510Z 
+2026-11-03T08:33:43.5446850Z       22 |  await expect(page.locator('.cm-content')).toBeVisible();return{path,doc}
+2026-11-03T08:33:43.5447440Z       23 | }
+2026-11-03T08:33:43.5449530Z     > 24 | async function loaded(count=1){await expect(article().locator('img')).toHaveCount(count);await expect.poll(()=>article().locator('img').evaluateAll(images=>images.length>0&&images.every(image=>(image as HTMLImageElement).complete&&(image as HTMLImageElement).naturalWidth>0))).toBe(true)}
+2026-11-03T08:33:43.5454460Z          |                                                                                                                                                                                                                                                                                      ^
+2026-11-03T08:33:43.5458990Z       25 | async function fixture(){
+2026-11-03T08:33:43.5461780Z       26 |  await mkdir(join(folder,'origen','a.assets'));for(const name of ['uno.png','dos.png','tres.png'])await writeFile(join(folder,'origen','a.assets',name),png)
+2026-11-03T08:33:43.5464550Z       27 |  return '# Informe\r\n\r\n![Árbol](a.assets/uno.png)\r\n\r\n<details><summary>Más</summary>\r\n\r\n![Segundo](a.assets/dos.png)\r\n\r\n</details>\r\n\r\n![Tercero][tercero]\r\n\r\n[tercero]: a.assets/tres.png "Título"\r\n'
+2026-11-03T08:33:43.5465640Z         at loaded (/Users/runner/work/freyalab/freyalab/tests/e2e/markdown-assets.spec.ts:24:278)
+2026-11-03T08:33:43.5466320Z         at /Users/runner/work/freyalab/freyalab/tests/e2e/markdown-assets.spec.ts:44:2
+2026-11-03T08:33:43.5467240Z 
+2026-11-03T08:33:43.5468850Z     Error Context: test-results-fast/markdown-assets-Buscar-·-e-3f829--Markdown-original-en-disco-md-retry1/error-context.md
+2026-11-03T08:33:43.5470250Z 
+2026-11-03T08:33:43.5472140Z     attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-11-03T08:33:43.5474380Z     test-results-fast/markdown-assets-Buscar-·-e-3f829--Markdown-original-en-disco-md-retry1/trace.zip
+2026-11-03T08:33:43.5474900Z     Usage:
+2026-11-03T08:33:43.5475630Z 
+2026-11-03T08:33:43.5477330Z         npx playwright show-trace test-results-fast/markdown-assets-Buscar-·-e-3f829--Markdown-original-en-disco-md-retry1/trace.zip
+2026-11-03T08:33:43.5477860Z 
+2026-11-03T08:33:43.5478540Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-11-03T08:33:43.5478850Z 
+2026-11-03T08:33:43.5480340Z   2) [md] › tests/e2e/mermaid-errors.spec.ts:86:1 › cerrar una pestaña limpia Markdown mientras espera exportar cancela la salida de su vista destruida 
+2026-11-03T08:33:43.5484470Z 
+2026-11-03T08:33:43.5484760Z     Error: expect(locator).toContainText(expected) failed
+2026-11-03T08:33:43.5488550Z 
+2026-11-03T08:33:43.5488740Z     Locator: locator('.toast')
+2026-11-03T08:33:43.5491300Z     Expected substring: "El documento se cerró antes de terminar la vista previa."
+2026-11-03T08:33:43.5491760Z     Timeout: 15000ms
+2026-11-03T08:33:43.5492020Z     Error: element(s) not found
+2026-11-03T08:33:43.5492210Z 
+2026-11-03T08:33:43.5495810Z     Call log:
+2026-11-03T08:33:43.5496240Z       - Expect "toContainText" locator('.toast') with timeout 15000ms
+2026-11-03T08:33:43.5497300Z       - waiting for locator('.toast')
+2026-11-03T08:33:43.5500220Z         18 × locator resolved to <div role="status" class="toast error svelte-1la1gos">…</div>
+2026-11-03T08:33:43.5500950Z            - unexpected value "  El documento ya no está abierto. "
+2026-11-03T08:33:43.5501930Z 
+2026-11-03T08:33:43.5501940Z 
+2026-11-03T08:33:43.5502780Z        97 |  await test.info().attach('cierre-durante-exportacion',{body:Buffer.from(JSON.stringify(result)),contentType:'application/json'})
+2026-11-03T08:33:43.5503400Z        98 |  expect(result.waiting).toBe(true)
+2026-11-03T08:33:43.5505500Z     >  99 |  await expect(page.getByRole('tablist',{name:'Documentos abiertos',exact:true}).getByRole('tab')).toHaveCount(0);await expect(page.locator('.toast')).toContainText(scenario.message)
+2026-11-03T08:33:43.5507040Z           |                                                                                                                                                       ^
+2026-11-03T08:33:43.5509140Z       100 |  expect(await readdir(join(folder,'exports'))).toEqual([]);expect(await readFile(path,'utf8')).toBe(scenario.text)
+2026-11-03T08:33:43.5511850Z       101 | })
+2026-11-03T08:33:43.5512300Z       102 | }
+2026-11-03T08:33:43.5513760Z         at /Users/runner/work/freyalab/freyalab/tests/e2e/mermaid-errors.spec.ts:99:151
+2026-11-03T08:33:43.5514480Z 
+2026-11-03T08:33:43.5515040Z     Error Context: test-results-fast/mermaid-errors-cerrar-una--dc672-alida-de-su-vista-destruida-md/error-context.md
+2026-11-03T08:33:43.5515760Z 
+2026-11-03T08:33:43.5516230Z     attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-11-03T08:33:43.5516990Z     test-results-fast/mermaid-errors-cerrar-una--dc672-alida-de-su-vista-destruida-md/trace.zip
+2026-11-03T08:33:43.5517860Z     Usage:
+2026-11-03T08:33:43.5518000Z 
+2026-11-03T08:33:43.5518490Z         npx playwright show-trace test-results-fast/mermaid-errors-cerrar-una--dc672-alida-de-su-vista-destruida-md/trace.zip
+2026-11-03T08:33:43.5518980Z 
+2026-11-03T08:33:43.5523130Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-11-03T08:33:43.5524140Z 
+2026-11-03T08:33:43.5525470Z   Slow test file: [csv] › tests/e2e/charts.spec.ts (7.9m)
+2026-11-03T08:33:43.5527100Z   Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+2026-11-03T08:33:43.5532910Z   1 failed
+2026-11-03T08:33:43.5533700Z     [md] › tests/e2e/markdown-assets.spec.ts:39:1 › Buscar · el marcador permite elegir, copiar, deshacer y rehacer sin modificar el Markdown original en disco 
+2026-11-03T08:33:43.5539370Z   1 flaky
+2026-11-03T08:33:43.5540100Z     [md] › tests/e2e/mermaid-errors.spec.ts:86:1 › cerrar una pestaña limpia Markdown mientras espera exportar cancela la salida de su vista destruida 
+2026-11-03T08:33:43.5540740Z   7 skipped
+2026-11-03T08:33:43.5541030Z   495 passed (31.0m)
+2026-11-03T08:33:45.9269500Z

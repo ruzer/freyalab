@@ -78,6 +78,16 @@ Estados: bienvenida vacía, Markdown, CSV, Resumen y gráfico, Ajustes, búsqued
 
 ## No verificado y fuera de alcance
 
+### Carrera de foco detectada por CI306
+
+El head7176d5b aprobó localmente los560 casos sin reintentos (19,8 min). En [CI306](https://github.com/ruzer/freyalab/actions/runs/41600138177), Ubuntu aprobó también la ejecución del paquete, pero macOS falló dos veces en `markdown-assets.spec.ts:44`: la imagen seguía sin cargar tras pulsar Enter. [Registro rojo](logs/ci-306-macos-red.txt). No se atribuye a velocidad del runner.
+
+Las trazas originales están en el artefacto `evidence-macos-15-1`, ID13216595250, SHA256 `6b5174316a8d6ba0288616c69c1fa8b87ceccc597ee02543524f780695d960c8`. Registran seleccionar tema→enfocar→Enter dentro del refresco diferido, sin esperar su finalización; no incluyen una captura del DOM que permita reconstruir por sí sola el foco. Una reproducción local controlada, enfocando el marcador y esperando su sustitución mediante MutationObserver, da [foco antes=true / después=false, activo=BODY](logs/theme-focus-probe.json). El refresco del article no ha cambiado en U0; no se afirma haber repetido la CI en main.
+
+Cambio mínimo del test: esperar el indicador real de fin de vista previa tras cada cambio de tema y comprobar explícitamente `toBeFocused()` antes de Enter. No cambia el producto, ni plazos, reintentos, grupos, capacidades o aserciones de imagen, historial y bytes originales. [Siete ejecuciones locales, cero reintentos](logs/theme-focus-green.txt). El resultado del head nuevo debe calificarse por separado en el PR.
+
+CI306 también registró un caso intermitente de cierre durante exportación Markdown: mensaje «El documento ya no está abierto.» en lugar de «El documento se cerró antes de terminar la vista previa.»; pasó en el reintento. Se conserva sin relajar su aserción ni presentar ese intento como verde. No se implementa una modificación de la carrera de exportación en U0.
+
 - Sin revisión visual manual en Windows/Linux, lector de pantalla físico, macOS Intel o instalación local del paquete. La emulación Chromium de forced-colors no equivale a Windows High Contrast en un equipo real.
 - Pandoc local no incluye soporte HTTP: no se acredita su sandbox HTTP; la suite conserva el aviso correspondiente.
 - La CI de PR comprueba Linux, Windows y macOS ARM. Intel corre en main/nocturna según la política vigente; su ausencia no acredita esa plataforma. Build, ejecución del paquete e instalación son comprobaciones diferentes.
