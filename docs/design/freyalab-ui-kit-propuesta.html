@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'">
+<title>FreyaLab · propuesta de componentes (referencia visual)</title>
+<style>
+:root{--bg:#fff;--surface:#f6f7fa;--raised:#fff;--border:#d9dce3;--border-strong:#b9bec9;--control:#848b9a;--accent-on-tint:#1d4ed8;--text:#1d2027;--muted:#5d6472;--accent:#2563eb;--accent-text:#fff;--tint:#e8efff;--danger:#c4301f;--danger-tint:#fdecea;--ok:#1a7f45;--focus:#2563eb;--r:8px;--shadow:0 1px 2px rgba(16,24,40,.08),0 1px 1px rgba(16,24,40,.04);--shadow-pop:0 8px 24px rgba(16,24,40,.16);--track:#e3e6ed;color-scheme:light}
+:root[data-theme=dark]{--bg:#16181d;--surface:#1d2026;--raised:#242830;--border:#343944;--border-strong:#4b5262;--control:#6b7385;--accent-on-tint:#86b4ff;--text:#eceef3;--muted:#a3a9b6;--accent:#4c8dff;--accent-text:#0b1220;--tint:#1e2d4d;--danger:#ff7a6b;--danger-tint:#3a2322;--ok:#4cc382;--focus:#6aa2ff;--track:#343944;--shadow:0 1px 2px rgba(0,0,0,.4);--shadow-pop:0 8px 24px rgba(0,0,0,.5);color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:13px/1.45 Inter,-apple-system,"Segoe UI",sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:5}
+header h1{font-size:14px;margin:0;flex:1}
+main{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+section.wide{grid-column:1/-1}
+h2{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.note{color:var(--muted);font-size:12px;margin:4px 0 0}
+/* botones */
+.btn{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:var(--r);border:1px solid var(--control);background:var(--raised);color:var(--text);font:inherit;font-weight:500;cursor:pointer;box-shadow:var(--shadow);transition:background .12s,border-color .12s,transform .06s}
+.btn:hover{background:var(--surface);border-color:var(--muted)}.btn:active{transform:translateY(1px);box-shadow:none}
+.btn:focus-visible,.field input:focus-visible,.seg button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-text)}.btn.primary:hover{filter:brightness(1.08);background:var(--accent)}
+.btn.tint{background:var(--tint);border-color:transparent;color:var(--accent-on-tint);box-shadow:none}
+.btn.ghost{background:transparent;border-color:transparent;box-shadow:none}.btn.ghost:hover{background:var(--surface);border-color:var(--border)}
+.btn.danger{color:var(--danger);border-color:var(--danger);background:var(--danger-tint);box-shadow:none}
+.btn.icon{width:30px;padding:0;justify-content:center}.btn.sm{height:26px;padding:0 9px;font-size:12px}
+.btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn .spin{width:12px;height:12px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* segmentado */
+.seg{display:inline-flex;background:var(--track);border-radius:9px;padding:2px;gap:2px}
+.seg button{border:0;background:transparent;color:var(--muted);height:26px;padding:0 12px;border-radius:7px;font:inherit;font-weight:500;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--raised);color:var(--text);box-shadow:var(--shadow)}
+/* campo de búsqueda */
+.field{position:relative;display:flex;align-items:center}
+.field svg{position:absolute;left:9px;width:14px;height:14px;color:var(--muted)}
+.field input{width:100%;height:32px;padding:0 64px 0 30px;border:1px solid var(--control);border-radius:var(--r);background:var(--raised);color:var(--text);font:inherit}
+.field input::placeholder{color:var(--muted);opacity:.9}
+.field kbd{position:absolute;right:8px;font:11px ui-monospace,monospace;color:var(--muted);border:1px solid var(--border);border-radius:5px;padding:0 5px;background:var(--surface)}
+.field .count{position:absolute;right:8px;font-size:11px;color:var(--muted)}
+/* progreso */
+.prog{display:grid;gap:4px;margin-bottom:12px}.prog .top{display:flex;justify-content:space-between;font-size:12px}
+.bar{height:6px;border-radius:99px;background:var(--track);overflow:hidden;position:relative}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+.bar.ind>i{position:absolute;width:35%;animation:slide 1.2s ease-in-out infinite}
+@keyframes slide{0%{left:-35%}100%{left:100%}}
+@media(prefers-reduced-motion:reduce){.bar.ind>i{animation:none;width:100%;opacity:.5}.btn .spin{animation-duration:2s}}
+.skel{height:12px;border-radius:6px;background:linear-gradient(90deg,var(--track),var(--surface),var(--track));background-size:200% 100%;animation:sh 1.4s linear infinite;margin:7px 0}
+@keyframes sh{to{background-position:-200% 0}}
+/* vacío */
+.empty{border:1px dashed var(--border-strong);border-radius:12px;padding:18px;text-align:center;background:var(--bg)}
+.empty .ic{width:34px;height:34px;border-radius:10px;background:var(--tint);color:var(--accent);display:grid;place-items:center;margin:0 auto 8px;font-weight:700}
+.empty b{display:block}.empty p{margin:2px 0 10px;color:var(--muted);font-size:12px}
+/* barra con etiquetas */
+.toolbar{flex-wrap:wrap;display:flex;gap:6px;align-items:center;background:var(--raised);border:1px solid var(--border);border-radius:10px;padding:6px}
+.toolbar .sp{flex:1}.vr{width:1px;height:20px;background:var(--border)}
+/* vidrio: solo marco, nunca contenido */
+.shell{display:grid;grid-template-columns:170px 1fr;height:190px;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:linear-gradient(135deg,#7aa2ff,#c79bff 55%,#ffb38a)}
+.shell aside{padding:10px;font-size:12px;background:color-mix(in srgb,var(--surface) 72%,transparent);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-right:1px solid color-mix(in srgb,var(--border) 70%,transparent)}
+.shell.noglass aside{background:var(--surface);backdrop-filter:none}
+.shell main{display:block;margin:0;padding:12px;max-width:none;background:var(--bg);grid-template-columns:none}
+.shell aside div{padding:5px 8px;border-radius:7px}.shell aside .on{background:var(--tint);color:var(--accent-on-tint);font-weight:600}
+@media(max-width:800px){main{grid-template-columns:1fr}}
+</style></head><body>
+<header><h1>FreyaLab · propuesta de componentes <span style="font-weight:400;color:var(--muted)">(referencia visual, no es código del producto)</span></h1>
+<div class="seg" role="group" aria-label="Tema"><button aria-pressed="true" data-t="light">Claro</button><button aria-pressed="false" data-t="dark">Oscuro</button></div></header>
+<main>
+<section><h2>Botones · 5 jerarquías</h2>
+<div class="row"><button class="btn primary">Guardar</button><button class="btn">Abrir</button><button class="btn tint">Sugerencia</button><button class="btn ghost">Cancelar</button><button class="btn danger">Quitar</button></div>
+<div class="row"><button class="btn icon" aria-label="Deshacer" title="Deshacer ⌘Z">↶</button><button class="btn" disabled title="Nada que guardar">Guardar</button><button class="btn primary"><span class="spin"></span>Calculando…</button><button class="btn sm">Pequeño 26</button></div>
+<p class="note">Un solo primario por pantalla. Altura 30 (26 compacto). Radio 8. Relieve sutil, estado «pulsado» y foco azul de 2 px. Deshabilitado siempre con el motivo en el tooltip.</p></section>
+<section><h2>Navegación · pestañas hermanas y barra con nombres</h2>
+<div class="row"><div class="seg" role="group" aria-label="Vista"><button aria-pressed="false">Tabla</button><button aria-pressed="true">Resumen y gráfico</button><button aria-pressed="false">Texto</button></div></div>
+<div class="toolbar"><button class="btn ghost sm">⌕ Buscar</button><button class="btn ghost sm">⇄ Reemplazar</button><button class="btn ghost sm">▽ Filtrar</button><span class="vr"></span><button class="btn ghost sm">✦ Limpiar datos</button><span class="sp"></span><button class="btn ghost sm">⌘ Acciones</button><button class="btn ghost sm">Σ Estadísticas y SQL</button></div>
+<p class="note">Cada botón con icono lleva su nombre a ≥1280 px; por debajo, solo icono con tooltip. Los iconos solos (flecha, ⌘) desaparecen.</p></section>
+<section><h2>Búsqueda y placeholders</h2>
+<div class="row" style="display:grid;gap:8px">
+<label class="field"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg><input placeholder="Buscar en la tabla" aria-label="Buscar en la tabla"><kbd>⌘F</kbd></label>
+<label class="field"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg><input value="norte" aria-label="Buscar" readonly><span class="count">3 de 842</span></label>
+<label class="field"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg><input placeholder="Buscar herramienta: filtrar, duplicar, reemplazar…" aria-label="Buscar herramienta"></label></div>
+<p class="note">Reglas de placeholder: describe QUÉ se busca, nunca repite la etiqueta («Buscar archivo...» con puntos suspensivos no); ejemplo real cuando ayuda; siempre hay etiqueta accesible aparte; muestra atajo o recuento al lado; los vacíos de resultados explican qué hacer.</p></section>
+<section><h2>Progreso · siempre con qué, cuánto y cómo cancelar</h2>
+<div class="prog" role="status"><div class="top"><span>Buscando en 842 000 filas…</span><span>40 %</span></div><div class="bar" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Avance de la búsqueda"><i style="width:40%"></i></div></div>
+<div class="prog" role="status"><div class="top"><span>Preparando el gráfico…</span><button class="btn ghost sm">Cancelar</button></div><div class="bar ind" role="progressbar" aria-label="Preparando el gráfico"><i></i></div></div>
+<div><div class="skel" style="width:70%"></div><div class="skel"></div><div class="skel" style="width:85%"></div></div>
+<p class="note">Una sola barra de acento (no gris + verde nativo), 6 px, animada y con modo de movimiento reducido. Cálculos cortos: esqueleto en vez de pantalla vacía.</p></section>
+<section><h2>Estados vacíos con una acción</h2>
+<div class="row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<div class="empty"><div class="ic">▤</div><b>Aún no hay archivos</b><p>Abre una carpeta para ver sus documentos aquí.</p><button class="btn primary sm">Abrir carpeta</button></div>
+<div class="empty"><div class="ic">⌕</div><b>Sin resultados para «norte»</b><p>Prueba con menos letras o quita los filtros.</p><button class="btn sm">Quitar filtros</button></div></div></section>
+<section><h2>Vidrio (opcional) · solo en el marco, nunca en el contenido</h2>
+<div class="row"><div class="seg" role="group" aria-label="Vidrio"><button aria-pressed="true" data-g="on">Con vidrio</button><button aria-pressed="false" data-g="off">Sin vidrio</button></div></div>
+<div class="shell" id="shell"><aside><div class="on">Archivos</div><div>Índice</div><div>ventas.csv</div><div>notas.md</div></aside><main><b>Contenido siempre opaco</b><p class="note">La tabla, el editor y los gráficos nunca llevan transparencia: texto sobre fondo fijo, contraste medible. El vidrio solo toca la barra lateral y la barra superior; sin soporte o con «reducir transparencia», cae a color sólido.</p></main></div></section>
+</main>
+<script>
+document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{document.documentElement.dataset.theme=b.dataset.t;document.querySelectorAll('[data-t]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{document.getElementById('shell').classList.toggle('noglass',b.dataset.g==='off');document.querySelectorAll('[data-g]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+</script></body></html>
