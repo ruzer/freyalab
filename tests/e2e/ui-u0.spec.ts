@@ -130,3 +130,24 @@ test('U0: Más opciones sigue visible con resumen paginado y controles de 13 px'
   await summary.focus();await page.keyboard.press('Enter');await expect(page.locator('.more-options')).toHaveAttribute('open','');await page.keyboard.press('Enter')
  }
 })
+
+test('U0: la ayuda del gráfico se despliega debajo de su control y permite cerrarla',async()=>{
+ await open(csv);await page.setViewportSize({width:1440,height:900});await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();await expect(page.locator('.pivot-result')).toBeVisible()
+ const summary=page.locator('.chart-info>summary');await summary.click();await expect(page.locator('.chart-info')).toHaveAttribute('open','')
+ const [trigger,popup]=await Promise.all([summary.boundingBox(),page.locator('.chart-info .info-content').boundingBox()]);expect(popup!.y).toBeGreaterThanOrEqual(trigger!.y+trigger!.height)
+ await summary.click();await expect(page.locator('.chart-info')).not.toHaveAttribute('open')
+})
+
+test('U0: Calculando cabe en el botón real con en-XA, inglés y español',async()=>{
+ await open(csv);await page.locator('.csv-toolbar .analyze').click();await expect(page.locator('.statistics-panel')).toBeVisible()
+ const samples=[]
+ for(const language of ['en-XA','en','es'] as const){
+  if(language!=='en-XA')await page.evaluate(language=>window.freya.setLanguage(language),language)
+  await expect(page.locator('html')).toHaveAttribute('lang',language)
+  const button=page.locator('.statistics-panel button[type=submit]')
+  const measured=await button.evaluate(async node=>{(node as HTMLButtonElement).click();await Promise.resolve();await Promise.resolve();const label=node.querySelector<HTMLElement>('.busy-label')!,spinner=node.querySelector('.button-spinner')!;const context=document.createElement('canvas').getContext('2d')!,font=getComputedStyle(node);context.font=`${font.fontWeight} ${font.fontSize} ${font.fontFamily}`;return{busy:node.getAttribute('aria-busy'),width:label.getBoundingClientRect().width,needed:context.measureText(label.dataset.loading!).width,spinner:spinner.getBoundingClientRect().width}})
+  samples.push({language,...measured});expect(measured.busy).toBe('true');expect(measured.spinner).toBe(12);expect(measured.width+.5).toBeGreaterThanOrEqual(measured.needed)
+  await expect(button).toHaveAttribute('aria-busy','false')
+ }
+ await writeFile(test.info().outputPath('loading-labels.json'),JSON.stringify(samples,null,2));expect(await readFile(csv,'utf8')).toBe(table)
+})
