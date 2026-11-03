@@ -42,8 +42,9 @@
  const summaryTitle=$derived(options.x<0||options.y===-2?t('charts.fields.emptyTitle'):aggregated?t(options.series!==undefined&&options.series>=0?'charts.fields.titleSplit':'charts.fields.titleResult',{summary:t('charts.aggregate.'+options.aggregate),field:options.y>=0?columnLabel(options.y):t('charts.fields.rowCount'),row:columnLabel(options.x),column:columnLabel(options.series??-1)}):axes.summary)
  const pivot=$derived(data?chartPivot(data,options,totals):null)
  const resultOrder=$derived.by(()=>{
-  if(options.kind==='bar'&&!temporal&&(options.series??-1)<0)return{field:axes.y,tie:axes.x}
-  return{field:axes.x,tie:options.kind==='heatmap'?axes.y:(options.series??-1)>=0?columnLabel(options.series??-1):''}
+  const direction=t(options.kind!=='heatmap'&&options.descending?'charts.fields.descending':'charts.fields.ascending')
+  if(options.kind==='bar'&&!temporal&&(options.series??-1)<0)return{field:axes.y,tie:axes.x,direction}
+  return{field:axes.x,tie:options.kind==='heatmap'?axes.y:(options.series??-1)>=0?columnLabel(options.series??-1):'',direction}
  })
  const suggestion=$derived(suggest(columns,options.x<0||options.y===-2?{}:{x:options.x,...options.y>=0?{y:options.y}:{}}))
  const signature=$derived(JSON.stringify([doc.id,doc.revision,options,scope,where,scope==='filtered'?viewSignature:scope==='saved'?savedView:null]))

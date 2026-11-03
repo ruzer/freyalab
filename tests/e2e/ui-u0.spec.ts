@@ -152,3 +152,90 @@ test('U0: Calculando cabe en el botón real con en-XA, inglés y español',async
  }
  await writeFile(test.info().outputPath('loading-labels.json'),JSON.stringify(samples,null,2));expect(await readFile(csv,'utf8')).toBe(table)
 })
+
+for(const locale of ['es','en-XA'] as const)test(`U0.1: campos legibles y orden a 1280 × 720 (${locale})`,async()=>{
+ const phase=process.env.FREYALAB_U01_PHASE
+ const capture=async(state:string,value:string)=>{
+  if(phase){await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath(`${phase}-${state}-${value}-1280x720.png`)})}
+ }
+ if(locale==='es')for(const value of ['light','dark'] as const){
+  await page.emulateMedia({colorScheme:value})
+  await theme('system')
+  await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+  await capture('inicio',value)
+  const themeFits=await page.locator('.sidebar-bottom select').evaluate(node=>{
+   const style=getComputedStyle(node),context=document.createElement('canvas').getContext('2d')!
+   context.font=style.font
+   const width=context.measureText((node as HTMLSelectElement).selectedOptions[0].text).width
+   return node.getBoundingClientRect().width>=width+parseFloat(style.paddingLeft)+parseFloat(style.paddingRight)+20
+  })
+  expect.soft(themeFits,value).toBe(true)
+  const tabs=await page.locator('.sidebar-tabs button').evaluateAll(nodes=>nodes.map(node=>({
+   selected:node.getAttribute('aria-selected')==='true',border:getComputedStyle(node).borderBottomColor
+  })))
+  expect.soft(tabs.filter(tab=>tab.selected)).toHaveLength(1)
+  for(const tab of tabs)expect.soft(tab.border==='rgba(0, 0, 0, 0)').toBe(!tab.selected)
+ }
+ await open(csv)
+ await expect(page.getByRole('gridcell').first()).toBeVisible()
+ await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+ const sort=page.getByRole('button',{name:'Cliente',exact:true})
+ await expect(sort).toBeVisible()
+ if(locale==='es')for(const value of ['light','dark']){
+  await theme(value)
+  await capture('tabla',value)
+  const appearance=await sort.evaluate(node=>{
+   const style=getComputedStyle(node)
+   return {background:style.backgroundColor,border:style.borderTopColor,width:style.borderTopWidth,shadow:style.boxShadow}
+  })
+  expect.soft(appearance.background,value).toBe('rgba(0, 0, 0, 0)')
+  expect.soft(appearance.border==='rgba(0, 0, 0, 0)'||appearance.width==='0px',value).toBe(true)
+  expect.soft(appearance.shadow,value).toBe('none')
+ }
+ await sort.hover()
+ expect(await sort.evaluate(node=>getComputedStyle(node).backgroundColor)).not.toBe('rgba(0, 0, 0, 0)')
+ await sort.focus()
+ await page.keyboard.press('Shift+Tab')
+ await page.keyboard.press('Tab')
+ await expect(sort).toBeFocused()
+ expect(await sort.evaluate(node=>getComputedStyle(node).outlineStyle)).toBe('solid')
+ const wide=join(folder,'campos.csv')
+ await writeFile(wide,'Cliente,Ventas,Región,Segmento\n'+Array.from({length:842},(_,i)=>`C${i},${100+i*3},${i%2?'Norte':'Sur'},${i%2?'A':'B'}`).join('\n')+'\n')
+ await open(wide)
+ await page.locator('[data-csv-view] button').nth(1).click()
+ await expect(page.locator('.pivot-result')).toBeVisible()
+ if(locale==='es')for(const [field,zone] of [['Cliente','Filas'],['Ventas','Valores']]){
+  await page.locator(`.field-entry[title="${field}"] button`).click()
+  await page.getByRole('menuitem',{name:new RegExp(`^Añadir a ${zone}(?: |$)`)}).click()
+ }
+ const entries=page.locator('.field-list .field-entry')
+ await expect(entries).toHaveCount(4)
+ for(const language of locale==='es'?['es','en']:['en-XA']){
+  if(language==='en')await page.evaluate(()=>window.freya.setLanguage('en'))
+  await expect(page.locator('html')).toHaveAttribute('lang',language)
+  if(language!=='en-XA'){
+   const notice=page.locator('.charts-panel .truncated.notice')
+   await expect(notice).toBeVisible()
+   expect.soft(await notice.innerText()).toContain(language==='es'?'de menor a mayor':'ascending')
+  }
+  for(const value of ['light','dark']){
+   await page.locator('.sidebar-bottom select').selectOption(value)
+   await capture(`campos-${language}`,value)
+   const boxes=await entries.evaluateAll(rows=>rows.map(row=>{
+    const badge=row.querySelector('.field-badge')!,button=row.querySelector('button')!,name=row.querySelector('.field-name')!
+    const b=button.getBoundingClientRect(),r=row.getBoundingClientRect(),label=badge.getBoundingClientRect(),title=name.getBoundingClientRect()
+    return {top:b.top,bottom:b.bottom,left:b.left,right:b.right,rowRight:r.right,badgeLeft:label.left,badgeRight:label.right,clipped:badge.scrollWidth>badge.clientWidth,nameWidth:title.width,nameRight:title.right,hit:document.elementFromPoint(b.x+b.width/2,b.y+b.height/2)===button}
+   }))
+   for(const [index,box] of boxes.entries()){
+    expect.soft(box.clipped,`${language}/${value} badge ${index}`).toBe(false)
+    expect.soft(box.nameWidth).toBeGreaterThan(0)
+    expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)
+    expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+    expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+    expect.soft(box.hit).toBe(true)
+    if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+   }
+   await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+  }
+ }
+})

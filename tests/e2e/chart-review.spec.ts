@@ -31,7 +31,7 @@ test('Revisión108 · truncado conserva cien barras en su orden y un solo aviso 
   await page.screenshot({path:test.info().outputPath(`${process.env.FREYALAB_REVIEW_PHASE||'after'}-${theme}-${width}x${height}.png`)})
  }
  const notice=panel().locator('.truncated')
- await expect(notice).toContainText('Se muestran los primeros 100 de 842 grupos, ordenados por «Suma de Ventas»; los empates, por «Cliente».')
+ await expect(notice).toContainText('Se muestran los primeros 100 de 842 grupos, ordenados por «Suma de Ventas» (de menor a mayor); los empates, por «Cliente».')
  await expect(notice).not.toContainText('mayores');await expect(panel().locator('.top-notice')).toHaveCount(0)
  const bars=await panel().locator('.plot').evaluate(node=>node.querySelectorAll(`svg path[fill="${getComputedStyle(node).getPropertyValue('--accent').trim()}"]`).length)
  expect(bars).toBe(100)
@@ -124,11 +124,20 @@ test('Revisión108 final · el aviso explica el campo de orden y los empates de 
    ['count',language==='es'?'Cuenta':'Count','842',['C0','C1','C10','C100','C101']]
   ] as const){
    await aggregate.selectOption(operation);await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText(total)
-   await expect(panel().locator('.truncated')).toContainText(language==='es'?`ordenados por «${measure}»; los empates, por «Cliente».`:`ordered by “${measure}”; ties by “Cliente”.`)
+   await expect(panel().locator('.truncated')).toContainText(language==='es'?`ordenados por «${measure}» (de menor a mayor); los empates, por «Cliente».`:`ordered by “${measure}” (ascending); ties by “Cliente”.`)
    await expect(panel().locator('.truncated')).not.toContainText(language==='es'?'orden elegido':'selected order')
    await expect(panel().locator('.pivot-result tbody th')).toHaveText([...labels])
    await expect(panel().locator('.pivot-result tfoot th')).toHaveText(language==='es'?'Total de los 842 grupos':'Total for all 842 groups')
   }
+  const options=panel().locator('.more-options')
+  await options.locator(':scope > summary').click()
+  const order=options.getByRole('combobox',{name:language==='es'?'Orden del gráfico':'Chart order',exact:true})
+  await aggregate.selectOption('sum')
+  await order.selectOption({index:1})
+  await expect(panel().locator('.truncated')).toContainText(language==='es'?'de mayor a menor':'descending')
+  await expect(panel().locator('.pivot-result tbody th').first()).toHaveText('C841')
+  await order.selectOption({index:0})
+  await options.locator(':scope > summary').click()
  }
  expect(await readFile(file,'utf8')).toBe(original)
 })

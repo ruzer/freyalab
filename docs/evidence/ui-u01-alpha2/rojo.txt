@@ -1,0 +1,95 @@
+Extracto de Playwright contra main 561deee
+
+Error:light
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      170 |    return node.getBoundingClientRect().width>=width+parseFloat(style.paddingLeft)+parseFloat(style.paddingRight)+20
+      171 |   })
+    > 172 |   expect.soft(themeFits,value).toBe(true)
+          |                                ^
+      173 |   const tabs=await page.locator('.sidebar-tabs button').evaluateAll(nodes=>nodes.map(node=>({
+      174 |    selected:node.getAttribute('aria-selected')==='true',border:getComputedStyle(node).borderBottomColor
+      175 |   })))
+        at /private/tmp/freyalab-u01-work/tests/e2e/ui-u0.spec.ts:172:32
+
+Error:expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      175 |   })))
+      176 |   expect.soft(tabs.filter(tab=>tab.selected)).toHaveLength(1)
+    > 177 |   for(const tab of tabs)expect.soft(tab.border==='rgba(0, 0, 0, 0)').toBe(!tab.selected)
+          |                                                                      ^
+      178 |  }
+      179 |  await open(csv)
+      180 |  await expect(page.getByRole('gridcell').first()).toBeVisible()
+        at /private/tmp/freyalab-u01-work/tests/e2e/ui-u0.spec.ts:177:70
+
+Error:light
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "none"
+    Received: "rgba(16, 24, 40, 0.08) 0px 1px 1px 0px"
+
+      191 |   expect.soft(appearance.background,value).toBe('rgba(0, 0, 0, 0)')
+      192 |   expect.soft(appearance.border==='rgba(0, 0, 0, 0)'||appearance.width==='0px',value).toBe(true)
+    > 193 |   expect.soft(appearance.shadow,value).toBe('none')
+          |                                        ^
+      194 |  }
+      195 |  await sort.hover()
+      196 |  expect(await sort.evaluate(node=>getComputedStyle(node).backgroundColor)).not.toBe('rgba(0, 0, 0, 0)')
+        at /private/tmp/freyalab-u01-work/tests/e2e/ui-u0.spec.ts:193:40
+
+Error:expect(received).toContain(expected) // indexOf
+
+    Expected substring: "de menor a mayor"
+    Received string:    "Gráfico parcial. Se muestran los primeros 100 de 842 grupos, ordenados por «Suma de Ventas»; los empates, por «Cliente». Filtra o cambia Filas."
+
+      217 |    const notice=page.locator('.charts-panel .truncated.notice')
+      218 |    await expect(notice).toBeVisible()
+    > 219 |    expect.soft(await notice.innerText()).toContain(language==='es'?'de menor a mayor':'ascending')
+          |                                          ^
+      220 |   }
+      221 |   for(const value of ['light','dark']){
+      222 |    await page.locator('.sidebar-bottom select').selectOption(value)
+        at /private/tmp/freyalab-u01-work/tests/e2e/ui-u0.spec.ts:219:42
+
+Error:es/light badge 0
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      228 |    }))
+      229 |    for(const [index,box] of boxes.entries()){
+    > 230 |     expect.soft(box.clipped,`${language}/${value} badge ${index}`).toBe(false)
+          |                                                                    ^
+      231 |     expect.soft(box.nameWidth).toBeGreaterThan(0)
+      232 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)
+      233 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+        at /private/tmp/freyalab-u01-work/tests/e2e/ui-u0.spec.ts:230:68
+
+Error:es/light row gap 1
+
+    expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 4
+    Received:    0
+
+      234 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+      235 |     expect.soft(box.hit).toBe(true)
+    > 236 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+          |                                                                                                 ^
+      237 |    }
+      238 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+      239 |   }
+        at /private/tmp/freyalab-u01-work/tests/e2e/ui-u0.spec.ts:236:97
+
+Resultado: 2 failed
