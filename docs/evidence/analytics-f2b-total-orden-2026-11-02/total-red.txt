@@ -1,0 +1,70 @@
+
+Running 2 tests using 1 worker
+
+(node:54712) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-review.spec.ts:100:31 › Revisión108 final · Total completo dentro del área visible a1280×720 (4.7s)
+(node:54729) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/chart-review.spec.ts:100:31 › Revisión108 final · Total completo dentro del área visible a800×720 (4.7s)
+
+
+  1) [csv] › tests/e2e/chart-review.spec.ts:100:31 › Revisión108 final · Total completo dentro del área visible a1280×720 
+
+    Error: light: borde inferior de Total
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 623.5
+    Received:    631.5
+
+      110 |  }
+      111 |  await writeFile(test.info().outputPath('total-geometry.json'),JSON.stringify(measurements,null,2))
+    > 112 |  for(const {theme,row,visible} of measurements){expect(row.top,`${theme}: borde superior de Total`).toBeGreaterThanOrEqual(visible.top);expect(row.bottom,`${theme}: borde inferior de Total`).toBeLessThanOrEqual(visible.bottom)}
+          |                                                                                                                                                                                                ^
+      113 |  await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('1,146,383')
+      114 |  expect(await readFile(file,'utf8')).toBe(original)
+      115 | })
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-review.spec.ts:112:192
+
+    Error Context: ../freyalab-f2b-evidence/total-red/chart-review-Revisión108-f-27508--del-área-visible-a1280×720-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/total-red/chart-review-Revisión108-f-27508--del-área-visible-a1280×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/total-red/chart-review-Revisión108-f-27508--del-área-visible-a1280×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/chart-review.spec.ts:100:31 › Revisión108 final · Total completo dentro del área visible a800×720 
+
+    Error: light: borde inferior de Total
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 659.5
+    Received:    667.5
+
+      110 |  }
+      111 |  await writeFile(test.info().outputPath('total-geometry.json'),JSON.stringify(measurements,null,2))
+    > 112 |  for(const {theme,row,visible} of measurements){expect(row.top,`${theme}: borde superior de Total`).toBeGreaterThanOrEqual(visible.top);expect(row.bottom,`${theme}: borde inferior de Total`).toBeLessThanOrEqual(visible.bottom)}
+          |                                                                                                                                                                                                ^
+      113 |  await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('1,146,383')
+      114 |  expect(await readFile(file,'utf8')).toBe(original)
+      115 | })
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-review.spec.ts:112:192
+
+    Error Context: ../freyalab-f2b-evidence/total-red/chart-review-Revisión108-f-c8b14-o-del-área-visible-a800×720-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/total-red/chart-review-Revisión108-f-c8b14-o-del-área-visible-a800×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/total-red/chart-review-Revisión108-f-c8b14-o-del-área-visible-a800×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/chart-review.spec.ts:100:31 › Revisión108 final · Total completo dentro del área visible a1280×720 
+    [csv] › tests/e2e/chart-review.spec.ts:100:31 › Revisión108 final · Total completo dentro del área visible a800×720 

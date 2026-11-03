@@ -1,0 +1,26 @@
+
+Running 19 tests using 1 worker
+
+(node:98079) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/charts.spec.ts:279:1 › resultados exportados: interfaz, agregados completos, CSV y contexto, informe y fórmulas preservan el original (6.6s)
+  ✓   2 [csv] › tests/e2e/compact-toolbar.spec.ts:44:1 › las cinco acciones principales se ven a la vez y lo demás está en menús con su nombre de siempre (883ms)
+  ✓   3 [csv] › tests/e2e/compact-toolbar.spec.ts:76:1 › Analizar abre el panel en la pestaña recordada y vuelve a cerrarlo con el foco en su botón (817ms)
+  ✓   4 [csv] › tests/e2e/compact-toolbar.spec.ts:85:1 › un filtro activo queda a la vista como etiqueta y se quita con un clic (1.2s)
+  ✓   5 [csv] › tests/e2e/csv-summary.spec.ts:19:1 › F2a: pestaña hermana muestra gráfico y resumen sin generar, con opciones plegadas y fuente intacta (2.6s)
+  ✓   6 [csv] › tests/e2e/csv-summary.spec.ts:40:1 › F2a: suma por serie, total real, porcentajes y seis tipos alcanzables con teclado (4.5s)
+  ✓   7 [csv] › tests/e2e/csv-summary.spec.ts:50:1 › F2a: cuatro capturas reales, resultado y límites visibles en ambos temas sin desplazar (5.0s)
+  ✓   8 [csv] › tests/e2e/csv-summary.spec.ts:73:1 › F2a: estados vacío, error numérico, truncado y ventana estrecha con captura (9.8s)
+  ✓   9 [csv] › tests/e2e/csv-summary.spec.ts:88:1 › F2a: cargando con cancelar y reintento explícito en 100.000 filas, sin escribir el original (2.9s)
+  ✓  10 [csv] › tests/e2e/csv-summary.spec.ts:98:1 › F2a: idioma inglés, foco, anuncios y ventana de 800 px (4.6s)
+  ✓  11 [csv] › tests/e2e/csv-summary.spec.ts:112:1 › F2a: en-XA real no recorta el resultado ni desborda los controles (3.4s)
+  ✓  12 [csv] › tests/e2e/csv-summary.spec.ts:121:1 › F2a: filtros del gráfico se pueden operar en inglés sin cambiar la tabla (6.4s)
+  ✓  13 [csv] › tests/e2e/csv-summary.spec.ts:128:1 › F2a: elegir Líneas aplica la agrupación mensual sugerida para fechas ISO (2.7s)
+  ✓  14 [csv] › tests/e2e/csv-summary.spec.ts:135:1 › F2a: pocas filas con celdas grandes conservan vista previa manual y límites explicados (2.3s)
+  ✓  15 [csv] › tests/e2e/csv-summary.spec.ts:143:1 › F2a: cambiar desde una celda en edición confirma el borrador sin guardar el archivo (2.8s)
+  ✓  16 [csv] › tests/e2e/csv-summary.spec.ts:149:1 › F2a: las herramientas de tabla siguen completas dentro de ambos anchos (734ms)
+  ✓  17 [csv] › tests/e2e/csv-summary.spec.ts:157:1 › F2a: desde Texto con cambios, Cancelar conserva el borrador y descartar abre Resumen sin escribir (2.8s)
+  ✓  18 [csv] › tests/e2e/csv-summary.spec.ts:164:1 › F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor (8.4s)
+  ✓  19 [csv] › tests/e2e/csv-summary.spec.ts:188:1 › F2a: alternar Tabla y Resumen es presentación, sin reinterpretar el CSV por IPC (2.6s)
+
+  19 passed (1.2m)

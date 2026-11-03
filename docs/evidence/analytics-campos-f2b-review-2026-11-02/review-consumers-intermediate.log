@@ -1,0 +1,9 @@
+Extracto literal seleccionado de la ejecución intermedia (no es el log completo).
+  ✘  28 [csv] › tests/e2e/charts.spec.ts:72:1 › gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial @perf (33.1s)
+  ✘  43 [csv] › tests/e2e/charts.spec.ts:279:1 › resultados exportados: interfaz, agregados completos, CSV y contexto, informe y fórmulas preservan el original (17.2s)
+    Error: expect(locator).toContainText(expected) failed
+    Expected substring: "Gráfico parcial"
+    Error: expect(locator).toContainText(expected) failed
+    Expected substring: "Gráfico parcial"
+  2 failed
+  59 passed (5.5m)

@@ -1,0 +1,13 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/chart-top.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-campos-zonas-f2b
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  03:39:46
+   Duration  121ms (transform 50%, tests 25%, import 21%, worker 3%)
+

@@ -1,0 +1,131 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/chart-fields.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-campos-zonas-f2b
+
+ ❯ tests/chart-fields.test.ts (15 tests | 13 failed) 5ms
+   × reemplaza rows sin modificar las opciones de entrada 2ms
+   × reemplaza columns sin modificar las opciones de entrada 0ms
+   × reemplaza values sin modificar las opciones de entrada 0ms
+   × texto en Valores cuenta, no suma identificadores con ceros 0ms
+   × fecha en Filas con medida numérica sugiere líneas mensuales 0ms
+   × quitar Filas o Valores deja explícitamente la zona vacía 0ms
+   × intercambia dimensiones manteniendo cálculo y medida 0ms
+   × recomienda destino del campo 2 0ms
+   × recomienda destino del campo 0 0ms
+   × recomienda destino del campo 3 0ms
+   × recomienda destino del campo 4 0ms
+   × categoría propone Columnas si Filas ya está ocupado; Fecha conserva Filas 0ms
+   × clasifica con el perfil existente, sin detector nuevo 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-fields.test.ts > reemplaza rows sin modificar las opciones de entrada
+ FAIL  tests/chart-fields.test.ts > reemplaza columns sin modificar las opciones de entrada
+ FAIL  tests/chart-fields.test.ts > reemplaza values sin modificar las opciones de entrada
+TypeError: addToZone is not a function
+ ❯ tests/chart-fields.test.ts:14:15
+     12| it.each(['rows','columns','values'] as const)('reemplaza %s sin modifi…
+     13|  const start=initialChart(columns)!,before=structuredClone(start)
+     14|  const result=addToZone(start,zone,zone==='values'?4:1,columns)
+       |               ^
+     15|  expect(start).toEqual(before)
+     16|  expect(zoneFields(result)[zone]).toBe(zone==='values'?4:1)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/13]⎯
+
+ FAIL  tests/chart-fields.test.ts > texto en Valores cuenta, no suma identificadores con ceros
+TypeError: addToZone is not a function
+ ❯ tests/chart-fields.test.ts:20:9
+     18| })
+     19| it('texto en Valores cuenta, no suma identificadores con ceros',()=>{
+     20|  expect(addToZone(initialChart(columns)!,'values',4,columns)).toMatchO…
+       |         ^
+     21| })
+     22| it('fecha en Filas con medida numérica sugiere líneas mensuales',()=>{
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/13]⎯
+
+ FAIL  tests/chart-fields.test.ts > fecha en Filas con medida numérica sugiere líneas mensuales
+TypeError: addToZone is not a function
+ ❯ tests/chart-fields.test.ts:23:9
+     21| })
+     22| it('fecha en Filas con medida numérica sugiere líneas mensuales',()=>{
+     23|  expect(addToZone(initialChart(columns)!,'rows',3,columns)).toMatchObj…
+       |         ^
+     24| })
+     25| it('quitar Filas o Valores deja explícitamente la zona vacía',()=>{
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/13]⎯
+
+ FAIL  tests/chart-fields.test.ts > quitar Filas o Valores deja explícitamente la zona vacía
+TypeError: removeFromZone is not a function
+ ❯ tests/chart-fields.test.ts:27:20
+     25| it('quitar Filas o Valores deja explícitamente la zona vacía',()=>{
+     26|  const start=initialChart(columns)!
+     27|  expect(zoneFields(removeFromZone(start,'rows')).rows).toBe(-1)
+       |                    ^
+     28|  expect(zoneFields(removeFromZone(start,'values')).values).toBe(-1)
+     29| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/13]⎯
+
+ FAIL  tests/chart-fields.test.ts > intercambia dimensiones manteniendo cálculo y medida
+TypeError: addToZone is not a function
+ ❯ tests/chart-fields.test.ts:31:14
+     29| })
+     30| it('intercambia dimensiones manteniendo cálculo y medida',()=>{
+     31|  const start=addToZone(initialChart(columns)!,'columns',1,columns)
+       |              ^
+     32|  expect(swapZones(start)).toMatchObject({x:1,series:0,y:2,aggregate:'s…
+     33|  expect(swapZones(swapZones(start))).toEqual(start)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/13]⎯
+
+ FAIL  tests/chart-fields.test.ts > recomienda destino del campo 2
+ FAIL  tests/chart-fields.test.ts > recomienda destino del campo 0
+ FAIL  tests/chart-fields.test.ts > recomienda destino del campo 3
+ FAIL  tests/chart-fields.test.ts > recomienda destino del campo 4
+TypeError: recommendedZone is not a function
+ ❯ tests/chart-fields.test.ts:36:9
+     34| })
+     35| it.each([[2,'values'],[0,'rows'],[3,'rows'],[4,'rows']] as const)('rec…
+     36|  expect(recommendedZone(columns[index],empty)).toBe(zone)
+       |         ^
+     37| })
+     38| it('categoría propone Columnas si Filas ya está ocupado; Fecha conserv…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/13]⎯
+
+ FAIL  tests/chart-fields.test.ts > categoría propone Columnas si Filas ya está ocupado; Fecha conserva Filas
+TypeError: recommendedZone is not a function
+ ❯ tests/chart-fields.test.ts:39:9
+     37| })
+     38| it('categoría propone Columnas si Filas ya está ocupado; Fecha conserv…
+     39|  expect(recommendedZone(columns[1],initialChart(columns)!)).toBe('colu…
+       |         ^
+     40|  expect(recommendedZone(columns[3],initialChart(columns)!)).toBe('rows…
+     41| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/13]⎯
+
+ FAIL  tests/chart-fields.test.ts > clasifica con el perfil existente, sin detector nuevo
+TypeError: undefined is not a function
+ ❯ tests/chart-fields.test.ts:43:17
+     41| })
+     42| it('clasifica con el perfil existente, sin detector nuevo',()=>{
+     43|  expect(columns.map(fieldGroup)).toEqual(['category','category','numbe…
+       |                 ^
+     44| })
+     45| it('sin columnas no inventa configuración',()=>expect(initialChart([])…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/13]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  13 failed | 2 passed (15)
+   Start at  03:38:31
+   Duration  132ms (transform 50%, import 31%, tests 15%, worker 5%)
+

@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:3332) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-fields.spec.ts:44:1 › F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones (19.4s)
+
+
+  1) [csv] › tests/e2e/chart-fields.spec.ts:44:1 › F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('.charts-panel').locator('.suggestion')
+    Expected: "Elige un campo para empezar."
+    Received: "Un campo ya no está disponible. Vuelve a elegirlo."
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" locator('.charts-panel').locator('.suggestion') with timeout 15000ms
+      - waiting for locator('.charts-panel').locator('.suggestion')
+        34 × locator resolved to <p class="suggestion svelte-1wo6u31" title="Un campo ya no está disponible. Vuelve a elegirlo.">Un campo ya no está disponible. Vuelve a elegirlo.</p>
+           - unexpected value "Un campo ya no está disponible. Vuelve a elegirlo."
+
+
+      55 |  await fields.getByRole('button',{name:'Limpiar todo',exact:true}).focus();await page.keyboard.press('Enter');await expect(live).toHaveText('Análisis limpiado');await expect(panel.getByRole('button',{name:'Empezar con una sugerencia',exact:true})).toBeVisible()
+      56 |  await expect(panel.getByLabel('Configuración del gráfico',{exact:true})).toHaveText('¿Qué quieres ver?')
+    > 57 |  await expect(panel.locator('.suggestion')).toHaveText('Elige un campo para empezar.')
+         |                                             ^
+      58 |  await page.screenshot({path:test.info().outputPath('state-empty.png')});await panel.getByRole('button',{name:'Empezar con una sugerencia',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
+      59 |  expect(await readFile(path,'utf8')).toBe(original)
+      60 | })
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-fields.spec.ts:57:45
+
+    Error Context: ../freyalab-f2b-evidence/empty-reason-red/chart-fields-F2b-teclado-b-043f9-menú-y-anuncios-de-acciones-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/empty-reason-red/chart-fields-F2b-teclado-b-043f9-menú-y-anuncios-de-acciones-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/empty-reason-red/chart-fields-F2b-teclado-b-043f9-menú-y-anuncios-de-acciones-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-fields.spec.ts:44:1 › F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones 

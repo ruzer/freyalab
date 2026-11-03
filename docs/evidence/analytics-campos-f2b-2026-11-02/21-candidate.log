@@ -1,0 +1,55 @@
+
+Running 51 tests using 1 worker
+
+(node:96250) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/chart-fields.spec.ts:16:1 › F2b: herramientas con nombre, ayuda inmediata al foco y controles sin pintura nativa (2.8s)
+  ✓   2 [csv] › tests/e2e/chart-fields.spec.ts:27:1 › F2b: sugerencia inicial y dos acciones cambian qué se grafica sin Más opciones (4.7s)
+  ✘   3 [csv] › tests/e2e/chart-fields.spec.ts:44:1 › F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones (19.6s)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) [csv] › tests/e2e/chart-fields.spec.ts:44:1 › F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('.charts-panel').locator('.chart-result>p.sr-only[role=status]')
+    Expected: "Filas y columnas intercambiadas"
+    Received: "Resultado actualizado: 2 grupos"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" locator('.charts-panel').locator('.chart-result>p.sr-only[role=status]') with timeout 15000ms
+      - waiting for locator('.charts-panel').locator('.chart-result>p.sr-only[role=status]')
+        5 × locator resolved to <p role="status" aria-live="polite" aria-atomic="true" class="sr-only svelte-1wo6u31">Actualizando vista previa…</p>
+          - unexpected value "Actualizando vista previa…"
+        2 × locator resolved to <p role="status" aria-live="polite" aria-atomic="true" class="sr-only svelte-1wo6u31">Calculando el resultado…</p>
+          - unexpected value "Calculando el resultado…"
+        27 × locator resolved to <p role="status" aria-live="polite" aria-atomic="true" class="sr-only svelte-1wo6u31">Resultado actualizado: 2 grupos</p>
+           - unexpected value "Resultado actualizado: 2 grupos"
+
+
+      52 |  await expect(fields.getByRole('region',{name:'Columnas',exact:true})).toContainText('Canal');await expect(fields.getByRole('button',{name:'Mover a… Canal',exact:true})).toBeFocused()
+      53 |  await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
+    > 54 |  await fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true}).focus();await page.keyboard.press('Enter');await expect(fields.getByRole('region',{name:'Filas',exact:true})).toContainText('Canal');await expect(live).toHaveText('Filas y columnas intercambiadas')
+         |                                                                                                                                                                                                                                             ^
+      55 |  await fields.getByRole('button',{name:'Limpiar todo',exact:true}).focus();await page.keyboard.press('Enter');await expect(live).toHaveText('Análisis limpiado');await expect(panel.getByRole('button',{name:'Empezar con una sugerencia',exact:true})).toBeVisible()
+      56 |  await page.screenshot({path:test.info().outputPath('state-empty.png')});await panel.getByRole('button',{name:'Empezar con una sugerencia',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
+      57 |  expect(await readFile(path,'utf8')).toBe(original)
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-fields.spec.ts:54:237
+
+    Error Context: ../freyalab-f2b-evidence/candidate/chart-fields-F2b-teclado-b-043f9-menú-y-anuncios-de-acciones-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/candidate/chart-fields-F2b-teclado-b-043f9-menú-y-anuncios-de-acciones-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/candidate/chart-fields-F2b-teclado-b-043f9-menú-y-anuncios-de-acciones-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-fields.spec.ts:44:1 › F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones 
+  48 did not run
+  2 passed (27.6s)
+  1 error was not a part of any test, see above for details

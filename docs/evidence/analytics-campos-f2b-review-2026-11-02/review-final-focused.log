@@ -1,0 +1,13 @@
+Running 7 tests using 1 worker
+
+(node:23946) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/chart-review.spec.ts:28:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (4.8s)
+  ✓  2 [csv] › tests/e2e/chart-review.spec.ts:44:1 › Revisión108 · motivo con línea propia y sin solapes a1280×720 (4.5s)
+  ✓  3 [csv] › tests/e2e/chart-review.spec.ts:53:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 (4.6s)
+  ✓  4 [csv] › tests/e2e/chart-review.spec.ts:66:1 › Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario (4.6s)
+  ✓  5 [csv] › tests/e2e/chart-review.spec.ts:78:1 › Revisión108 · tabla, total, marcas y eje conservan el formato numérico al cambiar campo e idioma (10.4s)
+  ✓  6 [csv] › tests/e2e/charts.spec.ts:72:1 › gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial @perf (22.9s)
+  ✓  7 [csv] › tests/e2e/charts.spec.ts:279:1 › resultados exportados: interfaz, agregados completos, CSV y contexto, informe y fórmulas preservan el original (5.9s)
+
+  7 passed (58.2s)

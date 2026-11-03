@@ -1,0 +1,26 @@
+[
+  {
+    "theme": "light",
+    "row": {
+      "top": 642,
+      "bottom": 667.5,
+      "height": 25.5
+    },
+    "visible": {
+      "top": 488.5,
+      "bottom": 659.5
+    }
+  },
+  {
+    "theme": "dark",
+    "row": {
+      "top": 642,
+      "bottom": 667.5,
+      "height": 25.5
+    },
+    "visible": {
+      "top": 488.5,
+      "bottom": 659.5
+    }
+  }
+]

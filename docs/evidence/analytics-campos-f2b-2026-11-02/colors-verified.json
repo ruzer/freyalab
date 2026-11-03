@@ -1,0 +1,329 @@
+{
+  "validator": "Data analytics chrome-contrast.js (development only)",
+  "themes": {
+    "light": {
+      "controls": 24,
+      "minText": 13.65530438837685,
+      "minUI": 4.087476364546202,
+      "minSeries": 3.599857119427381,
+      "ratios": [
+        {
+          "label": "Buscar campo…",
+          "text": 15.23755670944588,
+          "ui": 5.030663562051624
+        },
+        {
+          "label": "Categoría",
+          "text": 15.23755670944588,
+          "ui": 5.030663562051624
+        },
+        {
+          "label": "Mover a… Región",
+          "text": 15.23755670944588,
+          "ui": 5.030663562051624
+        },
+        {
+          "label": "Categoría",
+          "text": 15.23755670944588,
+          "ui": 5.030663562051624
+        },
+        {
+          "label": "Añadir a… Canal",
+          "text": 15.23755670944588,
+          "ui": 5.030663562051624
+        },
+        {
+          "label": "Categoría",
+          "text": 15.23755670944588,
+          "ui": 5.2392223421603035
+        },
+        {
+          "label": "Añadir a… Descuento",
+          "text": 15.23755670944588,
+          "ui": 5.030663562051624
+        },
+        {
+          "label": "Número",
+          "text": 15.23755670944588,
+          "ui": 5.030663562051624
+        },
+        {
+          "label": "Mover a… Ventas",
+          "text": 15.23755670944588,
+          "ui": 5.030663562051624
+        },
+        {
+          "label": "Fecha",
+          "text": 15.23755670944588,
+          "ui": 5.030663562051624
+        },
+        {
+          "label": "Añadir a… Fecha",
+          "text": 15.23755670944588,
+          "ui": 5.030663562051624
+        },
+        {
+          "label": "Quitar Región de Filas",
+          "text": 15.23755670944588,
+          "ui": null
+        },
+        {
+          "label": "Resumir Ventas por",
+          "text": 15.23755670944588,
+          "ui": 4.087476364546202
+        },
+        {
+          "label": "Quitar Ventas de Valores",
+          "text": 15.23755670944588,
+          "ui": null
+        },
+        {
+          "label": "Intercambiar filas y columnas",
+          "text": 15.23755670944588,
+          "ui": 5.030663562051624
+        },
+        {
+          "label": "Limpiar todo",
+          "text": 15.23755670944588,
+          "ui": 5.030663562051624
+        },
+        {
+          "label": "8 filas · 4 grupos · El archivo no se modifica",
+          "text": 13.65530438837685,
+          "ui": null
+        },
+        {
+          "label": "   Barras",
+          "text": 13.65530438837685,
+          "ui": 13.65530438837685
+        },
+        {
+          "label": "Líneas",
+          "text": 15.23755670944588,
+          "ui": 4.508284597408346
+        },
+        {
+          "label": "Dispersión",
+          "text": 15.23755670944588,
+          "ui": 4.508284597408346
+        },
+        {
+          "label": "Histograma",
+          "text": 15.23755670944588,
+          "ui": 4.508284597408346
+        },
+        {
+          "label": "Mapa de calor",
+          "text": 15.23755670944588,
+          "ui": 4.508284597408346
+        },
+        {
+          "label": "Caja",
+          "text": 15.23755670944588,
+          "ui": 4.508284597408346
+        },
+        {
+          "label": "Sugerido: compara la suma de «Ventas» por «Región».",
+          "text": 13.65530438837685,
+          "ui": null
+        }
+      ],
+      "series": [
+        {
+          "color": "#007aff",
+          "contrast": 3.599857119427381
+        },
+        {
+          "color": "#a05a00",
+          "contrast": 4.7557528887411005
+        },
+        {
+          "color": "#367220",
+          "contrast": 5.250011325740499
+        },
+        {
+          "color": "#bc3447",
+          "contrast": 5.058353070239848
+        },
+        {
+          "color": "#007f99",
+          "contrast": 4.186056589726768
+        },
+        {
+          "color": "#00745c",
+          "contrast": 5.152186786030706
+        },
+        {
+          "color": "#ac4c00",
+          "contrast": 4.968278723597851
+        },
+        {
+          "color": "#8250b5",
+          "contrast": 5.000009988648174
+        }
+      ]
+    },
+    "dark": {
+      "controls": 24,
+      "minText": 12.65036310287001,
+      "minUI": 3.381563888879915,
+      "minSeries": 4.8417067395792115,
+      "ratios": [
+        {
+          "label": "Buscar campo…",
+          "text": 12.65036310287001,
+          "ui": 5.8336556232972665
+        },
+        {
+          "label": "Categoría",
+          "text": 14.508082631847703,
+          "ui": 5.8336556232972665
+        },
+        {
+          "label": "Mover a… Región",
+          "text": 12.65036310287001,
+          "ui": 5.8336556232972665
+        },
+        {
+          "label": "Categoría",
+          "text": 14.508082631847703,
+          "ui": 5.8336556232972665
+        },
+        {
+          "label": "Añadir a… Canal",
+          "text": 12.65036310287001,
+          "ui": 5.8336556232972665
+        },
+        {
+          "label": "Categoría",
+          "text": 14.508082631847703,
+          "ui": 3.381563888879915
+        },
+        {
+          "label": "Añadir a… Descuento",
+          "text": 12.65036310287001,
+          "ui": 5.8336556232972665
+        },
+        {
+          "label": "Número",
+          "text": 14.508082631847703,
+          "ui": 5.8336556232972665
+        },
+        {
+          "label": "Mover a… Ventas",
+          "text": 12.65036310287001,
+          "ui": 5.8336556232972665
+        },
+        {
+          "label": "Fecha",
+          "text": 14.508082631847703,
+          "ui": 5.8336556232972665
+        },
+        {
+          "label": "Añadir a… Fecha",
+          "text": 12.65036310287001,
+          "ui": 5.8336556232972665
+        },
+        {
+          "label": "Quitar Región de Filas",
+          "text": 12.65036310287001,
+          "ui": null
+        },
+        {
+          "label": "Resumir Ventas por",
+          "text": 12.65036310287001,
+          "ui": 4.627325411752025
+        },
+        {
+          "label": "Quitar Ventas de Valores",
+          "text": 12.65036310287001,
+          "ui": null
+        },
+        {
+          "label": "Intercambiar filas y columnas",
+          "text": 12.65036310287001,
+          "ui": 5.8336556232972665
+        },
+        {
+          "label": "Limpiar todo",
+          "text": 12.65036310287001,
+          "ui": 5.8336556232972665
+        },
+        {
+          "label": "8 filas · 4 grupos · El archivo no se modifica",
+          "text": 13.29474932910281,
+          "ui": null
+        },
+        {
+          "label": "   Barras",
+          "text": 13.29474932910281,
+          "ui": 13.29474932910281
+        },
+        {
+          "label": "Líneas",
+          "text": 12.65036310287001,
+          "ui": 5.345778015752227
+        },
+        {
+          "label": "Dispersión",
+          "text": 12.65036310287001,
+          "ui": 5.345778015752227
+        },
+        {
+          "label": "Histograma",
+          "text": 12.65036310287001,
+          "ui": 5.345778015752227
+        },
+        {
+          "label": "Mapa de calor",
+          "text": 12.65036310287001,
+          "ui": 5.345778015752227
+        },
+        {
+          "label": "Caja",
+          "text": 12.65036310287001,
+          "ui": 5.345778015752227
+        },
+        {
+          "label": "Sugerido: compara la suma de «Ventas» por «Región».",
+          "text": 13.29474932910281,
+          "ui": null
+        }
+      ],
+      "series": [
+        {
+          "color": "#308bff",
+          "contrast": 4.8417067395792115
+        },
+        {
+          "color": "#efa657",
+          "contrast": 7.933742430270869
+        },
+        {
+          "color": "#a3c66d",
+          "contrast": 8.3925838500608
+        },
+        {
+          "color": "#ff8a91",
+          "contrast": 7.186930556821263
+        },
+        {
+          "color": "#6fc6de",
+          "contrast": 8.355904448399741
+        },
+        {
+          "color": "#65cba8",
+          "contrast": 8.242123702571316
+        },
+        {
+          "color": "#fcb07a",
+          "contrast": 8.99133868846638
+        },
+        {
+          "color": "#c294ee",
+          "contrast": 6.775780592899714
+        }
+      ]
+    }
+  }
+}

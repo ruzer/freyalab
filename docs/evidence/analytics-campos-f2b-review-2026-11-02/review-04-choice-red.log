@@ -1,0 +1,44 @@
+Running 1 test using 1 worker
+
+(node:21480) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-review.spec.ts:62:1 › Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario (19.6s)
+
+
+  1) [csv] › tests/e2e/chart-review.spec.ts:62:1 › Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario 
+
+    Error: expect(locator).not.toContainText(expected) failed
+
+    Locator: locator('.charts-panel').locator('.suggestion')
+    Expected substring: not "Elegiste"
+    Received string: "Elegiste Barras. Antes: Mapa de calor."
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "not toContainText" locator('.charts-panel').locator('.suggestion') with timeout 15000ms
+      - waiting for locator('.charts-panel').locator('.suggestion')
+        33 × locator resolved to <p class="suggestion svelte-1wo6u31" title="Elegiste Barras. Antes: Mapa de calor.">Elegiste Barras. Antes: Mapa de calor.</p>
+           - unexpected value "Elegiste Barras. Antes: Mapa de calor."
+
+
+      63 |  await assign('Descuento','Valores')
+      64 |  await expect(panel().getByLabel('Resumir Descuento por',{exact:true})).toHaveValue('count')
+    > 65 |  await expect(panel().locator('.suggestion')).not.toContainText('Elegiste')
+         |                                                   ^
+      66 |  await expect(panel().locator('.field-badge.amount').first()).toHaveAttribute('title','Parece un monto o un porcentaje')
+      67 |  await panel().locator('.chart-types').getByRole('button',{name:'Mapa de calor',exact:true}).click()
+      68 |  await panel().locator('.chart-types').getByRole('button',{name:'Barras',exact:true}).click()
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-review.spec.ts:65:51
+
+    Error Context: ../freyalab-f2b-evidence/review-choice-red/chart-review-Revisión108-·-b24ed-elección-de-tipo-al-usuario-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/review-choice-red/chart-review-Revisión108-·-b24ed-elección-de-tipo-al-usuario-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/review-choice-red/chart-review-Revisión108-·-b24ed-elección-de-tipo-al-usuario-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-review.spec.ts:62:1 › Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario

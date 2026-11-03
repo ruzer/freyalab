@@ -1,0 +1,37 @@
+Running 2 tests using 1 worker
+
+(node:21297) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/chart-review.spec.ts:43:1 › Revisión108 · motivo con línea propia y sin solapes a1280×720 (4.6s)
+  ✘  2 [csv] › tests/e2e/chart-review.spec.ts:51:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 (4.5s)
+
+
+  1) [csv] › tests/e2e/chart-review.spec.ts:51:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 6
+    Received:    4
+
+      52 |  const fields=panel().getByRole('complementary');await fields.locator('.field-list').evaluate(node=>node.scrollTop=0)
+      53 |  const visible=await fields.locator('.field-list').evaluate(node=>{const area=node.getBoundingClientRect();return[...node.querySelectorAll('.field-entry')].filter(row=>{const r=row.getBoundingClientRect();return r.top>=area.top&&r.bottom<=area.bottom}).length})
+    > 54 |  expect(visible).toBeGreaterThanOrEqual(6)
+         |                  ^
+      55 |  await expect(fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true})).toBeInViewport({ratio:1})
+      56 |  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})
+      57 |  await fields.locator('.field-list').evaluate(node=>node.scrollTop=node.scrollHeight)
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-review.spec.ts:54:18
+
+    Error Context: ../freyalab-f2b-evidence/review-layout-red/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/review-layout-red/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/review-layout-red/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-review.spec.ts:51:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 
+  1 passed (9.5s)

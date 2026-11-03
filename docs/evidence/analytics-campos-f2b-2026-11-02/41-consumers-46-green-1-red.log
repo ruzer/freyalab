@@ -1,0 +1,97 @@
+Running 47 tests using 1 worker
+
+(node:9429) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [shell] › tests/e2e/ui.spec.ts:22:1 › interfaz: crear, editar, visualizar, guardar y exportar Markdown en ambos temas (1.9s)
+  ✓   2 [shell] › tests/e2e/ui.spec.ts:51:1 › interfaz CSV: buscar, editar una fila filtrada, deshacer y guardar (1.7s)
+  ✓   3 [shell] › tests/e2e/ui.spec.ts:77:1 › interfaz Mermaid: renderizar y exportar SVG válido (1.3s)
+  ✓   4 [shell] › tests/e2e/ui.spec.ts:94:1 › formato Markdown: negritas y cursivas sin ocultar el explorador (1.2s)
+  ✓   5 [shell] › tests/e2e/ui.spec.ts:113:1 › barra Markdown: insertar sin sintaxis, conservar selección, deshacer y ver ejemplos (4.6s)
+  ✓   6 [shell] › tests/e2e/ui.spec.ts:151:1 › operaciones CSV: alcance explícito, fila filtrada, ceros iniciales, deshacer y guardar (1.7s)
+  ✓   7 [shell] › tests/e2e/ui.spec.ts:185:1 › operaciones CSV: duplicar filas y columnas conserva valores y permite deshacer estructura (1.3s)
+  ✓   8 [shell] › tests/e2e/ui.spec.ts:206:1 › estadísticas CSV: columnas, alcance completo, datos pendientes, temas y teclado (1.6s)
+  ✓   9 [shell] › tests/e2e/ui.spec.ts:245:1 › estadísticas CSV: cancelar descarta respuestas tardías y permite volver a analizar (780ms)
+  ✓  10 [shell] › tests/e2e/ui.spec.ts:265:1 › estadísticas CSV: muestra rotulada e IPC inválido rechazado @perf (827ms)
+  ✓  11 [shell] › tests/e2e/ui.spec.ts:279:1 › estadísticas CSV: límite explícito y encabezados duplicados por índice (837ms)
+  ✓  12 [shell] › tests/e2e/ui.spec.ts:294:1 › CSV: pegar sigue filtros y orden, conserva filas ocultas y se deshace en un paso (1.5s)
+  ✓  13 [shell] › tests/e2e/ui.spec.ts:328:1 › exportación CSV: completo y filtrado conservan columnas; selección limita explícitamente (1.9s)
+  ✓  14 [shell] › tests/e2e/ui.spec.ts:360:1 › consulta CSV: formulario, orden múltiple exacto, exportación y pegado por vista (1.7s)
+  ✓  15 [shell] › tests/e2e/ui.spec.ts:396:1 › consulta CSV: condiciones O, errores visibles, limpiar y ordenar con Mayús (1.9s)
+  ✓  16 [shell] › tests/e2e/ui.spec.ts:421:1 › rangos CSV: selección por teclado, vista previa, filas ocultas, deshacer y exportar @solo (1.8s)
+  ✓  17 [shell] › tests/e2e/ui.spec.ts:450:1 › rangos CSV: arrastrar, contexto por teclado, cortar y pegar con revisión previa @solo (1.2s)
+  ✓  18 [shell] › tests/e2e/ui.spec.ts:466:1 › rangos CSV: teclado atraviesa páginas virtuales y una revisión nueva invalida la selección @solo (1.1s)
+  ✓  19 [shell] › tests/e2e/ui.spec.ts:478:1 › rangos CSV: si falla el portapapeles, cortar no vacía ni modifica el documento @solo (945ms)
+  ✓  20 [shell] › tests/e2e/ui.spec.ts:488:1 › rangos CSV: arrastre desplaza el borde y conserva el rango al cargar otra página @solo (1.5s)
+  ✓  21 [shell] › tests/e2e/ui.spec.ts:503:1 › exploración CSV: perfil, frecuencias, distribución y Pearson conservan datos y alcance (1.4s)
+  ✓  22 [shell] › tests/e2e/ui.spec.ts:533:1 › exploración CSV: paginación, cancelación, muestra e IPC inválido @perf (1.1s)
+  ✓  23 [shell] › tests/e2e/ui.spec.ts:552:1 › perfil CSV: tipos probables, calidad y teclado sin modificar los datos (1.2s)
+(node:9708) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  24 [csv] › tests/e2e/analysis-dock.spec.ts:41:1 › con un panel de análisis abierto la tabla conserva las filas que tenía sin panel (2.6s)
+  ✓  25 [csv] › tests/e2e/analysis-dock.spec.ts:53:1 › con el panel acoplado a 1366×768 la tabla sigue mostrando al menos tres columnas y no queda debajo del panel (792ms)
+  ✓  26 [csv] › tests/e2e/analysis-dock.spec.ts:61:1 › las herramientas son pestañas accesibles con activación manual por teclado (809ms)
+  ✓  27 [csv] › tests/e2e/analysis-dock.spec.ts:73:1 › cambiar de pestaña conserva la configuración del gráfico y el borrador SQL (1.1s)
+  ✓  28 [csv] › tests/e2e/analysis-dock.spec.ts:83:1 › las pestañas visitadas siguen montadas y ocultas; cerrar el panel las desmonta y devuelve el foco (945ms)
+  ✘  29 [csv] › tests/e2e/analysis-dock.spec.ts:93:1 › el gráfico generado en el panel acoplado no se desplaza en horizontal y queda a la vista (30.9s)
+(node:9774) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  30 [csv] › tests/e2e/descriptive-percentiles.spec.ts:26:1 › percentiles: perfil filtrado, ayuda por teclado e informe preservan valores y procedencia (1.5s)
+  ✓  31 [csv] › tests/e2e/descriptive-percentiles.spec.ts:38:1 › percentiles: columnas marcadas, controles progresivos y rango comparten método sin recalcular al mostrar (1.1s)
+  ✓  32 [csv] › tests/e2e/descriptive-percentiles.spec.ts:46:1 › percentiles: vacío, un solo número y muestra limitada no inventan población completa @perf (1.3s)
+  ✓  33 [csv] › tests/e2e/dock-expanded.spec.ts:31:1 › ampliar y volver a la tabla conserva búsqueda, selección y posición de desplazamiento (1.4s)
+  ✓  34 [csv] › tests/e2e/dock-expanded.spec.ts:54:1 › Escape en la vista ampliada vuelve a acoplar y un segundo Escape cierra el panel (886ms)
+  ✓  35 [csv] › tests/e2e/dock-expanded.spec.ts:63:1 › la vista ampliada no se guarda: tras reiniciar el panel vuelve acoplado (1.6s)
+  ✓  36 [csv] › tests/e2e/dock-expanded.spec.ts:72:1 › en una ventana estrecha el panel se abre ampliado con un aviso y al ensanchar vuelve a acoplarse sin perder nada (953ms)
+  ✓  37 [csv] › tests/e2e/dock-expanded.spec.ts:84:1 › en una ventana estrecha «Volver a la tabla» cierra el panel y devuelve el foco a su botón (871ms)
+  ✓  38 [csv] › tests/e2e/dock-expanded.spec.ts:90:1 › a 900×600 los tres paneles son utilizables en la vista ampliada (1.2s)
+  ✓  39 [csv] › tests/e2e/dock-expanded.spec.ts:101:1 › los comandos amplían y acoplan el panel, y solo están disponibles cuando tienen sentido (1.1s)
+  ✓  40 [csv] › tests/e2e/selection-statistics.spec.ts:16:1 › estadísticas del rango: vista ordenada/filtrada, resumen conjunto y por columnas con datos intactos (1.9s)
+  ✓  41 [csv] › tests/e2e/selection-statistics.spec.ts:29:1 › estadísticas del rango: cancelar interrumpe y reintentar conserva la selección al paginar (1.1s)
+  ✓  42 [csv] › tests/e2e/selection-statistics.spec.ts:36:1 › estadísticas del rango: muestra limitada, campos nuevos y validación IPC sin atribuir totales globales @perf (1.1s)
+  ✓  43 [csv] › tests/e2e/selection-statistics.spec.ts:42:1 › estadísticas del rango: resumen de más de cien columnas sin expandir el límite del panel por columna (1.3s)
+  ✓  44 [csv] › tests/e2e/statistics-reports.spec.ts:18:1 › informe general editable: PDF/HTML, recuperación y guardado sin alterar el CSV pendiente (6.1s)
+  ✓  45 [csv] › tests/e2e/statistics-reports.spec.ts:29:1 › informe del rango fija búsqueda, posiciones y revisión; editar invalida el resultado (1.4s)
+  ✓  46 [csv] › tests/e2e/statistics-reports.spec.ts:34:1 › informes del explorador: perfil, distribución, Pearson y página parcial con texto hostil abreviado (1.7s)
+  ✓  47 [csv] › tests/e2e/statistics-reports.spec.ts:40:1 › informe de muestra exportable con alcance explícito sin habilitar la exportación del CSV parcial @perf (1.3s)
+
+
+  1) [csv] › tests/e2e/analysis-dock.spec.ts:93:1 › el gráfico generado en el panel acoplado no se desplaza en horizontal y queda a la vista 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.charts-panel .result-announcement')
+    Expected substring: "Gráfico listo"
+    Received string:    "Resultado actualizado: 5 grupos"
+    Timeout: 30000ms
+
+    Call log:
+      - Expect "toContainText" locator('.charts-panel .result-announcement') with timeout 30000ms
+      - waiting for locator('.charts-panel .result-announcement')
+        6 × locator resolved to <p role="status" aria-live="polite" aria-atomic="true" class="sr-only result-announcement svelte-1wo6u31">Calculando el resultado…</p>
+          - unexpected value "Calculando el resultado…"
+        57 × locator resolved to <p role="status" aria-live="polite" aria-atomic="true" class="sr-only result-announcement svelte-1wo6u31">Resultado actualizado: 5 grupos</p>
+           - unexpected value "Resultado actualizado: 5 grupos"
+
+
+       96 |  await page.locator('.charts-panel .more-options>summary').click();await page.getByRole('combobox',{name:'Columna X del gráfico'}).selectOption({label:'Ciudad'})
+       97 |  await page.getByRole('button',{name:'Generar gráfico'}).scrollIntoViewIfNeeded();await page.getByRole('button',{name:'Generar gráfico'}).click()
+    >  98 |  await expect(page.locator('.charts-panel .result-announcement')).toContainText('Gráfico listo',{timeout:30_000});await page.locator('.charts-panel .more-options>summary').click()
+          |                                                                   ^
+       99 |  const inView=()=>page.locator('.plot-scroll').evaluate(plot=>{
+      100 |   let ancestor=plot.parentElement;while(ancestor&&!(ancestor.scrollHeight>ancestor.clientHeight+1&&/auto|scroll/.test(getComputedStyle(ancestor).overflowY)))ancestor=ancestor.parentElement
+      101 |   const box=plot.getBoundingClientRect(),area=(ancestor??document.documentElement).getBoundingClientRect()
+        at /private/tmp/freyalab-f2b-cierre-consumidores/tests/e2e/analysis-dock.spec.ts:98:67
+
+    Error Context: ../freyalab-f2b-evidence/consumers-green/analysis-dock-el-gráfico-g-6972e-rizontal-y-queda-a-la-vista-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/consumers-green/analysis-dock-el-gráfico-g-6972e-rizontal-y-queda-a-la-vista-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/consumers-green/analysis-dock-el-gráfico-g-6972e-rizontal-y-queda-a-la-vista-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/analysis-dock.spec.ts:93:1 › el gráfico generado en el panel acoplado no se desplaza en horizontal y queda a la vista 
+  46 passed (1.7m)

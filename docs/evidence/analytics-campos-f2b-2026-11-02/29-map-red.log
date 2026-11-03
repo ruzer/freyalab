@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:99707) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-fields.spec.ts:70:1 › F2b: texto no se suma, mapa solo cuenta y símbolos no se convierten (17.9s)
+
+
+  1) [csv] › tests/e2e/chart-fields.spec.ts:70:1 › F2b: texto no se suma, mapa solo cuenta y símbolos no se convierten 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('.charts-panel').locator('.chart-types button[aria-pressed=true]')
+    Expected: "Mapa de calor"
+    Received: "   Barras"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" locator('.charts-panel').locator('.chart-types button[aria-pressed=true]') with timeout 15000ms
+      - waiting for locator('.charts-panel').locator('.chart-types button[aria-pressed=true]')
+        34 × locator resolved to <button aria-pressed="true" class="svelte-1wo6u31">…</button>
+           - unexpected value "   Barras"
+
+
+      75 |  await panel.locator('.chart-types').getByRole('button',{name:'Mapa de calor',exact:true}).click();const heat=panel.getByLabel('Resumir Filas del archivo por',{exact:true});await expect(heat).toHaveValue('count');for(const operation of ['sum','distinct','average','min','max','median'])await expect(heat.locator(`option[value=${operation}]`)).toBeDisabled()
+      76 |  await expect(panel.getByText('El mapa de calor solo cuenta filas',{exact:true})).toBeVisible();expect(await readFile(path,'utf8')).toBe(original)
+    > 77 |  await panel.getByRole('listitem').filter({hasText:'Ventas'}).dblclick();await expect(panel.locator('.chart-types button[aria-pressed=true]')).toHaveText('Mapa de calor')
+         |                                                                                                                                                ^
+      78 |  await panel.getByRole('button',{name:'Limpiar todo',exact:true}).click();await expect(panel.getByRole('region',{name:'Valores',exact:true}).getByRole('combobox')).toHaveCount(0)
+      79 | })
+      80 | test('F2b: 842 grupos conservan truncado y tabla paginada; Otros solo sobre resultados completos aditivos',async()=>{
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-fields.spec.ts:77:144
+
+    Error Context: ../freyalab-f2b-evidence/map-red/chart-fields-F2b-texto-no--b1852-y-símbolos-no-se-convierten-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/map-red/chart-fields-F2b-texto-no--b1852-y-símbolos-no-se-convierten-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/map-red/chart-fields-F2b-texto-no--b1852-y-símbolos-no-se-convierten-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-fields.spec.ts:70:1 › F2b: texto no se suma, mapa solo cuenta y símbolos no se convierten 

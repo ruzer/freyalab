@@ -1,0 +1,49 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/chart-top.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-campos-zonas-f2b
+
+ ❯ tests/chart-top.test.ts (13 tests | 1 failed) 31ms
+   × un grupo sin medida no se trata como cero al ordenar valores negativos 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-top.test.ts > un grupo sin medida no se trata como cero al ordenar valores negativos
+AssertionError: expected [ [ 'G0', null ], [ 'G1', null ] ] to deeply equal [ [ 'G10', '-1' ], [ 'G11', '-2' ] ]
+
+- Expected
++ Received
+
+  [
+    [
+-     "G10",
+-     "-1",
++     "G0",
++     null,
+    ],
+    [
+-     "G11",
+-     "-2",
++     "G1",
++     null,
+    ],
+  ]
+
+ ❯ tests/chart-top.test.ts:40:38
+     38|  const rows=Array.from({length:12},(_,i)=>['G'+i,i<10?null:String(-(i-…
+     39|  const result=chartTop({...data,points:12,rows},options,[])
+     40|  expect(result.data.rows.slice(0,2)).toEqual([['G10','-1'],['G11','-2'…
+       |                                      ^
+     41|  expect(result.data.rows.at(-1)?.[1]).toBeNull()
+     42| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 12 passed (13)
+   Start at  11:25:41
+   Duration  128ms (tests 51%, transform 27%, import 19%, worker 3%)
+

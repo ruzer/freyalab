@@ -1,0 +1,13 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/chart-fields.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-campos-zonas-f2b
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  03:38:31
+   Duration  132ms (transform 78%, import 16%, tests 3%, worker 3%)
+

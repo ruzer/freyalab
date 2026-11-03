@@ -1,0 +1,38 @@
+
+Running 1 test using 1 worker
+
+(node:97080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-fields.spec.ts:129:1 › F2b: contraste de textos y controles medido contra sus fondos reales en ambos temas (2.7s)
+
+
+  1) [csv] › tests/e2e/chart-fields.spec.ts:129:1 › F2b: contraste de textos y controles medido contra sus fondos reales en ambos temas 
+
+    Error: Buscar campo…
+
+    expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 3
+    Received:    1.3387855426340116
+
+      138 |   }))
+      139 |   await writeFile(test.info().outputPath(`colors-${theme}.json`),JSON.stringify(colors,null,2))
+    > 140 |   for(const color of colors){const background=color.backgrounds.find(value=>value!=='rgba(0, 0, 0, 0)')!;const a=luminance(color.color),b=luminance(background);expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05),color.label??'').toBeGreaterThanOrEqual(4.5);if(color.border){const c=luminance(color.border);expect((Math.max(c,b)+.05)/(Math.min(c,b)+.05),color.label??'').toBeGreaterThanOrEqual(3)}}
+          |                                                                                                                                                                                                                                                                                                                                                                              ^
+      141 |  }
+      142 | })
+      143 |
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-fields.spec.ts:140:366
+
+    Error Context: ../freyalab-f2b-evidence/colors-red/chart-fields-F2b-contraste-568e5-ondos-reales-en-ambos-temas-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/colors-red/chart-fields-F2b-contraste-568e5-ondos-reales-en-ambos-temas-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/colors-red/chart-fields-F2b-contraste-568e5-ondos-reales-en-ambos-temas-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-fields.spec.ts:129:1 › F2b: contraste de textos y controles medido contra sus fondos reales en ambos temas 

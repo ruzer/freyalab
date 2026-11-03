@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:55115) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-review.spec.ts:117:1 › Revisión108 final · el aviso explica el campo de orden y los empates de Suma y Cuenta en es/en (19.5s)
+
+
+  1) [csv] › tests/e2e/chart-review.spec.ts:117:1 › Revisión108 final · el aviso explica el campo de orden y los empates de Suma y Cuenta en es/en 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.charts-panel').locator('.truncated')
+    Expected substring: "ordenados por «Suma de Ventas»; los empates, por «Cliente»."
+    Received string:    "Gráfico parcial. Se muestran los primeros 100 de 842 grupos, en el orden elegido. Para comparar otros grupos, filtra o elige otro campo en Filas."
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" locator('.charts-panel').locator('.truncated') with timeout 15000ms
+      - waiting for locator('.charts-panel').locator('.truncated')
+        34 × locator resolved to <p role="status" class="truncated notice svelte-1wo6u31">…</p>
+           - unexpected value "Gráfico parcial. Se muestran los primeros 100 de 842 grupos, en el orden elegido. Para comparar otros grupos, filtra o elige otro campo en Filas."
+
+
+      124 |   ] as const){
+      125 |    await aggregate.selectOption(operation);await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText(total)
+    > 126 |    await expect(panel().locator('.truncated')).toContainText(language==='es'?`ordenados por «${measure}»; los empates, por «Cliente».`:`ordered by “${measure}”; ties by “Cliente”.`)
+          |                                                ^
+      127 |    await expect(panel().locator('.truncated')).not.toContainText(language==='es'?'orden elegido':'selected order')
+      128 |    await expect(panel().locator('.pivot-result tbody th')).toHaveText([...labels])
+      129 |    await expect(panel().locator('.pivot-result tfoot th')).toHaveText(language==='es'?'Total de los 842 grupos':'Total for all 842 groups')
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-review.spec.ts:126:48
+
+    Error Context: ../freyalab-f2b-evidence/order-red/chart-review-Revisión108-f-7af72-s-de-Suma-y-Cuenta-en-es-en-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/order-red/chart-review-Revisión108-f-7af72-s-de-Suma-y-Cuenta-en-es-en-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/order-red/chart-review-Revisión108-f-7af72-s-de-Suma-y-Cuenta-en-es-en-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-review.spec.ts:117:1 › Revisión108 final · el aviso explica el campo de orden y los empates de Suma y Cuenta en es/en 

@@ -37,3 +37,27 @@ Sustituyen las decisiones incompatibles del boceto #105, aprobado como referenci
 9. Ayuda en icono de información y una línea de estado accesible; español/inglés, sin vocabulario de base de datos. Categorías sin prefijo numérico salvo etiquetas visualmente duplicadas.
 
 F2a entrega únicamente disposición y vista previa desde la configuración existente; no campos/zonas, arrastre ni conversión. Archivos grandes: umbral medido y generación manual/cancelación sobre él. Estados con prueba y captura: vacío, cargando/cancelar, error, truncado, resultado con límites y estrecho (<900 px). 1280×720/1440×900, claro/oscuro y es/en/en-XA; teclado y aria-live. Mismo motor, equivalencia sobre chartSQL, sin nuevas dependencias/red, sin tocar guardado ni fuente original. Un PR en borrador base main; detenerse antes de F2b. Cerrar #105 al abrir el PR de F2a, sin fusionarlo.
+
+
+## Inicio F2b · 2026-11-02
+
+Contrato literal: [campos y zonas](11-f2b-campos-zonas.md). Referencia principal copiada sin editar: `docs/design/freyalab-pivot-combinado.html`, SHA-256 `1e358c5a42ed62ce25fa6f7a74860a6db740d27fb26b91968757313c0bddc1d3`. Solo visual; no ejecutar sus manejadores ni cargar sus recursos en la app.
+
+Base real: main `c5db752`, F2a #107 fusionada. Rama independiente `codex/analitica-campos-zonas-f2b`. F2c y F2b-2 fuera de alcance. Antes de interfaz: alcance y siete respuestas ADR0021 en el PR en borrador.
+
+### Fronteras de prueba autorizadas por el contrato
+
+Acciones puras de zonas sobre ChartOptions y perfil existente; resultado de presentación Top10, equivalencia chartSQL, traducciones y flujo observable de usuario en Electron. No pruebas de estado privado de Svelte. Cada corte vertical empieza en rojo y conserva salida.
+
+### Diferencias verificadas que requieren explicación
+
+- `src/shared/charts.ts`, chartTimeGroups: none/day/month/year, sin week. Se consultó al propietario antes de implementar esa opción.
+- `src/shared/charts.ts`, chartQuery: heatmap fuerza count, no sum/average. Se consultó su presentación antes de implementar el selector en ese tipo.
+- chartLimit: bar100/heatmap400. La tabla conserva todos los grupos devueltos, no promete 842 si el motor trunca. Se mantiene aviso, y nunca Otros de un resultado truncado (§7).
+- ColumnProfile carece de muestras y de distintivo de moneda/porcentaje. La lista mostrará Texto sin inventar detector; solo se usarán valores ya disponibles si se puede explicar el aviso.
+
+### Corrección de alcance aprobada por el propietario · F2b
+
+F2b queda solo de interfaz. §3.2: Día/Mes/Año; se quita Semana. Mapa de calor: Cuenta fija; otras operaciones deshabilitadas con «El mapa de calor solo cuenta filas». No medida adicional ni cambios chartSQL. §3.3 aplica a otros tipos, conservando chartAggregates completo; distinct se muestra «Cuenta distintos». El contrato original copiado se conserva literal y esta corrección explícita prevalece.
+
+Propuestas NO aprobadas para una historia posterior del motor: (1) semanas con comienzo, etiqueta y cruce de año definidos y probados; (2) separar dos dimensiones y una medida numérica del mapa de calor, operación y totales recalculados, compatibilidad de configuraciones anteriores. No se implementan aquí. F2c y F2b-2 siguen fuera.

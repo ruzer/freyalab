@@ -1,0 +1,59 @@
+CI41510205256 · head5ea3530 · Ubuntu125499787514
+Traza: https://github.com/ruzer/freyalab/actions/runs/41510205256/artifacts/13174636285
+Extracto literal; corrida rechazada antes de preparar nuevo head. No se transfieren verdes.
+
+2026-11-02T19:48:08.8009642Z   1) [csv] › tests/e2e/csv-summary.spec.ts:164:1 › F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor 
+2026-11-02T19:48:08.8010134Z 
+2026-11-02T19:48:08.8010288Z     Error: expect(received).toBeDefined()
+2026-11-02T19:48:08.8010444Z 
+2026-11-02T19:48:08.8010538Z     Received: undefined
+2026-11-02T19:48:08.8010679Z 
+2026-11-02T19:48:08.8011189Z       181 |   for(const cell of cells){const a=luminance(cell.text),b=luminance(cell.fill);expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05)).toBeGreaterThanOrEqual(4.5)}
+2026-11-02T19:48:08.8012988Z       182 |   const axis=await panel.locator('.plot svg text').filter({hasText:/^Paso$/}).boundingBox(),ramp=await panel.locator('.plot svg [fill^="url("]').evaluateAll(nodes=>nodes.map(node=>{const b=node.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height}}).find(box=>box.width>=100&&box.height>=10&&box.height<=40))
+2026-11-02T19:48:08.8014568Z     > 183 |   expect(axis).not.toBeNull();expect(ramp).toBeDefined();expect(axis!.y+axis!.height).toBeLessThanOrEqual(ramp!.y-2)
+2026-11-02T19:48:08.8015178Z           |                                            ^
+2026-11-02T19:48:08.8015659Z       184 |   await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath(`state-heatmap-${theme}.png`)})
+2026-11-02T19:48:08.8016085Z       185 |  }
+2026-11-02T19:48:08.8016248Z       186 | })
+2026-11-02T19:48:08.8016552Z         at /home/runner/work/freyalab/freyalab/tests/e2e/csv-summary.spec.ts:183:44
+2026-11-02T19:48:08.8016844Z 
+2026-11-02T19:48:08.8017306Z     Error Context: test-results-fast/csv-summary-F2a-series-sin-37c15-as-celdas-del-mapa-de-calor-csv/error-context.md
+2026-11-02T19:48:08.8017782Z 
+2026-11-02T19:48:08.8018259Z     attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-11-02T19:48:08.8018758Z     test-results-fast/csv-summary-F2a-series-sin-37c15-as-celdas-del-mapa-de-calor-csv/trace.zip
+2026-11-02T19:48:08.8019080Z     Usage:
+2026-11-02T19:48:08.8019180Z 
+2026-11-02T19:48:08.8019486Z         npx playwright show-trace test-results-fast/csv-summary-F2a-series-sin-37c15-as-celdas-del-mapa-de-calor-csv/trace.zip
+2026-11-02T19:48:08.8019807Z 
+2026-11-02T19:48:08.8020046Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-11-02T19:48:08.8020232Z 
+2026-11-02T19:48:08.8020461Z     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+2026-11-02T19:48:08.8020647Z 
+2026-11-02T19:48:08.8020793Z     Error: expect(received).not.toBeNull()
+2026-11-02T19:48:08.8020964Z 
+2026-11-02T19:48:08.8021055Z     Received: null
+2026-11-02T19:48:08.8021184Z 
+2026-11-02T19:48:08.8021665Z       181 |   for(const cell of cells){const a=luminance(cell.text),b=luminance(cell.fill);expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05)).toBeGreaterThanOrEqual(4.5)}
+2026-11-02T19:48:08.8022870Z       182 |   const axis=await panel.locator('.plot svg text').filter({hasText:/^Paso$/}).boundingBox(),ramp=await panel.locator('.plot svg [fill^="url("]').evaluateAll(nodes=>nodes.map(node=>{const b=node.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height}}).find(box=>box.width>=100&&box.height>=10&&box.height<=40))
+2026-11-02T19:48:08.8023961Z     > 183 |   expect(axis).not.toBeNull();expect(ramp).toBeDefined();expect(axis!.y+axis!.height).toBeLessThanOrEqual(ramp!.y-2)
+2026-11-02T19:48:08.8024326Z           |                    ^
+2026-11-02T19:48:08.8024696Z       184 |   await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath(`state-heatmap-${theme}.png`)})
+2026-11-02T19:48:08.8025040Z       185 |  }
+2026-11-02T19:48:08.8025182Z       186 | })
+2026-11-02T19:48:08.8025438Z         at /home/runner/work/freyalab/freyalab/tests/e2e/csv-summary.spec.ts:183:20
+2026-11-02T19:48:08.8025644Z 
+2026-11-02T19:48:08.8026034Z     Error Context: test-results-fast/csv-summary-F2a-series-sin-37c15-as-celdas-del-mapa-de-calor-csv-retry1/error-context.md
+2026-11-02T19:48:08.8026363Z 
+2026-11-02T19:48:08.8026679Z     attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-11-02T19:48:08.8027368Z     test-results-fast/csv-summary-F2a-series-sin-37c15-as-celdas-del-mapa-de-calor-csv-retry1/trace.zip
+2026-11-02T19:48:08.8027736Z     Usage:
+2026-11-02T19:48:08.8027813Z 
+2026-11-02T19:48:08.8028141Z         npx playwright show-trace test-results-fast/csv-summary-F2a-series-sin-37c15-as-celdas-del-mapa-de-calor-csv-retry1/trace.zip
+2026-11-02T19:48:08.8028481Z 
+2026-11-02T19:48:08.8028837Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-11-02T19:48:08.8029097Z 
+2026-11-02T19:48:08.8029183Z   1 failed
+2026-11-02T19:48:08.8029647Z     [csv] › tests/e2e/csv-summary.spec.ts:164:1 › F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor 
+2026-11-02T19:48:08.8030023Z   7 skipped
+2026-11-02T19:48:08.8030175Z   485 passed (18.5m)
+2026-11-02T19:48:10.0773795Z ##[error]Process completed with exit code 1.

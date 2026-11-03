@@ -1,0 +1,20 @@
+
+Running 13 tests using 1 worker
+
+(node:2693) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/chart-fields.spec.ts:16:1 › F2b: herramientas con nombre, ayuda inmediata al foco y controles sin pintura nativa (3.1s)
+  ✓   2 [csv] › tests/e2e/chart-fields.spec.ts:27:1 › F2b: sugerencia inicial y dos acciones cambian qué se grafica sin Más opciones (4.7s)
+  ✓   3 [csv] › tests/e2e/chart-fields.spec.ts:44:1 › F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones (6.5s)
+  ✓   4 [csv] › tests/e2e/chart-fields.spec.ts:60:1 › F2b: cada Resumir por coincide con datos independientes y porcentajes solo aditivos (15.7s)
+  ✓   5 [csv] › tests/e2e/chart-fields.spec.ts:71:1 › F2b: texto no se suma, mapa solo cuenta y símbolos no se convierten (2.7s)
+  ✓   6 [csv] › tests/e2e/chart-fields.spec.ts:81:1 › F2b: 842 grupos conservan truncado y tabla paginada; Otros solo sobre resultados completos aditivos (6.5s)
+  ✓   7 [csv] › tests/e2e/chart-fields.spec.ts:92:1 › F2b: filtros reutilizados, exportación y datos originales intactos (5.6s)
+  ✓   8 [csv] › tests/e2e/chart-fields.spec.ts:103:1 › F2b: estrecho conserva foco al editar campos, inglés natural y resultado completo (4.6s)
+  ✓   9 [csv] › tests/e2e/chart-fields.spec.ts:111:1 › F2b: actualizar una celda no sustituye el resumen elegido ni guarda el CSV (6.5s)
+  ✓  10 [csv] › tests/e2e/chart-fields.spec.ts:116:1 › F2b: 200 campos, nombres Unicode, idioma seudolocalizado y tamaños accesibles (5.2s)
+  ✓  11 [csv] › tests/e2e/chart-fields.spec.ts:125:1 › F2b: en-XA real, tema oscuro y ventana estrecha no recortan el resultado (3.5s)
+  ✓  12 [csv] › tests/e2e/chart-fields.spec.ts:133:1 › F2b: contraste de textos y controles medido contra sus fondos reales en ambos temas (2.7s)
+  ✓  13 [csv] › tests/e2e/csv-summary.spec.ts:73:1 › F2a: estados vacío, error numérico, truncado y ventana estrecha con captura (9.7s)
+
+  13 passed (1.3m)

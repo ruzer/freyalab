@@ -1,0 +1,197 @@
+
+Running 1 test using 1 worker
+
+(node:433) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/csv-summary.spec.ts:73:1 › F2a: estados vacío, error numérico, truncado y ventana estrecha con captura (7.8s)
+
+
+  1) [csv] › tests/e2e/csv-summary.spec.ts:73:1 › F2a: estados vacío, error numérico, truncado y ventana estrecha con captura 
+
+    Error: expect(received).not.toContain(expected) // indexOf
+
+    Expected substring: not "No hay valores numéricos utilizables"
+    Received string:        " Abrir
+     Nuevo 
+    CSV
+    ventas.csv
+     Guardar
+     Exportar 
+    Archivos
+    Índice
+    EXPLORADOR
+    
+    Explora tus archivos
+    en un solo lugar.
+    
+    Abrir carpeta
+    FreyaLab
+    Sistema
+    Claro
+    Oscuro
+    ventas.csv
+    vacio.csv
+     Tabla
+     Resumen y gráfico
+     Texto
+    Reemplazar
+    Filtrar
+    Campos
+    Categoría
+    ✓Región
+    Categoría
+    Mover a…
+    Canal
+    Categoría
+    Añadir a…
+    ✓Descuento
+    Categoría
+    Mover a…
+    Número
+    Ventas
+    Número
+    Añadir a…
+    Organiza tu análisis
+    Filas
+    Región
+    ×
+    Columnas
+    
+    Usa «Añadir a…»
+    
+    Valores
+    Descuento
+    Cuenta
+    Cuenta distintos
+    Suma
+    Promedio
+    Mínimo
+    Máximo
+    Mediana
+    ×
+    
+    Por ahora un valor a la vez
+    
+    Filtros
+    
+    Usa «Añadir a…»
+    
+    ⇄ Intercambiar filas y columnas
+    Limpiar todo
+    
+    «Descuento» tiene valores como «10%», que son texto. No se pueden sumar tal cual.
+    
+    Usar como número…
+    
+    Suma de Descuento por Región
+    
+    ⓘ
+    
+    El archivo no se modifica
+    
+    No se pudo calcular el resultado. El archivo no se modificó.
+    
+    Barras
+    Líneas
+    Dispersión
+    Histograma
+    Mapa de calor
+    Caja
+    
+    Elegiste Barras. Antes: Mapa de calor.
+    
+    No se pudo calcular el resultado. El archivo no se modificó.
+    
+    Reintentar
+    Más opciones
+    Opciones del gráfico
+    Datos incluidos
+    Documento completo
+    Vista filtrada actual
+    Gráfico
+    Histograma
+    Barras
+    Líneas
+    Dispersión
+    Mapa de calor
+    Diagrama de caja
+    Agrupar fechas
+    Sin agrupar fechas
+    Día
+    Mes
+    Año
+    Comparar categorías
+    Región
+    Canal
+    Ventas
+    Descuento
+    Valores verticales
+    Elige una columna…
+    Región
+    Canal
+    Ventas
+    Descuento
+    Usar valores como
+    Nombres o códigos
+    Números para resumir
+    Resumir por
+    Cuenta
+    Cuenta distintos
+    Suma
+    Promedio
+    Mínimo
+    Máximo
+    Mediana
+    Separar por color
+    Sin series
+    Región
+    Canal
+    Ventas
+    Descuento
+    Orden
+    Menor valor primero
+    Mayor valor primero
+    Filtros del gráfico
+    Generar gráfico
+    Configuraciones guardadas
+    
+    Suma de Descuento por Región · Documento completo. Eje X: Región. Eje Y: Suma de Descuento.
+    
+    Ver consulta
+    
+    8 de 8 filas
+    Codificación
+    UTF-8
+    UTF-16 LE
+    Windows-1252
+    Separador
+    Coma
+    Punto y coma
+    Tabulación
+    Barra vertical
+    Encabezado
+    Guardado
+    Local
+    No hay valores numéricos utilizables en las columnas elegidas. Elige otra columna o cuenta filas o valores únicos."
+
+      78 |  await page.getByRole('tab',{name:'ventas.csv',exact:true}).click();panel=await summary()
+      79 |  await panel.locator('.more-options>summary').click();await panel.getByLabel('Columna Y del gráfico').selectOption('3');await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum')
+    > 80 |  await expect(panel.locator('.result-announcement')).toContainText('No se pudo calcular el resultado. El archivo no se modificó.');expect(await page.locator('body').innerText()).not.toContain('No hay valores numéricos utilizables');await panel.locator('.chart-info>summary').click();await expect(panel.locator('.info-content')).toContainText('No hay valores numéricos utilizables');await page.screenshot({path:test.info().outputPath('state-error.png')});await page.getByRole('button',{name:'Cerrar aviso',exact:true}).click()
+         |                                                                                                                                                                                       ^
+      81 |  const many=join(folder,'grupos.csv');await writeFile(many,'Grupo,Valor\n'+Array.from({length:150},(_,i)=>`G${i},${i}`).join('\n')+'\n');await page.evaluate(file=>window.freya.openPaths([file]),many)
+      82 |  panel=await summary();await expect(panel.locator('.truncated')).toContainText('Mostrando 100 de 150 grupos');await page.screenshot({path:test.info().outputPath('state-truncated.png')})
+      83 |  await page.setViewportSize({width:800,height:720});await expect(page.locator('.sidebar')).toBeHidden();await expect(page.getByRole('button',{name:'Volver a la tabla',exact:true})).toHaveCount(0)
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/csv-summary.spec.ts:80:183
+
+    Error Context: ../freyalab-f2b-evidence/error-copy-red/csv-summary-F2a-estados-va-8e3dc-entana-estrecha-con-captura-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/error-copy-red/csv-summary-F2a-estados-va-8e3dc-entana-estrecha-con-captura-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/error-copy-red/csv-summary-F2a-estados-va-8e3dc-entana-estrecha-con-captura-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/csv-summary.spec.ts:73:1 › F2a: estados vacío, error numérico, truncado y ventana estrecha con captura 

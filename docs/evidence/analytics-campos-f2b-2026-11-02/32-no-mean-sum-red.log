@@ -1,0 +1,70 @@
+
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/chart-top.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-campos-zonas-f2b
+
+ ❯ tests/chart-top.test.ts (14 tests | 1 failed) 33ms
+   × no suma promedios por serie si no recibió el total recalculado del motor 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-top.test.ts > no suma promedios por serie si no recibió el total recalculado del motor
+AssertionError: expected { data: { total: 842, …(5) }, …(3) } to match object { top: false, other: false, …(1) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+@@ -106,32 +106,12 @@
+        [
+          "G9",
+          "20",
+          "B",
+        ],
+-       [
+-         "G10",
+-         "10",
+-         "A",
+-       ],
+-       [
+-         "G10",
+-         "20",
+-         "B",
+-       ],
+-       [
+-         "G11",
+-         "10",
+-         "A",
+-       ],
+-       [
+-         "G11",
+-         "20",
+-         "B",
+-       ],
+      ],
+      "total": 842,
+      "usable": 842,
+    },
+    "other": false,
+-   "top": false,
++   "top": true,
+  }
+
+ ❯ tests/chart-top.test.ts:45:71
+     43| it('no suma promedios por serie si no recibió el total recalculado del…
+     44|  const rows=Array.from({length:12},(_,i)=>[['G'+i,'10','A'],['G'+i,'20…
+     45|  expect(chartTop(input,{...options,aggregate:'average',series:2},[])).…
+       |                                                                       ^
+     46| })
+     47|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 13 passed (14)
+   Start at  11:27:58
+   Duration  132ms (tests 52%, transform 27%, import 18%, worker 3%)
+

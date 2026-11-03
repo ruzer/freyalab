@@ -1,0 +1,22 @@
+{
+  ".chart-types": {
+    "top": 204,
+    "bottom": 232,
+    "height": 28
+  },
+  ".suggestion": {
+    "top": 235,
+    "bottom": 252,
+    "height": 17
+  },
+  ".plot-scroll": {
+    "top": 255,
+    "bottom": 427,
+    "height": 172
+  },
+  ".truncated": {
+    "top": 188,
+    "bottom": 201,
+    "height": 13
+  }
+}

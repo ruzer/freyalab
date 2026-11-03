@@ -1,0 +1,83 @@
+> freyalab@0.1.0-alpha.1 test
+> vitest run tests/chart-presentation.test.ts
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-campos-zonas-f2b
+
+ ❯ tests/chart-presentation.test.ts (16 tests | 8 failed) 26ms
+   × los ejes numéricos usan separadores del idioma de interfaz: es 3ms
+   × los ejes numéricos usan separadores del idioma de interfaz: en 0ms
+   × los ejes numéricos usan separadores del idioma de interfaz: en-XA 0ms
+   × las etiquetas de bar usan el mismo formato numérico que el eje 0ms
+   × las etiquetas de line usan el mismo formato numérico que el eje 0ms
+   × las etiquetas de histogram usan el mismo formato numérico que el eje 0ms
+   × los dos ejes de dispersión formatean números sin cambiar las coordenadas 0ms
+   × las etiquetas numéricas del mapa no formatean sus identificadores de categoría 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-presentation.test.ts > los ejes numéricos usan separadores del idioma de interfaz: es
+ FAIL  tests/chart-presentation.test.ts > los ejes numéricos usan separadores del idioma de interfaz: en
+ FAIL  tests/chart-presentation.test.ts > los ejes numéricos usan separadores del idioma de interfaz: en-XA
+AssertionError: expected '1146383' to be '1,146,383' // Object.is equality
+
+Expected: "1,146,383"
+Received: "1146383"
+
+ ❯ tests/chart-presentation.test.ts:54:46
+     52|  const plot=chartOption(data,options,colors)
+     53|  const axis=plot.yAxis as {axisLabel:{formatter:(value:number,index:nu…
+     54|  expect(axis.axisLabel.formatter(1146383,0)).toBe('1,146,383')
+       |                                              ^
+     55|  expect(axis.axisLabel.formatter(285600.5,0)).toBe('285,600.5')
+     56| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/chart-presentation.test.ts > las etiquetas de bar usan el mismo formato numérico que el eje
+ FAIL  tests/chart-presentation.test.ts > las etiquetas de line usan el mismo formato numérico que el eje
+ FAIL  tests/chart-presentation.test.ts > las etiquetas de histogram usan el mismo formato numérico que el eje
+TypeError: series.label.formatter is not a function
+ ❯ tests/chart-presentation.test.ts:61:22
+     59|  const plot=chartOption(data,{...options,kind},colors)
+     60|  const [series]=plot.series as {label:{formatter:(params:{value:number…
+     61|  expect(series.label.formatter({value:kind==='line'?[1000,285600]:2856…
+       |                      ^
+     62| })
+     63| it('los dos ejes de dispersión formatean números sin cambiar las coord…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/chart-presentation.test.ts > los dos ejes de dispersión formatean números sin cambiar las coordenadas
+AssertionError: expected '285600' to be '285,600' // Object.is equality
+
+Expected: "285,600"
+Received: "285600"
+
+ ❯ tests/chart-presentation.test.ts:66:152
+     64|  const data:ChartData={total:1,usable:1,points:1,limited:false,columns…
+     65|  const plot=chartOption(data,{...options,kind:'scatter'},colors)
+     66|  for(const axis of [plot.xAxis,plot.yAxis] as {axisLabel:{formatter:(v…
+       |                                                                                                                                                        ^
+     67|  expect(plot.series).toMatchObject([{data:[[1200,285600]]}])
+     68| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/chart-presentation.test.ts > las etiquetas numéricas del mapa no formatean sus identificadores de categoría
+TypeError: series.label.formatter is not a function
+ ❯ tests/chart-presentation.test.ts:73:22
+     71|  const plot=chartOption(data,{...options,kind:'heatmap'},colors)
+     72|  const [series]=plot.series as {label:{formatter:(params:{value:number…
+     73|  expect(series.label.formatter({value:[0,0,1200]})).toBe('1,200')
+       |                      ^
+     74|  expect(plot.xAxis).toMatchObject({data:['00123']});expect(plot.yAxis)…
+     75| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 8 passed (16)
+   Start at  13:13:25
+   Duration  178ms (transform 49%, tests 33%, import 16%, worker 3%)

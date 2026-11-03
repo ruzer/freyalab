@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-fields.spec.ts:44:1 › F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones (19.6s)
+
+
+  1) [csv] › tests/e2e/chart-fields.spec.ts:44:1 › F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('.charts-panel').getByLabel('Configuración del gráfico', { exact: true })
+    Expected: "¿Qué quieres ver?"
+    Received: "Suma de Filas del archivo por Sin encabezado (0)"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" locator('.charts-panel').getByLabel('Configuración del gráfico', { exact: true }) with timeout 15000ms
+      - waiting for locator('.charts-panel').getByLabel('Configuración del gráfico', { exact: true })
+        34 × locator resolved to <p aria-label="Configuración del gráfico" class="chart-description svelte-1wo6u31" title="Suma de Filas del archivo por Sin encabezado (0)">Suma de Filas del archivo por Sin encabezado (0)</p>
+           - unexpected value "Suma de Filas del archivo por Sin encabezado (0)"
+
+
+      54 |  await fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true}).focus();await page.keyboard.press('Enter');await expect(fields.getByRole('region',{name:'Filas',exact:true})).toContainText('Canal');await expect(live).toHaveText('Filas y columnas intercambiadas')
+      55 |  await fields.getByRole('button',{name:'Limpiar todo',exact:true}).focus();await page.keyboard.press('Enter');await expect(live).toHaveText('Análisis limpiado');await expect(panel.getByRole('button',{name:'Empezar con una sugerencia',exact:true})).toBeVisible()
+    > 56 |  await expect(panel.getByLabel('Configuración del gráfico',{exact:true})).toHaveText('¿Qué quieres ver?')
+         |                                                                           ^
+      57 |  await page.screenshot({path:test.info().outputPath('state-empty.png')});await panel.getByRole('button',{name:'Empezar con una sugerencia',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
+      58 |  expect(await readFile(path,'utf8')).toBe(original)
+      59 | })
+        at /private/tmp/freyalab-campos-zonas-f2b/tests/e2e/chart-fields.spec.ts:56:75
+
+    Error Context: ../freyalab-f2b-evidence/empty-title-red/chart-fields-F2b-teclado-b-043f9-menú-y-anuncios-de-acciones-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-f2b-evidence/empty-title-red/chart-fields-F2b-teclado-b-043f9-menú-y-anuncios-de-acciones-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-f2b-evidence/empty-title-red/chart-fields-F2b-teclado-b-043f9-menú-y-anuncios-de-acciones-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-fields.spec.ts:44:1 › F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones 

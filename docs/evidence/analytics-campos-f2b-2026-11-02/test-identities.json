@@ -1,0 +1,19 @@
+{
+  "main": 531,
+  "f2b": 543,
+  "removed": [],
+  "added": [
+    "[csv] › chart-fields.spec.ts › F2b: 200 campos, nombres Unicode, idioma seudolocalizado y tamaños accesibles",
+    "[csv] › chart-fields.spec.ts › F2b: 842 grupos conservan truncado y tabla paginada; Otros solo sobre resultados completos aditivos",
+    "[csv] › chart-fields.spec.ts › F2b: actualizar una celda no sustituye el resumen elegido ni guarda el CSV",
+    "[csv] › chart-fields.spec.ts › F2b: cada Resumir por coincide con datos independientes y porcentajes solo aditivos",
+    "[csv] › chart-fields.spec.ts › F2b: contraste de textos y controles medido contra sus fondos reales en ambos temas",
+    "[csv] › chart-fields.spec.ts › F2b: en-XA real, tema oscuro y ventana estrecha no recortan el resultado",
+    "[csv] › chart-fields.spec.ts › F2b: estrecho conserva foco al editar campos, inglés natural y resultado completo",
+    "[csv] › chart-fields.spec.ts › F2b: filtros reutilizados, exportación y datos originales intactos",
+    "[csv] › chart-fields.spec.ts › F2b: herramientas con nombre, ayuda inmediata al foco y controles sin pintura nativa",
+    "[csv] › chart-fields.spec.ts › F2b: sugerencia inicial y dos acciones cambian qué se grafica sin Más opciones",
+    "[csv] › chart-fields.spec.ts › F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones",
+    "[csv] › chart-fields.spec.ts › F2b: texto no se suma, mapa solo cuenta y símbolos no se convierten"
+  ]
+}

@@ -44,7 +44,7 @@ test('una sola fila de herramientas deja la tabla a 110 px del borde superior o 
 test('las cinco acciones principales se ven a la vez y lo demás está en menús con su nombre de siempre', async()=>{
  const bar=toolbar()
  await expect(bar.getByRole('textbox',{name:'Buscar en tabla',exact:true})).toBeVisible()
- for(const name of ['Reemplazar','Filtrar','Limpiar datos','Filas y columnas','Analizar'])await expect(bar.getByLabel(name,{exact:true})).toBeVisible()
+ for(const name of ['Reemplazar','Filtrar','Limpiar datos','Filas y columnas','Estadísticas y SQL'])await expect(bar.getByLabel(name,{exact:true})).toBeVisible()
  // Lo secundario ya no ocupa sitio en la barra.
  for(const name of ['Consulta avanzada','Estadísticas','Gráficos','Análisis','Comandos','Orden numérico'])await expect(bar.getByRole('button',{name,exact:true})).toHaveCount(0)
  const menus:Record<string,string[]>={
@@ -74,7 +74,7 @@ test('la codificación, el separador, el encabezado y los recuentos viven en la 
 })
 
 test('Analizar abre el panel en la pestaña recordada y vuelve a cerrarlo con el foco en su botón', async()=>{
- const analyze=toolbar().getByLabel('Analizar',{exact:true}),tabs=page.getByRole('tablist',{name:'Herramientas de análisis'})
+ const analyze=toolbar().getByLabel('Estadísticas y SQL',{exact:true}),tabs=page.getByRole('tablist',{name:'Herramientas de análisis'})
  await analyze.click();await expect(tabs).toBeVisible()
  for(const name of ['Resumen','Gráficos','SQL'])await expect(tabs.getByRole('tab',{name,exact:true})).toBeVisible()
  await tabs.getByRole('tab',{name:'Gráficos',exact:true}).click()

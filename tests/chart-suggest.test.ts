@@ -162,8 +162,8 @@ it('las razones distinguen columnas de nombre vacío o duplicado por su posició
  const pair=suggest(columns,{x:2,y:0}),single=suggest(columns,{x:0})
  expect(pair.reason.parameters).toMatchObject({x:'Etiqueta',xPosition:3,y:'',yPosition:1})
  expect(single.reason.parameters).toMatchObject({x:'',xPosition:1})
- expect(t(single.reason.key,single.reason.parameters,'es')).toContain('columna 1')
- expect(t(single.reason.key,single.reason.parameters,'en')).toContain('Column 1')
+ expect(t(single.reason.key,single.reason.parameters,'es')).not.toMatch(/columna \d/i)
+ expect(t(single.reason.key,single.reason.parameters,'en')).not.toMatch(/column \d/i)
 })
 
 it('sólo propone caja si se pide distribución y se confirma más de un valor numérico por grupo',async()=>{
