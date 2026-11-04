@@ -6,6 +6,8 @@ import {tableFromIPC} from 'apache-arrow'
 import {TableEngine} from '../src/main/table-engine'
 import {quoteIdentifier,sqlColumns} from '../src/shared/sql-helpers'
 import {assistedSQL,type SqlAssist} from '../src/shared/sql-assist'
+// Este caso comprueba dos lecturas completas, que pueden superar 60 s en CI Intel.
+const fullSourceTestTimeoutMs=120_000
 let folder:string,path:string,engine:TableEngine
 beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-sql-source-'));path=join(folder,'data.csv');engine=new TableEngine()})
 afterEach(async()=>{await rm(folder,{recursive:true,force:true})})
@@ -30,7 +32,7 @@ it('lee íntegra una fuente de un millón por cuatro columnas que el editor abre
  await engine.analysisStart('a','large',info.revision,path);let count=0;while(true){const chunk=await engine.analysisNext('large');if(chunk.done)break;const table=tableFromIPC(chunk.data);count+=chunk.rows;expect(table.numCols).toBe(4);expect(table.getChildAt(0)!.get(0)).toBe('00000')}
  expect(count).toBe(1000000);expect((await engine.info('a')).readonly).toBe(true);expect((await engine.info('a')).dirty).toBe(false)
  await engine.analysisStart('a','where-full-disk',info.revision,path,undefined,{filterMode:'all',conditions:[{column:1,op:'equals',value:'Ciudad 9'}]});let matching=0;while(true){const chunk=await engine.analysisNext('where-full-disk');if(chunk.done)break;matching+=chunk.rows;const table=tableFromIPC(chunk.data);expect(table.getChildAt(1)!.get(0)).toBe('Ciudad 9')}expect(matching).toBe(100000)
-},60000)
+},fullSourceTestTimeoutMs)
 it('no presenta una lectura parcial como completa ante estructura irregular o cambios externos',async()=>{
  const {arrowBatches,fileRecords}=await import('../src/main/analysis-source');await writeFile(path,'A\nx\ny,z\n')
  const records=fileRecords(path,{encoding:'utf8',delimiter:',',header:true,headerWidth:1,headers:['A']},()=>{})
