@@ -16,7 +16,7 @@ test.beforeEach(async()=>{
  await launch()
 })
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
-test('F2a: pestaña hermana muestra gráfico y resumen sin generar, con opciones plegadas y fuente intacta',async()=>{
+test('F2a: pestaña hermana muestra gráfico y resumen sin generar, con opciones plegadas y fuente intacta', { tag: '@package-smoke' },async()=>{
  const mode=page.locator('[data-csv-view]')
  await expect(mode.getByRole('button',{name:'Tabla',exact:true})).toBeVisible()
  await expect(mode.getByRole('button',{name:'Texto',exact:true})).toBeVisible()

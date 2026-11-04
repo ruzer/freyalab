@@ -4,13 +4,13 @@ import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 
-test('AC-03 · citas, problemas y recarga bibliográfica conservan el archivo',async()=>{
+test('AC-03 · citas, problemas y recarga bibliográfica conservan el archivo', { tag: '@package-smoke' },async()=>{
  const directory=await mkdtemp(join(tmpdir(),'freya-ac03-')),path=join(directory,'reporte.md'),library=join(directory,'referencias.json')
  const source='---\nbibliography: referencias.json\nlof: true\n---\n\n# Reporte\n\nVéase [@garcia2020, p. 10] y [@ausente].\n\n`[@garcia2020]`\n\n![Datos [@garcia2020]](figura.svg){#fig:datos}'
  const entries=[{id:'garcia2020',type:'book',title:'Una fuente local',author:[{family:'García'}],issued:{'date-parts':[[2020]]}}]
  await writeFile(path,source);await writeFile(library,JSON.stringify(entries));await writeFile(join(directory,'figura.svg'),'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80"><rect width="200" height="80" fill="#1670be"/></svg>')
  const{ELECTRON_RUN_AS_NODE:_,...environment}=process.env
- const app=await electron.launch({chromiumSandbox:true,executablePath:electronPath as unknown as string,args:[process.env.FREYALAB_AC_TEST_ENTRY??resolve('out/main/index.js')],env:{...environment as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(directory,'profile')}})
+ const app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[process.env.FREYALAB_AC_TEST_ENTRY??resolve('out/main/index.js')],env:{...environment as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(directory,'profile')}})
  try{
   const page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
   const[document]=await page.evaluate(path=>window.freya.openPaths([path]),path)
@@ -50,12 +50,12 @@ test('AC-03 · citas, problemas y recarga bibliográfica conservan el archivo',a
  }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
 })
 
-test('AC-03 · HTML y PDF sin Pandoc usan la biblioteca actual aunque el Markdown no cambie',async()=>{
+test('AC-03 · HTML y PDF sin Pandoc usan la biblioteca actual aunque el Markdown no cambie', { tag: '@package-smoke' },async()=>{
  const directory=await mkdtemp(join(tmpdir(),'freya-ac03-fresh-')),path=join(directory,'reporte.md'),library=join(directory,'referencias.json'),source='---\nbibliography: referencias.json\n---\n\n# Reporte\n\n[@garcia2020]'
  const entry={id:'garcia2020',type:'book',title:'Fuente actual',author:[{family:'García'}],issued:{'date-parts':[[2020]]}}
  await writeFile(path,source);await writeFile(library,JSON.stringify([entry]))
  const{ELECTRON_RUN_AS_NODE:_,...environment}=process.env
- const app=await electron.launch({chromiumSandbox:true,executablePath:electronPath as unknown as string,args:[resolve('out/main/index.js')],env:{...environment as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_TEST_PANDOC_PATH:join(directory,'pandoc-inexistente'),FREYALAB_USER_DATA:join(directory,'profile'),FREYALAB_TEST_EXPORT_DIR:directory}})
+ const app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...environment as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_TEST_PANDOC_PATH:join(directory,'pandoc-inexistente'),FREYALAB_USER_DATA:join(directory,'profile'),FREYALAB_TEST_EXPORT_DIR:directory}})
  try{
   const page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);const[doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
   await expect(page.locator('.preview #citation-1')).toHaveText('(García, 2020)')

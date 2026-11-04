@@ -66,7 +66,7 @@ test('APP-01 M4: Word se descubre al iniciar y el menú exporta un DOCX real sin
  expect(await readFile(path,'utf8')).toBe(source);expect((await stat(path)).mtimeMs).toBe(fileBefore.mtimeMs)
 })
 
-test('APP-02: Acerca de muestra versión real, copia sólo diagnóstico y lee licencias del paquete',async()=>{
+test('APP-02: Acerca de muestra versión real, copia sólo diagnóstico y lee licencias del paquete', { tag: '@package-smoke' },async()=>{
  const path=join(folder,'CANARIO_DOCUMENTO_PRIVADO.md'),source='# CANARIO_CONTENIDO_PRIVADO\n';await writeFile(path,source);await page.evaluate(path=>window.freya.openPaths([path]),path)
  const metadata=await app.evaluate(({app})=>({version:app.getVersion(),electron:process.versions.electron,chromium:process.versions.chrome,node:process.versions.node,arch:process.arch}))
  expect(metadata.version).toBe((JSON.parse(await readFile('package.json','utf8')) as {version:string}).version)
@@ -351,7 +351,7 @@ test('APP-03: el menú abre Ajustes y Escape devuelve el foco',async()=>{
  await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(origin).toBeFocused()
 })
 
-test('APP-03: Ajustes usa teclado, aplica apariencia y restablece sólo su sección',async()=>{
+test('APP-03: Ajustes usa teclado, aplica apariencia y restablece sólo su sección', { tag: '@package-smoke' },async()=>{
  const source='# Fuente original\n';const path=join(folder,'original.md');await writeFile(path,source);await page.evaluate(path=>window.freya.openPaths([path]),path)
  await clickApplicationMenu('app.settings');const dialog=page.getByRole('dialog',{name:'Ajustes',exact:true})
  await dialog.getByRole('tab',{name:'General',exact:true}).focus();await page.keyboard.press('ArrowDown');await expect(dialog.getByRole('tab',{name:'Apariencia',exact:true})).toHaveAttribute('aria-selected','true')

@@ -9,8 +9,33 @@ on:
 permissions:
   contents: read
 jobs:
+  verify-main:
+    name: Require successful CI on current main
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Check the main push CI for the requested SHA
+        env:
+          REQUESTED_SHA: ${{ inputs.commit }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$GITHUB_REF" != refs/heads/main ]; then
+            echo "::error::Ejecuta Release candidate desde main."
+            exit 1
+          fi
+          export CURRENT_MAIN_SHA="$(git rev-parse HEAD)"
+          node --input-type=module -e 'import { requireMainCI } from "./scripts/require-main-ci.mjs"; console.log(await requireMainCI(process.env))'
   package:
     name: Package ${{ matrix.name }}
+    needs: verify-main
     strategy:
       fail-fast: false
       matrix:
@@ -31,9 +56,11 @@ jobs:
         env:
           REQUESTED_SHA: ${{ inputs.commit }}
         run: |
-          test "$(git rev-parse HEAD)" = "$REQUESTED_SHA"
           git fetch origin main
-          test "$(git rev-parse origin/main)" = "$REQUESTED_SHA"
+          if [ "$(git rev-parse HEAD)" != "$REQUESTED_SHA" ] || [ "$(git rev-parse origin/main)" != "$REQUESTED_SHA" ]; then
+            echo "::error::El SHA solicitado ya no corresponde a main. Espera la CI del nuevo commit."
+            exit 1
+          fi
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc

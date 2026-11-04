@@ -1,15 +1,19 @@
-import { readdir, mkdtemp, mkdir, cp, stat, writeFile, rm } from 'node:fs/promises'
+import { readdir, mkdtemp, mkdir, cp, stat, writeFile } from 'node:fs/promises'
 import { execFileSync } from 'node:child_process'
 import { join, resolve } from 'node:path'
 import { tmpdir } from 'node:os'
+import { removePackage, stopWindowsPackage, withCleanup } from './package-smoke-support.mjs'
 
 const release = resolve('release')
+const files = await readdir(release)
 const temp = await mkdtemp(join(tmpdir(), 'freyalab-package-'))
 const results = []
-const files = await readdir(release)
 const run = (file, args, options = {}) => execFileSync(file, args, { stdio: 'inherit', timeout: 600_000, ...options })
-const smoke = executable => {
-  run(process.execPath, ['node_modules/@playwright/test/cli.js', 'test'], { env: { ...process.env, FREYALAB_EXECUTABLE: executable } })
+const smoke = (executable, artifact) => {
+  run(process.execPath, [
+    'node_modules/@playwright/test/cli.js', 'test', '--grep', '@package-smoke', '--workers=1',
+    '--global-timeout=480000', `--output=test-results/${artifact}`,
+  ], { env: { ...process.env, FREYALAB_EXECUTABLE: executable, PLAYWRIGHT_HTML_OUTPUT_DIR: `playwright-report/${artifact}` } })
 }
 const linuxSandbox = async folder => {
   const helper = join(folder, 'chrome-sandbox')
@@ -19,7 +23,7 @@ const linuxSandbox = async folder => {
     run('sudo', ['chmod', '4755', helper])
   }
 }
-try {
+await withCleanup(async () => {
   if (process.platform === 'darwin') {
     const images = files.filter(name => name.endsWith('.dmg'))
     if (!images.length) throw new Error('Missing DMG')
@@ -27,14 +31,14 @@ try {
       const mount = join(temp, 'mount')
       await mkdir(mount, { recursive: true })
       run('hdiutil', ['attach', '-readonly', '-nobrowse', '-mountpoint', mount, join(release, name)])
-      let install
-      try {
+      const install = await withCleanup(async () => {
         const app = (await readdir(mount)).find(value => value.endsWith('.app'))
         if (!app) throw new Error('DMG contains no application')
-        install = join(temp, 'installed', app)
+        const install = join(temp, 'installed', app)
         await cp(join(mount, app), install, { recursive: true, verbatimSymlinks: true })
-      } finally { run('hdiutil', ['detach', mount]) }
-      smoke(join(install, 'Contents', 'MacOS', 'FreyaLab'))
+        return install
+      }, () => run('hdiutil', ['detach', mount]))
+      smoke(join(install, 'Contents', 'MacOS', 'FreyaLab'), name)
       results.push({ artifact: name, extractionOrInstallation: 'passed: copied application with preserved symlinks; source DMG detached before launch', packagedExecution: 'passed', userGatekeeperTest: 'pending manual check; no commercial signature/notarization' })
     }
   } else if (process.platform === 'win32') {
@@ -45,10 +49,12 @@ try {
       run(join(release, name), ['/S', `/D=${install}`])
       const executable = join(install, 'FreyaLab.exe')
       await stat(executable)
-      smoke(executable)
-      const uninstall = (await readdir(install)).find(value => /^uninstall.*\.exe$/i.test(value))
-      if (!uninstall) throw new Error('Missing uninstaller')
-      run(join(install, uninstall), ['/S'])
+      await withCleanup(() => smoke(executable, name), async () => {
+        await stopWindowsPackage(install)
+        const uninstall = (await readdir(install)).find(value => /^uninstall.*\.exe$/i.test(value))
+        if (!uninstall) throw new Error('Missing uninstaller')
+        run(join(install, uninstall), ['/S'])
+      })
       results.push({ artifact: name, extractionOrInstallation: 'passed: silent installation and uninstallation in temporary directory', packagedExecution: 'passed', userSmartScreenTest: 'pending manual check; unsigned alpha' })
     }
   } else if (process.platform === 'linux') {
@@ -58,17 +64,16 @@ try {
     run(join(release, image), ['--appimage-extract'], { cwd: temp })
     const extracted = join(temp, 'squashfs-root')
     await linuxSandbox(extracted)
-    smoke(join(extracted, 'freyalab'))
+    smoke(join(extracted, 'freyalab'), image)
     results.push({ artifact: image, extractionOrInstallation: 'passed: AppImage extraction', packagedExecution: 'passed', desktopIntegration: 'pending manual desktop check' })
     if (process.env.CI !== 'true') throw new Error('DEB installation runs only on disposable CI runners; run the candidate workflow')
     run('sudo', ['apt-get', 'install', '-y', join(release, deb)])
-    try {
-      smoke('/opt/FreyaLab/freyalab')
+    await withCleanup(() => {
+      smoke('/opt/FreyaLab/freyalab', deb)
       results.push({ artifact: deb, extractionOrInstallation: 'passed: apt installation', packagedExecution: 'passed', desktopIntegration: 'pending manual desktop check' })
-    } finally { run('sudo', ['apt-get', 'remove', '-y', 'freyalab']) }
+    }, () => run('sudo', ['apt-get', 'remove', '-y', 'freyalab']))
   } else throw new Error(`Unsupported platform ${process.platform}`)
-} finally {
+}, () => withCleanup(async () => {
   await mkdir('test-results', { recursive: true })
   await writeFile('test-results/package-smoke.json', JSON.stringify({ platform: process.platform, arch: process.arch, results, completedAt: new Date().toISOString() }, null, 2))
-  await rm(temp, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 })
-}
+}, () => removePackage(temp)))
