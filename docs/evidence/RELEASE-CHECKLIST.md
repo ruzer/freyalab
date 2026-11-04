@@ -1,18 +1,17 @@
-# Checklist de publicación — v0.1.0-alpha.1
+# Checklist de publicación — v0.1.0-alpha.2
 
-- [Prerelease publicada](https://github.com/ruzer/freyalab/releases/tag/v0.1.0-alpha.1).
-- Commit de código: `7851ee284d3bc6a068cbeffc6088af8e5a3cf46a`.
-- [CI de main](https://github.com/ruzer/freyalab/actions/runs/39529554737): satisfactoria.
-- [Paquetes e instalación](https://github.com/ruzer/freyalab/actions/runs/39529581811): satisfactorios.
-- Licencia MIT y avisos incluidos; DMG arm64 inspeccionado.
-- Capturas y rendimiento: documentos y screenshots en esta carpeta.
+- Commit de código `de5daa91d4cd3162cb2d70d171d4a8b1ec3b4302`.
+- [CI de main](https://github.com/ruzer/freyalab/actions/runs/41777635723).
+- [Release candidate](https://github.com/ruzer/freyalab/actions/runs/41778039720).
 
 | Archivo | Build | App empaquetada | Instalación/extracción | SHA-256 |
 |---|---|---|---|---|
-| FreyaLab-0.1.0-alpha.1-mac-arm64.dmg | Pasó | 17 E2E pasaron | passed: copied application with preserved symlinks; source DMG detached before launch | `57e2d9e332cfb96bc0f1a8bd4052f3c190c5d817e3a8d66fe97a5af4bc9d014b` |
-| FreyaLab-0.1.0-alpha.1-mac-x64.dmg | Pasó | 17 E2E pasaron | passed: copied application with preserved symlinks; source DMG detached before launch | `53eb16f1053afd8f9635808194ea061f60366b9068519d725170301b3a86e499` |
-| FreyaLab-0.1.0-alpha.1-win-x64.exe | Pasó | 17 E2E pasaron | passed: silent installation and uninstallation in temporary directory | `d6634cde9192e024085cd6c69c9dc17c79eb6ef14d931cd92dd02f9a8e36d284` |
-| FreyaLab-0.1.0-alpha.1-linux-x86_64.AppImage | Pasó | 17 E2E pasaron | passed: AppImage extraction | `333290c2d858c243d8b64a6d1e1c7a386c02ab826ab8f43497500469748c4762` |
-| FreyaLab-0.1.0-alpha.1-linux-amd64.deb | Pasó | 17 E2E pasaron | passed: apt installation | `a6fde2503ccf40c8a47d591bf1c1242e8b63a2efc0a32fbf62d845a56f9c015b` |
+| FreyaLab-0.1.0-alpha.2-mac-arm64.dmg | Pasó | Inconclusa por límite de 10 min | App copiada y DMG desmontado antes de ejecutar las pruebas | `7734945e14d475098d68b370a04f706915b9059d55ae1fbf6147c93e5e9219a0` |
+| FreyaLab-0.1.0-alpha.2-mac-x64.dmg | Pasó | Inconclusa por límite de 10 min | App copiada y DMG desmontado antes de ejecutar las pruebas | `8159baa384acd349315863b8545a7ba8e9018361ba86b1d623a4b93e1a8f1f0e` |
+| FreyaLab-0.1.0-alpha.2-win-x64.exe | Pasó | Inconclusa. P5 falló y la limpieza terminó con EPERM | Instalación silenciosa comprobada. Desinstalación pendiente | `4153cbeca5c58d1abfb63b13204b25373a10c905a3450363b197d2f25215248c` |
+| FreyaLab-0.1.0-alpha.2-linux-x86_64.AppImage | Pasó | Inconclusa por límite de 10 min | Extracción AppImage completada | `77c5cca88aadea59fa12886377d50fc64dff5bf1bb2d0edf730ad73d9efcab2d` |
+| FreyaLab-0.1.0-alpha.2-linux-amd64.deb | Pasó | Pendiente | Pendiente | `2406df30f639a77fe97b28f1444698f899614fc4d777b9133390d374f235e040` |
 
-Pruebas manuales de Gatekeeper/SmartScreen, montaje FUSE de AppImage e integración del escritorio: pendientes. Alfa sin firma comercial ni notarización. No se presentan como comprobadas las versiones mínimas de sistema no usadas en CI. [Detalle de evidencia](release-v0.1.0-alpha.1.md).
+Los SHA-256 se calcularon sobre los cinco archivos descargados de Release candidate. Los cuatro trabajos confirmaron el commit de código y construyeron los paquetes. La comprobación automatizada quedó inconclusa y el workflow omitió su paso de checksums.
+
+Comprobaciones manuales pendientes de Gatekeeper y SmartScreen, montaje de AppImage con FUSE e integración del escritorio.
