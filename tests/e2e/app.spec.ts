@@ -36,7 +36,7 @@ test.afterEach(async () => {
   await rm(directory, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 })
 })
 
-test('renderer aislado, documento Markdown editable y guardado real', async () => {
+test('renderer aislado, documento Markdown editable y guardado real', { tag: '@package-smoke' }, async () => {
   expect(await page.evaluate(() => ({ require: typeof (window as unknown as Record<string, unknown>).require, process: typeof (window as unknown as Record<string, unknown>).process }))).toEqual({ require: 'undefined', process: 'undefined' })
   const saved = await page.evaluate(async () => {
     const doc = await window.freya.newDocument('markdown')
@@ -64,7 +64,7 @@ test('renderer aislado, documento Markdown editable y guardado real', async () =
   }
 })
 
-test('CSV: ceros, multilinea, filtro, edición por identificador y guardado', async () => {
+test('CSV: ceros, multilinea, filtro, edición por identificador y guardado', { tag: '@package-smoke' }, async () => {
   const input = join(directory, 'inventario.csv')
   await writeFile(input, 'Código,Artículo,Existencias\r\n000124,"Nombre, con coma",5\r\n000125,"Dos\nlineas",12\r\n')
   const result = await page.evaluate(async path => {
@@ -86,7 +86,7 @@ test('CSV: ceros, multilinea, filtro, edición por identificador y guardado', as
   expect(text).toContain(',14')
 })
 
-test('exportación PDF con varias páginas y texto recuperable', async () => {
+test('exportación PDF con varias páginas y texto recuperable', { tag: '@package-smoke' }, async () => {
   const result = await page.evaluate(async () => {
     const doc = await window.freya.newDocument('markdown')
     await window.freya.update(doc.id, '# Pendiente')
@@ -121,7 +121,7 @@ test('exportación SVG independiente mantiene cambios pendientes', async () => {
 })
 
 
-test('HTML autónomo incluye fuentes y SVG, excluye recursos remotos y scripts', async () => {
+test('HTML autónomo incluye fuentes y SVG, excluye recursos remotos y scripts', { tag: '@package-smoke' }, async () => {
   const font = (await readdir('out/renderer/assets')).find(name => name.endsWith('.woff2'))!
   expect(font).toBeTruthy()
   const path = await page.evaluate(async font => {
