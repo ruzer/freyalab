@@ -1,0 +1,72 @@
+[
+  {
+    "state": "double",
+    "foreground": [
+      232,
+      232,
+      237
+    ],
+    "background": [
+      45,
+      63,
+      91
+    ],
+    "ratio": 8.713156171874003
+  },
+  {
+    "state": "drag",
+    "foreground": [
+      232,
+      232,
+      237
+    ],
+    "background": [
+      45,
+      63,
+      91
+    ],
+    "ratio": 8.713156171874003
+  },
+  {
+    "state": "keyboard",
+    "foreground": [
+      232,
+      232,
+      237
+    ],
+    "background": [
+      45,
+      63,
+      91
+    ],
+    "ratio": 8.713156171874003
+  },
+  {
+    "state": "inactive",
+    "foreground": [
+      232,
+      232,
+      237
+    ],
+    "background": [
+      58,
+      61,
+      73
+    ],
+    "ratio": 8.847794175463797
+  },
+  {
+    "state": "forced-colors",
+    "foreground": [
+      255,
+      255,
+      255
+    ],
+    "background": [
+      91,
+      54,
+      136
+    ],
+    "ratio": 9.020577078092774
+  }
+]
