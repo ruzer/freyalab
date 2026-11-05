@@ -22,12 +22,21 @@ test.describe('E1 · selección visible',{tag:'@solo'},()=>{
   await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{})
   await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})
  })
+ const csvTextEditor=()=>page.getByLabel('Editor CSV como texto',{exact:true})
  async function open(name:string,text:string){
   const path=join(folder,name);await writeFile(path,text);await page.evaluate(path=>window.freya.openPaths([path]),path)
   await expect(page.getByRole('tab',{name,exact:true})).toHaveAttribute('aria-selected','true')
-  if(name.endsWith('.csv'))await page.getByRole('group',{name:'Vista del CSV',exact:true}).getByRole('button',{name:'Texto',exact:true}).click()
-  else await page.getByRole('button',{name:'Editar',exact:true}).click()
-  await expect(page.locator('.cm-content')).toBeVisible()
+  if(name.endsWith('.csv')){
+   const textView=page.getByRole('group',{name:'Vista del CSV',exact:true}).getByRole('button',{name:'Texto',exact:true})
+   await textView.click()
+   await expect(textView).toHaveAttribute('aria-pressed','true')
+   // El cambio de vista acaba al devolver el foco al conmutador nuevo.
+   await expect(textView).toBeFocused()
+   await expect(csvTextEditor()).toBeVisible()
+  }else{
+   await page.getByRole('button',{name:'Editar',exact:true}).click()
+   await expect(page.locator('.cm-content')).toBeVisible()
+  }
   return path
  }
  const line=()=>page.locator('.cm-line').filter({hasText:'Hola mundo'})
@@ -35,7 +44,12 @@ test.describe('E1 · selección visible',{tag:'@solo'},()=>{
   const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT)
   let text:Node|null,remaining=offset
   while(text=walker.nextNode()){
-   if(remaining<=(text.textContent??'').length){const range=document.createRange();range.setStart(text,remaining);range.collapse(true);const box=range.getBoundingClientRect();return{x:box.x+.1,y:box.y+box.height/2}}
+   if(remaining<=(text.textContent??'').length){
+    const range=document.createRange();range.setStart(text,remaining);range.collapse(true)
+    const box=range.getBoundingClientRect(),line=element.getBoundingClientRect()
+    const x=box.x+.1,y=box.y+box.height/2
+    return{x,y,relative:{x:x-line.left,y:y-line.top}}
+   }
    remaining-=(text.textContent??'').length
   }
   throw new Error('No se encontró la posición del texto de prueba.')
@@ -51,8 +65,15 @@ test.describe('E1 · selección visible',{tag:'@solo'},()=>{
   await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))))
   return image
  }
+ async function captureWord(name:string,node:Locator){
+  await node.scrollIntoViewIfNeeded()
+  return capture(name,(await word(node)).clip)
+ }
  async function keyboardSelection(node:Locator){
   const {from}=await word(node);await page.mouse.click(from.x,from.y)
+  await extendSelection()
+ }
+ async function extendSelection(){
   for(let i=0;i<5;i++)await page.keyboard.press('Shift+ArrowRight')
   await expect.poll(()=>page.evaluate(()=>window.getSelection()?.toString())).toBe('mundo')
  }
@@ -126,13 +147,18 @@ test.describe('E1 · selección visible',{tag:'@solo'},()=>{
    for(const [name,text]of [['diagrama.mmd','flowchart LR\n A[Hola mundo] --> B[Fin]'],['tabla.csv','Saludo\nHola mundo\n'],['previa.md','Hola mundo\n']]as const){
     const path=await open(name,text)
     if(name==='previa.md'){await page.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(page.locator('.markdown-body p')).toHaveText('Hola mundo')}
-    const node=name==='previa.md'?page.locator('.markdown-body p'):line(),{from,clip}=await word(node)
-    await page.mouse.click(from.x,from.y);const before=await capture(`${theme}-${name}-sin-seleccion`,clip)
+    const node=name==='previa.md'?page.locator('.markdown-body p'):name==='tabla.csv'?csvTextEditor().locator('.cm-line',{hasText:'Hola mundo'}):line()
+    const {from}=await word(node)
+    await node.click({position:from.relative});const before=await captureWord(`${theme}-${name}-sin-seleccion`,node)
     if(name==='previa.md'){
-     const {to}=await word(node);await page.mouse.move(from.x,from.y);await page.mouse.down();await page.mouse.move(to.x,to.y,{steps:8});await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));await page.mouse.up()
-    }else await keyboardSelection(node)
+     const {from,to}=await word(node);await page.mouse.move(from.x,from.y);await page.mouse.down();await page.mouse.move(to.x,to.y,{steps:8});await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));await page.mouse.up()
+    }else{
+     const {from}=await word(node)
+     await node.click({position:from.relative})
+     await extendSelection()
+    }
     await expect.poll(()=>page.evaluate(()=>window.getSelection()?.toString())).toBe('mundo')
-    const selected=await capture(`${theme}-${name}-seleccion`,clip)
+    const selected=await captureWord(`${theme}-${name}-seleccion`,node)
     expect.soft(selected.equals(before),name).toBe(false)
     expect.soft(await paintedColor(selected),name).not.toEqual(await paintedColor(before))
     expect(await readFile(path,'utf8')).toBe(text)
