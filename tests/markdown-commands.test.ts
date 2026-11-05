@@ -1,4 +1,5 @@
 import {describe,it,expect} from 'vitest'
+import {markdownHTML} from '../src/renderer/lib/render'
 import {markdownCommands,lineFormatState,codeLanguages,type MarkdownAction,type MarkdownSelection} from '../src/renderer/lib/markdown-commands'
 
 function run(action:MarkdownAction,text:string,anchor=0,head=text.length,language:typeof codeLanguages[number]='text'){
@@ -192,5 +193,119 @@ describe('FL-MD-008 · fecha y hora locales inyectadas',()=>{
  it('respeta la hora local que resuelve el sistema en un día de cambio horario',()=>{
   const now=new Date(2024,2,10,2,30),result=dated('datetime','',0,0,now)
   expect(new Date(result.value.replace(' ','T')).getTime()).toBe(now.getTime())
+ })
+})
+
+describe('E2 · formato inline fiable',()=>{
+ it.each([
+  ['Hol|a mundo','**Hola** mundo','',5],
+  ['[Hola ]mundo','**Hola** mundo','Hola',6],
+  ['Hola[ mundo]','Hola **mundo**','mundo',12],
+  ['[Hola mundo\n\nOtr]a linea','**Hola mundo**\n\n**Otr**a linea','Hola mundo**\n\n**Otr',21],
+  ['Hola [mundo ]lindo','Hola **mundo** lindo','mundo',12],
+  ['m[und]o','m**und**o','und',6]
+ ])('%j produce negrita válida en Vista previa',async(marked,expected,content,head)=>{
+  const from=marked.search(/[\[|]/),to=marked.includes('|')?from:marked.indexOf(']')-1
+  const original=marked.replace(/[\[\]|]/g,'')
+  const result=run('bold',original,from,to)
+  expect(result.value).toBe(expected)
+  expect(result.selection.head).toBe(head)
+  expect(result.value.slice(result.selection.anchor,result.selection.head)).toBe(content)
+  const {html}=await markdownHTML(result.value)
+  expect(html).toContain('<strong>')
+  expect(html).not.toContain('*')
+ })
+ it.each([['bold','**','strong'],['italic','*','em'],['strike','~~','del'],['inline','`','code']] as const)(
+  '%s conserva CRLF, selección inversa, prefijos y alternancia',async(action,marker,tag)=>{
+   const original='- café\r\n> 你好\r\n\r\n# uno 😀'
+   const result=run(action,original,original.length,0)
+   expect(result.value).toBe(`- ${marker}café${marker}\r\n> ${marker}你好${marker}\r\n\r\n# ${marker}uno 😀${marker}`)
+   expect(result.selection.anchor).toBe(result.value.length-marker.length)
+   expect(result.selection.head).toBe(2+marker.length)
+   const {html}=await markdownHTML(result.value)
+   expect(html.match(new RegExp(`<${tag}>`,'g'))).toHaveLength(3)
+   expect(html).not.toContain('*')
+   expect(run(action,result.value,result.selection.anchor,result.selection.head).value).toBe(original)
+  })
+ it.each([0,2,4])('cursor en el interior o borde de una palabra acentuada (%i)',cursor=>{
+  const result=run('italic','café',cursor,cursor)
+  expect(result.value).toBe('*café*')
+  expect(result.selection).toEqual({anchor:cursor+1,head:cursor+1})
+  expect(run('italic',result.value,result.selection.anchor,result.selection.head).value).toBe('café')
+ })
+ it('quita el tachado vacío en una línea indentada sin abrir una cerca real',()=>{
+  expect(run('strike','  ~~~~',4,4).value).toBe('  ')
+  const source='  ~~~~\n  código\n  ~~~~'
+  expect(run('strike',source,4,4).changes).toEqual([])
+ })
+ it('preserva los espacios y la dirección al recortar una selección inversa',()=>{
+  const result=run('strike','a  café  b',9,1)
+  expect(result.value).toBe('a  ~~café~~  b')
+  expect(result.selection).toEqual({anchor:9,head:5})
+  expect(run('bold','a  b',1,3)).toMatchObject({changes:[],selection:{anchor:1,head:3}})
+ })
+ it('completa el formato de tramos mixtos antes de quitarlo de todos',()=>{
+  const result=run('bold','**uno**\n\ndos')
+  expect(result.value).toBe('**uno**\n\n**dos**')
+  expect(run('bold',result.value,result.selection.anchor,result.selection.head).value).toBe('uno\n\ndos')
+ })
+ it.each([['bold','**','strong'],['italic','*','em'],['strike','~~','del'],['inline','`','code']] as const)(
+  '%s extiende un formato contiguo sin dejar delimitadores literales',async(action,marker,tag)=>{
+   for(const original of [`m${marker}und${marker}o`,`${marker}mun${marker}do`,`mun${marker}do${marker}`]){
+    const result=run(action,original)
+    expect(result.value).toBe(marker+'mundo'+marker)
+    expect((await markdownHTML(result.value)).html).toBe(`<p><${tag}>mundo</${tag}></p>`)
+    expect(run(action,result.value,result.selection.anchor,result.selection.head).value).toBe('mundo')
+   }
+  })
+ it('una celda admite formato y cruzar la separación de celdas conserva el original',async()=>{
+  const text='| A | B |\n| --- | --- |\n| café | dos |',from=text.indexOf('café')
+  const result=run('bold',text,from-1,from+5)
+  expect(result.value).toBe(text.replace('café','**café**'))
+  expect((await markdownHTML(result.value)).html).toContain('<td><strong>café</strong></td>')
+  expect(run('bold',text,from,text.indexOf('dos')+3).changes).toEqual([])
+  expect(run('inline',text,0,text.length).changes).toEqual([])
+ })
+ it('omite vallas incluidas en citas y permite el párrafo posterior',async()=>{
+  const text='Antes\n\n> ```md\n> intacto\n\nDespués'
+  const result=run('italic',text)
+  expect(result.value).toBe('*Antes*\n\n> ```md\n> intacto\n\n*Después*')
+  expect((await markdownHTML(result.value)).html.match(/<em>/g)).toHaveLength(2)
+  const inside=text.indexOf('intacto')+2
+  expect(run('bold',text,inside,inside).changes).toEqual([])
+ })
+ it('preserva prefijos compuestos de tareas y el cierre ATX',()=>{
+  const text='> - [x] café\n>   你好\n\n# título ###'
+  expect(run('bold',text).value).toBe('> - [x] **café**\n>   **你好**\n\n# **título** ###')
+ })
+ it('conserva lista numerada y código existente dentro de la selección',async()=>{
+  const original='1. Uno con `código`\n2. Dos'
+  const result=run('bold',original)
+  expect(result.value).toBe('1. **Uno con `código`**\n2. **Dos**')
+  expect((await markdownHTML(result.value)).html).toContain('<strong>Uno con <code>código</code></strong>')
+  expect(run('bold',result.value,result.selection.anchor,result.selection.head).value).toBe(original)
+ })
+ it('deja intacta una selección que produciría marcadores literales',()=>{
+  const result=run('bold','a(b)c',1,4)
+  expect(result.changes).toEqual([])
+  expect(result.selection).toEqual({anchor:1,head:4})
+ })
+ it('el código inline separa sus delimitadores de backticks en los bordes',async()=>{
+  const original='`a',result=run('inline',original)
+  expect((await markdownHTML(result.value)).html).toContain('<code>`a</code>')
+  expect(run('inline',result.value,result.selection.anchor,result.selection.head).value).toBe(original)
+ })
+ it('selecciones seudoaleatorias de texto plano conservan el documento al alternar dos veces',async()=>{
+  let seed=20261105
+  const next=(limit:number)=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed%limit}
+  const words=['café','azúcar','Freya','mañana','你好','sol']
+  for(let trial=0;trial<80;trial++){
+   const text=Array.from({length:7},(_,i)=>words[next(words.length)]+(i===6?'':next(3)===0?'\r\n\r\n':' ')).join('')
+   let anchor=next(text.length+1),head=next(text.length+1)
+   if(anchor===head)head=(head+1)%(text.length+1)
+   const result=run('bold',text,anchor,head)
+   expect((await markdownHTML(result.value)).html).not.toContain('*')
+   expect(run('bold',result.value,result.selection.anchor,result.selection.head).value).toBe(text)
+  }
  })
 })
