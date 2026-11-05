@@ -7,7 +7,7 @@ import {join,resolve} from 'node:path'
 let app:ElectronApplication,page:Page,directory:string,documentId:string,serial=0
 const content=()=>page.locator('.cm-content')
 const toolbar=()=>page.getByRole('group',{name:'Formato Markdown',exact:true})
-const menu=()=>toolbar().getByLabel('Más opciones de Markdown',{exact:true})
+const menu=()=>toolbar().getByLabel('Insertar',{exact:true})
 const action=(name:string)=>toolbar().getByRole('button',{name,exact:true})
 const source=()=>page.evaluate(async id=>(await window.freya.documents()).find(document=>document.id===id)?.text,documentId)
 test.beforeEach(async()=>{
