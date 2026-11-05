@@ -4,7 +4,7 @@ Running 3 tests using 1 worker
   ✘  1 [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:77:38 › E1 · selección visible › light: doble clic, arrastre, teclado, ventana sin foco y colores forzados @solo (2.2s)
   ✘  2 [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:77:38 › E1 · selección visible › dark: doble clic, arrastre, teclado, ventana sin foco y colores forzados @solo (2.1s)
   ✘  3 [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:123:2 › E1 · selección visible › Mermaid, CSV Texto y vista previa conservan selección visible en ambos temas @solo (2.8s)
-  1) [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:77:38 › E1 · selección visible › light: doble clic, arrastre, teclado, ventana sin foco y colores forzados @solo 
+  1) [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:77:38 › E1 · selección visible › light: doble clic, arrastre, teclado, ventana sin foco y colores forzados @solo
     Error: double: el recorte de la palabra debe mostrar el resaltado
     Expected: false
     Received: true
@@ -32,7 +32,7 @@ Running 3 tests using 1 worker
     Error: expect(received).toBeGreaterThanOrEqual(expected)
     Expected: >= 4.5
     Received:    1.8426918969579444
-  2) [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:77:38 › E1 · selección visible › dark: doble clic, arrastre, teclado, ventana sin foco y colores forzados @solo 
+  2) [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:77:38 › E1 · selección visible › dark: doble clic, arrastre, teclado, ventana sin foco y colores forzados @solo
     Error: double: el recorte de la palabra debe mostrar el resaltado
     Expected: false
     Received: true
@@ -60,7 +60,7 @@ Running 3 tests using 1 worker
     Error: expect(received).toBeGreaterThanOrEqual(expected)
     Expected: >= 4.5
     Received:    2.328010704658824
-  3) [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:123:2 › E1 · selección visible › Mermaid, CSV Texto y vista previa conservan selección visible en ambos temas @solo 
+  3) [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:123:2 › E1 · selección visible › Mermaid, CSV Texto y vista previa conservan selección visible en ambos temas @solo
     Error: diagrama.mmd
     Expected: false
     Received: true
@@ -82,6 +82,6 @@ Running 3 tests using 1 worker
     Error: tabla.csv
     Expected: not [43, 43, 50]
   3 failed
-    [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:77:38 › E1 · selección visible › light: doble clic, arrastre, teclado, ventana sin foco y colores forzados @solo 
-    [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:77:38 › E1 · selección visible › dark: doble clic, arrastre, teclado, ventana sin foco y colores forzados @solo 
-    [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:123:2 › E1 · selección visible › Mermaid, CSV Texto y vista previa conservan selección visible en ambos temas @solo 
+    [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:77:38 › E1 · selección visible › light: doble clic, arrastre, teclado, ventana sin foco y colores forzados @solo
+    [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:77:38 › E1 · selección visible › dark: doble clic, arrastre, teclado, ventana sin foco y colores forzados @solo
+    [md] › ../freyalab-md-editor-e1/tests/e2e/markdown-selection.spec.ts:123:2 › E1 · selección visible › Mermaid, CSV Texto y vista previa conservan selección visible en ambos temas @solo
