@@ -41,7 +41,6 @@
   "src/renderer/components/CsvTransform.svelte",
   "src/renderer/components/Diagram.svelte",
   "src/renderer/components/Editor.svelte",
-  "src/renderer/components/MarkdownToolbar.svelte",
   "src/renderer/components/Outline.svelte",
   "src/renderer/components/Preview.svelte",
   "src/renderer/components/TextStats.svelte",
