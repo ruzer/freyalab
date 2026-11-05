@@ -7,6 +7,8 @@ import type {LargeViewState} from '../src/shared/types'
 
 let workerFolder:string,workerPath:string
 const count=12000,source='id,text\n'+'x,target\n'.repeat(count)
+// En CI Intel, confirmar los ocho rangos puede superar 5 s con la suite completa.
+const viewWaitMs=25_000
 const wait=()=>new Promise(resolve=>setTimeout(resolve,5))
 beforeAll(async()=>{
  workerFolder=await mkdtemp(join(tmpdir(),'freya-view-order-worker-'))
@@ -25,9 +27,9 @@ parentPort.on('message',async task=>{
   const folder=dirname(index.path)
   const observed=join(folder,'range-'+range.first+'.json')
   await writeFile(observed+'.tmp',JSON.stringify({range,every:index.every,checkpoints:index.offsets.length,records:index.records}));await rename(observed+'.tmp',observed)
-  if(range.first===0){
+  for(const signal of range.first===0?['release-results','release-first']:['release-results']){
    while(!cancelled()){
-    try{await access(join(folder,'release-first'));break}catch{}
+    try{await access(join(folder,signal));break}catch{}
     await new Promise(resolve=>setTimeout(resolve,5))
    }
   }
@@ -44,13 +46,11 @@ parentPort.on('message',async task=>{
 })
 afterAll(async()=>{if(workerFolder)await rm(workerFolder,{recursive:true,force:true})})
 
-async function until(engine:TableEngine,accept:(state:LargeViewState)=>boolean){
- const deadline=performance.now()+5000
+async function until(engine:TableEngine,deadline:number,accept:(state:LargeViewState)=>boolean){
  while(performance.now()<deadline){const state=await engine.viewState('a');if(state&&accept(state))return state;await wait()}
  throw new Error('La vista no alcanzó el estado esperado; el primer rango sigue controlado por release-first.')
 }
-async function assignedRanges(folder:string,workers:number){
- const deadline=performance.now()+5000
+async function assignedRanges(folder:string,workers:number,deadline:number){
  while(performance.now()<deadline){
   const names=(await readdir(folder)).filter(name=>/^range-\d+\.json$/.test(name))
   if(names.length===workers)return Promise.all(names.map(async name=>JSON.parse(await readFile(join(folder,name),'utf8'))))
@@ -67,23 +67,26 @@ for(const workers of [1,2,4,8])for(const limit of [3,7])it(`${workers} hilos, to
   if(workers===1)await writeFile(release,'')
   const opened=await engine.open('a',path);expect(opened.large).toBe(true)
   const requestId=crypto.randomUUID();await engine.viewStart('a',{requestId,revision:0,search:'target'})
-  const assigned=await assignedRanges(folder,workers)
+  const deadline=performance.now()+viewWaitMs
+  const assigned=await assignedRanges(folder,workers,deadline)
   // Hay doce checkpoints: las ocho configuraciones deben usar sus rangos
   // reales, sin convertir silenciosamente el caso paralelo en uno serial.
   expect(assigned).toHaveLength(workers)
   expect(assigned.every(item=>item.checkpoints===12&&item.every===1024&&item.records===count+1)).toBe(true)
   expect(assigned.map(item=>item.range.first).sort((a,b)=>a-b)).toEqual(Array.from({length:workers},(_,i)=>Math.floor(i*12/workers)*1024))
+  // Llenar el cupo puede cancelar un hilo antes de que confirme su rango.
+  await writeFile(join(folder,'release-results'),'')
   if(workers>1){
    // Si el coordinador termina al llenarse con rangos tardíos, observar ese
    // terminal también despierta la prueba: el rojo no depende de un timeout.
-   const late=await until(engine,state=>state.matched>=limit||state.status!=='running')
+   const late=await until(engine,deadline,state=>state.matched>=limit||state.status!=='running')
    expect(late.matched).toBeLessThanOrEqual(limit)
    const page=await engine.page('a',{viewId:requestId,offset:0,limit:200,requestId:1})
    expect(page.rows).toHaveLength(limit);expect(Number(page.rows[0].id)).toBeGreaterThan(1)
    expect(late.status,'Llenarse con coincidencias tardías no permite cancelar el prefijo pendiente.').toBe('running')
    await writeFile(release,'')
   }
-  const terminal=await until(engine,state=>state.status!=='running')
+  const terminal=await until(engine,deadline,state=>state.status!=='running')
   expect(terminal).toMatchObject({status:'limit',limitReason:'matches',matched:limit})
   const page=await engine.page('a',{viewId:requestId,offset:0,limit:200,requestId:2})
   expect(page.rows.map(row=>row.id)).toEqual(Array.from({length:limit},(_,i)=>String(i+1)))
@@ -93,4 +96,4 @@ for(const workers of [1,2,4,8])for(const limit of [3,7])it(`${workers} hilos, to
  }finally{
   await writeFile(release,'');await engine.close('a');await rm(folder,{recursive:true,force:true})
  }
-},10_000)
+},30_000)
