@@ -1,3 +1,9 @@
+import {unified} from 'unified'
+import remarkParse from 'remark-parse'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import {frontMatterOf} from '../../shared/front-matter'
+
 export type MarkdownAction='bold'|'italic'|'strike'|'inline'|'task'|'table'|'mermaid'|'code'|'paragraph'|'heading1'|'heading2'|'heading3'|'heading'|'list'|'ordered'|'quote'|'rule'|'link'|'date'|'datetime'
 export type MarkdownSelection={anchor:number;head:number}
 export type MarkdownChange={changes:{from:number;to:number;insert:string}[];selection:MarkdownSelection}
@@ -95,21 +101,236 @@ function replace(text:string,value:MarkdownSelection,from:number,to:number,inser
  const map=(at:number)=>from+Math.max(0,Math.min(contentLength,at-contentFrom))
  return{changes:[{from,to,insert}],selection:{anchor:map(value.anchor),head:map(value.head)}}
 }
-function inline(kind:'bold'|'italic'|'strike'|'inline'):Command{return(text,original)=>{
- const value=selection(text,original),from=Math.min(value.anchor,value.head),to=Math.max(value.anchor,value.head),selected=text.slice(from,to)
- let marker=kind==='bold'?'**':kind==='italic'?'*':kind==='strike'?'~~':'`'
- if(kind==='inline'){
-  const whole=codeSpans(selected).find(span=>span.from===0&&span.to===selected.length)
-  if(whole)return replace(text,value,from,to,selected.slice(whole.start,whole.end),from+whole.start,whole.end-whole.start)
-  for(const run of selected.matchAll(/`+/g))if(run[0].length>=marker.length)marker='`'.repeat(run[0].length+1)
+type InlineKind='bold'|'italic'|'strike'|'inline'
+type Range={from:number;to:number}
+type ParsedNode={
+ type:string
+ position?:{start:{offset?:number};end:{offset?:number}}
+ children?:ParsedNode[]
+}
+const inlineMarkers={bold:'**',italic:'*',strike:'~~',inline:'`'} as const
+const inlineNodes={bold:'strong',italic:'emphasis',strike:'delete',inline:'inlineCode'} as const
+const inlineParser=unified().use(remarkParse).use(remarkGfm).use(remarkMath)
+const overlaps=(first:Range,second:Range)=>first.from===first.to
+ ?first.from>=second.from&&first.from<=second.to
+ :first.from<second.to&&first.to>second.from
+
+function inlineSyntax(text:string,range:Range,kind:InlineKind){
+ const {body}=frontMatterOf(text)
+ let source=body.charCodeAt(0)===0xfeff?body.slice(1):body
+ const bodyStart=text.length-source.length
+ let origin=bodyStart
+ // Una separación en blanco basta si no hay cercas, HTML, referencias,
+ // citas, matemáticas ni continuaciones indentadas que crucen el límite.
+ if(!/```|~~~|[<>$]|\[|^[ \t]+\S/m.test(source)){
+  let start=0,end=source.length
+  for(const blank of source.matchAll(/\n[ \t]*\r?\n/g)){
+   const after=blank.index+blank[0].length
+   if(after<=range.from-origin)start=after
+   else if(blank.index>=range.to-origin){end=blank.index;break}
+  }
+  source=source.slice(start,end)
+  origin+=start
  }
- const size=marker.length
- if(selected.length>=size*2&&selected.startsWith(marker)&&selected.endsWith(marker)&&(kind!=='italic'||(/^\*+/.exec(selected)![0].length%2===1&&/\*+$/.exec(selected)![0].length%2===1)))return replace(text,value,from,to,selected.slice(size,-size),from+size,selected.length-size*2)
- const lineFrom=text.lastIndexOf('\n',from-1)+1,lineTo=text.indexOf('\n',from),line=text.slice(lineFrom,lineTo<0?text.length:lineTo)
- const span=(kind==='inline'?codeSpans(line):markerSpans(line,kind)).find(span=>within(span,from-lineFrom,to-lineFrom)||from-lineFrom===span.from&&to-lineFrom===span.to)
- if(span){const inner=text.slice(lineFrom+span.start,lineFrom+span.end);return replace(text,value,lineFrom+span.from,lineFrom+span.to,inner,lineFrom+span.start,inner.length)}
- if(from>=size&&text.slice(from-size,from)===marker&&text.slice(to,to+size)===marker&&(kind!=='italic'||!selected||text[from-size-1]!=='*'&&text[to+size]!=='*'))return replace(text,value,from-size,to+size,selected,from,selected.length)
- return{changes:[{from,to,insert:marker+selected+marker}],selection:{anchor:from+size+(value.anchor-from),head:from+size+(value.head-from)}}
+ const blocks:(Range&{quotes:number})[]=[],tables:Range[]=[],cells:Range[]=[],protectedRanges:(Range&{inline:boolean})[]=[],spans:Span[]=[],literal:Range[]=[]
+ function bounds(node:ParsedNode):Range|undefined{
+  const from=node.position?.start.offset,to=node.position?.end.offset
+  if(from!==undefined&&to!==undefined)return{from:from+origin,to:to+origin}
+ }
+ function visit(node:ParsedNode,quotes:number,insideFormat=false){
+  const position=bounds(node)
+  if(!position||!overlaps(range,position))return
+  const {from,to}=position
+  if(node.type==='text')literal.push(position)
+  if(node.type==='code'||node.type==='inlineMath'||node.type==='math'||node.type==='definition'){
+   protectedRanges.push({...position,inline:node.type==='inlineMath'})
+   return
+  }
+  if(node.type==='table')tables.push(position)
+  if(node.type==='tableCell'){
+   // GFM incluye las barras exteriores en la posición de la celda.
+   cells.push({from:from+Number(text[from]==='|'),to:to-Number(text[to-1]==='|'&&!escaped(text,to-1))})
+  }
+  if(node.type==='paragraph'||node.type==='heading'||node.type==='tableCell'){
+   const first=node.children?.[0],last=node.children?.at(-1)
+   if(first&&last)blocks.push({from:bounds(first)!.from,to:bounds(last)!.to,quotes})
+  }
+  if(node.type==='inlineCode'&&kind!=='inline')protectedRanges.push({...position,inline:true})
+  const matching=node.type===inlineNodes[kind]
+  if(node.type==='inlineCode'||matching&&!insideFormat){
+   const marker=node.type==='inlineCode'?/^`+/.exec(text.slice(from,to))![0]:kind==='strike'&&text[from+1]!=='~'?'~':inlineMarkers[kind]
+   let start=from+marker.length,end=to-marker.length
+   if(node.type==='inlineCode'&&text[start]===' '&&text[end-1]===' '&&/[^ \r\n]/.test(text.slice(start,end))){start++;end--}
+   if(node.type==='inlineCode')literal.push({from:start,to:end})
+   if(matching&&!insideFormat)spans.push({from,to,start,end})
+  }
+  for(const child of node.children??[])visit(child,quotes+Number(node.type==='blockquote'),insideFormat||matching)
+ }
+ visit(inlineParser.parse(source),0)
+ return{bodyStart,blocks,tables,cells,protectedRanges,spans,literal}
+}
+
+function trimRange(text:string,{from,to}:Range):Range{
+ const value=text.slice(from,to)
+ return{from:from+value.length-value.trimStart().length,to:from+value.trimEnd().length}
+}
+
+function inline(kind:InlineKind):Command{return(text,original)=>{
+ const value=selection(text,original),range={from:Math.min(value.anchor,value.head),to:Math.max(value.anchor,value.head)}
+ const caret=range.from===range.to,marker=inlineMarkers[kind]
+ const syntax=inlineSyntax(text,range,kind)
+ if(range.from<syntax.bodyStart||syntax.tables.length&&!syntax.cells.some(cell=>range.from>=cell.from&&range.to<=cell.to))return unchanged(original)
+ const rows=lines(text)
+ if(caret){
+  const row=rows.find(row=>range.from>=row.from&&range.from<=row.to)!
+  const offset=range.from-row.from
+  const placeholder=emptyMarker(row.text,offset,marker)
+  if(syntax.protectedRanges.some(span=>overlaps(range,span)&&!(placeholder&&span.from===row.from+row.text.search(/\S/)&&span.to===row.to)))return unchanged(original)
+  if(placeholder){
+   return{changes:[{from:range.from-marker.length,to:range.from+marker.length,insert:''}],selection:{anchor:range.from-marker.length,head:range.from-marker.length}}
+  }
+  // En un límite de palabra se conserva el desplazamiento del cursor dentro de ella.
+  if(original.anchor===value.anchor&&!syntax.spans.some(span=>within(span,range.from))){
+   for(const word of row.text.matchAll(/[\p{L}\p{N}\p{M}_]+/gu)){
+    const from=row.from+word.index,to=from+word[0].length
+    if(range.from>=from&&range.from<=to&&syntax.blocks.some(block=>from>=block.from&&to<=block.to)){
+     range.from=from;range.to=to
+     break
+    }
+   }
+  }
+  if(range.from===range.to&&!syntax.spans.some(span=>within(span,range.from))){
+   const anchor=range.from+marker.length
+   return{changes:[{...range,insert:marker+marker}],selection:{anchor,head:anchor}}
+  }
+ }
+
+ const present=new Set<Span>(),missing:Range[]=[],content:Range[]=[]
+ let blockIndex=0,protectedIndex=0,formatIndex=0
+ for(const row of rows){
+  if(!overlaps(range,row))continue
+  while(blockIndex<syntax.blocks.length&&syntax.blocks[blockIndex].to<row.from)blockIndex++
+  const block=syntax.blocks[blockIndex]
+  if(!block||block.from>row.to)continue
+  let prefix=row.from
+  for(let quote=0;quote<block.quotes;quote++){
+   const next=/^[ \t]*>[ \t]?/.exec(text.slice(prefix,row.to))
+   if(!next)break
+   prefix+=next[0].length
+  }
+  const segment=trimRange(text,{from:Math.max(range.from,block.from,prefix),to:Math.min(range.to,block.to,row.to)})
+  if(segment.from>=segment.to&&!caret)continue
+  while(syntax.protectedRanges[protectedIndex]?.to<segment.from)protectedIndex++
+  let blocked=false
+  for(let index=protectedIndex;syntax.protectedRanges[index]?.from<=segment.to;index++){
+   const span=syntax.protectedRanges[index]
+   if(overlaps(segment,span)&&!(span.inline&&segment.from<=span.from&&segment.to>=span.to)){blocked=true;break}
+  }
+  if(blocked)continue
+  while(syntax.spans[formatIndex]?.end<segment.from)formatIndex++
+  const formatted:Span[]=[]
+  for(let index=formatIndex;syntax.spans[index]?.start<=segment.to;index++){
+   const span=syntax.spans[index]
+   if(overlaps(segment,{from:span.start,to:span.end}))formatted.push(span)
+  }
+  let from=segment.from
+  for(const span of formatted){
+   const gap=trimRange(text,{from,to:Math.max(from,span.from)})
+   if(gap.from<gap.to&&!/^[*_~]+$/.test(text.slice(gap.from,gap.to))){missing.push(gap);content.push(gap)}
+   present.add(span)
+   content.push({from:Math.max(segment.from,span.start),to:Math.min(segment.to,span.end)})
+   from=Math.max(from,span.to)
+  }
+  const tail=trimRange(text,{from,to:Math.max(from,segment.to)})
+  if(tail.from<tail.to&&(!formatted.length||!/^[*_~]+$/.test(text.slice(tail.from,tail.to)))){missing.push(tail);content.push(tail)}
+ }
+ if(!content.length)return unchanged(original)
+
+ const changes:MarkdownChange['changes']=[]
+ const additions:{range:Range;opening:string;closing:string;length:number}[]=[]
+ if(missing.length){
+  // Dos pares pegados pueden convertirse en delimitadores literales. Extiende
+  // el tramo existente cuando toca el nuevo y conserva ambos contenidos.
+  const starts=new Map<number,Span>(),ends=new Map<number,Span>()
+  for(const span of present){
+   if(text.slice(span.from,span.to).includes('\n'))continue
+   starts.set(span.from,span);ends.set(span.to,span)
+  }
+  const groups:(Range&{absorbed:Set<Span>})[]=[]
+  for(const gap of missing){
+   const left=ends.get(gap.from),right=starts.get(gap.to)
+   const from=left?.from??gap.from,to=right?.to??gap.to
+   const previous=groups.at(-1)
+   const group=previous&&from<previous.to?previous:{from,to,absorbed:new Set<Span>()}
+   if(group!==previous)groups.push(group)
+   group.to=Math.max(group.to,to)
+   if(left)group.absorbed.add(left)
+   if(right)group.absorbed.add(right)
+  }
+  for(const group of groups){
+   const removed=[...group.absorbed].flatMap(span=>[
+    {from:span.from,to:span.start,insert:''},{from:span.end,to:span.to,insert:''}
+   ])
+   const pieces:string[]=[]
+   let offset=group.from
+   for(const change of removed){pieces.push(text.slice(offset,change.from));offset=change.to}
+   pieces.push(text.slice(offset,group.to))
+   const selected=pieces.join('')
+   let opening:string=marker,closing:string=marker
+   if(kind==='inline'){
+    let length=1
+    for(const run of selected.matchAll(/`+/g))length=Math.max(length,run[0].length+1)
+    const delimiter='`'.repeat(length),padding=/^`|`$/.test(selected)?' ':''
+    opening=delimiter+padding;closing=padding+delimiter
+   }
+   const first=removed[0],last=removed.at(-1)
+   if(first?.from===group.from)first.insert=opening
+   else changes.push({from:group.from,to:group.from,insert:opening})
+   if(last?.to===group.to)last.insert=closing
+   else changes.push({from:group.to,to:group.to,insert:closing})
+   for(const change of removed)changes.push(change)
+   additions.push({range:group,opening,closing,length:selected.length})
+  }
+ }else{
+  for(const span of present)changes.push({from:span.from,to:span.start,insert:''},{from:span.end,to:span.to,insert:''})
+ }
+ changes.sort((a,b)=>a.from-b.from)
+ const map=(offset:number,side:1|-1)=>{
+  let shift=0
+  for(const change of changes){
+   if(offset<change.from||offset===change.from&&side<0)break
+   if(offset<change.to)return change.from+shift+change.insert.length
+   shift+=change.insert.length-(change.to-change.from)
+  }
+  return offset+shift
+ }
+ if(additions.length){
+  // Los delimitadores junto a puntuación pueden quedar literales en CommonMark.
+  const pieces:string[]=[];let offset=0
+  for(const change of changes){pieces.push(text.slice(offset,change.from),change.insert);offset=change.to}
+  pieces.push(text.slice(offset))
+  const formatted=pieces.join('')
+  const parsed=inlineSyntax(formatted,{from:map(range.from,-1),to:map(range.to,1)},kind)
+  let shift=0,index=0,literalIndex=0
+  const hasLiteral=(from:number,to:number)=>{
+   while(parsed.literal[literalIndex]?.to<=from)literalIndex++
+   return parsed.literal[literalIndex]?.from<to
+  }
+  for(const {range,opening,closing,length} of additions){
+   const from=range.from+shift+opening.length,to=from+length
+   while(parsed.spans[index]?.to<to+closing.length)index++
+   const span=parsed.spans[index]
+   if(!span||span.from>from-opening.length||!within(span,from,to))return unchanged(original)
+   if(hasLiteral(from-opening.length,from)||hasLiteral(to,to+closing.length))return unchanged(original)
+   shift+=opening.length+length+closing.length-(range.to-range.from)
+  }
+ }
+ if(caret){
+  const anchor=map(value.anchor,value.anchor===range.to&&range.from!==range.to?-1:1)
+  return{changes,selection:{anchor,head:anchor}}
+ }
+ const from=map(content[0].from,1),to=map(content.at(-1)!.to,-1)
+ return{changes,selection:value.anchor>value.head?{anchor:to,head:from}:{anchor:from,head:to}}
 }}
 function block(action:'paragraph'|'heading1'|'heading2'|'heading3'|'list'|'ordered'|'task'|'quote'):Command{return(text,original)=>{
  const value=selection(text,original),from=Math.min(value.anchor,value.head),to=Math.max(value.anchor,value.head),rows=lines(text)

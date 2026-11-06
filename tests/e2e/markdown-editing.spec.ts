@@ -89,3 +89,36 @@ test('E2/E4: sólo lectura permite plegar sin aceptar ediciones ni formato',{tag
  await test.info().attach('readonly-foco',{body:Buffer.from(JSON.stringify(await content().evaluate(node=>({focused:node===document.activeElement,tabindex:node.getAttribute('tabindex'),editable:node.getAttribute('contenteditable')})))),contentType:'application/json'})
  await expect(content()).toBeFocused();await page.keyboard.press(foldKey);await expect(page.locator('.cm-foldPlaceholder')).toHaveCount(1);await page.keyboard.press(unfoldKey);await page.keyboard.press('ControlOrMeta+B');await page.keyboard.insertText('X');await page.keyboard.press('Enter');await expect.poll(source).toBe(visible);await expect.poll(async()=>(await info())?.dirty).toBe(false);expect(await readFile(path,'utf8')).toBe(full)
 })
+
+test('E2 inline: los cuatro formatos desde el interior de una palabra renderizan y deshacen en un paso',async()=>{
+ const original='Hola mundo',{path}=await open(original)
+ await page.getByRole('button',{name:'Dividido',exact:true}).click()
+ for(const [name,marker,tag] of [['Negrita','**','strong'],['Cursiva','*','em'],['Tachado','~~','del'],['Código en línea','`','code']] as const){
+  await clickAt(0,3)
+  const button=toolbar().getByRole('button',{name,exact:true})
+  await button.click()
+  await sameSource(marker+'Hola'+marker+' mundo',true)
+  await expect(button).toHaveAttribute('aria-pressed','true')
+  await expect(page.locator('.markdown-body '+tag)).toHaveText('Hola')
+  await expect(page.locator('.markdown-body p')).toHaveText(original)
+  await page.keyboard.press('ControlOrMeta+Z')
+  await sameSource(original)
+ }
+ expect(await readFile(path,'utf8')).toBe(original)
+})
+
+test('E2 inline: selección inversa entre párrafos conserva CRLF, alterna por tramo y deshace en un paso',async()=>{
+ const original='Hola mundo\r\n\r\nOtra línea',{path}=await open(original)
+ await page.getByRole('button',{name:'Dividido',exact:true}).click()
+ await clickAt(2,3)
+ for(let i=0;i<15;i++)await page.keyboard.press('Shift+ArrowLeft')
+ await page.keyboard.press('ControlOrMeta+B')
+ const formatted='**Hola mundo**\r\n\r\n**Otr**a línea'
+ await sameSource(formatted,true)
+ await expect(page.locator('.markdown-body strong')).toHaveText(['Hola mundo','Otr'])
+ await expect.poll(()=>page.evaluate(()=>window.getSelection()?.toString())).toBe('Hola mundo**\n\n**Otr')
+ await page.keyboard.press('ControlOrMeta+B');await sameSource(original)
+ await page.keyboard.press('ControlOrMeta+Z');await sameSource(formatted,true)
+ await page.keyboard.press('ControlOrMeta+Z');await sameSource(original)
+ expect(await readFile(path,'utf8')).toBe(original)
+})

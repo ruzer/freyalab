@@ -24,9 +24,9 @@ describe('ED-01 E4 · formato principal y posiciones secundarias',()=>{
   expect(result.sliceDoc()).toBe('Freya uno\n**Freya** dos');expect(result.selection.mainIndex).toBe(1);expect(result.selection.ranges).toHaveLength(2)
   expect(result.sliceDoc(result.selection.ranges[0].from,result.selection.ranges[0].to)).toBe('Freya')
  })
- it('los cursores vacíos conservan Unicode completo y los marcadores sólo se insertan en el principal',()=>{
+ it('el cursor principal al borde formatea la palabra sin dividir Unicode ni modificar la secundaria',()=>{
   const source='🐾uno\n🐾dos',state=EditorState.create({doc:source,selection:EditorSelection.create([EditorSelection.cursor(2),EditorSelection.cursor(8)],0),extensions:[EditorState.allowMultipleSelections.of(true)]}),result=state.update(markdownFormatChange(state,markdownCommands.bold(state.doc.toString(),state.selection.main))).state
-  expect(result.doc.toString()).toBe('🐾****uno\n🐾dos');expect(result.selection.ranges).toHaveLength(2);expect(result.selection.main.head).toBe(4);expect(result.selection.ranges[1].head).toBe(12)
+  expect(result.doc.toString()).toBe('🐾**uno**\n🐾dos');expect(result.selection.ranges).toHaveLength(2);expect(result.selection.main.head).toBe(4);expect(result.selection.ranges[1].head).toBe(12)
  })
  it('CRLF mantiene posiciones CodeMirror y finales de línea originales',()=>{
   const source='Freya uno\r\nFreya dos',state=EditorState.create({doc:source,selection:EditorSelection.create([EditorSelection.range(0,5),EditorSelection.range(10,15)],1),extensions:[EditorState.allowMultipleSelections.of(true),EditorState.lineSeparator.of('\r\n')]}),result=state.update(markdownFormatChange(state,markdownCommands.strike(state.doc.toString(),state.selection.main))).state
