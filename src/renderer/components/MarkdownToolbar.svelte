@@ -7,7 +7,7 @@
  let {readonly=false,formatState,onformat,onsearch,onindex,indexVisible}:{readonly?:boolean;formatState:ReturnType<typeof lineFormatState>;onformat:(action:MarkdownAction,language?:CodeLanguage)=>void;onsearch:()=>void;onindex:()=>void;indexVisible:boolean}=$props()
  const actions=[
   {id:'task',icon:'square-check-big',hintKey:'taskHint'},{id:'table',icon:'table',hintKey:'tableHint'},
-  {id:'mermaid',icon:'workflow',hintKey:'mermaidHint'},{id:'insert',icon:'chevron-down',hintKey:'insertLabel'},
+  {id:'mermaid',icon:'workflow',hintKey:'mermaidHint'},{id:'insert',icon:'chevron-down',hintKey:'insert'},
   {id:'search',icon:'search',hintKey:'search'},{id:'index',icon:'table-of-contents',hintKey:'index'}
  ] as const
  type Action=(typeof actions)[number]
@@ -96,7 +96,7 @@
  {#each actions.slice(collapsed) as action (action.id)}
   {#if action.id==='insert'}
    <details bind:this={insertMenu} class="insert-menu">
-    <summary class="action-size" aria-label={label('insertLabel')} {...controlHint(locked(action)?'readonly':null)} aria-disabled={locked(action)} onclick={event=>{if(locked(action))event.preventDefault()}} onkeydown={event=>{if(locked(action)&&(event.key==='Enter'||event.key===' '))event.preventDefault()}}>{@render actionLabel(action)}</summary>
+    <summary class="action-size" aria-label={label('insert')} {...controlHint(locked(action)?'readonly':null)} aria-disabled={locked(action)} onclick={event=>{if(locked(action))event.preventDefault()}} onkeydown={event=>{if(locked(action)&&(event.key==='Enter'||event.key===' '))event.preventDefault()}}>{@render actionLabel(action)}</summary>
     <div class="dropdown insert-dropdown">{@render insertControls()}</div>
    </details>
   {:else}
@@ -110,13 +110,13 @@
    {#if panel==='more'}
     <div class="dropdown overflow-menu" bind:this={popup} role="menu" aria-label={label('more')} tabindex="-1" onkeydown={menuKey} onfocusout={event=>{if(panel==='more'&&!event.currentTarget.contains(event.relatedTarget as Node)&&event.relatedTarget!==moreButton)dismiss()}}>
      {#each actions.slice(0,collapsed) as action (action.id)}
-      <button role={action.id==='index'?'menuitemcheckbox':'menuitem'} aria-checked={action.id==='index'?indexVisible:undefined} aria-haspopup={action.id==='insert'?'dialog':undefined} aria-label={action.id==='insert'?label('insertLabel'):undefined} aria-disabled={locked(action)} {...controlHint(locked(action)?'readonly':null,t('markdown.toolbar.'+action.hintKey))} tabindex="-1" onclick={()=>activate(action,true)}>
+      <button role={action.id==='index'?'menuitemcheckbox':'menuitem'} aria-checked={action.id==='index'?indexVisible:undefined} aria-haspopup={action.id==='insert'?'dialog':undefined} aria-label={action.id==='insert'?label('insert'):undefined} aria-disabled={locked(action)} {...controlHint(locked(action)?'readonly':null,t('markdown.toolbar.'+action.hintKey))} tabindex="-1" onclick={()=>activate(action,true)}>
        {@render actionLabel(action)}{#if action.id==='index'&&indexVisible}<Icon name="circle-check" size={14}/>{/if}
       </button>
      {/each}
     </div>
    {:else if panel==='insert'}
-    <div class="dropdown overflow-menu" bind:this={popup} role="dialog" aria-label={label('insertLabel')} tabindex="-1" onfocusout={event=>{if(!event.currentTarget.contains(event.relatedTarget as Node)&&event.relatedTarget!==moreButton)dismiss()}}>
+    <div class="dropdown overflow-menu" bind:this={popup} role="dialog" aria-label={label('insert')} tabindex="-1" onfocusout={event=>{if(!event.currentTarget.contains(event.relatedTarget as Node)&&event.relatedTarget!==moreButton)dismiss()}}>
      {@render insertControls()}
     </div>
    {/if}

@@ -23,7 +23,7 @@ async function open(text='Freya',name=`documento-${++serial}.md`){const path=joi
 async function replace(text:string){await content().click();await page.keyboard.press('ControlOrMeta+A');if(text)await page.keyboard.insertText(text);else await page.keyboard.press('Backspace');await expect.poll(source).toBe(text)}
 async function selectAll(){await content().focus();await page.keyboard.press('ControlOrMeta+A')}
 async function cursorAt(position:number){await content().focus();await page.keyboard.press('ControlOrMeta+Home');for(let i=0;i<position;i++)await page.keyboard.press('ArrowRight')}
-async function insert(label:string){await toolbar().getByLabel('Más opciones de Markdown',{exact:true}).click();await toolbar().getByRole('button',{name:label,exact:true}).click()}
+async function insert(label:string){await toolbar().getByLabel('Insertar',{exact:true}).click();await toolbar().getByRole('button',{name:label,exact:true}).click()}
 const focusedEditor=()=>expect(content()).toBeFocused()
 
 for(const [name,marker] of [['Negrita','**'],['Cursiva','*'],['Tachado','~~'],['Código en línea','`']]){
@@ -56,7 +56,7 @@ test('enlace, separador y código con lenguaje se insertan sin escribir sintaxis
  await open('Freya');await selectAll();await insert('Enlace');await expect.poll(source).toBe('[Freya](https://ejemplo.com)');await focusedEditor()
  await page.keyboard.press('ControlOrMeta+Z');await expect.poll(source).toBe('Freya')
  await replace('');await insert('Separador');await expect.poll(source).toBe('---');await focusedEditor();await page.keyboard.press('ControlOrMeta+Z');await expect.poll(source).toBe('')
- await replace('print("🐾")');await selectAll();await toolbar().getByLabel('Más opciones de Markdown',{exact:true}).click()
+ await replace('print("🐾")');await selectAll();await toolbar().getByLabel('Insertar',{exact:true}).click()
  await toolbar().getByRole('combobox',{name:'Lenguaje del bloque de código',exact:true}).selectOption('python')
  await toolbar().getByRole('button',{name:'Bloque de código',exact:true}).click();await expect.poll(source).toBe('```python\nprint("🐾")\n```');await focusedEditor()
  await page.keyboard.press('ControlOrMeta+Z');await expect.poll(source).toBe('print("🐾")')
@@ -87,7 +87,7 @@ test('teclado: formatos y títulos tienen atajos; menú, lenguaje y acciones son
  // Recorre el orden real de tabulación desde el selector, no invoca handlers de la aplicación.
  await block().focus();await page.keyboard.press('Tab');await expect(button('Negrita')).toBeFocused()
  await page.keyboard.press('Enter');await expect.poll(source).toBe('**Freya**');await focusedEditor()
- const summary=toolbar().getByLabel('Más opciones de Markdown',{exact:true});await summary.focus();await page.keyboard.press('Enter')
+ const summary=toolbar().getByLabel('Insertar',{exact:true});await summary.focus();await page.keyboard.press('Enter')
  await page.keyboard.press('Tab');await expect(toolbar().getByRole('button',{name:'Lista con viñetas',exact:true})).toBeFocused()
  await page.keyboard.press('Enter');await focusedEditor()
 })
@@ -116,8 +116,8 @@ test('solo lectura deshabilita todos los controles y vista previa oculta la barr
   if(['Buscar','Índice'].includes((await control.innerText()).trim()))await expect(control).toBeEnabled()
   else await expect(control).toBeDisabled()
  }
- await expect(toolbar().getByLabel('Más opciones de Markdown',{exact:true})).toHaveAttribute('aria-disabled','true')
- await toolbar().getByLabel('Más opciones de Markdown',{exact:true}).press('Enter');await expect(toolbar().locator('details[open]')).toHaveCount(0)
+ await expect(toolbar().getByLabel('Insertar',{exact:true})).toHaveAttribute('aria-disabled','true')
+ await toolbar().getByLabel('Insertar',{exact:true}).press('Enter');await expect(toolbar().locator('details[open]')).toHaveCount(0)
  await page.setViewportSize({width:700,height:720})
  const more=toolbar().getByRole('button',{name:'Más',exact:true});await more.press('Enter')
  const task=toolbar().getByRole('menuitem',{name:'Tarea',exact:true})
@@ -242,9 +242,9 @@ test('H14-1: las acciones caben a los seis anchos y Más conserva su acceso por 
  await expect.poll(source).toContain('- [ ]')
  await focusedEditor()
  await more.press('Enter')
- const insertItem=menu.getByRole('menuitem',{name:'Más opciones de Markdown',exact:true})
+ const insertItem=menu.getByRole('menuitem',{name:'Insertar',exact:true})
  await insertItem.press('Enter')
- const insertPanel=bar.getByRole('dialog',{name:'Más opciones de Markdown',exact:true})
+ const insertPanel=bar.getByRole('dialog',{name:'Insertar',exact:true})
  await expect(insertPanel.getByRole('button',{name:'Lista con viñetas',exact:true})).toBeFocused()
  await insertPanel.getByRole('combobox',{name:'Lenguaje del bloque de código',exact:true}).selectOption('python')
  await insertPanel.getByRole('button',{name:'Bloque de código',exact:true}).click()
@@ -286,7 +286,7 @@ test('H14-1: en-XA, colores forzados y movimiento reducido conservan todas las a
  await page.evaluate(path=>window.freya.openPaths([path]),path)
  await page.emulateMedia({forcedColors:'active',reducedMotion:'reduce'})
  const bar=page.locator('.document-tools'),more=bar.getByRole('button',{name:'[Mörë~~]',exact:true})
- const labels=['task','table','mermaid','insertLabel','search','index'].map(key=>t('markdown.toolbar.'+key,{},'en-XA'))
+ const labels=['task','table','mermaid','insert','search','index'].map(key=>t('markdown.toolbar.'+key,{},'en-XA'))
  for(const width of responsiveWidths){
   await page.setViewportSize({width,height:720})
   await expect.poll(clippedActions,{message:`en-XA · ${width} px`}).toEqual([])
