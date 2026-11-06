@@ -224,9 +224,11 @@ test('H14-1: las acciones caben a los seis anchos y Más conserva su acceso por 
  const bar=page.locator('.document-tools')
  for(const width of responsiveWidths){
   await page.setViewportSize({width,height:720})
-  await expect.soft.poll(clippedActions,{message:`${width} px`,timeout:800}).toEqual([])
+  // ResizeObserver puede actualizar la barra después de que cambie el viewport.
+  const geometryWait={message:`${width} px`,timeout:5000}
+  await expect.soft.poll(clippedActions,geometryWait).toEqual([])
   expect.soft((await bar.boundingBox())?.height).toBe(43)
-  expect.soft(await bar.evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true)
+  await expect.soft.poll(()=>bar.evaluate(node=>node.scrollWidth<=node.clientWidth),geometryWait).toBe(true)
  }
  const more=bar.getByRole('button',{name:'Más',exact:true})
  await more.press('Enter')
