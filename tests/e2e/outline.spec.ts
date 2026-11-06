@@ -152,18 +152,29 @@ test('A: indicador visible en claro/oscuro dentro de la barra izquierda',async()
  await open(Array.from({length:35},(_,i)=>`## Sección ${i+1}\n\n${paragraphs(3)}`).join(''))
  const styles=[]
  for(const theme of ['light','dark']){
-  await page.getByRole('combobox',{name:'Tema',exact:true}).selectOption(theme);await settled();await threshold('Sección 18');await expect(current()).toHaveText('Sección 18')
+  await page.getByRole('combobox',{name:'Tema',exact:true}).selectOption(theme)
+  const root=expect(page.locator('html'))
+  if(theme==='dark')await root.toHaveClass(/\bdark\b/)
+  else await root.not.toHaveClass(/\bdark\b/)
+  await settled();await threshold('Sección 18');await expect(current()).toHaveText('Sección 18')
   const transition=await current().evaluate(node=>({background:getComputedStyle(node).backgroundColor,color:getComputedStyle(node).color,animations:node.getAnimations().length}))
-  await current().evaluate(node=>Promise.all(node.getAnimations().map(animation=>animation.finished.catch(()=>{}))))
-  const measured=await current().evaluate(node=>{
+  const measure=()=>current().evaluate(node=>{
    const style=getComputedStyle(node),canvas=document.createElement('canvas');canvas.width=canvas.height=1;const ctx=canvas.getContext('2d')!
    function rgb(value:string){ctx.clearRect(0,0,1,1);ctx.fillStyle=value;ctx.fillRect(0,0,1,1);return Array.from(ctx.getImageData(0,0,1,1).data).slice(0,3)}
    const luminance=(values:number[])=>values.map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0)
    const text=rgb(style.color),background=rgb(style.backgroundColor),a=luminance(text),b=luminance(background)
-   return{text,background,contrast:(Math.max(a,b)+.05)/(Math.min(a,b)+.05),boxShadow:style.boxShadow,fontWeight:style.fontWeight}
+   return{text,background,contrast:(Math.max(a,b)+.05)/(Math.min(a,b)+.05),boxShadow:style.boxShadow,fontWeight:style.fontWeight,animations:node.getAnimations().length}
   })
+  let measured!:Awaited<ReturnType<typeof measure>>
+  await expect(async()=>{
+   measured=await measure()
+   expect(measured.animations).toBe(0)
+   expect(measured.contrast).toBeGreaterThanOrEqual(4.5)
+   expect(measured.boxShadow).toMatch(/inset/)
+   expect(measured.boxShadow).toContain('2px')
+  },`Indicador del índice · ${theme}`).toPass({timeout:5000})
   await evidence(`7-a-contraste-${theme}`,{transition,measured})
-  expect(measured.contrast).toBeGreaterThanOrEqual(4.5);expect(measured.boxShadow).toMatch(/inset/);expect(measured.boxShadow).toContain('2px');styles.push({theme,...measured})
+  styles.push({theme,...measured})
   await current().focus();await screenshot(theme)
  }
  expect((await page.locator('aside.sidebar').boundingBox())!.width).toBe(240)
