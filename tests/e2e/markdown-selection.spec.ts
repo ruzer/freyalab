@@ -67,7 +67,10 @@ test.describe('E1 · selección visible',{tag:'@solo'},()=>{
  }
  async function captureWord(name:string,node:Locator){
   await node.scrollIntoViewIfNeeded()
-  return capture(name,(await word(node)).clip)
+  await expect(page.locator('.external-banner')).toHaveCount(0)
+  const {clip}=await word(node)
+  await expect(page.locator('.external-banner')).toHaveCount(0)
+  return capture(name,clip)
  }
  async function keyboardSelection(node:Locator){
   const {from}=await word(node);await page.mouse.click(from.x,from.y)
@@ -145,16 +148,18 @@ test.describe('E1 · selección visible',{tag:'@solo'},()=>{
   for(const theme of ['light','dark']){
    await page.getByLabel('Tema',{exact:true}).selectOption(theme)
    for(const [name,text]of [['diagrama.mmd','flowchart LR\n A[Hola mundo] --> B[Fin]'],['tabla.csv','Saludo\nHola mundo\n'],['previa.md','Hola mundo\n']]as const){
-    const path=await open(name,text)
+    const path=await open(`${theme}-${name}`,text)
     if(name==='previa.md'){await page.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(page.locator('.markdown-body p')).toHaveText('Hola mundo')}
     const node=name==='previa.md'?page.locator('.markdown-body p'):name==='tabla.csv'?csvTextEditor().locator('.cm-line',{hasText:'Hola mundo'}):line()
+    await expect(page.locator('.external-banner')).toHaveCount(0)
     const {from}=await word(node)
     await node.click({position:from.relative});const before=await captureWord(`${theme}-${name}-sin-seleccion`,node)
+    await expect(page.locator('.external-banner')).toHaveCount(0)
+    const {from:start,to}=await word(node)
     if(name==='previa.md'){
-     const {from,to}=await word(node);await page.mouse.move(from.x,from.y);await page.mouse.down();await page.mouse.move(to.x,to.y,{steps:8});await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));await page.mouse.up()
+     await page.mouse.move(start.x,start.y);await page.mouse.down();await page.mouse.move(to.x,to.y,{steps:8});await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));await page.mouse.up()
     }else{
-     const {from}=await word(node)
-     await node.click({position:from.relative})
+     await node.click({position:start.relative})
      await extendSelection()
     }
     await expect.poll(()=>page.evaluate(()=>window.getSelection()?.toString())).toBe('mundo')
