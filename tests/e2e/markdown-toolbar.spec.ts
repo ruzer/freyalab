@@ -1,5 +1,6 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
+import {t} from '../../src/shared/i18n'
 import {mkdtemp,mkdir,writeFile,readFile,rm,stat} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
@@ -9,7 +10,7 @@ let app:ElectronApplication,page:Page,folder:string,id:string,serial=0
 test.beforeEach(async()=>{
  folder=await mkdtemp(join(tmpdir(),'freya-md001-'));await mkdir(join(folder,'saved'));await mkdir(join(folder,'exports'))
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
- app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_SAVE_DIR:join(folder,'saved'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')}})
+ app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:test.info().title.includes('en-XA')?'en-XA':'es',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_SAVE_DIR:join(folder,'saved'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')}})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
 })
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
@@ -111,9 +112,19 @@ test('solo lectura deshabilita todos los controles y vista previa oculta la barr
  await open('Pequeño');await page.getByRole('button',{name:'Editar',exact:true}).click()
  const text='# Fuente protegida\n'+('Texto sin modificar.\n'.repeat(600000)),{path,doc}=await open(text,'solo-lectura.md');expect(doc.readonly).toBe(true)
  const before=await readFile(path,'utf8')
- for(const control of await toolbar().locator('button,select').all())await expect(control).toBeDisabled()
+ for(const control of await toolbar().locator('button,select').all()){
+  if(['Buscar','Índice'].includes((await control.innerText()).trim()))await expect(control).toBeEnabled()
+  else await expect(control).toBeDisabled()
+ }
  await expect(toolbar().getByLabel('Más opciones de Markdown',{exact:true})).toHaveAttribute('aria-disabled','true')
  await toolbar().getByLabel('Más opciones de Markdown',{exact:true}).press('Enter');await expect(toolbar().locator('details[open]')).toHaveCount(0)
+ await page.setViewportSize({width:700,height:720})
+ const more=toolbar().getByRole('button',{name:'Más',exact:true});await more.press('Enter')
+ const task=toolbar().getByRole('menuitem',{name:'Tarea',exact:true})
+ await expect(task).toHaveAttribute('aria-disabled','true')
+ await expect(task).toHaveAttribute('aria-describedby','control-reason-readonly')
+ await task.press('Enter');await expect(task).toBeFocused()
+ await task.press('Escape');await expect(more).toBeFocused()
  await content().focus();await page.keyboard.press('ControlOrMeta+B');await page.keyboard.press('ControlOrMeta+Shift+X');expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===id)?.dirty).toBe(false)
  expect(await readFile(path,'utf8')).toBe(before)
  await page.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(toolbar()).toHaveCount(0)
@@ -194,3 +205,115 @@ for(const [name,marker] of [['Negrita','**'],['Cursiva','*'],['Tachado','~~'],['
   }
  })
 }
+
+const responsiveWidths=[1280,1100,1000,900,800,700]
+async function clippedActions(){
+ return page.locator('.document-tools').evaluate(bar=>{
+  const bounds=bar.getBoundingClientRect()
+  return [...bar.querySelectorAll<HTMLElement>('button,select,summary')].flatMap(item=>{
+   if(item.closest('.dropdown')||!item.getClientRects().length||getComputedStyle(item).visibility==='hidden')return []
+   const {left,right,top,bottom,width,height}=item.getBoundingClientRect()
+   return left<bounds.left-.5||right>bounds.right+.5||top<bounds.top-.5||bottom>bounds.bottom+.5||Math.min(width,height)<24
+    ?[{action:item.getAttribute('aria-label')||item.textContent?.trim(),width,height,right,limit:bounds.right}]:[]
+  })
+ })
+}
+
+test('H14-1: las acciones caben a los seis anchos y Más conserva su acceso por teclado',async()=>{
+ await open('# Inicio\n\nFreya')
+ const bar=page.locator('.document-tools')
+ for(const width of responsiveWidths){
+  await page.setViewportSize({width,height:720})
+  // ResizeObserver puede actualizar la barra después de que cambie el viewport.
+  const geometryWait={message:`${width} px`,timeout:5000}
+  await expect.soft.poll(clippedActions,geometryWait).toEqual([])
+  expect.soft((await bar.boundingBox())?.height).toBe(43)
+  await expect.soft.poll(()=>bar.evaluate(node=>node.scrollWidth<=node.clientWidth),geometryWait).toBe(true)
+ }
+ const more=bar.getByRole('button',{name:'Más',exact:true})
+ await more.press('Enter')
+ const menu=bar.getByRole('menu',{name:'Más',exact:true})
+ await expect(menu.getByRole('menuitem',{name:'Tarea',exact:true})).toBeFocused()
+ await page.keyboard.press('ArrowDown')
+ await expect(menu.getByRole('menuitem',{name:'Tabla',exact:true})).toBeFocused()
+ await page.keyboard.press('Escape')
+ await expect(menu).toBeHidden();await expect(more).toBeFocused()
+ await more.press('ArrowDown');await page.keyboard.press('Enter')
+ await expect.poll(source).toContain('- [ ]')
+ await focusedEditor()
+ await more.press('Enter')
+ const insertItem=menu.getByRole('menuitem',{name:'Más opciones de Markdown',exact:true})
+ await insertItem.press('Enter')
+ const insertPanel=bar.getByRole('dialog',{name:'Más opciones de Markdown',exact:true})
+ await expect(insertPanel.getByRole('button',{name:'Lista con viñetas',exact:true})).toBeFocused()
+ await insertPanel.getByRole('combobox',{name:'Lenguaje del bloque de código',exact:true}).selectOption('python')
+ await insertPanel.getByRole('button',{name:'Bloque de código',exact:true}).click()
+ await expect.poll(source).toContain('```python')
+ await focusedEditor()
+ // Ensanchar solo el explorador debe actualizar la barra aunque no cambie la ventana.
+ await page.setViewportSize({width:1280,height:720})
+ const sidebar=page.getByRole('slider',{name:'Ancho del explorador'})
+ for(let i=0;i<18;i++)await sidebar.press('ArrowRight')
+ await expect(sidebar).toHaveAttribute('aria-valuenow','420')
+ await expect(more).toBeVisible()
+ await page.setViewportSize({width:700,height:720})
+ await expect.poll(clippedActions).toEqual([])
+ await page.setViewportSize({width:1280,height:720})
+ await expect(sidebar).toHaveAttribute('aria-valuenow','420')
+})
+
+for(const locale of ['es','en-XA'] as const)test(`H14-1: TXT, Mermaid y CSV Texto conservan sus controles a los seis anchos (${locale})`,async()=>{
+ const csvLabel=(key:string)=>t('csvText.'+key,{},locale)
+ for(const [file,text] of [['nota.txt','Texto'],['flujo.mmd','flowchart LR\nA --> B'],['datos.csv','ID,Nombre\n1,Ana\n']]){
+  await page.setViewportSize({width:1280,height:720})
+  const path=join(folder,file);await writeFile(path,text)
+  await page.evaluate(path=>window.freya.openPaths([path]),path)
+  await expect(page.getByRole('tab',{name:file,exact:true})).toHaveAttribute('aria-selected','true')
+  if(file.endsWith('.csv'))await page.getByRole('group',{name:csvLabel('viewGroup')}).getByRole('button',{name:csvLabel('text'),exact:true}).click()
+  const bar=page.locator('.document-tools')
+  await expect(bar.getByRole('button',{name:file.endsWith('.csv')?csvLabel('search'):'Buscar',exact:true})).toBeVisible()
+  for(const width of responsiveWidths){
+   await page.setViewportSize({width,height:720})
+   expect.soft(await clippedActions(),`${file} · ${width} px`).toEqual([])
+   expect.soft(await bar.evaluate(node=>node.scrollWidth<=node.clientWidth),`${file} · ${width} px`).toBe(true)
+  }
+ }
+})
+
+test('H14-1: en-XA, colores forzados y movimiento reducido conservan todas las acciones',async()=>{
+ await expect(page.locator('html')).toHaveAttribute('lang','en-XA')
+ const path=join(folder,'ampliado.md');await writeFile(path,'# Inicio\n\nFreya')
+ await page.evaluate(path=>window.freya.openPaths([path]),path)
+ await page.emulateMedia({forcedColors:'active',reducedMotion:'reduce'})
+ const bar=page.locator('.document-tools'),more=bar.getByRole('button',{name:'[Mörë~~]',exact:true})
+ const labels=['task','table','mermaid','insertLabel','search','index'].map(key=>t('markdown.toolbar.'+key,{},'en-XA'))
+ for(const width of responsiveWidths){
+  await page.setViewportSize({width,height:720})
+  await expect.poll(clippedActions,{message:`en-XA · ${width} px`}).toEqual([])
+  expect((await bar.boundingBox())?.height).toBe(43)
+  await expect.poll(()=>bar.evaluate(node=>node.scrollWidth<=node.clientWidth),{message:`en-XA · ${width} px`,timeout:5000}).toBe(true)
+  for(const name of labels){
+   const action=bar.getByLabel(name,{exact:true}).or(bar.getByRole('button',{name,exact:true})).or(bar.getByRole('menuitem',{name,exact:true})).or(bar.getByRole('menuitemcheckbox',{name,exact:true}))
+   await expect(async()=>{
+    if(await more.isVisible()&&await more.getAttribute('aria-expanded',{timeout:1000})==='false')await more.press('Enter',{timeout:1000})
+    const boxes=await action.evaluateAll(nodes=>nodes.map(node=>{
+     if(!node.checkVisibility({visibilityProperty:true}))return null
+     const {x,width,height}=node.getBoundingClientRect()
+     return{x,width,height}
+    }))
+    expect(boxes).toHaveLength(1)
+    const [box]=boxes
+    expect(box).not.toBeNull()
+    expect(box!.width).toBeGreaterThanOrEqual(24);expect(box!.height).toBeGreaterThanOrEqual(24)
+    expect(box!.x).toBeGreaterThanOrEqual(0);expect(box!.x+box!.width).toBeLessThanOrEqual(width+.5)
+   },`${width} px · ${name}`).toPass({timeout:5000})
+  }
+  if(await bar.getByRole('menu',{name:'[Mörë~~]',exact:true}).isVisible()){
+   await page.keyboard.press('Escape');await expect(more).toBeFocused()
+  }
+ }
+ await expect.poll(()=>more.evaluate(node=>({
+  forced:matchMedia('(forced-colors: active)').matches,outline:getComputedStyle(node).outlineStyle,
+  duration:getComputedStyle(node).transitionDuration
+ }))).toEqual({forced:true,outline:'solid',duration:'0s'})
+})

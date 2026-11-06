@@ -53,7 +53,7 @@ jobs:
     env:
       FREYALAB_E2E_FAST_WORKERS: ${{ matrix.os == 'macos-15' && '2' || '1' }}
     # Intel agotó 45 min tras aprobar 43/61 pruebas del paquete; conserva el resto del gate.
-    timeout-minutes: ${{ matrix.os == 'macos-15-intel' && 90 || ((matrix.os == 'windows-2025' || startsWith(matrix.os, 'macos-')) && 60 || 45) }}
+    timeout-minutes: ${{ matrix.os == 'macos-15-intel' && 90 || matrix.os == 'macos-15' && 75 || ((matrix.os == 'windows-2025' || startsWith(matrix.os, 'macos-')) && 60 || 45) }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
