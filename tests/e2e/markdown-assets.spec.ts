@@ -5,6 +5,7 @@ import {mkdtemp,mkdir,writeFile,readFile,readdir,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 let app:ElectronApplication,page:Page,folder:string,target:string,selected:string
+const saveCopyNoticeTimeout=30_000
 const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6X8sAAAAASUVORK5CYII=','base64')
 const article=()=>page.locator('.preview article.markdown-body')
 const current=(id:string)=>page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),id)
@@ -28,7 +29,9 @@ async function fixture(){
 }
 test('A1 A2 · Guardar como copia tres activos; cerrar y reabrir prueba que las imágenes siguen resolviéndose',async()=>{
  const source=await fixture(),{path,doc}=await open(source);await expect(article().locator('img')).toHaveCount(3);await loaded(3)
- await page.getByRole('button',{name:'Guardar como',exact:true}).click();await expect(page.locator('.toast')).toContainText('Se copiaron 3 imágenes')
+ await page.getByRole('button',{name:'Guardar como',exact:true}).click()
+ // En Windows el guardado seguía en curso al vencer los 15 s de la espera habitual.
+ await expect(page.locator('.toast')).toContainText('Se copiaron 3 imágenes',{timeout:saveCopyNoticeTimeout})
  const saved=(await current(doc.id))!,text=await readFile(target,'utf8')
  expect(saved.dirty).toBe(false);expect(saved.text).toBe(text);expect(text).toBe(source.replaceAll('a.assets','Copia%20%C3%A1.assets'))
  await page.getByRole('button',{name:`Cerrar ${saved.name}`,exact:true}).click()
