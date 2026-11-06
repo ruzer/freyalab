@@ -224,9 +224,11 @@ test('H14-1: las acciones caben a los seis anchos y Más conserva su acceso por 
  const bar=page.locator('.document-tools')
  for(const width of responsiveWidths){
   await page.setViewportSize({width,height:720})
-  await expect.soft.poll(clippedActions,{message:`${width} px`,timeout:800}).toEqual([])
+  // ResizeObserver puede actualizar la barra después de que cambie el viewport.
+  const geometryWait={message:`${width} px`,timeout:5000}
+  await expect.soft.poll(clippedActions,geometryWait).toEqual([])
   expect.soft((await bar.boundingBox())?.height).toBe(43)
-  expect.soft(await bar.evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true)
+  await expect.soft.poll(()=>bar.evaluate(node=>node.scrollWidth<=node.clientWidth),geometryWait).toBe(true)
  }
  const more=bar.getByRole('button',{name:'Más',exact:true})
  await more.press('Enter')
@@ -289,21 +291,28 @@ test('H14-1: en-XA, colores forzados y movimiento reducido conservan todas las a
   await page.setViewportSize({width,height:720})
   await expect.poll(clippedActions,{message:`en-XA · ${width} px`}).toEqual([])
   expect((await bar.boundingBox())?.height).toBe(43)
-  expect(await bar.evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true)
-  if(await more.isVisible())await more.press('Enter')
+  await expect.poll(()=>bar.evaluate(node=>node.scrollWidth<=node.clientWidth),{message:`en-XA · ${width} px`,timeout:5000}).toBe(true)
   for(const name of labels){
    const action=bar.getByLabel(name,{exact:true}).or(bar.getByRole('button',{name,exact:true})).or(bar.getByRole('menuitem',{name,exact:true})).or(bar.getByRole('menuitemcheckbox',{name,exact:true}))
-   await expect(action,`${width} px · ${name}`).toHaveCount(1)
-   const box=await action.boundingBox()
-   expect(box).not.toBeNull()
-   expect(box!.width).toBeGreaterThanOrEqual(24);expect(box!.height).toBeGreaterThanOrEqual(24)
-   expect(box!.x).toBeGreaterThanOrEqual(0);expect(box!.x+box!.width).toBeLessThanOrEqual(width+.5)
+   await expect(async()=>{
+    if(await more.isVisible()&&await more.getAttribute('aria-expanded',{timeout:1000})==='false')await more.press('Enter',{timeout:1000})
+    const boxes=await action.evaluateAll(nodes=>nodes.map(node=>{
+     if(!node.checkVisibility({visibilityProperty:true}))return null
+     const {x,width,height}=node.getBoundingClientRect()
+     return{x,width,height}
+    }))
+    expect(boxes).toHaveLength(1)
+    const [box]=boxes
+    expect(box).not.toBeNull()
+    expect(box!.width).toBeGreaterThanOrEqual(24);expect(box!.height).toBeGreaterThanOrEqual(24)
+    expect(box!.x).toBeGreaterThanOrEqual(0);expect(box!.x+box!.width).toBeLessThanOrEqual(width+.5)
+   },`${width} px · ${name}`).toPass({timeout:5000})
   }
-  if(await more.isVisible()){
+  if(await bar.getByRole('menu',{name:'[Mörë~~]',exact:true}).isVisible()){
    await page.keyboard.press('Escape');await expect(more).toBeFocused()
   }
  }
- expect(await more.evaluate(node=>({
+ await expect.poll(()=>more.evaluate(node=>({
   forced:matchMedia('(forced-colors: active)').matches,outline:getComputedStyle(node).outlineStyle,
   duration:getComputedStyle(node).transitionDuration
  }))).toEqual({forced:true,outline:'solid',duration:'0s'})
