@@ -3,6 +3,7 @@ import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
+import {runApplicationMenu} from './application-menu'
 let app:ElectronApplication,page:Page,folder:string,id:string,serial=0
 const content=()=>page.locator('.cm-content'),toolbar=()=>page.getByRole('group',{name:'Formato Markdown',exact:true})
 const foldKey=process.platform==='darwin'?'Meta+Alt+[':'Control+Shift+BracketLeft',unfoldKey=process.platform==='darwin'?'Meta+Alt+]':'Control+Shift+BracketRight'
@@ -68,7 +69,7 @@ for(const [label,original,expected]of [['viñetas','- Uno','- Uno\n- '],['numera
  await open(original);await content().focus();await page.keyboard.press('ControlOrMeta+End');await page.keyboard.press('Enter');await expect.poll(source).toBe(expected);await page.keyboard.press('ControlOrMeta+Z');await sameSource(original)
 })
 test('E4: IME sintético no inserta formatos ni parte Unicode con varios cursores',async()=>{
- const original='uno\nuno';await open(original);await clickAt(0,3);await clickAt(1,3,true);await content().dispatchEvent('compositionstart',{data:''});await page.keyboard.press('ControlOrMeta+B');await page.keyboard.press('ControlOrMeta+I');await expect.poll(source).toBe(original);await content().dispatchEvent('compositionend',{data:''});await page.keyboard.insertText('🐾');await expect.poll(source).toBe('uno🐾\nuno🐾')
+ const original='uno\nuno';await open(original);await clickAt(0,3);await clickAt(1,3,true);await content().dispatchEvent('compositionstart',{data:''});await page.keyboard.press('ControlOrMeta+B');await page.keyboard.press('ControlOrMeta+I');await page.keyboard.press('ControlOrMeta+/');await expect(content().locator('.cm-line')).toHaveText(['uno','uno']);await expect.poll(source).toBe(original);await content().dispatchEvent('compositionend',{data:''});await page.keyboard.insertText('🐾');await expect.poll(source).toBe('uno🐾\nuno🐾')
  await test.info().attach('ime-alcance',{body:Buffer.from(JSON.stringify({synthetic:true,physicalIME:false,screenReader:false})),contentType:'application/json'})
 })
 test('E5: texto plano y Mermaid mantienen su comportamiento sin plegado ni continuación Markdown',async()=>{
@@ -87,7 +88,7 @@ test('E2/E4: sólo lectura permite plegar sin aceptar ediciones ni formato',{tag
  await expect(page.getByRole('button',{name:'Editar',exact:true})).toHaveClass(/\bactive\b/)
  const full='# Fuente protegida\n\n'+('Texto sin modificar.\n'.repeat(600000)),{path,doc}=await open(full,'protegido.md');expect(doc.readonly).toBe(true);const visible=await source();await readyToFold();await clickAt(0,2)
  await test.info().attach('readonly-foco',{body:Buffer.from(JSON.stringify(await content().evaluate(node=>({focused:node===document.activeElement,tabindex:node.getAttribute('tabindex'),editable:node.getAttribute('contenteditable')})))),contentType:'application/json'})
- await expect(content()).toBeFocused();await page.keyboard.press(foldKey);await expect(page.locator('.cm-foldPlaceholder')).toHaveCount(1);await page.keyboard.press(unfoldKey);await page.keyboard.press('ControlOrMeta+B');await page.keyboard.insertText('X');await page.keyboard.press('Enter');await expect.poll(source).toBe(visible);await expect.poll(async()=>(await info())?.dirty).toBe(false);expect(await readFile(path,'utf8')).toBe(full)
+ await expect(content()).toBeFocused();await page.keyboard.press(foldKey);await expect(page.locator('.cm-foldPlaceholder')).toHaveCount(1);await page.keyboard.press(unfoldKey);await page.keyboard.press('ControlOrMeta+B');await page.keyboard.press('ControlOrMeta+/');await page.keyboard.type('(');await page.keyboard.insertText('X');await page.keyboard.press('Enter');await expect.poll(source).toBe(visible);await expect.poll(async()=>(await info())?.dirty).toBe(false);expect(await readFile(path,'utf8')).toBe(full)
 })
 
 test('E2 inline: los cuatro formatos desde el interior de una palabra renderizan y deshacen en un paso',async()=>{
@@ -120,5 +121,95 @@ test('E2 inline: selección inversa entre párrafos conserva CRLF, alterna por t
  await page.keyboard.press('ControlOrMeta+B');await sameSource(original)
  await page.keyboard.press('ControlOrMeta+Z');await sameSource(formatted,true)
  await page.keyboard.press('ControlOrMeta+Z');await sameSource(original)
+ expect(await readFile(path,'utf8')).toBe(original)
+})
+
+async function openH13(text:string,extension:string){
+ const name=`h13-${++serial}.${extension}`,path=join(folder,name);await writeFile(path,text)
+ const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);id=doc.id
+ await expect(page.getByRole('tab',{name,exact:true})).toHaveAttribute('aria-selected','true')
+ if(extension==='csv'){
+  const textView=page.getByRole('group',{name:'Vista del CSV',exact:true}).getByRole('button',{name:'Texto',exact:true})
+  await textView.click();await expect(textView).toHaveAttribute('aria-pressed','true');await expect(textView).toBeFocused()
+  await expect(page.getByRole('textbox',{name:'Editor CSV como texto',exact:true})).toBeVisible()
+ }else await page.getByRole('button',{name:'Editar',exact:true}).click()
+ await expect(content()).toBeVisible()
+ return{path}
+}
+
+test('H13-1: cuatro gestos de multicursor editan y deshacen en cada formato',async()=>{
+ for(const extension of ['txt','mmd','md','csv']){
+  await test.step(extension,async()=>{
+   const first=extension==='mmd'||extension==='csv'?1:0,offset=first?4:0
+   const fixture=(words:readonly string[])=>{
+    const rows=words.map((word,index)=>`${word} ${index+1}`)
+    if(extension==='mmd')return ['flowchart LR',...rows.map((row,index)=>`  ${'ABC'[index]}[${row}]`)].join('\r\n')
+    if(extension==='csv')return `id,valor\r\n001,${rows[0]}\n002,${rows[1]}\r003,${rows[2]}\r\n`
+    return rows.join('\r\n')
+   }
+   const original=fixture(['Freya','Freya','Freya']),{path}=await openH13(original,extension)
+   const replace=async(words:readonly string[],insert:string)=>{
+    await page.keyboard.insertText(insert);await sameSource(fixture(words))
+    await page.keyboard.press('ControlOrMeta+Z');await sameSource(original)
+   }
+   await clickAt(first,offset+5);await clickAt(first+1,offset+5,true)
+   await replace(['Freya!','Freya!','Freya'],'!')
+   await clickAt(first,offset+2);await page.keyboard.press('ControlOrMeta+D');await page.keyboard.press('ControlOrMeta+D')
+   await replace(['Luna','Luna','Freya'],'Luna')
+   await clickAt(first,offset+2);await page.keyboard.press('ControlOrMeta+D');await page.keyboard.press('ControlOrMeta+Shift+L')
+   await replace(['Luna','Luna','Luna'],'Luna')
+   for(const [key,words]of [['ArrowUp',['Freya!','Freya!','Freya']],['ArrowDown',['Freya','Freya!','Freya!']]]as const){
+    await clickAt(first+1,offset+5);await page.keyboard.press(`Control+Alt+${key}`)
+    await replace(words,'!')
+   }
+   expect(await readFile(path,'utf8')).toBe(original)
+  })
+ }
+})
+
+test('H13-1: teclear un par lo cierra, resalta y permite seguir dentro',async()=>{
+ const original='Valor = ',{path}=await openH13(original,'txt')
+ await clickAt(0,original.length);await page.keyboard.type('(')
+ await sameSource('Valor = ()',true)
+ await expect(content().locator('.cm-matchingBracket')).toHaveText(['(',')'])
+ await page.keyboard.type('"hola")');await sameSource('Valor = ("hola")',true)
+ expect(await readFile(path,'utf8')).toBe(original)
+})
+
+test('H13-1: comentar alterna la sintaxis del formato y omite texto plano y CSV',async()=>{
+ const errors:Error[]=[];page.on('pageerror',error=>errors.push(error))
+ for(const [extension,original,commented]of [
+  ['mmd','flowchart LR\r\n  A --> B','flowchart LR\r\n  %% A --> B'],
+  ['md','Freya','<!-- Freya -->'],
+  ['txt','Freya','Freya'],
+  ['csv','id,valor\r\n001,Freya\r\n','id,valor\r\n001,Freya\r\n'],
+ ]as const){
+  const {path}=await openH13(original,extension)
+  if(extension==='mmd')await clickAt(1,4)
+  else{await content().focus();await page.keyboard.press('ControlOrMeta+A')}
+  await page.keyboard.press('ControlOrMeta+/');await sameSource(commented,commented===original?false:undefined)
+  await page.keyboard.press('ControlOrMeta+/');await sameSource(original,commented===original?false:undefined)
+  expect(await readFile(path,'utf8')).toBe(original)
+ }
+ expect(errors).toEqual([])
+})
+
+test('H13-1: Tab sangra según Ajustes y deja salir con Escape o Mayús+Tab',async()=>{
+ const original='Freya',{path}=await openH13(original,'txt')
+ const settings=page.getByRole('dialog',{name:'Ajustes',exact:true})
+ const tabIndents=settings.getByRole('checkbox',{name:'Tab sangra',exact:true})
+ const indentation=settings.getByRole('combobox',{name:'Sangría',exact:true})
+ const openSettings=async()=>{await runApplicationMenu(app,'app.settings');await settings.getByRole('tab',{name:'Apariencia',exact:true}).click()}
+ const closeSettings=async()=>{await settings.getByRole('button',{name:'Cerrar',exact:true}).click();await expect(settings).toHaveCount(0)}
+ await content().focus();await page.keyboard.press('Tab');await expect(content()).not.toBeFocused();await sameSource(original,false)
+ await openSettings();await expect(tabIndents).toBeVisible();await expect(tabIndents).not.toBeChecked()
+ await tabIndents.check();await expect(settings).toHaveAttribute('aria-busy','false');await expect(tabIndents).toBeChecked();await closeSettings()
+ for(const [label,indent]of [['2 espacios','  '],['4 espacios','    '],['Tabulación','\t']]as const){
+  await openSettings();await indentation.selectOption({label});await expect(settings).toHaveAttribute('aria-busy','false');await closeSettings()
+  await clickAt(0,0);await page.keyboard.press('Tab');await sameSource(indent+original,true)
+  await expect(content()).toBeFocused();await page.keyboard.press('ControlOrMeta+Z');await sameSource(original)
+ }
+ await page.keyboard.press('ControlOrMeta+A');await page.keyboard.press('Escape');await page.keyboard.press('Tab');await expect(content()).not.toBeFocused();await sameSource(original)
+ await content().focus();await page.keyboard.press('Shift+Tab');await expect(content()).not.toBeFocused();await sameSource(original)
  expect(await readFile(path,'utf8')).toBe(original)
 })

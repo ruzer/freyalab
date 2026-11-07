@@ -25,7 +25,7 @@
  function resetSection(){
   const values=defaultSettings()
   if(section==='general')void save({idioma:values.idioma})
-  else if(section==='appearance')void save({tema:values.tema,barraLateral:values.barraLateral,markdown:values.markdown,division:values.division})
+  else if(section==='appearance')void save({tema:values.tema,barraLateral:values.barraLateral,markdown:values.markdown,editor:values.editor,division:values.division})
   else if(section==='updates')void save({actualizaciones:values.actualizaciones})
   else if(section==='advanced')void save({avanzado:values.avanzado})
  }
@@ -52,6 +52,15 @@
      <label>{t('settings.markdownMode')}<select aria-label={t('settings.markdownMode')} value={settings.values.markdown.modoInicial} onchange={event=>save({markdown:{modoInicial:event.currentTarget.value as Settings['markdown']['modoInicial']}})}><option value="edit">{t('menu.view.mode.edit')}</option><option value="split">{t('menu.view.mode.split')}</option><option value="preview">{t('menu.view.mode.preview')}</option></select></label>
      <p>{t('settings.markdownMode.help')}</p>
      <label>{t('settings.split',{value:formatNumber(settings.values.division)})}<input type="range" aria-label={t('settings.split.label')} min="20" max="80" step="any" value={settings.values.division} onchange={event=>save({division:event.currentTarget.valueAsNumber})}/></label>
+     <label class="check"><input type="checkbox" checked={settings.values.editor.tabIndents} aria-describedby="settings-tab-indents-help" onchange={event=>save({editor:{tabIndents:event.currentTarget.checked}})}/>{t('settings.editor.tabIndents')}</label>
+     <p id="settings-tab-indents-help">{t('settings.editor.tabIndents.help')}</p>
+     <label>{t('settings.editor.indent')}
+      <select value={settings.values.editor.indent} onchange={event=>{const value=event.currentTarget.value;void save({editor:{indent:value==='tab'?'tab':value==='4'?4:2}})}}>
+       <option value={2}>{t('settings.editor.indent.two')}</option>
+       <option value={4}>{t('settings.editor.indent.four')}</option>
+       <option value="tab">{t('settings.editor.indent.tab')}</option>
+      </select>
+     </label>
     </fieldset>
    {:else if section==='files'}
     <p>{t('settings.recents.help')}</p>
