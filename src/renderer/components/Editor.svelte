@@ -174,6 +174,7 @@
  @media(forced-colors:active){
   .code-editor{--selection:Highlight;--selection-inactive:Highlight}
   .code-editor :global(.cm-activeLine){background-color:transparent}
+  .code-editor :global(.cm-matchingBracket){outline:1px solid Highlight}
   .code-editor :global(.cm-selectionBackground){forced-color-adjust:none}
   .code-editor :global(.cm-content ::selection),.code-editor :global(.cm-content::selection){color:HighlightText}
  }
