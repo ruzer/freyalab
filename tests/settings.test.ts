@@ -26,6 +26,23 @@ describe('APP-03 · modelo y persistencia de ajustes',()=>{
   expect((await store.get()).values.tema).toBe('light')
   expect((await new SettingsStore(path).migrate(legacy)).values.tema).toBe('light')
  })
+ it('H13-1 · lee los ajustes v1 anteriores con los valores iniciales del editor, sin reescribirlos',async()=>{
+  const previous=Object.fromEntries(Object.entries({...defaultSettings(),tema:'dark'}).filter(([key])=>key!=='editor'))
+  await writeFile(path,JSON.stringify(previous))
+  const state=await store.get()
+  expect(state).toMatchObject({readonly:false,migrationPending:false,values:{tema:'dark',editor:{tabIndents:false,indent:2}}})
+  expect(state.notice).toBeUndefined();expect(await disk()).toEqual(previous);expect(await readdir(folder)).toEqual(['settings.json'])
+ })
+ it('H13-1 · conserva los ajustes de sangría al aplicar parches parciales y volver a abrir',async()=>{
+  await store.migrate({})
+  await store.set({editor:{tabIndents:true}})
+  expect((await store.set({editor:{indent:4}})).values).toMatchObject({editor:{tabIndents:true,indent:4}})
+  await store.set({editor:{indent:'tab'}});await store.set({tema:'dark'})
+  expect((await new SettingsStore(path).get()).values).toMatchObject({tema:'dark',editor:{tabIndents:true,indent:'tab'}})
+  const before=await readFile(path)
+  for(const editor of [{indent:8},{indent:'4'},{tabIndents:'true'},{unknown:true}])await expect(store.set({editor})).rejects.toThrow(/ajustes|settings/i)
+  expect(await readFile(path)).toEqual(before)
+ })
  it.each([undefined,null,{},'localStorage bloqueado'])('S4 · %j usa defaults y finaliza la migración sin inventar preferencias',async value=>{
   const state=await store.migrate(value);expect(state.values).toEqual(defaultSettings());expect(state.migrationPending).toBe(false);expect(await disk()).toEqual(defaultSettings())
  })

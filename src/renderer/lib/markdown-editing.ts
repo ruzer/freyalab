@@ -9,7 +9,6 @@ const continueMarkup=insertNewlineContinueMarkupCommand({nonTightLists:false})
 export const markdownEditingExtensions:Extension=[
  markdownMultipleSelections,
  EditorView.contentAttributes.of({tabindex:'0'}),
- EditorView.clickAddsSelectionRange.of(event=>event.altKey),
  foldGutter(),keymap.of(foldKeymap),
  Prec.high(keymap.of(markdownKeymap.map(binding=>{
   const run=binding.key==='Enter'?continueMarkup:binding.run

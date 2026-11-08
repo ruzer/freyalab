@@ -48,7 +48,7 @@ export class SettingsStore {
   const current=await this.read()
   if(current.readonly)throw new Error(t('settings.readonly'))
   const previous=current.values,change=patch.data
-  const values=settingsSchema.parse({...previous,...change,barraLateral:{...previous.barraLateral,...change.barraLateral},markdown:{...previous.markdown,...change.markdown},actualizaciones:{...previous.actualizaciones,...change.actualizaciones},avanzado:{...previous.avanzado,...change.avanzado}})
+  const values=settingsSchema.parse({...previous,...change,barraLateral:{...previous.barraLateral,...change.barraLateral},markdown:{...previous.markdown,...change.markdown},editor:{...previous.editor,...change.editor},actualizaciones:{...previous.actualizaciones,...change.actualizaciones},avanzado:{...previous.avanzado,...change.avanzado}})
   await this.write(values)
   return{...current,values,readonly:false,migrationPending:false}
  })}
