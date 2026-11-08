@@ -1,7 +1,7 @@
 import {EditorState,type Extension} from '@codemirror/state'
 import {EditorView,keymap} from '@codemirror/view'
 import {addCursorAbove,addCursorBelow,indentMore,temporarilySetTabFocusMode,toggleComment} from '@codemirror/commands'
-import {closeBrackets} from '@codemirror/autocomplete'
+import {closeBrackets,closeBracketsKeymap} from '@codemirror/autocomplete'
 import {bracketMatching,indentUnit} from '@codemirror/language'
 import {markdown} from '@codemirror/lang-markdown'
 import type {Settings} from '../../shared/settings'
@@ -12,6 +12,7 @@ const csvMouseSelection=EditorView.clickAddsSelectionRange.of(event=>event.altKe
 const multipleSelections=EditorState.allowMultipleSelections.of(true)
 const mermaidComments=EditorState.languageData.of(()=>[{commentTokens:{line:'%%'}}])
 const editingKeys=keymap.of([
+ ...closeBracketsKeymap.map(binding=>({...binding,run:(view:EditorView)=>!view.compositionStarted&&!!binding.run?.(view)})),
  {key:'Mod-/',run:view=>{
   if(!view.compositionStarted)toggleComment(view)
   return true

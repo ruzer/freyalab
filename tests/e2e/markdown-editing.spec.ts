@@ -154,6 +154,12 @@ test('H13-1: cuatro gestos de multicursor editan y deshacen en cada formato',asy
    }
    await clickAt(first,offset+5);await clickAt(first+1,offset+5,true)
    await replace(['Freya!','Freya!','Freya'],'!')
+   if(extension==='csv'){
+    const modifier=process.platform==='darwin'?'Meta':'Control'
+    await clickAt(first,offset+5);await page.keyboard.down(modifier)
+    try{await clickAt(first+1,offset+5)}finally{await page.keyboard.up(modifier)}
+    await replace(['Freya!','Freya!','Freya'],'!')
+   }
    await clickAt(first,offset+2);await page.keyboard.press('ControlOrMeta+D');await page.keyboard.press('ControlOrMeta+D')
    await replace(['Luna','Luna','Freya'],'Luna')
    await clickAt(first,offset+2);await page.keyboard.press('ControlOrMeta+D');await page.keyboard.press('ControlOrMeta+Shift+L')
@@ -174,6 +180,28 @@ test('H13-1: teclear un par lo cierra, resalta y permite seguir dentro',async()=
  await expect(content().locator('.cm-matchingBracket')).toHaveText(['(',')'])
  await page.keyboard.type('"hola")');await sameSource('Valor = ("hola")',true)
  expect(await readFile(path,'utf8')).toBe(original)
+})
+
+for(const extension of ['txt','md','mmd'])test(`H13-1b: Retroceso borra el par vacío en ${extension}`,async()=>{
+ await openH13('',extension)
+ await content().focus();await page.keyboard.type('(');await sameSource('()')
+ await page.keyboard.press('Backspace');await sameSource('')
+})
+
+test('H13-1b: los pares resaltados tienen contorno Highlight con colores forzados',async()=>{
+ await page.emulateMedia({forcedColors:'active'})
+ await openH13('','txt');await content().focus();await page.keyboard.type('(')
+ const brackets=content().locator('.cm-matchingBracket')
+ await expect(brackets).toHaveText(['(',')'])
+ const highlight=await page.evaluate(()=>{
+  const sample=document.createElement('span');sample.style.color='Highlight';document.body.append(sample)
+  const color=getComputedStyle(sample).color;sample.remove();return color
+ })
+ for(const bracket of await brackets.all()){
+  await expect(bracket).toHaveCSS('outline-style','solid')
+  await expect(bracket).toHaveCSS('outline-width','1px')
+  await expect(bracket).toHaveCSS('outline-color',highlight)
+ }
 })
 
 test('H13-1: comentar alterna la sintaxis del formato y omite texto plano y CSV',async()=>{
