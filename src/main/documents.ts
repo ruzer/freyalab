@@ -19,6 +19,7 @@ import {CsvViewStore} from './csv-view-store'
 import {decodeCsvText,encodeCsvText,csvTextByteLength,type CsvTextFormat} from './csv-text-codec'
 import {isCsvTextFormat} from '../shared/csv-text'
 import {csvOpenError} from './csv-open-error'
+import type {CalculateColumnEdit,CalculatedValue} from '../shared/calculated-column'
 import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type CsvViewDecision,type AppEvent,type DocumentInfo,type Kind,type RecoveryEntry,type TableOptions,type TableEdit,type TableExport,type TreeEntry} from '../shared/types'
 interface RecordDoc { info:DocumentInfo; hash?:string; text:string; csvTextFormat?:CsvTextFormat;undo:string[]; redo:string[]; root:string; saving:boolean; timer?:ReturnType<typeof setTimeout>; watcher?:FSWatcher }
 const extensions:Record<string,Kind>={'.md':'markdown','.markdown':'markdown','.txt':'text','.mmd':'mermaid','.mermaid':'mermaid','.csv':'csv','.tsv':'csv'}
@@ -114,6 +115,40 @@ export class Documents {
  private async checkpointNow(id:string){const r=this.get(id);if(!r.info.dirty||r.info.readonly)return;await mkdir(this.recoveryDir,{recursive:true,mode:0o700});const revision=r.info.revision;const data=isTableDocument(r.info)?await this.table.call<string>('checkpoint',id,{...r.info}):JSON.stringify({version:1,info:r.info,savedAt:new Date().toISOString(),snapshot:{text:r.text,...(r.csvTextFormat?{format:r.csvTextFormat}:{})}});await atomicWrite(join(this.recoveryDir,`${id}.json`),data);if(revision!==r.info.revision)this.schedule(id)}
  async tableEdit(id:string,edit:TableEdit){this.rejectDuringReload(id);if((edit.type==='structure'||edit.type==='range')&&this.operations.has(id))throw new Error('Espera a que termine el guardado o la edición anterior antes de preparar el cambio.');return this.serial(id,()=>this.tableEditNow(id,edit))}
  private async tableEditNow(id:string,edit:TableEdit){this.requireTable(id);await this.table.call('edit',id,edit);await this.syncTable(id);this.schedule(id);return this.info(id)}
+ async calculationSource(id:string,revision:number){
+  const record=this.requireTable(id)
+  const path=record.info.path,hash=record.hash
+  if(record.info.readonly||record.info.revision!==revision)throw new Error(t('calculate.error.changed'))
+  let canonical:string|undefined
+  if(path){
+   try{
+    canonical=await this.authorize(path)
+    if(!hash||dirname(canonical)!==record.root)throw new Error()
+    const limit=50*1024*1024,actual=createHash('sha256')
+    const file=await openFile(canonical,constants.O_RDONLY|(constants.O_NOFOLLOW??0)|(constants.O_NONBLOCK??0))
+    try{
+     const info=await file.stat()
+     if(!info.isFile()||info.size>limit)throw new Error()
+     for await(const chunk of file.createReadStream({autoClose:false,end:limit}))actual.update(chunk)
+     if(actual.digest('hex')!==hash)throw new Error()
+    }finally{await file.close()}
+   }
+   catch{throw new Error(t('calculate.error.disk'))}
+  }
+  if(this.records.get(id)!==record||record.info.revision!==revision||record.info.path!==path||record.hash!==hash)throw new Error(t('calculate.error.changed'))
+  return canonical&&hash?{path:canonical,hash}:undefined
+ }
+ async calculationApply(id:string,edit:CalculateColumnEdit,values:CalculatedValue[],signal:AbortSignal){
+  this.rejectDuringReload(id)
+  if(this.operations.has(id))throw new Error(t('calculate.error.changed'))
+  return this.serial(id,async()=>{
+   const expectedSource=await this.calculationSource(id,edit.revision)
+   signal.throwIfAborted()
+   await this.table.call('calculationApply',id,edit,values,expectedSource)
+   await this.syncTable(id);this.schedule(id)
+   return this.info(id)
+  })
+ }
  async tableOptions(id:string,options:TableOptions){return this.reinterpret(id,()=>this.tableOptionsNow(id,options))}
  private async tableOptionsNow(id:string,options:TableOptions){const r=this.requireTable(id);if(r.info.dirty)throw new Error('Guarda los cambios antes de cambiar cómo se interpreta el archivo.');if(!r.info.path)throw new Error('Guarda el archivo antes de cambiar su interpretación.');const initial=await stat(r.info.path);const before=initial.size<=50*1024*1024?await digest(r.info.path):undefined;if(r.hash!==undefined&&r.hash!==before)throw new Error('El archivo cambió en disco. Recárgalo antes de cambiar su interpretación.');await this.table.call('open',id,r.info.path,options);await this.syncTable(id);const after=await stat(r.info.path);if(before!==undefined?before!==await digest(r.info.path):initial.size!==after.size||initial.mtimeMs!==after.mtimeMs)throw new Error('El archivo cambió durante la lectura. Recárgalo antes de guardar.');r.hash=before;return this.info(id)}
  async undo(id:string,redo=false){this.rejectDuringReload(id);return this.serial(id,()=>this.undoNow(id,redo))}
@@ -138,7 +173,7 @@ export class Documents {
    }else await atomicWrite(dest,data,same?r.hash:undefined)
    r.hash=createHash('sha256').update(data).digest('hex')
    if(revision===r.info.revision||assets){
-    if(isTableDocument(r.info)){const marked=await this.table.call('markSaved',id,revision);if(marked.revision>=r.info.revision)Object.assign(r.info,marked)}else r.info.dirty=false
+    if(isTableDocument(r.info)){const marked=await this.table.call('markSaved',id,revision,{path:canonical,hash:r.hash});if(marked.revision>=r.info.revision)Object.assign(r.info,marked)}else r.info.dirty=false
     if(!r.info.dirty){clearTimeout(r.timer);await this.recoveryTasks.get(id);if(!r.info.dirty)await this.discardRecovery(id)}
    }
    r.info.path=dest;r.info.name=basename(dest);if(!same)r.root=dirname(await realpath(dest));await r.watcher?.close();r.watcher=watch(dest,{ignoreInitial:true}).on('change',()=>{if(!r.saving)this.emit({type:'external',id})});await this.addRecent(dest)

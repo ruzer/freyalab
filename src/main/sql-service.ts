@@ -6,20 +6,29 @@ import {resolve,relative,isAbsolute} from 'node:path'
 import {fileURLToPath,pathToFileURL} from 'node:url'
 import {stat} from 'node:fs/promises'
 import {sqlColumns} from '../shared/sql-helpers'
-import type {SqlRequest,SqlSource,SqlResult,SqlProgress} from '../shared/types'
+import type {SqlRequest,SqlSource,SqlResult,SqlProgress,CalculatedColumnPreview} from '../shared/types'
+import type {CalculateColumnEdit,CalculatedValue} from '../shared/calculated-column'
+import {t} from '../shared/i18n'
 import type {Documents} from './documents'
 import {JobQueue,type Priority} from './job-queue'
 
 const origin='freyalab-analysis://engine',scheme='freyalab-analysis'
 protocol.registerSchemesAsPrivileged([{scheme,privileges:{standard:true,secure:true,supportFetchAPI:true}}])
-interface Job {id:string;documents:string[];sources:SqlSource[];window?:BrowserWindow;timer?:NodeJS.Timeout;used:number;result?:SqlResult;error?:string;disk:Map<string,{size:number;mtimeMs:number}>}
+interface Job {id:string;documents:string[];sources:SqlSource[];window?:BrowserWindow;timer?:NodeJS.Timeout;used:number;result?:SqlResult;error?:string;calculation?:string;disk:Map<string,{size:number;mtimeMs:number}>}
 // Resultados terminados que se conservan para paginarlos: el panel SQL, el gráfico y la exportación pueden tener uno cada uno.
 // Peor caso del esquema (10 000 filas × 200 columnas): unos 62 MiB de memoria por resultado, ver docs/evidence/sql-job-queue-2026-10-23.md.
 const retained=3
+const calculationBatch=z.object({rows:z.array(z.object({
+ rowId:z.string().min(1).max(100),value:z.string().max(1024*1024).nullable(),
+ invalid:z.array(z.number().int().min(0).max(199)).max(200),failed:z.boolean()
+}).strict()).max(2048),done:z.boolean()}).strict()
+function calculationKey(id:string,{requestId:_,...edit}:CalculateColumnEdit){return JSON.stringify([id,edit])}
 export class SqlService {
  private jobs=new Map<string,Job>()
  private queue:JobQueue
  private tick=0
+ private preparedCalculation?:{id:string;requestId:string;key:string;values:CalculatedValue[]}
+ private applyingCalculation=new Map<string,{id:string;abort:AbortController}>()
  constructor(private docs:Documents,private progress:(event:SqlProgress)=>void){
   this.queue=new JobQueue(1,requestId=>progress({requestId,phase:'En cola: hay otro análisis en curso',rows:0}))
   const isolated=session.fromPartition('freyalab-analysis'),root=fileURLToPath(new URL('../renderer',import.meta.url))
@@ -29,9 +38,15 @@ export class SqlService {
  }
  private check(job:Job){if(this.jobs.get(job.id)!==job)throw new Error('Análisis cancelado.');for(const source of job.sources)if(this.docs.get(source.id).info.revision!==source.revision)throw new Error('Una fuente cambió. Ejecuta de nuevo el análisis.')}
  cancel(requestId:string){if(!this.jobs.delete(requestId))return;this.queue.cancel(requestId)}
- stop(){this.jobs.clear();this.queue.clear()}
+ cancelCalculation(id:string,requestId:string){
+  const job=this.jobs.get(requestId),applying=this.applyingCalculation.get(requestId)
+  if(job?.calculation===id){job.error=t('calculate.error.cancelled');this.cancel(requestId)}
+  if(applying?.id===id)applying.abort.abort(new Error(t('calculate.error.cancelled')))
+  if(this.preparedCalculation?.id===id&&this.preparedCalculation.requestId===requestId)this.preparedCalculation=undefined
+ }
+ stop(){this.jobs.clear();this.preparedCalculation=undefined;this.queue.clear()}
  // Al cerrar un documento se cancelan sus solicitudes (en cola, en curso o terminadas) y se suelta lo que retenían.
- forget(documentId:string){for(const job of [...this.jobs.values()])if(job.documents.includes(documentId))this.cancel(job.id)}
+ forget(documentId:string){if(this.preparedCalculation?.id===documentId)this.preparedCalculation=undefined;for(const job of [...this.jobs.values()])if(job.documents.includes(documentId))this.cancel(job.id)}
  // Se descartan los menos usados (por orden de uso, no de llegada: un trabajo que acaba de terminar nunca es el más antiguo).
  private trim(){const finished=[...this.jobs.values()].filter(job=>job.result).sort((a,b)=>a.used-b.used);for(const old of finished.slice(0,Math.max(0,finished.length-retained)))this.jobs.delete(old.id)}
  async run(request:SqlRequest,priority:Priority='interactive'):Promise<SqlResult>{
@@ -43,14 +58,18 @@ export class SqlService {
   try{await this.queue.run(job.id,priority,start,dispose);job.used=++this.tick;this.trim();return await this.page(job.id,0)}
   catch(error){if(this.jobs.get(job.id)===job)this.jobs.delete(job.id);throw new Error(job.error??(error as Error).message)}
  }
- private async execute(job:Job,request:SqlRequest):Promise<void>{
+ private async openEngine(job:Job){
   const owner=new BrowserWindow({show:false,webPreferences:{sandbox:true,contextIsolation:true,nodeIntegration:false,partition:'freyalab-analysis',backgroundThrottling:false}});job.window=owner
   owner.webContents.setWindowOpenHandler(()=>({action:'deny'}));owner.webContents.on('will-navigate',event=>event.preventDefault())
   owner.webContents.on('render-process-gone',()=>{if(job.window!==owner)return;job.error='El motor de análisis se cerró. Los documentos siguen intactos.';this.cancel(job.id)})
-  const call=<T>(method:string,...args:unknown[])=>owner.webContents.executeJavaScript(`globalThis.freyaSQL.${method}(...${JSON.stringify(args)})`) as Promise<T>
   this.progress({requestId:job.id,phase:'Preparando motor local',rows:0})
   await owner.loadURL(origin+'/analytics.html')
   await owner.webContents.executeJavaScript('new Promise(resolve=>{const timer=setInterval(()=>{if(globalThis.freyaSQL){clearInterval(timer);resolve(true)}},10)})')
+  return owner.webContents
+ }
+ private async execute(job:Job,request:SqlRequest):Promise<void>{
+  const contents=await this.openEngine(job)
+  const call=<T>(method:string,...args:unknown[])=>contents.executeJavaScript(`globalThis.freyaSQL.${method}(...${JSON.stringify(args)})`) as Promise<T>
   let cells=0
   for(const [index,input] of request.sources.entries()){
    this.check(job);const record=this.docs.get(input.id);if(!isTableDocument(record.info)||record.info.revision!==input.revision)throw new Error('Una fuente no es CSV o cambió de revisión.')
@@ -66,6 +85,90 @@ export class SqlService {
   this.check(job);const version=await call<string>('seal');this.progress({requestId:job.id,phase:'Ejecutando consulta de solo lectura',rows:job.sources.reduce((n,s)=>n+s.rows,0)})
   const output=z.object({columns:z.array(z.object({name:z.string().max(100000),type:z.string().max(1000)})).min(1).max(200),rows:z.array(z.array(z.string().max(8*1024*1024).nullable()).max(200)).max(10000),limited:z.boolean()}).parse(await call('query',request.sql));if(output.rows.some(row=>row.length!==output.columns.length)||output.rows.reduce((n,row)=>n+row.reduce((m,v)=>m+(v===null?0:Buffer.byteLength(v,'utf8')),0),0)>8*1024*1024)throw new Error('El motor devolvió un resultado no válido o demasiado grande.');this.check(job)
   job.result={requestId:job.id,sources:job.sources,version,columns:output.columns,rows:output.rows,returnedRows:output.rows.length,limited:output.limited,offset:0,completedAt:new Date().toISOString()}
+ }
+ async calculatePreview(id:string,edit:CalculateColumnEdit):Promise<CalculatedColumnPreview>{
+  if(app.commandLine.hasSwitch('no-sandbox'))throw new Error(t('calculate.error.sandbox'))
+  const record=this.docs.get(id)
+  this.cancel(edit.requestId)
+  this.preparedCalculation=undefined
+  const job:Job={id:edit.requestId,documents:[id],sources:[],used:0,disk:new Map(),calculation:id}
+  this.jobs.set(job.id,job)
+  const assertCurrent=()=>{
+   this.check(job)
+   if(this.docs.get(id)!==record||record.info.revision!==edit.revision)throw new Error(t('calculate.error.changed'))
+  }
+  const start=async()=>{
+   job.timer=setTimeout(()=>{job.error=t('calculate.error.timeout');this.cancel(job.id)},120000)
+   await this.docs.calculationSource(id,edit.revision)
+   assertCurrent()
+   const contents=await this.openEngine(job)
+   const call=async<T>(method:string,...args:unknown[])=>{
+    const response=await contents.executeJavaScript(`(async()=>{try{return{ok:true,value:await globalThis.freyaSQL.${method}(...${JSON.stringify(args)})}}catch(error){return{ok:false,error:String(error?.message??error)}}})()`) as {ok:true;value:T}|{ok:false;error:string}
+    if(!response.ok)throw new Error(response.error)
+    return response.value
+   }
+   const ticket=randomUUID()
+   const values:CalculatedValue[]=[]
+   let bytes=0
+   // Una celda Windows-1252 puede ocupar hasta tres veces más al pasar en UTF-8.
+   const transportLimit=50*1024*1024*(record.info.encoding==='win1252'?3:1)
+   try{
+    assertCurrent()
+    const meta=await this.docs.table.call<{headers:string[];revision:number;rows:number}>('calculationStart',id,ticket,edit)
+    const names=sqlColumns(meta.headers)
+    const columns=edit.columns.map(column=>({...column,name:names[column.index].name}))
+    let rowColumn='__freya_row'
+    while(names.some(column=>column.name.toLowerCase()===rowColumn))rowColumn+='_'
+    await call('table','datos',[...columns.map(column=>column.name),rowColumn])
+    let loaded=0
+    while(true){
+     assertCurrent()
+     const batch=await this.docs.table.call<{data?:Uint8Array;rows:number;done:boolean}>('analysisNext',ticket)
+     if(batch.done)break
+     await call('append','datos',Buffer.from(batch.data!).toString('base64'))
+     loaded+=batch.rows
+     if(loaded%10000===0)this.progress({requestId:job.id,phase:t('calculate.progress.loading'),rows:loaded})
+    }
+    await call('seal')
+    this.progress({requestId:job.id,phase:t('calculate.progress.evaluating'),rows:0})
+    await call('calculateStart',edit.expression,columns,rowColumn)
+    while(true){
+     assertCurrent()
+     const {data:batch}=calculationBatch.safeParse(await call('calculateNext'))
+     if(!batch)throw new Error(t('calculate.error.result'))
+     if(!batch.done&&!batch.rows.length)throw new Error(t('calculate.error.result'))
+     for(const value of batch.rows){
+      bytes+=value.value===null?0:Buffer.byteLength(value.value,'utf8')
+      if(bytes>transportLimit||values.length>=meta.rows)throw new Error(t('calculate.error.result'))
+      values.push(value)
+     }
+     this.progress({requestId:job.id,phase:t('calculate.progress.evaluating'),rows:values.length})
+     if(batch.done)break
+    }
+   }finally{await this.docs.table.call('analysisClose',ticket)}
+   const expectedSource=await this.docs.calculationSource(id,edit.revision)
+   assertCurrent()
+   const preview=await this.docs.table.call<CalculatedColumnPreview>('calculationPreview',id,edit,values,expectedSource)
+   assertCurrent()
+   return{preview,values}
+  }
+  const dispose=()=>{clearTimeout(job.timer);const owner=job.window;job.window=undefined;owner?.destroy()}
+  try{
+   const {preview,values}=await this.queue.run(job.id,'interactive',start,dispose)
+   assertCurrent()
+   this.preparedCalculation={id,requestId:edit.requestId,key:calculationKey(id,edit),values}
+   return preview
+  }catch(error){throw new Error(job.error??(error as Error).message)}
+  finally{if(this.jobs.get(job.id)===job)this.jobs.delete(job.id)}
+ }
+ async calculateApply(id:string,edit:CalculateColumnEdit){
+  const prepared=this.preparedCalculation
+  if(!prepared||prepared.key!==calculationKey(id,edit))throw new Error(t('calculate.error.preview'))
+  this.preparedCalculation=undefined
+  const abort=new AbortController()
+  this.applyingCalculation.set(edit.requestId,{id,abort})
+  try{return await this.docs.calculationApply(id,edit,prepared.values,abort.signal)}
+  finally{this.applyingCalculation.delete(edit.requestId)}
  }
  async page(requestId:string,offset:number):Promise<SqlResult>{
   const job=this.jobs.get(requestId);if(!job?.result)throw new Error('El resultado ya no está disponible. Ejecuta de nuevo la consulta.');this.check(job)

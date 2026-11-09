@@ -1,5 +1,5 @@
 import { TableEngine } from './table-engine'
-const allowed = new Set(['analysisStart','analysisNext','analysisClose','open','cancelOpen','create','info','transformPreview','rangePreview','rangeClipboard','clipboard','page','viewStart','viewState','viewCancel','viewClear','edit','undo','stats','analyzeColumn','cancelAnalysis','operation','cancelOperation','markdown','serialize','snapshot','restore','markSaved','close','checkpoint'])
+const allowed = new Set(['analysisStart','analysisNext','analysisClose','calculationStart','calculationPreview','calculationApply','open','cancelOpen','create','info','transformPreview','rangePreview','rangeClipboard','clipboard','page','viewStart','viewState','viewCancel','viewClear','edit','undo','stats','analyzeColumn','cancelAnalysis','operation','cancelOperation','markdown','serialize','snapshot','restore','markSaved','close','checkpoint'])
 const port = process.parentPort
 if (!port) throw new Error('El motor tabular necesita un proceso de datos Electron.')
 // FREYALAB_LARGE_BYTES solo se atiende en las pruebas: fuerza el modo grande con archivos pequeños.

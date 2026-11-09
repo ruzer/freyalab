@@ -843,5 +843,14 @@
  "markdown.toolbar.datetime": "Date and time",
  "markdown.toolbar.language": "Code block language",
  "markdown.toolbar.codeBlock": "Code block",
- "markdown.toolbar.codeHint": "Insert a block in the selected language"
+ "markdown.toolbar.codeHint": "Insert a block in the selected language",
+ "calculate.error.sandbox": "Calculation needs Chromium isolation. Start FreyaLab without the --no-sandbox option.",
+ "calculate.error.changed": "The table changed or can no longer be edited. Review the document and prepare the preview again.",
+ "calculate.error.disk": "The file changed on disk. Review the document before calculating again.",
+ "calculate.error.timeout": "Calculation exceeded two minutes. Simplify the formula and try again.",
+ "calculate.error.result": "The result exceeds the table limits or contains invalid data. The document is intact.",
+ "calculate.error.preview": "Preview this formula before applying it.",
+ "calculate.error.cancelled": "Calculation cancelled. The document is intact.",
+ "calculate.progress.loading": "Reading every row in the document",
+ "calculate.progress.evaluating": "Calculating values"
 }

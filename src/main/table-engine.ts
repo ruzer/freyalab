@@ -1,5 +1,5 @@
-import { createReadStream } from 'node:fs'
-import {randomUUID} from 'node:crypto'
+import { constants, createReadStream } from 'node:fs'
+import {createHash,randomUUID} from 'node:crypto'
 import { Transform } from 'node:stream'
 import { open as openFile, stat, realpath } from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -10,19 +10,39 @@ import { stringify } from 'csv-stringify/sync'
 import iconv from 'iconv-lite'
 import {ANALYSIS_LIMITS,arrowBatches,fileRecords,validateUtf8} from './analysis-source'
 import {compileTableQuery} from './table-query'
-import {buildIndex,readRecords,splitFields,indexUnchanged,LargeFormatError,RECORD_DELIMITERS,type LargeIndex} from './large-table'
+import {buildIndex,readRecords,recordByteOffsets,splitFields,indexUnchanged,LargeFormatError,RECORD_DELIMITERS,type LargeIndex} from './large-table'
 import {runOperation,OperationCancelled} from './operations'
+import {calculatedRecordBytes} from './calculated-csv-bytes'
 import {LargeViews} from './large-view'
 import type {EngineOperation,OperationResult} from '../shared/operations'
 import {analyzeColumn,numeric,descriptive} from './table-analysis'
-import type {ColumnAnalysisRequest,ColumnAnalysis,TableTransformEdit,TableTransformPreview,SqlProgress} from '../shared/types'
+import type {CalculatedColumnPreview,ColumnAnalysisRequest,ColumnAnalysis,TableTransformEdit,TableTransformPreview,SqlProgress} from '../shared/types'
+import type {CalculateColumnEdit,CalculatedValue} from '../shared/calculated-column'
 import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableConditionGroup, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview,TableStatsOptions,LargeViewRequest } from '../shared/types'
 
 export const TABLE_LIMITS = { bytes: 50 * 1024 * 1024, cells: 2_000_000, record: 1024 * 1024, sampleBytes: 8 * 1024 * 1024, sampleRows: 200 }
 interface Metadata { encoding: Encoding; delimiter: string; eol: string; bom: boolean; header: boolean; finalEol: boolean; headerWidth: number }
-interface State extends Metadata { rows: TableRow[]; headers: string[]; readonly: boolean; warning?: string; revision: number; nextId: number; token: number; savedToken: number; history: Change[]; future: Change[]; large?: {index:LargeIndex;rowCount:number} }
-type Mutation = {type:'rowOrder'|'columnOrder';order:number[]} | { type: 'cell'; id: string; column: number; value: string; length?:number } | { type: 'header'; column: number; value: string; headerWidth?:number } | { type: 'rows'; index: number; remove: number; rows: TableRow[] } | { type: 'column'; index: number; remove: boolean; name: string; cells: string[]; headerWidth?:number; lengths?:number[] }
+interface State extends Metadata { columnIds:number[]; nextColumn:number; rows: TableRow[]; headers: string[]; readonly: boolean; warning?: string; revision: number; nextId: number; token: number; savedToken: number; history: Change[]; future: Change[]; large?: {index:LargeIndex;rowCount:number} }
+type Mutation = {type:'rowOrder'|'columnOrder';order:number[]} | { type: 'cell'; id: string; column: number; value: string; length?:number } | { type: 'header'; column: number; value: string; headerWidth?:number } | { type: 'rows'; index: number; remove: number; rows: TableRow[] } | { type: 'column'; index: number; remove: boolean; name: string; cells: string[]; headerWidth?:number; lengths?:number[]; columnId?:number }
 interface Change { forward: Mutation[]; backward: Mutation[]; before: number; after: number; bytes:number }
+interface CsvSource {path:string;hash:string}
+interface RecordLayout {rows:string[];columns:number[];header:boolean}
+interface OriginalBytes {bytes:Buffer;offsets:Uint32Array;layout:RecordLayout;rows:Map<string,number>}
+function bomLength(s:Metadata){return s.bom?(s.encoding==='utf16le'?2:3):0}
+function layout(s:State):RecordLayout{return {rows:s.rows.map(row=>row.id),columns:[...s.columnIds],header:s.header&&s.headerWidth>0}}
+function originalBytes(s:State,bytes:Buffer,layout:RecordLayout,offsets=recordByteOffsets(bytes,s.encoding,bomLength(s),layout.rows.length+Number(layout.header))):OriginalBytes{
+ const rows=new Map<string,number>()
+ for(const [index,id] of layout.rows.entries())rows.set(id,index+Number(layout.header))
+ return {bytes,layout,offsets,rows}
+}
+function originalRecord(original:OriginalBytes|undefined,rowId?:string):Buffer|undefined{
+ const index=rowId===undefined?(original?.layout.header?0:undefined):original?.rows.get(rowId)
+ if(original&&index!==undefined)return original.bytes.subarray(original.offsets[index],original.offsets[index+1])
+}
+function fieldOrigins(s:State,original:OriginalBytes|undefined):(number|null)[]{
+ const columns=new Map(original?.layout.columns.map((id,index)=>[id,index]))
+ return s.columnIds.map(id=>columns.get(id)??null)
+}
 class LimitError extends Error {}
 function validDelimiter(value: string) { if (![',', ';', '\t', '|'].includes(value)) throw new Error('Delimitador no válido.'); return value }
 function detectEncoding(bytes: Buffer): Encoding {
@@ -43,9 +63,10 @@ function metadata(bytes: Buffer, options: TableOptions, path = ''): Metadata {
  const bom = encoding === 'utf8' ? bytes.subarray(0, 3).equals(Buffer.from([0xef,0xbb,0xbf])) : encoding === 'utf16le' && bytes[0] === 0xff && bytes[1] === 0xfe
  return { encoding, delimiter, eol, bom, header: options.header ?? true, finalEol:/[\r\n]$/.test(text), headerWidth:0 }
 }
-async function prefix(path: string, max: number): Promise<Buffer> {
- const handle = await openFile(path, 'r')
- try { const result = Buffer.alloc(Math.min((await handle.stat()).size, max)); let offset = 0; while (offset < result.length) { const read = await handle.read(result, offset, result.length-offset, offset); if (!read.bytesRead) break; offset += read.bytesRead } return result.subarray(0, offset) } finally { await handle.close() }
+async function prefix(path: string, max: number, lexical=false): Promise<Buffer> {
+ const flags=lexical&&process.platform!=='win32'?constants.O_RDONLY|constants.O_NONBLOCK|constants.O_NOFOLLOW:'r'
+ const handle = await openFile(path,flags)
+ try { const file=await handle.stat();if(lexical&&!file.isFile())throw new Error('El origen no es un archivo regular.');const result = Buffer.alloc(Math.min(file.size, max)); let offset = 0; while (offset < result.length) { const read = await handle.read(result, offset, result.length-offset, offset); if (!read.bytesRead) break; offset += read.bytesRead } return result.subarray(0, offset) } finally { await handle.close() }
 }
 async function endsWithEol(path:string,bytes:number,encoding:Encoding){const handle=await openFile(path,'r');try{const tail=Buffer.alloc(Math.min(bytes,4));await handle.read(tail,0,tail.length,Math.max(0,bytes-tail.length));return /[\r\n]$/.test(iconv.decode(tail,encoding))}finally{await handle.close()}}
 function copyRow(row: TableRow): TableRow { return { id: row.id, cells: [...row.cells] } }
@@ -58,6 +79,10 @@ export class TableEngine {
  constructor(private progress:(event:SqlProgress)=>void=()=>{},private options:{largeBytes?:number;indexChunk?:number;extractBatch?:number;extractDelayMs?:number;freeBytes?:(dir:string)=>Promise<number>;viewWorkers?:number;viewWorkerPath?:URL|string;viewBatch?:number;viewChunk?:number;viewDelayMs?:number;viewLimit?:number;viewBytes?:number;viewPrefilter?:boolean;viewPartial?:boolean}={}){this.diskViews=new LargeViews({workers:options.viewWorkers,workerPath:options.viewWorkerPath,batchRecords:options.viewBatch,chunk:options.viewChunk,delayMs:options.viewDelayMs,limit:options.viewLimit,bytes:options.viewBytes,prefilter:options.viewPrefilter,partial:options.viewPartial})}
  private diskViews:LargeViews
  private states = new Map<string, State>()
+ private sources=new WeakMap<State,CsvSource & {layout:RecordLayout}>()
+ // Only a successfully applied calculated column keeps lexical bytes for saving and crash recovery.
+ private lossless=new WeakMap<State,OriginalBytes|undefined>()
+ private savedBytes=new WeakMap<State,{revision:number;bytes:Buffer;offsets:Uint32Array}>()
  private queries = new Map<string, number>()
  private openings = new Map<string, number>()
  private views = new Map<string,{key:string;indices:number[]}>()
@@ -67,7 +92,7 @@ export class TableEngine {
  // Un archivo grande no tiene `rows` en memoria: todo lo que lea o cambie datos debe rechazarlo (solo `info` y `page` lo admiten).
  private get(id: string, allowLarge = false): State { const s = this.states.get(id); if (!s) throw new Error('La tabla ya no está abierta.'); if (s.large && !allowLarge) throw new Error('Esta función aún no está disponible en archivos grandes (solo lectura): el orden, las estadísticas y la edición llegan en fases posteriores.'); return s }
  private editable(id: string): State { const s = this.get(id); if (s.readonly) throw new Error('La muestra es de solo lectura.'); return s }
- async create(id: string) { await this.diskViews.clear(id);this.openings.set(id,++this.serial);this.views.delete(id);this.queries.delete(id);const revision=(this.states.get(id)?.revision??-1)+1;this.states.set(id, { encoding:'utf8', delimiter:',',eol:'\n',bom:false,header:true,finalEol:true,headerWidth:1,rows:[],headers:['Columna 1'],readonly:false,revision,nextId:1,token:0,savedToken:-1,history:[],future:[] }); return this.info(id) }
+ async create(id: string) { await this.diskViews.clear(id);this.openings.set(id,++this.serial);this.views.delete(id);this.queries.delete(id);const revision=(this.states.get(id)?.revision??-1)+1;this.states.set(id, { encoding:'utf8', delimiter:',',eol:'\n',bom:false,header:true,finalEol:true,headerWidth:1,columnIds:[0],nextColumn:1,rows:[],headers:['Columna 1'],readonly:false,revision,nextId:1,token:0,savedToken:-1,history:[],future:[] }); return this.info(id) }
  async open(id: string, path: string, options: TableOptions = {}) {
   await this.diskViews.clear(id)
   const generation=++this.serial;this.openings.set(id,generation);this.views.delete(id);this.queries.delete(id)
@@ -76,9 +101,11 @@ export class TableEngine {
   meta.finalEol=await endsWithEol(path,bytes,meta.encoding)
   // Por encima del umbral no se carga el archivo: se indexa por posición y se lee por páginas (modo grande, solo lectura).
   let records: string[][] = []; let toLarge = bytes > (this.options.largeBytes ?? TABLE_LIMITS.bytes); let readonly = false; let reason = bytes > TABLE_LIMITS.bytes ? 'El archivo supera 50 MiB.' : ''
+  const digest=createHash('sha256')
   if (!toLarge) {
    const input = createReadStream(path, {highWaterMark:65536}); const validator=meta.encoding==='utf8'?validateUtf8():new Transform({transform(chunk,_encoding,callback){callback(null,chunk)}}); const decoder = iconv.decodeStream(meta.encoding)
    const parser = parse({delimiter:meta.delimiter,bom:true,relax_column_count:true,max_record_size:TABLE_LIMITS.record,record_delimiter:RECORD_DELIMITERS})
+   input.on('data', chunk=>digest.update(chunk))
    input.on('error', error => parser.destroy(error)); validator.on('error',error=>parser.destroy(error)); decoder.on('error', error => parser.destroy(error)); input.pipe(validator).pipe(decoder).pipe(parser)
    try { let cells = 0; for await (const row of parser) { const record=row as string[];const bytesInRecord=recordBytes(record,meta.encoding,meta.delimiter);if(bytesInRecord>TABLE_LIMITS.record)throw new LimitError('Un registro supera 1 MiB.');records.push(record); cells += row.length; if (cells > TABLE_LIMITS.cells) throw new LimitError('El archivo supera dos millones de celdas.'); if (records.length % 2000 === 0) await yieldTurn() } }
    catch (error) { if (error instanceof LimitError) { toLarge = true; reason = error.message; records = [] } else if ((error as {code?:string}).code === 'CSV_MAX_RECORD_SIZE') { readonly = true; reason = 'Un registro supera 1 MiB.'; records = [] } else throw new Error(`CSV no válido: ${(error as Error).message}`) }
@@ -101,10 +128,12 @@ export class TableEngine {
   meta.headerWidth=rawHeaders.length
   const width = Math.max(rawHeaders.length, ...records.slice(0,200).map(row=>row.length), 1)
   const headers = Array.from({length:width},(_,i)=>meta.header ? rawHeaders[i] ?? '' : `Columna ${i+1}`)
-  const s: State = {...meta, rows:records.map((cells,i)=>({id:String(i+1),cells})),headers,readonly,warning:readonly ? `${reason} Muestra limitada: hasta 200 registros completos y 8 MiB leídos. Búsqueda, filtros y recuentos se refieren solo a la muestra.` : undefined,revision:0,nextId:records.length+1,token:0,savedToken:0,history:[],future:[]}
+  const s: State = {...meta, columnIds:[],nextColumn:0,rows:records.map((cells,i)=>({id:String(i+1),cells})),headers,readonly,warning:readonly ? `${reason} Muestra limitada: hasta 200 registros completos y 8 MiB leídos. Búsqueda, filtros y recuentos se refieren solo a la muestra.` : undefined,revision:0,nextId:records.length+1,token:0,savedToken:0,history:[],future:[]}
   // shortcut: irregular tables expose their widest row, large-file disk indexing is a later release.
   if (!readonly) { for (const row of s.rows) while(s.headers.length < row.cells.length) s.headers.push(meta.header ? '' : `Columna ${s.headers.length+1}`) }
   if(this.openings.get(id)!==generation)throw new Error('Apertura cancelada por una solicitud más reciente.')
+  s.columnIds=s.headers.map((_,index)=>index);s.nextColumn=s.columnIds.length
+  if(!readonly)this.sources.set(s,{path,hash:digest.digest('hex'),layout:layout(s)})
   s.revision=(this.states.get(id)?.revision??-1)+1;this.views.delete(id);this.queries.delete(id);this.states.set(id,s); return this.info(id)
  }
   private async openLarge(id: string, path: string, meta: Metadata, generation: number, reason: string) {
@@ -118,7 +147,7 @@ export class TableEngine {
   const rowCount = Math.max(index.records - start, 0)
   const warning = `${reason ? reason + ' ' : ''}Archivo grande: ${rowCount.toLocaleString()} filas en solo lectura. Buscar y Filtrar recorren el archivo completo; el orden, las estadísticas y la edición aún no están disponibles.`
   if (this.openings.get(id) !== generation) throw new Error('Apertura cancelada por una solicitud más reciente.')
-  const s: State = {...meta, rows: [], headers, readonly: true, warning, revision: (this.states.get(id)?.revision ?? -1) + 1, nextId: 1, token: 0, savedToken: 0, history: [], future: [], large: {index, rowCount}}
+  const s: State = {...meta, columnIds:[],nextColumn:0,rows: [], headers, readonly: true, warning, revision: (this.states.get(id)?.revision ?? -1) + 1, nextId: 1, token: 0, savedToken: 0, history: [], future: [], large: {index, rowCount}}
   this.views.delete(id); this.queries.delete(id); this.states.set(id, s); return this.info(id)
  }
  private running = new Map<string, {cancelled: boolean}>()
@@ -308,12 +337,122 @@ export class TableEngine {
  }
  async transformPreview(id:string,edit:TableTransformEdit){return(await this.structurePlan(id,edit)).preview}
 
+ private calculationTable(id:string,edit:CalculateColumnEdit){
+  const s=this.editable(id)
+  if(edit.revision!==s.revision)throw new Error('La tabla cambió desde la vista previa. Vuelve a prepararla.')
+  if(s.headers.length>=200)throw new Error('El resultado supera 200 columnas.')
+  if(!Number.isInteger(edit.position)||edit.position<0||edit.position>s.headers.length)throw new Error('Elige una posición de destino válida.')
+  if(s.header&&s.headerWidth<edit.position)throw new Error('La posición convertiría encabezados ausentes en vacíos. Elige otra posición.')
+  if(!edit.name.trim())throw new Error('Elige un nombre para la columna calculada.')
+  const indexes=edit.columns.map(({index})=>index)
+  if(new Set(indexes).size!==indexes.length||indexes.some(index=>!Number.isInteger(index)||index<0||index>=s.headers.length))throw new Error('Selecciona columnas válidas.')
+  return s
+ }
+ async calculationStart(id:string,ticket:string,edit:CalculateColumnEdit){
+  const s=this.calculationTable(id,edit)
+  this.analyses.set(id,edit.requestId)
+  const ensure=()=>{
+   if(this.analyses.get(id)!==edit.requestId||this.states.get(id)!==s||s.revision!==edit.revision)throw new Error('Transformación cancelada: cambió la tabla o la solicitud.')
+  }
+  try{
+   let cells=s.header?s.headerWidth+1:0
+   for(const [index,row] of s.rows.entries()){
+    if(row.cells.length<edit.position)throw new Error(`La posición convertiría campos ausentes en vacíos en la fila original ${index+1}. Elige otra posición.`)
+    cells+=row.cells.length+1
+    if(cells>TABLE_LIMITS.cells)throw new Error('Las columnas resultantes superan dos millones de celdas.')
+    if(index%2048===0){await yieldTurn();ensure()}
+   }
+   ensure()
+   const records=(function*(){
+    for(const row of s.rows){
+     const values=edit.columns.map(({index})=>index<row.cells.length?row.cells[index]:undefined)
+     yield [...values,row.id]
+    }
+   })()
+   this.streams.set(ticket,{id,iterator:arrowBatches(records,edit.columns.length+1,()=>{
+    if(!this.streams.has(ticket)||this.states.get(id)!==s||s.revision!==edit.revision)throw new Error('Transferencia cancelada: cambió la fuente o la solicitud.')
+   },undefined,3*TABLE_LIMITS.record+100)})
+   return {headers:[...s.headers],revision:s.revision,rows:s.rows.length}
+  }finally{if(this.analyses.get(id)===edit.requestId)this.analyses.delete(id)}
+ }
+ private async calculationOriginal(s:State,expected?:CsvSource){
+  const source=this.sources.get(s),cached=this.lossless.get(s)
+  if(!source){
+   if(expected)throw new Error('El archivo cambió desde que se abrió. Vuelve a abrirlo antes de calcular.')
+   return cached
+  }
+  if(cached&&!expected)return cached
+  const changed=()=>new Error('El archivo cambió desde que se abrió. Vuelve a abrirlo antes de calcular.')
+  if(expected&&(resolve(source.path)!==resolve(expected.path)||source.hash!==expected.hash))throw changed()
+  const bytes=await prefix(source.path,TABLE_LIMITS.bytes+1,true).catch(()=>{throw changed()})
+  if(bytes.length>TABLE_LIMITS.bytes||createHash('sha256').update(bytes).digest('hex')!==source.hash)throw changed()
+  return cached??originalBytes(s,bytes,source.layout)
+ }
+ private async calculationPlan(id:string,edit:CalculateColumnEdit,values:CalculatedValue[],expected?:CsvSource){
+  const s=this.calculationTable(id,edit)
+  if(values.length!==s.rows.length)throw new Error('El cálculo no devolvió todas las filas de la tabla.')
+  const result=new Map<string,CalculatedValue>(),lengths:number[]=[],cells:string[]=[]
+  const indexes=new Set(edit.columns.map(({index})=>index))
+  const preview:CalculatedColumnPreview={revision:s.revision,rows:s.rows.length,affected:s.rows.length,cells:s.rows.length,addedColumns:1,deletedRows:0,changedHeaders:0,movedRows:0,movedColumns:0,samples:[],emptyRows:0,invalidByColumn:Object.fromEntries(edit.columns.map(({index})=>[index,0])),failures:0}
+  this.analyses.set(id,edit.requestId)
+  const progress=async(rows:number)=>{
+   this.progress({requestId:edit.requestId,phase:'Preparando transformación',rows})
+   await yieldTurn()
+   if(this.analyses.get(id)!==edit.requestId||this.states.get(id)!==s||s.revision!==edit.revision)throw new Error('Transformación cancelada: cambió la tabla o la solicitud.')
+  }
+  try{
+   for(const [index,item] of values.entries()){
+    if(result.has(item.rowId)||item.value!==null&&typeof item.value!=='string'||item.invalid.some(column=>!indexes.has(column))||item.invalid.length>1&&new Set(item.invalid).size!==item.invalid.length)throw new Error('El cálculo devolvió resultados no válidos.')
+    result.set(item.rowId,item)
+    if(index%2048===0)await progress(0)
+   }
+   const original=await this.calculationOriginal(s,expected),origins=fieldOrigins(s,original)
+   origins.splice(edit.position,0,null)
+   await progress(0)
+   let count=0,bytes=bomLength(s)
+   const measure=(record:string[],endOfRecord:boolean,rowId?:string)=>{
+    count+=record.length
+    if(count>TABLE_LIMITS.cells)throw new Error('Las columnas resultantes superan dos millones de celdas.')
+    bytes+=calculatedRecordBytes(originalRecord(original,rowId),s,record,origins,endOfRecord).length
+    if(bytes>TABLE_LIMITS.bytes)throw new Error('El resultado supera 50 MiB. No se ha modificado el documento.')
+   }
+   if(s.header){const headers=s.headers.slice(0,s.headerWidth);headers.splice(edit.position,0,edit.name);measure(headers,s.finalEol||s.rows.length>0)}
+   for(const [index,row] of s.rows.entries()){
+    const item=result.get(row.id)
+    if(!item)throw new Error('El cálculo no devolvió todas las filas de la tabla.')
+    if(row.cells.length<edit.position)throw new Error(`La posición convertiría campos ausentes en vacíos en la fila original ${index+1}. Elige otra posición.`)
+    const value=item.value??'',projected=[...row.cells]
+    projected.splice(edit.position,0,value)
+    measure(projected,s.finalEol||index+1<s.rows.length,row.id)
+    if(!value)preview.emptyRows++
+    if(item.failed||!value&&item.invalid.length)preview.failures++
+    for(const column of item.invalid)preview.invalidByColumn[column]++
+    if(preview.samples.length<8)preview.samples.push({row:index,column:edit.position,before:JSON.stringify(edit.columns.map(({index:column})=>row.cells[column])).slice(0,256),after:value.slice(0,256)})
+    cells.push(value);lengths.push(row.cells.length)
+    if(index%2048===0)await progress(index+1)
+   }
+   const forward:Mutation[]=[{type:'column',index:edit.position,remove:false,name:edit.name,cells,headerWidth:s.header?s.headerWidth+1:0}]
+   const backward:Mutation[]=[{type:'column',index:edit.position,remove:true,name:'',cells:[],headerWidth:s.headerWidth,lengths}]
+   await progress(s.rows.length)
+   const change=this.prepareChange(s,forward,backward)
+   return {s,change,preview,original}
+  }finally{if(this.analyses.get(id)===edit.requestId)this.analyses.delete(id)}
+ }
+ async calculationPreview(id:string,edit:CalculateColumnEdit,values:CalculatedValue[],expected?:CsvSource){return (await this.calculationPlan(id,edit,values,expected)).preview}
+ async calculationApply(id:string,edit:CalculateColumnEdit,values:CalculatedValue[],expected?:CsvSource){
+  const {s,change,preview,original}=await this.calculationPlan(id,edit,values,expected)
+  if(edit.onError==='abort'&&preview.failures)throw new Error('Hay filas que no se pudieron calcular. No se ha modificado el documento.')
+  const applied=this.commitChange(id,s,edit.revision,change)
+  this.lossless.set(s,original)
+  return applied
+ }
+
  private apply(s:State,mutations:Mutation[]){
   // Coalesce row-only changes to avoid quadratic splices and argument limits on undo.
   const rowChanges=mutations.filter((m):m is Extract<Mutation,{type:'rows'}>=>m.type==='rows')
   if(rowChanges.length===mutations.length&&mutations.length>1&&rowChanges.every((m,i)=>m.remove>0&&!m.rows.length&&(i===0||m.index<rowChanges[i-1].index))){const ranges=[...rowChanges].reverse(),rows:TableRow[]=[];let cursor=0;for(const m of ranges){while(cursor<m.index)rows.push(s.rows[cursor++]);cursor+=m.remove}while(cursor<s.rows.length)rows.push(s.rows[cursor++]);s.rows=rows;return}
   if(rowChanges.length===mutations.length&&(mutations.length>1||rowChanges[0]?.rows.length>1024)&&rowChanges.every((m,i)=>m.remove===0&&(i===0||m.index>=rowChanges[i-1].index))){const rows:TableRow[]=[];let cursor=0,inserted=0;for(const m of rowChanges){const at=m.index-inserted;while(cursor<at)rows.push(s.rows[cursor++]);for(const row of m.rows)rows.push(copyRow(row));inserted+=m.rows.length}while(cursor<s.rows.length)rows.push(s.rows[cursor++]);s.rows=rows;return}
-  const indexed=mutations.length>16?new Map(s.rows.map(row=>[row.id,row])):undefined;for(const mutation of mutations){switch(mutation.type){case'rowOrder':{const order=permutation(mutation.order,s.rows.length);s.rows=order.map(index=>s.rows[index]);break}case'columnOrder':{const order=permutation(mutation.order,s.headers.length);if(!preservesMissing(order,s.headerWidth)||s.rows.some(row=>!preservesMissing(order,row.cells.length)))throw new Error('El orden no conserva los campos o encabezados ausentes.');const headers=order.map(index=>s.headers[index]),rows=s.rows.map(row=>({id:row.id,cells:order.slice(0,row.cells.length).map(index=>row.cells[index])}));s.headers=headers;s.rows=rows;break}case'cell':{const row=indexed?.get(mutation.id)??s.rows.find(row=>row.id===mutation.id);if(!row)throw new Error('Fila no encontrada.');while(row.cells.length<mutation.column)row.cells.push('');row.cells[mutation.column]=mutation.value;if(mutation.length!==undefined)row.cells.length=mutation.length;break}case'header':s.headers[mutation.column]=mutation.value;s.headerWidth=mutation.headerWidth??Math.max(s.headerWidth,mutation.column+1);break;case'rows':s.rows.splice(mutation.index,mutation.remove,...mutation.rows.map(copyRow));break;case'column':if(mutation.remove){s.headers.splice(mutation.index,1);s.rows.forEach((row,i)=>{row.cells.splice(mutation.index,1);if(mutation.lengths)row.cells.length=mutation.lengths[i]})}else{s.headers.splice(mutation.index,0,mutation.name);s.rows.forEach((row,i)=>{while(row.cells.length<mutation.index)row.cells.push('');row.cells.splice(mutation.index,0,mutation.cells[i]??'');if(mutation.lengths)row.cells.length=mutation.lengths[i]})}s.headerWidth=mutation.headerWidth??s.headers.length;break}}}
+  const indexed=mutations.length>16?new Map(s.rows.map(row=>[row.id,row])):undefined;for(const mutation of mutations){switch(mutation.type){case'rowOrder':{const order=permutation(mutation.order,s.rows.length);s.rows=order.map(index=>s.rows[index]);break}case'columnOrder':{const order=permutation(mutation.order,s.headers.length);if(!preservesMissing(order,s.headerWidth)||s.rows.some(row=>!preservesMissing(order,row.cells.length)))throw new Error('El orden no conserva los campos o encabezados ausentes.');const headers=order.map(index=>s.headers[index]),rows=s.rows.map(row=>({id:row.id,cells:order.slice(0,row.cells.length).map(index=>row.cells[index])}));s.columnIds=order.map(index=>s.columnIds[index]);s.headers=headers;s.rows=rows;break}case'cell':{const row=indexed?.get(mutation.id)??s.rows.find(row=>row.id===mutation.id);if(!row)throw new Error('Fila no encontrada.');while(row.cells.length<mutation.column)row.cells.push('');row.cells[mutation.column]=mutation.value;if(mutation.length!==undefined)row.cells.length=mutation.length;break}case'header':s.headers[mutation.column]=mutation.value;s.headerWidth=mutation.headerWidth??Math.max(s.headerWidth,mutation.column+1);break;case'rows':s.rows.splice(mutation.index,mutation.remove,...mutation.rows.map(copyRow));break;case'column':if(mutation.remove){s.columnIds.splice(mutation.index,1);s.headers.splice(mutation.index,1);s.rows.forEach((row,i)=>{row.cells.splice(mutation.index,1);if(mutation.lengths)row.cells.length=mutation.lengths[i]})}else{const columnId=mutation.columnId??s.nextColumn;s.columnIds.splice(mutation.index,0,columnId);s.nextColumn=Math.max(s.nextColumn,columnId+1);s.headers.splice(mutation.index,0,mutation.name);s.rows.forEach((row,i)=>{while(row.cells.length<mutation.index)row.cells.push('');row.cells.splice(mutation.index,0,mutation.cells[i]??'');if(mutation.lengths)row.cells.length=mutation.lengths[i]})}s.headerWidth=mutation.headerWidth??s.headers.length;break}}}
  async edit(id:string,edit:TableEdit){const s=this.editable(id);const revision=s.revision;let forward:Mutation[]=[],backward:Mutation[]=[]
   const add=(a:Mutation,b:Mutation)=>{forward.push(a);backward.push(b)}
   const rowIndex=(rowId:string)=>{const i=s.rows.findIndex(row=>row.id===rowId);if(i<0)throw new Error('Fila no encontrada.');return i}
@@ -374,10 +513,36 @@ export class TableEngine {
    case'replace':{if(!edit.find)throw new Error('Introduce el texto que quieres reemplazar.');if(edit.column!==undefined)column(edit.column);for(let i=0;i<s.rows.length;i++){const row=s.rows[i];row.cells.forEach((text,col)=>{if(edit.column!==undefined&&col!==edit.column)return;const result=text.split(edit.find).join(edit.replacement);if(result!==text){value(result);add({type:'cell',id:row.id,column:col,value:result},{type:'cell',id:row.id,column:col,value:text})}});if(i%2048===0)await yieldTurn()}break}
   }
   if(!forward.length)return this.info(id)
-  if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la operación. Vuelve a intentarlo.')
-  const before=s.token,after=++this.serial;const change={forward,backward:backward.reverse(),before,after,bytes:0};change.bytes=Buffer.byteLength(JSON.stringify(change),'utf8');if(change.bytes>20*1024*1024)throw new Error('El cambio supera el presupuesto de deshacer de 20 MiB. Reduce el número de celdas modificadas.');this.apply(s,forward);s.token=after;s.revision++;s.history.push(change);let budget=s.history.reduce((sum,item)=>sum+item.bytes,0);while(budget>20*1024*1024&&s.history.length>1)budget-=s.history.shift()!.bytes;s.future=[];return this.info(id)
+  return this.commitChange(id,s,revision,this.prepareChange(s,forward,backward.reverse()))
  }
- async undo(id:string,redo=false){const s=this.editable(id);const source=redo?s.future:s.history,target=redo?s.history:s.future;const change=source.at(-1);if(change){this.apply(s,redo?change.forward:change.backward);source.pop();s.token=redo?change.after:change.before;s.revision++;target.push(change)}return this.info(id)}
+ private prepareChange(s:State,forward:Mutation[],backward:Mutation[]):Change{
+  if(forward.some(mutation=>mutation.type==='column')){
+   const columns=[...s.columnIds]
+   let next=s.nextColumn
+   for(const [index,mutation] of forward.entries()){
+    if(mutation.type!=='column')continue
+    if(mutation.remove){
+     const [id]=columns.splice(mutation.index,1),inverse=backward[backward.length-1-index]
+     if(inverse.type==='column')inverse.columnId=id
+    }else{
+     mutation.columnId=next++
+     columns.splice(mutation.index,0,mutation.columnId)
+    }
+   }
+  }
+  const change={forward,backward,before:s.token,after:++this.serial,bytes:0}
+  change.bytes=Buffer.byteLength(JSON.stringify(change),'utf8')
+  if(change.bytes>20*1024*1024)throw new Error('El cambio supera el presupuesto de deshacer de 20 MiB. Reduce el número de celdas modificadas.')
+  return change
+ }
+ private commitChange(id:string,s:State,revision:number,change:Change){
+  if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la operación. Vuelve a intentarlo.')
+  this.apply(s,change.forward);this.savedBytes.delete(s);s.token=change.after;s.revision++;s.history.push(change)
+  let budget=s.history.reduce((sum,item)=>sum+item.bytes,0)
+  while(budget>20*1024*1024&&s.history.length>1)budget-=s.history.shift()!.bytes
+  s.future=[];return this.info(id)
+ }
+ async undo(id:string,redo=false){const s=this.editable(id);const source=redo?s.future:s.history,target=redo?s.history:s.future;const change=source.at(-1);if(change){this.apply(s,redo?change.forward:change.backward);this.savedBytes.delete(s);source.pop();s.token=redo?change.after:change.before;s.revision++;target.push(change)}return this.info(id)}
  private async selected(id:string,options:TableExport){const s=this.get(id),revision=s.revision;if(s.readonly)throw new Error('La muestra no permite exportar el archivo ni selecciones.');let indices:number[];if(options.scope==='selection'&&options.range){const selected=await this.rangeRows(id,options.range);return{rows:selected.indices.map(i=>selected.columns.map(col=>s.rows[i].cells[col]??'')),headers:selected.columns.map(col=>s.headers[col])}}if(options.scope==='filtered')indices=await this.indices(id,options.query??{offset:0,limit:500,requestId:0});else if(options.scope==='selection'){const ids=new Set(options.rowIds??[]);indices=s.rows.flatMap((row,i)=>ids.has(row.id)?[i]:[])}else indices=s.rows.map((_,i)=>i);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.');const columns=options.columns??s.headers.map((_,i)=>i);if(columns.some(i=>!Number.isInteger(i)||i<0||i>=s.headers.length))throw new Error('Selección de columnas no válida.');return{rows:indices.map(i=>columns.map(col=>s.rows[i].cells[col]??'')),headers:columns.map(col=>s.headers[col])}}
  async analysisStart(id:string,ticket:string,revision:number,path:string|null,query?:TableQuery,where?:TableConditionGroup){
   const s=this.get(id,true);if(s.revision!==revision)throw new Error('La tabla cambió. Vuelve a analizar.');if(s.headers.length>ANALYSIS_LIMITS.columns)throw new Error('El análisis admite hasta 200 columnas por fuente.')
@@ -438,23 +603,89 @@ export class TableEngine {
  }
 
  async markdown(id:string,options:TableExport){const {rows,headers}=await this.selected(id,options);const escape=(v:string)=>v.replace(/\\/g,'\\\\').replace(/\|/g,'\\|').replace(/\r\n|\r|\n/g,'<br>');return[headers,headers.map(()=>'---'),...rows].map(row=>'| '+row.map(escape).join(' | ')+' |').join('\n')}
- async serialize(id:string,options?:TableExport):Promise<Buffer>{const s=this.editable(id),revision=s.revision;let records:string[][];if(options){const selection=await this.selected(id,options);records=s.header?[selection.headers,...selection.rows]:selection.rows}else records=s.header?[s.headers.slice(0,s.headerWidth),...s.rows.map(row=>row.cells)]:s.rows.map(row=>row.cells)
+ private async serializeCalculated(id:string,s:State,revision:number){
+  const original=this.lossless.get(s),origins=fieldOrigins(s,original),header=s.header&&s.headerWidth>0
+  const bom=original?.bytes.subarray(0,bomLength(s))??iconv.encode('',s.encoding,{addBOM:s.bom})
+  const parts:Buffer[]=[bom],offsets=new Uint32Array(s.rows.length+Number(header)+1)
+  let length=bom.length,count=0,previousCR=false,chunk=Buffer.alloc(0),used=0
+  const unit=s.encoding==='utf16le'?2:1
+  offsets[0]=length
+  const append=(cells:string[],endOfRecord:boolean,rowId?:string)=>{
+   const part=calculatedRecordBytes(originalRecord(original,rowId),s,cells,origins,endOfRecord,previousCR)
+   previousCR=endOfRecord&&part[part.length-unit]===13&&(unit===1||part[part.length-1]===0)
+   length+=part.length
+   if(length>TABLE_LIMITS.bytes)throw new Error('El resultado supera 50 MiB; reduce la tabla antes de guardarla.')
+   offsets[++count]=length
+   if(chunk.length-used<part.length){
+    if(used)parts.push(chunk.subarray(0,used))
+    chunk=Buffer.allocUnsafe(Math.max(64*1024,part.length));used=0
+   }
+   part.copy(chunk,used);used+=part.length
+  }
+  if(header)append(s.headers.slice(0,s.headerWidth),s.finalEol||s.rows.length>0)
+  for(const [index,row] of s.rows.entries()){
+   append(row.cells,s.finalEol||index+1<s.rows.length,row.id)
+   if(index%2048===0){
+    await yieldTurn()
+    if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.')
+   }
+  }
+  if(used)parts.push(chunk.subarray(0,used))
+  const bytes=Buffer.concat(parts,length)
+  this.savedBytes.set(s,{revision,bytes,offsets})
+  return bytes
+ }
+ async serialize(id:string,options?:TableExport):Promise<Buffer>{const s=this.editable(id),revision=s.revision;if(!options&&this.lossless.has(s))return this.serializeCalculated(id,s,revision);let records:string[][];if(options){const selection=await this.selected(id,options);records=s.header?[selection.headers,...selection.rows]:selection.rows}else records=s.header?[s.headers.slice(0,s.headerWidth),...s.rows.map(row=>row.cells)]:s.rows.map(row=>row.cells)
   if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.');
   const text=stringify(records,{delimiter:validDelimiter(options?.delimiter??s.delimiter),record_delimiter:s.eol,eof:options?true:s.finalEol,quoted_match:/[\r\n]/})
   if(!options&&Buffer.byteLength(text,s.encoding==='utf16le'?'utf16le':'utf8')>TABLE_LIMITS.bytes)throw new Error('El resultado supera 50 MiB; reduce la tabla antes de guardarla.')
   const result=iconv.encode(text,s.encoding,{addBOM:s.bom});if(iconv.decode(result,s.encoding)!==text)throw new Error('La codificación seleccionada no representa todos los caracteres. Guarda una copia en UTF-8.');return result
  }
- async markSaved(id:string,expectedRevision?:number){const s=this.get(id);if(expectedRevision===undefined||s.revision===expectedRevision)s.savedToken=s.token;return this.info(id)}
- async snapshot(id:string){const s=this.get(id);return structuredClone({version:2,state:s})}
+ async markSaved(id:string,expectedRevision?:number,source?:CsvSource){
+  const s=this.get(id)
+  if(expectedRevision===undefined||s.revision===expectedRevision){
+   if(source){
+    const saved=layout(s),pending=this.savedBytes.get(s)
+    this.sources.set(s,{...source,layout:saved})
+    if(pending?.revision===s.revision&&createHash('sha256').update(pending.bytes).digest('hex')===source.hash){
+     this.lossless.set(s,originalBytes(s,pending.bytes,saved,pending.offsets))
+    }
+   }
+   this.savedBytes.delete(s)
+   s.savedToken=s.token
+  }
+  return this.info(id)
+ }
+ async snapshot(id:string){
+  const s=this.get(id),original=this.lossless.get(s)
+  const fidelity=original?{...original.layout,bytes:original.bytes.toString('base64')}:null
+  return structuredClone({version:2,state:s,...(this.lossless.has(s)?{fidelity}:{})})
+ }
  async restore(id:string,snapshot:unknown){
   await this.diskViews.clear(id)
-  const data=snapshot as {version?:number;state?:State}
+  const data=snapshot as {version?:number;state?:State;fidelity?:(RecordLayout & {bytes:string})|null}
   if(![1,2].includes(data?.version??0)||!data.state||!Array.isArray(data.state.rows)||!Array.isArray(data.state.headers))throw new Error('Formato de recuperación no compatible. El archivo se conserva.')
   const s=structuredClone(data.state),allowed=new Set(['cell','header','rows','column',...data.version===2?['rowOrder','columnOrder']:[]])
   if(s.readonly||!s.headers.length||s.headers.some(header=>typeof header!=='string')||s.rows.some(row=>!row||typeof row.id!=='string'||!Array.isArray(row.cells)||row.cells.length>s.headers.length||row.cells.some(v=>typeof v!=='string'))||(s.header?s.headerWidth:0)+s.rows.reduce((n,row)=>n+row.cells.length,0)>TABLE_LIMITS.cells||s.rows.length>TABLE_LIMITS.cells||new Set(s.rows.map(row=>row.id)).size!==s.rows.length)throw new Error('Recuperación CSV no válida. El archivo se conserva.')
   if(!Number.isSafeInteger(s.headerWidth)||s.headerWidth<0||s.headerWidth>s.headers.length||![s.nextId,s.token,s.revision].every(Number.isSafeInteger)||s.nextId<1||s.token<0||s.revision<0||!['utf8','utf16le','win1252'].includes(s.encoding)||!['\n','\r\n','\r'].includes(s.eol)||![s.bom,s.header,s.finalEol].every(value=>typeof value==='boolean'))throw new Error('Metadatos de recuperación no válidos. El archivo se conserva.')
   validDelimiter(s.delimiter)
   if(!Array.isArray(s.history)||!Array.isArray(s.future)||[...s.history,...s.future].some(change=>!change||!Array.isArray(change.forward)||!Array.isArray(change.backward)||[...change.forward,...change.backward].some(mutation=>!mutation||!allowed.has(mutation.type))))throw new Error('Historial de recuperación no compatible. El archivo se conserva.')
+  const badFidelity=()=>new Error('Los registros originales de recuperación no son válidos. El archivo se conserva.')
+  const validColumnIds=(ids:unknown):ids is number[]=>Array.isArray(ids)&&new Set(ids).size===ids.length&&ids.every(id=>Number.isSafeInteger(id)&&id>=0)
+  if(s.columnIds===undefined){s.columnIds=s.headers.map((_,index)=>index);s.nextColumn=s.columnIds.length}
+  else if(!validColumnIds(s.columnIds)||s.columnIds.length!==s.headers.length||!Number.isSafeInteger(s.nextColumn)||s.columnIds.some(id=>id>=s.nextColumn))throw badFidelity()
+  if(data.fidelity!==undefined){
+   const original=data.fidelity
+   if(original===null)this.lossless.set(s,undefined)
+   else{
+    const {bytes,rows,columns,header}=original
+    if(typeof bytes!=='string'||bytes.length>Math.ceil(TABLE_LIMITS.bytes/3)*4||typeof header!=='boolean'||!Array.isArray(rows)||rows.length>TABLE_LIMITS.cells||
+      rows.some(id=>typeof id!=='string')||new Set(rows).size!==rows.length||!Array.isArray(columns)||columns.length>TABLE_LIMITS.cells||!validColumnIds(columns))throw badFidelity()
+    const decoded=Buffer.from(bytes,'base64')
+    if(decoded.length>TABLE_LIMITS.bytes||decoded.toString('base64')!==bytes)throw badFidelity()
+    try{this.lossless.set(s,originalBytes(s,decoded,{rows,columns,header}))}catch{throw badFidelity()}
+   }
+  }
   s.savedToken=-1;s.readonly=false;s.warning=undefined;this.serial=Math.max(this.serial,s.token,s.nextId);this.openings.set(id,++this.serial);this.queries.delete(id);this.views.delete(id);s.revision=Math.max(s.revision,this.states.get(id)?.revision??-1)+1;this.states.set(id,s);return this.info(id)
  }
  async close(id:string){await this.diskViews.clear(id);for(const [ticket,source] of this.streams)if(source.id===id)await this.analysisClose(ticket);this.analyses.delete(id);this.states.delete(id);this.queries.delete(id);this.views.delete(id);this.openings.delete(id);if(!this.states.size)await this.diskViews.stop()}

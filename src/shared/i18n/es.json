@@ -843,5 +843,14 @@
  "markdown.toolbar.datetime": "Fecha y hora",
  "markdown.toolbar.language": "Lenguaje del bloque de código",
  "markdown.toolbar.codeBlock": "Bloque de código",
- "markdown.toolbar.codeHint": "Insertar un bloque con el lenguaje elegido"
+ "markdown.toolbar.codeHint": "Insertar un bloque con el lenguaje elegido",
+ "calculate.error.sandbox": "El cálculo necesita el aislamiento de Chromium. Inicia FreyaLab sin la opción --no-sandbox.",
+ "calculate.error.changed": "La tabla cambió o ya no se puede editar. Revisa el documento y vuelve a preparar la vista previa.",
+ "calculate.error.disk": "El archivo cambió en disco. Revisa el documento antes de volver a calcular.",
+ "calculate.error.timeout": "El cálculo superó dos minutos. Simplifica la fórmula y vuelve a intentarlo.",
+ "calculate.error.result": "El resultado supera los límites de la tabla o contiene datos no válidos. El documento sigue intacto.",
+ "calculate.error.preview": "Prepara la vista previa de esta fórmula antes de aplicarla.",
+ "calculate.error.cancelled": "Cálculo cancelado. El documento sigue intacto.",
+ "calculate.progress.loading": "Leyendo todas las filas del documento",
+ "calculate.progress.evaluating": "Calculando los valores"
 }

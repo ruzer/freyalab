@@ -26,14 +26,14 @@ export async function* fileRecords(path:string,format:{encoding:Encoding;delimit
  }finally{input.unpipe(tap);tap.unpipe(validator);validator.unpipe(decoder);decoder.unpipe(parser);input.destroy();tap.destroy();validator.destroy();decoder.end();parser.destroy()}
 }
 
-export async function* arrowBatches(records:Iterable<string[]>|AsyncIterable<string[]>,width:number,ensure:()=>void,matches?:(row:string[])=>boolean){
+export async function* arrowBatches<T extends string|undefined>(records:Iterable<T[]>|AsyncIterable<T[]>,width:number,ensure:()=>void,matches?:(row:T[])=>boolean,maxRecordBytes=1024*1024){
  if(width<1||width>ANALYSIS_LIMITS.columns)throw new Error('El análisis admite entre 1 y 200 columnas por fuente.')
- let batch:string[][]=[],bytes=0,rows=0,totalBytes=0
+ let batch:T[][]=[],bytes=0,rows=0,totalBytes=0
  const encode=()=>Buffer.from(tableToIPC(new Table(Object.fromEntries(Array.from({length:width},(_,col)=>[`c${col+1}`,vectorFromArray(batch.map(row=>row[col]??null),new Utf8())]))),'stream'))
  for await(const row of records){
   ensure();rows++;if(row.length>width)throw new Error('Una fila tiene más columnas que la muestra. Recarga el archivo con una estructura consistente.')
   if(rows>ANALYSIS_LIMITS.rows||rows*width>ANALYSIS_LIMITS.cells)throw new Error('El análisis supera dos millones de filas u ocho millones de celdas por fuente.')
-  const size=row.reduce((total,value)=>total+Buffer.byteLength(value,'utf8'),0);totalBytes+=size;if(totalBytes>ANALYSIS_LIMITS.bytes)throw new Error('La fuente supera 256 MiB de texto decodificado.');if(size>1024*1024)throw new Error('Un registro supera 1 MiB.')
+  const size=row.reduce((total,value)=>total+(value===undefined?0:Buffer.byteLength(value,'utf8')),0);totalBytes+=size;if(totalBytes>ANALYSIS_LIMITS.bytes)throw new Error('La fuente supera 256 MiB de texto decodificado.');if(size>maxRecordBytes)throw new Error(maxRecordBytes===ANALYSIS_LIMITS.batchBytes?'Un registro supera 1 MiB.':'Un registro supera el límite de transferencia.')
   if(matches&&rows%2048===0){await yieldTurn();ensure()}
   if(matches&&!matches(row))continue
   if(batch.length&&(batch.length>=ANALYSIS_LIMITS.batchRows||bytes+size>ANALYSIS_LIMITS.batchBytes)){ensure();yield {data:encode(),rows:batch.length};batch=[];bytes=0}
