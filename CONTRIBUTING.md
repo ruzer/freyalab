@@ -19,11 +19,23 @@ Durante cada bloque ejecuta las unitarias y E2E de los archivos o flujos afectad
 | Archivos compartidos (`App.svelte`, `Editor.svelte`, `style.css`, `src/main/**`, `src/preload/**`, `src/shared/**`, `Icon.svelte`, `Tree.svelte`) | Flujos consumidores afectados; suite completa al cerrar la integración |
 | Render, editor o motor de tablas con efecto en rendimiento | Además los límites afectados; `npm run test:e2e:perf` cuando corresponda |
 
-Al cierre de la rama de integración y de la última tarea del lote: `npm run check`, `npm test` completo, `npm run test:e2e` completo y `npm run build`. La CI conserva todas las pruebas, las comprobaciones críticas y la ejecución del paquete: Linux, Windows y macOS Apple silicon en los PR; las cuatro plataformas, incluido macOS Intel, en los push a `main`; las pruebas enfocadas de desarrollo no sustituyen ese cierre.
+Al cierre de la rama de integración y de la última tarea del lote: `npm run check`, `npm test` completo, `npm run test:e2e` completo y `npm run build`. La CI de los PR verifica las áreas seleccionadas en Linux, Windows y macOS Apple silicon. Los push a `main` conservan la suite completa en las cuatro plataformas, incluido macOS Intel.
 
 Congela el SHA enviado a CI. Mientras se califica, continúa el código en otra rama y worktree; no cambies el head evaluado ni sus fuentes de medición. Un nuevo SHA o una integración diferente necesita su propia calificación. Registra el resultado de CI en el PR sin crear un commit solo para cambiar su estado en la evidencia.
 
-`npm run test:e2e:fast` ejecuta todo salvo `@perf` y `@solo`; sirve para una comprobación amplia, pero no sustituye la fase serial. `npm run test:e2e:perf` ejecuta los límites de tamaño y los casos `@solo`, con un único worker. La CI ejecuta ambas fases consecutivamente: fast con dos workers sólo en macOS Apple silicon y con uno en Windows, Linux y macOS Intel, y después perf/solo aislados con un worker; conserva la suite completa en los tres sistemas de los PR y añade Intel en los push a `main` cuando cambian entradas del producto, pruebas o construcción. Cada noche a las 07:23 UTC (01:23 en Ciudad de México) ejecuta sólo Intel sobre `main`. Intel reparte ese trabajo entre `shell-md` (tipos, unitarias y rápidas de Shell/Markdown) y `csv-package` (rápidas CSV, perf/solo y paquete). Esos dos jobs no se crean en los PR normales y su ausencia no acredita esa plataforma. Las ejecuciones de `main` tienen grupos independientes y no se cancelan entre sí, tampoco al estar pendientes; los nuevos commits de un mismo PR sí cancelan sus ejecuciones anteriores. Los PR sólo documentales pueden omitirla según los filtros auditados de `ci.yml`. Un verde de otra base o head es histórico, no el cierre de la entrega actual.
+`npm run test:e2e:fast` ejecuta las E2E salvo `@perf` y `@solo`. La CI ejecuta después `npm run test:e2e:perf` en solitario con un worker. La fase rápida conserva dos workers en macOS Apple silicon y uno en Windows, Linux y macOS Intel.
+
+En los PR solo documentales, Gate comprueba el plan y que Verify se haya omitido. Las capturas y otros resultados de evidencia cuentan como documentación. Para cambios de código, unitarias o entradas de pruebas, Verify ejecuta tipos, todas las unitarias y E2E de `shell`. El mapa añade Markdown o CSV según los cambios. Los cambios transversales o sin clasificar ejecutan los tres proyectos y el paquete. Un cambio de CSV en `src/main` también activa las pruebas del paquete. Para reproducir los proyectos elegidos desde la rama de un PR a `main`, con la base actualizada:
+
+```bash
+set -o pipefail
+plan=$(git diff --name-only --no-renames -z origin/main...HEAD | node scripts/ci-areas.mjs --stdin) &&
+  npm run test:e2e:area -- "$plan"
+```
+
+El propietario debe configurar **Gate** como check requerido en la protección de `main`. Gate exige un plan válido y, cuando corresponde Verify, el éxito de las tres plataformas. La aceptación de CI-1b no modifica la protección.
+
+En los push a `main`, Intel se añade cuando cambian entradas del producto, pruebas o construcción. Cada noche a las 07:23 UTC (01:23 en Ciudad de México) se ejecuta sólo Intel sobre `main`. Intel reparte ese trabajo entre `shell-md` (tipos, unitarias y rápidas de Shell/Markdown) y `csv-package` (rápidas CSV, perf/solo y paquete). Las ejecuciones de `main` tienen grupos independientes. Un commit nuevo en un PR cancela las corridas anteriores de ese PR.
 
 Los grupos están en `tests/e2e/groups.ts`. `shell` y `md` enumeran archivos; `csv` contiene los demás. Cada prueba pertenece a un único proyecto en la ejecución completa. Registra los archivos nuevos en su área; un archivo sin registrar cae en `csv` y sigue protegido en CI. Cambiar de grupo no permite borrar ni debilitar aserciones.
 

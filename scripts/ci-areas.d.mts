@@ -5,4 +5,5 @@ export function classifyPaths(paths: readonly string[]): {
   full: boolean
   package: boolean
   specs: string[]
+  docsOnly: boolean
 }

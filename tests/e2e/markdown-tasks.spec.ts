@@ -71,7 +71,9 @@ test('C2: Vista previa sin CodeMirror conserva teclado local e historial mediant
 
 test('C2: guardar no borra el historial y cambiar pestaña no aplica un cambio a otro documento',async()=>{
  const original='- [ ] Primera\n',{path}=await open(original);const firstId=id
- await boxes().first().click();await expect.poll(source).toBe('- [x] Primera\n');await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect.poll(()=>readFile(path,'utf8')).toBe('- [x] Primera\n');expect((await info())?.dirty).toBe(false)
+ await boxes().first().click();await expect.poll(source).toBe('- [x] Primera\n');await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect.poll(()=>readFile(path,'utf8')).toBe('- [x] Primera\n')
+ // El reemplazo en disco puede verse antes de que termine el guardado.
+ await expect.poll(async()=>(await info())?.dirty).toBe(false)
  await open('- [ ] Segunda\n');const secondId=id;await page.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(page.locator('.cm-editor')).toHaveCount(0);await boxes().first().click();await expect.poll(source).toBe('- [x] Segunda\n');await settled();await page.getByRole('tab',{name:/tareas-1.md/}).click();id=firstId;await settled()
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect.poll(source).toBe(original);expect((await info())?.dirty).toBe(true);expect(await readFile(path,'utf8')).toBe('- [x] Primera\n')
  await page.getByRole('tab',{name:/tareas-2.md/}).click();id=secondId;await expect(article()).toContainText('Segunda');await expect(boxes().first()).toBeChecked();await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect.poll(source).toBe('- [ ] Segunda\n');await page.getByRole('button',{name:'Dividido',exact:true}).click();await expect(content()).toContainText('Segunda');await expect(boxes().first()).not.toBeChecked()
