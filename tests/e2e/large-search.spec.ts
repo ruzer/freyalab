@@ -99,6 +99,8 @@ test('el tope de coincidencias conserva una vista parcial y mantiene bloqueadas 
  const bar=page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true})
  await expect(bar.getByLabel('Filtrar',{exact:true})).toHaveAttribute('aria-disabled','false')
  for(const name of ['Limpiar datos','Filas y columnas']){const button=bar.getByLabel(name,{exact:true});await expect(button).toHaveAttribute('aria-disabled','true');await expect(button).toHaveCSS('opacity','0.45')}
+ const calculation=page.getByRole('button',{name:'Añadir columna calculada…',exact:true})
+ await expect(calculation).toBeDisabled();await expect(calculation).toHaveAccessibleDescription(/solo lectura/)
  await expect(bar.getByRole('button',{name:'Reemplazar',exact:true})).toBeDisabled();await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled();await expect(page.getByRole('button',{name:'Exportar',exact:false}).first()).toBeDisabled()
  await capture('limit');expect(await readFile(path,'utf8')).toBe(source)
 })

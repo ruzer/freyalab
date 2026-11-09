@@ -417,19 +417,17 @@
    {#each ['rows-trim','rows-upper','rows-lower'] as id}{@render item(id)}{/each}
    <span class="dropdown-note">{selectedRows.length?`${selectedRows.length} filas × ${selectedColumns.length||doc.headers?.length||0} columnas · sin encabezados`:'Marca filas por su número (Ctrl/⌘ o Mayús añade más) y, si quieres limitarlo, columnas.'}</span>
   </div></details>
-  <details class="insert-menu"><summary data-tooltip={t('charts.toolbar.structure')} aria-label={t('charts.toolbar.structure')}><Icon name="table" size={14}/><span class="tool-text">{t('charts.toolbar.structure')}</span><Icon name="chevron-down" size={12}/></summary><div class="dropdown">
-   {#if !large}
+  <details class="insert-menu"><summary data-tooltip={t('charts.toolbar.structure')} aria-label={t('charts.toolbar.structure')} aria-disabled={large} class:disabled={large} title={large?'La edición llega en una fase posterior (archivos grandes)':undefined} onclick={event=>{if(large)event.preventDefault()}}><Icon name="table" size={14}/><span class="tool-text">{t('charts.toolbar.structure')}</span><Icon name="chevron-down" size={12}/></summary><div class="dropdown">
    <span class="dropdown-label">Filas</span>
    {#each ['insertRow','insertRowBefore','insertRowAfter','duplicateRows','deleteRows'] as id}{@render item(id)}{/each}
    <span class="dropdown-label">Columnas</span>
    {#each ['insertColumn','insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn'] as id}{@render item(id)}{/each}
-   {/if}
-   <button disabled={!!calculationDisabled} aria-describedby={calculationDisabled?'calculate-disabled':undefined} onclick={openCalculation}>{t('calculate.action')}</button>
-   {#if calculationDisabled}<span class="dropdown-note" id="calculate-disabled">{calculationDisabled}</span>{/if}
    {#if !large}
+    <button disabled={!!calculationDisabled} aria-describedby={calculationDisabled?'calculate-disabled':undefined} onclick={openCalculation}>{t('calculate.action')}</button>
+    {#if calculationDisabled}<span class="dropdown-note" id="calculate-disabled">{calculationDisabled}</span>{/if}
+   {/if}
    <span class="dropdown-label">Copiar</span>
    {@render item('copyMarkdown')}
-   {/if}
   </div></details>
   {#if large}<button bind:this={extractButton} aria-label={t('charts.toolbar.extract')} data-tooltip={t('charts.toolbar.extract')} aria-expanded={showExtract} title="Crea un archivo nuevo con las filas que cumplan unas condiciones; el original no se modifica" onclick={()=>void runCommand('extract')}><Icon name="funnel" size={14}/><span class="tool-text">Extraer…</span></button>{/if}
   <span class="spacer"></span>
@@ -437,7 +435,10 @@
   <button bind:this={commandsButton} data-tooltip={commandTitle('edit.commandPalette',t('charts.toolbar.findAction'))} aria-label={t('charts.toolbar.findAction')} title={commandTitle('edit.commandPalette',t('charts.toolbar.findAction'))} onclick={openCommands}><Icon name="command" size={14}/><span class="tool-text">{t('charts.toolbar.findAction')}</span></button>
   <button bind:this={analyzeButton} class="analyze" class:active={dockOpen} aria-label={t('charts.toolbar.analysis')} aria-expanded={dockOpen} aria-controls="analysis-dock" title={t('charts.toolbar.analysisHelp')} data-tooltip={t('charts.toolbar.analysisHelp')} onclick={()=>{showQuery=false;toggleDock(workspace.tab)}}><Icon name="chart-column" size={14}/><span class="tool-text">{t('charts.toolbar.analysis')}</span></button>
  </div>
- {#if large}<p id="large-search-help" class="large-search-help">Enter para buscar en las {number(doc.rowCount??page.total)} filas. Esc cancela el recorrido o quita la búsqueda.</p>{/if}
+ {#if large}<div class="large-search-help large-csv-help">
+  <span id="large-search-help">Enter para buscar en las {number(doc.rowCount??page.total)} filas. Esc cancela el recorrido o quita la búsqueda.</span>
+  <span title={calculationDisabled}><button class="btn-ghost" disabled aria-describedby="calculate-disabled">{t('calculate.action')}</button><span class="sr-only" id="calculate-disabled">{calculationDisabled}</span></span>
+ </div>{/if}
  {#if largeView}<section class="large-search-status" aria-label="Búsqueda en archivo grande">
   {#if largeView.query.conditions?.length}<p>Vista filtrada: {largeView.query.conditions.length} {largeView.query.conditions.length===1?'condición':'condiciones'} ({largeView.query.filterMode==='any'?'cualquiera':'todas'}) · {number(largeView.matched)} de {number(largeView.total)} filas <button {...controlHint(changingView?'busy':null)} disabled={changingView} onclick={()=>void openLargeFilters()}>Editar filtros</button></p>{/if}
   <p aria-live="off">{viewText}</p>
@@ -505,6 +506,7 @@
 <style>
  .csv-body.summary :global(.analysis-dock){display:none}.summary-host{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column}.summary-host[hidden]{display:none}
  .csv-toolbar summary.disabled{opacity:.45;cursor:not-allowed}.large-search-help{margin:0;padding:4px 12px;font-size:var(--font-meta);color:var(--muted);border-bottom:1px solid var(--border)}.large-search-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 12px;border-bottom:1px solid var(--border);font-size:11px;background:var(--panel)}.large-search-status p{margin:0;line-height:1.5}.large-search-status button{font-size:11px;padding:3px 7px}.large-search-status progress{width:110px}.large-search-scope{flex-basis:100%;color:var(--muted)}
+ .large-csv-help{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
  .csv-toolbar [data-tooltip]{position:relative;appearance:none;min-width:24px;min-height:24px}.csv-toolbar [data-tooltip]:hover::after,.csv-toolbar [data-tooltip]:focus::after{content:attr(data-tooltip);position:absolute;right:0;top:calc(100% + 7px);max-width:300px;padding:6px 9px;border-radius:var(--radius-control);background:var(--text);color:var(--panel);font-size:11px;white-space:normal;z-index:90;pointer-events:none;min-width:max-content}.csv-toolbar [data-tooltip]:focus-visible{outline:2px solid var(--accent)}
  @media(min-width:1280px){.csv-toolbar.compact .keep-label .tool-text{display:inline}}
 </style>

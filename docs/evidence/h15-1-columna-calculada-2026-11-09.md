@@ -1,6 +1,6 @@
 # H15-1 · Columna calculada en CSV
 
-La entrada vive en «Filas y columnas», el menú estructural actual de FreyaLab. El diálogo reutiliza «Transformar documento» y la ventana aislada de Análisis. «Aplicar» añade valores de texto en un paso de deshacer. «Guardar» sigue siendo una acción separada. La decisión sobre filas cortas se aplica antes de evaluar la fórmula y conserva los campos ausentes.
+La entrada vive en «Filas y columnas», el menú estructural actual de FreyaLab. En la vista de archivo grande aparece deshabilitada junto a la búsqueda, con la explicación de solo lectura. El diálogo reutiliza «Transformar documento» y la ventana aislada de Análisis. «Aplicar» añade valores de texto en un paso de deshacer. «Guardar» sigue siendo una acción separada. La decisión sobre filas cortas se aplica antes de evaluar la fórmula y conserva los campos ausentes.
 
 El [diseño original](../stories/historia-15-columna-calculada-diseno-para-codex.md) se comprobó con `cmp` y tiene SHA-256 `03b24fe8702865f86544abb588d87349391667931ab904ef371c748cc51d992b`. Las [siete respuestas del ADR 0021](../stories/h15-1-alcance-adr-0021.md) quedaron en el borrador antes del trabajo de interfaz.
 
