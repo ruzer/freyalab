@@ -11,5 +11,3 @@ export const toLogical=(physical:number,scale:number)=>physical*scale
 export const toPhysical=(logical:number,scale:number)=>logical/scale
 // Posición física de una fila dentro del contenido desplazable: su inicio lógico menos el desplazamiento lógico, más el físico.
 export const rowTop=(start:number,offset:number,scale:number)=>scale===1?start:start-offset+offset/scale
-
-// Sonda temporal de CI-1b.
