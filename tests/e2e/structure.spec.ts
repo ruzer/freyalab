@@ -174,6 +174,58 @@ test('H15-2: los ocho ejemplos eligen columnas, ajustan la lectura y calculan',a
  expect(await readFile(path,'utf8')).toBe(source)
 })
 
+test('H15-2: dejar Resumen cancela su perfilado y permite preparar la fórmula',async()=>{
+ const source='Precio,Cantidad,Fecha,Nombre,Apellido\n10.10,2,2026-02-04,Ana,López\n'
+ const {path}=await open(source)
+ const views=page.locator('[data-csv-view]')
+ type Gate={chartRequest?:string;cancelled:boolean;release?:()=>void;restore:()=>void}
+ await app.evaluate(({ipcMain})=>{
+  type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
+  const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers
+  const original=handlers.get('freya');if(!original)throw new Error('No existe el manejador real de freya')
+  const state=globalThis as typeof globalThis&{__calculationProfileGate?:Gate}
+  const gate:Gate={cancelled:false,restore:()=>handlers.set('freya',original)}
+  state.__calculationProfileGate=gate
+  // Retiene la primera respuesta real de Gráficos hasta cambiar de vista. El diálogo usa bins:1.
+  handlers.set('freya',async(event,operation,...args)=>{
+   const request=args[1] as {bins:number;requestId:string}|undefined
+   if(operation==='analyzeColumn'&&request?.bins===10&&!gate.chartRequest){
+    const result=await original(event,operation,...args)
+    gate.chartRequest=request.requestId
+    await new Promise<void>(release=>{gate.release=release})
+    return result
+   }
+   if(operation==='cancelAnalysis'&&args[1]===gate.chartRequest)gate.cancelled=true
+   return original(event,operation,...args)
+  })
+ })
+ const gateState=()=>app.evaluate(()=>{
+  const gate=(globalThis as typeof globalThis&{__calculationProfileGate?:Gate}).__calculationProfileGate
+  return {held:!!gate?.chartRequest,cancelled:!!gate?.cancelled}
+ })
+ try{
+  await views.getByRole('button',{name:'Resumen y gráfico',exact:true}).click()
+  await expect.poll(gateState).toEqual({held:true,cancelled:false})
+  await views.getByRole('button',{name:'Tabla',exact:true}).click()
+  await expect.poll(gateState).toEqual({held:true,cancelled:true})
+  const panel=await calculationDialog()
+  await app.evaluate(()=>{(globalThis as typeof globalThis&{__calculationProfileGate?:Gate}).__calculationProfileGate?.release?.()})
+  await panel.getByRole('button',{name:'Multiplicar',exact:true}).click()
+  await panel.getByRole('button',{name:'Vista previa',exact:true}).press('Enter')
+  await expect(panel.getByRole('status')).toContainText('Vista previa lista')
+  await expect(panel.getByRole('table')).toContainText('20.20')
+  await page.keyboard.press('Escape')
+  await views.getByRole('button',{name:'Resumen y gráfico',exact:true}).click()
+  await expect(page.locator('.pivot-result')).toBeVisible()
+  expect(await readFile(path,'utf8')).toBe(source)
+ }finally{
+  await app.evaluate(()=>{
+   const state=globalThis as typeof globalThis&{__calculationProfileGate?:Gate}
+   state.__calculationProfileGate?.release?.();state.__calculationProfileGate?.restore();delete state.__calculationProfileGate
+  }).catch(()=>{})
+ }
+})
+
 test('H15-2: el encabezado inserta a su derecha y distingue vacío de campo ausente',async()=>{
  const source='ID,Precio,Nota\n1,7,\n2\n', {doc,path}=await open(source)
  await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toBeVisible()

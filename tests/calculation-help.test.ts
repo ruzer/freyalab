@@ -30,3 +30,10 @@ it('nunca toma identificadores, datos mixtos o columnas sin perfil para completa
  expect(examples.filter(example=>example.recipe).map(example=>example.id)).toEqual(['round','condition','fill'])
  expect(examples.find(example=>example.id==='year')).toMatchObject({reason:'date1',recipe:undefined})
 })
+
+it('omite una fecha con espacios que la lectura de fórmulas rechazaría',()=>{
+ const fields=sqlColumns(['Fecha con espacios','Fecha ISO'])
+ const profiles={0:{kind:'date',dateReadCompatible:false},1:{kind:'date',dateReadCompatible:true}} as const
+ expect(calculationExamples(fields,profiles).find(example=>example.id==='year')?.recipe?.expression).toBe('year("Fecha ISO")')
+ expect(calculationExamples(fields.slice(0,1),profiles).find(example=>example.id==='month')?.recipe).toBeUndefined()
+})

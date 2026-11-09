@@ -22,10 +22,11 @@ const patterns=[
  ['fill','number',1,a=>`coalesce(${a}, 0)`],
 ] as const satisfies readonly (readonly [string,ColumnRead['read'],number,(a:string,b:string)=>string])[]
 
-export function calculationExamples(fields:readonly {index:number;name:string}[],profiles:Readonly<Record<number,Pick<ColumnProfile,'kind'|'decimalPlaces'>|null>>){
+export function calculationExamples(fields:readonly {index:number;name:string}[],profiles:Readonly<Record<number,Pick<ColumnProfile,'kind'|'decimalPlaces'|'dateReadCompatible'>|null>>){
  const candidates={number:[],date:[],text:[]} as Record<ColumnRead['read'],{index:number;name:string}[]>
  for(const field of fields){
-  const kind=profiles[field.index]?.kind
+  const profile=profiles[field.index],kind=profile?.kind
+  if(kind==='date'&&profile?.dateReadCompatible===false)continue
   if(kind==='number'||kind==='date'||kind==='text'||kind==='category')candidates[kind==='category'?'text':kind].push(field)
  }
  return patterns.map(([id,read,count,format])=>{

@@ -135,7 +135,15 @@
    if(initializedDocument!==id){const first=initialChart($state.snapshot(columns));if(first)options=first;initializedDocument=id}
   }finally{if(token===fieldGeneration){fieldJob=undefined;fieldsLoading=false}}
  }
- $effect(()=>{const revision=JSON.stringify([doc.id,doc.revision,doc.headers]);if(visible&&revision!==fieldRevision){fieldRevision=revision;untrack(()=>void loadFields())}})
+ $effect(()=>{
+  if(!visible){
+   // El resumen oculto no debe reemplazar la solicitud de análisis de la tabla.
+   if(fieldJob){fieldRevision=undefined;untrack(cancelFields)}
+   return
+  }
+  const revision=JSON.stringify([doc.id,doc.revision,doc.headers])
+  if(revision!==fieldRevision){fieldRevision=revision;untrack(()=>void loadFields())}
+ })
  function addField(zone:ChartZone,column:number){
   const previous=zoneFields(options)[zone],name=columnLabel(column)
   options=addToZone($state.snapshot(options),zone,column,$state.snapshot(columns))

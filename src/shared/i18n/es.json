@@ -939,7 +939,7 @@
  "calculate.examples.profileFailed": "No se pudieron revisar todas las columnas para este ejemplo.",
  "calculate.examples.number1": "No hay una columna numérica.",
  "calculate.examples.number2": "Se necesitan dos columnas numéricas.",
- "calculate.examples.date1": "No hay una columna de fecha.",
+ "calculate.examples.date1": "No hay una columna de fechas AAAA-MM-DD sin espacios.",
  "calculate.examples.text2": "Se necesitan dos columnas de texto.",
  "calculate.examples.inserted": "Ejemplo «{example}» insertado. Revisa la fórmula antes de aplicarla.",
  "calculate.functions.title": "Funciones disponibles",

@@ -939,7 +939,7 @@
  "calculate.examples.profileFailed": "Some columns could not be checked for this example.",
  "calculate.examples.number1": "There is no numeric column.",
  "calculate.examples.number2": "Two numeric columns are required.",
- "calculate.examples.date1": "There is no date column.",
+ "calculate.examples.date1": "There is no column with YYYY-MM-DD dates without spaces.",
  "calculate.examples.text2": "Two text columns are required.",
  "calculate.examples.inserted": "Example ‘{example}’ inserted. Review the formula before applying it.",
  "calculate.functions.title": "Available functions",
