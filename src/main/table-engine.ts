@@ -30,7 +30,8 @@ interface RecordLayout {rows:string[];columns:number[];header:boolean}
 interface OriginalBytes {bytes:Buffer;offsets:Uint32Array;layout:RecordLayout;rows:Map<string,number>}
 function bomLength(s:Metadata){return s.bom?(s.encoding==='utf16le'?2:3):0}
 function layout(s:State):RecordLayout{return {rows:s.rows.map(row=>row.id),columns:[...s.columnIds],header:s.header&&s.headerWidth>0}}
-function originalBytes(s:State,bytes:Buffer,layout:RecordLayout,offsets=recordByteOffsets(bytes,s.encoding,bomLength(s),layout.rows.length+Number(layout.header))):OriginalBytes{
+function originalBytes(s:State,bytes:Buffer,layout:RecordLayout):OriginalBytes{
+ const offsets=recordByteOffsets(bytes,s.encoding,bomLength(s),layout.rows.length+Number(layout.header))
  const rows=new Map<string,number>()
  for(const [index,id] of layout.rows.entries())rows.set(id,index+Number(layout.header))
  return {bytes,layout,offsets,rows}
@@ -64,7 +65,7 @@ function metadata(bytes: Buffer, options: TableOptions, path = ''): Metadata {
  return { encoding, delimiter, eol, bom, header: options.header ?? true, finalEol:/[\r\n]$/.test(text), headerWidth:0 }
 }
 async function prefix(path: string, max: number, lexical=false): Promise<Buffer> {
- const flags=lexical&&process.platform!=='win32'?constants.O_RDONLY|constants.O_NONBLOCK|constants.O_NOFOLLOW:'r'
+ const flags=lexical&&process.platform!=='win32'?constants.O_RDONLY|(constants.O_NONBLOCK??0)|(constants.O_NOFOLLOW??0):'r'
  const handle = await openFile(path,flags)
  try { const file=await handle.stat();if(lexical&&!file.isFile())throw new Error('El origen no es un archivo regular.');const result = Buffer.alloc(Math.min(file.size, max)); let offset = 0; while (offset < result.length) { const read = await handle.read(result, offset, result.length-offset, offset); if (!read.bytesRead) break; offset += read.bytesRead } return result.subarray(0, offset) } finally { await handle.close() }
 }
@@ -82,7 +83,6 @@ export class TableEngine {
  private sources=new WeakMap<State,CsvSource & {layout:RecordLayout}>()
  // Only a successfully applied calculated column keeps lexical bytes for saving and crash recovery.
  private lossless=new WeakMap<State,OriginalBytes|undefined>()
- private savedBytes=new WeakMap<State,{revision:number;bytes:Buffer;offsets:Uint32Array}>()
  private queries = new Map<string, number>()
  private openings = new Map<string, number>()
  private views = new Map<string,{key:string;indices:number[]}>()
@@ -537,12 +537,12 @@ export class TableEngine {
  }
  private commitChange(id:string,s:State,revision:number,change:Change){
   if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la operación. Vuelve a intentarlo.')
-  this.apply(s,change.forward);this.savedBytes.delete(s);s.token=change.after;s.revision++;s.history.push(change)
+  this.apply(s,change.forward);s.token=change.after;s.revision++;s.history.push(change)
   let budget=s.history.reduce((sum,item)=>sum+item.bytes,0)
   while(budget>20*1024*1024&&s.history.length>1)budget-=s.history.shift()!.bytes
   s.future=[];return this.info(id)
  }
- async undo(id:string,redo=false){const s=this.editable(id);const source=redo?s.future:s.history,target=redo?s.history:s.future;const change=source.at(-1);if(change){this.apply(s,redo?change.forward:change.backward);this.savedBytes.delete(s);source.pop();s.token=redo?change.after:change.before;s.revision++;target.push(change)}return this.info(id)}
+ async undo(id:string,redo=false){const s=this.editable(id);const source=redo?s.future:s.history,target=redo?s.history:s.future;const change=source.at(-1);if(change){this.apply(s,redo?change.forward:change.backward);source.pop();s.token=redo?change.after:change.before;s.revision++;target.push(change)}return this.info(id)}
  private async selected(id:string,options:TableExport){const s=this.get(id),revision=s.revision;if(s.readonly)throw new Error('La muestra no permite exportar el archivo ni selecciones.');let indices:number[];if(options.scope==='selection'&&options.range){const selected=await this.rangeRows(id,options.range);return{rows:selected.indices.map(i=>selected.columns.map(col=>s.rows[i].cells[col]??'')),headers:selected.columns.map(col=>s.headers[col])}}if(options.scope==='filtered')indices=await this.indices(id,options.query??{offset:0,limit:500,requestId:0});else if(options.scope==='selection'){const ids=new Set(options.rowIds??[]);indices=s.rows.flatMap((row,i)=>ids.has(row.id)?[i]:[])}else indices=s.rows.map((_,i)=>i);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.');const columns=options.columns??s.headers.map((_,i)=>i);if(columns.some(i=>!Number.isInteger(i)||i<0||i>=s.headers.length))throw new Error('Selección de columnas no válida.');return{rows:indices.map(i=>columns.map(col=>s.rows[i].cells[col]??'')),headers:columns.map(col=>s.headers[col])}}
  async analysisStart(id:string,ticket:string,revision:number,path:string|null,query?:TableQuery,where?:TableConditionGroup){
   const s=this.get(id,true);if(s.revision!==revision)throw new Error('La tabla cambió. Vuelve a analizar.');if(s.headers.length>ANALYSIS_LIMITS.columns)throw new Error('El análisis admite hasta 200 columnas por fuente.')
@@ -606,16 +606,14 @@ export class TableEngine {
  private async serializeCalculated(id:string,s:State,revision:number){
   const original=this.lossless.get(s),origins=fieldOrigins(s,original),header=s.header&&s.headerWidth>0
   const bom=original?.bytes.subarray(0,bomLength(s))??iconv.encode('',s.encoding,{addBOM:s.bom})
-  const parts:Buffer[]=[bom],offsets=new Uint32Array(s.rows.length+Number(header)+1)
-  let length=bom.length,count=0,previousCR=false,chunk=Buffer.alloc(0),used=0
+  const parts:Buffer[]=[bom]
+  let length=bom.length,previousCR=false,chunk=Buffer.alloc(0),used=0
   const unit=s.encoding==='utf16le'?2:1
-  offsets[0]=length
   const append=(cells:string[],endOfRecord:boolean,rowId?:string)=>{
    const part=calculatedRecordBytes(originalRecord(original,rowId),s,cells,origins,endOfRecord,previousCR)
    previousCR=endOfRecord&&part[part.length-unit]===13&&(unit===1||part[part.length-1]===0)
    length+=part.length
    if(length>TABLE_LIMITS.bytes)throw new Error('El resultado supera 50 MiB; reduce la tabla antes de guardarla.')
-   offsets[++count]=length
    if(chunk.length-used<part.length){
     if(used)parts.push(chunk.subarray(0,used))
     chunk=Buffer.allocUnsafe(Math.max(64*1024,part.length));used=0
@@ -631,9 +629,7 @@ export class TableEngine {
    }
   }
   if(used)parts.push(chunk.subarray(0,used))
-  const bytes=Buffer.concat(parts,length)
-  this.savedBytes.set(s,{revision,bytes,offsets})
-  return bytes
+  return Buffer.concat(parts,length)
  }
  async serialize(id:string,options?:TableExport):Promise<Buffer>{const s=this.editable(id),revision=s.revision;if(!options&&this.lossless.has(s))return this.serializeCalculated(id,s,revision);let records:string[][];if(options){const selection=await this.selected(id,options);records=s.header?[selection.headers,...selection.rows]:selection.rows}else records=s.header?[s.headers.slice(0,s.headerWidth),...s.rows.map(row=>row.cells)]:s.rows.map(row=>row.cells)
   if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.');
@@ -644,14 +640,8 @@ export class TableEngine {
  async markSaved(id:string,expectedRevision?:number,source?:CsvSource){
   const s=this.get(id)
   if(expectedRevision===undefined||s.revision===expectedRevision){
-   if(source){
-    const saved=layout(s),pending=this.savedBytes.get(s)
-    this.sources.set(s,{...source,layout:saved})
-    if(pending?.revision===s.revision&&createHash('sha256').update(pending.bytes).digest('hex')===source.hash){
-     this.lossless.set(s,originalBytes(s,pending.bytes,saved,pending.offsets))
-    }
-   }
-   this.savedBytes.delete(s)
+   // Saving updates the disk identity. The older lexical baseline can still contain rows or columns restored by undo.
+   if(source)this.sources.set(s,{...source,layout:layout(s)})
    s.savedToken=s.token
   }
   return this.info(id)

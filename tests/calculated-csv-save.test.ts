@@ -91,3 +91,17 @@ it.each([
  await engine.markSaved('csv',(await engine.info('csv')).revision,{path,hash:createHash('sha256').update(saved).digest('hex')})
  expect((await engine.open('csv',path)).rowCount).toBe(rows.length)
 })
+
+it('keeps original field bytes when undo restores a row deleted before a calculated save',async()=>{
+ const original='"ID",Name\r\n"0001","same"\r"0002",same\n'
+ await writeFile(path,original)
+ await engine.open('csv',path)
+ const {revision}=await engine.edit('csv',{type:'deleteRows',ids:['1']})
+ const applied=await engine.calculationApply('csv',calculation(revision),[values[1]])
+ const saved=await engine.serialize('csv')
+ await writeFile(path,saved)
+ await engine.markSaved('csv',applied.revision,{path,hash:createHash('sha256').update(saved).digest('hex')})
+ await engine.undo('csv')
+ await engine.undo('csv')
+ expect((await engine.serialize('csv')).toString()).toBe(original)
+})
