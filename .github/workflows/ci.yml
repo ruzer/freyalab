@@ -30,6 +30,7 @@ jobs:
     outputs:
       plan: ${{ steps.plan.outputs.plan }}
       package: ${{ steps.plan.outputs.package }}
+      docs_only: ${{ steps.plan.outputs.docs_only }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,16 +48,20 @@ jobs:
           plan=$(git diff --name-only --no-renames -z "$BASE_SHA...$HEAD_SHA" | node scripts/ci-areas.mjs --stdin)
           node --input-type=module - "$plan" <<'NODE' >> "$GITHUB_OUTPUT"
           import {areaCommand} from './scripts/ci-e2e-area.mjs'
-          const {e2e,full,package:pack}=JSON.parse(process.argv[2])
-          if(typeof pack!=='boolean')throw new Error('Plan de empaquetado inválido')
+          const {e2e,full,package:pack,docsOnly}=JSON.parse(process.argv[2])
+          if(typeof pack!=='boolean'||typeof docsOnly!=='boolean'||(docsOnly&&(full||pack||e2e.length))){
+            throw new Error('Plan de CI inválido')
+          }
           const plan=JSON.stringify({e2e,full})
-          console.error('Proyectos E2E:',areaCommand(plan,[]).slice(2).join(' '),'| Paquete:',pack||full)
+          const projects=areaCommand(plan,[]).slice(2).join(' ')
+          console.error(docsOnly?'Solo documentación: Verify se omite.':'Proyectos E2E: '+projects+' | Paquete: '+(pack||full))
           console.log('plan='+plan)
           console.log('package='+(pack||full))
+          console.log('docs_only='+docsOnly)
           NODE
   verify:
     needs: areas
-    if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.areas.result == 'success') }}
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || (needs.areas.result == 'success' && needs.areas.outputs.docs_only == 'false')) }}
     name: Verify ${{ matrix.os }}${{ matrix.part && format(' ({0})', matrix.part) || '' }}
     strategy:
       fail-fast: false
@@ -175,16 +180,17 @@ jobs:
     if: ${{ always() && github.event_name == 'pull_request' }}
     runs-on: ubuntu-24.04
     steps:
-      - name: Require the plan and all three platforms
+      - name: Require the plan and its expected verification
         env:
           AREAS_RESULT: ${{ needs.areas.result }}
+          DOCS_ONLY: ${{ needs.areas.outputs.docs_only }}
           VERIFY_RESULT: ${{ needs.verify.result }}
           UBUNTU: ${{ needs.verify.outputs.ubuntu }}
           WINDOWS: ${{ needs.verify.outputs.windows }}
           MACOS: ${{ needs.verify.outputs.macos }}
         run: |
-          if [[ "$AREAS_RESULT" != success || "$VERIFY_RESULT" != success ||
-                "$UBUNTU/$WINDOWS/$MACOS" != passed/passed/passed ]]; then
-            echo "Gate falló. Áreas: $AREAS_RESULT. Matriz: $VERIFY_RESULT. Ubuntu: ${UBUNTU:-sin éxito}. Windows: ${WINDOWS:-sin éxito}. macOS: ${MACOS:-sin éxito}."
-            exit 1
-          fi
+          case "$AREAS_RESULT/$DOCS_ONLY/$VERIFY_RESULT/$UBUNTU/$WINDOWS/$MACOS" in
+            success/true/skipped///|success/false/success/passed/passed/passed) exit 0 ;;
+          esac
+          echo "Gate falló. Áreas: $AREAS_RESULT. Solo documentación: ${DOCS_ONLY:-sin plan}. Matriz: $VERIFY_RESULT. Ubuntu: ${UBUNTU:-sin éxito}. Windows: ${WINDOWS:-sin éxito}. macOS: ${MACOS:-sin éxito}."
+          exit 1

@@ -25,7 +25,7 @@ Congela el SHA enviado a CI. Mientras se califica, continúa el código en otra 
 
 `npm run test:e2e:fast` ejecuta las E2E salvo `@perf` y `@solo`. La CI ejecuta después `npm run test:e2e:perf` en solitario con un worker. La fase rápida conserva dos workers en macOS Apple silicon y uno en Windows, Linux y macOS Intel.
 
-En cada PR, incluidos los documentales, corren tipos, todas las unitarias y E2E de `shell`. El mapa añade Markdown o CSV según los cambios. Los cambios transversales o sin clasificar ejecutan los tres proyectos y el paquete. Un cambio de CSV en `src/main` también activa las pruebas del paquete. Para reproducir los proyectos elegidos desde la rama de un PR a `main`, con la base actualizada:
+En los PR solo documentales, Gate comprueba el plan y que Verify se haya omitido. Las capturas y otros resultados de evidencia cuentan como documentación. Para cambios de código, unitarias o entradas de pruebas, Verify ejecuta tipos, todas las unitarias y E2E de `shell`. El mapa añade Markdown o CSV según los cambios. Los cambios transversales o sin clasificar ejecutan los tres proyectos y el paquete. Un cambio de CSV en `src/main` también activa las pruebas del paquete. Para reproducir los proyectos elegidos desde la rama de un PR a `main`, con la base actualizada:
 
 ```bash
 set -o pipefail
@@ -33,7 +33,7 @@ plan=$(git diff --name-only --no-renames -z origin/main...HEAD | node scripts/ci
   npm run test:e2e:area -- "$plan"
 ```
 
-El propietario debe configurar **Gate** como check requerido en la protección de `main`. Gate exige un plan válido y el éxito de las tres plataformas. La aceptación de CI-1b no modifica la protección.
+El propietario debe configurar **Gate** como check requerido en la protección de `main`. Gate exige un plan válido y, cuando corresponde Verify, el éxito de las tres plataformas. La aceptación de CI-1b no modifica la protección.
 
 En los push a `main`, Intel se añade cuando cambian entradas del producto, pruebas o construcción. Cada noche a las 07:23 UTC (01:23 en Ciudad de México) se ejecuta sólo Intel sobre `main`. Intel reparte ese trabajo entre `shell-md` (tipos, unitarias y rápidas de Shell/Markdown) y `csv-package` (rápidas CSV, perf/solo y paquete). Las ejecuciones de `main` tienen grupos independientes. Un commit nuevo en un PR cancela las corridas anteriores de ese PR.
 

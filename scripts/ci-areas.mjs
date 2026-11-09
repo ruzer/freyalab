@@ -77,7 +77,13 @@ const areas = {
 }
 const projects=['shell','md','csv']
 const byPath=new Map(Object.entries(areas).flatMap(([area,paths])=>paths.map(path=>[path,area])))
-const documentation=/^(?:[^/]+\.md|docs\/[^/]+\.md|docs\/(?:audit|evidence|stories)\/.+\.md|docs\/design\/[^/]+\.(?:html|md))$/
+// Las evidencias son salidas opcionales, salvo estas dos entradas de Vitest. El PNG
+// original que lee app.spec.ts vive en docs/design y conserva la cobertura completa.
+const unitFixtures=new Set([
+  'docs/evidence/seg-s2e-2026-10-30/custom-style-invalid.docx',
+  'docs/evidence/i18n-01-baseline-2026-10-28.json',
+])
+const documentation=/^(?:[^/]+\.md|docs\/[^/]+\.md|docs\/(?:audit|stories)\/.+\.md|docs\/evidence\/.+|docs\/design\/[^/]+\.(?:html|md))$/
 // CSV usa workers y una ventana analítica que deben resolverse también desde el paquete.
 const packagePath=/^(?:package(?:-lock)?\.json$|electron\.vite\.config\.ts$|electron-builder\.[^/]+$|(?:build|src\/(?:main|preload))\/)/
 const specPath=/^tests\/e2e\/.+\.spec\.ts$/
@@ -86,15 +92,18 @@ const unitPath=/^tests\/(?!e2e\/).+\.test\.ts$/
 
 export function classifyPaths(paths,unclassified=new Set()) {
   const selected=new Set(),specs=new Set()
-  let full=paths.length===0,pack=false
+  let full=paths.length===0,pack=false,docsOnly=paths.length>0
   for(const path of paths){
     if(typeof path!=='string'||/[\\\x00-\x1f]/.test(path)||path.split('/').some(part=>!part||part==='.'||part==='..')){
       full=true
+      docsOnly=false
       unclassified.add(path)
       continue
     }
+    if(documentation.test(path)&&!unitFixtures.has(path))continue
+    docsOnly=false
     if(packagePath.test(path))pack=true
-    if(documentation.test(path)||unitPath.test(path))continue
+    if(unitPath.test(path)||unitFixtures.has(path))continue
     if(specPath.test(path)){
       const file=posix.basename(path)
       specs.add(path)
@@ -111,7 +120,7 @@ export function classifyPaths(paths,unclassified=new Set()) {
       unclassified.add(path)
     }
   }
-  return {checks:true,unit:true,e2e:projects.filter(project=>full||selected.has(project)),full,package:pack,specs:[...specs].sort()}
+  return {checks:true,unit:true,e2e:projects.filter(project=>full||selected.has(project)),full,package:pack,specs:[...specs].sort(),docsOnly}
 }
 
 if(import.meta.main){

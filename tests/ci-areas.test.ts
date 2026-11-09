@@ -7,7 +7,7 @@ import {areaCommand} from '../scripts/ci-e2e-area.mjs'
 import {mdFiles,shellFiles} from './e2e/groups'
 
 const all=['shell','md','csv']
-const full={checks:true,unit:true,e2e:all,full:true,package:false,specs:[]}
+const full={checks:true,unit:true,e2e:all,full:true,package:false,specs:[],docsOnly:false}
 
 it.each([
  ['src/renderer/components/MarkdownToolbar.svelte',['shell','md'],false],
@@ -18,13 +18,11 @@ it.each([
  ['src/renderer/components/AnalysisDock.svelte',['shell','csv'],false],
  ['src/main/table-worker.ts',['shell','csv'],true],
  ['src/main/large-search-worker.ts',['shell','csv'],true],
- ['docs/stories/historia-ci1-pruebas-por-area-diseno-para-codex.md',[],false],
- ['README.md',[],false],
  ['tests/markdown-commands.test.ts',[],false],
  ['tests/documents.test.ts',[],false],
  ['tests/nested/regression.test.ts',[],false],
 ] as const)('%s selecciona sus áreas y el paquete cuando corresponde',(path,e2e,pack)=>{
- expect(classifyPaths([path])).toEqual({checks:true,unit:true,e2e,full:false,package:pack,specs:[]})
+ expect(classifyPaths([path])).toEqual({...full,e2e,full:false,package:pack})
 })
 
 it.each([
@@ -49,13 +47,32 @@ it.each([
  ['scripts/ci-areas.mjs',false],
  ['tests/e2e/freya-helper.ts',false],
  ['tests/e2e/helper.test.ts',false],
- ['docs/evidence/seg-s2e-2026-10-30/custom-style-invalid.docx',false],
  ['docs/design/freya-icon-original.png',false],
  ['docs/licenses/csl-CC-BY-SA-3.0.txt',false],
  ['src/renderer/components/MarkdownNuevo.svelte',false],
  ['zona-desconocida/archivo.ts',false],
 ] as const)('%s conserva la ejecución completa',(path,pack)=>{
  expect(classifyPaths([path])).toEqual({...full,package:pack})
+})
+
+it('solo documentación y evidencia generada omiten Verify',()=>{
+ expect(classifyPaths([
+  'README.md','docs/stories/historia-ci1-pruebas-por-area-diseno-para-codex.md',
+  'docs/evidence/fase/captura.png','docs/evidence/fase/vista.html','docs/evidence/fase/medición.json',
+ ])).toEqual({...full,e2e:[],full:false,docsOnly:true})
+})
+
+it('una captura no amplía un cambio Markdown y una unitaria impide omitir Verify',()=>{
+ const evidence='docs/evidence/captura.png'
+ expect(classifyPaths(['src/renderer/lib/markdown-commands.ts',evidence])).toEqual({...full,e2e:['shell','md'],full:false})
+ expect(classifyPaths(['tests/markdown-commands.test.ts',evidence])).toEqual({...full,e2e:[],full:false})
+})
+
+it.each([
+ 'docs/evidence/seg-s2e-2026-10-30/custom-style-invalid.docx',
+ 'docs/evidence/i18n-01-baseline-2026-10-28.json',
+])('la entrada de Vitest %s exige Verify sin ampliar las E2E',fixture=>{
+ expect(classifyPaths([fixture,'README.md'])).toEqual({...full,e2e:[],full:false})
 })
 
 it('una prueba unitaria no amplía el área de su fuente',()=>{
@@ -102,7 +119,7 @@ it('cada spec real tiene un proyecto y se incluye si cambia',()=>{
   if(!project.length)project.push('csv')
   expect(project).toHaveLength(1)
   const spec='tests/e2e/'+path
-  expect(classifyPaths([spec])).toEqual({checks:true,unit:true,e2e:[...new Set(['shell',...project])],full:false,package:false,specs:[spec]})
+  expect(classifyPaths([spec])).toEqual({...full,e2e:[...new Set(['shell',...project])],full:false,specs:[spec]})
  }
 })
 

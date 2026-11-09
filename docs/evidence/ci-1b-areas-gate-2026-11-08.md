@@ -22,11 +22,12 @@ Base `4c2b7fd`, fusión de #128. [Diseño CI-1b](../stories/historia-ci1-pruebas
 | `components/TextStats.svelte`, `lib/text-stats.worker.ts` | El componente crea el worker y App lo monta para Markdown y TXT. Las E2E de estadísticas de texto pertenecen a `md`. |
 | `src/main/table-client.ts`, `table-worker.ts`, `table-engine.ts`, `large-search-worker.ts`, `sql-service.ts`, `analytics.html`, `analytics.ts` | Documentos abre la tabla con TableClient y este inicia el worker con `utilityProcess.fork`. Vite incluye ambos workers. SqlService carga la ventana analítica. Sus rutas empaquetadas justifican CSV + paquete para esos cambios de proceso principal. |
 | `tests/**/*.test.ts` fuera de `tests/e2e/**` | Coincide con Vitest. Los auxiliares y fixtures fuera de esa regla siguen siendo transversales. |
-| DOCX de `docs/evidence/seg-s2e-2026-10-30/`, PNG de `docs/design/`, `docs/licenses/**` | Son entradas reales de pruebas o licencias. Se clasifican como transversales. El filtro anterior de PR podía omitir el DOCX. |
+| DOCX de `docs/evidence/seg-s2e-2026-10-30/`, `docs/evidence/i18n-01-baseline-2026-10-28.json` | Los leen `word-style-evidence.test.ts` e `i18n-pending.test.ts`, respectivamente. Ambos exigen Verify y mantienen Shell sin añadir áreas. |
+| `docs/design/freya-icon-original.png`, `docs/licenses/**` | Son entradas de `app.spec.ts` y de generación de licencias. Conservan la clasificación transversal. |
 
 La exclusividad de las demás rutas del mapa es una hipótesis heredada de CI-1a. Los imports tampoco demuestran el aislamiento de las ramas por formato, IPC y cargas dinámicas futuras. Por ejemplo, el servicio de configuraciones de gráficos se construye al arrancar la app. Shell cubre el arranque y `main` conserva la suite completa para detectar cruces de área.
 
-Gate falla si falta el plan, la matriz falla o alguna plataforma carece de confirmación de éxito. Quitar el filtro de rutas en PR evita que un cambio documental suprima el check. Los grupos de Playwright y el selector comparten la lista de specs. El propietario debe marcar **Gate** como requerido en GitHub.
+Gate exige cálculo exitoso en todos los PR. Acepta Verify omitido únicamente con un plan de solo documentación y sin confirmaciones de plataforma. Con los demás planes exige Verify exitoso y sus tres confirmaciones. Quitar el filtro de rutas evita que un cambio documental suprima el check. Los grupos de Playwright y el selector comparten la lista de specs. El propietario debe marcar **Gate** como requerido en GitHub.
 
 ## Comprobaciones locales
 
