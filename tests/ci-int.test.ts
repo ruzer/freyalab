@@ -1,6 +1,7 @@
 import {execFileSync} from 'node:child_process'
 import {readFileSync} from 'node:fs'
 import {createRequire} from 'node:module'
+import {dirname} from 'node:path'
 import {expect,it} from 'vitest'
 
 type Job={os:string;part?:string;projects?:string}
@@ -22,7 +23,11 @@ function identities(suite:Suite,parents:string[]=[]):string[]{
 }
 
 function list(...args:string[]):string[]{
- const report=JSON.parse(execFileSync(process.execPath,[require.resolve('@playwright/test/cli'),'test','--list','--reporter=json',...args],{encoding:'utf8',timeout:30_000,maxBuffer:4*1024*1024})) as {suites:Suite[]}
+ const report=JSON.parse(execFileSync(process.execPath,[require.resolve('@playwright/test/cli'),'test','--list','--reporter=json',...args],{
+  encoding:'utf8',timeout:30_000,maxBuffer:4*1024*1024,
+  // La enumeración importa los specs sin lanzar Electron ni necesitar su binario.
+  env:{...process.env,ELECTRON_OVERRIDE_DIST_PATH:dirname(require.resolve('electron'))}
+ })) as {suites:Suite[]}
  return report.suites.flatMap(suite=>identities(suite))
 }
 
