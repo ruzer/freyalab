@@ -3,6 +3,7 @@ import {readdirSync} from 'node:fs'
 import {basename} from 'node:path'
 import {expect,it} from 'vitest'
 import {classifyPaths} from '../scripts/ci-areas.mjs'
+import {areaCommand} from '../scripts/ci-e2e-area.mjs'
 import {mdFiles,shellFiles} from './e2e/groups'
 
 const all=['shell','md','csv']
@@ -68,6 +69,24 @@ it('anuncia las rutas no clasificadas en stderr sin contaminar el plan JSON',()=
  expect(result.status).toBe(0)
  expect(JSON.parse(result.stdout)).toEqual(full)
  expect(result.stderr).toBe('no clasificado: zona-nueva/a.ts, zona-nueva/b.ts\n')
+})
+
+it.each([
+ [['README.md'],['--project=shell']],
+ [['src/renderer/lib/markdown-commands.ts'],['--project=shell','--project=md']],
+ [['tests/e2e/csv-text.spec.ts'],['--project=shell','--project=csv']],
+ [['src/renderer/components/Editor.svelte'],['--project=shell','--project=md','--project=csv']],
+] as const)('reproduce en cada fase los proyectos del plan para %j',(paths,projects)=>{
+ const plan=JSON.stringify(classifyPaths(paths))
+ expect(areaCommand(plan,[])).toEqual(['test:e2e','--',...projects])
+ expect(areaCommand(plan,['--phase=fast','--workers=2'])).toEqual(['test:e2e:fast','--',...projects,'--workers=2'])
+ expect(areaCommand(plan,['--phase=serial','--workers=1'])).toEqual(['test:e2e:perf','--',...projects,'--workers=1'])
+})
+
+it('rechaza planes inválidos y argumentos que puedan reducir la cobertura',()=>{
+ expect(()=>areaCommand('{"full":false,"e2e":["ajeno"]}',[])).toThrow()
+ expect(()=>areaCommand('{"e2e":[]}',[])).toThrow()
+ expect(()=>areaCommand(JSON.stringify(classifyPaths([])),['--project=csv'])).toThrow()
 })
 
 it('cada spec real tiene un proyecto y se incluye si cambia',()=>{

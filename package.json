@@ -23,6 +23,7 @@
     "test:e2e:csv": "npm run build && playwright test --project=shell --project=csv",
     "test:e2e:fast": "npm run build && playwright test --grep-invert \"@perf|@solo\"",
     "test:e2e:perf": "npm run build && playwright test --grep \"@perf|@solo\"",
+    "test:e2e:area": "node scripts/ci-e2e-area.mjs",
     "build": "electron-vite build",
     "dist": "npm run build && electron-builder",
     "licenses": "node scripts/licenses.mjs"
