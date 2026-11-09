@@ -48,6 +48,8 @@ it('mantiene exactamente el texto decimal, los nulos válidos y el índice origi
   {rowId:'4',value:'0.00',failed:false,invalid:[8]}
  ])
  expect(calculate('CAST(9007199254740993 AS HUGEINT)',[])[0].value).toBe('9007199254740993')
+ expect(calculate('round("Precio unitario" * Cantidad, 2)')[0].value).toBe('30.30')
+ expect(calculate('coalesce("Precio unitario", 0)')[2].value).toBe('0.00')
 })
 it('distingue error de evaluación, infinito y NULL intencional',()=>{
  expect(calculate("CAST(Descripción AS INTEGER)")[0]).toMatchObject({value:null,failed:true})
@@ -55,10 +57,12 @@ it('distingue error de evaluación, infinito y NULL intencional',()=>{
  expect(calculate('NULL',[])[0]).toMatchObject({value:null,failed:false})
  expect(calculate('1e-8',[])[0].value).toBe('0.00000001')
  expect(calculate('1e+308',[])[0].value).toBe('1'+'0'.repeat(308))
+ expect(calculate('Cantidad / Cantidad * 100')[0].value).toBe('100.0')
 })
 it('acepta fecha ISO real, booleanos, condiciones y texto que parece una sentencia',()=>{
  expect(calculate('Fecha').map(row=>row.value)).toEqual(['2026-01-05',null,null,null])
  expect(calculate('EXTRACT(YEAR FROM Fecha)')[0].value).toBe('2026')
+ expect(calculate('month(Fecha)')[0].value).toBe('1')
  expect(calculate('Cantidad > 0')[0].value).toBe('true')
  expect(calculate(`if((Cantidad > 1), "Descripción" || '; SELECT 1 --', 'no')`)[0].value).toBe('Café; SELECT 1 --')
  expect(calculate('"SELECT ""; costo"')[0].value).toBe('privado')

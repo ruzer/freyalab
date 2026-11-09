@@ -3,16 +3,26 @@ import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,mkdir,rm} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
-import {} from './panel'
+import {menuItem} from './panel'
 import {readCalculationError,type CalculateColumnEdit} from '../../src/shared/calculated-column'
+import {t,type Language} from '../../src/shared/i18n'
 let app:ElectronApplication,page:Page,folder:string
 const original='ID,Partes,Nota\r\n001,a;0007,Café\r\n002,b;;,é\r\n001,a;0007,Otra\r\n'
-test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-transform-e2e-'));await mkdir(join(folder,'exports'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
+test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-transform-e2e-'));await mkdir(join(folder,'exports'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env,locale=test.info().title.match(/\[(en|en-XA)\]$/)?.[1]??'es';app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:locale,FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
-async function open(source=original){const path=join(folder,'data.csv');await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);return{doc,path}}
+async function open(source=original,name='data.csv'){const path=join(folder,name);await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);return{doc,path}}
 async function dialog(operation:string,columns=['0']){await page.getByLabel('Limpiar datos',{exact:true}).click();await page.getByRole('button',{name:'Transformar documento…',exact:true}).click();const panel=page.getByRole('dialog',{name:'Transformar documento CSV',exact:true});await panel.getByLabel('Transformación CSV',{exact:true}).selectOption(operation);if(operation!=='headers')await panel.getByLabel('Columnas para transformar',{exact:true}).selectOption(columns);return panel}
 async function preview(panel:ReturnType<Page['getByRole']>){await panel.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Vista previa lista',{timeout:30000})}
 async function apply(panel:ReturnType<Page['getByRole']>){await panel.getByRole('button',{name:'Aplicar transformación',exact:true}).click();await expect(panel).toHaveCount(0)}
+
+async function calculationDialog(locale:Language='es'){
+ const menu=page.getByLabel(t('charts.toolbar.structure',{},locale),{exact:true})
+ await menu.focus();await page.keyboard.press('Enter')
+ const action=page.getByRole('button',{name:t('calculate.action',{},locale),exact:true})
+ await expect(action).toBeVisible({timeout:3000})
+ await action.focus();await page.keyboard.press('Enter')
+ return page.getByRole('dialog',{name:t('calculate.action',{},locale),exact:true})
+}
 
 test('H15-1: la transformación calculada conserva decimales exactos',async()=>{
  const original='Producto,Precio unitario,Cantidad\nA,10.10,3\nB,0.1,3\n'
@@ -48,6 +58,93 @@ test('H15-1: las fórmulas que salen de la expresión escalar se rechazan sin ca
   expect(await page.evaluate(()=>window.freya.documents())).toEqual(before)
   expect(await readFile(path,'utf8')).toBe(original)
  }
+})
+
+test('H15-1 interfaz: vista previa de filas filtradas, cambio pendiente, guardar y deshacer',async()=>{
+ const source='Producto,Precio unitario,Cantidad\r\n"Café",10.10,3\r\nTé,0.1,3\r\n'
+ const {doc,path}=await open(source)
+ await page.getByLabel('Tema',{exact:true}).selectOption('light')
+ await page.getByRole('gridcell',{name:'Fila 2, Cantidad',exact:true}).dblclick()
+ const cell=page.getByRole('textbox',{name:'Editar celda',exact:true})
+ await cell.fill('4');await cell.press('Enter')
+ await expect(page.getByRole('gridcell',{name:'Fila 2, Cantidad',exact:true})).toHaveText('4')
+ const product=page.getByRole('button',{name:'Producto',exact:true})
+ await product.click();await product.click()
+ await expect(page.getByRole('columnheader').first()).toHaveAttribute('aria-sort','descending')
+ await menuItem(page,'Filtrar','Filtros por columna');await page.getByLabel('Filtrar Producto',{exact:true}).fill('Café')
+ await page.getByLabel('Buscar en tabla',{exact:true}).fill('Café');await expect(page.locator('footer')).toContainText('1 de 2 filas')
+ const panel=await calculationDialog()
+ await expect(panel.getByLabel('Nombre de la columna',{exact:true})).toBeFocused()
+ await panel.getByLabel('Nombre de la columna',{exact:true}).fill('Total')
+ const formula=panel.getByLabel('Fórmula',{exact:true})
+ await panel.getByLabel('Insertar columna en la fórmula',{exact:true}).selectOption('1')
+ await expect(formula).toHaveValue('"Precio unitario"')
+ await formula.press('End');await page.keyboard.insertText(' * Cantidad')
+ await panel.getByLabel('Cómo leer Precio unitario',{exact:true}).selectOption('number')
+ await panel.getByLabel('Decimales de Precio unitario',{exact:true}).fill('2')
+ await panel.getByLabel('Cómo leer Cantidad',{exact:true}).selectOption('number')
+ await panel.getByRole('button',{name:'Vista previa',exact:true}).press('Enter')
+ await expect(panel.getByRole('status')).toContainText('Vista previa lista')
+ await expect(panel.getByRole('table')).toContainText('30.30');await expect(panel.getByRole('table')).toContainText('0.40')
+ await expect(panel.getByRole('button',{name:'Aplicar',exact:true})).toBeInViewport()
+ await page.screenshot({path:test.info().outputPath('h15-1-claro-1440x900.png')})
+ await panel.getByRole('button',{name:'Aplicar',exact:true}).press('Enter')
+ await expect(panel).toHaveCount(0);await expect(page.getByRole('status').filter({hasText:'Columna añadida'})).toHaveText('Columna añadida. Guarda el documento para conservar el cambio.')
+ await expect(page.getByLabel('Filas y columnas',{exact:true})).toBeFocused()
+ expect(await readFile(path,'utf8')).toBe(source)
+ await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(page.getByRole('columnheader',{name:/Total/})).toHaveCount(0)
+ await page.getByRole('button',{name:'Rehacer',exact:true}).click();await expect(page.getByRole('columnheader',{name:/Total/})).toHaveCount(1)
+ await page.getByRole('button',{name:'Guardar',exact:true}).click()
+ const expected='Producto,Precio unitario,Cantidad,Total\r\n"Café",10.10,3,30.30\r\nTé,0.1,4,0.40\r\n'
+ await expect.poll(()=>readFile(path,'utf8')).toBe(expected)
+ const persisted=await page.evaluate(id=>window.freya.documents().then(all=>all.find(item=>item.id===id)),doc.id)
+ expect(persisted?.rowCount).toBe(2)
+})
+
+for(const locale of ['en','en-XA'] as const)test(`H15-1 interfaz: traducción, fórmula con acento y medios accesibles [${locale}]`,async()=>{
+ const label=(key:string)=>t('calculate.'+key,{},locale)
+ await open('Región,Importe\nCafé,1\n')
+ await expect(page.locator('html')).toHaveAttribute('lang',locale)
+ await page.getByLabel('Tema',{exact:true}).selectOption('dark')
+ const panel=await calculationDialog(locale)
+ const formula=panel.getByLabel(label('formula'),{exact:true})
+ await formula.fill('"Región" * 2')
+ await panel.getByRole('button',{name:label('preview'),exact:true}).press('Enter')
+ await expect(panel.getByRole('alert')).toContainText(t('calculate.error.textType',{column:'Región'},locale))
+ await expect(panel.getByText(label('detail'),{exact:true})).toBeVisible()
+ await expect(panel.locator('details')).not.toHaveAttribute('open')
+ await formula.fill('')
+ await formula.focus();await page.keyboard.insertText('"Región" || \' con té\'')
+ await panel.getByRole('button',{name:label('preview'),exact:true}).press('Enter')
+ await expect(panel.getByRole('status')).toHaveText(label('progress.ready'))
+ await expect(panel.getByRole('table')).toContainText('Café con té')
+ await page.screenshot({path:test.info().outputPath(`h15-1-oscuro-${locale}-1440x900.png`)})
+ if(locale==='en-XA'){
+  await page.emulateMedia({forcedColors:'active',reducedMotion:'reduce'})
+  expect(await page.evaluate(()=>matchMedia('(forced-colors: active)').matches&&matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true)
+  await formula.focus();await expect(formula).toBeFocused();await expect(panel).toBeVisible()
+  await page.screenshot({path:test.info().outputPath('h15-1-colores-forzados-en-XA-1440x900.png')})
+ }
+ await page.keyboard.press('Escape');await expect(panel).toHaveCount(0)
+ await expect(page.getByLabel(t('charts.toolbar.structure',{},locale),{exact:true})).toBeFocused()
+})
+
+test('H15-1 interfaz: explica la fila corta y desactiva el cálculo en una muestra',async()=>{
+ const source='A,B\nuno,2\ndos\n',opened=await open(source,'irregular.csv')
+ const panel=await calculationDialog()
+ await panel.getByLabel('Fórmula',{exact:true}).fill('1')
+ await panel.getByRole('button',{name:'Vista previa',exact:true}).press('Enter')
+ await expect(panel.getByRole('alert')).toContainText('La fila 2 tiene campos ausentes')
+ await expect(panel.getByRole('button',{name:'Aplicar',exact:true})).toBeDisabled()
+ await page.keyboard.press('Escape');await expect(panel).toHaveCount(0)
+ expect(await readFile(opened.path,'utf8')).toBe(source)
+ const {doc}=await open('A\nuno\n'+'x'.repeat(1024*1024+4)+'\n','muestra.csv')
+ expect(doc.readonly).toBe(true)
+ const menu=page.getByLabel('Filas y columnas',{exact:true})
+ await menu.focus();await page.keyboard.press('Enter')
+ const action=page.getByRole('button',{name:'Añadir columna calculada…',exact:true})
+ await expect(action).toBeDisabled()
+ await expect(action).toHaveAccessibleDescription(/solo lectura/)
 })
 
 test('transformaciones visuales: documento completo, originales, Unicode, encabezados, duplicados y deshacer',async()=>{

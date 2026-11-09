@@ -45,7 +45,7 @@ describe('calculated column in the CSV engine',()=>{
   expect(preview).toMatchObject({rows:3,affected:3,emptyRows:1,invalidByColumn:{1:1},failures:1})
   expect(preview.samples.map(sample=>sample.after)).toEqual(['30.30','','0.30'])
   expect((await engine.info('csv')).dirty).toBe(false)
-  await expect(engine.calculationApply('csv',{...edit,onError:'abort'},values)).rejects.toThrow('no se pudieron calcular')
+  await expect(engine.calculationApply('csv',{...edit,onError:'abort'},values)).rejects.toThrow('"code":"failedRows"')
   expect((await engine.info('csv')).dirty).toBe(false)
   await engine.calculationApply('csv',edit,values)
   const inserted=(await engine.page('csv',query)).rows
@@ -66,7 +66,7 @@ describe('calculated column in the CSV engine',()=>{
   const source='ID,Precio\n00001,10.10\n00002\n'
   const edit=await fixture(source)
   const values=[result('1','30.30'),result('2','2')]
-  await expect(engine.calculationStart('csv','ticket',{...edit,position:2})).rejects.toThrow('fila original 2')
+  await expect(engine.calculationStart('csv','ticket',{...edit,position:2})).rejects.toThrow('"code":"rowTooShort","row":2')
   await expect(engine.calculationApply('csv',{...edit,revision:edit.revision-1},values)).rejects.toThrow('cambió')
   await expect(engine.calculationApply('csv',edit,[values[0]])).rejects.toThrow('todas las filas')
   await expect(engine.calculationApply('csv',edit,[values[0],values[0]])).rejects.toThrow('no válidos')
@@ -91,6 +91,6 @@ describe('calculated column in the CSV engine',()=>{
   const first=await fixture(`${full}\n${full}\n`)
   await expect(engine.calculationStart('csv','ticket',first)).rejects.toThrow('200 columnas')
   const second=await fixture('ID,Nombre\n001,A,Ausente en el encabezado\n',{position:3})
-  await expect(engine.calculationStart('csv','ticket',second)).rejects.toThrow('encabezados ausentes')
+  await expect(engine.calculationStart('csv','ticket',second)).rejects.toThrow('"code":"headerTooShort"')
  })
 })

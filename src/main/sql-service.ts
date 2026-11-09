@@ -30,7 +30,7 @@ export class SqlService {
  private preparedCalculation?:{id:string;requestId:string;key:string;values:CalculatedValue[]}
  private applyingCalculation=new Map<string,{id:string;abort:AbortController}>()
  constructor(private docs:Documents,private progress:(event:SqlProgress)=>void){
-  this.queue=new JobQueue(1,requestId=>progress({requestId,phase:'En cola: hay otro análisis en curso',rows:0}))
+  this.queue=new JobQueue(1,requestId=>progress({requestId,phase:this.jobs.get(requestId)?.calculation?'calculate.progress.waiting':'En cola: hay otro análisis en curso',rows:0}))
   const isolated=session.fromPartition('freyalab-analysis'),root=fileURLToPath(new URL('../renderer',import.meta.url))
   isolated.protocol.handle(scheme,request=>{try{const url=new URL(request.url),target=resolve(root,'.'+decodeURIComponent(url.pathname)),path=relative(root,target);if(url.hostname!=='engine'||path.startsWith('..')||isAbsolute(path))return new Response('No autorizado',{status:403});const dev=process.env.ELECTRON_RENDERER_URL;return net.fetch(dev?new URL(url.pathname,dev).href:pathToFileURL(target).href)}catch{return new Response('Ruta no válida',{status:400})}})
   isolated.webRequest.onBeforeRequest((details,callback)=>callback({cancel:!details.url.startsWith(origin+'/')}))
@@ -62,7 +62,7 @@ export class SqlService {
   const owner=new BrowserWindow({show:false,webPreferences:{sandbox:true,contextIsolation:true,nodeIntegration:false,partition:'freyalab-analysis',backgroundThrottling:false}});job.window=owner
   owner.webContents.setWindowOpenHandler(()=>({action:'deny'}));owner.webContents.on('will-navigate',event=>event.preventDefault())
   owner.webContents.on('render-process-gone',()=>{if(job.window!==owner)return;job.error='El motor de análisis se cerró. Los documentos siguen intactos.';this.cancel(job.id)})
-  this.progress({requestId:job.id,phase:'Preparando motor local',rows:0})
+  this.progress({requestId:job.id,phase:job.calculation?'calculate.progress.engine':'Preparando motor local',rows:0})
   await owner.loadURL(origin+'/analytics.html')
   await owner.webContents.executeJavaScript('new Promise(resolve=>{const timer=setInterval(()=>{if(globalThis.freyaSQL){clearInterval(timer);resolve(true)}},10)})')
   return owner.webContents

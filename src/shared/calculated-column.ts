@@ -19,14 +19,14 @@ export interface CalculatedColumnPreview extends TableTransformPreview {
  failures:number
 }
 
-const errorCodes=['scalar','unknownColumn','textType','incompatible','tooLarge'] as const
+const errorCodes=['scalar','unknownColumn','textType','incompatible','tooLarge','rowTooShort','headerTooShort','failedRows','limitColumns','cellsLimit','bytesLimit','recordLimit','undoLimit','encoding','disk'] as const
 export type CalculationErrorCode=(typeof errorCodes)[number]
-interface CalculationErrorInfo {code:CalculationErrorCode;detail?:string;column?:string}
+interface CalculationErrorInfo {code:CalculationErrorCode;detail?:string;column?:string;row?:number}
 const prefix='[freya:CALCULATE] '
 export class CalculationError extends Error {
- constructor(code:CalculationErrorCode,detail?:string,column?:string){
+ constructor(code:CalculationErrorCode,detail?:string,column?:string,row?:number){
   // Electron recrea Error al cruzar IPC. Conserva los datos en el mensaje.
-  super(prefix+JSON.stringify({code,detail:detail?.slice(0,16_000),column}))
+  super(prefix+JSON.stringify({code,detail:detail?.slice(0,16_000),column,row}))
  }
 }
 export function readCalculationError(error:unknown):CalculationErrorInfo|undefined{
@@ -34,6 +34,6 @@ export function readCalculationError(error:unknown):CalculationErrorInfo|undefin
  if(start<0)return
  try{
   const info=JSON.parse(message.slice(start+prefix.length)) as CalculationErrorInfo
-  if(errorCodes.includes(info.code)&&(info.detail===undefined||typeof info.detail==='string')&&(info.column===undefined||typeof info.column==='string'))return info
+  if(errorCodes.includes(info.code)&&(info.detail===undefined||typeof info.detail==='string')&&(info.column===undefined||typeof info.column==='string')&&(info.row===undefined||Number.isSafeInteger(info.row)))return info
  }catch{return}
 }

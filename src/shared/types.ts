@@ -14,7 +14,7 @@ export type CsvViewDecision='save'|'discard'
 export interface CsvOpenError {path:string;name:string;message:string;reportedLine?:number;byteLength:number;textAllowed:boolean}
 export const CSV_TEXT_LIMIT=10*1024*1024
 export function isTableDocument(document:Pick<DocumentInfo,'kind'|'csvView'>){return document.kind==='csv'&&document.csvView!=='text'}
-export interface DocumentInfo { id:string; name:string; path:string|null; kind:Kind; csvView?:CsvView;byteLength?:number;text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:Encoding; delimiter:string; headers?:string[]; rowCount?:number; large?:boolean; extract?:ExtractOrigin }
+export interface DocumentInfo { id:string; name:string; path:string|null; kind:Kind; csvView?:CsvView;byteLength?:number;text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:Encoding; delimiter:string; headers?:string[]; hasHeader?:boolean; rowCount?:number; large?:boolean; extract?:ExtractOrigin }
 export type AssetChange={from:number;to:number;insert:string}
 export type SaveOutcome=DocumentInfo&{assets?:{copied:number;warnings:string[];changes:AssetChange[]}}
 export interface TreeEntry { name:string; path:string; directory:boolean }

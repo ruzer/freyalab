@@ -19,7 +19,7 @@ import {CsvViewStore} from './csv-view-store'
 import {decodeCsvText,encodeCsvText,csvTextByteLength,type CsvTextFormat} from './csv-text-codec'
 import {isCsvTextFormat} from '../shared/csv-text'
 import {csvOpenError} from './csv-open-error'
-import type {CalculateColumnEdit,CalculatedValue} from '../shared/calculated-column'
+import {readCalculationError,type CalculateColumnEdit,type CalculatedValue} from '../shared/calculated-column'
 import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type CsvViewDecision,type AppEvent,type DocumentInfo,type Kind,type RecoveryEntry,type TableOptions,type TableEdit,type TableExport,type TreeEntry} from '../shared/types'
 interface RecordDoc { info:DocumentInfo; hash?:string; text:string; csvTextFormat?:CsvTextFormat;undo:string[]; redo:string[]; root:string; saving:boolean; timer?:ReturnType<typeof setTimeout>; watcher?:FSWatcher }
 const extensions:Record<string,Kind>={'.md':'markdown','.markdown':'markdown','.txt':'text','.mmd':'mermaid','.mermaid':'mermaid','.csv':'csv','.tsv':'csv'}
@@ -125,7 +125,8 @@ export class Documents {
     canonical=await this.authorize(path)
     if(!hash||dirname(canonical)!==record.root)throw new Error()
     const limit=50*1024*1024,actual=createHash('sha256')
-    const file=await openFile(canonical,constants.O_RDONLY|(constants.O_NOFOLLOW??0)|(constants.O_NONBLOCK??0))
+    const flags=process.platform==='win32'?'r':constants.O_RDONLY|constants.O_NOFOLLOW|constants.O_NONBLOCK
+    const file=await openFile(canonical,flags)
     try{
      const info=await file.stat()
      if(!info.isFile()||info.size>limit)throw new Error()
@@ -163,7 +164,7 @@ export class Documents {
   if((await lstat(dest).catch(()=>null))?.isSymbolicLink())throw new Error('No se sobrescriben enlaces simbólicos.')
   const revision=r.info.revision,same=r.info.path===dest||r.info.path===canonical
   if(same&&dirname(canonical)!==r.root)throw new Error(t('file.error.changedLocation'))
-  let data=isTableDocument(r.info)?Buffer.from(await this.table.call('serialize',id)):r.csvTextFormat?encodeCsvText(r.text,r.csvTextFormat):Buffer.from(r.text,'utf8'),assets:DocumentAssets|undefined
+  let data=isTableDocument(r.info)?Buffer.from(await this.table.call('serialize',id).catch(error=>{const known=readCalculationError(error);if(known)throw new Error(t('calculate.error.'+known.code));throw error})):r.csvTextFormat?encodeCsvText(r.text,r.csvTextFormat):Buffer.from(r.text,'utf8'),assets:DocumentAssets|undefined
   r.saving=true
   try{
    if(r.info.kind==='markdown'&&!same){

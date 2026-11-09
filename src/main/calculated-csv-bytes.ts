@@ -1,10 +1,11 @@
 import {stringify} from 'csv-stringify/sync'
 import iconv from 'iconv-lite'
 import type {Encoding} from '../shared/types'
+import {CalculationError} from '../shared/calculated-column'
 import {decodeRecord,splitFields} from './large-table'
 
 const recordLimit=1024*1024
-const tooLarge=()=>new Error('Un registro resultante supera 1 MiB. No se ha modificado el documento.')
+const tooLarge=()=>new CalculationError('recordLimit','Un registro resultante supera 1 MiB. No se ha modificado el documento.')
 
 export function calculatedRecordBytes(
  original:Buffer|undefined,
@@ -30,7 +31,7 @@ export function calculatedRecordBytes(
    fields.push(original.subarray(offset,next))
    offset=next+unit
   })
-  if(offset-unit!==end)throw new Error('El registro original no coincide con su codificación.')
+  if(offset-unit!==end)throw new CalculationError('encoding','El registro original no coincide con su codificación.')
   if(ending)terminator=original.subarray(end)
  }
  const ending=endOfRecord?(terminator??encode(eol)):undefined
@@ -54,7 +55,7 @@ export function calculatedRecordBytes(
   // Una U+FEFF inicial es un valor, aunque ocupe el primer campo de un archivo sin BOM.
   const text=quoteEmpty?'""':stringify([[cell]],{delimiter,eof:false,quoted_match:/[\r\n\uFEFF]/})
   const encoded=encode(text)
-  if(decodeRecord(encoded,encoding)!==text)throw new Error('La codificación seleccionada no representa todos los caracteres. Guarda una copia en UTF-8.')
+  if(decodeRecord(encoded,encoding)!==text)throw new CalculationError('encoding','La codificación seleccionada no representa todos los caracteres. Guarda una copia en UTF-8.')
   append(encoded)
  }
  if(ending)append(ending)

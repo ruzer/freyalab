@@ -17,7 +17,7 @@ import {LargeViews} from './large-view'
 import type {EngineOperation,OperationResult} from '../shared/operations'
 import {analyzeColumn,numeric,descriptive} from './table-analysis'
 import type {CalculatedColumnPreview,ColumnAnalysisRequest,ColumnAnalysis,TableTransformEdit,TableTransformPreview,SqlProgress} from '../shared/types'
-import type {CalculateColumnEdit,CalculatedValue} from '../shared/calculated-column'
+import {CalculationError,type CalculateColumnEdit,type CalculatedValue} from '../shared/calculated-column'
 import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableConditionGroup, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview,TableStatsOptions,LargeViewRequest } from '../shared/types'
 
 export const TABLE_LIMITS = { bytes: 50 * 1024 * 1024, cells: 2_000_000, record: 1024 * 1024, sampleBytes: 8 * 1024 * 1024, sampleRows: 200 }
@@ -45,6 +45,7 @@ function fieldOrigins(s:State,original:OriginalBytes|undefined):(number|null)[]{
  return s.columnIds.map(id=>columns.get(id)??null)
 }
 class LimitError extends Error {}
+class UndoLimitError extends Error {}
 function validDelimiter(value: string) { if (![',', ';', '\t', '|'].includes(value)) throw new Error('Delimitador no válido.'); return value }
 function detectEncoding(bytes: Buffer): Encoding {
  if(bytes[0]===0xff&&bytes[1]===0xfe)return 'utf16le'
@@ -168,7 +169,7 @@ export class TableEngine {
  }
  async cancelOperation(requestId: string) { const control = this.running.get(requestId); if (control) control.cancelled = true }
  async cancelOpen(id: string) { this.openings.set(id, ++this.serial) } // la apertura en curso lo nota en su siguiente bloque
- async info(id: string) { const s=this.get(id,true); return {headers:[...s.headers],rowCount:s.large?s.large.rowCount:s.rows.length,readonly:s.readonly,warning:s.warning,encoding:s.encoding,delimiter:s.delimiter,revision:s.revision,dirty:s.token!==s.savedToken,large:s.large?true:undefined} }
+ async info(id: string) { const s=this.get(id,true); return {headers:[...s.headers],hasHeader:s.header,rowCount:s.large?s.large.rowCount:s.rows.length,readonly:s.readonly,warning:s.warning,encoding:s.encoding,delimiter:s.delimiter,revision:s.revision,dirty:s.token!==s.savedToken,large:s.large?true:undefined} }
  async viewStart(id:string,request:LargeViewRequest){const s=this.get(id,true);if(!s.large)throw new Error('Esta búsqueda se ofrece para archivos grandes.');if(request.revision!==s.revision)throw new Error('El documento cambió. Vuelve a aplicar la búsqueda.');return this.diskViews.start(id,{index:s.large.index,delimiter:s.delimiter,header:s.header,width:s.headers.length,revision:s.revision,alive:()=>this.states.get(id)===s},request)}
  async viewState(id:string){this.get(id,true);return this.diskViews.state(id)}
  async viewCancel(id:string,requestId:string){this.get(id,true);return this.diskViews.cancel(id,requestId)}
@@ -340,9 +341,9 @@ export class TableEngine {
  private calculationTable(id:string,edit:CalculateColumnEdit){
   const s=this.editable(id)
   if(edit.revision!==s.revision)throw new Error('La tabla cambió desde la vista previa. Vuelve a prepararla.')
-  if(s.headers.length>=200)throw new Error('El resultado supera 200 columnas.')
+  if(s.headers.length>=200)throw new CalculationError('limitColumns','El resultado supera 200 columnas.')
   if(!Number.isInteger(edit.position)||edit.position<0||edit.position>s.headers.length)throw new Error('Elige una posición de destino válida.')
-  if(s.header&&s.headerWidth<edit.position)throw new Error('La posición convertiría encabezados ausentes en vacíos. Elige otra posición.')
+  if(s.header&&s.headerWidth<edit.position)throw new CalculationError('headerTooShort')
   if(!edit.name.trim())throw new Error('Elige un nombre para la columna calculada.')
   const indexes=edit.columns.map(({index})=>index)
   if(new Set(indexes).size!==indexes.length||indexes.some(index=>!Number.isInteger(index)||index<0||index>=s.headers.length))throw new Error('Selecciona columnas válidas.')
@@ -357,9 +358,9 @@ export class TableEngine {
   try{
    let cells=s.header?s.headerWidth+1:0
    for(const [index,row] of s.rows.entries()){
-    if(row.cells.length<edit.position)throw new Error(`La posición convertiría campos ausentes en vacíos en la fila original ${index+1}. Elige otra posición.`)
+    if(row.cells.length<edit.position)throw new CalculationError('rowTooShort',undefined,undefined,index+1)
     cells+=row.cells.length+1
-    if(cells>TABLE_LIMITS.cells)throw new Error('Las columnas resultantes superan dos millones de celdas.')
+    if(cells>TABLE_LIMITS.cells)throw new CalculationError('cellsLimit')
     if(index%2048===0){await yieldTurn();ensure()}
    }
    ensure()
@@ -378,11 +379,11 @@ export class TableEngine {
  private async calculationOriginal(s:State,expected?:CsvSource){
   const source=this.sources.get(s),cached=this.lossless.get(s)
   if(!source){
-   if(expected)throw new Error('El archivo cambió desde que se abrió. Vuelve a abrirlo antes de calcular.')
+   if(expected)throw new CalculationError('disk')
    return cached
   }
   if(cached&&!expected)return cached
-  const changed=()=>new Error('El archivo cambió desde que se abrió. Vuelve a abrirlo antes de calcular.')
+  const changed=()=>new CalculationError('disk','El archivo cambió desde que se abrió. Vuelve a abrirlo antes de calcular.')
   if(expected&&(resolve(source.path)!==resolve(expected.path)||source.hash!==expected.hash))throw changed()
   const bytes=await prefix(source.path,TABLE_LIMITS.bytes+1,true).catch(()=>{throw changed()})
   if(bytes.length>TABLE_LIMITS.bytes||createHash('sha256').update(bytes).digest('hex')!==source.hash)throw changed()
@@ -396,7 +397,7 @@ export class TableEngine {
   const preview:CalculatedColumnPreview={revision:s.revision,rows:s.rows.length,affected:s.rows.length,cells:s.rows.length,addedColumns:1,deletedRows:0,changedHeaders:0,movedRows:0,movedColumns:0,samples:[],emptyRows:0,invalidByColumn:Object.fromEntries(edit.columns.map(({index})=>[index,0])),failures:0}
   this.analyses.set(id,edit.requestId)
   const progress=async(rows:number)=>{
-   this.progress({requestId:edit.requestId,phase:'Preparando transformación',rows})
+   this.progress({requestId:edit.requestId,phase:'calculate.progress.preparing',rows})
    await yieldTurn()
    if(this.analyses.get(id)!==edit.requestId||this.states.get(id)!==s||s.revision!==edit.revision)throw new Error('Transformación cancelada: cambió la tabla o la solicitud.')
   }
@@ -412,15 +413,15 @@ export class TableEngine {
    let count=0,bytes=bomLength(s)
    const measure=(record:string[],endOfRecord:boolean,rowId?:string)=>{
     count+=record.length
-    if(count>TABLE_LIMITS.cells)throw new Error('Las columnas resultantes superan dos millones de celdas.')
+    if(count>TABLE_LIMITS.cells)throw new CalculationError('cellsLimit')
     bytes+=calculatedRecordBytes(originalRecord(original,rowId),s,record,origins,endOfRecord).length
-    if(bytes>TABLE_LIMITS.bytes)throw new Error('El resultado supera 50 MiB. No se ha modificado el documento.')
+    if(bytes>TABLE_LIMITS.bytes)throw new CalculationError('bytesLimit')
    }
    if(s.header){const headers=s.headers.slice(0,s.headerWidth);headers.splice(edit.position,0,edit.name);measure(headers,s.finalEol||s.rows.length>0)}
    for(const [index,row] of s.rows.entries()){
     const item=result.get(row.id)
     if(!item)throw new Error('El cálculo no devolvió todas las filas de la tabla.')
-    if(row.cells.length<edit.position)throw new Error(`La posición convertiría campos ausentes en vacíos en la fila original ${index+1}. Elige otra posición.`)
+    if(row.cells.length<edit.position)throw new CalculationError('rowTooShort',undefined,undefined,index+1)
     const value=item.value??'',projected=[...row.cells]
     projected.splice(edit.position,0,value)
     measure(projected,s.finalEol||index+1<s.rows.length,row.id)
@@ -436,12 +437,13 @@ export class TableEngine {
    await progress(s.rows.length)
    const change=this.prepareChange(s,forward,backward)
    return {s,change,preview,original}
-  }finally{if(this.analyses.get(id)===edit.requestId)this.analyses.delete(id)}
+  }catch(error){if(error instanceof UndoLimitError)throw new CalculationError('undoLimit',error.message);throw error}
+  finally{if(this.analyses.get(id)===edit.requestId)this.analyses.delete(id)}
  }
  async calculationPreview(id:string,edit:CalculateColumnEdit,values:CalculatedValue[],expected?:CsvSource){return (await this.calculationPlan(id,edit,values,expected)).preview}
  async calculationApply(id:string,edit:CalculateColumnEdit,values:CalculatedValue[],expected?:CsvSource){
   const {s,change,preview,original}=await this.calculationPlan(id,edit,values,expected)
-  if(edit.onError==='abort'&&preview.failures)throw new Error('Hay filas que no se pudieron calcular. No se ha modificado el documento.')
+  if(edit.onError==='abort'&&preview.failures)throw new CalculationError('failedRows')
   const applied=this.commitChange(id,s,edit.revision,change)
   this.lossless.set(s,original)
   return applied
@@ -532,7 +534,7 @@ export class TableEngine {
   }
   const change={forward,backward,before:s.token,after:++this.serial,bytes:0}
   change.bytes=Buffer.byteLength(JSON.stringify(change),'utf8')
-  if(change.bytes>20*1024*1024)throw new Error('El cambio supera el presupuesto de deshacer de 20 MiB. Reduce el número de celdas modificadas.')
+  if(change.bytes>20*1024*1024)throw new UndoLimitError('El cambio supera el presupuesto de deshacer de 20 MiB. Reduce el número de celdas modificadas.')
   return change
  }
  private commitChange(id:string,s:State,revision:number,change:Change){
