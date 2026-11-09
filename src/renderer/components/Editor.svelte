@@ -179,3 +179,5 @@
   .code-editor :global(.cm-content ::selection),.code-editor :global(.cm-content::selection){color:HighlightText}
  }
 </style>
+
+<!-- Sonda temporal de CI-1b. -->
