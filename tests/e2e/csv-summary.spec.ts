@@ -86,12 +86,18 @@ test('F2a: estados vacío, error numérico, truncado y ventana estrecha con capt
 })
 
 test('F2a: cargando con cancelar y reintento explícito en 100.000 filas, sin escribir el original',async()=>{
- const content='Grupo,Valor\n'+Array.from({length:100000},(_,i)=>`${i%2?'A':'B'},${i}`).join('\n')+'\n',file=join(folder,'grande.csv');await writeFile(file,content);await page.evaluate(file=>window.freya.openPaths([file]),file)
+ const content='Grupo\n'+'B\nA\n'.repeat(50000),file=join(folder,'grande.csv');await writeFile(file,content);await page.evaluate(file=>window.freya.openPaths([file]),file)
  await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();const panel=page.locator('.charts-panel')
+ const generate=panel.getByRole('button',{name:'Generar gráfico',exact:true}),cancel=panel.getByRole('button',{name:'Cancelar gráfico',exact:true})
+ const announcement=panel.locator('.chart-result>.result-announcement')
  await expect(panel.getByText('Vista previa manual para este archivo.',{exact:true})).toBeVisible();await expect(panel.locator('.plot svg path')).toHaveCount(0)
- await panel.getByRole('button',{name:'Generar gráfico',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.getByRole('button',{name:'Cancelar gráfico',exact:true})).toBeVisible()
- await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-loading.png')});await panel.getByRole('button',{name:'Cancelar gráfico',exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Gráfico cancelado');await expect(panel.locator('.plot svg path')).toHaveCount(0)
- await panel.getByRole('button',{name:'Generar gráfico',exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await expect(panel.locator('.result-status')).toContainText('100,000 filas');await expect(panel.locator('.pivot-result tfoot')).toContainText('100,000')
+ await generate.focus();await page.keyboard.press('Enter');await expect(cancel).toBeVisible()
+ await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-loading.png')});await cancel.click();await expect(announcement).toContainText('Gráfico cancelado');await expect(panel.locator('.plot svg path')).toHaveCount(0)
+ await generate.click()
+ await expect(cancel).toBeVisible()
+ // El cálculo y sus totales terminan antes de comprobar el anuncio de éxito.
+ await cancel.waitFor({state:'detached'})
+ await expect(announcement).toContainText('Resultado actualizado');await expect(panel.locator('.result-status')).toContainText('100,000 filas');await expect(panel.locator('.pivot-result tfoot')).toContainText('100,000')
  expect(await readFile(file,'utf8')).toBe(content)
 })
 

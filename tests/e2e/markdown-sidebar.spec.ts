@@ -210,8 +210,13 @@ test('P6: las dos pestañas comparten ancho, límites y recuerdo del divisor',as
  await slider.focus();await page.keyboard.press('ArrowRight');await expect(slider).toHaveAttribute('aria-valuenow','250');await indexTab().click();expect((await sidebar().boundingBox())!.width).toBe(250)
  const box=(await slider.boundingBox())!;await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.mouse.move(box.x+box.width/2+70,box.y+box.height/2);await page.mouse.up()
  await expect(slider).toHaveAttribute('aria-valuenow','320');await filesTab().click();expect((await sidebar().boundingBox())!.width).toBe(320);await reload();slider=page.getByRole('slider',{name:'Ancho del explorador',exact:true});await expect(slider).toHaveAttribute('aria-valuenow','320')
- await slider.focus();for(let i=0;i<12;i++)await page.keyboard.press('ArrowRight');await expect(slider).toHaveAttribute('aria-valuenow','420')
- for(let i=0;i<26;i++)await page.keyboard.press('ArrowLeft');await expect(slider).toHaveAttribute('aria-valuenow','180');await indexTab().click();expect((await sidebar().boundingBox())!.width).toBe(180)
+ // Una pulsación debe cruzar cada límite sin acumular escrituras de preferencias.
+ for(const [start,key,limit]of [[415,'ArrowRight',420],[185,'ArrowLeft',180]] as const){
+  await page.evaluate(ancho=>window.freya.setSettings({barraLateral:{ancho}}),start)
+  await expect(slider).toHaveAttribute('aria-valuenow',String(start))
+  await slider.press(key);await expect(slider).toHaveAttribute('aria-valuenow',String(limit))
+ }
+ await indexTab().click();expect((await sidebar().boundingBox())!.width).toBe(180)
 })
 
 test('P7: alternar conserva árbol expandido, búsqueda, resultados y desplazamiento de ambos paneles',async()=>{
