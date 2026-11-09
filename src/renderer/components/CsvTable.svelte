@@ -21,10 +21,12 @@
  import {dockMode,isNarrow,type DockTab} from '../lib/workspace-layout'
  import {parse} from 'csv-parse/browser/esm/sync'
  import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit,LargeViewState,LargeViewQuery} from '../../shared/types'
- let {doc,summary=false,onsummary,ontable,onchange,onerror,onstatus,onreport,viewControls,commandTitle=(_id:string,label:string)=>label}:{doc:DocumentInfo;summary?:boolean;onsummary?:()=>void;ontable?:()=>void;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;onreport:(markdown:string)=>Promise<void>;viewControls?:Snippet;commandTitle?:(id:string,label:string)=>string}=$props()
+ import type {CalculateColumnEdit} from '../../shared/calculated-column'
+ let {doc,summary=false,externalChange=false,onsummary,ontable,onchange,onerror,onstatus,onreport,viewControls,commandTitle=(_id:string,label:string)=>label}:{doc:DocumentInfo;summary?:boolean;externalChange?:boolean;onsummary?:()=>void;ontable?:()=>void;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;onreport:(markdown:string)=>Promise<void>;viewControls?:Snippet;commandTitle?:(id:string,label:string)=>string}=$props()
  let showExtract=$state(false),extractButton=$state<HTMLButtonElement>()
  let showCommands=$state(false),commandsButton=$state<HTMLButtonElement>(),commandReturn:HTMLElement|null=null
- let showTransform=$state(false),transformStart=$state<import('../../shared/types').TableTransformEdit['operation']>()
+ type TransformOperation=import('../../shared/types').TableTransformEdit['operation']|'calculate'
+ let showTransform=$state(false),transformStart=$state<TransformOperation>(),transformReturn:HTMLElement|null=null
  // Las páginas grandes usan la vista aplicada; escribir en el buscador no inicia un recorrido.
  const large=$derived(!!doc.large)
  let largeView=$state<LargeViewState|null>(null),viewReady=$state(false),changingView=$state(false),viewAnnouncement=$state(''),viewGeneration=0
@@ -47,6 +49,7 @@
  async function backToTable(){if(narrow){closeDock(analyzeButton);return}workspace.expanded=false;announcement='Vuelves a la tabla';await tick();scrollElement?.focus()}
  let conditions=$state<TableFilter[]>([]),order=$state<TableSort[]>([]),filterMode=$state<'all'|'any'>('all'),showQuery=$state(false),queryError=$state(''),filterError=$state(''),queryButton=$state<HTMLElement>()
  const locked=$derived(doc.readonly||interpreting||!!queryError)
+ const calculationDisabled=$derived(doc.readonly?t('calculate.readonly'):externalChange?t('calculate.error.disk'):(doc.headers?.length??0)>=200?t('calculate.error.limitColumns'):locked?t('ui.reason.busy'):'')
  let search=$state(''),filters=$state<Record<string,string>>({}),sort=$state<TableQuery['sort']>(),page=$state<TablePage>({rows:[],total:0,matched:0,revision:0,requestId:0,sample:false}),busy=$state(false),showFilters=$state(false),showReplace=$state(false)
  const activeOrder=$derived(order.length?order:sort?[sort]:[])
  const filterCount=$derived(large?(largeView?.query.conditions?.length??0)+(largeView?.query.search?1:0):Object.values(filters).filter(Boolean).length+conditions.length+(search?1:0))
@@ -166,9 +169,15 @@
    rangeDialog={edit:{type:'range',range:$state.snapshot(cellRange),operation:(action==='cut'?'clear':action) as TableRangeEdit['operation'],value:'',find:''},cut:action==='cut'}
   }catch(error){onerror(action==='paste'?'No se pudo leer el portapapeles. Usa Ctrl/⌘ + V sobre la tabla.':String(error))}
  }
- function openTransform(start?:import('../../shared/types').TableTransformEdit['operation']){if(locked)return;transformStart=start;if((doc.headers?.length??0)>200){onerror('Estas transformaciones admiten hasta 200 columnas por documento.');return}context=null;pendingCell=null;showTransform=true}
- async function applyTransform(change:import('../../shared/types').TableTransformEdit){const error=await edit(change);if(error===null){if(['moveRows','moveColumns','commitOrder'].includes(change.operation)){search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}selection=null;selectedRows=[];selectedColumns=[];selectionStats=null;await load(0);scrollElement?.scrollTo({top:0,left:0})}return error}
- function closeTransform(){showTransform=false;transformStart=undefined;if(selection)focusCell(selection.end.row,selection.end.column,true);else document.querySelector<HTMLElement>('[aria-label="Operaciones CSV"]')?.focus()}
+ function openTransform(start?:TransformOperation){if(locked)return;transformStart=start;if((doc.headers?.length??0)>200){onerror('Estas transformaciones admiten hasta 200 columnas por documento.');return}context=null;pendingCell=null;showTransform=true}
+ function openCalculation(event:MouseEvent&{currentTarget:HTMLButtonElement}){
+  if(calculationDisabled)return
+  const menu=event.currentTarget.closest('details')
+  transformReturn=menu?.querySelector('summary')??null
+  menu?.removeAttribute('open');announcement='';openTransform('calculate')
+ }
+ async function applyTransform(change:import('../../shared/types').TableTransformEdit|CalculateColumnEdit){const error=await edit(change);if(error===null){if(['moveRows','moveColumns','commitOrder'].includes(change.operation)){search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}selection=null;selectedRows=[];selectedColumns=[];selectionStats=null;await load(0);scrollElement?.scrollTo({top:0,left:0});if(change.operation==='calculate')announcement=t('calculate.progress.applied')}return error}
+ function closeTransform(){showTransform=false;transformStart=undefined;if(transformReturn){const trigger=transformReturn;transformReturn=null;void tick().then(()=>trigger.focus())}else if(selection)focusCell(selection.end.row,selection.end.column,true);else document.querySelector<HTMLElement>('[aria-label="Operaciones CSV"]')?.focus()}
  function preparePaste(text:string){if(!cellRange||locked)return;try{rangeDialog={edit:{type:'range',range:$state.snapshot(cellRange),operation:'paste',values:parse(text,{delimiter:'\t',relax_column_count:true,skip_empty_lines:false}) as string[][]}}}catch(error){onerror(String(error))}}
  async function applyRange(change:TableRangeEdit,cancelled:()=>boolean){try{if(rangeDialog?.cut)await window.freya.tableCopy(doc.id,{scope:'selection',range:change.range},'tsv');if(cancelled())return 'Preparación del rango cancelada.';return await edit(change)}catch(error){const message=String(error).replace(/^.*Error: /,'');onerror(message);return message}}
  function closeRangeDialog(){const documentScope=rangeDialog?.documentScope,fromColumn=!!rangeDialog?.column;rangeDialog=null;if(documentScope)void tick().then(()=>replaceInput?.focus());else if(selection)focusCell(selection.end.row,selection.end.column,true);else if(fromColumn)void tick().then(()=>{if(contextReturn?.isConnected)contextReturn.focus()})}
@@ -339,8 +348,8 @@
  }
  function update(updated:DocumentInfo){if(updated.headers?.length!==doc.headers?.length){filters={};sort=undefined;conditions=[];order=[];showQuery=false;selectedColumns=[]}onchange(updated)}
  let pendingEdit:Promise<string|null>|null=null
- function edit(change:TableEdit){const task=editNow(change);pendingEdit=task;void task.finally(()=>{if(pendingEdit===task)pendingEdit=null}).catch(()=>{});return task}
- async function editNow(change:TableEdit){if(locked)return 'La vista no permite editar.';try{update(await window.freya.tableEdit(doc.id,$state.snapshot(change)));editing=null;await load(pageOffset);await stats();return null}catch(error){const message=String(error).replace(/^.*Error: /,'');onerror(message);return message}}
+ function edit(change:TableEdit|CalculateColumnEdit){const task=editNow(change);pendingEdit=task;void task.finally(()=>{if(pendingEdit===task)pendingEdit=null}).catch(()=>{});return task}
+ async function editNow(change:TableEdit|CalculateColumnEdit){if(locked)return 'La vista no permite editar.';try{update(await window.freya.tableEdit(doc.id,$state.snapshot(change)));editing=null;await load(pageOffset);await stats();return null}catch(error){const message=String(error).replace(/^.*Error: /,'');if(!('operation'in change&&change.operation==='calculate'))onerror(message);return message}}
  async function stats(){if(large||!selectedRows.length){selectionStats=null;return}try{selectionStats=await window.freya.stats(doc.id,$state.snapshot(selectedRows),selectedColumns.length?$state.snapshot(selectedColumns):(doc.headers??[]).map((_,i)=>i))}catch(error){onerror(String(error))}}
  function selectRow(id:string,add:boolean){selection=null;context=null;selectedRows=add?(selectedRows.includes(id)?selectedRows.filter(x=>x!==id):[...selectedRows,id]):[id];void stats()}
  function selectColumn(index:number,replace=false){selection=null;context=null;selectedColumns=replace?[index]:selectedColumns.includes(index)?selectedColumns.filter(x=>x!==index):[...selectedColumns,index];void stats()}
@@ -413,6 +422,10 @@
    {#each ['insertRow','insertRowBefore','insertRowAfter','duplicateRows','deleteRows'] as id}{@render item(id)}{/each}
    <span class="dropdown-label">Columnas</span>
    {#each ['insertColumn','insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn'] as id}{@render item(id)}{/each}
+   {#if !large}
+    <button disabled={!!calculationDisabled} aria-describedby={calculationDisabled?'calculate-disabled':undefined} onclick={openCalculation}>{t('calculate.action')}</button>
+    {#if calculationDisabled}<span class="dropdown-note" id="calculate-disabled">{calculationDisabled}</span>{/if}
+   {/if}
    <span class="dropdown-label">Copiar</span>
    {@render item('copyMarkdown')}
   </div></details>
@@ -422,7 +435,10 @@
   <button bind:this={commandsButton} data-tooltip={commandTitle('edit.commandPalette',t('charts.toolbar.findAction'))} aria-label={t('charts.toolbar.findAction')} title={commandTitle('edit.commandPalette',t('charts.toolbar.findAction'))} onclick={openCommands}><Icon name="command" size={14}/><span class="tool-text">{t('charts.toolbar.findAction')}</span></button>
   <button bind:this={analyzeButton} class="analyze" class:active={dockOpen} aria-label={t('charts.toolbar.analysis')} aria-expanded={dockOpen} aria-controls="analysis-dock" title={t('charts.toolbar.analysisHelp')} data-tooltip={t('charts.toolbar.analysisHelp')} onclick={()=>{showQuery=false;toggleDock(workspace.tab)}}><Icon name="chart-column" size={14}/><span class="tool-text">{t('charts.toolbar.analysis')}</span></button>
  </div>
- {#if large}<p id="large-search-help" class="large-search-help">Enter para buscar en las {number(doc.rowCount??page.total)} filas. Esc cancela el recorrido o quita la búsqueda.</p>{/if}
+ {#if large}<div class="large-search-help large-csv-help">
+  <span id="large-search-help">Enter para buscar en las {number(doc.rowCount??page.total)} filas. Esc cancela el recorrido o quita la búsqueda.</span>
+  <span title={calculationDisabled}><button class="btn-ghost" disabled aria-describedby="calculate-disabled">{t('calculate.action')}</button><span class="sr-only" id="calculate-disabled">{calculationDisabled}</span></span>
+ </div>{/if}
  {#if largeView}<section class="large-search-status" aria-label="Búsqueda en archivo grande">
   {#if largeView.query.conditions?.length}<p>Vista filtrada: {largeView.query.conditions.length} {largeView.query.conditions.length===1?'condición':'condiciones'} ({largeView.query.filterMode==='any'?'cualquiera':'todas'}) · {number(largeView.matched)} de {number(largeView.total)} filas <button {...controlHint(changingView?'busy':null)} disabled={changingView} onclick={()=>void openLargeFilters()}>Editar filtros</button></p>{/if}
   <p aria-live="off">{viewText}</p>
@@ -490,6 +506,7 @@
 <style>
  .csv-body.summary :global(.analysis-dock){display:none}.summary-host{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column}.summary-host[hidden]{display:none}
  .csv-toolbar summary.disabled{opacity:.45;cursor:not-allowed}.large-search-help{margin:0;padding:4px 12px;font-size:var(--font-meta);color:var(--muted);border-bottom:1px solid var(--border)}.large-search-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 12px;border-bottom:1px solid var(--border);font-size:11px;background:var(--panel)}.large-search-status p{margin:0;line-height:1.5}.large-search-status button{font-size:11px;padding:3px 7px}.large-search-status progress{width:110px}.large-search-scope{flex-basis:100%;color:var(--muted)}
+ .large-csv-help{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
  .csv-toolbar [data-tooltip]{position:relative;appearance:none;min-width:24px;min-height:24px}.csv-toolbar [data-tooltip]:hover::after,.csv-toolbar [data-tooltip]:focus::after{content:attr(data-tooltip);position:absolute;right:0;top:calc(100% + 7px);max-width:300px;padding:6px 9px;border-radius:var(--radius-control);background:var(--text);color:var(--panel);font-size:11px;white-space:normal;z-index:90;pointer-events:none;min-width:max-content}.csv-toolbar [data-tooltip]:focus-visible{outline:2px solid var(--accent)}
  @media(min-width:1280px){.csv-toolbar.compact .keep-label .tool-text{display:inline}}
 </style>

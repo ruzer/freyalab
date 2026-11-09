@@ -5,6 +5,8 @@ import type {ApplicationUiState,ApplicationCommand,ApplicationShortcuts,Applicat
 import type {LegacySettings,SettingsPatch,SettingsState} from './settings'
 import type {UpdateResult} from './updates'
 import type {ExtractOrigin,OperationRequest,OperationOutcome} from './operations'
+import type {CalculateColumnEdit,CalculatedColumnPreview} from './calculated-column'
+export type {CalculatedColumnPreview} from './calculated-column'
 export type Kind = 'markdown' | 'text' | 'mermaid' | 'csv'
 export type Encoding = 'utf8' | 'utf16le' | 'win1252'
 export type CsvView='table'|'text'
@@ -12,7 +14,7 @@ export type CsvViewDecision='save'|'discard'
 export interface CsvOpenError {path:string;name:string;message:string;reportedLine?:number;byteLength:number;textAllowed:boolean}
 export const CSV_TEXT_LIMIT=10*1024*1024
 export function isTableDocument(document:Pick<DocumentInfo,'kind'|'csvView'>){return document.kind==='csv'&&document.csvView!=='text'}
-export interface DocumentInfo { id:string; name:string; path:string|null; kind:Kind; csvView?:CsvView;byteLength?:number;text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:Encoding; delimiter:string; headers?:string[]; rowCount?:number; large?:boolean; extract?:ExtractOrigin }
+export interface DocumentInfo { id:string; name:string; path:string|null; kind:Kind; csvView?:CsvView;byteLength?:number;text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:Encoding; delimiter:string; headers?:string[]; hasHeader?:boolean; rowCount?:number; large?:boolean; extract?:ExtractOrigin }
 export type AssetChange={from:number;to:number;insert:string}
 export type SaveOutcome=DocumentInfo&{assets?:{copied:number;warnings:string[];changes:AssetChange[]}}
 export interface TreeEntry { name:string; path:string; directory:boolean }
@@ -76,8 +78,9 @@ export interface FreyaAPI {
  update(id:string,text:string):Promise<DocumentInfo>; save(id:string,as?:boolean):Promise<SaveOutcome|null>; locateImage(id:string,source:string):Promise<SaveOutcome|null>; close(id:string):Promise<boolean>; reload(id:string):Promise<DocumentInfo>; documents():Promise<DocumentInfo[]>;
  tableCopy(id:string,options:TableExport,format:'tsv'|'markdown'):Promise<void>; tablePaste(id:string,range:TableRange):Promise<string>;
  transformPreview(id:string,edit:TableTransformEdit):Promise<TableTransformPreview>;
+ transformPreview(id:string,edit:CalculateColumnEdit):Promise<CalculatedColumnPreview>;
  rangePreview(id:string,edit:TableRangeEdit):Promise<TableRangePreview>; rangeClipboard(id:string,range:TableRange):Promise<string>;
- tablePage(id:string,query:TableQuery):Promise<TablePage>; tableEdit(id:string,edit:TableEdit):Promise<DocumentInfo>; tableOptions(id:string,options:TableOptions):Promise<DocumentInfo>;
+ tablePage(id:string,query:TableQuery):Promise<TablePage>; tableEdit(id:string,edit:TableEdit|CalculateColumnEdit):Promise<DocumentInfo>; tableOptions(id:string,options:TableOptions):Promise<DocumentInfo>;
  tableViewStart(id:string,request:LargeViewRequest):Promise<LargeViewState>;tableViewState(id:string):Promise<LargeViewState|null>;tableViewCancel(id:string,requestId:string):Promise<LargeViewState|null>;tableViewClear(id:string):Promise<void>;
  chartPresets():Promise<ChartPreset[]>;saveChartPreset(id:string,input:{name:string;configuration:ChartConfiguration}):Promise<ChartPreset>;deleteChartPreset(id:string):Promise<void>;
  sqlRun(request:SqlRequest):Promise<SqlResult>;sqlPage(requestId:string,offset:number):Promise<SqlResult>;sqlCancel(requestId:string):Promise<void>;

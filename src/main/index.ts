@@ -45,6 +45,12 @@ const csvView=z.enum(['table','text'])
 const range=z.object({top:z.number().int().nonnegative(),bottom:z.number().int().nonnegative(),left:col,right:col,query,revision:z.number().int().nonnegative()})
 const rangeEdit=z.object({type:z.literal('range'),requestId:z.uuid().optional(),range,operation:z.enum(['fill','clear','trim','upper','lower','replace','paste']),value:z.string().max(1024*1024).optional(),find:z.string().max(10000).optional(),values:z.array(z.array(z.string().max(1024*1024)).max(100000)).max(100000).optional()})
 const structureEdit=z.object({type:z.literal('structure'),operation:z.enum(['split','combine','deduplicate','normalize','headers','moveRows','moveColumns','commitOrder']),columns:z.array(col).max(200),revision:z.number().int().nonnegative(),requestId:z.uuid(),separator:z.string().max(64).optional(),name:z.string().max(10000).optional(),rowIds:rows.optional(),range:range.optional(),destination:z.number().int().nonnegative().optional(),query:query.optional()})
+const calculation=z.strictObject({
+ type:z.literal('structure'),operation:z.literal('calculate'),name:z.string().min(1).max(10000),position:z.number().int().min(0).max(199),
+ expression:z.string().trim().min(1).max(100000),columns:z.array(z.strictObject({index:z.number().int().min(0).max(198),read:z.enum(['text','number','date']),scale:z.number().int().min(0).max(12).optional()})).max(199),
+ onError:z.enum(['empty','abort']),revision:z.number().int().nonnegative(),requestId:id
+})
+function isCalculation(value:unknown){return !!value&&typeof value==='object'&&'operation'in value&&value.operation==='calculate'}
 const edits=z.discriminatedUnion('type',[rangeEdit,structureEdit,
  z.object({type:z.literal('cell'),rowId:z.string().max(100),column:col,value:z.string().max(1024*1024)}),
  z.object({type:z.literal('paste'),rowId:z.string().max(100),column:col,values:z.array(z.array(z.string().max(1024*1024)).max(100000)).max(100000),view:z.object({query,revision:z.number().int().nonnegative()}).optional()}),
@@ -138,7 +144,7 @@ async function handle(operation:string,args:unknown[]){
  case'reload':return docs.reload(id.parse(a))
  case'copyTable':{docs.requireTable(id.parse(a));const options=tableExport.parse(b),format=z.enum(['tsv','markdown']).parse(c),output=await docs.table.call<string>(format==='markdown'?'markdown':'clipboard',a,options);if(Buffer.byteLength(output,'utf8')>8*1024*1024)throw new Error('La copia supera 8 MiB. Reduce la selección o expórtala.');await clipboard.writeText(output);return}
  case'pasteTable':{docs.requireTable(id.parse(a));const selected=range.parse(b);await docs.table.call('rangePreview',a,{type:'range',range:selected,operation:'clear'});const content=await clipboard.readText();if(Buffer.byteLength(content,'utf8')>8*1024*1024)throw new Error('El portapapeles supera 8 MiB. Pega un bloque menor.');return content}
- case'transformPreview':docs.requireTable(id.parse(a));return docs.table.call('transformPreview',a,structureEdit.parse(b) as TableTransformEdit)
+ case'transformPreview':{const key=id.parse(a);if(isCalculation(b))return analytics.calculatePreview(key,calculation.parse(b));docs.requireTable(key);return docs.table.call('transformPreview',key,structureEdit.parse(b) as TableTransformEdit)}
  case'rangePreview':docs.requireTable(id.parse(a));return docs.table.call('rangePreview',a,rangeEdit.parse(b) as TableRangeEdit)
  case'rangeClipboard':docs.requireTable(id.parse(a));return docs.table.call('rangeClipboard',a,range.parse(b) as TableRange)
  case'page':docs.requireTable(id.parse(a));return docs.table.call('page',a,query.parse(b) as TableQuery)
@@ -146,7 +152,7 @@ async function handle(operation:string,args:unknown[]){
  case'viewState':docs.requireTable(id.parse(a));return docs.table.call('viewState',a)
  case'viewCancel':docs.requireTable(id.parse(a));return docs.table.call('viewCancel',a,z.uuid().parse(b))
  case'viewClear':docs.requireTable(id.parse(a));return docs.table.call('viewClear',a)
- case'edit':return docs.tableEdit(id.parse(a),edits.parse(b) as TableEdit)
+ case'edit':{const key=id.parse(a);return isCalculation(b)?analytics.calculateApply(key,calculation.parse(b)):docs.tableEdit(key,edits.parse(b) as TableEdit)}
  case'options':return docs.tableOptions(id.parse(a),z.object({encoding:z.enum(['utf8','utf16le','win1252']).optional(),delimiter:z.enum([',',';','\t','|']).optional(),header:z.boolean().optional()}).parse(b) as TableOptions)
  case'undo':return docs.undo(id.parse(a),z.boolean().optional().parse(b))
  case'chartPresets':return presets.list()
@@ -156,7 +162,7 @@ async function handle(operation:string,args:unknown[]){
  case'sqlPage':return analytics.page(id.parse(a),z.number().int().min(0).max(9999).parse(b))
  case'sqlCancel':return analytics.cancel(id.parse(a))
  case'analyzeColumn':docs.requireTable(id.parse(a));return docs.table.call('analyzeColumn',a,z.object({column:col,otherColumn:col.optional(),query:query.optional(),revision:z.number().int().nonnegative(),requestId:z.uuid(),frequencyOffset:z.number().int().min(0).max(2000000),duplicatesOnly:z.boolean(),bins:z.number().int().min(1).max(30)}).parse(b))
- case'cancelAnalysis':docs.requireTable(id.parse(a));return docs.table.call('cancelAnalysis',a,z.uuid().parse(b))
+ case'cancelAnalysis':{const key=id.parse(a),requestId=id.parse(b);docs.requireTable(key);analytics.cancelCalculation(key,requestId);return docs.table.call('cancelAnalysis',key,requestId)}
  case'operation':{const key=id.parse(a),outcome=await operateDocument(docs,key,operationRequest.parse(b));if(outcome?.document)window?.webContents.send('freya:event',{type:'opened',document:outcome.document});return outcome}
  case'cancelOperation':docs.requireTable(id.parse(a));return docs.table.call('cancelOperation',z.uuid().parse(b))
  case'cancelOpen':return docs.table.call('cancelOpen',id.parse(a)) // el documento aún no está en `records`: se está abriendo

@@ -47,6 +47,25 @@ function scan(buffer: Buffer, length: number, base: number, state: ScanState, un
  state.cr = cr
 }
 
+// Los CSV editables ya tienen un número conocido de registros. Acota el índice aunque el origen sea inválido.
+export function recordByteOffsets(bytes:Buffer,encoding:Encoding,bomLength:number,records:number):Uint32Array {
+ const unit=encoding==='utf16le'?2:1,content=bytes.subarray(bomLength)
+ if(bytes.length<bomLength||content.length%unit)throw new LargeFormatError('El archivo no coincide con su codificación.')
+ const state:ScanState={inQuotes:false},offsets=new Uint32Array(records+1)
+ let count=0
+ offsets[0]=bomLength
+ const add=(end:number)=>{
+  if(count===records)throw new LargeFormatError('El archivo no coincide con las filas de la tabla.')
+  offsets[++count]=end
+ }
+ scan(content,content.length,bomLength,state,unit,add)
+ if(state.inQuotes)throw new UnclosedQuoteError(count,offsets[count])
+ if(state.cr!==undefined)add(state.cr)
+ if(offsets[count]<bytes.length)add(bytes.length)
+ if(count!==records)throw new LargeFormatError('El archivo no coincide con las filas de la tabla.')
+ return offsets
+}
+
 export interface IndexOptions {
  encoding: Encoding; bomLength: number; maxRecord: number
  every?: number; chunk?: number
@@ -149,10 +168,10 @@ export async function readRecords(index: LargeIndex, from: number, count: number
 }
 
 // Campos de un registro. Tolerante: una comilla solo abre un campo al principio de este y lo que siga a la comilla de cierre se conserva.
-export function splitFields(record: string, delimiter: string, through?:number): string[] {
+export function splitFields(record: string, delimiter: string, through?:number, span?:(start:number,end:number)=>void): string[] {
  const fields: string[] = []; let i = 0
  while (true) {
-  let value = ''
+  const start=i; let value = ''
   if (record[i] === '"') {
    i++
    while (i < record.length) {
@@ -166,10 +185,11 @@ export function splitFields(record: string, delimiter: string, through?:number):
    value+=record.slice(i,end);i=end
   } else { const from = i, next = record.indexOf(delimiter,i); i=next<0?record.length:next; value = record.slice(from, i) }
   fields.push(value)
+  span?.(start,i)
   if(through!==undefined&&fields.length>through)break
   if (i >= record.length) break
   i++
-  if (i === record.length) { fields.push(''); break } // delimitador final = campo vacío
+  if (i === record.length) { fields.push(''); span?.(i,i); break } // delimitador final = campo vacío
  }
  return fields
 }
