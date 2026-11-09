@@ -78,19 +78,23 @@ const areas = {
 const projects=['shell','md','csv']
 const byPath=new Map(Object.entries(areas).flatMap(([area,paths])=>paths.map(path=>[path,area])))
 const documentation=/^(?:[^/]+\.md|docs\/[^/]+\.md|docs\/(?:audit|evidence|stories)\/.+\.md|docs\/design\/[^/]+\.(?:html|md))$/
+// CSV usa workers y una ventana analítica que deben resolverse también desde el paquete.
 const packagePath=/^(?:package(?:-lock)?\.json$|electron\.vite\.config\.ts$|electron-builder\.[^/]+$|(?:build|src\/(?:main|preload))\/)/
 const specPath=/^tests\/e2e\/.+\.spec\.ts$/
+// Mismo alcance que vitest.config.ts. Los auxiliares y fixtures siguen siendo transversales.
+const unitPath=/^tests\/(?!e2e\/).+\.test\.ts$/
 
-export function classifyPaths(paths) {
+export function classifyPaths(paths,unclassified=new Set()) {
   const selected=new Set(),specs=new Set()
   let full=paths.length===0,pack=false
   for(const path of paths){
     if(typeof path!=='string'||/[\\\x00-\x1f]/.test(path)||path.split('/').some(part=>!part||part==='.'||part==='..')){
       full=true
+      unclassified.add(path)
       continue
     }
     if(packagePath.test(path))pack=true
-    if(documentation.test(path))continue
+    if(documentation.test(path)||unitPath.test(path))continue
     if(specPath.test(path)){
       const file=posix.basename(path)
       specs.add(path)
@@ -102,7 +106,10 @@ export function classifyPaths(paths) {
     if(area){
       selected.add('shell')
       selected.add(area)
-    }else full=true
+    }else{
+      full=true
+      unclassified.add(path)
+    }
   }
   return {checks:true,unit:true,e2e:projects.filter(project=>full||selected.has(project)),full,package:pack,specs:[...specs].sort()}
 }
@@ -111,5 +118,8 @@ if(import.meta.main){
   const args=process.argv.slice(2)
   const input=args.length===1&&args[0]==='--stdin'?readFileSync(0,'utf8'):null
   const paths=input===null?args:input.endsWith('\0')?input.slice(0,-1).split('\0'):[]
-  process.stdout.write(JSON.stringify(classifyPaths(paths))+'\n')
+  const unclassified=new Set()
+  const plan=classifyPaths(paths,unclassified)
+  if(unclassified.size)console.error('no clasificado: '+[...unclassified].sort().map(path=>/[\x00-\x1f\x7f-\x9f]/.test(path)?JSON.stringify(path):path).join(', '))
+  process.stdout.write(JSON.stringify(plan)+'\n')
 }

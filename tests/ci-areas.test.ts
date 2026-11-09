@@ -1,4 +1,4 @@
-import {execFileSync} from 'node:child_process'
+import {execFileSync,spawnSync} from 'node:child_process'
 import {readdirSync} from 'node:fs'
 import {basename} from 'node:path'
 import {expect,it} from 'vitest'
@@ -19,6 +19,9 @@ it.each([
  ['src/main/large-search-worker.ts',['shell','csv'],true],
  ['docs/stories/historia-ci1-pruebas-por-area-diseno-para-codex.md',[],false],
  ['README.md',[],false],
+ ['tests/markdown-commands.test.ts',[],false],
+ ['tests/documents.test.ts',[],false],
+ ['tests/nested/regression.test.ts',[],false],
 ] as const)('%s selecciona sus áreas y el paquete cuando corresponde',(path,e2e,pack)=>{
  expect(classifyPaths([path])).toEqual({checks:true,unit:true,e2e,full:false,package:pack,specs:[]})
 })
@@ -44,7 +47,7 @@ it.each([
  ['.github/workflows/ci.yml',false],
  ['scripts/ci-areas.mjs',false],
  ['tests/e2e/freya-helper.ts',false],
- ['tests/documents.test.ts',false],
+ ['tests/e2e/helper.test.ts',false],
  ['docs/evidence/seg-s2e-2026-10-30/custom-style-invalid.docx',false],
  ['docs/design/freya-icon-original.png',false],
  ['docs/licenses/csl-CC-BY-SA-3.0.txt',false],
@@ -52,6 +55,19 @@ it.each([
  ['zona-desconocida/archivo.ts',false],
 ] as const)('%s conserva la ejecución completa',(path,pack)=>{
  expect(classifyPaths([path])).toEqual({...full,package:pack})
+})
+
+it('una prueba unitaria no amplía el área de su fuente',()=>{
+ expect(classifyPaths(['src/renderer/lib/markdown-commands.ts','tests/markdown-commands.test.ts']))
+  .toEqual({...full,full:false,e2e:['shell','md']})
+})
+
+it('anuncia las rutas no clasificadas en stderr sin contaminar el plan JSON',()=>{
+ const paths=['zona-nueva/b.ts','zona-nueva/a.ts']
+ const result=spawnSync(process.execPath,['scripts/ci-areas.mjs','--stdin'],{input:paths.join('\0')+'\0',encoding:'utf8'})
+ expect(result.status).toBe(0)
+ expect(JSON.parse(result.stdout)).toEqual(full)
+ expect(result.stderr).toBe('no clasificado: zona-nueva/a.ts, zona-nueva/b.ts\n')
 })
 
 it('cada spec real tiene un proyecto y se incluye si cambia',()=>{
