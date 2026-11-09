@@ -13,6 +13,42 @@ async function dialog(operation:string,columns=['0']){await page.getByLabel('Lim
 async function preview(panel:ReturnType<Page['getByRole']>){await panel.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Vista previa lista',{timeout:30000})}
 async function apply(panel:ReturnType<Page['getByRole']>){await panel.getByRole('button',{name:'Aplicar transformación',exact:true}).click();await expect(panel).toHaveCount(0)}
 
+test('H15-1: la transformación calculada conserva decimales exactos',async()=>{
+ const original='Producto,Precio unitario,Cantidad\nA,10.10,3\nB,0.1,3\n'
+ const {doc,path}=await open(original)
+ const rows=await page.evaluate(async({id,revision})=>{
+  const edit={type:'structure',operation:'calculate',name:'Total',position:3,expression:'"Precio unitario" * Cantidad',
+   columns:[{index:1,read:'number',scale:2},{index:2,read:'number',scale:0}],onError:'abort',revision,requestId:crypto.randomUUID()}
+  await window.freya.transformPreview(id,edit as never)
+  await window.freya.tableEdit(id,edit as never)
+  return (await window.freya.tablePage(id,{offset:0,limit:2,requestId:1})).rows.map(row=>row.cells)
+ },doc)
+ expect(rows).toEqual([['A','10.10','3','30.30'],['B','0.1','3','0.30']])
+ expect(await readFile(path,'utf8')).toBe(original)
+})
+
+test('H15-1: las fórmulas que salen de la expresión escalar se rechazan sin cambios',async()=>{
+ const original='Producto,Precio unitario,Cantidad\nA,10.10,3\n'
+ const {doc,path}=await open(original)
+ const before=await page.evaluate(()=>window.freya.documents())
+ for(const expression of [
+  'Cantidad); SELECT 1; --',
+  '(SELECT 1)',
+  "read_csv('archivo-privado.csv')",
+  'sum(Cantidad)',
+  'avg(Cantidad) OVER ()',
+ ]){
+  const error=await page.evaluate(async({id,revision,expression})=>{
+   const edit={type:'structure',operation:'calculate',name:'Total',position:3,expression,
+    columns:[{index:2,read:'number',scale:0}],onError:'abort',revision,requestId:crypto.randomUUID()}
+   try{await window.freya.transformPreview(id,edit as never);return ''}catch(error){return String(error)}
+  },{id:doc.id,revision:doc.revision,expression})
+  expect(error,expression).toMatch(/expresión|fórmula|función|subconsulta/i)
+  expect(await page.evaluate(()=>window.freya.documents())).toEqual(before)
+  expect(await readFile(path,'utf8')).toBe(original)
+ }
+})
+
 test('transformaciones visuales: documento completo, originales, Unicode, encabezados, duplicados y deshacer',async()=>{
  const {path}=await open();await page.getByLabel('Buscar en tabla',{exact:true}).fill('001');await expect(page.locator('footer')).toContainText('2 de 3 filas')
  let panel=await dialog('split',['1']);await expect(panel).toContainText('incluye filas ocultas');await preview(panel);await expect(panel.locator('dl')).toContainText('Columnas añadidas3');await apply(panel)
