@@ -101,11 +101,14 @@ test('selección que cruza un bloque cercado: títulos, listas y citas no altera
 test('CRLF se conserva al formatear y guardar; el original no cambia hasta guardar',async()=>{
  const {path}=await open('Uno\r\nDos\r\n');await selectAll();await insert('Cita');await expect.poll(source).toBe('> Uno\r\n> Dos\r\n')
  expect(await readFile(path,'utf8')).toBe('Uno\r\nDos\r\n')
- await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect.poll(()=>readFile(path,'utf8')).toBe('> Uno\r\n> Dos\r\n')
+ const save=page.getByRole('button',{name:'Guardar',exact:true})
+ await save.click();await expect.poll(()=>readFile(path,'utf8')).toBe('> Uno\r\n> Dos\r\n')
+ // Los bytes pueden estar en disco mientras Guardar todavía bloquea Insertar.
+ await expect(save).toHaveAttribute('aria-busy','false')
  await selectAll();await insert('Bloque de código')
  const fenced='```text\r\n> Uno\r\n> Dos\r\n\r\n```';await expect.poll(source).toBe(fenced)
  await expect(content().locator('.cm-line')).toHaveCount(5)
- await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect.poll(()=>readFile(path,'utf8')).toBe(fenced)
+ await save.click();await expect.poll(()=>readFile(path,'utf8')).toBe(fenced)
 })
 
 test('solo lectura deshabilita todos los controles y vista previa oculta la barra',{tag:'@perf'},async()=>{
