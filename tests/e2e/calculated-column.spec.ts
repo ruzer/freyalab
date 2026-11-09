@@ -6,18 +6,21 @@ import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {randomUUID} from 'node:crypto'
 import type {CalculateColumnEdit} from '../../src/shared/calculated-column'
+import {t} from '../../src/shared/i18n'
 import type {DocumentInfo} from '../../src/shared/types'
+import {runApplicationMenu} from './application-menu'
 
 let app:ElectronApplication,page:Page,folder:string
 
-test.beforeEach(async()=>{
+test.beforeEach(async({},testInfo)=>{
  folder=await mkdtemp(join(tmpdir(),'freya-calculated-column-'))
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
  app=await electron.launch({
   chromiumSandbox:true,
   executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,
   args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],
-  env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:'es',FREYALAB_USER_DATA:join(folder,'profile')},
+  env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:'es',FREYALAB_USER_DATA:join(folder,'profile'),
+   ...(testInfo.title.startsWith('H15-2')?{FREYALAB_LARGE_BYTES:'2048'}:{})},
   timeout:60000
  })
  page=await app.firstWindow()
@@ -154,5 +157,42 @@ test('H15-1 IPC: guardar añade solo el campo calculado en TSV, Windows-1252 y U
   await page.evaluate(id=>window.freya.save(id),doc.id)
   const fields=header?['Triple','6','9']:['6','9']
   expect(await readFile(opened.path),name).toEqual(encode(records.map((record,index)=>record+delimiter+fields[index])))
+ }
+})
+
+test('H15-2: encabezado y paleta explican los bloqueos del cálculo',async()=>{
+ const fixtures=[
+  {first:'Límite',source:['Límite',...Array.from({length:199},(_,i)=>`C${i+2}`)].join(',')+'\n'+Array(200).fill('1').join(',')+'\n',readonly:false,large:false,reason:'calculate.error.limitColumns'},
+  {first:'Muestra',source:'Muestra,N\n1,2\n2,'+'x'.repeat(1024*1024+4)+'\n',readonly:true,large:false,reason:'calculate.readonly'},
+  {first:'Grande',source:'Grande,N\n'+'1,2\n'.repeat(600),readonly:true,large:true,reason:'calculate.readonly'},
+ ]
+ for(const {first,source,readonly,large,reason} of fixtures){
+  const {doc}=await open(`${first}.csv`,source)
+  expect(!!doc.readonly,first).toBe(readonly)
+  expect(!!doc.large,first).toBe(large)
+  if(!readonly)expect(doc.headers).toHaveLength(200)
+  await expect(page.getByRole('gridcell',{name:`Fila 1, ${first}`,exact:true})).toBeVisible()
+  const header=page.getByLabel(`Seleccionar columna ${first}`,{exact:true})
+  await header.focus()
+  await page.keyboard.press('Shift+F10')
+  const action=page.getByRole('menuitem',{name:'Calcular columna a la derecha',exact:true})
+  await expect(action).toBeVisible()
+  await expect(action).toBeDisabled()
+  const expectedReason=t(reason,{},'es')
+  await expect(action).toHaveAccessibleDescription(expectedReason)
+  await page.keyboard.press('Escape')
+  await expect(header).toBeFocused()
+
+  await runApplicationMenu(app,'edit.commandPalette')
+  const palette=page.getByRole('dialog',{name:'Comandos CSV'})
+  await palette.getByRole('searchbox').fill('columna calculada')
+  const command=palette.getByRole('button',{name:'Añadir columna calculada…',exact:true})
+  await expect(command).toBeVisible()
+  await expect(command).toBeDisabled()
+  await expect(command).toHaveAccessibleDescription(expectedReason)
+  await page.keyboard.press('Enter')
+  await expect(palette).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(header).toBeFocused()
  }
 })

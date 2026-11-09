@@ -2,18 +2,18 @@
  import {formatNumber,t} from '../lib/i18n.svelte'
  import {controlHint} from '../lib/control-hint'
  import {onMount,onDestroy,tick,untrack} from 'svelte'
- import type {DocumentInfo,TableTransformEdit,TableTransformPreview,TableQuery,TableRange} from '../../shared/types'
+ import type {CalculatedColumnPreview,DocumentInfo,TableTransformEdit,TableTransformPreview,TableQuery,TableRange} from '../../shared/types'
  import {readCalculationError,type CalculateColumnEdit,type ColumnRead} from '../../shared/calculated-column'
  import {sqlColumns} from '../../shared/sql-helpers'
  import CsvCalculationFields from './CsvCalculationFields.svelte'
  type Edit=TableTransformEdit|CalculateColumnEdit
- let {doc,initialColumns,initialOperation,initialRows,initialRange,viewQuery,onapply,onclose,onerror}:{doc:DocumentInfo;initialColumns:number[];initialOperation?:Edit['operation'];initialRows:string[];initialRange:TableRange|null;viewQuery:TableQuery;onapply:(edit:Edit)=>Promise<string|null>;onclose:()=>void;onerror:(message:string)=>void}=$props()
+ let {doc,initialColumns,initialOperation,initialCalculationPosition,initialRows,initialRange,viewQuery,onapply,onclose,onerror}:{doc:DocumentInfo;initialColumns:number[];initialOperation?:Edit['operation'];initialCalculationPosition?:number;initialRows:string[];initialRange:TableRange|null;viewQuery:TableQuery;onapply:(edit:Edit)=>Promise<string|null>;onclose:()=>void;onerror:(message:string)=>void}=$props()
  const calculation=untrack(()=>initialOperation==='calculate')
  let operation=$state<TableTransformEdit['operation']>(untrack(()=>initialOperation==='calculate'?'split':initialOperation??'split')),columns=$state<number[]>(untrack(()=>initialColumns.length?[...initialColumns]:[0])),separator=$state(';'),custom=$state(''),name=$state('Combinada')
- let preview=$state<TableTransformPreview|null>(null),prepared=$state<Edit|null>(null),busy=$state(false),processed=$state(0),message=$state('Elige la operación y revisa su vista previa.'),external=$state(false),dialog:HTMLDialogElement
+ let preview=$state<TableTransformPreview|CalculatedColumnPreview|null>(null),prepared=$state<Edit|null>(null),busy=$state(false),processed=$state(0),message=$state('Elige la operación y revisa su vista previa.'),external=$state(false),dialog:HTMLDialogElement
  let calculationName=$state(''),expression=$state(''),reads=$state<ColumnRead[]>([]),onError=$state<CalculateColumnEdit['onError']>('empty'),calculationError=$state<{text:string;detail?:string}|null>(null)
  let previewButton=$state<HTMLButtonElement>(),applyButton=$state<HTMLButtonElement>(),cancelButton=$state<HTMLButtonElement>()
- const calculated=$derived(preview&&'emptyRows'in preview?preview as import('../../shared/calculated-column').CalculatedColumnPreview:null)
+ const calculated=$derived(preview&&'emptyRows'in preview?preview:null)
  const names=$derived(calculation?sqlColumns(doc.headers??[]):[])
  const markedRows=untrack(()=>[...initialRows]),markedRange=untrack(()=>initialRange?structuredClone($state.snapshot(initialRange)):null)
  const hasSelection=markedRows.length>0||!!markedRange
@@ -40,10 +40,16 @@
  async function inspect(){
   if(busy||external)return;cancel();preview=null;prepared=null;calculationError=null;processed=0;busy=true
   if(calculation){
-   const request:CalculateColumnEdit={type:'structure',operation:'calculate',name:calculationName,position:doc.headers?.length??0,expression,columns:$state.snapshot(reads),onError,revision:doc.revision,requestId:crypto.randomUUID()}
+   const request:CalculateColumnEdit={type:'structure',operation:'calculate',name:calculationName,position:initialCalculationPosition??doc.headers?.length??0,expression,columns:$state.snapshot(reads),onError,revision:doc.revision,requestId:crypto.randomUUID()}
    active=request.requestId;message=t('calculate.progress.starting')
    void tick().then(()=>{if(active===request.requestId)cancelButton?.focus()})
-   try{const result=await window.freya.transformPreview(doc.id,request);if(active===request.requestId){preview=result;prepared=request;message=t('calculate.progress.ready')}}
+   try{
+    // Cede el control para que el diálogo cancele su perfilado antes de enviar el cálculo.
+    await tick()
+    if(active!==request.requestId)return
+    const result=await window.freya.transformPreview(doc.id,request)
+    if(active===request.requestId){preview=result;prepared=request;message=t('calculate.progress.ready')}
+   }
    catch(error){if(active===request.requestId){message='';calculationError=explain(error)}}
    finally{if(active===request.requestId){const focus=document.activeElement===cancelButton;active=undefined;busy=false;if(focus)void tick().then(()=>(applyButton?.disabled?previewButton:applyButton)?.focus())}}
    return
@@ -89,7 +95,7 @@
    {#if calculated.samples.length}
     <div class="preview-scroll"><table><caption>{t('calculate.preview.examples')}</caption>
      <thead><tr><th scope="col">{t('calculate.preview.row')}</th><th scope="col">{t('calculate.preview.source')}</th><th scope="col">{t('calculate.preview.result')}</th></tr></thead>
-     <tbody>{#each calculated.samples as sample}<tr><th scope="row">{formatNumber((sample.row??0)+1)}</th><td><pre>{sample.before}</pre></td><td><pre>{sample.after}</pre></td></tr>{/each}</tbody>
+     <tbody>{#each calculated.samples as sample}<tr><th scope="row">{formatNumber(sample.row+1)}</th><td><pre>{sample.inputs.map(({column,value})=>`${names[column]?.name??formatNumber(column+1)}: ${value===null?t('calculate.preview.missingInput'):value===''?t('calculate.preview.emptyInput'):value}`).join(' · ')}</pre></td><td><pre>{sample.after}</pre></td></tr>{/each}</tbody>
     </table></div>
    {/if}
   {/if}
@@ -116,7 +122,7 @@
  </form>
  <p role="status">{message}</p>
  {#if busy}<div class="progress"><progress aria-label="Preparación de transformación"></progress><span>{processed.toLocaleString()} elementos revisados</span><button class="btn-ghost" onclick={cancelPreparation}>Cancelar preparación</button></div>{/if}
- {#if preview}<dl>{#each (ordering?[['Filas originales',preview.rows],['Filas afectadas',preview.affected],['Filas que cambian de posición',preview.movedRows],['Columnas que cambian de posición',preview.movedColumns]]:[['Filas originales',preview.rows],['Filas afectadas',preview.affected],['Celdas escritas',preview.cells],['Columnas añadidas',preview.addedColumns],['Filas por eliminar',preview.deletedRows],['Encabezados renombrados',preview.changedHeaders]]) as [label,value]}<div><dt>{label}</dt><dd>{Number(value).toLocaleString()}</dd></div>{/each}</dl>
+ {#if preview&&!('emptyRows'in preview)}<dl>{#each (ordering?[['Filas originales',preview.rows],['Filas afectadas',preview.affected],['Filas que cambian de posición',preview.movedRows],['Columnas que cambian de posición',preview.movedColumns]]:[['Filas originales',preview.rows],['Filas afectadas',preview.affected],['Celdas escritas',preview.cells],['Columnas añadidas',preview.addedColumns],['Filas por eliminar',preview.deletedRows],['Encabezados renombrados',preview.changedHeaders]]) as [label,value]}<div><dt>{label}</dt><dd>{Number(value).toLocaleString()}</dd></div>{/each}</dl>
   {#if preview.samples.length}<div class="preview-scroll"><table><caption>Hasta ocho ejemplos, textos abreviados a 256 caracteres. Posiciones originales, sin contar la fila de encabezados.</caption><thead><tr><th>Posición original</th><th>Antes</th><th>Después</th></tr></thead><tbody>{#each preview.samples as sample}<tr><th>{sample.row===null?'Encabezado':`Fila ${sample.row+1}`}{#if sample.column!==null} / columna {sample.column+1}{/if}</th><td><pre>{sample.before}</pre></td><td><pre>{sample.after}</pre></td></tr>{/each}</tbody></table></div>{/if}
  {/if}
  <p>La preparación se puede cancelar; el cambio final se aplica completo y se puede deshacer. Los límites de edición, codificación y recuperación siguen vigentes; presupuesto de deshacer de 20 MiB.</p>

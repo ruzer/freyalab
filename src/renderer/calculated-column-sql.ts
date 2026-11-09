@@ -1,11 +1,12 @@
 import {TokenType,type ScriptTokens} from '@duckdb/duckdb-wasm'
 import {CalculationError,type ColumnRead} from '../shared/calculated-column'
+import {calculationFunctionGroups} from '../shared/calculation-help'
 import {quoteIdentifier} from '../shared/sql-helpers'
 
 export type CalculationColumn=ColumnRead&{name:string}
 
 // El binder sigue interpretando la expresión. Esta lista solo delimita la superficie local.
-const calls=new Set('abs acos asin atan atan2 ceil ceiling cos exp floor ln log log10 mod pow power round sign sin sqrt tan trunc char_length character_length concat concat_ws contains ends_with instr left length lower ltrim replace reverse right rtrim starts_with strpos substr substring trim upper date_add date_diff date_part date_sub datediff day dayofmonth dayofweek dayofyear extract make_date month strftime week year cast try_cast coalesce if ifnull nullif greatest least try'.split(' '))
+const calls=new Set(Object.values(calculationFunctionGroups).flat())
 const words=new Set('and as between case else end escape false for from ilike in is like not null or then true when date interval day days month months year years hour hours minute minutes second seconds boolean tinyint smallint integer int bigint hugeint utinyint usmallint uinteger ubigint uhugeint decimal numeric double precision float real text string char character varying varchar ::'.split(' '))
 const typeModifiers=new Set(['decimal','numeric','char','character','varchar'])
 const groups=new Set('and between case else for from in is not or then when interval'.split(' '))

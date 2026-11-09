@@ -13,7 +13,8 @@ export interface CalculateColumnEdit {
  requestId:string
 }
 export interface CalculatedValue {rowId:string;value:string|null;invalid:number[];failed:boolean}
-export interface CalculatedColumnPreview extends TableTransformPreview {
+export interface CalculatedColumnPreview extends Omit<TableTransformPreview,'samples'> {
+ samples:{row:number;column:number;inputs:{column:number;value:string|null}[];after:string}[]
  emptyRows:number
  invalidByColumn:Record<number,number>
  failures:number
