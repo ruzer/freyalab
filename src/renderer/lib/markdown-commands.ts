@@ -393,3 +393,5 @@ export const markdownCommands:Record<MarkdownAction,Command>={
  table:(text,value)=>inserted(text,selection(text,value),'| Columna 1 | Columna 2 |\n| --- | --- |\n| Dato 1 | Dato 2 |',2),
  mermaid:(text,value)=>inserted(text,selection(text,value),'```mermaid\nflowchart LR\n  A[Inicio] --> B[Proceso]\n  B --> C[Fin]\n```',11)
 }
+
+// Sonda temporal de CI-1b.
