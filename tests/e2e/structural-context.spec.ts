@@ -4,15 +4,37 @@ import {mkdtemp,writeFile,readFile,rm,truncate,stat} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {menuItem,numericOrder} from './panel'
+import {readTableRows} from './csv-rows'
 let app:ElectronApplication,page:Page,folder:string
 const menu=(kind:'filas'|'columnas')=>page.getByRole('menu',{name:'Acciones de '+kind,exact:true})
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-context-e2e-'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function open(source:string){const path=join(folder,'data.csv');await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toBeVisible();return{doc,path}}
-async function rows(){return page.evaluate(async()=>{const [doc]=await window.freya.documents();return(await window.freya.tablePage(doc.id,{offset:0,limit:500,requestId:987})).rows.map(row=>row.cells)})}
+const rows=()=>readTableRows(page,500)
 async function undo(){await page.getByRole('grid',{name:'Tabla de datos',exact:true}).focus();await page.keyboard.press('ControlOrMeta+z')}
 async function columnMenu(name:string,keyboard=false){const input=page.getByLabel('Seleccionar columna '+name,{exact:true});if(keyboard){await input.focus();await page.keyboard.press('Shift+F10')}else await input.click({button:'right'});await expect(menu('columnas')).toBeVisible();return menu('columnas')}
 async function rowMenu(index:number,keyboard=false){const button=page.getByRole('button',{name:'Seleccionar fila '+index,exact:true});if(keyboard){await button.focus();await page.keyboard.press('Shift+F10')}else await button.click({button:'right'});await expect(menu('filas')).toBeVisible();return menu('filas')}
+
+test('la lectura de filas recupera una consulta sustituida por una recarga',async()=>{
+ const records=Array.from({length:20_000},(_,index)=>[String(index),'original'])
+ const {doc}=await open('ID,N\n'+records.map(row=>row.join(',')).join('\n')+'\n')
+ // Cachea otra vista para que la primera lectura tenga que recorrer las filas.
+ await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:1,requestId:1,search:'sin coincidencia'}),doc.id)
+ await app.evaluate(({ipcMain})=>{
+  type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
+  const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')!
+  handlers.set('freya',async(event,...args)=>{
+   const [operation,id,query]=args
+   if(operation!=='page'||(query as {requestId:number}).requestId!==987)return original(event,...args)
+   handlers.set('freya',original)
+   // Encola las dos consultas reales en el mismo turno del proceso principal.
+   const [rows]=await Promise.all([original(event,...args),original(event,operation,id,{offset:0,limit:1,requestId:2,search:'original'})])
+   return rows
+  })
+ })
+ expect(await rows()).toEqual(records.slice(0,500))
+ await expect(readTableRows(page,0)).rejects.toThrow('Datos de operación no válidos')
+})
 
 test('menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar',async()=>{
  const source='ID,Grupo,N\r\n00123,v,30\r\n9007199254740993,h,10\r\n00003,v,20\r\n',{path}=await open(source);await page.getByLabel('Buscar en tabla',{exact:true}).fill('v');await expect(page.locator('footer')).toContainText('2 de 3 filas');await numericOrder(page);let panel=await columnMenu('N');await panel.getByRole('menuitem',{name:'Ordenar columna ascendente (vista)',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00003')

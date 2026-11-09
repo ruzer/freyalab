@@ -5,11 +5,12 @@ import {mkdtemp,writeFile,readFile,rm,truncate,stat} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {showPanel} from './panel'
+import {readTableRows} from './csv-rows'
 let app:ElectronApplication,page:Page,folder:string
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-search-e2e-'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
 test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function open(source:string){const path=join(folder,'data.csv');await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible();return{doc,path}}
-async function rows(){return page.evaluate(async()=>{const [doc]=await window.freya.documents();return(await window.freya.tablePage(doc.id,{offset:0,limit:200,requestId:987})).rows.map(row=>row.cells)})}
+const rows=()=>readTableRows(page,200)
 
 test('buscar CSV: teclado, coincidencias por celda, texto hostil y temas conservan los datos',async()=>{
  const hostile='<img src="https://evil.test/x"> & $x$ [clic](https://evil.test/)',source='ID,Texto\n00123,ÁRBOL\n00002,árbol\n9007199254740993,"'+hostile.replaceAll('"','""')+'"\n',{path}=await open(source),before=await page.evaluate(()=>window.freya.documents()),grid=page.getByRole('grid',{name:'Tabla de datos',exact:true}),search=page.getByLabel('Buscar en tabla',{exact:true})
