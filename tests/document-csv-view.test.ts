@@ -112,7 +112,8 @@ it('C: Guardar una Tabla y cambiar a Texto usa su serializador real',async()=>{
 })
 
 it.each(['utf16le','win1252'] as const)('X9/X13: permite editar y guardar menos de 10 MiB reales en %s aunque UTF-8 sea mayor',async encoding=>{
- const iconv=(await import('iconv-lite')).default,raw='ID,Nombre\n00123,'+(encoding==='utf16le'?'中'.repeat(4*1024*1024):'é'.repeat(6*1024*1024))+'\n',prefix=encoding==='utf16le'?Buffer.from([0xff,0xfe]):Buffer.alloc(0),bytes=Buffer.concat([prefix,iconv.encode(raw,encoding)]);expect(bytes.length).toBeLessThan(10*1024*1024);expect(Buffer.byteLength(raw)).toBeGreaterThan(10*1024*1024);await writeFile(path,bytes);const doc=await docs.open(path,'text');expect(doc).toMatchObject({encoding,readonly:false,csvView:'text'});const edited=raw.replace('00123','00124');await docs.update(doc.id,edited);await docs.save(doc.id);expect((await readFile(path)).equals(Buffer.concat([prefix,iconv.encode(edited,encoding)]))).toBe(true)
+ // Ambos caracteres ocupan tres bytes en UTF-8 y cruzan 10 MiB con menos texto.
+ const iconv=(await import('iconv-lite')).default,raw='ID,Nombre\n00123,'+(encoding==='utf16le'?'中':'€').repeat(3_500_000)+'\n',prefix=encoding==='utf16le'?Buffer.from([0xff,0xfe]):Buffer.alloc(0),bytes=Buffer.concat([prefix,iconv.encode(raw,encoding)]);expect(bytes.length).toBeLessThan(10*1024*1024);expect(Buffer.byteLength(raw)).toBeGreaterThan(10*1024*1024);await writeFile(path,bytes);const doc=await docs.open(path,'text');expect(doc).toMatchObject({encoding,readonly:false,csvView:'text'});const edited=raw.replace('00123','00124');await docs.update(doc.id,edited);await docs.save(doc.id);expect((await readFile(path)).equals(Buffer.concat([prefix,iconv.encode(edited,encoding)]))).toBe(true)
 })
 
 it.each(['utf8','utf16le'] as const)('X13: cuenta el BOM en el límite exacto de 10 MiB de %s',async encoding=>{

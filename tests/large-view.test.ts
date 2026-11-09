@@ -7,6 +7,7 @@ import {parse} from 'csv-parse/sync'
 import iconv from 'iconv-lite'
 import {TableEngine} from '../src/main/table-engine'
 import type {LargeViewRequest} from '../src/shared/types'
+import {waitForView} from './helpers/view-state'
 let workerFolder:string,workerPath:string
 beforeAll(async()=>{
  workerFolder=await mkdtemp(join(tmpdir(),'freya-view-worker-'));workerPath=join(workerFolder,'worker.mjs')
@@ -106,7 +107,11 @@ for(const [encoding,bom] of [['utf8',false],['utf8',true],['utf16le',true],['win
  }finally{await large.close('a');await small.close('a');await rm(folder,{recursive:true,force:true})}
 })
 
+const FILTER_PARITY_BUDGET_MS=10_000
 for(const encoding of ['utf8','utf16le'] as const)it(`${encoding}: paridad de 330 consultas de filtros por operador y grupos de 2 a 20 condiciones`,async()=>{
+ const deadline=performance.now()+FILTER_PARITY_BUDGET_MS
+ // Cede al worker y a la E/S sin un temporizador por cada consulta pequeña.
+ const clock={now:()=>performance.now(),pause:()=>new Promise<void>(resolve=>setImmediate(resolve))}
  const {compileTableQuery}=await import('../src/main/table-query'),{LargeViews}=await import('../src/main/large-view'),{buildIndex}=await import('../src/main/large-table')
  const folder=await mkdtemp(join(tmpdir(),'freya-filter-parity-')),path=join(folder,'data.csv'),small=new TableEngine(),views=new LargeViews({workerPath,workers:1,batchRecords:3})
  try{
@@ -116,12 +121,12 @@ for(const encoding of ['utf8','utf16le'] as const)it(`${encoding}: paridad de 33
   const sourceInfo={index,delimiter:',',header:true,width:5,revision:0,alive:()=>true},ops=['contains','equals','notEquals','starts','ends','empty','notEmpty','greater','greaterEqual','less','lessEqual','dateBefore','dateOn','dateAfter','regex'] as const
   for(let i=0;i<330;i++){
    const conditions=Array.from({length:i<30?1:2+(i-30)%19},(_,j)=>{const op=ops[(i+j)%ops.length],column=op.startsWith('date')?3:['greater','greaterEqual','less','lessEqual'].includes(op)?2:1,value=op.startsWith('date')?'2026-10-28':['greater','greaterEqual','less','lessEqual'].includes(op)?(i%2?'9007199254740992':'0'):op==='regex'?(i%2?'^[A-Z]':'[ñKİ]'):[op==='equals'||op==='notEquals'?'José Kelvin':'k','i',' ','ñ','zzq99'][i%5];return {column,op,value,caseSensitive:!!(i%3)}}),search=i%4===0?['k','i','ñ',' '][i%4]:undefined,query={search,conditions,filterMode:i%2?'any' as const:'all' as const,offset:0,limit:1000,requestId:i},compiled=compileTableQuery(query,5),oracle=expected.slice(1).flatMap((cells,n)=>compiled.matches(cells)?[{id:String(n+1),cells}]:[]),requestId=crypto.randomUUID()
-   await views.start('a',sourceInfo,{...query,revision:0,requestId});for(let wait=0;(await views.state('a'))?.status==='running';wait++){if(wait>300)throw new Error('No terminó');await new Promise(resolve=>setTimeout(resolve,2))}
-   expect(await views.state('a')).toMatchObject({status:'complete',matched:oracle.length});expect((await views.page('a',requestId,0,1000)).rows).toEqual(oracle);expect((await small.page('a',query)).rows).toEqual(oracle)
+   await views.start('a',sourceInfo,{...query,revision:0,requestId})
+   expect(await waitForView(()=>views.state('a'),deadline,clock)).toMatchObject({status:'complete',matched:oracle.length});expect((await views.page('a',requestId,0,1000)).rows).toEqual(oracle);expect((await small.page('a',query)).rows).toEqual(oracle)
   }
   expect(await readFile(path)).toEqual(data)
  }finally{await views.stop();await small.close('a');await rm(folder,{recursive:true,force:true})}
-},10_000)
+},FILTER_PARITY_BUDGET_MS)
 
 it('cancelar o cerrar un documento no cancela la búsqueda de otro; reinterpretar elimina la vista antigua',async()=>{
  const folder=await mkdtemp(join(tmpdir(),'freya-view-lifecycle-')),path=join(folder,'data.csv'),text=table(4000),engine=new TableEngine(()=>{},{largeBytes:1,viewWorkerPath:workerPath,viewWorkers:2,viewBatch:10,viewDelayMs:1})
