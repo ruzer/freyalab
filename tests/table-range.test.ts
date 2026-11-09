@@ -64,8 +64,11 @@ it('rechaza rangos obsoletos, límites y bloques incompatibles íntegros',async(
 })
 
 it('rechaza una copia excesiva y una edición que no cabe en deshacer sin cambios parciales',async()=>{
- const value='€'.repeat(280_000) // Tres bytes por carácter. Diez celdas superan 8 MiB y 25 superan 20 MiB.
- await open('A\n'+Array(10).fill(value).join('\n')+'\n')
+ const value='a'.repeat(840_000) // Diez celdas superan 8 MiB y 25 superan 20 MiB.
+ await open('A\n'+'a\n'.repeat(10))
+ const large=await engine.snapshot('a')
+ for(const row of large.state.rows)row.cells[0]=value
+ await engine.restore('a',large)
  await expect(engine.rangeClipboard('a',await range(0,9))).rejects.toThrow('8 MiB')
  await open(Array.from({length:25},(_,i)=>'C'+i).join(',')+'\n'+Array(25).fill('').join(',')+'\n')
  const before=await engine.snapshot('a')
