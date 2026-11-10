@@ -5,6 +5,7 @@ import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {t} from '../../src/shared/i18n'
 import {runApplicationMenu} from './application-menu'
+import {closeElectron} from './close-electron'
 
 let app:ElectronApplication,page:Page,folder:string
 const source='Grupo,Valor\nA,10\nA,20\nB,80\n'
@@ -19,7 +20,7 @@ async function launch(language='es'){
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:language,FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports'),FREYALAB_LARGE_BYTES:'2048'},timeout:60000})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
 }
-async function quit(){await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{})}
+async function quit(){await closeElectron(app)}
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-analysis-tab-'));await mkdir(join(folder,'exports'));await launch()})
 test.afterEach(async()=>{await quit();await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function open(name='datos.csv',text=source){
