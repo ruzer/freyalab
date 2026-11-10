@@ -1,4 +1,5 @@
 import {describe,it,expect} from 'vitest'
+import {editorText} from '../src/renderer/lib/csv-text-model'
 import {EditorState,EditorSelection,Transaction} from '@codemirror/state'
 import {history,undo,redo,undoDepth,isolateHistory} from '@codemirror/commands'
 import {language} from '@codemirror/language'
@@ -145,7 +146,7 @@ describe('FL-MD-004 · sesiones Markdown sin gramática cuando no hay editor',()
   ['mixto y BOM','\uFEFFAntes\r\nOtra\n- [ ] tarea\r\n'],
  ])('%s inicia con RAW exacto, ui vacío y sin lenguaje',(_,source)=>{
   const session=createMarkdownSession(source)
-  expect(session.state.sliceDoc()).toBe(source)
+  expect(editorText(session.state)).toBe(source)
   expect(session.state.facet(language)).toBeNull()
   expect(session.ui.get(session.state)).toEqual([])
   expect(session.state.readOnly).toBe(false)
@@ -157,17 +158,17 @@ describe('FL-MD-004 · sesiones Markdown sin gramática cuando no hay editor',()
   const selection=session.state.selection
   expect(session.state.facet(language)).not.toBeNull()
   session.state=taskTransaction(session.state,source,reference(source,3))!.state
-  const checked=session.state.sliceDoc()
+  const checked=editorText(session.state)
   session.state=session.state.update({effects:session.ui.reconfigure([])}).state
   expect(session.state.facet(language)).toBeNull()
   expect(session.state.selection.eq(selection)).toBe(true)
   expect(undoDepth(session.state)).toBe(1)
   const target={get state(){return session.state},dispatch:(transaction:Transaction)=>{session.state=transaction.state}}
   expect(undo(target)).toBe(true)
-  expect(session.state.sliceDoc()).toBe(source)
+  expect(editorText(session.state)).toBe(source)
   expect(session.state.selection.eq(selection)).toBe(true)
   expect(redo(target)).toBe(true)
-  expect(session.state.sliceDoc()).toBe(checked)
+  expect(editorText(session.state)).toBe(checked)
   expect(session.state.facet(language)).toBeNull()
  })
  it('la UI puede bloquear y desbloquear sin un facet de solo lectura permanente',()=>{
@@ -183,6 +184,6 @@ describe('FL-MD-004 · sesiones Markdown sin gramática cuando no hay editor',()
   first.state=taskTransaction(first.state,source,reference(source))!.state
   expect(undoDepth(first.state)).toBe(1)
   expect(undoDepth(second.state)).toBe(0)
-  expect(second.state.sliceDoc()).toBe(source)
+  expect(editorText(second.state)).toBe(source)
  })
 })

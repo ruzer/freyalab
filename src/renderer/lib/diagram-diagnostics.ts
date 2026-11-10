@@ -1,4 +1,5 @@
 import type {EditorState} from '@codemirror/state'
+import {editorText} from './csv-text-model'
 import {syntaxTree,syntaxTreeAvailable} from '@codemirror/language'
 import {frontMatterOf} from '../../shared/front-matter'
 
@@ -32,7 +33,7 @@ function fenceIndent(state:EditorState,node:MarkdownNode):number|undefined {
 
 export function markdownDiagramBlocks(state:EditorState):{complete:boolean;blocks:DiagramBlock[]} {
  if(!syntaxTreeAvailable(state,state.doc.length))return{complete:false,blocks:[]}
- const source=state.sliceDoc(),body=frontMatterOf(source).body
+ const source=editorText(state),body=frontMatterOf(source).body
  const bodyFrom=state.toText(source.slice(0,source.length-body.length)).length
  const blocks:DiagramBlock[]=[]
  syntaxTree(state).iterate({enter:cursor=>{

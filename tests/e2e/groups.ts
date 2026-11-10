@@ -4,6 +4,7 @@ export const mdFiles=[
  'markdown-render.spec.ts',
  'markdown-toolbar.spec.ts',
  'markdown-editing.spec.ts',
+ 'editor-status.spec.ts',
  'markdown-selection.spec.ts',
  'markdown-editing-performance.spec.ts',
  'mermaid-errors.spec.ts',

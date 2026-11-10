@@ -16,6 +16,12 @@ La vista previa oculta la barra. Los documentos de solo lectura desactivan todos
 
 Las flechas de los encabezados permiten plegar secciones sin cambiar el texto ni el estado de guardado. Con el cursor en el encabezado, usa Ctrl+Mayús+[ / Ctrl+Mayús+] en Windows/Linux, o ⌘+Alt+[ / ⌘+Alt+] en macOS para plegar/desplegar. El widget indica «Sección plegada» y el editor anuncia las líneas afectadas. Intro continúa listas, tareas y citas; en un elemento vacío sale de la lista. Retroceso elimina el marcador vacío. CSV-texto y texto plano mantienen su comportamiento propio.
 
+## Barra de estado del editor de texto
+
+Markdown, texto plano, Mermaid y CSV en modo Texto muestran la línea física y columna visible del cursor, la extensión de la selección y la sangría de Ajustes. En una selección, un salto CRLF cuenta como un carácter y una letra combinada o emoji se cuenta como una unidad visual.
+
+El selector de fin de línea muestra LF, CRLF, CR o Mixtos según el documento. Elegir LF o CRLF convierte los saltos del borrador en un paso reversible y devuelve el foco al editor. Esto incluye saltos dentro de campos entrecomillados si el documento es CSV Texto. El archivo cambia al pulsar Guardar. En un documento sin saltos, la elección se usa para el próximo salto que escribas.
+
 ## CSV y TSV
 
 Selecciona una fila pulsando su número. Ctrl/⌘ o Mayús añade o retira filas individuales; Mayús no selecciona un rango. Las casillas de encabezado seleccionan columnas.

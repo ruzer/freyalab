@@ -28,15 +28,11 @@ const indentOnTab=[
  }})
 ]
 
-export function editorEditingExtensions(kind:string,source:string,markdownSession=false):Extension {
+export function editorEditingExtensions(kind:string):Extension {
  const plain=kind==='text',mermaid=kind==='mermaid'
  if(kind!=='markdown'&&!plain&&!mermaid&&kind!=='csv-text')return []
- const crlf=!markdownSession&&kind!=='csv-text'&&source.includes('\r\n')
- // Una separación CRLF fija solo es segura en texto plano con finales uniformes.
- const preserveCRLF=crlf&&(!plain||!/(?<!\r)\n|\r(?!\n)/.test(source))
  return [
   kind==='csv-text'?csvMouseSelection:mouseSelection,closeBrackets(),bracketMatching(),editingKeys,
-  ...(preserveCRLF?[EditorState.lineSeparator.of('\r\n')]:[]),
   ...(plain||mermaid?[multipleSelections]:[]),
   ...(mermaid?[mermaidComments]:[]),
   ...(kind==='markdown'?[markdown({pasteURLAsLink:false,addKeymap:false}),markdownEditingExtensions]:[])

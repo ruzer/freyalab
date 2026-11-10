@@ -1,4 +1,5 @@
 import {StateEffect,StateField,RangeSet,type Extension} from '@codemirror/state'
+import {editorText} from './csv-text-model'
 import {Decoration,EditorView,GutterMarker,gutter,showTooltip} from '@codemirror/view'
 import type {DiagramError} from './diagram-errors'
 export type DiagramMark={line:number;error:DiagramError}
@@ -8,7 +9,7 @@ export const diagramMarks=StateField.define({
  create:()=>({generation:-1,marks:[] as DiagramMark[],decorations:Decoration.none}),
  update(value,transaction){
   if(transaction.docChanged)value={generation:value.generation,marks:[],decorations:Decoration.none}
-  for(const effect of transaction.effects)if(effect.is(setDiagramMarks)&&effect.value.generation>=value.generation&&effect.value.source===transaction.state.sliceDoc()){
+  for(const effect of transaction.effects)if(effect.is(setDiagramMarks)&&effect.value.generation>=value.generation&&effect.value.source===editorText(transaction.state)){
    const marks=effect.value.marks.filter(mark=>Number.isSafeInteger(mark.line)&&mark.line>0&&mark.line<=transaction.state.doc.lines)
    const decorations=Decoration.set(marks.map(mark=>Decoration.line({class:'cm-diagram-error',attributes:{'data-diagram-line':String(mark.line)}}).range(transaction.state.doc.line(mark.line).from)),true)
    value={generation:effect.value.generation,marks,decorations}

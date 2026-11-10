@@ -1,10 +1,11 @@
 import {ChangeSet,EditorSelection,EditorState,MapMode,StateEffect,StateField,type Extension,type Transaction,type TransactionSpec} from '@codemirror/state'
-import {invertedEffects} from '@codemirror/commands'
+import {invertedEffects,isolateHistory} from '@codemirror/commands'
 import {t} from '../../shared/i18n'
 
 type Endings={types:Uint8Array;preferred:number}
 type Overrides={positions:Uint32Array;types:Uint8Array}
 const separators=['\n','\r\n','\r']
+const preferredEnding=StateEffect.define<number>()
 const restore=StateEffect.define<Overrides>({map(value,mapping){
  const positions:number[]=[],types:number[]=[]
  for(let i=0;i<value.positions.length;i++){const next=mapping.mapPos(value.positions[i],1,MapMode.TrackAfter);if(next!==null){positions.push(next);types.push(value.types[i])}}
@@ -27,25 +28,28 @@ function inserted(raw:string,from:number){const value=parse(raw);return{doc:valu
 function nextEndings(value:Endings,tr:Transaction):Endings{
  const edits:{start:number;remove:number;add:number}[]=[];let length=value.types.length
  tr.changes.iterChanges((from,to,_fromB,_toB,text)=>{const start=tr.startState.doc.lineAt(from).number-1,remove=tr.startState.doc.lineAt(to).number-1-start,add=text.lines-1;if(remove||add){edits.push({start,remove,add});length+=add-remove}})
- let types=value.types,copied=false
+ let types=value.types,copied=false,preferred=value.preferred
  if(edits.length){
   types=new Uint8Array(length);copied=true;let read=0,write=0
   for(const edit of edits){if(edit.start<read)invalid();types.set(value.types.subarray(read,edit.start),write);write+=edit.start-read;types.fill(value.preferred,write,write+edit.add);write+=edit.add;read=edit.start+edit.remove}
   types.set(value.types.subarray(read),write)
  }
- for(const effect of tr.effects)if(effect.is(restore))for(let i=0;i<effect.value.positions.length;i++){
-  const position=effect.value.positions[i],type=effect.value.types[i]
-  if(position>=tr.newDoc.length||tr.newDoc.sliceString(position,position+1)!=='\n'||type>2)invalid()
-  const index=tr.newDoc.lineAt(position).number-1
-  if(types[index]!==type){if(!copied){types=types.slice();copied=true}types[index]=type}
+ for(const effect of tr.effects){
+  if(effect.is(preferredEnding))preferred=effect.value
+  if(effect.is(restore))for(let i=0;i<effect.value.positions.length;i++){
+   const position=effect.value.positions[i],type=effect.value.types[i]
+   if(position>=tr.newDoc.length||tr.newDoc.sliceString(position,position+1)!=='\n'||type>2)invalid()
+   const index=tr.newDoc.lineAt(position).number-1
+   if(types[index]!==type){if(!copied){types=types.slice();copied=true}types[index]=type}
+  }
  }
  if(types.length!==tr.newDoc.lines-1)invalid()
- return copied?{types,preferred:value.preferred}:value
+ return copied||preferred!==value.preferred?{types,preferred}:value
 }
 export const csvLineEndings=StateField.define<Endings>({create:state=>({types:new Uint8Array(state.doc.lines-1),preferred:0}),update:nextEndings})
 
 function inverse(tr:Transaction){
- const before=tr.startState.field(csvLineEndings).types,found=new Map<number,number>()
+ const {types:before,preferred}=tr.startState.field(csvLineEndings),found=new Map<number,number>()
  tr.changes.iterChanges((from,to)=>{const start=tr.startState.doc.lineAt(from).number,end=tr.startState.doc.lineAt(to).number;for(let line=start;line<end;line++)found.set(tr.startState.doc.line(line).to,before[line-1])})
  // A visual CR+LF coalescence can change the type of a retained LF as well.
  for(const effect of tr.effects)if(effect.is(restore))for(let i=0;i<effect.value.positions.length;i++){
@@ -54,7 +58,9 @@ function inverse(tr:Transaction){
    const type=before[tr.startState.doc.lineAt(old).number-1];if(type!==effect.value.types[i])found.set(old,type)
   }
  }
- return found.size?[restore.of({positions:Uint32Array.from(found.keys()),types:Uint8Array.from(found.values())})]:[]
+ const effects:StateEffect<unknown>[]=found.size?[restore.of({positions:Uint32Array.from(found.keys()),types:Uint8Array.from(found.values())})]:[]
+ if(tr.effects.some(effect=>effect.is(preferredEnding)&&effect.value!==preferred))effects.push(preferredEnding.of(preferred))
+ return effects
 }
 function canonical(tr:Transaction):Transaction|readonly TransactionSpec[]{
  if(!tr.docChanged&&!tr.effects.some(effect=>effect.is(restore)))return tr
@@ -85,8 +91,27 @@ export function csvTextRange(state:EditorState,from:number,to:number):string{
  return state.doc.sliceString(from,to).replace(/\n/g,()=>separators[types[index++]])
 }
 export function csvTextValue(state:EditorState):string{return csvTextRange(state,0,state.doc.length)}
-export function replaceCsvText(_state:EditorState,from:number,to:number,raw:string):TransactionSpec{
- const value=inserted(raw,from);return{changes:{from,to,insert:value.doc},effects:value.effects}
+export function editorText(state:EditorState):string{return state.field(csvLineEndings,false)?csvTextValue(state):state.sliceDoc()}
+export function editorTextChanged(tr:Transaction):boolean{
+ return tr.docChanged||tr.startState.field(csvLineEndings,false)?.types!==tr.state.field(csvLineEndings,false)?.types
+}
+export function editorLineEnding(state:EditorState):'LF'|'CRLF'|'CR'|'mixed'{
+ const {types,preferred}=state.field(csvLineEndings),first=types[0]??preferred
+ return types.some(type=>type!==first)?'mixed':first===1?'CRLF':first===2?'CR':'LF'
+}
+export function convertLineEndings(state:EditorState,ending:'LF'|'CRLF'):TransactionSpec|undefined{
+ if(state.readOnly)return
+ const {types,preferred}=state.field(csvLineEndings),target=ending==='CRLF'?1:0
+ const changed:number[]=[]
+ for(let i=0;i<types.length;i++)if(types[i]!==target)changed.push(state.doc.line(i+1).to)
+ if(!changed.length&&preferred===target)return
+ return {effects:[restore.of({positions:Uint32Array.from(changed),types:new Uint8Array(changed.length).fill(target)}),preferredEnding.of(target)],annotations:isolateHistory.of('full'),userEvent:'input.eol'}
+}
+export function replaceCsvText(state:EditorState,from:number,to:number,raw:string):TransactionSpec{
+ const value=inserted(raw,from)
+ const effects:StateEffect<unknown>[]=[value.effects]
+ if(from===0&&to===state.doc.length)effects.push(preferredEnding.of(value.effects.value.types[0]??0))
+ return{changes:{from,to,insert:value.doc},effects}
 }
 export function insertCsvText(state:EditorState,raw:string):TransactionSpec{
  return{...state.changeByRange(range=>{const value=inserted(raw,range.from);return{changes:{from:range.from,to:range.to,insert:value.doc},range:EditorSelection.cursor(range.from+value.doc.length),effects:value.effects}}),userEvent:'input.paste'}

@@ -1,13 +1,13 @@
 import {EditorState,Compartment,type Transaction} from '@codemirror/state'
 import {history,isolateHistory} from '@codemirror/commands'
-import {markdownMultipleSelections} from './markdown-editing'
+import {csvTextDocument,editorText} from './csv-text-model'
 
 export type MarkdownSession={state:EditorState;ui:Compartment;receive?:(transactions:readonly Transaction[])=>void}
 export type TaskReference={line:number;from:number;expectedLine:string;marker:'[ ]'|'[x]'|'[X]'}
 
 export function createMarkdownSession(source:string):MarkdownSession{
- const ui=new Compartment()
- return{ui,state:EditorState.create({doc:source,extensions:[history(),markdownMultipleSelections,ui.of([]),...(source.includes('\r\n')?[EditorState.lineSeparator.of('\r\n')]:[])]})}
+ const ui=new Compartment(),document=csvTextDocument(source)
+ return{ui,state:EditorState.create({doc:document.doc,extensions:[history(),ui.of([]),...document.extensions]})}
 }
 
 export function taskChange(source:string,ref:TaskReference):{from:number;to:number;insert:string}|undefined{
@@ -27,11 +27,10 @@ export function taskChange(source:string,ref:TaskReference):{from:number;to:numb
 export function taskTransaction(state:EditorState,source:string,ref:TaskReference):Transaction|undefined{
  if(state.readOnly)return
  const change=taskChange(source,ref)
- if(!change||state.sliceDoc()!==source)return
- // La línea física puede no coincidir con la de CM en documentos con LF/CRLF mezclados.
+ if(!change||editorText(state)!==source)return
  const from=state.toText(source.slice(0,change.from)).length
  if(state.doc.sliceString(from,from+3)!==ref.marker)return
  const transaction=state.update({changes:{from,to:from+3,insert:change.insert},annotations:isolateHistory.of('full'),userEvent:'input.task'})
  const expected=source.slice(0,change.from)+change.insert+source.slice(change.to)
- if(transaction.state.sliceDoc()===expected)return transaction
+ if(editorText(transaction.state)===expected)return transaction
 }

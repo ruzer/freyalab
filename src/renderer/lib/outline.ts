@@ -1,4 +1,5 @@
 import type {EditorState} from '@codemirror/state'
+import {editorText} from './csv-text-model'
 import {syntaxTree,syntaxTreeAvailable} from '@codemirror/language'
 import {frontMatterOf} from '../../shared/front-matter'
 import type {Heading} from './render'
@@ -47,7 +48,7 @@ const headingLabel=(text:string)=>text.replace(/\s+/g,' ').trim()
 export function editorHeadings(state:EditorState):{complete:boolean;headings:EditorHeading[]}{
  const headings:EditorHeading[]=[]
  if(!syntaxTreeAvailable(state,state.doc.length))return{complete:false,headings}
- const tree=syntaxTree(state),source=state.sliceDoc(),body=frontMatterOf(source).body
+ const tree=syntaxTree(state),source=editorText(state),body=frontMatterOf(source).body
  const bodyFrom=state.toText(source.slice(0,source.length-body.length)).length
  function textOf(node:typeof tree.topNode):string|undefined{
   const value=state.doc.sliceString(node.from,node.to)

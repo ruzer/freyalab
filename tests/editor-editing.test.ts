@@ -6,7 +6,7 @@ import {selectNextOccurrence,selectSelectionMatches} from '@codemirror/search'
 import {insertBracket} from '@codemirror/autocomplete'
 import {keymap} from '@codemirror/view'
 import {editorEditingExtensions,editorIndentation} from '../src/renderer/lib/editor-editing'
-import {csvTextDocument,csvTextValue} from '../src/renderer/lib/csv-text-model'
+import {csvTextDocument,editorText} from '../src/renderer/lib/csv-text-model'
 import {createMarkdownSession} from '../src/renderer/lib/markdown-tasks'
 
 const formats=[
@@ -18,9 +18,9 @@ const formats=[
 
 describe.each(formats)('$kind',format=>{
  const {kind,source}=format
- const csv=kind==='csv-text'?csvTextDocument(source):undefined
- const value=(state:EditorState)=>csv?csvTextValue(state):state.sliceDoc()
- const make=(readonly=false)=>EditorState.create({doc:csv?.doc??source,extensions:[...(csv?.extensions??[]),editorEditingExtensions(kind,source),editorIndentation({tabIndents:false,indent:2}),EditorState.readOnly.of(readonly)]})
+ const csv=csvTextDocument(source)
+ const value=editorText
+ const make=(readonly=false)=>EditorState.create({doc:csv.doc,extensions:[...csv.extensions,editorEditingExtensions(kind),editorIndentation({tabIndents:false,indent:2}),EditorState.readOnly.of(readonly)]})
  it('permite extender y editar una selección múltiple conservando los saltos de línea',()=>{
   let state=make().update({selection:EditorSelection.range(0,3)}).state
   const dispatch=(transaction:Transaction)=>{state=transaction.state}
@@ -69,13 +69,13 @@ it.each([[2,'  '],[4,'    '],['tab','\t']] as const)('sangría %s se aplica sin 
 
 it('cambiar la sangría conserva las selecciones, CRLF y el historial de la sesión Markdown',()=>{
  const session=createMarkdownSession('uno\r\ndos'),indentation=new Compartment()
- let state=session.state.update({effects:session.ui.reconfigure([editorEditingExtensions('markdown','uno\r\ndos',true),indentation.of(editorIndentation({tabIndents:false,indent:2}))])}).state
+ let state=session.state.update({effects:session.ui.reconfigure([editorEditingExtensions('markdown'),indentation.of(editorIndentation({tabIndents:false,indent:2}))])}).state
  state=state.update({selection:EditorSelection.create([EditorSelection.cursor(3),EditorSelection.cursor(7)])}).state
  state=state.update(state.replaceSelection('!'),{userEvent:'input.type'}).state
  const selection=state.selection
  state=state.update({effects:indentation.reconfigure(editorIndentation({tabIndents:true,indent:4}))}).state
  expect(state.selection.eq(selection)).toBe(true)
- expect(state.sliceDoc()).toBe('uno!\r\ndos!')
+ expect(editorText(state)).toBe('uno!\r\ndos!')
  expect(undo({state,dispatch:tr=>{state=tr.state}})).toBe(true)
- expect(state.sliceDoc()).toBe('uno\r\ndos')
+ expect(editorText(state)).toBe('uno\r\ndos')
 })
