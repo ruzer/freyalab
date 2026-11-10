@@ -1,5 +1,6 @@
 <script lang="ts">
  import {controlHint} from '../lib/control-hint'
+ import {csvAnalysisViews} from '../lib/csv-analysis-view'
  import Icon from './Icon.svelte'
  import {t} from '../lib/i18n.svelte'
  import {createTable,tableFeatures} from '@tanstack/svelte-table'
@@ -22,7 +23,7 @@
  import {parse} from 'csv-parse/browser/esm/sync'
  import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit,LargeViewState,LargeViewQuery} from '../../shared/types'
  import type {CalculateColumnEdit} from '../../shared/calculated-column'
- let {doc,summary=false,externalChange=false,onsummary,ontable,onchange,onerror,onstatus,onreport,viewControls,commandTitle=(_id:string,label:string)=>label}:{doc:DocumentInfo;summary?:boolean;externalChange?:boolean;onsummary?:()=>void;ontable?:()=>void;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;onreport:(markdown:string)=>Promise<void>;viewControls?:Snippet;commandTitle?:(id:string,label:string)=>string}=$props()
+ let {doc,summary=false,externalChange=false,onsummary,ontable,onanalysis,analysisHidden=false,onchange,onerror,onstatus,onreport,viewControls,commandTitle=(_id:string,label:string)=>label}:{doc:DocumentInfo;summary?:boolean;externalChange?:boolean;onsummary?:()=>void;ontable?:()=>void;onanalysis:()=>void;analysisHidden?:boolean;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;onreport:(markdown:string)=>Promise<void>;viewControls?:Snippet;commandTitle?:(id:string,label:string)=>string}=$props()
  let showExtract=$state(false),extractButton=$state<HTMLButtonElement>()
  let showCommands=$state(false),commandsButton=$state<HTMLButtonElement>(),commandReturn:HTMLElement|null=null
  type TransformOperation=import('../../shared/types').TableTransformEdit['operation']|'calculate'
@@ -47,20 +48,23 @@
  function setExpanded(value:boolean){workspace.expanded=value;announcement=value?'Panel de análisis ampliado':'Panel de análisis acoplado'}
  // Con la ventana estrecha no hay sitio para acoplar: volver a la tabla es cerrar el panel.
  async function backToTable(){if(narrow){closeDock(analyzeButton);return}workspace.expanded=false;announcement='Vuelves a la tabla';await tick();scrollElement?.focus()}
- let conditions=$state<TableFilter[]>([]),order=$state<TableSort[]>([]),filterMode=$state<'all'|'any'>('all'),showQuery=$state(false),queryError=$state(''),filterError=$state(''),queryButton=$state<HTMLElement>()
+ const initialView=untrack(()=>csvAnalysisViews.get(doc.id)),initialQuery=initialView?.query
+ let firstLoad=true
+ let conditions=$state<TableFilter[]>(initialQuery?.conditions??[]),order=$state<TableSort[]>(initialQuery?.order??[]),filterMode=$state<'all'|'any'>(initialQuery?.filterMode??'all'),showQuery=$state(false),queryError=$state(''),filterError=$state(''),queryButton=$state<HTMLElement>()
  const locked=$derived(doc.readonly||interpreting||!!queryError)
  const calculationDisabled=$derived(large||doc.readonly?t('calculate.readonly'):externalChange?t('calculate.error.disk'):(doc.headers?.length??0)>=200?t('calculate.error.limitColumns'):locked?t('ui.reason.busy'):'')
- let search=$state(''),filters=$state<Record<string,string>>({}),sort=$state<TableQuery['sort']>(),page=$state<TablePage>({rows:[],total:0,matched:0,revision:0,requestId:0,sample:false}),busy=$state(false),showFilters=$state(false),showReplace=$state(false)
+ let search=$state(initialQuery?.search??''),filters=$state<Record<string,string>>(initialQuery?.filters??{}),sort=$state<TableQuery['sort']>(initialQuery?.sort),page=$state<TablePage>({rows:[],total:0,matched:0,revision:0,requestId:0,sample:false}),busy=$state(false),showFilters=$state(false),showReplace=$state(false)
  const activeOrder=$derived(order.length?order:sort?[sort]:[])
  const filterCount=$derived(large?(largeView?.query.conditions?.length??0)+(largeView?.query.search?1:0):Object.values(filters).filter(Boolean).length+conditions.length+(search?1:0))
  const viewActive=$derived(large?!!largeView&&largeView.status!=='invalidated':filterCount>0||activeOrder.length>0),gotoTotal=$derived(large?(doc.rowCount??page.total):page.matched)
- let selectedRows=$state<string[]>([]),selectedColumns=$state<number[]>([]),selectionStats=$state<TableStats|null>(null)
+ let selectedRows=$state<string[]>([]),selectedColumns=$state<number[]>(initialView?.columns??[]),selectionStats=$state<TableStats|null>(null)
  let searchInput=$state<HTMLInputElement>(),replaceInput=$state<HTMLInputElement>()
  let replaceFind=$state(''),replaceWith=$state(''),header=$state(true),numeric=$state(false)
  let scrollElement=$state<HTMLDivElement>(),pageOffset=$state(0),requestId=0
  let editing=$state<{rowId:string;column:number;value:string}|null>(null),editingHeader=$state<{index:number;value:string}|null>(null)
  type Cell={row:number;column:number}
- let selection=$state<{anchor:Cell;end:Cell;query:TableQuery;revision:number}|null>(null),dragging=$state(false),pendingCell=$state<Cell|null>(null)
+ const initialRange=untrack(()=>initialView?.range?.revision===doc.revision?initialView.range:null)
+ let selection=$state<{anchor:Cell;end:Cell;query:TableQuery;revision:number}|null>(initialRange?{anchor:{row:initialRange.top,column:initialRange.left},end:{row:initialRange.bottom,column:initialRange.right},query:initialRange.query,revision:initialRange.revision}:null),dragging=$state(false),pendingCell=$state<Cell|null>(null)
  let rangeDialog=$state<{edit:TableRangeEdit;cut?:boolean;documentScope?:boolean;column?:{name:string;rows:number;hidden:number;title:string}}|null>(null),context=$state<{x:number;y:number;kind:'range'|'rows'|'columns';column?:number;headerColumn?:number}|null>(null)
  let contextMenu=$state<HTMLDivElement>(),contextReturn:HTMLElement|null=null
  let dragPoint={x:0,y:0}
@@ -95,6 +99,7 @@
   {id:'query',label:large?'Filtrar archivo completo':'Consulta avanzada',detail:large?'Filtrar por texto, número, fecha o regex al pulsar Aplicar':'Filtrar por texto, número, fecha o regex; ordenar varias columnas · solo vista',disabled:large&&(!viewReady||changingView),run:()=>large?openLargeFilters():showQuery=!showQuery},
   {id:'extract',label:'Extraer filas a un archivo nuevo…',detail:'Filtra por condiciones y columnas el archivo grande y crea un archivo nuevo; el original no se modifica',disabled:!large,run:()=>{showQuery=false;showExtract=!showExtract}},
   {id:'clearQuery',label:large?'Quitar búsqueda y filtros':'Quitar filtros y orden',detail:'Restaura la vista de todas las filas; no cambia el documento',disabled:large?!largeView:!search&&!Object.values(filters).some(Boolean)&&!sort&&!order.length&&!conditions.length,run:()=>{if(large)return clearView();search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}},
+  {id:'openAnalysis',label:t('analysis.tab.command'),detail:t('analysis.tab.search'),disabled:false,run:onanalysis},
   {id:'sql',label:'Análisis SQL y asistentes',detail:'Mostrar u ocultar agrupaciones, tablas dinámicas (pivot) y cruces de archivos con DuckDB',disabled:false,run:()=>{showQuery=false;return toggleDock('sql')}},
   {id:'statistics',label:'Estadísticas y exploración',detail:large?'Las estadísticas llegan en una fase posterior':'Mostrar u ocultar perfiles, frecuencias, valores faltantes, duplicados y correlación',disabled:large,run:()=>toggleDock('resumen')},
   {id:'charts',label:'Gráficos',detail:'Mostrar u ocultar histogramas, barras, líneas, dispersión, mapas de calor y cajas',disabled:false,run:()=>{showQuery=false;return onsummary?.()}},
@@ -242,6 +247,11 @@
  function resetViewPosition(){selectedRows=[];selectionStats=null;selection=null;context=null;rangeDialog=null;pendingCell=null;dragging=false;scrollElement?.scrollTo({top:0})}
  const hasViewPage=(view:LargeViewState)=>view.status!=='invalidated'&&(view.status!=='running'||view.matched>=200)
  function query(offset=0):TableQuery{return large?{viewId:activeViewId,offset,limit:200,requestId}:{search,conditions:$state.snapshot(conditions),filterMode,order:order.length?$state.snapshot(order):undefined,filters:$state.snapshot(filters),sort:sort?$state.snapshot(sort):undefined,offset,limit:200,requestId}}
+ $effect(()=>{
+  const id=doc.id,snapshot={query:query(),queryValid:!queryError&&!busy&&!interpreting,columns:$state.snapshot(selectedColumns),range:cellRange?$state.snapshot(cellRange):null,
+   viewMeta:{matched:page.matched,revision:page.revision,requestId:page.requestId,sample:page.sample,query:$state.snapshot(pageQuery)}}
+  untrack(()=>csvAnalysisViews.set(id,snapshot))
+ })
  async function load(offset=0){
   if(large&&(!viewReady||largeView?.status==='invalidated'))return
   const id=doc.id,revision=doc.revision,q={...query(offset),requestId:++requestId};busy=true
@@ -256,7 +266,7 @@
  $effect(()=>{
   if(large)return
   const signature=JSON.stringify([doc.id,doc.revision,search,filters,sort,conditions,filterMode,order]);void signature
-  untrack(resetViewPosition);const timer=setTimeout(()=>void load(0),150);return()=>clearTimeout(timer)
+  if(firstLoad)firstLoad=false;else untrack(resetViewPosition);const timer=setTimeout(()=>void load(0),150);return()=>clearTimeout(timer)
  })
  $effect(()=>{
   const id=doc.id,revision=doc.revision;if(!large)return
@@ -391,7 +401,7 @@
   else void runCommand(id==='go.row'?'goToRow':id==='search.replace'?'replaceDocument':'search')
  }
 </script>
-<svelte:window onblur={()=>dragging=false} onpointerup={()=>dragging=false} onpointercancel={()=>dragging=false} onkeydown={event=>{if(closeMenu(event))return;if(event.key==='Escape'&&viewRunning&&!event.defaultPrevented&&event.target instanceof HTMLElement&&!event.target.closest('.cm-editor,.query-tools,.extract-tools,.goto-popover,dialog')){event.preventDefault();void cancelView();return}if(event.key==='Tab')pendingCell=null;revealKey(event)}} onpointermove={event=>{dragPoint={x:event.clientX,y:event.clientY}}} onpointerdown={event=>{pendingCell=null;closeMenus(event.target as Node);if(context&&!(event.target as HTMLElement).closest('.range-context,.header-menu'))context=null}}/>
+<svelte:window onblur={()=>dragging=false} onpointerup={()=>dragging=false} onpointercancel={()=>dragging=false} onkeydown={event=>{if(analysisHidden||closeMenu(event))return;if(event.key==='Escape'&&viewRunning&&!event.defaultPrevented&&event.target instanceof HTMLElement&&!event.target.closest('.cm-editor,.query-tools,.extract-tools,.goto-popover,dialog')){event.preventDefault();void cancelView();return}if(event.key==='Tab')pendingCell=null;revealKey(event)}} onpointermove={event=>{dragPoint={x:event.clientX,y:event.clientY}}} onpointerdown={event=>{pendingCell=null;closeMenus(event.target as Node);if(context&&!(event.target as HTMLElement).closest('.range-context,.header-menu'))context=null}}/>
 {#snippet statisticsPanel()}{#if large}<section class="large-notice" aria-label="Estadísticas"><p>Las estadísticas de columna aún no están disponibles en archivos grandes: llegan en una fase posterior.</p><p>Mientras tanto, «SQL» y «Gráficos» leen el archivo completo (hasta dos millones de filas u ocho millones de celdas).</p></section>{:else}<CsvStatistics {doc} autofocus={userOpened} range={cellRange} query={query()} queryValid={!queryError} viewMeta={{matched:page.matched,revision:page.revision,requestId:page.requestId,sample:page.sample,query:pageQuery}} columns={selectedColumns} onerror={onerror} {onreport} onclose={()=>closeDock(analyzeButton)}/>{/if}{/snippet}
 {#snippet chartsPanel()}{#await import('./CsvCharts.svelte')}<p role="status">{t('charts.ui.prepare')}</p>{:then module}{#key JSON.stringify(doc.headers)}<module.default {doc} query={query()} queryValid={!queryError&&!busy} visible={summary} {onerror} onclose={()=>summary?void closeSummary():closeDock(analyzeButton)}/>{/key}{:catch}<p role="alert">{t('charts.ui.loadError')}</p>{/await}{/snippet}
 {#snippet summaryLink()}<button onclick={()=>onsummary?.()}>{t('charts.ui.summaryTab')}</button>{/snippet}
@@ -454,7 +464,7 @@
   <span class="spacer"></span>
   <span class="goto-wrap"><button {...controlHint(!gotoTotal?'noRows':null, (commandTitle('go.row',t('charts.toolbar.goToRow'))))} bind:this={gotoButton} data-tooltip={commandTitle('go.row',t('charts.toolbar.goToRow'))} aria-label={t('charts.toolbar.goToRow')} aria-expanded={showGoto}  disabled={!gotoTotal} onclick={()=>void runCommand('goToRow')}><Icon name="arrow-down" size={14}/><span class="tool-text">{t('charts.toolbar.goToRow')}</span></button>{#if showGoto}<form class="goto-popover" novalidate onsubmit={event=>{event.preventDefault();void goToRow()}}><label>Ir a la fila <input bind:this={gotoInput} onkeydown={event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeGoto()}}} type="number" min="1" max={gotoTotal} step="1" inputmode="numeric" aria-label="Número de fila" aria-invalid={!!gotoError} bind:value={gotoValue} oninput={()=>gotoError=''}/></label><span class="muted">de {gotoTotal.toLocaleString()}</span><button type="submit">Ir</button><button type="button" onclick={closeGoto}>Cerrar</button>{#if gotoError}<span role="alert" class="goto-error">{gotoError}</span>{/if}</form>{/if}</span>
   <button bind:this={commandsButton} data-tooltip={commandTitle('edit.commandPalette',t('charts.toolbar.findAction'))} aria-label={t('charts.toolbar.findAction')} title={commandTitle('edit.commandPalette',t('charts.toolbar.findAction'))} onclick={openCommands}><Icon name="command" size={14}/><span class="tool-text">{t('charts.toolbar.findAction')}</span></button>
-  <button bind:this={analyzeButton} class="analyze" class:active={dockOpen} aria-label={t('charts.toolbar.analysis')} aria-expanded={dockOpen} aria-controls="analysis-dock" title={t('charts.toolbar.analysisHelp')} data-tooltip={t('charts.toolbar.analysisHelp')} onclick={()=>{showQuery=false;toggleDock(workspace.tab)}}><Icon name="chart-column" size={14}/><span class="tool-text">{t('charts.toolbar.analysis')}</span></button>
+  <button class="keep-label" type="button" aria-label={t('analysis.tab.open')} data-tooltip={t('analysis.tab.open')} onclick={onanalysis}><Icon name="chart-column" size={14}/><span class="tool-text">{t('analysis.tab.open')}</span></button><button bind:this={analyzeButton} class="analyze" class:active={dockOpen} aria-label={t('charts.toolbar.analysis')} aria-expanded={dockOpen} aria-controls="analysis-dock" title={t('charts.toolbar.analysisHelp')} data-tooltip={t('charts.toolbar.analysisHelp')} onclick={()=>{showQuery=false;toggleDock(workspace.tab)}}><Icon name="chart-column" size={14}/><span class="tool-text">{t('charts.toolbar.analysis')}</span></button>
  </div>
  {#if large}<div class="large-search-help large-csv-help">
   <span id="large-search-help">Enter para buscar en las {number(doc.rowCount??page.total)} filas. Esc cancela el recorrido o quita la búsqueda.</span>
@@ -503,14 +513,14 @@
   {#if !page.matched&&!busy&&!viewRunning}<div class="table-empty">{#if large&&largeView}{largeView.status==='complete'?`Sin coincidencias en ${number(largeView.total)} filas`:'No hay coincidencias disponibles en esta vista.'}{:else}No hay filas que coincidan. <button {...controlHint(!commandDisabled('insertRow')?null:doc.readonly?'readonly':busy||interpreting?'busy':'parameters')} onclick={()=>void runCommand('insertRow')} disabled={commandDisabled('insertRow')}>Añadir fila</button>{/if}</div>{/if}
  </div>
  <!-- Se mueve a la barra de estado de la ventana: así hay una sola barra inferior y la tabla conserva el alto. -->
- <div class="csv-status" use:portal={'#document-status'}>
+ {#if !analysisHidden}<div class="csv-status" use:portal={'#document-status'}>
   {#if busy&&!large}<span role="status">Procesando…</span>{/if}
   {#if cellRange}<span role="status">Rango: filas {cellRange.top+1}–{cellRange.bottom+1}, columnas {cellRange.left+1}–{cellRange.right+1} · {((cellRange.bottom-cellRange.top+1)*(cellRange.right-cellRange.left+1)).toLocaleString()} celdas</span><details class="insert-menu"><summary aria-label="Acciones del rango">Rango <Icon name="chevron-down" size={12}/></summary><div class="dropdown">{@render rangeButtons()}</div></details>{:else if selectedRows.length}<span>{selectedRows.length} filas seleccionadas</span>{/if}
   {#if selectionStats}<span>Vacíos: {selectionStats.empty} · Únicos: {selectionStats.unique}</span>{#if selectionStats.numeric}<span class="truncate">Suma: {selectionStats.sum?.toLocaleString()} · Media: {selectionStats.average?.toLocaleString()} · Mín: {selectionStats.min?.toLocaleString()} · Máx: {selectionStats.max?.toLocaleString()}</span>{/if}{/if}
   <label><span class="label-text">Codificación</span> <select aria-label="Codificación" value={doc.encoding} disabled={doc.dirty||interpreting} onchange={e=>void options({encoding:e.currentTarget.value as Encoding})}><option value="utf8">UTF-8</option><option value="utf16le">UTF-16 LE</option><option value="win1252">Windows-1252</option></select></label>
   <label><span class="label-text">Separador</span> <select aria-label="Separador" value={doc.delimiter} disabled={doc.dirty||interpreting} onchange={e=>void options({delimiter:e.currentTarget.value})}><option value=",">Coma</option><option value=";">Punto y coma</option><option value={'\t'}>Tabulación</option><option value="|">Barra vertical</option></select></label>
   <label title="Primera fila como encabezado"><input type="checkbox" aria-label="Primera fila como encabezado" bind:checked={header} disabled={doc.dirty||interpreting} onchange={()=>void options({header})}/><span class="label-text">Encabezado</span></label>
- </div>
+ </div>{/if}
   </div>
   {#if mode==='expanded'&&!summary}<button class="table-strip" onclick={backToTable}>Volver a la tabla</button>{/if}
   <div class="summary-host" hidden={!summary}>{#if summaryVisited}{@render chartsPanel()}{/if}</div>
