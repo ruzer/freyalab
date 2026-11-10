@@ -1,4 +1,5 @@
 import { test, expect, _electron as electron, type ElectronApplication, type Page } from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import { mkdtemp, mkdir, readFile, readdir, rm, writeFile, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -31,8 +32,7 @@ async function launch() {
   await page.waitForFunction(() => !!window.freya)
 }
 test.afterEach(async () => {
-  if (app?.process().exitCode === null) await app.evaluate(({ app }) => app.exit(0)).catch(() => {})
-  await app?.close().catch(() => {})
+  await closeElectron(app)
   await rm(directory, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 })
 })
 

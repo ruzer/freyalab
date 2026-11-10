@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm,truncate,stat} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
@@ -12,7 +13,7 @@ test.beforeEach(async()=>{
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
 })
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function open(source:string,name='datos.csv') {const path=join(folder,name);await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible();return{path,doc}}
 async function statistics(){await showPanel(page,'Estadísticas');return page.getByRole('region',{name:'Estadísticas por columna',exact:true})}
 async function explorer(){await statistics();await page.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click();return page.getByRole('region',{name:'Exploración de columna',exact:true})}

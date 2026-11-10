@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -18,7 +19,7 @@ test.beforeEach(async()=>{
  // Solo fija Date; no congela temporizadores, requestAnimationFrame ni el debounce de la vista previa.
  await page.clock.setFixedTime(new Date(2024,1,29,9,5))
 })
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+test.afterEach(async()=>{await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function open(text:string,extension='md'){
  const path=join(directory,`documento-${++serial}.${extension}`);await writeFile(path,text)
  const [document]=await page.evaluate(path=>window.freya.openPaths([path]),path);documentId=document.id

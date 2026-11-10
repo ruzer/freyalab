@@ -1,4 +1,5 @@
 import {runApplicationMenu} from './application-menu'
+import { closeElectron } from './close-electron'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,mkdir,rm} from 'node:fs/promises'
@@ -15,7 +16,7 @@ test.beforeEach(async()=>{
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
 })
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
 async function open(source=original){const path=join(folder,`data-${randomUUID()}.csv`);await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('grid',{name:'Tabla de datos'})).toBeVisible();return{doc,path}}
 async function dialog(operation:string){await page.getByLabel('Limpiar datos',{exact:true}).click();await page.getByRole('button',{name:'Transformar documento…',exact:true}).click();const panel=page.getByRole('dialog',{name:'Transformar documento CSV',exact:true});await panel.getByLabel('Transformación CSV',{exact:true}).selectOption(operation);return panel}
 async function preview(panel:ReturnType<Page['getByRole']>){await panel.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Vista previa lista',{timeout:30000})}

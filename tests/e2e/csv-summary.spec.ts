@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -15,7 +16,7 @@ test.beforeEach(async()=>{
  folder=await mkdtemp(join(tmpdir(),'freya-summary-'));path=join(folder,'ventas.csv');await writeFile(path,original);await mkdir(join(folder,'exports'))
  await launch()
 })
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
 test('F2a: pestaña hermana muestra gráfico y resumen sin generar, con opciones plegadas y fuente intacta', { tag: '@package-smoke' },async()=>{
  const mode=page.locator('[data-csv-view]')
  await expect(mode.getByRole('button',{name:'Tabla',exact:true})).toBeVisible()

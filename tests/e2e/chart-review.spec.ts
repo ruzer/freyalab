@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -23,7 +24,7 @@ test.beforeEach(async()=>{
  await assign('Cliente','Filas');await assign('Ventas','Valores')
  await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('1,146,383')
 })
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
 
 test('Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10',async()=>{
  for(const [width,height] of [[1280,720],[1440,900]])for(const theme of ['light','dark']){

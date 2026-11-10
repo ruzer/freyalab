@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -40,7 +41,7 @@ async function release(){
  await expect.poll(()=>app!.evaluate(()=>(globalThis as unknown as {initialDocuments:{applied:boolean}}).initialDocuments.applied)).toBe(true)
  await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))))
 }
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});if(folder)await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200});app=undefined})
+test.afterEach(async()=>{await closeElectron(app);if(folder)await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200});app=undefined})
 
 test('el inventario inicial vacío retrasado conserva un documento abierto mientras arranca',async()=>{
  await launch()

@@ -82,7 +82,7 @@ describe('FL-TST-001 · partición E2E sin pérdida de casos',()=>{
   const common=Object.fromEntries(Object.entries(config).filter(([key])=>key!=='projects'))
   expect(common).toEqual({
    testDir:'./tests/e2e',timeout:90_000,expect:{timeout:15_000},workers:1,fullyParallel:false,
-   forbidOnly:!!process.env.CI,retries:process.env.CI?1:0,
+   forbidOnly:!!process.env.CI,retries:process.env.CI?1:0,maxFailures:process.env.CI?3:0,
    reporter:[['list'],['html',{open:'never'}]],use:{trace:'retain-on-failure',screenshot:'only-on-failure'},
   })
  })

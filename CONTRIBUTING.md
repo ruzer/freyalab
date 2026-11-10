@@ -25,6 +25,8 @@ Congela el SHA enviado a CI. Mientras se califica, continúa el código en otra 
 
 `npm run test:e2e:fast` ejecuta las E2E salvo `@perf` y `@solo`. La CI ejecuta después `npm run test:e2e:perf` en solitario con un worker. La fase rápida conserva dos workers en macOS Apple silicon y uno en Windows, Linux y macOS Intel.
 
+Cada ejecución de Playwright en CI se detiene tras tres fallos definitivos. El cierre de Electron de prueba intenta salir normalmente y, tras cinco segundos sin confirmación, termina el proceso de esa prueba si sigue activo.
+
 En los PR solo documentales, Gate comprueba el plan y que Verify se haya omitido. Las capturas y otros resultados de evidencia cuentan como documentación. Para cambios de código, unitarias o entradas de pruebas, Verify ejecuta tipos, todas las unitarias y E2E de `shell`. El mapa añade Markdown o CSV según los cambios. Los cambios transversales o sin clasificar ejecutan los tres proyectos y el paquete. Un cambio de CSV en `src/main` también activa las pruebas del paquete. Para reproducir los proyectos elegidos desde la rama de un PR a `main`, con la base actualizada:
 
 ```bash

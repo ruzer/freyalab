@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,readdir,rm} from 'node:fs/promises'
 import {createHash} from 'node:crypto'
@@ -13,7 +14,7 @@ async function launch(extra:Record<string,string>={}){
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LARGE_BYTES:'1024',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_SAVE_DIR:join(folder,'saved'),FREYALAB_TEST_EXTRACT_DIR:extracts,...extra}})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1600,height:900})
 }
-async function quit(){await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{})}
+async function quit(){await closeElectron(app)}
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-extract-e2e-'));extracts=join(folder,'extractos');await mkdir(join(folder,'saved'));await mkdir(extracts);await launch()})
 test.afterEach(async()=>{await quit();await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 

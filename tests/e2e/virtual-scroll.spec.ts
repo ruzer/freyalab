@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -18,7 +19,7 @@ test.beforeEach(async()=>{
  await page.evaluate(path=>window.freya.openPaths([path]),file);await expect(page.getByRole('grid')).toBeVisible()
  await expect.poll(()=>grid(e=>Number(e.getAttribute('aria-rowcount'))-1)).toBe(ROWS)
 })
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{})})
+test.afterEach(async()=>{await closeElectron(app)})
 
 const grid=<T,>(fn:(element:HTMLElement)=>T)=>page.getByRole('grid').evaluate(fn)
 const scrollTo=(fraction:number)=>page.getByRole('grid').evaluate((element,f)=>{element.scrollTop=(element.scrollHeight-element.clientHeight)*f},fraction)

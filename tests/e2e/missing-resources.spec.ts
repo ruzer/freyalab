@@ -1,4 +1,5 @@
 import { test, expect, _electron as electron, type ElectronApplication, type Page } from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import { mkdtemp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -13,7 +14,7 @@ test.beforeEach(async()=>{
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya)
  await page.setViewportSize({width:1440,height:900})
 })
-test.afterEach(async()=>{if(app){await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{})}await rm(directory,{recursive:true,force:true})})
+test.afterEach(async()=>{await closeElectron(app);await rm(directory,{recursive:true,force:true})})
 
 test('una imagen local ausente no bloquea Mermaid ni la exportación y no revela rutas',async()=>{
  const missing='logo-que-no-existe.png',file=join(directory,'informe.md')

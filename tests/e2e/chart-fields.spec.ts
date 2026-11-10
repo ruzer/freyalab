@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -23,7 +24,7 @@ test('F2b: herramientas con nombre, ayuda inmediata al foco y controles sin pint
   const style=await control.evaluate(node=>{const s=getComputedStyle(node);return{appearance:s.appearance,color:s.color,background:s.backgroundColor,opacity:s.opacity}});expect(style.appearance).toBe('none')
  }
 })
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
 test('F2b: sugerencia inicial y dos acciones cambian qué se grafica sin Más opciones',async()=>{
  const panel=page.locator('.charts-panel')
  await expect(panel.locator('.pivot-result')).toBeVisible()

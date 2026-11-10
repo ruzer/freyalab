@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,mkdir,rm} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
@@ -6,7 +7,7 @@ import {tmpdir} from 'node:os'
 let app:ElectronApplication,page:Page,folder:string
 const query={offset:0,limit:100,requestId:1}
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-range-cancel-e2e-'));await mkdir(join(folder,'exports'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
 async function open(source:string){const path=join(folder,'data.csv');await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toBeVisible();return{doc,path}}
 async function fillDialog(){await page.getByRole('grid',{name:'Tabla de datos'}).evaluate(element=>element.scrollTop=0);await page.getByRole('gridcell',{name:'Fila 1, ID',exact:true}).click();await page.keyboard.press('ControlOrMeta+A');await expect(page.locator('footer').getByRole('button',{name:'Rellenar rango…',exact:true,includeHidden:true})).toBeEnabled();await page.keyboard.press('ControlOrMeta+Enter');const panel=page.getByRole('dialog',{name:'Rellenar rango',exact:true});await panel.getByLabel('Valor del rango',{exact:true}).fill('0007');return panel}
 async function clickAndCancel(button:ReturnType<Page['getByRole']>){await button.evaluate(button=>{(button as HTMLButtonElement).click();queueMicrotask(()=>{const cancel=[...document.querySelectorAll<HTMLButtonElement>('dialog button')].find(button=>button.textContent==='Cancelar preparación');if(!cancel)throw new Error('Falta el control de cancelación');cancel.click()})})}

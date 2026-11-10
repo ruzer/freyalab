@@ -1,4 +1,5 @@
 import { test, expect, _electron as electron, type ElectronApplication, type Page } from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import { mkdtemp, mkdir, readFile, readdir, rm, writeFile, truncate } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -16,7 +17,7 @@ test.beforeEach(async()=>{
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya)
  await page.setViewportSize({width:1440,height:900})
 })
-test.afterEach(async()=>{if(app){await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{})}await rm(directory,{recursive:true,force:true})})
+test.afterEach(async()=>{await closeElectron(app);await rm(directory,{recursive:true,force:true})})
 async function replaceEditor(text:string){const editor=page.locator('.cm-content');await editor.click();await page.keyboard.press('ControlOrMeta+A');if(text)await page.keyboard.insertText(text);else await page.keyboard.press('Backspace')}
 
 test('interfaz: crear, editar, visualizar, guardar y exportar Markdown en ambos temas',async()=>{

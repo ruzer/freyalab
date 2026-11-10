@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,mkdir,rm} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
@@ -11,7 +12,7 @@ import {t,type Language} from '../../src/shared/i18n'
 let app:ElectronApplication,page:Page,folder:string
 const original='ID,Partes,Nota\r\n001,a;0007,Café\r\n002,b;;,é\r\n001,a;0007,Otra\r\n'
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-transform-e2e-'));await mkdir(join(folder,'exports'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env,locale=test.info().title.match(/\[(en|en-XA)\]$/)?.[1]??'es';app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:locale,FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
 async function open(source=original,name='data.csv'){const path=join(folder,name);await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);return{doc,path}}
 async function dialog(operation:string,columns=['0']){await page.getByLabel('Limpiar datos',{exact:true}).click();await page.getByRole('button',{name:'Transformar documento…',exact:true}).click();const panel=page.getByRole('dialog',{name:'Transformar documento CSV',exact:true});await panel.getByLabel('Transformación CSV',{exact:true}).selectOption(operation);if(operation!=='headers')await panel.getByLabel('Columnas para transformar',{exact:true}).selectOption(columns);return panel}
 async function preview(panel:ReturnType<Page['getByRole']>){await panel.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Vista previa lista',{timeout:30000})}

@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -14,7 +15,7 @@ async function launch(open:string[]=[]){
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya)
 }
 // El almacenamiento local se escribe en segundo plano: se vuelca a disco antes de cerrar para que el siguiente arranque lo vea.
-async function quit(){if(!app)return;await app.evaluate(async({session,app})=>{await session.defaultSession.flushStorageData();app.exit(0)}).catch(()=>{});await app.close().catch(()=>{});app=undefined}
+async function quit(){if(!app)return;await closeElectron(app,()=>app!.evaluate(async({session,app})=>{await session.defaultSession.flushStorageData();app.exit(0)}));app=undefined}
 let files:string[]
 test.beforeEach(async()=>{
  folder=await mkdtemp(join(tmpdir(),'freya-dock-resize-'));await mkdir(join(folder,'saved'));await mkdir(join(folder,'exports'))

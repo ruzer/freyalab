@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,readdir,rm,stat} from 'node:fs/promises'
 import {createHash} from 'node:crypto'
@@ -52,5 +53,5 @@ test('ED-01: tiempos reales de plegar y desplegar con AST preparado, pequeño y 
   const report={main:{folding:'no disponible en la interfaz',foldMs:null,unfoldMs:null,comparison:'N/D, aprobado por el propietario; no se inventa una operación ni 0 ms.'},method:'Latencia observable desde clic real hasta dos requestAnimationFrame; primera operación y cinco muestras posteriores por separado; preparación del AST excluida.',hardware,snapshots,results,largeVersusSmall:{foldRatio:results[1].medianFoldMs/results[0].medianFoldMs,unfoldRatio:results[1].medianUnfoldMs/results[0].medianUnfoldMs},notVerified:['rendimiento universal','lector de pantalla físico','caché fría del sistema operativo']}
   await test.info().attach('ed01-plegado-tiempos',{body:Buffer.from(JSON.stringify(report,null,2)),contentType:'application/json'})
   if(process.env.FREYALAB_ED01_EVIDENCE==='1')await writeFile('docs/evidence/ed-01-tiempos.json',JSON.stringify(report,null,2)+'\n')
- }finally{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+ }finally{await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
 })

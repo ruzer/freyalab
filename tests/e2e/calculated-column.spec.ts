@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import iconv from 'iconv-lite'
 import {mkdtemp,readFile,rename,rm,writeFile} from 'node:fs/promises'
@@ -28,8 +29,7 @@ test.beforeEach(async({},testInfo)=>{
 })
 
 test.afterEach(async()=>{
- await app?.evaluate(({app})=>app.exit(0)).catch(()=>{})
- await app?.close().catch(()=>{})
+ await closeElectron(app)
  await rm(folder,{recursive:true,force:true})
 })
 

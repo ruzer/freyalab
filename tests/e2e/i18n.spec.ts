@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
@@ -6,7 +7,7 @@ import {tmpdir} from 'node:os'
 let app:ElectronApplication,page:Page,folder:string
 
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-i18n-'))})
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function launch(language:string,testMode=true){
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[process.env.FREYALAB_I18N_TEST_ENTRY??resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:testMode?'1':'0',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_LANG:language}})

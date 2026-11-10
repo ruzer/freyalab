@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -23,5 +24,5 @@ test('AC-00 P1/P5 · Pandoc opcional explica DOCX sin bloquear PDF, con diálogo
   await expect(dialog.getByRole('button',{name:'Cómo instalar Pandoc',exact:true})).toBeEnabled()
   await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0)
   expect(await readFile(path,'utf8')).toBe(source)
- }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+ }finally{await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
 })

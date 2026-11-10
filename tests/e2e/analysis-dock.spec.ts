@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -15,7 +16,7 @@ test.beforeEach(async()=>{
  await writeFile(file,Array.from({length:columns},(_,c)=>c===0?'Id':c===1?'Ciudad':c===2?'Valor':`Campo ${c+1}`).join(',')+'\n'+Array.from({length:80},(_,r)=>Array.from({length:columns},(_,c)=>c===0?r:c===1?`C${r%5}`:c===2?r%97:`v${c}-${r%13}`).join(',')).join('\n')+'\n')
  await page.evaluate(path=>window.freya.openPaths([path]),file);await expect(page.getByRole('grid')).toBeVisible()
 })
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
 
 // Filas de datos totalmente visibles: dentro de la tabla y por encima de la barra de estado.
 const visibleRows=()=>page.evaluate(()=>{

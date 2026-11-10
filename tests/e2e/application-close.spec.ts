@@ -1,4 +1,5 @@
 import {test as base,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,rm,stat} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
@@ -14,7 +15,7 @@ test.beforeEach(async({freyaLanguage})=>{
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await expect(page.locator('.welcome')).toBeVisible()
  await app.evaluate(({dialog},file)=>{const fs=process.getBuiltinModule('node:fs'),records:string[]=[];Object.defineProperty(dialog,'showMessageBox',{configurable:true,value:async(...args:unknown[])=>{records.push((args.at(-1) as {message:string}).message);fs.writeFileSync(file,JSON.stringify(records));return{response:1,checkboxChecked:false}}})},questions)
 })
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function openCsv(){const path=join(folder,'datos.csv');await writeFile(path,original);const[doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('gridcell',{name:'Fila 1, nombre',exact:true})).toHaveText('Freya');return{path,doc}}
 async function request(action:'close'|'quit'){
  await app.evaluate(({app,BrowserWindow},action)=>{if(action==='quit')app.quit();else BrowserWindow.getAllWindows()[0].close()},action).catch(()=>{})

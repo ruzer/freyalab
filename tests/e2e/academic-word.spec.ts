@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,readdir,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -91,7 +92,7 @@ test('AC-04 D1/D2 · reporte real en DOCX, HTML y PDF con fuentes, índices, fig
   expect(await readFile(path,'utf8')).toBe(source);expect((await page.evaluate(()=>window.freya.documents())).find(current=>current.id===doc.id)).toMatchObject({text:source,dirty:false})
   await test.info().attach('reporte-html',{body:Buffer.from(html),contentType:'text/html'})
   if(process.env.FREYALAB_AC_EVIDENCE==='1'){await writeFile('docs/evidence/ac-04-informe.docx',docx);await writeFile('docs/evidence/ac-04-informe.html',html);await writeFile('docs/evidence/ac-04-informe.pdf',pdfBytes);for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect(page.locator('.render-progress')).toHaveCount(0);await page.screenshot({path:`docs/evidence/ac-04-${theme}-1440x900.png`,animations:'disabled'})}}
- }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+ }finally{await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
 })
 
 for(const customStyles of [false,true])test(`SEG-S2a · ${customStyles?'estilos y metadatos':'metadatos'} XML imposibles conservan el documento`,async()=>{
@@ -138,7 +139,7 @@ for(const customStyles of [false,true])test(`SEG-S2a · ${customStyles?'estilos 
   }
   expect(summaries.flatMap(value=>value.codes)).toHaveLength(2079)
   await test.info().attach('word-xml-controles',{body:Buffer.from(JSON.stringify(summaries)),contentType:'application/json'})
- }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+ }finally{await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
 })
 
 test('SEG-S2a · sustitutos sueltos de custom-style se exportan como U+FFFD sin alterar el original',async()=>{
@@ -162,7 +163,7 @@ test('SEG-S2a · sustitutos sueltos de custom-style se exportan como U+FFFD sin 
   expect(await readFile(path,'utf8')).toBe(original)
   const artifact=test.info().outputPath('word-surrogates.docx');await writeFile(artifact,bytes)
   await test.info().attach('word-surrogates.docx',{path:artifact,contentType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})
- }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+ }finally{await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
 })
 
 test('SEG-S2b · límites nombran el campo en español e inglés sin DOCX parcial ni pérdida de texto',async()=>{
@@ -201,7 +202,7 @@ test('SEG-S2b · límites nombran el campo en español e inglés sin DOCX parcia
   expect((await page.evaluate(()=>window.freya.documents())).find(current=>current.id===doc.id)).toMatchObject({text,dirty:true});expect(await readFile(path,'utf8')).toBe(original)
   const artifact=test.info().outputPath('word-metadata-8000.docx');await writeFile(artifact,bytes)
   await test.info().attach('word-metadata-8000.docx',{path:artifact,contentType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})
- }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+ }finally{await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
 })
 
 test('SEG-S2d · Pandoc real avisa del TeX degradado y el control limpio conserva el resultado habitual',async()=>{
@@ -231,5 +232,5 @@ test('SEG-S2d · Pandoc real avisa del TeX degradado y el control limpio conserv
    results.push({name,count,xmlParts:parts.length});await test.info().attach('word-math-'+name+'.docx',{path:artifact,contentType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})
   }
   await test.info().attach('word-math-resultados',{body:Buffer.from(JSON.stringify({pandoc:await page.evaluate(()=>window.freya.pandocStatus()),results})),contentType:'application/json'})
- }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+ }finally{await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
 })

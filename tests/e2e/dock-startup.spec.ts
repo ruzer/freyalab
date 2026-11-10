@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -14,7 +15,7 @@ async function launch(){
 }
 // El tamaño se fija ANTES de abrir el archivo: la decisión de arranque se toma al medir el área de trabajo de la primera tabla.
 async function openAt(width:number,height=800){await page.setViewportSize({width,height});await page.evaluate(path=>window.freya.openPaths([path]),file);await expect(page.locator('.csv-body')).toBeAttached()}
-async function quit(){if(!app)return;await app.evaluate(async({session,app})=>{await session.defaultSession.flushStorageData();app.exit(0)}).catch(()=>{});await app.close().catch(()=>{});app=undefined}
+async function quit(){if(!app)return;await closeElectron(app,()=>app!.evaluate(async({session,app})=>{await session.defaultSession.flushStorageData();app.exit(0)}));app=undefined}
 test.beforeEach(async()=>{
  folder=await mkdtemp(join(tmpdir(),'freya-dock-startup-'));await mkdir(join(folder,'saved'));await mkdir(join(folder,'exports'));file=join(folder,'ventas.csv')
  await writeFile(file,'Id,Ciudad,Valor\n'+Array.from({length:40},(_,r)=>`${r},C${r%5},${r%97}`).join('\n')+'\n')

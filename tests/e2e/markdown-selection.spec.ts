@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -19,7 +20,7 @@ test.describe('E1 · selección visible',{tag:'@solo'},()=>{
   await page.setViewportSize({width:1440,height:900});await page.emulateMedia({reducedMotion:'reduce'})
  })
  test.afterEach(async()=>{
-  await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{})
+  await closeElectron(app)
   await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})
  })
  const csvTextEditor=()=>page.getByLabel('Editor CSV como texto',{exact:true})

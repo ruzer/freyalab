@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {createServer,type Server,type ServerResponse} from 'node:http'
 import {mkdtemp,mkdir,writeFile,readFile,readdir,rm} from 'node:fs/promises'
@@ -21,7 +22,7 @@ test.beforeEach(async()=>{
  await new Promise<void>((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve)})
  await launch()
 })
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});app=undefined;server?.closeAllConnections();if(server?.listening)await new Promise<void>(resolve=>server.close(()=>resolve()));await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+test.afterEach(async()=>{await closeElectron(app);app=undefined;server?.closeAllConnections();if(server?.listening)await new Promise<void>(resolve=>server.close(()=>resolve()));await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 
 test('APP-04 U1/U2 · sesión sin red y las tres entradas abren el mismo flujo',async()=>{
  await page.getByRole('button',{name:'Nuevo archivo',exact:false}).click();await page.locator('.cm-content').fill('DOCUMENTO_SIN_CAMBIOS_POR_ACTUALIZAR')

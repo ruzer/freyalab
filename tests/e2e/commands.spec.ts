@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,rm,truncate,stat,realpath} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -13,12 +14,12 @@ import {defaultSettings} from '../../src/shared/settings'
 let app:ElectronApplication,page:Page,folder:string
 const palette=()=>page.getByRole('dialog',{name:'Comandos CSV',exact:true})
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-commands-e2e-'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('.')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),...(process.env.FREYALAB_PANDOC_TEST_PATH?{FREYALAB_TEST_PANDOC_PATH:process.env.FREYALAB_PANDOC_TEST_PATH}:{})},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function open(source:string){const path=join(folder,'data.csv');await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible();return{doc,path}}
 async function show(query=''){await page.getByRole('button',{name:'Buscar acción',exact:true}).click();const dialog=palette();await expect(dialog.getByLabel('Buscar comando CSV',{exact:true})).toBeFocused();await dialog.getByLabel('Buscar comando CSV',{exact:true}).fill(query);return dialog}
 function command(dialog:Locator,name:string){return dialog.getByRole('button',{name,exact:false})}
 async function restartApplication(language=''){
- await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{})
+ await closeElectron(app)
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('.')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:language,FREYALAB_USER_DATA:join(folder,'profile')},timeout:60000})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
