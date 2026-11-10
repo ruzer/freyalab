@@ -294,7 +294,13 @@
   if(markdown)assetBusy[id]='Guardando…'
   const operation=async()=>{
    await prepareDocumentAction(id);const snapshot=documents.find(doc=>doc.id===id)?.text??'',saved=encoding?await window.freya.saveTextEncoding(id,encoding):await window.freya.save(id,as)
-   if(saved){const {assets,...doc}=saved;merge(doc,false,assets?{source:snapshot,changes:assets.changes,undoable:false}:undefined);external=external.filter(value=>value!==id);if(doc.kind==='markdown')tagsRefresh++
+   if(saved){
+    const {assets,...doc}=saved,current=documents.find(value=>value.id===id)
+    // La respuesta confirma qué texto llegó a disco. El editor puede haber avanzado mientras esperaba.
+    if(!markdown&&doc.text!==undefined&&current?.text!==undefined&&(current.text!==doc.text||current.revision>doc.revision)){
+     merge({...current,name:doc.name,path:doc.path,encoding:doc.encoding,bom:doc.bom,dirty:true,revision:Math.max(current.revision,doc.revision)})
+    }else merge(doc,false,assets?{source:snapshot,changes:assets.changes,undoable:false}:undefined)
+    external=external.filter(value=>value!==id);if(doc.kind==='markdown')tagsRefresh++
     if(assets){if(assets.warnings.length)assetWarnings[id]=assets.warnings;else delete assetWarnings[id]}
     notify([encoding?t('textEncoding.saved'):'Archivo guardado',...(assets?.copied?[`${assets.copied===1?'Se copió':'Se copiaron'} ${assets.copied} ${assets.copied===1?'imagen':'imágenes'}`]:[]),...(assets?.warnings.length?[assets.warnings.length===1?'1 imagen no se copió':`${assets.warnings.length} imágenes no se copiaron`]:[])].join(' · '))
    }
