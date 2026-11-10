@@ -4,6 +4,7 @@ import electronPath from 'electron'
 import {mkdtemp,mkdir,open,readFile,readdir,realpath,rm,writeFile} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
+import {createHash} from 'node:crypto'
 let app:ElectronApplication,page:Page,folder:string,files:string
 const source='ID,Nombre\n"001","Ana"\n9007199254740993,"dos\nlíneas"\n'
 async function launch(extra:Record<string,string>={}){const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:'es',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_FOLDER:files,...extra}});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900});await page.getByRole('button',{name:'Abrir',exact:true}).waitFor()}
@@ -138,4 +139,102 @@ test('C: el encabezado rechazado conserva su borrador y permite corregirlo antes
  await expect(page.getByRole('button',{name:'Apellido',exact:true})).toBeVisible()
  expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toMatchObject({csvView:'table',headers:['ID','Apellido'],dirty:true})
  expect((await readFile(join(files,'datos.csv'))).equals(original)).toBe(true)
+})
+
+test('TXT-02a: colores por columna y ubicación persistente sin cambiar el CSV',async()=>{
+ const raw='"ID","Nombre","Categoría","MarcaModelo","Estado","País","Nota"\r\n"001","a, b","di ""hola""","ModeloX","abierto","México","final"\r\n"002","dos\r\nlíneas","grupo","ModeloY","cerrado","Perú","fin"\r\n'
+ const path=join(files,'datos.csv'),bytes=Buffer.concat([Buffer.from([0xef,0xbb,0xbf]),Buffer.from(raw)])
+ await writeFile(path,bytes);await openCsv();await views().getByRole('button',{name:'Texto',exact:true}).click()
+ const header=editor().locator('.cm-line').first()
+ await expect(header).toHaveCSS('font-weight','500')
+ await expect(header.locator('.csv-column-1').first()).toHaveText('ID')
+ await expect(header.locator('.csv-column-1').last()).toHaveText('Nota')
+ const model=editor().getByText('ModeloX',{exact:true})
+ await model.click()
+ await expect(page.locator('.csv-column-position')).toHaveText('Columna 4 de 7 · MarcaModelo')
+ await expect(page.locator('.csv-column-position')).toHaveAccessibleName('Columna 4 de 7, MarcaModelo')
+ await expect(editor().locator('.csv-current-column').filter({hasText:'ModeloY'})).toHaveCount(1)
+ for(const [theme,colors] of [
+  ['light',['rgb(29, 78, 216)','rgb(146, 64, 14)','rgb(22, 101, 52)','rgb(126, 34, 206)','rgb(190, 18, 60)','rgb(17, 94, 89)']],
+  ['dark',['rgb(147, 197, 253)','rgb(251, 191, 36)','rgb(74, 222, 128)','rgb(216, 180, 254)','rgb(253, 164, 175)','rgb(94, 234, 212)']]
+ ] as const){
+  await page.getByRole('combobox',{name:'Tema',exact:true}).selectOption(theme)
+  for(const [index,color] of colors.entries())await expect(header.locator(`.csv-column-${index+1}`).first()).toHaveCSS('color',color)
+  expect(await editor().locator('.csv-current-column').first().evaluate(node=>getComputedStyle(node).backgroundColor)).not.toBe('rgba(0, 0, 0, 0)')
+  await expect(header.locator('.csv-column-muted').first()).toHaveCSS('color',theme==='light'?'rgb(102, 102, 114)':'rgb(147, 147, 159)')
+  if(process.env.FREYALAB_TXT02A_EVIDENCE==='1')await page.screenshot({animations:'disabled',path:test.info().outputPath(`txt-02a-${theme}.png`)})
+ }
+ await expect(editor().getByText('a, b',{exact:true})).toHaveClass(/csv-column-2/)
+ await expect(editor().getByText('di ""hola""',{exact:true})).toHaveClass(/csv-column-3/)
+ await expect(editor().getByText('líneas',{exact:true})).toHaveClass(/csv-column-2/)
+ const digest=(value:Buffer)=>createHash('sha256').update(value).digest('hex')
+ await page.evaluate(async()=>{const [doc]=await window.freya.documents();await window.freya.save(doc.id)})
+ expect(digest(await readFile(path))).toBe(digest(bytes))
+ await header.getByText('MarcaModelo',{exact:true}).dblclick()
+ await page.keyboard.insertText('Modelo')
+ await expect(page.locator('.csv-column-position')).toHaveText('Columna 4 de 7 · Modelo')
+ await editor().press('ControlOrMeta+z')
+ await expect(page.locator('.csv-column-position')).toHaveText('Columna 4 de 7 · MarcaModelo')
+ await model.click()
+
+ await page.getByText('Opciones de texto',{exact:true}).click()
+ const colors=page.getByRole('button',{name:'Colores por columna',exact:true})
+ await expect(colors).toHaveAttribute('aria-pressed','true');await colors.click()
+ await expect(editor().locator('.csv-column-1,.csv-current-column')).toHaveCount(0)
+ await expect(page.locator('.csv-column-position')).toHaveText('Columna 4 de 7 · MarcaModelo')
+ await expect.poll(async()=>JSON.parse(await readFile(join(folder,'profile','settings.json'),'utf8')).editor.csvColumnColors).toBe(false)
+ await quit();await launch();await page.evaluate(path=>window.freya.openPaths([path]),path)
+ await expect(editor()).toBeVisible();await expect(editor().locator('.csv-column-1,.csv-current-column')).toHaveCount(0)
+ await expect(page.locator('.csv-column-position')).toHaveText('Columna 1 de 7 · ID')
+})
+
+for(const [name,separator] of [['datos.tsv','\t'],['punto-y-coma.csv',';']])test(`TXT-02a: separador detectado en ${name} abierto directamente como Texto`,async()=>{
+ const path=join(files,name),raw=`ID${separator}Nombre\r\n001${separator}"Ana, Paz"\r\n`
+ await writeFile(path,raw)
+ const doc=await page.evaluate(path=>window.freya.csvOpen(path,'text'),path)
+ expect(doc.delimiter).toBe(separator)
+ await editor().locator('.csv-column-2').filter({hasText:'Ana, Paz'}).click()
+ await expect(page.locator('.csv-column-position')).toHaveText('Columna 2 de 2 · Nombre')
+})
+
+test('TXT-02a: filas irregulares y un documento sin encabezado conservan su columna',async()=>{
+ const path=join(files,'datos.csv'),raw='uno;dos\n1;2;Extra\n'
+ await writeFile(path,raw)
+ const doc=await openCsv()
+ const text=views().getByRole('button',{name:'Texto',exact:true})
+ await text.click()
+ const third=editor().locator('.csv-column-3').getByText('Extra',{exact:true})
+ await third.click()
+ await expect(page.locator('.csv-column-position')).toHaveText('Columna 3 · sin encabezado')
+ await views().getByRole('button',{name:'Tabla',exact:true}).click()
+ await expect(table()).toBeVisible()
+ await page.evaluate(id=>window.freya.tableOptions(id,{header:false,delimiter:';'}),doc.id)
+ await text.click()
+ await third.click()
+ await expect(page.locator('.csv-column-position')).toHaveText('Columna 3 de 3')
+ await expect(editor().locator('.cm-line').first()).toHaveCSS('font-weight','400')
+ expect(await readFile(path,'utf8')).toBe(raw)
+})
+
+test('TXT-02a: saltar lejos no pierde la columna de un campo con varias líneas',async()=>{
+ const path=join(files,'datos.csv'),lines=10_000
+ await writeFile(path,'A,B,C\n1,"'+'fragmento,continuación\n'.repeat(lines)+'fin del campo",3\n')
+ await page.evaluate(path=>window.freya.csvOpen(path,'text'),path)
+ await editor().press('ControlOrMeta+Alt+g')
+ const line=page.getByRole('textbox',{name:'Ir a línea:',exact:true})
+ await line.fill(String(lines+2));await line.press('Enter')
+ await expect(page.locator('.csv-column-position')).toHaveText('Columna 2 de 3 · B')
+ await expect(editor().locator('.cm-activeLine .csv-column-2')).toHaveText('fin del campo')
+})
+
+test('TXT-02a: pinta las columnas al desplazarse horizontalmente',async()=>{
+ const path=join(files,'datos.csv'),head=Array.from({length:200},(_,i)=>`Encabezado ${i+1}`),row=Array.from({length:200},(_,i)=>`Campo ${i+1}`)
+ await writeFile(path,head.join(',')+'\n'+row.join(',')+'\n')
+ await page.evaluate(path=>window.freya.csvOpen(path,'text'),path)
+ await expect(editor().locator('.csv-column-1').getByText('Campo 1',{exact:true})).toBeVisible()
+ const last=editor().locator('.csv-column-2').getByText('Campo 200',{exact:true})
+ await expect(last).toHaveCount(0)
+ await page.locator('.code-editor .cm-scroller').evaluate(node=>{node.scrollLeft=node.scrollWidth})
+ await expect(last).toBeVisible();await last.click()
+ await expect(page.locator('.csv-column-position')).toHaveText('Columna 200 de 200 · Encabezado 200')
 })

@@ -17,6 +17,7 @@ import {fingerprintCsvSource} from './project-sources'
 import type {DocumentAssets} from './document-assets'
 import { TableClient } from './table-client'
 import {CsvViewStore} from './csv-view-store'
+import {csvDelimiter} from './csv-delimiter'
 import {decodeCsvText,decodeTextDocument,encodeCsvText,encodedTextFormat,csvTextByteLength} from './csv-text-codec'
 import {isCsvTextFormat,isTextFormat,type TextFormat} from '../shared/csv-text'
 import {csvOpenError} from './csv-open-error'
@@ -152,7 +153,15 @@ export class Documents {
   const id=previous?.info.id??randomUUID();const record:RecordDoc={info:{id,name:basename(canonical),path:canonical,kind,csvView:view,byteLength:kind==='csv'?size:undefined,extract:previous?.info.extract,dirty:false,readonly:false,revision:previous?previous.info.revision+1:0,encoding:'utf8',delimiter:kind==='csv'&&extname(canonical)==='.tsv'?'\t':','},text:'',undo:[],redo:[],root:dirname(canonical),saving:false}
   try {
    if(isTableDocument(record.info)){const before=size<=50*1024*1024?await digest(canonical):undefined;await this.table.call('open',id,canonical,projectSource?.format??{delimiter:extname(canonical)==='.tsv'?'\t':undefined});Object.assign(record.info,await this.table.call('info',id));if(!record.info.readonly){const after=await digest(canonical);if(before!==after)throw new Error('El archivo cambió durante la apertura. Vuelve a abrirlo.');record.hash=after}}
-   else if(view==='text'){const bytes=await readFile(canonical);if(bytes.length>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'));const decoded=decodeCsvText(bytes);record.hash=bytesHash(bytes);record.text=decoded.text;record.textFormat=decoded.format;record.info.encoding=decoded.format.encoding;record.info.readonly=decoded.readonly;record.info.warning=decoded.warning;record.info.byteLength=bytes.length}
+   else if(view==='text'){
+    const bytes=await readFile(canonical)
+    if(bytes.length>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'))
+    const decoded=decodeCsvText(bytes)
+    record.hash=bytesHash(bytes);record.text=decoded.text;record.textFormat=decoded.format
+    // shortcut: detectar el separador en 64 KiB al abrir directamente como Texto, revisar si el primer registro puede ser mayor.
+    const delimiter=previous?.info.delimiter??csvDelimiter(decoded.text.slice(0,64*1024),canonical)
+    Object.assign(record.info,{encoding:decoded.format.encoding,readonly:decoded.readonly,warning:decoded.warning,byteLength:bytes.length,delimiter,hasHeader:previous?.info.hasHeader??true})
+   }
    else installText(record,await readDocumentText(canonical))
    record.watcher=watch(canonical,{ignoreInitial:true,awaitWriteFinish:{stabilityThreshold:150,pollInterval:50}}).on('change',()=>{if(!record.saving)this.emit({type:'external',id})}).on('unlink',()=>this.emit({type:'external',id}))
    // La lista de recientes es auxiliar: su fallo no invalida el documento ya leído.
