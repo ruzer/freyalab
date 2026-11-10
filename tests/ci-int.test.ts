@@ -7,7 +7,7 @@ import {expect,it} from 'vitest'
 type Job={os:string;part?:string;projects?:string}
 type Suite={title:string;suites?:Suite[];specs?:{file:string;title:string;tests:{projectName:string}[]}[]}
 const require=createRequire(import.meta.url)
-const workflow=readFileSync(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8')
+const workflow=readFileSync(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8').replaceAll('\r\n','\n')
 const {scripts}=JSON.parse(readFileSync(new URL('../package.json',import.meta.url),'utf8'))
 
 function selection(script:string){
