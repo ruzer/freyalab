@@ -1,3 +1,4 @@
+import type {ProjectInfo,ProjectRecent} from './project'
 import type {ChartConfiguration,ChartPreset} from './chart-presets'
 import type {LanguagePreference,LanguageState} from './i18n'
 import type {ApplicationInfo} from './app-info'
@@ -64,7 +65,7 @@ export type ExportOutcome=string|null|{path:string;mathWarnings:number}
 export interface ChartResultRequest {requestId:string;revision:number;configuration:ChartConfiguration;format:'csv'|'json'|'md';protectFormulas:boolean}
 export interface GraphicExportRequest {format:'svg'|'png'|'pdf';svg:string;revision:number}
 export interface RecoveryEntry { id:string; name:string; savedAt:string }
-export interface AppEvent { type:'opened'|'changed'|'external'|'error'|'analysis'|'language'|'csv-open-error'|'settings'|'recents'|'updates'|'close-status';update?:UpdateResult;closingKind?:'error'|'notice';csvOpenError?:CsvOpenError;settings?:SettingsState;language?:LanguageState;progress?:SqlProgress; document?:DocumentInfo; id?:string; message?:string }
+export interface AppEvent { type:'project'|'opened'|'changed'|'external'|'error'|'analysis'|'language'|'csv-open-error'|'settings'|'recents'|'updates'|'close-status';update?:UpdateResult;project?:ProjectInfo|null;projectRecents?:ProjectRecent[];closingKind?:'error'|'notice';csvOpenError?:CsvOpenError;settings?:SettingsState;language?:LanguageState;progress?:SqlProgress; document?:DocumentInfo; id?:string; message?:string }
 export interface FreyaAPI {
  setApplicationState(state:ApplicationUiState):Promise<void>;applicationShortcuts():Promise<ApplicationShortcuts>;
  onCommand(callback:(command:ApplicationCommand,delegate:()=>void)=>void):()=>void;
@@ -97,5 +98,6 @@ export interface FreyaAPI {
  export(id:string,request:ExportRequest&{format:Exclude<ExportRequest['format'],'docx'>}):Promise<string|null>;
  export(id:string,request:ExportRequest):Promise<ExportOutcome>; image(id:string,src:string):Promise<string|null>; openLink(url:string):Promise<void>;
  recents():Promise<string[]>; recoveries():Promise<RecoveryEntry[]>; recover(id:string):Promise<DocumentInfo>; discardRecovery(id:string):Promise<void>;
+ projectState():Promise<{project:ProjectInfo|null;recents:ProjectRecent[]}>; projectPickFolder():Promise<{path:string;name:string}|null>; projectCancelCreate():Promise<void>; projectCreate(name:string,suggested:boolean):Promise<void>; projectClose(id:string):Promise<void>; projectRename(id:string,name:string):Promise<void>; projectOpenRecent(path:string):Promise<void>; projectForgetRecent(path:string):Promise<void>;
  onEvent(callback:(event:AppEvent)=>void):()=>void; droppedPaths(files:File[]):string[]
 }

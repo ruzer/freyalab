@@ -37,6 +37,9 @@
  import CsvViewDialog from './components/CsvViewDialog.svelte'
  import CsvOpenError from './components/CsvOpenError.svelte'
  import Tree from './components/Tree.svelte'
+ import ProjectDialog from './components/ProjectDialog.svelte'
+ import ProjectPanel from './components/ProjectPanel.svelte'
+ import type {ProjectInfo,ProjectRecent} from '../shared/project'
  import AssetWarnings from './components/AssetWarnings.svelte'
  import AboutDialog from './components/AboutDialog.svelte'
  import SettingsDialog from './components/SettingsDialog.svelte'
@@ -58,6 +61,7 @@
  import {tokensFileQuery,tagQueryToken} from '../shared/tag-query'
  import {matchHeadings,currentHeading as headingAtPosition,type EditorHeading} from './lib/outline'
  type SidebarTab='files'|'outline'
+ type WorkspaceSidebarTab=SidebarTab|'project'
  const initialSettings=defaultSettings()
  let preferencesState=$state<SettingsState>({values:initialSettings,readonly:false,migrationPending:true});let settingsReady:Promise<void>|undefined,settingsNotice:string|undefined,settingsWrites=0
  let nextMarkdownMode:Settings['markdown']['modoInicial']|undefined=initialSettings.markdown.modoInicial
@@ -79,6 +83,7 @@
  let closedDuringStartup:Set<string>|undefined=new Set()
  let sidebar=$state(initialSettings.barraLateral.visible),sidebarWidth=$state(initialSettings.barraLateral.ancho),split=$state(initialSettings.division),filterFiles=$state('')
  let sidebarTab=$state<SidebarTab>(initialSettings.barraLateral.pestana)
+ let activeProject=$state<ProjectInfo|null>(null),projectRecents=$state<ProjectRecent[]>([]),showProject=$state(false),projectDialog=$state(false),projectGeneration=0
  let filesScroll=$state<HTMLDivElement>(),indexScroll=$state<HTMLDivElement>()
  const sidebarScroll={files:0,outline:0}
  let folderTags=$state<{tag:string;count:number}[]>([]),tagsBusy=$state(false),tagsLimited=$state(false),tagsRefresh=$state(0),tagGeneration=0,tagFolder=''
@@ -111,7 +116,7 @@
  const editingReason=$derived(activeAnalysis?'analysisTab':!active?'noDocument':active.readonly?'readonly':editingLocked?'busy':null)
  const saveReason=$derived(editingReason??(savingActive?'busy':!saveNeeded?'saved':null))
  const exportReason=$derived(editingReason??(busy||savingActive?'busy':active?.kind==='text'||csvText?'textExport':null))
- const effectiveSidebarTab=$derived(active?.kind==='markdown'?sidebarTab:'files')
+ const effectiveSidebarTab=$derived<WorkspaceSidebarTab>(showProject&&activeProject?'project':active?.kind==='markdown'?sidebarTab:'files')
  const indexVisible=$derived(sidebar&&effectiveSidebarTab==='outline'&&active?.kind==='markdown')
  const outlineHeadings=$derived(headingDocument===activeId?headings:[])
  let appDialog=$state<'about'|'licenses'|'settings'|'shortcuts'|null>(null)
@@ -143,17 +148,31 @@
  function error(message:string){opening=null;const clean=visibleEditError(message.replace(/^Error:\s*/,''));if(csvFailure?.message===clean)return;toastKind='error';toast=clean;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',7000)}
  function notify(message:string){toastKind='info';status=message;toast=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',3500)}
  function toggleSidebar(){sidebar=!sidebar;remember({barraLateral:{visible:sidebar}})}
- async function selectSidebarTab(tab:SidebarTab,focus=false){
-  if(tab==='outline'&&active?.kind!=='markdown')return
-  if(active?.kind==='markdown'){sidebarTab=tab;remember({barraLateral:{pestana:tab}})}
+ async function selectSidebarTab(tab:WorkspaceSidebarTab,focus=false){
+  if(tab==='outline'&&active?.kind!=='markdown'||tab==='project'&&!activeProject)return
+  showProject=tab==='project'
+  if(tab!=='project'&&active?.kind==='markdown'){sidebarTab=tab;remember({barraLateral:{pestana:tab}})}
   if(focus){await tick();document.getElementById(`freya-${tab}-tab`)?.focus()}
  }
  function sidebarKeydown(event:KeyboardEvent){
   if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return
   event.preventDefault()
-  const tab=event.key==='Home'?'files':event.key==='End'?'outline':effectiveSidebarTab==='files'?'outline':'files'
-  void selectSidebarTab(active?.kind==='markdown'?tab:'files',true)
+  const tabs:WorkspaceSidebarTab[]=['files',...(active?.kind==='markdown'?['outline'] as const:[]),...(activeProject?['project'] as const:[])]
+  const index=tabs.indexOf(effectiveSidebarTab)
+  const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(index+(event.key==='ArrowLeft'?-1:1)+tabs.length)%tabs.length
+  void selectSidebarTab(tabs[next],true)
  }
+ async function receiveProject(project:ProjectInfo|null|undefined,recents:ProjectRecent[]|undefined){
+  if(recents)projectRecents=recents
+  if(project===undefined)return
+  const changed=project?.id!==activeProject?.id||project?.path!==activeProject?.path,wasProject=showProject
+  activeProject=project
+  if(!project){showProject=false;if(wasProject)await selectSidebarTab('files',true);return}
+  if(!changed)return
+  sidebar=true;showProject=true;remember({barraLateral:{visible:true}})
+  if(folderPath!==project.path){folderPath=project.path;entries=[];const tree=await window.freya.tree(project.path);if(folderPath===project.path)entries=tree}
+ }
+ function closeProject(){if(activeProject)void action(()=>window.freya.projectClose(activeProject!.id))}
  function toggleIndex(){if(indexVisible)void selectSidebarTab('files');else{sidebar=true;remember({barraLateral:{visible:true}});void selectSidebarTab('outline')}}
  async function filterByTag(tag:string){
   if(!folderPath){notify('Abre una carpeta para filtrar por etiqueta');return}
@@ -187,7 +206,7 @@
   if(!after||before.csvView!==after.csvView||wasActive&&activeId!==id||owner&&csv!==owner)throw new Error(t('document.actionChanged'))
  }
  const closingFlow=new ApplicationClosing({
-  snapshot:()=>({documents,activeId,busy:busy||csvOpening||!!csvChange||Object.values(assetBusy).some(Boolean),modal:!!appDialog||!!document.querySelector('dialog[open]'),composing:compositionActive||!!editor?.isComposing()}),
+  snapshot:()=>({documents,activeId,busy:busy||csvOpening||!!csvChange||Object.values(assetBusy).some(Boolean),modal:!!appDialog||projectDialog||!!document.querySelector('dialog[open]'),composing:compositionActive||!!editor?.isComposing()}),
   prepare:prepareDocumentAction,locked:value=>applicationClosing=value,notice:value=>{if(value?.kind==='error')toast='';closingNotice=value}
  })
  function placeClosingNotice(node:HTMLElement){
@@ -226,7 +245,9 @@
   event.preventDefault();document.getElementById('workspace-tab-'+tabs[next].id)?.focus()
  }
  $effect(()=>{
-  const tab=effectiveSidebarTab,shown=sidebar,target=tab==='files'?filesScroll:indexScroll
+  const tab=effectiveSidebarTab,shown=sidebar
+  if(tab==='project')return
+  const target=tab==='files'?filesScroll:indexScroll
   if(shown&&target)void tick().then(()=>{if(sidebar&&effectiveSidebarTab===tab&&target.isConnected)target.scrollTop=sidebarScroll[tab]})
  })
  function textSession(doc:DocumentInfo){
@@ -396,7 +417,7 @@
   const target=focusedElement();let capabilities=applicationEditingState(target)
   if(previewEditing(target)&&active){const state=textSession(active).state;capabilities={focus:'editor',editable:!editingLocked,canUndo:undoDepth(state)>0,canRedo:redoDepth(state)>0,hasSelection:window.getSelection()?.isCollapsed===false}}
   // El visor pertenece a la pestaña; los diálogos de formulario siguen bloqueando el menú.
-  return{activeId:active?.id??null,analysis:activeAnalysis?'active':analyses.length?'open':undefined,mode,focus:capabilities.focus,...(active?.kind==='csv'?{csvView:active.csvView??'table'}:{}),inCodeMirror:!!target?.closest('.cm-editor'),locked:applicationClosing||busy||!!assetBusy[activeId],modal:!!appDialog||!!document.querySelector('dialog[open]:not(.diagram-modal)'),canEdit:capabilities.editable??(capabilities.focus==='grid'&&!editingLocked),...(capabilities.canUndo!==undefined?{canUndo:capabilities.canUndo}:{}),...(capabilities.canRedo!==undefined?{canRedo:capabilities.canRedo}:{}),...(capabilities.hasSelection!==undefined?{hasSelection:capabilities.hasSelection}:{})}
+  return{activeId:active?.id??null,analysis:activeAnalysis?'active':analyses.length?'open':undefined,mode,focus:capabilities.focus,...(active?.kind==='csv'?{csvView:active.csvView??'table'}:{}),inCodeMirror:!!target?.closest('.cm-editor'),locked:applicationClosing||busy||!!assetBusy[activeId],modal:!!appDialog||projectDialog||!!document.querySelector('dialog[open]:not(.diagram-modal)'),canEdit:capabilities.editable??(capabilities.focus==='grid'&&!editingLocked),...(capabilities.canUndo!==undefined?{canUndo:capabilities.canUndo}:{}),...(capabilities.canRedo!==undefined?{canRedo:capabilities.canRedo}:{}),...(capabilities.hasSelection!==undefined?{hasSelection:capabilities.hasSelection}:{})}
  }
  function refreshShortcuts(){void window.freya.applicationShortcuts().then(value=>shortcutInfo=value).catch(()=>{})}
  function queueApplicationState(){
@@ -425,6 +446,7 @@
     case'help.licenses':appDialog='licenses';return
     case'app.settings':appDialog='settings';return
     case'help.shortcuts':appDialog='shortcuts';return
+    case'file.newProject':projectDialog=true;return
     case'file.newMarkdown':await create('markdown');return
     case'file.newMermaid':await create('mermaid');return
     case'file.newCsv':await create('csv');return
@@ -487,8 +509,10 @@
     if(!activeId)activate(documents[0]?.id??'')
    }finally{closedDuringStartup=undefined}
    recent=await window.freya.recents();recoveries=await window.freya.recoveries()
+   const generation=projectGeneration,state=await window.freya.projectState()
+   if(generation===projectGeneration)await receiveProject(state.project,state.recents)
   })
-  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='updates'&&event.update?.status==='available'){if(!updatesOpen)updateNotice=event.update}else if(event.type==='language'&&event.language){setUILanguage(event.language.language);refreshShortcuts()}else if(event.type==='recents'){void window.freya.recents().then(value=>recent=value).catch(value=>error(String(value)))}else if(event.type==='settings'&&event.settings)applySettings(event.settings);else if(event.type==='csv-open-error'&&event.csvOpenError)receiveCsvError(event.csvOpenError);else if(event.type==='opened'&&event.document){const document=event.document;void action(async()=>{await settingsReady;merge(document,true)})}else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='close-status'&&event.message)closingNotice={kind:event.closingKind??'notice',message:event.message};else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];notify(event.message??'El archivo cambió en otra aplicación. Al guardar se comprobarán los cambios.')}})
+  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='project'){projectGeneration++;void action(()=>receiveProject(event.project,event.projectRecents))}else if(event.type==='updates'&&event.update?.status==='available'){if(!updatesOpen)updateNotice=event.update}else if(event.type==='language'&&event.language){setUILanguage(event.language.language);refreshShortcuts()}else if(event.type==='recents'){void window.freya.recents().then(value=>recent=value).catch(value=>error(String(value)))}else if(event.type==='settings'&&event.settings)applySettings(event.settings);else if(event.type==='csv-open-error'&&event.csvOpenError)receiveCsvError(event.csvOpenError);else if(event.type==='opened'&&event.document){const document=event.document;void action(async()=>{await settingsReady;merge(document,true)})}else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='close-status'&&event.message)closingNotice={kind:event.closingKind??'notice',message:event.message};else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];notify(event.message??'El archivo cambió en otra aplicación. Al guardar se comprobarán los cambios.')}})
   return()=>{applicationReady=false;for(const event of contextEvents)document.removeEventListener(event,queueApplicationState);unsubscribeCommand();unsubscribeClose();closingFlow.abort();mq.removeEventListener('change',change);unsubscribe();clearTimeout(toastTimer)}
  })
  $effect(()=>{
@@ -524,12 +548,24 @@
    <div class="sidebar-tabs" role="tablist" aria-label="Barra lateral">
     <button id="freya-files-tab" role="tab" onkeydown={sidebarKeydown} aria-selected={effectiveSidebarTab==='files'} aria-controls="freya-files-panel" tabindex={effectiveSidebarTab==='files'?0:-1} onclick={()=>selectSidebarTab('files')}>Archivos</button>
     <button id="freya-outline-tab" role="tab" onkeydown={sidebarKeydown} aria-selected={effectiveSidebarTab==='outline'} aria-controls="freya-outline-panel" aria-disabled={active?.kind!=='markdown'} {...controlHint(active?.kind!=='markdown'?'markdownOnly':null)} disabled={active?.kind!=='markdown'} title={active?.kind!=='markdown'?'El índice está disponible en documentos Markdown':undefined} tabindex={effectiveSidebarTab==='outline'?0:-1} onclick={()=>selectSidebarTab('outline')}>Índice</button>
+    {#if activeProject}<button id="freya-project-tab" role="tab" onkeydown={sidebarKeydown} aria-selected={effectiveSidebarTab==='project'} aria-controls="freya-project-panel" tabindex={effectiveSidebarTab==='project'?0:-1} onclick={()=>selectSidebarTab('project')}>{t('project.tab')}</button>{/if}
    </div>
-   <div id="freya-files-panel" class="sidebar-tab-panel" role="tabpanel" aria-label="Archivos" hidden={effectiveSidebarTab!=='files'}><div class="sidebar-label">EXPLORADOR <button aria-label={"Abrir carpeta"} class="icon-button" title="Abrir carpeta" onclick={openFolder}><Icon name="plus" size={14}/></button></div><div class="sidebar-search"><Icon name="search" size={14}/><input aria-label="Buscar archivo" placeholder="Buscar archivo…" bind:value={filterFiles}/></div>{#if folderPath}<div class="folder-root" title={folderPath}><Icon name="chevron-down" size={12}/> <span class="folder-icon"><Icon name="folder-open" size={14}/></span> {folderPath.split(/[\\/]/).at(-1)}</div><div class="tree-scroll" bind:this={filesScroll} onscroll={event=>{if(event.currentTarget.clientHeight)sidebarScroll.files=event.currentTarget.scrollTop}}>{#if filterFiles.trim()}<div class="file-search-status" role="status">{fileSearchBusy?'Buscando en la carpeta…':fileSearchLimited?'Resultados limitados; acota la búsqueda.':`${fileMatches.length} archivos encontrados`}</div>{#each fileMatches as match (match.path)}{@const type=fileKind(match.name)}<button class="file-search-result" title={match.path} onclick={()=>openPath(match.path)} oncontextmenu={event=>csvContext(event,match.path)} onkeydown={event=>{if(event.key==='ContextMenu'||event.key==='F10'&&event.shiftKey)csvContext(event,match.path)}}><span><span class="kind-{type.kind}"><Icon name={type.icon} size={14}/></span> {match.name}</span><small>{match.path.slice(folderPath.length+1)}</small></button>{/each}{:else}<Tree {entries} open={openPath} onerror={error} oncsvcontext={csvContext}/>{/if}</div>{#if tagsBusy}<p class="file-tag-status" role="status">Leyendo etiquetas…</p>{/if}{#if tagsLimited}<p class="file-tag-status" role="status">Lista parcial: la carpeta tiene demasiados archivos</p>{/if}{#if folderTags.length}<section class="file-tags" role="group" aria-label="Etiquetas"><div class="sidebar-label">ETIQUETAS <button class="icon-button" aria-label="Actualizar" title="Volver a leer las etiquetas guardadas" onclick={()=>tagsRefresh++}><span aria-hidden="true">↻</span></button></div><div class="file-tags-scroll">{#each folderTags as item (normalizeTag(item.tag))}<button aria-label={`${item.tag}, ${item.count} documentos`} aria-pressed={activeTags.has(normalizeTag(item.tag))} title={item.tag} onclick={()=>toggleTag(item.tag)}><span>{item.tag}</span><small>{item.count}</small></button>{/each}</div></section>{/if}{:else}<div class="sidebar-empty"><p>Explora tus archivos<br/>en un solo lugar.</p><button onclick={openFolder}>Abrir carpeta</button></div>{/if}</div>
+   <div id="freya-files-panel" class="sidebar-tab-panel" role="tabpanel" aria-label="Archivos" hidden={effectiveSidebarTab!=='files'}><div class="sidebar-label">EXPLORADOR <button aria-label={"Abrir carpeta"} class="icon-button" title="Abrir carpeta" onclick={openFolder}><Icon name="plus" size={14}/></button></div><div class="sidebar-search"><Icon name="search" size={14}/><input aria-label="Buscar archivo" placeholder="Buscar archivo…" bind:value={filterFiles}/></div>{#if folderPath}<div class="folder-root" title={folderPath}><Icon name="chevron-down" size={12}/> <span class="folder-icon"><Icon name="folder-open" size={14}/></span> {folderPath.split(/[\\/]/).at(-1)}</div><div class="tree-scroll" bind:this={filesScroll} onscroll={event=>{if(event.currentTarget.clientHeight)sidebarScroll.files=event.currentTarget.scrollTop}}>{#if filterFiles.trim()}<div class="file-search-status" role="status">{fileSearchBusy?'Buscando en la carpeta…':fileSearchLimited?'Resultados limitados; acota la búsqueda.':`${fileMatches.length} archivos encontrados`}</div>{#each fileMatches as match (match.path)}{@const type=fileKind(match.name)}<button class="file-search-result" title={match.path} onclick={()=>openPath(match.path)} oncontextmenu={event=>csvContext(event,match.path)} onkeydown={event=>{if(event.key==='ContextMenu'||event.key==='F10'&&event.shiftKey)csvContext(event,match.path)}}><span><span class="kind-{type.kind}"><Icon name={type.icon} size={14}/></span> {match.name}</span><small>{match.path.slice(folderPath.length+1)}</small></button>{/each}{:else}<Tree {entries} open={openPath} onerror={error} oncsvcontext={csvContext}/>{/if}</div>{#if tagsBusy}<p class="file-tag-status" role="status">Leyendo etiquetas…</p>{/if}{#if tagsLimited}<p class="file-tag-status" role="status">Lista parcial: la carpeta tiene demasiados archivos</p>{/if}{#if folderTags.length}<section class="file-tags" role="group" aria-label="Etiquetas"><div class="sidebar-label">ETIQUETAS <button class="icon-button" aria-label="Actualizar" title="Volver a leer las etiquetas guardadas" onclick={()=>tagsRefresh++}><span aria-hidden="true">↻</span></button></div><div class="file-tags-scroll">{#each folderTags as item (normalizeTag(item.tag))}<button aria-label={`${item.tag}, ${item.count} documentos`} aria-pressed={activeTags.has(normalizeTag(item.tag))} title={item.tag} onclick={()=>toggleTag(item.tag)}><span>{item.tag}</span><small>{item.count}</small></button>{/each}</div></section>{/if}{:else}<div class="sidebar-empty"><p>Explora tus archivos<br/>en un solo lugar.</p><button onclick={openFolder}>Abrir carpeta</button></div>{/if}
+    {#if !activeProject}<div class="project-start">
+     <button onclick={()=>projectDialog=true}>{t('project.create')}</button>
+     {#if projectRecents.length}<div class="sidebar-label">{t('menu.file.projectRecents')}</div>
+      <ul>{#each projectRecents as recent (recent.path)}
+       <li>{#if recent.missing}<span>{t('project.recentMissing',{name:recent.name})}</span><button title={t('project.removeRecent',{name:recent.name})} aria-label={t('project.removeRecent',{name:recent.name})} onclick={()=>void action(()=>window.freya.projectForgetRecent(recent.path))}><Icon name="x" size={12}/></button>
+       {:else}<button title={recent.path} onclick={()=>void action(()=>window.freya.projectOpenRecent(recent.path))}>{recent.name}</button>{/if}</li>
+      {/each}</ul>
+     {/if}
+    </div>{/if}
+   </div>
    <div id="freya-outline-panel" class="sidebar-tab-panel" role="tabpanel" aria-label="Índice del documento" hidden={effectiveSidebarTab!=='outline'}>
     <div class="sidebar-label">EN ESTE DOCUMENTO</div>
     <Outline headings={outlineHeadings} current={mode==='edit'?editorHeading:previewHeading} collapsed={collapsedByDocument[activeId]??new Set()} oncollapse={next=>collapsedByDocument={...collapsedByDocument,[activeId]:next}} ready={headingDocument===activeId} shown={indexVisible} bind:container={indexScroll} onscroll={top=>sidebarScroll.outline=top} onselect={selectHeading} canselect={()=>mode!=='edit'||!editor?.isComposing()}/>
    </div>
+   {#if activeProject}<div id="freya-project-panel" class="sidebar-tab-panel" role="tabpanel" aria-label={t('project.tab')} hidden={effectiveSidebarTab!=='project'}>{#key activeProject.id}<ProjectPanel project={activeProject} onclose={closeProject}/>{/key}</div>{/if}
    <div class="sidebar-bottom"><img class="brand-mark small" src={appIcon} alt=""/><button class="text-button" aria-label={t('about.title')} onclick={()=>appDialog='about'}>{t('about.product')}</button><span class="spacer"></span><select aria-label="Tema" value={theme} onchange={e=>themeChange(e.currentTarget.value)}><option value="system">Sistema</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></div>
   </aside><button class="resize-handle sidebar-handle" aria-valuenow={sidebarWidth} aria-valuemin="180" aria-valuemax="420" role="slider" aria-label="Ancho del explorador" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSidebar} onkeydown={e=>{if(e.key==='ArrowRight')sidebarWidth=Math.min(420,sidebarWidth+10);if(e.key==='ArrowLeft')sidebarWidth=Math.max(180,sidebarWidth-10);if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();remember({barraLateral:{ancho:sidebarWidth}})}}}></button>{/if}
   <main class="main-area">
@@ -578,6 +614,7 @@
   </main>
  </div>
  <footer class="statusbar"><span class="status-dot"></span><span class="truncate">{status}</span>{#if opening}<span role="status">{opening.phase}</span><button onclick={cancelOpening}>Cancelar apertura</button>{/if}<span class="spacer"></span><div id="document-status"></div>{#if active&&(active.kind==='markdown'||active.kind==='text')}<TextStats id={active.id} name={active.name} text={active.text??''} markdown={active.kind==='markdown'} partial={active.readonly} selection={textSelection}/>{/if}{#if active}{#if csvText&&csvTextInfo}<span role="status" aria-label={t('csvText.format')} aria-live="polite">{t(`csvText.encoding.${active.encoding}`)} · {plural('csvText.lines',csvTextInfo.lines)}</span>{:else if active.kind!=='csv'}{#key active.id}<TextEncodingControl bind:this={encodingControl} doc={active} locked={busy||savingActive||applicationClosing||!!assetBusy[active.id]} onreopen={reopenTextEncoding} onsave={async encoding=>!!(await save(false,encoding))}/>{/key}{/if}<span>{active.readonly?'Solo lectura':!active.path?'Sin guardar':active.dirty?'Cambios pendientes':'Guardado'}</span>{/if}<span>Local</span></footer>
+ {#if projectDialog}<ProjectDialog onclose={()=>{projectDialog=false;void tick().then(()=>{if(showProject)document.getElementById('freya-project-tab')?.focus()})}}/>{/if}
  {#if csvChange}<CsvViewDialog name={csvChange.name} busy={csvChange.busy} message={csvChange.message} onchoose={decision=>void resolveCsvChange(decision)}/>{/if}
  {#if csvFileMenu}<CsvFileMenu path={csvFileMenu.path} x={csvFileMenu.x} y={csvFileMenu.y} onopen={(path,view)=>void chooseCsvView(view,path)} onclose={closeCsvContext} onerror={error}/>{/if}
  {#if toast}<div class="toast {toastKind}" role="status"><Icon name={toastKind==='error'?'triangle-alert':'circle-check'} size={16}/><span>{toast}</span><button title={"Cerrar aviso"} onclick={()=>toast=''} aria-label="Cerrar aviso"><Icon name="x" size={14}/></button></div>{/if}
@@ -594,6 +631,10 @@
   .toolbar.analysis-active :is(.save-button,.export-button) .button-label{display:none}
   .toolbar.analysis-active .document-title strong{max-width:none}
  }
+ .project-start{border-top:1px solid var(--border);padding:8px;overflow:auto;max-height:40%}
+ .project-start ul{list-style:none;margin:0;padding:0}
+ .project-start li{display:flex;gap:4px;align-items:center;overflow-wrap:anywhere}
+ .project-start li button{min-width:0;text-align:left;overflow-wrap:anywhere}
  /* Mantén espacio para los modos, el formato prioritario y Más en ventanas estrechas. */
  .workspace:has(.markdown-tools)>.sidebar{max-width:min(420px,calc(100% - 466px))}
  .markdown-tools{container-type:inline-size}
