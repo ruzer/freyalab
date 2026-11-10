@@ -1038,5 +1038,7 @@
  "project.error.schema": "The manifest does not match the FreyaLab project format.",
  "project.error.changed": "The project file changed outside FreyaLab.",
  "project.error.readonly": "The project changed or is read-only.",
- "project.error.recent": "That location is not in recent projects."
+ "project.error.recent": "That location is not in recent projects.",
+ "project.error.atomicCreate": "The project could not be created safely. The file system must support hard links and the folder must be writable. Choose another location.",
+ "project.error.recentWrite": "The project is open. The recent projects list could not be updated."
 }

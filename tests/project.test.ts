@@ -1,4 +1,6 @@
-import {afterEach,beforeEach,describe,expect,it} from 'vitest'
+import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest'
+import filesystem from 'node:fs/promises'
+import {syncBuiltinESMExports} from 'node:module'
 import {mkdtemp,mkdir,readFile,readdir,rm,writeFile} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join} from 'node:path'
@@ -70,6 +72,17 @@ describe('PRJ-01a · manifiesto y proyectos recientes',()=>{
    {...valid,sources:[{...source,cells:['No pertenecen al manifiesto']}]}
   ])expect(projectManifest.safeParse(invalid).success,JSON.stringify(invalid)).toBe(false)
  })
+ it('avisa si el sistema de archivos no admite creación atómica y deja intactos los datos',async()=>{
+  await writeFile(join(folder,'original.txt'),'original')
+  const link=vi.spyOn(filesystem,'link').mockRejectedValueOnce(Object.assign(new Error('unsupported'),{code:'ENOTSUP'}))
+  syncBuiltinESMExports()
+  try{
+   await expect(store.create(folder,'Proyecto',true)).rejects.toThrow(/sistema de archivos|permisos/)
+   expect(await readdir(folder)).toEqual(['original.txt'])
+   expect(await readFile(join(folder,'original.txt'),'utf8')).toBe('original')
+   expect(store.active).toBeNull()
+  }finally{link.mockRestore();syncBuiltinESMExports()}
+ })
  it('protege el manifiesto cuando dos procesos crean a la vez',async()=>{
   const secondProfile=join(root,'otro-perfil');await mkdir(secondProfile)
   const other=new ProjectStore(secondProfile)
@@ -87,6 +100,16 @@ describe('PRJ-01a · manifiesto y proyectos recientes',()=>{
  })
  it('publica exactamente el esquema JSON generado por el validador',async()=>{
   expect(JSON.parse(await readFile(new URL('../docs/design/project-manifest-v1.schema.json',import.meta.url),'utf8'))).toEqual(projectManifestJSONSchema)
+ })
+ it('abre el proyecto aunque el historial de recientes no se pueda actualizar',async()=>{
+  const recent=join(root,'profile','recent-projects.json'),corrupt='{"contenido": "no sobrescribir"}'
+  await writeFile(recent,corrupt)
+  const active=await store.create(folder,'Proyecto',false)
+  expect(store.active).toEqual(active)
+  expect(store.recentWriteFailed).toBe(true)
+  expect(await store.recents()).toEqual([])
+  expect(await readFile(recent,'utf8')).toBe(corrupt)
+  expect(projectManifest.parse(JSON.parse(await readFile(join(folder,projectFile),'utf8'))).name).toBe('Proyecto')
  })
  it('conserva hasta diez recientes y solo permite abrir rutas registradas',async()=>{
   await expect(store.openRecent(folder)).rejects.toThrow()

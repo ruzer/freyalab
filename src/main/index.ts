@@ -69,6 +69,7 @@ async function publishProject(){
  menuProjectRecents=recents
  if(project)docs.roots.add(project.path)
  window?.webContents.send('freya:event',{type:'project',project,projectRecents:recents})
+ if(project&&projects.recentWriteFailed)window?.webContents.send('freya:event',{type:'error',message:t('project.error.recentWrite')})
  refreshApplicationMenu()
 }
 async function openProjectFolder(folder:string,optional=false){
