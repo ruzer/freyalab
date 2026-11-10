@@ -7,7 +7,9 @@
  import CsvColumnAnalysis from './CsvColumnAnalysis.svelte'
  import CsvColumnsOverview from './CsvColumnsOverview.svelte'
  import type {DocumentInfo,TableQuery,TableRange,TableViewMeta} from '../../shared/types'
- let {doc,autofocus=true,columns,range,query,queryValid,viewMeta,onclose,onerror,onreport}:{doc:DocumentInfo;autofocus?:boolean;columns:number[];range:TableRange|null;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
+ let {doc,autofocus=true,embedded=false,inspection,columns,range,query,queryValid,viewMeta,onclose,onerror,onreport}:{doc:DocumentInfo;autofocus?:boolean;embedded?:boolean;inspection?:{column:number;scope:'all'|'view'};columns:number[];range:TableRange|null;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
+ const titleId=$derived(embedded?'analysis-statistics-'+doc.id:'csv-statistics-title')
+ $effect(()=>{if(inspection){explorationColumn=inspection.column;explorationScope=inspection.scope;exploring=true}})
  let exploring=$state(false),overviewing=$state(false),explorationColumn=$state(0),explorationScope=$state<'all'|'view'>('all')
  let scope=$state('all'),busy=$state(false),results=$state<StatisticsRow[]>([]),numericDetails=$state(false)
  let message=$state('Elige columnas y pulsa Analizar.'),revision=$state(-1),total=$state(0),analyzedScope=$state(''),heading:HTMLHeadingElement
@@ -48,9 +50,9 @@
  async function report(){if(!reportContext||busy||reporting||doc.revision!==revision)return;const text=statisticsReport($state.snapshot(reportContext),$state.snapshot(results));reporting=true;try{await onreport(text)}catch(error){onerror(String(error))}finally{reporting=false}}
  function number(value:number|null){return value===null?'—':value.toLocaleString(undefined,{maximumSignificantDigits:12})}
 </script>
-<svelte:window onkeydown={event=>{if(event.key==='Escape'&&event.target instanceof HTMLElement&&event.target.closest('.statistics-panel')){event.preventDefault();event.stopPropagation();onclose()}}}/>
-<section class="statistics-panel" aria-labelledby="csv-statistics-title">
- <div class="statistics-heading"><h3 id="csv-statistics-title" tabindex="-1" bind:this={heading}>Estadísticas por columna</h3><button title={"Cerrar estadísticas"} aria-label="Cerrar estadísticas" onclick={onclose}><Icon name="x" size={14}/></button></div>
+<svelte:window onkeydown={event=>{if(!embedded&&event.key==='Escape'&&event.target instanceof HTMLElement&&event.target.closest('.statistics-panel')){event.preventDefault();event.stopPropagation();onclose()}}}/>
+<section class="statistics-panel" aria-labelledby={titleId}>
+ <div class="statistics-heading"><h3 id={titleId} tabindex="-1" bind:this={heading}>Estadísticas por columna</h3>{#if !embedded}<button title={"Cerrar estadísticas"} aria-label="Cerrar estadísticas" onclick={onclose}><Icon name="x" size={14}/></button>{/if}</div>
  {#if !exploring&&!overviewing}
  <p>{doc.readonly?'Solo muestra: los recuentos no describen el archivo completo.':usingRange?'Solo el rango de la vista seleccionada; excluye filas ocultas y encabezados.':'Documento completo: incluye las filas ocultas por búsqueda o filtros; excluye encabezados.'}</p>
  <form onsubmit={event=>{event.preventDefault();void analyze()}}>
@@ -69,7 +71,7 @@
  </table>{:else}<p>Los resultados del rango aparecerán aquí al pulsar Analizar.</p>{/if}</div>{/if}
  {/if}
  {#if !overviewing}<details bind:open={exploring}><summary>{exploring?'Volver a estadísticas generales':'Explorar una columna: frecuencias, calidad y distribución'}</summary>{#if exploring}<CsvColumnAnalysis {doc} {query} {queryValid} {onerror} {onreport} bind:column={explorationColumn} bind:scope={explorationScope}/>{/if}</details>{/if}
- {#if !exploring}<details bind:open={overviewing}><summary>{overviewing?'Volver a estadísticas generales':'Comprender todas las columnas'}</summary>{#if overviewing}<CsvColumnsOverview {doc} {columns} {query} {queryValid} {viewMeta} {onerror} {onreport} oninspect={inspectColumn}/>{/if}</details>{/if}
+ {#if !embedded&&!exploring}<details bind:open={overviewing}><summary>{overviewing?'Volver a estadísticas generales':'Comprender todas las columnas'}</summary>{#if overviewing}<CsvColumnsOverview {doc} {columns} {query} {queryValid} {viewMeta} {onerror} {onreport} oninspect={inspectColumn}/>{/if}</details>{/if}
  {#if !exploring&&!overviewing}<details><summary>Cómo interpretar los resultados</summary><p class="statistics-note">Solo consulta: los valores del archivo se conservan. Vacíos incluye campos ausentes o con espacios; Únicos compara el texto exacto. Ausentes y Solo espacios son subconjuntos de Vacíos. Los cálculos son aproximados y usan punto decimal; Excluidos cuenta textos y números fuera del rango seguro, incluidos identificadores grandes. — indica falta de datos o un resultado no representable. Cancelar descarta los resultados y evita continuar con las siguientes columnas.</p></details>{/if}
 </section>
 <style>
