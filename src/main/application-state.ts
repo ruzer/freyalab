@@ -4,7 +4,7 @@ import type {ApplicationUiState} from '../shared/application'
 
 export const applicationUiStateSchema:z.ZodType<ApplicationUiState>=z.object({
  activeId:z.uuid().nullable(),mode:z.enum(['edit','split','preview']),focus:z.enum(['none','editor','field','grid','cell','sql']),locked:z.boolean(),
- canUndo:z.boolean().optional(),canRedo:z.boolean().optional(),canEdit:z.boolean().optional(),hasSelection:z.boolean().optional(),inCodeMirror:z.boolean().optional(),modal:z.boolean().optional(),csvView:z.enum(['table','text']).optional(),analysis:z.enum(['open','active']).optional(),
+ canUndo:z.boolean().optional(),canRedo:z.boolean().optional(),canEdit:z.boolean().optional(),hasSelection:z.boolean().optional(),inCodeMirror:z.boolean().optional(),modal:z.boolean().optional(),csvView:z.enum(['table','text']).optional(),
 }).strict()
 export const applicationCommandSchema=z.object({id:z.string().refine(isApplicationCommand),argument:z.union([z.string(),z.number()]).optional()}).strict().refine(command=>{
  if(command.id==='window.document')return z.uuid().safeParse(command.argument).success

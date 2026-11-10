@@ -8,7 +8,7 @@ type Focus='none'|'editor'|'field'|'grid'|'cell'|'sql'
 export interface ApplicationMenuContext {
  documents:readonly {id:string;name:string;kind:'markdown'|'mermaid'|'csv'|'text';readonly:boolean;dirty:boolean;csvView?:'table'|'text'}[]
  recents:readonly string[];activeId:string|null;mode:'edit'|'split'|'preview';theme:'system'|'light'|'dark';sidebar:boolean;focus:Focus;locked:boolean;development:boolean
- canUndo?:boolean;canRedo?:boolean;canEdit?:boolean;hasSelection?:boolean;inCodeMirror?:boolean;modal?:boolean;showDevTools?:boolean;updatesReady?:boolean;docxAvailable?:boolean;analysis?:'open'|'active'
+ canUndo?:boolean;canRedo?:boolean;canEdit?:boolean;hasSelection?:boolean;inCodeMirror?:boolean;modal?:boolean;showDevTools?:boolean;updatesReady?:boolean;docxAvailable?:boolean
 }
 interface Command {
  id:string;labelKey:string;group:Group;accelerator?:string;requires:Requirement;separator?:boolean;macOnly?:boolean
@@ -62,15 +62,15 @@ function enabled(requirement:Requirement,context:ApplicationMenuContext):boolean
  if(context.locked)return false
  switch(requirement){
   case'document':return !!document
-  case'editable':return context.analysis!=='active'&&!!document&&!document.readonly
+  case'editable':return !!document&&!document.readonly
   case'editing':return !(document?.kind==='markdown'&&context.focus==='editor'&&(context.mode==='preview'||context.inCodeMirror===false))&&editing&&context.canEdit!==false&&(context.focus==='field'||context.focus==='sql'||!document?.readonly)
   case'textEditing':return context.focus!=='grid'&&enabled('editing',context)
   case'selection':return editing
   case'markdown':return document?.kind==='markdown'
-  case'csv':return context.analysis!=='active'&&document?.kind==='csv'&&document.csvView!=='text'
+  case'csv':return document?.kind==='csv'&&document.csvView!=='text'
   case'undo':return editing&&context.canEdit!==false&&(context.focus==='field'||context.focus==='sql'||!document?.readonly)&&(context.canUndo??(['field','cell','sql','grid'].includes(context.focus)))
   case'redo':return editing&&context.canEdit!==false&&(context.focus==='field'||context.focus==='sql'||!document?.readonly)&&(context.canRedo??(['field','cell','sql','grid'].includes(context.focus)))
-  case'tabs':return context.documents.length>1||!!context.analysis
+  case'tabs':return context.documents.length>1
   case'updates':return !!context.updatesReady
   case'recents':return context.recents.length>0
   default:return true

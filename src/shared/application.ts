@@ -1,6 +1,6 @@
 export interface ApplicationUiState {
  activeId:string|null;mode:'edit'|'split'|'preview';focus:'none'|'editor'|'field'|'grid'|'cell'|'sql';locked:boolean
- canUndo?:boolean;canRedo?:boolean;canEdit?:boolean;hasSelection?:boolean;inCodeMirror?:boolean;modal?:boolean;csvView?:'table'|'text';analysis?:'open'|'active'
+ canUndo?:boolean;canRedo?:boolean;canEdit?:boolean;hasSelection?:boolean;inCodeMirror?:boolean;modal?:boolean;csvView?:'table'|'text'
 }
 export interface ApplicationCommand {id:string;argument?:string|number}
 export interface ApplicationShortcut {id:string;label:string;accelerator:string|null;enabled:boolean}
