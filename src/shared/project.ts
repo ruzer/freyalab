@@ -1,4 +1,5 @@
 import {z} from 'zod'
+import {t} from './i18n'
 import {filterOperators} from './table-conditions'
 
 export const projectFile='proyecto.freyalab'
@@ -51,7 +52,7 @@ const result=z.strictObject({
 })
 export const projectManifest=z.strictObject({format:z.literal(format),version:z.literal(1),id,name:storedName,createdAt:time,
  sources:z.array(source),recipes:z.array(recipe),results:z.array(result)}).superRefine((value,context)=>{
- const issue=(key:string,index:number)=>context.addIssue({code:'custom',path:[key,index],message:'Referencia de proyecto inválida'})
+ const issue=(key:string,index:number)=>context.addIssue({code:'custom',path:[key,index],message:t('project.error.reference')})
  const sources=new Map(value.sources.map(source=>[source.id,source]))
  const recipes=new Map(value.recipes.map(recipe=>[recipe.id,recipe]))
  for(const [index,source] of value.sources.entries()){

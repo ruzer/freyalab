@@ -1036,6 +1036,7 @@
  "project.error.file": "The manifest must be a regular file up to 4 MiB.",
  "project.error.json": "The manifest does not contain valid UTF-8 JSON.",
  "project.error.schema": "The manifest does not match the FreyaLab project format.",
+ "project.error.reference": "Invalid project reference.",
  "project.error.changed": "The project file changed outside FreyaLab.",
  "project.error.readonly": "The project changed or is read-only.",
  "project.error.recent": "That location is not in recent projects.",
