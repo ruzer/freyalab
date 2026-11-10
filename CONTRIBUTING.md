@@ -35,7 +35,7 @@ plan=$(git diff --name-only --no-renames -z origin/main...HEAD | node scripts/ci
 
 El propietario debe configurar **Gate** como check requerido en la protección de `main`. Gate exige un plan válido y, cuando corresponde Verify, el éxito de las tres plataformas. La aceptación de CI-1b no modifica la protección.
 
-En los push a `main`, Intel se añade cuando cambian entradas del producto, pruebas o construcción. Cada noche a las 07:23 UTC (01:23 en Ciudad de México) se ejecuta sólo Intel sobre `main`. Intel reparte ese trabajo entre `shell-md` (tipos, unitarias y rápidas de Shell/Markdown) y `csv-package` (rápidas CSV, perf/solo y paquete). Las ejecuciones de `main` tienen grupos independientes. Un commit nuevo en un PR cancela las corridas anteriores de ese PR.
+En los push a `main`, Intel se añade cuando cambian entradas del producto, pruebas o construcción. Cada noche a las 07:23 UTC (01:23 en Ciudad de México) se ejecuta sólo Intel sobre `main`. Intel reparte ese trabajo en tres jobs paralelos. `shell-md` ejecuta tipos, unitarias y rápidas de Shell/Markdown, `csv` ejecuta rápidas de CSV y toda la fase perf/solo, y `package` construye y prueba la aplicación empaquetada. Las ejecuciones de `main` tienen grupos independientes. Un commit nuevo en un PR cancela las corridas anteriores de ese PR.
 
 Los grupos están en `tests/e2e/groups.ts`. `shell` y `md` enumeran archivos; `csv` contiene los demás. Cada prueba pertenece a un único proyecto en la ejecución completa. Registra los archivos nuevos en su área; un archivo sin registrar cae en `csv` y sigue protegido en CI. Cambiar de grupo no permite borrar ni debilitar aserciones.
 
