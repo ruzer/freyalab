@@ -99,7 +99,6 @@
   {id:'query',label:large?'Filtrar archivo completo':'Consulta avanzada',detail:large?'Filtrar por texto, número, fecha o regex al pulsar Aplicar':'Filtrar por texto, número, fecha o regex; ordenar varias columnas · solo vista',disabled:large&&(!viewReady||changingView),run:()=>large?openLargeFilters():showQuery=!showQuery},
   {id:'extract',label:'Extraer filas a un archivo nuevo…',detail:'Filtra por condiciones y columnas el archivo grande y crea un archivo nuevo; el original no se modifica',disabled:!large,run:()=>{showQuery=false;showExtract=!showExtract}},
   {id:'clearQuery',label:large?'Quitar búsqueda y filtros':'Quitar filtros y orden',detail:'Restaura la vista de todas las filas; no cambia el documento',disabled:large?!largeView:!search&&!Object.values(filters).some(Boolean)&&!sort&&!order.length&&!conditions.length,run:()=>{if(large)return clearView();search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}},
-  {id:'openAnalysis',label:t('analysis.tab.command'),detail:t('analysis.tab.search'),disabled:false,run:onanalysis},
   {id:'sql',label:'Análisis SQL y asistentes',detail:'Mostrar u ocultar agrupaciones, tablas dinámicas (pivot) y cruces de archivos con DuckDB',disabled:false,run:()=>{showQuery=false;return toggleDock('sql')}},
   {id:'statistics',label:'Estadísticas y exploración',detail:large?'Las estadísticas llegan en una fase posterior':'Mostrar u ocultar perfiles, frecuencias, valores faltantes, duplicados y correlación',disabled:large,run:()=>toggleDock('resumen')},
   {id:'charts',label:'Gráficos',detail:'Mostrar u ocultar histogramas, barras, líneas, dispersión, mapas de calor y cajas',disabled:false,run:()=>{showQuery=false;return onsummary?.()}},
@@ -127,7 +126,9 @@
   {id:'undo',label:'Deshacer edición CSV',detail:commandTitle('edit.undo','Un paso del historial compartido'),disabled:locked,run:()=>undoEdit()},
   {id:'redo',label:'Rehacer edición CSV',detail:commandTitle('edit.redo','Un paso del historial compartido'),disabled:locked,run:()=>undoEdit(true)},
   {id:'copyMarkdown',label:'Copiar como Markdown',detail:'Rango, filas marcadas o vista filtrada, según la selección',disabled:locked||busy,run:copyMarkdown},
-  ...rangeActions.filter(([action])=>action!=='transformations').map(([action,label])=>({id:action,label,detail:'Necesita un rango de celdas seleccionado en la vista',disabled:locked||!cellRange||busy,run:()=>rangeAction(action)}))
+  ...rangeActions.filter(([action])=>action!=='transformations').map(([action,label])=>({id:action,label,detail:'Necesita un rango de celdas seleccionado en la vista',disabled:locked||!cellRange||busy,run:()=>rangeAction(action)})),
+  // Los términos compartidos mantienen su primer resultado mientras exista el panel lateral.
+  {id:'openAnalysis',label:t('analysis.tab.command'),detail:t('analysis.tab.search'),disabled:false,run:onanalysis}
  ])
  const contextCommands=$derived((context?.kind==='rows'?[...(large&&viewActive?['viewDocument']:[]),'insertRowBefore','insertRowAfter','duplicateRows','deleteRows','rows-trim','rows-upper','rows-lower','transformations','copyMarkdown','undo','redo']:context?.kind==='columns'?['sortAscending','sortDescending','columnFilter','columnStats','column-upper','column-lower','column-trim','columnDuplicates','insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn','transformations','copyMarkdown','undo','redo']:[]).map(id=>commands.find(command=>command.id===id)!))
  const rangeCommands=$derived(rangeActions.map(([action])=>commands.find(command=>command.id===action)!))
