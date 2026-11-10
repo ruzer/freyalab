@@ -1,4 +1,4 @@
-# Checklist de publicación — v0.1.0-alpha.2 (22b871f)
+# Candidato sin publicar — v0.1.0-alpha.2 (22b871f)
 
 - Commit de código `22b871fc68f81dcf10291f0281ea3a666cc5b0cc`.
 - [CI de main](https://github.com/ruzer/freyalab/actions/runs/41971176672), completada con éxito en los cuatro trabajos de verificación de Linux, Windows, macOS Apple silicon y macOS Intel.
@@ -14,4 +14,4 @@
 
 Los SHA-256 proceden de los archivos `SHA256SUMS.txt` de este candidato y se cotejaron de nuevo con los cinco archivos descargados. Los cuatro trabajos confirmaron el commit de código, construyeron los paquetes y completaron las pruebas automatizadas del paquete. Los cinco archivos tienen resultado `passed` en `packagedExecution` de sus respectivos `test-results/package-smoke.json`.
 
-Comprobaciones manuales pendientes de Gatekeeper y SmartScreen, montaje de AppImage con FUSE e integración del escritorio de Linux. La publicación sigue pendiente de esos gates manuales.
+Comprobaciones manuales pendientes de Gatekeeper y SmartScreen, montaje de AppImage con FUSE e integración del escritorio de Linux. Este candidato quedó sin publicar y sin etiqueta.
