@@ -1036,6 +1036,7 @@
  "project.error.file": "El manifiesto debe ser un archivo regular de hasta 4 MiB.",
  "project.error.json": "El manifiesto no contiene JSON válido en UTF-8.",
  "project.error.schema": "El manifiesto no cumple el contrato de FreyaLab.",
+ "project.error.reference": "Referencia de proyecto inválida.",
  "project.error.changed": "El archivo del proyecto cambió fuera de FreyaLab.",
  "project.error.readonly": "El proyecto cambió o está en solo lectura.",
  "project.error.recent": "Esa ruta no está entre los proyectos recientes.",
