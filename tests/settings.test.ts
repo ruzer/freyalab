@@ -43,6 +43,15 @@ describe('APP-03 · modelo y persistencia de ajustes',()=>{
   for(const editor of [{indent:8},{indent:'4'},{tabIndents:'true'},{unknown:true}])await expect(store.set({editor})).rejects.toThrow(/ajustes|settings/i)
   expect(await readFile(path)).toEqual(before)
  })
+ it('TXT-02a · colores predeterminados y preferencia conservada en parches de sangría',async()=>{
+  const previous={...defaultSettings(),editor:{tabIndents:false,indent:2}}
+  await writeFile(path,JSON.stringify(previous))
+  expect((await store.get()).values.editor.csvColumnColors).toBe(true)
+  expect(await disk()).toEqual(previous)
+  await store.set({editor:{csvColumnColors:false}})
+  await store.set({editor:{indent:4}});await store.set({tema:'dark'})
+  expect((await new SettingsStore(path).get()).values.editor).toMatchObject({indent:4,csvColumnColors:false})
+ })
  it.each([undefined,null,{},'localStorage bloqueado'])('S4 · %j usa defaults y finaliza la migración sin inventar preferencias',async value=>{
   const state=await store.migrate(value);expect(state.values).toEqual(defaultSettings());expect(state.migrationPending).toBe(false);expect(await disk()).toEqual(defaultSettings())
  })
