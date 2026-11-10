@@ -85,6 +85,8 @@
  "csvText.codec.lossyWarning": "El texto no se puede volver a codificar byte a byte. Se abrió en solo lectura para conservar el original.",
  "csvText.codec.unrepresentable": "No se puede guardar en {encoding}: el carácter de la línea {line} no se puede representar sin pérdida.",
  "textEncoding.warning.pending": "El archivo no es UTF-8. Revisa el texto y confirma Windows-1252 o Latin-1 antes de editar. El original sigue intacto.",
+ "textEncoding.warning.nulSuggested": "El archivo contiene bytes NUL y parece estar en {encoding} sin BOM. Revisa el texto y confirma la codificación antes de editar.",
+ "textEncoding.warning.nulAmbiguous": "El archivo contiene bytes NUL. Revisa y confirma su codificación antes de editar.",
  "textEncoding.warning.sample": "Muestra de solo lectura: primer MiB. El archivo supera 10 MiB.",
  "textEncoding.error.bomMismatch": "La codificación elegida no coincide con el BOM del archivo.",
  "textEncoding.error.bomSave": "La codificación elegida no admite el BOM del archivo. Elige una codificación Unicode para conservarlo.",

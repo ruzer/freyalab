@@ -26,11 +26,34 @@ it.each([
 ] as const)('abre y guarda %s en %s conservando BOM y finales mixtos',async(name,encoding,bom)=>{
  const original=bytes(mixed,encoding,bom),path=await fixture(name,original),document=await documents.open(path)
  expect(document).toMatchObject({text:mixed,encoding,bom:!!bom.length,dirty:false,readonly:false})
+ expect(document.encodingPending).toBeFalsy()
  await documents.save(document.id)
  expect(await readFile(path)).toEqual(original)
  await documents.update(document.id,mixed+'\r\nñ')
  await documents.save(document.id)
  expect(await readFile(path)).toEqual(bytes(mixed+'\r\nñ',encoding,bom))
+})
+
+it.each([['utf16le','UTF-16 LE'],['utf16be','UTF-16 BE']] as const)('sugiere %s sin BOM según la posición de NUL y pide confirmación',async(encoding,label)=>{
+ const original=bytes('Hola\n',encoding),path=await fixture('notas.txt',original),doc=await documents.open(path)
+ expect(doc).toMatchObject({text:'Hola\n',encoding,bom:false,encodingPending:true,readonly:true,dirty:false})
+ expect(doc.warning).toContain(label)
+ await expect(documents.update(doc.id,'Edición')).rejects.toThrow(/Confirma/)
+ await expect(documents.save(doc.id)).rejects.toThrow(/Confirma/)
+ const reopened=await documents.reopenTextEncoding(doc.id,encoding)
+ expect(reopened).toMatchObject({text:'Hola\n',encoding,bom:false,readonly:false,dirty:false})
+ expect(reopened.encodingPending).toBeFalsy()
+ await documents.update(doc.id,'Hola\nAdiós\n')
+ expect(await readFile(path)).toEqual(original)
+ await documents.save(doc.id)
+ expect(await readFile(path)).toEqual(bytes('Hola\nAdiós\n',encoding))
+})
+
+it.each([Buffer.from([65,0,0,66]),Buffer.from([65,0,66])])('mantiene pendiente un patrón NUL sin orden inequívoco (%j)',async original=>{
+ const path=await fixture('notas.txt',original),doc=await documents.open(path)
+ expect(doc).toMatchObject({encodingPending:true,readonly:true,dirty:false})
+ expect(doc.warning).toContain('NUL')
+ expect(await readFile(path)).toEqual(original)
 })
 
 it('pide confirmar un texto de un byte, y Latin-1 conserva incluso un byte indefinido en Windows-1252',async()=>{
