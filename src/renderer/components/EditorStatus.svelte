@@ -1,18 +1,13 @@
 <script lang="ts">
- import type {CsvColumnPosition} from '../lib/csv-column-colors'
  import type {editorPosition} from '../lib/editor-status'
  import {formatNumber,plural,t} from '../lib/i18n.svelte'
  import type {Settings} from '../../shared/settings'
  type Ending='LF'|'CRLF'
- let {position,csvPosition,ending,kind,indent,readonly,onending}:{
-  position:ReturnType<typeof editorPosition>;csvPosition?:CsvColumnPosition;ending:Ending|'CR'|'mixed';kind:string;indent:Settings['editor']['indent'];readonly:boolean;onending:(ending:Ending)=>boolean
+ let {position,ending,kind,indent,readonly,onending}:{
+  position:ReturnType<typeof editorPosition>;ending:Ending|'CR'|'mixed';kind:string;indent:Settings['editor']['indent'];readonly:boolean;onending:(ending:Ending)=>boolean
  }=$props()
  let announcement=$state('')
  const location=$derived({line:formatNumber(position.line),column:formatNumber(position.column)})
- const csvLocation=$derived(csvPosition?{
-  label:t(csvPosition.extra?'csvText.columnExtra':'csvText.columnPosition',{column:formatNumber(csvPosition.column),total:formatNumber(csvPosition.total)}),
-  name:csvPosition.name
- }:undefined)
  function portal(node:HTMLElement){
   document.getElementById('document-status')?.appendChild(node)
   return{destroy(){node.remove()}}
@@ -26,9 +21,6 @@
 
 <div class="editor-status" role="group" aria-label={t('editor.status.group')} use:portal>
  <span title={t('editor.status.positionLong',location)}>{t('editor.status.position',location)}</span>
- {#if csvLocation}
-  <span class="csv-column-position" role="status" aria-label={csvLocation.name?`${csvLocation.label}, ${csvLocation.name}`:csvLocation.label}>{csvLocation.name?`${csvLocation.label} · ${csvLocation.name}`:csvLocation.label}</span>
- {/if}
  {#if position.selection}
   <span class="selection">{plural('csvText.lines',position.selection.lines)}, {plural('editor.status.characters',position.selection.characters)}</span>
  {/if}
@@ -44,6 +36,6 @@
 
 <style>
  .editor-status{display:flex;align-items:center;gap:8px;min-width:0;white-space:nowrap}
- .selection,.csv-column-position{min-width:0;overflow:hidden;text-overflow:ellipsis}
+ .selection{min-width:0;overflow:hidden;text-overflow:ellipsis}
  select{flex:none;padding:0 3px;font:inherit;color:inherit}
 </style>

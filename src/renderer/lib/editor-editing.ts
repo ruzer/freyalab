@@ -39,7 +39,7 @@ export function editorEditingExtensions(kind:string):Extension {
  ]
 }
 
-export function editorIndentation(editing?:Pick<Settings['editor'],'indent'|'tabIndents'>):Extension {
+export function editorIndentation(editing?:Settings['editor']):Extension {
  if(!editing)return []
  // Solo Tab sangra. CodeMirror deja salir con Mayús+Tab o con Esc seguido de Tab.
  return [indentUnit.of(editing.indent==='tab'?'\t':' '.repeat(editing.indent)),editing.tabIndents?indentOnTab:[]]

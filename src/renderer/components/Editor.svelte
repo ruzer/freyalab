@@ -6,7 +6,6 @@
  import {searchKeymap,highlightSelectionMatches,openSearchPanel,gotoLine} from '@codemirror/search'
  import {csvTextDocument,csvLineEndings,csvTextRange,replaceCsvText,insertCsvText,editorText,editorTextChanged,editorLineEnding,convertLineEndings} from '../lib/csv-text-model'
  import {editorPosition} from '../lib/editor-status'
- import {csvColumnExtensions,type CsvColumnPosition} from '../lib/csv-column-colors'
  import EditorStatus from './EditorStatus.svelte'
  import {t} from '../lib/i18n.svelte'
  import {syntaxHighlighting,defaultHighlightStyle,syntaxTree,syntaxTreeAvailable,forceParsing} from '@codemirror/language'
@@ -20,7 +19,7 @@
  import {markdownFormatChange} from '../lib/markdown-editing'
  import {editorEditingExtensions,editorIndentation} from '../lib/editor-editing'
  import type {Settings} from '../../shared/settings'
- let {text='',readonly=false,kind='markdown',label='Editor de texto',showStatus=true,wrapLines=true,showWhitespace=false,csvDelimiter=',',csvHeader=true,csvColors=true,editing,onchange,onscroll,onformatstate,onselection,session,ontransactions,outlineEnabled=false,onoutline,oncurrentline,onblocks}: {onblocks?:(blocks:DiagramBlock[],source:string,complete:boolean)=>void;outlineEnabled?:boolean;onoutline?:(headings:EditorHeading[],source:string)=>void;oncurrentline?:(from:number)=>void;session?:MarkdownSession;ontransactions?:(transactions:readonly Transaction[])=>void;text:string;label?:string;readonly?:boolean;kind?:string;showStatus?:boolean;wrapLines?:boolean;showWhitespace?:boolean;csvDelimiter?:string;csvHeader?:boolean;csvColors?:boolean;editing?:Settings['editor'];onchange:(text:string)=>void;onscroll?:(ratio:number)=>void;onformatstate?:(state:ReturnType<typeof lineFormatState>)=>void;onselection?:(selection:TextSelection|null)=>void}=$props()
+ let {text='',readonly=false,kind='markdown',label='Editor de texto',showStatus=true,wrapLines=true,showWhitespace=false,editing,onchange,onscroll,onformatstate,onselection,session,ontransactions,outlineEnabled=false,onoutline,oncurrentline,onblocks}: {onblocks?:(blocks:DiagramBlock[],source:string,complete:boolean)=>void;outlineEnabled?:boolean;onoutline?:(headings:EditorHeading[],source:string)=>void;oncurrentline?:(from:number)=>void;session?:MarkdownSession;ontransactions?:(transactions:readonly Transaction[])=>void;text:string;label?:string;readonly?:boolean;kind?:string;showStatus?:boolean;wrapLines?:boolean;showWhitespace?:boolean;editing?:Settings['editor'];onchange:(text:string)=>void;onscroll?:(ratio:number)=>void;onformatstate?:(state:ReturnType<typeof lineFormatState>)=>void;onselection?:(selection:TextSelection|null)=>void}=$props()
  let host:HTMLDivElement
  let view:EditorView|undefined
  let mountedSession:MarkdownSession|undefined
@@ -29,9 +28,6 @@
  const permission=new Compartment()
  const textDisplay=new Compartment()
  const indentation=new Compartment()
- const csvDisplay=new Compartment()
- let csvPosition=$state<CsvColumnPosition>()
- function csvExtensions(delimiter:string,header:boolean,colors:boolean){return csvColumnExtensions(delimiter,header,colors,value=>{csvPosition=value})}
  function displayExtensions(wrap:boolean,spaces:boolean){return[
   ...(wrap?[EditorView.lineWrapping]:[]),...(spaces?[highlightWhitespace()]:[]),
   ...(kind==='csv-text'?[EditorState.phrases.of({
@@ -154,7 +150,7 @@
   const sessionAtMount=session,dispatch=ontransactions;mountedSession=sessionAtMount
   const textDocument=!sessionAtMount&&['markdown','text','mermaid','csv-text'].includes(kind)?csvTextDocument(text):undefined
   // Los números van antes del control de plegado para dejarlo fuera del separador lateral.
-  const extensions=[...(textDocument?.extensions??[]),textDisplay.of(displayExtensions(wrapLines,showWhitespace)),...(kind==='csv-text'?[csvDisplay.of(csvExtensions(csvDelimiter,csvHeader,csvColors))]:[]),indentation.of(editorIndentation(editing)),EditorView.contentAttributes.of({'aria-label':label}),lineNumbers(),editorEditingExtensions(kind),(['markdown','mermaid'].includes(kind)?diagramMarkExtensions:[]),outlinePadding.of(outlineEnabled?[scrollPastEnd(),EditorView.theme({'.cm-scroller':{paddingBottom:'1lh'}})]:[]),highlightActiveLine(),drawSelection(),...(!sessionAtMount?[history()]:[]),highlightSelectionMatches(),keymap.of([{key:'Mod-b',run:shortcut('bold')},{key:'Mod-i',run:shortcut('italic')},{key:'Mod-Shift-x',run:shortcut('strike')},...(['paragraph','heading1','heading2','heading3'] as const).map((action,index)=>({key:`Mod-Alt-${index}`,run:shortcut(action)})),...defaultKeymap,...historyKeymap,...searchKeymap]),syntaxHighlighting(defaultHighlightStyle),permission.of([EditorState.readOnly.of(readonly),EditorView.editable.of(!readonly)]),EditorView.theme({
+  const extensions=[...(textDocument?.extensions??[]),textDisplay.of(displayExtensions(wrapLines,showWhitespace)),indentation.of(editorIndentation(editing)),EditorView.contentAttributes.of({'aria-label':label}),lineNumbers(),editorEditingExtensions(kind),(['markdown','mermaid'].includes(kind)?diagramMarkExtensions:[]),outlinePadding.of(outlineEnabled?[scrollPastEnd(),EditorView.theme({'.cm-scroller':{paddingBottom:'1lh'}})]:[]),highlightActiveLine(),drawSelection(),...(!sessionAtMount?[history()]:[]),highlightSelectionMatches(),keymap.of([{key:'Mod-b',run:shortcut('bold')},{key:'Mod-i',run:shortcut('italic')},{key:'Mod-Shift-x',run:shortcut('strike')},...(['paragraph','heading1','heading2','heading3'] as const).map((action,index)=>({key:`Mod-Alt-${index}`,run:shortcut(action)})),...defaultKeymap,...historyKeymap,...searchKeymap]),syntaxHighlighting(defaultHighlightStyle),permission.of([EditorState.readOnly.of(readonly),EditorView.editable.of(!readonly)]),EditorView.theme({
    '&':{height:'100%',fontSize:'13px'},
    '.cm-scroller':{fontFamily:'"JetBrains Mono", monospace',lineHeight:'1.8'},
    '.cm-content':{padding:'20px 0'},
@@ -188,12 +184,11 @@
  $effect(()=>{const locked=readonly;if(view)view.dispatch({effects:permission.reconfigure([EditorState.readOnly.of(locked),EditorView.editable.of(!locked)])})})
  $effect(()=>{const value=text;if(view&&!mountedSession&&value!==editorText(view.state)){applying=true;view.dispatch(view.state.field(csvLineEndings,false)?replaceCsvText(view.state,0,view.state.doc.length,value):{changes:{from:0,to:view.state.doc.length,insert:value}});applying=false}})
  $effect(()=>{const extensions=editorIndentation(editing);if(view)view.dispatch({effects:indentation.reconfigure(extensions)})})
- $effect(()=>{const delimiter=csvDelimiter,header=csvHeader,colors=csvColors;if(view&&kind==='csv-text')view.dispatch({effects:csvDisplay.reconfigure(csvExtensions(delimiter,header,colors))})})
  $effect(()=>{const wrap=wrapLines,spaces=showWhitespace;if(view)view.dispatch({effects:textDisplay.reconfigure(displayExtensions(wrap,spaces))})})
 </script>
 {#if kind==='markdown'||kind==='mermaid'}<span class:sr-only={!generalDiagramError} class="diagram-editor-notice" role="status" aria-label="Diagnósticos de diagramas" aria-live="polite">{diagnosticSummary}</span>{/if}
-<div class="code-editor" class:csv-column-editor={kind==='csv-text'} bind:this={host} aria-label="Editor de texto"></div>
-{#if showStatus&&position}<EditorStatus {position} {csvPosition} {ending} {kind} {readonly} indent={editing?.indent??2} onending={changeEnding}/>{/if}
+<div class="code-editor" bind:this={host} aria-label="Editor de texto"></div>
+{#if showStatus&&position}<EditorStatus {position} {ending} {kind} {readonly} indent={editing?.indent??2} onending={changeEnding}/>{/if}
 
 <style>
  .diagram-editor-notice:not(.sr-only){padding:6px 10px;font-size:12px;background:var(--panel);color:var(--text);border-bottom:1px solid var(--border)}
@@ -201,17 +196,6 @@
  .code-editor :global(.cm-foldPlaceholder){color:var(--text);background:var(--hover);border-color:var(--border)}
  .code-editor :global(.cm-foldGutter){color:var(--text)}
  :global(.dark) .code-editor{--diagram-error-bg:var(--danger-tint);--diagram-error-ink:var(--danger)}
- .csv-column-editor{--csv-column-1:#1d4ed8;--csv-column-2:#92400e;--csv-column-3:#166534;--csv-column-4:#7e22ce;--csv-column-5:#be123c;--csv-column-6:#115e59;--csv-column-tint:8%}
- :global(.dark) .csv-column-editor{--csv-column-1:#93c5fd;--csv-column-2:#fbbf24;--csv-column-3:#4ade80;--csv-column-4:#d8b4fe;--csv-column-5:#fda4af;--csv-column-6:#5eead4;--csv-column-tint:14%}
- .csv-column-editor :global(.csv-column-1){color:var(--csv-column-1)}
- .csv-column-editor :global(.csv-column-2){color:var(--csv-column-2)}
- .csv-column-editor :global(.csv-column-3){color:var(--csv-column-3)}
- .csv-column-editor :global(.csv-column-4){color:var(--csv-column-4)}
- .csv-column-editor :global(.csv-column-5){color:var(--csv-column-5)}
- .csv-column-editor :global(.csv-column-6){color:var(--csv-column-6)}
- .csv-column-editor :global(.csv-column-muted){color:var(--muted)}
- .csv-column-editor :global(.csv-current-column){background:color-mix(in srgb,var(--accent) var(--csv-column-tint),transparent)}
- .csv-column-editor :global(.csv-header-line){font-weight:500}
  @media(forced-colors:active){
   .code-editor{--selection:Highlight;--selection-inactive:Highlight}
   .code-editor :global(.cm-activeLine){background-color:transparent}
