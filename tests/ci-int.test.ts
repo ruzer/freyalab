@@ -7,7 +7,7 @@ import {expect,it} from 'vitest'
 type Job={os:string;part?:string;projects?:string}
 type Suite={title:string;suites?:Suite[];specs?:{file:string;title:string;tests:{projectName:string}[]}[]}
 const require=createRequire(import.meta.url)
-const workflow=readFileSync(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8')
+const workflow=readFileSync(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8').replaceAll('\r\n','\n')
 const {scripts}=JSON.parse(readFileSync(new URL('../package.json',import.meta.url),'utf8'))
 
 function selection(script:string){
@@ -31,19 +31,43 @@ function list(...args:string[]):string[]{
  return report.suites.flatMap(suite=>identities(suite))
 }
 
-it('las dos partes Intel conservan todas las identidades de Playwright exactamente una vez',()=>{
+it('Intel conserva las identidades de desarrollo en dos partes y prueba el paquete en paralelo',()=>{
  const matrices=[...workflow.matchAll(/^\s*'(\[\{.*\}\])'(?:\s*\|\|)?[ \t]*$/gm)]
   .map(([,rows])=>(JSON.parse(rows) as Job[]).filter(job=>job.os==='macos-15-intel'))
  const scheduled=matrices[0],push=matrices.at(-1)
- expect(scheduled?.map(job=>[job.part,job.projects])).toEqual([['shell-md','--project=shell --project=md'],['csv-package','--project=csv']])
+ expect(scheduled?.map(job=>[job.part,job.projects])).toEqual([['shell-md','--project=shell --project=md'],['csv','--project=csv'],['package',undefined]])
+ expect(matrices[1]).toEqual([])
  expect(push).toEqual(scheduled)
  expect(workflow).toMatch(/run: npm run test:e2e:fast -- [^\n]*\$\{\{ matrix\.projects \}\}/)
  const all=list().sort()
  expect(new Set(all).size).toBe(all.length)
- const [first,second]=scheduled.map(job=>list(...selection('test:e2e:fast'),...job.projects!.split(' ')))
+ const [first,second]=scheduled.filter(job=>job.projects).map(job=>list(...selection('test:e2e:fast'),...job.projects!.split(' ')))
  const perf=list(...selection('test:e2e:perf'))
  expect(first.length).toBeGreaterThan(0)
  expect(second.length).toBeGreaterThan(0)
  expect(perf.length).toBeGreaterThan(0)
  expect([...first,...second,...perf].sort()).toEqual(all)
 },60_000)
+
+it('la parte empaquetada construye su app y conserva exactamente los specs del paquete',()=>{
+ expect(workflow).toMatch(/name: E2E fast \(macOS and Windows\)\n[^\n]*\n\s*if: .*matrix\.part != 'package'/)
+ expect(workflow).toMatch(/run: npm run build\n\s*if: matrix\.part == 'package'/)
+ expect(workflow).toMatch(/name: Package application directory\n[^\n]*\n\s*if: \(!matrix\.part \|\| matrix\.part == 'package'\)/)
+ const packaged=[...workflow.matchAll(/run: (?:xvfb-run -a )?npx playwright test (tests\/e2e\/[^\n]+) --output=packaged-test-results/g)].map(([,specs])=>specs.split(' '))
+ const original='structural-context commands search sql charts structure ordering range-cancellation selection-statistics statistics-reports'.split(' ').map(name=>`tests/e2e/${name}.spec.ts`)
+ expect(packaged).toEqual([original,original])
+})
+
+it('restaura las descargas por sistema, arquitectura y lockfile sin compartir un caché parcial de builder',()=>{
+ const caches=[...workflow.matchAll(/- name: Cache (Electron|electron-builder) downloads\n([\s\S]+?)(?=\n      - )/g)]
+ expect(caches.map(([,name])=>name)).toEqual(['Electron','electron-builder'])
+ for(const [,name,step] of caches){
+  expect(step).toMatch(/uses: actions\/cache@[a-f0-9]{40}/)
+  expect(step).toContain(`key: ${name.toLowerCase()}-v1-\${{ runner.os }}-\${{ runner.arch }}-\${{ hashFiles('package-lock.json') }}`)
+  expect(step).not.toMatch(/restore-keys|node_modules/)
+ }
+ const packageCondition=workflow.match(/name: Package application directory\n[^\n]*\n\s*if: ([^\n]+)/)?.[1]
+ expect(caches[1][2]).toContain(`if: ${packageCondition}`)
+ expect(caches[0].index).toBeLessThan(workflow.indexOf('- run: npm ci'))
+ expect(workflow).toContain("checksums: require('electron/checksums.json')")
+})
