@@ -31,6 +31,8 @@ Como persona que trabaja con datos originales, quiero crear conjuntos derivados,
 3. **La primera versión respeta los límites actuales del motor.** Todo análisis indica si usa datos **completos, filtrados o una muestra**.
 4. **SHA-256 completo al registrar una fuente**, con progreso y cancelación. Las comprobaciones rápidas detectan posibles cambios, pero **no son prueba de identidad**; antes de una operación que exija identidad exacta se vuelve a verificar la huella completa.
 
+El 2026-11-10 el propietario aprobó el camino AN-1 → PRJ-01 → PRJ-05 con DuckDB, ECharts y el constructor de FreyaLab. El contrato de PRJ-02 incorpora el muestreo y las recetas encadenadas antes de su implementación.
+
 ### 4. El contrato
 
 #### 4.1 Proyecto y carpeta
@@ -60,6 +62,10 @@ Claves en inglés (coinciden con los tipos del código); la interfaz habla espa�
       {"op": "order", "by": [{"column": {"position": 7, "name": "POBTOT"}, "descending": true, "numeric": true}]}
     ],
     "createdAt": "2026-10-27T18:10:00Z"
+  }, {
+    "id": "rec2", "name": "Oaxaca, adultos · muestra", "baseRecipeId": "rec1", "sourceSha256": "…", "semantics": 1,
+    "steps": [{"op": "sample", "method": "random", "rows": 10000, "seed": 20261110}],
+    "createdAt": "2026-11-10T18:10:00Z"
   }],
   "results": [{
     "id": "res1", "kind": "extract", "recipeId": "rec1", "path": "02_datasets/poblacion_oaxaca.csv",
@@ -83,7 +89,8 @@ Claves en inglés (coinciden con los tipos del código); la interfaz habla espa�
 | `sources[].sha256` | Identidad del contenido: lo único que prueba que es «esa» fuente. Se calcula una sola vez al registrar (4.3) |
 | `sources[].quick` | Detector de cambios (tamaño, `mtime`, SHA-256 de los primeros y últimos 64 KiB). **No es prueba de identidad** |
 | `sources[].format` y `schema` | Se **fijan** al registrar y no se vuelven a autodetectar al ejecutar (RECIPES §3, «Formato»): codificación, BOM, delimitador, encabezado, saltos de línea, y columnas por posición (desde 1) y nombre exacto, incluidos vacíos y duplicados |
-| `recipes[]`, `results[]` | Ver 4.4 y 4.5 |
+| `recipes[]` | Cada receta indica exactamente uno de `sourceId` o `baseRecipeId`. Los pasos y la cadena se validan según 4.4 |
+| `results[]` | Ver 4.5 y 4.6 |
 | Sin valores de celdas | El manifiesto nunca guarda filas ni muestras; solo constantes de filtro escritas por la persona |
 
 #### 4.3 Fuentes: registro, protección y huellas
@@ -105,13 +112,14 @@ El coste de la huella completa **no se promete**: E1 midió unos 30 s por GiB va
 
 #### 4.4 Receta (versión 1)
 
-Una receta es una lista **ordenada y cerrada** de pasos sobre una fuente registrada. Reutiliza los tipos que ya existen (`TableFilter`, `TableSort`) y se ejecuta con el contrato I0; **no se añade motor, SQL ni lenguaje**.
+Una receta es una lista **ordenada y cerrada** de pasos sobre una fuente registrada o sobre el resultado lógico de otra receta del mismo proyecto. Reutiliza los tipos que ya existen (`TableFilter`, `TableSort`) y se ejecuta con el contrato I0. Se conserva el motor y el conjunto cerrado de operaciones.
 
 | Paso | Contenido |
 |---|---|
 | `filter` | `mode` (`all` o `any`) y condiciones: columna `{position, name}`, operador de la lista de `FilterOperator`, valor **como texto**, `caseSensitive` |
 | `select` | Columnas `{position, name}` en el orden de salida |
 | `order` | Lista de `{column, descending, numeric}` |
+| `sample` | `method: "first"` con `rows`, o `method: "random"` con `seed` y exactamente uno de `rows` o `percent` |
 
 Reglas del contrato:
 - **Columnas por posición y nombre, nunca solo por nombre.** Si el esquema de la fuente cambió, la ejecución se detiene y pide una correspondencia confirmada por posición y nombre; nunca se adivina una columna renombrada.
@@ -121,6 +129,18 @@ Reglas del contrato:
 - Una receta **guarda instrucciones, no datos**. Reproducir exactamente los valores exige la fuente exacta (misma `sourceSha256`); sin ella solo se promete repetir las instrucciones. La interfaz distingue ambos casos.
 - Los **conjuntos derivados** son recetas con nombre humano («Ventas pagadas de Oaxaca»); no crean ningún archivo hasta que la persona pide «Exportar extracción».
 - Se ejecuta sobre la **versión guardada en disco**. Un documento con cambios sin guardar avisa y no se analiza en la v1 (RECIPES §3, «Cambios pendientes»).
+
+**Muestreo.** El paso actúa sobre las filas que llegan a ese punto de la receta. Por ejemplo, después de `filter` muestrea las coincidencias.
+
+| Ejemplo | Regla |
+|---|---|
+| `{"op":"sample","method":"first","rows":10000}` | Toma las primeras N filas en el orden de llegada |
+| `{"op":"sample","method":"random","rows":10000,"seed":20261110}` | Muestreo de depósito (Algorithm R). Usa un generador fijado por la semántica. La propuesta para v1 es SplitMix64 inicializado con `seed`. Recorre una vez, retiene hasta N filas en memoria y las devuelve en el orden del archivo |
+| `{"op":"sample","method":"random","percent":5,"seed":20261110}` | Conserva la fila si `hash(seed, posición física) < umbral`. La posición corresponde a la fuente raíz. El porcentaje objetivo es aproximado. El contrato de semántica v1 fijará el hash y su umbral antes de implementar PRJ-02 |
+
+`rows` es un entero de 1 a 1.000.000, `percent` va de 0,01 a 100 y `seed` es un entero de 32 bits. La misma fuente verificada, receta y semilla producen las mismas filas en el mismo orden. La interfaz propone la semilla, permite editarla y «Otra muestra» genera una nueva.
+
+**Encadenado.** Una receta con `baseRecipeId` ejecuta los pasos de la base y después sus propios pasos, sin escribir archivos intermedios. El origen de toda la cadena es la fuente registrada de la primera receta. Se rechaza completa una cadena cíclica o de más de ocho niveles. Si cambia el esquema de la fuente raíz, se detiene toda la cadena según C9. La extracción explícita sigue disponible para crear un archivo y registrarlo como fuente.
 
 #### 4.5 Resultados y procedencia
 
@@ -132,6 +152,8 @@ Reglas del contrato:
 
 Todo resultado lleva `provenance`: fuente y huella, receta, fecha, motor (aplicación, contrato y `semantics`), **cobertura**, **fidelidad** (`bytes` o `values`, con las normalizaciones, como ya devuelve I0) y advertencias. La interfaz muestra la frase de RECIPES §5: *«Extracto de [fuente] · [N] de [M] registros · [condición legible] · [columnas] · fuente [versión] · [fidelidad]»*; `M` solo aparece si se examinó y verificó toda la fuente. Una vista previa no crea resultado.
 
+La procedencia de una receta encadenada conserva `chain` en orden desde la base hasta la receta ejecutada, por ejemplo `["rec1","rec2"]`, el `sourceSha256` de la fuente raíz y la huella de cada receta de la cadena.
+
 #### 4.6 Cobertura
 
 Todo análisis, gráfico, extracto e informe declara una de tres coberturas, visible en la interfaz y en `provenance.coverage`:
@@ -140,13 +162,16 @@ Todo análisis, gráfico, extracto e informe declara una de tres coberturas, vis
 |---|---|---|
 | `full` | Toda la fuente, sin filtros | «Todos los registros (72.465)» |
 | `filtered` | Un subconjunto definido por una receta, con toda la fuente examinada | «1.250 de 72.465 · Entidad = Oaxaca» |
-| `sample` | Solo una parte examinada (límite del motor, muestra de solo lectura o cancelación) | «Muestra: 200 filas; total no determinado» |
+| `sample`, `complete: true` | La receta tomó una muestra tras recorrer toda la fuente. `sampling` declara `method`, `rows` o `percent` y `seed` para el método aleatorio | «Muestra aleatoria: 10.000 de 72.465 filas · semilla 20261110» |
+| `sample`, `complete: false` | Solo se examinó parte de la fuente (límite del motor, muestra de solo lectura o cancelación) | «Muestra: 200 filas; total no determinado» |
 
-Si la lectura se canceló o solo hay muestra, se dice «parcial» y **no se escribe un «N de M» inventado**. En la v1, las fuentes por encima de los límites del motor (256 MiB y 8 millones de celdas para SQL y gráficos) solo se analizan a través de un extracto que quepa, con su cobertura declarada.
+Si la lectura se canceló o solo hay una muestra parcial, se indica «parcial» y `M` queda sin determinar. Un muestreo por porcentaje identifica el porcentaje como aproximado. La cobertura acompaña a la receta, la extracción y el pie del gráfico. Las fuentes por encima de los límites de SQL y gráficos (256 MiB y 8 millones de celdas) se analizan a través de un conjunto extraído que quepa, con su cobertura declarada.
 
 #### 4.7 Obsolescencia y actualización
 
 El estado de un resultado es `current`, `maybe-stale` (la comprobación rápida de la fuente cambió), `source-missing` o `recipe-changed`. **Actualizar crea una ejecución nueva y explícita** con resumen de qué cambió; no reemplaza ni borra resultados anteriores y nunca presenta uno viejo como actual (ANALYSIS-DATASETS, decisión 3). Si cambió el esquema, se detiene y pide la correspondencia por posición y nombre. El comparador de versiones y «aplicar cambios al original» son PRJ-06 y PRJ-07.
+
+Antes de guardar un cambio en una receta base se enumeran las recetas dependientes («Afecta a 2 recetas: …»). Quedan obsoletas hasta volver a ejecutarlas (PRJ-06). Si se intenta borrar una receta base con dependientes, se bloquea el borrado y se indican las recetas afectadas.
 
 #### 4.8 Escritura del manifiesto y versión del formato
 
@@ -209,7 +234,7 @@ Lo que PRJ-01 a PRJ-07 deben cumplir y que Claude comprobará al revisar cada PR
 | ID | Contenido | Depende de | Tamaño | Criterio principal |
 |---|---|---|---|---|
 | PRJ-01 | Crear y abrir un proyecto, registrar una fuente (SHA-256 con progreso y cancelación), fuente protegida, pestaña «Proyecto», plantilla de carpetas, proyectos recientes | PRJ-00 aprobado | M | C1 a C4, C11 |
-| PRJ-02 | Guardar vistas filtradas como recetas con nombre y ejecutarlas | PRJ-01 | M a L | C5 a C7, C9 |
+| PRJ-02 | Guardar y ejecutar recetas con nombre, con muestreo y base de fuente o receta | PRJ-01 | M a L | C5 a C9 |
 | PRJ-03 | «Exportar extracción» con procedencia guardada (interfaz sobre E1) | PRJ-01 | M | C8, C10 |
 | PRJ-04 | Gráficos guardados ligados a su fuente, con exportación de imagen y de datos | PRJ-02 | M | C8 |
 | PRJ-05 | Informe Markdown con gráficos y su procedencia | PRJ-04 y FL-DRW-001 | M | C8 |
@@ -217,6 +242,19 @@ Lo que PRJ-01 a PRJ-07 deben cumplir y que Claude comprobará al revisar cada PR
 | PRJ-07 | Comparar versiones y aplicar cambios al original | L3 | L | C2 |
 
 Cada historia lleva su prompt para Codex, su plan de pruebas y sus criterios de revisión cuando se detalla; **PRJ-00 no se implementa**.
+
+**Flujo de PRJ-02.** «Partir de» ofrece la fuente o la receta base y preselecciona la vista desde la que se guarda. «Quedarme con» ofrece todas las filas, las primeras N o una muestra aleatoria de N filas o de un porcentaje. En archivos grandes se indica el tamaño estimado del resultado y, si se conoce, el tiempo del último recorrido.
+
+**Aceptación añadida a PRJ-02.**
+
+1. `first`, `random` con `rows` y `random` con `percent` reproducen en tres ejecuciones las filas y el orden del oráculo independiente, con la misma semilla cuando corresponda.
+2. Muestrear 10.000 filas al azar de un archivo de 1 GB termina en una sola pasada y con memoria acotada. Registrar tiempo y memoria máxima.
+3. La muestra conserva ceros iniciales, identificadores largos, campos multilínea y la diferencia entre ausente y vacío (C7).
+4. Una cadena de tres recetas equivale a aplicar sus pasos en una sola. Los ciclos se rechazan.
+5. Editar una base deja sus recetas dependientes obsoletas y borrarla queda bloqueado mientras existan dependientes.
+6. La receta, su extracción (PRJ-03) y un gráfico (PRJ-04) muestran la misma cobertura.
+
+PRJ-02 queda acotado a los métodos descritos. El muestreo estratificado o ponderado, los pasos con expresiones o SQL y las copias ocultas en caché quedan fuera de alcance. Materializar datos requiere una extracción explícita (PRJ-03).
 
 ### 8. Decisiones por confirmar
 
@@ -231,4 +269,4 @@ El propietario aprobó Q1 a Q4. E0 §8 pide además cuatro decisiones antes de i
 
 ### 9. Criterios de revisión de este documento (Claude)
 
-Cada campo del manifiesto tiene regla; las cuatro decisiones del propietario están reflejadas sin ampliarlas; no hay promesas que el motor actual no cumple; los límites y la cobertura aparecen donde corresponde; todo lo reutilizado cita su origen; no hay código ni dependencias nuevas.
+Cada campo del manifiesto tiene regla. El texto refleja las decisiones del propietario y separa el contrato de lo que ya hace el motor. Los límites y la cobertura aparecen donde corresponde. Todo lo reutilizado cita su origen. La entrega contiene solo documentación.
