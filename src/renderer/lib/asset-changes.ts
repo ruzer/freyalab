@@ -1,9 +1,10 @@
 import {EditorState,Transaction} from '@codemirror/state'
+import {editorText} from './csv-text-model'
 import {isolateHistory} from '@codemirror/commands'
 import type {AssetChange} from '../../shared/types'
 
 export function assetTransaction(state:EditorState,source:string,changes:readonly AssetChange[],expected:string,undoable:boolean):Transaction|undefined{
- if(state.sliceDoc()!==source)return
+ if(editorText(state)!==source)return
  let raw=0,position=0
  const mapped:{from:number;to:number;insert:string}[]=[]
  const splitsPair=(index:number)=>index>0&&/[\uD800-\uDBFF]/.test(source[index-1])&&/[\uDC00-\uDFFF]/.test(source[index]??'')
@@ -15,5 +16,5 @@ export function assetTransaction(state:EditorState,source:string,changes:readonl
  }
  // La interfaz está bloqueada durante la copia; ese readOnly temporal no impide adoptar el resultado validado del guardado.
  const transaction=state.update({changes:mapped,annotations:undoable?isolateHistory.of('full'):Transaction.addToHistory.of(false),...(undoable?{userEvent:'input.image'}:{})})
- return transaction.state.sliceDoc()===expected?transaction:undefined
+ return editorText(transaction.state)===expected?transaction:undefined
 }

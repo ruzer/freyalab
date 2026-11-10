@@ -6,6 +6,7 @@
  import {loadSettings} from './lib/settings-client'
  import {Transaction,StateEffect} from '@codemirror/state'
  import {csvTextStatistics} from '../shared/csv-text'
+ import {editorText,editorTextChanged,replaceCsvText} from './lib/csv-text-model'
  import {visibleEditError} from '../shared/text-edit-error'
  import {undo as undoText,redo as redoText,undoDepth,redoDepth} from '@codemirror/commands'
  import {EditorView} from '@codemirror/view'
@@ -204,7 +205,7 @@
   if(!session){
    session=createMarkdownSession(doc.text??'')
    session.state=session.state.update({effects:StateEffect.appendConfig.of(autocompletion({interactionDelay:0,override:[context=>completeCitations(context,async()=>{
-    const source=context.state.sliceDoc();await pending.get(doc.id)
+    const source=editorText(context.state);await pending.get(doc.id)
     if(context.aborted)return[]
     const library=await window.freya.bibliography(doc.id,source)
     return library.ok?library.entries:[]
@@ -222,7 +223,7 @@
   let current=session.state
   for(const transaction of transactions){if(transaction.startState!==current)return;current=transaction.state}
   session.state=current;session.receive?.(transactions)
-  if(transactions.some(transaction=>transaction.docChanged))updateText(id,current.sliceDoc())
+  if(transactions.some(editorTextChanged))updateText(id,editorText(current))
  }}
  function toggleTask(id:string,snapshot:string,reference:TaskReference){
   const doc=documents.find(value=>value.id===id)
@@ -235,7 +236,7 @@
  function merge(doc:DocumentInfo,focus=false,assetUpdate?:{source:string;changes:AssetChange[];undoable:boolean}){
   const old=documents.find(value=>value.id===doc.id);if(old&&old.csvView!==doc.csvView){exportMenu=false;external=external.filter(value=>value!==doc.id);status=doc.name}
   const fresh=!old,session=textSessions.get(doc.id)
-  if(session&&doc.text!==undefined&&doc.text!==session.state.sliceDoc()){const transaction=assetUpdate?assetTransaction(session.state,assetUpdate.source,assetUpdate.changes,doc.text,assetUpdate.undoable):session.state.update({changes:{from:0,to:session.state.doc.length,insert:doc.text},annotations:Transaction.addToHistory.of(false)});if(!transaction)throw new Error('El documento cambió durante la operación. Se conserva tu edición; revisa la copia guardada antes de continuar.');session.state=transaction.state;session.receive?.([transaction])}
+  if(session&&doc.text!==undefined&&doc.text!==editorText(session.state)){const transaction=assetUpdate?assetTransaction(session.state,assetUpdate.source,assetUpdate.changes,doc.text,assetUpdate.undoable):session.state.update({...replaceCsvText(session.state,0,session.state.doc.length,doc.text),annotations:Transaction.addToHistory.of(false)});if(!transaction)throw new Error('El documento cambió durante la operación. Se conserva tu edición; revisa la copia guardada antes de continuar.');session.state=transaction.state;session.receive?.([transaction])}
   if(opening?.id===doc.id)opening=null;documents=fresh?[...documents,doc]:documents.map(d=>d.id===doc.id?doc:d);if(focus||!activeId)activate(doc.id)}
  async function action<T>(operation:()=>Promise<T>):Promise<T|undefined>{try{return await operation()}catch(e){error(e instanceof Error?e.message:String(e))}}
  async function open(){await action(async()=>{await settingsReady;for(const doc of await window.freya.open())merge(doc,true);recent=await window.freya.recents()})}
@@ -494,7 +495,7 @@
       <div class="document-tools" class:markdown-tools={active.kind==='markdown'}><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div>{#if active.kind==='markdown'&&mode!=='preview'}<MarkdownToolbar readonly={editingLocked} formatState={markdownState} onformat={(action,language)=>editor?.format(action,language)} onsearch={searchText} onindex={toggleIndex} {indexVisible}/>{:else}<span class="spacer"></span><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> Buscar</button>{#if active.kind==='markdown'}<button class="text-button" class:active={indexVisible} aria-pressed={indexVisible} onclick={toggleIndex}><Icon name="table-of-contents" size={14}/> Índice</button>{/if}{/if}</div>
       {#if active.warning}<div class="warning-banner">{active.warning}</div>{/if}
       <div class="document-panes">
-       {#if active.kind!=='markdown'||mode!=='preview'}<div class:hidden={mode==='preview'&&active.kind!=='text'} class="editor-pane" style:width={mode==='split'&&active.kind!=='text'?`${split}%`:'100%'}><div class="pane-caption">{active.kind==='mermaid'?'DEFINICIÓN MERMAID':active.kind==='text'?'TEXTO':'MARKDOWN'}{#if assetBusy[active.id]}<span role="status">{assetBusy[active.id]}</span>{:else if active.readonly}<span>Solo lectura</span>{/if}</div><Editor bind:this={editor} editing={preferencesState.values.editor} session={active.kind==='markdown'?textSession(active):undefined} ontransactions={active.kind==='markdown'?receiveText(active.id):undefined} text={active.text??''} readonly={editingLocked} kind={active.kind} onformatstate={state=>markdownState=state} onselection={selection=>textSelection=selection} onchange={text=>updateText(active!.id,text)} onscroll={ratio=>{if(mode==='split')preview?.scrollRatio(ratio)}} outlineEnabled={active.kind==='markdown'&&mode==='edit'&&indexVisible} onoutline={receiveEditorHeadings(active.id)} oncurrentline={receiveEditorLine(active.id)} onblocks={active.kind==='markdown'?receiveBlocks(active.id):undefined}/></div>{/if}
+       {#if active.kind!=='markdown'||mode!=='preview'}<div class:hidden={mode==='preview'&&active.kind!=='text'} class="editor-pane" style:width={mode==='split'&&active.kind!=='text'?`${split}%`:'100%'}><div class="pane-caption">{active.kind==='mermaid'?'DEFINICIÓN MERMAID':active.kind==='text'?'TEXTO':'MARKDOWN'}{#if assetBusy[active.id]}<span role="status">{assetBusy[active.id]}</span>{:else if active.readonly}<span>Solo lectura</span>{/if}</div><Editor bind:this={editor} editing={preferencesState.values.editor} session={active.kind==='markdown'?textSession(active):undefined} ontransactions={active.kind==='markdown'?receiveText(active.id):undefined} text={active.text??''} readonly={editingLocked} kind={active.kind} showStatus={active.kind==='text'||mode!=='preview'} onformatstate={state=>markdownState=state} onselection={selection=>textSelection=selection} onchange={text=>updateText(active!.id,text)} onscroll={ratio=>{if(mode==='split')preview?.scrollRatio(ratio)}} outlineEnabled={active.kind==='markdown'&&mode==='edit'&&indexVisible} onoutline={receiveEditorHeadings(active.id)} oncurrentline={receiveEditorLine(active.id)} onblocks={active.kind==='markdown'?receiveBlocks(active.id):undefined}/></div>{/if}
        {#if active.kind!=='text'}<button class:hidden={mode!=='split'} class="resize-handle split-handle" aria-valuenow={split} aria-valuemin="20" aria-valuemax="80" role="slider" aria-label="Ancho del editor" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSplit} onkeydown={e=>{if(e.key==='ArrowRight')split=Math.min(80,split+2);if(e.key==='ArrowLeft')split=Math.max(20,split-2);if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();remember({division:split})}}}></button><div class:hidden={mode==='edit'} class="preview-pane"><div class="pane-caption">VISTA PREVIA <span>{active.kind==='mermaid'?'SVG':'Renderizado local'}</span></div>{#if active.kind==='mermaid'}<Diagram bind:this={diagram} text={active.text??''} {dark} onerror={error} ondiagnostics={receiveDiagnostics(active.id)}/>{:else}<Preview bind:this={preview} text={active.text??''} id={active.id} path={active.path} renderEnabled={mode!=='edit'||indexVisible} candidates={diagramCandidates?.id===active.id?diagramCandidates:undefined} ondiagnostics={receiveDiagnostics(active.id)} {dark} readonly={editingLocked} ontask={toggleTask} onheadings={receiveHeadings(active.id)} oncurrent={receiveCurrent(active.id)} onfiltertag={filterByTag} onlocateimage={locateImage} onerror={error}/>{/if}</div>{/if}
       </div>
      {/if}

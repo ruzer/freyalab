@@ -4,7 +4,9 @@
  import {EditorView,keymap,lineNumbers,highlightActiveLine,drawSelection,scrollPastEnd,highlightWhitespace} from '@codemirror/view'
  import {defaultKeymap,history,historyKeymap,undo,redo,isolateHistory} from '@codemirror/commands'
  import {searchKeymap,highlightSelectionMatches,openSearchPanel,gotoLine} from '@codemirror/search'
- import {csvTextDocument,csvTextValue,csvTextRange,replaceCsvText,insertCsvText} from '../lib/csv-text-model'
+ import {csvTextDocument,csvLineEndings,csvTextRange,replaceCsvText,insertCsvText,editorText,editorTextChanged,editorLineEnding,convertLineEndings} from '../lib/csv-text-model'
+ import {editorPosition} from '../lib/editor-status'
+ import EditorStatus from './EditorStatus.svelte'
  import {t} from '../lib/i18n.svelte'
  import {syntaxHighlighting,defaultHighlightStyle,syntaxTree,syntaxTreeAvailable,forceParsing} from '@codemirror/language'
  import {editorHeadings,type EditorHeading} from '../lib/outline'
@@ -17,7 +19,7 @@
  import {markdownFormatChange} from '../lib/markdown-editing'
  import {editorEditingExtensions,editorIndentation} from '../lib/editor-editing'
  import type {Settings} from '../../shared/settings'
- let {text='',readonly=false,kind='markdown',label='Editor de texto',wrapLines=true,showWhitespace=false,editing,onchange,onscroll,onformatstate,onselection,session,ontransactions,outlineEnabled=false,onoutline,oncurrentline,onblocks}: {onblocks?:(blocks:DiagramBlock[],source:string,complete:boolean)=>void;outlineEnabled?:boolean;onoutline?:(headings:EditorHeading[],source:string)=>void;oncurrentline?:(from:number)=>void;session?:MarkdownSession;ontransactions?:(transactions:readonly Transaction[])=>void;text:string;label?:string;readonly?:boolean;kind?:string;wrapLines?:boolean;showWhitespace?:boolean;editing?:Settings['editor'];onchange:(text:string)=>void;onscroll?:(ratio:number)=>void;onformatstate?:(state:ReturnType<typeof lineFormatState>)=>void;onselection?:(selection:TextSelection|null)=>void}=$props()
+ let {text='',readonly=false,kind='markdown',label='Editor de texto',showStatus=true,wrapLines=true,showWhitespace=false,editing,onchange,onscroll,onformatstate,onselection,session,ontransactions,outlineEnabled=false,onoutline,oncurrentline,onblocks}: {onblocks?:(blocks:DiagramBlock[],source:string,complete:boolean)=>void;outlineEnabled?:boolean;onoutline?:(headings:EditorHeading[],source:string)=>void;oncurrentline?:(from:number)=>void;session?:MarkdownSession;ontransactions?:(transactions:readonly Transaction[])=>void;text:string;label?:string;readonly?:boolean;kind?:string;showStatus?:boolean;wrapLines?:boolean;showWhitespace?:boolean;editing?:Settings['editor'];onchange:(text:string)=>void;onscroll?:(ratio:number)=>void;onformatstate?:(state:ReturnType<typeof lineFormatState>)=>void;onselection?:(selection:TextSelection|null)=>void}=$props()
  let host:HTMLDivElement
  let view:EditorView|undefined
  let mountedSession:MarkdownSession|undefined
@@ -58,8 +60,8 @@
   if(tree!==lastOutlineTree||doc!==lastOutlineDoc){
    lastOutlineTree=tree;lastOutlineDoc=doc
    const state=view.state
-   if(outlineEnabled){const result=editorHeadings(state);onoutline?.(result.headings.map(heading=>({...heading,from:state.doc.lineAt(heading.from).from})),result.complete?state.sliceDoc():'')}
-   const diagrams=markdownDiagramBlocks(state);onblocks?.(diagrams.blocks,state.sliceDoc(),diagrams.complete)
+   if(outlineEnabled){const result=editorHeadings(state);onoutline?.(result.headings.map(heading=>({...heading,from:state.doc.lineAt(heading.from).from})),result.complete?editorText(state):'')}
+   const diagrams=markdownDiagramBlocks(state);onblocks?.(diagrams.blocks,editorText(state),diagrams.complete)
   }
   if(!syntaxTreeAvailable(view.state,doc.length)&&!outlineIdle&&!isComposing())outlineIdle=requestIdleCallback(()=>{
    outlineIdle=0
@@ -68,14 +70,28 @@
    forceParsing(view,view.state.doc.length,10);publishOutline()
   })
  }
- export function setDiagnostics(value:DiagramDiagnostics){if(!view||value.source!==view.state.sliceDoc())return;view.dispatch({effects:setDiagramMarks.of(value),annotations:Transaction.addToHistory.of(false)});generalDiagramError=(value.errors??[]).some(error=>!value.marks.some(mark=>mark.error===error));diagnosticSummary=(value.errors??[]).map(error=>{const mark=value.marks.find(mark=>mark.error===error);return `${mark?`Línea ${mark.line}. `:''}${error.title} ${error.hint}`}).join(' ')}
+ export function setDiagnostics(value:DiagramDiagnostics){if(!view||value.source!==editorText(view.state))return;view.dispatch({effects:setDiagramMarks.of(value),annotations:Transaction.addToHistory.of(false)});generalDiagramError=(value.errors??[]).some(error=>!value.marks.some(mark=>mark.error===error));diagnosticSummary=(value.errors??[]).map(error=>{const mark=value.marks.find(mark=>mark.error===error);return `${mark?`Línea ${mark.line}. `:''}${error.title} ${error.hint}`}).join(' ')}
  export function isComposing(){return !!view&&(view.composing||view.compositionStarted)}
  export function goToHeading(from:number,source:string){
-  if(!view||isComposing()||!Number.isInteger(from)||from<0||from>view.state.doc.length||view.state.sliceDoc()!==source||!syntaxTreeAvailable(view.state,view.state.doc.length))return false
+  if(!view||isComposing()||!Number.isInteger(from)||from<0||from>view.state.doc.length||editorText(view.state)!==source||!syntaxTreeAvailable(view.state,view.state.doc.length))return false
   const position=view.state.doc.lineAt(from).from
   view.dispatch({selection:EditorSelection.cursor(position),effects:EditorView.scrollIntoView(position,{y:'start',yMargin:0}),annotations:Transaction.addToHistory.of(false)});view.focus();return true
  }
  let lastFormat=''
+ let position=$state<ReturnType<typeof editorPosition>>(),ending=$state<ReturnType<typeof editorLineEnding>>('LF')
+ let lastEndings:unknown
+ function publishStatus(state:EditorState){
+  const endings=state.field(csvLineEndings,false)
+  if(!endings)return
+  if(endings!==lastEndings){lastEndings=endings;ending=editorLineEnding(state)}
+  position=editorPosition(state)
+ }
+ function changeEnding(ending:'LF'|'CRLF'){
+  if(!view||readonly||isComposing())return false
+  const change=convertLineEndings(view.state,ending)
+  if(!change)return false
+  view.dispatch(change);view.focus();return true
+ }
  function publishSelection(state:EditorState){const selection=state.selection.main;onselection?.(selection.empty?null:{from:selection.from,to:selection.to})}
  function publishFormat(state:EditorState){
   if(kind!=='markdown'||!onformatstate)return
@@ -114,7 +130,7 @@
   view.dispatch({selection:EditorSelection.cursor(position),effects:EditorView.scrollIntoView(position,{y:'center'}),annotations:Transaction.addToHistory.of(false)});view.focus();return true
  }
  function clipboard(event:ClipboardEvent,cut=false){
-  if(kind!=='csv-text'||!view||!event.clipboardData)return false
+  if(!view||!view.state.field(csvLineEndings,false)||!event.clipboardData)return false
   const state=view.state,ranges=state.selection.ranges.filter(range=>!range.empty)
   if(!ranges.length)return false
   event.clipboardData.setData('text/plain',ranges.map(range=>csvTextRange(state,range.from,range.to)).join('\n'));event.preventDefault()
@@ -132,9 +148,9 @@
  }
  onMount(()=>{
   const sessionAtMount=session,dispatch=ontransactions;mountedSession=sessionAtMount
-  const csv=kind==='csv-text'?csvTextDocument(text):undefined
+  const textDocument=!sessionAtMount&&['markdown','text','mermaid','csv-text'].includes(kind)?csvTextDocument(text):undefined
   // Los números van antes del control de plegado para dejarlo fuera del separador lateral.
-  const extensions=[...(csv?.extensions??[]),textDisplay.of(displayExtensions(wrapLines,showWhitespace)),indentation.of(editorIndentation(editing)),EditorView.contentAttributes.of({'aria-label':label}),lineNumbers(),editorEditingExtensions(kind,text,!!sessionAtMount),(['markdown','mermaid'].includes(kind)?diagramMarkExtensions:[]),outlinePadding.of(outlineEnabled?[scrollPastEnd(),EditorView.theme({'.cm-scroller':{paddingBottom:'1lh'}})]:[]),highlightActiveLine(),drawSelection(),...(!sessionAtMount?[history()]:[]),highlightSelectionMatches(),keymap.of([{key:'Mod-b',run:shortcut('bold')},{key:'Mod-i',run:shortcut('italic')},{key:'Mod-Shift-x',run:shortcut('strike')},...(['paragraph','heading1','heading2','heading3'] as const).map((action,index)=>({key:`Mod-Alt-${index}`,run:shortcut(action)})),...defaultKeymap,...historyKeymap,...searchKeymap]),syntaxHighlighting(defaultHighlightStyle),permission.of([EditorState.readOnly.of(readonly),EditorView.editable.of(!readonly)]),EditorView.theme({
+  const extensions=[...(textDocument?.extensions??[]),textDisplay.of(displayExtensions(wrapLines,showWhitespace)),indentation.of(editorIndentation(editing)),EditorView.contentAttributes.of({'aria-label':label}),lineNumbers(),editorEditingExtensions(kind),(['markdown','mermaid'].includes(kind)?diagramMarkExtensions:[]),outlinePadding.of(outlineEnabled?[scrollPastEnd(),EditorView.theme({'.cm-scroller':{paddingBottom:'1lh'}})]:[]),highlightActiveLine(),drawSelection(),...(!sessionAtMount?[history()]:[]),highlightSelectionMatches(),keymap.of([{key:'Mod-b',run:shortcut('bold')},{key:'Mod-i',run:shortcut('italic')},{key:'Mod-Shift-x',run:shortcut('strike')},...(['paragraph','heading1','heading2','heading3'] as const).map((action,index)=>({key:`Mod-Alt-${index}`,run:shortcut(action)})),...defaultKeymap,...historyKeymap,...searchKeymap]),syntaxHighlighting(defaultHighlightStyle),permission.of([EditorState.readOnly.of(readonly),EditorView.editable.of(!readonly)]),EditorView.theme({
    '&':{height:'100%',fontSize:'13px'},
    '.cm-scroller':{fontFamily:'"JetBrains Mono", monospace',lineHeight:'1.8'},
    '.cm-content':{padding:'20px 0'},
@@ -147,23 +163,32 @@
    '.cm-content ::selection, .cm-content::selection':{color:'var(--text)'},
    '.cm-panels':{backgroundColor:'var(--panel)',color:'var(--text)'},
    '.cm-search input':{color:'var(--text)'}
-  }),EditorView.updateListener.of(update=>{if(update.docChanged){diagnosticSummary='';generalDiagramError=false;cancelOutline();if(!applying&&!sessionAtMount)onchange(csv?csvTextValue(update.state):update.state.sliceDoc())}publishFormat(update.state);if(update.docChanged||update.selectionSet)publishSelection(update.state);if(update.docChanged||syntaxTree(update.startState)!==syntaxTree(update.state))publishOutline();if(update.geometryChanged||update.viewportChanged)publishVisibleLine()}),EditorView.domEventHandlers({paste,copy:event=>clipboard(event),cut:event=>clipboard(event,true),keydown:()=>{plainPaste=false},blur:()=>{plainPaste=false},scroll:()=>{const el=view!.scrollDOM;onscroll?.(el.scrollTop/Math.max(1,el.scrollHeight-el.clientHeight));publishVisibleLine()},compositionstart:()=>{cancelOutline()},compositionend:()=>{queueMicrotask(publishOutline)}})]
+  }),EditorView.updateListener.of(update=>{
+   const changed=update.transactions.some(editorTextChanged)
+   if(changed){diagnosticSummary='';generalDiagramError=false;cancelOutline();if(!update.docChanged)lastOutlineDoc=undefined;if(!applying&&!sessionAtMount)onchange(editorText(update.state))}
+   publishFormat(update.state)
+   if(changed||update.selectionSet)publishSelection(update.state)
+   if(changed||update.selectionSet||update.startState.field(csvLineEndings,false)!==update.state.field(csvLineEndings,false))publishStatus(update.state)
+   if(changed||syntaxTree(update.startState)!==syntaxTree(update.state))publishOutline()
+   if(update.geometryChanged||update.viewportChanged)publishVisibleLine()
+  }),EditorView.domEventHandlers({paste,copy:event=>clipboard(event),cut:event=>clipboard(event,true),keydown:()=>{plainPaste=false},blur:()=>{plainPaste=false},scroll:()=>{const el=view!.scrollDOM;onscroll?.(el.scrollTop/Math.max(1,el.scrollHeight-el.clientHeight));publishVisibleLine()},compositionstart:()=>{cancelOutline()},compositionend:()=>{queueMicrotask(publishOutline)}})]
   if(sessionAtMount&&dispatch)dispatch([sessionAtMount.state.update({effects:sessionAtMount.ui.reconfigure(extensions)})])
-  view=new EditorView({parent:host,state:sessionAtMount?.state??EditorState.create({doc:csv?.doc??text,extensions}),...(sessionAtMount&&dispatch?{dispatchTransactions:dispatch}:{})})
+  view=new EditorView({parent:host,state:sessionAtMount?.state??EditorState.create({doc:textDocument?.doc??text,extensions}),...(sessionAtMount&&dispatch?{dispatchTransactions:dispatch}:{})})
   if(sessionAtMount)sessionAtMount.receive=transactions=>view?.update(transactions)
   const plain=()=>{plainPaste=!!view?.hasFocus}
   window.addEventListener('freya-paste-plain',plain)
-  publishFormat(view.state);publishSelection(view.state);publishOutline();publishVisibleLine()
+  publishFormat(view.state);publishSelection(view.state);publishStatus(view.state);publishOutline();publishVisibleLine()
   return()=>{cancelOutline();window.removeEventListener('freya-paste-plain',plain);if(sessionAtMount){sessionAtMount.receive=undefined;dispatch?.([sessionAtMount.state.update({effects:sessionAtMount.ui.reconfigure([])})])}view?.destroy();view=undefined}
  })
  $effect(()=>{const enabled=outlineEnabled;cancelOutline();lastOutlineTree=undefined;lastOutlineDoc=undefined;lastVisibleLine=-1;if(view)view.dispatch({effects:outlinePadding.reconfigure(enabled?[scrollPastEnd(),EditorView.theme({'.cm-scroller':{paddingBottom:'1lh'}})]:[])});publishOutline();if(enabled)publishVisibleLine()})
  $effect(()=>{const locked=readonly;if(view)view.dispatch({effects:permission.reconfigure([EditorState.readOnly.of(locked),EditorView.editable.of(!locked)])})})
- $effect(()=>{const value=text;if(view&&!mountedSession&&value!==(kind==='csv-text'?csvTextValue(view.state):view.state.sliceDoc())){applying=true;view.dispatch(kind==='csv-text'?replaceCsvText(view.state,0,view.state.doc.length,value):{changes:{from:0,to:view.state.doc.length,insert:value}});applying=false}})
+ $effect(()=>{const value=text;if(view&&!mountedSession&&value!==editorText(view.state)){applying=true;view.dispatch(view.state.field(csvLineEndings,false)?replaceCsvText(view.state,0,view.state.doc.length,value):{changes:{from:0,to:view.state.doc.length,insert:value}});applying=false}})
  $effect(()=>{const extensions=editorIndentation(editing);if(view)view.dispatch({effects:indentation.reconfigure(extensions)})})
  $effect(()=>{const wrap=wrapLines,spaces=showWhitespace;if(view)view.dispatch({effects:textDisplay.reconfigure(displayExtensions(wrap,spaces))})})
 </script>
 {#if kind==='markdown'||kind==='mermaid'}<span class:sr-only={!generalDiagramError} class="diagram-editor-notice" role="status" aria-label="Diagnósticos de diagramas" aria-live="polite">{diagnosticSummary}</span>{/if}
 <div class="code-editor" bind:this={host} aria-label="Editor de texto"></div>
+{#if showStatus&&position}<EditorStatus {position} {ending} {kind} {readonly} indent={editing?.indent??2} onending={changeEnding}/>{/if}
 
 <style>
  .diagram-editor-notice:not(.sr-only){padding:6px 10px;font-size:12px;background:var(--panel);color:var(--text);border-bottom:1px solid var(--border)}

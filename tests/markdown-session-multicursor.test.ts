@@ -1,4 +1,5 @@
 import {describe,it,expect} from 'vitest'
+import {editorText} from '../src/renderer/lib/csv-text-model'
 import {EditorState,EditorSelection,Transaction,type TransactionSpec} from '@codemirror/state'
 import {keymap,type EditorView} from '@codemirror/view'
 import {undo,redo,isolateHistory} from '@codemirror/commands'
@@ -19,16 +20,16 @@ describe('ED-01 E1/E4 · sesión Markdown persistente',()=>{
   dispatch(session.state.update({selection:EditorSelection.create(cursors,1),annotations:Transaction.addToHistory.of(false)}))
   expect(session.state.selection.ranges).toHaveLength(3)
   dispatch(session.state.update({...session.state.replaceSelection('🐕'),annotations:isolateHistory.of('full'),userEvent:'input.type'}))
-  expect(session.state.sliceDoc()).toBe(['Freya🐕','café 🐾🐕','Fin🐕'].join(separator))
-  expect(undo({state:session.state,dispatch})).toBe(true);expect(session.state.sliceDoc()).toBe(source);expect(session.state.selection.ranges).toHaveLength(3)
-  expect(redo({state:session.state,dispatch})).toBe(true);expect(session.state.sliceDoc()).toBe(['Freya🐕','café 🐾🐕','Fin🐕'].join(separator))
+  expect(editorText(session.state)).toBe(['Freya🐕','café 🐾🐕','Fin🐕'].join(separator))
+  expect(undo({state:session.state,dispatch})).toBe(true);expect(editorText(session.state)).toBe(source);expect(session.state.selection.ranges).toHaveLength(3)
+  expect(redo({state:session.state,dispatch})).toBe(true);expect(editorText(session.state)).toBe(['Freya🐕','café 🐾🐕','Fin🐕'].join(separator))
  })
  it('Mod+D usa el comando instalado y añade la coincidencia siguiente sin alterar el documento',()=>{
   const source='Freya uno\nFreya dos\nFreya tres',session=createMarkdownSession(source),dispatch=(transaction:Transaction)=>{session.state=transaction.state}
   expect(selectNextOccurrence({state:session.state,dispatch})).toBe(true)
   expect(selectNextOccurrence({state:session.state,dispatch})).toBe(true)
   expect(session.state.selection.ranges.map(range=>session.state.sliceDoc(range.from,range.to))).toEqual(['Freya','Freya'])
-  expect(session.state.sliceDoc()).toBe(source)
+  expect(editorText(session.state)).toBe(source)
  })
  it('reconfigurar la interfaz, ir a vista previa y volver conserva principal y secundarias',()=>{
   const session=createMarkdownSession('uno\ndos'),dispatch=(transaction:Transaction)=>{session.state=transaction.state}
