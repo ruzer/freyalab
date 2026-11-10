@@ -1,6 +1,6 @@
 import {createHash,randomUUID} from 'node:crypto'
 import {constants} from 'node:fs'
-import {lstat,mkdir,open,readFile,realpath} from 'node:fs/promises'
+import {lstat,mkdir,open,readFile,realpath,rmdir} from 'node:fs/promises'
 import {basename,isAbsolute,join} from 'node:path'
 import {z} from 'zod'
 import {atomicWrite} from './files'
@@ -41,9 +41,11 @@ async function readProject(folder:string):Promise<Snapshot>{
 
 export class ProjectStore{
  private current:Snapshot|undefined
+ private recentFailure=false
  private queue:Promise<unknown>=Promise.resolve()
  constructor(private profile:string){}
  get active(){return this.current?.info??null}
+ get recentWriteFailed(){return this.recentFailure}
  private serial<T>(action:()=>Promise<T>){
   const task=this.queue.then(action,action);this.queue=task;return task
  }
@@ -54,8 +56,11 @@ export class ProjectStore{
  }
  private async activate(snapshot:Snapshot){
   const path=snapshot.info.path
-  await atomicWrite(this.recentPath,sortedJSON([path,...(await this.recentPaths()).filter(recent=>recent!==path)].slice(0,10)))
   this.current=snapshot
+  try{
+   await atomicWrite(this.recentPath,sortedJSON([path,...(await this.recentPaths()).filter(recent=>recent!==path)].slice(0,10)))
+   this.recentFailure=false
+  }catch{this.recentFailure=true}
   return snapshot.info
  }
  open(folder:string){return this.serial(async()=>this.activate(await readProject(await realpath(folder))))}
@@ -72,9 +77,19 @@ export class ProjectStore{
    await mkdir(folder,{recursive:true})
    const root=await realpath(folder),path=join(root,projectFile)
    try{await lstat(path);return this.activate(await readProject(root))}catch(error){if(!missing(error))throw error}
-   if(suggested)for(const directory of projectFolders)await mkdir(join(root,directory),{recursive:true})
+   const created:string[]=[]
    const manifest:ProjectManifest={format:'freyalab-project',version:1,id:randomUUID(),name:validName,createdAt:new Date().toISOString(),sources:[],recipes:[],results:[]}
-   try{await atomicWrite(path,sortedJSON(manifest),null)}catch(error){if((error as NodeJS.ErrnoException).code!=='EEXIST')throw error}
+   try{
+    if(suggested)for(const directory of projectFolders){
+     const added=await mkdir(join(root,directory),{recursive:true});if(added)created.push(added)
+    }
+    try{await atomicWrite(path,sortedJSON(manifest),null)}catch(error){if((error as NodeJS.ErrnoException).code!=='EEXIST')throw error}
+   }catch(error){
+    if(await lstat(path).then(()=>false,missing))await Promise.allSettled(created.map(directory=>rmdir(directory)))
+    const code=(error as NodeJS.ErrnoException).code??''
+    if(['EACCES','EPERM','EXDEV','ENOTSUP','EOPNOTSUPP','ENOSYS'].includes(code))throw new Error(t('project.error.atomicCreate'),{cause:error})
+    throw error
+   }
    return this.activate(await readProject(root))
   })
  }
@@ -93,7 +108,8 @@ export class ProjectStore{
  }
  close(id:string){return this.serial(async()=>{if(this.current?.info.id===id)this.current=undefined})}
  async recents(){
-  return Promise.all((await this.recentPaths()).map(async path=>({path,name:basename(path),missing:await lstat(join(path,projectFile)).then(()=>false,error=>missing(error))})))
+  const paths=await this.recentPaths().catch(()=>[])
+  return Promise.all(paths.map(async path=>({path,name:basename(path),missing:await lstat(join(path,projectFile)).then(()=>false,missing)})))
  }
  openRecent(path:string){
   return this.serial(async()=>{

@@ -1038,5 +1038,7 @@
  "project.error.schema": "El manifiesto no cumple el contrato de FreyaLab.",
  "project.error.changed": "El archivo del proyecto cambió fuera de FreyaLab.",
  "project.error.readonly": "El proyecto cambió o está en solo lectura.",
- "project.error.recent": "Esa ruta no está entre los proyectos recientes."
+ "project.error.recent": "Esa ruta no está entre los proyectos recientes.",
+ "project.error.atomicCreate": "No se pudo crear el proyecto sin riesgo de sobrescritura. El sistema de archivos debe admitir enlaces duros y permitir escribir en la carpeta. Elige otra ubicación.",
+ "project.error.recentWrite": "El proyecto se abrió. No se pudo actualizar la lista de proyectos recientes."
 }
