@@ -14,10 +14,7 @@
  }
  function choose(event:Event&{currentTarget:HTMLSelectElement}){
   const target=event.currentTarget,value=target.value
-  if((value==='LF'||value==='CRLF')&&onending(value)){
-   // CSV Texto ya anuncia el nuevo formato en el indicador del documento.
-   if(kind!=='csv-text')announcement=t('editor.status.endingsChanged',{ending:value})
-  }
+  if((value==='LF'||value==='CRLF')&&onending(value))announcement=t('editor.status.endingsChanged',{ending:value})
   else target.value=ending
  }
 </script>

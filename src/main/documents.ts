@@ -45,7 +45,7 @@ async function readDocumentText(path:string,encoding?:TextEncoding,reopen=false)
   const after=await handle.stat(),current=await lstat(path)
   if(offset!==buffer.length||after.size!==before.size||after.mtimeMs!==before.mtimeMs||current.isSymbolicLink()||current.ino!==before.ino||current.dev!==before.dev||current.size!==before.size||current.mtimeMs!==before.mtimeMs)throw new Error(t('textEncoding.error.changed'))
   const decoded=decodeTextDocument(buffer,sample?undefined:encoding,sample)
-  return{...decoded,hash:sample?undefined:bytesHash(buffer),warning:sample?t('textEncoding.warning.sample'):decoded.pending?t('textEncoding.warning.pending'):decoded.readonly?t('csvText.codec.lossyWarning'):undefined}
+  return{...decoded,hash:sample?undefined:bytesHash(buffer),warning:sample?t('textEncoding.warning.sample'):decoded.warning??(decoded.readonly?t('csvText.codec.lossyWarning'):undefined)}
  }finally{await handle.close()}
 }
 function installText(record:RecordDoc,decoded:Awaited<ReturnType<typeof readDocumentText>>){

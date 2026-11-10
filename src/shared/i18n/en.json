@@ -85,6 +85,8 @@
  "csvText.codec.lossyWarning": "This text cannot be re-encoded byte for byte. It was opened read-only to preserve the original.",
  "csvText.codec.unrepresentable": "Cannot save as {encoding}: the character on line {line} cannot be represented without loss.",
  "textEncoding.warning.pending": "The file is not UTF-8. Review the text and confirm Windows-1252 or Latin-1 before editing. The original file is unchanged.",
+ "textEncoding.warning.nulSuggested": "The file contains NUL bytes and appears to use {encoding} without a BOM. Review the text and confirm its encoding before editing.",
+ "textEncoding.warning.nulAmbiguous": "The file contains NUL bytes. Review and confirm its encoding before editing.",
  "textEncoding.warning.sample": "Read-only preview: first MiB. The file is larger than 10 MiB.",
  "textEncoding.error.bomMismatch": "The selected encoding does not match the file’s BOM.",
  "textEncoding.error.bomSave": "The selected encoding cannot carry the file’s BOM. Choose a Unicode encoding to preserve it.",

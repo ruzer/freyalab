@@ -37,12 +37,22 @@ export function decodeCsvText(bytes:Buffer):{text:string;format:CsvTextFormat;re
 export function decodeTextDocument(bytes:Buffer,requested?:TextEncoding,sample=false){
  const bom=(Object.keys(signatures) as BomEncoding[]).find(encoding=>startsWith(bytes,signatures[encoding]))
  if(bom&&requested&&requested!==bom)throw new Error(t('textEncoding.error.bomMismatch'))
- const encoding=requested??bom??utf8OrWestern(bytes,sample),decoded=decode(bytes,encoding)
- const pending=!sample&&!requested&&encoding==='win1252'
+ const hasNul=!sample&&!requested&&!bom&&bytes.includes(0)
+ // En texto UTF-16, el byte alto de los caracteres ASCII suele ser cero.
+ let nulBalance=0
+ if(hasNul&&bytes.length%2===0){
+  for(let i=0;i<bytes.length;i++)if(bytes[i]===0)nulBalance+=i%2?1:-1
+ }
+ const suggestion=nulBalance>0?'utf16le':nulBalance<0?'utf16be':undefined
+ const encoding=requested??bom??suggestion??utf8OrWestern(bytes,sample),decoded=decode(bytes,encoding)
+ const pending=!sample&&!requested&&(hasNul||encoding==='win1252')
+ const warning=hasNul
+  ? suggestion?t('textEncoding.warning.nulSuggested',{encoding:suggestion==='utf16le'?'UTF-16 LE':'UTF-16 BE'}):t('textEncoding.warning.nulAmbiguous')
+  : pending?t('textEncoding.warning.pending'):undefined
  // Un sustituto UTF-16 aislado puede reproducir los bytes sin representar texto válido.
  const lossy=decoded.readonly||loneSurrogate.test(decoded.text)
  if(requested&&lossy)throw new Error(t('textEncoding.error.decode'))
- return{...decoded,readonly:sample||pending||lossy,pending}
+ return{...decoded,readonly:sample||pending||lossy,pending,warning}
 }
 
 export function encodedTextFormat(original:TextFormat,encoding:TextEncoding):TextFormat{

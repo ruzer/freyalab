@@ -31,13 +31,20 @@ test('A: más de 10 MiB deshabilita Texto en la barra y el menú con ayuda expl�
 test('B: texto exacto conserva saltos mixtos, pegado, undo y opciones apagadas',async()=>{
  const raw='ID,Nombre\r\n00123,"á\nñ"\r9007199254740993,conservar\n',bytes=Buffer.concat([Buffer.from([0xef,0xbb,0xbf]),Buffer.from(raw)]);await writeFile(join(files,'datos.csv'),bytes)
  await openCsv();await views().getByRole('button',{name:'Texto',exact:true}).click();await expect(editor()).toBeVisible()
- const format=page.getByRole('status',{name:'Formato del texto CSV',exact:true});await expect(format).toContainText('UTF-8',{timeout:1000});await expect(format).toContainText('Mixtos');await expect(format).toContainText('5 líneas')
+ const format=page.getByRole('status',{name:'Formato del texto CSV',exact:true})
+ const endings=page.getByRole('combobox',{name:'Fin de línea',exact:true})
+ await expect(endings).toHaveValue('mixed')
+ await expect(format).toHaveText('UTF-8 · 5 líneas',{timeout:1000})
  await page.getByText('Opciones de texto',{exact:true}).click();const box=await page.locator('.csv-text-options .dropdown').boundingBox();expect(box!.x+box!.width).toBeLessThanOrEqual(1440);const wrap=page.getByRole('button',{name:'Ajustar líneas',exact:true}),spaces=page.getByRole('button',{name:'Mostrar espacios y tabuladores',exact:true});await expect(wrap).toHaveAttribute('aria-pressed','false');await expect(spaces).toHaveAttribute('aria-pressed','false');await expect(page.locator('.code-editor .cm-line')).toHaveCount(5)
  await wrap.click();await expect(editor()).toBeFocused();await page.getByText('Opciones de texto',{exact:true}).click();await expect(wrap).toHaveAttribute('aria-pressed','true');await spaces.click();await expect(editor()).toBeFocused();await page.getByText('Opciones de texto',{exact:true}).click();await expect(spaces).toHaveAttribute('aria-pressed','true');await page.getByText('Opciones de texto',{exact:true}).click();await editor().focus()
  await editor().press('ControlOrMeta+End');await editor().evaluate(element=>{const data=new DataTransfer();data.setData('text/plain','x\ry\r\nz\n');element.dispatchEvent(new ClipboardEvent('paste',{clipboardData:data,bubbles:true,cancelable:true}))})
  await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].text).toBe(raw+'x\ry\r\nz\n');await editor().press('ControlOrMeta+z');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].text).toBe(raw);await editor().press(process.platform==='darwin'?'ControlOrMeta+Shift+z':'ControlOrMeta+y');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].text).toBe(raw+'x\ry\r\nz\n')
  await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect.poll(()=>readFile(join(files,'datos.csv'))).toEqual(Buffer.concat([bytes,Buffer.from('x\ry\r\nz\n')]))
  if(process.env.FREYALAB_TXT_EVIDENCE==='1'){await page.getByText('Opciones de texto',{exact:true}).click();await page.getByRole('combobox',{name:'Tema',exact:true}).selectOption('light');await page.screenshot({animations:'disabled',path:'docs/evidence/txt-01-texto-claro.png'});await page.getByRole('combobox',{name:'Tema',exact:true}).selectOption('dark');await page.screenshot({animations:'disabled',path:'docs/evidence/txt-01-texto-oscuro.png'})}
+ await endings.selectOption('CRLF')
+ await expect(endings).toHaveValue('CRLF')
+ await expect(format).toHaveText('UTF-8 · 8 líneas')
+ await expect(page.getByRole('status').filter({hasText:'Saltos de línea del borrador cambiados a CRLF.'})).toHaveCount(1)
 })
 
 test('B: buscar reemplazar con expresión regular e ir a línea usan CodeMirror en español',async()=>{
