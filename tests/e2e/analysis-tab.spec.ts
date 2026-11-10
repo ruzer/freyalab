@@ -202,6 +202,7 @@ test('AN-1a paleta y pestañas con teclado, Escape conserva la pestaña y captur
   for(const [width,height] of [[1440,900],[900,900]])for(const theme of ['light','dark']){
    await page.setViewportSize({width,height});await page.getByLabel('Tema',{exact:true}).selectOption(theme)
    expect(await analysis().evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true)
+   expect(await page.locator('.document-title strong').evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true)
    await page.screenshot({animations:'disabled',path:test.info().outputPath(`an1a-${language}-${theme}-${width}x${height}.png`)})
   }
   await analysis().getByRole('button',{name:t('analysis.tab.return',{},language),exact:true}).click()

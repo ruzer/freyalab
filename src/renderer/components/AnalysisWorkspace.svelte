@@ -41,7 +41,7 @@
   <p class="analysis-warning" role="status">{t('analysis.tab.textView')}</p>
  {:else}
   {#each mounted as item (item)}
-   <div class="analysis-section" class:charts-section={item==='charts'} hidden={item!==section}>
+   <div class="analysis-section" class:charts-section={item==='charts'} class:info-section={item==='info'} hidden={item!==section}>
     {#if !unavailable(item)}
      {#if item==='info'}<CsvColumnsOverview {doc} {...view} {onerror} {onreport} oninspect={inspect}/>
      {:else if item==='statistics'}<CsvStatistics {doc} {...view} embedded autofocus={false} {inspection} {onerror} {onreport} onclose={onreturn}/>
@@ -66,7 +66,7 @@
  .analysis-sections button[aria-pressed=true]{color:var(--accent);border-color:var(--accent)}
  h2{margin:0;padding:2px 16px 8px;font-size:16px}
  .analysis-section{flex:1;min-height:0;min-width:0;overflow:auto}
- .charts-section{display:flex;flex-direction:column}
+ .charts-section{display:flex;flex-direction:column}.info-section{padding-inline:16px}
  .analysis-warning{margin:0;padding:8px 16px;background:var(--hover)}
  .analysis-section :global(section.sql-panel),.analysis-section :global(section.statistics-panel){max-height:none;overflow:visible;border-bottom:0}
 </style>
