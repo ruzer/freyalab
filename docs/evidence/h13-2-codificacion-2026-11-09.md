@@ -19,3 +19,9 @@ Base `f2e3d7aa826c7d797261845373ef52a7ade111da`. Primera entrega de [H13-2](../s
 | `npx playwright test tests/e2e/text-encoding.spec.ts tests/e2e/markdown-assets.spec.ts --project=md --retries=0` | 13 aprobadas y 0 reintentos. |
 
 El detector reutiliza la validación y la comprobación de ida y vuelta del códec de CSV Texto. Si el archivo carece de BOM y los bytes admiten más de una lectura, la elección se conserva durante la sesión abierta. Los guardados de Markdown con imágenes validan los bytes de destino antes de publicar los activos nuevos. El texto guarda la codificación actual hasta que se elige otra en el diálogo. Las muestras de más de 10 MiB siguen siendo de solo lectura.
+
+## Hallazgos de CI en la revisión
+
+En la [corrida de `afa0073`](https://github.com/ruzer/freyalab/actions/runs/42748030474), dos E2E de Markdown comparaban el texto editable con una firma incrustada y P5 retenía una llamada a `readFile` que ya no abría el documento. Las primeras comparan el texto junto con su metadato BOM y los bytes originales. La prueba de tareas también vuelve a guardar tras deshacer y compara el archivo byte a byte. P5 retiene la apertura del mismo archivo y sigue exigiendo que la consulta inicial vea cero documentos. Pasaron los siete casos enfocados en Electron, con cero reintentos.
+
+En [Windows](https://github.com/ruzer/freyalab/actions/runs/42748030474/job/129604828488), la prueba de detección más allá del primer MiB alcanzó su plazo de 5 s. Conserva el recorrido de apertura, reapertura y guardado y compara los mismos bytes con `Buffer.equals`. La mediana local de tres repeticiones bajó de 1.360 ms a 64 ms. No se cambió ningún plazo.

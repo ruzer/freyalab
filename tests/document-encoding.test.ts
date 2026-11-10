@@ -106,10 +106,11 @@ it('migra una recuperación antigua cuyo texto incluía el BOM de UTF-8',async()
 })
 
 it('verifica UTF-8 completo aunque el primer MiB sea ASCII',async()=>{
- const source='a'.repeat(1024*1024+16)+' café',original=bytes(source,'win1252'),path=await fixture('notas.txt',original),document=await documents.open(path)
+ const prefix=Buffer.alloc(1024*1024+16,0x61),source=prefix.toString()+' café',original=Buffer.concat([prefix,Buffer.from(' café','latin1')])
+ const path=await fixture('notas.txt',original),document=await documents.open(path)
  expect(document).toMatchObject({encoding:'win1252',encodingPending:true,readonly:true})
  expect(await documents.reopenTextEncoding(document.id,'win1252')).toMatchObject({text:source,readonly:false})
- await documents.save(document.id);expect(await readFile(path)).toEqual(original)
+ await documents.save(document.id);expect((await readFile(path)).equals(original)).toBe(true)
 })
 
 it('un cambio externo impide convertir y conserva el borrador y la codificación',async()=>{

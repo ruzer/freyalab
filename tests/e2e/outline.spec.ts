@@ -334,7 +334,8 @@ test('C4: ATX, Setext, duplicados, front matter, Unicode y contenedores llevan a
    await expect.poll(async()=>(await editorSnapshot()).line).toBe(target.line)
    const moved=await editorSnapshot();expect(moved.from).toBe(moved.lineFrom);expect(moved.to).toBe(moved.from);expect(moved.focused).toBe(true);destinations.push({fixture:fixture.name,target:target.name,...moved})
   }
-  expect(await source()).toBe(fixture.text);expect(await readFile(path,'utf8')).toBe(fixture.text)
+  const doc=await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),id)
+  expect((doc?.bom?'\ufeff':'')+doc?.text).toBe(fixture.text);expect(await readFile(path)).toEqual(Buffer.from(fixture.text))
  }
  await evidence('7-c-destinos',destinations)
 })
