@@ -12,6 +12,7 @@ import {ANALYSIS_LIMITS,arrowBatches,fileRecords,validateUtf8} from './analysis-
 import {compileTableQuery} from './table-query'
 import {buildIndex,readRecords,recordByteOffsets,splitFields,indexUnchanged,LargeFormatError,RECORD_DELIMITERS,type LargeIndex} from './large-table'
 import {runOperation,OperationCancelled} from './operations'
+import {metadata,prefix,endsWithEol,validDelimiter,type Metadata} from './csv-file-format'
 import {calculatedRecordBytes} from './calculated-csv-bytes'
 import {LargeViews} from './large-view'
 import type {EngineOperation,OperationResult} from '../shared/operations'
@@ -21,7 +22,6 @@ import {CalculationError,type CalculateColumnEdit,type CalculatedValue} from '..
 import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableConditionGroup, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview,TableStatsOptions,LargeViewRequest } from '../shared/types'
 
 export const TABLE_LIMITS = { bytes: 50 * 1024 * 1024, cells: 2_000_000, record: 1024 * 1024, sampleBytes: 8 * 1024 * 1024, sampleRows: 200 }
-interface Metadata { encoding: Encoding; delimiter: string; eol: string; bom: boolean; header: boolean; finalEol: boolean; headerWidth: number }
 interface State extends Metadata { columnIds:number[]; nextColumn:number; rows: TableRow[]; headers: string[]; readonly: boolean; warning?: string; revision: number; nextId: number; token: number; savedToken: number; history: Change[]; future: Change[]; large?: {index:LargeIndex;rowCount:number} }
 type Mutation = {type:'rowOrder'|'columnOrder';order:number[]} | { type: 'cell'; id: string; column: number; value: string; length?:number } | { type: 'header'; column: number; value: string; headerWidth?:number } | { type: 'rows'; index: number; remove: number; rows: TableRow[] } | { type: 'column'; index: number; remove: boolean; name: string; cells: string[]; headerWidth?:number; lengths?:number[]; columnId?:number }
 interface Change { forward: Mutation[]; backward: Mutation[]; before: number; after: number; bytes:number }
@@ -46,31 +46,6 @@ function fieldOrigins(s:State,original:OriginalBytes|undefined):(number|null)[]{
 }
 class LimitError extends Error {}
 class UndoLimitError extends Error {}
-function validDelimiter(value: string) { if (![',', ';', '\t', '|'].includes(value)) throw new Error('Delimitador no válido.'); return value }
-function detectEncoding(bytes: Buffer): Encoding {
- if(bytes[0]===0xff&&bytes[1]===0xfe)return 'utf16le'
- try { new TextDecoder('utf-8',{fatal:true}).decode(bytes,{stream:true}); return 'utf8' } catch { return 'win1252' }
-}
-function metadata(bytes: Buffer, options: TableOptions, path = ''): Metadata {
- const encoding = options.encoding ?? detectEncoding(bytes)
- const text = iconv.decode(bytes, encoding)
- const counts = [',', ';', '\t', '|'].map(delimiter => {
-  try { const first = parseSync(text, {delimiter, bom:true, to:1, relax_column_count:true,record_delimiter:RECORD_DELIMITERS}) as string[][]; return {delimiter,count:(first[0]?.length??1)-1} }
-  catch { return {delimiter,count:0} }
- })
- counts.sort((a,b) => b.count-a.count)
- const delimiter = validDelimiter(options.delimiter ?? (path.endsWith('.tsv') ? '\t' : (counts[0].count ? counts[0].delimiter : ',')))
- let eol='\n',inQuotes=false
- for(let i=0;i<text.length;i++){if(text[i]==='"')inQuotes=!inQuotes;else if(!inQuotes&&(text[i]==='\r'||text[i]==='\n')){eol=text.startsWith('\r\n',i)?'\r\n':text[i];break}}
- const bom = encoding === 'utf8' ? bytes.subarray(0, 3).equals(Buffer.from([0xef,0xbb,0xbf])) : encoding === 'utf16le' && bytes[0] === 0xff && bytes[1] === 0xfe
- return { encoding, delimiter, eol, bom, header: options.header ?? true, finalEol:/[\r\n]$/.test(text), headerWidth:0 }
-}
-async function prefix(path: string, max: number, lexical=false): Promise<Buffer> {
- const flags=lexical&&process.platform!=='win32'?constants.O_RDONLY|(constants.O_NONBLOCK??0)|(constants.O_NOFOLLOW??0):'r'
- const handle = await openFile(path,flags)
- try { const file=await handle.stat();if(lexical&&!file.isFile())throw new Error('El origen no es un archivo regular.');const result = Buffer.alloc(Math.min(file.size, max)); let offset = 0; while (offset < result.length) { const read = await handle.read(result, offset, result.length-offset, offset); if (!read.bytesRead) break; offset += read.bytesRead } return result.subarray(0, offset) } finally { await handle.close() }
-}
-async function endsWithEol(path:string,bytes:number,encoding:Encoding){const handle=await openFile(path,'r');try{const tail=Buffer.alloc(Math.min(bytes,4));await handle.read(tail,0,tail.length,Math.max(0,bytes-tail.length));return /[\r\n]$/.test(iconv.decode(tail,encoding))}finally{await handle.close()}}
 function copyRow(row: TableRow): TableRow { return { id: row.id, cells: [...row.cells] } }
 function permutation(order:number[],size:number){if(!Array.isArray(order)||order.length!==size||new Set(order).size!==size||order.some(index=>!Number.isSafeInteger(index)||index<0||index>=size))throw new Error('La secuencia de posiciones no es válida.');return order}
 function preservesMissing(order:number[],length:number){for(let i=0;i<length;i++)if(order[i]>=length)return false;return true}

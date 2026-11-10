@@ -1,12 +1,18 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { open, rename, link, unlink, stat, chmod, realpath } from 'node:fs/promises'
 import { createReadStream } from 'node:fs'
+import type {FileHandle} from 'node:fs/promises'
 import { dirname, basename, join, relative, isAbsolute } from 'node:path'
-export async function digest(path:string):Promise<string> { const hash=createHash('sha256');for await(const chunk of createReadStream(path))hash.update(chunk);return hash.digest('hex') }
+export async function digest(source:string|FileHandle,options?:{signal?:AbortSignal;observe?:(chunk:Buffer)=>void}):Promise<string> {
+ const stream=typeof source==='string'?createReadStream(source,{signal:options?.signal}):source.createReadStream({signal:options?.signal,autoClose:false,start:0})
+ const hash=createHash('sha256')
+ for await(const chunk of stream){hash.update(chunk);options?.observe?.(chunk);options?.signal?.throwIfAborted()}
+ return hash.digest('hex')
+}
 export async function contained(root:string,path:string):Promise<boolean> {
  const r=relative(await realpath(root),await realpath(path)); return r===''||(!r.startsWith('..')&&!isAbsolute(r))
 }
-export async function atomicWrite(path:string,data:Uint8Array|string,expected?:string|null):Promise<void> {
+export async function atomicWrite(path:string,data:Uint8Array|string|AsyncIterable<Uint8Array>,expected?:string|null):Promise<void> {
  const temp=join(dirname(path),`.${basename(path)}.${randomUUID()}.tmp`)
  let handle:Awaited<ReturnType<typeof open>>|undefined
  try {

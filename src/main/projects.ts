@@ -5,7 +5,7 @@ import {basename,isAbsolute,join} from 'node:path'
 import {z} from 'zod'
 import {atomicWrite} from './files'
 import {t} from '../shared/i18n'
-import {projectEnvelope,projectFile,projectFolders,projectManifest,projectName,type ProjectInfo,type ProjectManifest} from '../shared/project'
+import {projectEnvelope,projectFile,projectFolders,projectManifest,projectName,type ProjectInfo,type ProjectManifest,type ProjectSource} from '../shared/project'
 
 const maxManifest=4*1024*1024
 const hash=(bytes:Uint8Array)=>createHash('sha256').update(bytes).digest('hex')
@@ -45,6 +45,7 @@ export class ProjectStore{
  private queue:Promise<unknown>=Promise.resolve()
  constructor(private profile:string){}
  get active(){return this.current?.info??null}
+ get sources(){return this.current?.manifest?.sources??[]}
  get recentWriteFailed(){return this.recentFailure}
  private serial<T>(action:()=>Promise<T>){
   const task=this.queue.then(action,action);this.queue=task;return task
@@ -104,6 +105,20 @@ export class ProjectStore{
    await atomicWrite(file,sortedJSON({...latest.manifest,name:validName}),latest.digest)
    this.current=await readProject(latest.info.path)
    return this.current.info
+  })
+ }
+ changeSources(project:ProjectInfo,update:(sources:ProjectSource[])=>ProjectSource[],keepLocal:()=>Promise<boolean>){
+  return this.serial(async()=>{
+   const before=this.current
+   if(!before?.manifest||before.info.id!==project.id||before.info.path!==project.path)throw new Error(t('project.error.readonly'))
+   const latest=await readProject(project.path)
+   if(!latest.manifest||latest.info.id!==project.id){this.current=latest;throw new Error(t('project.error.changed'))}
+   if(before.digest!==latest.digest&&!await keepLocal()){this.current=latest;return false}
+   const manifest=projectManifest.parse({...latest.manifest,sources:update(latest.manifest.sources)})
+   const content=sortedJSON(manifest)
+   if(Buffer.byteLength(content)>maxManifest)throw new Error(t('project.error.file'))
+   await atomicWrite(join(project.path,projectFile),content,latest.digest)
+   this.current=await readProject(project.path);return true
   })
  }
  close(id:string){return this.serial(async()=>{if(this.current?.info.id===id)this.current=undefined})}

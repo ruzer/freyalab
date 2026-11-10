@@ -119,3 +119,33 @@ it.each(['utf16le','win1252'] as const)('X9/X13: permite editar y guardar menos 
 it.each(['utf8','utf16le'] as const)('X13: cuenta el BOM en el límite exacto de 10 MiB de %s',async encoding=>{
  const prefix=encoding==='utf8'?Buffer.from([0xef,0xbb,0xbf]):Buffer.from([0xff,0xfe]),bytes=Buffer.concat([prefix,Buffer.from('ID,Nombre\n1,Ana\n',encoding)]);await writeFile(path,bytes);const doc=await docs.open(path,'text'),exact='x'.repeat((10*1024*1024-prefix.length)/(encoding==='utf16le'?2:1));await docs.update(doc.id,exact);const before=docs.info(doc.id),rejected=docs.update(doc.id,exact+'x');await expect(rejected).rejects.toThrow(/10 MiB/);const failure=await rejected.catch(error=>error);expect(isTextEditLimitError(failure)).toBe(true);expect(visibleEditError(failure.message)).toBe('El documento supera el límite de edición de 10 MiB.');expect(docs.info(doc.id)).toEqual(before);expect(docs.info(doc.id).text).toBe(exact);expect(await readFile(path)).toEqual(bytes)
 })
+
+it('PRJ-01b: una fuente abierta se protege incluso por las operaciones directas',async()=>{
+ const doc=await docs.open(path),target=join(state.folder,'copia.csv')
+ const sha256=(await import('node:crypto')).createHash('sha256').update(source).digest('hex')
+ docs.setProjectSources(new Map([[path,{sha256,format:{encoding:'utf8',delimiter:',',header:true}}]]))
+ expect(docs.info(doc.id)).toMatchObject({readonly:true,projectSource:'protected'})
+ await expect(docs.tableEdit(doc.id,{type:'cell',rowId:'1',column:0,value:'otro'})).rejects.toThrow(/protegida/i)
+ await expect(docs.tableOptions(doc.id,{header:false})).rejects.toThrow(/protegida/i)
+ await expect(docs.setCsvView(doc.id,'text')).rejects.toThrow(/protegida/i)
+ await expect(docs.save(doc.id)).rejects.toThrow(/protegida/i)
+ vi.stubEnv('FREYALAB_TEST','1');vi.stubEnv('FREYALAB_TEST_SAVE_PATH',target)
+ try{const copy=await docs.save(doc.id,true);expect(copy).toMatchObject({readonly:false,path:target});expect(copy?.id).not.toBe(doc.id)}
+ finally{vi.unstubAllEnvs()}
+ expect(await readFile(target,'utf8')).toBe(source)
+ expect(await readFile(path,'utf8')).toBe(source)
+ docs.setProjectSources(new Map(),true)
+ expect(docs.info(doc.id)).toMatchObject({readonly:true,projectSource:'closed'})
+ await expect(docs.save(doc.id)).rejects.toThrow(/proyecto cerrado/i)
+ await docs.close(doc.id)
+ expect((await docs.open(path)).readonly).toBe(false)
+})
+
+it('PRJ-01b: también protege una fuente registrada como destino de otro documento',async()=>{
+ const another=join(state.folder,'otro.csv');await writeFile(another,source)
+ const doc=await docs.open(another)
+ docs.setProjectSources(new Map([[path,{sha256:'',format:{encoding:'utf8',delimiter:',',header:true}}]]))
+ vi.stubEnv('FREYALAB_TEST','1');vi.stubEnv('FREYALAB_TEST_SAVE_PATH',path)
+ try{await expect(docs.save(doc.id,true)).rejects.toThrow(/protegida/i)}finally{vi.unstubAllEnvs()}
+ expect(await readFile(path,'utf8')).toBe(source)
+})

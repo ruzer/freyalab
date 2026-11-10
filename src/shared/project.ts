@@ -27,8 +27,8 @@ const step=z.union([
  z.strictObject({op:z.literal('order'),by:z.array(z.strictObject({column,descending:z.boolean(),numeric:z.boolean()}))}),
  ...sampling.options.map(sample=>sample.extend({op:z.literal('sample')}))
 ])
-const source=z.strictObject({
- id,path,external:z.boolean(),protection:z.literal('readonly'),bytes:count,sha256:hash,registeredAt:time,
+export const projectSource=z.strictObject({
+ id,path:path.regex(/\.[cCtT][sS][vV]$/),external:z.boolean(),protection:z.literal('readonly'),bytes:count,sha256:hash,registeredAt:time,
  quick:z.strictObject({mtimeMs:z.number(),headSha256:hash,tailSha256:hash}),
  format:z.strictObject({encoding:z.enum(['utf8','utf16le','win1252']),bom:z.boolean(),delimiter:z.enum([',',';','\t','|']),header:z.boolean(),eol:z.enum(['\n','\r\n','\r']),finalEol:z.boolean()}),
  schema:z.strictObject({sha256:hash,columns:z.array(column)}),
@@ -51,7 +51,7 @@ const result=z.strictObject({
  })
 })
 export const projectManifest=z.strictObject({format:z.literal(format),version:z.literal(1),id,name:storedName,createdAt:time,
- sources:z.array(source),recipes:z.array(recipe),results:z.array(result)}).superRefine((value,context)=>{
+ sources:z.array(projectSource),recipes:z.array(recipe),results:z.array(result)}).superRefine((value,context)=>{
  const issue=(key:string,index:number)=>context.addIssue({code:'custom',path:[key,index],message:t('project.error.reference')})
  const sources=new Map(value.sources.map(source=>[source.id,source]))
  const recipes=new Map(value.recipes.map(recipe=>[recipe.id,recipe]))
@@ -74,5 +74,13 @@ export const projectManifestJSONSchema={...z.toJSONSchema(projectManifest,{reuse
  $comment:'El validador de FreyaLab también verifica rutas, referencias entre registros y profundidad de recetas.'}
 export const projectEnvelope=z.looseObject({format:z.literal(format),version:count.min(1),id:z.unknown().optional(),name:z.unknown().optional()})
 export type ProjectManifest=z.infer<typeof projectManifest>
+export type ProjectSource=z.infer<typeof projectSource>
+export type ProjectSourceView=Pick<ProjectSource,'id'|'path'|'external'|'bytes'|'format'>&{
+ name:string;columnCount:number;overAnalysis:boolean;status:'verified'|'changed'|'missing'|'external'
+}
+export type ProjectSourceDraft={
+ id:string;path:string;bytes:number;external:boolean
+ format:ProjectSource['format'];columns:ProjectSource['schema']['columns']
+}
 export type ProjectInfo={id:string;name:string;path:string;version:number;readonly:boolean;sourceCount:number}
 export type ProjectRecent={path:string;name:string;missing:boolean}

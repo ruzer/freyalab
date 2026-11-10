@@ -72,6 +72,14 @@
             "$ref": "#/$defs/__schema2"
           },
           "path": {
+            "allOf": [
+              {
+                "pattern": "^[^\\0]+$"
+              },
+              {
+                "pattern": "\\.[cCtT][sS][vV]$"
+              }
+            ],
             "$ref": "#/$defs/__schema6"
           },
           "external": {
