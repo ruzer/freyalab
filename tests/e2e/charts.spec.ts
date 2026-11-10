@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,mkdir,rm,stat,readdir} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -12,7 +13,7 @@ const original='Grupo,X,Y,Z\r\nA,1,1,U\r\nA,2,2,V\r\nA,3,3,U\r\nA,4,4,V\r\nA,5,1
 const options:ChartOptions={kind:'histogram',x:0,y:2,bins:2,aggregate:'count',descending:false,measureType:'number'}
 async function launch(){const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})}
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-charts-'));await mkdir(join(folder,'exports'));await launch()})
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
 async function showPanel(page:Page,name:'Gráficos'){await showSummary(page,name);const more=page.locator('.charts-panel .more-options');if(await more.getAttribute('open')===null)await more.locator(':scope>summary').click()}
 async function open(text=original,name='plots.csv'){const path=join(folder,name);await writeFile(path,text);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('tab',{name:doc.name,exact:false})).toHaveAttribute('aria-selected','true');return{doc,path}}
 async function query(doc:DocumentInfo,settings:ChartOptions){const sql=chartSQL(doc.headers??[],settings),result=await page.evaluate(({doc,sql})=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id:doc.id,revision:doc.revision}],sql}),{doc,sql}),rows=[...result.rows];for(let offset=100;offset<result.returnedRows;offset+=100)rows.push(...(await page.evaluate(({id,offset})=>window.freya.sqlPage(id,offset),{id:result.requestId,offset})).rows);return chartData(settings.kind,result.columns.map(c=>c.name),rows)}

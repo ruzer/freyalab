@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,mkdir,rm,readdir,stat} from 'node:fs/promises'
 import {tmpdir,cpus,totalmem,release} from 'node:os'
@@ -9,7 +10,7 @@ import type {DocumentInfo} from '../../src/shared/types'
 import {analyzeButton,showPanel} from './panel'
 let app:ElectronApplication,page:Page,folder:string,server:Server|undefined
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-sql-e2e-'));await mkdir(join(folder,'saved'));await mkdir(join(folder,'exports'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_SAVE_DIR:join(folder,'saved'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});if(server)await new Promise<void>(resolve=>server!.close(()=>resolve()));server=undefined;await rm(folder,{recursive:true,force:true})})
+test.afterEach(async()=>{await closeElectron(app);if(server)await new Promise<void>(resolve=>server!.close(()=>resolve()));server=undefined;await rm(folder,{recursive:true,force:true})})
 async function open(name:string,text:string){const path=join(folder,name);await writeFile(path,text);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);return{doc,path}}
 async function query(doc:DocumentInfo,sql:string){return page.evaluate(({doc,sql})=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id:doc.id,revision:doc.revision}],sql}),{doc,sql})}
 

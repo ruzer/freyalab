@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -13,7 +14,7 @@ async function launch(open=true){
  // La ventana de arranque puede ser estrecha (en la CI lo es): un panel restaurado se abriría ampliado y ocultaría la tabla, así que cada prueba fija su tamaño antes de esperar la tabla.
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);if(open)await expect(page.locator('.csv-body')).toBeAttached()
 }
-async function quit(){if(!app)return;await app.evaluate(async({session,app})=>{await session.defaultSession.flushStorageData();app.exit(0)}).catch(()=>{});await app.close().catch(()=>{});app=undefined}
+async function quit(){if(!app)return;await closeElectron(app,()=>app!.evaluate(async({session,app})=>{await session.defaultSession.flushStorageData();app.exit(0)}));app=undefined}
 test.beforeEach(async()=>{
  folder=await mkdtemp(join(tmpdir(),'freya-dock-expanded-'));await mkdir(join(folder,'saved'));await mkdir(join(folder,'exports'));file=join(folder,'ventas.csv')
  await writeFile(file,'Id,Ciudad,Valor,Campo\n'+Array.from({length:200},(_,r)=>`${r},C${r%5},${r%97},v${r}`).join('\n')+'\n')

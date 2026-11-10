@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {appendFileSync} from 'node:fs'
 import {mkdtemp,mkdir,writeFile,readFile,rm,realpath} from 'node:fs/promises'
@@ -54,11 +55,14 @@ async function launch(open:string[]=[],entry=resolve('out/main/index.js')){
 }
 async function quit(){
  if(!app)return
- const child=app.process(),pid=await app.evaluate(()=>process.pid).catch(()=>undefined)
- lifecycle('quit-request',{pid,childPid:child.pid,mainAlive:processAlive(pid),childExit:child.exitCode})
- await page.evaluate(()=>window.freya.settings()).catch(()=>{})
- await app.evaluate(async({session,app})=>{await session.defaultSession.flushStorageData();app.exit(0)}).catch(()=>{})
- await app.close().catch(()=>{})
+ const current=app,child=current.process()
+ let pid:number|undefined
+ await closeElectron(current,async()=>{
+  pid=await current.evaluate(()=>process.pid).catch(()=>undefined)
+  lifecycle('quit-request',{pid,childPid:child.pid,mainAlive:processAlive(pid),childExit:child.exitCode})
+  await page.evaluate(()=>window.freya.settings()).catch(()=>{})
+  await current.evaluate(async({session,app})=>{await session.defaultSession.flushStorageData();app.exit(0)})
+ })
  lifecycle('quit-return',{pid,childPid:child.pid,mainAlive:processAlive(pid),childExit:child.exitCode,childSignal:child.signalCode})
  previousPid=pid;app=undefined
 }

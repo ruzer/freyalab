@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,readdir,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -26,7 +27,7 @@ test.beforeEach(async()=>{
  try{await expect.poll(()=>browserWindow.evaluate(window=>window.webContents.isLoading())).toBe(false)}finally{await browserWindow.dispose()}
  await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
 })
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+test.afterEach(async()=>{await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 
 async function open(text=fixture,name='manual.md'){
  const path=join(directory,name);await writeFile(path,text)

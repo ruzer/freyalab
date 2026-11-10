@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,open,readFile,readdir,realpath,rm,writeFile} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -6,7 +7,7 @@ import {join,resolve} from 'node:path'
 let app:ElectronApplication,page:Page,folder:string,files:string
 const source='ID,Nombre\n"001","Ana"\n9007199254740993,"dos\nlíneas"\n'
 async function launch(extra:Record<string,string>={}){const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:'es',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_FOLDER:files,...extra}});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900});await page.getByRole('button',{name:'Abrir',exact:true}).waitFor()}
-async function quit(){await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{})}
+async function quit(){await closeElectron(app)}
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-txt01-'));files=join(folder,'files');await mkdir(files);await writeFile(join(files,'datos.csv'),source);await writeFile(join(files,'datos.tsv'),source.replaceAll(',','\t'));await launch()})
 test.afterEach(async()=>{await quit();await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 const views=()=>page.getByRole('group',{name:'Vista del CSV',exact:true})

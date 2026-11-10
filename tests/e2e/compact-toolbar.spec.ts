@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -17,7 +18,7 @@ test.beforeEach(async()=>{
  await page.setViewportSize({width:1440,height:900}) // el tamaño de la ventana real depende de la pantalla del equipo (en CI es más pequeña)
  await page.evaluate(path=>window.freya.openPaths([path]),file);await expect(page.getByRole('grid')).toBeVisible()
 })
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
 
 const toolbar=()=>page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true})
 const status=()=>page.locator('footer')

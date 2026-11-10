@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -47,7 +48,7 @@ test('AC-03 · citas, problemas y recarga bibliográfica conservan el archivo', 
    await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.id===document.id)?.text).toBe(before)
   }
   expect(await readFile(path,'utf8')).toBe(source)
- }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+ }finally{await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
 })
 
 test('AC-03 · HTML y PDF sin Pandoc usan la biblioteca actual aunque el Markdown no cambie', { tag: '@package-smoke' },async()=>{
@@ -67,5 +68,5 @@ test('AC-03 · HTML y PDF sin Pandoc usan la biblioteca actual aunque el Markdow
    else{const{getDocument}=await import('pdfjs-dist/legacy/build/pdf.mjs'),loading=getDocument({data:new Uint8Array(bytes),useSystemFonts:true});try{const pdf=await loading.promise,parts:string[]=[];for(let n=1;n<=pdf.numPages;n++)parts.push((await(await pdf.getPage(n)).getTextContent()).items.map(item=>'str'in item?item.str:'').join(' '));expect(parts.join(' ')).toContain('(Chen, 2024)');expect(parts.join(' ')).toContain('Fuente revisada');expect(parts.join(' ')).not.toContain('(García, 2020)')}finally{await loading.destroy()}}
   }
   expect((await page.evaluate(()=>window.freya.documents())).find(current=>current.id===doc.id)).toMatchObject({text:source,dirty:false});expect(await readFile(path,'utf8')).toBe(source);expect(await readFile(library,'utf8')).toBe(updated)
- }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+ }finally{await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
 })

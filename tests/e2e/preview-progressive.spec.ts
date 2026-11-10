@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -26,5 +27,5 @@ test('el párrafo nuevo aparece mientras las imágenes siguen pendientes, sin de
   await expect(preview.locator('img[src^="data:"]')).toHaveCount(2)
   await expect(preview.locator('.mermaid-render svg')).toBeVisible()
   await expect(preview.locator('.render-progress')).toHaveCount(0)
- }finally{await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app.close().catch(()=>{});await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+ }finally{await closeElectron(app);await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
 })

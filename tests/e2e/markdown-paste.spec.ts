@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -25,7 +26,7 @@ test.afterEach(async()=>{
  try{
   if(app)await app.evaluate(async({clipboard})=>{const target=globalThis as typeof globalThis&{freyaPasteClipboard?:import('electron').ClipboardItem[]};if(target.freyaPasteClipboard){if(target.freyaPasteClipboard.length)await clipboard.write(target.freyaPasteClipboard);else clipboard.clear();delete target.freyaPasteClipboard}})
  }finally{
-  await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})
+  await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})
  }
 })
 async function open(text:string,extension='md'){

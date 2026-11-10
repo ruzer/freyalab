@@ -1,4 +1,5 @@
 import {runApplicationMenu} from './application-menu'
+import { closeElectron } from './close-electron'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises'
@@ -52,7 +53,7 @@ test.afterEach(async()=>{
   const result=await page.evaluate(()=>{const probe=(window as typeof window&{__textStatsProbe?:WorkerProbe}).__textStatsProbe;return probe?{posts:probe.posts,replies:probe.replies,errors:probe.errors,terminations:probe.terminations,pending:probe.pending.map(({worker,request})=>({worker,request})),selection:getSelection()?.toString(),counter:document.querySelector('.text-stats')?.textContent}:null}).catch(error=>({captureError:String(error)}))
   if(result){const value={...result,pageErrors:runtimeErrors};await test.info().attach('worker-diagnostic',{body:Buffer.from(JSON.stringify(value,null,2)),contentType:'application/json'});if(process.env.FREYALAB_TEXT_STATS_DIAGNOSTIC==='1')await writeFile(`/private/tmp/freyalab-lote/3-selection-${test.info().title.includes('CRLF')?'crlf':'lf'}.json`,JSON.stringify(value,null,2))}
  }
- await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})
+ await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})
 })
 async function open(source:string,extension='md'){
  const path=join(directory,`documento-${++serial}.${extension}`);await writeFile(path,source)

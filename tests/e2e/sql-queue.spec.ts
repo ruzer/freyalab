@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readdir,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -12,7 +13,7 @@ test.beforeEach(async()=>{
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_SAVE_DIR:join(folder,'saved'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya)
 })
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
 
 const csv='Id,Ciudad,Valor\n'+Array.from({length:240},(_,i)=>`${i},C${i%5},${i%97}`).join('\n')+'\n'
 const SQL='SELECT ciudad, count(*) AS n FROM datos GROUP BY 1 ORDER BY 1',ALL='SELECT * FROM datos ORDER BY CAST(id AS INTEGER)'

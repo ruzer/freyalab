@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
+import { closeElectron } from './close-electron'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm,truncate} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -15,7 +16,7 @@ test.beforeEach(async()=>{
  await app.evaluate(({dialog},file)=>{dialog.showSaveDialog=async()=>({canceled:false,filePath:file})},join(folder,'saved','nuevo.md'))
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.emulateMedia({reducedMotion:'reduce'});await page.setViewportSize({width:1280,height:720})
 })
-test.afterEach(async()=>{await app?.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(folder,{recursive:true,force:true})})
+test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
 const header=()=>page.locator('header.toolbar')
 const save=()=>header().getByRole('button',{name:'Guardar',exact:true})
 const exp=()=>header().getByRole('button',{name:'Exportar',exact:true})
