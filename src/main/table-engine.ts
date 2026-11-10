@@ -5,7 +5,7 @@ import { open as openFile, stat, realpath } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { setImmediate as yieldTurn } from 'node:timers/promises'
 import { parse } from 'csv-parse'
-import {csvDelimiter} from './csv-delimiter'
+import { parse as parseSync } from 'csv-parse/sync'
 import { stringify } from 'csv-stringify/sync'
 import iconv from 'iconv-lite'
 import {ANALYSIS_LIMITS,arrowBatches,fileRecords,validateUtf8} from './analysis-source'
@@ -54,7 +54,12 @@ function detectEncoding(bytes: Buffer): Encoding {
 function metadata(bytes: Buffer, options: TableOptions, path = ''): Metadata {
  const encoding = options.encoding ?? detectEncoding(bytes)
  const text = iconv.decode(bytes, encoding)
- const delimiter = validDelimiter(options.delimiter ?? csvDelimiter(text,path))
+ const counts = [',', ';', '\t', '|'].map(delimiter => {
+  try { const first = parseSync(text, {delimiter, bom:true, to:1, relax_column_count:true,record_delimiter:RECORD_DELIMITERS}) as string[][]; return {delimiter,count:(first[0]?.length??1)-1} }
+  catch { return {delimiter,count:0} }
+ })
+ counts.sort((a,b) => b.count-a.count)
+ const delimiter = validDelimiter(options.delimiter ?? (path.endsWith('.tsv') ? '\t' : (counts[0].count ? counts[0].delimiter : ',')))
  let eol='\n',inQuotes=false
  for(let i=0;i<text.length;i++){if(text[i]==='"')inQuotes=!inQuotes;else if(!inQuotes&&(text[i]==='\r'||text[i]==='\n')){eol=text.startsWith('\r\n',i)?'\r\n':text[i];break}}
  const bom = encoding === 'utf8' ? bytes.subarray(0, 3).equals(Buffer.from([0xef,0xbb,0xbf])) : encoding === 'utf16le' && bytes[0] === 0xff && bytes[1] === 0xfe
