@@ -1,6 +1,6 @@
 {
   "name": "freyalab",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "description": "Editor local de documentos, tablas y diagramas. Para Freya.",
   "main": "./out/main/index.js",
   "type": "module",
