@@ -51,8 +51,10 @@ function converted(column:CalculationColumn){
  const name=quoteIdentifier(column.name)
  if(column.read==='text')return name
  if(column.read==='date'){
-  const parsed=`TRY_CAST(${name} AS DATE)`
-  return `CASE WHEN length(${name})=10 AND CAST(${parsed} AS VARCHAR)=${name} THEN ${parsed} END`
+  // Los mismos caracteres exteriores que String.trim() ignora al perfilar.
+  const trimmed=`TRIM(${name}, ' \t\n\v\f\r\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000\ufeff')`
+  const parsed=`TRY_CAST(${trimmed} AS DATE)`
+  return `CASE WHEN length(${trimmed})=10 AND CAST(${parsed} AS VARCHAR)=${trimmed} THEN ${parsed} END`
  }
  const scale=column.scale??0
  if(!Number.isInteger(scale)||scale<0||scale>12)throw new CalculationError('incompatible')

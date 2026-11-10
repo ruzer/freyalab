@@ -157,7 +157,7 @@ La entrega de desarrollo añade **Gráficos** junto a Análisis/Estadísticas. I
 Abre **Añadir columna calculada…** desde **Filas y columnas** o desde la paleta CSV con **Ctrl/⌘ + K**. Para insertar el resultado junto a una columna concreta, abre el menú de su encabezado con clic derecho o **Mayús + F10** y elige **Calcular columna a la derecha**.
 
 - Usa los nombres que aparecen en **Columnas**. La lista inserta los nombres entre comillas dobles. Escribe `"Precio unitario"` si contiene espacios y duplica cualquier comilla interna, como en `"Precio ""lista"""`. Usa comillas simples para texto literal, como `'Mayorista'`.
-- En **Cómo leer**, elige **Número** y sus decimales para operar con cantidades o **Fecha AAAA-MM-DD** para fechas ISO. Usa **Texto** para nombres y códigos con ceros iniciales. Los ejemplos eligen columnas según su perfil y ajustan la lectura para esa fórmula.
+- En **Cómo leer**, elige **Número** y sus decimales para operar con cantidades o **Fecha AAAA-MM-DD** para fechas ISO. La lectura de fechas ignora el espacio exterior sin modificar el dato original. Usa **Texto** para nombres y códigos con ceros iniciales. Los ejemplos eligen columnas según su perfil y ajustan la lectura para esa fórmula.
 - Usa `+`, `-`, `*` y `/` para operaciones aritméticas, `=`, `<>`, `<` y `>` para comparar, `||` para unir texto y paréntesis para indicar qué se calcula primero. **Funciones disponibles** agrupa las funciones permitidas.
 
 | Para calcular | Fórmula de ejemplo |

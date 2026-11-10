@@ -152,7 +152,7 @@ test('H15-1 interfaz: explica la fila corta y desactiva el cálculo en una muest
 })
 
 test('H15-2: los ocho ejemplos eligen columnas, ajustan la lectura y calculan',async()=>{
- const source='Precio unitario,Cantidad,Fecha,Nombre,Apellido\n10.10,2,2026-02-04,Ana,López\n0.10,4,2025-11-09,Luz,Pérez\n'
+ const source='Precio unitario,Cantidad,Fecha,Nombre,Apellido\n10.10,2, 2026-02-04 ,Ana,López\n0.10,4,2025-11-09,Luz,Pérez\n'
  const {path}=await open(source)
  await page.getByLabel('Tema',{exact:true}).selectOption('light')
  const panel=await calculationDialog()
@@ -172,6 +172,37 @@ test('H15-2: los ocho ejemplos eligen columnas, ajustan la lectura y calculan',a
  await expect(panel.getByText('round',{exact:true})).toBeVisible()
  expect((await panel.locator('[data-calculation-function]').allTextContents()).sort()).toEqual(Object.values(calculationFunctionGroups).flat().sort())
  await page.screenshot({path:test.info().outputPath('h15-2-claro-1440x900.png')})
+ expect(await readFile(path,'utf8')).toBe(source)
+})
+
+test('H15-2b: los ejemplos encuentran cantidades aunque haya más de 100 000 valores distintos',async()=>{
+ const source='Precio,Cantidad\n'+Array.from({length:150000},(_,i)=>`${i}.${String(i%100).padStart(2,'0')},${i%50}\n`).join('')
+ const {path}=await open(source)
+ const panel=await calculationDialog()
+ const multiply=panel.getByRole('button',{name:'Multiplicar',exact:true})
+ await expect(multiply).toBeEnabled()
+ const year=panel.getByRole('button',{name:'Año',exact:true})
+ await expect(year).toBeDisabled()
+ await expect(year).toHaveAccessibleDescription(/No hay una columna de fechas AAAA-MM-DD/)
+ await multiply.click()
+ await expect(panel.getByLabel('Fórmula',{exact:true})).toHaveValue('"Precio" * "Cantidad"')
+ await expect(panel.getByLabel('Decimales de Precio',{exact:true})).toHaveValue('2')
+ await expect(panel.getByLabel('Decimales de Cantidad',{exact:true})).toHaveValue('0')
+ expect(await readFile(path,'utf8')).toBe(source)
+})
+
+test('H15-2b: el ejemplo Condition calcula en el idioma de la interfaz [en]',async()=>{
+ const source='Price\n11\n10\n'
+ const {path}=await open(source)
+ const panel=await calculationDialog('en')
+ const example=panel.getByRole('button',{name:'Condition',exact:true})
+ await expect(example).toBeEnabled()
+ await expect(example).toHaveAccessibleDescription('Returns ‘Wholesaler’ above 10 and ‘Retailer’ otherwise.')
+ await example.click()
+ await panel.getByRole('button',{name:'Preview',exact:true}).click()
+ await expect(panel.getByRole('status')).toContainText('Preview ready')
+ await expect(panel.getByRole('row').nth(1).getByRole('cell').last()).toHaveText('Wholesaler')
+ await expect(panel.getByRole('row').nth(2).getByRole('cell').last()).toHaveText('Retailer')
  expect(await readFile(path,'utf8')).toBe(source)
 })
 
