@@ -53,7 +53,10 @@ test('registra un CSV con teclado, bloquea edición directa y deja guardar una c
  await panel().getByRole('button',{name:'Abrir',exact:true}).press('Enter')
  await expect(page.getByRole('tab',{name:'datos.csv'})).toBeVisible()
  await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled()
- await expect(page.locator('[data-csv-view]').getByRole('button',{name:'Texto',exact:true})).toBeDisabled()
+ const textView=page.locator('[data-csv-view]').getByRole('button',{name:'Texto',exact:true})
+ await expect(textView).toBeDisabled()
+ await expect(textView).toHaveAccessibleDescription(t('ui.reason.projectProtected'))
+ await expect(textView).toHaveAttribute('title',`Texto · ${t('ui.reason.projectProtected')}`)
  const attempts=await page.evaluate(async()=>{
   const [document]=await window.freya.documents()
   const attempts=await Promise.allSettled([window.freya.save(document.id),window.freya.tableEdit(document.id,{type:'cell',rowId:'1',column:0,value:'cambio'}),window.freya.csvView(document.id,'text')])
@@ -68,6 +71,9 @@ test('registra un CSV con teclado, bloquea edición directa y deja guardar una c
  await panel().getByRole('button',{name:'Cerrar proyecto',exact:true}).press('Enter')
  await expect(projectTab()).toHaveCount(0)
  expect((await page.evaluate(()=>window.freya.documents())).find(document=>document.name==='datos.csv')?.projectSource).toBe('closed')
+ await page.getByRole('tab',{name:'datos.csv'}).click()
+ await expect(textView).toBeDisabled()
+ await expect(textView).toHaveAccessibleDescription(t('ui.reason.projectClosed'))
 })
 
 test('avisa cuando la fuente cambia y conserva la huella previa al volver a registrarla',async()=>{
