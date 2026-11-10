@@ -3,8 +3,8 @@
  import {quoteIdentifier,sqlColumns} from '../../shared/sql-helpers'
  import {calculationExamples,calculationFunctionGroups} from '../../shared/calculation-help'
  import type {ColumnRead} from '../../shared/calculated-column'
- import type {ColumnProfile,DocumentInfo} from '../../shared/types'
- import {t} from '../lib/i18n.svelte'
+ import type {ColumnProfileHint,DocumentInfo} from '../../shared/types'
+ import {getUILanguage,t} from '../lib/i18n.svelte'
 
  let {doc,name=$bindable(),expression=$bindable(),columns=$bindable(),onError=$bindable(),busy}:{doc:DocumentInfo;name:string;expression:string;columns:ColumnRead[];onError:'empty'|'abort';busy:boolean}=$props()
  const uid=$props.id()
@@ -31,9 +31,9 @@
  }
  onMount(()=>{if(!name)name=uniqueName(t('calculate.defaultName'))})
  let formula=$state<HTMLInputElement>(),nameField=$state<HTMLInputElement>()
- let profiles=$state<Record<number,ColumnProfile|null>>({})
+ let profiles=$state<Record<number,ColumnProfileHint|null>>({})
  let inserted=$state('')
- const examples=$derived(calculationExamples(fields,profiles))
+ const examples=$derived(calculationExamples(fields,profiles,getUILanguage()))
  const pending=$derived(fields.some(({index})=>profiles[index]===undefined))
  const profileFailed=$derived(fields.some(({index})=>profiles[index]===null))
  let profileSource=''
@@ -57,7 +57,7 @@
     if(untrack(()=>profiles[index]!==undefined))continue
     requestId=crypto.randomUUID()
     try{
-     const {profile}=await window.freya.analyzeColumn(id,{column:index,revision,requestId,frequencyOffset:0,duplicatesOnly:false,bins:1})
+     const {profile}=await window.freya.analyzeColumn(id,{column:index,revision,requestId,frequencyOffset:0,duplicatesOnly:false,bins:1,profileOnly:true})
      if(!cancelled)profiles[index]=profile
     }catch{
      if(!cancelled)profiles[index]=null

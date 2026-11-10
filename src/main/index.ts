@@ -165,7 +165,7 @@ async function handle(operation:string,args:unknown[]){
  case'sqlRun':return analytics.run(z.object({requestId:z.uuid(),sources:z.array(z.object({id,revision:z.number().int().nonnegative(),query:query.optional(),where:conditionGroup.optional()})).min(1).max(4),sql:z.string().trim().min(1).max(100000)}).parse(a))
  case'sqlPage':return analytics.page(id.parse(a),z.number().int().min(0).max(9999).parse(b))
  case'sqlCancel':return analytics.cancel(id.parse(a))
- case'analyzeColumn':docs.requireTable(id.parse(a));return docs.table.call('analyzeColumn',a,z.object({column:col,otherColumn:col.optional(),query:query.optional(),revision:z.number().int().nonnegative(),requestId:z.uuid(),frequencyOffset:z.number().int().min(0).max(2000000),duplicatesOnly:z.boolean(),bins:z.number().int().min(1).max(30)}).parse(b))
+ case'analyzeColumn':docs.requireTable(id.parse(a));return docs.table.call('analyzeColumn',a,z.object({column:col,otherColumn:col.optional(),query:query.optional(),revision:z.number().int().nonnegative(),requestId:z.uuid(),frequencyOffset:z.number().int().min(0).max(2000000),duplicatesOnly:z.boolean(),bins:z.number().int().min(1).max(30),profileOnly:z.literal(true).optional()}).parse(b))
  case'cancelAnalysis':{const key=id.parse(a),requestId=id.parse(b);docs.requireTable(key);analytics.cancelCalculation(key,requestId);return docs.table.call('cancelAnalysis',key,requestId)}
  case'operation':{const key=id.parse(a),outcome=await operateDocument(docs,key,operationRequest.parse(b));if(outcome?.document)window?.webContents.send('freya:event',{type:'opened',document:outcome.document});return outcome}
  case'cancelOperation':docs.requireTable(id.parse(a));return docs.table.call('cancelOperation',z.uuid().parse(b))

@@ -31,9 +31,13 @@ it('nunca toma identificadores, datos mixtos o columnas sin perfil para completa
  expect(examples.find(example=>example.id==='year')).toMatchObject({reason:'date1',recipe:undefined})
 })
 
-it('omite una fecha con espacios que la lectura de fórmulas rechazaría',()=>{
+it('usa la primera columna de fechas que identificó el perfil',()=>{
  const fields=sqlColumns(['Fecha con espacios','Fecha ISO'])
- const profiles={0:{kind:'date',dateReadCompatible:false},1:{kind:'date',dateReadCompatible:true}} as const
- expect(calculationExamples(fields,profiles).find(example=>example.id==='year')?.recipe?.expression).toBe('year("Fecha ISO")')
- expect(calculationExamples(fields.slice(0,1),profiles).find(example=>example.id==='month')?.recipe).toBeUndefined()
+ const profiles={0:{kind:'date'},1:{kind:'date'}} as const
+ expect(calculationExamples(fields,profiles).find(example=>example.id==='year')?.recipe?.expression).toBe('year("Fecha con espacios")')
+})
+
+it('localiza los resultados del ejemplo Condición en inglés',()=>{
+ const example=calculationExamples(sqlColumns(['Price']),{0:{kind:'number'}},'en').find(value=>value.id==='condition')
+ expect(example?.recipe?.expression).toBe(`if("Price" > 10, 'Wholesaler', 'Retailer')`)
 })

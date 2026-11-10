@@ -1,7 +1,7 @@
 import {setImmediate as yieldTurn} from 'node:timers/promises'
 import {sum,mean,min,max,quantile,variance,sampleVariance,standardDeviation,sampleCorrelation,equalIntervalBreaks} from 'simple-statistics'
 import {date as isoDate} from './table-query'
-import type {ColumnAnalysis,ColumnAnalysisRequest,TableRow} from '../shared/types'
+import type {ColumnAnalysis,ColumnAnalysisRequest,ColumnProfileHint,ColumnProfileRequest,TableRow} from '../shared/types'
 
 const numberPattern=/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/
 export function numeric(value:string):number|null{const v=value.trim(),n=Number(v);return v&&numberPattern.test(v)&&Number.isFinite(n)?n:null}
@@ -16,52 +16,59 @@ export function descriptive(values:number[]){
   deviation:populationVariance===null?null:finite(Math.sqrt(populationVariance)),sampleDeviation:samplingVariance===null?null:finite(Math.sqrt(samplingVariance))}
 }
 
-export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,request:ColumnAnalysisRequest,ensure:()=>void,header:string):Promise<Omit<ColumnAnalysis,'revision'|'sample'|'filtered'|'column'>>{
+type Analysis=Omit<ColumnAnalysis,'revision'|'sample'|'filtered'|'column'>
+export function analyzeColumn(rows:TableRow[],indices:number[]|undefined,request:ColumnProfileRequest,ensure:()=>void,header:string):Promise<{profile:ColumnProfileHint}>
+export function analyzeColumn(rows:TableRow[],indices:number[]|undefined,request:ColumnAnalysisRequest,ensure:()=>void,header:string):Promise<Analysis>
+export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,request:ColumnAnalysisRequest|ColumnProfileRequest,ensure:()=>void,header:string):Promise<Analysis|{profile:ColumnProfileHint}>{
+ const profileOnly='profileOnly' in request&&request.profileOnly===true
  const cells=indices?.length??rows.length,values:number[]=[],x:number[]=[],y:number[]=[],missingRows:ColumnAnalysis['missingRows']=[]
  // shortcut: hasta 100 000 claves exactas en memoria; usar el motor analítico antes de ampliar la cardinalidad.
- const counts=new Map<string,{count:number;firstRow:number;rowId:string}>()
- let empty=0,missing=0,whitespace=0,leadingZeros=0,minLength=Infinity,maxLength=0,dates=0,invalidDates=0,unsafeIntegers=0,identifierZeros=0,decimalPlaces=0
- let dateReadCompatible=true
+ const counts=profileOnly?undefined:new Map<string,{count:number;firstRow:number;rowId:string}>()
+ // Distinguir hasta 20 categorías no exige guardar las frecuencias de toda la columna.
+ const distinct=new Set<string>()
+ let empty=0,missing=0,whitespace=0,leadingZeros=0,minLength=Infinity,maxLength=0,dates=0,invalidDates=0,unsafeIntegers=0,identifierZeros=0,decimalPlaces=0,numbers=0
  for(let i=0;i<cells;i++){
   const index=indices?indices[i]:i,row=rows[index],value=row.cells[request.column]??'',trimmed=value.trim(),parsed=numeric(value),n=parsed!==null&&(!Number.isInteger(parsed)||Number.isSafeInteger(parsed))?parsed:null
-  const found=counts.get(value);if(found)found.count++;else{if(counts.size>=100000)throw new Error('La columna supera 100 000 valores distintos. Filtra los datos antes de explorarla.');counts.set(value,{count:1,firstRow:index+1,rowId:row.id})}
-  if(!value.trim()){empty++;if(missingRows.length<20)missingRows.push({row:index+1,rowId:row.id})}
-  if(request.column>=row.cells.length)missing++
-  if(value.length&&!value.trim())whitespace++
+  const found=counts?.get(value)
+  if(counts){
+   if(found)found.count++;else{if(counts.size>=100000)throw new Error('La columna supera 100 000 valores distintos. Filtra los datos antes de explorarla.');counts.set(value,{count:1,firstRow:index+1,rowId:row.id})}
+   if(!trimmed&&missingRows.length<20)missingRows.push({row:index+1,rowId:row.id})
+   if(request.column>=row.cells.length)missing++
+   if(value.length&&!trimmed)whitespace++
+   minLength=Math.min(minLength,value.length);maxLength=Math.max(maxLength,value.length)
+  }else if(trimmed&&distinct.size<=20)distinct.add(value)
+  if(!trimmed)empty++
   if(/^[+-]?0\d/.test(trimmed)){leadingZeros++;if(parsed!==null)identifierZeros++}
   if(parsed!==null&&Number.isInteger(parsed)&&!Number.isSafeInteger(parsed))unsafeIntegers++
   if(/^\d{4}-\d{2}-\d{2}$/.test(trimmed)){
-   if(!trimmed.startsWith('0000-')&&isoDate(trimmed)){
-    dates++
-    // Los gráficos toleran espacios, pero la lectura explícita de fechas en fórmulas exige ISO exacto.
-    if(value!==trimmed)dateReadCompatible=false
-   }else invalidDates++
+   if(!trimmed.startsWith('0000-')&&isoDate(trimmed))dates++;else invalidDates++
   }
-  minLength=Math.min(minLength,value.length);maxLength=Math.max(maxLength,value.length)
   if(n!==null){
-   values.push(n)
+   numbers++;if(counts)values.push(n)
    if(!found&&decimalPlaces<12){
     const point=trimmed.indexOf('.'),exponent=trimmed.search(/[eE]/)
     const fraction=point<0?0:(exponent<0?trimmed.length:exponent)-point-1
     decimalPlaces=Math.min(12,Math.max(decimalPlaces,fraction-(exponent<0?0:Number(trimmed.slice(exponent+1)))))
    }
   }
-  if(request.otherColumn!==undefined&&n!==null){const other=safeNumber(row.cells[request.otherColumn]??'');if(other!==null){x.push(n);y.push(other)}}
+  if(counts&&request.otherColumn!==undefined&&n!==null){const other=safeNumber(row.cells[request.otherColumn]??'');if(other!==null){x.push(n);y.push(other)}}
   if(i%2048===0){await yieldTurn();ensure()}
  }
  await yieldTurn();ensure()
- const frequencies=[...counts].filter(([,entry])=>!request.duplicatesOnly||entry.count>1).sort((a,b)=>b[1].count-a[1].count||a[1].firstRow-b[1].firstRow)
- let duplicateGroups=0,duplicateRows=0,distinctNonEmpty=0
- for(const [value,entry] of counts){if(value.trim())distinctNonEmpty++;if(entry.count>1){duplicateGroups++;duplicateRows+=entry.count}}
+ let duplicateGroups=0,duplicateRows=0,distinctNonEmpty=distinct.size
+ if(counts)for(const [value,entry] of counts){if(value.trim())distinctNonEmpty++;if(entry.count>1){duplicateGroups++;duplicateRows+=entry.count}}
  const words=header.replace(/([a-z])([A-Z])/g,'$1 $2').normalize('NFD').replace(/\p{M}/gu,'').toLowerCase(),headerHint=/(^|[^a-z0-9])(id|ids|codigo|code|clave|folio|uuid|rfc|curp|sku|zip)(?=$|[^a-z0-9])/.test(words),nonEmpty=cells-empty
  let kind:ColumnAnalysis['profile']['kind']='text'
  if(!nonEmpty)kind='empty'
  else if(headerHint||identifierZeros||unsafeIntegers)kind='identifier'
- else if(values.length===nonEmpty)kind='number'
+ else if(numbers===nonEmpty)kind='number'
  else if(dates===nonEmpty)kind='date'
- else if(values.length||dates||invalidDates)kind='mixed'
+ else if(numbers||dates||invalidDates)kind='mixed'
  else if(distinctNonEmpty<=20&&distinctNonEmpty<nonEmpty)kind='category'
- const profile={kind,dates,invalidDates,unsafeIntegers,identifierZeros,headerHint,distinctNonEmpty,...kind==='number'?{decimalPlaces}:kind==='date'?{dateReadCompatible}:{}}
+ const hint={kind,...kind==='number'?{decimalPlaces}:{}}
+ if(!counts)return{profile:hint}
+ const profile={...hint,dates,invalidDates,unsafeIntegers,identifierZeros,headerHint,distinctNonEmpty}
+ const frequencies=[...counts].filter(([,entry])=>!request.duplicatesOnly||entry.count>1).sort((a,b)=>b[1].count-a[1].count||a[1].firstRow-b[1].firstRow)
  const warnings:string[]=[],histogram:ColumnAnalysis['histogram']=[]
  const statistics=descriptive(values)
  if(values.length){

@@ -1,6 +1,7 @@
 import type {ColumnRead} from './calculated-column'
 import {quoteIdentifier} from './sql-helpers'
-import type {ColumnProfile} from './types'
+import type {ColumnProfileHint} from './types'
+import {t,type Language} from './i18n'
 
 // El validador y la ayuda comparten el mismo catálogo de llamadas escalares.
 export const calculationFunctionGroups={
@@ -11,6 +12,10 @@ export const calculationFunctionGroups={
  conversion:'cast try_cast try'.split(' '),
 }
 
+function conditionValue(key:'above'|'otherwise',locale:Language){
+ return "'" + t(`calculate.examples.condition.${key}`,{},locale).replaceAll("'","''") + "'"
+}
+
 const patterns=[
  ['multiply','number',2,(a,b)=>`${a} * ${b}`],
  ['percentage','number',2,(a,b)=>`${a} / ${b} * 100`],
@@ -18,15 +23,14 @@ const patterns=[
  ['year','date',1,a=>`year(${a})`],
  ['month','date',1,a=>`month(${a})`],
  ['join','text',2,(a,b)=>`${a} || ' ' || ${b}`],
- ['condition','number',1,a=>`if(${a} > 10, 'Mayorista', 'Minorista')`],
+ ['condition','number',1,(a,_b,locale)=>`if(${a} > 10, ${conditionValue('above',locale)}, ${conditionValue('otherwise',locale)})`],
  ['fill','number',1,a=>`coalesce(${a}, 0)`],
-] as const satisfies readonly (readonly [string,ColumnRead['read'],number,(a:string,b:string)=>string])[]
+] as const satisfies readonly (readonly [string,ColumnRead['read'],number,(a:string,b:string,locale:Language)=>string])[]
 
-export function calculationExamples(fields:readonly {index:number;name:string}[],profiles:Readonly<Record<number,Pick<ColumnProfile,'kind'|'decimalPlaces'|'dateReadCompatible'>|null>>){
+export function calculationExamples(fields:readonly {index:number;name:string}[],profiles:Readonly<Record<number,ColumnProfileHint|null>>,locale:Language='es'){
  const candidates={number:[],date:[],text:[]} as Record<ColumnRead['read'],{index:number;name:string}[]>
  for(const field of fields){
   const profile=profiles[field.index],kind=profile?.kind
-  if(kind==='date'&&profile?.dateReadCompatible===false)continue
   if(kind==='number'||kind==='date'||kind==='text'||kind==='category')candidates[kind==='category'?'text':kind].push(field)
  }
  return patterns.map(([id,read,count,format])=>{
@@ -34,6 +38,6 @@ export function calculationExamples(fields:readonly {index:number;name:string}[]
   if(selected.length<count)return {id,reason:`${read}${count}`,recipe:undefined}
   const [a,b]=selected.map(field=>quoteIdentifier(field.name))
   const columns=selected.map(({index}):ColumnRead=>read==='number'?{index,read,scale:profiles[index]?.decimalPlaces??0}:{index,read})
-  return {id,reason:`${read}${count}`,recipe:{expression:format(a,b??''),columns}}
+  return {id,reason:`${read}${count}`,recipe:{expression:format(a,b??'',locale),columns}}
  })
 }

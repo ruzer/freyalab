@@ -16,7 +16,7 @@ import {calculatedRecordBytes} from './calculated-csv-bytes'
 import {LargeViews} from './large-view'
 import type {EngineOperation,OperationResult} from '../shared/operations'
 import {analyzeColumn,numeric,descriptive} from './table-analysis'
-import type {CalculatedColumnPreview,ColumnAnalysisRequest,ColumnAnalysis,TableTransformEdit,TableTransformPreview,SqlProgress} from '../shared/types'
+import type {CalculatedColumnPreview,ColumnAnalysisRequest,ColumnAnalysis,ColumnProfileRequest,ColumnProfileHint,TableTransformEdit,TableTransformPreview,SqlProgress} from '../shared/types'
 import {CalculationError,type CalculateColumnEdit,type CalculatedValue} from '../shared/calculated-column'
 import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableConditionGroup, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview,TableStatsOptions,LargeViewRequest } from '../shared/types'
 
@@ -569,13 +569,21 @@ export class TableEngine {
  }
  async analysisNext(ticket:string){const active=this.streams.get(ticket);if(!active)throw new Error('La transferencia ya no está disponible.');try{const chunk=await active.iterator.next();if(chunk.done){this.streams.delete(ticket);return{done:true as const,rows:0}}return{done:false as const,...chunk.value}}catch(error){this.streams.delete(ticket);throw error}}
  async analysisClose(ticket:string){const active=this.streams.get(ticket);this.streams.delete(ticket);await active?.iterator.return().catch(()=>{})}
- async analyzeColumn(id:string,request:ColumnAnalysisRequest):Promise<ColumnAnalysis>{
+ analyzeColumn(id:string,request:ColumnProfileRequest):Promise<{profile:ColumnProfileHint}>
+ analyzeColumn(id:string,request:ColumnAnalysisRequest):Promise<ColumnAnalysis>
+ async analyzeColumn(id:string,request:ColumnAnalysisRequest|ColumnProfileRequest):Promise<ColumnAnalysis|{profile:ColumnProfileHint}>{
   const s=this.get(id);if(request.revision!==s.revision)throw new Error('La tabla cambió. Vuelve a analizar.')
   for(const column of [request.column,...request.otherColumn===undefined?[]:[request.otherColumn]])if(!Number.isInteger(column)||column<0||column>=s.headers.length)throw new Error('Columna no válida.')
   if(!Number.isInteger(request.frequencyOffset)||request.frequencyOffset<0||!Number.isInteger(request.bins)||request.bins<1||request.bins>30)throw new Error('Opciones de análisis no válidas.')
   this.analyses.set(id,request.requestId)
   const ensure=()=>{if(this.analyses.get(id)!==request.requestId||this.states.get(id)!==s||request.revision!==s.revision)throw new Error('Análisis cancelado: la tabla cambió o se recibió otra solicitud.')}
-  try{const indices=request.query?await this.indices(id,request.query,ensure):undefined;ensure();const result=await analyzeColumn(s.rows,indices,request,ensure,s.headers[request.column]);ensure();return{...result,revision:s.revision,sample:s.readonly,filtered:!!request.query,column:request.column}}
+  try{
+   const indices=request.query?await this.indices(id,request.query,ensure):undefined;ensure()
+   const header=s.headers[request.column]
+   if('profileOnly' in request&&request.profileOnly===true)return await analyzeColumn(s.rows,indices,request,ensure,header)
+   const result=await analyzeColumn(s.rows,indices,request,ensure,header);ensure()
+   return{...result,revision:s.revision,sample:s.readonly,filtered:!!request.query,column:request.column}
+  }
   finally{if(this.analyses.get(id)===request.requestId)this.analyses.delete(id)}
  }
  async cancelAnalysis(id:string,requestId:string){if(this.analyses.get(id)===requestId)this.analyses.delete(id)}

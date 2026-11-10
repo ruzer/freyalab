@@ -23,7 +23,7 @@ beforeAll(async()=>{
  },new VoidLogger(),NODE_RUNTIME)
  await db.instantiate();db.open({});connection=db.connect();tokenize=db.tokenize.bind(db);close=()=>{connection.close();db.reset()}
  connection.query(`CREATE TABLE datos (id VARCHAR,"Precio unitario" VARCHAR,Cantidad VARCHAR,Fecha VARCHAR,"Descripción" VARCHAR,datos VARCHAR,"SELECT ""; costo" VARCHAR,repeat VARCHAR);
- INSERT INTO datos VALUES ('1','10.10','3','2026-01-05','Café','visible','privado','columna'),('2','0.1','3','2026-01-05 extra','té',NULL,NULL,NULL),('3','','','2026-02-30','',NULL,NULL,NULL),('4','0.01','0',NULL,'sin fecha',NULL,NULL,NULL)`)
+ INSERT INTO datos VALUES ('1','10.10','3',' 2026-01-05\t\u00a0','Café','visible','privado','columna'),('2','0.1','3','2026-01-05 extra','té',NULL,NULL,NULL),('3','','','2026-02-30','',NULL,NULL,NULL),('4','0.01','0',NULL,'sin fecha',NULL,NULL,NULL)`)
  for(const sql of ["SET enable_external_access=false","SET autoload_known_extensions=false","SET autoinstall_known_extensions=false","SET lock_configuration=true"])connection.query(sql)
 })
 afterAll(()=>close?.())
