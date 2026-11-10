@@ -4,11 +4,11 @@ import {t} from '../shared/i18n'
 import type {ProjectRecent} from '../shared/project'
 
 type Group='app'|'file'|'edit'|'search'|'view'|'mode'|'theme'|'go'|'window'|'help'|'export'|'dynamic'
-type Requirement='always'|'document'|'editable'|'editing'|'textEditing'|'selection'|'markdown'|'csv'|'undo'|'redo'|'tabs'|'updates'|'recents'
+type Requirement='always'|'document'|'editable'|'saveAs'|'projectCsv'|'editing'|'textEditing'|'selection'|'markdown'|'csv'|'undo'|'redo'|'tabs'|'updates'|'recents'
 type Focus='none'|'editor'|'field'|'grid'|'cell'|'sql'
 export interface ApplicationMenuContext {
- documents:readonly {id:string;name:string;kind:'markdown'|'mermaid'|'csv'|'text';readonly:boolean;dirty:boolean;csvView?:'table'|'text'}[]
- recents:readonly string[];projectRecents?:readonly ProjectRecent[];activeId:string|null;mode:'edit'|'split'|'preview';theme:'system'|'light'|'dark';sidebar:boolean;focus:Focus;locked:boolean;development:boolean
+ documents:readonly {id:string;name:string;kind:'markdown'|'mermaid'|'csv'|'text';readonly:boolean;dirty:boolean;projectSource?:'protected'|'closed';csvView?:'table'|'text'}[]
+ recents:readonly string[];projectRecents?:readonly ProjectRecent[];projectActive?:boolean;activeId:string|null;mode:'edit'|'split'|'preview';theme:'system'|'light'|'dark';sidebar:boolean;focus:Focus;locked:boolean;development:boolean
  canUndo?:boolean;canRedo?:boolean;canEdit?:boolean;hasSelection?:boolean;inCodeMirror?:boolean;modal?:boolean;showDevTools?:boolean;updatesReady?:boolean;docxAvailable?:boolean;analysis?:'open'|'active'
 }
 interface Command {
@@ -29,8 +29,8 @@ export const applicationCommands:readonly Command[]=[
  command('file.newMarkdown','file','CommandOrControl+N'),command('file.newMermaid','file','CommandOrControl+Shift+N'),command('file.newCsv','file','CommandOrControl+Alt+N'),
  command('file.open','file','CommandOrControl+O','always',{separator:true}),command('file.openFolder','file','CommandOrControl+Shift+O'),
  command('file.recents','file',undefined,'always',{submenu:'recent'}),
- command('file.newProject','file'),command('file.projectRecents','file',undefined,'always',{submenu:'projectRecent'}),
- command('file.close','file','CommandOrControl+W','document',{separator:true}),command('file.save','file','CommandOrControl+S','editable'),command('file.saveAs','file','CommandOrControl+Shift+S','editable'),
+ command('file.newProject','file'),command('file.addProjectSource','file',undefined,'projectCsv'),command('file.projectRecents','file',undefined,'always',{submenu:'projectRecent'}),
+ command('file.close','file','CommandOrControl+W','document',{separator:true}),command('file.save','file','CommandOrControl+S','editable'),command('file.saveAs','file','CommandOrControl+Shift+S','saveAs'),
  command('file.exports','file',undefined,'editable',{submenu:'export'}),
  command('file.openRecent','dynamic'),command('file.openRecentProject','dynamic'),command('file.clearRecents','dynamic',undefined,'recents'),command('window.document','dynamic'),
  command('edit.undo','edit','CommandOrControl+Z','undo'),command('edit.redo','edit','CommandOrControl+Shift+Z','redo'),
@@ -65,6 +65,8 @@ function enabled(requirement:Requirement,context:ApplicationMenuContext):boolean
  switch(requirement){
   case'document':return !!document
   case'editable':return context.analysis!=='active'&&!!document&&!document.readonly
+  case'saveAs':return context.analysis!=='active'&&!!document&&(!document.readonly||document.projectSource==='protected')
+  case'projectCsv':return context.analysis!=='active'&&!!context.projectActive&&document?.kind==='csv'&&!document.projectSource
   case'editing':return !(document?.kind==='markdown'&&context.focus==='editor'&&(context.mode==='preview'||context.inCodeMirror===false))&&editing&&context.canEdit!==false&&(context.focus==='field'||context.focus==='sql'||!document?.readonly)
   case'textEditing':return context.focus!=='grid'&&enabled('editing',context)
   case'selection':return editing

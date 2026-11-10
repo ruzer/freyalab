@@ -3,7 +3,8 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve, relative, isAbsolute, extname, basename } from 'node:path'
 import { z } from 'zod'
 import {ProjectStore} from './projects'
-import {projectFile,projectName,type ProjectRecent} from '../shared/project'
+import {ProjectSourceRegistry} from './project-source-registry'
+import {projectFile,projectName,projectSource,type ProjectInfo,type ProjectRecent} from '../shared/project'
 import {col,query,conditionGroup} from './query-schema'
 import {ChartPresets,chartConfiguration} from './chart-presets'
 import {exportChartResult} from './chart-result-export'
@@ -38,7 +39,10 @@ const here=dirname(fileURLToPath(import.meta.url))
 if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FREYALAB_USER_DATA))
 let window:BrowserWindow|undefined,windowReady:Promise<void>|undefined,docs:Documents,analytics:SqlService,presets:ChartPresets,settings:SettingsStore,updates:UpdatesService,settingsStartupNotice:string|undefined,quitting=false,quitRequested=false,closingWindow=false
 let menuState:ApplicationUiState={activeId:null,mode:'split',focus:'none',locked:false,canEdit:false},menuSettings:SettingsState,menuRecents:string[]=[],menuSignature=''
-let projects:ProjectStore,projectDraftFolder:string|undefined,menuProjectRecents:ProjectRecent[]=[]
+let projects:ProjectStore,projectSources:ProjectSourceRegistry,projectDraftFolder:string|undefined,menuProjectRecents:ProjectRecent[]=[]
+let publishedProject:ProjectInfo|null=null,projectPublishGeneration=0
+let projectSourceJob:{requestId:string;controller:AbortController}|undefined
+const sourceFormat=projectSource.shape.format.pick({encoding:true,delimiter:true,header:true,eol:true}).partial()
 let menuPandocAvailable=false
 const menuPandoc=new MenuPandocAvailability(detectPandoc,()=>docs?.pandocPath,value=>{docs.pandocPath=value},value=>{menuPandocAvailable=value;refreshApplicationMenu()})
 const nativeEdits=new MenuNativeEdits()
@@ -65,12 +69,57 @@ const edits=z.discriminatedUnion('type',[rangeEdit,structureEdit,
  z.object({type:z.literal('insertColumn'),index:col,name:z.string().max(10000)}),z.object({type:z.literal('deleteColumn'),index:col}),z.object({type:z.literal('header'),index:col,name:z.string().max(10000)}),z.object({type:z.literal('replace'),find:z.string().min(1).max(10000),replacement:z.string().max(1024*1024),column:col.optional()})])
 const tableExport=z.object({range:range.optional(),scope:z.enum(['all','filtered','selection']),query:query.optional(),rowIds:rows.optional(),columns:z.array(col).optional(),delimiter:z.enum([',',';','\t','|']).optional()})
 async function publishProject(){
- const project=projects.active,recents=await projects.recents()
- menuProjectRecents=recents
+ const generation=++projectPublishGeneration,project=projects.active
+ const [recents,paths]=await Promise.all([projects.recents(),projectSources.protectedPaths()])
+ if(generation!==projectPublishGeneration)return
+ const closing=!!publishedProject&&(project?.id!==publishedProject.id||project?.path!==publishedProject.path)
+ publishedProject=project;menuProjectRecents=recents
+ docs.setProjectSources(paths,closing)
  if(project)docs.roots.add(project.path)
- window?.webContents.send('freya:event',{type:'project',project,projectRecents:recents})
+ const sources=await projectSources.list()
+ if(generation!==projectPublishGeneration)return
+ window?.webContents.send('freya:event',{type:'project',project,projectRecents:recents,projectSources:sources})
  if(project&&projects.recentWriteFailed)window?.webContents.send('freya:event',{type:'error',message:t('project.error.recentWrite')})
  refreshApplicationMenu()
+}
+async function refreshProjectSources(){
+ const generation=projectPublishGeneration,project=projects.active,projectSourcesNow=await projectSources.list()
+ if(generation===projectPublishGeneration&&project===projects.active)window?.webContents.send('freya:event',{type:'project',projectSources:projectSourcesNow})
+}
+async function keepProjectChanges(){
+ const result=await dialog.showMessageBox(window!,{type:'warning',message:t('project.error.changed'),buttons:[t('project.reload'),t('project.keepMine')],defaultId:0,cancelId:0})
+ return result.response===1
+}
+async function chooseProjectCsv(defaultPath?:string){
+ if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_PROJECT_SOURCE_PATH)return process.env.FREYALAB_TEST_PROJECT_SOURCE_PATH
+ const result=await dialog.showOpenDialog(window!,{title:t('project.source.add'),buttonLabel:t('dialog.open.button'),defaultPath,properties:['openFile'],filters:[{name:'CSV/TSV',extensions:['csv','tsv']}]})
+ return result.canceled?null:result.filePaths[0]??null
+}
+async function projectSourceOperation(requestId:string,run:(signal:AbortSignal,progress:(bytes:number,total:number)=>void)=>Promise<boolean>){
+ if(projectSourceJob)throw new Error(t('project.source.busy'))
+ const controller=new AbortController()
+ projectSourceJob={requestId,controller}
+ try{
+  const result=await run(controller.signal,(bytes,total)=>window?.webContents.send('freya:event',{type:'project-source-progress',sourceProgress:{requestId,bytes,total}}))
+  await publishProject();return result
+ }catch(error){if(controller.signal.aborted)return false;throw error}
+ finally{projectSourceJob=undefined}
+}
+async function openProjectSource(sourceId:string){
+ const source=projects.sources.find(source=>source.id===sourceId)
+ if(!source)throw new Error(t('project.source.missing'))
+ let target:string
+ try{target=await projectSources.openPath(sourceId)}
+ catch(error){
+  if(!source.external)throw error
+  const selected=await chooseProjectCsv(source.path);if(!selected)return null
+  await projectSources.authorizeExternal(sourceId,selected);await publishProject()
+  target=await projectSources.openPath(sourceId)
+ }
+ docs.grants.add(target)
+ const document=(await openPaths([target]))[0]??null
+ await refreshProjectSources()
+ return document
 }
 async function openProjectFolder(folder:string,optional=false){
  try{const project=await(optional?projects.maybeOpen(folder):projects.open(folder));if(project)await publishProject()}
@@ -88,8 +137,11 @@ async function pickFolder(newProject=false){
 async function openPaths(paths:string[]){const result=[];for(const p of paths){if(!await docs.allowed(p))throw new Error('Abre el archivo desde el selector o arrástralo a la ventana.');if(basename(p)===projectFile){await openProjectFolder(dirname(p));continue}const document=await docs.open(p);result.push(document);window?.webContents.send('freya:event',{type:'opened',document})}return result}
 function assertSender(event:Electron.IpcMainInvokeEvent|Electron.IpcMainEvent){if(!window||event.sender!==window.webContents||event.senderFrame!==window.webContents.mainFrame)throw new Error('Origen no autorizado.')}
 function applicationContext():ApplicationMenuContext {
- const documents=docs?[...docs.records.values()].map(({info:{id,name,kind,readonly,dirty,csvView}})=>({id,name,kind,readonly,dirty,...(kind==='csv'?{csvView:csvView??'table'}:{})})):[]
- return{...menuState,documents,recents:menuRecents,projectRecents:menuProjectRecents,theme:menuSettings.values.tema,sidebar:menuSettings.values.barraLateral.visible,development:!app.isPackaged,showDevTools:menuSettings.values.avanzado.herramientasDeDesarrollo,updatesReady:true,docxAvailable:menuPandocAvailable}
+ const documents=docs?[...docs.records.keys()].map(key=>{
+  const{id,name,kind,readonly,dirty,csvView,projectSource}=docs.info(key)
+  return{id,name,kind,readonly,dirty,projectSource,...(kind==='csv'?{csvView:csvView??'table'}:{})}
+ }):[]
+ return{...menuState,documents,recents:menuRecents,projectRecents:menuProjectRecents,projectActive:!!projects.active&&!projects.active.readonly,theme:menuSettings.values.tema,sidebar:menuSettings.values.barraLateral.visible,development:!app.isPackaged,showDevTools:menuSettings.values.avanzado.herramientasDeDesarrollo,updatesReady:true,docxAvailable:menuPandocAvailable}
 }
 function refreshApplicationMenu(){
  const context=applicationContext(),signature=languageState().language+'\n'+menuFingerprint(context)
@@ -158,18 +210,53 @@ async function handle(operation:string,args:unknown[]){
  case'csvViewInfo':{const target=path.parse(a);if(!await docs.allowed(target))throw new Error(t('csvText.openAuthorized'));return docs.csvViewInfo(target)}
  case'new':return docs.create(z.enum(['markdown','text','mermaid','csv']).parse(a) as Kind)
  case'folder':{const folder=await pickFolder();if(folder){docs.roots.add(folder);await openProjectFolder(folder,true)}return folder}
- case'project:state':{z.tuple([]).parse(args);return{project:projects.active,recents:await projects.recents()}}
+ case'project:state':{z.tuple([]).parse(args);return{project:projects.active,recents:await projects.recents(),sources:await projectSources.list()}}
  case'project:pickFolder':{z.tuple([]).parse(args);const folder=await pickFolder(true);if(!folder)return null;projectDraftFolder=folder;return{path:folder,name:basename(folder)}}
  case'project:cancelCreate':{z.tuple([]).parse(args);projectDraftFolder=undefined;return}
  case'project:create':{const[name,suggested]=z.tuple([projectName,z.boolean()]).parse(args),folder=projectDraftFolder;projectDraftFolder=undefined;if(!folder)throw new Error(t('project.pickFolder'));await projects.create(folder,name,suggested);await publishProject();return}
  case'project:close':{const[key]=z.tuple([z.string().min(1).max(32768)]).parse(args);await projects.close(key);await publishProject();return}
  case'project:rename':{
   const[key,name]=z.tuple([z.string().min(1).max(100),projectName]).parse(args)
-  await projects.rename(key,name,async()=>{const result=await dialog.showMessageBox(window!,{type:'warning',message:t('project.error.changed'),buttons:[t('project.reload'),t('project.keepMine')],defaultId:0,cancelId:0});return result.response===1})
+  await projects.rename(key,name,keepProjectChanges)
   await publishProject();return
  }
  case'project:openRecent':{const[target]=z.tuple([path]).parse(args);await projects.openRecent(target);await publishProject();return}
  case'project:forgetRecent':{const[target]=z.tuple([path]).parse(args);await projects.forgetRecent(target);menuProjectRecents=await projects.recents();window?.webContents.send('freya:event',{type:'project',projectRecents:menuProjectRecents});refreshApplicationMenu();return}
+ case'project:pickSource':{
+  const [argument]=z.tuple([path.optional()]).parse(args),selected=argument??await chooseProjectCsv()
+  if(!selected)return null
+  const record=[...docs.records.values()].find(record=>record.info.path===selected&&record.info.kind==='csv'),current=record?.info
+  const options=current?sourceFormat.safeParse({encoding:current.encoding,delimiter:current.delimiter,header:current.hasHeader}).data??{}:{}
+  return projectSources.prepare(selected,options,argument===undefined)
+ }
+ case'project:inspectSource':{const[draft,format]=z.tuple([id,sourceFormat]).parse(args);return projectSources.inspectDraft(draft,format)}
+ case'project:discardSourceDraft':{z.tuple([]).parse(args);projectSources.cancelDraft();return}
+ case'project:registerSource':{
+  const[project,draft,format,request]=z.tuple([id,id,sourceFormat,id]).parse(args)
+  const release=docs.reserveProjectSource(projectSources.registrationTarget(draft))
+  try{return await projectSourceOperation(request,(signal,progress)=>projectSources.register(project,draft,format,signal,progress,keepProjectChanges))}
+  finally{release()}
+ }
+ case'project:reregisterSource':{
+  const[project,source,request]=z.tuple([id,id,id]).parse(args)
+  return projectSourceOperation(request,(signal,progress)=>projectSources.reregister(project,source,signal,progress,keepProjectChanges))
+ }
+ case'project:openSource':{const[source]=z.tuple([id]).parse(args);return openProjectSource(source)}
+ case'project:showSource':{const[source]=z.tuple([id]).parse(args);shell.showItemInFolder(await projectSources.openPath(source));return}
+ case'project:forgetSource':{const[project,source]=z.tuple([id,id]).parse(args);await projectSources.forget(project,source,keepProjectChanges);await publishProject();return}
+ case'project:relinkSource':{
+  const[project,source,request]=z.tuple([id,id,id]).parse(args)
+  let release:(()=>void)|undefined
+  try{return await projectSourceOperation(request,async signal=>{
+   const candidate=await projectSources.find(source,signal)
+   if(!candidate)throw new Error(t('project.source.notFound'))
+   const confirmation=await dialog.showMessageBox(window!,{type:'question',message:t('project.source.relinkConfirm',{name:basename(candidate)}),buttons:[t('project.source.relink'),t('dialog.cancel')],defaultId:1,cancelId:1})
+   if(confirmation.response!==0)return false
+   release=docs.reserveProjectSource(candidate)
+   return projectSources.relink(project,source,candidate,signal,keepProjectChanges)
+  })}finally{release?.()}
+ }
+ case'project:cancelSource':{const[request]=z.tuple([id]).parse(args);if(projectSourceJob?.requestId===request)projectSourceJob.controller.abort();return}
  case'tree':return docs.tree(path.parse(a))
  case'findFiles':return docs.findFiles(path.parse(a),z.string().min(1).max(500).parse(b))
  case'cancelFileSearch':return docs.cancelFileSearch()
@@ -184,9 +271,9 @@ async function handle(operation:string,args:unknown[]){
  case'reopenTextEncoding':{const[key,encoding]=z.tuple([id,textEncoding]).parse(args);return docs.reopenTextEncoding(key,encoding)}
  case'saveTextEncoding':{const[key,encoding]=z.tuple([id,textEncoding]).parse(args);return docs.saveTextEncoding(key,encoding)}
  case'copyTable':{docs.requireTable(id.parse(a));const options=tableExport.parse(b),format=z.enum(['tsv','markdown']).parse(c),output=await docs.table.call<string>(format==='markdown'?'markdown':'clipboard',a,options);if(Buffer.byteLength(output,'utf8')>8*1024*1024)throw new Error('La copia supera 8 MiB. Reduce la selección o expórtala.');await clipboard.writeText(output);return}
- case'pasteTable':{docs.requireTable(id.parse(a));const selected=range.parse(b);await docs.table.call('rangePreview',a,{type:'range',range:selected,operation:'clear'});const content=await clipboard.readText();if(Buffer.byteLength(content,'utf8')>8*1024*1024)throw new Error('El portapapeles supera 8 MiB. Pega un bloque menor.');return content}
- case'transformPreview':{const key=id.parse(a);if(isCalculation(b))return analytics.calculatePreview(key,calculation.parse(b));docs.requireTable(key);return docs.table.call('transformPreview',key,structureEdit.parse(b) as TableTransformEdit)}
- case'rangePreview':docs.requireTable(id.parse(a));return docs.table.call('rangePreview',a,rangeEdit.parse(b) as TableRangeEdit)
+ case'pasteTable':{const key=id.parse(a);docs.assertProjectEditable(key);docs.requireTable(key);const selected=range.parse(b);await docs.table.call('rangePreview',a,{type:'range',range:selected,operation:'clear'});const content=await clipboard.readText();if(Buffer.byteLength(content,'utf8')>8*1024*1024)throw new Error('El portapapeles supera 8 MiB. Pega un bloque menor.');return content}
+ case'transformPreview':{const key=id.parse(a);docs.assertProjectEditable(key);if(isCalculation(b))return analytics.calculatePreview(key,calculation.parse(b));docs.requireTable(key);return docs.table.call('transformPreview',key,structureEdit.parse(b) as TableTransformEdit)}
+ case'rangePreview':{const key=id.parse(a);docs.assertProjectEditable(key);docs.requireTable(key);return docs.table.call('rangePreview',key,rangeEdit.parse(b) as TableRangeEdit)}
  case'rangeClipboard':docs.requireTable(id.parse(a));return docs.table.call('rangeClipboard',a,range.parse(b) as TableRange)
  case'page':docs.requireTable(id.parse(a));return docs.table.call('page',a,query.parse(b) as TableQuery)
  case'viewStart':docs.requireTable(id.parse(a));return docs.table.call('viewStart',a,viewRequest.parse(b))
@@ -240,7 +327,11 @@ app.whenReady().then(async()=>{
  const initialSettings=await settings.get();settingsStartupNotice=initialSettings.notice;menuSettings=initialSettings
  initializeLanguage(app.getPreferredSystemLanguages(),process.env,initialSettings.values.idioma)
  projects=new ProjectStore(app.getPath('userData'));menuProjectRecents=await projects.recents().catch(()=>[])
- docs=new Documents(event=>{window?.webContents.send('freya:event',event);refreshApplicationMenu()})
+ docs=new Documents(event=>{
+  window?.webContents.send('freya:event',event);refreshApplicationMenu()
+  if(event.type==='external'&&event.id&&docs.records.has(event.id)&&docs.info(event.id).projectSource==='protected')void refreshProjectSources().catch(()=>{})
+ })
+ projectSources=new ProjectSourceRegistry(projects,path=>docs.allowed(path),path=>docs.assertProjectSourceClean(path),path=>[...docs.records.values()].find(record=>record.info.path===path)?.info)
  if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_PANDOC_PATH)docs.pandocPath=process.env.FREYALAB_TEST_PANDOC_PATH
  void menuPandoc.refresh().catch(error=>window?.webContents.send('freya:event',{type:'error',message:error.message}))
  presets=new ChartPresets(join(app.getPath('userData'),'chart-presets.json'))

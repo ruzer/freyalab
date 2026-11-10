@@ -14,5 +14,5 @@ export const applicationCommandSchema=z.object({id:z.string().refine(isApplicati
 
 export function menuFingerprint(context:ApplicationMenuContext):string{
  const {documents,...state}=context
- return JSON.stringify({...state,documents:documents.map(({id,name,kind,readonly,csvView})=>({id,name,kind,readonly,csvView}))})
+ return JSON.stringify({...state,documents:documents.map(({id,name,kind,readonly,projectSource,csvView})=>({id,name,kind,readonly,projectSource,csvView}))})
 }
