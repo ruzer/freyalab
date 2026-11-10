@@ -233,3 +233,11 @@ Mermaid 12.2.0 sustituye una definición excesiva por un SVG con un aviso en ing
 Esta entrega cubre la parte de errores de UX-10 y F06. No añade plantillas, navegación a la línea, asistentes ni confirmaciones de exportación Markdown.
 
 Una definición vacía se presenta como estado inicial neutro, sin color de error ni detalle técnico; conserva la explicación y el ejemplo para comenzar. Lo mismo se aplica a un bloque Mermaid vacío dentro de Markdown.
+
+## Codificación de Markdown, texto y Mermaid
+
+La barra de estado muestra la codificación y, cuando existe, la firma BOM. UTF-8 válido y los archivos con BOM de UTF-8 o UTF-16 LE/BE se abren directamente. Si el texto no es UTF-8 y carece de BOM, la vista propone Windows-1252 en solo lectura. Pulsa **Confirmar codificación…**, elige Windows-1252 o Latin-1 según el texto que esperas y pulsa **Reabrir con codificación…**. Puedes abrir el mismo diálogo desde la barra de estado. Reabrir conserva el archivo en disco y, si hay cambios pendientes, pide confirmación antes de reemplazar la edición.
+
+**Guardar** conserva la codificación actual. En el diálogo, **Guardar con codificación…** escribe el documento en la codificación que elegiste. Las conversiones a UTF-16 incluyen BOM para que se detecte al abrir. Si el original tiene BOM, elige una codificación Unicode para conservarlo. Si algún carácter no se puede representar o el resultado supera 10 MiB, se rechaza el guardado antes de escribir. Los saltos de línea del texto guardado se conservan en una conversión de codificación.
+
+Windows-1252 y Latin-1 pueden representar los mismos bytes con caracteres distintos. Confirma cómo leer el archivo la próxima vez que abras uno sin BOM cuando la detección no pueda resolverlo.

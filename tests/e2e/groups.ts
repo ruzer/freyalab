@@ -15,6 +15,7 @@ export const mdFiles=[
  'preview-edit.spec.ts',
  'preview-progressive.spec.ts',
  'text-stats.spec.ts',
+ 'text-encoding.spec.ts',
  'markdown-paste.spec.ts',
  'markdown-date.spec.ts',
  'markdown-tasks.spec.ts',

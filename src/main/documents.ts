@@ -16,13 +16,42 @@ import { atomicWrite, contained, digest } from './files'
 import type {DocumentAssets} from './document-assets'
 import { TableClient } from './table-client'
 import {CsvViewStore} from './csv-view-store'
-import {decodeCsvText,encodeCsvText,csvTextByteLength,type CsvTextFormat} from './csv-text-codec'
-import {isCsvTextFormat} from '../shared/csv-text'
+import {decodeCsvText,decodeTextDocument,encodeCsvText,encodedTextFormat,csvTextByteLength} from './csv-text-codec'
+import {isCsvTextFormat,isTextFormat,type TextFormat} from '../shared/csv-text'
 import {csvOpenError} from './csv-open-error'
 import {readCalculationError,type CalculateColumnEdit,type CalculatedValue} from '../shared/calculated-column'
-import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type CsvViewDecision,type AppEvent,type DocumentInfo,type Kind,type RecoveryEntry,type TableOptions,type TableEdit,type TableExport,type TreeEntry} from '../shared/types'
-interface RecordDoc { info:DocumentInfo; hash?:string; text:string; csvTextFormat?:CsvTextFormat;undo:string[]; redo:string[]; root:string; saving:boolean; timer?:ReturnType<typeof setTimeout>; watcher?:FSWatcher }
+import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type CsvViewDecision,type AppEvent,type DocumentInfo,type Kind,type RecoveryEntry,type TableOptions,type TableEdit,type TableExport,type TreeEntry,type TextEncoding} from '../shared/types'
+interface RecordDoc { info:DocumentInfo; hash?:string; text:string; textFormat?:TextFormat; encodingOverride?:TextEncoding;undo:string[]; redo:string[]; root:string; saving:boolean; timer?:ReturnType<typeof setTimeout>; watcher?:FSWatcher }
 const extensions:Record<string,Kind>={'.md':'markdown','.markdown':'markdown','.txt':'text','.mmd':'mermaid','.mermaid':'mermaid','.csv':'csv','.tsv':'csv'}
+const textLimit=10*1024*1024
+const defaultTextFormat:TextFormat={encoding:'utf8',bom:false}
+const bytesHash=(bytes:Buffer)=>createHash('sha256').update(bytes).digest('hex')
+const textLimitError=()=>textEditLimitError('El documento supera el límite de edición de 10 MiB.')
+function checkTextSize(text:string,format?:TextFormat){
+ const bytes=format&&format.encoding!=='utf8'?csvTextByteLength(text,format):Buffer.byteLength(text)+(format?.bom?3:0)
+ if(bytes>textLimit)throw textLimitError()
+}
+async function readDocumentText(path:string,encoding?:TextEncoding,reopen=false){
+ const flags=process.platform==='win32'?'r':constants.O_RDONLY|constants.O_NOFOLLOW|constants.O_NONBLOCK
+ const handle=await openFile(path,flags)
+ try{
+  const before=await handle.stat()
+  if(!before.isFile())throw new Error(t('textEncoding.error.notFile'))
+  const sample=before.size>textLimit
+  if(sample&&reopen)throw new Error(t('textEncoding.error.sample'))
+  const buffer=Buffer.alloc(sample?1024*1024:before.size)
+  let offset=0
+  while(offset<buffer.length){const {bytesRead}=await handle.read(buffer,offset,buffer.length-offset,offset);if(!bytesRead)break;offset+=bytesRead}
+  const after=await handle.stat(),current=await lstat(path)
+  if(offset!==buffer.length||after.size!==before.size||after.mtimeMs!==before.mtimeMs||current.isSymbolicLink()||current.ino!==before.ino||current.dev!==before.dev||current.size!==before.size||current.mtimeMs!==before.mtimeMs)throw new Error(t('textEncoding.error.changed'))
+  const decoded=decodeTextDocument(buffer,sample?undefined:encoding,sample)
+  return{...decoded,hash:sample?undefined:bytesHash(buffer),warning:sample?t('textEncoding.warning.sample'):decoded.pending?t('textEncoding.warning.pending'):decoded.readonly?t('csvText.codec.lossyWarning'):undefined}
+ }finally{await handle.close()}
+}
+function installText(record:RecordDoc,decoded:Awaited<ReturnType<typeof readDocumentText>>){
+ record.text=decoded.text;record.textFormat=decoded.format;record.hash=decoded.hash
+ Object.assign(record.info,{encoding:decoded.format.encoding,bom:decoded.format.bom,readonly:decoded.readonly,encodingPending:decoded.pending||undefined,warning:decoded.warning})
+}
 export class Documents {
  pandocPath?:string
  records=new Map<string,RecordDoc>(); roots=new Set<string>(); grants=new Set<string>(); table=new TableClient(progress=>this.emit({type:'analysis',progress}))
@@ -70,8 +99,8 @@ export class Documents {
   const id=previous?.info.id??randomUUID();const record:RecordDoc={info:{id,name:basename(canonical),path:canonical,kind,csvView:view,byteLength:kind==='csv'?size:undefined,extract:previous?.info.extract,dirty:false,readonly:false,revision:previous?previous.info.revision+1:0,encoding:'utf8',delimiter:kind==='csv'&&extname(canonical)==='.tsv'?'\t':','},text:'',undo:[],redo:[],root:dirname(canonical),saving:false}
   try {
    if(isTableDocument(record.info)){const before=size<=50*1024*1024?await digest(canonical):undefined;await this.table.call('open',id,canonical,{delimiter:extname(canonical)==='.tsv'?'\t':undefined});Object.assign(record.info,await this.table.call('info',id));if(!record.info.readonly){const after=await digest(canonical);if(before!==after)throw new Error('El archivo cambió durante la apertura. Vuelve a abrirlo.');record.hash=after}}
-   else if(size>10*1024*1024){const h=await import('node:fs/promises').then(m=>m.open(canonical,'r'));try{const b=Buffer.alloc(1024*1024);const {bytesRead}=await h.read(b,0,b.length,0);record.text=b.subarray(0,bytesRead).toString('utf8')}finally{await h.close()};record.info.readonly=true;record.info.warning='Muestra de solo lectura: primer MiB. El archivo supera 10 MiB.'}
-   else{const bytes=await readFile(canonical);record.hash=createHash('sha256').update(bytes).digest('hex');if(view==='text'){if(bytes.length>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'));const decoded=decodeCsvText(bytes);record.text=decoded.text;record.csvTextFormat=decoded.format;record.info.encoding=decoded.format.encoding;record.info.readonly=decoded.readonly;record.info.warning=decoded.warning;record.info.byteLength=bytes.length}else{const text=bytes.toString('utf8');if(!Buffer.from(text).equals(bytes))throw new Error('Este documento no es UTF-8 válido. Convierte su codificación antes de editarlo.');record.text=text}}
+   else if(view==='text'){const bytes=await readFile(canonical);if(bytes.length>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'));const decoded=decodeCsvText(bytes);record.hash=bytesHash(bytes);record.text=decoded.text;record.textFormat=decoded.format;record.info.encoding=decoded.format.encoding;record.info.readonly=decoded.readonly;record.info.warning=decoded.warning;record.info.byteLength=bytes.length}
+   else installText(record,await readDocumentText(canonical))
    record.watcher=watch(canonical,{ignoreInitial:true,awaitWriteFinish:{stabilityThreshold:150,pollInterval:50}}).on('change',()=>{if(!record.saving)this.emit({type:'external',id})}).on('unlink',()=>this.emit({type:'external',id}))
    // La lista de recientes es auxiliar: su fallo no invalida el documento ya leído.
    await this.addRecent(canonical).catch(()=>this.emit({type:'error',message:t('documents.recentsUnavailable')}));if(requested)await this.csvViews.remember(canonical,requested)
@@ -92,7 +121,7 @@ export class Documents {
  })}
  async csvViewInfo(path:string){const canonical=await this.authorize(path);if(extensions[extname(canonical).toLowerCase()]!=='csv')throw new Error(t('csvText.chooseFile'));const info=await stat(canonical);if(!info.isFile())throw new Error(t('csvText.selectFile'));const document=[...this.records.values()].find(record=>record.info.path===canonical);return{byteLength:info.size,textAllowed:info.size<=CSV_TEXT_LIMIT,...(document?{id:document.info.id}:{})}}
  async create(kind:Kind,csvView:CsvView='table'){return this.serial('create',()=>this.createNow(kind,csvView))}
- private async createNow(kind:Kind,csvView:CsvView='table'){const id=randomUUID();const extension=kind==='csv'?'csv':kind==='mermaid'?'mmd':kind==='text'?'txt':'md';const r:RecordDoc={info:{id,name:`Sin título.${extension}`,path:null,kind,csvView:kind==='csv'?csvView:undefined,byteLength:kind==='csv'?0:undefined,dirty:false,readonly:false,revision:0,encoding:'utf8',delimiter:','},text:'',undo:[],redo:[],root:app.getPath('documents'),saving:false};if(isTableDocument(r.info)){await this.table.call('create',id);Object.assign(r.info,await this.table.call('info',id))}this.records.set(id,r);return this.info(id)}
+ private async createNow(kind:Kind,csvView:CsvView='table'){const id=randomUUID();const extension=kind==='csv'?'csv':kind==='mermaid'?'mmd':kind==='text'?'txt':'md';const r:RecordDoc={info:{id,name:`Sin título.${extension}`,path:null,kind,csvView:kind==='csv'?csvView:undefined,byteLength:kind==='csv'?0:undefined,dirty:false,readonly:false,revision:0,encoding:'utf8',delimiter:','},text:'',undo:[],redo:[],root:app.getPath('documents'),saving:false};if(isTableDocument(r.info)){await this.table.call('create',id);Object.assign(r.info,await this.table.call('info',id))}else if(kind!=='csv'){r.textFormat=defaultTextFormat;r.info.bom=false}this.records.set(id,r);return this.info(id)}
  get(id:string){const r=this.records.get(id);if(!r)throw new Error('El documento ya no está abierto.');return r}
  requireTable(id:string){const record=this.get(id);if(!isTableDocument(record.info))throw new Error(t('csvText.tableOnly'));return record}
  info(id:string){const r=this.get(id);return {...r.info,...(!isTableDocument(r.info)?{text:r.text}:{})}}
@@ -109,10 +138,10 @@ export class Documents {
  }
  async syncTable(id:string){const r=this.get(id);Object.assign(r.info,await this.table.call('info',id));return this.info(id)}
  async update(id:string,text:string){this.rejectDuringReload(id);return this.serial(id,()=>this.updateNow(id,text))}
- private async updateNow(id:string,text:string){const r=this.get(id);if(r.info.readonly||isTableDocument(r.info))throw new Error('El documento no permite edición de texto.');if((r.info.kind==='csv'&&r.info.csvView==='text'&&r.csvTextFormat?csvTextByteLength(text,r.csvTextFormat):Buffer.byteLength(text))>10*1024*1024)throw textEditLimitError('El documento supera el límite de edición de 10 MiB.');if(text!==r.text){r.undo.push(r.text);while(r.undo.length>1&&(r.undo.length>100||r.undo.reduce((n,t)=>n+Buffer.byteLength(t),0)>20*1024*1024))r.undo.shift();r.redo=[];r.text=text;r.info.dirty=true;r.info.revision++;this.schedule(id)}return this.info(id)}
+ private async updateNow(id:string,text:string){const r=this.get(id);if(r.info.encodingPending)throw new Error(t('textEncoding.error.confirm'));if(r.info.readonly||isTableDocument(r.info))throw new Error('El documento no permite edición de texto.');checkTextSize(text,r.textFormat);if(text!==r.text){r.undo.push(r.text);while(r.undo.length>1&&(r.undo.length>100||r.undo.reduce((n,t)=>n+Buffer.byteLength(t),0)>20*1024*1024))r.undo.shift();r.redo=[];r.text=text;r.info.dirty=true;r.info.revision++;this.schedule(id)}return this.info(id)}
  schedule(id:string){const r=this.get(id);clearTimeout(r.timer);r.timer=setTimeout(()=>{this.checkpoint(id).catch(e=>this.emit({type:'error',message:`No se pudo guardar recuperación: ${(e as Error).message}`}))},2000)}
  checkpoint(id:string):Promise<void>{const pending=this.recoveryTasks.get(id);if(pending)return pending;const task=this.checkpointNow(id).finally(()=>this.recoveryTasks.delete(id));this.recoveryTasks.set(id,task);return task}
- private async checkpointNow(id:string){const r=this.get(id);if(!r.info.dirty||r.info.readonly)return;await mkdir(this.recoveryDir,{recursive:true,mode:0o700});const revision=r.info.revision;const data=isTableDocument(r.info)?await this.table.call<string>('checkpoint',id,{...r.info}):JSON.stringify({version:1,info:r.info,savedAt:new Date().toISOString(),snapshot:{text:r.text,...(r.csvTextFormat?{format:r.csvTextFormat}:{})}});await atomicWrite(join(this.recoveryDir,`${id}.json`),data);if(revision!==r.info.revision)this.schedule(id)}
+ private async checkpointNow(id:string){const r=this.get(id);if(!r.info.dirty||r.info.readonly)return;await mkdir(this.recoveryDir,{recursive:true,mode:0o700});const revision=r.info.revision;const data=isTableDocument(r.info)?await this.table.call<string>('checkpoint',id,{...r.info}):JSON.stringify({version:1,info:r.info,savedAt:new Date().toISOString(),snapshot:{text:r.text,...(r.textFormat?{format:r.textFormat}:{})}});await atomicWrite(join(this.recoveryDir,`${id}.json`),data);if(revision!==r.info.revision)this.schedule(id)}
  async tableEdit(id:string,edit:TableEdit){this.rejectDuringReload(id);if((edit.type==='structure'||edit.type==='range')&&this.operations.has(id))throw new Error('Espera a que termine el guardado o la edición anterior antes de preparar el cambio.');return this.serial(id,()=>this.tableEditNow(id,edit))}
  private async tableEditNow(id:string,edit:TableEdit){this.requireTable(id);await this.table.call('edit',id,edit);await this.syncTable(id);this.schedule(id);return this.info(id)}
  async calculationSource(id:string,revision:number){
@@ -156,23 +185,36 @@ export class Documents {
  private async undoNow(id:string,redo=false){const r=this.get(id);if(r.info.readonly)return this.info(id);if(isTableDocument(r.info)){await this.table.call('undo',id,redo);await this.syncTable(id)}else{const from=redo?r.redo:r.undo,to=redo?r.undo:r.redo;const text=from.pop();if(text===undefined)return this.info(id);to.push(r.text);r.text=text;r.info.dirty=true;r.info.revision++}this.schedule(id);return this.info(id)}
  private async saveDestination(r:RecordDoc){if(process.env.FREYALAB_TEST==='1'&&(process.env.FREYALAB_TEST_SAVE_PATH||process.env.FREYALAB_TEST_SAVE_DIR))return process.env.FREYALAB_TEST_SAVE_PATH??join(process.env.FREYALAB_TEST_SAVE_DIR!,r.info.name.replace('Sin título','documento'));const result=await dialog.showSaveDialog(this.owner(),{title:t('dialog.save.title'),buttonLabel:t('dialog.save'),defaultPath:r.info.path??r.info.name});return result.canceled?null:result.filePath??null}
  async save(id:string,as=false){return this.serial(id,()=>this.saveNow(id,as))}
- private async saveNow(id:string,as=false){
-  const r=this.get(id);if(r.info.readonly)throw new Error('La muestra es de solo lectura.')
+ async saveTextEncoding(id:string,encoding:TextEncoding){return this.serial(id,()=>this.saveNow(id,false,encoding))}
+ private async saveNow(id:string,as=false,encoding?:TextEncoding){
+  const r=this.get(id)
+  if(encoding&&r.info.kind==='csv')throw new Error(t('textEncoding.error.kind'))
+  if(r.info.encodingPending)throw new Error(t('textEncoding.error.confirm'))
+  if(r.info.readonly)throw new Error('La muestra es de solo lectura.')
+  const format=encoding?encodedTextFormat(r.textFormat??defaultTextFormat,encoding):r.textFormat
   const dest=as||!r.info.path?await this.saveDestination(r):r.info.path;if(!dest)return null
   const canonical=await realpath(dest).catch(()=>resolve(dest))
   if([...this.records.values()].some(other=>other!==r&&other.info.path===canonical))throw new Error('El destino corresponde a otro documento abierto. Guarda una copia con otro nombre.')
   if((await lstat(dest).catch(()=>null))?.isSymbolicLink())throw new Error('No se sobrescriben enlaces simbólicos.')
   const revision=r.info.revision,same=r.info.path===dest||r.info.path===canonical
   if(same&&dirname(canonical)!==r.root)throw new Error(t('file.error.changedLocation'))
-  let data=isTableDocument(r.info)?Buffer.from(await this.table.call('serialize',id).catch(error=>{const known=readCalculationError(error);if(known)throw new Error(t('calculate.error.'+known.code));throw error})):r.csvTextFormat?encodeCsvText(r.text,r.csvTextFormat):Buffer.from(r.text,'utf8'),assets:DocumentAssets|undefined
+  const encode=(source:string)=>{
+   checkTextSize(source,format)
+   return format?encodeCsvText(source,format,r.info.kind!=='csv'):Buffer.from(source,'utf8')
+  }
+  let data=isTableDocument(r.info)?Buffer.from(await this.table.call('serialize',id).catch(error=>{const known=readCalculationError(error);if(known)throw new Error(t('calculate.error.'+known.code));throw error})):encode(r.text),assets:DocumentAssets|undefined
   r.saving=true
   try{
    if(r.info.kind==='markdown'&&!same){
     const {saveMarkdownCopy}=await import('./document-assets')
-    const result=await saveMarkdownCopy(r.text,r.info.path,dest);data=Buffer.from(result.text,'utf8');assets=result.assets
+    const result=await saveMarkdownCopy(r.text,r.info.path,dest,encode);data=result.bytes;assets=result.assets
     if(result.text!==r.text){r.text=result.text;r.info.revision++}
    }else await atomicWrite(dest,data,same?r.hash:undefined)
-   r.hash=createHash('sha256').update(data).digest('hex')
+   r.hash=bytesHash(data)
+   if(encoding&&format){
+    r.textFormat=format;r.info.encoding=format.encoding;r.info.bom=format.bom
+    r.encodingOverride=format.bom||encoding==='utf8'?undefined:encoding
+   }
    if(revision===r.info.revision||assets){
     if(isTableDocument(r.info)){const marked=await this.table.call('markSaved',id,revision,{path:canonical,hash:r.hash});if(marked.revision>=r.info.revision)Object.assign(r.info,marked)}else r.info.dirty=false
     if(!r.info.dirty){clearTimeout(r.timer);await this.recoveryTasks.get(id);if(!r.info.dirty)await this.discardRecovery(id)}
@@ -200,7 +242,7 @@ export class Documents {
   if(!selected)return null
   const assertCurrent=()=>{if(this.records.get(id)!==r||r.info.path!==path||r.info.readonly||r.text!==source||r.info.revision!==revision)throw new Error('El documento cambió mientras elegías la imagen. Vuelve a intentarlo.')}
   assertCurrent()
-  const result=await locateMarkdownImage(source,path,missingURL,selected,assertCurrent)
+  const result=await locateMarkdownImage(source,path,missingURL,selected,assertCurrent,text=>checkTextSize(text,r.textFormat))
   return{...await this.updateNow(id,result.text),assets:result.assets}
  }
  async close(id:string){return this.serial(id,()=>this.closeNow(id))}
@@ -233,17 +275,26 @@ export class Documents {
  }
 
  async reload(id:string){return this.reinterpret(id,()=>this.reloadNow(id))}
- private async reloadNow(id:string){
-  const r=this.get(id);if(!r.info.path)throw new Error('El documento no tiene un archivo original.')
+ async reopenTextEncoding(id:string,encoding:TextEncoding){return this.reinterpret(id,()=>this.reloadNow(id,encoding))}
+ private async reloadNow(id:string,encoding?:TextEncoding){
+  const r=this.get(id)
+  if(encoding&&r.info.kind==='csv')throw new Error(t('textEncoding.error.kind'))
+  if(!r.info.path)throw new Error(encoding?t('textEncoding.error.noPath'):'El documento no tiene un archivo original.')
   const csvText=r.info.kind==='csv'&&r.info.csvView==='text'
   if(r.info.dirty){const {response}=await dialog.showMessageBox(this.owner(),{type:'warning',title:t('dialog.reload.title'),buttons:[t('dialog.reload.keep'),t('dialog.reload.discard')],defaultId:0,cancelId:0,message:t('dialog.reload.message')});if(response===0)return this.info(id)}
   if(isTableDocument(r.info)){const size=(await stat(r.info.path)).size;const before=size<=50*1024*1024?await digest(r.info.path):undefined;await this.table.call('open',id,r.info.path,{encoding:r.info.encoding,delimiter:r.info.delimiter});await this.syncTable(id);if(!r.info.readonly&&before!==await digest(r.info.path))throw new Error('El archivo cambió durante la recarga. Vuelve a intentarlo.')}
   else if(csvText){
    if((await stat(r.info.path)).size>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'))
    const bytes=await readFile(r.info.path);if(bytes.length>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'))
-   const decoded=decodeCsvText(bytes);r.text=decoded.text;r.csvTextFormat=decoded.format;r.info.encoding=decoded.format.encoding;r.info.readonly=decoded.readonly;r.info.warning=decoded.warning;r.info.byteLength=bytes.length;r.hash=decoded.readonly?undefined:createHash('sha256').update(bytes).digest('hex');r.info.revision++;r.info.dirty=false
-  }else {r.info.readonly=(await stat(r.info.path)).size>10*1024*1024;let data:Buffer;if(r.info.readonly){const handle=await openFile(r.info.path,'r');try{data=Buffer.alloc(1024*1024);const result=await handle.read(data,0,data.length,0);data=data.subarray(0,result.bytesRead)}finally{await handle.close()}}else data=await readFile(r.info.path);const nextText=data.toString('utf8');if(!r.info.readonly&&!Buffer.from(nextText).equals(data))throw new Error('El archivo externo no es UTF-8 válido.');r.text=nextText;r.info.warning=r.info.readonly?'Muestra de solo lectura: primer MiB. El archivo supera 10 MiB.':undefined;r.info.revision++;r.info.dirty=false}
-  if(!csvText)r.hash=r.info.readonly?undefined:await digest(r.info.path);r.undo=[];r.redo=[];clearTimeout(r.timer);if(csvText)await this.removeCsvRecovery(id);else await this.discardRecovery(id);return this.info(id)
+   const decoded=decodeCsvText(bytes);r.text=decoded.text;r.textFormat=decoded.format;r.info.encoding=decoded.format.encoding;r.info.readonly=decoded.readonly;r.info.warning=decoded.warning;r.info.byteLength=bytes.length;r.hash=decoded.readonly?undefined:bytesHash(bytes);r.info.revision++;r.info.dirty=false
+  }else {
+   const canonical=await this.authorize(r.info.path)
+   if(dirname(canonical)!==r.root)throw new Error(t('file.error.changedLocation'))
+   installText(r,await readDocumentText(canonical,encoding??r.encodingOverride,!!encoding))
+   if(encoding)r.encodingOverride=encoding
+   r.info.revision++;r.info.dirty=false
+  }
+  if(isTableDocument(r.info))r.hash=r.info.readonly?undefined:await digest(r.info.path);r.undo=[];r.redo=[];clearTimeout(r.timer);if(csvText)await this.removeCsvRecovery(id);else await this.discardRecovery(id);return this.info(id)
  }
  async tree(path:string):Promise<TreeEntry[]>{if(!await this.allowed(path))throw new Error('Carpeta no autorizada.');const entries=await readdir(path,{withFileTypes:true});return entries.filter(e=>!e.name.startsWith('.')&&e.name!=='node_modules'&&!e.isSymbolicLink()&&(e.isDirectory()||extensions[extname(e.name).toLowerCase()])).sort((a,b)=>Number(b.isDirectory())-Number(a.isDirectory())||a.name.localeCompare(b.name)).map(e=>({name:e.name,path:join(path,e.name),directory:e.isDirectory()}))}
  cancelFileSearch(){this.fileSearch++;this.cancelQueuedTagReads()}
@@ -354,11 +405,15 @@ export class Documents {
  private async recoverNow(id:string){
   const data=JSON.parse(await readFile(join(this.recoveryDir,`${id}.json`),'utf8'))
   if(data.version!==1)throw new Error('Versión de recuperación no compatible. El archivo se conserva.')
-  const csvText=data.info.kind==='csv'&&data.info.csvView==='text',format=csvText?(data.snapshot?.format===undefined?{encoding:'utf8',bom:false}:data.snapshot.format):undefined
+  const csvText=data.info.kind==='csv'&&data.info.csvView==='text',text=data.snapshot?.text
+  // Las recuperaciones antiguas de Markdown, Texto y Mermaid guardaban el BOM dentro de text.
+  const legacyBom=data.info.kind!=='csv'&&data.snapshot?.format===undefined&&typeof text==='string'&&text.startsWith('\uFEFF')
+  const format=data.snapshot?.format===undefined?{encoding:'utf8',bom:legacyBom}:data.snapshot.format
   if(csvText&&(typeof data.snapshot?.text!=='string'||!isCsvTextFormat(format)))throw new Error(t('csvText.invalidRecovery'))
+  if(data.info.kind!=='csv'&&(typeof data.snapshot?.text!=='string'||!isTextFormat(format)))throw new Error(t('textEncoding.error.recovery'))
   const info=await this.create(data.info.kind,csvText?'text':'table'),r=this.get(info.id)
   if(isTableDocument(info)){try{await this.table.call('restore',info.id,data.snapshot);await this.syncTable(info.id)}catch(error){await this.table.call('close',info.id).catch(()=>{});this.records.delete(info.id);throw error}}
-  else{r.text=data.snapshot.text;if(csvText){r.csvTextFormat=format;r.info.encoding=format.encoding}}
+  else{r.text=legacyBom?text.slice(1):text;r.textFormat=format;r.info.encoding=format.encoding;if(!csvText)r.info.bom=format.bom}
   r.info.name=`Recuperado-${data.info.name}`;r.info.path=null;r.info.dirty=true;r.root=app.getPath('documents');this.schedule(info.id);return this.info(info.id)
  }
  async discardRecovery(id:string){await this.recoveryTasks.get(id);await unlink(join(this.recoveryDir,`${id}.json`)).catch(e=>{if(e.code!=='ENOENT')throw e})}

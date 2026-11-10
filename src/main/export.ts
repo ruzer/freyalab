@@ -133,7 +133,7 @@ async function academicExport(docs:Documents,id:string,request:ExportRequest,des
 export function exportDocument(docs:Documents,id:string,request:ExportRequest&{format:Exclude<ExportRequest['format'],'docx'>}):Promise<string|null>
 export function exportDocument(docs:Documents,id:string,request:ExportRequest):Promise<ExportOutcome>
 export async function exportDocument(docs:Documents,id:string,request:ExportRequest):Promise<ExportOutcome>{
- const record=docs.get(id);if(record.info.readonly)throw new Error('No se exporta un archivo completo desde una muestra limitada.')
+ const record=docs.get(id);if(record.info.encodingPending)throw new Error(t('textEncoding.error.confirm'));if(record.info.readonly)throw new Error('No se exporta un archivo completo desde una muestra limitada.')
  if(request.format==='docx'&&record.info.kind!=='markdown')throw new Error(t('error.invalidOperation'))
  if(record.info.kind==='markdown'){
   const revision=request.revision??record.info.revision,source=record.text,path=record.info.path

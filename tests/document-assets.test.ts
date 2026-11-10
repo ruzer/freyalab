@@ -59,7 +59,7 @@ it('cero imágenes guarda los bytes de texto exactos y devuelve cero copias',asy
  const source='\ufeff---\r\ntitle: Ámbito\r\n---\r\n# Texto\r\n\r\n`![ejemplo](a.assets/x.png)`\r\n'
  const {doc,path}=await original(source,{})
  const saved=await docs.save(doc.id,true)
- expect(saved).toMatchObject({text:source,assets:{copied:0,warnings:[],changes:[]}});expect(await readFile(state.target,'utf8')).toBe(source);expect(await readFile(path,'utf8')).toBe(source)
+ expect(saved).toMatchObject({text:source.slice(1),bom:true,assets:{copied:0,warnings:[],changes:[]}});expect(await readFile(state.target)).toEqual(Buffer.from(source));expect(await readFile(path)).toEqual(Buffer.from(source))
  expect(await readdir(dirname(state.target))).toEqual(['b.md'])
 })
 
@@ -78,7 +78,7 @@ it('parcha solo las URL con acentos, espacios, BOM/CRLF, referencias y details c
  const source='\ufeff---\r\ntitle: "![no](a.assets/x.png)"\r\n---\r\n# Guía 😀\r\n\r\n![directa](<a.assets/foto%20á.png> "Título")\r\n![referencia][FOTO]\r\n\r\n[FOTO]: a.assets/foto%20á.png "Conservar título"\r\n\r\n<details><summary>Más</summary>![interior](a.assets/x.png)</details>\r\n\r\n```md\r\n![no](a.assets/x.png)\r\n```\r\n'
  const {doc,path}=await original(source,{'foto á.png':PNG,'x.png':PNG}),saved=await docs.save(doc.id,true),prefix='Resumen%20final%20%C3%A1.assets'
  const expected=source.replace('<a.assets/foto%20á.png>',`<${prefix}/foto%20%C3%A1.png>`).replace('[FOTO]: a.assets/foto%20á.png',`[FOTO]: ${prefix}/foto%20%C3%A1.png`).replace('![interior](a.assets/x.png)',`![interior](${prefix}/x.png)`)
- expect(saved?.text).toBe(expected);expect(saved).toMatchObject({assets:{copied:2,warnings:[]}});expect(await readFile(path,'utf8')).toBe(source)
+ expect(saved?.text).toBe(expected.slice(1));expect(saved).toMatchObject({bom:true,assets:{copied:2,warnings:[]}});expect(await readFile(path)).toEqual(Buffer.from(source));expect(await readFile(state.target)).toEqual(Buffer.from(expected))
  expect(await docs.image(doc.id,`${prefix}/foto%20%C3%A1.png`)).toMatch(/^data:image\/png;base64,/)
 })
 
@@ -248,10 +248,11 @@ it('Buscar usa el selector solo sobre una referencia relativa AST vigente',async
 it('Buscar respeta espacios/acentos codificados y referencias/details sin reserializar el Markdown',async()=>{
  const source='\ufeff# Guía 😀\r\n\r\n![uno](a.assets/foto%20á.png "T")\r\n![dos][FOTO]\r\n\r\n[FOTO]: <a.assets/foto á.png> "Referencia"\r\n\r\n<details><summary>Más</summary>![tres](a.assets/foto%20%C3%A1.png)</details>\r\n'
  const {doc,path}=await original(source,{});await selectedImage();const result=await docs.locateImage(doc.id,'a.assets/foto%20%C3%A1.png'),changes=result!.assets.changes
- expect(changes).toHaveLength(3);let text=source
+ expect(changes).toHaveLength(3);let text=source.slice(1)
  for(const change of [...changes].reverse())text=text.slice(0,change.from)+change.insert+text.slice(change.to)
  expect(text).toBe(result?.text);expect(result?.assets.copied).toBe(1)
  expect(result?.text).toContain('![dos][FOTO]');expect(result?.text).toContain('"Referencia"');expect(result?.text).toContain('<details><summary>Más</summary>');expect(await readFile(path,'utf8')).toBe(source)
+ await docs.save(doc.id);expect(await readFile(path)).toEqual(Buffer.from('\ufeff'+text))
 })
 
 for(const fixture of [{name:'formato no admitido',nameFile:'no.pdf',bytes:PNG,error:/formato|imagen/i},{name:'mayor de 8 MiB',nameFile:'grande.png',bytes:Buffer.alloc(8*1024*1024+1),error:/8 MiB/}])it(`Buscar rechaza ${fixture.name} sin modificar el documento ni publicar activos`,async()=>{

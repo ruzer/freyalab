@@ -1,36 +1,62 @@
 import iconv from 'iconv-lite'
-import type {Encoding} from '../shared/types'
+import type {Encoding,TextEncoding} from '../shared/types'
 import {t} from '../shared/i18n'
-import {csvTextStatistics,type CsvTextFormat} from '../shared/csv-text'
+import {csvTextStatistics,type CsvTextFormat,type TextFormat} from '../shared/csv-text'
 export {csvTextStatistics,type CsvTextFormat} from '../shared/csv-text'
 
-const signatures={utf8:Buffer.from([0xef,0xbb,0xbf]),utf16le:Buffer.from([0xff,0xfe])}
+const signatures={utf8:Buffer.from([0xef,0xbb,0xbf]),utf16le:Buffer.from([0xff,0xfe]),utf16be:Buffer.from([0xfe,0xff])}
+type BomEncoding=keyof typeof signatures
+const loneSurrogate=/[\uD800-\uDFFF]/u
+const signatureFor=(encoding:TextEncoding)=>encoding==='win1252'||encoding==='latin1'?undefined:signatures[encoding]
+const startsWith=(bytes:Buffer,signature:Buffer)=>bytes.subarray(0,signature.length).equals(signature)
 
-function withBom(body:Buffer,format:CsvTextFormat){
+function withBom(body:Buffer,format:TextFormat){
  if(!format.bom)return body
- if(format.encoding==='win1252')throw new Error(t('csvText.codec.invalidBom'))
- return Buffer.concat([signatures[format.encoding],body])
+ const signature=signatureFor(format.encoding)
+ if(!signature)throw new Error(t('csvText.codec.invalidBom'))
+ return Buffer.concat([signature,body])
 }
 
-export function decodeCsvText(bytes:Buffer):{text:string;format:CsvTextFormat;readonly:boolean;warning?:string}{
- // Igual que TableEngine: el prefijo termina con margen de cuatro bytes y se valida como flujo.
- let encoding:Encoding='utf16le'
- if(bytes[0]!==0xff||bytes[1]!==0xfe){
-  try{new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(0,1024*1024+4),{stream:true});encoding='utf8'}catch{encoding='win1252'}
- }
- const signature=encoding==='win1252'?undefined:signatures[encoding],bom=!!signature&&bytes.subarray(0,signature.length).equals(signature),format={encoding,bom}
+function utf8OrWestern(bytes:Buffer,stream:boolean):'utf8'|'win1252'{
+ try{new TextDecoder('utf-8',{fatal:true}).decode(bytes,{stream});return 'utf8'}catch{return 'win1252'}
+}
+function decode<T extends TextEncoding>(bytes:Buffer,encoding:T){
+ const signature=signatureFor(encoding),bom=!!signature&&startsWith(bytes,signature),format={encoding,bom}
  const text=iconv.decode(bytes.subarray(bom?signature!.length:0),encoding,{stripBOM:false})
  // iconv codifica U+FFFD como 0x9D: ese roundtrip aparente también es una sustitución.
  const readonly=encoding==='win1252'&&text.includes('\uFFFD')||!withBom(iconv.encode(text,encoding,{addBOM:false}),format).equals(bytes)
- return{text,format,readonly,...(readonly?{warning:t('csvText.codec.lossyWarning')}:{})}
+ return{text,format,readonly}
+}
+export function decodeCsvText(bytes:Buffer):{text:string;format:CsvTextFormat;readonly:boolean;warning?:string}{
+ // Igual que TableEngine: el prefijo termina con margen de cuatro bytes y se valida como flujo.
+ const encoding:Encoding=startsWith(bytes,signatures.utf16le)?'utf16le':utf8OrWestern(bytes.subarray(0,1024*1024+4),true)
+ const decoded=decode(bytes,encoding)
+ return{...decoded,...(decoded.readonly?{warning:t('csvText.codec.lossyWarning')}:{})}
+}
+
+export function decodeTextDocument(bytes:Buffer,requested?:TextEncoding,sample=false){
+ const bom=(Object.keys(signatures) as BomEncoding[]).find(encoding=>startsWith(bytes,signatures[encoding]))
+ if(bom&&requested&&requested!==bom)throw new Error(t('textEncoding.error.bomMismatch'))
+ const encoding=requested??bom??utf8OrWestern(bytes,sample),decoded=decode(bytes,encoding)
+ const pending=!sample&&!requested&&encoding==='win1252'
+ // Un sustituto UTF-16 aislado puede reproducir los bytes sin representar texto válido.
+ const lossy=decoded.readonly||loneSurrogate.test(decoded.text)
+ if(requested&&lossy)throw new Error(t('textEncoding.error.decode'))
+ return{...decoded,readonly:sample||pending||lossy,pending}
+}
+
+export function encodedTextFormat(original:TextFormat,encoding:TextEncoding):TextFormat{
+ if(original.bom&&!signatureFor(encoding))throw new Error(t('textEncoding.error.bomSave'))
+ // La detección automática requiere BOM cuando se convierte a UTF-16.
+ return{encoding,bom:original.bom||encoding!==original.encoding&&(encoding==='utf16le'||encoding==='utf16be')}
 }
 
 // Cuenta en el formato original; representar cada carácter se valida al guardar.
-export function csvTextByteLength(text:string,format:CsvTextFormat){return withBom(iconv.encode(text,format.encoding,{addBOM:false}),format).length}
+export function csvTextByteLength(text:string,format:TextFormat){return withBom(iconv.encode(text,format.encoding,{addBOM:false}),format).length}
 
-export function encodeCsvText(text:string,format:CsvTextFormat):Buffer{
+export function encodeCsvText(text:string,format:TextFormat,strictUnicode=false):Buffer{
  const body=iconv.encode(text,format.encoding,{addBOM:false}),decoded=iconv.decode(body,format.encoding,{stripBOM:false})
- const substituted=format.encoding==='win1252'?text.indexOf('\uFFFD'):-1
+ const substituted=format.encoding==='win1252'?text.indexOf('\uFFFD'):strictUnicode?text.search(loneSurrogate):-1
  if(decoded!==text||substituted>=0){
   let first=0;while(first<text.length&&text[first]===decoded[first])first++
   if(substituted>=0)first=Math.min(first,substituted)
