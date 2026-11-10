@@ -6,6 +6,7 @@ import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {t} from '../../src/shared/i18n'
 import type {ProjectManifest} from '../../src/shared/project'
+import {closeElectron} from './close-electron'
 
 let app:ElectronApplication,page:Page,root:string,folder:string,source:string,copy:string
 const fixture=Buffer.from('ID;ID;\r\n001;México;\r\n','utf8')
@@ -21,7 +22,7 @@ test.beforeEach(async({},info)=>{
   env:{...process.env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:info.title.endsWith('[en-XA]')?'en-XA':'es',FREYALAB_USER_DATA:join(root,'profile'),FREYALAB_TEST_FOLDER:folder,FREYALAB_TEST_PROJECT_SOURCE_PATH:source,FREYALAB_TEST_SAVE_PATH:copy}})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya)
 })
-test.afterEach(async()=>{if(app?.process().exitCode===null)await app.evaluate(({app})=>app.exit(0)).catch(()=>{});await app?.close().catch(()=>{});await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+test.afterEach(async()=>{await closeElectron(app);await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 
 async function create(locale:'es'|'en-XA'='es'){
  const tr=(key:string)=>t(key,{},locale)
