@@ -241,13 +241,42 @@ test('guardar como protege otro documento abierto',async()=>{
 
 test('reinterpretar CSV rechaza ediciones simultáneas y conserva todas las filas',async()=>{
  const file=join(directory,'opciones.csv');await writeFile(file,'Nombre,Valor\nFreya,01\nOtra,02\n')
- const result=await page.evaluate(async path=>{
-  const [doc]=await window.freya.openPaths([path]);const original=await window.freya.tablePage(doc.id,{offset:0,limit:20,requestId:1})
-  const options=window.freya.tableOptions(doc.id,{header:false})
-  let rejected=false;try{await window.freya.tableEdit(doc.id,{type:'cell',rowId:original.rows[0].id,column:0,value:'NO'})}catch(error){rejected=String(error).includes('recarga')}
-  await options;const page=await window.freya.tablePage(doc.id,{offset:0,limit:20,requestId:2});await window.freya.save(doc.id);return{rejected,page}
- },file)
- expect(result.rejected).toBe(true);expect(result.page.total).toBe(3);expect(result.page.rows[0].cells).toEqual(['Nombre','Valor']);expect(await readFile(file,'utf8')).not.toContain('NO')
+ const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),file)
+ await app.evaluate(({ipcMain},id)=>{
+  type Handler=(event:Electron.IpcMainInvokeEvent,operation:unknown,...args:unknown[])=>Promise<unknown>
+  const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers
+  const original=handlers.get('freya')!
+  let markEditArrived!:()=>void,markOptionsStarted!:()=>void
+  const editArrived=new Promise<void>(resolve=>{markEditArrived=resolve})
+  const optionsStarted=new Promise<void>(resolve=>{markOptionsStarted=resolve})
+  handlers.set('freya',async(event,operation,...args)=>{
+   if(args[0]!==id)return original(event,operation,...args)
+   if(operation==='options'){
+    // Entrega ambas solicitudes en el mismo turno, después de que opciones active la recarga.
+    await editArrived
+    const options=original(event,operation,...args)
+    markOptionsStarted()
+    return options
+   }
+   if(operation==='edit'){
+    markEditArrived()
+    await optionsStarted
+    handlers.set('freya',original)
+   }
+   return original(event,operation,...args)
+  })
+ },doc.id)
+ const result=await page.evaluate(async id=>{
+  const original=await window.freya.tablePage(id,{offset:0,limit:20,requestId:1})
+  const options=window.freya.tableOptions(id,{header:false})
+  const edit=window.freya.tableEdit(id,{type:'cell',rowId:original.rows[0].id,column:0,value:'NO'}).then(()=>'',String)
+  const [,editError]=await Promise.all([options,edit])
+  const page=await window.freya.tablePage(id,{offset:0,limit:20,requestId:2})
+  await window.freya.save(id)
+  return{editError,page}
+ },doc.id)
+ expect(result.editError).toContain('Espera a que termine la recarga antes de editar.')
+ expect(result.page.total).toBe(3);expect(result.page.rows[0].cells).toEqual(['Nombre','Valor']);expect(await readFile(file,'utf8')).not.toContain('NO')
 })
 
 test('PDF desde Markdown real conserva imagen local grande, fórmula y diagrama en varias páginas',async()=>{
