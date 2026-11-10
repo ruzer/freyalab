@@ -9,7 +9,7 @@
  import {sqlColumns} from '../../shared/sql-helpers'
  import {assistedSQL,type SqlAssist} from '../../shared/sql-assist'
  import type {DocumentInfo,SqlResult} from '../../shared/types'
- let {doc,onclose,onerror,onreport}:{doc:DocumentInfo;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
+ let {doc,embedded=false,onclose,onerror,onreport}:{doc:DocumentInfo;embedded?:boolean;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
  let sql=$state('SELECT * FROM datos;'),choices=$state<DocumentInfo[]>([]),extra=$state<string[]>([]),busy=$state(false),result=$state<SqlResult|null>(null),choicesReady=$state(false),message=$state('Elige un asistente o escribe SQL. Preparar una consulta no la ejecuta.'),transferred=$state(0)
  let assist=$state<SqlAssist>({mode:'group',group:0,measure:0,category:1,values:'',aggregate:'count',scale:2,leftKey:0,rightKey:0,leftJoin:true,otherTable:2}),showAssist=$state(false)
  let reporting=$state(false)
@@ -42,9 +42,9 @@
  function prepare(){try{sql=assistedSQL(doc.headers??[],other?.headers??[],assist)}catch(error){onerror((error as Error).message)}}
  function choose(id:string,checked:boolean){extra=checked?[...extra,id]:extra.filter(value=>value!==id)}
 </script>
-<svelte:window onkeydown={event=>{if(!(event.target instanceof HTMLElement)||!event.target.closest('.sql-panel'))return;if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();if(!busy&&sql.trim())void run()}else if(event.key==='Escape'){event.preventDefault();onclose()}}}/>
+<svelte:window onkeydown={event=>{if(!(event.target instanceof HTMLElement)||!event.target.closest('.sql-panel'))return;if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();if(!busy&&sql.trim())void run()}else if(!embedded&&event.key==='Escape'){event.preventDefault();onclose()}}}/>
 <section class="sql-panel" aria-label="Análisis SQL y asistentes">
- <div class="heading"><h3>Análisis local con DuckDB</h3><button title={"Cerrar análisis SQL"} aria-label="Cerrar análisis SQL" onclick={onclose}><Icon name="x" size={14}/></button></div>
+ <div class="heading"><h3>Análisis local con DuckDB</h3>{#if !embedded}<button title={"Cerrar análisis SQL"} aria-label="Cerrar análisis SQL" onclick={onclose}><Icon name="x" size={14}/></button>{/if}</div>
  <p>Solo lectura. Consulta todos los registros, incluidos los cambios pendientes; los filtros y la búsqueda de la tabla no limitan SQL. Para una muestra, lee el archivo original completo desde disco. Hasta 4 fuentes, 256 MiB por archivo y 8 millones de celdas en total; máximo 2 millones de filas y 200 columnas por fuente; no cambia los límites de edición.</p>
  <details><summary>Archivos y nombres para SQL</summary><p><strong>datos</strong>: {doc.name} · {doc.readonly?'archivo completo en disco':`documento en memoria, revisión ${doc.revision}`}</p><div class="sources">{#each choices.filter(value=>value.id!==doc.id) as choice}<label><input type="checkbox" checked={extra.includes(choice.id)} disabled={busy||extra.length>=3&&!extra.includes(choice.id)} onchange={event=>choose(choice.id,event.currentTarget.checked)}/>{choice.name}{choice.dirty?' · cambios pendientes':''}</label>{/each}</div>{#each sources as source,index}<p>{index===0?'datos':`tabla_${index+1}`}: {sqlColumns((source.headers??[]).slice(0,200)).map(column=>`${column.name}${column.name!==column.original?` (encabezado ${column.index+1})`:''}`).join(' · ')}</p>{/each}</details>
  <button {...controlHint(tooWide?'columnLimit':null)} disabled={tooWide} aria-expanded={showAssist} onclick={()=>showAssist=!showAssist}>Asistentes: agrupar, pivotar y cruzar</button>
