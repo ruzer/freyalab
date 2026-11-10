@@ -66,14 +66,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Intel reparte la suite en main y de noche; los PR no crean sus jobs.
+        # Intel reparte la suite en main y de noche; Ubuntu reparte los push a main.
         include: >-
           ${{ fromJSON(
             github.event_name == 'schedule' &&
             '[{"os":"macos-15-intel","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15-intel","part":"csv","projects":"--project=csv"},{"os":"macos-15-intel","part":"package","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
             github.event_name == 'pull_request' &&
             '[{"os":"ubuntu-24.04","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"macos-15","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
-            '[{"os":"ubuntu-24.04","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"macos-15","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"},{"os":"macos-15-intel","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15-intel","part":"csv","projects":"--project=csv"},{"os":"macos-15-intel","part":"package","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]'
+            '[{"os":"ubuntu-24.04","part":"shell-md","projects":"--project=shell --project=md"},{"os":"ubuntu-24.04","part":"csv-package","projects":"--project=csv","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"macos-15","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"},{"os":"macos-15-intel","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15-intel","part":"csv","projects":"--project=csv"},{"os":"macos-15-intel","part":"package","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]'
           ) }}
     runs-on: ${{ matrix.os }}
     env:
@@ -97,7 +97,7 @@ jobs:
           path: ${{ runner.os == 'macOS' && '~/Library/Caches/electron' || runner.os == 'Windows' && '~/AppData/Local/electron/Cache' || '~/.cache/electron' }}
           key: electron-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
       - name: Cache electron-builder downloads
-        if: (!matrix.part || matrix.part == 'package') && (github.event_name != 'pull_request' || needs.areas.outputs.package == 'true')
+        if: matrix.executable && (github.event_name != 'pull_request' || needs.areas.outputs.package == 'true')
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ${{ runner.temp }}/freyalab-electron-builder
@@ -117,7 +117,7 @@ jobs:
         if: ${{ !matrix.part || matrix.part == 'shell-md' }}
         run: node --test experiments/large-file-editor/tests/overlay.test.mjs
       - run: npm run licenses
-        if: ${{ !matrix.part || matrix.part == 'package' }}
+        if: matrix.executable
       - name: E2E fast (PR areas)
         id: e2e_fast_pr
         if: github.event_name == 'pull_request'
@@ -130,7 +130,7 @@ jobs:
         if: github.event_name != 'pull_request' && runner.os == 'Linux'
         env:
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-fast
-        run: xvfb-run -a npm run test:e2e:fast -- --workers=${{ env.FREYALAB_E2E_FAST_WORKERS }} --output=test-results-fast
+        run: xvfb-run -a npm run test:e2e:fast -- --workers=${{ env.FREYALAB_E2E_FAST_WORKERS }} --output=test-results-fast ${{ matrix.projects }}
       - name: E2E fast (macOS and Windows)
         id: e2e_fast_desktop
         if: github.event_name != 'pull_request' && runner.os != 'Linux' && matrix.part != 'package'
@@ -144,7 +144,7 @@ jobs:
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo
         run: ${{ runner.os == 'Linux' && 'xvfb-run -a ' || '' }}npm run test:e2e:area -- --phase=serial --workers=1 --output=test-results-solo
       - name: E2E perf and solo (Linux)
-        if: ${{ !cancelled() && runner.os == 'Linux' && (steps.e2e_fast_linux.outcome == 'success' || steps.e2e_fast_linux.outcome == 'failure') }}
+        if: ${{ !cancelled() && runner.os == 'Linux' && matrix.part != 'shell-md' && (steps.e2e_fast_linux.outcome == 'success' || steps.e2e_fast_linux.outcome == 'failure') }}
         env:
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo
         run: xvfb-run -a npm run test:e2e:perf -- --workers=1 --output=test-results-solo
@@ -157,7 +157,7 @@ jobs:
         if: matrix.part == 'package'
       - name: Package application directory
         id: package
-        if: (!matrix.part || matrix.part == 'package') && (github.event_name != 'pull_request' || needs.areas.outputs.package == 'true')
+        if: matrix.executable && (github.event_name != 'pull_request' || needs.areas.outputs.package == 'true')
         env:
           ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/freyalab-electron-builder
         # El lockfile ya fija las sumas de Electron. Pasarlas evita descargar SHASUMS256.txt aun con el ZIP en caché.

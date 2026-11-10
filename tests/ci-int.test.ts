@@ -4,11 +4,12 @@ import {createRequire} from 'node:module'
 import {dirname} from 'node:path'
 import {expect,it} from 'vitest'
 
-type Job={os:string;part?:string;projects?:string}
+type Job={os:string;part?:string;projects?:string;executable?:string}
 type Suite={title:string;suites?:Suite[];specs?:{file:string;title:string;tests:{projectName:string}[]}[]}
 const require=createRequire(import.meta.url)
 const workflow=readFileSync(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8').replaceAll('\r\n','\n')
 const {scripts}=JSON.parse(readFileSync(new URL('../package.json',import.meta.url),'utf8'))
+const matrices=[...workflow.matchAll(/^\s*'(\[\{.*\}\])'(?:\s*\|\|)?[ \t]*$/gm)].map(([,rows])=>JSON.parse(rows) as Job[])
 
 function selection(script:string){
  const filter=scripts[script]?.match(/ (--grep(?:-invert)?) "([^"]+)"$/)
@@ -32,11 +33,9 @@ function list(...args:string[]):string[]{
 }
 
 it('Intel conserva las identidades de desarrollo en dos partes y prueba el paquete en paralelo',()=>{
- const matrices=[...workflow.matchAll(/^\s*'(\[\{.*\}\])'(?:\s*\|\|)?[ \t]*$/gm)]
-  .map(([,rows])=>(JSON.parse(rows) as Job[]).filter(job=>job.os==='macos-15-intel'))
- const scheduled=matrices[0],push=matrices.at(-1)
+ const [scheduled,pr,push]=matrices.map(rows=>rows.filter(job=>job.os==='macos-15-intel'))
  expect(scheduled?.map(job=>[job.part,job.projects])).toEqual([['shell-md','--project=shell --project=md'],['csv','--project=csv'],['package',undefined]])
- expect(matrices[1]).toEqual([])
+ expect(pr).toEqual([])
  expect(push).toEqual(scheduled)
  expect(workflow).toMatch(/run: npm run test:e2e:fast -- [^\n]*\$\{\{ matrix\.projects \}\}/)
  const all=list().sort()
@@ -49,10 +48,24 @@ it('Intel conserva las identidades de desarrollo en dos partes y prueba el paque
  expect([...first,...second,...perf].sort()).toEqual(all)
 },60_000)
 
+it('Ubuntu solo reparte los push y conserva la misma selección de pruebas que Intel',()=>{
+ const [scheduled,pr,push]=matrices.map(rows=>rows.filter(job=>job.os==='ubuntu-24.04'))
+ expect(scheduled).toEqual([])
+ expect(pr).toEqual([{os:'ubuntu-24.04',executable:'release/linux-unpacked/freyalab'}])
+ expect(push.map(job=>[job.part,job.projects,job.executable])).toEqual([
+  ['shell-md','--project=shell --project=md',undefined],
+  ['csv-package','--project=csv','release/linux-unpacked/freyalab']
+ ])
+ // La prueba anterior enumera los dos mismos filtros y la fase serial completa.
+ expect(workflow).toMatch(/run: xvfb-run -a npm run test:e2e:fast -- [^\n]*\$\{\{ matrix\.projects \}\}/)
+ expect(workflow).toMatch(/name: E2E perf and solo \(Linux\)\n\s*if: [^\n]*matrix\.part != 'shell-md'/)
+ expect(workflow).toMatch(/run: xvfb-run -a npm run test:e2e:perf -- --workers=1 --output=test-results-solo\n/)
+})
+
 it('la parte empaquetada construye su app y conserva exactamente los specs del paquete',()=>{
  expect(workflow).toMatch(/name: E2E fast \(macOS and Windows\)\n[^\n]*\n\s*if: .*matrix\.part != 'package'/)
  expect(workflow).toMatch(/run: npm run build\n\s*if: matrix\.part == 'package'/)
- expect(workflow).toMatch(/name: Package application directory\n[^\n]*\n\s*if: \(!matrix\.part \|\| matrix\.part == 'package'\)/)
+ expect(workflow).toMatch(/name: Package application directory\n[^\n]*\n\s*if: matrix\.executable && \(github\.event_name != 'pull_request' \|\| needs\.areas\.outputs\.package == 'true'\)/)
  const packaged=[...workflow.matchAll(/run: (?:xvfb-run -a )?npx playwright test (tests\/e2e\/[^\n]+) --output=packaged-test-results/g)].map(([,specs])=>specs.split(' '))
  const original='structural-context commands search sql charts structure ordering range-cancellation selection-statistics statistics-reports'.split(' ').map(name=>`tests/e2e/${name}.spec.ts`)
  expect(packaged).toEqual([original,original])
