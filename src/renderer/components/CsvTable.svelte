@@ -26,7 +26,7 @@
  let showExtract=$state(false),extractButton=$state<HTMLButtonElement>()
  let showCommands=$state(false),commandsButton=$state<HTMLButtonElement>(),commandReturn:HTMLElement|null=null
  type TransformOperation=import('../../shared/types').TableTransformEdit['operation']|'calculate'
- let showTransform=$state(false),transformStart=$state<TransformOperation>(),transformReturn:HTMLElement|null=null
+ let showTransform=$state(false),transformStart=$state<TransformOperation>(),calculationPosition=$state<number>(),transformReturn:HTMLElement|null=null
  // Las páginas grandes usan la vista aplicada; escribir en el buscador no inicia un recorrido.
  const large=$derived(!!doc.large)
  let largeView=$state<LargeViewState|null>(null),viewReady=$state(false),changingView=$state(false),viewAnnouncement=$state(''),viewGeneration=0
@@ -49,7 +49,7 @@
  async function backToTable(){if(narrow){closeDock(analyzeButton);return}workspace.expanded=false;announcement='Vuelves a la tabla';await tick();scrollElement?.focus()}
  let conditions=$state<TableFilter[]>([]),order=$state<TableSort[]>([]),filterMode=$state<'all'|'any'>('all'),showQuery=$state(false),queryError=$state(''),filterError=$state(''),queryButton=$state<HTMLElement>()
  const locked=$derived(doc.readonly||interpreting||!!queryError)
- const calculationDisabled=$derived(doc.readonly?t('calculate.readonly'):externalChange?t('calculate.error.disk'):(doc.headers?.length??0)>=200?t('calculate.error.limitColumns'):locked?t('ui.reason.busy'):'')
+ const calculationDisabled=$derived(large||doc.readonly?t('calculate.readonly'):externalChange?t('calculate.error.disk'):(doc.headers?.length??0)>=200?t('calculate.error.limitColumns'):locked?t('ui.reason.busy'):'')
  let search=$state(''),filters=$state<Record<string,string>>({}),sort=$state<TableQuery['sort']>(),page=$state<TablePage>({rows:[],total:0,matched:0,revision:0,requestId:0,sample:false}),busy=$state(false),showFilters=$state(false),showReplace=$state(false)
  const activeOrder=$derived(order.length?order:sort?[sort]:[])
  const filterCount=$derived(large?(largeView?.query.conditions?.length??0)+(largeView?.query.search?1:0):Object.values(filters).filter(Boolean).length+conditions.length+(search?1:0))
@@ -61,7 +61,7 @@
  let editing=$state<{rowId:string;column:number;value:string}|null>(null),editingHeader=$state<{index:number;value:string}|null>(null)
  type Cell={row:number;column:number}
  let selection=$state<{anchor:Cell;end:Cell;query:TableQuery;revision:number}|null>(null),dragging=$state(false),pendingCell=$state<Cell|null>(null)
- let rangeDialog=$state<{edit:TableRangeEdit;cut?:boolean;documentScope?:boolean;column?:{name:string;rows:number;hidden:number;title:string}}|null>(null),context=$state<{x:number;y:number;kind:'range'|'rows'|'columns';column?:number}|null>(null)
+ let rangeDialog=$state<{edit:TableRangeEdit;cut?:boolean;documentScope?:boolean;column?:{name:string;rows:number;hidden:number;title:string}}|null>(null),context=$state<{x:number;y:number;kind:'range'|'rows'|'columns';column?:number;headerColumn?:number}|null>(null)
  let contextMenu=$state<HTMLDivElement>(),contextReturn:HTMLElement|null=null
  let dragPoint={x:0,y:0}
  const cellRange=$derived<TableRange|null>(selection?{top:Math.min(selection.anchor.row,selection.end.row),bottom:Math.max(selection.anchor.row,selection.end.row),left:Math.min(selection.anchor.column,selection.end.column),right:Math.max(selection.anchor.column,selection.end.column),query:selection.query,revision:selection.revision}:null)
@@ -105,6 +105,7 @@
   ...([['upper','Mayúsculas en la columna…','Convertir a mayúsculas'],['lower','Minúsculas en la columna…','Convertir a minúsculas'],['trim','Quitar espacios en la columna…','Quitar espacios al inicio y al final']] as const).map(([operation,label,title])=>({id:'column-'+operation,label,detail:`${title} en toda la columna de la vista actual · vista previa antes → después, recuento y un paso de deshacer`,disabled:locked||busy||!page.matched||targetColumn===undefined,run:()=>cleanColumn(operation)})),
   {id:'columnDuplicates',label:'Quitar filas duplicadas de la columna…',detail:'Compara el texto exacto de esta columna y conserva la primera fila · vista previa, recuento y un paso de deshacer',disabled:locked||targetColumn===undefined,run:()=>openTransform('deduplicate')},
   {id:'transformations',label:'Transformar documento…',detail:'Asistente para dividir/combinar columnas, normalizar, eliminar duplicados, mover filas/columnas y fijar orden · vista previa · Ctrl/⌘ + Mayús + T',disabled:locked||(doc.headers?.length??0)>200,run:openTransform},
+  {id:'calculate',label:t('calculate.action'),detail:calculationDisabled||t('calculate.actionHint'),disabled:!!calculationDisabled,disabledReason:calculationDisabled,run:()=>openCalculation(undefined,commandReturn?.isConnected?commandReturn:commandsButton??null)},
   {id:'insertRow',label:'Añadir fila',detail:'Después de la última fila marcada por número; sin marcas, al final del documento',disabled:locked,run:()=>edit({type:'insertRow',afterId:selectedRows.at(-1)})},
   {id:'insertRowBefore',label:'Insertar fila arriba',detail:'Antes de una única fila marcada, en el orden del documento',disabled:locked||selectedRows.length!==1,run:()=>edit({type:'insertRow',beforeId:selectedRows[0]})},
   {id:'insertRowAfter',label:'Insertar fila abajo',detail:'Después de una única fila marcada, en el orden del documento',disabled:locked||selectedRows.length!==1,run:()=>edit({type:'insertRow',afterId:selectedRows[0]})},
@@ -140,14 +141,14 @@
  $effect(()=>{if(!dragging)return;const timer=setInterval(()=>{const grid=scrollElement;if(!grid)return;const rect=grid.getBoundingClientRect(),{x,y}=dragPoint;const dy=y>rect.bottom-24?32:y<rect.top+44?-32:0;if(rowScale>1&&dy)get(rowsVirtual).scrollToOffset((get(rowsVirtual).scrollOffset??0)+dy);grid.scrollBy({top:rowScale>1?0:dy,left:x>rect.right-24?32:x<rect.left+54?-32:0});const cell=document.elementFromPoint(Math.max(rect.left+54,Math.min(x,rect.right-8)),Math.max(rect.top+(showFilters?80:44),Math.min(y,rect.bottom-8)))?.closest<HTMLElement>('.csv-cell');if(cell&&selection)selection={...selection,end:{row:Number(cell.dataset.row),column:Number(cell.dataset.column)}}},50);return()=>clearInterval(timer)})
  $effect(()=>{const target=pendingCell;void page;void renderedRows;void $rowsVirtual.getVirtualItems();void $columnsVirtual.getVirtualItems();if(target&&!busy)void tick().then(()=>{if(busy||pendingCell!==target)return;const node=scrollElement?.querySelector<HTMLElement>(`.csv-cell[data-row="${target.row}"][data-column="${target.column}"]`);if(node){node.focus({preventScroll:true});if(document.activeElement===node)pendingCell=null}})})
  function focusCell(row:number,column:number,extend=false,align:'auto'|'none'='auto'){if(!page.matched)return;row=Math.max(0,Math.min(row,page.matched-1));column=Math.max(0,Math.min(column,(doc.headers?.length??1)-1));selectCell(row,column,extend);pendingCell={row,column};if(align==='auto')get(rowsVirtual).scrollToIndex(row,{align});get(columnsVirtual).scrollToIndex(column,{align:'auto'});if(row<pageOffset||row>=pageOffset+page.rows.length)void load(Math.floor(row/100)*100)}
- function openContext(x:number,y:number,kind:'range'|'rows'|'columns'='range',origin?:HTMLElement,column?:number){pendingCell=null;contextReturn=origin??(document.activeElement instanceof HTMLElement?document.activeElement:null);context={kind,column,x:Math.max(0,Math.min(x,window.innerWidth-270)),y:Math.max(0,Math.min(y,window.innerHeight-(kind==='columns'?590:370)))}}
+ function openContext(x:number,y:number,kind:'range'|'rows'|'columns'='range',origin?:HTMLElement,column?:number,headerColumn?:number){pendingCell=null;contextReturn=origin??(document.activeElement instanceof HTMLElement?document.activeElement:null);context={kind,column,headerColumn,x:Math.max(0,Math.min(x,window.innerWidth-270)),y:Math.max(0,Math.min(y,window.innerHeight-(kind==='columns'?590:370)))}}
  function structuralContext(event:MouseEvent|KeyboardEvent,kind:'rows'|'columns',item:string|number){
   if(event.target instanceof HTMLElement&&event.target.classList.contains('column-filter'))return
   event.preventDefault();event.stopPropagation();if(queryError||page.revision!==doc.revision)return
   selection=null;context=null
   if(kind==='rows'){const id=String(item);if(large&&viewActive||!selectedRows.includes(id))selectRow(id,false)}else{const column=Number(item);if(!selectedColumns.includes(column))selectColumn(column,true)}
   const element=event.currentTarget as HTMLElement,origin=(event.target instanceof HTMLElement?event.target:element).closest<HTMLElement>('button,input')??element.querySelector<HTMLElement>('button,input')??element,rect=origin.getBoundingClientRect()
-  openContext(event instanceof MouseEvent?event.clientX:rect.left,event instanceof MouseEvent?event.clientY:rect.bottom,kind,origin)
+  openContext(event instanceof MouseEvent?event.clientX:rect.left,event instanceof MouseEvent?event.clientY:rect.bottom,kind,origin,undefined,kind==='columns'?Number(item):undefined)
  }
 
  // El mismo menú que el clic derecho de la cabecera, ahora con un botón visible. Actúa solo sobre su columna.
@@ -170,14 +171,16 @@
   }catch(error){onerror(action==='paste'?'No se pudo leer el portapapeles. Usa Ctrl/⌘ + V sobre la tabla.':String(error))}
  }
  function openTransform(start?:TransformOperation){if(locked)return;transformStart=start;if((doc.headers?.length??0)>200){onerror('Estas transformaciones admiten hasta 200 columnas por documento.');return}context=null;pendingCell=null;showTransform=true}
- function openCalculation(event:MouseEvent&{currentTarget:HTMLButtonElement}){
+ function openCalculation(position:number|undefined,trigger:HTMLElement|null){
   if(calculationDisabled)return
+  calculationPosition=position;transformReturn=trigger;announcement='';openTransform('calculate')
+ }
+ function openToolbarCalculation(event:MouseEvent&{currentTarget:HTMLButtonElement}){
   const menu=event.currentTarget.closest('details')
-  transformReturn=menu?.querySelector('summary')??null
-  menu?.removeAttribute('open');announcement='';openTransform('calculate')
+  menu?.removeAttribute('open');openCalculation(undefined,menu?.querySelector('summary')??null)
  }
  async function applyTransform(change:import('../../shared/types').TableTransformEdit|CalculateColumnEdit){const error=await edit(change);if(error===null){if(['moveRows','moveColumns','commitOrder'].includes(change.operation)){search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}selection=null;selectedRows=[];selectedColumns=[];selectionStats=null;await load(0);scrollElement?.scrollTo({top:0,left:0});if(change.operation==='calculate')announcement=t('calculate.progress.applied')}return error}
- function closeTransform(){showTransform=false;transformStart=undefined;if(transformReturn){const trigger=transformReturn;transformReturn=null;void tick().then(()=>trigger.focus())}else if(selection)focusCell(selection.end.row,selection.end.column,true);else document.querySelector<HTMLElement>('[aria-label="Operaciones CSV"]')?.focus()}
+ function closeTransform(){showTransform=false;transformStart=undefined;calculationPosition=undefined;if(transformReturn){const trigger=transformReturn;transformReturn=null;void tick().then(()=>{if(trigger.isConnected)trigger.focus();else commandsButton?.focus()})}else if(selection)focusCell(selection.end.row,selection.end.column,true);else document.querySelector<HTMLElement>('[aria-label="Operaciones CSV"]')?.focus()}
  function preparePaste(text:string){if(!cellRange||locked)return;try{rangeDialog={edit:{type:'range',range:$state.snapshot(cellRange),operation:'paste',values:parse(text,{delimiter:'\t',relax_column_count:true,skip_empty_lines:false}) as string[][]}}}catch(error){onerror(String(error))}}
  async function applyRange(change:TableRangeEdit,cancelled:()=>boolean){try{if(rangeDialog?.cut)await window.freya.tableCopy(doc.id,{scope:'selection',range:change.range},'tsv');if(cancelled())return 'Preparación del rango cancelada.';return await edit(change)}catch(error){const message=String(error).replace(/^.*Error: /,'');onerror(message);return message}}
  function closeRangeDialog(){const documentScope=rangeDialog?.documentScope,fromColumn=!!rangeDialog?.column;rangeDialog=null;if(documentScope)void tick().then(()=>replaceInput?.focus());else if(selection)focusCell(selection.end.row,selection.end.column,true);else if(fromColumn)void tick().then(()=>{if(contextReturn?.isConnected)contextReturn.focus()})}
@@ -395,10 +398,28 @@
 {#snippet sqlPanel()}<CsvSql {doc} {onerror} {onreport} onclose={()=>closeDock(analyzeButton)}/>{/snippet}
 {#snippet item(id:string)}{@const command=commands.find(command=>command.id===id)}<button {...controlHint(command?.disabled===false?null:doc.readonly?'readonly':busy||interpreting?'busy':'context', (command?.detail))} disabled={command?.disabled??true}  onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand(id)}}>{command?.label}</button>{/snippet}
 {#snippet rangeButtons(menu=false)}{#each rangeCommands as command}<button {...controlHint(doc.readonly?'readonly':busy||interpreting?'busy':command.disabled||!cellRange?'selection':null)} role={menu?'menuitem':undefined} disabled={command.disabled||!cellRange} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand(command.id)}}>{command.label}</button>{/each}{/snippet}
+{#snippet calculateMenuItem(column:number)}
+ <button role="menuitem" disabled={!!calculationDisabled} aria-describedby={calculationDisabled?'context-calculation-disabled':undefined} onclick={()=>openCalculation(column+1,contextReturn)}>{t('calculate.right')}</button>
+ {#if calculationDisabled}<span class="dropdown-note" role="presentation" id="context-calculation-disabled">{calculationDisabled}</span>{/if}
+{/snippet}
 {#if showCommands}<CsvCommands {commands} context={doc.readonly?'Muestra de solo lectura: edición y copia tabular bloqueadas.':interpreting?'Interpretando el archivo; edición bloqueada.':queryError?'Consulta no válida: corrige o quita los filtros antes de editar.':busy?'Cargando página; las acciones del rango esperan.':cellRange?`Rango: filas ${cellRange.top+1}–${cellRange.bottom+1}, columnas ${cellRange.left+1}–${cellRange.right+1}.`:`${selectedRows.length} filas marcadas por número · ${selectedColumns.length} columnas marcadas.`} onexecute={id=>void chooseCommand(id)} onclose={()=>void closeCommands()}/>{/if}
-{#if showTransform}<CsvTransform {doc} initialOperation={transformStart} initialRows={selectedRows} initialRange={cellRange} viewQuery={query()} initialColumns={selectedColumns.length?selectedColumns:cellRange?Array.from({length:cellRange.right-cellRange.left+1},(_,i)=>cellRange.left+i):[]} onapply={applyTransform} onclose={closeTransform} {onerror}/>{/if}
+{#if showTransform}<CsvTransform {doc} initialOperation={transformStart} initialCalculationPosition={calculationPosition} initialRows={selectedRows} initialRange={cellRange} viewQuery={query()} initialColumns={selectedColumns.length?selectedColumns:cellRange?Array.from({length:cellRange.right-cellRange.left+1},(_,i)=>cellRange.left+i):[]} onapply={applyTransform} onclose={closeTransform} {onerror}/>{/if}
 {#if rangeDialog}<CsvRangePreview id={doc.id} initial={rangeDialog.edit} cut={rangeDialog.cut} documentScope={rangeDialog.documentScope} column={rangeDialog.column} onapply={applyRange} onclose={closeRangeDialog} {onerror}/>{/if}
-{#if context}<div bind:this={contextMenu} class="range-context" role="menu" aria-label={context.kind==='rows'?'Acciones de filas':context.kind==='columns'?'Acciones de columnas':'Acciones del rango'} tabindex="-1" style:left={`${context.x}px`} style:top={`${context.y}px`} onkeydown={event=>{const buttons=Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')),index=buttons.indexOf(document.activeElement as HTMLButtonElement);if(event.key==='Escape'){event.preventDefault();closeContext()}else if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();buttons[event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(event.key==='ArrowDown'?1:buttons.length-1))%buttons.length]?.focus()}else if(event.key==='Tab')context=null}}>{#if context.kind==='range'}{@render rangeButtons(true)}{:else}{#if context.kind==='columns'&&context.column!==undefined}<span class="dropdown-label" role="presentation">Columna «{columnLabel(context.column)}» · {page.matched.toLocaleString()} {page.matched===1?'fila':'filas'}</span>{#each [['Vista de la tabla',['sortAscending','sortDescending','columnFilter','columnStats']],['Limpiar la columna · con vista previa',['column-upper','column-lower','column-trim','columnDuplicates']],['Estructura',['insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn']],['Más',['transformations','copyMarkdown','undo','redo']]] as [title,ids]}<span class="dropdown-label" role="presentation">{title}</span>{#each contextCommands.filter(command=>(ids as string[]).includes(command.id)) as command}<button {...controlHint(!command.disabled?null:doc.readonly?'readonly':busy||interpreting?'busy':'context', (command.detail))} role="menuitem"  disabled={command.disabled} onclick={()=>{closeContext();void runCommand(command.id)}}>{command.label}</button>{/each}{/each}{:else}<span class="dropdown-label" role="presentation">{selectedRows.length} filas · {selectedColumns.length?`${selectedColumns.length} columnas`:'todas las columnas'}</span>{#each contextCommands as command}<button {...controlHint(!command.disabled?null:doc.readonly?'readonly':busy||interpreting?'busy':'context', (command.detail))} role="menuitem"  disabled={command.disabled} onclick={()=>{closeContext();void runCommand(command.id)}}>{command.label}</button>{/each}{/if}{/if}</div>{/if}
+{#if context}<div bind:this={contextMenu} class="range-context" role="menu" aria-label={context.kind==='rows'?'Acciones de filas':context.kind==='columns'?'Acciones de columnas':'Acciones del rango'} tabindex="-1" style:left={`${context.x}px`} style:top={`${context.y}px`} onkeydown={event=>{const buttons=Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')),index=buttons.indexOf(document.activeElement as HTMLButtonElement);if(event.key==='Escape'){event.preventDefault();closeContext()}else if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();buttons[event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(event.key==='ArrowDown'?1:buttons.length-1))%buttons.length]?.focus()}else if(event.key==='Tab')context=null}}>
+ {#if context.kind==='range'}{@render rangeButtons(true)}
+ {:else if context.kind==='columns'&&context.column!==undefined}
+  <span class="dropdown-label" role="presentation">Columna «{columnLabel(context.column)}» · {page.matched.toLocaleString()} {page.matched===1?'fila':'filas'}</span>
+  {#each [['Vista de la tabla',['sortAscending','sortDescending','columnFilter','columnStats']],['Limpiar la columna · con vista previa',['column-upper','column-lower','column-trim','columnDuplicates']],['Estructura',['insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn']],['Más',['transformations','copyMarkdown','undo','redo']]] as [title,ids]}
+   <span class="dropdown-label" role="presentation">{title}</span>
+   {#each contextCommands.filter(command=>(ids as string[]).includes(command.id)) as command}
+    <button {...controlHint(!command.disabled?null:doc.readonly?'readonly':busy||interpreting?'busy':'context', (command.detail))} role="menuitem" disabled={command.disabled} onclick={()=>{closeContext();void runCommand(command.id)}}>{command.label}</button>
+   {/each}
+   {#if title==='Estructura'}{@render calculateMenuItem(context.column)}{/if}
+  {/each}
+ {:else}<span class="dropdown-label" role="presentation">{selectedRows.length} filas · {selectedColumns.length?`${selectedColumns.length} columnas`:'todas las columnas'}</span>{#each contextCommands as command}<button {...controlHint(!command.disabled?null:doc.readonly?'readonly':busy||interpreting?'busy':'context', (command.detail))} role="menuitem"  disabled={command.disabled} onclick={()=>{closeContext();void runCommand(command.id)}}>{command.label}</button>{/each}
+  {#if context.headerColumn!==undefined}{@render calculateMenuItem(context.headerColumn)}{/if}
+ {/if}
+</div>{/if}
 <div class="csv-workspace">
  <div class="csv-toolbar" class:compact={bodyWidth>0&&bodyWidth<(viewControls?1280:1000)} role="toolbar" aria-label="Herramientas de la tabla">
   {@render viewControls?.()}
@@ -423,7 +444,7 @@
    <span class="dropdown-label">Columnas</span>
    {#each ['insertColumn','insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn'] as id}{@render item(id)}{/each}
    {#if !large}
-    <button disabled={!!calculationDisabled} aria-describedby={calculationDisabled?'calculate-disabled':undefined} onclick={openCalculation}>{t('calculate.action')}</button>
+    <button disabled={!!calculationDisabled} aria-describedby={calculationDisabled?'calculate-disabled':undefined} onclick={openToolbarCalculation}>{t('calculate.action')}</button>
     {#if calculationDisabled}<span class="dropdown-note" id="calculate-disabled">{calculationDisabled}</span>{/if}
    {/if}
    <span class="dropdown-label">Copiar</span>

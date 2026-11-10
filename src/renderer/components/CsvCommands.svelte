@@ -1,5 +1,5 @@
 <script module lang="ts">
- export interface CsvCommand {id:string;label:string;detail:string;disabled:boolean;run:()=>unknown}
+ export interface CsvCommand {id:string;label:string;detail:string;disabled:boolean;disabledReason?:string;run:()=>unknown}
 </script>
 <script lang="ts">
  import {controlHint} from '../lib/control-hint'
@@ -25,7 +25,10 @@
  <p>{context}</p>
  <label>Buscar herramienta<input type="search" aria-label="Buscar comando CSV" placeholder="Buscar, reemplazar, filtrar, duplicar…" bind:value={search}/></label>
  <p role="status">{matches.length} comandos encontrados. Las acciones deshabilitadas necesitan otro contexto.</p>
- <ul class="command-list">{#each matches as command (command.id)}<li><button {...controlHint(command.disabled?'context':null)} disabled={command.disabled} onclick={()=>onexecute(command.id)}><strong>{command.label}</strong><small>{command.detail}</small></button></li>{/each}</ul>
+ <ul class="command-list">{#each matches as command (command.id)}
+  {@const hint=command.disabledReason?{title:command.disabledReason,'aria-describedby':'csv-command-reason-'+command.id}:controlHint(command.disabled?'context':null)}
+  <li><button {...hint} aria-label={command.disabledReason?command.label:undefined} disabled={command.disabled} onclick={()=>onexecute(command.id)}><strong>{command.label}</strong><small id={command.disabledReason?'csv-command-reason-'+command.id:undefined}>{command.detail}</small></button></li>
+ {/each}</ul>
  {#if !matches.length}<p>No hay comandos que coincidan. Prueba con otra palabra.</p>{/if}
  <p>↑ ↓ para recorrer · Enter para ejecutar · Escape para cerrar. Los cambios usan el historial y las vistas previas existentes.</p>
 </dialog>

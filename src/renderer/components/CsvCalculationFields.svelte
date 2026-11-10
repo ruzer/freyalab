@@ -1,8 +1,9 @@
 <script lang="ts">
  import {onMount,tick,untrack} from 'svelte'
  import {quoteIdentifier,sqlColumns} from '../../shared/sql-helpers'
+ import {calculationExamples,calculationFunctionGroups} from '../../shared/calculation-help'
  import type {ColumnRead} from '../../shared/calculated-column'
- import type {DocumentInfo} from '../../shared/types'
+ import type {ColumnProfile,DocumentInfo} from '../../shared/types'
  import {t} from '../lib/i18n.svelte'
 
  let {doc,name=$bindable(),expression=$bindable(),columns=$bindable(),onError=$bindable(),busy}:{doc:DocumentInfo;name:string;expression:string;columns:ColumnRead[];onError:'empty'|'abort';busy:boolean}=$props()
@@ -30,7 +31,11 @@
  }
  onMount(()=>{if(!name)name=uniqueName(t('calculate.defaultName'))})
  let formula=$state<HTMLInputElement>(),nameField=$state<HTMLInputElement>()
- let profiles=$state<Record<number,ColumnRead['read']>>({})
+ let profiles=$state<Record<number,ColumnProfile|null>>({})
+ let inserted=$state('')
+ const examples=$derived(calculationExamples(fields,profiles))
+ const pending=$derived(fields.some(({index})=>profiles[index]===undefined))
+ const profileFailed=$derived(fields.some(({index})=>profiles[index]===null))
  let profileSource=''
 
  $effect(()=>{
@@ -41,18 +46,21 @@
  $effect(()=>{
   const {id,revision}=doc,key=profileKey,source=`${id}:${revision}`
   if(source!==profileSource){profileSource=source;profiles={}}
-  if(busy||!key)return
+  if(busy||!fields.length)return
+  const priority=new Set(key?key.split(',').map(Number):[])
+  const queue=new Set([...priority,...fields.map(({index})=>index)])
   let requestId:string|undefined,cancelled=false
   void (async()=>{
-   for(const index of key.split(',').map(Number)){
+   for(const index of queue){
     if(cancelled||busy)break
+    if(!priority.has(index)&&untrack(()=>examples.every(example=>example.recipe)))break
     if(untrack(()=>profiles[index]!==undefined))continue
     requestId=crypto.randomUUID()
     try{
      const {profile}=await window.freya.analyzeColumn(id,{column:index,revision,requestId,frequencyOffset:0,duplicatesOnly:false,bins:1})
-     if(!cancelled)profiles[index]=profile.kind==='number'||profile.kind==='date'?profile.kind:'text'
+     if(!cancelled)profiles[index]=profile
     }catch{
-     // Una sugerencia fallida deja disponible la lectura explícita en los tres formatos.
+     if(!cancelled)profiles[index]=null
     }finally{requestId=undefined}
    }
   })()
@@ -78,6 +86,12 @@
   await tick()
   formula?.focus()
   formula?.setSelectionRange(start+identifier.length,start+identifier.length)
+ }
+ function insertExample(example:typeof examples[number]){
+  if(!example.recipe)return
+  expression=example.recipe.expression
+  columns=example.recipe.columns
+  inserted=example.id
  }
 </script>
 
@@ -110,10 +124,11 @@
    <legend>{t('calculate.reads')}</legend>
    {#each used as field (field.index)}
     {@const choice=read(field.index)}
-    {@const suggestion=profiles[field.index]}
+    {@const suggestion=profiles[field.index]?.kind}
+    {@const suggested=suggestion==='number'||suggestion==='date'}
     <div class="read-field">
      <label>{t('calculate.read',{column:field.name})}
-      <select value={choice.read} aria-label={t('calculate.read',{column:field.name})} aria-describedby={choice.read==='text'&&suggestion&&suggestion!=='text'?`${uid}-profile-${field.index}`:undefined} onchange={event=>setRead(field.index,event.currentTarget.value as ColumnRead['read'])}>
+      <select value={choice.read} aria-label={t('calculate.read',{column:field.name})} aria-describedby={choice.read==='text'&&suggested?`${uid}-profile-${field.index}`:undefined} onchange={event=>setRead(field.index,event.currentTarget.value as ColumnRead['read'])}>
        <option value="text">{t('calculate.read.text')}</option>
        <option value="number">{t('calculate.read.number')}</option>
        <option value="date">{t('calculate.read.date')}</option>
@@ -123,7 +138,7 @@
       <label>{t('calculate.scale',{column:field.name})}
        <input type="number" min="0" max="12" step="1" required value={choice.scale??0} oninput={event=>setScale(field.index,event.currentTarget.valueAsNumber)}/>
       </label>
-     {:else if choice.read==='text'&&suggestion&&suggestion!=='text'}
+     {:else if choice.read==='text'&&suggested}
       <p id={`${uid}-profile-${field.index}`}>{t('calculate.read.suggested',{column:field.name,type:t(`calculate.read.${suggestion}`)})}</p>
      {/if}
     </div>
@@ -136,6 +151,30 @@
    <option value="abort">{t('calculate.onError.abort')}</option>
   </select>
  </label>
+ <fieldset class="reads">
+  <legend>{t('calculate.examples.title')}</legend>
+  <div class="examples">
+   {#each examples as example (example.id)}
+    <div>
+     <button type="button" disabled={!example.recipe} aria-describedby={`${uid}-example-${example.id}`} onclick={()=>insertExample(example)}>{t(`calculate.examples.${example.id}`)}</button>
+     <p id={`${uid}-example-${example.id}`}>
+      {t(`calculate.examples.${example.id}.description`)}
+      {#if !example.recipe}<span>{t(`calculate.examples.${pending?'loading':profileFailed?'profileFailed':example.reason}`)}</span>{/if}
+     </p>
+    </div>
+   {/each}
+  </div>
+  <p class="sr-only" aria-live="polite">{inserted?t('calculate.examples.inserted',{example:t(`calculate.examples.${inserted}`)}):''}</p>
+ </fieldset>
+ <details class="function-help">
+  <summary>{t('calculate.functions.title')}</summary>
+  <dl>
+   {#each Object.entries(calculationFunctionGroups) as [group,functions] (group)}
+    <dt>{t(`calculate.functions.group.${group}`)}</dt>
+    <dd>{#each functions as name (name)}<code data-calculation-function>{name}</code>{/each}</dd>
+   {/each}
+  </dl>
+ </details>
 </fieldset>
 
 <style>
@@ -146,5 +185,11 @@
  .reads{padding-block:6px}.reads legend,p{font-size:var(--font-dense);color:var(--muted)}
  p{margin:0;overflow-wrap:anywhere}.name-suggestion{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
  button{justify-self:start;max-width:100%;white-space:normal;overflow-wrap:anywhere}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
- @media(forced-colors:active){input:focus-visible,select:focus-visible{outline-color:Highlight}}
+ .examples{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr))}
+ .examples div{min-inline-size:0}.examples p{margin-top:4px}.examples p span{display:block}
+ .function-help summary{cursor:pointer;font-size:var(--font-ui);width:fit-content}
+ .function-help summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+ .function-help dl{font-size:var(--font-dense);margin-block:8px}.function-help dt{font-weight:600}
+ .function-help dd{display:flex;flex-wrap:wrap;gap:4px 8px;margin:4px 0 8px}
+ @media(forced-colors:active){input:focus-visible,select:focus-visible,.function-help summary:focus-visible{outline-color:Highlight}}
 </style>

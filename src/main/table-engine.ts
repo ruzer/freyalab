@@ -428,7 +428,17 @@ export class TableEngine {
     if(!value)preview.emptyRows++
     if(item.failed||!value&&item.invalid.length)preview.failures++
     for(const column of item.invalid)preview.invalidByColumn[column]++
-    if(preview.samples.length<8)preview.samples.push({row:index,column:edit.position,before:JSON.stringify(edit.columns.map(({index:column})=>row.cells[column])).slice(0,256),after:value.slice(0,256)})
+    if(preview.samples.length<8){
+     let remaining=256
+     const inputs=edit.columns.map(({index:column})=>{
+      const source=row.cells[column]
+      if(source===undefined)return {column,value:null}
+      const excerpt=source.length>remaining?source.slice(0,remaining)+'…':source
+      remaining=Math.max(0,remaining-source.length)
+      return {column,value:excerpt}
+     })
+     preview.samples.push({row:index,column:edit.position,inputs,after:value.slice(0,256)})
+    }
     cells.push(value);lengths.push(row.cells.length)
     if(index%2048===0)await progress(index+1)
    }

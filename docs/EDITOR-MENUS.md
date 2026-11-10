@@ -146,6 +146,25 @@ La entrega de desarrollo añade **Gráficos** junto a Análisis/Estadísticas. I
 
 **Operaciones → Transformar documento…**, menú contextual del rango o Ctrl/⌘ + Mayús + T desde la tabla. Divide/combina columnas conservando originales, elimina duplicados por claves compuestas, normaliza Unicode/encabezados, mueve filas/columnas y fija el orden de la vista en el documento. Los movimientos usan destinos originales; tras aplicar limpian filtros/orden de vista. Guardar sigue siendo independiente. [Alcance completo, vista previa, cancelación, límites y deshacer](TRANSFORMS.md). Entrega de desarrollo; no función publicada en alpha.1.
 
+### Cómo escribir fórmulas
+
+Abre **Añadir columna calculada…** desde **Filas y columnas** o desde la paleta CSV con **Ctrl/⌘ + K**. Para insertar el resultado junto a una columna concreta, abre el menú de su encabezado con clic derecho o **Mayús + F10** y elige **Calcular columna a la derecha**.
+
+- Usa los nombres que aparecen en **Columnas**. La lista inserta los nombres entre comillas dobles. Escribe `"Precio unitario"` si contiene espacios y duplica cualquier comilla interna, como en `"Precio ""lista"""`. Usa comillas simples para texto literal, como `'Mayorista'`.
+- En **Cómo leer**, elige **Número** y sus decimales para operar con cantidades o **Fecha AAAA-MM-DD** para fechas ISO. Usa **Texto** para nombres y códigos con ceros iniciales. Los ejemplos eligen columnas según su perfil y ajustan la lectura para esa fórmula.
+- Usa `+`, `-`, `*` y `/` para operaciones aritméticas, `=`, `<>`, `<` y `>` para comparar, `||` para unir texto y paréntesis para indicar qué se calcula primero. **Funciones disponibles** agrupa las funciones permitidas.
+
+| Para calcular | Fórmula de ejemplo |
+| --- | --- |
+| Importe | `"Precio unitario" * "Cantidad"` |
+| Porcentaje y redondeo | `round("Parte" / "Total" * 100, 2)` |
+| Año o mes | `year("Fecha")` o `month("Fecha")` |
+| Nombre completo | `"Nombre" \|\| ' ' \|\| "Apellido"` |
+| Categoría | `if("Cantidad" > 10, 'Mayorista', 'Minorista')` |
+| Valor para una celda vacía leída como Número | `coalesce("Importe", 0)` |
+
+La fórmula se evalúa por fila con expresiones de DuckDB. Los agregados, las ventanas y las referencias a otras tablas se rechazan porque requieren datos de fuera de la fila. También se rechazan subconsultas y funciones de acceso a archivos. En **Vista previa**, «(vacío)» representa una celda presente sin texto y «(sin campo)» indica que el registro termina antes de esa columna. **Aplicar** añade los resultados como valores y **Guardar** escribe el CSV.
+
 ## Informes de estadísticas en Markdown
 
 Después de completar **Analizar** o **Explorar columna**, **Abrir informe Markdown** crea una pestaña editable y sin guardar. Reutiliza el guardado, la recuperación local y las exportaciones PDF/HTML de documentos; no guarda, ordena ni transforma el CSV. En estadísticas generales incluye todos los resultados completados; en el explorador incluye la vista actual (perfil, frecuencias, distribución o Pearson). Una consulta incompleta, cancelada o invalidada no permite crear el informe.

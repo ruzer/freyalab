@@ -20,7 +20,8 @@ export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,r
  const cells=indices?.length??rows.length,values:number[]=[],x:number[]=[],y:number[]=[],missingRows:ColumnAnalysis['missingRows']=[]
  // shortcut: hasta 100 000 claves exactas en memoria; usar el motor analítico antes de ampliar la cardinalidad.
  const counts=new Map<string,{count:number;firstRow:number;rowId:string}>()
- let empty=0,missing=0,whitespace=0,leadingZeros=0,minLength=Infinity,maxLength=0,dates=0,invalidDates=0,unsafeIntegers=0,identifierZeros=0
+ let empty=0,missing=0,whitespace=0,leadingZeros=0,minLength=Infinity,maxLength=0,dates=0,invalidDates=0,unsafeIntegers=0,identifierZeros=0,decimalPlaces=0
+ let dateReadCompatible=true
  for(let i=0;i<cells;i++){
   const index=indices?indices[i]:i,row=rows[index],value=row.cells[request.column]??'',trimmed=value.trim(),parsed=numeric(value),n=parsed!==null&&(!Number.isInteger(parsed)||Number.isSafeInteger(parsed))?parsed:null
   const found=counts.get(value);if(found)found.count++;else{if(counts.size>=100000)throw new Error('La columna supera 100 000 valores distintos. Filtra los datos antes de explorarla.');counts.set(value,{count:1,firstRow:index+1,rowId:row.id})}
@@ -29,9 +30,22 @@ export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,r
   if(value.length&&!value.trim())whitespace++
   if(/^[+-]?0\d/.test(trimmed)){leadingZeros++;if(parsed!==null)identifierZeros++}
   if(parsed!==null&&Number.isInteger(parsed)&&!Number.isSafeInteger(parsed))unsafeIntegers++
-  if(/^\d{4}-\d{2}-\d{2}$/.test(trimmed)){if(!trimmed.startsWith('0000-')&&isoDate(trimmed))dates++;else invalidDates++}
+  if(/^\d{4}-\d{2}-\d{2}$/.test(trimmed)){
+   if(!trimmed.startsWith('0000-')&&isoDate(trimmed)){
+    dates++
+    // Los gráficos toleran espacios, pero la lectura explícita de fechas en fórmulas exige ISO exacto.
+    if(value!==trimmed)dateReadCompatible=false
+   }else invalidDates++
+  }
   minLength=Math.min(minLength,value.length);maxLength=Math.max(maxLength,value.length)
-  if(n!==null)values.push(n)
+  if(n!==null){
+   values.push(n)
+   if(!found&&decimalPlaces<12){
+    const point=trimmed.indexOf('.'),exponent=trimmed.search(/[eE]/)
+    const fraction=point<0?0:(exponent<0?trimmed.length:exponent)-point-1
+    decimalPlaces=Math.min(12,Math.max(decimalPlaces,fraction-(exponent<0?0:Number(trimmed.slice(exponent+1)))))
+   }
+  }
   if(request.otherColumn!==undefined&&n!==null){const other=safeNumber(row.cells[request.otherColumn]??'');if(other!==null){x.push(n);y.push(other)}}
   if(i%2048===0){await yieldTurn();ensure()}
  }
@@ -47,7 +61,7 @@ export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,r
  else if(dates===nonEmpty)kind='date'
  else if(values.length||dates||invalidDates)kind='mixed'
  else if(distinctNonEmpty<=20&&distinctNonEmpty<nonEmpty)kind='category'
- const profile={kind,dates,invalidDates,unsafeIntegers,identifierZeros,headerHint,distinctNonEmpty}
+ const profile={kind,dates,invalidDates,unsafeIntegers,identifierZeros,headerHint,distinctNonEmpty,...kind==='number'?{decimalPlaces}:kind==='date'?{dateReadCompatible}:{}}
  const warnings:string[]=[],histogram:ColumnAnalysis['histogram']=[]
  const statistics=descriptive(values)
  if(values.length){

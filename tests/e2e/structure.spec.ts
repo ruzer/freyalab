@@ -4,7 +4,9 @@ import {mkdtemp,writeFile,readFile,mkdir,rm} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
 import {menuItem} from './panel'
+import {runApplicationMenu} from './application-menu'
 import {readCalculationError,type CalculateColumnEdit} from '../../src/shared/calculated-column'
+import {calculationFunctionGroups} from '../../src/shared/calculation-help'
 import {t,type Language} from '../../src/shared/i18n'
 let app:ElectronApplication,page:Page,folder:string
 const original='ID,Partes,Nota\r\n001,a;0007,Café\r\n002,b;;,é\r\n001,a;0007,Otra\r\n'
@@ -86,6 +88,7 @@ test('H15-1 interfaz: vista previa de filas filtradas, cambio pendiente, guardar
  await panel.getByRole('button',{name:'Vista previa',exact:true}).press('Enter')
  await expect(panel.getByRole('status')).toContainText('Vista previa lista')
  await expect(panel.getByRole('table')).toContainText('30.30');await expect(panel.getByRole('table')).toContainText('0.40')
+ await expect(panel.getByRole('table')).toContainText('Precio unitario: 10.10 · Cantidad: 3')
  await expect(panel.getByRole('button',{name:'Aplicar',exact:true})).toBeInViewport()
  await page.screenshot({path:test.info().outputPath('h15-1-claro-1440x900.png')})
  await panel.getByRole('button',{name:'Aplicar',exact:true}).press('Enter')
@@ -112,7 +115,7 @@ for(const locale of ['en','en-XA'] as const)test(`H15-1 interfaz: traducción, f
  await panel.getByRole('button',{name:label('preview'),exact:true}).press('Enter')
  await expect(panel.getByRole('alert')).toContainText(t('calculate.error.textType',{column:'Región'},locale))
  await expect(panel.getByText(label('detail'),{exact:true})).toBeVisible()
- await expect(panel.locator('details')).not.toHaveAttribute('open')
+ await expect(panel.getByRole('alert').locator('details')).not.toHaveAttribute('open')
  await formula.fill('')
  await formula.focus();await page.keyboard.insertText('"Región" || \' con té\'')
  await panel.getByRole('button',{name:label('preview'),exact:true}).press('Enter')
@@ -145,6 +148,130 @@ test('H15-1 interfaz: explica la fila corta y desactiva el cálculo en una muest
  const action=page.getByRole('button',{name:'Añadir columna calculada…',exact:true})
  await expect(action).toBeDisabled()
  await expect(action).toHaveAccessibleDescription(/solo lectura/)
+})
+
+test('H15-2: los ocho ejemplos eligen columnas, ajustan la lectura y calculan',async()=>{
+ const source='Precio unitario,Cantidad,Fecha,Nombre,Apellido\n10.10,2,2026-02-04,Ana,López\n0.10,4,2025-11-09,Luz,Pérez\n'
+ const {path}=await open(source)
+ await page.getByLabel('Tema',{exact:true}).selectOption('light')
+ const panel=await calculationDialog()
+ for(const [label,expected] of [
+  ['Multiplicar',/^20\.20$/],['Porcentaje',/^505(?:\.0+)?$/],['Redondear',/^10\.10$/],['Año',/^2026$/],['Mes',/^2$/],
+  ['Juntar textos',/^Ana López$/],['Condición',/^Mayorista$/],['Valor si está vacío',/^10\.10$/],
+ ] as const){
+  const example=panel.getByRole('button',{name:label,exact:true})
+  await expect(example).toBeEnabled({timeout:5000});await example.focus();await page.keyboard.press('Enter')
+  await expect(panel.locator('[aria-live="polite"]').filter({hasText:label})).toBeAttached()
+  await panel.getByRole('button',{name:'Vista previa',exact:true}).press('Enter')
+  await expect(panel.getByRole('status')).toContainText('Vista previa lista')
+  await expect(panel.getByRole('row').nth(1).getByRole('cell').last()).toHaveText(expected)
+ }
+ const help=panel.getByText('Funciones disponibles',{exact:true})
+ await help.focus();await page.keyboard.press('Enter')
+ await expect(panel.getByText('round',{exact:true})).toBeVisible()
+ expect((await panel.locator('[data-calculation-function]').allTextContents()).sort()).toEqual(Object.values(calculationFunctionGroups).flat().sort())
+ await page.screenshot({path:test.info().outputPath('h15-2-claro-1440x900.png')})
+ expect(await readFile(path,'utf8')).toBe(source)
+})
+
+test('H15-2: dejar Resumen cancela su perfilado y permite preparar la fórmula',async()=>{
+ const source='Precio,Cantidad,Fecha,Nombre,Apellido\n10.10,2,2026-02-04,Ana,López\n'
+ const {path}=await open(source)
+ const views=page.locator('[data-csv-view]')
+ type Gate={chartRequest?:string;cancelled:boolean;release?:()=>void;restore:()=>void}
+ await app.evaluate(({ipcMain})=>{
+  type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
+  const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers
+  const original=handlers.get('freya');if(!original)throw new Error('No existe el manejador real de freya')
+  const state=globalThis as typeof globalThis&{__calculationProfileGate?:Gate}
+  const gate:Gate={cancelled:false,restore:()=>handlers.set('freya',original)}
+  state.__calculationProfileGate=gate
+  // Retiene la primera respuesta real de Gráficos hasta cambiar de vista. El diálogo usa bins:1.
+  handlers.set('freya',async(event,operation,...args)=>{
+   const request=args[1] as {bins:number;requestId:string}|undefined
+   if(operation==='analyzeColumn'&&request?.bins===10&&!gate.chartRequest){
+    const result=await original(event,operation,...args)
+    gate.chartRequest=request.requestId
+    await new Promise<void>(release=>{gate.release=release})
+    return result
+   }
+   if(operation==='cancelAnalysis'&&args[1]===gate.chartRequest)gate.cancelled=true
+   return original(event,operation,...args)
+  })
+ })
+ const gateState=()=>app.evaluate(()=>{
+  const gate=(globalThis as typeof globalThis&{__calculationProfileGate?:Gate}).__calculationProfileGate
+  return {held:!!gate?.chartRequest,cancelled:!!gate?.cancelled}
+ })
+ try{
+  await views.getByRole('button',{name:'Resumen y gráfico',exact:true}).click()
+  await expect.poll(gateState).toEqual({held:true,cancelled:false})
+  await views.getByRole('button',{name:'Tabla',exact:true}).click()
+  await expect.poll(gateState).toEqual({held:true,cancelled:true})
+  const panel=await calculationDialog()
+  await app.evaluate(()=>{(globalThis as typeof globalThis&{__calculationProfileGate?:Gate}).__calculationProfileGate?.release?.()})
+  await panel.getByRole('button',{name:'Multiplicar',exact:true}).click()
+  await panel.getByRole('button',{name:'Vista previa',exact:true}).press('Enter')
+  await expect(panel.getByRole('status')).toContainText('Vista previa lista')
+  await expect(panel.getByRole('table')).toContainText('20.20')
+  await page.keyboard.press('Escape')
+  await views.getByRole('button',{name:'Resumen y gráfico',exact:true}).click()
+  await expect(page.locator('.pivot-result')).toBeVisible()
+  expect(await readFile(path,'utf8')).toBe(source)
+ }finally{
+  await app.evaluate(()=>{
+   const state=globalThis as typeof globalThis&{__calculationProfileGate?:Gate}
+   state.__calculationProfileGate?.release?.();state.__calculationProfileGate?.restore();delete state.__calculationProfileGate
+  }).catch(()=>{})
+ }
+})
+
+test('H15-2: el encabezado inserta a su derecha y distingue vacío de campo ausente',async()=>{
+ const source='ID,Precio,Nota\n1,7,\n2\n', {doc,path}=await open(source)
+ await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toBeVisible()
+ const column=page.getByLabel('Seleccionar columna ID',{exact:true})
+ await column.focus();await page.keyboard.press('Shift+F10')
+ const action=page.getByRole('menuitem',{name:'Calcular columna a la derecha',exact:true})
+ await expect(action).toBeVisible({timeout:3000});await action.focus();await page.keyboard.press('Enter')
+ const panel=page.getByRole('dialog',{name:'Añadir columna calculada…',exact:true})
+ await panel.getByLabel('Fórmula',{exact:true}).fill('"Nota"')
+ const noDate=panel.getByRole('button',{name:'Año',exact:true})
+ await expect(noDate).toBeDisabled();await expect(noDate).toHaveAccessibleDescription(/no hay.*fecha/i)
+ await panel.getByRole('button',{name:'Vista previa',exact:true}).press('Enter')
+ await expect(panel.getByRole('status')).toContainText('Vista previa lista')
+ await expect(panel.getByRole('table')).toContainText('Nota: (vacío)')
+ await expect(panel.getByRole('table')).toContainText('Nota: (sin campo)')
+ await panel.getByRole('button',{name:'Aplicar',exact:true}).press('Enter')
+ await expect(panel).toHaveCount(0)
+ await expect(page.getByRole('status').filter({hasText:'Columna añadida'})).toBeVisible()
+ await expect(column).toBeFocused()
+ const updated=await page.evaluate(id=>window.freya.documents().then(docs=>docs.find(item=>item.id===id)),doc.id)
+ expect(updated?.headers).toEqual(['ID','Calculada','Precio','Nota'])
+ expect(await readFile(path,'utf8')).toBe(source)
+})
+
+test('H15-2: paleta CSV y ayuda por teclado con colores forzados [en-XA]',async()=>{
+ await open('Importe,Cantidad\n10.10,2\n')
+ await page.getByLabel('Tema',{exact:true}).selectOption('dark')
+ const origin=page.getByRole('gridcell',{name:'Fila 1, Importe',exact:true})
+ expect(await app.evaluate(({Menu})=>Menu.getApplicationMenu()?.getMenuItemById('edit.commandPalette')?.accelerator)).toBe('CommandOrControl+K')
+ await origin.focus();await runApplicationMenu(app,'edit.commandPalette')
+ const palette=page.getByRole('dialog',{name:'Comandos CSV',exact:true})
+ await expect(palette).toBeVisible({timeout:3000})
+ const search=palette.getByLabel('Buscar comando CSV',{exact:true})
+ await search.fill('cálcülátëd')
+ const command=palette.getByRole('button').filter({has:page.getByText(t('calculate.action',{},'en-XA'),{exact:true})})
+ await expect(command).toBeEnabled({timeout:3000});await search.press('Enter')
+ const panel=page.getByRole('dialog',{name:t('calculate.action',{},'en-XA'),exact:true})
+ const help=panel.getByText(t('calculate.functions.title',{},'en-XA'),{exact:true})
+ await help.focus();await page.keyboard.press('Enter')
+ await expect(panel.getByText('round',{exact:true})).toBeVisible()
+ await page.screenshot({path:test.info().outputPath('h15-2-oscuro-en-XA-1440x900.png')})
+ await page.emulateMedia({forcedColors:'active',reducedMotion:'reduce'})
+ await expect(help).toBeFocused();await expect(help).toBeInViewport()
+ expect(await page.evaluate(()=>matchMedia('(forced-colors: active)').matches)).toBe(true)
+ await page.screenshot({path:test.info().outputPath('h15-2-colores-forzados-en-XA-1440x900.png')})
+ await page.keyboard.press('Escape');await expect(panel).toHaveCount(0);await expect(origin).toBeFocused()
 })
 
 test('transformaciones visuales: documento completo, originales, Unicode, encabezados, duplicados y deshacer',async()=>{
