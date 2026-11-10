@@ -69,7 +69,7 @@ for(const lang of ['en','en-XA'])test(`H13-2: UTF-16 BE muestra su firma, guarda
  await button.press('Enter')
  await panel().getByRole('combobox',{name:label('choice'),exact:true}).selectOption('latin1')
  await panel().getByRole('button',{name:label('save'),exact:true}).press('Enter')
- await expect(panel().getByRole('alert')).toBeVisible()
+ await expect(panel().getByRole('alert')).toHaveText(label('error.bomSave'))
  expect(await readFile(path)).toEqual(original)
  await page.keyboard.press('Escape')
  await expect(button).toBeFocused()

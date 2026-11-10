@@ -19,7 +19,7 @@
   if(busy||locked||(mode==='reopen'?!doc.path:doc.readonly))return
   busy=true;message=''
   try{if(await (mode==='reopen'?onreopen:onsave)(choice))dialog.close()}
-  catch(error){message=(error instanceof Error?error.message:String(error)).replace(/^Error invoking remote method 'freya': Error: /,'')}
+  catch(error){message=error instanceof Error?error.message:String(error)}
   finally{busy=false}
  }
 </script>
