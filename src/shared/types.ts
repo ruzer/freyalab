@@ -9,12 +9,13 @@ import type {CalculateColumnEdit,CalculatedColumnPreview} from './calculated-col
 export type {CalculatedColumnPreview} from './calculated-column'
 export type Kind = 'markdown' | 'text' | 'mermaid' | 'csv'
 export type Encoding = 'utf8' | 'utf16le' | 'win1252'
+export type TextEncoding = Encoding | 'utf16be' | 'latin1'
 export type CsvView='table'|'text'
 export type CsvViewDecision='save'|'discard'
 export interface CsvOpenError {path:string;name:string;message:string;reportedLine?:number;byteLength:number;textAllowed:boolean}
 export const CSV_TEXT_LIMIT=10*1024*1024
 export function isTableDocument(document:Pick<DocumentInfo,'kind'|'csvView'>){return document.kind==='csv'&&document.csvView!=='text'}
-export interface DocumentInfo { id:string; name:string; path:string|null; kind:Kind; csvView?:CsvView;byteLength?:number;text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:Encoding; delimiter:string; headers?:string[]; hasHeader?:boolean; rowCount?:number; large?:boolean; extract?:ExtractOrigin }
+export interface DocumentInfo { id:string; name:string; path:string|null; kind:Kind; csvView?:CsvView;byteLength?:number;text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:TextEncoding; bom?:boolean; encodingPending?:boolean; delimiter:string; headers?:string[]; hasHeader?:boolean; rowCount?:number; large?:boolean; extract?:ExtractOrigin }
 export type AssetChange={from:number;to:number;insert:string}
 export type SaveOutcome=DocumentInfo&{assets?:{copied:number;warnings:string[];changes:AssetChange[]}}
 export interface TreeEntry { name:string; path:string; directory:boolean }
@@ -76,6 +77,7 @@ export interface FreyaAPI {
  open():Promise<DocumentInfo[]>; openPaths(paths:string[]):Promise<DocumentInfo[]>; newDocument(kind:Kind):Promise<DocumentInfo>; folder():Promise<string|null>; tree(path:string):Promise<TreeEntry[]>; findFiles(root:string,query:string):Promise<{entries:TreeEntry[];limited:boolean}>; cancelFileSearch():Promise<void>; listTags(root:string):Promise<{tags:{tag:string;count:number}[];limited:boolean}>; cancelTagList():Promise<void>;
  csvOpen(path:string,view:CsvView):Promise<DocumentInfo>;csvView(id:string,view:CsvView,decision?:CsvViewDecision):Promise<DocumentInfo>;csvViewInfo(path:string):Promise<{byteLength:number;textAllowed:boolean;id?:string}>;
  update(id:string,text:string):Promise<DocumentInfo>; save(id:string,as?:boolean):Promise<SaveOutcome|null>; locateImage(id:string,source:string):Promise<SaveOutcome|null>; close(id:string):Promise<boolean>; reload(id:string):Promise<DocumentInfo>; documents():Promise<DocumentInfo[]>;
+ reopenTextEncoding(id:string,encoding:TextEncoding):Promise<DocumentInfo>; saveTextEncoding(id:string,encoding:TextEncoding):Promise<SaveOutcome|null>;
  tableCopy(id:string,options:TableExport,format:'tsv'|'markdown'):Promise<void>; tablePaste(id:string,range:TableRange):Promise<string>;
  transformPreview(id:string,edit:TableTransformEdit):Promise<TableTransformPreview>;
  transformPreview(id:string,edit:CalculateColumnEdit):Promise<CalculatedColumnPreview>;

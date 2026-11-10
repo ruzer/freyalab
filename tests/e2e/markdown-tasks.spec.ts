@@ -35,12 +35,14 @@ test('C1/C2: una casilla modifica solo el marcador, marca cambios y se deshace e
 
 test('C1/C3: CRLF, YAML, citas, anidación y [X] conservan literalmente el resto',async()=>{
  const original='\ufeff---\r\ntitle: Tareas\r\n---\r\n\r\n# Lista\r\n\r\n* [ ] Uno\r\n  + [X] Dos\r\n\r\n> 1. [ ] Tres\r\n\r\n```markdown\r\n- [ ] No interactiva\r\n```\r\n',{path}=await open(original)
+ const signedSource=async()=>{const doc=await info();return (doc?.bom?'\ufeff':'')+(doc?.text??'')}
  await expect(boxes()).toHaveCount(3)
  expect(await article().locator('li.task-list-item').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('data-line')))).toEqual(['7','8','10'])
- await boxes().nth(1).click();const first=original.replace('[X]','[ ]');await expect.poll(source).toBe(first);await settled()
- await boxes().nth(2).click();await expect.poll(source).toBe(first.replace('1. [ ]','1. [x]'));expect(await readFile(path,'utf8')).toBe(original)
- await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect.poll(source).toBe(first)
- await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect.poll(source).toBe(original)
+ await boxes().nth(1).click();const first=original.replace('[X]','[ ]');await expect.poll(signedSource).toBe(first);await settled()
+ await boxes().nth(2).click();await expect.poll(signedSource).toBe(first.replace('1. [ ]','1. [x]'));expect(await readFile(path)).toEqual(Buffer.from(original))
+ await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect.poll(signedSource).toBe(first)
+ await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect.poll(signedSource).toBe(original)
+ await page.evaluate(id=>window.freya.save(id),id);expect(await readFile(path)).toEqual(Buffer.from(original))
 })
 
 test('C1: mezcla LF/CRLF y un plegable compacto con marcador literal previo no eligen otra casilla',async()=>{

@@ -30,6 +30,7 @@ import { operateDocument } from './extract'
 import { operationRequest } from './operation-schema'
 import {viewRequest} from './large-view-schema'
 import {isTableDocument} from '../shared/types'
+import {textEncodings} from '../shared/csv-text'
 import type { Kind,TableEdit,TableOptions,TableExport,TableQuery,ExportRequest,TableRange,TableRangeEdit,TableTransformEdit } from '../shared/types'
 const here=dirname(fileURLToPath(import.meta.url))
 if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FREYALAB_USER_DATA))
@@ -42,6 +43,7 @@ const closePreparation=new WindowClosePreparation(),applicationClose=new Applica
 const waiting:string[]=[]
 const id=z.uuid(),path=z.string().min(1).max(32768), text=z.string().max(20*1024*1024), rows=z.array(z.string().max(100)).max(2000000)
 const csvView=z.enum(['table','text'])
+const textEncoding=z.enum(textEncodings)
 const range=z.object({top:z.number().int().nonnegative(),bottom:z.number().int().nonnegative(),left:col,right:col,query,revision:z.number().int().nonnegative()})
 const rangeEdit=z.object({type:z.literal('range'),requestId:z.uuid().optional(),range,operation:z.enum(['fill','clear','trim','upper','lower','replace','paste']),value:z.string().max(1024*1024).optional(),find:z.string().max(10000).optional(),values:z.array(z.array(z.string().max(1024*1024)).max(100000)).max(100000).optional()})
 const structureEdit=z.object({type:z.literal('structure'),operation:z.enum(['split','combine','deduplicate','normalize','headers','moveRows','moveColumns','commitOrder']),columns:z.array(col).max(200),revision:z.number().int().nonnegative(),requestId:z.uuid(),separator:z.string().max(64).optional(),name:z.string().max(10000).optional(),rowIds:rows.optional(),range:range.optional(),destination:z.number().int().nonnegative().optional(),query:query.optional()})
@@ -142,6 +144,8 @@ async function handle(operation:string,args:unknown[]){
  case'save':return docs.save(id.parse(a),z.boolean().optional().parse(b))
  case'close':{const key=id.parse(a),closed=await docs.close(key);if(closed)analytics.forget(key);return closed}
  case'reload':return docs.reload(id.parse(a))
+ case'reopenTextEncoding':{const[key,encoding]=z.tuple([id,textEncoding]).parse(args);return docs.reopenTextEncoding(key,encoding)}
+ case'saveTextEncoding':{const[key,encoding]=z.tuple([id,textEncoding]).parse(args);return docs.saveTextEncoding(key,encoding)}
  case'copyTable':{docs.requireTable(id.parse(a));const options=tableExport.parse(b),format=z.enum(['tsv','markdown']).parse(c),output=await docs.table.call<string>(format==='markdown'?'markdown':'clipboard',a,options);if(Buffer.byteLength(output,'utf8')>8*1024*1024)throw new Error('La copia supera 8 MiB. Reduce la selección o expórtala.');await clipboard.writeText(output);return}
  case'pasteTable':{docs.requireTable(id.parse(a));const selected=range.parse(b);await docs.table.call('rangePreview',a,{type:'range',range:selected,operation:'clear'});const content=await clipboard.readText();if(Buffer.byteLength(content,'utf8')>8*1024*1024)throw new Error('El portapapeles supera 8 MiB. Pega un bloque menor.');return content}
  case'transformPreview':{const key=id.parse(a);if(isCalculation(b))return analytics.calculatePreview(key,calculation.parse(b));docs.requireTable(key);return docs.table.call('transformPreview',key,structureEdit.parse(b) as TableTransformEdit)}
@@ -203,7 +207,7 @@ app.whenReady().then(async()=>{
  void menuPandoc.refresh().catch(error=>window?.webContents.send('freya:event',{type:'error',message:error.message}))
  presets=new ChartPresets(join(app.getPath('userData'),'chart-presets.json'))
  analytics=new SqlService(docs,progress=>window?.webContents.send('freya:event',{type:'analysis',progress}))
- ipcMain.handle('freya',async(event,operation,...args)=>{assertSender(event);try{const result=await handle(z.string().max(100).parse(operation),args);if(['open','openPaths','save','recover','recents:clear'].includes(operation)){await refreshMenuRecents();if(operation==='recents:clear')window?.webContents.send('freya:event',{type:'recents'})}else if(['new','close','reload'].includes(operation))refreshApplicationMenu();return result}catch(e){throw new Error(e instanceof z.ZodError?t('error.invalidOperation'):(e as Error).message)}})
+ ipcMain.handle('freya',async(event,operation,...args)=>{assertSender(event);try{const result=await handle(z.string().max(100).parse(operation),args);if(['open','openPaths','save','saveTextEncoding','recover','recents:clear'].includes(operation)){await refreshMenuRecents();if(operation==='recents:clear')window?.webContents.send('freya:event',{type:'recents'})}else if(['new','close','reload','reopenTextEncoding'].includes(operation))refreshApplicationMenu();return result}catch(e){throw new Error(e instanceof z.ZodError?t('error.invalidOperation'):(e as Error).message)}})
  ipcMain.on('freya:drop',(event,paths)=>{assertSender(event);for(const p of z.array(path).max(100).parse(paths))docs.grants.add(resolve(p))})
  ipcMain.on('freya:paste-plain',event=>{
   try{assertSender(event);if(!event.sender.isDestroyed())event.sender.pasteAndMatchStyle()}

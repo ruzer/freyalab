@@ -18,10 +18,11 @@
  import {assetTransaction} from './lib/asset-changes'
  import {createMarkdownSession,taskTransaction,type TaskReference,type MarkdownSession} from './lib/markdown-tasks'
  import appIcon from '../../build/icon.png'
- import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type CsvViewDecision,type CsvOpenError as CsvOpenIssue,type DocumentInfo,type Kind,type TreeEntry,type RecoveryEntry,type ExportRequest,type AssetChange} from '../shared/types'
+ import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type CsvViewDecision,type CsvOpenError as CsvOpenIssue,type DocumentInfo,type Kind,type TreeEntry,type RecoveryEntry,type ExportRequest,type AssetChange,type TextEncoding} from '../shared/types'
  import Editor from './components/Editor.svelte'
  import MarkdownToolbar from './components/MarkdownToolbar.svelte'
  import TextStats from './components/TextStats.svelte'
+ import TextEncodingControl from './components/TextEncodingControl.svelte'
  import type {TextSelection} from './lib/text-stats'
  import {lineFormatState} from './lib/markdown-commands'
  import Preview from './components/Preview.svelte'
@@ -119,6 +120,7 @@
  const editorHeading=$derived(headingAtPosition(editorPositions,editorLine,0,Infinity))
  let markdownState=$state(lineFormatState('',0)),textSelection=$state<TextSelection|null>(null)
  let editor=$state<Editor>(),preview=$state<Preview>(),diagram=$state<Diagram>(),csv=$state<CsvTable>()
+ let encodingControl=$state<TextEncodingControl>(),reopenedText=$state(0)
  let diagramCandidates=$state<{id:string;source:string;blocks:DiagramBlock[];complete:boolean}|undefined>()
  let diagnostics=$state<{id:string;value:DiagramDiagnostics}|undefined>()
  function receiveBlocks(id:string){return(blocks:DiagramBlock[],source:string,complete:boolean)=>{if(id===activeId&&source===active?.text)diagramCandidates={id,source,blocks,complete}}}
@@ -282,19 +284,37 @@
  function updateText(id:string,text:string){documents=documents.map(d=>d.id===id?{...d,text,dirty:true}:d);const previous=pending.get(id)??Promise.resolve();const task=previous.catch(()=>{}).then(()=>window.freya.update(id,text)).then(doc=>{const current=documents.find(d=>d.id===id);if(current?.text===text)merge(doc)}).catch(e=>{error(String(e));throw e});pending.set(id,task);void task.then(()=>{if(pending.get(id)===task)pending.delete(id)},()=>{})}
  async function openStatisticsReport(text:string){await action(async()=>{await settingsReady;if(new TextEncoder().encode(text).byteLength>10*1024*1024)throw new Error('El informe supera el límite de edición de 10 MiB. Reduce el alcance del análisis.');const doc=await window.freya.newDocument('markdown');merge(doc,true);updateText(doc.id,text);await pending.get(doc.id)})}
  // Las rutas del diálogo y del documento pueden usar alias distintos del sistema.
- async function save(as=false){
+ async function save(as=false,encoding?:TextEncoding){
   if(!active||editingLocked||saving[active.id])return
   const id=active.id,markdown=active.kind==='markdown'
+  if(encoding&&(compositionActive||editor?.isComposing()))throw new Error(t('textEncoding.finishWriting'))
   if(markdown&&editor?.isComposing()){notify('Termina de escribir antes de guardar el documento.');return}
   saving[id]={primary:savePrimary}
   if(markdown)assetBusy[id]='Guardando…'
-  try{await action(async()=>{
-   await prepareDocumentAction(id);const snapshot=documents.find(doc=>doc.id===id)?.text??'',saved=await window.freya.save(id,as)
+  const operation=async()=>{
+   await prepareDocumentAction(id);const snapshot=documents.find(doc=>doc.id===id)?.text??'',saved=encoding?await window.freya.saveTextEncoding(id,encoding):await window.freya.save(id,as)
    if(saved){const {assets,...doc}=saved;merge(doc,false,assets?{source:snapshot,changes:assets.changes,undoable:false}:undefined);external=external.filter(value=>value!==id);if(doc.kind==='markdown')tagsRefresh++
     if(assets){if(assets.warnings.length)assetWarnings[id]=assets.warnings;else delete assetWarnings[id]}
-    notify(['Archivo guardado',...(assets?.copied?[`${assets.copied===1?'Se copió':'Se copiaron'} ${assets.copied} ${assets.copied===1?'imagen':'imágenes'}`]:[]),...(assets?.warnings.length?[assets.warnings.length===1?'1 imagen no se copió':`${assets.warnings.length} imágenes no se copiaron`]:[])].join(' · '))
+    notify([encoding?t('textEncoding.saved'):'Archivo guardado',...(assets?.copied?[`${assets.copied===1?'Se copió':'Se copiaron'} ${assets.copied} ${assets.copied===1?'imagen':'imágenes'}`]:[]),...(assets?.warnings.length?[assets.warnings.length===1?'1 imagen no se copió':`${assets.warnings.length} imágenes no se copiaron`]:[])].join(' · '))
    }
-  })}finally{delete assetBusy[id];delete saving[id]}
+   return !!saved
+  }
+  try{return encoding?await operation():await action(operation)}finally{delete assetBusy[id];delete saving[id]}
+ }
+ async function reopenTextEncoding(encoding:TextEncoding){
+  const doc=active
+  if(!doc?.path||doc.kind==='csv'||applicationClosing||assetBusy[doc.id]||saving[doc.id])return false
+  if(compositionActive||editor?.isComposing())throw new Error(t('textEncoding.finishWriting'))
+  const {id}=doc
+  assetBusy[id]=t('textEncoding.busy')
+  try{
+   await prepareDocumentAction(id)
+   const reopened=await window.freya.reopenTextEncoding(id,encoding)
+   if(reopened.dirty)return false
+   textSessions.delete(id)
+   merge(reopened);if(id===activeId)reopenedText++
+   external=external.filter(value=>value!==id);notify(t('textEncoding.reopened'));return true
+  }finally{delete assetBusy[id]}
  }
  async function locateImage(id:string,snapshot:string,source:string){
   const doc=documents.find(doc=>doc.id===id)
@@ -485,14 +505,14 @@
     {#if external.includes(active.id)}<div class="warning-banner external-banner"><span>Este archivo cambió fuera de FreyaLab.</span><button onclick={()=>reload(active!.id)}>Recargar</button><button onclick={()=>save(true)}>Guardar copia</button><button onclick={()=>external=external.filter(value=>value!==active!.id)}>Conservar mi edición</button></div>{/if}
     {#if assetWarnings[active.id]}<AssetWarnings warnings={assetWarnings[active.id]} ondismiss={()=>{delete assetWarnings[active!.id];if(mode==='preview')preview?.focus();else editor?.focus()}}/>{/if}
     {#snippet csvViewControls()}<div class="mode-switch" role="group" data-csv-view aria-label={t('csvText.viewGroup')}><button class:active={!csvText&&!csvSummary} aria-pressed={!csvText&&!csvSummary} aria-label={t('csvText.table')} title={t('csvText.table')} onclick={()=>{csvSummaryId=null;summaryAfterSwitch=null;if(csvText)void chooseCsvView('table')}}><Icon name="table" size={14}/> <span>{t('csvText.table')}</span></button><button class:active={csvSummary} aria-pressed={csvSummary} aria-label={t('charts.ui.summaryTab')} title={t('charts.ui.summaryTab')} onclick={()=>void chooseCsvSummary()}><Icon name="chart-column" size={14}/> <span>{t('charts.ui.summaryTab')}</span></button><button class:active={csvText} aria-pressed={csvText} aria-label={t('csvText.text')} disabled={(active?.byteLength??0)>CSV_TEXT_LIMIT} {...controlHint((active?.byteLength??0)>CSV_TEXT_LIMIT?'textLimit':null)} title={(active?.byteLength??0)>CSV_TEXT_LIMIT?t('csvText.limit'):t('csvText.text')} onclick={()=>chooseCsvView('text')}><Icon name="file-text" size={14}/> <span>{t('csvText.text')}</span></button></div>{/snippet}
-    {#key `${active.id}:${active.csvView??'table'}`}
+    {#key `${active.id}:${active.csvView??'table'}:${active.kind==='csv'?0:reopenedText}`}
      {#if active.kind==='csv'}
       {#if csvText}<div class="document-tools csv-text-tools">{@render csvViewControls()}<span class="spacer"></span><details class="insert-menu csv-text-options" bind:this={csvOptions}><summary>{t('csvText.options')}</summary><div class="dropdown"><button class:btn-tint={csvWrap} aria-pressed={csvWrap} onclick={()=>textOption('wrap')}>{t('csvText.wrap')}</button><button class:btn-tint={csvSpaces} aria-pressed={csvSpaces} onclick={()=>textOption('spaces')}>{t('csvText.spaces')}</button><button onclick={()=>textOption('line')} title={t('csvText.goto.title')}>{t('csvText.goto')}</button></div></details><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> {t('csvText.search')}</button></div>{/if}
       {#if csvText}{#if active.warning}<div class="warning-banner" style="color:var(--text)">{active.warning}</div>{/if}<div class="document-panes"><div class="editor-pane" style:width="100%"><div class="pane-caption">{t('csvText.caption')}{#if active.readonly}<span>{t('csvText.readonly')}</span>{/if}</div><Editor bind:this={editor} editing={preferencesState.values.editor} text={active.text??''} readonly={editingLocked} kind="csv-text" label={t('csvText.editorLabel')} wrapLines={csvWrap} showWhitespace={csvSpaces} onchange={text=>updateText(active!.id,text)}/></div></div>
       {:else}<CsvTable bind:this={csv} doc={active} externalChange={external.includes(active.id)} summary={csvSummary} onsummary={()=>void chooseCsvSummary()} ontable={()=>csvSummaryId=null} {commandTitle} viewControls={csvViewControls} onchange={doc=>merge(doc)} onerror={error} onstatus={value=>status=value} onreport={openStatisticsReport}/>{/if}
      {:else}
       <div class="document-tools" class:markdown-tools={active.kind==='markdown'}><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div>{#if active.kind==='markdown'&&mode!=='preview'}<MarkdownToolbar readonly={editingLocked} formatState={markdownState} onformat={(action,language)=>editor?.format(action,language)} onsearch={searchText} onindex={toggleIndex} {indexVisible}/>{:else}<span class="spacer"></span><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> Buscar</button>{#if active.kind==='markdown'}<button class="text-button" class:active={indexVisible} aria-pressed={indexVisible} onclick={toggleIndex}><Icon name="table-of-contents" size={14}/> Índice</button>{/if}{/if}</div>
-      {#if active.warning}<div class="warning-banner">{active.warning}</div>{/if}
+      {#if active.warning}<div class="warning-banner"><span role={active.encodingPending?'status':undefined}>{active.warning}</span>{#if active.encodingPending} <button type="button" onclick={()=>encodingControl?.open()}>{t('textEncoding.confirm')}</button>{/if}</div>{/if}
       <div class="document-panes">
        {#if active.kind!=='markdown'||mode!=='preview'}<div class:hidden={mode==='preview'&&active.kind!=='text'} class="editor-pane" style:width={mode==='split'&&active.kind!=='text'?`${split}%`:'100%'}><div class="pane-caption">{active.kind==='mermaid'?'DEFINICIÓN MERMAID':active.kind==='text'?'TEXTO':'MARKDOWN'}{#if assetBusy[active.id]}<span role="status">{assetBusy[active.id]}</span>{:else if active.readonly}<span>Solo lectura</span>{/if}</div><Editor bind:this={editor} editing={preferencesState.values.editor} session={active.kind==='markdown'?textSession(active):undefined} ontransactions={active.kind==='markdown'?receiveText(active.id):undefined} text={active.text??''} readonly={editingLocked} kind={active.kind} onformatstate={state=>markdownState=state} onselection={selection=>textSelection=selection} onchange={text=>updateText(active!.id,text)} onscroll={ratio=>{if(mode==='split')preview?.scrollRatio(ratio)}} outlineEnabled={active.kind==='markdown'&&mode==='edit'&&indexVisible} onoutline={receiveEditorHeadings(active.id)} oncurrentline={receiveEditorLine(active.id)} onblocks={active.kind==='markdown'?receiveBlocks(active.id):undefined}/></div>{/if}
        {#if active.kind!=='text'}<button class:hidden={mode!=='split'} class="resize-handle split-handle" aria-valuenow={split} aria-valuemin="20" aria-valuemax="80" role="slider" aria-label="Ancho del editor" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSplit} onkeydown={e=>{if(e.key==='ArrowRight')split=Math.min(80,split+2);if(e.key==='ArrowLeft')split=Math.max(20,split-2);if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();remember({division:split})}}}></button><div class:hidden={mode==='edit'} class="preview-pane"><div class="pane-caption">VISTA PREVIA <span>{active.kind==='mermaid'?'SVG':'Renderizado local'}</span></div>{#if active.kind==='mermaid'}<Diagram bind:this={diagram} text={active.text??''} {dark} onerror={error} ondiagnostics={receiveDiagnostics(active.id)}/>{:else}<Preview bind:this={preview} text={active.text??''} id={active.id} path={active.path} renderEnabled={mode!=='edit'||indexVisible} candidates={diagramCandidates?.id===active.id?diagramCandidates:undefined} ondiagnostics={receiveDiagnostics(active.id)} {dark} readonly={editingLocked} ontask={toggleTask} onheadings={receiveHeadings(active.id)} oncurrent={receiveCurrent(active.id)} onfiltertag={filterByTag} onlocateimage={locateImage} onerror={error}/>{/if}</div>{/if}
@@ -504,7 +524,7 @@
    {/if}
   </main>
  </div>
- <footer class="statusbar"><span class="status-dot"></span><span class="truncate">{status}</span>{#if opening}<span role="status">{opening.phase}</span><button onclick={cancelOpening}>Cancelar apertura</button>{/if}<span class="spacer"></span><div id="document-status"></div>{#if active&&(active.kind==='markdown'||active.kind==='text')}<TextStats id={active.id} name={active.name} text={active.text??''} markdown={active.kind==='markdown'} partial={active.readonly} selection={textSelection}/>{/if}{#if active}{#if csvText&&csvTextInfo}<span role="status" aria-label={t('csvText.format')} aria-live="polite">{t(`csvText.encoding.${active.encoding}`)} · {t(`csvText.eol.${csvTextInfo.eol}`)} · {plural('csvText.lines',csvTextInfo.lines)}</span>{:else if active.kind!=='csv'}<span>{active.encoding.toUpperCase()}</span>{/if}<span>{active.readonly?'Solo lectura':!active.path?'Sin guardar':active.dirty?'Cambios pendientes':'Guardado'}</span>{/if}<span>Local</span></footer>
+ <footer class="statusbar"><span class="status-dot"></span><span class="truncate">{status}</span>{#if opening}<span role="status">{opening.phase}</span><button onclick={cancelOpening}>Cancelar apertura</button>{/if}<span class="spacer"></span><div id="document-status"></div>{#if active&&(active.kind==='markdown'||active.kind==='text')}<TextStats id={active.id} name={active.name} text={active.text??''} markdown={active.kind==='markdown'} partial={active.readonly} selection={textSelection}/>{/if}{#if active}{#if csvText&&csvTextInfo}<span role="status" aria-label={t('csvText.format')} aria-live="polite">{t(`csvText.encoding.${active.encoding}`)} · {t(`csvText.eol.${csvTextInfo.eol}`)} · {plural('csvText.lines',csvTextInfo.lines)}</span>{:else if active.kind!=='csv'}{#key active.id}<TextEncodingControl bind:this={encodingControl} doc={active} locked={busy||savingActive||applicationClosing||!!assetBusy[active.id]} onreopen={reopenTextEncoding} onsave={async encoding=>!!(await save(false,encoding))}/>{/key}{/if}<span>{active.readonly?'Solo lectura':!active.path?'Sin guardar':active.dirty?'Cambios pendientes':'Guardado'}</span>{/if}<span>Local</span></footer>
  {#if csvChange}<CsvViewDialog name={csvChange.name} busy={csvChange.busy} message={csvChange.message} onchoose={decision=>void resolveCsvChange(decision)}/>{/if}
  {#if csvFileMenu}<CsvFileMenu path={csvFileMenu.path} x={csvFileMenu.x} y={csvFileMenu.y} onopen={(path,view)=>void chooseCsvView(view,path)} onclose={closeCsvContext} onerror={error}/>{/if}
  {#if toast}<div class="toast {toastKind}" role="status"><Icon name={toastKind==='error'?'triangle-alert':'circle-check'} size={16}/><span>{toast}</span><button title={"Cerrar aviso"} onclick={()=>toast=''} aria-label="Cerrar aviso"><Icon name="x" size={14}/></button></div>{/if}

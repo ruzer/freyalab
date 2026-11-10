@@ -1,9 +1,14 @@
-import type {Encoding} from './types'
+import type {Encoding,TextEncoding} from './types'
+export const textEncodings=['utf8','utf16le','utf16be','win1252','latin1'] as const satisfies readonly TextEncoding[]
+export interface TextFormat {encoding:TextEncoding;bom:boolean}
 export interface CsvTextFormat {encoding:Encoding;bom:boolean}
-export function isCsvTextFormat(value:unknown):value is CsvTextFormat{
+export function isTextFormat(value:unknown):value is TextFormat{
  if(!value||typeof value!=='object')return false
- const format=value as Record<string,unknown>
- return typeof format.encoding==='string'&&['utf8','utf16le','win1252'].includes(format.encoding)&&typeof format.bom==='boolean'&&!(format.encoding==='win1252'&&format.bom)
+ const {encoding,bom}=value as Partial<TextFormat>
+ return textEncodings.some(item=>item===encoding)&&typeof bom==='boolean'&&!(bom&&(encoding==='win1252'||encoding==='latin1'))
+}
+export function isCsvTextFormat(value:unknown):value is CsvTextFormat{
+ return isTextFormat(value)&&value.encoding!=='utf16be'&&value.encoding!=='latin1'
 }
 export function csvTextStatistics(text:string):{eol:'LF'|'CRLF'|'CR'|'mixed'|'none';lines:number}{
  const endings=new Set<'LF'|'CRLF'|'CR'>();let lines=1

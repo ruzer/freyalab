@@ -146,13 +146,13 @@ for(const run of process.platform==='win32'?[1,2,3,4,5]:[1])test(`P5: preferenci
  // Sólo el proceso de prueba: retener la lectura hasta una consulta de documentos posterior a la carga visible.
  await writeFile(entry,`
  const fs=require('node:fs/promises'),{app,ipcMain}=require('electron');
- const nativeRead=fs.readFile.bind(fs),nativeHandle=ipcMain.handle.bind(ipcMain);
+ const nativeOpen=fs.open.bind(fs),nativeHandle=ipcMain.handle.bind(ipcMain);
  let armed=false,held=false,released=false,release;
  let started;globalThis.__p5ReadStarted=new Promise(resolve=>{started=resolve});
  globalThis.__p5DelayedSnapshot=undefined;
- fs.readFile=async function(path,...args){
+ fs.open=async function(path,...args){
   if(String(path)===${JSON.stringify(canonical)}&&!released){held=true;started();await new Promise(resolve=>{release=resolve});held=false}
-  return nativeRead(path,...args);
+  return nativeOpen(path,...args);
  };
  require('node:module').syncBuiltinESMExports();
  app.on('web-contents-created',(_event,contents)=>{

@@ -136,18 +136,18 @@ const encoded=(path:string)=>path.split(sep).map(part=>encodeURIComponent(part).
 function patchedText(source:string,changes:AssetChange[]):string {
  let text=source
  for(const change of [...changes].reverse())text=text.slice(0,change.from)+change.insert+text.slice(change.to)
- if(Buffer.byteLength(text)>10*1024*1024)throw new Error('Las rutas nuevas harían que el documento supere el límite de edición de 10 MiB.')
  return text
 }
 
 // Solo publica recursos nuevos; una copia fallida revierte sus archivos y carpetas, nunca activos previos.
-export async function saveMarkdownCopy(source:string,previousPath:string|null,destinationPath:string):Promise<{text:string;assets:DocumentAssets}>{
+export async function saveMarkdownCopy(source:string,previousPath:string|null,destinationPath:string,encode:(text:string)=>Buffer):Promise<{text:string;bytes:Buffer;assets:DocumentAssets}>{
  const assets:DocumentAssets={copied:0,warnings:[],changes:[]},references=images(source)
+ const write=async(text:string,bytes=encode(text))=>{await atomicWrite(destinationPath,bytes);return{text,bytes,assets}}
  const parent=await realpath(dirname(destinationPath)),targetRoot=assetDirectory(join(parent,basename(destinationPath)))
- if(previousPath&&resolve(assetDirectory(previousPath))===resolve(targetRoot)){await atomicWrite(destinationPath,source);return{text:source,assets}}
+ if(previousPath&&resolve(assetDirectory(previousPath))===resolve(targetRoot))return write(source)
  if(!previousPath){
   for(const reference of references)if(!reference.url.startsWith('data:'))assets.warnings.push(`${reference.url}: No se copió la imagen porque el documento no tenía una ubicación propia; su referencia se conservó.`)
-  await atomicWrite(destinationPath,source);return{text:source,assets}
+  return write(source)
  }
  const previousRoot=assetDirectory(previousPath),documentRoot=dirname(previousPath)
  const files=new Map<string,{stage:string;relative:string;hash:string}>(),names=new Set<string>(),createdFiles:string[]=[],createdDirectories:string[]=[]
@@ -179,7 +179,7 @@ export async function saveMarkdownCopy(source:string,previousPath:string|null,de
    const insert=`${encoded(basename(targetRoot))}/${encoded(file.relative)}${tail}`
    if(source.slice(reference.from,reference.to)!==insert)assets.changes.push({from:reference.from,to:reference.to,insert})
   }
-  const text=patchedText(source,assets.changes)
+  const text=patchedText(source,assets.changes),bytes=encode(text)
   if(files.size){
    const alias=(await readdir(parent)).find(name=>folded(name)===folded(basename(targetRoot))&&name!==basename(targetRoot))
    if(alias)throw new Error('Ya existe una carpeta de activos con otra combinación de mayúsculas.')
@@ -196,8 +196,7 @@ export async function saveMarkdownCopy(source:string,previousPath:string|null,de
     if(await digest(target)!==file.hash)throw new Error('La copia de una imagen no conserva sus bytes. Vuelve a intentarlo.')
    }
   }
-  await atomicWrite(destinationPath,text)
-  assets.copied=files.size;return{text,assets}
+  assets.copied=files.size;return await write(text,bytes)
  }catch(error){
   for(const file of createdFiles.reverse())await unlink(file).catch(()=>{})
   for(const path of createdDirectories.reverse())await rmdir(path).catch(()=>{})
@@ -213,7 +212,7 @@ export function hasImageReference(source:string,url:string):boolean {
  return!(/^[a-z][a-z0-9+.-]*:/i.test(url)||url.startsWith('//'))&&images(source).some(reference=>sameImageURL(reference.url,url))
 }
 
-export async function locateMarkdownImage(source:string,documentPath:string,url:string,selected:string,assertCurrent:()=>void):Promise<{text:string;assets:DocumentAssets}>{
+export async function locateMarkdownImage(source:string,documentPath:string,url:string,selected:string,assertCurrent:()=>void,validate:(text:string)=>void):Promise<{text:string;assets:DocumentAssets}>{
  const references=images(source).filter(reference=>sameImageURL(reference.url,url))
  if(!references.length||/^[a-z][a-z0-9+.-]*:/i.test(url)||url.startsWith('//'))throw new Error('La referencia de imagen ya no está en el documento. Vuelve a intentarlo.')
  if(!isAbsolute(selected)||!imageExtensions.has(extname(selected).toLowerCase()))throw new Error('Selecciona un archivo de imagen PNG, JPEG, GIF, WebP o SVG.')
@@ -225,6 +224,7 @@ export async function locateMarkdownImage(source:string,documentPath:string,url:
   if(!await contained(parent,root))throw new Error('La carpeta de activos está fuera del documento.')
   const name=`${randomUUID()}${extname(selected).toLowerCase()}`,path=join(root,name),insert=`${encoded(basename(root))}/${name}`
   const changes=references.map(reference=>({from:reference.from,to:reference.to,insert})),text=patchedText(source,changes)
+  validate(text)
   const handle=await open(path,'wx',0o600);owned=path
   try{await handle.writeFile(bytes);await handle.sync()}finally{await handle.close()}
   if(await digest(path)!==createHash('sha256').update(bytes).digest('hex'))throw new Error('La copia de la imagen no conserva sus bytes.')
