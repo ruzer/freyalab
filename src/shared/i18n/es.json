@@ -1264,7 +1264,10 @@
  "describe.report.no": "No",
  "describe.report.time": "Análisis iniciado (UTC)",
  "describe.report.text": "En texto y fechas se excluyen ausentes, vacíos y solo espacios de count, unique, top y freq. Los demás valores se comparan como texto exacto. Las fechas no muestran top ni freq.",
- "describe.report.precision": "Los cálculos numéricos son aproximados; se conserva aquí el valor completo, sin el redondeo de la pantalla. Los textos literales se entrecomillan para conservar espacios, saltos de línea y marcadores. — indica que la medida no corresponde al tipo o no está disponible.",
+ "describe.report.precision": "Los cálculos numéricos son aproximados; se conserva aquí el valor completo, sin el redondeo de la pantalla. Los textos literales se entrecomillan para conservar espacios, saltos de línea y marcadores. Una celda vacía indica que la medida no corresponde al tipo o no está disponible.",
  "describe.command": "Resumen estadístico",
- "describe.commandHelp": "{command}: tipos de columnas y estadísticas sin modificar los datos."
+ "describe.commandHelp": "{command}: tipos de columnas y estadísticas sin modificar los datos.",
+ "describe.scope.sample.all": "Todos los registros de la muestra",
+ "describe.scope.sample.view": "Vista filtrada de la muestra",
+ "describe.scope.sample.selected": "Columnas marcadas de la muestra"
 }

@@ -38,7 +38,7 @@ export function describeReport(context:ReportContext,entries:DescribeEntry[],inc
  const matrix=describeTable(entries,includeText)
  let text='# '+t('describe.reportTitle')+'\n\n'+(context.sample?'> **'+t('describe.report.sample')+'**\n\n':'')+t('describe.report.intro')+'\n\n'
  text+=table([[t('describe.report.provenance'),t('describe.report.value')],['---','---'],[t('describe.report.source'),literal(context.source)],[t('describe.report.revision'),String(context.revision)],[t('describe.report.scope'),literal(context.scope)],[t('describe.report.dirty'),t(context.dirty?'describe.report.yes':'describe.report.no')],[t('describe.report.time'),literal(context.analyzedAt)]])
- text+=table([[t('describe.metric'),...matrix.columns.map(column=>literal(column.name))],Array(matrix.columns.length+1).fill('---'),...matrix.rows.map(row=>[row.metric,...row.values.map(value=>value===null?'—':typeof value==='string'?literal(value):String(value))])])
+ text+=table([[t('describe.metric'),...matrix.columns.map(column=>literal(column.name))],Array(matrix.columns.length+1).fill('---'),...matrix.rows.map(row=>[row.metric,...row.values.map(value=>value===null?'':typeof value==='string'?literal(value):String(value))])])
  if(matrix.columns.some(column=>column.unavailable))text+='\n'+t('describe.unavailableHelp')+'\n'
  text+='\n## '+t('describe.how')+'\n\n'+t('describe.how.statistics')+'\n\n'+t('describe.report.text')+'\n\n'+t('describe.report.precision')+'\n\n'
  if(context.query){

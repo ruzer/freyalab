@@ -13,6 +13,8 @@
  const ready=$derived(sample!==undefined&&!doc.large&&(scope!=='view'||queryValid&&csvAnalysisQueryReady(doc,query,viewMeta)))
  const signature=$derived(JSON.stringify([doc.id,doc.revision,scope,includeText,scope==='selected'?columns:null,scope==='view'?csvAnalysisQueryKey(query):null,scope==='view'?ready:null]))
  const matrix=$derived(describeTable(entries,includeText))
+ const scopes=['all','view','selected'] as const
+ function scopeLabel(value:typeof scopes[number],limited:boolean|undefined){return limited===undefined?t('analysis.scope.pending'):t('describe.scope.'+(limited?'sample.':'')+value)}
  function cancel(){generation++;if(active)void window.freya.cancelAnalysis(active.id,active.requestId).catch(()=>{});active=undefined;busy=false;entries=[];context=null}
  export function cancelPending(){if(busy){cancel();status='describe.cancelled'}}
  onDestroy(cancel)
@@ -26,7 +28,8 @@
   cancel();const ticket=generation,id=doc.id,revision=doc.revision,headers=[...doc.headers??[]],capturedSample=sample!,capturedScope=scope,capturedQuery=scope==='view'?$state.snapshot(query):undefined,capturedText=includeText,matched=capturedQuery?viewMeta.matched:doc.rowCount
   if(matched===undefined||!Number.isSafeInteger(matched)||matched<0){onerror(t('describe.error.ready'));return}
   const current=()=>ticket===generation&&doc.id===id&&doc.revision===revision
-  const captured:ReportContext={source:doc.name,revision,sample:capturedSample,dirty:doc.dirty,scope:t('describe.scope.'+capturedScope),analyzedAt:new Date().toISOString(),query:capturedQuery}
+  if(matched*selected.length>2_000_000){onerror(t('info.error.cells'));return}
+  const captured:ReportContext={source:doc.name,revision,sample:capturedSample,dirty:doc.dirty,scope:scopeLabel(capturedScope,capturedSample),analyzedAt:new Date().toISOString(),query:capturedQuery}
   total=selected.length;busy=true;status='describe.progress'
   try{
    for(const column of selected){
@@ -62,13 +65,13 @@
   }catch(error){if(current()){entries=[];context=null;status='describe.error';onerror(String(error))}}
   finally{if(current()){active=undefined;busy=false}}
  }
- async function report(){if(!context||busy||reporting||doc.revision!==context.revision)return;reporting=true;try{await onreport(describeReport({...$state.snapshot(context),scope:t('describe.scope.'+analyzedScope)},$state.snapshot(entries),includeText))}catch(error){onerror(String(error))}finally{reporting=false}}
+ async function report(){if(!context||busy||reporting||doc.revision!==context.revision)return;reporting=true;try{await onreport(describeReport({...$state.snapshot(context),scope:scopeLabel(analyzedScope,context.sample)},$state.snapshot(entries),includeText))}catch(error){onerror(String(error))}finally{reporting=false}}
  const full=(value:string|number|null)=>value===null?'':String(value)
 </script>
 
 <section class="describe-panel" aria-label={t('describe.title')}>
  <form onsubmit={event=>{event.preventDefault();void calculate()}}>
-  <label>{t('describe.rows')}<select bind:value={scope} aria-label={t('describe.scopeLabel')} disabled={busy}>{#each ['all','view','selected'] as value}<option value={value} disabled={value==='selected'&&!columns.length}>{t('describe.scope.'+value)}</option>{/each}</select></label>
+  <label>{t('describe.rows')}<select bind:value={scope} aria-label={t('describe.scopeLabel')} disabled={busy}>{#each scopes as value}<option value={value} disabled={value==='selected'&&!columns.length}>{scopeLabel(value,sample)}</option>{/each}</select></label>
   <label><input type="checkbox" bind:checked={includeText} disabled={busy}/>{t('describe.includeText')}</label>
   <button type="submit" class="btn-tint" aria-busy={busy} disabled={!ready||busy||blocked} {...controlHint(busy||blocked?'busy':!ready?'scope':null)}>{t('describe.calculate')}</button>
   {#if busy}<button type="button" onclick={()=>{cancel();status='describe.cancelled'}}>{t('describe.cancel')}</button><progress aria-label={t('describe.progressLabel')} value={entries.length} max={total}></progress>{/if}
@@ -79,9 +82,9 @@
  {#if matrix.columns.length}
   <!-- svelte-ignore a11y_no_noninteractive_tabindex (La tabla horizontal debe poder desplazarse con teclado.) -->
   <div class="describe-scroll" role="region" aria-label={t('describe.results')} tabindex="0"><table>
-   <caption>{t('describe.scope.'+(context?analyzedScope:scope))} · {t('describe.revision',{revision:doc.revision})}{busy?' · '+t('describe.provisional'):''}</caption>
+   <caption>{scopeLabel(context?analyzedScope:scope,context?.sample??sample)} · {t('describe.revision',{revision:doc.revision})}{busy?' · '+t('describe.provisional'):''}</caption>
    <thead><tr><th scope="col">{t('describe.metric')}</th>{#each matrix.columns as column(column.index)}<th scope="col"><span>{column.name||t('describe.column',{index:column.index+1})}</span><small>{t('describe.type.'+column.profile.kind)}</small>{#if column.unavailable}<small title={t('describe.unavailableHelp')}>{t('describe.unavailable')}</small>{/if}</th>{/each}</tr></thead>
-   <tbody>{#each matrix.rows as row}<tr><th scope="row" aria-label={row.metric+' · '+t('describe.help.'+row.metric)}><abbr title={t('describe.help.'+row.metric)}>{row.metric}</abbr></th>{#each row.values as value}<td title={full(value)}>{value===null?'—':typeof value==='number'?formatNumber(value,{maximumFractionDigits:4}):value}</td>{/each}</tr>{/each}</tbody>
+   <tbody>{#each matrix.rows as row}<tr><th scope="row" aria-label={row.metric+' · '+t('describe.help.'+row.metric)}><abbr title={t('describe.help.'+row.metric)}>{row.metric}</abbr></th>{#each row.values as value}<td title={full(value)}>{value===null?'':typeof value==='number'?formatNumber(value,{maximumFractionDigits:4}):value}</td>{/each}</tr>{/each}</tbody>
   </table></div>
  {:else if context}<p>{t('describe.noNumbers')}</p>{/if}
  <details><summary>{t('describe.how')}</summary><p>{t('describe.how.statistics')}</p><p>{t('describe.how.identifiers')}</p><p>{t('describe.how.decimal')}</p></details>

@@ -63,3 +63,24 @@ it('el informe usa la misma matriz, precisión completa y el ámbito elegido sin
  expect(text).not.toContain('Rango de la vista')
  expect(text).not.toContain('Las posiciones del rango')
 })
+
+
+it('el informe deja vacíos los null sin perder el alcance de muestra ni el texto completo',()=>{
+ const top='á😺'.repeat(150),columns:DescribeEntry[]=[
+  {index:0,name:'Único',profile:{kind:'number'},stats:{numeric:1,average:7,sampleDeviation:null,min:7,percentile25:7,median:7,percentile75:7,max:7}},
+  {index:1,name:'Fecha',profile:{kind:'date'},description:{count:2,unique:1,top:null,freq:null,dateMin:'2026-01-02',dateMax:'2026-01-02'}},
+  {index:2,name:'Texto',profile:{kind:'text'},description:{count:2,unique:1,top,freq:2,dateMin:null,dateMax:null}}
+ ]
+ const matrix=describeTable(columns,true)
+ expect(matrix.rows.find(row=>row.metric==='std')?.values).toEqual([null,null,null])
+ expect(matrix.rows.find(row=>row.metric==='top')?.values).toEqual([null,null,top])
+ expect(matrix.rows.find(row=>row.metric==='freq')?.values).toEqual([null,null,2])
+ const text=describeReport({source:'muestra.csv',revision:4,sample:true,dirty:false,scope:'Muestra',analyzedAt:'2026-11-11T00:00:00Z'},columns,true)
+ expect(text).toContain('| std |  |  |  |')
+ expect(text).toContain('| top |  |  | ` '+JSON.stringify(top)+' ` |')
+ expect(text).toContain('| freq |  |  | 2 |')
+ expect(text).not.toContain('—')
+ expect(text).toContain('| Alcance | ` "Muestra" ` |')
+ expect(text).toContain('MUESTRA LIMITADA')
+ expect(text).not.toContain('"Documento completo"')
+})

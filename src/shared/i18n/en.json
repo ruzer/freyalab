@@ -1264,7 +1264,10 @@
  "describe.report.no": "No",
  "describe.report.time": "Analysis started (UTC)",
  "describe.report.text": "For text and dates, count, unique, top and freq exclude missing, empty and whitespace-only fields. All other values use exact text comparison. Dates have no top or freq.",
- "describe.report.precision": "Numeric calculations are approximate; full values are retained here without display rounding. Literal text is quoted to preserve spaces, newlines and markup. — means that a measure does not apply to the type or is unavailable.",
+ "describe.report.precision": "Numeric calculations are approximate; full values are retained here without display rounding. Literal text is quoted to preserve spaces, newlines and markup. An empty cell means that a measure does not apply to the type or is unavailable.",
  "describe.command": "Statistical summary",
- "describe.commandHelp": "{command}: column types and statistics without modifying data."
+ "describe.commandHelp": "{command}: column types and statistics without modifying data.",
+ "describe.scope.sample.all": "All sample records",
+ "describe.scope.sample.view": "Filtered sample view",
+ "describe.scope.sample.selected": "Selected sample columns"
 }
