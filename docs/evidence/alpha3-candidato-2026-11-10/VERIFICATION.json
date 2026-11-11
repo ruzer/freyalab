@@ -1,0 +1,58 @@
+{
+  "version": "0.1.0-alpha.3",
+  "commit": "238b387413fa5e7b3ebe2b63d0ff52efce8bc8f2",
+  "mainCI": "https://github.com/ruzer/freyalab/actions/runs/42956116818",
+  "candidate": "https://github.com/ruzer/freyalab/actions/runs/42963212736",
+  "artifacts": [
+    {
+      "platform": "linux",
+      "arch": "x64",
+      "artifact": "FreyaLab-0.1.0-alpha.3-linux-amd64.deb",
+      "extractionOrInstallation": "passed: apt installation",
+      "packagedExecution": "passed",
+      "desktopIntegration": "pending manual desktop check",
+      "sha256": "28eccf1906447df34c677a7fc2f14669e9d7027d966e12e260f72d18c08bfaa8",
+      "bytes": 169786328
+    },
+    {
+      "platform": "linux",
+      "arch": "x64",
+      "artifact": "FreyaLab-0.1.0-alpha.3-linux-x86_64.AppImage",
+      "extractionOrInstallation": "passed: AppImage extraction",
+      "packagedExecution": "passed",
+      "desktopIntegration": "pending manual desktop check",
+      "sha256": "477f685ea518db31ded9b0f5945d2b0289f2ba4bb287540f4db8f24bcbda2253",
+      "bytes": 215377352
+    },
+    {
+      "platform": "darwin",
+      "arch": "arm64",
+      "artifact": "FreyaLab-0.1.0-alpha.3-mac-arm64.dmg",
+      "extractionOrInstallation": "passed: copied application with preserved symlinks; source DMG detached before launch",
+      "packagedExecution": "passed",
+      "userGatekeeperTest": "pending manual check; no commercial signature/notarization",
+      "sha256": "3d221c19e0a9243a6f9dcf0c9e4ddab3efcb0a75e1133bea3ec8afde2c9f817f",
+      "bytes": 225175169
+    },
+    {
+      "platform": "darwin",
+      "arch": "x64",
+      "artifact": "FreyaLab-0.1.0-alpha.3-mac-x64.dmg",
+      "extractionOrInstallation": "passed: copied application with preserved symlinks; source DMG detached before launch",
+      "packagedExecution": "passed",
+      "userGatekeeperTest": "pending manual check; no commercial signature/notarization",
+      "sha256": "a292843fa7748defd93f20fff97806fb9b6f961a18d459d24323e39a0a264921",
+      "bytes": 228942094
+    },
+    {
+      "platform": "win32",
+      "arch": "x64",
+      "artifact": "FreyaLab-0.1.0-alpha.3-win-x64.exe",
+      "extractionOrInstallation": "passed: silent installation and uninstallation in temporary directory",
+      "packagedExecution": "passed",
+      "userSmartScreenTest": "pending manual check; unsigned alpha",
+      "sha256": "b25a4bca8b1a939ae958c959b1b1f33848df9a9604a8fe527a37899c6c1ea90c",
+      "bytes": 179616321
+    }
+  ]
+}

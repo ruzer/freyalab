@@ -1,0 +1,19 @@
+{
+  "platform": "linux",
+  "arch": "x64",
+  "results": [
+    {
+      "artifact": "FreyaLab-0.1.0-alpha.3-linux-x86_64.AppImage",
+      "extractionOrInstallation": "passed: AppImage extraction",
+      "packagedExecution": "passed",
+      "desktopIntegration": "pending manual desktop check"
+    },
+    {
+      "artifact": "FreyaLab-0.1.0-alpha.3-linux-amd64.deb",
+      "extractionOrInstallation": "passed: apt installation",
+      "packagedExecution": "passed",
+      "desktopIntegration": "pending manual desktop check"
+    }
+  ],
+  "completedAt": "2026-11-11T05:08:43.060Z"
+}

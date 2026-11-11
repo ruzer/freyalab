@@ -1,0 +1,11 @@
+{
+  "commit": "238b387413fa5e7b3ebe2b63d0ff52efce8bc8f2",
+  "platform": "darwin",
+  "arch": "arm64",
+  "node": "v24.22.2",
+  "artifacts": [
+    "FreyaLab-0.1.0-alpha.3-mac-arm64.dmg"
+  ],
+  "generatedAt": "2026-11-11T05:08:10.207Z",
+  "publication": "pending manual release gates"
+}
