@@ -26,13 +26,28 @@ export async function openAnalysis(page:Page,name:keyof typeof sections='Informa
 }
 export async function selectAnalysis(page:Page,name:keyof typeof sections){
  await expect(workspace(page)).toBeVisible()
- await workspace(page).getByRole('group',{name:await translated(page,'analysis.tab.sections'),exact:true}).getByRole('button',{name:await translated(page,'analysis.tab.section.'+sections[name]),exact:true}).click()
+ const button=workspace(page).getByRole('group',{name:await translated(page,'analysis.tab.sections'),exact:true}).getByRole('button',{name:await translated(page,'analysis.tab.section.'+sections[name]),exact:true})
+ if(await button.getAttribute('aria-pressed')!=='true')await button.click()
  return workspace(page)
 }
-export async function showTable(page:Page){
- if(await workspace(page).isVisible())await workspace(page).getByRole('button',{name:await translated(page,'analysis.tab.return'),exact:true}).click()
+export async function showTable(page:Page,name?:string){
+ if(name)await page.locator('.tabs[role=tablist]').getByRole('tab',{name,exact:true}).click()
+ else if(await workspace(page).isVisible())await workspace(page).getByRole('button',{name:await translated(page,'analysis.tab.return'),exact:true}).click()
  await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()
 }
+export async function closeAnalysis(page:Page){
+ const tab=page.locator('.tabs[role=tablist]').getByRole('tab',{selected:true})
+ await tab.locator('..').locator('.tab-close').click()
+ await expect(workspace(page)).toHaveCount(0)
+ await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()
+}
+// Las comprobaciones de alcance pueden conservar este panel mientras se vuelve al CSV visible.
+export async function analysisRegion(page:Page,name:string){
+ const id=await workspace(page).getAttribute('id')
+ if(!id)throw new Error('No hay una pestaña de análisis activa')
+ return page.locator('[id='+JSON.stringify(id)+']').getByRole('region',{name,exact:true,includeHidden:true})
+}
+export const analysisResultExport=(page:Page)=>workspace(page).locator('.header-export')
 export const chartPanel=(page:Page)=>workspace(page).locator('.charts-panel')
 export const chartSuggestion=(page:Page)=>chartPanel(page).locator('.empty-result button')
 export async function createSuggestedChart(page:Page){
@@ -49,7 +64,8 @@ export async function showPanel(page:Page,name:'Gráficos'|'Estadísticas'|'Aná
  if(name==='Gráficos'){
   const panel=workspace(page).locator('.charts-panel')
   await expect(panel).toBeVisible()
-  if(!await panel.locator('.pivot-result').count())await createSuggestedChart(page)
+  await expect(panel.locator('.zone-actions button').first()).toBeEnabled()
+  if(await chartSuggestion(page).isVisible()&&await chartSuggestion(page).isEnabled())await createSuggestedChart(page)
  }
 }
 // Abre un menú de la barra de la tabla (Filtrar, Limpiar datos, Filas y columnas) y elige una de sus acciones.
