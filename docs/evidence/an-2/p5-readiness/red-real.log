@@ -1,0 +1,37 @@
+
+Running 1 test using 1 worker
+
+(node:62478) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+P5_DELAY_PROBE {"reads":0,"beforeBootstrap":true,"read":true,"write":true,"hook":true}
+  ✘  1 [md] › tests/e2e/markdown-sidebar.spec.ts:182:1 › P5: almacenamiento bloqueado no impide abrir el documento ni alternar las pestañas (1.4s)
+
+
+  1) [md] › tests/e2e/markdown-sidebar.spec.ts:182:1 › P5: almacenamiento bloqueado no impide abrir el documento ni alternar las pestañas 
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      207 |   let read=false,write=false;try{localStorage.getItem('__storage_test__')}catch{read=true}try{localStorage.setItem('__storage_test__','value')}catch{write=true}
+      208 |   return{...initial,read,write}
+    > 209 |  });const hook=await app!.evaluate(()=>Reflect.get(globalThis,'p5DelayHook'));console.log('P5_DELAY_PROBE',JSON.stringify({...blocked,hook}));expect(hook).toBe(true);expect(blocked.beforeBootstrap).toBe(true);expect(blocked.reads).toBeGreaterThan(0);expect(blocked.read).toBe(true);expect(blocked.write).toBe(true);await evidence('md007-p-storage-blocked',{...blocked,scope:'Denegación comprobada antes del bootstrap, incluidas lecturas iniciales de la aplicación.'})
+          |                                                                                                                                                                                                                                        ^
+      210 |  const{doc,path}=await open(layoutSource);await expect(filesTab()).toHaveAttribute('aria-selected','true')
+      211 |  await indexTab().click();await expect(indexPanel()).toContainText('Manual de FreyaLab');await filesTab().click();await expect(filesTab()).toHaveAttribute('aria-selected','true')
+      212 |  expect(errors).toEqual([]);expect(await source(doc.id)).toBe(layoutSource);expect(await readFile(path,'utf8')).toBe(layoutSource)
+        at /private/tmp/freyalab-an1b-p5-observation/tests/e2e/markdown-sidebar.spec.ts:209:232
+
+    Error Context: test-results/markdown-sidebar-P5-almace-aa2b8-to-ni-alternar-las-pestañas-md/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/markdown-sidebar-P5-almace-aa2b8-to-ni-alternar-las-pestañas-md/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/markdown-sidebar-P5-almace-aa2b8-to-ni-alternar-las-pestañas-md/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [md] › tests/e2e/markdown-sidebar.spec.ts:182:1 › P5: almacenamiento bloqueado no impide abrir el documento ni alternar las pestañas 
