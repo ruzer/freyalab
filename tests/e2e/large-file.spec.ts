@@ -1,4 +1,4 @@
-import {openAnalysis} from './panel'
+import {openAnalysis,openCsvCommands} from './panel'
 import {runApplicationMenu} from './application-menu'
 import { closeElectron } from './close-electron'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
@@ -25,6 +25,7 @@ const cell=(row:number,column='id')=>page.getByRole('gridcell',{name:`Fila ${row
 test('un CSV por encima del umbral se abre como archivo grande: aviso, recuento exacto y sin el límite de 200 filas',async()=>{
  const {doc}=await open(csv(3000))
  expect(doc).toMatchObject({readonly:true,large:true,rowCount:3000})
+ const commands=await openCsvCommands(page,app);await expect(commands.locator(':scope>p').first()).toContainText('Archivo grande');await expect(commands.locator(':scope>p').first()).not.toContainText('Muestra de solo lectura');await commands.getByRole('button',{name:'Cerrar comandos CSV',exact:true}).click()
  await expect(page.locator('.warning-banner').first()).toContainText('Archivo grande')
  await expect(page.locator('footer')).toContainText('3,000 de 3,000 filas · archivo grande')
  await expect(page.getByRole('grid',{name:'Tabla de datos'})).toHaveAttribute('aria-rowcount','3001')

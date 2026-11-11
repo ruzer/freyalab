@@ -21,3 +21,9 @@ export function csvAnalysisSample(doc:Pick<DocumentInfo,'revision'>,viewMeta:Tab
  if(viewMeta.requestId<=0||viewMeta.revision!==doc.revision)return undefined
  return viewMeta.sample
 }
+
+// Firma usada por la vista general: la posición de página no cambia el alcance.
+export const csvAnalysisQueryKey=(query:TableQuery)=>JSON.stringify([query.search,query.filters,query.sort,query.order,query.conditions,query.filterMode,query.viewId])
+export function csvAnalysisQueryReady(doc:Pick<DocumentInfo,'revision'>,query:TableQuery,viewMeta:TableViewMeta):boolean{
+ return viewMeta.requestId>0&&viewMeta.revision===doc.revision&&csvAnalysisQueryKey(query)===csvAnalysisQueryKey(viewMeta.query)
+}

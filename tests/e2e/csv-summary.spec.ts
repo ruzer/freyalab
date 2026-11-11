@@ -77,7 +77,7 @@ test('F2a: estados vacío, error numérico, truncado y ventana estrecha con capt
  const empty=join(folder,'vacio.csv');await writeFile(empty,'Campo,Valor\n');await page.evaluate(file=>window.freya.openPaths([file]),empty)
  await openAnalysis(page,'Gráficos')
  await expect(page.getByText('Elige qué quieres ver: coloca un campo en Filas y un número en Valores.',{exact:true})).toBeVisible();await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-empty.png')})
- await page.getByRole('tab',{name:'ventas.csv',exact:true}).click();panel=await summary()
+ await showTable(page,'ventas.csv');panel=await summary()
  await panel.locator('.more-options>summary').click();await panel.getByLabel('Columna Y del gráfico').selectOption('3');await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum')
  await expect(panel.locator('.result-announcement')).toContainText('No se pudo calcular el resultado. El archivo no se modificó.');expect(await page.locator('body').innerText()).not.toContain('No hay valores numéricos utilizables');await panel.locator('.chart-info>summary').click();await expect(panel.locator('.info-content')).toContainText('No hay valores numéricos utilizables');await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-error.png')});await page.getByRole('button',{name:'Cerrar aviso',exact:true}).click()
  const many=join(folder,'grupos.csv');await writeFile(many,'Grupo,Valor\n'+Array.from({length:150},(_,i)=>`G${i},${i}`).join('\n')+'\n');await page.evaluate(file=>window.freya.openPaths([file]),many)

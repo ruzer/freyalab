@@ -1,6 +1,6 @@
 import {expect,it} from 'vitest'
-import {csvAnalysisSample,csvAnalysisViews,emptyCsvAnalysisView} from '../src/renderer/lib/csv-analysis-view'
-import type {DocumentInfo} from '../src/shared/types'
+import {csvAnalysisQueryReady,csvAnalysisSample,csvAnalysisViews,emptyCsvAnalysisView} from '../src/renderer/lib/csv-analysis-view'
+import type {DocumentInfo,TableQuery} from '../src/shared/types'
 
 it('mantiene la consulta y la selección separadas por CSV hasta que se cierre el documento',()=>{
  const a={id:'one',revision:3,readonly:false} as DocumentInfo
@@ -31,4 +31,23 @@ it.each([
  const doc={id:'one',revision:3,readonly:true,projectSource} as DocumentInfo
  const view=emptyCsvAnalysisView(doc)
  expect(csvAnalysisSample(doc,{...view.viewMeta,sample,requestId,revision})).toBe(expected)
+})
+
+
+it.each([
+ ['página distinta de la misma consulta',{offset:900,limit:20,requestId:88},4,3,true],
+ ['búsqueda nueva',{search:'oculto'},4,3,false],
+ ['filtro nuevo',{filters:{1:'otro'}},4,3,false],
+ ['condición nueva',{conditions:[{column:1,op:'greater',value:'20'}]},4,3,false],
+ ['modo de filtros nuevo',{filterMode:'any'},4,3,false],
+ ['orden simple nuevo',{sort:{column:0,numeric:false,descending:true}},4,3,false],
+ ['orden múltiple nuevo',{order:[{column:1,numeric:true,descending:true}]},4,3,false],
+ ['vista grande distinta',{viewId:'otra-vista'},4,3,false],
+ ['metadatos desconocidos',{},0,3,false],
+ ['revisión distinta',{},4,2,false],
+] as const)('la validez compartida conserva %s sin confundir paginación con cambios de datos',(_name,change,requestId,revision,expected)=>{
+ const query:TableQuery={offset:0,limit:200,requestId:4,search:'visible',filters:{1:'sí'},conditions:[{column:1,op:'greater',value:'10'}],filterMode:'all',order:[{column:1,numeric:true,descending:false}]}
+ const doc={revision:3} as DocumentInfo
+ const meta={matched:10000,revision,requestId,sample:false,query}
+ expect(csvAnalysisQueryReady(doc,{...query,...change} as TableQuery,meta)).toBe(expected)
 })

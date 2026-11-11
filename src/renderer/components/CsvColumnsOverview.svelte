@@ -1,8 +1,8 @@
 <script lang="ts">
  import {t} from '../lib/i18n.svelte'
- import {csvAnalysisSample} from '../lib/csv-analysis-view'
+ import {csvAnalysisSample,csvAnalysisQueryReady,csvAnalysisQueryKey as viewKey} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
- import {onDestroy} from 'svelte'
+ import {onDestroy,untrack} from 'svelte'
  import {columnSummary} from '../../shared/column-profile'
  import {columnOverviewReport,type ReportContext} from '../lib/statistics-report'
  import type {DocumentInfo,TableQuery,ColumnOverviewRow,TableViewMeta} from '../../shared/types'
@@ -10,9 +10,8 @@
  let scope=$state<'all'|'view'>('all'),selection=$state('all'),busy=$state(false),reporting=$state(false),results=$state<ColumnOverviewRow[]>([])
  let message=$state('Pulsa Explorar columnas para comprender este archivo.'),total=$state(0),rowCount=$state(0),search=$state(''),offset=$state(0),context=$state<ReportContext|null>(null)
  let serial=0,active:{id:string;requestId:string}|null=null,timer:ReturnType<typeof setTimeout>|undefined
- const viewKey=(query:TableQuery)=>JSON.stringify([query.search,query.filters,query.sort,query.order,query.conditions,query.filterMode])
  const sample=$derived(csvAnalysisSample(doc,viewMeta))
- const viewReady=$derived(queryValid&&viewMeta.requestId>0&&viewMeta.revision===doc.revision&&sample!==undefined&&viewKey(query)===viewKey(viewMeta.query))
+ const viewReady=$derived(queryValid&&sample!==undefined&&csvAnalysisQueryReady(doc,query,viewMeta))
  const scopeKey=$derived(scope==='view'?JSON.stringify([scope,viewKey(query),viewReady]):scope)
  const scopeReady=$derived(sample!==undefined&&(scope==='all'?doc.rowCount!==undefined&&Number.isSafeInteger(doc.rowCount)&&doc.rowCount>=0:viewReady))
  const selectionKey=$derived(selection==='selected'?JSON.stringify(columns):'all')
@@ -20,7 +19,9 @@
  const failed=$derived(results.filter(row=>'error'in row).length)
  function cancel(){serial++;clearTimeout(timer);if(active)void window.freya.cancelAnalysis(active.id,active.requestId).catch(()=>{});active=null;busy=false;results=[];context=null;offset=0}
  onDestroy(cancel)
- $effect(()=>{void doc.id;void doc.revision;void scopeKey;void selectionKey;cancel();message='Datos o alcance actualizados. Pulsa Explorar columnas.'})
+ // Cambiar de pestaña o de página no cambia la captura del análisis.
+ const invalidationKey=$derived(JSON.stringify([doc.id,doc.revision,scopeKey,selectionKey]))
+ $effect(()=>{void invalidationKey;untrack(()=>{cancel();message='Datos o alcance actualizados. Pulsa Explorar columnas.'})})
  $effect(()=>{void search;offset=0})
  async function explore(){
   if(sample===undefined||!scopeReady){onerror('Espera a que se cargue el alcance elegido antes de explorar.');return}

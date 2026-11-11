@@ -1,3 +1,4 @@
+import {openCsvCommands,showTable,openAnalysis} from './panel'
 import {expect,test,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {createHash} from 'node:crypto'
@@ -118,6 +119,7 @@ test('el análisis distingue una fuente completa protegida de una muestra, inclu
  await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()
  const [document]=await page.evaluate(()=>window.freya.documents())
  expect(document).toMatchObject({projectSource:'protected',readonly:true,rowCount:1})
+ const commands=await openCsvCommands(page,app);await expect(commands.locator(':scope>p').first()).toHaveText(t('ui.reason.projectProtected'));await expect(commands).not.toContainText('Muestra de solo lectura');await commands.getByRole('button',{name:'Cerrar comandos CSV',exact:true}).click()
  await panel().getByRole('button',{name:'Analizar',exact:true}).click()
  const workspace=page.locator('.analysis-workspace:not([hidden])'),overview=workspace.getByRole('region',{name:'Vista general de columnas',exact:true})
  await expect(workspace.locator('.analysis-warning')).toHaveCount(0)
@@ -171,6 +173,7 @@ test('el análisis distingue una fuente completa protegida de una muestra, inclu
  await overview.getByRole('button',{name:'Explorar columnas',exact:true}).click()
  await expect(overview.getByRole('status')).toHaveText('Exploración de columnas completa.')
  await expect(overview.locator('.scope')).toContainText('Documento completo')
+ await showTable(page,'datos.csv');const closedCommands=await openCsvCommands(page,app);await expect(closedCommands.locator(':scope>p').first()).toHaveText(t('ui.reason.projectClosed'));await expect(closedCommands).not.toContainText('Muestra de solo lectura');await closedCommands.getByRole('button',{name:'Cerrar comandos CSV',exact:true}).click();await openAnalysis(page,'Información')
  expect(await readFile(source)).toEqual(fixture)
 })
 

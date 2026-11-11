@@ -673,6 +673,7 @@
   .csv-text-tools .mode-switch span{display:none}
   .csv-text-tools .mode-switch button{padding-inline:6px}
  }
+ @media(max-width:899px){.workspace:has(:global(.analysis-workspace:not([hidden])))>:is(.sidebar,.sidebar-handle){display:none}}
  .csv-text-options>.dropdown{left:auto;right:0}
  .close-notice{max-width:min(600px,calc(100vw - 32px));color:var(--text)}.close-notice.error{border-color:var(--accent)}
 </style>

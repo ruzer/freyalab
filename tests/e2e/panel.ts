@@ -8,8 +8,12 @@ async function translated(page:Page,key:string){return t(key,{},(await page.loca
 export const analyzeButton=(page:Page)=>page.locator('.csv-toolbar,.csv-text-tools').getByRole('button',{name:/^(Analizar|Analyze|\[Ánályzë~+\])$/})
 // Pedir el análisis puede abrir primero el diálogo de cambio desde CSV Texto.
 export async function requestAnalysis(page:Page,app?:ElectronApplication){
- if(app){await runApplicationMenu(app,'edit.commandPalette');const search=page.getByRole('searchbox',{name:'Buscar comando CSV',exact:true});await search.fill('info');await search.press('Enter')}
+ if(app){const commands=await openCsvCommands(page,app);const search=commands.getByRole('searchbox',{name:'Buscar comando CSV',exact:true});await search.fill('info');await search.press('Enter')}
  else await analyzeButton(page).click()
+}
+export async function openCsvCommands(page:Page,app:ElectronApplication){
+ await runApplicationMenu(app,'edit.commandPalette')
+ const commands=page.getByRole('dialog',{name:'Comandos CSV',exact:true});await expect(commands).toBeVisible();return commands
 }
 async function sourceAnalysisTab(page:Page){
  const sourceId=(await page.locator('.tabs[role=tablist]').getByRole('tab',{selected:true}).getAttribute('id'))?.replace('workspace-tab-','')
@@ -49,6 +53,8 @@ export async function analysisRegion(page:Page,name:string){
 }
 export const analysisResultExport=(page:Page)=>workspace(page).locator('.header-export')
 export const chartPanel=(page:Page)=>workspace(page).locator('.charts-panel')
+// El botón manual cubre revisión nueva/archivo grande; en automático se usa el del formulario.
+export const chartGenerate=(page:Page)=>chartPanel(page).locator('.manual>button,.more-options form button[type=submit]').first()
 export const chartSuggestion=(page:Page)=>chartPanel(page).locator('.empty-result button')
 export async function createSuggestedChart(page:Page){
  const panel=chartPanel(page)
@@ -64,8 +70,8 @@ export async function showPanel(page:Page,name:'Gráficos'|'Estadísticas'|'Aná
  if(name==='Gráficos'){
   const panel=workspace(page).locator('.charts-panel')
   await expect(panel).toBeVisible()
-  await expect(panel.locator('.zone-actions button').first()).toBeEnabled()
-  if(await chartSuggestion(page).isVisible()&&await chartSuggestion(page).isEnabled())await createSuggestedChart(page)
+  const title=panel.getByLabel(await translated(page,'charts.ui.config'),{exact:true})
+  if(await title.innerText()===await translated(page,'charts.fields.emptyTitle'))await createSuggestedChart(page)
  }
 }
 // Abre un menú de la barra de la tabla (Filtrar, Limpiar datos, Filas y columnas) y elige una de sus acciones.

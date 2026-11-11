@@ -1,6 +1,6 @@
 <script lang="ts">
  import {controlHint} from '../lib/control-hint'
- import {csvAnalysisViews} from '../lib/csv-analysis-view'
+ import {csvAnalysisViews,csvAnalysisQueryReady} from '../lib/csv-analysis-view'
  import type {AnalysisSection,AnalysisStatistics} from '../lib/workspace-tabs'
  import Icon from './Icon.svelte'
  import {t} from '../lib/i18n.svelte'
@@ -234,8 +234,8 @@
  const hasViewPage=(view:LargeViewState)=>view.status!=='invalidated'&&(view.status!=='running'||view.matched>=200)
  function query(offset=0):TableQuery{return large?{viewId:activeViewId,offset,limit:200,requestId}:{search,conditions:$state.snapshot(conditions),filterMode,order:order.length?$state.snapshot(order):undefined,filters:$state.snapshot(filters),sort:sort?$state.snapshot(sort):undefined,offset,limit:200,requestId}}
  $effect(()=>{
-  const id=doc.id,snapshot={query:query(),queryValid:!queryError&&!busy&&!interpreting,columns:$state.snapshot(selectedColumns),range:cellRange?$state.snapshot(cellRange):null,
-   viewMeta:{matched:page.matched,revision:page.revision,requestId:page.requestId,sample:page.sample,query:$state.snapshot(pageQuery)}}
+  const id=doc.id,currentQuery=query(),viewMeta={matched:page.matched,revision:page.revision,requestId:page.requestId,sample:page.sample,query:$state.snapshot(pageQuery)}
+  const snapshot={query:currentQuery,queryValid:!queryError&&!interpreting&&csvAnalysisQueryReady(doc,currentQuery,viewMeta),columns:$state.snapshot(selectedColumns),range:cellRange?$state.snapshot(cellRange):null,viewMeta}
   untrack(()=>csvAnalysisViews.set(id,snapshot))
  })
  async function load(offset=0){
@@ -394,7 +394,7 @@
  <button role="menuitem" disabled={!!calculationDisabled} aria-describedby={calculationDisabled?'context-calculation-disabled':undefined} onclick={()=>openCalculation(column+1,contextReturn)}>{t('calculate.right')}</button>
  {#if calculationDisabled}<span class="dropdown-note" role="presentation" id="context-calculation-disabled">{calculationDisabled}</span>{/if}
 {/snippet}
-{#if showCommands}<CsvCommands {commands} context={doc.readonly?'Muestra de solo lectura: edición y copia tabular bloqueadas.':interpreting?'Interpretando el archivo; edición bloqueada.':queryError?'Consulta no válida: corrige o quita los filtros antes de editar.':busy?'Cargando página; las acciones del rango esperan.':cellRange?`Rango: filas ${cellRange.top+1}–${cellRange.bottom+1}, columnas ${cellRange.left+1}–${cellRange.right+1}.`:`${selectedRows.length} filas marcadas por número · ${selectedColumns.length} columnas marcadas.`} onexecute={id=>void chooseCommand(id)} onclose={()=>void closeCommands()}/>{/if}
+{#if showCommands}<CsvCommands {commands} context={doc.projectSource?t('ui.reason.'+readonlyReason):doc.readonly?page.sample?'Muestra de solo lectura: edición y copia tabular bloqueadas.':doc.warning??t('ui.reason.readonly'):interpreting?'Interpretando el archivo; edición bloqueada.':queryError?'Consulta no válida: corrige o quita los filtros antes de editar.':busy?'Cargando página; las acciones del rango esperan.':cellRange?`Rango: filas ${cellRange.top+1}–${cellRange.bottom+1}, columnas ${cellRange.left+1}–${cellRange.right+1}.`:`${selectedRows.length} filas marcadas por número · ${selectedColumns.length} columnas marcadas.`} onexecute={id=>void chooseCommand(id)} onclose={()=>void closeCommands()}/>{/if}
 {#if showTransform}<CsvTransform {doc} initialOperation={transformStart} initialCalculationPosition={calculationPosition} initialRows={selectedRows} initialRange={cellRange} viewQuery={query()} initialColumns={selectedColumns.length?selectedColumns:cellRange?Array.from({length:cellRange.right-cellRange.left+1},(_,i)=>cellRange.left+i):[]} onapply={applyTransform} onclose={closeTransform} {onerror}/>{/if}
 {#if rangeDialog}<CsvRangePreview id={doc.id} initial={rangeDialog.edit} cut={rangeDialog.cut} documentScope={rangeDialog.documentScope} column={rangeDialog.column} onapply={applyRange} onclose={closeRangeDialog} {onerror}/>{/if}
 {#if context}<div bind:this={contextMenu} class="range-context" role="menu" aria-label={context.kind==='rows'?'Acciones de filas':context.kind==='columns'?'Acciones de columnas':'Acciones del rango'} tabindex="-1" style:left={`${context.x}px`} style:top={`${context.y}px`} onkeydown={event=>{const buttons=Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')),index=buttons.indexOf(document.activeElement as HTMLButtonElement);if(event.key==='Escape'){event.preventDefault();closeContext()}else if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();buttons[event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(event.key==='ArrowDown'?1:buttons.length-1))%buttons.length]?.focus()}else if(event.key==='Tab')context=null}}>
