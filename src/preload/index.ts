@@ -58,11 +58,6 @@ const api:FreyaAPI={
  bibliography:(id,source)=>invoke('bibliography',id,source),
  pandocStatus:()=>invoke('pandocStatus'),pandocChoose:()=>invoke('pandocChoose'),pandocTest:()=>invoke('pandocTest'),
  export:(id,request)=>invoke('export',id,request),locateImage:(id,src)=>invoke('locateImage',id,src),image:async(id,src)=>{if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_IMAGE_DELAY_MS)await new Promise(resolve=>setTimeout(resolve,Number(process.env.FREYALAB_TEST_IMAGE_DELAY_MS)));return invoke('image',id,src)},openLink:url=>invoke('link',url),
- projectState:()=>invoke('project:state'),projectPickFolder:()=>invoke('project:pickFolder'),projectCancelCreate:()=>invoke('project:cancelCreate'),projectCreate:(name,suggested)=>invoke('project:create',name,suggested),projectClose:id=>invoke('project:close',id),projectRename:(id,name)=>invoke('project:rename',id,name),projectOpenRecent:path=>invoke('project:openRecent',path),projectForgetRecent:path=>invoke('project:forgetRecent',path),
- projectPickSource:path=>invoke('project:pickSource',path),projectInspectSource:(id,format)=>invoke('project:inspectSource',id,format),projectDiscardSourceDraft:()=>invoke('project:discardSourceDraft'),
- projectRegisterSource:(id,draft,format,request)=>invoke('project:registerSource',id,draft,format,request),projectReregisterSource:(id,source,request)=>invoke('project:reregisterSource',id,source,request),
- projectOpenSource:source=>invoke('project:openSource',source),projectShowSource:source=>invoke('project:showSource',source),projectForgetSource:(id,source)=>invoke('project:forgetSource',id,source),
- projectRelinkSource:(id,source,request)=>invoke('project:relinkSource',id,source,request),projectCancelSource:request=>invoke('project:cancelSource',request),
  recents:()=>invoke('recents'),recoveries:()=>invoke('recoveries'),recover:id=>invoke('recover',id),discardRecovery:id=>invoke('discardRecovery',id),
  onEvent(callback){const listener=(_:unknown,event:AppEvent)=>callback(event);ipcRenderer.on('freya:event',listener);return()=>ipcRenderer.removeListener('freya:event',listener)},
  droppedPaths(files){const paths=Array.from(files).map(f=>webUtils.getPathForFile(f)).filter(Boolean);ipcRenderer.send('freya:drop',paths);return paths}
