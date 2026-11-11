@@ -27,6 +27,7 @@ export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,r
  // Distinguir hasta 20 categorías no exige guardar las frecuencias de toda la columna.
  const distinct=new Set<string>()
  let empty=0,missing=0,whitespace=0,leadingZeros=0,minLength=Infinity,maxLength=0,dates=0,invalidDates=0,unsafeIntegers=0,identifierZeros=0,decimalPlaces=0,numbers=0
+ let dateMin:string|null=null,dateMax:string|null=null
  for(let i=0;i<cells;i++){
   const index=indices?indices[i]:i,row=rows[index],value=row.cells[request.column]??'',trimmed=value.trim(),parsed=numeric(value),n=parsed!==null&&(!Number.isInteger(parsed)||Number.isSafeInteger(parsed))?parsed:null
   const found=counts?.get(value)
@@ -41,7 +42,10 @@ export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,r
   if(/^[+-]?0\d/.test(trimmed)){leadingZeros++;if(parsed!==null)identifierZeros++}
   if(parsed!==null&&Number.isInteger(parsed)&&!Number.isSafeInteger(parsed))unsafeIntegers++
   if(/^\d{4}-\d{2}-\d{2}$/.test(trimmed)){
-   if(!trimmed.startsWith('0000-')&&isoDate(trimmed))dates++;else invalidDates++
+   if(!trimmed.startsWith('0000-')&&isoDate(trimmed)){
+    dates++
+    if(counts){if(dateMin===null||trimmed<dateMin)dateMin=trimmed;if(dateMax===null||trimmed>dateMax)dateMax=trimmed}
+   }else invalidDates++
   }
   if(n!==null){
    numbers++;if(counts)values.push(n)
@@ -93,6 +97,6 @@ export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,r
   if(value===null)warnings.push('Pearson requiere al menos dos pares numéricos y variación en ambas columnas; también puede ser no representable con esta precisión.')
  }
  await yieldTurn();ensure()
- return{profile,describe:{count:nonEmpty,unique:distinctNonEmpty,top:kind==='date'?null:top,freq:kind==='date'?null:freq,dateMin:null,dateMax:null},cells,empty,missing,whitespace,numeric:values.length,excluded:cells-empty-values.length,leadingZeros,minLength:cells?minLength:0,maxLength,unique:counts.size,duplicateGroups,duplicateRows,extraDuplicates:duplicateRows-duplicateGroups,...statistics,
+ return{profile,describe:{count:nonEmpty,unique:distinctNonEmpty,top:kind==='date'?null:top,freq:kind==='date'?null:freq,dateMin:kind==='date'?dateMin:null,dateMax:kind==='date'?dateMax:null},cells,empty,missing,whitespace,numeric:values.length,excluded:cells-empty-values.length,leadingZeros,minLength:cells?minLength:0,maxLength,unique:counts.size,duplicateGroups,duplicateRows,extraDuplicates:duplicateRows-duplicateGroups,...statistics,
   frequencies:frequencies.slice(request.frequencyOffset,request.frequencyOffset+50).map(([value,{count,firstRow,rowId}])=>({value:value.slice(0,256),truncated:value.length>256,count,firstRow,rowId})),frequencyTotal:frequencies.length,frequencyOffset:request.frequencyOffset,missingRows,histogram,correlation,warnings}
 }

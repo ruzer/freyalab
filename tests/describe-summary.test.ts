@@ -39,3 +39,23 @@ it.each([{cells:[]},{cells:[[''],['  '],[]]}])('describe de una columna vacía n
  const result=await analyzeColumn(rows(cells),undefined,request,()=>{},'Vacía')
  expect(result.describe).toEqual({count:0,unique:0,top:null,freq:null,dateMin:null,dateMax:null})
 })
+
+it('describe compara fechas ISO con espacios exteriores y omite siempre su top y frecuencia',async()=>{
+ const source=rows([[' 2026-01-30 '],['2026-03-04'],['2026-01-02'],['2026-03-04'],['  ']]),before=structuredClone(source)
+ const result=await analyzeColumn(source,undefined,request,()=>{},'Alta')
+ expect(result.describe).toEqual({count:4,unique:3,top:null,freq:null,dateMin:'2026-01-02',dateMax:'2026-03-04'})
+ expect(result.profile).toMatchObject({kind:'date',dates:4,invalidDates:0})
+ expect(result.frequencies.find(entry=>entry.value==='2026-03-04')?.count).toBe(2)
+ expect(source).toEqual(before)
+})
+
+it('describe no convierte una columna mixta con fechas imposibles en una fecha uniforme',async()=>{
+ const result=await analyzeColumn(rows([['0000-01-01'],['2026-02-30'],['2024-02-29']]),undefined,request,()=>{},'Alta')
+ expect(result.profile).toMatchObject({kind:'mixed',dates:1,invalidDates:2})
+ expect(result.describe).toEqual({count:3,unique:3,top:'0000-01-01',freq:1,dateMin:null,dateMax:null})
+})
+
+it('describe conserva como distintos los textos de fecha con espacios aunque compare los mismos extremos',async()=>{
+ const result=await analyzeColumn(rows([['0001-01-01'],[' 0001-01-01 '],['9999-12-31']]),undefined,request,()=>{},'Alta')
+ expect(result.describe).toEqual({count:3,unique:3,top:null,freq:null,dateMin:'0001-01-01',dateMax:'9999-12-31'})
+})
