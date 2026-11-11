@@ -1,0 +1,13 @@
+{
+  "platform": "win32",
+  "arch": "x64",
+  "results": [
+    {
+      "artifact": "FreyaLab-0.1.0-alpha.3-win-x64.exe",
+      "extractionOrInstallation": "passed: silent installation and uninstallation in temporary directory",
+      "packagedExecution": "passed",
+      "userSmartScreenTest": "pending manual check; unsigned alpha"
+    }
+  ],
+  "completedAt": "2026-11-11T05:07:48.868Z"
+}

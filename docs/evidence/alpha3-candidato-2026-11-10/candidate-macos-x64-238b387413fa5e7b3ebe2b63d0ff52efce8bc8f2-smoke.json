@@ -1,0 +1,13 @@
+{
+  "platform": "darwin",
+  "arch": "x64",
+  "results": [
+    {
+      "artifact": "FreyaLab-0.1.0-alpha.3-mac-x64.dmg",
+      "extractionOrInstallation": "passed: copied application with preserved symlinks; source DMG detached before launch",
+      "packagedExecution": "passed",
+      "userGatekeeperTest": "pending manual check; no commercial signature/notarization"
+    }
+  ],
+  "completedAt": "2026-11-11T05:12:43.638Z"
+}
