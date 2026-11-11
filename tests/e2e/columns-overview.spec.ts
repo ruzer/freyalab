@@ -38,6 +38,7 @@ test('panorámica: páginas, nombres duplicados, columnas marcadas y detalle con
 
 test('panorámica: cancelar o cambiar revisión descarta respuestas tardías y no continúa columnas',async()=>{
  const {doc,path}=await open(),panel=await overview()
+ await expect(panel.getByRole('button',{name:'Explorar columnas',exact:true})).toBeEnabled()
  await panel.evaluate(element=>{element.querySelector<HTMLFormElement>('form')!.requestSubmit();queueMicrotask(()=>{Reflect.set(window,'overviewCancelledPhase',element.querySelector('[role=status]')?.textContent);const button=[...element.querySelectorAll('button')].find(button=>button.textContent==='Cancelar exploración de columnas');if(!button)throw new Error('Sin cancelación durante el análisis');button.click()})})
  expect(await page.evaluate(()=>Reflect.get(window,'overviewCancelledPhase'))).toBe('Explorando columna 1 de 5…');await expect(panel.getByRole('status')).toHaveText('Exploración de columnas cancelada.');await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:1,requestId:999}),doc.id);await expect(panel.locator('tbody tr')).toHaveCount(0);await expect(panel.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true})).toBeDisabled()
  await panel.evaluate((element,id)=>{element.querySelector<HTMLFormElement>('form')!.requestSubmit();queueMicrotask(()=>Reflect.set(window,'overviewPendingEdit',window.freya.tableEdit(id,{type:'cell',rowId:'1',column:2,value:'99'})))},doc.id)

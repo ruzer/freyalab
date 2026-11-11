@@ -51,6 +51,14 @@ export async function analysisRegion(page:Page,name:string){
  if(!id)throw new Error('No hay una pestaña de análisis activa')
  return page.locator('[id='+JSON.stringify(id)+']').getByRole('region',{name,exact:true,includeHidden:true})
 }
+export async function openColumnExplorer(page:Page){
+ await openAnalysis(page,'Estadísticas')
+ const statistics=await analysisRegion(page,'Estadísticas por columna')
+ const explorer=statistics.getByRole('region',{name:'Exploración de columna',exact:true})
+ if(!await explorer.isVisible())await statistics.locator('summary').filter({hasText:'Explorar una columna'}).click()
+ await expect(explorer).toBeVisible()
+ return explorer
+}
 export const analysisResultExport=(page:Page)=>workspace(page).locator('.header-export')
 export const chartPanel=(page:Page)=>workspace(page).locator('.charts-panel')
 // El botón manual cubre revisión nueva/archivo grande; en automático se usa el del formulario.
