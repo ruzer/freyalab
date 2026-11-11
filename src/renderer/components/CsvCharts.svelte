@@ -18,7 +18,7 @@
  import {chartPivot,chartTop} from '../../shared/chart-pivot'
  import {suggest,type ChartColumn} from '../../shared/chart-suggest'
  import {chartOption,chartSeries,formatChartNumber} from '../chart-option'
- import {chartTrendText} from '../../shared/chart-trend'
+ import {chartTrendText,chartTrendLine} from '../../shared/chart-trend'
  import type {DocumentInfo,SqlResult,TableQuery,TableConditionGroup,TableViewMeta} from '../../shared/types'
  use([BarChart,LineChart,ScatterChart,HeatmapChart,BoxplotChart,GridComponent,TooltipComponent,VisualMapComponent,AriaComponent,TitleComponent,LegendComponent,SVGRenderer])
  let {doc,query,queryValid,viewMeta,visible=true,onDemand=false,exportHost,onclose,onerror}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;visible?:boolean;onDemand?:boolean;exportHost?:HTMLElement;onclose:()=>void;onerror:(message:string)=>void}=$props()
@@ -38,7 +38,7 @@
  let data=$state<ChartData|null>(null),source=$state<SqlResult['sources'][number]|null>(null),busy=$state(false),message=$state('charts.ui.initial'),tablePage=$state(0),ready=$state(false),zoom=$state(1),exporting=$state(false)
  let resultFormat=$state<'csv'|'json'|'md'>('json'),protectFormulas=$state(true),cancellingExport=$state(false),exportJob=$state<string>()
  let hiddenSeries=$state<string[]>([])
- const series=$derived(data?chartSeries(data):[])
+ const series=$derived(data?[...chartSeries(data),...data.trend&&chartTrendLine(data.trend).length?[{name:t('charts.trend.legend')}]:[]]:[])
  let element:HTMLDivElement,chart:ECharts|undefined,active:string|undefined,observedSignature:string|undefined,totalJob:string|undefined,fieldJob:{id:string;requestId:string}|undefined
  let totals=$state<Record<string,string|null>[]>([]),profiles=$state<ChartColumn[]>([]),pivotPage=$state(0),pivotSize=$state(5),fieldsOpen=$state(false),fieldsLoading=$state(true),announcement=$state(''),cancelledSignature=$state<string|null>(null),failed=$state(false),conversion=$state<number|null>(null),pendingFilter=$state<number|undefined>(),samples=$state<Record<number,string[]>>({}),interpretable=$state<Record<number,boolean>>({}),fieldErrors=$state<string[]>([])
  let fieldGeneration=0,fieldRevision:string|undefined,initializedDocument:string|undefined,filterReturn:HTMLElement|null=null,conversionReturn:HTMLElement|null=null

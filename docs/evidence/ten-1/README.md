@@ -70,6 +70,16 @@ Las [salidas Node 24](logs/node24-e2e.log) y las capturas de esta carpeta corres
 
 Antes de congelar la entrega se incorporó también `main` `d89d4dc` (PR #166) en `7c89676b7dec5a42dd3a85c089c24e708ab1fb89`. Ese cambio solo añade evidencia y ajusta la comparación exacta de bytes en `tests/project-sources.test.ts`; no cambia fuentes del producto. La [revalidación después del merge](logs/node24-merge166.log) con Node 24 confirma check 0/0 y **123 casos verdes** de proyecto, tendencia, presentación, presets, exportación y baseline SQL. No se presenta como una nueva ejecución completa de unitarias ni se repiten los 14 recorridos por ese cambio de pruebas.
 
+## Revisión final de visibilidad antes del push
+
+Sobre el head local `7a5a7c6` se reprodujeron dos fallos con Node 24: ocultar Tendencia en la leyenda y después ampliar/cambiar el tema volvía a dibujar la recta (un path cuando se esperaban cero), y la lista existente «Series visibles · controles de teclado» no incluía la tendencia. Se conservan el [rojo funcional de Electron](logs/node24-rojo-visibilidad-e2e.log) y el [rojo unitario de selección](logs/node24-rojo-visibilidad-unit.log).
+
+La leyenda de tendencia utiliza ahora `selected` con el mismo `hiddenSeries` que las demás leyendas. La lista de visibilidad existente recibe «Tendencia» únicamente si `chartTrendLine` devuelve una recta dibujable. El clic y Espacio comparten ese estado; ampliar y cambiar de tema lo conservan. La casilla «Línea de tendencia» sigue marcada y los resultados siguen disponibles al ocultar la línea. El recorrido de teclado verifica que solo hubo una consulta de tendencia.
+
+Node 24: **33 unitarias enfocadas**, check **0 errores/avisos**, build completado y **5/5 E2E verdes, 27,2 s, sin reintentos**. Esos cinco casos comprueban las dos reproducciones, el control solo con recta dibujable (incluida Y constante), cinco puntos/exportaciones y las leyendas categóricas anteriores. La [última suite unitaria completa](logs/node24-unitarias-visibilidad.log) pasó **144 archivos, 2 707 casos y 1 omitido, 38,66 s**, con Pandoc real.
+
+La [captura del control existente con la tendencia oculta](ten1-trend-hidden-keyboard.png) conserva la recta oculta después del redibujo. El PNG/SVG exportado real se volvió a conservar del recorrido verde. No se ejecutó la suite E2E integral: continúa pendiente del cierre de integración coordinado con LIM-1.
+
 ## Capturas de la leyenda final
 
 - [Español claro, 1440×900](ten1-es-light-1440x900.png)

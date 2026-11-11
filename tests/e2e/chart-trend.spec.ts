@@ -103,8 +103,31 @@ test('TEN-1 degenerados explican la ausencia y conservan marcada la opción',asy
   await open(content,name+'.csv');const checkbox=await configure();await checkbox.check();await generate()
   await expect(trend()).toContainText(message);await expect(checkbox).toBeChecked()
   expect(await panel().locator('.plot svg text').filter({hasText:/^Tendencia$/}).count()).toBe(name==='constant-y'?1:0)
+  await expect(panel().getByText('Series visibles · controles de teclado',{exact:true})).toHaveCount(name==='constant-y'?1:0)
   if(name==='constant-y'){await expect(trend()).toContainText('y = 0·x + 7');await expect(trend()).not.toContainText('100%')}
  }
+})
+
+test('TEN-1 ocultar Tendencia en la leyenda persiste después de ampliar y cambiar tema',async()=>{
+ await open();const checkbox=await configure();await checkbox.check();await generate()
+ const line=panel().locator('.plot svg path[stroke-dasharray][fill="none"]'),legend=panel().locator('.plot svg text').filter({hasText:/^Tendencia$/})
+ await expect(line).toHaveCount(1);await legend.click()
+ await panel().getByRole('button',{name:t('charts.ui.zoomIn'),exact:true}).click();await page.getByLabel('Tema',{exact:true}).selectOption('dark')
+ await expect(line).toHaveCount(0);await expect(checkbox).toBeChecked();await expect(trend()).toContainText('5 puntos')
+ await legend.click();await expect(line).toHaveCount(1)
+})
+
+test('TEN-1 controla la misma visibilidad de Tendencia con el teclado existente',async()=>{
+ await spy();await open();const checkbox=await configure();await checkbox.check();await generate()
+ await panel().getByText('Series visibles · controles de teclado',{exact:true}).click()
+ const visibility=panel().getByRole('checkbox',{name:'Tendencia',exact:true}),line=panel().locator('.plot svg path[stroke-dasharray][fill="none"]')
+ await expect(visibility).toBeChecked();await visibility.focus();await page.keyboard.press('Space')
+ await expect(visibility).not.toBeChecked();await expect(line).toHaveCount(0)
+ await panel().getByRole('button',{name:t('charts.ui.zoomIn'),exact:true}).click();await page.getByLabel('Tema',{exact:true}).selectOption('dark')
+ await expect(line).toHaveCount(0);await expect(visibility).not.toBeChecked();await expect(checkbox).toBeChecked()
+ await page.screenshot({path:test.info().outputPath('ten1-trend-hidden-keyboard.png')})
+ await visibility.focus();await page.keyboard.press('Space');await expect(visibility).toBeChecked();await expect(line).toHaveCount(1)
+ expect(await queries()).toHaveLength(1)
 })
 
 test('TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia',async()=>{
