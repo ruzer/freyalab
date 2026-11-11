@@ -51,6 +51,7 @@
     }catch(error){
      if(ticket!==serial)return
      const detail=String(error).replace(/^.*Error: /,'')
+     // shortcut: el motor aún identifica este límite por su mensaje fijo; usar un código estable antes de traducirlo.
      if(!detail.includes('100 000 valores distintos'))throw error
      const current=(await window.freya.documents()).find(value=>value.id===id)
      if(ticket!==serial)return

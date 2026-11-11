@@ -44,7 +44,7 @@ Equipo: macOS Apple silicon local, Node 24.22.1, Electron del lockfile. Todos lo
 | `npx playwright test tests/e2e/analysis-describe.spec.ts --project=csv --grep 'cardinalidad textual' --retries=0` | Selector corregido: 1/1 aprobada; 3,1 s; producto sin cambio |
 | `npx playwright test tests/e2e/ui.spec.ts tests/e2e/ui-u0.spec.ts --grep 'estadísticas\|Calculando' --retries=0` | 5/5 aprobadas; 7,6 s; incluye muestra, encabezados duplicados, límite, teclado y spinner en es/en/en-XA |
 
-La primera ejecución completa de unitarias dentro de la restricción de puertos produjo EPERM al crear servidores de prueba locales: 26 fallos y 9 omisiones de Pandoc derivados de ese montaje. Se repitió **la suite completa**, sin cambiar pruebas ni configuración, con los puertos locales autorizados; el resultado de 2.687/1 es ese segundo comando real. La única omisión restante es el control de HTTP de Pandoc: el binario local 3.12.1 no lo soporta; no se atribuye cobertura HTTP a ese binario.
+La primera ejecución completa de unitarias dentro de la restricción de puertos produjo EPERM al crear servidores de prueba locales: 26 fallos y 9 omisiones de Pandoc derivados de ese montaje. Se repitió **la suite completa**, sin cambiar pruebas ni configuración, con los puertos locales autorizados; el resultado de 2.687/1 es ese segundo comando real. La única prueba omitida es `tests/package-smoke.test.ts:18`, exclusiva de Windows. Pandoc 3.12.1 sí ejecutó sus nueve pruebas; el mensaje de control HTTP informa que ese binario no soporta HTTP y **no es una omisión de Vitest**. Por ello no se atribuye eficacia del sandbox HTTP a ese binario.
 
 La comparación estática de navegación e Información está en [ledger-navegacion-legacy.md](an-2/ledger-navegacion-legacy.md) y [ledger-info-legacy.md](an-2/ledger-info-legacy.md). Todas las cifras originales, etiquetas, límites, archivos, seguridad, revisión y plazos se conservan. El montaje adicional P5 está en el commit propio `5f89dda`, con su [procedencia y reproducción](an-2/p5-readiness/README.md).
 
@@ -69,3 +69,5 @@ Se comprobó teclado real, encabezados scope, caption, nombres largos de abrevia
 - Los informes y explicaciones legacy mantienen su idioma/semántica anterior; la nueva matriz y sus textos tienen catálogo es/en y prueba en-XA.
 
 No se subieron dependencias, no se cambiaron filtros/SQL, no se toca el CSV al consultar ni se saltan pruebas de integridad. El siguiente paso es la revisión del sucesor y su calificación integral; no hay fusión automática.
+
+Antes del cierre integral se incorporó por merge normal el head final de AN-1b `3923a98`, que tras d210 solo añade documentación/evidencia y corrige la identificación de la omisión Windows. El reconocimiento del límite textual por mensaje fijo en español queda señalado como shortcut: debe migrar a código estable antes de traducir el backend, sin ampliar IPC en AN-2.

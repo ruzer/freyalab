@@ -49,7 +49,12 @@
       if(!current())return
       if(result.revision!==revision||result.sample!==capturedSample||result.cells!==matched||result.profile.kind!==profile.kind)throw new Error(t('describe.error.changed'))
       entry.description=result.describe
-     }catch(error){if(!current())return;if(!String(error).includes('100 000 valores distintos'))throw error;entry.unavailable=true}
+     }catch(error){
+      if(!current())return
+      // shortcut: mismo límite por mensaje del motor; migrar a un código estable antes de traducir el backend.
+      if(!String(error).includes('100 000 valores distintos'))throw error
+      entry.unavailable=true
+     }
     }
     active=undefined;entries=[...entries,entry]
    }
