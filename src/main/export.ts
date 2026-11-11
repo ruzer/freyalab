@@ -179,7 +179,9 @@ async function writeExport(docs:Documents,id:string,request:ExportRequest,valida
   }finally{window.destroy()}
  }
  validateSource?.()
- await atomicWrite(destination,data);return{path:destination,mathWarnings:academic?.mathWarnings??0}
+ if(request.format==='csv'||request.format==='tsv')await docs.writeProjectDestination(destination,()=>atomicWrite(destination,data))
+ else await atomicWrite(destination,data)
+ return{path:destination,mathWarnings:academic?.mathWarnings??0}
 }
 
 async function exportDestination(source:string,format:string,analysis=false){
@@ -193,6 +195,7 @@ async function exportDestination(source:string,format:string,analysis=false){
 async function validateDestination(docs:Documents,destination:string,format:string){
  if((await lstat(destination).catch(()=>null))?.isSymbolicLink())throw new Error('No se exporta sobre enlaces simbólicos.')
  const target=await realpath(destination).catch(()=>resolve(destination))
+ if(format==='csv'||format==='tsv')docs.assertWritableDestination(target)
  for(const r of docs.records.values()){if(r.info.path&&target===(await realpath(r.info.path).catch(()=>resolve(r.info.path!))))throw new Error('Exporta a una ruta distinta de los archivos abiertos. Usa Guardar para modificar el original.')}
  if(extname(destination).toLowerCase()!==`.${format}`)throw new Error(`El destino debe terminar en .${format}.`)
 }
@@ -200,20 +203,22 @@ export async function exportResult(docs:Documents,id:string,request:{format:'csv
  if(Buffer.byteLength(request.content)>20*1024*1024||Buffer.byteLength(request.context??'')>20*1024*1024)throw new Error('El informe supera 20 MiB por archivo. Reduce el análisis.')
  const destination=await exportDestination(docs.get(id).info.name,request.format,true)
  if(!destination)return null
- await validate();await validateDestination(docs,destination,request.format)
- if(request.format!=='csv'){await validate();await atomicWrite(destination,request.content);return destination}
- if(!request.context)throw new Error('Falta el contexto JSON del CSV.')
+ await validate();await docs.verifyProjectSource(id);await validateDestination(docs,destination,request.format)
+ if(request.format!=='csv'){await validate();await docs.writeProjectDestination(destination,()=>atomicWrite(destination,request.content));return destination}
+ const context=request.context
+ if(!context)throw new Error('Falta el contexto JSON del CSV.')
  const companion=destination+'.contexto.json';await validateDestination(docs,companion,'json')
+ return docs.writeProjectDestination(destination,()=>docs.writeProjectDestination(companion,async()=>{
  const reserved=new Map<string,string>(),empty=createHash('sha256').update('').digest('hex')
  try{
   // Two files cannot be committed atomically together; reserve new names and roll back only our own bytes.
   for(const path of [destination,companion]){const handle=await open(path,'wx',0o600);reserved.set(path,empty);await handle.close()}
-  for(const [path,content] of [[companion,request.context],[destination,request.content]]){await validate();await atomicWrite(path,content,empty);reserved.set(path,createHash('sha256').update(content).digest('hex'))}
+  for(const [path,content] of [[companion,context],[destination,request.content]]){await validate();await atomicWrite(path,content,empty);reserved.set(path,createHash('sha256').update(content).digest('hex'))}
   await validate();return destination
  }catch(error){
   const remaining:string[]=[]
   for(const [path,hash] of reserved)try{if(await digest(path)===hash)await unlink(path);else remaining.push(path)}catch(cleanup){if((cleanup as NodeJS.ErrnoException).code!=='ENOENT')remaining.push(path)}
   const message=(error as NodeJS.ErrnoException).code==='EEXIST'?'CSV y contexto requieren nombres nuevos. Elige otro nombre para conservar los archivos existentes.':(error as Error).message
   throw new Error(message+(remaining.length?' No se completó la pareja; revisa estos archivos que se conservaron: '+remaining.join(', '):''))
- }
+ } }))
 }

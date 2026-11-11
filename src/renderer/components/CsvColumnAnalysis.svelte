@@ -1,15 +1,17 @@
 <script lang="ts">
  import {t} from '../lib/i18n.svelte'
+ import {csvAnalysisSample} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
  import {PROFILE_FIELDS,NUMERIC_DETAIL_FIELDS,NUMERIC_DETAIL_HELP,columnReport,type ColumnReportContext} from '../lib/statistics-report'
  import {onDestroy} from 'svelte'
  import {columnSummary} from '../../shared/column-profile'
- import type {DocumentInfo,TableQuery,ColumnAnalysis,ColumnAnalysisRequest} from '../../shared/types'
- let {doc,query,queryValid,onerror,onreport,column=$bindable(0),scope=$bindable('all')}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;column?:number;scope?:'all'|'view';onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
+ import type {DocumentInfo,TableQuery,ColumnAnalysis,ColumnAnalysisRequest,TableViewMeta} from '../../shared/types'
+ let {doc,query,queryValid,viewMeta,onerror,onreport,column=$bindable(0),scope=$bindable('all')}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;column?:number;scope?:'all'|'view';onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
  let otherColumn=$state(-1),duplicatesOnly=$state(false),bins=$state(10)
  let result=$state<ColumnAnalysis|null>(null),busy=$state(false),message=$state('Elige una columna. El análisis no modifica los datos.'),page=$state<'profile'|'frequencies'|'distribution'|'correlation'>('profile')
  let reportContext=$state<ColumnReportContext|null>(null),reporting=$state(false)
  let active:string|null=null
+ const sample=$derived(csvAnalysisSample(doc,viewMeta))
  const queryKey=$derived(JSON.stringify([query.search,query.filters,query.sort,query.order,query.conditions,query.filterMode]))
  function cancel(){if(active){void window.freya.cancelAnalysis(doc.id,active).catch(()=>{});active=null}busy=false;result=null;reportContext=null}
  onDestroy(cancel)
@@ -17,9 +19,9 @@
  $effect(()=>{void column;void otherColumn;void scope;void duplicatesOnly;void bins;cancel();message='Opciones actualizadas. Pulsa Explorar columna.'})
  async function analyze(offset=0){
   cancel();const request:ColumnAnalysisRequest={column,otherColumn:otherColumn<0?undefined:otherColumn,query:scope==='view'?$state.snapshot(query):undefined,revision:doc.revision,requestId:crypto.randomUUID(),frequencyOffset:offset,duplicatesOnly,bins}
-  const context:ColumnReportContext={source:doc.name,revision:doc.revision,sample:doc.readonly,dirty:doc.dirty,scope:doc.readonly?request.query?'Vista filtrada de la muestra':'Muestra completa':request.query?'Vista filtrada':'Documento completo',analyzedAt:new Date().toISOString(),query:request.query,columnName:doc.headers?.[column]??'',otherColumnName:doc.headers?.[otherColumn],duplicatesOnly}
+  const context:Omit<ColumnReportContext,'sample'|'scope'>={source:doc.name,revision:doc.revision,dirty:doc.dirty,analyzedAt:new Date().toISOString(),query:request.query,columnName:doc.headers?.[column]??'',otherColumnName:doc.headers?.[otherColumn],duplicatesOnly}
   active=request.requestId;busy=true;message='Analizando columna…'
-  try{const data=await window.freya.analyzeColumn(doc.id,request);if(active!==request.requestId)return;result=data;reportContext={...context,sample:data.sample};message='Exploración completa.'}
+  try{const data=await window.freya.analyzeColumn(doc.id,request);if(active!==request.requestId)return;result=data;reportContext={...context,sample:data.sample,scope:data.sample?request.query?'Vista filtrada de la muestra':'Muestra completa':request.query?'Vista filtrada':'Documento completo'};message='Exploración completa.'}
   catch(error){if(active===request.requestId){message=String(error).replace(/^.*Error: /,'');onerror(message)}}
   finally{if(active===request.requestId){active=null;busy=false}}
  }
@@ -32,13 +34,13 @@
 <section class="column-explorer" aria-label="Exploración de columna">
  <form onsubmit={event=>{event.preventDefault();void analyze()}}>
   <label>Columna <select aria-label="Columna para explorar" bind:value={column} disabled={busy}>{#each doc.headers??[] as name,index}<option value={index}>{index+1}. {name||`Columna ${index+1}`}</option>{/each}</select></label>
-  <label>Filas <select aria-label="Filas para explorar" bind:value={scope} disabled={busy}><option value="all">{doc.readonly?'Muestra completa':'Documento completo'}</option><option value="view">{doc.readonly?'Vista de la muestra':'Vista filtrada'}</option></select></label>
+  <label>Filas <select aria-label="Filas para explorar" bind:value={scope} disabled={busy}><option value="all">{sample===undefined?t('analysis.scope.pending'):sample?'Muestra completa':'Documento completo'}</option><option value="view">{sample?'Vista de la muestra':'Vista filtrada'}</option></select></label>
   <button aria-busy={busy} {...controlHint(busy?'busy':!queryValid?'scope':!Number.isInteger(bins)||bins<1||bins>30?'parameters':null)} type="submit" disabled={busy||!queryValid||!Number.isInteger(bins)||bins<1||bins>30}>{#if busy}<span class="button-spinner" aria-hidden="true"></span>{/if}<span class:busy-label={busy} data-loading={t('ui.button.calculating')}>Explorar columna</span></button>
   {#if busy}<button class="btn-ghost" type="button" onclick={()=>{cancel();message='Exploración cancelada.'}}>Cancelar exploración</button>{/if}
   <button {...controlHint(busy||reporting?'busy':!result||!reportContext?'result':doc.revision!==result.revision?'refresh':page==='correlation'&&!result.correlation?'correlation':null, "Abrir como documento editable la vista actual; en frecuencias incluye solo la página cargada")} type="button"  disabled={!result||!reportContext||busy||reporting||doc.revision!==result.revision||page==='correlation'&&!result.correlation} onclick={report}>Abrir informe Markdown</button>
  </form>
  <p role="status">{message}</p>
- {#if doc.readonly}<p class="notice">Solo muestra: todos los resultados describen hasta 200 registros; no el archivo completo.</p>{/if}
+ {#if sample===true}<p class="notice">Solo muestra: todos los resultados describen hasta 200 registros; no el archivo completo.</p>{/if}
  <div class="views" aria-label="Vistas de exploración">{#each tabs as [value,label]}<button aria-pressed={page===value} onclick={()=>page=value}>{label}</button>{/each}</div>
  {#if page==='frequencies'}<label class="option"><input type="checkbox" bind:checked={duplicatesOnly} disabled={busy}/>Solo valores repetidos</label>{/if}
  {#if page==='distribution'}<label class="option">Intervalos <input aria-label="Número de intervalos" type="number" min="1" max="30" bind:value={bins} disabled={busy}/></label>{/if}

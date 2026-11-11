@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:19213) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/analysis-tab.spec.ts:214:1 › AN-1b ignora la disposición antigua del panel al abrir un perfil existente (16.6s)
+
+
+  1) [csv] › tests/e2e/analysis-tab.spec.ts:214:1 › AN-1b ignora la disposición antigua del panel al abrir un perfil existente
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('.analysis-dock')
+    Expected: 0
+    Received: 1
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveCount" locator('.analysis-dock') with timeout 15000ms
+      - waiting for locator('.analysis-dock')
+        34 × locator resolved to 1 element
+           - unexpected value "1"
+
+
+      220 |  await open()
+      221 |  await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()
+    > 222 |  await expect(page.locator('.analysis-dock')).toHaveCount(0)
+          |                                               ^
+      223 |  await expect(tab()).toHaveCount(0)
+      224 |  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('freya-workspace')!))).toEqual(previous)
+      225 |  expect(await page.evaluate(()=>localStorage.getItem('an1b-preferencia-ajena'))).toBe('conservar')
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/analysis-tab.spec.ts:222:47
+
+    Error Context: test-results/analysis-tab-AN-1b-ignora--62083-l-abrir-un-perfil-existente-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-tab-AN-1b-ignora--62083-l-abrir-un-perfil-existente-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-tab-AN-1b-ignora--62083-l-abrir-un-perfil-existente-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/analysis-tab.spec.ts:214:1 › AN-1b ignora la disposición antigua del panel al abrir un perfil existente

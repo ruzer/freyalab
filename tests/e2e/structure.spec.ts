@@ -4,7 +4,7 @@ import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,mkdir,rm} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
-import {menuItem} from './panel'
+import {openAnalysis,showPanel,closeAnalysis,chartPanel,menuItem} from './panel'
 import {runApplicationMenu} from './application-menu'
 import {readCalculationError,type CalculateColumnEdit} from '../../src/shared/calculated-column'
 import {calculationFunctionGroups} from '../../src/shared/calculation-help'
@@ -206,10 +206,9 @@ test('H15-2b: el ejemplo Condition calcula en el idioma de la interfaz [en]',asy
  expect(await readFile(path,'utf8')).toBe(source)
 })
 
-test('H15-2: dejar Resumen cancela su perfilado y permite preparar la fórmula',async()=>{
+test('H15-2: cerrar Análisis cancela su perfilado y permite preparar la fórmula',async()=>{
  const source='Precio,Cantidad,Fecha,Nombre,Apellido\n10.10,2,2026-02-04,Ana,López\n'
  const {path}=await open(source)
- const views=page.locator('[data-csv-view]')
  type Gate={chartRequest?:string;cancelled:boolean;release?:()=>void;restore:()=>void}
  await app.evaluate(({ipcMain})=>{
   type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
@@ -236,9 +235,9 @@ test('H15-2: dejar Resumen cancela su perfilado y permite preparar la fórmula',
   return {held:!!gate?.chartRequest,cancelled:!!gate?.cancelled}
  })
  try{
-  await views.getByRole('button',{name:'Resumen y gráfico',exact:true}).click()
+  await openAnalysis(page,'Gráficos')
   await expect.poll(gateState).toEqual({held:true,cancelled:false})
-  await views.getByRole('button',{name:'Tabla',exact:true}).click()
+  await closeAnalysis(page)
   await expect.poll(gateState).toEqual({held:true,cancelled:true})
   const panel=await calculationDialog()
   await app.evaluate(()=>{(globalThis as typeof globalThis&{__calculationProfileGate?:Gate}).__calculationProfileGate?.release?.()})
@@ -247,8 +246,8 @@ test('H15-2: dejar Resumen cancela su perfilado y permite preparar la fórmula',
   await expect(panel.getByRole('status')).toContainText('Vista previa lista')
   await expect(panel.getByRole('table')).toContainText('20.20')
   await page.keyboard.press('Escape')
-  await views.getByRole('button',{name:'Resumen y gráfico',exact:true}).click()
-  await expect(page.locator('.pivot-result')).toBeVisible()
+  await showPanel(page,'Gráficos')
+  await expect(chartPanel(page).locator('.pivot-result')).toBeVisible()
   expect(await readFile(path,'utf8')).toBe(source)
  }finally{
   await app.evaluate(()=>{

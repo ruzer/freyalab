@@ -15,7 +15,6 @@ it.each([
  ['src/renderer/lib/markdown-editing.ts',['shell','md'],false],
  ['src/renderer/components/CsvTable.svelte',['shell','csv'],false],
  ['src/renderer/lib/csv-text-model.ts',['shell','csv'],false],
- ['src/renderer/components/AnalysisDock.svelte',['shell','csv'],false],
  ['src/main/table-worker.ts',['shell','csv'],true],
  ['src/main/large-search-worker.ts',['shell','csv'],true],
  ['tests/markdown-commands.test.ts',[],false],

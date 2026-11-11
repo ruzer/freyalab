@@ -117,6 +117,16 @@ it('APP-01 · conserva la paleta CSV por el mismo comando y no captura Mod+K en 
  expect(other).toMatchObject({enabled:false});expect(other?.accelerator).toBeUndefined()
 })
 
+it('AN-1b · solo la paleta de análisis mantiene su acelerador CSV en Texto',()=>{
+ const context:ApplicationMenuContext={...base,activeId:'a',focus:'editor',inCodeMirror:true,documents:[{id:'a',name:'datos.csv',kind:'csv',csvView:'text',readonly:false,dirty:true}]}
+ for(const platform of ['darwin','win32','linux'] as const){
+  const menu=flatten(applicationMenu(context,()=>{},platform))
+  expect(menu.find(item=>item.id==='edit.commandPalette')).toMatchObject({enabled:true,accelerator:'CommandOrControl+K'})
+  expect(menu.find(item=>item.id==='go.row')).toMatchObject({enabled:false})
+  expect(menu.find(item=>item.id==='go.row')?.accelerator).toBeUndefined()
+ }
+})
+
 it('APP-01 · Rehacer conserva el atajo nativo de cada plataforma',()=>{
  const key=(platform:NodeJS.Platform)=>flatten(applicationMenu({...base,focus:'field'},()=>{},platform)).find(item=>item.id==='edit.redo')?.accelerator
  expect(key('win32')).toBe('Control+Y')
@@ -144,4 +154,13 @@ it.each(['win32','linux'] as const)('APP-01 M8 · Zoom despacha una acción de v
 })
 it('APP-01 M8 · macOS conserva el rol Zoom del sistema',()=>{
  expect(flatten(applicationMenu(base,()=>{},'darwin')).find(item=>item.id==='window.zoom')?.role).toBe('zoom')
+})
+
+it('AN-1a permite cerrar o recorrer pestañas de análisis y deshabilita guardar y exportar el CSV',()=>{
+ const csv={id:'a',name:'datos.csv',kind:'csv' as const,readonly:false,dirty:false}
+ const menu=(analysis:'open'|'active')=>flatten(applicationMenu({...base,activeId:csv.id,documents:[csv],analysis},()=>{},'linux'))
+ const enabled=(items:ReturnType<typeof menu>,id:string)=>items.find(item=>item.id===id)?.enabled
+ for(const id of ['file.save','file.saveAs','file.exports','edit.commandPalette'])expect(enabled(menu('active'),id)).toBe(false)
+ for(const id of ['file.close','go.nextTab','go.previousTab'])expect(enabled(menu('active'),id)).toBe(true)
+ expect(enabled(menu('open'),'file.save')).toBe(true)
 })

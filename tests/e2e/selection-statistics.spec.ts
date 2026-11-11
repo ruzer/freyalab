@@ -4,7 +4,7 @@ import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,mkdir,rm,truncate,stat} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
-import {numericOrder,showPanel} from './panel'
+import {numericOrder,showPanel,showTable} from './panel'
 let app:ElectronApplication,page:Page,folder:string
 const source='ID,Grupo,X,Y\r\n00123,A,2,10\r\n9007199254740993,B,100,1000\r\n00007,A,4,20\r\n00008,A,6,30\r\n'
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-selection-stats-e2e-'));await mkdir(join(folder,'exports'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
@@ -20,18 +20,22 @@ test('estadísticas del rango: vista ordenada/filtrada, resumen conjunto y por c
  expect((await cells(stats)).slice(0,10)).toEqual(['Celdas del rango','4','0','4','4','60','15','4','30','13']);await expect(stats.locator('caption')).toContainText('filas 1–2, columnas 3–4');await expect(stats.getByRole('columnheader',{name:'Desv. poblacional (n)',exact:true})).toBeAttached()
  await stats.getByLabel('Columnas para estadísticas',{exact:true}).selectOption('rangeColumns');await analyze(stats);expect((await cells(stats)).slice(0,10)).toEqual(['3. X','2','0','2','2','10','5','4','6','5']);expect((await cells(stats,1)).slice(0,10)).toEqual(['4. Y','2','0','2','2','50','25','20','30','25']);expect((await cells(stats)).slice(12)).toEqual(['0','0','0'])
  for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);for(const [width,height] of [[1440,900],[1280,800]]){await page.setViewportSize({width,height});await stats.locator('.statistics-scroll').evaluate(element=>element.scrollLeft=element.scrollWidth);await page.screenshot({path:test.info().outputPath(`csv-selection-stats-${theme}-${width}x${height}.png`)})}}
- await page.setViewportSize({width:1440,height:900}) // a 1280 px el panel se abre ampliado y oculta la tabla; el resto de la prueba vuelve a usarla
+ await page.setViewportSize({width:1440,height:900})
  expect(await page.evaluate(()=>window.freya.documents())).toEqual(before);expect(await page.evaluate(()=>window.freya.recoveries())).toEqual([]);expect(await readFile(path,'utf8')).toBe(source)
- await page.getByLabel('Buscar en tabla',{exact:true}).fill('B');await expect(stats.locator('tbody tr')).toHaveCount(0);await expect(stats.getByRole('button',{name:'Analizar',exact:true})).toBeDisabled();await expect(page.locator('footer')).toContainText('1 de 4 filas')
- await page.getByRole('gridcell',{name:'Fila 1, X',exact:true}).click();await page.keyboard.press('Shift+ArrowRight');await analyze(stats);expect((await cells(stats)).slice(0,10)).toEqual(['3. X','1','0','1','1','100','100','100','100','100']);expect((await cells(stats,1)).slice(0,10)).toEqual(['4. Y','1','0','1','1','1,000','1,000','1,000','1,000','1,000'])
- const value=page.getByRole('gridcell',{name:'Fila 1, Y',exact:true});await value.dblclick();await page.getByLabel('Editar celda',{exact:true}).fill('2000');await page.getByLabel('Editar celda',{exact:true}).press('Enter');await expect(stats.locator('tbody tr')).toHaveCount(0);await expect(stats.getByRole('button',{name:'Analizar',exact:true})).toBeDisabled();expect(await readFile(path,'utf8')).toBe(source)
+ await showTable(page);await page.getByLabel('Buscar en tabla',{exact:true}).fill('B');await showPanel(page,'Estadísticas')
+ await expect(stats.locator('tbody tr')).toHaveCount(0);await expect(stats.getByRole('button',{name:'Analizar',exact:true})).toBeDisabled();await expect(page.locator('footer')).toContainText('1 de 4 filas')
+ await showTable(page);await page.getByRole('gridcell',{name:'Fila 1, X',exact:true}).click();await page.keyboard.press('Shift+ArrowRight');await showPanel(page,'Estadísticas')
+ await analyze(stats);expect((await cells(stats)).slice(0,10)).toEqual(['3. X','1','0','1','1','100','100','100','100','100']);expect((await cells(stats,1)).slice(0,10)).toEqual(['4. Y','1','0','1','1','1,000','1,000','1,000','1,000','1,000'])
+ const value=page.getByRole('gridcell',{name:'Fila 1, Y',exact:true});await showTable(page);await value.dblclick();await page.getByLabel('Editar celda',{exact:true}).fill('2000');await page.getByLabel('Editar celda',{exact:true}).press('Enter');await showPanel(page,'Estadísticas')
+ await expect(stats.locator('tbody tr')).toHaveCount(0);await expect(stats.getByRole('button',{name:'Analizar',exact:true})).toBeDisabled();expect(await readFile(path,'utf8')).toBe(source)
 })
 
 test('estadísticas del rango: cancelar interrumpe y reintentar conserva la selección al paginar',async()=>{
  const text='ID,N\n'+'00123,4\n'.repeat(50000),{path}=await open(text),before=await page.evaluate(()=>window.freya.documents());await page.getByRole('gridcell',{name:'Fila 1, N',exact:true}).click();await page.keyboard.press('ControlOrMeta+Shift+End');const stats=await panel('range')
  await stats.evaluate(element=>{element.querySelector<HTMLFormElement>('form')!.requestSubmit();queueMicrotask(()=>{const cancel=[...element.querySelectorAll<HTMLButtonElement>('button')].find(button=>button.textContent==='Cancelar análisis');if(!cancel)throw new Error('No apareció Cancelar análisis');cancel.click()})});await expect(stats.getByRole('status')).toHaveText('Análisis cancelado.');await expect(stats.locator('tbody tr')).toHaveCount(0)
  await analyze(stats);const values=await cells(stats);expect(values[0]).toBe('Celdas del rango');expect(values[1]).toMatch(/50[,.]000/);expect(values[9]).toBe('4');expect(values.slice(10)).toEqual(['0','0','0','0','0'])
- await page.getByRole('grid',{name:'Tabla de datos'}).evaluate(element=>element.scrollTop=0);await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00123');await expect(stats.locator('tbody tr')).toHaveCount(1);expect(await page.evaluate(()=>window.freya.documents())).toEqual(before);expect(await readFile(path,'utf8')).toBe(text)
+ await showTable(page);await page.getByRole('grid',{name:'Tabla de datos'}).evaluate(element=>element.scrollTop=0);await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00123');await showPanel(page,'Estadísticas')
+ await expect(stats.locator('tbody tr')).toHaveCount(1);expect(await page.evaluate(()=>window.freya.documents())).toEqual(before);expect(await readFile(path,'utf8')).toBe(text)
 })
 
 test('estadísticas del rango: muestra limitada, campos nuevos y validación IPC sin atribuir totales globales',{tag:'@perf'},async()=>{

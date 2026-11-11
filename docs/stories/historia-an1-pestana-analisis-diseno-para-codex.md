@@ -84,8 +84,16 @@ Como persona que trabaja con un CSV, quiero que el archivo se abra solo con la t
    | **Borrar** | `dock-expanded.spec.ts` (7), `dock-startup.spec.ts` (4), `dock-resize.spec.ts` (5) y `tests/workspace-layout.test.ts` (16 unitarias), junto con `workspace-layout.ts` si queda sin uso | Prueban el panel lateral en sí: ampliar, acoplar, divisor, ancho guardado y arranque según la ventana. Con la pestaña ya no existe nada de eso |
    | **Borrar** | En `analysis-dock.spec.ts`: «la tabla conserva las filas que tenía sin panel» (:41), «a 1366×768… tres columnas» (:53) y «el gráfico… no se desplaza en horizontal» (:93) | Hablan de compartir el ancho con la tabla |
    | **Reescribir para la pestaña** | El resto de `analysis-dock.spec.ts`: secciones accesibles por teclado (:61), cambiar de sección conserva el gráfico y el borrador SQL (:73), cerrar desmonta y devuelve el foco (:83). En `compact-toolbar.spec.ts`: «Analizar abre el panel…» (:76) | El comportamiento sigue existiendo en la pestaña. Coincide con los criterios 2, 7 y 11 de AN-1 |
-   | **No tocar la prueba, solo el ayudante** | `charts`, `csv-summary`, `chart-fields`, `sql`, `ui`, `ui-u0`, `structure`, `statistics-reports`, `selection-statistics`, `search`, `descriptive-percentiles`, `commands`, `columns-overview`, `large-file`, `chart-review` | Prueban resultados (sumas, percentiles, SQL, exportaciones) que siguen igual. Casi todas entran por `showPanel` y `analyzeButton` de `tests/e2e/panel.ts`: cambia ese ayudante para que abra la pestaña «Análisis» en la sección pedida. Si una prueba solo comprueba la navegación antigua, pasa a la fila de reescribir |
+   | **No tocar la prueba, solo el ayudante** | `charts`, `csv-summary`, `chart-fields`, `sql`, `ui`, `ui-u0`, `structure`, `statistics-reports`, `selection-statistics`, `search`, `descriptive-percentiles`, `commands`, `columns-overview`, `large-file`, `chart-review` | Prueban resultados (sumas, percentiles, SQL, exportaciones) que siguen igual. Casi todas entran por `showPanel` y `analyzeButton` de `tests/e2e/panel.ts`: cambia ese ayudante para que abra la pestaña «Análisis» en la sección pedida. Si una prueba solo comprueba la navegación antigua, pasa a la fila de reescribir. En `csv-summary`, `chart-fields`, `ui-u0`, `large-file` y `chart-review` se adaptan la navegación directa y las comprobaciones que solo existen en la interfaz retirada, con las condiciones de la nota de abajo |
    | **Añadir** | Una prueba: un perfil con el `workspace` del panel guardado por una versión anterior arranca sin errores y lo ignora | Sustituye a la de «valor guardado corrupto» de `dock-resize.spec.ts` |
+
+   **Condiciones para adaptar pruebas de datos** (autorizado por el propietario):
+   - La navegación pasa por un ayudante común en `tests/e2e/panel.ts` (por ejemplo, `openAnalysis(page, section)`), sin selectores sueltos por archivo.
+   - Una comprobación de la interfaz retirada se **sustituye** por su equivalente en la pestaña cuando la conducta sigue existiendo: nombres en en y en-XA, capturas y disposición a 1280×720 y 1440×900, foco, conservar la configuración al volver.
+   - Solo se **borra** si la conducta desaparece a propósito: `aria-pressed` de «Resumen y gráfico» o el botón por posición (`ui-u0.spec.ts:205`).
+   - El gráfico que salía solo al entrar se sustituye por: comprobar que no se dibuja nada, pulsar la sugerencia «Crear» y mantener intactas todas las aserciones del resultado.
+   - Las aserciones de datos, guardado, seguridad y límites no cambian. En su diff solo pueden cambiar las líneas de navegación.
+   - El PR lista cada comprobación cambiada o borrada con `archivo:línea`, antes y después, y su motivo.
 
    Quita también las entradas de los archivos borrados en el mapa de áreas de CI (`tests/ci-areas.test.ts` y su configuración). En la CI de macOS ARM, los archivos borrados suman unos 2 minutos de E2E por corrida (corrida 42772526410). En el PR: la lista de pruebas borradas con su motivo y el recuento antes y después.
 
@@ -105,7 +113,8 @@ Como persona que trabaja con un CSV, quiero que el archivo se abra solo con la t
 
 ## Casos límite
 - Dos CSV abiertos, cada uno con su análisis. Cerrar uno no toca el otro.
-- El CSV pasa a Texto con cambios de texto sin confirmar: el análisis avisa de datos cambiados cuando se confirmen.
+- **Abrir el análisis desde Texto con cambios sin confirmar** (botón o paleta): aparece el mismo diálogo de hoy, «Guardar y cambiar», «Descartar cambios y cambiar» y «Cancelar». Con Cancelar no se abre el análisis y el texto sigue intacto. Hoy lo cubre `csv-summary.spec.ts:164-167`, y se conserva con el nuevo disparador.
+- Si el análisis ya está abierto y se edita en Texto, avisa de datos cambiados cuando se confirmen.
 - Reinterpretar el CSV con otro separador o codificación invalida todos los resultados.
 - Documento de solo lectura o muestra: los avisos de «muestra limitada» siguen visibles.
 - El análisis abierto mientras el CSV se cierra desde el menú de la app o al salir.

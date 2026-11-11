@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:39798) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 (20.5s)
+
+
+  1) [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720
+
+    Error: expect(locator).toBeInViewport() failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Valores', exact: true })
+    Expected: in viewport
+    Received: viewport ratio 0.8364018201828003
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeInViewport" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Valores', exact: true }) with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Valores', exact: true })
+        33 × locator resolved to <section aria-label="Valores" class="zone svelte-hqvgw9 wide">…</section>
+           - unexpected value "viewport ratio 0.8364018201828003"
+
+
+      64 |  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})
+      65 |  await test.info().attach('an1b-fields-layout',{body:JSON.stringify(await fields.evaluate(root=>Object.fromEntries([':scope','.field-header','input','.field-list','.organize','.zone-content','.zones',...Array.from({length:4},(_,i)=>'.zone:nth-child('+(i+1)+')')].map(selector=>{const node=root.querySelector(selector)??root,box=node.getBoundingClientRect();return[selector,{y:box.y,height:box.height,bottom:box.bottom,scroll:node.scrollHeight,client:node.clientHeight}]})))),contentType:'application/json'})
+    > 66 |  for(const zone of ['Filas','Columnas','Valores','Filtros'])await expect(fields.getByRole('region',{name:zone,exact:true})).toBeInViewport({ratio:1})
+         |                                                                                                                             ^
+      67 | })
+      68 |
+      69 | test('Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario',async()=>{
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/chart-review.spec.ts:66:125
+
+    Error Context: test-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720

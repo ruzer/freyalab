@@ -1,7 +1,8 @@
 <script lang="ts">
  import {t} from '../lib/i18n.svelte'
+ import {csvAnalysisSample,csvAnalysisQueryReady,csvAnalysisQueryKey as viewKey} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
- import {onDestroy} from 'svelte'
+ import {onDestroy,untrack} from 'svelte'
  import {columnSummary} from '../../shared/column-profile'
  import {columnOverviewReport,type ReportContext} from '../lib/statistics-report'
  import type {DocumentInfo,TableQuery,ColumnOverviewRow,TableViewMeta} from '../../shared/types'
@@ -9,19 +10,21 @@
  let scope=$state<'all'|'view'>('all'),selection=$state('all'),busy=$state(false),reporting=$state(false),results=$state<ColumnOverviewRow[]>([])
  let message=$state('Pulsa Explorar columnas para comprender este archivo.'),total=$state(0),rowCount=$state(0),search=$state(''),offset=$state(0),context=$state<ReportContext|null>(null)
  let serial=0,active:{id:string;requestId:string}|null=null,timer:ReturnType<typeof setTimeout>|undefined
- const viewKey=(query:TableQuery)=>JSON.stringify([query.search,query.filters,query.sort,query.order,query.conditions,query.filterMode])
- const viewReady=$derived(queryValid&&viewMeta.requestId>0&&viewMeta.revision===doc.revision&&viewMeta.sample===doc.readonly&&viewKey(query)===viewKey(viewMeta.query))
+ const sample=$derived(csvAnalysisSample(doc,viewMeta))
+ const viewReady=$derived(queryValid&&sample!==undefined&&csvAnalysisQueryReady(doc,query,viewMeta))
  const scopeKey=$derived(scope==='view'?JSON.stringify([scope,viewKey(query),viewReady]):scope)
- const scopeReady=$derived(scope==='all'?doc.rowCount!==undefined&&Number.isSafeInteger(doc.rowCount)&&doc.rowCount>=0:viewReady)
+ const scopeReady=$derived(sample!==undefined&&(scope==='all'?doc.rowCount!==undefined&&Number.isSafeInteger(doc.rowCount)&&doc.rowCount>=0:viewReady))
  const selectionKey=$derived(selection==='selected'?JSON.stringify(columns):'all')
  const visible=$derived(results.filter(row=>`${row.column+1}. ${row.name}`.toLocaleLowerCase().includes(search.toLocaleLowerCase())))
  const failed=$derived(results.filter(row=>'error'in row).length)
  function cancel(){serial++;clearTimeout(timer);if(active)void window.freya.cancelAnalysis(active.id,active.requestId).catch(()=>{});active=null;busy=false;results=[];context=null;offset=0}
  onDestroy(cancel)
- $effect(()=>{void doc.id;void doc.revision;void scopeKey;void selectionKey;cancel();message='Datos o alcance actualizados. Pulsa Explorar columnas.'})
+ // Cambiar de pestaña o de página no cambia la captura del análisis.
+ const invalidationKey=$derived(JSON.stringify([doc.id,doc.revision,scopeKey,selectionKey]))
+ $effect(()=>{void invalidationKey;untrack(()=>{cancel();message='Datos o alcance actualizados. Pulsa Explorar columnas.'})})
  $effect(()=>{void search;offset=0})
  async function explore(){
-  if(!scopeReady){onerror('Espera a que se cargue el alcance elegido antes de explorar.');return}
+  if(sample===undefined||!scopeReady){onerror('Espera a que se cargue el alcance elegido antes de explorar.');return}
   cancel();const ticket=serial,id=doc.id,revision=doc.revision,headers=[...doc.headers??[]],capturedScope=scope,capturedQuery=scope==='view'?$state.snapshot(query):undefined
   const selected=selection==='all'?headers.map((_,index)=>index):[...new Set($state.snapshot(columns))].sort((a,b)=>a-b)
   if(!selected.length){message='Marca al menos una columna en la tabla.';return}
@@ -29,7 +32,7 @@
   total=selected.length;rowCount=0;busy=true;message='Comprobando filas del alcance…'
   timer=setTimeout(()=>{if(ticket===serial){cancel();message='La exploración superó dos minutos. Reduce las columnas o filtra las filas y vuelve a intentarlo.'}},120000)
   try{
-   const matched=capturedQuery?viewMeta.matched:doc.rowCount,capturedSample=doc.readonly
+   const matched=capturedQuery?viewMeta.matched:doc.rowCount,capturedSample=sample
    if(matched===undefined||!Number.isSafeInteger(matched)||matched<0)throw new Error('El alcance no tiene un recuento válido. Vuelve a abrir el archivo.')
    if(matched*selected.length>2_000_000)throw new Error('El alcance supera dos millones de posiciones de celdas. Marca menos columnas o elige una vista filtrada.')
    rowCount=matched
@@ -64,15 +67,15 @@
  <p>Comprende las columnas sin cambiar el archivo. No se ejecuta automáticamente al abrirlo.</p>
  <form onsubmit={event=>{event.preventDefault();void explore()}}>
   <label>Columnas <select aria-label="Columnas para explorar" bind:value={selection} disabled={busy}><option value="all">Todas las columnas</option><option value="selected" disabled={!columns.length}>Columnas marcadas</option></select></label>
-  <label>Filas <select aria-label="Alcance de la vista general" bind:value={scope} disabled={busy}><option value="all">{doc.readonly?'Muestra completa':'Documento completo'}</option><option value="view">{doc.readonly?'Vista filtrada de la muestra':'Vista filtrada'}</option></select></label>
+  <label>Filas <select aria-label="Alcance de la vista general" bind:value={scope} disabled={busy}><option value="all">{sample===undefined?t('analysis.scope.pending'):sample?'Muestra completa':'Documento completo'}</option><option value="view">{sample?'Vista filtrada de la muestra':'Vista filtrada'}</option></select></label>
   <button aria-busy={busy} {...controlHint(busy?'busy':!scopeReady?'scope':null)} type="submit" disabled={busy||!scopeReady}>{#if busy}<span class="button-spinner" aria-hidden="true"></span>{/if}<span class:busy-label={busy} data-loading={t('ui.button.calculating')}>Explorar columnas</span></button>
   {#if busy}<button class="btn-ghost" type="button" onclick={()=>{cancel();message='Exploración de columnas cancelada.'}}>Cancelar exploración de columnas</button><progress aria-label="Progreso de exploración de columnas" value={results.length} max={total}></progress>{/if}
   <button {...controlHint(busy||reporting?'busy':!context?'result':doc.revision!==context.revision?'refresh':null)} type="button" disabled={!context||busy||reporting||doc.revision!==context.revision} onclick={report}>Abrir informe de columnas Markdown</button>
  </form>
  <p role="status">{message}</p>
- {#if doc.readonly}<p class="notice">Solo muestra: los perfiles describen hasta 200 registros; no el archivo completo.</p>{/if}
+ {#if sample===true}<p class="notice">Solo muestra: los perfiles describen hasta 200 registros; no el archivo completo.</p>{/if}
  {#if results.length}
-  <p class="scope">{context?.scope??(doc.readonly?scope==='view'?'Vista filtrada de la muestra':'Muestra completa':scope==='view'?'Vista filtrada':'Documento completo')} · revisión {context?.revision??doc.revision} · {number(rowCount)} filas por columna · {results.length} de {total} columnas{busy?' · en curso; resultados provisionales':''}{failed?' · cobertura parcial':''}</p>
+  <p class="scope">{context?.scope??(sample?scope==='view'?'Vista filtrada de la muestra':'Muestra completa':scope==='view'?'Vista filtrada':'Documento completo')} · revisión {context?.revision??doc.revision} · {number(rowCount)} filas por columna · {results.length} de {total} columnas{busy?' · en curso; resultados provisionales':''}{failed?' · cobertura parcial':''}</p>
   <label>Buscar columnas <input aria-label="Buscar nombres de columnas" bind:value={search} type="search" placeholder="Nombre o posición"/></label>
   <!-- svelte-ignore a11y_no_noninteractive_tabindex (La tabla desplazable debe recibir foco para usar flechas y PageDown.) -->
   <div class="overview-scroll" role="region" aria-label="Perfiles de columnas" tabindex="0"><table>

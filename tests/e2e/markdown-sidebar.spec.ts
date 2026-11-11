@@ -186,6 +186,10 @@ test('P5: almacenamiento bloqueado no impide abrir el documento ni alternar las 
   w.__mdSidebarStorage={reads:0,beforeBootstrap:!document.querySelector('.app-shell')}
   Storage.prototype.getItem=function(){w.__mdSidebarStorage.reads++;throw new DOMException('Almacenamiento bloqueado','SecurityError')};Storage.prototype.setItem=function(){throw new DOMException('Almacenamiento bloqueado','SecurityError')}
  })
+ // La primera apertura ya migró los ajustes. Solo este perfil temporal vuelve
+ // al estado previo a APP-03 para comprobar lecturas legítimas con Storage bloqueado.
+ await expect.poll(()=>page.evaluate(async()=>(await window.freya.settings()).migrationPending)).toBe(false)
+ await rm(join(directory,'profile','settings.json'))
  // La carga inicial ya terminó: recargar antes abortaría su loadFile y cerraría la app.
  await Promise.all([page.waitForEvent('load'),app!.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].webContents.reload())]);await expect(page.locator('.app-shell .toolbar')).toBeVisible()
  const blocked=await page.evaluate(()=>{

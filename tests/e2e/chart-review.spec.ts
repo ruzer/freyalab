@@ -1,3 +1,4 @@
+import {chartPanel,openAnalysis,createSuggestedChart} from './panel'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import { closeElectron } from './close-electron'
 import electronPath from 'electron'
@@ -6,7 +7,7 @@ import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 
 let app:ElectronApplication,page:Page,folder:string,file:string,original:string
-const panel=()=>page.locator('.charts-panel')
+const panel=()=>chartPanel(page)
 async function assign(field:string,zone:string){
  await panel().locator('.field-list').getByRole('button',{name:new RegExp(`^(Añadir|Mover) a… ${field}$`)}).click()
  await page.getByRole('menuitem',{name:new RegExp(`^Añadir a ${zone}(?: |$)`)}).click()
@@ -19,7 +20,7 @@ test.beforeEach(async()=>{
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:'es',FREYALAB_USER_DATA:join(folder,'profile')}})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.emulateMedia({reducedMotion:'reduce'});await page.setViewportSize({width:1280,height:720})
  await page.evaluate(file=>window.freya.openPaths([file]),file)
- await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click()
+ await openAnalysis(page,'Gráficos');await createSuggestedChart(page)
  await expect(panel().locator('.pivot-result')).toBeVisible()
  await assign('Cliente','Filas');await assign('Ventas','Valores')
  await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('1,146,383')
@@ -61,6 +62,7 @@ test('Revisión108 · seis campos y acciones fijas visibles a1280×720',async()=
  await fields.locator('.field-list').evaluate(node=>node.scrollTop=node.scrollHeight)
  await expect(fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true})).toBeInViewport({ratio:1})
  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})
+ await test.info().attach('an1b-fields-layout',{body:JSON.stringify(await fields.evaluate(root=>Object.fromEntries([':scope','.field-header','input','.field-list','.organize','.zone-content','.zones',...Array.from({length:4},(_,i)=>'.zone:nth-child('+(i+1)+')')].map(selector=>{const node=root.querySelector(selector)??root,box=node.getBoundingClientRect();return[selector,{y:box.y,height:box.height,bottom:box.bottom,scroll:node.scrollHeight,client:node.clientHeight}]})))),contentType:'application/json'})
  for(const zone of ['Filas','Columnas','Valores','Filtros'])await expect(fields.getByRole('region',{name:zone,exact:true})).toBeInViewport({ratio:1})
 })
 

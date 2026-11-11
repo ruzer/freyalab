@@ -1,3 +1,4 @@
+import {chartPanel,openAnalysis,selectAnalysis,showPanel,showTable,requestAnalysis,requestAnalysisTab,createSuggestedChart,analyzeButton} from './panel'
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
 import { closeElectron } from './close-electron'
 import electronPath from 'electron'
@@ -17,12 +18,12 @@ test.beforeEach(async()=>{
  await launch()
 })
 test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
-test('F2a: pestaña hermana muestra gráfico y resumen sin generar, con opciones plegadas y fuente intacta', { tag: '@package-smoke' },async()=>{
+test('AN-1b: pestaña de análisis crea gráfico y resumen a petición, con opciones plegadas y fuente intacta', { tag: '@package-smoke' },async()=>{
  const mode=page.locator('[data-csv-view]')
  await expect(mode.getByRole('button',{name:'Tabla',exact:true})).toBeVisible()
  await expect(mode.getByRole('button',{name:'Texto',exact:true})).toBeVisible()
- await mode.getByRole('button',{name:'Resumen y gráfico',exact:true}).click()
- const panel=page.locator('.charts-panel')
+ await openAnalysis(page,'Gráficos');await createSuggestedChart(page)
+ const panel=chartPanel(page)
  await expect(panel.locator('.plot svg path').first()).toBeAttached()
  await expect(panel.getByRole('table',{name:/Resumen/})).toBeVisible()
  await expect(panel.getByText('Más opciones',{exact:true})).toBeVisible()
@@ -32,10 +33,10 @@ test('F2a: pestaña hermana muestra gráfico y resumen sin generar, con opciones
  await expect(page.getByRole('button',{name:'Volver a la tabla',exact:true})).toHaveCount(0)
  await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado')
  expect(await readFile(path,'utf8')).toBe(original)
- await mode.getByRole('button',{name:'Tabla',exact:true}).click();await expect(page.getByRole('grid')).toBeVisible()
+ await showTable(page);await expect(page.getByRole('grid')).toBeVisible()
 })
 
-async function summary(){await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();const panel=page.locator('.charts-panel');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');return panel}
+async function summary(){await showPanel(page,'Gráficos');const panel=chartPanel(page);await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');return panel}
 async function configureSum(){const panel=await summary();await panel.locator('.more-options>summary').click();await panel.getByLabel('Columna Y del gráfico').selectOption('2');await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum');await panel.getByLabel('Series del gráfico').selectOption('1');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await panel.locator('.more-options>summary').click();return panel}
 
 test('F2a: suma por serie, total real, porcentajes y seis tipos alcanzables con teclado',async()=>{
@@ -74,9 +75,9 @@ test('F2a: cuatro capturas reales, resultado y límites visibles en ambos temas 
 test('F2a: estados vacío, error numérico, truncado y ventana estrecha con captura',async()=>{
  let panel=await summary();const [doc]=await page.evaluate(()=>window.freya.documents())
  const empty=join(folder,'vacio.csv');await writeFile(empty,'Campo,Valor\n');await page.evaluate(file=>window.freya.openPaths([file]),empty)
- await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click()
+ await openAnalysis(page,'Gráficos')
  await expect(page.getByText('Elige qué quieres ver: coloca un campo en Filas y un número en Valores.',{exact:true})).toBeVisible();await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-empty.png')})
- await page.getByRole('tab',{name:'ventas.csv',exact:true}).click();panel=await summary()
+ await showTable(page,'ventas.csv');panel=await summary()
  await panel.locator('.more-options>summary').click();await panel.getByLabel('Columna Y del gráfico').selectOption('3');await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum')
  await expect(panel.locator('.result-announcement')).toContainText('No se pudo calcular el resultado. El archivo no se modificó.');expect(await page.locator('body').innerText()).not.toContain('No hay valores numéricos utilizables');await panel.locator('.chart-info>summary').click();await expect(panel.locator('.info-content')).toContainText('No hay valores numéricos utilizables');await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-error.png')});await page.getByRole('button',{name:'Cerrar aviso',exact:true}).click()
  const many=join(folder,'grupos.csv');await writeFile(many,'Grupo,Valor\n'+Array.from({length:150},(_,i)=>`G${i},${i}`).join('\n')+'\n');await page.evaluate(file=>window.freya.openPaths([file]),many)
@@ -88,7 +89,7 @@ test('F2a: estados vacío, error numérico, truncado y ventana estrecha con capt
 
 test('F2a: cargando con cancelar y reintento explícito en 100.000 filas, sin escribir el original',async()=>{
  const content='Grupo\n'+'B\nA\n'.repeat(50000),file=join(folder,'grande.csv');await writeFile(file,content);await page.evaluate(file=>window.freya.openPaths([file]),file)
- await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();const panel=page.locator('.charts-panel')
+ await openAnalysis(page,'Gráficos');await createSuggestedChart(page);const panel=chartPanel(page)
  const generate=panel.getByRole('button',{name:'Generar gráfico',exact:true}),cancel=panel.getByRole('button',{name:'Cancelar gráfico',exact:true})
  const announcement=panel.locator('.chart-result>.result-announcement')
  await expect(panel.getByText('Vista previa manual para este archivo.',{exact:true})).toBeVisible();await expect(panel.locator('.plot svg path')).toHaveCount(0)
@@ -105,7 +106,7 @@ test('F2a: cargando con cancelar y reintento explícito en 100.000 filas, sin es
 test('F2a: idioma inglés, foco, anuncios y ventana de 800 px',async()=>{
  const panel=await configureSum()
  await page.evaluate(()=>window.freya.setLanguage('en'))
- await expect(page.locator('[data-csv-view]').getByRole('button',{name:'Summary and chart',exact:true})).toHaveAttribute('aria-pressed','true')
+ await expect(page.locator('.analysis-sections').getByRole('button',{name:'Charts',exact:true})).toHaveAttribute('aria-pressed','true')
  await expect(panel.getByLabel('Chart configuration',{exact:true})).toHaveText('Sum of Ventas by Región · split by Canal')
  await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Result updated');await expect(panel.locator('.chart-result>.result-announcement')).toHaveAttribute('aria-live','polite')
  await panel.locator('.more-options>summary').focus();await page.keyboard.press('Enter');await expect(panel.getByLabel('Chart X column')).toBeVisible();await panel.locator('.more-options>summary').focus();await page.keyboard.press('Enter')
@@ -118,8 +119,8 @@ test('F2a: idioma inglés, foco, anuncios y ventana de 800 px',async()=>{
 
 test('F2a: en-XA real no recorta el resultado ni desborda los controles',async()=>{
  await app.evaluate(({app})=>app.exit(0));await app.close().catch(()=>{});await launch('en-XA','profile-XA')
- const button=page.locator('[data-csv-view]').getByRole('button').filter({hasText:'Sümmáry'});await expect(button).toBeVisible();await button.click()
- const panel=page.locator('.charts-panel');await expect(panel.locator('.plot svg path').first()).toBeAttached();await expect(panel.locator('.pivot-result')).toBeVisible()
+ await openAnalysis(page,'Gráficos');await createSuggestedChart(page);await expect(page.locator('.analysis-sections button[aria-pressed=true]')).toContainText('Chárts')
+ const panel=chartPanel(page);await expect(panel.locator('.plot svg path').first()).toBeAttached();await expect(panel.locator('.pivot-result')).toBeVisible()
  const box=await panel.locator('.pivot-result').boundingBox();expect(box!.y+box!.height).toBeLessThanOrEqual(720)
  expect(await panel.evaluate(e=>e.scrollWidth<=e.clientWidth)).toBe(true);await expect(panel.locator('.chart-result>.result-announcement')).toHaveAttribute('aria-live','polite')
  await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-en-XA.png')});expect(await readFile(path,'utf8')).toBe(original)
@@ -141,7 +142,7 @@ test('F2a: elegir Líneas aplica la agrupación mensual sugerida para fechas ISO
 
 test('F2a: pocas filas con celdas grandes conservan vista previa manual y límites explicados',async()=>{
  const file=join(folder,'celdas-grandes.csv'),content='Grupo,Valor,Nota\n'+Array.from({length:3000},(_,i)=>`G${i%4},${i%100},${'x'.repeat(350)}`).join('\n')+'\n';await writeFile(file,content);await page.evaluate(file=>window.freya.openPaths([file]),file)
- await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();const panel=page.locator('.charts-panel')
+ await openAnalysis(page,'Gráficos');await createSuggestedChart(page);const panel=chartPanel(page)
  await expect(panel.getByText('Vista previa manual para este archivo.',{exact:true})).toBeVisible();await expect(panel.locator('.plot svg path')).toHaveCount(0)
  await panel.getByRole('button',{name:'Generar gráfico',exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await expect(panel.locator('.pivot-result tfoot')).toContainText('3,000')
  await panel.locator('.chart-info>summary').click();await expect(panel.locator('.info-content')).toContainText('Incluye todas las filas y los cambios pendientes');await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-result-limits.png')});expect(await readFile(file,'utf8')).toBe(content)
@@ -149,23 +150,27 @@ test('F2a: pocas filas con celdas grandes conservan vista previa manual y límit
 
 test('F2a: cambiar desde una celda en edición confirma el borrador sin guardar el archivo',async()=>{
  const grid=page.getByRole('grid',{name:'Tabla de datos',exact:true});await grid.getByRole('gridcell').filter({hasText:'1200'}).first().dblclick();await page.getByRole('textbox',{name:'Editar celda',exact:true}).fill('1350')
- const panel=await summary();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true}).click()
+ const panel=await summary();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await showTable(page)
  await expect(grid.getByRole('gridcell').filter({hasText:'1350'}).first()).toBeVisible();const [doc]=await page.evaluate(()=>window.freya.documents());expect(doc.dirty).toBe(true);expect(await readFile(path,'utf8')).toBe(original)
 })
 
 test('F2a: las herramientas de tabla siguen completas dentro de ambos anchos',async()=>{
  for(const [width,height] of [[1440,900],[1280,720]]){
   await page.setViewportSize({width,height});const bar=page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true})
-  const box=await bar.getByRole('button',{name:'Estadísticas y SQL',exact:true}).boundingBox();expect(box!.x+box!.width).toBeLessThanOrEqual(width)
-  await expect(bar.getByRole('button',{name:'Estadísticas y SQL',exact:true})).toBeVisible()
+  const box=await analyzeButton(page).boundingBox();expect(box!.x+box!.width).toBeLessThanOrEqual(width)
+  await expect(analyzeButton(page)).toBeVisible()
  }
 })
 
-test('F2a: desde Texto con cambios, Cancelar conserva el borrador y descartar abre Resumen sin escribir',async()=>{
+test('AN-1b: desde Texto con cambios, Cancelar conserva el borrador y descartar abre análisis sin escribir',async()=>{
  const mode=page.locator('[data-csv-view]');await mode.getByRole('button',{name:'Texto',exact:true}).click();const editor=page.getByRole('textbox',{name:'Editor CSV como texto',exact:true})
  await editor.press('ControlOrMeta+End');await page.keyboard.insertText('Extra,Web,50,0%\n');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(true)
- await mode.getByRole('button',{name:'Resumen y gráfico',exact:true}).click();let dialog=page.getByRole('dialog');await expect(dialog.getByRole('button',{name:'Guardar y cambiar',exact:true})).toBeVisible();await dialog.getByRole('button',{name:'Cancelar',exact:true}).click();await expect(editor).toContainText('Extra,Web,50,0%');await expect(mode.getByRole('button',{name:'Texto',exact:true})).toHaveAttribute('aria-pressed','true')
- await mode.getByRole('button',{name:'Resumen y gráfico',exact:true}).click();dialog=page.getByRole('dialog');await dialog.getByRole('button',{name:'Descartar cambios y cambiar',exact:true}).click();await expect(mode.getByRole('button',{name:'Resumen y gráfico',exact:true})).toHaveAttribute('aria-pressed','true');await expect(page.locator('.charts-panel').locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');expect(await readFile(path,'utf8')).toBe(original)
+ await requestAnalysis(page);let dialog=page.getByRole('dialog');await expect(dialog.getByRole('button',{name:'Guardar y cambiar',exact:true})).toBeVisible();await expect(dialog.getByRole('button',{name:'Descartar cambios y cambiar',exact:true})).toBeVisible();await expect(dialog.getByRole('button',{name:'Cancelar',exact:true})).toBeVisible();await dialog.getByRole('button',{name:'Cancelar',exact:true}).click();await expect(page.locator('.analysis-workspace:not([hidden])')).toHaveCount(0);await expect(editor).toContainText('Extra,Web,50,0%');await expect(mode.getByRole('button',{name:'Texto',exact:true})).toHaveAttribute('aria-pressed','true')
+ await requestAnalysis(page,app);dialog=page.getByRole('dialog');await dialog.getByRole('button',{name:'Descartar cambios y cambiar',exact:true}).click();await selectAnalysis(page,'Gráficos');await createSuggestedChart(page);await expect(chartPanel(page).locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');expect(await readFile(path,'utf8')).toBe(original)
+ await showTable(page);await mode.getByRole('button',{name:'Texto',exact:true}).click()
+ await editor.press('ControlOrMeta+End');await page.keyboard.insertText('Otro,Web,60,0%\n');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(true)
+ await requestAnalysisTab(page);dialog=page.getByRole('dialog');await expect(dialog.getByRole('button',{name:'Cancelar',exact:true})).toBeVisible();await dialog.getByRole('button',{name:'Cancelar',exact:true}).click()
+ await expect(page.locator('.analysis-workspace:not([hidden])')).toHaveCount(0);await expect(editor).toContainText('Otro,Web,60,0%');expect(await readFile(path,'utf8')).toBe(original)
 })
 
 test('F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor',async()=>{
@@ -207,7 +212,7 @@ test('F2a: alternar Tabla y Resumen es presentación, sin reinterpretar el CSV p
   handlers.set('freya',async(event,...args)=>{if(args[0]==='csvView')state.__csvPresentation!.calls++;return original(event,...args)})
  })
  try{
-  await page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true}).click();await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()
+  await showTable(page);await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()
   await page.evaluate(()=>window.freya.documents())
   expect(await app.evaluate(()=>(globalThis as typeof globalThis&{__csvPresentation?:{calls:number}}).__csvPresentation?.calls)).toBe(0)
   await summary();expect(await page.evaluate(()=>window.freya.documents())).toEqual(before);expect(await readFile(path,'utf8')).toBe(original)

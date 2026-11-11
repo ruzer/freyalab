@@ -2,13 +2,13 @@ import {z} from 'zod'
 
 const sidebar=z.strictObject({visible:z.boolean(),ancho:z.number().min(180).max(420),pestana:z.enum(['files','outline'])})
 const markdown=z.strictObject({modoInicial:z.enum(['edit','split','preview'])})
-const editor=z.strictObject({tabIndents:z.boolean(),indent:z.literal([2,4,'tab'])})
-const editorDefaults={tabIndents:false,indent:2} as const
+const editor=z.strictObject({tabIndents:z.boolean(),indent:z.literal([2,4,'tab']),csvColumnColors:z.boolean().default(true)})
+const editorDefaults={tabIndents:false,indent:2,csvColumnColors:true} as const
 const version=z.string().regex(/^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/)
 const updates=z.strictObject({buscarAlIniciar:z.boolean(),ultimaComprobacion:z.iso.datetime().nullable(),versionesOmitidas:z.array(version)})
 const advanced=z.strictObject({herramientasDeDesarrollo:z.boolean()})
 export const settingsSchema=z.strictObject({version:z.literal(1),idioma:z.enum(['sistema','es','en']),tema:z.enum(['system','light','dark']),barraLateral:sidebar,markdown,editor:editor.default(()=>({...editorDefaults})),division:z.number().min(20).max(80),actualizaciones:updates,avanzado:advanced})
-export const settingsPatchSchema=settingsSchema.omit({version:true}).partial().extend({barraLateral:sidebar.partial().optional(),markdown:markdown.partial().optional(),editor:editor.partial().optional(),actualizaciones:updates.partial().optional(),avanzado:advanced.partial().optional()})
+export const settingsPatchSchema=settingsSchema.omit({version:true}).partial().extend({barraLateral:sidebar.partial().optional(),markdown:markdown.partial().optional(),editor:editor.partial().extend({csvColumnColors:z.boolean().optional()}).optional(),actualizaciones:updates.partial().optional(),avanzado:advanced.partial().optional()})
 export type Settings=z.infer<typeof settingsSchema>
 export type SettingsPatch=z.infer<typeof settingsPatchSchema>
 export interface SettingsState {values:Settings;readonly:boolean;migrationPending:boolean;notice?:string}

@@ -1,5 +1,7 @@
 <script lang="ts">
  import {controlHint} from '../lib/control-hint'
+ import {csvAnalysisViews,csvAnalysisQueryReady} from '../lib/csv-analysis-view'
+ import type {AnalysisSection,AnalysisStatistics} from '../lib/workspace-tabs'
  import Icon from './Icon.svelte'
  import {t} from '../lib/i18n.svelte'
  import {createTable,tableFeatures} from '@tanstack/svelte-table'
@@ -11,18 +13,13 @@
  import CsvCommands,{type CsvCommand} from './CsvCommands.svelte'
  import CsvRangePreview from './CsvRangePreview.svelte'
  import CsvTransform from './CsvTransform.svelte'
- import CsvSql from './CsvSql.svelte'
- import CsvStatistics from './CsvStatistics.svelte'
  import CsvQueryTools from './CsvQueryTools.svelte'
  import CsvExtract from './CsvExtract.svelte'
  import {fidelityLabel} from '../../shared/operations'
- import AnalysisDock from './AnalysisDock.svelte'
- import {workspace,saveWorkspace,settleStartup} from '../lib/workspace.svelte'
- import {dockMode,isNarrow,type DockTab} from '../lib/workspace-layout'
  import {parse} from 'csv-parse/browser/esm/sync'
  import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit,LargeViewState,LargeViewQuery} from '../../shared/types'
  import type {CalculateColumnEdit} from '../../shared/calculated-column'
- let {doc,summary=false,externalChange=false,onsummary,ontable,onchange,onerror,onstatus,onreport,viewControls,commandTitle=(_id:string,label:string)=>label}:{doc:DocumentInfo;summary?:boolean;externalChange?:boolean;onsummary?:()=>void;ontable?:()=>void;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;onreport:(markdown:string)=>Promise<void>;viewControls?:Snippet;commandTitle?:(id:string,label:string)=>string}=$props()
+ let {doc,externalChange=false,onanalysis,analysisHidden=false,onchange,onerror,onstatus,viewControls,commandTitle=(_id:string,label:string)=>label}:{doc:DocumentInfo;externalChange?:boolean;onanalysis:(section?:AnalysisSection,statistics?:AnalysisStatistics)=>void;analysisHidden?:boolean;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;viewControls?:Snippet;commandTitle?:(id:string,label:string)=>string}=$props()
  let showExtract=$state(false),extractButton=$state<HTMLButtonElement>()
  let showCommands=$state(false),commandsButton=$state<HTMLButtonElement>(),commandReturn:HTMLElement|null=null
  type TransformOperation=import('../../shared/types').TableTransformEdit['operation']|'calculate'
@@ -32,35 +29,29 @@
  let largeView=$state<LargeViewState|null>(null),viewReady=$state(false),changingView=$state(false),viewAnnouncement=$state(''),viewGeneration=0
  const viewRunning=$derived(largeView?.status==='running')
  let showGoto=$state(false),gotoValue=$state<number|null>(null),gotoError=$state(''),gotoInput=$state<HTMLInputElement>(),gotoButton=$state<HTMLButtonElement>()
- let bodyWidth=$state(0),userOpened=$state(false) // userOpened: el panel lo abrió la persona en este documento (no se restauró), para que Estadísticas pueda llevar el foco a su encabezado
- // El panel no se monta hasta medir el área: así un panel restaurado que va a empezar cerrado (ventana estrecha) nunca llega a montarse.
- const dockOpen=$derived(workspace.visible&&bodyWidth>0),dockTab=$derived(workspace.tab),mode=$derived(dockMode({visible:workspace.visible,expanded:workspace.expanded,area:bodyWidth})),narrow=$derived(isNarrow(bodyWidth))
- let summaryVisited=$state(false)
- $effect(()=>{if(summary)summaryVisited=true})
- let announcement=$state('')
- $effect.pre(()=>{if(bodyWidth>0)untrack(()=>settleStartup(bodyWidth))})
- let analyzeButton=$state<HTMLButtonElement>()
- let interpreting=$state(false)
- function toggleDock(tab:DockTab){const wasSummary=summary;if(wasSummary)ontable?.();userOpened=true;if(!wasSummary&&workspace.visible&&workspace.tab===tab){workspace.visible=false;workspace.expanded=false}else{workspace.visible=true;workspace.tab=tab}saveWorkspace()}
- async function closeSummary(){ontable?.();await tick();document.querySelector<HTMLButtonElement>('[data-csv-view] button[aria-pressed="true"]')?.focus()}
- function closeDock(button?:HTMLButtonElement){workspace.visible=false;workspace.expanded=false;saveWorkspace();button?.focus()}
- function setExpanded(value:boolean){workspace.expanded=value;announcement=value?'Panel de análisis ampliado':'Panel de análisis acoplado'}
- // Con la ventana estrecha no hay sitio para acoplar: volver a la tabla es cerrar el panel.
- async function backToTable(){if(narrow){closeDock(analyzeButton);return}workspace.expanded=false;announcement='Vuelves a la tabla';await tick();scrollElement?.focus()}
- let conditions=$state<TableFilter[]>([]),order=$state<TableSort[]>([]),filterMode=$state<'all'|'any'>('all'),showQuery=$state(false),queryError=$state(''),filterError=$state(''),queryButton=$state<HTMLElement>()
+ let bodyWidth=$state(0),announcement=$state(''),interpreting=$state(false)
+ function analyze(section:AnalysisSection='info',statistics?:AnalysisStatistics){
+  showQuery=false
+  onanalysis(section,statistics)
+ }
+ const initialView=untrack(()=>csvAnalysisViews.get(doc.id)),initialQuery=initialView?.query
+ let firstLoad=true
+ let conditions=$state<TableFilter[]>(initialQuery?.conditions??[]),order=$state<TableSort[]>(initialQuery?.order??[]),filterMode=$state<'all'|'any'>(initialQuery?.filterMode??'all'),showQuery=$state(false),queryError=$state(''),filterError=$state(''),queryButton=$state<HTMLElement>()
  const locked=$derived(doc.readonly||interpreting||!!queryError)
- const calculationDisabled=$derived(large||doc.readonly?t('calculate.readonly'):externalChange?t('calculate.error.disk'):(doc.headers?.length??0)>=200?t('calculate.error.limitColumns'):locked?t('ui.reason.busy'):'')
- let search=$state(''),filters=$state<Record<string,string>>({}),sort=$state<TableQuery['sort']>(),page=$state<TablePage>({rows:[],total:0,matched:0,revision:0,requestId:0,sample:false}),busy=$state(false),showFilters=$state(false),showReplace=$state(false)
+ const readonlyReason=$derived(doc.projectSource==='protected'?'projectProtected':doc.projectSource==='closed'?'projectClosed':'readonly')
+ const calculationDisabled=$derived(doc.projectSource?t('ui.reason.'+readonlyReason):large||doc.readonly?t('calculate.readonly'):externalChange?t('calculate.error.disk'):(doc.headers?.length??0)>=200?t('calculate.error.limitColumns'):locked?t('ui.reason.busy'):'')
+ let search=$state(initialQuery?.search??''),filters=$state<Record<string,string>>(initialQuery?.filters??{}),sort=$state<TableQuery['sort']>(initialQuery?.sort),page=$state<TablePage>({rows:[],total:0,matched:0,revision:0,requestId:0,sample:false}),busy=$state(false),showFilters=$state(false),showReplace=$state(false)
  const activeOrder=$derived(order.length?order:sort?[sort]:[])
  const filterCount=$derived(large?(largeView?.query.conditions?.length??0)+(largeView?.query.search?1:0):Object.values(filters).filter(Boolean).length+conditions.length+(search?1:0))
  const viewActive=$derived(large?!!largeView&&largeView.status!=='invalidated':filterCount>0||activeOrder.length>0),gotoTotal=$derived(large?(doc.rowCount??page.total):page.matched)
- let selectedRows=$state<string[]>([]),selectedColumns=$state<number[]>([]),selectionStats=$state<TableStats|null>(null)
+ let selectedRows=$state<string[]>([]),selectedColumns=$state<number[]>(initialView?.columns??[]),selectionStats=$state<TableStats|null>(null)
  let searchInput=$state<HTMLInputElement>(),replaceInput=$state<HTMLInputElement>()
  let replaceFind=$state(''),replaceWith=$state(''),header=$state(true),numeric=$state(false)
  let scrollElement=$state<HTMLDivElement>(),pageOffset=$state(0),requestId=0
  let editing=$state<{rowId:string;column:number;value:string}|null>(null),editingHeader=$state<{index:number;value:string}|null>(null)
  type Cell={row:number;column:number}
- let selection=$state<{anchor:Cell;end:Cell;query:TableQuery;revision:number}|null>(null),dragging=$state(false),pendingCell=$state<Cell|null>(null)
+ const initialRange=untrack(()=>initialView?.range?.revision===doc.revision?initialView.range:null)
+ let selection=$state<{anchor:Cell;end:Cell;query:TableQuery;revision:number}|null>(initialRange?{anchor:{row:initialRange.top,column:initialRange.left},end:{row:initialRange.bottom,column:initialRange.right},query:initialRange.query,revision:initialRange.revision}:null),dragging=$state(false),pendingCell=$state<Cell|null>(null)
  let rangeDialog=$state<{edit:TableRangeEdit;cut?:boolean;documentScope?:boolean;column?:{name:string;rows:number;hidden:number;title:string}}|null>(null),context=$state<{x:number;y:number;kind:'range'|'rows'|'columns';column?:number;headerColumn?:number}|null>(null)
  let contextMenu=$state<HTMLDivElement>(),contextReturn:HTMLElement|null=null
  let dragPoint={x:0,y:0}
@@ -85,21 +76,19 @@
   if(column!==undefined&&!conditions.some(rule=>rule.column===column)&&conditions.length<20)conditions=[...conditions,{column,op:'contains',value:''}]
   await tick();showQuery=true
  }
- function columnStatistics(){if(targetColumn===undefined)return;selectedColumns=[targetColumn];context=null;showQuery=false;userOpened=true;workspace.visible=true;workspace.tab='resumen';saveWorkspace()}
+ function columnStatistics(){if(targetColumn===undefined)return;selectedColumns=[targetColumn];context=null;analyze('statistics',{scope:'selected'})}
  const commands=$derived<CsvCommand[]>([
   {id:'goToRow',label:'Ir a la fila…',detail:commandTitle('go.row','Salta a una fila por su número'),disabled:!gotoTotal,run:openGoto},
   {id:'search',label:'Buscar en tabla',detail:large?'Buscar en el archivo completo con Enter · Ctrl/⌘ + F':'Filtra filas · Ctrl/⌘ + F',disabled:large&&!viewReady,run:()=>{searchInput?.focus();searchInput?.select()}},
   {id:'viewDocument',label:'Ver en el documento completo',detail:'Quita la búsqueda y enfoca la fila original · Ctrl/⌘ + Mayús + G',disabled:!large||!viewActive||selectedRows.length!==1,run:()=>revealRow(Number(selectedRows[0]))},
-  {id:'replaceDocument',label:'Reemplazar en documento…',detail:'Documento completo, incluidas filas ocultas · vista previa · Ctrl/⌘ + Mayús + F',disabled:large,run:focusReplace},
+  {id:'replaceDocument',label:'Reemplazar en documento…',detail:doc.projectSource?t('ui.reason.'+readonlyReason):'Documento completo, incluidas filas ocultas · vista previa · Ctrl/⌘ + Mayús + F',disabled:large||!!doc.projectSource,run:focusReplace},
   {id:'filters',label:'Filtros por columna',detail:large?'Usa Filtrar: en archivos grandes cada filtro recorre el archivo':'Mostrar u ocultar filtros de texto en encabezados',disabled:large,run:()=>showFilters=!showFilters},
   {id:'query',label:large?'Filtrar archivo completo':'Consulta avanzada',detail:large?'Filtrar por texto, número, fecha o regex al pulsar Aplicar':'Filtrar por texto, número, fecha o regex; ordenar varias columnas · solo vista',disabled:large&&(!viewReady||changingView),run:()=>large?openLargeFilters():showQuery=!showQuery},
   {id:'extract',label:'Extraer filas a un archivo nuevo…',detail:'Filtra por condiciones y columnas el archivo grande y crea un archivo nuevo; el original no se modifica',disabled:!large,run:()=>{showQuery=false;showExtract=!showExtract}},
   {id:'clearQuery',label:large?'Quitar búsqueda y filtros':'Quitar filtros y orden',detail:'Restaura la vista de todas las filas; no cambia el documento',disabled:large?!largeView:!search&&!Object.values(filters).some(Boolean)&&!sort&&!order.length&&!conditions.length,run:()=>{if(large)return clearView();search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}},
-  {id:'sql',label:'Análisis SQL y asistentes',detail:'Mostrar u ocultar agrupaciones, tablas dinámicas (pivot) y cruces de archivos con DuckDB',disabled:false,run:()=>{showQuery=false;return toggleDock('sql')}},
-  {id:'statistics',label:'Estadísticas y exploración',detail:large?'Las estadísticas llegan en una fase posterior':'Mostrar u ocultar perfiles, frecuencias, valores faltantes, duplicados y correlación',disabled:large,run:()=>toggleDock('resumen')},
-  {id:'charts',label:'Gráficos',detail:'Mostrar u ocultar histogramas, barras, líneas, dispersión, mapas de calor y cajas',disabled:false,run:()=>{showQuery=false;return onsummary?.()}},
-  {id:'dockExpand',label:'Ampliar panel de análisis',detail:'El panel ocupa toda el área de trabajo; la tabla se conserva · «Volver a la tabla» o Escape lo acopla',disabled:!dockOpen||mode==='expanded',run:()=>setExpanded(true)},
-  {id:'dockDock',label:'Acoplar panel de análisis',detail:'Devuelve el panel junto a la tabla (no disponible con la ventana estrecha)',disabled:mode!=='expanded'||narrow,run:()=>setExpanded(false)},
+  {id:'sql',label:'Análisis SQL y asistentes',detail:'Mostrar u ocultar agrupaciones, tablas dinámicas (pivot) y cruces de archivos con DuckDB',disabled:false,run:()=>analyze('sql')},
+  {id:'statistics',label:'Estadísticas y exploración',detail:large?'Las estadísticas llegan en una fase posterior':'Mostrar u ocultar perfiles, frecuencias, valores faltantes, duplicados y correlación',disabled:large,run:()=>analyze('statistics')},
+  {id:'charts',label:'Gráficos',detail:'Mostrar u ocultar histogramas, barras, líneas, dispersión, mapas de calor y cajas',disabled:false,run:()=>analyze('charts')},
   {id:'columnFilter',label:'Filtrar esta columna',detail:large?'Abre las condiciones con esta columna seleccionada':'Muestra los filtros por columna y lleva el foco al de esta columna',disabled:interpreting||targetColumn===undefined||large&&(!viewReady||changingView),run:filterColumn},
   {id:'columnStats',label:'Estadísticas de la columna',detail:'Abre el resumen con esta columna marcada: faltantes, únicos, duplicados y distribución',disabled:large||targetColumn===undefined,run:columnStatistics},
   ...([['upper','Mayúsculas en la columna…','Convertir a mayúsculas'],['lower','Minúsculas en la columna…','Convertir a minúsculas'],['trim','Quitar espacios en la columna…','Quitar espacios al inicio y al final']] as const).map(([operation,label,title])=>({id:'column-'+operation,label,detail:`${title} en toda la columna de la vista actual · vista previa antes → después, recuento y un paso de deshacer`,disabled:locked||busy||!page.matched||targetColumn===undefined,run:()=>cleanColumn(operation)})),
@@ -122,10 +111,12 @@
   {id:'undo',label:'Deshacer edición CSV',detail:commandTitle('edit.undo','Un paso del historial compartido'),disabled:locked,run:()=>undoEdit()},
   {id:'redo',label:'Rehacer edición CSV',detail:commandTitle('edit.redo','Un paso del historial compartido'),disabled:locked,run:()=>undoEdit(true)},
   {id:'copyMarkdown',label:'Copiar como Markdown',detail:'Rango, filas marcadas o vista filtrada, según la selección',disabled:locked||busy,run:copyMarkdown},
-  ...rangeActions.filter(([action])=>action!=='transformations').map(([action,label])=>({id:action,label,detail:'Necesita un rango de celdas seleccionado en la vista',disabled:locked||!cellRange||busy,run:()=>rangeAction(action)}))
+  ...rangeActions.filter(([action])=>action!=='transformations').map(([action,label])=>({id:action,label,detail:'Necesita un rango de celdas seleccionado en la vista',disabled:locked||!cellRange||busy,run:()=>rangeAction(action)})),
+  {id:'rangeStatistics',label:t('analysis.tab.range'),detail:t('analysis.tab.rangeHelp'),disabled:large||!cellRange||busy||!!queryError,run:()=>analyze('statistics',{scope:'range'})},
+  {id:'openAnalysis',label:t('analysis.tab.command'),detail:t('analysis.tab.search'),disabled:false,run:()=>analyze()}
  ])
  const contextCommands=$derived((context?.kind==='rows'?[...(large&&viewActive?['viewDocument']:[]),'insertRowBefore','insertRowAfter','duplicateRows','deleteRows','rows-trim','rows-upper','rows-lower','transformations','copyMarkdown','undo','redo']:context?.kind==='columns'?['sortAscending','sortDescending','columnFilter','columnStats','column-upper','column-lower','column-trim','columnDuplicates','insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn','transformations','copyMarkdown','undo','redo']:[]).map(id=>commands.find(command=>command.id===id)!))
- const rangeCommands=$derived(rangeActions.map(([action])=>commands.find(command=>command.id===action)!))
+ const rangeCommands=$derived([...rangeActions.map(([action])=>commands.find(command=>command.id===action)!),commands.find(command=>command.id==='rangeStatistics')!])
  function openCommands(){if(showTransform||rangeDialog)return;commandReturn=document.activeElement instanceof HTMLElement?document.activeElement:null;pendingCell=null;context=null;dragging=false;showCommands=true}
  async function closeCommands(){showCommands=false;await tick();if(commandReturn?.isConnected)commandReturn.focus();else commandsButton?.focus()}
  function commandDisabled(id:string){return commands.find(command=>command.id===id)?.disabled??true}
@@ -242,6 +233,11 @@
  function resetViewPosition(){selectedRows=[];selectionStats=null;selection=null;context=null;rangeDialog=null;pendingCell=null;dragging=false;scrollElement?.scrollTo({top:0})}
  const hasViewPage=(view:LargeViewState)=>view.status!=='invalidated'&&(view.status!=='running'||view.matched>=200)
  function query(offset=0):TableQuery{return large?{viewId:activeViewId,offset,limit:200,requestId}:{search,conditions:$state.snapshot(conditions),filterMode,order:order.length?$state.snapshot(order):undefined,filters:$state.snapshot(filters),sort:sort?$state.snapshot(sort):undefined,offset,limit:200,requestId}}
+ $effect(()=>{
+  const id=doc.id,currentQuery=query(),viewMeta={matched:page.matched,revision:page.revision,requestId:page.requestId,sample:page.sample,query:$state.snapshot(pageQuery)}
+  const snapshot={query:currentQuery,queryValid:!queryError&&!interpreting&&csvAnalysisQueryReady(doc,currentQuery,viewMeta),columns:$state.snapshot(selectedColumns),range:cellRange?$state.snapshot(cellRange):null,viewMeta}
+  untrack(()=>csvAnalysisViews.set(id,snapshot))
+ })
  async function load(offset=0){
   if(large&&(!viewReady||largeView?.status==='invalidated'))return
   const id=doc.id,revision=doc.revision,q={...query(offset),requestId:++requestId};busy=true
@@ -256,7 +252,7 @@
  $effect(()=>{
   if(large)return
   const signature=JSON.stringify([doc.id,doc.revision,search,filters,sort,conditions,filterMode,order]);void signature
-  untrack(resetViewPosition);const timer=setTimeout(()=>void load(0),150);return()=>clearTimeout(timer)
+  if(firstLoad)firstLoad=false;else untrack(resetViewPosition);const timer=setTimeout(()=>void load(0),150);return()=>clearTimeout(timer)
  })
  $effect(()=>{
   const id=doc.id,revision=doc.revision;if(!large)return
@@ -391,18 +387,14 @@
   else void runCommand(id==='go.row'?'goToRow':id==='search.replace'?'replaceDocument':'search')
  }
 </script>
-<svelte:window onblur={()=>dragging=false} onpointerup={()=>dragging=false} onpointercancel={()=>dragging=false} onkeydown={event=>{if(closeMenu(event))return;if(event.key==='Escape'&&viewRunning&&!event.defaultPrevented&&event.target instanceof HTMLElement&&!event.target.closest('.cm-editor,.query-tools,.extract-tools,.goto-popover,dialog')){event.preventDefault();void cancelView();return}if(event.key==='Tab')pendingCell=null;revealKey(event)}} onpointermove={event=>{dragPoint={x:event.clientX,y:event.clientY}}} onpointerdown={event=>{pendingCell=null;closeMenus(event.target as Node);if(context&&!(event.target as HTMLElement).closest('.range-context,.header-menu'))context=null}}/>
-{#snippet statisticsPanel()}{#if large}<section class="large-notice" aria-label="Estadísticas"><p>Las estadísticas de columna aún no están disponibles en archivos grandes: llegan en una fase posterior.</p><p>Mientras tanto, «SQL» y «Gráficos» leen el archivo completo (hasta dos millones de filas u ocho millones de celdas).</p></section>{:else}<CsvStatistics {doc} autofocus={userOpened} range={cellRange} query={query()} queryValid={!queryError} viewMeta={{matched:page.matched,revision:page.revision,requestId:page.requestId,sample:page.sample,query:pageQuery}} columns={selectedColumns} onerror={onerror} {onreport} onclose={()=>closeDock(analyzeButton)}/>{/if}{/snippet}
-{#snippet chartsPanel()}{#await import('./CsvCharts.svelte')}<p role="status">{t('charts.ui.prepare')}</p>{:then module}{#key JSON.stringify(doc.headers)}<module.default {doc} query={query()} queryValid={!queryError&&!busy} visible={summary} {onerror} onclose={()=>summary?void closeSummary():closeDock(analyzeButton)}/>{/key}{:catch}<p role="alert">{t('charts.ui.loadError')}</p>{/await}{/snippet}
-{#snippet summaryLink()}<button onclick={()=>onsummary?.()}>{t('charts.ui.summaryTab')}</button>{/snippet}
-{#snippet sqlPanel()}<CsvSql {doc} {onerror} {onreport} onclose={()=>closeDock(analyzeButton)}/>{/snippet}
-{#snippet item(id:string)}{@const command=commands.find(command=>command.id===id)}<button {...controlHint(command?.disabled===false?null:doc.readonly?'readonly':busy||interpreting?'busy':'context', (command?.detail))} disabled={command?.disabled??true}  onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand(id)}}>{command?.label}</button>{/snippet}
-{#snippet rangeButtons(menu=false)}{#each rangeCommands as command}<button {...controlHint(doc.readonly?'readonly':busy||interpreting?'busy':command.disabled||!cellRange?'selection':null)} role={menu?'menuitem':undefined} disabled={command.disabled||!cellRange} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand(command.id)}}>{command.label}</button>{/each}{/snippet}
+<svelte:window onblur={()=>dragging=false} onpointerup={()=>dragging=false} onpointercancel={()=>dragging=false} onkeydown={event=>{if(analysisHidden||closeMenu(event))return;if(event.key==='Escape'&&viewRunning&&!event.defaultPrevented&&event.target instanceof HTMLElement&&!event.target.closest('.cm-editor,.query-tools,.extract-tools,.goto-popover,dialog')){event.preventDefault();void cancelView();return}if(event.key==='Tab')pendingCell=null;revealKey(event)}} onpointermove={event=>{dragPoint={x:event.clientX,y:event.clientY}}} onpointerdown={event=>{pendingCell=null;closeMenus(event.target as Node);if(context&&!(event.target as HTMLElement).closest('.range-context,.header-menu'))context=null}}/>
+{#snippet item(id:string)}{@const command=commands.find(command=>command.id===id)}<button {...controlHint(command?.disabled===false?null:doc.readonly?readonlyReason:busy||interpreting?'busy':'context', (command?.detail))} disabled={command?.disabled??true}  onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand(id)}}>{command?.label}</button>{/snippet}
+{#snippet rangeButtons(menu=false)}{#each rangeCommands as command}<button {...controlHint(doc.readonly?readonlyReason:busy||interpreting?'busy':command.disabled||!cellRange?'selection':null)} role={menu?'menuitem':undefined} disabled={command.disabled||!cellRange} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand(command.id)}}>{command.label}</button>{/each}{/snippet}
 {#snippet calculateMenuItem(column:number)}
  <button role="menuitem" disabled={!!calculationDisabled} aria-describedby={calculationDisabled?'context-calculation-disabled':undefined} onclick={()=>openCalculation(column+1,contextReturn)}>{t('calculate.right')}</button>
  {#if calculationDisabled}<span class="dropdown-note" role="presentation" id="context-calculation-disabled">{calculationDisabled}</span>{/if}
 {/snippet}
-{#if showCommands}<CsvCommands {commands} context={doc.readonly?'Muestra de solo lectura: edición y copia tabular bloqueadas.':interpreting?'Interpretando el archivo; edición bloqueada.':queryError?'Consulta no válida: corrige o quita los filtros antes de editar.':busy?'Cargando página; las acciones del rango esperan.':cellRange?`Rango: filas ${cellRange.top+1}–${cellRange.bottom+1}, columnas ${cellRange.left+1}–${cellRange.right+1}.`:`${selectedRows.length} filas marcadas por número · ${selectedColumns.length} columnas marcadas.`} onexecute={id=>void chooseCommand(id)} onclose={()=>void closeCommands()}/>{/if}
+{#if showCommands}<CsvCommands {commands} context={doc.projectSource?t('ui.reason.'+readonlyReason):doc.readonly?page.sample?'Muestra de solo lectura: edición y copia tabular bloqueadas.':doc.warning??t('ui.reason.readonly'):interpreting?'Interpretando el archivo; edición bloqueada.':queryError?'Consulta no válida: corrige o quita los filtros antes de editar.':busy?'Cargando página; las acciones del rango esperan.':cellRange?`Rango: filas ${cellRange.top+1}–${cellRange.bottom+1}, columnas ${cellRange.left+1}–${cellRange.right+1}.`:`${selectedRows.length} filas marcadas por número · ${selectedColumns.length} columnas marcadas.`} onexecute={id=>void chooseCommand(id)} onclose={()=>void closeCommands()}/>{/if}
 {#if showTransform}<CsvTransform {doc} initialOperation={transformStart} initialCalculationPosition={calculationPosition} initialRows={selectedRows} initialRange={cellRange} viewQuery={query()} initialColumns={selectedColumns.length?selectedColumns:cellRange?Array.from({length:cellRange.right-cellRange.left+1},(_,i)=>cellRange.left+i):[]} onapply={applyTransform} onclose={closeTransform} {onerror}/>{/if}
 {#if rangeDialog}<CsvRangePreview id={doc.id} initial={rangeDialog.edit} cut={rangeDialog.cut} documentScope={rangeDialog.documentScope} column={rangeDialog.column} onapply={applyRange} onclose={closeRangeDialog} {onerror}/>{/if}
 {#if context}<div bind:this={contextMenu} class="range-context" role="menu" aria-label={context.kind==='rows'?'Acciones de filas':context.kind==='columns'?'Acciones de columnas':'Acciones del rango'} tabindex="-1" style:left={`${context.x}px`} style:top={`${context.y}px`} onkeydown={event=>{const buttons=Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')),index=buttons.indexOf(document.activeElement as HTMLButtonElement);if(event.key==='Escape'){event.preventDefault();closeContext()}else if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();buttons[event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(event.key==='ArrowDown'?1:buttons.length-1))%buttons.length]?.focus()}else if(event.key==='Tab')context=null}}>
@@ -412,11 +404,11 @@
   {#each [['Vista de la tabla',['sortAscending','sortDescending','columnFilter','columnStats']],['Limpiar la columna · con vista previa',['column-upper','column-lower','column-trim','columnDuplicates']],['Estructura',['insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn']],['Más',['transformations','copyMarkdown','undo','redo']]] as [title,ids]}
    <span class="dropdown-label" role="presentation">{title}</span>
    {#each contextCommands.filter(command=>(ids as string[]).includes(command.id)) as command}
-    <button {...controlHint(!command.disabled?null:doc.readonly?'readonly':busy||interpreting?'busy':'context', (command.detail))} role="menuitem" disabled={command.disabled} onclick={()=>{closeContext();void runCommand(command.id)}}>{command.label}</button>
+    <button {...controlHint(!command.disabled?null:doc.readonly?readonlyReason:busy||interpreting?'busy':'context', (command.detail))} role="menuitem" disabled={command.disabled} onclick={()=>{closeContext();void runCommand(command.id)}}>{command.label}</button>
    {/each}
    {#if title==='Estructura'}{@render calculateMenuItem(context.column)}{/if}
   {/each}
- {:else}<span class="dropdown-label" role="presentation">{selectedRows.length} filas · {selectedColumns.length?`${selectedColumns.length} columnas`:'todas las columnas'}</span>{#each contextCommands as command}<button {...controlHint(!command.disabled?null:doc.readonly?'readonly':busy||interpreting?'busy':'context', (command.detail))} role="menuitem"  disabled={command.disabled} onclick={()=>{closeContext();void runCommand(command.id)}}>{command.label}</button>{/each}
+ {:else}<span class="dropdown-label" role="presentation">{selectedRows.length} filas · {selectedColumns.length?`${selectedColumns.length} columnas`:'todas las columnas'}</span>{#each contextCommands as command}<button {...controlHint(!command.disabled?null:doc.readonly?readonlyReason:busy||interpreting?'busy':'context', (command.detail))} role="menuitem"  disabled={command.disabled} onclick={()=>{closeContext();void runCommand(command.id)}}>{command.label}</button>{/each}
   {#if context.headerColumn!==undefined}{@render calculateMenuItem(context.headerColumn)}{/if}
  {/if}
 </div>{/if}
@@ -454,7 +446,7 @@
   <span class="spacer"></span>
   <span class="goto-wrap"><button {...controlHint(!gotoTotal?'noRows':null, (commandTitle('go.row',t('charts.toolbar.goToRow'))))} bind:this={gotoButton} data-tooltip={commandTitle('go.row',t('charts.toolbar.goToRow'))} aria-label={t('charts.toolbar.goToRow')} aria-expanded={showGoto}  disabled={!gotoTotal} onclick={()=>void runCommand('goToRow')}><Icon name="arrow-down" size={14}/><span class="tool-text">{t('charts.toolbar.goToRow')}</span></button>{#if showGoto}<form class="goto-popover" novalidate onsubmit={event=>{event.preventDefault();void goToRow()}}><label>Ir a la fila <input bind:this={gotoInput} onkeydown={event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeGoto()}}} type="number" min="1" max={gotoTotal} step="1" inputmode="numeric" aria-label="Número de fila" aria-invalid={!!gotoError} bind:value={gotoValue} oninput={()=>gotoError=''}/></label><span class="muted">de {gotoTotal.toLocaleString()}</span><button type="submit">Ir</button><button type="button" onclick={closeGoto}>Cerrar</button>{#if gotoError}<span role="alert" class="goto-error">{gotoError}</span>{/if}</form>{/if}</span>
   <button bind:this={commandsButton} data-tooltip={commandTitle('edit.commandPalette',t('charts.toolbar.findAction'))} aria-label={t('charts.toolbar.findAction')} title={commandTitle('edit.commandPalette',t('charts.toolbar.findAction'))} onclick={openCommands}><Icon name="command" size={14}/><span class="tool-text">{t('charts.toolbar.findAction')}</span></button>
-  <button bind:this={analyzeButton} class="analyze" class:active={dockOpen} aria-label={t('charts.toolbar.analysis')} aria-expanded={dockOpen} aria-controls="analysis-dock" title={t('charts.toolbar.analysisHelp')} data-tooltip={t('charts.toolbar.analysisHelp')} onclick={()=>{showQuery=false;toggleDock(workspace.tab)}}><Icon name="chart-column" size={14}/><span class="tool-text">{t('charts.toolbar.analysis')}</span></button>
+  <button class="keep-label" type="button" aria-label={t('analysis.tab.open')} data-tooltip={t('analysis.tab.open')} onclick={()=>analyze()}><Icon name="chart-column" size={14}/><span class="tool-text">{t('analysis.tab.open')}</span></button>
  </div>
  {#if large}<div class="large-search-help large-csv-help">
   <span id="large-search-help">Enter para buscar en las {number(doc.rowCount??page.total)} filas. Esc cancela el recorrido o quita la búsqueda.</span>
@@ -472,16 +464,16 @@
  {#if queryError}<div class="warning-banner" role="alert">{#if large}{queryError} <button {...controlHint(busy||changingView?'busy':null)} disabled={busy||changingView} onclick={()=>void startView()}>Volver a buscar</button>{:else}Consulta no aplicada. Se conserva la última vista válida. {queryError} Corrige o limpia la consulta para editar. <button {...controlHint(busy?'busy':null)} disabled={busy} onclick={()=>void load(0)}>Reintentar consulta</button>{/if}</div>{/if}
  {#if doc.extract}<div class="warning-banner extract-banner" role="note"><strong>Extracto de «{doc.extract.sourceName}»</strong> · {doc.extract.matched.toLocaleString('es')} de {doc.extract.total.toLocaleString('es')} filas{#if doc.extract.conditions} · {doc.extract.conditions}{/if}{#if doc.extract.columns} · columnas: {doc.extract.columns.join(', ')}{/if} · {fidelityLabel[doc.extract.fidelity]}.{#each doc.extract.normalization as note} {note}{/each}{#if doc.extract.irregularRows} {doc.extract.irregularRows.toLocaleString('es')} filas con distinto número de campos que el encabezado se conservaron como estaban.{/if} El original no se modificó.</div>{/if}
  {#if doc.warning||doc.readonly}<div class="warning-banner">{doc.warning??'Solo lectura'}{#if page.sample} Los filtros y recuentos describen únicamente la muestra.{/if}</div>{/if}
- {#if showReplace}<form class="csv-toolbar" onsubmit={event=>{event.preventDefault();prepareReplacement()}}><input bind:this={replaceInput} aria-label="Buscar valor para reemplazar" placeholder="Buscar valor" bind:value={replaceFind}/><input aria-label="Nuevo valor" placeholder="Reemplazar por" bind:value={replaceWith}/><span class="muted">{selectedColumns.length===1?'Columna marcada':'Todas las columnas'} · documento completo, incluye filas ocultas · literal, distingue mayúsculas</span><button {...controlHint(doc.readonly?'readonly':busy||interpreting?'busy':queryError?'parameters':!replaceFind?'findText':!doc.rowCount?'noRows':!doc.headers?.length?'columns':null)} disabled={locked||busy||!replaceFind||!doc.rowCount||!doc.headers?.length} type="submit">Vista previa del reemplazo</button></form>{/if}
- <div class="csv-body" class:summary class:expanded={mode==='expanded'} bind:clientWidth={bodyWidth}>
-  <div class="csv-main" style:display={summary?'none':undefined}>
+ {#if showReplace}<form class="csv-toolbar" onsubmit={event=>{event.preventDefault();prepareReplacement()}}><input bind:this={replaceInput} aria-label="Buscar valor para reemplazar" placeholder="Buscar valor" bind:value={replaceFind}/><input aria-label="Nuevo valor" placeholder="Reemplazar por" bind:value={replaceWith}/><span class="muted">{selectedColumns.length===1?'Columna marcada':'Todas las columnas'} · documento completo, incluye filas ocultas · literal, distingue mayúsculas</span><button {...controlHint(doc.readonly?readonlyReason:busy||interpreting?'busy':queryError?'parameters':!replaceFind?'findText':!doc.rowCount?'noRows':!doc.headers?.length?'columns':null)} disabled={locked||busy||!replaceFind||!doc.rowCount||!doc.headers?.length} type="submit">Vista previa del reemplazo</button></form>{/if}
+ <div class="csv-body" bind:clientWidth={bodyWidth}>
+  <div class="csv-main">
  <div class="csv-scroll" bind:this={scrollElement} bind:clientHeight={viewHeight} use:wheelRows role="grid" aria-label="Tabla de datos" aria-rowcount={page.matched+1} aria-colcount={(doc.headers?.length??0)+1} tabindex="0" aria-multiselectable="true" onkeydown={gridKey}>
   <div class="virtual-table" style:height={`${scrollHeight($rowsVirtual.getTotalSize())}px`} style:width={`${Math.max($columnsVirtual.getTotalSize(),scrollElement?.clientWidth??0)}px`}>
    <div class="csv-header" role="row" style:height={showFilters?'76px':'40px'}>
     <div class="row-number corner">#</div>
     {#each $columnsVirtual.getVirtualItems() as col (col.key)}
      <div class="column-header" role="columnheader" tabindex="-1" oncontextmenu={event=>structuralContext(event,'columns',col.index)} onkeydown={event=>structuralKey(event,'columns',col.index)} aria-sort={activeOrder.find(item=>item.column===col.index)?.descending===true?'descending':activeOrder.some(item=>item.column===col.index)?'ascending':'none'} style:left={`${col.start}px`} style:width={`${col.size}px`}>
-      {#if editingHeader?.index===col.index}<input class="column-filter" aria-label="Nombre del encabezado" bind:value={editingHeader.value} use:focus onblur={async()=>{const draft=editingHeader;if(!draft)return;const name=draft.value;if(!await edit({type:'header',index:col.index,name})&&editingHeader===draft&&draft.value===name)editingHeader=null}} onkeydown={event=>{if(event.key==='Enter')event.currentTarget.blur();else if(event.key==='Escape')editingHeader=null}}/>{:else}<div class="column-title"><input class="column-select" type="checkbox" aria-label={`Seleccionar columna ${doc.headers?.[col.index]}`} checked={selectedColumns.includes(col.index)} onchange={()=>selectColumn(col.index)}/><button {...controlHint(large?'largeUnsupported':null, (large?'Ordenar llega con L5c (archivos grandes)':'Ordenar columna'))} class="sort-button btn-ghost"  disabled={large} onclick={event=>sortBy(col.index,event.shiftKey)}>{doc.headers?.[col.index]||`Columna ${col.index+1}`} {#if activeOrder.some(item=>item.column===col.index)}<Icon name={activeOrder.find(item=>item.column===col.index)?.descending?'arrow-down':'arrow-up'} size={12}/>{/if}</button><button {...controlHint(!locked?null:doc.readonly?'readonly':interpreting?'busy':'parameters', "Editar encabezado")} class="header-edit"  aria-label={`Editar encabezado ${col.index+1}`} disabled={locked} onclick={()=>editingHeader={index:col.index,value:doc.headers?.[col.index]??''}}><Icon name="pencil" size={12}/></button><button class="header-menu" aria-label={`Acciones de la columna ${columnLabel(col.index)}`} aria-haspopup="menu" aria-expanded={context?.kind==='columns'&&context.column===col.index} title="Ordenar, filtrar, estadísticas y limpieza de la columna" onclick={event=>columnMenu(event,col.index)}><Icon name="chevron-down" size={12}/></button></div>{/if}
+      {#if editingHeader?.index===col.index}<input class="column-filter" aria-label="Nombre del encabezado" bind:value={editingHeader.value} use:focus onblur={async()=>{const draft=editingHeader;if(!draft)return;const name=draft.value;if(!await edit({type:'header',index:col.index,name})&&editingHeader===draft&&draft.value===name)editingHeader=null}} onkeydown={event=>{if(event.key==='Enter')event.currentTarget.blur();else if(event.key==='Escape')editingHeader=null}}/>{:else}<div class="column-title"><input class="column-select" type="checkbox" aria-label={`Seleccionar columna ${doc.headers?.[col.index]}`} checked={selectedColumns.includes(col.index)} onchange={()=>selectColumn(col.index)}/><button {...controlHint(large?'largeUnsupported':null, (large?'Ordenar llega con L5c (archivos grandes)':'Ordenar columna'))} class="sort-button btn-ghost"  disabled={large} onclick={event=>sortBy(col.index,event.shiftKey)}>{doc.headers?.[col.index]||`Columna ${col.index+1}`} {#if activeOrder.some(item=>item.column===col.index)}<Icon name={activeOrder.find(item=>item.column===col.index)?.descending?'arrow-down':'arrow-up'} size={12}/>{/if}</button><button {...controlHint(!locked?null:doc.readonly?readonlyReason:interpreting?'busy':'parameters', "Editar encabezado")} class="header-edit"  aria-label={`Editar encabezado ${col.index+1}`} disabled={locked} onclick={()=>editingHeader={index:col.index,value:doc.headers?.[col.index]??''}}><Icon name="pencil" size={12}/></button><button class="header-menu" aria-label={`Acciones de la columna ${columnLabel(col.index)}`} aria-haspopup="menu" aria-expanded={context?.kind==='columns'&&context.column===col.index} title="Ordenar, filtrar, estadísticas y limpieza de la columna" onclick={event=>columnMenu(event,col.index)}><Icon name="chevron-down" size={12}/></button></div>{/if}
       {#if showFilters}<input class="column-filter" data-column-filter={col.index} aria-label={`Filtrar ${doc.headers?.[col.index]}`} placeholder="Contiene…" value={filters[col.index]??''} oninput={e=>setFilter(col.index,e.currentTarget.value)}/>{/if}
      </div>
     {/each}
@@ -500,21 +492,18 @@
     </div>{/if}
    {/each}
   </div>
-  {#if !page.matched&&!busy&&!viewRunning}<div class="table-empty">{#if large&&largeView}{largeView.status==='complete'?`Sin coincidencias en ${number(largeView.total)} filas`:'No hay coincidencias disponibles en esta vista.'}{:else}No hay filas que coincidan. <button {...controlHint(!commandDisabled('insertRow')?null:doc.readonly?'readonly':busy||interpreting?'busy':'parameters')} onclick={()=>void runCommand('insertRow')} disabled={commandDisabled('insertRow')}>Añadir fila</button>{/if}</div>{/if}
+  {#if !page.matched&&!busy&&!viewRunning}<div class="table-empty">{#if large&&largeView}{largeView.status==='complete'?`Sin coincidencias en ${number(largeView.total)} filas`:'No hay coincidencias disponibles en esta vista.'}{:else}No hay filas que coincidan. <button {...controlHint(!commandDisabled('insertRow')?null:doc.readonly?readonlyReason:busy||interpreting?'busy':'parameters')} onclick={()=>void runCommand('insertRow')} disabled={commandDisabled('insertRow')}>Añadir fila</button>{/if}</div>{/if}
  </div>
  <!-- Se mueve a la barra de estado de la ventana: así hay una sola barra inferior y la tabla conserva el alto. -->
- <div class="csv-status" use:portal={'#document-status'}>
+ {#if !analysisHidden}<div class="csv-status" use:portal={'#document-status'}>
   {#if busy&&!large}<span role="status">Procesando…</span>{/if}
   {#if cellRange}<span role="status">Rango: filas {cellRange.top+1}–{cellRange.bottom+1}, columnas {cellRange.left+1}–{cellRange.right+1} · {((cellRange.bottom-cellRange.top+1)*(cellRange.right-cellRange.left+1)).toLocaleString()} celdas</span><details class="insert-menu"><summary aria-label="Acciones del rango">Rango <Icon name="chevron-down" size={12}/></summary><div class="dropdown">{@render rangeButtons()}</div></details>{:else if selectedRows.length}<span>{selectedRows.length} filas seleccionadas</span>{/if}
   {#if selectionStats}<span>Vacíos: {selectionStats.empty} · Únicos: {selectionStats.unique}</span>{#if selectionStats.numeric}<span class="truncate">Suma: {selectionStats.sum?.toLocaleString()} · Media: {selectionStats.average?.toLocaleString()} · Mín: {selectionStats.min?.toLocaleString()} · Máx: {selectionStats.max?.toLocaleString()}</span>{/if}{/if}
-  <label><span class="label-text">Codificación</span> <select aria-label="Codificación" value={doc.encoding} disabled={doc.dirty||interpreting} onchange={e=>void options({encoding:e.currentTarget.value as Encoding})}><option value="utf8">UTF-8</option><option value="utf16le">UTF-16 LE</option><option value="win1252">Windows-1252</option></select></label>
-  <label><span class="label-text">Separador</span> <select aria-label="Separador" value={doc.delimiter} disabled={doc.dirty||interpreting} onchange={e=>void options({delimiter:e.currentTarget.value})}><option value=",">Coma</option><option value=";">Punto y coma</option><option value={'\t'}>Tabulación</option><option value="|">Barra vertical</option></select></label>
-  <label title="Primera fila como encabezado"><input type="checkbox" aria-label="Primera fila como encabezado" bind:checked={header} disabled={doc.dirty||interpreting} onchange={()=>void options({header})}/><span class="label-text">Encabezado</span></label>
- </div>
+  <label><span class="label-text">Codificación</span> <select aria-label="Codificación" value={doc.encoding} disabled={!!doc.projectSource||doc.dirty||interpreting} {...controlHint(doc.projectSource?readonlyReason:null)} onchange={e=>void options({encoding:e.currentTarget.value as Encoding})}><option value="utf8">UTF-8</option><option value="utf16le">UTF-16 LE</option><option value="win1252">Windows-1252</option></select></label>
+  <label><span class="label-text">Separador</span> <select aria-label="Separador" value={doc.delimiter} disabled={!!doc.projectSource||doc.dirty||interpreting} {...controlHint(doc.projectSource?readonlyReason:null)} onchange={e=>void options({delimiter:e.currentTarget.value})}><option value=",">Coma</option><option value=";">Punto y coma</option><option value={'\t'}>Tabulación</option><option value="|">Barra vertical</option></select></label>
+  <label title="Primera fila como encabezado"><input type="checkbox" aria-label="Primera fila como encabezado" bind:checked={header} disabled={!!doc.projectSource||doc.dirty||interpreting} {...controlHint(doc.projectSource?readonlyReason:null)} onchange={()=>void options({header})}/><span class="label-text">Encabezado</span></label>
+ </div>{/if}
   </div>
-  {#if mode==='expanded'&&!summary}<button class="table-strip" onclick={backToTable}>Volver a la tabla</button>{/if}
-  <div class="summary-host" hidden={!summary}>{#if summaryVisited}{@render chartsPanel()}{/if}</div>
-  {#if dockOpen}<AnalysisDock expanded={mode==='expanded'} {narrow} onexpand={()=>setExpanded(!workspace.expanded)} tab={dockTab} ontab={tab=>{userOpened=true;workspace.tab=tab;saveWorkspace()}} width={workspace.width} area={bodyWidth} onresize={width=>workspace.width=width} oncommit={saveWorkspace} resumen={statisticsPanel} graficos={summaryLink} sql={sqlPanel}/>{/if}
  </div>
  <p id="dock-announcement" class="sr-only" role="status">{announcement}</p>
 </div>
@@ -525,7 +514,6 @@
 </script>
 
 <style>
- .csv-body.summary :global(.analysis-dock){display:none}.summary-host{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column}.summary-host[hidden]{display:none}
  .csv-toolbar summary.disabled{opacity:.45;cursor:not-allowed}.large-search-help{margin:0;padding:4px 12px;font-size:var(--font-meta);color:var(--muted);border-bottom:1px solid var(--border)}.large-search-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 12px;border-bottom:1px solid var(--border);font-size:11px;background:var(--panel)}.large-search-status p{margin:0;line-height:1.5}.large-search-status button{font-size:11px;padding:3px 7px}.large-search-status progress{width:110px}.large-search-scope{flex-basis:100%;color:var(--muted)}
  .large-csv-help{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
  .csv-toolbar [data-tooltip]{position:relative;appearance:none;min-width:24px;min-height:24px}.csv-toolbar [data-tooltip]:hover::after,.csv-toolbar [data-tooltip]:focus::after{content:attr(data-tooltip);position:absolute;right:0;top:calc(100% + 7px);max-width:300px;padding:6px 9px;border-radius:var(--radius-control);background:var(--text);color:var(--panel);font-size:11px;white-space:normal;z-index:90;pointer-events:none;min-width:max-content}.csv-toolbar [data-tooltip]:focus-visible{outline:2px solid var(--accent)}

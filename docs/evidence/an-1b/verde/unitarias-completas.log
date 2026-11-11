@@ -1,0 +1,17 @@
+
+> freyalab@0.1.0-alpha.4 test
+> vitest run
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-alpha4-an1b
+
+AC-00 P4 real: darwin, {"available":true,"path":"/opt/homebrew/Cellar/pandoc/3.12.1/bin/pandoc","version":"3.12.1","license":"GPL-2.0-or-later"}
+AC-00 HTTP: Pandoc sin soporte HTTP; eficacia del sandbox HTTP pendiente de otro binario
+
+ Test Files  140 passed (140)
+      Tests  2669 passed | 1 skipped (2670)
+   Start at  00:17:13
+   Duration  17.03s (tests 89%, import 9%, transform 1%)
+
+    Isolate  140 workers spawned · ~80ms startup each (spawn + environment, per file)
+             at least ~941ms faster with isolate: false — reuses workers across files instead of one per file

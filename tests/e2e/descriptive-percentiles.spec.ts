@@ -4,7 +4,7 @@ import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm,truncate,stat} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
-import {showPanel} from './panel'
+import {showPanel,showTable} from './panel'
 let app:ElectronApplication,page:Page,folder:string
 const fields=['Varianza poblacional (n)','Varianza muestral (n−1)','P10 (percentil 10)','P25 (percentil 25)','P75 (percentil 75)','P90 (percentil 90)']
 test.beforeEach(async()=>{
@@ -40,7 +40,8 @@ test('percentiles: columnas marcadas, controles progresivos y rango comparten m�
  const source='Valor,Otro\r\n0,0\r\n10,20\r\n20,40\r\n30,60\r\n',{doc,path}=await open(source),before=(await page.evaluate(()=>window.freya.documents()))[0]
  await page.getByLabel('Seleccionar columna Valor',{exact:true}).check();const panel=await statistics();await panel.getByLabel('Columnas para estadísticas',{exact:true}).selectOption('selected');await analyze(panel);await expect(panel.getByRole('columnheader',{name:fields[0],exact:true})).toHaveCount(0)
  const advanced=panel.getByRole('checkbox',{name:'Varianza y percentiles',exact:true});await advanced.focus();await advanced.press('Space');await tableValues(panel,[125,500/3,3,7.5,22.5,27]);await expect(panel.getByRole('status')).toHaveText('Análisis completo.');await advanced.uncheck();await expect(panel.getByRole('columnheader',{name:fields[0],exact:true})).toHaveCount(0)
- await page.getByRole('gridcell',{name:'Fila 1, Valor',exact:true}).click();await page.keyboard.press('Shift+ArrowRight');await page.keyboard.press('Shift+ArrowDown');await panel.getByLabel('Columnas para estadísticas',{exact:true}).selectOption('range');await analyze(panel);await advanced.check();await tableValues(panel,[68.75,275/3,0,0,12.5,17]);await expect(panel.locator('caption')).toContainText('filas 1–2, columnas 1–2')
+ await showTable(page);await page.getByRole('gridcell',{name:'Fila 1, Valor',exact:true}).click();await page.keyboard.press('Shift+ArrowRight');await page.keyboard.press('Shift+ArrowDown');await showPanel(page,'Estadísticas')
+ await panel.getByLabel('Columnas para estadísticas',{exact:true}).selectOption('range');await analyze(panel);await advanced.check();await tableValues(panel,[68.75,275/3,0,0,12.5,17]);await expect(panel.locator('caption')).toContainText('filas 1–2, columnas 1–2')
  await advanced.uncheck();const output=await report(panel,'# Informe de estadísticas CSV');expect(output.text).toContain('Celdas del rango');expect(output.text).toContain('| Varianza poblacional (n) | 68.75 |');expect(output.text).toContain('| P25 (percentil 25) | 0 |');expect(output.text).toContain('| P75 (percentil 75) | 12.5 |');expect(output.text).toContain('tipo 7');expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toEqual(before);expect(await readFile(path,'utf8')).toBe(source)
 })
 

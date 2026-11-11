@@ -25,7 +25,6 @@
   "src/renderer/App.svelte",
   "src/renderer/analytics.ts",
   "src/renderer/chart-option.ts",
-  "src/renderer/components/AnalysisDock.svelte",
   "src/renderer/components/AssetWarnings.svelte",
   "src/renderer/components/ChartPresets.svelte",
   "src/renderer/components/CsvCharts.svelte",

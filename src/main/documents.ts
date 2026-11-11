@@ -13,9 +13,11 @@ import {tokensFileQuery} from '../shared/tag-query'
 import { watch, type FSWatcher } from 'chokidar'
 import iconv from 'iconv-lite'
 import { atomicWrite, contained, digest } from './files'
+import {fingerprintCsvSource} from './project-sources'
 import type {DocumentAssets} from './document-assets'
 import { TableClient } from './table-client'
 import {CsvViewStore} from './csv-view-store'
+import {csvDelimiter} from './csv-delimiter'
 import {decodeCsvText,decodeTextDocument,encodeCsvText,encodedTextFormat,csvTextByteLength} from './csv-text-codec'
 import {isCsvTextFormat,isTextFormat,type TextFormat} from '../shared/csv-text'
 import {csvOpenError} from './csv-open-error'
@@ -26,6 +28,7 @@ const extensions:Record<string,Kind>={'.md':'markdown','.markdown':'markdown','.
 const textLimit=10*1024*1024
 const defaultTextFormat:TextFormat={encoding:'utf8',bom:false}
 const bytesHash=(bytes:Buffer)=>createHash('sha256').update(bytes).digest('hex')
+const canonicalDestination=(path:string)=>realpath(path).catch(async()=>join(await realpath(dirname(path)).catch(()=>resolve(dirname(path))),basename(path)))
 const textLimitError=()=>textEditLimitError('El documento supera el límite de edición de 10 MiB.')
 function checkTextSize(text:string,format?:TextFormat){
  const bytes=format&&format.encoding!=='utf8'?csvTextByteLength(text,format):Buffer.byteLength(text)+(format?.bom?3:0)
@@ -69,6 +72,55 @@ export class Documents {
   return{ready,closeAll:(ownerIsCurrent:()=>boolean)=>closing??=ready.then(()=>{if(released)throw new Error(t('menu.close.busy'));return this.confirmAndDisposeAll(ownerIsCurrent)}),release:()=>{if(!released){released=true;this.applicationClose=false}}}
  }
 
+ private projectSources=new Map<string,{sha256:string;format:TableOptions}>()
+ private closedProjectSources=new Set<string>()
+ private registeringSources=new Set<string>()
+ private writingPaths=new Map<string,number>()
+ setProjectSources(paths:Map<string,{sha256:string;format:TableOptions}>,closing=false){
+  const previous=this.projectSources
+  this.projectSources=paths
+  for(const [id,record] of this.records){
+   const path=record.info.path
+   if(!path)continue
+   if(paths.has(path))this.closedProjectSources.delete(id)
+   else if(closing&&previous.has(path))this.closedProjectSources.add(id)
+   if(paths.has(path)||previous.has(path))this.emit({type:'changed',document:this.info(id)})
+  }
+ }
+ private sourceStatus(id:string,path:string|null){
+  if(path&&this.projectSources.has(path))return 'protected' as const
+  if(this.closedProjectSources.has(id))return 'closed' as const
+ }
+ assertProjectSourceClean(path:string){
+  const record=[...this.records.values()].find(item=>item.info.path===path)
+  if(this.writingPaths.has(path)||record&&(record.info.dirty||this.operations.has(record.info.id)))throw new Error(t('project.source.unsaved'))
+ }
+ reserveProjectSource(path:string){
+  this.assertProjectSourceClean(path)
+  if(this.registeringSources.has(path))throw new Error(t('project.source.busy'))
+  this.registeringSources.add(path)
+  return ()=>{this.registeringSources.delete(path)}
+ }
+ assertWritableDestination(path:string){
+  if(this.projectSources.has(path)||this.registeringSources.has(path))throw new Error(t('project.source.protected'))
+ }
+ private reserveWrite(path:string){
+  this.assertWritableDestination(path)
+  this.writingPaths.set(path,(this.writingPaths.get(path)??0)+1)
+  return ()=>{const count=this.writingPaths.get(path)??1;if(count>1)this.writingPaths.set(path,count-1);else this.writingPaths.delete(path)}
+ }
+ async writeProjectDestination<T>(path:string,operation:()=>Promise<T>){
+  const canonical=await canonicalDestination(path),release=this.reserveWrite(canonical)
+  try{return await operation()}finally{release()}
+ }
+ assertProjectEditable(id:string){
+  const record=this.get(id),status=this.sourceStatus(id,record.info.path)
+  if(status||record.info.path&&this.registeringSources.has(record.info.path))throw new Error(t(status==='closed'?'project.source.closed':'project.source.protected'))
+ }
+ async verifyProjectSource(id:string){
+  const path=this.get(id).info.path,source=path?this.projectSources.get(path):undefined
+  if(path&&source&&(await realpath(path)!==path||(await fingerprintCsvSource(path)).sha256!==source.sha256))throw new Error(t('project.source.changed'))
+ }
  private reloading=new Set<string>()
  private serial<T>(id:string,operation:()=>Promise<T>):Promise<T>{if(this.applicationClose)return Promise.reject(new Error(t('menu.close.busy')));const task=(this.operations.get(id)??Promise.resolve()).catch(()=>{}).then(operation);this.operations.set(id,task);void task.finally(()=>{if(this.operations.get(id)===task)this.operations.delete(id)}).catch(()=>{});return task}
  private rejectDuringReload(id:string){if(this.reloading.has(id))throw new Error('Espera a que termine la recarga antes de editar.')}
@@ -94,12 +146,22 @@ export class Documents {
  private async openNew(canonical:string,requested?:CsvView,previous?:RecordDoc):Promise<DocumentInfo>{
   const kind=extensions[extname(canonical).toLowerCase()];if(!kind)throw new Error('Tipo de archivo no compatible. Usa Markdown, texto, Mermaid, CSV o TSV.')
   const size=(await stat(canonical)).size;if(!(await stat(canonical)).isFile())throw new Error('Selecciona un archivo.')
-  const view=kind==='csv'?(requested??await this.csvViews.get(canonical)):undefined
+  const projectSource=this.projectSources.get(canonical)
+  if(projectSource&&requested==='text')throw new Error(t('project.source.protected'))
+  const view=kind==='csv'?(projectSource?'table':requested??await this.csvViews.get(canonical)):undefined
   if(view==='text'&&size>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'))
   const id=previous?.info.id??randomUUID();const record:RecordDoc={info:{id,name:basename(canonical),path:canonical,kind,csvView:view,byteLength:kind==='csv'?size:undefined,extract:previous?.info.extract,dirty:false,readonly:false,revision:previous?previous.info.revision+1:0,encoding:'utf8',delimiter:kind==='csv'&&extname(canonical)==='.tsv'?'\t':','},text:'',undo:[],redo:[],root:dirname(canonical),saving:false}
   try {
-   if(isTableDocument(record.info)){const before=size<=50*1024*1024?await digest(canonical):undefined;await this.table.call('open',id,canonical,{delimiter:extname(canonical)==='.tsv'?'\t':undefined});Object.assign(record.info,await this.table.call('info',id));if(!record.info.readonly){const after=await digest(canonical);if(before!==after)throw new Error('El archivo cambió durante la apertura. Vuelve a abrirlo.');record.hash=after}}
-   else if(view==='text'){const bytes=await readFile(canonical);if(bytes.length>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'));const decoded=decodeCsvText(bytes);record.hash=bytesHash(bytes);record.text=decoded.text;record.textFormat=decoded.format;record.info.encoding=decoded.format.encoding;record.info.readonly=decoded.readonly;record.info.warning=decoded.warning;record.info.byteLength=bytes.length}
+   if(isTableDocument(record.info)){const before=size<=50*1024*1024?await digest(canonical):undefined;await this.table.call('open',id,canonical,projectSource?.format??{delimiter:extname(canonical)==='.tsv'?'\t':undefined});Object.assign(record.info,await this.table.call('info',id));if(!record.info.readonly){const after=await digest(canonical);if(before!==after)throw new Error('El archivo cambió durante la apertura. Vuelve a abrirlo.');record.hash=after}}
+   else if(view==='text'){
+    const bytes=await readFile(canonical)
+    if(bytes.length>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'))
+    const decoded=decodeCsvText(bytes)
+    record.hash=bytesHash(bytes);record.text=decoded.text;record.textFormat=decoded.format
+    // shortcut: detectar el separador en 64 KiB al abrir directamente como Texto, revisar si el primer registro puede ser mayor.
+    const delimiter=previous?.info.delimiter??csvDelimiter(decoded.text.slice(0,64*1024),canonical)
+    Object.assign(record.info,{encoding:decoded.format.encoding,readonly:decoded.readonly,warning:decoded.warning,byteLength:bytes.length,delimiter,hasHeader:previous?.info.hasHeader??true})
+   }
    else installText(record,await readDocumentText(canonical))
    record.watcher=watch(canonical,{ignoreInitial:true,awaitWriteFinish:{stabilityThreshold:150,pollInterval:50}}).on('change',()=>{if(!record.saving)this.emit({type:'external',id})}).on('unlink',()=>this.emit({type:'external',id}))
    // La lista de recientes es auxiliar: su fallo no invalida el documento ya leído.
@@ -113,18 +175,22 @@ export class Documents {
   if(record.info.kind!=='csv')throw new Error(t('csvText.chooseFileForView'))
   if(view!=='table'&&view!=='text'||decision!==undefined&&decision!=='save'&&decision!=='discard')throw new Error(t('csvText.invalidView'))
   if(!record.info.path)throw new Error(t('csvText.saveBeforeView'))
+  if(view==='text')this.assertProjectEditable(id)
   if((record.info.csvView??'table')===view){await this.csvViews.remember(record.info.path,view);return this.info(id)}
   if(record.info.dirty){if(!decision)throw new Error(t('csvText.pendingChanges'));if(decision==='save'&&!await this.saveNow(id))return this.info(id)}
   const document=await this.openNew(record.info.path,view,record)
   clearTimeout(record.timer);await this.removeCsvRecovery(id)
   return document
  })}
- async csvViewInfo(path:string){const canonical=await this.authorize(path);if(extensions[extname(canonical).toLowerCase()]!=='csv')throw new Error(t('csvText.chooseFile'));const info=await stat(canonical);if(!info.isFile())throw new Error(t('csvText.selectFile'));const document=[...this.records.values()].find(record=>record.info.path===canonical);return{byteLength:info.size,textAllowed:info.size<=CSV_TEXT_LIMIT,...(document?{id:document.info.id}:{})}}
+ async csvViewInfo(path:string){const canonical=await this.authorize(path);if(extensions[extname(canonical).toLowerCase()]!=='csv')throw new Error(t('csvText.chooseFile'));const info=await stat(canonical);if(!info.isFile())throw new Error(t('csvText.selectFile'));const document=[...this.records.values()].find(record=>record.info.path===canonical);return{byteLength:info.size,textAllowed:info.size<=CSV_TEXT_LIMIT,projectSource:this.projectSources.has(canonical)?'protected' as const:document?this.sourceStatus(document.info.id,canonical):undefined,...(document?{id:document.info.id}:{})}}
  async create(kind:Kind,csvView:CsvView='table'){return this.serial('create',()=>this.createNow(kind,csvView))}
  private async createNow(kind:Kind,csvView:CsvView='table'){const id=randomUUID();const extension=kind==='csv'?'csv':kind==='mermaid'?'mmd':kind==='text'?'txt':'md';const r:RecordDoc={info:{id,name:`Sin título.${extension}`,path:null,kind,csvView:kind==='csv'?csvView:undefined,byteLength:kind==='csv'?0:undefined,dirty:false,readonly:false,revision:0,encoding:'utf8',delimiter:','},text:'',undo:[],redo:[],root:app.getPath('documents'),saving:false};if(isTableDocument(r.info)){await this.table.call('create',id);Object.assign(r.info,await this.table.call('info',id))}else if(kind!=='csv'){r.textFormat=defaultTextFormat;r.info.bom=false}this.records.set(id,r);return this.info(id)}
  get(id:string){const r=this.records.get(id);if(!r)throw new Error('El documento ya no está abierto.');return r}
  requireTable(id:string){const record=this.get(id);if(!isTableDocument(record.info))throw new Error(t('csvText.tableOnly'));return record}
- info(id:string){const r=this.get(id);return {...r.info,...(!isTableDocument(r.info)?{text:r.text}:{})}}
+ info(id:string){
+  const r=this.get(id),projectSource=this.sourceStatus(id,r.info.path)
+  return {...r.info,...projectSource?{projectSource,readonly:true,warning:t(projectSource==='closed'?'project.source.closed':'project.source.protected')}:null,...(!isTableDocument(r.info)?{text:r.text}:{})}
+ }
  async bibliography(id:string,source:string):Promise<DocumentBibliography>{
   const record=this.get(id),path=record.info.path,revision=record.info.revision
   const assertCurrent=()=>{if(this.records.get(id)!==record||record.text!==source||record.info.path!==path||record.info.revision!==revision)throw new Error(t('bibliography.error.changedDocument'))}
@@ -138,13 +204,14 @@ export class Documents {
  }
  async syncTable(id:string){const r=this.get(id);Object.assign(r.info,await this.table.call('info',id));return this.info(id)}
  async update(id:string,text:string){this.rejectDuringReload(id);return this.serial(id,()=>this.updateNow(id,text))}
- private async updateNow(id:string,text:string){const r=this.get(id);if(r.info.encodingPending)throw new Error(t('textEncoding.error.confirm'));if(r.info.readonly||isTableDocument(r.info))throw new Error('El documento no permite edición de texto.');checkTextSize(text,r.textFormat);if(text!==r.text){r.undo.push(r.text);while(r.undo.length>1&&(r.undo.length>100||r.undo.reduce((n,t)=>n+Buffer.byteLength(t),0)>20*1024*1024))r.undo.shift();r.redo=[];r.text=text;r.info.dirty=true;r.info.revision++;this.schedule(id)}return this.info(id)}
+ private async updateNow(id:string,text:string){this.assertProjectEditable(id);const r=this.get(id);if(r.info.encodingPending)throw new Error(t('textEncoding.error.confirm'));if(r.info.readonly||isTableDocument(r.info))throw new Error('El documento no permite edición de texto.');checkTextSize(text,r.textFormat);if(text!==r.text){r.undo.push(r.text);while(r.undo.length>1&&(r.undo.length>100||r.undo.reduce((n,t)=>n+Buffer.byteLength(t),0)>20*1024*1024))r.undo.shift();r.redo=[];r.text=text;r.info.dirty=true;r.info.revision++;this.schedule(id)}return this.info(id)}
  schedule(id:string){const r=this.get(id);clearTimeout(r.timer);r.timer=setTimeout(()=>{this.checkpoint(id).catch(e=>this.emit({type:'error',message:`No se pudo guardar recuperación: ${(e as Error).message}`}))},2000)}
  checkpoint(id:string):Promise<void>{const pending=this.recoveryTasks.get(id);if(pending)return pending;const task=this.checkpointNow(id).finally(()=>this.recoveryTasks.delete(id));this.recoveryTasks.set(id,task);return task}
  private async checkpointNow(id:string){const r=this.get(id);if(!r.info.dirty||r.info.readonly)return;await mkdir(this.recoveryDir,{recursive:true,mode:0o700});const revision=r.info.revision;const data=isTableDocument(r.info)?await this.table.call<string>('checkpoint',id,{...r.info}):JSON.stringify({version:1,info:r.info,savedAt:new Date().toISOString(),snapshot:{text:r.text,...(r.textFormat?{format:r.textFormat}:{})}});await atomicWrite(join(this.recoveryDir,`${id}.json`),data);if(revision!==r.info.revision)this.schedule(id)}
  async tableEdit(id:string,edit:TableEdit){this.rejectDuringReload(id);if((edit.type==='structure'||edit.type==='range')&&this.operations.has(id))throw new Error('Espera a que termine el guardado o la edición anterior antes de preparar el cambio.');return this.serial(id,()=>this.tableEditNow(id,edit))}
- private async tableEditNow(id:string,edit:TableEdit){this.requireTable(id);await this.table.call('edit',id,edit);await this.syncTable(id);this.schedule(id);return this.info(id)}
+ private async tableEditNow(id:string,edit:TableEdit){this.assertProjectEditable(id);this.requireTable(id);await this.table.call('edit',id,edit);await this.syncTable(id);this.schedule(id);return this.info(id)}
  async calculationSource(id:string,revision:number){
+  this.assertProjectEditable(id)
   const record=this.requireTable(id)
   const path=record.info.path,hash=record.hash
   if(record.info.readonly||record.info.revision!==revision)throw new Error(t('calculate.error.changed'))
@@ -180,20 +247,45 @@ export class Documents {
   })
  }
  async tableOptions(id:string,options:TableOptions){return this.reinterpret(id,()=>this.tableOptionsNow(id,options))}
- private async tableOptionsNow(id:string,options:TableOptions){const r=this.requireTable(id);if(r.info.dirty)throw new Error('Guarda los cambios antes de cambiar cómo se interpreta el archivo.');if(!r.info.path)throw new Error('Guarda el archivo antes de cambiar su interpretación.');const initial=await stat(r.info.path);const before=initial.size<=50*1024*1024?await digest(r.info.path):undefined;if(r.hash!==undefined&&r.hash!==before)throw new Error('El archivo cambió en disco. Recárgalo antes de cambiar su interpretación.');await this.table.call('open',id,r.info.path,options);await this.syncTable(id);const after=await stat(r.info.path);if(before!==undefined?before!==await digest(r.info.path):initial.size!==after.size||initial.mtimeMs!==after.mtimeMs)throw new Error('El archivo cambió durante la lectura. Recárgalo antes de guardar.');r.hash=before;return this.info(id)}
+ private async tableOptionsNow(id:string,options:TableOptions){this.assertProjectEditable(id);const r=this.requireTable(id);if(r.info.dirty)throw new Error('Guarda los cambios antes de cambiar cómo se interpreta el archivo.');if(!r.info.path)throw new Error('Guarda el archivo antes de cambiar su interpretación.');const initial=await stat(r.info.path);const before=initial.size<=50*1024*1024?await digest(r.info.path):undefined;if(r.hash!==undefined&&r.hash!==before)throw new Error('El archivo cambió en disco. Recárgalo antes de cambiar su interpretación.');await this.table.call('open',id,r.info.path,options);await this.syncTable(id);const after=await stat(r.info.path);if(before!==undefined?before!==await digest(r.info.path):initial.size!==after.size||initial.mtimeMs!==after.mtimeMs)throw new Error('El archivo cambió durante la lectura. Recárgalo antes de guardar.');r.hash=before;return this.info(id)}
  async undo(id:string,redo=false){this.rejectDuringReload(id);return this.serial(id,()=>this.undoNow(id,redo))}
- private async undoNow(id:string,redo=false){const r=this.get(id);if(r.info.readonly)return this.info(id);if(isTableDocument(r.info)){await this.table.call('undo',id,redo);await this.syncTable(id)}else{const from=redo?r.redo:r.undo,to=redo?r.undo:r.redo;const text=from.pop();if(text===undefined)return this.info(id);to.push(r.text);r.text=text;r.info.dirty=true;r.info.revision++}this.schedule(id);return this.info(id)}
+ private async undoNow(id:string,redo=false){this.assertProjectEditable(id);const r=this.get(id);if(r.info.readonly)return this.info(id);if(isTableDocument(r.info)){await this.table.call('undo',id,redo);await this.syncTable(id)}else{const from=redo?r.redo:r.undo,to=redo?r.undo:r.redo;const text=from.pop();if(text===undefined)return this.info(id);to.push(r.text);r.text=text;r.info.dirty=true;r.info.revision++}this.schedule(id);return this.info(id)}
  private async saveDestination(r:RecordDoc){if(process.env.FREYALAB_TEST==='1'&&(process.env.FREYALAB_TEST_SAVE_PATH||process.env.FREYALAB_TEST_SAVE_DIR))return process.env.FREYALAB_TEST_SAVE_PATH??join(process.env.FREYALAB_TEST_SAVE_DIR!,r.info.name.replace('Sin título','documento'));const result=await dialog.showSaveDialog(this.owner(),{title:t('dialog.save.title'),buttonLabel:t('dialog.save'),defaultPath:r.info.path??r.info.name});return result.canceled?null:result.filePath??null}
  async save(id:string,as=false){return this.serial(id,()=>this.saveNow(id,as))}
  async saveTextEncoding(id:string,encoding:TextEncoding){return this.serial(id,()=>this.saveNow(id,false,encoding))}
+ private async copyProjectSource(r:RecordDoc){
+  const path=r.info.path!,source=this.projectSources.get(path)!
+  const dest=await this.saveDestination(r);if(!dest)return null
+  const canonical=await canonicalDestination(dest),release=this.reserveWrite(canonical)
+  const flags=process.platform==='win32'?'r':constants.O_RDONLY|constants.O_NOFOLLOW|constants.O_NONBLOCK
+  try{
+   if(await realpath(path)!==path)throw new Error(t('project.source.changed'))
+   const handle=await openFile(path,flags)
+   try{
+    const before=await handle.stat()
+    if(!before.isFile())throw new Error(t('project.source.changed'))
+    async function* bytes(){
+     const hash=createHash('sha256')
+     for await(const chunk of handle.createReadStream({autoClose:false})){hash.update(chunk);yield chunk as Buffer}
+     if(hash.digest('hex')!==source.sha256)throw new Error(t('project.source.changed'))
+    }
+    await atomicWrite(dest,bytes(),null)
+   }catch(error){if((error as NodeJS.ErrnoException).code==='EEXIST')throw new Error(t('project.source.copyExists'));throw error}
+   finally{await handle.close()}
+   return this.open(dest)
+  }finally{release()}
+ }
  private async saveNow(id:string,as=false,encoding?:TextEncoding){
   const r=this.get(id)
+  if(as&&!encoding&&this.sourceStatus(id,r.info.path)==='protected')return this.copyProjectSource(r)
+  this.assertProjectEditable(id)
   if(encoding&&r.info.kind==='csv')throw new Error(t('textEncoding.error.kind'))
   if(r.info.encodingPending)throw new Error(t('textEncoding.error.confirm'))
   if(r.info.readonly)throw new Error('La muestra es de solo lectura.')
   const format=encoding?encodedTextFormat(r.textFormat??defaultTextFormat,encoding):r.textFormat
   const dest=as||!r.info.path?await this.saveDestination(r):r.info.path;if(!dest)return null
-  const canonical=await realpath(dest).catch(()=>resolve(dest))
+  const canonical=await canonicalDestination(dest),release=this.reserveWrite(canonical)
+  try{
   if([...this.records.values()].some(other=>other!==r&&other.info.path===canonical))throw new Error('El destino corresponde a otro documento abierto. Guarda una copia con otro nombre.')
   if((await lstat(dest).catch(()=>null))?.isSymbolicLink())throw new Error('No se sobrescriben enlaces simbólicos.')
   const revision=r.info.revision,same=r.info.path===dest||r.info.path===canonical
@@ -222,6 +314,7 @@ export class Documents {
    r.info.path=dest;r.info.name=basename(dest);if(!same)r.root=dirname(await realpath(dest));await r.watcher?.close();r.watcher=watch(dest,{ignoreInitial:true}).on('change',()=>{if(!r.saving)this.emit({type:'external',id})});await this.addRecent(dest)
    return{...this.info(id),...(assets?{assets}:{})}
   }finally{setTimeout(()=>{r.saving=false},300)}
+  }finally{release()}
  }
 
  async locateImage(id:string,missingURL:string){return this.serial(id,()=>this.locateImageNow(id,missingURL))}
@@ -258,7 +351,7 @@ export class Documents {
   // Un checkpoint anterior todavía usa el registro y, si cambió la revisión,
   // puede reprogramar recuperación. Se espera con sus recursos aún abiertos.
   await this.discardRecovery(id);clearTimeout(record.timer)
-  await record.watcher?.close();if(isTableDocument(record.info))await this.table.call('close',id);this.records.delete(id)
+  await record.watcher?.close();if(isTableDocument(record.info))await this.table.call('close',id);this.records.delete(id);this.closedProjectSources.delete(id)
  }
  private async closeNow(id:string){if(await this.confirmCloseNow(id)==='cancel')return false;await this.disposeNow(id);return true}
  private async confirmAndDisposeAll(ownerIsCurrent:()=>boolean):Promise<{closed:boolean;saved:string[]}>{
@@ -282,7 +375,7 @@ export class Documents {
   if(!r.info.path)throw new Error(encoding?t('textEncoding.error.noPath'):'El documento no tiene un archivo original.')
   const csvText=r.info.kind==='csv'&&r.info.csvView==='text'
   if(r.info.dirty){const {response}=await dialog.showMessageBox(this.owner(),{type:'warning',title:t('dialog.reload.title'),buttons:[t('dialog.reload.keep'),t('dialog.reload.discard')],defaultId:0,cancelId:0,message:t('dialog.reload.message')});if(response===0)return this.info(id)}
-  if(isTableDocument(r.info)){const size=(await stat(r.info.path)).size;const before=size<=50*1024*1024?await digest(r.info.path):undefined;await this.table.call('open',id,r.info.path,{encoding:r.info.encoding,delimiter:r.info.delimiter});await this.syncTable(id);if(!r.info.readonly&&before!==await digest(r.info.path))throw new Error('El archivo cambió durante la recarga. Vuelve a intentarlo.')}
+  if(isTableDocument(r.info)){const size=(await stat(r.info.path)).size;const before=size<=50*1024*1024?await digest(r.info.path):undefined;await this.table.call('open',id,r.info.path,this.projectSources.get(r.info.path)?.format??{encoding:r.info.encoding,delimiter:r.info.delimiter});await this.syncTable(id);if(!r.info.readonly&&before!==await digest(r.info.path))throw new Error('El archivo cambió durante la recarga. Vuelve a intentarlo.')}
   else if(csvText){
    if((await stat(r.info.path)).size>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'))
    const bytes=await readFile(r.info.path);if(bytes.length>CSV_TEXT_LIMIT)throw new Error(t('csvText.limit'))

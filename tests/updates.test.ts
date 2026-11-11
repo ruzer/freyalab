@@ -16,10 +16,10 @@ async function local(handler:RequestListener){
  return{FREYALAB_TEST:'1',FREYALAB_TEST_UPDATES_URL:`http://127.0.0.1:${(server.address() as {port:number}).port}/releases`}
 }
 describe('APP-04 · versiones y frontera de confianza',()=>{
- it('ofrece la versión empaquetada a quien instaló el candidato alpha.2',()=>{
+ it.each(['0.1.0-alpha.2','0.1.0-alpha.3'])('ofrece la versión empaquetada a quien instaló %s',previous=>{
   const releases=[release('0.1.0-alpha.1'),release(current)]
-  expect(selectRelease(releases,'0.1.0-alpha.2')?.version).toBe(current)
-  expect(selectRelease([release(current,{draft:true})],'0.1.0-alpha.2')).toBeNull()
+  expect(selectRelease(releases,previous)?.version).toBe(current)
+  expect(selectRelease([release(current,{draft:true})],previous)).toBeNull()
  })
  it('U5 · compara componentes numéricos y prereleases sin orden textual',()=>{
   const ordered=['0.1.0-alpha.1','0.1.0-alpha.2','0.1.0-alpha.3',nextVersion,'0.1.0-beta.1','0.1.0','0.1.1','0.2.0','1.0.0']
