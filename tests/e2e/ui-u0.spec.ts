@@ -1,3 +1,4 @@
+import {chartPanel,openAnalysis,showTable,createSuggestedChart} from './panel'
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
 import { closeElectron } from './close-electron'
 import electronPath from 'electron'
@@ -50,9 +51,9 @@ test('U0: capturas de estados existentes y tipografía base sin modificar archiv
  const cell=await page.getByRole('gridcell').first().evaluate(node=>({cellFamily:getComputedStyle(node).fontFamily,cellSize:getComputedStyle(node).fontSize}))
  expect(cell.cellSize).toBe('11px');expect(cell.cellFamily).toContain('JetBrains Mono')
  await writeFile(test.info().outputPath('fonts.json'),JSON.stringify({...fonts,...cell},null,2))
- await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();await expect(page.locator('.pivot-result')).toBeVisible();await captures('resumen')
+ await openAnalysis(page,'Gráficos');await createSuggestedChart(page);await expect(page.locator('.pivot-result')).toBeVisible();await captures('resumen')
  await runApplicationMenu(app,'app.settings');await captures('ajustes');await page.getByRole('dialog',{name:'Ajustes',exact:true}).getByRole('button',{name:'Cerrar',exact:true}).click()
- await page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true}).click();await page.getByLabel('Buscar en tabla',{exact:true}).fill('sin-coincidencias-u0');await expect(page.locator('.statusbar')).toContainText('0 de 842 filas');await captures('sin-resultados')
+ await showTable(page);await page.getByLabel('Buscar en tabla',{exact:true}).fill('sin-coincidencias-u0');await expect(page.locator('.statusbar')).toContainText('0 de 842 filas');await captures('sin-resultados')
  await runApplicationMenu(app,'file.newMarkdown');await page.waitForFunction(async()=>{const docs=await window.freya.documents();return docs.some(doc=>!doc.path)})
  await holdSave();await save().click();await expect.poll(()=>app.evaluate(()=>(globalThis as typeof globalThis&{u0SavePending?:boolean}).u0SavePending)).toBe(true)
  await captures('guardando');await releaseSave()
@@ -125,23 +126,23 @@ test('U0: solo lectura conserva sus restricciones y Abrir como acción disponibl
 })
 
 test('U0: Más opciones sigue visible con resumen paginado y controles de 13 px',async()=>{
- await open(csv);await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();await expect(page.locator('.pivot-result')).toBeVisible()
+ await open(csv);await openAnalysis(page,'Gráficos');await createSuggestedChart(page);await expect(page.locator('.pivot-result')).toBeVisible()
  for(const width of [1280,1440,800]){
   await page.setViewportSize({width,height:width===1440?900:720})
-  const summary=page.locator('.more-options>summary');await expect(summary).toBeInViewport({ratio:1})
+  const summary=page.locator('.more-options>summary');await test.info().attach('an1b-layout-'+width,{body:JSON.stringify(await page.locator('.analysis-workspace').evaluate(root=>Object.fromEntries([':scope','header','.analysis-sections','h2','.charts-panel','.chart-result','.chart-intro','.result-status','.truncated','.chart-types','.suggestion','.plot-scroll','.pivot-result','.more-options'].map(selector=>{const node=root.querySelector(selector)??root,box=node.getBoundingClientRect();return[selector,{y:box.y,height:box.height,bottom:box.bottom,scroll:node.scrollHeight,client:node.clientHeight}]})))),contentType:'application/json'});await expect(summary).toBeInViewport({ratio:1})
   await summary.focus();await page.keyboard.press('Enter');await expect(page.locator('.more-options')).toHaveAttribute('open','');await page.keyboard.press('Enter')
  }
 })
 
 test('U0: la ayuda del gráfico se despliega debajo de su control y permite cerrarla',async()=>{
- await open(csv);await page.setViewportSize({width:1440,height:900});await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click();await expect(page.locator('.pivot-result')).toBeVisible()
+ await open(csv);await page.setViewportSize({width:1440,height:900});await openAnalysis(page,'Gráficos');await createSuggestedChart(page);await expect(page.locator('.pivot-result')).toBeVisible()
  const summary=page.locator('.chart-info>summary');await summary.click();await expect(page.locator('.chart-info')).toHaveAttribute('open','')
  const [trigger,popup]=await Promise.all([summary.boundingBox(),page.locator('.chart-info .info-content').boundingBox()]);expect(popup!.y).toBeGreaterThanOrEqual(trigger!.y+trigger!.height)
  await summary.click();await expect(page.locator('.chart-info')).not.toHaveAttribute('open')
 })
 
 test('U0: Calculando cabe en el botón real con en-XA, inglés y español',async()=>{
- await open(csv);await page.locator('.csv-toolbar .analyze').click();await expect(page.locator('.statistics-panel')).toBeVisible()
+ await open(csv);await openAnalysis(page,'Estadísticas');await expect(page.locator('.statistics-panel')).toBeVisible()
  const samples=[]
  for(const language of ['en-XA','en','es'] as const){
   if(language!=='en-XA')await page.evaluate(language=>window.freya.setLanguage(language),language)
@@ -203,7 +204,7 @@ for(const locale of ['es','en-XA'] as const)test(`U0.1: campos legibles y orden 
  const wide=join(folder,'campos.csv')
  await writeFile(wide,'Cliente,Ventas,Región,Segmento\n'+Array.from({length:842},(_,i)=>`C${i},${100+i*3},${i%2?'Norte':'Sur'},${i%2?'A':'B'}`).join('\n')+'\n')
  await open(wide)
- await page.locator('[data-csv-view] button').nth(1).click()
+ await openAnalysis(page,'Gráficos');await createSuggestedChart(page)
  await expect(page.locator('.pivot-result')).toBeVisible()
  if(locale==='es')for(const [field,zone] of [['Cliente','Filas'],['Ventas','Valores']]){
   await page.locator(`.field-entry[title="${field}"] button`).click()
@@ -215,7 +216,7 @@ for(const locale of ['es','en-XA'] as const)test(`U0.1: campos legibles y orden 
   if(language==='en')await page.evaluate(()=>window.freya.setLanguage('en'))
   await expect(page.locator('html')).toHaveAttribute('lang',language)
   if(language!=='en-XA'){
-   const notice=page.locator('.charts-panel .truncated.notice')
+   const notice=chartPanel(page).locator('.truncated.notice')
    await expect(notice).toBeVisible()
    expect.soft(await notice.innerText()).toContain(language==='es'?'de menor a mayor':'ascending')
   }

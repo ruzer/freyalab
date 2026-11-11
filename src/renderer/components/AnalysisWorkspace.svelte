@@ -44,7 +44,7 @@
    <div class="analysis-section" class:charts-section={item==='charts'} class:info-section={item==='info'} hidden={item!==section}>
     {#if !unavailable(item)}
      {#if item==='info'}<CsvColumnsOverview {doc} {...view} {onerror} {onreport} oninspect={inspect}/>
-     {:else if item==='statistics'}<CsvStatistics {doc} {...view} embedded autofocus={false} {inspection} {onerror} {onreport} onclose={onreturn}/>
+     {:else if item==='statistics'}<CsvStatistics {doc} {...view} embedded autofocus={false} {inspection} entry={tab.statistics} {onerror} {onreport} onclose={onreturn}/>
      {:else if item==='sql'}<CsvSql {doc} embedded {onerror} {onreport} onclose={onreturn}/>
      {:else}{#await import('./CsvCharts.svelte')}<p role="status">{t('charts.ui.prepare')}</p>{:then module}
       {#key JSON.stringify(doc.headers)}<module.default {doc} query={view.query} queryValid={view.queryValid} visible={shown&&section==='charts'} onDemand {exportHost} {onerror} onclose={()=>heading?.focus()}/>{/key}
@@ -68,5 +68,10 @@
  .analysis-section{flex:1;min-height:0;min-width:0;overflow:auto}
  .charts-section{display:flex;flex-direction:column}.info-section{padding-inline:16px}
  .analysis-warning{margin:0;padding:8px 16px;background:var(--hover)}
+ /* La cabecera de la pestaña deja espacio al gráfico y al pie de la tabla paginada. */
+ .charts-section :global(.pivot-result){flex-shrink:1;min-height:100px}
+ .charts-section :global(.chart-info summary){margin-block:0}
+ @media(max-height:760px){header{padding-block:4px}.analysis-sections{padding-block:4px}h2{padding-bottom:4px}}
+
  .analysis-section :global(section.sql-panel),.analysis-section :global(section.statistics-panel){max-height:none;overflow:visible;border-bottom:0}
 </style>

@@ -45,7 +45,7 @@ test('una sola fila de herramientas deja la tabla a 110 px del borde superior o 
 test('las cinco acciones principales se ven a la vez y lo demás está en menús con su nombre de siempre', async()=>{
  const bar=toolbar()
  await expect(bar.getByRole('textbox',{name:'Buscar en tabla',exact:true})).toBeVisible()
- for(const name of ['Reemplazar','Filtrar','Limpiar datos','Filas y columnas','Estadísticas y SQL'])await expect(bar.getByLabel(name,{exact:true})).toBeVisible()
+ for(const name of ['Reemplazar','Filtrar','Limpiar datos','Filas y columnas','Analizar'])await expect(bar.getByLabel(name,{exact:true})).toBeVisible()
  // Lo secundario ya no ocupa sitio en la barra.
  for(const name of ['Consulta avanzada','Estadísticas','Gráficos','Análisis','Comandos','Orden numérico'])await expect(bar.getByRole('button',{name,exact:true})).toHaveCount(0)
  const menus:Record<string,string[]>={
@@ -74,13 +74,21 @@ test('la codificación, el separador, el encabezado y los recuentos viven en la 
  await expect(page.getByRole('grid').getByRole('columnheader')).toHaveCount(1) // con «;» el archivo queda en una sola columna
 })
 
-test('Analizar abre el panel en la pestaña recordada y vuelve a cerrarlo con el foco en su botón', async()=>{
- const analyze=toolbar().getByLabel('Estadísticas y SQL',{exact:true}),tabs=page.getByRole('tablist',{name:'Herramientas de análisis'})
- await analyze.click();await expect(tabs).toBeVisible()
- for(const name of ['Resumen','Gráficos','SQL'])await expect(tabs.getByRole('tab',{name,exact:true})).toBeVisible()
- await tabs.getByRole('tab',{name:'Gráficos',exact:true}).click()
- await analyze.click();await expect(tabs).toHaveCount(0);await expect(analyze).toBeFocused()
- await analyze.click();await expect(tabs.getByRole('tab',{name:'Gráficos',exact:true})).toHaveAttribute('aria-selected','true') // recuerda la pestaña
+test('Analizar abre una pestaña a petición y permite volver a la tabla con el foco en su pestaña', async()=>{
+ const modes=page.locator('[data-csv-view]')
+ await expect(modes.getByRole('button')).toHaveText(['Tabla','Texto'])
+ const analyze=toolbar().getByRole('button',{name:'Analizar',exact:true})
+ await expect(toolbar().getByRole('button',{name:'Estadísticas y SQL',exact:true})).toHaveCount(0)
+ await analyze.press('Enter')
+ const analysis=page.locator('.analysis-workspace:not([hidden])')
+ await expect(analysis).toBeVisible()
+ await expect(analysis.getByRole('heading',{name:'Información',exact:true})).toBeFocused()
+ await analysis.getByRole('button',{name:'Gráficos',exact:true}).press('Enter')
+ await expect(analysis.getByRole('button',{name:'Crear',exact:false})).toBeVisible()
+ await analysis.getByRole('button',{name:'Ir al CSV',exact:true}).press('Enter')
+ await expect(page.getByRole('tab',{name:'ventas.csv',exact:true})).toBeFocused()
+ await analyze.press('Enter')
+ await expect(page.getByRole('tab',{name:/^Análisis de /})).toHaveCount(1)
 })
 
 test('un filtro activo queda a la vista como etiqueta y se quita con un clic', async()=>{

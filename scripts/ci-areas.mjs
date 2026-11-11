@@ -52,7 +52,6 @@ const areas = {
     'src/main/table-worker.ts',
     'src/renderer/analytics.html',
     'src/renderer/analytics.ts',
-    'src/renderer/components/AnalysisDock.svelte',
     'src/renderer/components/ChartFields.svelte',
     'src/renderer/components/ChartPresets.svelte',
     'src/renderer/components/CsvCharts.svelte',

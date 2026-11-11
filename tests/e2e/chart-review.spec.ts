@@ -1,3 +1,4 @@
+import {chartPanel,openAnalysis,createSuggestedChart} from './panel'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import { closeElectron } from './close-electron'
 import electronPath from 'electron'
@@ -6,7 +7,7 @@ import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 
 let app:ElectronApplication,page:Page,folder:string,file:string,original:string
-const panel=()=>page.locator('.charts-panel')
+const panel=()=>chartPanel(page)
 async function assign(field:string,zone:string){
  await panel().locator('.field-list').getByRole('button',{name:new RegExp(`^(Añadir|Mover) a… ${field}$`)}).click()
  await page.getByRole('menuitem',{name:new RegExp(`^Añadir a ${zone}(?: |$)`)}).click()
@@ -19,7 +20,7 @@ test.beforeEach(async()=>{
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:'es',FREYALAB_USER_DATA:join(folder,'profile')}})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.emulateMedia({reducedMotion:'reduce'});await page.setViewportSize({width:1280,height:720})
  await page.evaluate(file=>window.freya.openPaths([file]),file)
- await page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true}).click()
+ await openAnalysis(page,'Gráficos');await createSuggestedChart(page)
  await expect(panel().locator('.pivot-result')).toBeVisible()
  await assign('Cliente','Filas');await assign('Ventas','Valores')
  await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('1,146,383')

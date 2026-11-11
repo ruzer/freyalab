@@ -1,6 +1,7 @@
 export type AnalysisSource = {documentId:string}
 export type AnalysisSection = 'info'|'statistics'|'charts'|'sql'
-export type AnalysisTab = {type:'analysis';id:string;source:AnalysisSource;section:AnalysisSection}
+export type AnalysisStatistics = {scope:'all'|'selected'|'range'|'rangeColumns'}
+export type AnalysisTab = {type:'analysis';id:string;source:AnalysisSource;section:AnalysisSection;statistics?:AnalysisStatistics}
 export type WorkspaceTab = {type:'document';id:string}|AnalysisTab
 
 export function workspaceTabs(documents:readonly {id:string}[],analyses:readonly AnalysisTab[]):WorkspaceTab[]{
@@ -11,9 +12,9 @@ export function workspaceTabs(documents:readonly {id:string}[],analyses:readonly
  })
 }
 
-export function openAnalysisTab(tabs:readonly AnalysisTab[],source:AnalysisSource,section:AnalysisSection){
+export function openAnalysisTab(tabs:readonly AnalysisTab[],source:AnalysisSource,section:AnalysisSection,statistics?:AnalysisStatistics){
  const id='analysis:'+source.documentId
- const tab:AnalysisTab={type:'analysis',id,source,section}
+ const tab:AnalysisTab={type:'analysis',id,source,section,...statistics?{statistics}:{}}
  return {tab,tabs:tabs.some(value=>value.id===id)?tabs.map(value=>value.id===id?tab:value):[...tabs,tab]}
 }
 

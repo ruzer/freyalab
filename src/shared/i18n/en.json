@@ -1098,5 +1098,7 @@
  "project.source.tab": "Tab",
  "menu.file.addProjectSource": "Add to project as a source…",
  "ui.reason.projectProtected": "Protected from changes made by FreyaLab. Other programs may still modify it. FreyaLab detects those changes and warns you.",
- "ui.reason.projectClosed": "Project closed. Close and reopen the file to edit it."
+ "ui.reason.projectClosed": "Project closed. Close and reopen the file to edit it.",
+ "analysis.tab.range": "Range statistics",
+ "analysis.tab.rangeHelp": "Opens Statistics for the cells in the selected range"
 }

@@ -1,15 +1,56 @@
-import {expect,type Page} from '@playwright/test'
-// Estadísticas y SQL conservan el dock; Gráficos abre la presentación hermana de Tabla.
-const tabs={'Gráficos':'Gráficos','Estadísticas':'Resumen','Análisis':'SQL'} as const
-export const analyzeButton=(page:Page)=>page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true}).getByRole('button',{name:'Estadísticas y SQL',exact:true})
-// Deja el panel abierto en la pestaña indicada (lo abre solo si hace falta; no lo cierra nunca).
-export async function showPanel(page:Page,name:keyof typeof tabs){
- if(name==='Gráficos'){const mode=page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true});if(await mode.getAttribute('aria-pressed')!=='true')await mode.click();await expect(mode).toHaveAttribute('aria-pressed','true');await expect(page.locator('.charts-panel')).toBeVisible();return}
- const summary=page.locator('[data-csv-view]').getByRole('button',{name:'Resumen y gráfico',exact:true});if(await summary.getAttribute('aria-pressed')==='true')await page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true}).click()
- const button=analyzeButton(page)
- if(await button.getAttribute('aria-expanded')!=='true')await button.click()
- const tab=page.getByRole('tablist',{name:'Herramientas de análisis'}).getByRole('tab',{name:tabs[name],exact:true})
- if(await tab.getAttribute('aria-selected')!=='true')await tab.click() // si ya está seleccionada no se pulsa: el foco se queda donde lo dejó el panel
+import {runApplicationMenu} from './application-menu'
+import {expect,type Page,type ElectronApplication} from '@playwright/test'
+import {t} from '../../src/shared/i18n'
+import type {Language} from '../../src/shared/i18n'
+const sections={'Información':'info','Gráficos':'charts','Estadísticas':'statistics','Análisis':'sql','SQL':'sql'} as const
+const workspace=(page:Page)=>page.locator('.analysis-workspace:not([hidden])')
+async function translated(page:Page,key:string){return t(key,{},(await page.locator('html').getAttribute('lang')??'es') as Language)}
+export const analyzeButton=(page:Page)=>page.locator('.csv-toolbar,.csv-text-tools').getByRole('button',{name:/^(Analizar|Analyze|\[Ánályzë~+\])$/})
+// Pedir el análisis puede abrir primero el diálogo de cambio desde CSV Texto.
+export async function requestAnalysis(page:Page,app?:ElectronApplication){
+ if(app){await runApplicationMenu(app,'edit.commandPalette');const search=page.getByRole('searchbox',{name:'Buscar comando CSV',exact:true});await search.fill('info');await search.press('Enter')}
+ else await analyzeButton(page).click()
+}
+async function sourceAnalysisTab(page:Page){
+ const sourceId=(await page.locator('.tabs[role=tablist]').getByRole('tab',{selected:true}).getAttribute('id'))?.replace('workspace-tab-','')
+ return page.locator('[id='+JSON.stringify('workspace-tab-analysis:'+sourceId)+']')
+}
+export async function requestAnalysisTab(page:Page){await (await sourceAnalysisTab(page)).click()}
+export async function openAnalysis(page:Page,name:keyof typeof sections='Información'){
+ if(!await workspace(page).isVisible()){
+  const analysis=await sourceAnalysisTab(page)
+  if(await analysis.count())await analysis.click()
+  else await requestAnalysis(page)
+ }
+ return selectAnalysis(page,name)
+}
+export async function selectAnalysis(page:Page,name:keyof typeof sections){
+ await expect(workspace(page)).toBeVisible()
+ await workspace(page).getByRole('group',{name:await translated(page,'analysis.tab.sections'),exact:true}).getByRole('button',{name:await translated(page,'analysis.tab.section.'+sections[name]),exact:true}).click()
+ return workspace(page)
+}
+export async function showTable(page:Page){
+ if(await workspace(page).isVisible())await workspace(page).getByRole('button',{name:await translated(page,'analysis.tab.return'),exact:true}).click()
+ await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()
+}
+export const chartPanel=(page:Page)=>workspace(page).locator('.charts-panel')
+export const chartSuggestion=(page:Page)=>chartPanel(page).locator('.empty-result button')
+export async function createSuggestedChart(page:Page){
+ const panel=chartPanel(page)
+ await expect(panel.locator('.pivot-result')).toHaveCount(0)
+ // El texto del botón incluye la descripción generada, no una etiqueta fija.
+ const suggestion=chartSuggestion(page)
+ await expect(suggestion).toBeEnabled()
+ await suggestion.click()
+ return panel
+}
+export async function showPanel(page:Page,name:'Gráficos'|'Estadísticas'|'Análisis'){
+ await openAnalysis(page,name)
+ if(name==='Gráficos'){
+  const panel=workspace(page).locator('.charts-panel')
+  await expect(panel).toBeVisible()
+  if(!await panel.locator('.pivot-result').count())await createSuggestedChart(page)
+ }
 }
 // Abre un menú de la barra de la tabla (Filtrar, Limpiar datos, Filas y columnas) y elige una de sus acciones.
 export async function menuItem(page:Page,menu:'Filtrar'|'Limpiar datos'|'Filas y columnas',item:string){

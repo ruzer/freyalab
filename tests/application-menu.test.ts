@@ -117,6 +117,16 @@ it('APP-01 · conserva la paleta CSV por el mismo comando y no captura Mod+K en 
  expect(other).toMatchObject({enabled:false});expect(other?.accelerator).toBeUndefined()
 })
 
+it('AN-1b · solo la paleta de análisis mantiene su acelerador CSV en Texto',()=>{
+ const context:ApplicationMenuContext={...base,activeId:'a',focus:'editor',inCodeMirror:true,documents:[{id:'a',name:'datos.csv',kind:'csv',csvView:'text',readonly:false,dirty:true}]}
+ for(const platform of ['darwin','win32','linux'] as const){
+  const menu=flatten(applicationMenu(context,()=>{},platform))
+  expect(menu.find(item=>item.id==='edit.commandPalette')).toMatchObject({enabled:true,accelerator:'CommandOrControl+K'})
+  expect(menu.find(item=>item.id==='go.row')).toMatchObject({enabled:false})
+  expect(menu.find(item=>item.id==='go.row')?.accelerator).toBeUndefined()
+ }
+})
+
 it('APP-01 · Rehacer conserva el atajo nativo de cada plataforma',()=>{
  const key=(platform:NodeJS.Platform)=>flatten(applicationMenu({...base,focus:'field'},()=>{},platform)).find(item=>item.id==='edit.redo')?.accelerator
  expect(key('win32')).toBe('Control+Y')

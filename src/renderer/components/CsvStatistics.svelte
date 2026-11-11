@@ -6,11 +6,13 @@
  import {STATISTICS_FIELDS,NUMERIC_DETAIL_FIELDS,NUMERIC_DETAIL_HELP,statisticsReport,type ReportContext,type StatisticsRow} from '../lib/statistics-report'
  import CsvColumnAnalysis from './CsvColumnAnalysis.svelte'
  import CsvColumnsOverview from './CsvColumnsOverview.svelte'
+ import type {AnalysisStatistics} from '../lib/workspace-tabs'
  import type {DocumentInfo,TableQuery,TableRange,TableViewMeta} from '../../shared/types'
- let {doc,autofocus=true,embedded=false,inspection,columns,range,query,queryValid,viewMeta,onclose,onerror,onreport}:{doc:DocumentInfo;autofocus?:boolean;embedded?:boolean;inspection?:{column:number;scope:'all'|'view'};columns:number[];range:TableRange|null;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
+ let {doc,autofocus=true,embedded=false,inspection,entry,columns,range,query,queryValid,viewMeta,onclose,onerror,onreport}:{doc:DocumentInfo;autofocus?:boolean;embedded?:boolean;inspection?:{column:number;scope:'all'|'view'};entry?:AnalysisStatistics;columns:number[];range:TableRange|null;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
  const titleId=$derived(embedded?'analysis-statistics-'+doc.id:'csv-statistics-title')
  $effect(()=>{if(inspection){explorationColumn=inspection.column;explorationScope=inspection.scope;exploring=true}})
  let exploring=$state(false),overviewing=$state(false),explorationColumn=$state(0),explorationScope=$state<'all'|'view'>('all')
+ $effect(()=>{if(entry){scope=entry.scope;exploring=false;overviewing=false}})
  let scope=$state('all'),busy=$state(false),results=$state<StatisticsRow[]>([]),numericDetails=$state(false)
  let message=$state('Elige columnas y pulsa Analizar.'),revision=$state(-1),total=$state(0),analyzedScope=$state(''),heading:HTMLHeadingElement
  let reportContext=$state<ReportContext|null>(null),reporting=$state(false)

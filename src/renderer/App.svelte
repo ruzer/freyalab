@@ -30,9 +30,10 @@
  import Outline from './components/Outline.svelte'
  import Diagram from './components/Diagram.svelte'
  import CsvTable from './components/CsvTable.svelte'
+ import CsvCommands from './components/CsvCommands.svelte'
  import AnalysisWorkspace from './components/AnalysisWorkspace.svelte'
  import {csvAnalysisViews,emptyCsvAnalysisView} from './lib/csv-analysis-view'
- import {workspaceTabs,openAnalysisTab,closeDocumentAnalysis,type AnalysisTab,type AnalysisSection,type WorkspaceTab} from './lib/workspace-tabs'
+ import {workspaceTabs,openAnalysisTab,closeDocumentAnalysis,type AnalysisTab,type AnalysisSection,type AnalysisStatistics,type WorkspaceTab} from './lib/workspace-tabs'
  import CsvFileMenu from './components/CsvFileMenu.svelte'
  import CsvViewDialog from './components/CsvViewDialog.svelte'
  import CsvOpenError from './components/CsvOpenError.svelte'
@@ -97,14 +98,15 @@
  const active=$derived(documents.find(doc=>doc.id===activeId))
  const csvText=$derived(active?.kind==='csv'&&active.csvView==='text')
  const csvTextReason=$derived(active?.projectSource==='protected'?'projectProtected':active?.projectSource==='closed'?'projectClosed':(active?.byteLength??0)>CSV_TEXT_LIMIT?'textLimit':null)
- let csvSummaryId=$state<string|null>(null),summaryAfterSwitch:string|null=null
- const csvSummary=$derived(!!active&&!activeAnalysis&&!csvText&&csvSummaryId===active.id)
  const csvTextInfo=$derived(csvText?csvTextStatistics(active?.text??''):undefined)
  let csvWrap=$state(false),csvSpaces=$state(false),csvOptions=$state<HTMLDetailsElement>()
  $effect(()=>{activeId;csvText;csvWrap=false;csvSpaces=false})
  function textOption(action:'wrap'|'spaces'|'colors'|'line'){if(action==='wrap')csvWrap=!csvWrap;else if(action==='spaces')csvSpaces=!csvSpaces;else if(action==='colors')remember({editor:{csvColumnColors:!preferencesState.values.editor.csvColumnColors}});if(csvOptions)csvOptions.open=false;if(action==='line')editor?.goToLine();else editor?.focus()}
  let csvFileMenu=$state<{path:string;x:number;y:number;origin:HTMLElement}|null>(null)
- let csvChange=$state<{id:string;name:string;view:CsvView;busy:boolean;message:string}|null>(null)
+ let csvChange=$state<{id:string;name:string;view:CsvView;busy:boolean;message:string;analysis?:{section:AnalysisSection;statistics?:AnalysisStatistics}}|null>(null)
+ let textCommands=$state(false)
+ async function closeTextCommands(){textCommands=false;await tick();editor?.focus()}
+ async function chooseTextAnalysis(){await closeTextCommands();if(active)await openAnalysis(active.id)}
  let csvFailure=$state<(CsvOpenIssue&{saved?:boolean})|null>(null),csvOpening=$state(false),csvFailureOrigin:HTMLElement|undefined
  let assetBusy=$state<Record<string,string>>({})
  let assetWarnings=$state<Record<string,string[]>>({})
@@ -241,12 +243,21 @@
    activeId=id;if(documents.find(document=>document.id===id)?.kind==='markdown'&&nextMarkdownMode!==undefined){mode=nextMarkdownMode;nextMarkdownMode=undefined}diagramCandidates=undefined;diagnostics=undefined;headings=[];headingDocument='';previewHeading=undefined;headingsSource='';editorSource='';editorHeadings=[];editorLine=0;editorDocument=''
   })
  }
- async function openAnalysis(documentId:string,section:AnalysisSection='info'){
-  const source={documentId},id=openAnalysisTab(analyses,source,section).tab.id
+ async function openAnalysis(documentId:string,section:AnalysisSection='info',statistics?:AnalysisStatistics){await action(async()=>{
+  let current=documents.find(doc=>doc.id===documentId)
+  if(!current)return
+  if(current.csvView==='text'){
+   await prepareDocumentAction(documentId)
+   current=documents.find(doc=>doc.id===documentId)
+   if(!current)return
+   if(current.dirty){csvChange={id:current.id,name:current.name,view:'table',busy:false,message:'',analysis:{section,statistics}};return}
+   await finishCsvView(await window.freya.csvView(current.id,'table'))
+  }
+  const source={documentId},id=openAnalysisTab(analyses,source,section,statistics).tab.id
   await activate(documentId,id)
-  if(selectedAnalysisId===id)analyses=openAnalysisTab(analyses,source,section).tabs
- }
- async function activateTab(tab:WorkspaceTab){if(tab.type==='analysis')await activate(tab.source.documentId,tab.id);else await activate(tab.id)}
+  if(selectedAnalysisId===id)analyses=openAnalysisTab(analyses,source,section,statistics).tabs
+ })}
+ async function activateTab(tab:WorkspaceTab){if(tab.type==='analysis')await openAnalysis(tab.source.documentId,tab.section,tab.statistics);else await activate(tab.id)}
  function analysisSection(id:string,section:AnalysisSection){analyses=analyses.map(tab=>tab.id===id?{...tab,section}:tab)}
  async function focusDocumentTab(id:string){await tick();document.getElementById('workspace-tab-'+id)?.focus()}
  async function returnToCsv(id:string){await activate(id);if(activeId===id&&!selectedAnalysisId)await focusDocumentTab(id)}
@@ -306,12 +317,7 @@
  async function action<T>(operation:()=>Promise<T>):Promise<T|undefined>{try{return await operation()}catch(e){error(e instanceof Error?e.message:String(e))}}
  async function open(){await action(async()=>{await settingsReady;for(const doc of await window.freya.open())merge(doc,true);recent=await window.freya.recents()})}
  async function openPath(path:string){await action(async()=>{await settingsReady;for(const doc of await window.freya.openPaths([path]))merge(doc,true)})}
- async function chooseCsvSummary(){
-  const id=active?.id;if(!id)return
-  if(csvText){summaryAfterSwitch=id;await chooseCsvView('table');if(!csvChange)summaryAfterSwitch=null;return}
-  await action(async()=>{await csv?.flushEditing();await pending.get(id);if(activeId===id)csvSummaryId=id})
- }
- async function finishCsvView(doc:DocumentInfo){csvSummaryId=summaryAfterSwitch===doc.id&&doc.csvView!=='text'?doc.id:null;summaryAfterSwitch=null;merge(doc,true);notify(t('csvText.viewAnnouncement',{view:t(doc.csvView==='text'?'csvText.text':'csvText.table')}));await tick();document.querySelector<HTMLButtonElement>('[data-csv-view] button[aria-pressed="true"]')?.focus()}
+ async function finishCsvView(doc:DocumentInfo){merge(doc,true);notify(t('csvText.viewAnnouncement',{view:t(doc.csvView==='text'?'csvText.text':'csvText.table')}));await tick();document.querySelector<HTMLButtonElement>('[data-csv-view] button[aria-pressed="true"]')?.focus()}
  async function chooseCsvView(view:CsvView,path?:string){await action(async()=>{
   const id=path?(await window.freya.csvViewInfo(path)).id:active?.id,existing=documents.find(doc=>doc.id===id);if(existing?.id===active?.id&&existing&&isTableDocument(existing))await csv?.flushEditing();if(existing)await pending.get(existing.id)
   const current=existing?documents.find(doc=>doc.id===existing.id):undefined
@@ -321,11 +327,11 @@
  })}
  async function resolveCsvChange(decision:CsvViewDecision|'cancel'){
   const request=csvChange;if(!request||request.busy)return
-  if(decision==='cancel'){summaryAfterSwitch=null;csvChange=null;await tick();document.querySelector<HTMLButtonElement>('[data-csv-view] button[aria-pressed="true"]')?.focus();return}
+  if(decision==='cancel'){csvChange=null;await tick();document.querySelector<HTMLButtonElement>('[data-csv-view] button[aria-pressed="true"]')?.focus();return}
   csvChange={...request,busy:true,message:''}
   clearCsvError()
-  try{await pending.get(request.id);const doc=await window.freya.csvView(request.id,request.view,decision);csvChange=null;await finishCsvView(doc)}
-  catch(error){summaryAfterSwitch=null;
+  try{await pending.get(request.id);const doc=await window.freya.csvView(request.id,request.view,decision);csvChange=null;await finishCsvView(doc);if(request.analysis)await openAnalysis(doc.id,request.analysis.section,request.analysis.statistics)}
+  catch(error){
    const document=await window.freya.documents().then(values=>values.find(value=>value.id===request.id),()=>undefined)
    if(document)merge(document)
    if(decision==='save'&&document?.csvView==='text'&&!document.dirty&&csvFailure?.path===document.path){csvFailure={...csvFailure,saved:true};csvChange=null;await activate(document.id);await tick();if(activeId===document.id)editor?.focus();return}
@@ -474,7 +480,7 @@
     case'file.saveAs':await save(true);return
     case'file.clearRecents':await clearRecentList();return
     case'window.document':if(typeof command.argument==='string'&&documents.some(document=>document.id===command.argument))activate(command.argument);return
-    case'edit.commandPalette':if(!activeAnalysis)csv?.applicationCommand(id);return
+    case'edit.commandPalette':if(!activeAnalysis){if(csvText)textCommands=true;else csv?.applicationCommand(id)}return
     case'search.document':case'search.replace':if(searchFocusedEditor(id==='search.replace'))return;if(active?.kind==='csv')csv?.applicationCommand(id);else{await searchText();if(id==='search.replace')searchFocusedEditor(true)}return
     case'search.folder':sidebar=true;remember({barraLateral:{visible:true}});await selectSidebarTab('files');if(!folderPath)await openFolder();await tick();document.querySelector<HTMLInputElement>('.sidebar-search input')?.focus();return
     case'view.mode.edit':mode='edit';return
@@ -560,7 +566,7 @@
   <div class="document-title">{#if activeAnalysis&&active}<strong class="truncate" title={t('analysis.tab.title',{name:active.name})}>{t('analysis.tab.title',{name:active.name})}</strong>{:else if active}<span class="tag">{active.kind==='markdown'?'MD':active.kind==='csv'?'CSV':active.kind==='mermaid'?'MMD':'TXT'}</span><strong class="truncate" title={active.path??active.name}>{active.name}</strong>{#if active.dirty}<span class="dirty-badge">● Editado</span>{/if}{:else}<img class="brand-mark small" src={appIcon} alt=""/><strong>FreyaLab</strong>{/if}</div>
   <div class="toolbar-right"><button class="btn-icon btn-ghost btn-sm" {...controlHint(editingReason,commandTitle('edit.undo',t('menu.edit.undo')))} aria-label="Deshacer" disabled={editingLocked} onclick={()=>undo()}><Icon name="undo-2"/></button><button class="btn-icon btn-ghost btn-sm" {...controlHint(editingReason,commandTitle('edit.redo',t('menu.edit.redo')))} aria-label="Rehacer" disabled={editingLocked} onclick={()=>undo(true)}><Icon name="redo-2"/></button><button class="save-button btn-sm" class:btn-primary={savePrimary} disabled={!!saveReason} {...controlHint(saveReason,commandTitle('file.save',t('toolbar.save')))} aria-label={t('toolbar.save')} aria-busy={savingActive} onclick={()=>save()}><span class="button-icon" aria-hidden="true">{#if savingActive}<span class="button-spinner"></span>{:else}<Icon name={!active||saveNeeded||active.readonly?'save':'square-check-big'}/>{/if}</span><span class="button-label" aria-hidden="true"><span class:visible={!savingActive&&(!active||saveNeeded||active.readonly)}>{t('toolbar.save')}</span><span class:visible={savingActive}>{t('ui.button.saving')}</span><span class:visible={!!active&&!active.readonly&&!savingActive&&!saveNeeded}>{t('ui.button.saved')}</span></span></button><button class="btn-icon btn-ghost btn-sm" disabled={editingLocked&&!projectCopy||savingActive} {...controlHint((projectCopy?null:editingReason)??(savingActive?'busy':null),commandTitle('file.saveAs',t('toolbar.saveAs')))} aria-label={t('toolbar.saveAs')} onclick={()=>save(true)}><Icon name="save-all"/></button><div class="menu-anchor"><button class="export-button btn-sm" class:btn-primary={exportPrimary} disabled={!!exportReason} {...controlHint(exportReason,t('dialog.export.title'))} aria-label={t('menu.file.exports')} aria-busy={busy} onclick={toggleExport}><span class="button-icon" aria-hidden="true">{#if busy}<span class="button-spinner"></span>{:else}<Icon name="upload"/>{/if}</span><span class="button-label" aria-hidden="true"><span class:visible={!busy}>{t('menu.file.exports')}</span><span class:visible={busy}>{t('ui.button.exporting')}</span></span><Icon name="chevron-down" size={12}/></button>{#if exportMenu&&active}<div class="dropdown export-dropdown"><div class="dropdown-label">Exportar una copia</div>{#if active.kind==='csv'}<label>Contenido<select bind:value={exportScope}><option value="all">Documento completo</option><option value="filtered">Filas filtradas</option><option value="selection">Selección</option></select></label><button onclick={()=>exportDocument('csv')}>CSV</button><button onclick={()=>exportDocument('tsv')}>TSV</button>{:else}<button onclick={()=>exportDocument('pdf')}>Documento PDF</button>{#if active.kind==='markdown'}<button disabled={!pandocStatus?.available} {...controlHint(!pandocStatus?.available?'pandoc':null)} onclick={()=>exportDocument('docx')}>{t('pandoc.export.docx')}</button>{#if bibliographyPath(frontMatterOf(active.text??'').frontMatter)}<label>{t('pandoc.export.style')}<select aria-label={t('pandoc.export.style')} disabled={!pandocStatus?.available} title={!pandocStatus?.available?t('pandoc.export.styleRequire'):undefined} bind:value={citationStyle}><option value="apa">APA 7</option><option value="ieee">IEEE</option><option value="vancouver">Vancouver (NLM)</option><option value="chicago">Chicago 18</option><option value="mla">MLA 9</option></select></label>{/if}<button onclick={()=>{exportMenu=false;pandocOpen=true}}>{t('pandoc.dialog.title')}</button>{/if}{#if active.kind==='mermaid'}<button onclick={()=>exportDocument('svg')}>Imagen SVG</button><button onclick={()=>exportDocument('png')}>Imagen PNG</button>{/if}<button onclick={()=>exportDocument('html')}>HTML autónomo</button><p style="max-width:240px;margin:8px 12px;font-size:11px;line-height:1.4;color:var(--muted);white-space:normal">Se exporta con colores claros para que se lea en papel y en cualquier pantalla</p>{/if}</div>{/if}</div></div>
  </header>
- <div class="workspace" class:summary-active={csvSummary}>
+ <div class="workspace">
   {#if sidebar}<aside class="sidebar" style:width={`${sidebarWidth}px`}>
    <div class="sidebar-tabs" role="tablist" aria-label="Barra lateral">
     <button id="freya-files-tab" role="tab" onkeydown={sidebarKeydown} aria-selected={effectiveSidebarTab==='files'} aria-controls="freya-files-panel" tabindex={effectiveSidebarTab==='files'?0:-1} onclick={()=>selectSidebarTab('files')}>Archivos</button>
@@ -605,12 +611,12 @@
     <div class="document-workspace" id={'workspace-panel-'+active.id} role="tabpanel" aria-labelledby={'workspace-tab-'+active.id} hidden={!!activeAnalysis}>
     {#if external.includes(active.id)}<div class="warning-banner external-banner"><span>Este archivo cambió fuera de FreyaLab.</span><button onclick={()=>reload(active!.id)}>Recargar</button><button onclick={()=>save(true)}>Guardar copia</button><button onclick={()=>external=external.filter(value=>value!==active!.id)}>Conservar mi edición</button></div>{/if}
     {#if assetWarnings[active.id]}<AssetWarnings warnings={assetWarnings[active.id]} ondismiss={()=>{delete assetWarnings[active!.id];if(mode==='preview')preview?.focus();else editor?.focus()}}/>{/if}
-    {#snippet csvViewControls()}<div class="mode-switch" role="group" data-csv-view aria-label={t('csvText.viewGroup')}><button class:active={!csvText&&!csvSummary} aria-pressed={!csvText&&!csvSummary} aria-label={t('csvText.table')} title={t('csvText.table')} onclick={()=>{csvSummaryId=null;summaryAfterSwitch=null;if(csvText)void chooseCsvView('table')}}><Icon name="table" size={14}/> <span>{t('csvText.table')}</span></button><button class:active={csvSummary} aria-pressed={csvSummary} aria-label={t('charts.ui.summaryTab')} title={t('charts.ui.summaryTab')} onclick={()=>void chooseCsvSummary()}><Icon name="chart-column" size={14}/> <span>{t('charts.ui.summaryTab')}</span></button><button class:active={csvText} aria-pressed={csvText} aria-label={t('csvText.text')} disabled={!!csvTextReason} {...controlHint(csvTextReason,t('csvText.text'))} {...csvTextReason==='textLimit'?{title:t('csvText.limit')}: {}} onclick={()=>chooseCsvView('text')}><Icon name="file-text" size={14}/> <span>{t('csvText.text')}</span></button></div>{/snippet}
+    {#snippet csvViewControls()}<div class="mode-switch" role="group" data-csv-view aria-label={t('csvText.viewGroup')}><button class:active={!csvText} aria-pressed={!csvText} aria-label={t('csvText.table')} title={t('csvText.table')} onclick={()=>{if(csvText)void chooseCsvView('table')}}><Icon name="table" size={14}/> <span>{t('csvText.table')}</span></button><button class:active={csvText} aria-pressed={csvText} aria-label={t('csvText.text')} disabled={!!csvTextReason} {...controlHint(csvTextReason,t('csvText.text'))} {...csvTextReason==='textLimit'?{title:t('csvText.limit')}: {}} onclick={()=>chooseCsvView('text')}><Icon name="file-text" size={14}/> <span>{t('csvText.text')}</span></button></div>{/snippet}
     {#key `${active.id}:${active.csvView??'table'}:${active.kind==='csv'?0:reopenedText}`}
      {#if active.kind==='csv'}
-      {#if csvText}<div class="document-tools csv-text-tools">{@render csvViewControls()}<span class="spacer"></span><details class="insert-menu csv-text-options" bind:this={csvOptions}><summary>{t('csvText.options')}</summary><div class="dropdown"><button class:btn-tint={csvWrap} aria-pressed={csvWrap} onclick={()=>textOption('wrap')}>{t('csvText.wrap')}</button><button class:btn-tint={csvSpaces} aria-pressed={csvSpaces} onclick={()=>textOption('spaces')}>{t('csvText.spaces')}</button><button class:btn-tint={preferencesState.values.editor.csvColumnColors} aria-pressed={preferencesState.values.editor.csvColumnColors} disabled={preferencesState.readonly} onclick={()=>textOption('colors')}>{t('csvText.columnColors')}</button><button onclick={()=>textOption('line')} title={t('csvText.goto.title')}>{t('csvText.goto')}</button></div></details><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> {t('csvText.search')}</button></div>{/if}
+      {#if csvText}<div class="document-tools csv-text-tools">{@render csvViewControls()}<button class="analyze" title={t('analysis.tab.search')} onclick={()=>void openAnalysis(active!.id)}><Icon name="chart-column" size={14}/>{t('analysis.tab.open')}</button><span class="spacer"></span><details class="insert-menu csv-text-options" bind:this={csvOptions}><summary>{t('csvText.options')}</summary><div class="dropdown"><button class:btn-tint={csvWrap} aria-pressed={csvWrap} onclick={()=>textOption('wrap')}>{t('csvText.wrap')}</button><button class:btn-tint={csvSpaces} aria-pressed={csvSpaces} onclick={()=>textOption('spaces')}>{t('csvText.spaces')}</button><button class:btn-tint={preferencesState.values.editor.csvColumnColors} aria-pressed={preferencesState.values.editor.csvColumnColors} disabled={preferencesState.readonly} onclick={()=>textOption('colors')}>{t('csvText.columnColors')}</button><button onclick={()=>textOption('line')} title={t('csvText.goto.title')}>{t('csvText.goto')}</button></div></details><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> {t('csvText.search')}</button></div>{/if}
       {#if csvText}{#if active.warning}<div class="warning-banner" style="color:var(--text)">{active.warning}</div>{/if}<div class="document-panes"><div class="editor-pane" style:width="100%"><div class="pane-caption">{t('csvText.caption')}{#if active.readonly}<span>{t('csvText.readonly')}</span>{/if}</div><Editor bind:this={editor} editing={preferencesState.values.editor} text={active.text??''} readonly={editingLocked} kind="csv-text" label={t('csvText.editorLabel')} wrapLines={csvWrap} showWhitespace={csvSpaces} csvDelimiter={active.delimiter} csvHeader={active.hasHeader!==false} csvColors={preferencesState.values.editor.csvColumnColors} onchange={text=>updateText(active!.id,text)}/></div></div>
-      {:else}<CsvTable bind:this={csv} doc={active} externalChange={external.includes(active.id)} summary={csvSummary} onsummary={()=>void chooseCsvSummary()} ontable={()=>csvSummaryId=null} onanalysis={()=>void openAnalysis(active!.id)} analysisHidden={!!activeAnalysis} {commandTitle} viewControls={csvViewControls} onchange={doc=>merge(doc)} onerror={error} onstatus={value=>status=value} onreport={openStatisticsReport}/>{/if}
+      {:else}<CsvTable bind:this={csv} doc={active} externalChange={external.includes(active.id)} onanalysis={(section,statistics)=>void openAnalysis(active!.id,section,statistics)} analysisHidden={!!activeAnalysis} {commandTitle} viewControls={csvViewControls} onchange={doc=>merge(doc)} onerror={error} onstatus={value=>status=value}/>{/if}
      {:else}
       <div class="document-tools" class:markdown-tools={active.kind==='markdown'}><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div>{#if active.kind==='markdown'&&mode!=='preview'}<MarkdownToolbar readonly={editingLocked} formatState={markdownState} onformat={(action,language)=>editor?.format(action,language)} onsearch={searchText} onindex={toggleIndex} {indexVisible}/>{:else}<span class="spacer"></span><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> Buscar</button>{#if active.kind==='markdown'}<button class="text-button" class:active={indexVisible} aria-pressed={indexVisible} onclick={toggleIndex}><Icon name="table-of-contents" size={14}/> Índice</button>{/if}{/if}</div>
       {#if active.warning}<div class="warning-banner"><span role={active.encodingPending?'status':undefined}>{active.warning}</span>{#if active.encodingPending} <button type="button" onclick={()=>encodingControl?.open()}>{t('textEncoding.confirm')}</button>{/if}</div>{/if}
@@ -633,6 +639,7 @@
  <footer class="statusbar"><span class="status-dot"></span><span class="truncate">{status}</span>{#if opening}<span role="status">{opening.phase}</span><button onclick={cancelOpening}>Cancelar apertura</button>{/if}<span class="spacer"></span><div id="document-status"></div>{#if active&&(active.kind==='markdown'||active.kind==='text')}<TextStats id={active.id} name={active.name} text={active.text??''} markdown={active.kind==='markdown'} partial={active.readonly} selection={textSelection}/>{/if}{#if active}{#if csvText&&csvTextInfo}<span role="status" aria-label={t('csvText.format')} aria-live="polite">{t(`csvText.encoding.${active.encoding}`)} · {plural('csvText.lines',csvTextInfo.lines)}</span>{:else if active.kind!=='csv'}{#key active.id}<TextEncodingControl bind:this={encodingControl} doc={active} locked={busy||savingActive||applicationClosing||!!assetBusy[active.id]} onreopen={reopenTextEncoding} onsave={async encoding=>!!(await save(false,encoding))}/>{/key}{/if}<span>{active.readonly?'Solo lectura':!active.path?'Sin guardar':active.dirty?'Cambios pendientes':'Guardado'}</span>{/if}<span>Local</span></footer>
  {#if sourceDraft&&activeProject}<ProjectSourceDialog initial={sourceDraft} projectId={activeProject.id} onclose={()=>sourceDraft=null}/>{/if}
  {#if projectDialog}<ProjectDialog onclose={()=>{projectDialog=false;void tick().then(()=>{if(showProject)document.getElementById('freya-project-tab')?.focus()})}}/>{/if}
+ {#if textCommands}<CsvCommands commands={[{id:'openAnalysis',label:t('analysis.tab.command'),detail:t('analysis.tab.search'),disabled:false,run:chooseTextAnalysis}]} context={t('analysis.tab.textView')} onexecute={()=>void chooseTextAnalysis()} onclose={()=>void closeTextCommands()}/>{/if}
  {#if csvChange}<CsvViewDialog name={csvChange.name} busy={csvChange.busy} message={csvChange.message} onchoose={decision=>void resolveCsvChange(decision)}/>{/if}
  {#if csvFileMenu}<CsvFileMenu path={csvFileMenu.path} x={csvFileMenu.x} y={csvFileMenu.y} onopen={(path,view)=>void chooseCsvView(view,path)} onclose={closeCsvContext} onerror={error} onproject={activeProject&&!activeProject.readonly?addProjectSource:undefined}/>{/if}
  {#if toast}<div class="toast {toastKind}" role="status"><Icon name={toastKind==='error'?'triangle-alert':'circle-check'} size={16}/><span>{toast}</span><button title={"Cerrar aviso"} onclick={()=>toast=''} aria-label="Cerrar aviso"><Icon name="x" size={14}/></button></div>{/if}

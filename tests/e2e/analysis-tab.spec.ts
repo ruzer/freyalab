@@ -17,7 +17,7 @@ const section=(name:string)=>analysis().getByRole('group',{name:'Secciones de an
 
 async function launch(language='es'){
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
- app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:language,FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports'),FREYALAB_LARGE_BYTES:'2048'},timeout:60000})
+ app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve(process.env.FREYALAB_AN1_ENTRY??'out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:language,FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports'),FREYALAB_LARGE_BYTES:'2048'},timeout:60000})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
 }
 async function quit(){await closeElectron(app)}
@@ -208,4 +208,19 @@ test('AN-1a paleta y pestañas con teclado, Escape conserva la pestaña y captur
   }
   await analysis().getByRole('button',{name:t('analysis.tab.return',{},language),exact:true}).click()
  }
+})
+
+
+test('AN-1b ignora la disposición antigua del panel al abrir un perfil existente',async()=>{
+ const previous={version:1,dock:{visible:true,width:1800,tab:'sql'}}
+ await page.evaluate(previous=>{localStorage.setItem('freya-workspace',JSON.stringify(previous));localStorage.setItem('an1b-preferencia-ajena','conservar')},previous)
+ await closeElectron(app,()=>app.evaluate(async({session,app})=>{await session.defaultSession.flushStorageData();app.exit(0)}))
+ await launch()
+ await page.setViewportSize({width:1920,height:1080})
+ await open()
+ await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()
+ await expect(page.locator('.analysis-dock')).toHaveCount(0)
+ await expect(tab()).toHaveCount(0)
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('freya-workspace')!))).toEqual(previous)
+ expect(await page.evaluate(()=>localStorage.getItem('an1b-preferencia-ajena'))).toBe('conservar')
 })

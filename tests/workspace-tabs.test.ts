@@ -12,6 +12,14 @@ describe('pestañas de análisis',()=>{
   ])
   expect(again.tab.section).toBe('charts')
  })
+ it('un acceso de estadísticas conserva el alcance pedido y no lo lleva a otra sección',()=>{
+  const first=openAnalysisTab([],{documentId:'one'},'statistics',{scope:'range'})
+  expect(first.tab.statistics).toEqual({scope:'range'})
+  const column=openAnalysisTab(first.tabs,{documentId:'one'},'statistics',{scope:'selected'})
+  expect(column.tabs).toHaveLength(1)
+  expect(column.tab.statistics).toEqual({scope:'selected'})
+  expect(openAnalysisTab(column.tabs,{documentId:'one'},'sql').tab.statistics).toBeUndefined()
+ })
  it('al cerrar un documento desaparece solo su análisis y una sesión nueva solo tiene documentos',()=>{
   const first=openAnalysisTab([],{documentId:'one'},'info')
   const second=openAnalysisTab(first.tabs,{documentId:'two'},'statistics')

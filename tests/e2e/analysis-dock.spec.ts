@@ -4,7 +4,8 @@ import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
-import {analyzeButton,showPanel} from './panel'
+import {showPanel} from './panel'
+import {runApplicationMenu} from './application-menu'
 
 let app:ElectronApplication,page:Page,folder:string
 test.beforeEach(async()=>{
@@ -18,89 +19,56 @@ test.beforeEach(async()=>{
 })
 test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
 
-// Filas de datos totalmente visibles: dentro de la tabla y por encima de la barra de estado.
-const visibleRows=()=>page.evaluate(()=>{
- const grid=document.querySelector('[role=grid]')!,box=grid.getBoundingClientRect()
- const limit=Math.min(document.querySelector('main')!.getBoundingClientRect().bottom,document.querySelector('footer')?.getBoundingClientRect().top??innerHeight,innerHeight)
- const header=grid.querySelector('[role=columnheader]')?.getBoundingClientRect().height??0
- return [...grid.querySelectorAll('[role=gridcell][data-column="0"]')].filter(cell=>{const r=cell.getBoundingClientRect();return r.top>=box.top+header-1&&r.bottom<=limit+1}).length
-})
-const visibleColumns=()=>page.evaluate(()=>{
- const grid=document.querySelector('[role=grid]')!,box=grid.getBoundingClientRect()
- return [...grid.querySelectorAll('[role=columnheader]')].filter(header=>{const r=header.getBoundingClientRect();return r.left>=box.left-1&&r.right<=box.right+1}).length
-})
-// Espera a que el reparto de la tabla se asiente (en una ejecución lenta la primera lectura puede ser anterior al último ajuste).
-const stableRows=async()=>{let last=-1,same=0;for(let i=0;i<50&&same<3;i++){const now=await visibleRows();same=now===last?same+1:0;last=now;await page.waitForTimeout(100)}return last}
-const tools=()=>page.getByRole('tablist',{name:'Herramientas de análisis'})
-const panels=[
- {button:'Gráficos' as const,ready:()=>page.getByLabel('Gráficos del CSV')},
- {button:'Estadísticas' as const,ready:()=>page.getByRole('heading',{name:'Estadísticas por columna'})},
- {button:'Análisis' as const,ready:()=>page.getByLabel('Análisis SQL y asistentes')}
-]
-const close=async()=>{if(await analyzeButton(page).getAttribute('aria-expanded')==='true')await analyzeButton(page).click()}
+const workspace=()=>page.locator('.analysis-workspace:not([hidden])')
+const sections=()=>workspace().getByRole('group',{name:'Secciones de análisis',exact:true})
 
-test('con un panel de análisis abierto la tabla conserva las filas que tenía sin panel',async()=>{
- for(const [width,height] of [[1440,900],[1366,768]] as const){
-  await page.setViewportSize({width,height})
-  await expect.poll(visibleRows,{message:`sin panel ${width}×${height}`}).toBeGreaterThan(5)
-  const without=await stableRows()
-  for(const panel of panels){
-   await showPanel(page,panel.button);await expect(panel.ready()).toBeVisible()
-   if(panel.button==='Gráficos'){await expect(page.getByRole('grid')).toBeHidden();await page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true}).click();await expect.poll(visibleRows).toBe(without)}else{await expect.poll(visibleRows,{message:`${panel.button} abierto en ${width}×${height} (sin panel: ${without} filas)`}).toBe(without);await close();await expect(panel.ready()).toHaveCount(0)}
-  }
- }
-})
-
-test('con el panel acoplado a 1366×768 la tabla sigue mostrando al menos tres columnas y no queda debajo del panel',async()=>{
- await page.setViewportSize({width:1366,height:768})
- await showPanel(page,'Estadísticas');await expect(page.locator('.statistics-panel')).toBeVisible()
- await expect.poll(visibleColumns).toBeGreaterThanOrEqual(3)
- const [grid,dock]=await Promise.all([page.getByRole('grid').boundingBox(),page.getByLabel('Panel de análisis').boundingBox()])
- expect(dock!.x).toBeGreaterThanOrEqual(grid!.x+grid!.width-1)
-})
-
-test('las herramientas son pestañas accesibles con activación manual por teclado',async()=>{
- await showPanel(page,'Estadísticas');await expect(tools()).toBeVisible()
- const [resumen,graficos,sql]=['Resumen','Gráficos','SQL'].map(name=>tools().getByRole('tab',{name,exact:true}))
- await graficos.click();await expect(graficos).toHaveAttribute('aria-selected','true');await expect(resumen).toHaveAttribute('aria-selected','false')
- await expect(graficos).toHaveAttribute('tabindex','0');await expect(sql).toHaveAttribute('tabindex','-1')
- await graficos.focus();await page.keyboard.press('ArrowRight');await expect(sql).toBeFocused();await expect(graficos).toHaveAttribute('aria-selected','true') // mover el foco no activa
- await page.keyboard.press('Enter');await expect(sql).toHaveAttribute('aria-selected','true');await expect(page.getByLabel('Análisis SQL y asistentes')).toBeVisible();await expect(page.getByLabel('Gráficos del CSV')).toBeHidden()
- await page.keyboard.press('Home');await expect(resumen).toBeFocused();await page.keyboard.press('End');await expect(sql).toBeFocused();await page.keyboard.press('ArrowRight');await expect(resumen).toBeFocused() // da la vuelta
- await page.keyboard.press('Space');await expect(resumen).toHaveAttribute('aria-selected','true');await expect(page.getByRole('heading',{name:'Estadísticas por columna'})).toBeVisible()
- const panel=page.getByRole('tabpanel',{name:'Resumen'});await expect(panel).toBeVisible();await expect(panel).toHaveAttribute('id',(await resumen.getAttribute('aria-controls'))!)
-})
-
-test('cambiar de pestaña conserva la configuración del gráfico y el borrador SQL',async()=>{
+test('las secciones de la pestaña de análisis se alcanzan y activan con teclado',async()=>{
  await showPanel(page,'Gráficos')
- await page.locator('.charts-panel .more-options>summary').click();const x=page.getByRole('combobox',{name:'Columna X del gráfico'});await x.selectOption({label:'Ciudad'});await expect(x).toHaveValue(/1/)
+ const [info,statistics,charts,sql]=['Información','Estadísticas','Gráficos','SQL'].map(name=>sections().getByRole('button',{name,exact:true}))
+ await expect(charts).toHaveAttribute('aria-pressed','true');await expect(statistics).toHaveAttribute('aria-pressed','false')
+ await charts.focus();await page.keyboard.press('Tab');await expect(sql).toBeFocused()
+ await expect(charts).toHaveAttribute('aria-pressed','true')
+ await page.keyboard.press('Enter');await expect(sql).toHaveAttribute('aria-pressed','true')
+ await expect(workspace().getByLabel('Análisis SQL y asistentes')).toBeVisible()
+ await expect(page.getByLabel('Gráficos del CSV')).toBeHidden()
+ await info.focus();await page.keyboard.press('Enter');await expect(info).toHaveAttribute('aria-pressed','true')
+ await statistics.focus();await page.keyboard.press('Enter')
+ await expect(statistics).toHaveAttribute('aria-pressed','true')
+ await expect(workspace().getByRole('heading',{name:'Estadísticas por columna',exact:true})).toBeVisible()
+ await workspace().getByRole('button',{name:'Ir al CSV',exact:true}).click()
+ await page.getByRole('button',{name:'Acciones de la columna Ciudad',exact:true}).click()
+ await page.getByRole('menuitem',{name:'Estadísticas de la columna',exact:false}).click()
+ await expect(workspace().getByLabel('Columnas para estadísticas',{exact:true})).toHaveValue('selected')
+ await workspace().getByRole('button',{name:'Ir al CSV',exact:true}).click()
+ const value=page.getByRole('gridcell',{name:'Fila 1, Valor',exact:true})
+ await value.click();await page.keyboard.press('Shift+ArrowDown');await value.click({button:'right'})
+ await page.getByRole('menuitem',{name:'Estadísticas del rango',exact:true}).click()
+ await expect(workspace().getByLabel('Columnas para estadísticas',{exact:true})).toHaveValue('range')
+})
+
+test('cambiar de sección conserva la configuración del gráfico y el borrador SQL',async()=>{
+ await showPanel(page,'Gráficos')
+ await page.locator('.charts-panel .more-options>summary').click()
+ const x=page.getByRole('combobox',{name:'Columna X del gráfico'})
+ await x.selectOption({label:'Ciudad'});await expect(x).toHaveValue(/1/)
  const chosen=await x.inputValue()
  await showPanel(page,'Análisis')
- const editor=page.getByRole('textbox',{name:'Consulta SQL',exact:true});await editor.click();await page.keyboard.press(process.platform==='darwin'?'Meta+a':'Control+a');await page.keyboard.type('SELECT 42 AS respuesta')
+ const editor=page.getByRole('textbox',{name:'Consulta SQL',exact:true})
+ await editor.click();await page.keyboard.press(process.platform==='darwin'?'Meta+a':'Control+a');await page.keyboard.type('SELECT 42 AS respuesta')
  await showPanel(page,'Gráficos');await expect(x).toHaveValue(chosen)
  await showPanel(page,'Análisis');await expect(editor).toContainText('SELECT 42 AS respuesta')
 })
 
-test('las pestañas visitadas siguen montadas y ocultas; cerrar el panel las desmonta y devuelve el foco',async()=>{
+test('las secciones visitadas se conservan y cerrar análisis las desmonta y devuelve el foco al CSV',async()=>{
  const charts=page.locator('.charts-panel'),sql=page.locator('.sql-panel')
  await expect(charts).toHaveCount(0);await expect(sql).toHaveCount(0)
- await showPanel(page,'Gráficos');await expect(charts).toBeVisible();await expect(sql).toHaveCount(0) // las no visitadas no se montan
+ await showPanel(page,'Gráficos');await expect(charts).toBeVisible();await expect(sql).toHaveCount(0)
  await showPanel(page,'Análisis');await expect(sql).toBeVisible();await expect(charts).toHaveCount(1);await expect(charts).toBeHidden()
  await page.getByRole('textbox',{name:'Consulta SQL',exact:true}).focus();await page.keyboard.press('Escape')
- await expect(sql).toHaveCount(0);await expect(charts).toBeHidden();await expect(tools()).toHaveCount(0)
- await expect(analyzeButton(page)).toBeFocused()
-})
-
-test('el gráfico generado en el panel acoplado no se desplaza en horizontal y queda a la vista',async()=>{
- await page.setViewportSize({width:1366,height:768})
- await showPanel(page,'Gráficos');await expect(page.getByLabel('Gráficos del CSV')).toBeVisible()
- await page.locator('.charts-panel .more-options>summary').click();await page.getByRole('combobox',{name:'Columna X del gráfico'}).selectOption({label:'Ciudad'})
- await page.getByRole('button',{name:'Generar gráfico'}).scrollIntoViewIfNeeded();await page.getByRole('button',{name:'Generar gráfico'}).click()
- await expect(page.locator('.charts-panel .result-announcement')).toHaveText('Resultado actualizado: 5 grupos',{timeout:30_000});await page.locator('.charts-panel .more-options>summary').click()
- const inView=()=>page.locator('.plot-scroll').evaluate(plot=>{
-  let ancestor=plot.parentElement;while(ancestor&&!(ancestor.scrollHeight>ancestor.clientHeight+1&&/auto|scroll/.test(getComputedStyle(ancestor).overflowY)))ancestor=ancestor.parentElement
-  const box=plot.getBoundingClientRect(),area=(ancestor??document.documentElement).getBoundingClientRect()
-  return{horizontal:plot.scrollWidth>plot.clientWidth+1,visible:Math.max(0,Math.min(box.bottom,area.bottom)-Math.max(box.top,area.top)),height:box.height}
- })
- await expect.poll(async()=>{const now=await inView();return !now.horizontal&&now.visible>=now.height-1},{message:JSON.stringify(await inView())}).toBe(true)
+ await expect(sql).toBeVisible()
+ await page.getByRole('tab',{name:/^Análisis de /}).focus()
+ await runApplicationMenu(app,'file.close')
+ await expect(sql).toHaveCount(0);await expect(charts).toHaveCount(0)
+ await expect(page.getByRole('tab',{name:/^Análisis de /})).toHaveCount(0)
+ await expect(page.getByRole('tab',{name:'ancha.csv',exact:true})).toBeFocused()
 })

@@ -4,7 +4,7 @@ import {t} from '../shared/i18n'
 import type {ProjectRecent} from '../shared/project'
 
 type Group='app'|'file'|'edit'|'search'|'view'|'mode'|'theme'|'go'|'window'|'help'|'export'|'dynamic'
-type Requirement='always'|'document'|'editable'|'saveAs'|'projectCsv'|'editing'|'textEditing'|'selection'|'markdown'|'csv'|'undo'|'redo'|'tabs'|'updates'|'recents'
+type Requirement='always'|'document'|'editable'|'saveAs'|'projectCsv'|'editing'|'textEditing'|'selection'|'markdown'|'csv'|'csvPalette'|'undo'|'redo'|'tabs'|'updates'|'recents'
 type Focus='none'|'editor'|'field'|'grid'|'cell'|'sql'
 export interface ApplicationMenuContext {
  documents:readonly {id:string;name:string;kind:'markdown'|'mermaid'|'csv'|'text';readonly:boolean;dirty:boolean;projectSource?:'protected'|'closed';csvView?:'table'|'text'}[]
@@ -36,7 +36,7 @@ export const applicationCommands:readonly Command[]=[
  command('edit.undo','edit','CommandOrControl+Z','undo'),command('edit.redo','edit','CommandOrControl+Shift+Z','redo'),
  command('edit.cut','edit','CommandOrControl+X','editing',{separator:true}),command('edit.copy','edit','CommandOrControl+C','selection'),command('edit.paste','edit','CommandOrControl+V','editing'),
  command('edit.pastePlain','edit','CommandOrControl+Alt+Shift+V','textEditing'),command('edit.selectAll','edit','CommandOrControl+A','selection'),
- command('edit.commandPalette','edit','CommandOrControl+K','csv'),
+ command('edit.commandPalette','edit','CommandOrControl+K','csvPalette'),
  command('edit.search','edit',undefined,'document',{separator:true,submenu:'search'}),
  command('search.document','search','CommandOrControl+F','document'),command('search.replace','search','CommandOrControl+Shift+F','editable'),command('search.folder','search'),
  command('view.mode','view',undefined,'markdown',{submenu:'mode'}),
@@ -71,6 +71,7 @@ function enabled(requirement:Requirement,context:ApplicationMenuContext):boolean
   case'textEditing':return context.focus!=='grid'&&enabled('editing',context)
   case'selection':return editing
   case'markdown':return document?.kind==='markdown'
+  case'csvPalette':return context.analysis!=='active'&&document?.kind==='csv'
   case'csv':return context.analysis!=='active'&&document?.kind==='csv'&&document.csvView!=='text'
   case'undo':return editing&&context.canEdit!==false&&(context.focus==='field'||context.focus==='sql'||!document?.readonly)&&(context.canUndo??(['field','cell','sql','grid'].includes(context.focus)))
   case'redo':return editing&&context.canEdit!==false&&(context.focus==='field'||context.focus==='sql'||!document?.readonly)&&(context.canRedo??(['field','cell','sql','grid'].includes(context.focus)))
@@ -84,7 +85,7 @@ function accelerator(item:Command,context:ApplicationMenuContext,platform:NodeJS
  // El editor Markdown ya posee Mod+B; el menú conserva el contexto previo.
  if(item.id==='view.sidebar'&&context.focus==='editor'&&context.inCodeMirror!==false&&active(context)?.kind==='markdown')return undefined
  if(item.id==='go.row'&&(context.focus==='sql'||context.inCodeMirror))return undefined
- if((item.id==='go.row'||item.id==='edit.commandPalette')&&!enabled('csv',context))return undefined
+ if(item.id==='go.row'&&!enabled('csv',context)||item.id==='edit.commandPalette'&&!enabled('csvPalette',context))return undefined
  if(item.id==='edit.redo'&&platform==='win32')return 'Control+Y'
  if(item.id==='view.fullscreen'&&platform==='darwin')return 'Control+Command+F'
  return item.accelerator
