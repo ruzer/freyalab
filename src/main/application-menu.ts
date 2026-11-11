@@ -1,19 +1,18 @@
 import type {MenuItemConstructorOptions} from 'electron'
 import {basename,win32} from 'node:path'
 import {t} from '../shared/i18n'
-import type {ProjectRecent} from '../shared/project'
 
 type Group='app'|'file'|'edit'|'search'|'view'|'mode'|'theme'|'go'|'window'|'help'|'export'|'dynamic'
-type Requirement='always'|'document'|'editable'|'saveAs'|'projectCsv'|'editing'|'textEditing'|'selection'|'markdown'|'csv'|'undo'|'redo'|'tabs'|'updates'|'recents'
+type Requirement='always'|'document'|'editable'|'editing'|'textEditing'|'selection'|'markdown'|'csv'|'undo'|'redo'|'tabs'|'updates'|'recents'
 type Focus='none'|'editor'|'field'|'grid'|'cell'|'sql'
 export interface ApplicationMenuContext {
- documents:readonly {id:string;name:string;kind:'markdown'|'mermaid'|'csv'|'text';readonly:boolean;dirty:boolean;projectSource?:'protected'|'closed';csvView?:'table'|'text'}[]
- recents:readonly string[];projectRecents?:readonly ProjectRecent[];projectActive?:boolean;activeId:string|null;mode:'edit'|'split'|'preview';theme:'system'|'light'|'dark';sidebar:boolean;focus:Focus;locked:boolean;development:boolean
- canUndo?:boolean;canRedo?:boolean;canEdit?:boolean;hasSelection?:boolean;inCodeMirror?:boolean;modal?:boolean;showDevTools?:boolean;updatesReady?:boolean;docxAvailable?:boolean;analysis?:'open'|'active'
+ documents:readonly {id:string;name:string;kind:'markdown'|'mermaid'|'csv'|'text';readonly:boolean;dirty:boolean;csvView?:'table'|'text'}[]
+ recents:readonly string[];activeId:string|null;mode:'edit'|'split'|'preview';theme:'system'|'light'|'dark';sidebar:boolean;focus:Focus;locked:boolean;development:boolean
+ canUndo?:boolean;canRedo?:boolean;canEdit?:boolean;hasSelection?:boolean;inCodeMirror?:boolean;modal?:boolean;showDevTools?:boolean;updatesReady?:boolean;docxAvailable?:boolean
 }
 interface Command {
  id:string;labelKey:string;group:Group;accelerator?:string;requires:Requirement;separator?:boolean;macOnly?:boolean
- role?:MenuItemConstructorOptions['role'];submenu?:'recent'|'projectRecent'|'export'|'search'|'mode'|'theme';developer?:boolean;format?:string
+ role?:MenuItemConstructorOptions['role'];submenu?:'recent'|'export'|'search'|'mode'|'theme';developer?:boolean;format?:string
 }
 const command=(id:string,group:Group,accelerator?:string,requires:Requirement='always',extra:Partial<Command>={}):Command=>({id,labelKey:`menu.${id}`,group,accelerator,requires,...extra})
 
@@ -29,10 +28,9 @@ export const applicationCommands:readonly Command[]=[
  command('file.newMarkdown','file','CommandOrControl+N'),command('file.newMermaid','file','CommandOrControl+Shift+N'),command('file.newCsv','file','CommandOrControl+Alt+N'),
  command('file.open','file','CommandOrControl+O','always',{separator:true}),command('file.openFolder','file','CommandOrControl+Shift+O'),
  command('file.recents','file',undefined,'always',{submenu:'recent'}),
- command('file.newProject','file'),command('file.addProjectSource','file',undefined,'projectCsv'),command('file.projectRecents','file',undefined,'always',{submenu:'projectRecent'}),
- command('file.close','file','CommandOrControl+W','document',{separator:true}),command('file.save','file','CommandOrControl+S','editable'),command('file.saveAs','file','CommandOrControl+Shift+S','saveAs'),
+ command('file.close','file','CommandOrControl+W','document',{separator:true}),command('file.save','file','CommandOrControl+S','editable'),command('file.saveAs','file','CommandOrControl+Shift+S','editable'),
  command('file.exports','file',undefined,'editable',{submenu:'export'}),
- command('file.openRecent','dynamic'),command('file.openRecentProject','dynamic'),command('file.clearRecents','dynamic',undefined,'recents'),command('window.document','dynamic'),
+ command('file.openRecent','dynamic'),command('file.clearRecents','dynamic',undefined,'recents'),command('window.document','dynamic'),
  command('edit.undo','edit','CommandOrControl+Z','undo'),command('edit.redo','edit','CommandOrControl+Shift+Z','redo'),
  command('edit.cut','edit','CommandOrControl+X','editing',{separator:true}),command('edit.copy','edit','CommandOrControl+C','selection'),command('edit.paste','edit','CommandOrControl+V','editing'),
  command('edit.pastePlain','edit','CommandOrControl+Alt+Shift+V','textEditing'),command('edit.selectAll','edit','CommandOrControl+A','selection'),
@@ -64,17 +62,15 @@ function enabled(requirement:Requirement,context:ApplicationMenuContext):boolean
  if(context.locked)return false
  switch(requirement){
   case'document':return !!document
-  case'editable':return context.analysis!=='active'&&!!document&&!document.readonly
-  case'saveAs':return context.analysis!=='active'&&!!document&&(!document.readonly||document.projectSource==='protected')
-  case'projectCsv':return context.analysis!=='active'&&!!context.projectActive&&document?.kind==='csv'&&!document.projectSource
+  case'editable':return !!document&&!document.readonly
   case'editing':return !(document?.kind==='markdown'&&context.focus==='editor'&&(context.mode==='preview'||context.inCodeMirror===false))&&editing&&context.canEdit!==false&&(context.focus==='field'||context.focus==='sql'||!document?.readonly)
   case'textEditing':return context.focus!=='grid'&&enabled('editing',context)
   case'selection':return editing
   case'markdown':return document?.kind==='markdown'
-  case'csv':return context.analysis!=='active'&&document?.kind==='csv'&&document.csvView!=='text'
+  case'csv':return document?.kind==='csv'&&document.csvView!=='text'
   case'undo':return editing&&context.canEdit!==false&&(context.focus==='field'||context.focus==='sql'||!document?.readonly)&&(context.canUndo??(['field','cell','sql','grid'].includes(context.focus)))
   case'redo':return editing&&context.canEdit!==false&&(context.focus==='field'||context.focus==='sql'||!document?.readonly)&&(context.canRedo??(['field','cell','sql','grid'].includes(context.focus)))
-  case'tabs':return context.documents.length>1||!!context.analysis
+  case'tabs':return context.documents.length>1
   case'updates':return !!context.updatesReady
   case'recents':return context.recents.length>0
   default:return true
@@ -110,9 +106,6 @@ export function applicationMenu(context:ApplicationMenuContext,dispatch:(id:stri
     result.submenu=context.recents.slice(0,10).map((path,index)=>({id:`recent.${index}`,label:label((platform==='win32'?win32.basename:basename)(path)),enabled:!context.locked,click:()=>dispatch('file.openRecent',index)}))
     if(result.submenu.length)result.submenu.push({type:'separator'})
     result.submenu.push(item(definitions.get('file.clearRecents')!))
-   }else if(definition.submenu==='projectRecent'){
-    result.submenu=(context.projectRecents??[]).map((recent,index)=>({id:`project.recent.${index}`,label:label(recent.missing?t('project.recentMissing',{name:recent.name}):recent.name),enabled:!!result.enabled&&!recent.missing,click:()=>dispatch('file.openRecentProject',index)}))
-    result.enabled=!!result.enabled&&result.submenu.length>0
    }else if(definition.submenu==='export'){result.submenu=formats(context).map(format=>item(definitions.get(`export.${format}`)!));result.enabled=!!result.enabled&&result.submenu.length>0}
    else result.submenu=group(definition.submenu)
   }else if(definition.role&&!(definition.id==='window.zoom'&&!mac))result.role=definition.role

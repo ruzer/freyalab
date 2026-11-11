@@ -1,0 +1,19 @@
+ src/main/application-menu.ts                     |   8 +-
+ src/main/application-state.ts                    |   2 +-
+ src/renderer/App.svelte                          |  89 ++++++++--
+ src/renderer/components/AnalysisWorkspace.svelte |  72 ++++++++
+ src/renderer/components/CsvCharts.svelte         |  48 ++++--
+ src/renderer/components/CsvSql.svelte            |   6 +-
+ src/renderer/components/CsvStatistics.svelte     |  12 +-
+ src/renderer/components/CsvTable.svelte          |  33 ++--
+ src/renderer/lib/control-hint.ts                 |   2 +-
+ src/renderer/lib/csv-analysis-view.ts            |  17 ++
+ src/renderer/lib/workspace-tabs.ts               |  22 +++
+ src/shared/application.ts                        |   2 +-
+ src/shared/i18n/en.json                          |  21 ++-
+ src/shared/i18n/es.json                          |  21 ++-
+ tests/application-menu.test.ts                   |   9 +
+ tests/csv-analysis-view.test.ts                  |  20 +++
+ tests/e2e/analysis-tab.spec.ts                   | 211 +++++++++++++++++++++++
+ tests/workspace-tabs.test.ts                     |  21 +++
+ 18 files changed, 551 insertions(+), 65 deletions(-)

@@ -1,4 +1,3 @@
-import type {ProjectInfo,ProjectRecent,ProjectSourceDraft,ProjectSourceView} from './project'
 import type {ChartConfiguration,ChartPreset} from './chart-presets'
 import type {LanguagePreference,LanguageState} from './i18n'
 import type {ApplicationInfo} from './app-info'
@@ -16,7 +15,7 @@ export type CsvViewDecision='save'|'discard'
 export interface CsvOpenError {path:string;name:string;message:string;reportedLine?:number;byteLength:number;textAllowed:boolean}
 export const CSV_TEXT_LIMIT=10*1024*1024
 export function isTableDocument(document:Pick<DocumentInfo,'kind'|'csvView'>){return document.kind==='csv'&&document.csvView!=='text'}
-export interface DocumentInfo { projectSource?:'protected'|'closed'; id:string; name:string; path:string|null; kind:Kind; csvView?:CsvView;byteLength?:number;text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:TextEncoding; bom?:boolean; encodingPending?:boolean; delimiter:string; headers?:string[]; hasHeader?:boolean; rowCount?:number; large?:boolean; extract?:ExtractOrigin }
+export interface DocumentInfo { id:string; name:string; path:string|null; kind:Kind; csvView?:CsvView;byteLength?:number;text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:TextEncoding; bom?:boolean; encodingPending?:boolean; delimiter:string; headers?:string[]; hasHeader?:boolean; rowCount?:number; large?:boolean; extract?:ExtractOrigin }
 export type AssetChange={from:number;to:number;insert:string}
 export type SaveOutcome=DocumentInfo&{assets?:{copied:number;warnings:string[];changes:AssetChange[]}}
 export interface TreeEntry { name:string; path:string; directory:boolean }
@@ -57,7 +56,6 @@ export interface SqlRequest {requestId:string;sources:{id:string;revision:number
 export interface SqlSource {id:string;name:string;revision:number;table:string;columns:{name:string;original:string;index:number}[];rows:number;fromDisk:boolean;large?:boolean;filtered?:boolean;where?:TableConditionGroup}
 export interface SqlResult {requestId:string;sources:SqlSource[];version:string;columns:{name:string;type:string}[];rows:(string|null)[][];returnedRows:number;limited:boolean;offset:number;completedAt:string}
 export interface SqlProgress {requestId:string;phase:string;rows:number}
-export type ProjectSourceOptions=TableOptions&{eol?:'\n'|'\r'|'\r\n'}
 export interface TableOptions { encoding?:Encoding; delimiter?:string; header?:boolean }
 export interface TableExport { range?:TableRange; scope:'all'|'filtered'|'selection'; query?:TableQuery; rowIds?:string[]; columns?:number[]; delimiter?:string }
 export interface ExportRequest { format:'pdf'|'html'|'svg'|'png'|'csv'|'tsv'|'docx'; html?:string; svg?:string; table?:TableExport;revision?:number;citationStyle?:import('./bibliography').CitationStyleId }
@@ -66,7 +64,7 @@ export type ExportOutcome=string|null|{path:string;mathWarnings:number}
 export interface ChartResultRequest {requestId:string;revision:number;configuration:ChartConfiguration;format:'csv'|'json'|'md';protectFormulas:boolean}
 export interface GraphicExportRequest {format:'svg'|'png'|'pdf';svg:string;revision:number}
 export interface RecoveryEntry { id:string; name:string; savedAt:string }
-export interface AppEvent { type:'project'|'project-source-progress'|'opened'|'changed'|'external'|'error'|'analysis'|'language'|'csv-open-error'|'settings'|'recents'|'updates'|'close-status';update?:UpdateResult;project?:ProjectInfo|null;projectRecents?:ProjectRecent[];projectSources?:ProjectSourceView[];sourceProgress?:{requestId:string;bytes:number;total:number};closingKind?:'error'|'notice';csvOpenError?:CsvOpenError;settings?:SettingsState;language?:LanguageState;progress?:SqlProgress; document?:DocumentInfo; id?:string; message?:string }
+export interface AppEvent { type:'opened'|'changed'|'external'|'error'|'analysis'|'language'|'csv-open-error'|'settings'|'recents'|'updates'|'close-status';update?:UpdateResult;closingKind?:'error'|'notice';csvOpenError?:CsvOpenError;settings?:SettingsState;language?:LanguageState;progress?:SqlProgress; document?:DocumentInfo; id?:string; message?:string }
 export interface FreyaAPI {
  setApplicationState(state:ApplicationUiState):Promise<void>;applicationShortcuts():Promise<ApplicationShortcuts>;
  onCommand(callback:(command:ApplicationCommand,delegate:()=>void)=>void):()=>void;
@@ -79,7 +77,7 @@ export interface FreyaAPI {
  bibliography(id:string,source:string):Promise<import('./bibliography').DocumentBibliography>;
  language():Promise<LanguageState>;setLanguage(preference:LanguagePreference):Promise<LanguageState>;
  open():Promise<DocumentInfo[]>; openPaths(paths:string[]):Promise<DocumentInfo[]>; newDocument(kind:Kind):Promise<DocumentInfo>; folder():Promise<string|null>; tree(path:string):Promise<TreeEntry[]>; findFiles(root:string,query:string):Promise<{entries:TreeEntry[];limited:boolean}>; cancelFileSearch():Promise<void>; listTags(root:string):Promise<{tags:{tag:string;count:number}[];limited:boolean}>; cancelTagList():Promise<void>;
- csvOpen(path:string,view:CsvView):Promise<DocumentInfo>;csvView(id:string,view:CsvView,decision?:CsvViewDecision):Promise<DocumentInfo>;csvViewInfo(path:string):Promise<{byteLength:number;textAllowed:boolean;id?:string;projectSource?:DocumentInfo['projectSource']}>;
+ csvOpen(path:string,view:CsvView):Promise<DocumentInfo>;csvView(id:string,view:CsvView,decision?:CsvViewDecision):Promise<DocumentInfo>;csvViewInfo(path:string):Promise<{byteLength:number;textAllowed:boolean;id?:string}>;
  update(id:string,text:string):Promise<DocumentInfo>; save(id:string,as?:boolean):Promise<SaveOutcome|null>; locateImage(id:string,source:string):Promise<SaveOutcome|null>; close(id:string):Promise<boolean>; reload(id:string):Promise<DocumentInfo>; documents():Promise<DocumentInfo[]>;
  reopenTextEncoding(id:string,encoding:TextEncoding):Promise<DocumentInfo>; saveTextEncoding(id:string,encoding:TextEncoding):Promise<SaveOutcome|null>;
  tableCopy(id:string,options:TableExport,format:'tsv'|'markdown'):Promise<void>; tablePaste(id:string,range:TableRange):Promise<string>;
@@ -99,10 +97,5 @@ export interface FreyaAPI {
  export(id:string,request:ExportRequest&{format:Exclude<ExportRequest['format'],'docx'>}):Promise<string|null>;
  export(id:string,request:ExportRequest):Promise<ExportOutcome>; image(id:string,src:string):Promise<string|null>; openLink(url:string):Promise<void>;
  recents():Promise<string[]>; recoveries():Promise<RecoveryEntry[]>; recover(id:string):Promise<DocumentInfo>; discardRecovery(id:string):Promise<void>;
- projectState():Promise<{project:ProjectInfo|null;recents:ProjectRecent[];sources:ProjectSourceView[]}>; projectPickFolder():Promise<{path:string;name:string}|null>; projectCancelCreate():Promise<void>; projectCreate(name:string,suggested:boolean):Promise<void>; projectClose(id:string):Promise<void>; projectRename(id:string,name:string):Promise<void>; projectOpenRecent(path:string):Promise<void>; projectForgetRecent(path:string):Promise<void>;
- projectPickSource(path?:string):Promise<ProjectSourceDraft|null>; projectInspectSource(draftId:string,format:ProjectSourceOptions):Promise<ProjectSourceDraft>; projectDiscardSourceDraft():Promise<void>;
- projectRegisterSource(projectId:string,draftId:string,format:ProjectSourceOptions,requestId:string):Promise<boolean>; projectReregisterSource(projectId:string,sourceId:string,requestId:string):Promise<boolean>;
- projectOpenSource(sourceId:string):Promise<DocumentInfo|null>; projectShowSource(sourceId:string):Promise<void>; projectForgetSource(projectId:string,sourceId:string):Promise<void>;
- projectRelinkSource(projectId:string,sourceId:string,requestId:string):Promise<boolean>; projectCancelSource(requestId:string):Promise<void>;
  onEvent(callback:(event:AppEvent)=>void):()=>void; droppedPaths(files:File[]):string[]
 }

@@ -19,7 +19,6 @@ async function validateDestination(docs: Documents, destination: string) {
  if ((await lstat(destination).catch(() => null))?.isSymbolicLink()) throw new Error('No se escribe sobre enlaces simbólicos.')
  if (!['.csv', '.tsv'].includes(extname(destination).toLowerCase())) throw new Error('El destino debe terminar en .csv o .tsv para poder abrirlo después.')
  const target = await realpath(destination).catch(() => resolve(destination))
- docs.assertWritableDestination(target)
  for (const r of docs.records.values()) if (r.info.path && target === (await realpath(r.info.path).catch(() => resolve(r.info.path!)))) throw new Error('El extracto debe ir a un archivo distinto de los que tienes abiertos: la extracción nunca modifica el original.')
 }
 
@@ -30,10 +29,7 @@ export async function operateDocument(docs: Documents, id: string, request: Oper
  const output = await destinationFor(source.info.name)
  if (!output) return null
  await validateDestination(docs, output)
- const result = await docs.writeProjectDestination(output,async()=>{
-  await docs.verifyProjectSource(id)
-  return docs.table.call<ExtractResult>('operation', id, {...request, output})
- })
+ const result = await docs.table.call<ExtractResult>('operation', id, {...request, output})
  const document = await docs.open(output).catch(error => { throw new Error(`El extracto se guardó en ${output}, pero no se pudo abrir: ${(error as Error).message}`) })
  const record = docs.get(document.id)
  const headers = source.info.headers ?? []

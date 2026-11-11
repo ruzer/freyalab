@@ -19,16 +19,14 @@
  import {chartOption,chartSeries,formatChartNumber} from '../chart-option'
  import type {DocumentInfo,SqlResult,TableQuery,TableConditionGroup} from '../../shared/types'
  use([BarChart,LineChart,ScatterChart,HeatmapChart,BoxplotChart,GridComponent,TooltipComponent,VisualMapComponent,AriaComponent,TitleComponent,LegendComponent,SVGRenderer])
- let {doc,query,queryValid,visible=true,onDemand=false,exportHost,onclose,onerror}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;visible?:boolean;onDemand?:boolean;exportHost?:HTMLElement;onclose:()=>void;onerror:(message:string)=>void}=$props()
+ let {doc,query,queryValid,visible=true,onclose,onerror}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;visible?:boolean;onclose:()=>void;onerror:(message:string)=>void}=$props()
  let scope=$state<'all'|'filtered'|'saved'>('all'),savedView=$state<ChartView>()
  let where=$state<TableConditionGroup>({conditions:[],filterMode:'all'}),showFilters=$state(false),filtersButton=$state<HTMLButtonElement>()
  const scopeLabel=$derived((scope==='all'?t('charts.ui.all'):scope==='saved'?t('charts.ui.saved'):t('charts.ui.filtered'))+(where.conditions.length?` · ${t('charts.ui.filterStatus',{n:where.conditions.length,mode:t(where.filterMode==='all'?'charts.ui.and':'charts.ui.or')})}`:''))
  const viewSignature=$derived(JSON.stringify([query.search,query.filters,query.conditions,query.filterMode]))
  const unavailable=$derived((scope==='filtered'&&(!queryValid||doc.readonly))||(scope==='saved'&&(!savedView||doc.readonly)))
  const analysisQuery=$derived(scope==='saved'&&savedView?{...savedView,offset:0,limit:1000,requestId:0}:query)
- let options=$state<ChartOptions>({kind:'bar',x:0,y:-1,bins:10,aggregate:'count',descending:false,measureType:'text',series:-1,time:'none',...untrack(()=>onDemand?{x:-1,y:-2}:{})})
- let started=$state(false),stale=$state(false),lastRevision=untrack(()=>doc.revision)
- $effect(()=>{const revision=doc.revision;if(onDemand&&lastRevision!==revision){lastRevision=revision;if(untrack(()=>started)){stale=true;message='charts.ui.changed'}}})
+ let options=$state<ChartOptions>({kind:'bar',x:0,y:-1,bins:10,aggregate:'count',descending:false,measureType:'text',series:-1,time:'none'})
  const temporal=$derived(options.time!==undefined&&options.time!=='none')
  const aggregated=$derived(options.kind==='bar'||(options.kind==='line'&&temporal))
  const axes=$derived.by(()=>{getUILanguage();return chartLabels((doc.headers??[]).map((_,column)=>columnLabel(column)),options)})
@@ -51,8 +49,6 @@
  const suggestion=$derived(suggest(columns,options.x<0||options.y===-2?{}:{x:options.x,...options.y>=0?{y:options.y}:{}}))
  const signature=$derived(JSON.stringify([doc.id,doc.revision,options,scope,where,scope==='filtered'?viewSignature:scope==='saved'?savedView:null]))
  let chosenTypeSignature=$state<string|null>(null)
- const startingSuggestion=$derived(initialChart(columns))
- const suggestedTitle=$derived(startingSuggestion?chartLabels(columns.map(column=>column.name),startingSuggestion).summary:'')
  const reason=$derived(chosenTypeSignature===signature&&options.kind!==suggestion.options?.kind&&suggestion.options?t('charts.fields.selectedType',{type:t('charts.kind.'+options.kind),suggested:t('charts.kind.'+suggestion.options.kind)}):t(suggestion.reason.key,{...suggestion.reason.parameters,measure:t('charts.measure.'+options.aggregate),period:t('charts.period.'+(options.time==='none'?'month':options.time??'month'))}))
  const typeIcons={bar:'chart-column',line:'chart-line',scatter:'chart-scatter',histogram:'chart-histogram',heatmap:'chart-heatmap',box:'chart-box'} as const
  async function cancelChart(){cancelledSignature=signature;cancelFields();cancel();message='charts.ui.cancelled';await tick();element?.closest('section')?.querySelector<HTMLButtonElement>('.chart-types button[aria-pressed="true"]')?.focus()}
@@ -65,8 +61,8 @@
  const sql=$derived.by(()=>{try{if(options.y===-2)return '';return chartSQL(doc.headers??[],options)}catch{return ''}})
  function cancel(){if(totalJob){void window.freya.sqlCancel(totalJob).catch(()=>{});totalJob=undefined}totals=[];pivotPage=0;const previous=active;active=undefined;busy=false;data=null;source=null;tablePage=0;hiddenSeries=[];if(previous)void window.freya.sqlCancel(previous).catch(()=>{});if(exportJob){void window.freya.sqlCancel(exportJob).catch(()=>{});exportJob=undefined;exporting=false;cancellingExport=false}}
  $effect(()=>{
-  const current=signature,run=ready&&!fieldsLoading&&visible&&automatic&&(!onDemand||started&&!stale)&&current!==cancelledSignature&&!!sql&&!tooWide&&!unavailable
-  if(current!==observedSignature){observedSignature=current;untrack(cancel);message=onDemand&&!started?'charts.ui.initial':onDemand&&stale?'charts.ui.changed':automatic?'charts.ui.updating':'charts.ui.changed'}
+  const current=signature,run=ready&&!fieldsLoading&&visible&&automatic&&current!==cancelledSignature&&!!sql&&!tooWide&&!unavailable
+  if(current!==observedSignature){observedSignature=current;untrack(cancel);message=automatic?'charts.ui.updating':'charts.ui.changed'}
   if(!visible||unavailable){if(active)untrack(cancel);return}
   if(run&&!untrack(()=>!!data)){const timer=setTimeout(()=>{void generate()},300);return()=>clearTimeout(timer)}
  })
@@ -76,13 +72,13 @@
   chart.on('legendselectchanged',event=>{const {selected}=event as {selected:Record<string,boolean>};hiddenSeries=Object.keys(selected).filter(name=>!selected[name])})
   const resize=new ResizeObserver(()=>chart?.resize());resize.observe(element)
   const theme=new MutationObserver(()=>draw());theme.observe(document.documentElement,{attributes:true,attributeFilter:['class']})
-  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress&&(event.progress.requestId===active||event.progress.requestId===totalJob||event.progress.requestId===exportJob))message='charts.ui.prepare';else if(event.id===doc.id&&event.type==='external'){cancel();if(onDemand&&started)stale=true;message='charts.ui.external'}})
+  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress&&(event.progress.requestId===active||event.progress.requestId===totalJob||event.progress.requestId===exportJob))message='charts.ui.prepare';else if(event.id===doc.id&&event.type==='external'){cancel();message='charts.ui.external'}})
   return()=>{resize.disconnect();theme.disconnect();unsubscribe();chart?.dispose();chart=undefined}
  })
  function draw(compact=true){getUILanguage();if(!chart||!data)return;try{const css=getComputedStyle(element);chart.setOption(chartOption(plotData!.data,$state.snapshot(options),{text:css.getPropertyValue('--text').trim(),background:css.getPropertyValue('--panel').trim(),accent:css.getPropertyValue('--accent').trim(),dark:document.documentElement.classList.contains('dark'),compact},(doc.headers??[]).map((_,column)=>columnLabel(column)),scopeLabel,hiddenSeries),{notMerge:true})}catch(error){chart.clear();data=null;message=String(error);onerror(message)}}
  $effect(()=>{if(ready){if(data)draw();else chart?.clear()}})
  async function generate(){
-  if(busy||fieldsLoading||exporting||!sql||tooWide||unavailable)return;started=true;stale=false;cancelledSignature=null;cancel();const requestId=crypto.randomUUID();active=requestId;busy=true;failed=false;message='charts.ui.prepare'
+  if(busy||fieldsLoading||exporting||!sql||tooWide||unavailable)return;cancelledSignature=null;cancel();const requestId=crypto.randomUUID();active=requestId;busy=true;failed=false;message='charts.ui.prepare'
   try{
    const first=await window.freya.sqlRun({requestId,sources:[{id:doc.id,revision:doc.revision,...scope!=='all'?{query:$state.snapshot(analysisQuery)}:{},...where.conditions.length?{where:$state.snapshot(where)}:{}}],sql})
    if(active!==requestId)return
@@ -123,7 +119,7 @@
  function cancelFields(){fieldGeneration++;if(fieldJob){void window.freya.cancelAnalysis(fieldJob.id,fieldJob.requestId).catch(()=>{});fieldJob=undefined}fieldsLoading=false}
  async function loadFields(){
   cancelFields();const token=fieldGeneration,id=doc.id,revision=doc.revision;fieldsLoading=true;profiles=[];samples={};interpretable={};fieldErrors=[]
-  if(!automatic||tooWide){if(initializedDocument!==id){if(!onDemand)options={kind:'bar',x:0,y:-1,bins:10,aggregate:'count',descending:false,measureType:'text',series:-1,time:'none'};initializedDocument=id}fieldsLoading=false;return}
+  if(!automatic||tooWide){if(initializedDocument!==id){options={kind:'bar',x:0,y:-1,bins:10,aggregate:'count',descending:false,measureType:'text',series:-1,time:'none'};initializedDocument=id}fieldsLoading=false;return}
   try{
    for(const column of (doc.headers??[]).map((_,i)=>i).slice(0,200)){
     const requestId=crypto.randomUUID();fieldJob={id,requestId}
@@ -136,7 +132,7 @@
     }catch(error){if(token!==fieldGeneration)return;fieldErrors=[...fieldErrors,`${columnLabel(column)}: ${String(error).replace(/^.*Error: /,'')}`]}
    }
    if(token!==fieldGeneration)return
-   if(initializedDocument!==id){const first=initialChart($state.snapshot(columns));if(first&&!onDemand)options=first;initializedDocument=id}
+   if(initializedDocument!==id){const first=initialChart($state.snapshot(columns));if(first)options=first;initializedDocument=id}
   }finally{if(token===fieldGeneration){fieldJob=undefined;fieldsLoading=false}}
  }
  $effect(()=>{
@@ -149,31 +145,20 @@
   if(revision!==fieldRevision){fieldRevision=revision;untrack(()=>void loadFields())}
  })
  function addField(zone:ChartZone,column:number){
-  started=true;stale=false
   const previous=zoneFields(options)[zone],name=columnLabel(column)
-  const current=$state.snapshot(options)
- if(onDemand&&zone==='rows'&&current.x<0&&current.y===-2)current.y=-1
- options=addToZone(current,zone,column,$state.snapshot(columns))
+  options=addToZone($state.snapshot(options),zone,column,$state.snapshot(columns))
   announcement=t(previous>=0&&previous!==column?'charts.fields.replaced':'charts.fields.added',{field:name,previous:columnLabel(previous),zone:t('charts.fields.'+zone)})
  }
  function removeField(zone:ChartZone){const previous=zoneFields(options)[zone];options=removeFromZone($state.snapshot(options),zone);announcement=t('charts.fields.removed',{field:previous<0?t('charts.fields.rowCount'):columnLabel(previous),zone:t('charts.fields.'+zone)})}
  function clearFields(){options={...options,kind:'bar',x:-1,y:-2,series:-1,time:'none'};where={conditions:[],filterMode:'all'};failed=false;announcement=t('charts.fields.cleared')}
- function startSuggestion(){const first=startingSuggestion;if(first){started=true;stale=false;options=first;announcement=t('charts.fields.ready',{n:0})}}
+ function startSuggestion(){const first=initialChart($state.snapshot(columns));if(first){options=first;announcement=t('charts.fields.ready',{n:0})}}
  function changeAggregate(aggregate:ChartOptions['aggregate']){if(options.kind==='heatmap')return;if(!aggregated){options.kind='bar';options.time='none'}options.aggregate=aggregate;announcement=t('charts.fields.changed',{operation:t('charts.aggregate.'+aggregate)})}
  function openFilters(column?:number){filterReturn=document.activeElement as HTMLElement;pendingFilter=column;showFilters=true}
  async function closeFilters(){showFilters=false;pendingFilter=undefined;await tick();(filterReturn?.isConnected?filterReturn:filtersButton)?.focus();filterReturn=null}
  async function openConversion(column:number){conversionReturn=document.activeElement as HTMLElement;conversion=column;await tick();element?.closest('section')?.querySelector<HTMLButtonElement>('.conversion-notice button')?.focus()}
  async function closeConversion(){conversion=null;await tick();if(conversionReturn?.isConnected)conversionReturn.focus();else element?.closest('section')?.querySelector<HTMLButtonElement>('.chart-types button[aria-pressed=true]')?.focus();conversionReturn=null}
 
- function attachExport(node:HTMLElement,host?:HTMLElement){if(!host)return;host.appendChild(node);return{destroy:()=>node.remove()}}
 </script>
-{#snippet resultExport()}
-  <details use:attachExport={exportHost} class:header-export={!!exportHost}><summary>{t(exportHost?'analysis.tab.export':'charts.ui.exportResults')}</summary><div class="result-export-options">
-   <p>{t('charts.ui.exportHelp')}</p>
-   <div class="actions"><label>{t('charts.ui.resultFormat')} <select aria-label={t('charts.ui.resultFormatLabel')} bind:value={resultFormat} disabled={busy||exporting}><option value="json">{t('charts.ui.exactJson')}</option><option value="csv">{t('charts.ui.csvContext')}</option><option value="md">{t('charts.ui.markdown')}</option></select></label><button {...controlHint(busy||exporting?'busy':null)} disabled={busy||exporting} onclick={()=>void exportResults()}>{t('charts.ui.export')}</button>{#if exportJob}<button {...controlHint(cancellingExport?'cancelPending':null)} disabled={cancellingExport} onclick={cancelResults}>{t('charts.ui.cancelExport')}</button><progress aria-label={t('charts.ui.exportProgress')}></progress>{/if}</div>
-   {#if resultFormat==='csv'}<label><input type="checkbox" bind:checked={protectFormulas} disabled={busy||exporting}/>{t('charts.ui.protect')}</label><p>{t('charts.ui.protectHelp')}</p>{/if}
-  </div></details>
-{/snippet}
 <svelte:window onkeydown={event=>{if(event.key==='Escape'&&event.target instanceof HTMLElement&&event.target.closest('.charts-panel')&&!event.target.closest('.query-tools')){event.preventDefault();if(conversion!==null)void closeConversion();else if(window.innerWidth<900&&fieldsOpen){fieldsOpen=false;tick().then(()=>element?.closest('section')?.querySelector<HTMLButtonElement>('.fields-toggle')?.focus())}else onclose()}}}/>
 <section class="charts-panel" class:fields-open={fieldsOpen} aria-label={t('charts.ui.region')}>
  <button class="fields-toggle" aria-expanded={fieldsOpen} onclick={()=>fieldsOpen=!fieldsOpen}>{t('charts.fields.panel')}</button>
@@ -198,13 +183,13 @@
  <p class="sr-only analysis-announcement" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
  {#if data?.limited}<p class="truncated notice" role="status">{#if !['bar','heatmap'].includes(options.kind)}{t('charts.ui.partial',{n:formatNumber(chartLimit(options.kind))})}{' '}{/if}{t(['bar','heatmap'].includes(options.kind)?resultOrder.tie?'charts.fields.truncatedTies':'charts.fields.truncated':'charts.ui.truncated',{shown:formatNumber(data.rows.length),total:formatNumber(data.points),...resultOrder})}</p>{/if}
 
- {#if !automatic||stale}<div class="manual"><button aria-busy={busy} {...controlHint(busy||fieldsLoading||exporting?'busy':tooWide?'columnLimit':unavailable?'fileReady':!sql?'parameters':null)} class="btn-tint" disabled={busy||fieldsLoading||exporting||!sql||tooWide||unavailable} onclick={()=>void generate()}>{#if busy}<span class="button-spinner" aria-hidden="true"></span>{/if}<span class:busy-label={busy} data-loading={t('ui.button.calculating')}>{t('charts.ui.generate')}</span></button><span>{t(stale?'charts.ui.changed':'charts.ui.manual')}</span></div>{/if}
+ {#if !automatic}<div class="manual"><button aria-busy={busy} {...controlHint(busy||fieldsLoading||exporting?'busy':tooWide?'columnLimit':unavailable?'fileReady':!sql?'parameters':null)} class="btn-tint" disabled={busy||fieldsLoading||exporting||!sql||tooWide||unavailable} onclick={()=>void generate()}>{#if busy}<span class="button-spinner" aria-hidden="true"></span>{/if}<span class:busy-label={busy} data-loading={t('ui.button.calculating')}>{t('charts.ui.generate')}</span></button><span>{t('charts.ui.manual')}</span></div>{/if}
  {#if busy||fieldsLoading}<div class="progress"><button onclick={()=>void cancelChart()}>{t('charts.ui.cancel')}</button><progress aria-label={t('charts.ui.progress')}></progress></div>{/if}
  {#if unavailable}<p role="alert">{t('charts.ui.unavailable')}</p>{/if}
  {#if tooWide}<p role="alert">{t('charts.ui.tooWide')}</p>{/if}
  <div class="chart-types" role="group" aria-label={t('charts.ui.chooseType')}>{#each Object.keys(typeIcons) as kind}<button {...controlHint(exporting?'busy':null)} aria-pressed={options.kind===kind} disabled={exporting} onclick={()=>chooseKind(kind as ChartOptions['kind'],true)}><Icon name={typeIcons[kind as keyof typeof typeIcons]} size={14}/>{kind==='box'?t('charts.ui.boxButton'):t('charts.kind.'+kind)}</button>{/each}</div>
  <p class="suggestion" title={reason}>{reason}</p>
- {#if !busy&&!fieldsLoading&&(!sql||data&&!data.rows.length)}<div class="empty-result"><p>{t('charts.ui.chooseField')}</p><button disabled={onDemand&&!startingSuggestion} onclick={startSuggestion}>{onDemand?t('analysis.tab.createChart',{chart:suggestedTitle}):t('charts.fields.start')}</button></div>{/if}
+ {#if !busy&&!fieldsLoading&&(!sql||data&&!data.rows.length)}<div class="empty-result"><p>{t('charts.ui.chooseField')}</p><button onclick={startSuggestion}>{t('charts.fields.start')}</button></div>{/if}
  {#if failed}<div class="error-result" role="alert"><p>{t('charts.fields.failed')}</p><button onclick={()=>void generate()}>{t('charts.fields.retry')}</button></div>{/if}
  {#if plotData?.top}<p class="top-notice" role="status">{t('charts.fields.top',{n:plotData.groups,other:plotData.other?t('charts.fields.topOther'):''})} <button onclick={()=>{fieldsOpen=true;tick().then(()=>document.querySelector<HTMLInputElement>('.chart-fields input')?.focus())}}>{t('charts.fields.changeRows')}</button></p>{/if}
  <!-- svelte-ignore a11y_no_noninteractive_tabindex (La región ampliada debe admitir desplazamiento con teclado.) -->
@@ -244,7 +229,7 @@
   </fieldset>
 
  </form>
- <ChartPresets docId={doc.id} headers={doc.headers??[]} readonly={doc.readonly} disabled={exporting||fieldsLoading} canSave={!!sql&&!tooWide&&!unavailable} configuration={{headers:doc.headers??[],options,where,...scope!=='all'?{view:chartView(analysisQuery)}:{}}} onapply={(configuration:ChartConfiguration)=>{started=true;stale=false;options=configuration.options;where=configuration.where;savedView=configuration.view;scope=configuration.view?'saved':'all';showFilters=false}}/>
+ <ChartPresets docId={doc.id} headers={doc.headers??[]} readonly={doc.readonly} disabled={exporting||fieldsLoading} canSave={!!sql&&!tooWide&&!unavailable} configuration={{headers:doc.headers??[],options,where,...scope!=='all'?{view:chartView(analysisQuery)}:{}}} onapply={(configuration:ChartConfiguration)=>{options=configuration.options;where=configuration.where;savedView=configuration.view;scope=configuration.view?'saved':'all';showFilters=false}}/>
  {#if scope==='saved'&&savedView}<details><summary>{t('charts.ui.recovered')}</summary><p>{t('charts.ui.recoveredHelp')}</p><pre>{savedView.search?`${t('charts.ui.search',{query:savedView.search})}\n`:''}{Object.entries(savedView.filters??{}).map(([column,value])=>`${Number(column)+1}. ${(doc.headers??[])[Number(column)]}: ${JSON.stringify(value)}`).join('\n')}{'\n'}{describeConditions(doc.headers??[],{conditions:savedView.conditions??[],filterMode:savedView.filterMode??'all'})}</pre></details>{/if}
 
  {#if where.conditions.length}<details><summary>{t('charts.ui.applied')}</summary><pre>{describeConditions(doc.headers??[],where)}</pre><p>{t('charts.ui.appliedHelp')}</p></details>{/if}
@@ -252,7 +237,11 @@
 
 
  {#if data}
-  {@render resultExport()}
+  <details><summary>{t('charts.ui.exportResults')}</summary>
+   <p>{t('charts.ui.exportHelp')}</p>
+   <div class="actions"><label>{t('charts.ui.resultFormat')} <select aria-label={t('charts.ui.resultFormatLabel')} bind:value={resultFormat} disabled={busy||exporting}><option value="json">{t('charts.ui.exactJson')}</option><option value="csv">{t('charts.ui.csvContext')}</option><option value="md">{t('charts.ui.markdown')}</option></select></label><button {...controlHint(busy||exporting?'busy':null)} disabled={busy||exporting} onclick={()=>void exportResults()}>{t('charts.ui.export')}</button>{#if exportJob}<button {...controlHint(cancellingExport?'cancelPending':null)} disabled={cancellingExport} onclick={cancelResults}>{t('charts.ui.cancelExport')}</button><progress aria-label={t('charts.ui.exportProgress')}></progress>{/if}</div>
+   {#if resultFormat==='csv'}<label><input type="checkbox" bind:checked={protectFormulas} disabled={busy||exporting}/>{t('charts.ui.protect')}</label><p>{t('charts.ui.protectHelp')}</p>{/if}
+  </details>
   {#if doc.readonly}<p>{t('charts.ui.sampleExport')}</p>{/if}
   <details><summary>{t('charts.ui.table')}</summary><div class="table-scroll"><table><caption>{t('charts.ui.caption',{kind:t('charts.kind.'+options.kind)})}</caption><thead><tr>{#each data.columns as name}<th scope="col">{t('charts.head.'+name)}</th>{/each}</tr></thead><tbody>{#each data.rows.slice(tablePage*50,(tablePage+1)*50) as row}<tr>{#each row as value}<td>{value===null?'—':value===''?t('charts.plot.empty'):value}</td>{/each}</tr>{/each}</tbody></table></div><div class="actions"><button {...controlHint(tablePage===0?'firstPage':null)} disabled={tablePage===0} onclick={()=>tablePage--}>{t('charts.ui.previous')}</button><span>{t('charts.ui.page',{page:tablePage+1,total:Math.max(1,Math.ceil(data.rows.length/50))})}</span><button {...controlHint((tablePage+1)*50>=data.rows.length?'lastPage':null)} disabled={(tablePage+1)*50>=data.rows.length} onclick={()=>tablePage++}>{t('charts.ui.next')}</button></div></details>
  {/if}
@@ -263,7 +252,6 @@
  {#if conversion!==null}<div class="conversion-notice" role="region" aria-label={t('charts.fields.conversion')}><p>{t(interpretable[conversion]?'charts.fields.explicit':'charts.fields.symbols')}</p>{#if interpretable[conversion]}<button onclick={()=>{options={...options,kind:'bar',y:conversion!,measureType:'number',aggregate:'sum',time:'none'};void closeConversion()}}>{t('charts.fields.explicit')}</button>{/if}<button onclick={()=>void closeConversion()}>{t('charts.fields.close')}</button></div>{/if}
 </section>
 <style>
- .header-export .result-export-options{position:absolute;right:0;top:calc(100% + 6px);z-index:4;width:min(390px,75vw);padding:12px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-control);box-shadow:0 8px 20px #0003}.header-export summary{cursor:pointer}
  .charts-panel{padding:10px 14px;border-bottom:1px solid var(--border);background:var(--panel);font-size:12px;height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden;flex:1}.actions,fieldset{display:flex;align-items:center;gap:8px;flex-wrap:wrap}p{color:var(--text);line-height:1.5;margin:8px 0}fieldset{border:0;padding:0;margin:8px 0}label{display:flex;align-items:center;gap:6px}select{max-width:180px}input{width:60px}input[type=checkbox]{width:auto}select,input,button{font:inherit;color:var(--text);background:var(--input);border:1px solid var(--border);padding:5px 8px;border-radius:var(--radius-control)}button.btn-tint{background:var(--text);color:var(--panel)}button:disabled{opacity:.5}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.plot-scroll{position:relative;flex:1;min-height:160px;overflow:auto;border:1px solid var(--border);border-radius:6px}.plot{overflow:hidden;position:absolute;inset:0;height:100%;min-width:0}.actions{margin:8px 0}.scope{font-weight:600}.notice{border-left:3px solid var(--accent);padding-left:8px}summary{cursor:pointer;margin:8px 0}.table-scroll{max-height:180px;overflow:auto}table{border-collapse:collapse;width:100%}td,th{padding:6px;border:1px solid var(--border);text-align:left;overflow-wrap:anywhere;max-width:280px}caption{padding:6px;text-align:left;color:var(--muted)}pre{white-space:pre-wrap;overflow-wrap:anywhere}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
  .chart-intro{display:flex;align-items:center;gap:8px}.chart-description{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;font-size:13px;font-weight:600;color:var(--text)}.chart-info{position:relative}.chart-info summary{display:flex;padding:6px}.chart-info .info-content{position:absolute;max-height:55vh;overflow:auto;right:0;top:100%;width:260px;padding:12px;background:var(--panel);border:1px solid var(--border);z-index:3}.more-options{flex:0 1 auto;min-height:0;overflow:auto}.advanced-content{padding-bottom:8px}.manual,.progress{display:flex;align-items:center;gap:8px;margin-bottom:8px}.actions{flex-shrink:0} .chart-info summary:focus-visible{outline:2px solid var(--accent)}
  .chart-types{display:flex;gap:5px;flex-wrap:wrap}.chart-types button{display:flex;align-items:center;gap:5px;min-height:28px}.chart-types button[aria-pressed=true]{background:var(--text);color:var(--panel);border-color:var(--text)}.suggestion{flex-shrink:0;min-height:17px;line-height:17px;margin:5px 0;font-size:11px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.empty-result{padding:8px;margin:0}.pivot-result{flex:0 1 auto;max-height:240px;min-height:0;display:flex;flex-direction:column;margin-top:8px}.pivot-heading{display:flex;justify-content:space-between;gap:8px;font-size:11px;margin-bottom:4px}.pivot-scroll{min-height:0;overflow:auto}.pivot-result table{font-size:11px;font-variant-numeric:tabular-nums}.pivot-result td,.pivot-result th{padding:5px 8px;border-left:0;border-right:0;text-align:right}.pivot-result th:first-child{text-align:left}.pivot-result tfoot{font-weight:700;background:var(--hover);position:sticky;bottom:0}.pivot-pages{display:flex;gap:8px;align-items:center;justify-content:flex-end;padding-top:4px;font-size:11px}.pivot-pages button{padding:3px 7px}.more-options{margin-top:3px}.chart-intro p{margin:4px 0}.chart-types button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
