@@ -1,0 +1,12 @@
+
+Running 3 tests using 1 worker
+
+(node:36712) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [shell] › tests/e2e/project-source.spec.ts:116:1 › el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado (4.6s)
+(node:36727) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [csv] › tests/e2e/columns-overview.spec.ts:86:1 › panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance (1.5s)
+  ✓  3 [csv] › tests/e2e/large-file.spec.ts:25:1 › un CSV por encima del umbral se abre como archivo grande: aviso, recuento exacto y sin el límite de 200 filas (838ms)
+
+  3 passed (7.5s)

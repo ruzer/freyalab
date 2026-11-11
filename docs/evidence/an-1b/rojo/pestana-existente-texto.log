@@ -1,0 +1,43 @@
+
+Running 1 test using 1 worker
+
+(node:25260) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/csv-summary.spec.ts:165:1 › AN-1b: desde Texto con cambios, Cancelar conserva el borrador y descartar abre análisis sin escribir (18.9s)
+
+
+  1) [csv] › tests/e2e/csv-summary.spec.ts:165:1 › AN-1b: desde Texto con cambios, Cancelar conserva el borrador y descartar abre análisis sin escribir
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('dialog').getByRole('button', { name: 'Cancelar', exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('dialog').getByRole('button', { name: 'Cancelar', exact: true }) with timeout 15000ms
+      - waiting for getByRole('dialog').getByRole('button', { name: 'Cancelar', exact: true })
+
+
+      170 |  await showTable(page);await mode.getByRole('button',{name:'Texto',exact:true}).click()
+      171 |  await editor.press('ControlOrMeta+End');await page.keyboard.insertText('Otro,Web,60,0%\n');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(true)
+    > 172 |  await requestAnalysisTab(page);dialog=page.getByRole('dialog');await expect(dialog.getByRole('button',{name:'Cancelar',exact:true})).toBeVisible();await dialog.getByRole('button',{name:'Cancelar',exact:true}).click()
+          |                                                                                                                                       ^
+      173 |  await expect(page.locator('.analysis-workspace:not([hidden])')).toHaveCount(0);await expect(editor).toContainText('Otro,Web,60,0%');expect(await readFile(path,'utf8')).toBe(original)
+      174 | })
+      175 |
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/csv-summary.spec.ts:172:135
+
+    Error Context: test-results/csv-summary-AN-1b-desde-Te-3ba2d--abre-análisis-sin-escribir-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/csv-summary-AN-1b-desde-Te-3ba2d--abre-análisis-sin-escribir-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/csv-summary-AN-1b-desde-Te-3ba2d--abre-análisis-sin-escribir-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/csv-summary.spec.ts:165:1 › AN-1b: desde Texto con cambios, Cancelar conserva el borrador y descartar abre análisis sin escribir

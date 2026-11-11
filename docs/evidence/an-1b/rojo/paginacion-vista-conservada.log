@@ -1,0 +1,125 @@
+
+Running 6 tests using 1 worker
+
+(node:30348) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/charts.spec.ts:32:1 › gráficos visuales: seis SVG, temas, teclado, exportación e invalidación (17.0s)
+(node:30419) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [csv] › tests/e2e/charts.spec.ts:96:1 › constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones (15.5s)
+  ✘  3 [csv] › tests/e2e/columns-overview.spec.ts:86:1 › panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance (1.5m)
+(node:31332) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  4 [csv] › tests/e2e/csv-summary.spec.ts:75:1 › F2a: estados vacío, error numérico, truncado y ventana estrecha con captura (19.7s)
+Testing stopped early after 3 maximum allowed failures.
+
+
+  1) [csv] › tests/e2e/charts.spec.ts:32:1 › gráficos visuales: seis SVG, temas, teclado, exportación e invalidación
+
+    Error: locator.click: Error: strict mode violation: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('button', { name: 'Generar gráfico', exact: true }) resolved to 2 elements:
+        1) <button aria-busy="false" class="btn-tint svelte-1wo6u31">…</button> aka getByRole('button', { name: 'Generar gráfico' }).first()
+        2) <button type="submit" aria-busy="false" class="btn-tint svelte-1wo6u31">…</button> aka locator('fieldset').getByRole('button', { name: 'Generar gráfico' })
+
+    Call log:
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('button', { name: 'Generar gráfico', exact: true })
+
+
+      46 |  expect((await readFile(join(folder,'exports','plots.pdf'))).subarray(0,5).toString()).toBe('%PDF-')
+      47 |  const svg=await readFile(join(folder,'exports','plots.svg'),'utf8');expect(svg).toContain('<svg');expect(svg).not.toContain('<script')
+    > 48 |  await showTable(page);await menuItem(page,'Filas y columnas','Añadir fila');await showPanel(page,'Gráficos');await panel.getByRole('button',{name:'Generar gráfico',exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await expect(panel.locator('.plot svg path').first()).toBeAttached()
+         |                                                                                                                                                                                   ^
+      49 |  await panel.getByRole('button',{name:'Generar gráfico',exact:true}).focus();await page.keyboard.press('Escape');await expect(panel).toBeVisible();await showTable(page);await expect(page.locator('.tabs').getByRole('tab',{selected:true})).toBeFocused();expect(await readFile(path,'utf8')).toBe(original)
+      50 | })
+      51 |
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/charts.spec.ts:48:179
+
+    Error Context: test-results/charts-gráficos-visuales-s-36a88--exportación-e-invalidación-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/charts-gráficos-visuales-s-36a88--exportación-e-invalidación-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/charts-gráficos-visuales-s-36a88--exportación-e-invalidación-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/columns-overview.spec.ts:86:1 › panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance
+
+    Test timeout of 90000ms exceeded.
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('[id="workspace-panel-analysis:b9e36c5b-6715-4f2f-9969-789cad66949e"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('status')
+    Expected: "Exploración de columnas completa."
+    Received: "Datos o alcance actualizados. Pulsa Explorar columnas."
+
+    Call log:
+      - Expect "toHaveText" locator('[id="workspace-panel-analysis:b9e36c5b-6715-4f2f-9969-789cad66949e"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('status') with timeout 90000ms
+      - waiting for locator('[id="workspace-panel-analysis:b9e36c5b-6715-4f2f-9969-789cad66949e"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('status')
+        179 × locator resolved to <p role="status" class="svelte-1alawu2">Datos o alcance actualizados. Pulsa Explorar colu…</p>
+            - unexpected value "Datos o alcance actualizados. Pulsa Explorar columnas."
+      - Target page, context or browser has been closed
+
+
+      114 |  await expect(page.getByRole('gridcell',{name:'Fila 10000, Grupo',exact:true})).toHaveText('visible')
+      115 |  await overview();await app.evaluate(()=>Reflect.get(globalThis,'overviewPagingRelease')?.())
+    > 116 |  await expect(panel.getByRole('status')).toHaveText('Exploración de columnas completa.',{timeout:90000})
+          |                                          ^
+      117 |  await expect(panel.locator('.scope')).toContainText((10000).toLocaleString()+' filas por columna');await expect(panel.locator('tbody tr')).toHaveCount(2)
+      118 |  expect((await panel.locator('tbody tr').nth(1).locator('th,td').allTextContents()).slice(2,8)).toEqual([(10000).toLocaleString(),'0','0','0','1',(9999).toLocaleString()]);expect(await readFile(path,'utf8')).toBe(text)
+      119 | })
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/columns-overview.spec.ts:116:42
+
+    Error Context: test-results/columns-overview-panorámic-6d837-l-paginar-ese-mismo-alcance-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/columns-overview-panorámic-6d837-l-paginar-ese-mismo-alcance-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/columns-overview-panorámic-6d837-l-paginar-ese-mismo-alcance-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/csv-summary.spec.ts:75:1 › F2a: estados vacío, error numérico, truncado y ventana estrecha con captura
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-result>.result-announcement')
+    Expected substring: "Resultado actualizado"
+    Received string:    "Elige las columnas y pulsa Generar gráfico."
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-result>.result-announcement') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-result>.result-announcement')
+        34 × locator resolved to <p role="status" aria-live="polite" aria-atomic="true" class="sr-only result-announcement svelte-1wo6u31">Elige las columnas y pulsa Generar gráfico.</p>
+           - unexpected value "Elige las columnas y pulsa Generar gráfico."
+
+
+      37 | })
+      38 |
+    > 39 | async function summary(){await showPanel(page,'Gráficos');const panel=chartPanel(page);await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');return panel}
+         |                                                                                                                                                          ^
+      40 | async function configureSum(){const panel=await summary();await panel.locator('.more-options>summary').click();await panel.getByLabel('Columna Y del gráfico').selectOption('2');await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum');await panel.getByLabel('Series del gráfico').selectOption('1');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await panel.locator('.more-options>summary').click();return panel}
+      41 |
+      42 | test('F2a: suma por serie, total real, porcentajes y seis tipos alcanzables con teclado',async()=>{
+        at summary (/private/tmp/freyalab-alpha4-an1b/tests/e2e/csv-summary.spec.ts:39:154)
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/csv-summary.spec.ts:84:8
+
+    Error Context: test-results/csv-summary-F2a-estados-va-8e3dc-entana-estrecha-con-captura-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/csv-summary-F2a-estados-va-8e3dc-entana-estrecha-con-captura-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/csv-summary-F2a-estados-va-8e3dc-entana-estrecha-con-captura-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [csv] › tests/e2e/charts.spec.ts:32:1 › gráficos visuales: seis SVG, temas, teclado, exportación e invalidación
+    [csv] › tests/e2e/columns-overview.spec.ts:86:1 › panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance
+    [csv] › tests/e2e/csv-summary.spec.ts:75:1 › F2a: estados vacío, error numérico, truncado y ventana estrecha con captura
+  2 did not run
+  1 passed (2.4m)
+  1 error was not a part of any test, see above for details

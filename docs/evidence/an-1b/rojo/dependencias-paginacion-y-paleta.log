@@ -1,0 +1,97 @@
+
+Running 2 tests using 1 worker
+
+(node:35158) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [shell] › tests/e2e/project-source.spec.ts:116:1 › el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado (16.4s)
+(node:35205) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+AN1B_DEBUG view {"queryValid":false,"queryError":"","interpreting":false,"busy":false,"query":{"search":"","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":0},"viewMeta":{"matched":0,"revision":0,"requestId":0,"sample":false,"query":{"offset":0,"limit":200,"requestId":0}}}
+AN1B_DEBUG cancel {"revision":0,"scopeKey":"all","selectionKey":"all","queryValid":false,"query":{"search":"","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":0},"viewMeta":{"matched":0,"revision":0,"requestId":0,"sample":false,"query":{"offset":0,"limit":200,"requestId":0}}}
+AN1B_DEBUG cancel {"revision":0,"scopeKey":"[\"view\",\"[\\\"\\\",{},null,null,[],\\\"all\\\",null]\",false]","selectionKey":"all","queryValid":false,"query":{"search":"","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":0},"viewMeta":{"matched":0,"revision":0,"requestId":0,"sample":false,"query":{"offset":0,"limit":200,"requestId":0}}}
+AN1B_DEBUG view {"queryValid":true,"queryError":"","interpreting":false,"busy":false,"query":{"search":"","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":1},"viewMeta":{"matched":20000,"revision":0,"requestId":1,"sample":false,"query":{"search":"","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":1}}}
+AN1B_DEBUG cancel {"revision":0,"scopeKey":"[\"view\",\"[\\\"\\\",{},null,null,[],\\\"all\\\",null]\",true]","selectionKey":"all","queryValid":true,"query":{"search":"","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":1},"viewMeta":{"matched":20000,"revision":0,"requestId":1,"sample":false,"query":{"search":"","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":1}}}
+AN1B_DEBUG view {"queryValid":false,"queryError":"","interpreting":false,"busy":false,"query":{"search":"visible","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":1},"viewMeta":{"matched":20000,"revision":0,"requestId":1,"sample":false,"query":{"search":"","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":1}}}
+AN1B_DEBUG cancel {"revision":0,"scopeKey":"[\"view\",\"[\\\"visible\\\",{},null,null,[],\\\"all\\\",null]\",false]","selectionKey":"all","queryValid":false,"query":{"search":"visible","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":1},"viewMeta":{"matched":20000,"revision":0,"requestId":1,"sample":false,"query":{"search":"","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":1}}}
+AN1B_DEBUG view {"queryValid":true,"queryError":"","interpreting":false,"busy":false,"query":{"search":"visible","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":2},"viewMeta":{"matched":10000,"revision":0,"requestId":2,"sample":false,"query":{"search":"visible","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":2}}}
+AN1B_DEBUG cancel {"revision":0,"scopeKey":"[\"view\",\"[\\\"visible\\\",{},null,null,[],\\\"all\\\",null]\",true]","selectionKey":"all","queryValid":true,"query":{"search":"visible","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":2},"viewMeta":{"matched":10000,"revision":0,"requestId":2,"sample":false,"query":{"search":"visible","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":2}}}
+AN1B_DEBUG view {"queryValid":true,"queryError":"","interpreting":false,"busy":false,"query":{"search":"visible","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":3},"viewMeta":{"matched":10000,"revision":0,"requestId":3,"sample":false,"query":{"search":"visible","conditions":[],"filterMode":"all","filters":{},"offset":9900,"limit":200,"requestId":3}}}
+AN1B_DEBUG cancel {"revision":0,"scopeKey":"[\"view\",\"[\\\"visible\\\",{},null,null,[],\\\"all\\\",null]\",true]","selectionKey":"all","queryValid":true,"query":{"search":"visible","conditions":[],"filterMode":"all","filters":{},"offset":0,"limit":200,"requestId":3},"viewMeta":{"matched":10000,"revision":0,"requestId":3,"sample":false,"query":{"search":"visible","conditions":[],"filterMode":"all","filters":{},"offset":9900,"limit":200,"requestId":3}}}
+  ✘  2 [csv] › tests/e2e/columns-overview.spec.ts:86:1 › panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance (1.5m)
+
+
+  1) [shell] › tests/e2e/project-source.spec.ts:116:1 › el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  getByRole('dialog', { name: 'Comandos CSV', exact: true }).locator(':scope>p').first()
+    Expected: "Protegida contra cambios hechos por FreyaLab. No impide que otro programa la modifique; FreyaLab lo detecta y avisa."
+    Received: "Muestra de solo lectura: edición y copia tabular bloqueadas."
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" getByRole('dialog', { name: 'Comandos CSV', exact: true }).locator(':scope>p').first() with timeout 15000ms
+      - waiting for getByRole('dialog', { name: 'Comandos CSV', exact: true }).locator(':scope>p').first()
+        34 × locator resolved to <p class="svelte-ki85c0">Muestra de solo lectura: edición y copia tabular …</p>
+           - unexpected value "Muestra de solo lectura: edición y copia tabular bloqueadas."
+
+
+      120 |  const [document]=await page.evaluate(()=>window.freya.documents())
+      121 |  expect(document).toMatchObject({projectSource:'protected',readonly:true,rowCount:1})
+    > 122 |  const commands=await openCsvCommands(page,app);await expect(commands.locator(':scope>p').first()).toHaveText(t('ui.reason.projectProtected'));await expect(commands).not.toContainText('Muestra de solo lectura');await commands.getByRole('button',{name:'Cerrar comandos CSV',exact:true}).click()
+          |                                                                                                    ^
+      123 |  await panel().getByRole('button',{name:'Analizar',exact:true}).click()
+      124 |  const workspace=page.locator('.analysis-workspace:not([hidden])'),overview=workspace.getByRole('region',{name:'Vista general de columnas',exact:true})
+      125 |  await expect(workspace.locator('.analysis-warning')).toHaveCount(0)
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/project-source.spec.ts:122:100
+
+    Error Context: test-results/project-source-el-análisis-e5510-uso-con-el-proyecto-cerrado-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/project-source-el-análisis-e5510-uso-con-el-proyecto-cerrado-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/project-source-el-análisis-e5510-uso-con-el-proyecto-cerrado-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/columns-overview.spec.ts:86:1 › panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance
+
+    Test timeout of 90000ms exceeded.
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('[id="workspace-panel-analysis:47753e47-6cdf-415d-9959-eaae8d4f31de"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('status')
+    Expected: "Exploración de columnas completa."
+    Received: "Datos o alcance actualizados. Pulsa Explorar columnas."
+
+    Call log:
+      - Expect "toHaveText" locator('[id="workspace-panel-analysis:47753e47-6cdf-415d-9959-eaae8d4f31de"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('status') with timeout 90000ms
+      - waiting for locator('[id="workspace-panel-analysis:47753e47-6cdf-415d-9959-eaae8d4f31de"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('status')
+        179 × locator resolved to <p role="status" class="svelte-1alawu2">Datos o alcance actualizados. Pulsa Explorar colu…</p>
+            - unexpected value "Datos o alcance actualizados. Pulsa Explorar columnas."
+      - Target page, context or browser has been closed
+
+
+      116 |  await expect(page.getByRole('gridcell',{name:'Fila 10000, Grupo',exact:true})).toHaveText('visible')
+      117 |  await overview();await app.evaluate(()=>Reflect.get(globalThis,'overviewPagingRelease')?.())
+    > 118 |  await expect(panel.getByRole('status')).toHaveText('Exploración de columnas completa.',{timeout:90000})
+          |                                          ^
+      119 |  await expect(panel.locator('.scope')).toContainText((10000).toLocaleString()+' filas por columna');await expect(panel.locator('tbody tr')).toHaveCount(2)
+      120 |  expect((await panel.locator('tbody tr').nth(1).locator('th,td').allTextContents()).slice(2,8)).toEqual([(10000).toLocaleString(),'0','0','0','1',(9999).toLocaleString()]);expect(await readFile(path,'utf8')).toBe(text)
+      121 | })
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/columns-overview.spec.ts:118:42
+
+    Error Context: test-results/columns-overview-panorámic-6d837-l-paginar-ese-mismo-alcance-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/columns-overview-panorámic-6d837-l-paginar-ese-mismo-alcance-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/columns-overview-panorámic-6d837-l-paginar-ese-mismo-alcance-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [shell] › tests/e2e/project-source.spec.ts:116:1 › el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado
+    [csv] › tests/e2e/columns-overview.spec.ts:86:1 › panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance

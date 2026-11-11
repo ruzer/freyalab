@@ -1,0 +1,39 @@
+
+Running 1 test using 1 worker
+
+(node:21609) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/csv-summary.spec.ts:165:1 › AN-1b: desde Texto con cambios, Cancelar conserva el borrador y descartar abre análisis sin escribir (31.4s)
+
+
+  1) [csv] › tests/e2e/csv-summary.spec.ts:165:1 › AN-1b: desde Texto con cambios, Cancelar conserva el borrador y descartar abre análisis sin escribir
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.csv-toolbar .analyze,.csv-text-tools .analyze')
+
+
+       at panel.ts:9
+
+       7 | export const analyzeButton=(page:Page)=>page.locator('.csv-toolbar .analyze,.csv-text-tools .analyze')
+       8 | // Pedir el análisis puede abrir primero el diálogo de cambio desde CSV Texto.
+    >  9 | export async function requestAnalysis(page:Page){await analyzeButton(page).click()}
+         |                                                                            ^
+      10 | export async function openAnalysis(page:Page,name:keyof typeof sections='Información'){
+      11 |  if(!await workspace(page).isVisible()){
+      12 |   const tabs=page.locator('.tabs[role=tablist]')
+        at requestAnalysis (/private/tmp/freyalab-alpha4-an1b/tests/e2e/panel.ts:9:76)
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/csv-summary.spec.ts:168:8
+
+    Error Context: test-results/csv-summary-AN-1b-desde-Te-3ba2d--abre-análisis-sin-escribir-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/csv-summary-AN-1b-desde-Te-3ba2d--abre-análisis-sin-escribir-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/csv-summary-AN-1b-desde-Te-3ba2d--abre-análisis-sin-escribir-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/csv-summary.spec.ts:165:1 › AN-1b: desde Texto con cambios, Cancelar conserva el borrador y descartar abre análisis sin escribir

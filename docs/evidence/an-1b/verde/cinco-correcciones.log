@@ -1,0 +1,21 @@
+
+Running 10 tests using 1 worker
+
+(node:55966) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [shell] › tests/e2e/project-source.spec.ts:116:1 › el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado (4.8s)
+  ✓   2 [shell] › tests/e2e/project-source.spec.ts:180:1 › una muestra conserva su alcance al protegerla y al cerrar el proyecto (1.6s)
+(node:56015) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   3 [md] › tests/e2e/markdown-sidebar.spec.ts:182:1 › P5: almacenamiento bloqueado no impide abrir el documento ni alternar las pestañas (1.2s)
+(node:56024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   4 [csv] › tests/e2e/charts.spec.ts:73:1 › gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial @perf (19.1s)
+  ✓   5 [csv] › tests/e2e/charts.spec.ts:260:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV (5.7s)
+  ✓   6 [csv] › tests/e2e/charts.spec.ts:273:1 › configuraciones: columnas incompatibles y duplicadas, IPC inválido y biblioteca dañada preservados (1.4s)
+  ✓   7 [csv] › tests/e2e/column-menu.spec.ts:99:1 › «Estadísticas de la columna» abre Análisis con esa columna marcada (1.0s)
+  ✓   8 [csv] › tests/e2e/columns-overview.spec.ts:39:1 › panorámica: cancelar o cambiar revisión descarta respuestas tardías y no continúa columnas (1.2s)
+  ✓   9 [csv] › tests/e2e/statistics-reports.spec.ts:36:1 › informes del explorador: perfil, distribución, Pearson y página parcial con texto hostil abreviado (2.4s)
+  ✓  10 [csv] › tests/e2e/statistics-reports.spec.ts:42:1 › informe de muestra exportable con alcance explícito sin habilitar la exportación del CSV parcial @perf (1.3s)
+
+  10 passed (40.7s)

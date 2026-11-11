@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:36188) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/large-file.spec.ts:25:1 › un CSV por encima del umbral se abre como archivo grande: aviso, recuento exacto y sin el límite de 200 filas (16.6s)
+
+
+  1) [csv] › tests/e2e/large-file.spec.ts:25:1 › un CSV por encima del umbral se abre como archivo grande: aviso, recuento exacto y sin el límite de 200 filas
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('dialog', { name: 'Comandos CSV', exact: true }).locator(':scope>p').first()
+    Expected substring: "Archivo grande"
+    Received string:    "Muestra de solo lectura: edición y copia tabular bloqueadas."
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('dialog', { name: 'Comandos CSV', exact: true }).locator(':scope>p').first() with timeout 15000ms
+      - waiting for getByRole('dialog', { name: 'Comandos CSV', exact: true }).locator(':scope>p').first()
+        33 × locator resolved to <p class="svelte-ki85c0">Muestra de solo lectura: edición y copia tabular …</p>
+           - unexpected value "Muestra de solo lectura: edición y copia tabular bloqueadas."
+
+
+      26 |  const {doc}=await open(csv(3000))
+      27 |  expect(doc).toMatchObject({readonly:true,large:true,rowCount:3000})
+    > 28 |  const commands=await openCsvCommands(page,app);await expect(commands.locator(':scope>p').first()).toContainText('Archivo grande');await expect(commands.locator(':scope>p').first()).not.toContainText('Muestra de solo lectura');await commands.getByRole('button',{name:'Cerrar comandos CSV',exact:true}).click()
+         |                                                                                                    ^
+      29 |  await expect(page.locator('.warning-banner').first()).toContainText('Archivo grande')
+      30 |  await expect(page.locator('footer')).toContainText('3,000 de 3,000 filas · archivo grande')
+      31 |  await expect(page.getByRole('grid',{name:'Tabla de datos'})).toHaveAttribute('aria-rowcount','3001')
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/large-file.spec.ts:28:100
+
+    Error Context: test-results/large-file-un-CSV-por-enci-cf2d2--sin-el-límite-de-200-filas-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/large-file-un-CSV-por-enci-cf2d2--sin-el-límite-de-200-filas-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/large-file-un-CSV-por-enci-cf2d2--sin-el-límite-de-200-filas-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/large-file.spec.ts:25:1 › un CSV por encima del umbral se abre como archivo grande: aviso, recuento exacto y sin el límite de 200 filas

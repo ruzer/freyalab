@@ -18,7 +18,7 @@ Se corrige además la clasificación demostrada de fuentes protegidas/cerradas: 
 
 ## Rojo → verde
 
-Las salidas completas anteriores se conservan en [rojo](rojo/). Las salidas enfocadas están en [verde](verde/).
+Las salidas completas anteriores se conservan en [rojo](rojo/). Las salidas enfocadas están en [verde](verde/). Estas copias de consola normalizan únicamente blancos al final de línea y el salto final; los originales y las trazas se conservan intactos en las rutas temporales de esta sesión. No se cambian mensajes, aserciones ni resultados.
 
 | Conducta | Rojo observado | Verde comprobado |
 | --- | --- | --- |
