@@ -1,0 +1,18 @@
+v24.22.1
+7c89676b7dec5a42dd3a85c089c24e708ab1fb89
+
+> freyalab@0.1.0-alpha.4 check
+> svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json --noEmit
+
+Loading svelte-check in workspace: /private/tmp/freyalab-ten-1
+Getting Svelte diagnostics...
+
+svelte-check found 0 errors and 0 warnings
+
+ RUN  v5.0.5 /private/tmp/freyalab-ten-1
+
+
+ Test Files  6 passed (6)
+      Tests  123 passed (123)
+   Start at  13:24:07
+   Duration  1.10s (tests 75%, import 18%, transform 6%, worker 1%)

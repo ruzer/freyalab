@@ -68,6 +68,8 @@ playwright test tests/e2e/chart-trend.spec.ts tests/e2e/charts.spec.ts \
 
 Las [salidas Node 24](logs/node24-e2e.log) y las capturas de esta carpeta corresponden al cierre con ese runtime. El [PNG real](trend-export.png) y el [SVG real](trend-export.svg) se copiaron del primer fixture después de exportarlos, antes de limpiar su perfil temporal; no se regeneraron para la documentación. La suite integral local permanece pendiente de la última integración coordinada con LIM-1. La CI se registrará en el PR sobre su head congelado.
 
+Antes de congelar la entrega se incorporó también `main` `d89d4dc` (PR #166) en `7c89676b7dec5a42dd3a85c089c24e708ab1fb89`. Ese cambio solo añade evidencia y ajusta la comparación exacta de bytes en `tests/project-sources.test.ts`; no cambia fuentes del producto. La [revalidación después del merge](logs/node24-merge166.log) con Node 24 confirma check 0/0 y **123 casos verdes** de proyecto, tendencia, presentación, presets, exportación y baseline SQL. No se presenta como una nueva ejecución completa de unitarias ni se repiten los 14 recorridos por ese cambio de pruebas.
+
 ## Capturas de la leyenda final
 
 - [Español claro, 1440×900](ten1-es-light-1440x900.png)
