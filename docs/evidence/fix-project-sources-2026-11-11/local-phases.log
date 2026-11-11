@@ -1,0 +1,20 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-fix-project-sources
+
+stdout | tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > cancela la huella al primer bloque y conserva el archivo
+[DEBUG-project-sources] {"bytes":400000,"writeMs":0.6760830000000055,"toProgressMs":1.6962919999999997,"abortCloseMs":3.1817909999999756,"compareMs":814.7068340000001,"totalMs":820.2637500000001,"events":[65536]}
+
+ ↓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > fija la codificación, el esquema físico y la huella sin alterar el CSV
+ ↓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > no guarda encabezados inventados al corregir un CSV sin encabezado
+ ↓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > rechaza una vista previa cuyo primer registro queda cortado
+ ✓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > cancela la huella al primer bloque y conserva el archivo 823ms
+ ↓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > omite directorios enlazados fuera del proyecto
+ ↓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > solo reenlaza dentro del proyecto por tamaño y SHA-256 completo
+ ↓ tests/project-sources.test.ts > PRJ-01b · registro en un proyecto > cancela antes de guardar y registra después con ruta relativa e historial
+ ↓ tests/project-sources.test.ts > PRJ-01b · registro en un proyecto > una ruta externa de un manifiesto carece de permiso hasta confirmarla en el selector
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 7 skipped (8)
+   Start at  12:34:08
+   Duration  1.05s (tests 85%, import 11%, transform 4%)
+

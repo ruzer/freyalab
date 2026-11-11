@@ -1,0 +1,77 @@
+{
+  "node": "24.22.1",
+  "platform": "darwin",
+  "arch": "arm64",
+  "os": "27.0.0",
+  "cpu": "Apple M2 Max",
+  "logicalCpus": 12,
+  "memoryBytes": 34359738368,
+  "results": [
+    {
+      "name": "original unchanged",
+      "equal": true,
+      "bytes": 400000
+    },
+    {
+      "name": "original BOM/start",
+      "equal": false,
+      "changedByte": 0,
+      "bytes": 400000
+    },
+    {
+      "name": "original middle",
+      "equal": false,
+      "changedByte": 200000,
+      "bytes": 400000
+    },
+    {
+      "name": "original final",
+      "equal": false,
+      "changedByte": 399999,
+      "bytes": 400000
+    },
+    {
+      "name": "original truncated",
+      "equal": false,
+      "bytes": 399999
+    },
+    {
+      "name": "original appended",
+      "equal": false,
+      "bytes": 400001
+    },
+    {
+      "name": "BOM unchanged",
+      "equal": true,
+      "bytes": 400003
+    },
+    {
+      "name": "BOM BOM/start",
+      "equal": false,
+      "changedByte": 0,
+      "bytes": 400003
+    },
+    {
+      "name": "BOM middle",
+      "equal": false,
+      "changedByte": 200001,
+      "bytes": 400003
+    },
+    {
+      "name": "BOM final",
+      "equal": false,
+      "changedByte": 400002,
+      "bytes": 400003
+    },
+    {
+      "name": "BOM truncated",
+      "equal": false,
+      "bytes": 400002
+    },
+    {
+      "name": "BOM appended",
+      "equal": false,
+      "bytes": 400004
+    }
+  ]
+}
