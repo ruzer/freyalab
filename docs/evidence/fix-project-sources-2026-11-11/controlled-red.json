@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/Users/ruzer/.npm/_npx/387698761821791d/node_modules/node/bin/node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/project-sources.test.ts",
+    "--testNamePattern=cancela la huella al primer bloque",
+    "--reporter=verbose"
+  ],
+  "node": "/Users/ruzer/.npm/_npx/387698761821791d/node_modules/node/bin/node",
+  "duty_cycle": 0.08,
+  "quantum_seconds": 0.1,
+  "wall_seconds": 30.608412375004264,
+  "cpu_seconds": 3.193532,
+  "cpu_per_wall": 0.1043351076453718,
+  "exit_code": 1,
+  "external_watchdog_fired": false
+}

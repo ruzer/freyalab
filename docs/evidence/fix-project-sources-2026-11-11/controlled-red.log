@@ -1,0 +1,38 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-fix-project-sources
+
+ ↓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > fija la codificación, el esquema físico y la huella sin alterar el CSV
+ ↓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > no guarda encabezados inventados al corregir un CSV sin encabezado
+ ↓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > rechaza una vista previa cuyo primer registro queda cortado
+stdout | tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > cancela la huella al primer bloque y conserva el archivo
+[DEBUG-project-sources] {"bytes":400000,"writeMs":1.840541999999914,"toProgressMs":2.6846250000007785,"abortCloseMs":3.530291000000034,"compareMs":18788.094291999998,"totalMs":18796.152583000003,"events":[65536]}
+
+ × tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > cancela la huella al primer bloque y conserva el archivo 19099ms
+   → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ↓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > omite directorios enlazados fuera del proyecto
+ ↓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > solo reenlaza dentro del proyecto por tamaño y SHA-256 completo
+ ↓ tests/project-sources.test.ts > PRJ-01b · registro en un proyecto > cancela antes de guardar y registra después con ruta relativa e historial
+ ↓ tests/project-sources.test.ts > PRJ-01b · registro en un proyecto > una ruta externa de un manifiesto carece de permiso hasta confirmarla en el selector
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > cancela la huella al primer bloque y conserva el archivo
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/project-sources.test.ts:37:2
+     35|   await expect(prepareCsvSource(file)).rejects.toThrow()
+     36|  })
+     37|  it('cancela la huella al primer bloque y conserva el archivo',async()…
+       |  ^
+     38|   const started=performance.now(),file=join(folder,'datos.csv'),origin…
+     39|   await writeFile(file,original)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 skipped (8)
+   Start at  12:37:58
+   Duration  25.42s (tests 83%, import 13%, transform 4%)
+

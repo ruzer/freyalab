@@ -1,0 +1,22 @@
+--- a/tests/project-sources.test.ts
++++ b/tests/project-sources.test.ts
+@@ -35,13 +35,16 @@
+   await expect(prepareCsvSource(file)).rejects.toThrow()
+  })
+  it('cancela la huella al primer bloque y conserva el archivo',async()=>{
+-  const file=join(folder,'datos.csv'),original=Buffer.from('a,b\n'.repeat(100000))
++  const started=performance.now(),file=join(folder,'datos.csv'),original=Buffer.from('a,b\n'.repeat(100000))
+   await writeFile(file,original)
+-  const control=new AbortController(),events:number[]=[]
+-  await expect(fingerprintCsvSource(file,{signal:control.signal,progress:done=>{events.push(done);control.abort()}})).rejects.toHaveProperty('name','AbortError')
++  const written=performance.now(),control=new AbortController(),events:number[]=[]
++  let progressAt=0
++  await expect(fingerprintCsvSource(file,{signal:control.signal,progress:done=>{progressAt=performance.now();events.push(done);control.abort()}})).rejects.toHaveProperty('name','AbortError')
++  const cancelled=performance.now()
+   expect(events).toHaveLength(1)
+   expect(events[0]).toBeLessThan(original.length)
+   expect(await readFile(file)).toEqual(original)
++  console.info('[DEBUG-project-sources]',JSON.stringify({bytes:original.length,writeMs:written-started,toProgressMs:progressAt-written,abortCloseMs:cancelled-progressAt,compareMs:performance.now()-cancelled,totalMs:performance.now()-started,events}))
+  })
+  it.skipIf(process.platform==='win32')('omite directorios enlazados fuera del proyecto',async()=>{
+   const external=join(root,'fuera');await mkdir(external);const path=join(external,'datos.csv');await writeFile(path,'ID\n1\n')

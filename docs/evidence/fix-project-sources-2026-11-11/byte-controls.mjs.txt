@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict'
+import {cpus,arch,platform,release,totalmem} from 'node:os'
+const original=Buffer.from('a,b\n'.repeat(100000)),withBom=Buffer.concat([Buffer.from('\ufeff'),original]),results=[]
+for(const [name,expected] of [['original',original],['BOM',withBom]]){
+ assert.equal(Buffer.from(expected).equals(expected),true);results.push({name:name+' unchanged',equal:true,bytes:expected.length})
+ for(const [position,index] of [['BOM/start',0],['middle',Math.floor(expected.length/2)],['final',expected.length-1]]){
+  const changed=Buffer.from(expected);changed[index]^=1;assert.equal(changed.equals(expected),false);results.push({name:name+' '+position,equal:false,changedByte:index,bytes:changed.length})
+ }
+ for(const [position,changed] of [['truncated',expected.subarray(0,expected.length-1)],['appended',Buffer.concat([expected,Buffer.of(0)])]]){
+  assert.equal(changed.equals(expected),false);results.push({name:name+' '+position,equal:false,bytes:changed.length})
+ }
+}
+console.log(JSON.stringify({node:process.versions.node,platform:platform(),arch:arch(),os:release(),cpu:cpus()[0]?.model,logicalCpus:cpus().length,memoryBytes:totalmem(),results},null,2))
