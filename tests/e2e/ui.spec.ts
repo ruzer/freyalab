@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import {parse as parseCSV} from 'csv-parse/sync'
 import {stringify as stringifyCSV} from 'csv-stringify/sync'
-import {analyzeButton,closeAnalysis,menuItem,numericOrder,showPanel,showTable} from './panel'
+import {analyzeButton,closeAnalysis,menuItem,numericOrder,openAnalysis,showPanel,showTable} from './panel'
 let app:ElectronApplication,page:Page,directory:string
 
 test.beforeEach(async()=>{
@@ -214,9 +214,10 @@ test('estadísticas CSV: columnas, alcance completo, datos pendientes, temas y t
  await page.getByLabel('Buscar en tabla',{exact:true}).fill('00123')
  await expect(page.locator('footer')).toContainText('1 de 3 filas')
  await page.getByLabel('Seleccionar columna Valor',{exact:true}).check()
+ await openAnalysis(page,'Estadísticas')
+ await expect(page.getByRole('heading',{name:'Estadísticas',level:2,exact:true})).toBeFocused()
  await showPanel(page,'Estadísticas')
  const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true})
- await expect(page.getByRole('heading',{name:'Estadísticas',level:2,exact:true})).toBeFocused()
  await expect(panel).toContainText('incluye las filas ocultas')
  await page.getByLabel('Columnas para estadísticas',{exact:true}).selectOption('selected')
  await panel.getByRole('button',{name:'Analizar',exact:true}).click()

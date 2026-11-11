@@ -1,4 +1,4 @@
-import {openCsvCommands,showTable,openAnalysis} from './panel'
+import {openCsvCommands,showTable,openAnalysis,showPanel} from './panel'
 import {expect,test,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {createHash} from 'node:crypto'
@@ -124,22 +124,31 @@ test('el análisis distingue una fuente completa protegida de una muestra, inclu
  const workspace=page.locator('.analysis-workspace:not([hidden])'),overview=workspace.getByRole('region',{name:'Vista general de columnas',exact:true})
  await expect(workspace.locator('.analysis-warning')).toHaveCount(0)
  await expect(overview.getByLabel('Alcance de la vista general').locator('option[value="all"]')).toHaveText('Documento completo')
- await overview.getByRole('button',{name:'Explorar columnas',exact:true}).click()
+ await overview.getByRole('button',{name:'Obtener información',exact:true}).click()
  await expect(overview.getByRole('status')).toHaveText('Exploración de columnas completa.')
  await expect(overview.locator('tbody tr')).toHaveCount(3)
  await expect(overview.locator('.scope')).toContainText('Documento completo')
  await overview.getByLabel('Alcance de la vista general').selectOption('view')
- await overview.getByRole('button',{name:'Explorar columnas',exact:true}).click()
+ await overview.getByRole('button',{name:'Obtener información',exact:true}).click()
  await expect(overview.getByRole('status')).toHaveText('Exploración de columnas completa.')
  await expect(overview.locator('.scope')).toContainText('Vista filtrada')
  await expect(overview.locator('.scope')).not.toContainText('muestra')
  await workspace.getByRole('button',{name:'Estadísticas',exact:true}).click()
+ const describe=workspace.getByRole('region',{name:'Resumen estadístico',exact:true})
+ await describe.getByRole('checkbox',{name:'Incluir texto y fechas',exact:true}).check();await describe.getByRole('button',{name:'Calcular',exact:true}).click()
+ await expect(describe.getByRole('status')).toHaveText('Resumen calculado.');await expect(describe.locator('tbody tr').first().locator('td')).toHaveText(['1','1','0']);await expect(describe.locator('caption')).toContainText('Documento completo')
+ await describe.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click()
+ await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)?.text).toContain('# Resumen estadístico CSV')
+ const describeReport=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!
+ expect(describeReport.text).not.toContain('MUESTRA LIMITADA')
+ await page.getByRole('tab',{name:'Análisis de datos.csv',exact:true}).click()
+ await showPanel(page,'Estadísticas')
  const statistics=workspace.getByRole('region',{name:'Estadísticas por columna',exact:true})
  await expect(statistics).not.toContainText('Solo muestra')
  await statistics.getByRole('button',{name:'Analizar',exact:true}).click()
  await expect(statistics.getByRole('status')).toHaveText('Análisis completo.')
- await statistics.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click()
- const statisticsReport=(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')!
+ await statistics.getByRole('button',{name:'Abrir informe detallado',exact:true}).click()
+ const statisticsReport=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!
  expect(statisticsReport.text).toContain('# Informe de estadísticas CSV')
  expect(statisticsReport.text).not.toContain('MUESTRA LIMITADA')
  await page.getByRole('tab',{name:'Análisis de datos.csv',exact:true}).click()
@@ -170,7 +179,7 @@ test('el análisis distingue una fuente completa protegida de una muestra, inclu
  await expect(workspace.locator('.analysis-warning')).toHaveCount(0)
  await workspace.getByRole('button',{name:'Información',exact:true}).click()
  await overview.getByLabel('Alcance de la vista general').selectOption('all')
- await overview.getByRole('button',{name:'Explorar columnas',exact:true}).click()
+ await overview.getByRole('button',{name:'Obtener información',exact:true}).click()
  await expect(overview.getByRole('status')).toHaveText('Exploración de columnas completa.')
  await expect(overview.locator('.scope')).toContainText('Documento completo')
  await showTable(page,'datos.csv');const closedCommands=await openCsvCommands(page,app);await expect(closedCommands.locator(':scope>p').first()).toHaveText(t('ui.reason.projectClosed'));await expect(closedCommands).not.toContainText('Muestra de solo lectura');await closedCommands.getByRole('button',{name:'Cerrar comandos CSV',exact:true}).click();await openAnalysis(page,'Información')
@@ -186,7 +195,7 @@ test('una muestra conserva su alcance al protegerla y al cerrar el proyecto',asy
  const workspace=page.locator('.analysis-workspace:not([hidden])'),overview=workspace.getByRole('region',{name:'Vista general de columnas',exact:true})
  await expect(workspace.locator('.analysis-warning')).toHaveText(t('charts.fields.sample'))
  await expect(overview.getByLabel('Alcance de la vista general').locator('option[value="all"]')).toHaveText('Muestra completa')
- await overview.getByRole('button',{name:'Explorar columnas',exact:true}).click()
+ await overview.getByRole('button',{name:'Obtener información',exact:true}).click()
  await expect(overview.getByRole('status')).toHaveText('Exploración de columnas completa.')
  await expect(overview.locator('.scope')).toContainText('200 filas por columna')
  await expect(overview.locator('.scope')).toContainText('Muestra completa')
@@ -195,7 +204,7 @@ test('una muestra conserva su alcance al protegerla y al cerrar el proyecto',asy
  await panel().getByRole('button',{name:'Analizar',exact:true}).click()
  expect((await page.evaluate(()=>window.freya.documents()))[0]).toMatchObject({readonly:true,projectSource:'protected',rowCount:200})
  await expect(workspace.locator('.analysis-warning')).toHaveText(t('charts.fields.sample'))
- await overview.getByRole('button',{name:'Explorar columnas',exact:true}).click()
+ await overview.getByRole('button',{name:'Obtener información',exact:true}).click()
  await expect(overview.getByRole('status')).toHaveText('Exploración de columnas completa.')
  await expect(overview.locator('.scope')).toContainText('Muestra completa')
  await panel().getByRole('button',{name:'Cerrar proyecto',exact:true}).click()

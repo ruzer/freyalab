@@ -1,5 +1,6 @@
 import {expect,it} from 'vitest'
 import {describeTable,type DescribeEntry} from '../src/renderer/lib/describe-table'
+import {describeReport} from '../src/renderer/lib/statistics-report'
 
 const entries:DescribeEntry[]=[
  {index:0,name:'Producto',profile:{kind:'category'},description:{count:6,unique:3,top:'a',freq:4,dateMin:null,dateMax:null}},
@@ -51,4 +52,14 @@ it('conserva top completo, nombres repetidos y el orden de cien columnas sin mut
  expect(table.rows.find(row=>row.metric==='mean')?.values).toEqual(Array(100).fill(null))
  expect(columns).toEqual(before)
  expect(describeTable([],false).columns).toEqual([])
+})
+
+it('el informe usa la misma matriz, precisión completa y el ámbito elegido sin confundirlo con el rango interno',()=>{
+ const text=describeReport({source:'datos.csv',revision:3,sample:false,dirty:true,scope:'Vista filtrada',analyzedAt:'2026-11-11T00:00:00Z',query:{offset:0,limit:200,requestId:1,search:'visible'}},entries,false)
+ expect(text).toContain('| Estadística | ` "Precio" ` | ` "Cantidad" ` |')
+ expect(text).toContain('| std | 15.811388300841896 | 1.2909944487358056 |')
+ expect(text).toContain('"Vista filtrada"')
+ expect(text).toContain('"search": "visible"')
+ expect(text).not.toContain('Rango de la vista')
+ expect(text).not.toContain('Las posiciones del rango')
 })

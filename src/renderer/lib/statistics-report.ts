@@ -1,5 +1,7 @@
 import {columnSummary} from '../../shared/column-profile'
 import type {TableStats,TableQuery,ColumnAnalysis,ColumnOverviewRow} from '../../shared/types'
+import {t} from '../../shared/i18n'
+import {describeTable,type DescribeEntry} from './describe-table'
 
 export const STATISTICS_FIELDS=[['cells','Celdas'],['empty','Vacíos'],['unique','Únicos'],['numeric','Numéricos'],['sum','Suma'],['average','Media'],['min','Mínimo'],['max','Máximo'],['median','Mediana'],['deviation','Desv. poblacional (n)'],['sampleDeviation','Desv. muestral (n−1)'],['missing','Ausentes'],['whitespace','Solo espacios'],['excluded','Excluidos']] as const
 export const PROFILE_FIELDS=[['cells','Filas'],['empty','Vacíos'],['missing','Campos ausentes'],['whitespace','Solo espacios'],['unique','Valores distintos exactos'],['duplicateGroups','Grupos repetidos'],['duplicateRows','Filas en grupos repetidos'],['extraDuplicates','Repeticiones adicionales'],['numeric','Numéricos utilizables'],['excluded','No numéricos o fuera del rango seguro'],['leadingZeros','Con ceros iniciales'],['minLength','Longitud mínima'],['maxLength','Longitud máxima'],['sum','Suma'],['average','Media'],['median','Mediana'],['min','Mínimo'],['max','Máximo'],['deviation','Desviación poblacional (n)'],['sampleDeviation','Desviación muestral (n−1)']] as const
@@ -31,6 +33,20 @@ export function statisticsReport(context:ReportContext,rows:StatisticsRow[]){
  let text=preamble(context,'Informe de estadísticas CSV')
  for(const row of rows)text+=`## ${row.index<0?'Celdas del rango':'Columna '+(row.index+1)}\n\n${literal(row.name)}\n\n`+table([['Medida','Valor'],['---','---'],...[...STATISTICS_FIELDS,...NUMERIC_DETAIL_FIELDS].map(([key,label])=>[label,number(row[key])])])
  return text+NUMERIC_DETAIL_HELP+'\n\n'+notes(context)
+}
+export function describeReport(context:ReportContext,entries:DescribeEntry[],includeText:boolean){
+ const matrix=describeTable(entries,includeText)
+ let text='# '+t('describe.reportTitle')+'\n\n'+(context.sample?'> **'+t('describe.report.sample')+'**\n\n':'')+t('describe.report.intro')+'\n\n'
+ text+=table([[t('describe.report.provenance'),t('describe.report.value')],['---','---'],[t('describe.report.source'),literal(context.source)],[t('describe.report.revision'),String(context.revision)],[t('describe.report.scope'),literal(context.scope)],[t('describe.report.dirty'),t(context.dirty?'describe.report.yes':'describe.report.no')],[t('describe.report.time'),literal(context.analyzedAt)]])
+ text+=table([[t('describe.metric'),...matrix.columns.map(column=>literal(column.name))],Array(matrix.columns.length+1).fill('---'),...matrix.rows.map(row=>[row.metric,...row.values.map(value=>value===null?'—':typeof value==='string'?literal(value):String(value))])])
+ if(matrix.columns.some(column=>column.unavailable))text+='\n'+t('describe.unavailableHelp')+'\n'
+ text+='\n## '+t('describe.how')+'\n\n'+t('describe.how.statistics')+'\n\n'+t('describe.report.text')+'\n\n'+t('describe.report.precision')+'\n\n'
+ if(context.query){
+  const {search,filters,sort,order,conditions,filterMode}=context.query,json=JSON.stringify({search,filters,sort,order,conditions,filterMode},null,2)
+  const fence='`'.repeat((json.match(/`+/g)??[]).reduce((n,run)=>Math.max(n,run.length+1),3))
+  text+='\n## '+t('describe.filters')+'\n\n'+fence+'json\n'+json+'\n'+fence+'\n'
+ }
+ return text
 }
 export function columnReport(context:ColumnReportContext,result:ColumnAnalysis,view:ColumnReportView){
  const titles={profile:'Perfil de columna',frequencies:'Frecuencias de columna',distribution:'Distribución de columna',correlation:'Correlación de Pearson'}
