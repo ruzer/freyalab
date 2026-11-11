@@ -1,4 +1,5 @@
 <script lang="ts">
+ import {csvAnalysisSample} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
  import Icon from './Icon.svelte'
  import {t,plural,getUILanguage,formatNumber} from '../lib/i18n.svelte'
@@ -17,14 +18,15 @@
  import {chartPivot,chartTop} from '../../shared/chart-pivot'
  import {suggest,type ChartColumn} from '../../shared/chart-suggest'
  import {chartOption,chartSeries,formatChartNumber} from '../chart-option'
- import type {DocumentInfo,SqlResult,TableQuery,TableConditionGroup} from '../../shared/types'
+ import type {DocumentInfo,SqlResult,TableQuery,TableConditionGroup,TableViewMeta} from '../../shared/types'
  use([BarChart,LineChart,ScatterChart,HeatmapChart,BoxplotChart,GridComponent,TooltipComponent,VisualMapComponent,AriaComponent,TitleComponent,LegendComponent,SVGRenderer])
- let {doc,query,queryValid,visible=true,onDemand=false,exportHost,onclose,onerror}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;visible?:boolean;onDemand?:boolean;exportHost?:HTMLElement;onclose:()=>void;onerror:(message:string)=>void}=$props()
+ let {doc,query,queryValid,viewMeta,visible=true,onDemand=false,exportHost,onclose,onerror}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;visible?:boolean;onDemand?:boolean;exportHost?:HTMLElement;onclose:()=>void;onerror:(message:string)=>void}=$props()
  let scope=$state<'all'|'filtered'|'saved'>('all'),savedView=$state<ChartView>()
  let where=$state<TableConditionGroup>({conditions:[],filterMode:'all'}),showFilters=$state(false),filtersButton=$state<HTMLButtonElement>()
- const scopeLabel=$derived((scope==='all'?t('charts.ui.all'):scope==='saved'?t('charts.ui.saved'):t('charts.ui.filtered'))+(where.conditions.length?` · ${t('charts.ui.filterStatus',{n:where.conditions.length,mode:t(where.filterMode==='all'?'charts.ui.and':'charts.ui.or')})}`:''))
+ const sample=$derived(csvAnalysisSample(doc,viewMeta))
+ const scopeLabel=$derived((sample===undefined?t('analysis.scope.pending'):scope==='all'?t('charts.ui.all'):scope==='saved'?t('charts.ui.saved'):t('charts.ui.filtered'))+(where.conditions.length?` · ${t('charts.ui.filterStatus',{n:where.conditions.length,mode:t(where.filterMode==='all'?'charts.ui.and':'charts.ui.or')})}`:''))
  const viewSignature=$derived(JSON.stringify([query.search,query.filters,query.conditions,query.filterMode]))
- const unavailable=$derived((scope==='filtered'&&(!queryValid||doc.readonly))||(scope==='saved'&&(!savedView||doc.readonly)))
+ const unavailable=$derived(sample===undefined||(scope==='filtered'&&(!queryValid||sample))||(scope==='saved'&&(!savedView||sample)))
  const analysisQuery=$derived(scope==='saved'&&savedView?{...savedView,offset:0,limit:1000,requestId:0}:query)
  let options=$state<ChartOptions>({kind:'bar',x:0,y:-1,bins:10,aggregate:'count',descending:false,measureType:'text',series:-1,time:'none',...untrack(()=>onDemand?{x:-1,y:-2}:{})})
  let started=$state(false),stale=$state(false),lastRevision=untrack(()=>doc.revision)
@@ -60,7 +62,7 @@
  const valueLabel=(value:string|null)=>value===null?t('charts.plot.missing'):value===''?t('charts.plot.empty'):value
  function displayNumber(value:string|null){getUILanguage();return value===null?'—':formatChartNumber(Number(value))}
  // shortcut: auto hasta 3.000 filas, 1 MiB y 200.000 celdas; ampliar tras medir más equipos (experiments/analytics-f2a).
- const automatic=$derived(!doc.readonly&&!doc.large&&doc.byteLength!==undefined&&doc.byteLength<=1024*1024&&doc.rowCount!==undefined&&doc.rowCount<=3000&&doc.rowCount*(doc.headers?.length??0)<=200000)
+ const automatic=$derived(sample===false&&!doc.large&&doc.byteLength!==undefined&&doc.byteLength<=1024*1024&&doc.rowCount!==undefined&&doc.rowCount<=3000&&doc.rowCount*(doc.headers?.length??0)<=200000)
  const tooWide=$derived((doc.headers?.length??0)>200)
  const sql=$derived.by(()=>{try{if(options.y===-2)return '';return chartSQL(doc.headers??[],options)}catch{return ''}})
  function cancel(){if(totalJob){void window.freya.sqlCancel(totalJob).catch(()=>{});totalJob=undefined}totals=[];pivotPage=0;const previous=active;active=undefined;busy=false;data=null;source=null;tablePage=0;hiddenSeries=[];if(previous)void window.freya.sqlCancel(previous).catch(()=>{});if(exportJob){void window.freya.sqlCancel(exportJob).catch(()=>{});exportJob=undefined;exporting=false;cancellingExport=false}}
@@ -123,6 +125,7 @@
  function cancelFields(){fieldGeneration++;if(fieldJob){void window.freya.cancelAnalysis(fieldJob.id,fieldJob.requestId).catch(()=>{});fieldJob=undefined}fieldsLoading=false}
  async function loadFields(){
   cancelFields();const token=fieldGeneration,id=doc.id,revision=doc.revision;fieldsLoading=true;profiles=[];samples={};interpretable={};fieldErrors=[]
+  if(sample===undefined){fieldsLoading=false;return}
   if(!automatic||tooWide){if(initializedDocument!==id){if(!onDemand)options={kind:'bar',x:0,y:-1,bins:10,aggregate:'count',descending:false,measureType:'text',series:-1,time:'none'};initializedDocument=id}fieldsLoading=false;return}
   try{
    for(const column of (doc.headers??[]).map((_,i)=>i).slice(0,200)){
@@ -145,7 +148,7 @@
    if(fieldJob){fieldRevision=undefined;untrack(cancelFields)}
    return
   }
-  const revision=JSON.stringify([doc.id,doc.revision,doc.headers])
+  const revision=JSON.stringify([doc.id,doc.revision,doc.headers,sample])
   if(revision!==fieldRevision){fieldRevision=revision;untrack(()=>void loadFields())}
  })
  function addField(zone:ChartZone,column:number){
@@ -181,7 +184,7 @@
  <div class="chart-result">
  <div class="chart-intro"><p class="chart-description" aria-label={t('charts.ui.config')} title={summaryTitle}>{summaryTitle}</p>
  <details class="chart-info"><summary aria-label={t('charts.ui.info')}><span aria-hidden="true">ⓘ</span></summary><div class="info-content"><p>{t('charts.ui.source',{name:doc.name})}</p>{#if !automatic}<p>{t('charts.fields.manualTypes')}</p>{/if}{#if fieldErrors.length}<ul>{#each fieldErrors as detail}<li>{detail}</li>{/each}</ul>{/if} <p class="help">{aggregated?(options.aggregate==='count'?t('charts.ui.countHelp'):t('charts.ui.measureHelp')):options.kind==='histogram'?t('charts.ui.histogramHelp'):options.kind==='heatmap'?t('charts.ui.heatmapHelp'):t('charts.ui.compareHelp')}</p>
- <p>{scope==='saved'?t('charts.ui.savedHelp'):scope==='filtered'?t('charts.ui.filteredHelp'):doc.readonly&&!doc.large?t('charts.ui.sampleHelp'):t('charts.ui.allHelp')}</p>
+ <p>{scope==='saved'?t('charts.ui.savedHelp'):scope==='filtered'?t('charts.ui.filteredHelp'):sample===undefined?t('analysis.scope.pending'):sample?t('charts.ui.sampleHelp'):t('charts.ui.allHelp')}</p>
  {#if aggregated&&options.measureType==='number'}<p>{t('charts.ui.numberHelp')}</p>{/if}
  {#if aggregated&&options.aggregate==='distinct'}<p>{t('charts.ui.distinctHelp')}</p>{/if}
  {#if options.series!==undefined&&options.series>=0}<p>{t('charts.ui.seriesHelp')}</p>{/if}
@@ -193,7 +196,7 @@
  {#if data&&source}<p class="scope">{source.name} · {scopeLabel} · {source.fromDisk?t('charts.ui.disk'):t('charts.ui.revision',{revision:source.revision})} · {t('charts.ui.dataStatus',{total:formatNumber(data.total),usable:formatNumber(data.usable),omitted:formatNumber(data.total-data.usable),drawn:data.rows.length,points:formatNumber(data.points)})}{#if data.invalidDates!==undefined} · {t('charts.ui.invalidDates',{n:data.invalidDates})}{/if}{#if data.seriesCount!==undefined} · {t('charts.ui.seriesCount',{drawn:series.length,total:data.seriesCount})}{/if}.</p>{/if}
  {#if hiddenSeries.length}<p>{plural('charts.ui.hidden',hiddenSeries.length)}</p>{/if}
 </div></details></div>
- <p class="result-status" title={scopeLabel}>{#if doc.readonly&&!doc.large}{t('charts.fields.sample')} · {/if}{#if scope!=='all'}{scope==='saved'?t('charts.fields.savedScope'):t('charts.fields.filteredScope')} · {/if}{data?t('charts.fields.status',{n:formatNumber(data.total),g:plotData?.groups??0}):fieldsLoading?t('charts.fields.loading'):busy?t('charts.ui.prepare'):t('charts.fields.unchanged')}</p>
+ <p class="result-status" title={scopeLabel}>{#if sample===true}{t('charts.fields.sample')} · {/if}{#if scope!=='all'}{scope==='saved'?t('charts.fields.savedScope'):t('charts.fields.filteredScope')} · {/if}{data?t('charts.fields.status',{n:formatNumber(data.total),g:plotData?.groups??0}):fieldsLoading?t('charts.fields.loading'):busy?t('charts.ui.prepare'):t('charts.fields.unchanged')}</p>
  <p class="sr-only result-announcement" role="status" aria-live="polite" aria-atomic="true">{resultAnnouncement}</p>
  <p class="sr-only analysis-announcement" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
  {#if data?.limited}<p class="truncated notice" role="status">{#if !['bar','heatmap'].includes(options.kind)}{t('charts.ui.partial',{n:formatNumber(chartLimit(options.kind))})}{' '}{/if}{t(['bar','heatmap'].includes(options.kind)?resultOrder.tie?'charts.fields.truncatedTies':'charts.fields.truncated':'charts.ui.truncated',{shown:formatNumber(data.rows.length),total:formatNumber(data.points),...resultOrder})}</p>{/if}
@@ -226,7 +229,7 @@
  {/if}
  <form onsubmit={event=>{event.preventDefault();void generate()}}>
   <fieldset disabled={exporting}><legend class="sr-only">{t('charts.ui.options')}</legend>
-   <label>{t('charts.ui.dataIncluded')} <select aria-label={t('charts.ui.scopeLabel')} bind:value={scope}><option value="all">{t('charts.ui.all')}</option><option value="filtered" disabled={doc.readonly}>{t('charts.ui.filtered')}</option>{#if savedView}<option value="saved" disabled={doc.readonly}>{t('charts.ui.saved')}</option>{/if}</select></label>
+   <label>{t('charts.ui.dataIncluded')} <select aria-label={t('charts.ui.scopeLabel')} bind:value={scope}><option value="all">{t(sample===undefined?'analysis.scope.pending':'charts.ui.all')}</option><option value="filtered" disabled={sample!==false}>{t('charts.ui.filtered')}</option>{#if savedView}<option value="saved" disabled={sample!==false}>{t('charts.ui.saved')}</option>{/if}</select></label>
    <label>{t('charts.ui.type')} <select aria-label={t('charts.ui.typeLabel')} bind:value={options.kind} onchange={event=>chooseKind(event.currentTarget.value as ChartOptions['kind'])}>{#each Object.entries(chartKinds) as [kind,title]}<option value={kind}>{t('charts.kind.'+kind)}</option>{/each}</select></label>
    {#if ['bar','line'].includes(options.kind)}<label>{t('charts.ui.groupDates')} <select aria-label={t('charts.ui.groupDatesLabel')} bind:value={options.time}>{#each Object.entries(chartTimeGroups) as [unit,title]}<option value={unit}>{t('charts.time.'+unit)}</option>{/each}</select></label>{/if}
    {#if options.kind!=='histogram'}<label>{temporal?t('charts.ui.xDate'):options.kind==='line'||options.kind==='scatter'?t('charts.ui.xNumber'):t('charts.ui.xCategory')} <select aria-label={t('charts.ui.xLabel')} bind:value={options.x}>{#each doc.headers??[] as header,index}<option value={index}>{columnLabel(index)}</option>{/each}</select></label>{/if}
@@ -244,7 +247,7 @@
   </fieldset>
 
  </form>
- <ChartPresets docId={doc.id} headers={doc.headers??[]} readonly={doc.readonly} disabled={exporting||fieldsLoading} canSave={!!sql&&!tooWide&&!unavailable} configuration={{headers:doc.headers??[],options,where,...scope!=='all'?{view:chartView(analysisQuery)}:{}}} onapply={(configuration:ChartConfiguration)=>{started=true;stale=false;options=configuration.options;where=configuration.where;savedView=configuration.view;scope=configuration.view?'saved':'all';showFilters=false}}/>
+ <ChartPresets docId={doc.id} headers={doc.headers??[]} readonly={sample===true} disabled={exporting||fieldsLoading||sample===undefined} canSave={!!sql&&!tooWide&&!unavailable} configuration={{headers:doc.headers??[],options,where,...scope!=='all'?{view:chartView(analysisQuery)}:{}}} onapply={(configuration:ChartConfiguration)=>{started=true;stale=false;options=configuration.options;where=configuration.where;savedView=configuration.view;scope=configuration.view?'saved':'all';showFilters=false}}/>
  {#if scope==='saved'&&savedView}<details><summary>{t('charts.ui.recovered')}</summary><p>{t('charts.ui.recoveredHelp')}</p><pre>{savedView.search?`${t('charts.ui.search',{query:savedView.search})}\n`:''}{Object.entries(savedView.filters??{}).map(([column,value])=>`${Number(column)+1}. ${(doc.headers??[])[Number(column)]}: ${JSON.stringify(value)}`).join('\n')}{'\n'}{describeConditions(doc.headers??[],{conditions:savedView.conditions??[],filterMode:savedView.filterMode??'all'})}</pre></details>{/if}
 
  {#if where.conditions.length}<details><summary>{t('charts.ui.applied')}</summary><pre>{describeConditions(doc.headers??[],where)}</pre><p>{t('charts.ui.appliedHelp')}</p></details>{/if}
@@ -253,7 +256,7 @@
 
  {#if data}
   {@render resultExport()}
-  {#if doc.readonly}<p>{t('charts.ui.sampleExport')}</p>{/if}
+  {#if sample===true}<p>{t('charts.ui.sampleExport')}</p>{/if}
   <details><summary>{t('charts.ui.table')}</summary><div class="table-scroll"><table><caption>{t('charts.ui.caption',{kind:t('charts.kind.'+options.kind)})}</caption><thead><tr>{#each data.columns as name}<th scope="col">{t('charts.head.'+name)}</th>{/each}</tr></thead><tbody>{#each data.rows.slice(tablePage*50,(tablePage+1)*50) as row}<tr>{#each row as value}<td>{value===null?'—':value===''?t('charts.plot.empty'):value}</td>{/each}</tr>{/each}</tbody></table></div><div class="actions"><button {...controlHint(tablePage===0?'firstPage':null)} disabled={tablePage===0} onclick={()=>tablePage--}>{t('charts.ui.previous')}</button><span>{t('charts.ui.page',{page:tablePage+1,total:Math.max(1,Math.ceil(data.rows.length/50))})}</span><button {...controlHint((tablePage+1)*50>=data.rows.length?'lastPage':null)} disabled={(tablePage+1)*50>=data.rows.length} onclick={()=>tablePage++}>{t('charts.ui.next')}</button></div></details>
  {/if}
  <details><summary>{t('charts.ui.viewQuery')}</summary><p>{t('charts.ui.precisionHelp')}</p><pre>{sql}</pre></details>

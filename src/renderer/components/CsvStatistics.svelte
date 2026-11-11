@@ -1,5 +1,6 @@
 <script lang="ts">
  import {t} from '../lib/i18n.svelte'
+ import {csvAnalysisSample} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
  import Icon from './Icon.svelte'
  import {onDestroy,onMount,tick} from 'svelte'
@@ -17,6 +18,7 @@
  let message=$state('Elige columnas y pulsa Analizar.'),revision=$state(-1),total=$state(0),analyzedScope=$state(''),heading:HTMLHeadingElement
  let reportContext=$state<ReportContext|null>(null),reporting=$state(false)
  let request=0,active:string|undefined
+ const sample=$derived(csvAnalysisSample(doc,viewMeta))
  const usingRange=$derived(scope==='range'||scope==='rangeColumns')
  const fields=$derived([...STATISTICS_FIELDS,...(numericDetails?NUMERIC_DETAIL_FIELDS:[])])
  const scopeKey=$derived(JSON.stringify([scope,scope==='selected'?columns:null,usingRange?range:null,usingRange?queryValid:null]))
@@ -36,7 +38,7 @@
   if(selected.length>100){onerror('Este panel admite hasta 100 columnas. Marca las columnas o reduce el rango.');return}
   cancel();const ticket=request,current=doc.revision,id=doc.id,headers=[...doc.headers??[]]
   revision=current;analyzedScope=captured?`Rango de la vista capturada: filas ${captured.top+1}–${captured.bottom+1}, columnas ${captured.left+1}–${captured.right+1}`:scope==='all'?'Todas las columnas':'Columnas marcadas al iniciar';total=selected.length;results=[];busy=true;message='Analizando columnas…'
-  const context:ReportContext={source:doc.name,revision:current,sample:doc.readonly,dirty:doc.dirty,scope:analyzedScope,analyzedAt:new Date().toISOString(),query:captured?.query}
+  const context:Omit<ReportContext,'sample'>={source:doc.name,revision:current,dirty:doc.dirty,scope:analyzedScope,analyzedAt:new Date().toISOString(),query:captured?.query}
   try{
    for(const index of selected){
     const requestId=crypto.randomUUID();active=requestId
@@ -56,7 +58,7 @@
 <section class="statistics-panel" aria-labelledby={titleId}>
  <div class="statistics-heading"><h3 id={titleId} tabindex="-1" bind:this={heading}>Estadísticas por columna</h3>{#if !embedded}<button title={"Cerrar estadísticas"} aria-label="Cerrar estadísticas" onclick={onclose}><Icon name="x" size={14}/></button>{/if}</div>
  {#if !exploring&&!overviewing}
- <p>{doc.readonly?'Solo muestra: los recuentos no describen el archivo completo.':usingRange?'Solo el rango de la vista seleccionada; excluye filas ocultas y encabezados.':'Documento completo: incluye las filas ocultas por búsqueda o filtros; excluye encabezados.'}</p>
+ <p>{sample===undefined?t('analysis.scope.pending'):sample?'Solo muestra: los recuentos no describen el archivo completo.':usingRange?'Solo el rango de la vista seleccionada; excluye filas ocultas y encabezados.':'Documento completo: incluye las filas ocultas por búsqueda o filtros; excluye encabezados.'}</p>
  <form onsubmit={event=>{event.preventDefault();void analyze()}}>
   <label>Columnas <select aria-label="Columnas para estadísticas" bind:value={scope} disabled={busy}><option value="all">Todas las columnas</option><option value="selected" disabled={!columns.length}>Columnas marcadas</option><option value="range" disabled={!range||!queryValid}>Celdas del rango</option><option value="rangeColumns" disabled={!range||!queryValid}>Rango por columnas</option></select></label>
   <button aria-busy={busy} {...controlHint(busy?'busy':usingRange&&(!range||!queryValid)?'selection':null)} class="btn-tint" type="submit" disabled={busy||usingRange&&(!range||!queryValid)}>{#if busy}<span class="button-spinner" aria-hidden="true"></span>{/if}<span class:busy-label={busy} data-loading={t('ui.button.calculating')}>Analizar</span></button>
@@ -72,7 +74,7 @@
   <tbody>{#each results as result (result.index)}<tr><th scope="row">{result.index<0?'':`${result.index+1}. `}{result.name}</th>{#each fields as [key]}<td>{number(result[key])}</td>{/each}</tr>{/each}</tbody>
  </table>{:else}<p>Los resultados del rango aparecerán aquí al pulsar Analizar.</p>{/if}</div>{/if}
  {/if}
- {#if !overviewing}<details bind:open={exploring}><summary>{exploring?'Volver a estadísticas generales':'Explorar una columna: frecuencias, calidad y distribución'}</summary>{#if exploring}<CsvColumnAnalysis {doc} {query} {queryValid} {onerror} {onreport} bind:column={explorationColumn} bind:scope={explorationScope}/>{/if}</details>{/if}
+ {#if !overviewing}<details bind:open={exploring}><summary>{exploring?'Volver a estadísticas generales':'Explorar una columna: frecuencias, calidad y distribución'}</summary>{#if exploring}<CsvColumnAnalysis {doc} {query} {queryValid} {viewMeta} {onerror} {onreport} bind:column={explorationColumn} bind:scope={explorationScope}/>{/if}</details>{/if}
  {#if !embedded&&!exploring}<details bind:open={overviewing}><summary>{overviewing?'Volver a estadísticas generales':'Comprender todas las columnas'}</summary>{#if overviewing}<CsvColumnsOverview {doc} {columns} {query} {queryValid} {viewMeta} {onerror} {onreport} oninspect={inspectColumn}/>{/if}</details>{/if}
  {#if !exploring&&!overviewing}<details><summary>Cómo interpretar los resultados</summary><p class="statistics-note">Solo consulta: los valores del archivo se conservan. Vacíos incluye campos ausentes o con espacios; Únicos compara el texto exacto. Ausentes y Solo espacios son subconjuntos de Vacíos. Los cálculos son aproximados y usan punto decimal; Excluidos cuenta textos y números fuera del rango seguro, incluidos identificadores grandes. — indica falta de datos o un resultado no representable. Cancelar descarta los resultados y evita continuar con las siguientes columnas.</p></details>{/if}
 </section>

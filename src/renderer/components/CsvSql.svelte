@@ -1,6 +1,7 @@
 <script module lang="ts">const drafts=new Map<string,{sql:string;sources:string[]}>()</script>
 <script lang="ts">
  import {t} from '../lib/i18n.svelte'
+ import {csvAnalysisSample} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
  import Icon from './Icon.svelte'
  import {onMount,onDestroy} from 'svelte'
@@ -8,8 +9,9 @@
  import {sqlReport} from '../lib/sql-report'
  import {sqlColumns} from '../../shared/sql-helpers'
  import {assistedSQL,type SqlAssist} from '../../shared/sql-assist'
- import type {DocumentInfo,SqlResult} from '../../shared/types'
- let {doc,embedded=false,onclose,onerror,onreport}:{doc:DocumentInfo;embedded?:boolean;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
+ import type {DocumentInfo,SqlResult,TableViewMeta} from '../../shared/types'
+ let {doc,viewMeta,embedded=false,onclose,onerror,onreport}:{doc:DocumentInfo;viewMeta:TableViewMeta;embedded?:boolean;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
+ const sample=$derived(csvAnalysisSample(doc,viewMeta))
  let sql=$state('SELECT * FROM datos;'),choices=$state<DocumentInfo[]>([]),extra=$state<string[]>([]),busy=$state(false),result=$state<SqlResult|null>(null),choicesReady=$state(false),message=$state('Elige un asistente o escribe SQL. Preparar una consulta no la ejecuta.'),transferred=$state(0)
  let assist=$state<SqlAssist>({mode:'group',group:0,measure:0,category:1,values:'',aggregate:'count',scale:2,leftKey:0,rightKey:0,leftJoin:true,otherTable:2}),showAssist=$state(false)
  let reporting=$state(false)
@@ -46,7 +48,7 @@
 <section class="sql-panel" aria-label="Análisis SQL y asistentes">
  <div class="heading"><h3>Análisis local con DuckDB</h3>{#if !embedded}<button title={"Cerrar análisis SQL"} aria-label="Cerrar análisis SQL" onclick={onclose}><Icon name="x" size={14}/></button>{/if}</div>
  <p>Solo lectura. Consulta todos los registros, incluidos los cambios pendientes; los filtros y la búsqueda de la tabla no limitan SQL. Para una muestra, lee el archivo original completo desde disco. Hasta 4 fuentes, 256 MiB por archivo y 8 millones de celdas en total; máximo 2 millones de filas y 200 columnas por fuente; no cambia los límites de edición.</p>
- <details><summary>Archivos y nombres para SQL</summary><p><strong>datos</strong>: {doc.name} · {doc.readonly?'archivo completo en disco':`documento en memoria, revisión ${doc.revision}`}</p><div class="sources">{#each choices.filter(value=>value.id!==doc.id) as choice}<label><input type="checkbox" checked={extra.includes(choice.id)} disabled={busy||extra.length>=3&&!extra.includes(choice.id)} onchange={event=>choose(choice.id,event.currentTarget.checked)}/>{choice.name}{choice.dirty?' · cambios pendientes':''}</label>{/each}</div>{#each sources as source,index}<p>{index===0?'datos':`tabla_${index+1}`}: {sqlColumns((source.headers??[]).slice(0,200)).map(column=>`${column.name}${column.name!==column.original?` (encabezado ${column.index+1})`:''}`).join(' · ')}</p>{/each}</details>
+ <details><summary>Archivos y nombres para SQL</summary><p><strong>datos</strong>: {doc.name} · {sample===undefined?t('analysis.scope.pending'):sample||doc.large?'archivo completo en disco':`documento en memoria, revisión ${doc.revision}`}</p><div class="sources">{#each choices.filter(value=>value.id!==doc.id) as choice}<label><input type="checkbox" checked={extra.includes(choice.id)} disabled={busy||extra.length>=3&&!extra.includes(choice.id)} onchange={event=>choose(choice.id,event.currentTarget.checked)}/>{choice.name}{choice.dirty?' · cambios pendientes':''}</label>{/each}</div>{#each sources as source,index}<p>{index===0?'datos':`tabla_${index+1}`}: {sqlColumns((source.headers??[]).slice(0,200)).map(column=>`${column.name}${column.name!==column.original?` (encabezado ${column.index+1})`:''}`).join(' · ')}</p>{/each}</details>
  <button {...controlHint(tooWide?'columnLimit':null)} disabled={tooWide} aria-expanded={showAssist} onclick={()=>showAssist=!showAssist}>Asistentes: agrupar, pivotar y cruzar</button>
  {#if tooWide}<p class="warning">Una fuente supera 200 columnas; no puede analizarse en esta entrega.</p>{/if}
  {#if choicesReady&&missing}<p class="warning">Un archivo seleccionado ya no está abierto. <button onclick={()=>extra=extra.filter(id=>choices.some(choice=>choice.id===id))}>Quitar archivos cerrados</button> Revisa los nombres de tabla antes de ejecutar.</p>{/if}

@@ -6,7 +6,7 @@
  import Icon from './Icon.svelte'
  import {t,formatNumber} from '../lib/i18n.svelte'
  import type {AnalysisSection,AnalysisTab} from '../lib/workspace-tabs'
- import type {CsvAnalysisView} from '../lib/csv-analysis-view'
+ import {csvAnalysisSample,type CsvAnalysisView} from '../lib/csv-analysis-view'
  import type {DocumentInfo} from '../../shared/types'
  let {tab,doc,shown,view,external,onsection,onreturn,onerror,onreport}:{tab:AnalysisTab;doc:DocumentInfo;shown:boolean;view:CsvAnalysisView;external:boolean;onsection:(section:AnalysisSection)=>void;onreturn:()=>void;onerror:(message:string)=>void;onreport:(text:string)=>Promise<void>}=$props()
  const sections:AnalysisSection[]=['info','statistics','charts','sql']
@@ -29,7 +29,7 @@
   <div class="header-actions"><div bind:this={exportHost} hidden={section!=='charts'}></div><button type="button" onclick={onreturn}><Icon name="table" size={14}/>{t('analysis.tab.return')}</button></div>
  </header>
  {#if external}<p class="analysis-warning" role="status">{t('analysis.tab.external')}</p>{/if}
- {#if doc.readonly&&!doc.large}<p class="analysis-warning" role="status">{t('charts.fields.sample')}</p>{/if}
+ {#if csvAnalysisSample(doc,view.viewMeta)===true}<p class="analysis-warning" role="status">{t('charts.fields.sample')}</p>{/if}
  <div class="analysis-sections" role="group" aria-label={t('analysis.tab.sections')}>
   {#each sections as item (item)}
    <button type="button" aria-pressed={item===section} disabled={unavailable(item)} title={unavailable(item)?t('analysis.tab.large'):undefined} aria-describedby={unavailable(item)?'analysis-large-'+tab.id:undefined} onclick={()=>onsection(item)}>{t('analysis.tab.section.'+item)}</button>
@@ -45,9 +45,9 @@
     {#if !unavailable(item)}
      {#if item==='info'}<CsvColumnsOverview {doc} {...view} {onerror} {onreport} oninspect={inspect}/>
      {:else if item==='statistics'}<CsvStatistics {doc} {...view} embedded autofocus={false} {inspection} entry={tab.statistics} {onerror} {onreport} onclose={onreturn}/>
-     {:else if item==='sql'}<CsvSql {doc} embedded {onerror} {onreport} onclose={onreturn}/>
+     {:else if item==='sql'}<CsvSql {doc} viewMeta={view.viewMeta} embedded {onerror} {onreport} onclose={onreturn}/>
      {:else}{#await import('./CsvCharts.svelte')}<p role="status">{t('charts.ui.prepare')}</p>{:then module}
-      {#key JSON.stringify(doc.headers)}<module.default {doc} query={view.query} queryValid={view.queryValid} visible={shown&&section==='charts'} onDemand {exportHost} {onerror} onclose={()=>heading?.focus()}/>{/key}
+      {#key JSON.stringify(doc.headers)}<module.default {doc} query={view.query} queryValid={view.queryValid} viewMeta={view.viewMeta} visible={shown&&section==='charts'} onDemand {exportHost} {onerror} onclose={()=>heading?.focus()}/>{/key}
      {:catch}<p role="alert">{t('charts.ui.loadError')}</p>{/await}{/if}
     {/if}
    </div>

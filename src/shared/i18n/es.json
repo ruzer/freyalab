@@ -1100,5 +1100,6 @@
  "ui.reason.projectProtected": "Protegida contra cambios hechos por FreyaLab. No impide que otro programa la modifique; FreyaLab lo detecta y avisa.",
  "ui.reason.projectClosed": "Proyecto cerrado: cierra y vuelve a abrir el archivo para editarlo.",
  "analysis.tab.range": "Estadísticas del rango",
- "analysis.tab.rangeHelp": "Abre Estadísticas con las celdas del rango seleccionado"
+ "analysis.tab.rangeHelp": "Abre Estadísticas con las celdas del rango seleccionado",
+ "analysis.scope.pending": "Alcance por confirmar"
 }
