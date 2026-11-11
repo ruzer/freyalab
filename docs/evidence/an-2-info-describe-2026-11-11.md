@@ -1,6 +1,6 @@
 # AN-2 · Información y resumen estadístico
 
-Código: `9ee37a9feabf9291a29387c783ec67e53e92c0c2`, rama local `codex/alpha4-an-2`. Base AN-1b `26a5e1bc5bb24646941a15d4c59bef7f99430685`; las correcciones finales de AN-1b `d2109ba14adc2314f911d3d5da982b97f34ea227` se incorporaron mediante merge normal `4d14483`. Sin push, PR, versión nueva, publicación ni modificación de la app instalada.
+Código final: `082780b8ae2fde4eb0defe4c96717cf07ee066c4` (presentación inicial: `9ee37a9feabf9291a29387c783ec67e53e92c0c2`), rama local `codex/alpha4-an-2`. Base AN-1b `26a5e1bc5bb24646941a15d4c59bef7f99430685`; las correcciones finales de AN-1b `d2109ba14adc2314f911d3d5da982b97f34ea227` se incorporaron mediante merge normal `4d14483`. Sin push, PR, versión nueva, publicación ni modificación de la app instalada.
 
 El contrato aprobado se conserva fielmente en `docs/stories/an-2-contrato-resumen-aprobado.md`; las siete respuestas del ADR 0021 están en `docs/stories/an-2-alcance-adr-0021.md`. No cambian dependencias, workflows, plazos, modelo CSV, escritura, permisos ni motor SQL.
 
@@ -30,6 +30,10 @@ Las salidas completas están en [an-2/rojo-verde](an-2/rojo-verde/). Los rojos d
 Se corrigió además un espacio de presentación entre el mensaje de error traducido y el detalle: el E2E de revisión real recibió ambos textos pegados. Se conserva su misma causa y se volvió a comprobar la aserción original, sin ampliar los errores aceptados.
 
 Durante la creación de pruebas hubo expectativas incorrectas del test: el filtro de Producto convierte Mixta en numérica legítimamente; el botón se enfocaba antes de tener metadatos; End no desplaza horizontalmente; y el selector de media con texto incluido apuntaba a unique. Se corrigieron esas expectativas y el último caso se repitió de forma aislada. No se presentan estos fallos del montaje como defectos del producto ni se borran las salidas previas.
+
+## Primera validación enfocada (9ee37a9)
+
+Los resultados de esta sección son históricos de la presentación inicial; el cierre integral y las tres correcciones posteriores se distinguen abajo.
 
 ## Ejecuciones reales
 
@@ -63,7 +67,7 @@ Se comprobó teclado real, encabezados scope, caption, nombres largos de abrevia
 
 ## No verificado todavía
 
-- Suite E2E completa del sucesor AN-2; la validación integral anterior pertenece a AN-1b y no se transfiere.
+- CI final de AN-2 y suite E2E completa sobre su código final 082780b. La integral local f882 y las enfocadas posteriores se identifican por separado abajo; no se repitió la suite completa después de tres correcciones de presentación/presupuesto, por decisión de coordinación.
 - CI de Ubuntu, Windows, macOS ARM e Intel, empaquetado o instalación de este código.
 - Rendimiento multiplataforma nuevo: las unidades del núcleo cubren exactitud de 100.001 distintos, no una garantía universal de latencia.
 - Los informes y explicaciones legacy mantienen su idioma/semántica anterior; la nueva matriz y sus textos tienen catálogo es/en y prueba en-XA.
@@ -71,3 +75,35 @@ Se comprobó teclado real, encabezados scope, caption, nombres largos de abrevia
 No se subieron dependencias, no se cambiaron filtros/SQL, no se toca el CSV al consultar ni se saltan pruebas de integridad. El siguiente paso es la revisión del sucesor y su calificación integral; no hay fusión automática.
 
 Antes del cierre integral se incorporó por merge normal el head final de AN-1b `3923a98`, que tras d210 solo añade documentación/evidencia y corrige la identificación de la omisión Windows. El reconocimiento del límite textual por mensaje fijo en español queda señalado como shortcut: debe migrar a código estable antes de traducir el backend, sin ampliar IPC en AN-2.
+
+
+## Cierre integral local y revisión final
+
+La única integral local del sucesor se ejecutó sobre **f8826a69a5c0cbc413452f591ede3b493b55267a**, construido inmediatamente antes: `npx playwright test --retries=0`. Resultado real: **618 aprobadas, 7 omitidas, 0 fallos, 23,2 min**, 625 casos y un worker. El head quedó inmóvil durante la corrida. Se conservan la [salida completa](an-2/rojo-verde/integral-f882.log) y su [construcción](an-2/rojo-verde/integral-f882-build.log). P5 de preferencia/recarga y de almacenamiento bloqueado pasaron, al igual que el resto de shell y Markdown.
+
+Las siete omisiones E2E son las comprobaciones opt-in con Pandoc externo: APP-01 M4 y seis casos de academic-word. No se omiten por AN-2 y no se presentan como verificados en esta integral. Esto es distinto de la única omisión **unitaria**, exclusiva de Windows en package-smoke.test.ts:18.
+
+Después de la integral se hizo `git fetch origin main` y merge normal **b5e683999ef216dae9ed09b42474824c4e0d9340**, sin conflictos de código. La base ya incluye #162/#163: **main a0bb5175237b6e43afdbe93cb6705e62183d0518**. Se incorporaron únicamente la procedencia y documentación de main que faltaba. Las CI de esa base [43036981807](https://github.com/ruzer/freyalab/actions/runs/43036981807) y [43047736520](https://github.com/ruzer/freyalab/actions/runs/43047736520) fueron verificadas por la coordinación: son evidencia de **la base**, no CI del sucesor AN-2.
+
+La revisión del propietario detectó tres huecos que no cubría la primera tanda; se reprodujeron antes de corregirlos, manteniendo el motor y el informe legacy intactos:
+
+| Hallazgo | Rojo real | Corrección y verde |
+| --- | --- | --- |
+| Alcance de muestra | Selector/caption/informe decían Documento completo o Vista filtrada, aunque el aviso sample estuviera presente | Se usa sample canónico/capturado para todos los rótulos y el informe; metadato desconocido conserva Alcance por confirmar. Una muestra por registro mayor de 1 MiB conserva 200 registros y nunca afirma documento completo; una fuente completa protegida sigue diciéndolo |
+| Celdas no aplicables | La UI y el nuevo informe mostraban — para std de un valor y top/freq de fechas | Solo la presentación pasa a vacío, con la ayuda correspondiente en es/en; la matriz interna conserva null y todas las cifras. El informe detallado anterior conserva su semántica |
+| Presupuesto agregado | 100 encabezados y 20.001 registros de un solo campo iniciaban análisis en vez de rechazar 2.000.100 posiciones lógicas | Guard antes de cualquier llamada con el límite existente de 2.000.000 y el mensaje info.error.cells: aviso + cero llamadas analyzeColumn/stats + archivo intacto. No se modifica la conducta legacy ni el motor |
+
+Salidas: [tres E2E rojos](an-2/rojo-verde/revision-tres-red.log), [contrato null rojo](an-2/rojo-verde/revision-null-red.log), [cuatro E2E finales verdes](an-2/rojo-verde/revision-cuatro-green.log). El caso unitario adicional conserva también top Unicode completo (>256 caracteres) y la procedencia de muestra.
+
+Los tres arreglos se concentran en **082780b8ae2fde4eb0defe4c96717cf07ee066c4**. Se mantienen las aserciones de datos y el assert duro del límite. En la primera enfocada posterior hubo 27 aprobadas y un fallo del **montaje nuevo**: leía el selector antes de tener los metadatos y recibió correctamente Alcance por confirmar. Se esperó por condición a Calcular habilitado, sin sleeps ni cambios de plazo/aserción. El cierre final sobre 082780b construyó ese head y pasó los tres casos más la fuente completa protegida.
+
+| Validación final | Resultado real |
+| --- | --- |
+| `npm run check` | 0 errores y 0 avisos |
+| `npm test` | 143 archivos; **2.688 aprobadas y 1 omitida**, 25,53 s. Única omisión: prueba Windows de package-smoke |
+| Unitarias enfocadas describe/report/i18n | 47/47 aprobadas, 442 ms |
+| Enfocadas tras cambios (describe, fuentes, informes, selección) | 27 aprobadas y 1 montaje nuevo corregido por condición, sin cambio de producto |
+| `npx playwright test tests/e2e/analysis-describe.spec.ts tests/e2e/project-source.spec.ts --grep 'AN-2 revisión:…' --retries=0` (tres casos y fuente completa protegida) | **4/4 aprobadas**, 9,1 s; sin reintento |
+| `npm run build` del código final 082780b | Completado |
+
+No se repitieron las 625 E2E locales: se mantiene su SHA real y las correcciones posteriores tienen sus enfocadas. La CI completa del head final sigue pendiente; tampoco se empaquetó ni instaló este sucesor. Las ocho capturas corresponden a 250 × 100 datos completos y a la presentación inicial: los tres arreglos no alteran esa pantalla numérica completa. Las métricas antiguas y las explicaciones/informes legacy permanecen bajo Más estadísticas. El reconocimiento del límite textual por mensaje español es un shortcut heredado, señalado para migrar a código estable antes de traducir el backend.

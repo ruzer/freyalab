@@ -1,0 +1,82 @@
+
+Running 28 tests using 1 worker
+
+(node:96596) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [shell] › tests/e2e/project-source.spec.ts:49:1 › registra un CSV con teclado, bloquea edición directa y deja guardar una copia exacta (1.7s)
+  ✓   2 [shell] › tests/e2e/project-source.spec.ts:81:1 › avisa cuando la fuente cambia y conserva la huella previa al volver a registrarla (1.3s)
+  ✓   3 [shell] › tests/e2e/project-source.spec.ts:97:1 › busca por huella dentro del proyecto y solo reenlaza tras confirmar (1.0s)
+  ✓   4 [shell] › tests/e2e/project-source.spec.ts:116:1 › el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado (4.9s)
+  ✓   5 [shell] › tests/e2e/project-source.spec.ts:189:1 › una muestra conserva su alcance al protegerla y al cerrar el proyecto (2.3s)
+  ✓   6 [shell] › tests/e2e/project-source.spec.ts:216:45 › diálogo y fuente protegida en colores claro y oscuro [es] (1.3s)
+  ✓   7 [shell] › tests/e2e/project-source.spec.ts:216:45 › diálogo y fuente protegida en colores claro y oscuro [en-XA] (1.3s)
+(node:96782) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   8 [csv] › tests/e2e/analysis-describe.spec.ts:36:1 › AN-2 muestra describe por petición con el fixture aprobado y conserva la fuente (1.4s)
+  ✓   9 [csv] › tests/e2e/analysis-describe.spec.ts:68:1 › AN-2 coordina el cálculo avanzado con describe sin lanzar consultas al desplegar (1.4s)
+  ✓  10 [csv] › tests/e2e/analysis-describe.spec.ts:93:1 › AN-2 Información presenta dimensiones, tipos y calidad sin modificar los distintos anteriores (1.3s)
+  ✓  11 [csv] › tests/e2e/analysis-describe.spec.ts:113:1 › AN-2 cancelar conserva la fuente y permite pasar a la vista avanzada sin respuestas tardías (1.3s)
+  ✓  12 [csv] › tests/e2e/analysis-describe.spec.ts:128:1 › AN-2 entrar en el explorador cancela describe pendiente antes de activar el otro análisis (1.5s)
+  ✓  13 [csv] › tests/e2e/analysis-describe.spec.ts:141:1 › AN-2 descarta la respuesta anterior cuando cambia la revisión y recalcula con los valores actuales (1.6s)
+  ✓  14 [csv] › tests/e2e/analysis-describe.spec.ts:155:1 › AN-2 la paleta describe abre estadísticas sin empezar a calcular (1.3s)
+  ✓  15 [csv] › tests/e2e/analysis-describe.spec.ts:162:1 › AN-2 describe conserva el ámbito filtrado, el informe y las columnas marcadas (2.1s)
+  ✓  16 [csv] › tests/e2e/analysis-describe.spec.ts:176:47 › AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (es) (2.3s)
+  ✓  17 [csv] › tests/e2e/analysis-describe.spec.ts:176:47 › AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (en-XA) (2.4s)
+  ✓  18 [csv] › tests/e2e/analysis-describe.spec.ts:190:1 › AN-2 ciento veinte columnas se rechazan antes de consultar y conservan el archivo (1.1s)
+  ✓  19 [csv] › tests/e2e/analysis-describe.spec.ts:196:1 › AN-2 la cardinalidad textual no disponible no elimina las estadísticas numéricas exactas (1.6s)
+  ✘  20 [csv] › tests/e2e/analysis-describe.spec.ts:202:1 › AN-2 revisión: una muestra conserva su ámbito en selector, caption e informe (1.5s)
+(node:97207) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  21 [csv] › tests/e2e/analysis-describe.spec.ts:218:1 › AN-2 revisión: std de un valor y top/freq de fecha se presentan vacíos (1.1s)
+  ✓  22 [csv] › tests/e2e/analysis-describe.spec.ts:227:1 › AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes de consultar (1.1s)
+  ✓  23 [csv] › tests/e2e/selection-statistics.spec.ts:17:1 › estadísticas del rango: vista ordenada/filtrada, resumen conjunto y por columnas con datos intactos (2.3s)
+  ✓  24 [csv] › tests/e2e/selection-statistics.spec.ts:33:1 › estadísticas del rango: cancelar interrumpe y reintentar conserva la selección al paginar (1.3s)
+  ✓  25 [csv] › tests/e2e/selection-statistics.spec.ts:47:1 › estadísticas del rango: resumen de más de cien columnas sin expandir el límite del panel por columna (1.6s)
+  ✓  26 [csv] › tests/e2e/statistics-reports.spec.ts:19:1 › informe general editable: PDF/HTML, recuperación y guardado sin alterar el CSV pendiente (6.5s)
+  ✓  27 [csv] › tests/e2e/statistics-reports.spec.ts:30:1 › informe del rango fija búsqueda, posiciones y revisión; editar invalida el resultado (1.7s)
+  ✓  28 [csv] › tests/e2e/statistics-reports.spec.ts:36:1 › informes del explorador: perfil, distribución, Pearson y página parcial con texto hostil abreviado (2.3s)
+
+
+  1) [csv] › tests/e2e/analysis-describe.spec.ts:202:1 › AN-2 revisión: una muestra conserva su ámbito en selector, caption e informe 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Todos los registros de la muestra"
+    Received: "Alcance por confirmar"
+
+      204 |  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),file);expect(doc).toMatchObject({readonly:true,rowCount:200});expect(doc.large).not.toBe(true)
+      205 |  await openAnalysis(page,'Estadísticas');const panel=page.getByRole('region',{name:'Resumen estadístico',exact:true}),scope=panel.getByLabel('Alcance de las estadísticas',{exact:true})
+    > 206 |  expect.soft(await scope.locator('option[value=all]').textContent()).toBe('Todos los registros de la muestra');expect.soft(await scope.locator('option[value=view]').textContent()).toBe('Vista filtrada de la muestra')
+          |                                                                      ^
+      207 |  for(const [value,label] of [['all','Todos los registros de la muestra'],['view','Vista filtrada de la muestra']]){
+      208 |   await scope.selectOption(value);await panel.getByRole('button',{name:'Calcular',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Resumen calculado.')
+      209 |   expect.soft(await panel.locator('caption').textContent()).toContain(label);expect.soft(await panel.locator('caption').textContent()).not.toContain('Documento completo')
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:206:70
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Vista filtrada de la muestra"
+    Received: "Alcance por confirmar"
+
+      204 |  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),file);expect(doc).toMatchObject({readonly:true,rowCount:200});expect(doc.large).not.toBe(true)
+      205 |  await openAnalysis(page,'Estadísticas');const panel=page.getByRole('region',{name:'Resumen estadístico',exact:true}),scope=panel.getByLabel('Alcance de las estadísticas',{exact:true})
+    > 206 |  expect.soft(await scope.locator('option[value=all]').textContent()).toBe('Todos los registros de la muestra');expect.soft(await scope.locator('option[value=view]').textContent()).toBe('Vista filtrada de la muestra')
+          |                                                                                                                                                                                     ^
+      207 |  for(const [value,label] of [['all','Todos los registros de la muestra'],['view','Vista filtrada de la muestra']]){
+      208 |   await scope.selectOption(value);await panel.getByRole('button',{name:'Calcular',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Resumen calculado.')
+      209 |   expect.soft(await panel.locator('caption').textContent()).toContain(label);expect.soft(await panel.locator('caption').textContent()).not.toContain('Documento completo')
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:206:181
+
+    Error Context: test-results/analysis-describe-AN-2-rev-29020--selector-caption-e-informe-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-describe-AN-2-rev-29020--selector-caption-e-informe-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-describe-AN-2-rev-29020--selector-caption-e-informe-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/analysis-describe.spec.ts:202:1 › AN-2 revisión: una muestra conserva su ámbito en selector, caption e informe 
+  27 passed (53.9s)

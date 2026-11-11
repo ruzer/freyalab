@@ -1,0 +1,70 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-alpha4-an2
+
+ ❯ tests/describe-table.test.ts (7 tests | 1 failed) 9ms
+   × el informe deja vacíos los null sin perder el alcance de muestra ni el texto completo 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/describe-table.test.ts > el informe deja vacíos los null sin perder el alcance de muestra ni el texto completo
+AssertionError: expected '# Resumen estadístico CSV\n\n> **MUES…' to contain '| std |  |  |  |'
+
+- Expected
++ Received
+
+- | std |  |  |  |
++ # Resumen estadístico CSV
++
++ > **MUESTRA LIMITADA: el resumen no describe el archivo completo.**
++
++ Informe estático del análisis completado. No modifica el CSV y abrirlo no vuelve a calcularlo.
++
++ | Procedencia | Valor |
++ | --- | --- |
++ | Archivo | ` "muestra.csv" ` |
++ | Revisión de la sesión | 4 |
++ | Alcance | ` "Muestra" ` |
++ | Cambios sin guardar al iniciar | No |
++ | Análisis iniciado (UTC) | ` "2026-11-11T00:00:00Z" ` |
++
++ | Estadística | ` "Único" ` | ` "Fecha" ` | ` "Texto" ` |
++ | --- | --- | --- | --- |
++ | count | 1 | 2 | 2 |
++ | unique | — | 1 | 1 |
++ | top | — | — | ` "á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺á😺" ` |
++ | freq | — | — | 2 |
++ | mean | 7 | — | — |
++ | std | — | — | — |
++ | min | 7 | ` "2026-01-02" ` | — |
++ | 25% | 7 | — | — |
++ | 50% | 7 | — | — |
++ | 75% | 7 | — | — |
++ | max | 7 | ` "2026-01-02" ` | — |
++
++
++ ## Cómo se calcula
++
++ Mismos criterios que pandas: desviación muestral con n−1 y percentiles lineales.
++
++ En texto y fechas se excluyen ausentes, vacíos y solo espacios de count, unique, top y freq. Los demás valores se comparan como texto exacto. Las fechas no muestran top ni freq.
++
++ Los cálculos numéricos son aproximados; se conserva aquí el valor completo, sin el redondeo de la pantalla. Los textos literales se entrecomillan para conservar espacios, saltos de línea y marcadores. — indica que la medida no corresponde al tipo o no está disponible.
++
++
+
+ ❯ tests/describe-table.test.ts:79:15
+     77|  expect(matrix.rows.find(row=>row.metric==='freq')?.values).toEqual([n…
+     78|  const text=describeReport({source:'muestra.csv',revision:4,sample:tru…
+     79|  expect(text).toContain('| std |  |  |  |')
+       |               ^
+     80|  expect(text).toContain('| top |  |  | ` '+JSON.stringify(top)+' ` |')
+     81|  expect(text).toContain('| freq |  |  | 2 |')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  10:08:05
+   Duration  124ms (transform 50%, import 27%, tests 19%, worker 4%)
+
