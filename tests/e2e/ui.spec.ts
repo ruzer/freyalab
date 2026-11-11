@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import {parse as parseCSV} from 'csv-parse/sync'
 import {stringify as stringifyCSV} from 'csv-stringify/sync'
-import {analyzeButton,menuItem,numericOrder,showPanel} from './panel'
+import {analyzeButton,closeAnalysis,menuItem,numericOrder,showPanel,showTable} from './panel'
 let app:ElectronApplication,page:Page,directory:string
 
 test.beforeEach(async()=>{
@@ -216,7 +216,7 @@ test('estadísticas CSV: columnas, alcance completo, datos pendientes, temas y t
  await page.getByLabel('Seleccionar columna Valor',{exact:true}).check()
  await showPanel(page,'Estadísticas')
  const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true})
- await expect(panel.getByRole('heading')).toBeFocused()
+ await expect(page.getByRole('heading',{name:'Estadísticas',level:2,exact:true})).toBeFocused()
  await expect(panel).toContainText('incluye las filas ocultas')
  await page.getByLabel('Columnas para estadísticas',{exact:true}).selectOption('selected')
  await panel.getByRole('button',{name:'Analizar',exact:true}).click()
@@ -226,7 +226,9 @@ test('estadísticas CSV: columnas, alcance completo, datos pendientes, temas y t
  expect(await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),doc.id)).toEqual(before)
  expect(await readFile(path,'utf8')).toBe(source)
  const cell=page.getByRole('gridcell',{name:'Fila 1, Valor',exact:true})
+ await showTable(page)
  await cell.dblclick();await page.getByLabel('Editar celda',{exact:true}).fill('10');await page.getByLabel('Editar celda',{exact:true}).press('Enter')
+ await showPanel(page,'Estadísticas')
  await expect(panel.getByRole('status')).toContainText('Los datos cambiaron')
  await expect(panel.locator('tbody tr')).toHaveCount(0)
  await panel.getByRole('button',{name:'Analizar',exact:true}).click()
@@ -238,6 +240,7 @@ test('estadísticas CSV: columnas, alcance completo, datos pendientes, temas y t
  for(const theme of ['dark','light']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.screenshot({path:test.info().outputPath(`csv-statistics-${theme}-1440x900.png`)})}
  await page.setViewportSize({width:1280,height:800});await page.screenshot({path:test.info().outputPath('csv-statistics-light-1280x800.png')})
  await page.getByLabel('Columnas para estadísticas',{exact:true}).focus();await page.keyboard.press('Escape')
+ await closeAnalysis(page)
  await expect(panel).toHaveCount(0);await expect(analyzeButton(page)).toBeFocused()
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(cell).toHaveText('2')
  expect(await readFile(path,'utf8')).toBe(source)
@@ -285,7 +288,9 @@ test('estadísticas CSV: límite explícito y encabezados duplicados por índice
  await panel.getByRole('button',{name:'Analizar',exact:true}).click()
  await expect(page.locator('.toast')).toContainText('hasta 100 columnas')
  await expect(panel.locator('tbody tr')).toHaveCount(0)
+ await showTable(page)
  await page.getByLabel('Seleccionar columna A',{exact:true}).nth(1).check()
+ await showPanel(page,'Estadísticas')
  await page.getByLabel('Columnas para estadísticas',{exact:true}).selectOption('selected')
  await panel.getByRole('button',{name:'Analizar',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Análisis completo.')
  expect((await panel.locator('tbody tr').first().locator('th,td').allTextContents()).slice(0,9)).toEqual(['2. A','1','0','1','1','2','2','2','2'])
@@ -525,10 +530,11 @@ test('exploración CSV: perfil, frecuencias, distribución y Pearson conservan d
  await expect(explorer.getByLabel('Correlación de Pearson')).toContainText('Pearson con 2. Doble1')
  for(const theme of ['dark','light']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.screenshot({animations:'disabled',path:test.info().outputPath(`csv-exploration-${theme}-1440x900.png`)})}
  await page.setViewportSize({width:1280,height:800});await explorer.getByLabel('Columna para correlación',{exact:true}).focus();await page.screenshot({animations:'disabled',path:test.info().outputPath('csv-exploration-light-1280x800.png')})
- await page.getByLabel('Buscar en tabla',{exact:true}).fill('00000');await expect(page.locator('footer')).toContainText('1 de 8 filas');await expect(explorer.getByRole('status')).toContainText('Los datos o la vista cambiaron')
+ await showTable(page);await page.getByLabel('Buscar en tabla',{exact:true}).fill('00000');await expect(page.locator('footer')).toContainText('1 de 8 filas');await showPanel(page,'Estadísticas')
+ await expect(explorer.getByRole('status')).toContainText('Los datos o la vista cambiaron')
  await explorer.getByLabel('Filas para explorar',{exact:true}).selectOption('view');await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer).toContainText('Vista filtrada · 1 filas · revisión 0')
  expect(await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),doc.id)).toEqual(before);expect(await readFile(path,'utf8')).toBe(source)
- await explorer.getByLabel('Filas para explorar',{exact:true}).focus();await page.keyboard.press('Escape');await expect(explorer).toHaveCount(0);await expect(analyzeButton(page)).toBeFocused()
+ await explorer.getByLabel('Filas para explorar',{exact:true}).focus();await page.keyboard.press('Escape');await closeAnalysis(page);await expect(explorer).toHaveCount(0);await expect(analyzeButton(page)).toBeFocused()
 })
 
 test('exploración CSV: paginación, cancelación, muestra e IPC inválido',{tag:'@perf'},async()=>{
