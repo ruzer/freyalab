@@ -241,7 +241,7 @@ test('estadísticas CSV: columnas, alcance completo, datos pendientes, temas y t
  await page.setViewportSize({width:1280,height:800});await page.screenshot({path:test.info().outputPath('csv-statistics-light-1280x800.png')})
  await page.getByLabel('Columnas para estadísticas',{exact:true}).focus();await page.keyboard.press('Escape')
  await closeAnalysis(page)
- await expect(panel).toHaveCount(0);await expect(analyzeButton(page)).toBeFocused()
+ await expect(panel).toHaveCount(0);await expect(page.locator('.tabs[role=tablist]').getByRole('tab',{selected:true})).toBeFocused()
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(cell).toHaveText('2')
  expect(await readFile(path,'utf8')).toBe(source)
 })
@@ -534,7 +534,7 @@ test('exploración CSV: perfil, frecuencias, distribución y Pearson conservan d
  await expect(explorer.getByRole('status')).toContainText('Los datos o la vista cambiaron')
  await explorer.getByLabel('Filas para explorar',{exact:true}).selectOption('view');await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer).toContainText('Vista filtrada · 1 filas · revisión 0')
  expect(await page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),doc.id)).toEqual(before);expect(await readFile(path,'utf8')).toBe(source)
- await explorer.getByLabel('Filas para explorar',{exact:true}).focus();await page.keyboard.press('Escape');await closeAnalysis(page);await expect(explorer).toHaveCount(0);await expect(analyzeButton(page)).toBeFocused()
+ await explorer.getByLabel('Filas para explorar',{exact:true}).focus();await page.keyboard.press('Escape');await closeAnalysis(page);await expect(explorer).toHaveCount(0);await expect(page.locator('.tabs[role=tablist]').getByRole('tab',{selected:true})).toBeFocused()
 })
 
 test('exploración CSV: paginación, cancelación, muestra e IPC inválido',{tag:'@perf'},async()=>{
