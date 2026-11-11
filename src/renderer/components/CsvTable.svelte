@@ -113,6 +113,7 @@
   {id:'copyMarkdown',label:'Copiar como Markdown',detail:'Rango, filas marcadas o vista filtrada, según la selección',disabled:locked||busy,run:copyMarkdown},
   ...rangeActions.filter(([action])=>action!=='transformations').map(([action,label])=>({id:action,label,detail:'Necesita un rango de celdas seleccionado en la vista',disabled:locked||!cellRange||busy,run:()=>rangeAction(action)})),
   {id:'rangeStatistics',label:t('analysis.tab.range'),detail:t('analysis.tab.rangeHelp'),disabled:large||!cellRange||busy||!!queryError,run:()=>analyze('statistics',{scope:'range'})},
+  {id:'describe',label:t('describe.command'),detail:large?t('analysis.tab.large'):t('describe.commandHelp',{command:'describe'}),disabled:large,run:()=>analyze('statistics')},
   {id:'openAnalysis',label:t('analysis.tab.command'),detail:t('analysis.tab.search'),disabled:false,run:()=>analyze()}
  ])
  const contextCommands=$derived((context?.kind==='rows'?[...(large&&viewActive?['viewDocument']:[]),'insertRowBefore','insertRowAfter','duplicateRows','deleteRows','rows-trim','rows-upper','rows-lower','transformations','copyMarkdown','undo','redo']:context?.kind==='columns'?['sortAscending','sortDescending','columnFilter','columnStats','column-upper','column-lower','column-trim','columnDuplicates','insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn','transformations','copyMarkdown','undo','redo']:[]).map(id=>commands.find(command=>command.id===id)!))

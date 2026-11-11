@@ -43,8 +43,10 @@ export interface ColumnAnalysisRequest {column:number;otherColumn?:number;query?
 export interface ColumnProfile {kind:'empty'|'identifier'|'number'|'date'|'category'|'text'|'mixed';dates:number;invalidDates:number;unsafeIntegers:number;identifierZeros:number;headerHint:boolean;distinctNonEmpty:number;decimalPlaces?:number}
 export type ColumnProfileRequest=ColumnAnalysisRequest&{profileOnly:true}
 export type ColumnProfileHint=Pick<ColumnProfile,'kind'|'decimalPlaces'>
+export interface ColumnDescribe {count:number;unique:number;top:string|null;freq:number|null;dateMin:string|null;dateMax:string|null}
 export interface ColumnAnalysis {
  profile:ColumnProfile;
+ describe:ColumnDescribe;
  revision:number;sample:boolean;filtered:boolean;column:number;cells:number;empty:number;missing:number;whitespace:number;numeric:number;excluded:number;leadingZeros:number;unique:number;duplicateGroups:number;duplicateRows:number;extraDuplicates:number;minLength:number;maxLength:number;
  sum:number|null;average:number|null;min:number|null;max:number|null;median:number|null;deviation:number|null;sampleDeviation:number|null;variance:number|null;sampleVariance:number|null;percentile10:number|null;percentile25:number|null;percentile75:number|null;percentile90:number|null;
  frequencies:{value:string;truncated:boolean;count:number;firstRow:number;rowId:string}[];frequencyTotal:number;frequencyOffset:number;

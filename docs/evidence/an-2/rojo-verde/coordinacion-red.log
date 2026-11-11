@@ -1,0 +1,47 @@
+
+Running 2 tests using 1 worker
+
+(node:60308) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/analysis-describe.spec.ts:19:1 › AN-2 muestra describe por petición con el fixture aprobado y conserva la fuente (1.5s)
+  ✘  2 [csv] › tests/e2e/analysis-describe.spec.ts:35:1 › AN-2 coordina el cálculo avanzado con describe sin lanzar consultas al desplegar (15.9s)
+
+
+  1) [csv] › tests/e2e/analysis-describe.spec.ts:35:1 › AN-2 coordina el cálculo avanzado con describe sin lanzar consultas al desplegar 
+
+    Error: expect(locator).toBeDisabled() failed
+
+    Locator:  getByRole('region', { name: 'Resumen estadístico', exact: true }).getByRole('button', { name: 'Calcular', exact: true })
+    Expected: disabled
+    Received: enabled
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeDisabled" getByRole('region', { name: 'Resumen estadístico', exact: true }).getByRole('button', { name: 'Calcular', exact: true }) with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Resumen estadístico', exact: true }).getByRole('button', { name: 'Calcular', exact: true })
+        34 × locator resolved to <button type="submit" aria-busy="false" class="btn-tint svelte-vctb4x">Calcular</button>
+           - unexpected value "enabled"
+
+
+      51 |  await advanced.getByRole('button',{name:'Analizar',exact:true}).click()
+      52 |  await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'describeLegacyHeld'))).toBe(true)
+    > 53 |  await expect(panel.getByRole('button',{name:'Calcular',exact:true})).toBeDisabled()
+         |                                                                       ^
+      54 |  await app.evaluate(()=>Reflect.get(globalThis,'describeLegacyRelease')?.())
+      55 |  await expect(advanced.getByRole('status')).toHaveText('Análisis completo.')
+      56 |  await expect(panel.getByRole('button',{name:'Calcular',exact:true})).toBeEnabled()
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:53:71
+
+    Error Context: ../freyalab-an2-core-evidence.tWy5z7/ui-coordination-red/analysis-describe-AN-2-coo-ee5dc-nzar-consultas-al-desplegar-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-an2-core-evidence.tWy5z7/ui-coordination-red/analysis-describe-AN-2-coo-ee5dc-nzar-consultas-al-desplegar-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-an2-core-evidence.tWy5z7/ui-coordination-red/analysis-describe-AN-2-coo-ee5dc-nzar-consultas-al-desplegar-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/analysis-describe.spec.ts:35:1 › AN-2 coordina el cálculo avanzado con describe sin lanzar consultas al desplegar 
+  1 passed (17.8s)

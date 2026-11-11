@@ -1,0 +1,36 @@
+
+Running 1 test using 1 worker
+
+(node:66427) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/analysis-describe.spec.ts:153:1 › AN-2 la paleta describe abre estadísticas sin empezar a calcular (1.4s)
+
+
+  1) [csv] › tests/e2e/analysis-describe.spec.ts:153:1 › AN-2 la paleta describe abre estadísticas sin empezar a calcular 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 0
+
+      153 | test('AN-2 la paleta describe abre estadísticas sin empezar a calcular',async()=>{
+      154 |  await spy();const palette=await openCsvCommands(page,app),search=palette.getByRole('searchbox',{name:'Buscar comando CSV',exact:true});await search.fill('describe')
+    > 155 |  expect(await palette.getByRole('button',{name:/^Resumen estadístico describe:/}).count()).toBe(1);await search.press('Enter')
+          |                                                                                            ^
+      156 |  await expect(page.getByRole('region',{name:'Resumen estadístico',exact:true})).toBeVisible();expect(await calls()).toEqual([])
+      157 | })
+      158 |
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:155:92
+
+    Error Context: test-results/analysis-describe-AN-2-la--af097-icas-sin-empezar-a-calcular-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-describe-AN-2-la--af097-icas-sin-empezar-a-calcular-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-describe-AN-2-la--af097-icas-sin-empezar-a-calcular-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/analysis-describe.spec.ts:153:1 › AN-2 la paleta describe abre estadísticas sin empezar a calcular 

@@ -192,6 +192,8 @@ test('P5: almacenamiento bloqueado no impide abrir el documento ni alternar las 
  await rm(join(directory,'profile','settings.json'))
  // La carga inicial ya terminó: recargar antes abortaría su loadFile y cerraría la app.
  await Promise.all([page.waitForEvent('load'),app!.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].webContents.reload())]);await expect(page.locator('.app-shell .toolbar')).toBeVisible()
+ // La barra puede estar visible antes de terminar la lectura asíncrona de ajustes.
+ await expect.poll(()=>page.evaluate(()=>(window as unknown as {__mdSidebarStorage:{reads:number}}).__mdSidebarStorage.reads)).toBeGreaterThan(0)
  const blocked=await page.evaluate(()=>{
   const initial={...(window as unknown as {__mdSidebarStorage:{reads:number;beforeBootstrap:boolean}}).__mdSidebarStorage}
   let read=false,write=false;try{localStorage.getItem('__storage_test__')}catch{read=true}try{localStorage.setItem('__storage_test__','value')}catch{write=true}

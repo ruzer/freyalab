@@ -1,0 +1,476 @@
+
+Running 3 tests using 1 worker
+
+(node:95914) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/analysis-describe.spec.ts:202:1 › AN-2 revisión: una muestra conserva su ámbito en selector, caption e informe (1.5s)
+(node:95924) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/analysis-describe.spec.ts:218:1 › AN-2 revisión: std de un valor y top/freq de fecha se presentan vacíos (1.1s)
+(node:95934) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [csv] › tests/e2e/analysis-describe.spec.ts:227:1 › AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes de consultar (16.0s)
+
+
+  1) [csv] › tests/e2e/analysis-describe.spec.ts:202:1 › AN-2 revisión: una muestra conserva su ámbito en selector, caption e informe 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Todos los registros de la muestra"
+    Received: "Documento completo"
+
+      204 |  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),file);expect(doc).toMatchObject({readonly:true,rowCount:200});expect(doc.large).not.toBe(true)
+      205 |  await openAnalysis(page,'Estadísticas');const panel=page.getByRole('region',{name:'Resumen estadístico',exact:true}),scope=panel.getByLabel('Alcance de las estadísticas',{exact:true})
+    > 206 |  expect.soft(await scope.locator('option[value=all]').textContent()).toBe('Todos los registros de la muestra');expect.soft(await scope.locator('option[value=view]').textContent()).toBe('Vista filtrada de la muestra')
+          |                                                                      ^
+      207 |  for(const [value,label] of [['all','Todos los registros de la muestra'],['view','Vista filtrada de la muestra']]){
+      208 |   await scope.selectOption(value);await panel.getByRole('button',{name:'Calcular',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Resumen calculado.')
+      209 |   expect.soft(await panel.locator('caption').textContent()).toContain(label);expect.soft(await panel.locator('caption').textContent()).not.toContain('Documento completo')
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:206:70
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Vista filtrada de la muestra"
+    Received: "Vista filtrada"
+
+      204 |  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),file);expect(doc).toMatchObject({readonly:true,rowCount:200});expect(doc.large).not.toBe(true)
+      205 |  await openAnalysis(page,'Estadísticas');const panel=page.getByRole('region',{name:'Resumen estadístico',exact:true}),scope=panel.getByLabel('Alcance de las estadísticas',{exact:true})
+    > 206 |  expect.soft(await scope.locator('option[value=all]').textContent()).toBe('Todos los registros de la muestra');expect.soft(await scope.locator('option[value=view]').textContent()).toBe('Vista filtrada de la muestra')
+          |                                                                                                                                                                                     ^
+      207 |  for(const [value,label] of [['all','Todos los registros de la muestra'],['view','Vista filtrada de la muestra']]){
+      208 |   await scope.selectOption(value);await panel.getByRole('button',{name:'Calcular',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Resumen calculado.')
+      209 |   expect.soft(await panel.locator('caption').textContent()).toContain(label);expect.soft(await panel.locator('caption').textContent()).not.toContain('Documento completo')
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:206:181
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Todos los registros de la muestra"
+    Received string:    "Documento completo · Revisión 0"
+
+      207 |  for(const [value,label] of [['all','Todos los registros de la muestra'],['view','Vista filtrada de la muestra']]){
+      208 |   await scope.selectOption(value);await panel.getByRole('button',{name:'Calcular',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Resumen calculado.')
+    > 209 |   expect.soft(await panel.locator('caption').textContent()).toContain(label);expect.soft(await panel.locator('caption').textContent()).not.toContain('Documento completo')
+          |                                                             ^
+      210 |   await expect(panel.locator('tbody tr').first().locator('td')).toHaveText('200');await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click()
+      211 |   const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
+      212 |   expect.soft(report).toContain('MUESTRA LIMITADA');expect.soft(report).toContain(JSON.stringify(label));expect.soft(report).not.toContain('Documento completo')
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:209:61
+
+    Error: expect(received).not.toContain(expected) // indexOf
+
+    Expected substring: not "Documento completo"
+    Received string:        "Documento completo · Revisión 0"
+
+      207 |  for(const [value,label] of [['all','Todos los registros de la muestra'],['view','Vista filtrada de la muestra']]){
+      208 |   await scope.selectOption(value);await panel.getByRole('button',{name:'Calcular',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Resumen calculado.')
+    > 209 |   expect.soft(await panel.locator('caption').textContent()).toContain(label);expect.soft(await panel.locator('caption').textContent()).not.toContain('Documento completo')
+          |                                                                                                                                            ^
+      210 |   await expect(panel.locator('tbody tr').first().locator('td')).toHaveText('200');await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click()
+      211 |   const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
+      212 |   expect.soft(report).toContain('MUESTRA LIMITADA');expect.soft(report).toContain(JSON.stringify(label));expect.soft(report).not.toContain('Documento completo')
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:209:140
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "\"Todos los registros de la muestra\""
+    Received string:    "# Resumen estadístico CSV·
+    > **MUESTRA LIMITADA: el resumen no describe el archivo completo.**·
+    Informe estático del análisis completado. No modifica el CSV y abrirlo no vuelve a calcularlo.·
+    | Procedencia | Valor |
+    | --- | --- |
+    | Archivo | ` \"muestra.csv\" ` |
+    | Revisión de la sesión | 0 |
+    | Alcance | ` \"Documento completo\" ` |
+    | Cambios sin guardar al iniciar | No |
+    | Análisis iniciado (UTC) | ` \"2026-11-11T16:08:12.196Z\" ` |·
+    | Estadística | ` \"Precio\" ` |
+    | --- | --- |
+    | count | 200 |
+    | mean | 2 |
+    | std | 0 |
+    | min | 2 |
+    | 25% | 2 |
+    | 50% | 2 |
+    | 75% | 2 |
+    | max | 2 |··
+    ## Cómo se calcula·
+    Mismos criterios que pandas: desviación muestral con n−1 y percentiles lineales.·
+    En texto y fechas se excluyen ausentes, vacíos y solo espacios de count, unique, top y freq. Los demás valores se comparan como texto exacto. Las fechas no muestran top ni freq.·
+    Los cálculos numéricos son aproximados; se conserva aquí el valor completo, sin el redondeo de la pantalla. Los textos literales se entrecomillan para conservar espacios, saltos de línea y marcadores. — indica que la medida no corresponde al tipo o no está disponible.·
+    "
+
+      210 |   await expect(panel.locator('tbody tr').first().locator('td')).toHaveText('200');await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click()
+      211 |   const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
+    > 212 |   expect.soft(report).toContain('MUESTRA LIMITADA');expect.soft(report).toContain(JSON.stringify(label));expect.soft(report).not.toContain('Documento completo')
+          |                                                                         ^
+      213 |   await page.getByRole('tab',{name:'Análisis de muestra.csv',exact:true}).click()
+      214 |  }
+      215 |  expect(await readFile(file,'utf8')).toBe(text)
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:212:73
+
+    Error: expect(received).not.toContain(expected) // indexOf
+
+    Expected substring: not "Documento completo"
+    Received string:        "# Resumen estadístico CSV
+    
+    > **MUESTRA LIMITADA: el resumen no describe el archivo completo.**
+    
+    Informe estático del análisis completado. No modifica el CSV y abrirlo no vuelve a calcularlo.
+    
+    | Procedencia | Valor |
+    | --- | --- |
+    | Archivo | ` \"muestra.csv\" ` |
+    | Revisión de la sesión | 0 |
+    | Alcance | ` \"Documento completo\" ` |
+    | Cambios sin guardar al iniciar | No |
+    | Análisis iniciado (UTC) | ` \"2026-11-11T16:08:12.196Z\" ` |
+    
+    | Estadística | ` \"Precio\" ` |
+    | --- | --- |
+    | count | 200 |
+    | mean | 2 |
+    | std | 0 |
+    | min | 2 |
+    | 25% | 2 |
+    | 50% | 2 |
+    | 75% | 2 |
+    | max | 2 |
+    
+    
+    ## Cómo se calcula
+    
+    Mismos criterios que pandas: desviación muestral con n−1 y percentiles lineales.
+    
+    En texto y fechas se excluyen ausentes, vacíos y solo espacios de count, unique, top y freq. Los demás valores se comparan como texto exacto. Las fechas no muestran top ni freq.
+    
+    Los cálculos numéricos son aproximados; se conserva aquí el valor completo, sin el redondeo de la pantalla. Los textos literales se entrecomillan para conservar espacios, saltos de línea y marcadores. — indica que la medida no corresponde al tipo o no está disponible.
+    
+    "
+
+      210 |   await expect(panel.locator('tbody tr').first().locator('td')).toHaveText('200');await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click()
+      211 |   const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
+    > 212 |   expect.soft(report).toContain('MUESTRA LIMITADA');expect.soft(report).toContain(JSON.stringify(label));expect.soft(report).not.toContain('Documento completo')
+          |                                                                                                                                  ^
+      213 |   await page.getByRole('tab',{name:'Análisis de muestra.csv',exact:true}).click()
+      214 |  }
+      215 |  expect(await readFile(file,'utf8')).toBe(text)
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:212:130
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Vista filtrada de la muestra"
+    Received string:    "Vista filtrada · Revisión 0"
+
+      207 |  for(const [value,label] of [['all','Todos los registros de la muestra'],['view','Vista filtrada de la muestra']]){
+      208 |   await scope.selectOption(value);await panel.getByRole('button',{name:'Calcular',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Resumen calculado.')
+    > 209 |   expect.soft(await panel.locator('caption').textContent()).toContain(label);expect.soft(await panel.locator('caption').textContent()).not.toContain('Documento completo')
+          |                                                             ^
+      210 |   await expect(panel.locator('tbody tr').first().locator('td')).toHaveText('200');await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click()
+      211 |   const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
+      212 |   expect.soft(report).toContain('MUESTRA LIMITADA');expect.soft(report).toContain(JSON.stringify(label));expect.soft(report).not.toContain('Documento completo')
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:209:61
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "\"Vista filtrada de la muestra\""
+    Received string:    "# Resumen estadístico CSV·
+    > **MUESTRA LIMITADA: el resumen no describe el archivo completo.**·
+    Informe estático del análisis completado. No modifica el CSV y abrirlo no vuelve a calcularlo.·
+    | Procedencia | Valor |
+    | --- | --- |
+    | Archivo | ` \"muestra.csv\" ` |
+    | Revisión de la sesión | 0 |
+    | Alcance | ` \"Vista filtrada\" ` |
+    | Cambios sin guardar al iniciar | No |
+    | Análisis iniciado (UTC) | ` \"2026-11-11T16:08:12.546Z\" ` |·
+    | Estadística | ` \"Precio\" ` |
+    | --- | --- |
+    | count | 200 |
+    | mean | 2 |
+    | std | 0 |
+    | min | 2 |
+    | 25% | 2 |
+    | 50% | 2 |
+    | 75% | 2 |
+    | max | 2 |··
+    ## Cómo se calcula·
+    Mismos criterios que pandas: desviación muestral con n−1 y percentiles lineales.·
+    En texto y fechas se excluyen ausentes, vacíos y solo espacios de count, unique, top y freq. Los demás valores se comparan como texto exacto. Las fechas no muestran top ni freq.·
+    Los cálculos numéricos son aproximados; se conserva aquí el valor completo, sin el redondeo de la pantalla. Los textos literales se entrecomillan para conservar espacios, saltos de línea y marcadores. — indica que la medida no corresponde al tipo o no está disponible.··
+    ## Filtros y orden de la vista·
+    ```json
+    {
+      \"search\": \"\",
+      \"filters\": {},
+      \"conditions\": [],
+      \"filterMode\": \"all\"
+    }
+    ```
+    "
+
+      210 |   await expect(panel.locator('tbody tr').first().locator('td')).toHaveText('200');await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click()
+      211 |   const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
+    > 212 |   expect.soft(report).toContain('MUESTRA LIMITADA');expect.soft(report).toContain(JSON.stringify(label));expect.soft(report).not.toContain('Documento completo')
+          |                                                                         ^
+      213 |   await page.getByRole('tab',{name:'Análisis de muestra.csv',exact:true}).click()
+      214 |  }
+      215 |  expect(await readFile(file,'utf8')).toBe(text)
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:212:73
+
+    Error Context: test-results/analysis-describe-AN-2-rev-29020--selector-caption-e-informe-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-describe-AN-2-rev-29020--selector-caption-e-informe-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-describe-AN-2-rev-29020--selector-caption-e-informe-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/analysis-describe.spec.ts:218:1 › AN-2 revisión: std de un valor y top/freq de fecha se presentan vacíos 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 3
+
+      Array [
+    -   "",
+    -   "",
+    -   "",
+    +   "—",
+    +   "—",
+    +   "—",
+      ]
+
+      220 |  const panel=page.getByRole('region',{name:'Resumen estadístico',exact:true});await panel.getByRole('checkbox',{name:'Incluir texto y fechas',exact:true}).check();await panel.getByRole('button',{name:'Calcular',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Resumen calculado.');await expect(panel.locator('tbody tr')).toHaveCount(11)
+      221 |  expect.soft(await panel.locator('tbody tr').nth(0).locator('td').allTextContents()).toEqual(['1','1','0'])
+    > 222 |  for(const row of [2,3,5])expect.soft(await panel.locator('tbody tr').nth(row).locator('td').allTextContents()).toEqual(['','',''])
+          |                                                                                                                 ^
+      223 |  await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
+      224 |  expect.soft(report).toContain('| std |  |  |  |');expect.soft(report).toContain('| top |  |  |  |');expect.soft(report).not.toContain('—');expect(await readFile(file,'utf8')).toBe(text)
+      225 | })
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:222:113
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 3
+
+      Array [
+    -   "",
+    -   "",
+    -   "",
+    +   "—",
+    +   "—",
+    +   "—",
+      ]
+
+      220 |  const panel=page.getByRole('region',{name:'Resumen estadístico',exact:true});await panel.getByRole('checkbox',{name:'Incluir texto y fechas',exact:true}).check();await panel.getByRole('button',{name:'Calcular',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Resumen calculado.');await expect(panel.locator('tbody tr')).toHaveCount(11)
+      221 |  expect.soft(await panel.locator('tbody tr').nth(0).locator('td').allTextContents()).toEqual(['1','1','0'])
+    > 222 |  for(const row of [2,3,5])expect.soft(await panel.locator('tbody tr').nth(row).locator('td').allTextContents()).toEqual(['','',''])
+          |                                                                                                                 ^
+      223 |  await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
+      224 |  expect.soft(report).toContain('| std |  |  |  |');expect.soft(report).toContain('| top |  |  |  |');expect.soft(report).not.toContain('—');expect(await readFile(file,'utf8')).toBe(text)
+      225 | })
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:222:113
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 3
+
+      Array [
+    -   "",
+    -   "",
+    -   "",
+    +   "—",
+    +   "—",
+    +   "—",
+      ]
+
+      220 |  const panel=page.getByRole('region',{name:'Resumen estadístico',exact:true});await panel.getByRole('checkbox',{name:'Incluir texto y fechas',exact:true}).check();await panel.getByRole('button',{name:'Calcular',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Resumen calculado.');await expect(panel.locator('tbody tr')).toHaveCount(11)
+      221 |  expect.soft(await panel.locator('tbody tr').nth(0).locator('td').allTextContents()).toEqual(['1','1','0'])
+    > 222 |  for(const row of [2,3,5])expect.soft(await panel.locator('tbody tr').nth(row).locator('td').allTextContents()).toEqual(['','',''])
+          |                                                                                                                 ^
+      223 |  await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
+      224 |  expect.soft(report).toContain('| std |  |  |  |');expect.soft(report).toContain('| top |  |  |  |');expect.soft(report).not.toContain('—');expect(await readFile(file,'utf8')).toBe(text)
+      225 | })
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:222:113
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "| std |  |  |  |"
+    Received string:    "# Resumen estadístico CSV·
+    Informe estático del análisis completado. No modifica el CSV y abrirlo no vuelve a calcularlo.·
+    | Procedencia | Valor |
+    | --- | --- |
+    | Archivo | ` \"una-fecha.csv\" ` |
+    | Revisión de la sesión | 0 |
+    | Alcance | ` \"Documento completo\" ` |
+    | Cambios sin guardar al iniciar | No |
+    | Análisis iniciado (UTC) | ` \"2026-11-11T16:08:13.905Z\" ` |·
+    | Estadística | ` \"Precio\" ` | ` \"Alta\" ` | ` \"Vacía\" ` |
+    | --- | --- | --- | --- |
+    | count | 1 | 1 | 0 |
+    | unique | — | 1 | — |
+    | top | — | — | — |
+    | freq | — | — | — |
+    | mean | 7 | — | — |
+    | std | — | — | — |
+    | min | 7 | ` \"2026-02-01\" ` | — |
+    | 25% | 7 | — | — |
+    | 50% | 7 | — | — |
+    | 75% | 7 | — | — |
+    | max | 7 | ` \"2026-02-01\" ` | — |··
+    ## Cómo se calcula·
+    Mismos criterios que pandas: desviación muestral con n−1 y percentiles lineales.·
+    En texto y fechas se excluyen ausentes, vacíos y solo espacios de count, unique, top y freq. Los demás valores se comparan como texto exacto. Las fechas no muestran top ni freq.·
+    Los cálculos numéricos son aproximados; se conserva aquí el valor completo, sin el redondeo de la pantalla. Los textos literales se entrecomillan para conservar espacios, saltos de línea y marcadores. — indica que la medida no corresponde al tipo o no está disponible.·
+    "
+
+      222 |  for(const row of [2,3,5])expect.soft(await panel.locator('tbody tr').nth(row).locator('td').allTextContents()).toEqual(['','',''])
+      223 |  await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
+    > 224 |  expect.soft(report).toContain('| std |  |  |  |');expect.soft(report).toContain('| top |  |  |  |');expect.soft(report).not.toContain('—');expect(await readFile(file,'utf8')).toBe(text)
+          |                      ^
+      225 | })
+      226 |
+      227 | test('AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes de consultar',async()=>{
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:224:22
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "| top |  |  |  |"
+    Received string:    "# Resumen estadístico CSV·
+    Informe estático del análisis completado. No modifica el CSV y abrirlo no vuelve a calcularlo.·
+    | Procedencia | Valor |
+    | --- | --- |
+    | Archivo | ` \"una-fecha.csv\" ` |
+    | Revisión de la sesión | 0 |
+    | Alcance | ` \"Documento completo\" ` |
+    | Cambios sin guardar al iniciar | No |
+    | Análisis iniciado (UTC) | ` \"2026-11-11T16:08:13.905Z\" ` |·
+    | Estadística | ` \"Precio\" ` | ` \"Alta\" ` | ` \"Vacía\" ` |
+    | --- | --- | --- | --- |
+    | count | 1 | 1 | 0 |
+    | unique | — | 1 | — |
+    | top | — | — | — |
+    | freq | — | — | — |
+    | mean | 7 | — | — |
+    | std | — | — | — |
+    | min | 7 | ` \"2026-02-01\" ` | — |
+    | 25% | 7 | — | — |
+    | 50% | 7 | — | — |
+    | 75% | 7 | — | — |
+    | max | 7 | ` \"2026-02-01\" ` | — |··
+    ## Cómo se calcula·
+    Mismos criterios que pandas: desviación muestral con n−1 y percentiles lineales.·
+    En texto y fechas se excluyen ausentes, vacíos y solo espacios de count, unique, top y freq. Los demás valores se comparan como texto exacto. Las fechas no muestran top ni freq.·
+    Los cálculos numéricos son aproximados; se conserva aquí el valor completo, sin el redondeo de la pantalla. Los textos literales se entrecomillan para conservar espacios, saltos de línea y marcadores. — indica que la medida no corresponde al tipo o no está disponible.·
+    "
+
+      222 |  for(const row of [2,3,5])expect.soft(await panel.locator('tbody tr').nth(row).locator('td').allTextContents()).toEqual(['','',''])
+      223 |  await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
+    > 224 |  expect.soft(report).toContain('| std |  |  |  |');expect.soft(report).toContain('| top |  |  |  |');expect.soft(report).not.toContain('—');expect(await readFile(file,'utf8')).toBe(text)
+          |                                                                        ^
+      225 | })
+      226 |
+      227 | test('AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes de consultar',async()=>{
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:224:72
+
+    Error: expect(received).not.toContain(expected) // indexOf
+
+    Expected substring: not "—"
+    Received string:        "# Resumen estadístico CSV
+    
+    Informe estático del análisis completado. No modifica el CSV y abrirlo no vuelve a calcularlo.
+    
+    | Procedencia | Valor |
+    | --- | --- |
+    | Archivo | ` \"una-fecha.csv\" ` |
+    | Revisión de la sesión | 0 |
+    | Alcance | ` \"Documento completo\" ` |
+    | Cambios sin guardar al iniciar | No |
+    | Análisis iniciado (UTC) | ` \"2026-11-11T16:08:13.905Z\" ` |
+    
+    | Estadística | ` \"Precio\" ` | ` \"Alta\" ` | ` \"Vacía\" ` |
+    | --- | --- | --- | --- |
+    | count | 1 | 1 | 0 |
+    | unique | — | 1 | — |
+    | top | — | — | — |
+    | freq | — | — | — |
+    | mean | 7 | — | — |
+    | std | — | — | — |
+    | min | 7 | ` \"2026-02-01\" ` | — |
+    | 25% | 7 | — | — |
+    | 50% | 7 | — | — |
+    | 75% | 7 | — | — |
+    | max | 7 | ` \"2026-02-01\" ` | — |
+    
+    
+    ## Cómo se calcula
+    
+    Mismos criterios que pandas: desviación muestral con n−1 y percentiles lineales.
+    
+    En texto y fechas se excluyen ausentes, vacíos y solo espacios de count, unique, top y freq. Los demás valores se comparan como texto exacto. Las fechas no muestran top ni freq.
+    
+    Los cálculos numéricos son aproximados; se conserva aquí el valor completo, sin el redondeo de la pantalla. Los textos literales se entrecomillan para conservar espacios, saltos de línea y marcadores. — indica que la medida no corresponde al tipo o no está disponible.
+    
+    "
+
+      222 |  for(const row of [2,3,5])expect.soft(await panel.locator('tbody tr').nth(row).locator('td').allTextContents()).toEqual(['','',''])
+      223 |  await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
+    > 224 |  expect.soft(report).toContain('| std |  |  |  |');expect.soft(report).toContain('| top |  |  |  |');expect.soft(report).not.toContain('—');expect(await readFile(file,'utf8')).toBe(text)
+          |                                                                                                                              ^
+      225 | })
+      226 |
+      227 | test('AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes de consultar',async()=>{
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:224:126
+
+    Error Context: test-results/analysis-describe-AN-2-rev-f64ce-e-fecha-se-presentan-vacíos-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-describe-AN-2-rev-f64ce-e-fecha-se-presentan-vacíos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-describe-AN-2-rev-f64ce-e-fecha-se-presentan-vacíos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/analysis-describe.spec.ts:227:1 › AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes de consultar 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('.toast[role=status]')
+    Expected: "El alcance supera dos millones de posiciones de celdas. Marca menos columnas o elige una vista filtrada.Cerrar aviso"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('.toast[role=status]') with timeout 15000ms
+      - waiting for locator('.toast[role=status]')
+
+
+      227 | test('AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes de consultar',async()=>{
+      228 |  const file=join(folder,'posiciones.csv'),text=Array.from({length:100},(_,i)=>'Campo '+i).join(',')+'\n'+'1\n'.repeat(20001);await writeFile(file,text);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),file);expect(doc).toMatchObject({readonly:false,rowCount:20001});await spy();await openAnalysis(page,'Estadísticas')
+    > 229 |  await page.getByRole('button',{name:'Calcular',exact:true}).click();await expect(page.locator('.toast[role=status]')).toHaveText(t('info.error.cells')+'Cerrar aviso')
+          |                                                                                                                        ^
+      230 |  expect(await calls()).toEqual([]);expect(await readFile(file,'utf8')).toBe(text)
+      231 | })
+      232 |
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:229:120
+
+    Error Context: test-results/analysis-describe-AN-2-rev-e1a27-ausentes-antes-de-consultar-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-describe-AN-2-rev-e1a27-ausentes-antes-de-consultar-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-describe-AN-2-rev-e1a27-ausentes-antes-de-consultar-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [csv] › tests/e2e/analysis-describe.spec.ts:202:1 › AN-2 revisión: una muestra conserva su ámbito en selector, caption e informe 
+    [csv] › tests/e2e/analysis-describe.spec.ts:218:1 › AN-2 revisión: std de un valor y top/freq de fecha se presentan vacíos 
+    [csv] › tests/e2e/analysis-describe.spec.ts:227:1 › AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes de consultar 

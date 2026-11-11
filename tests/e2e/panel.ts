@@ -52,7 +52,7 @@ export async function analysisRegion(page:Page,name:string){
  return page.locator('[id='+JSON.stringify(id)+']').getByRole('region',{name,exact:true,includeHidden:true})
 }
 export async function openColumnExplorer(page:Page){
- await openAnalysis(page,'Estadísticas')
+ await showPanel(page,'Estadísticas')
  const statistics=await analysisRegion(page,'Estadísticas por columna')
  const explorer=statistics.getByRole('region',{name:'Exploración de columna',exact:true})
  if(!await explorer.isVisible())await statistics.locator('summary').filter({hasText:'Explorar una columna'}).click()
@@ -80,6 +80,9 @@ export async function showPanel(page:Page,name:'Gráficos'|'Estadísticas'|'Aná
   await expect(panel).toBeVisible()
   const title=panel.getByLabel(await translated(page,'charts.ui.config'),{exact:true})
   if(await title.innerText()===await translated(page,'charts.fields.emptyTitle'))await createSuggestedChart(page)
+ }else if(name==='Estadísticas'){
+  const advanced=workspace(page).locator('.advanced-statistics')
+  if(await advanced.getAttribute('open')===null)await advanced.locator(':scope>summary').click()
  }
 }
 // Abre un menú de la barra de la tabla (Filtrar, Limpiar datos, Filas y columnas) y elige una de sus acciones.

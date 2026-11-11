@@ -1,0 +1,43 @@
+
+Running 1 test using 1 worker
+
+(node:57608) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/analysis-describe.spec.ts:19:1 › AN-2 muestra describe por petición con el fixture aprobado y conserva la fuente (16.2s)
+
+
+  1) [csv] › tests/e2e/analysis-describe.spec.ts:19:1 › AN-2 muestra describe por petición con el fixture aprobado y conserva la fuente 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: 'Calcular', exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('button', { name: 'Calcular', exact: true }) with timeout 15000ms
+      - waiting for getByRole('button', { name: 'Calcular', exact: true })
+
+
+      19 | test('AN-2 muestra describe por petición con el fixture aprobado y conserva la fuente',async()=>{
+      20 |  await openAnalysis(page,'Estadísticas')
+    > 21 |  await expect(page.getByRole('button',{name:'Calcular',exact:true})).toBeVisible()
+         |                                                                      ^
+      22 |  const panel=page.getByRole('region',{name:'Resumen estadístico',exact:true})
+      23 |  await expect(panel.getByRole('table')).toHaveCount(0)
+      24 |  await panel.getByRole('button',{name:'Calcular',exact:true}).click()
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:21:70
+
+    Error Context: ../freyalab-an2-core-evidence.tWy5z7/ui-red/analysis-describe-AN-2-mue-73e52-robado-y-conserva-la-fuente-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-an2-core-evidence.tWy5z7/ui-red/analysis-describe-AN-2-mue-73e52-robado-y-conserva-la-fuente-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-an2-core-evidence.tWy5z7/ui-red/analysis-describe-AN-2-mue-73e52-robado-y-conserva-la-fuente-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/analysis-describe.spec.ts:19:1 › AN-2 muestra describe por petición con el fixture aprobado y conserva la fuente 

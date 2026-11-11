@@ -1,0 +1,39 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-alpha4-an2
+
+ ❯ tests/describe-summary.test.ts (3 tests | 1 failed) 8ms
+   × describe resuelve empates por la primera fila original aunque el alcance esté ordenado al revés 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/describe-summary.test.ts > describe resuelve empates por la primera fila original aunque el alcance esté ordenado al revés
+AssertionError: expected { count: 4, unique: 2, top: 'b', …(3) } to match object { count: 4, unique: 2, top: 'a', …(1) }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "count": 4,
+    "freq": 2,
+-   "top": "a",
++   "top": "b",
+    "unique": 2,
+  }
+
+ ❯ tests/describe-summary.test.ts:27:26
+     25|  const source=rows([['a'],['b'],['b'],['a']])
+     26|  const result=await analyzeColumn(source,[3,2,1,0],request,()=>{},'Tex…
+     27|  expect(result.describe).toMatchObject({count:4,unique:2,top:'a',freq:…
+       |                          ^
+     28| })
+     29|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  23:50:36
+   Duration  150ms (transform 41%, import 33%, tests 18%, worker 7%)
+

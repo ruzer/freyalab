@@ -23,15 +23,16 @@ export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,r
  const profileOnly='profileOnly' in request&&request.profileOnly===true
  const cells=indices?.length??rows.length,values:number[]=[],x:number[]=[],y:number[]=[],missingRows:ColumnAnalysis['missingRows']=[]
  // shortcut: hasta 100 000 claves exactas en memoria; usar el motor analítico antes de ampliar la cardinalidad.
- const counts=profileOnly?undefined:new Map<string,{count:number;firstRow:number;rowId:string}>()
+ const counts=profileOnly?undefined:new Map<string,{count:number;firstRow:number;rowId:string;firstOriginalRow:number}>()
  // Distinguir hasta 20 categorías no exige guardar las frecuencias de toda la columna.
  const distinct=new Set<string>()
  let empty=0,missing=0,whitespace=0,leadingZeros=0,minLength=Infinity,maxLength=0,dates=0,invalidDates=0,unsafeIntegers=0,identifierZeros=0,decimalPlaces=0,numbers=0
+ let dateMin:string|null=null,dateMax:string|null=null
  for(let i=0;i<cells;i++){
   const index=indices?indices[i]:i,row=rows[index],value=row.cells[request.column]??'',trimmed=value.trim(),parsed=numeric(value),n=parsed!==null&&(!Number.isInteger(parsed)||Number.isSafeInteger(parsed))?parsed:null
   const found=counts?.get(value)
   if(counts){
-   if(found)found.count++;else{if(counts.size>=100000)throw new Error('La columna supera 100 000 valores distintos. Filtra los datos antes de explorarla.');counts.set(value,{count:1,firstRow:index+1,rowId:row.id})}
+   if(found){found.count++;found.firstOriginalRow=Math.min(found.firstOriginalRow,index+1)}else{if(counts.size>=100000)throw new Error('La columna supera 100 000 valores distintos. Filtra los datos antes de explorarla.');counts.set(value,{count:1,firstRow:index+1,rowId:row.id,firstOriginalRow:index+1})}
    if(!trimmed&&missingRows.length<20)missingRows.push({row:index+1,rowId:row.id})
    if(request.column>=row.cells.length)missing++
    if(value.length&&!trimmed)whitespace++
@@ -41,7 +42,10 @@ export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,r
   if(/^[+-]?0\d/.test(trimmed)){leadingZeros++;if(parsed!==null)identifierZeros++}
   if(parsed!==null&&Number.isInteger(parsed)&&!Number.isSafeInteger(parsed))unsafeIntegers++
   if(/^\d{4}-\d{2}-\d{2}$/.test(trimmed)){
-   if(!trimmed.startsWith('0000-')&&isoDate(trimmed))dates++;else invalidDates++
+   if(!trimmed.startsWith('0000-')&&isoDate(trimmed)){
+    dates++
+    if(counts){if(dateMin===null||trimmed<dateMin)dateMin=trimmed;if(dateMax===null||trimmed>dateMax)dateMax=trimmed}
+   }else invalidDates++
   }
   if(n!==null){
    numbers++;if(counts)values.push(n)
@@ -55,8 +59,14 @@ export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,r
   if(i%2048===0){await yieldTurn();ensure()}
  }
  await yieldTurn();ensure()
- let duplicateGroups=0,duplicateRows=0,distinctNonEmpty=distinct.size
- if(counts)for(const [value,entry] of counts){if(value.trim())distinctNonEmpty++;if(entry.count>1){duplicateGroups++;duplicateRows+=entry.count}}
+ let duplicateGroups=0,duplicateRows=0,distinctNonEmpty=distinct.size,top:string|null=null,freq:number|null=null,firstRow=Infinity
+ if(counts)for(const [value,entry] of counts){
+  if(value.trim()){
+   distinctNonEmpty++
+   if(freq===null||entry.count>freq||entry.count===freq&&entry.firstOriginalRow<firstRow){top=value;freq=entry.count;firstRow=entry.firstOriginalRow}
+  }
+  if(entry.count>1){duplicateGroups++;duplicateRows+=entry.count}
+ }
  const words=header.replace(/([a-z])([A-Z])/g,'$1 $2').normalize('NFD').replace(/\p{M}/gu,'').toLowerCase(),headerHint=/(^|[^a-z0-9])(id|ids|codigo|code|clave|folio|uuid|rfc|curp|sku|zip)(?=$|[^a-z0-9])/.test(words),nonEmpty=cells-empty
  let kind:ColumnAnalysis['profile']['kind']='text'
  if(!nonEmpty)kind='empty'
@@ -87,6 +97,6 @@ export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,r
   if(value===null)warnings.push('Pearson requiere al menos dos pares numéricos y variación en ambas columnas; también puede ser no representable con esta precisión.')
  }
  await yieldTurn();ensure()
- return{profile,cells,empty,missing,whitespace,numeric:values.length,excluded:cells-empty-values.length,leadingZeros,minLength:cells?minLength:0,maxLength,unique:counts.size,duplicateGroups,duplicateRows,extraDuplicates:duplicateRows-duplicateGroups,...statistics,
-  frequencies:frequencies.slice(request.frequencyOffset,request.frequencyOffset+50).map(([value,entry])=>({value:value.slice(0,256),truncated:value.length>256,...entry})),frequencyTotal:frequencies.length,frequencyOffset:request.frequencyOffset,missingRows,histogram,correlation,warnings}
+ return{profile,describe:{count:nonEmpty,unique:distinctNonEmpty,top:kind==='date'?null:top,freq:kind==='date'?null:freq,dateMin:kind==='date'?dateMin:null,dateMax:kind==='date'?dateMax:null},cells,empty,missing,whitespace,numeric:values.length,excluded:cells-empty-values.length,leadingZeros,minLength:cells?minLength:0,maxLength,unique:counts.size,duplicateGroups,duplicateRows,extraDuplicates:duplicateRows-duplicateGroups,...statistics,
+  frequencies:frequencies.slice(request.frequencyOffset,request.frequencyOffset+50).map(([value,{count,firstRow,rowId}])=>({value:value.slice(0,256),truncated:value.length>256,count,firstRow,rowId})),frequencyTotal:frequencies.length,frequencyOffset:request.frequencyOffset,missingRows,histogram,correlation,warnings}
 }
