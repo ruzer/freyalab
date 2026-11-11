@@ -53,7 +53,7 @@
  const suggestion=$derived(suggest(columns,options.x<0||options.y===-2?{}:{x:options.x,...options.y>=0?{y:options.y}:{}}))
  const signature=$derived(JSON.stringify([doc.id,doc.revision,options,scope,where,scope==='filtered'?viewSignature:scope==='saved'?savedView:null]))
  let chosenTypeSignature=$state<string|null>(null)
- const startingSuggestion=$derived(initialChart(columns))
+ const startingSuggestion=$derived(sample===undefined||fieldsLoading?null:initialChart(columns))
  const suggestedTitle=$derived(startingSuggestion?chartLabels(columns.map(column=>column.name),startingSuggestion).summary:'')
  const reason=$derived(chosenTypeSignature===signature&&options.kind!==suggestion.options?.kind&&suggestion.options?t('charts.fields.selectedType',{type:t('charts.kind.'+options.kind),suggested:t('charts.kind.'+suggestion.options.kind)}):t(suggestion.reason.key,{...suggestion.reason.parameters,measure:t('charts.measure.'+options.aggregate),period:t('charts.period.'+(options.time==='none'?'month':options.time??'month'))}))
  const typeIcons={bar:'chart-column',line:'chart-line',scatter:'chart-scatter',histogram:'chart-histogram',heatmap:'chart-heatmap',box:'chart-box'} as const
