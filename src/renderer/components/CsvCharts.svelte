@@ -26,7 +26,7 @@
  const sample=$derived(csvAnalysisSample(doc,viewMeta))
  const scopeLabel=$derived((sample===undefined?t('analysis.scope.pending'):scope==='all'?t('charts.ui.all'):scope==='saved'?t('charts.ui.saved'):t('charts.ui.filtered'))+(where.conditions.length?` · ${t('charts.ui.filterStatus',{n:where.conditions.length,mode:t(where.filterMode==='all'?'charts.ui.and':'charts.ui.or')})}`:''))
  const viewSignature=$derived(JSON.stringify([query.search,query.filters,query.conditions,query.filterMode]))
- const unavailable=$derived(sample===undefined||(scope==='filtered'&&(!queryValid||sample))||(scope==='saved'&&(!savedView||sample)))
+ const unavailable=$derived(sample===undefined||(scope==='filtered'&&(!queryValid||sample||doc.large))||(scope==='saved'&&(!savedView||sample||doc.large)))
  const analysisQuery=$derived(scope==='saved'&&savedView?{...savedView,offset:0,limit:1000,requestId:0}:query)
  let options=$state<ChartOptions>({kind:'bar',x:0,y:-1,bins:10,aggregate:'count',descending:false,measureType:'text',series:-1,time:'none',...untrack(()=>onDemand?{x:-1,y:-2}:{})})
  let started=$state(false),stale=$state(false),lastRevision=untrack(()=>doc.revision)
@@ -229,7 +229,7 @@
  {/if}
  <form onsubmit={event=>{event.preventDefault();void generate()}}>
   <fieldset disabled={exporting}><legend class="sr-only">{t('charts.ui.options')}</legend>
-   <label>{t('charts.ui.dataIncluded')} <select aria-label={t('charts.ui.scopeLabel')} bind:value={scope}><option value="all">{t(sample===undefined?'analysis.scope.pending':'charts.ui.all')}</option><option value="filtered" disabled={sample!==false}>{t('charts.ui.filtered')}</option>{#if savedView}<option value="saved" disabled={sample!==false}>{t('charts.ui.saved')}</option>{/if}</select></label>
+   <label>{t('charts.ui.dataIncluded')} <select aria-label={t('charts.ui.scopeLabel')} bind:value={scope}><option value="all">{t(sample===undefined?'analysis.scope.pending':'charts.ui.all')}</option><option value="filtered" disabled={sample!==false||doc.large}>{t('charts.ui.filtered')}</option>{#if savedView}<option value="saved" disabled={sample!==false||doc.large}>{t('charts.ui.saved')}</option>{/if}</select></label>
    <label>{t('charts.ui.type')} <select aria-label={t('charts.ui.typeLabel')} bind:value={options.kind} onchange={event=>chooseKind(event.currentTarget.value as ChartOptions['kind'])}>{#each Object.entries(chartKinds) as [kind,title]}<option value={kind}>{t('charts.kind.'+kind)}</option>{/each}</select></label>
    {#if ['bar','line'].includes(options.kind)}<label>{t('charts.ui.groupDates')} <select aria-label={t('charts.ui.groupDatesLabel')} bind:value={options.time}>{#each Object.entries(chartTimeGroups) as [unit,title]}<option value={unit}>{t('charts.time.'+unit)}</option>{/each}</select></label>{/if}
    {#if options.kind!=='histogram'}<label>{temporal?t('charts.ui.xDate'):options.kind==='line'||options.kind==='scatter'?t('charts.ui.xNumber'):t('charts.ui.xCategory')} <select aria-label={t('charts.ui.xLabel')} bind:value={options.x}>{#each doc.headers??[] as header,index}<option value={index}>{columnLabel(index)}</option>{/each}</select></label>{/if}
@@ -247,7 +247,7 @@
   </fieldset>
 
  </form>
- <ChartPresets docId={doc.id} headers={doc.headers??[]} readonly={sample===true} disabled={exporting||fieldsLoading||sample===undefined} canSave={!!sql&&!tooWide&&!unavailable} configuration={{headers:doc.headers??[],options,where,...scope!=='all'?{view:chartView(analysisQuery)}:{}}} onapply={(configuration:ChartConfiguration)=>{started=true;stale=false;options=configuration.options;where=configuration.where;savedView=configuration.view;scope=configuration.view?'saved':'all';showFilters=false}}/>
+ <ChartPresets docId={doc.id} headers={doc.headers??[]} readonly={sample===true} large={!!doc.large} disabled={exporting||fieldsLoading||sample===undefined} canSave={!!sql&&!tooWide&&!unavailable} configuration={{headers:doc.headers??[],options,where,...scope!=='all'?{view:chartView(analysisQuery)}:{}}} onapply={(configuration:ChartConfiguration)=>{started=true;stale=false;options=configuration.options;where=configuration.where;savedView=configuration.view;scope=configuration.view?'saved':'all';showFilters=false}}/>
  {#if scope==='saved'&&savedView}<details><summary>{t('charts.ui.recovered')}</summary><p>{t('charts.ui.recoveredHelp')}</p><pre>{savedView.search?`${t('charts.ui.search',{query:savedView.search})}\n`:''}{Object.entries(savedView.filters??{}).map(([column,value])=>`${Number(column)+1}. ${(doc.headers??[])[Number(column)]}: ${JSON.stringify(value)}`).join('\n')}{'\n'}{describeConditions(doc.headers??[],{conditions:savedView.conditions??[],filterMode:savedView.filterMode??'all'})}</pre></details>{/if}
 
  {#if where.conditions.length}<details><summary>{t('charts.ui.applied')}</summary><pre>{describeConditions(doc.headers??[],where)}</pre><p>{t('charts.ui.appliedHelp')}</p></details>{/if}

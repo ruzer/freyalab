@@ -4,6 +4,7 @@ import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
+import {analysisRegion,showTable} from './panel'
 
 // R1-3 · Limpieza contextual: cada cabecera de columna tiene un menú ▾ con ordenar, filtrar, estadísticas y limpieza con vista previa.
 let app:ElectronApplication,page:Page,folder:string
@@ -95,11 +96,12 @@ test('«Filtrar esta columna» muestra los filtros y lleva el foco al de esa col
  await expect(page.getByLabel('Filtrar Ciudad',{exact:true})).toBeFocused()
 })
 
-test('«Estadísticas de la columna» abre el panel de resumen con esa columna marcada', async()=>{
- await page.setViewportSize({width:1920,height:1080}) // con una ventana estrecha (la de CI) el panel se abre ampliado y oculta la tabla
+test('«Estadísticas de la columna» abre Análisis con esa columna marcada', async()=>{
+ await page.setViewportSize({width:1920,height:1080})
  await open()
  await columnButton('Ciudad').click();await menu().getByRole('menuitem',{name:'Estadísticas de la columna',exact:true}).click()
- const tabs=page.getByRole('tablist',{name:'Herramientas de análisis'});await expect(tabs).toBeVisible();await expect(tabs.getByRole('tab',{name:'Resumen',exact:true})).toHaveAttribute('aria-selected','true')
+ const panel=await analysisRegion(page,'Estadísticas por columna');await expect(panel).toBeVisible();await expect(panel.getByLabel('Columnas para estadísticas',{exact:true})).toHaveValue('selected')
+ await showTable(page)
  await expect(page.getByLabel('Seleccionar columna Ciudad',{exact:true})).toBeChecked();await expect(page.getByLabel('Seleccionar columna Folio',{exact:true})).not.toBeChecked()
 })
 
