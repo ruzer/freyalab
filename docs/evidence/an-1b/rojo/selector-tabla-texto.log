@@ -1,0 +1,52 @@
+
+Running 1 test using 1 worker
+
+(node:17981) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/compact-toolbar.spec.ts:77:1 › Analizar abre una pestaña a petición y permite volver a la tabla con el foco en su pestaña (16.3s)
+
+
+  1) [csv] › tests/e2e/compact-toolbar.spec.ts:77:1 › Analizar abre una pestaña a petición y permite volver a la tabla con el foco en su pestaña
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('[data-csv-view]').getByRole('button')
+    Timeout: 15000ms
+    - Expected  - 2
+    + Received  + 3
+
+      Array [
+    -   "Tabla",
+    -   "Texto",
+    +   "    Tabla",
+    +   "    Resumen y gráfico",
+    +   "     Texto",
+      ]
+
+    Call log:
+      - Expect "toHaveText" locator('[data-csv-view]').getByRole('button') with timeout 15000ms
+      - waiting for locator('[data-csv-view]').getByRole('button')
+        34 × locator resolved to 3 elements
+
+
+      77 | test('Analizar abre una pestaña a petición y permite volver a la tabla con el foco en su pestaña', async()=>{
+      78 |  const modes=page.locator('[data-csv-view]')
+    > 79 |  await expect(modes.getByRole('button')).toHaveText(['Tabla','Texto'])
+         |                                          ^
+      80 |  const analyze=toolbar().getByRole('button',{name:'Analizar',exact:true})
+      81 |  await expect(toolbar().getByRole('button',{name:'Estadísticas y SQL',exact:true})).toHaveCount(0)
+      82 |  await analyze.press('Enter')
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/compact-toolbar.spec.ts:79:42
+
+    Error Context: test-results/compact-toolbar-Analizar-a-b264f-a-con-el-foco-en-su-pestaña-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/compact-toolbar-Analizar-a-b264f-a-con-el-foco-en-su-pestaña-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/compact-toolbar-Analizar-a-b264f-a-con-el-foco-en-su-pestaña-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/compact-toolbar.spec.ts:77:1 › Analizar abre una pestaña a petición y permite volver a la tabla con el foco en su pestaña

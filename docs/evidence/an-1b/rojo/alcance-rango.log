@@ -1,0 +1,35 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-alpha4-an1b
+
+ ❯ tests/workspace-tabs.test.ts (3 tests | 1 failed) 5ms
+   ❯ pestañas de análisis (3)
+     × un acceso de estadísticas conserva el alcance pedido y no lo lleva a otra sección 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/workspace-tabs.test.ts > pestañas de análisis > un acceso de estadísticas conserva el alcance pedido y no lo lleva a otra sección
+AssertionError: expected undefined to deeply equal { scope: 'range' }
+
+- Expected:
+{
+  "scope": "range",
+}
+
++ Received:
+undefined
+
+ ❯ tests/workspace-tabs.test.ts:17:32
+     15|  it('un acceso de estadísticas conserva el alcance pedido y no lo llev…
+     16|   const first=openAnalysisTab([],{documentId:'one'},'statistics',{scop…
+     17|   expect(first.tab.statistics).toEqual({scope:'range'})
+       |                                ^
+     18|   const column=openAnalysisTab(first.tabs,{documentId:'one'},'statisti…
+     19|   expect(column.tabs).toHaveLength(1)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  21:49:15
+   Duration  101ms (transform 54%, import 19%, tests 18%, worker 9%)

@@ -1,0 +1,25 @@
+
+Running 16 tests using 1 worker
+
+(node:40709) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [shell] › tests/e2e/commands.spec.ts:70:1 › APP-02: Acerca de muestra versión real, copia sólo diagnóstico y lee licencias del paquete @package-smoke (7.8s)
+(node:40735) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 [csv] › tests/e2e/analysis-dock.spec.ts:25:1 › las secciones de la pestaña de análisis se alcanzan y activan con teclado (1.4s)
+  ✓   3 [csv] › tests/e2e/analysis-dock.spec.ts:49:1 › cambiar de sección conserva la configuración del gráfico y el borrador SQL (1.2s)
+  ✓   4 [csv] › tests/e2e/analysis-dock.spec.ts:62:1 › las secciones visitadas se conservan y cerrar análisis las desmonta y devuelve el foco al CSV (1.1s)
+  ✓   5 [csv] › tests/e2e/analysis-tab.spec.ts:186:1 › AN-1a paleta y pestañas con teclado, Escape conserva la pestaña y capturas de idiomas (2.3s)
+  ✓   6 [csv] › tests/e2e/chart-fields.spec.ts:108:1 › F2b: estrecho conserva foco al editar campos, inglés natural y resultado completo (4.9s)
+  ✓   7 [csv] › tests/e2e/chart-fields.spec.ts:116:1 › F2b: actualizar una celda no sustituye el resumen elegido ni guarda el CSV (6.4s)
+  ✓   8 [csv] › tests/e2e/chart-fields.spec.ts:133:1 › F2b: en-XA real, tema oscuro y ventana estrecha no recortan el resultado (4.0s)
+  ✓   9 [csv] › tests/e2e/chart-review.spec.ts:46:1 › Revisión108 · motivo con línea propia y sin solapes a1280×720 (4.8s)
+  ✓  10 [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 (4.9s)
+  ✓  11 [csv] › tests/e2e/chart-review.spec.ts:103:31 › Revisión108 final · Total completo dentro del área visible a1280×720 (5.1s)
+  ✓  12 [csv] › tests/e2e/chart-review.spec.ts:103:31 › Revisión108 final · Total completo dentro del área visible a800×720 (4.9s)
+  ✓  13 [csv] › tests/e2e/csv-summary.spec.ts:52:1 › F2a: cuatro capturas reales, resultado y límites visibles en ambos temas sin desplazar (5.2s)
+  ✓  14 [csv] › tests/e2e/csv-summary.spec.ts:75:1 › F2a: estados vacío, error numérico, truncado y ventana estrecha con captura (6.8s)
+  ✓  15 [csv] › tests/e2e/csv-summary.spec.ts:106:1 › F2a: idioma inglés, foco, anuncios y ventana de 800 px (4.8s)
+  ✓  16 [csv] › tests/e2e/csv-summary.spec.ts:120:1 › F2a: en-XA real no recorta el resultado ni desborda los controles (3.7s)
+
+  16 passed (1.2m)

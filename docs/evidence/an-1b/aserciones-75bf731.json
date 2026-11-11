@@ -1,0 +1,408 @@
+[
+  {
+    "file": "tests/e2e/csv-summary.spec.ts",
+    "before": 105,
+    "after": 111,
+    "removed": [
+      {
+        "line": 108,
+        "text": "expect(page.locator('[data-csv-view]').getByRole('button',{name:'Summary and chart',exact:true})).toHaveAttribute('aria-pressed','true')"
+      },
+      {
+        "line": 121,
+        "text": "expect(button).toBeVisible()"
+      },
+      {
+        "line": 160,
+        "text": "expect(bar.getByRole('button',{name:'Estadísticas y SQL',exact:true})).toBeVisible()"
+      },
+      {
+        "line": 168,
+        "text": "expect(mode.getByRole('button',{name:'Resumen y gráfico',exact:true})).toHaveAttribute('aria-pressed','true')"
+      },
+      {
+        "line": 168,
+        "text": "expect(page.locator('.charts-panel').locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado')"
+      }
+    ],
+    "added": [
+      {
+        "line": 109,
+        "text": "expect(page.locator('.analysis-sections').getByRole('button',{name:'Charts',exact:true})).toHaveAttribute('aria-pressed','true')"
+      },
+      {
+        "line": 122,
+        "text": "expect(page.locator('.analysis-sections button[aria-pressed=true]')).toContainText('Chárts')"
+      },
+      {
+        "line": 161,
+        "text": "expect(analyzeButton(page)).toBeVisible()"
+      },
+      {
+        "line": 168,
+        "text": "expect(dialog.getByRole('button',{name:'Descartar cambios y cambiar',exact:true})).toBeVisible()"
+      },
+      {
+        "line": 168,
+        "text": "expect(dialog.getByRole('button',{name:'Cancelar',exact:true})).toBeVisible()"
+      },
+      {
+        "line": 168,
+        "text": "expect(page.locator('.analysis-workspace:not([hidden])')).toHaveCount(0)"
+      },
+      {
+        "line": 169,
+        "text": "expect(chartPanel(page).locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado')"
+      },
+      {
+        "line": 172,
+        "text": "expect(dialog.getByRole('button',{name:'Cancelar',exact:true})).toBeVisible()"
+      },
+      {
+        "line": 173,
+        "text": "expect(page.locator('.analysis-workspace:not([hidden])')).toHaveCount(0)"
+      },
+      {
+        "line": 173,
+        "text": "expect(editor).toContainText('Otro,Web,60,0%')"
+      },
+      {
+        "line": 218,
+        "text": "expect(await readFile(path,'utf8')).toBe(original)"
+      }
+    ]
+  },
+  {
+    "file": "tests/e2e/chart-fields.spec.ts",
+    "before": 96,
+    "after": 96,
+    "removed": [
+      {
+        "line": 21,
+        "text": "expect(await statistics.evaluate(node=>getComputedStyle(node,'::after').content)).toContain('estadísticas')"
+      },
+      {
+        "line": 22,
+        "text": "expect(page.locator('.charts-panel .pivot-result')).toBeVisible()"
+      },
+      {
+        "line": 56,
+        "text": "expect(panel.getByRole('button',{name:'Empezar con una sugerencia',exact:true})).toBeVisible()"
+      }
+    ],
+    "added": [
+      {
+        "line": 23,
+        "text": "expect(await statistics.evaluate(node=>getComputedStyle(node,'::after').content)).toContain('Analizar')"
+      },
+      {
+        "line": 25,
+        "text": "expect(chartPanel(page).locator('.pivot-result')).toBeVisible()"
+      },
+      {
+        "line": 59,
+        "text": "expect(chartSuggestion(page)).toBeVisible()"
+      }
+    ]
+  },
+  {
+    "file": "tests/e2e/ui-u0.spec.ts",
+    "before": 91,
+    "after": 91,
+    "removed": [],
+    "added": []
+  },
+  {
+    "file": "tests/e2e/large-file.spec.ts",
+    "before": 35,
+    "after": 38,
+    "removed": [
+      {
+        "line": 60,
+        "text": "expect(page.getByRole('tabpanel',{name:'Resumen'})).toContainText('aún no están disponibles en archivos grandes')"
+      }
+    ],
+    "added": [
+      {
+        "line": 28,
+        "text": "expect(commands.locator(':scope>p').first()).toContainText('Archivo grande')"
+      },
+      {
+        "line": 28,
+        "text": "expect(commands.locator(':scope>p').first()).not.toContainText('Muestra de solo lectura')"
+      },
+      {
+        "line": 62,
+        "text": "expect(analysis.getByRole('button',{name:'Estadísticas',exact:true})).toBeDisabled()"
+      },
+      {
+        "line": 62,
+        "text": "expect(analysis.getByRole('button',{name:'Estadísticas',exact:true})).toHaveAccessibleDescription('Las estadísticas llegan en una fase posterior para archivos grandes.')"
+      }
+    ]
+  },
+  {
+    "file": "tests/e2e/chart-review.spec.ts",
+    "before": 50,
+    "after": 50,
+    "removed": [],
+    "added": []
+  },
+  {
+    "file": "tests/e2e/charts.spec.ts",
+    "before": 353,
+    "after": 355,
+    "removed": [
+      {
+        "line": 18,
+        "text": "expect(page.getByRole('tab',{name:doc.name,exact:false})).toHaveAttribute('aria-selected','true')"
+      },
+      {
+        "line": 49,
+        "text": "expect(panel).toHaveCount(0)"
+      },
+      {
+        "line": 49,
+        "text": "expect(page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true})).toBeFocused()"
+      },
+      {
+        "line": 106,
+        "text": "expect(page.getByRole('tab',{name:/plots.csv/})).toHaveAttribute('aria-selected','true')"
+      },
+      {
+        "line": 110,
+        "text": "expect(charts.getByRole('button',{name:'Generar gráfico',exact:true})).toBeEnabled()"
+      },
+      {
+        "line": 136,
+        "text": "expect(panel.getByRole('button',{name:'Generar gráfico',exact:true})).toBeDisabled()"
+      },
+      {
+        "line": 139,
+        "text": "expect(page.locator('[data-csv-view]').getByRole('button',{name:'Tabla',exact:true})).toBeFocused()"
+      },
+      {
+        "line": 221,
+        "text": "expect(panel.getByRole('button',{name:'Generar gráfico',exact:true})).toBeEnabled()"
+      },
+      {
+        "line": 233,
+        "text": "expect(await filterEditor.getByRole('heading',{level:3}).getAttribute('id')).not.toBe(await tableEditor.getByRole('heading',{level:3}).getAttribute('id'))"
+      },
+      {
+        "line": 263,
+        "text": "expect(page.getByRole('tab',{name:doc.name,exact:false})).toHaveAttribute('aria-selected','true')"
+      },
+      {
+        "line": 285,
+        "text": "expect(panel.getByRole('checkbox',{name:'Proteger fórmulas para hojas de cálculo',exact:true})).toBeChecked()"
+      }
+    ],
+    "added": [
+      {
+        "line": 18,
+        "text": "expect(page.getByRole('tab',{name:doc.name,exact:true})).toHaveAttribute('aria-selected','true')"
+      },
+      {
+        "line": 49,
+        "text": "expect(page.locator('.tabs').getByRole('tab',{selected:true})).toBeFocused()"
+      },
+      {
+        "line": 86,
+        "text": "expect(panel).toBeVisible()"
+      },
+      {
+        "line": 106,
+        "text": "expect(page.getByRole('tab',{name:'plots.csv',exact:true})).toHaveAttribute('aria-selected','true')"
+      },
+      {
+        "line": 110,
+        "text": "expect(chartGenerate(page)).toBeEnabled()"
+      },
+      {
+        "line": 136,
+        "text": "expect(chartGenerate(page)).toBeDisabled()"
+      },
+      {
+        "line": 139,
+        "text": "expect(panel).toBeVisible()"
+      },
+      {
+        "line": 139,
+        "text": "expect(page.locator('.tabs').getByRole('tab',{selected:true})).toBeFocused()"
+      },
+      {
+        "line": 221,
+        "text": "expect(chartGenerate(page)).toBeEnabled()"
+      },
+      {
+        "line": 233,
+        "text": "expect(await filterEditor.getByRole('heading',{level:3}).getAttribute('id')).not.toBe(tableHeadingId)"
+      },
+      {
+        "line": 233,
+        "text": "expect(panel).toBeVisible()"
+      },
+      {
+        "line": 263,
+        "text": "expect(page.getByRole('tab',{name:doc.name,exact:true})).toHaveAttribute('aria-selected','true')"
+      },
+      {
+        "line": 285,
+        "text": "expect(analysisResultExport(page).getByRole('checkbox',{name:'Proteger fórmulas para hojas de cálculo',exact:true})).toBeChecked()"
+      }
+    ]
+  },
+  {
+    "file": "tests/e2e/sql.spec.ts",
+    "before": 105,
+    "after": 105,
+    "removed": [
+      {
+        "line": 32,
+        "text": "expect(panel).toHaveCount(0)"
+      },
+      {
+        "line": 32,
+        "text": "expect(analyzeButton(page)).toBeFocused()"
+      }
+    ],
+    "added": [
+      {
+        "line": 32,
+        "text": "expect(panel).toBeVisible()"
+      },
+      {
+        "line": 32,
+        "text": "expect(page.locator('.tabs').getByRole('tab',{selected:true})).toBeFocused()"
+      }
+    ]
+  },
+  {
+    "file": "tests/e2e/ui.spec.ts",
+    "before": 246,
+    "after": 246,
+    "removed": [
+      {
+        "line": 219,
+        "text": "expect(panel.getByRole('heading')).toBeFocused()"
+      },
+      {
+        "line": 241,
+        "text": "expect(analyzeButton(page)).toBeFocused()"
+      },
+      {
+        "line": 531,
+        "text": "expect(analyzeButton(page)).toBeFocused()"
+      }
+    ],
+    "added": [
+      {
+        "line": 219,
+        "text": "expect(page.getByRole('heading',{name:'Estadísticas',level:2,exact:true})).toBeFocused()"
+      },
+      {
+        "line": 244,
+        "text": "expect(page.locator('.tabs[role=tablist]').getByRole('tab',{selected:true})).toBeFocused()"
+      },
+      {
+        "line": 537,
+        "text": "expect(page.locator('.tabs[role=tablist]').getByRole('tab',{selected:true})).toBeFocused()"
+      }
+    ]
+  },
+  {
+    "file": "tests/e2e/structure.spec.ts",
+    "before": 132,
+    "after": 132,
+    "removed": [
+      {
+        "line": 251,
+        "text": "expect(page.locator('.pivot-result')).toBeVisible()"
+      }
+    ],
+    "added": [
+      {
+        "line": 250,
+        "text": "expect(chartPanel(page).locator('.pivot-result')).toBeVisible()"
+      }
+    ]
+  },
+  {
+    "file": "tests/e2e/statistics-reports.spec.ts",
+    "before": 50,
+    "after": 49,
+    "removed": [
+      {
+        "line": 16,
+        "text": "expect(page.getByRole('grid',{name:'Tabla de datos'})).toBeVisible()"
+      }
+    ],
+    "added": []
+  },
+  {
+    "file": "tests/e2e/selection-statistics.spec.ts",
+    "before": 51,
+    "after": 51,
+    "removed": [],
+    "added": []
+  },
+  {
+    "file": "tests/e2e/descriptive-percentiles.spec.ts",
+    "before": 45,
+    "after": 45,
+    "removed": [],
+    "added": []
+  },
+  {
+    "file": "tests/e2e/columns-overview.spec.ts",
+    "before": 90,
+    "after": 95,
+    "removed": [
+      {
+        "line": 36,
+        "text": "expect(page.getByRole('heading',{name:'Estadísticas por columna',exact:true})).toBeFocused()"
+      }
+    ],
+    "added": [
+      {
+        "line": 36,
+        "text": "expect(page.locator('.analysis-workspace:not([hidden])').getByRole('heading',{name:'Estadísticas',exact:true})).toBeFocused()"
+      },
+      {
+        "line": 96,
+        "text": "expect(button).toBeEnabled()"
+      },
+      {
+        "line": 111,
+        "text": "expect(panel.getByRole('status',{includeHidden:true})).toHaveText('Explorando columna 1 de 2…')"
+      },
+      {
+        "line": 112,
+        "text": "expect(grid).toBeVisible()"
+      },
+      {
+        "line": 116,
+        "text": "expect(panel.getByRole('status')).toHaveText('Explorando columna 1 de 2…')"
+      },
+      {
+        "line": 117,
+        "text": "expect(panel.getByRole('status')).toHaveText('Exploración de columnas completa.',{timeout:90000})"
+      }
+    ]
+  },
+  {
+    "file": "tests/e2e/search.spec.ts",
+    "before": 58,
+    "after": 58,
+    "removed": [],
+    "added": []
+  },
+  {
+    "file": "tests/e2e/commands.spec.ts",
+    "before": 280,
+    "after": 280,
+    "removed": [],
+    "added": []
+  }
+]

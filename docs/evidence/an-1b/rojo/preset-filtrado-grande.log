@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:55183) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/charts.spec.ts:73:1 › gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial @perf (17.1s)
+
+
+  1) [csv] › tests/e2e/charts.spec.ts:73:1 › gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial @perf
+
+    Error: expect(locator).toBeDisabled() failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('button', { name: 'Aplicar configuración', exact: true })
+    Expected: disabled
+    Received: enabled
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeDisabled" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('button', { name: 'Aplicar configuración', exact: true }) with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('button', { name: 'Aplicar configuración', exact: true })
+        33 × locator resolved to <button type="button" class="svelte-t5yt1q">Aplicar configuración</button>
+           - unexpected value "enabled"
+
+
+      78 |  const preset=await page.evaluate(({doc,options})=>window.freya.saveChartPreset(doc.id,{name:'Vista guardada para comprobar límites',configuration:{headers:doc.headers!,options:{...options,y:1},where:{conditions:[],filterMode:'all'},view:{search:'000'}}}),{doc,options})
+      79 |  await panel.getByText('Configuraciones guardadas',{exact:true}).click();await panel.getByRole('button',{name:'Actualizar biblioteca',exact:true}).click();await panel.getByLabel('Configuración guardada del gráfico').selectOption(preset.id)
+    > 80 |  await expect(panel.getByRole('button',{name:'Aplicar configuración',exact:true})).toBeDisabled();await expect(panel.getByRole('button',{name:'Aplicar configuración',exact:true})).toHaveAccessibleDescription('Esta acción no está disponible en el modo de archivos grandes.');await expect(panel.locator('.presets [role=alert]')).toHaveText('Esta acción no está disponible en el modo de archivos grandes.')
+         |                                                                                    ^
+      81 |  await panel.getByText('Configuraciones guardadas',{exact:true}).click()
+      82 |  await expect(panel.getByLabel('Alcance del gráfico').locator('option[value="filtered"]')).toHaveJSProperty('disabled',true);await expect(page.evaluate(id=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id,revision:0,query:{offset:0,limit:1,requestId:1,search:'0'}}],sql:'SELECT COUNT(*) FROM datos'}),doc.id)).rejects.toThrow('no está disponible en archivos grandes');await panel.getByLabel('Tipo de gráfico',{exact:true}).selectOption('histogram');await panel.getByLabel('Columna Y del gráfico',{exact:true}).selectOption('1');await chartGenerate(page).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:90000});await chartDetails(panel);await expect(panel.locator('.chart-info .scope').last()).toContainText('Fuente completa desde disco');await panel.locator('.chart-info>summary').click();await chartDetails(panel);await expect(panel.locator('.chart-info .scope').last()).toContainText(/2[,.]400 filas/)
+      83 |  await panel.locator('.chart-info>summary').click();await showTable(page);await expect(page.getByRole('button',{name:'Exportar',exact:true})).toBeDisabled();await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled();await showPanel(page,'Gráficos')
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/charts.spec.ts:80:84
+
+    Error Context: test-results/charts-gráficos-de-un-CSV--08ef6-in-habilitar-el-CSV-parcial-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/charts-gráficos-de-un-CSV--08ef6-in-habilitar-el-CSV-parcial-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/charts-gráficos-de-un-CSV--08ef6-in-habilitar-el-CSV-parcial-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/charts.spec.ts:73:1 › gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial @perf

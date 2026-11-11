@@ -1,0 +1,1078 @@
+
+> freyalab@0.1.0-alpha.4 test:e2e
+> npm run build && playwright test
+
+
+> freyalab@0.1.0-alpha.4 build
+> electron-vite build
+
+vite v8.3.4 building ssr environment for production...
+transforming...
+✓ 89 modules transformed.
+rendering chunks...
+out/main/chunks/docx-reference-BN6C4M3K.docx                 11.33 kB
+out/main/chunks/ieee-B8PWB0vG.csl                            17.58 kB
+out/main/chunks/nlm-citation-sequence-C4Ol6L9N.csl           18.12 kB
+out/main/chunks/modern-language-association-D8XFYsEz.csl     44.38 kB
+out/main/chunks/apa-C4S_z8Xk.csl                             85.81 kB
+out/main/chunks/chicago-author-date-CrHqWj3t.csl            167.76 kB
+out/main/chunks/icon-CzXCv3fk.png                         1,449.27 kB
+out/main/large-search-worker.js                               4.55 kB
+out/main/chunks/report-reference-Dd07X5IH.js                  5.46 kB
+out/main/chunks/citation-styles-BtSrKC0j.js                   5.52 kB
+out/main/chunks/table-query-SyYCAq1-.js                      16.24 kB
+out/main/table-worker.js                                    111.28 kB
+out/main/chunks/calculated-column-9fmWXj4d.js               154.06 kB
+out/main/index.js                                           311.75 kB
+
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0msrc/main/pandoc.ts is dynamically imported by src/main/bibliography.ts but also statically imported by src/main/export.ts, src/main/index.ts, dynamic import will not move module into another chunk.
+
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0msrc/main/document-assets.ts is dynamically imported by src/main/documents.ts but also statically imported by src/main/report-markdown.ts, dynamic import will not move module into another chunk.
+
+✓ built in 40ms
+vite v8.3.4 building ssr environment for production...
+transforming...
+✓ 4 modules transformed.
+rendering chunks...
+out/preload/index.cjs  9.13 kB
+
+✓ built in 6ms
+11:50:01 PM [vite-plugin-svelte] no Svelte config found at /private/tmp/freyalab-alpha4-an1b - using default configuration.
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 3823 modules transformed.
+rendering chunks...
+out/renderer/analytics.html                                                  0.55 kB
+out/renderer/index.html                                                      1.07 kB
+out/renderer/assets/jetbrains-mono-greek-400-normal-C190GLew.woff2           4.22 kB
+out/renderer/assets/KaTeX_Size3-Regular-CTq5MqoE.woff                        4.42 kB
+out/renderer/assets/KaTeX_Size4-Regular-Dl5lxZxV.woff2                       4.92 kB
+out/renderer/assets/inter-vietnamese-400-normal-DMkecbls.woff2               4.97 kB
+out/renderer/assets/inter-vietnamese-600-normal-Cc8MFFhd.woff2               5.10 kB
+out/renderer/assets/inter-vietnamese-500-normal-DOriooB6.woff2               5.11 kB
+out/renderer/assets/KaTeX_Size2-Regular-Dy4dx90m.woff2                       5.20 kB
+out/renderer/assets/inter-greek-ext-400-normal-DGGRlc-M.woff2                5.26 kB
+out/renderer/assets/jetbrains-mono-cyrillic-400-normal-BEIGL1Tu.woff2        5.32 kB
+out/renderer/assets/jetbrains-mono-vietnamese-400-normal-CqNFfHCs.woff       5.37 kB
+out/renderer/assets/inter-greek-ext-500-normal-C4iEst2y.woff2                5.42 kB
+out/renderer/assets/inter-greek-ext-600-normal-DRtmH8MT.woff2                5.43 kB
+out/renderer/assets/KaTeX_Size1-Regular-mCD8mA8B.woff2                       5.46 kB
+out/renderer/assets/jetbrains-mono-greek-400-normal-B9oWc5Lo.woff            5.66 kB
+out/renderer/assets/KaTeX_Size4-Regular-BF-4gkZK.woff                        5.98 kB
+out/renderer/assets/KaTeX_Size2-Regular-oD1tc_U0.woff                        6.18 kB
+out/renderer/assets/KaTeX_Size1-Regular-C195tn64.woff                        6.49 kB
+out/renderer/assets/inter-vietnamese-400-normal-Bbgyi5SW.woff                6.50 kB
+out/renderer/assets/inter-vietnamese-500-normal-mJboJaSs.woff                6.59 kB
+out/renderer/assets/inter-vietnamese-600-normal-BuLX-rYi.woff                6.64 kB
+out/renderer/assets/KaTeX_Caligraphic-Regular-Di6jR-x-.woff2                 6.90 kB
+out/renderer/assets/KaTeX_Caligraphic-Bold-Dq_IR9rO.woff2                    6.91 kB
+out/renderer/assets/jetbrains-mono-cyrillic-400-normal-ugxPyKxw.woff         6.97 kB
+out/renderer/assets/inter-greek-ext-400-normal-KugGGMne.woff                 7.06 kB
+out/renderer/assets/inter-greek-ext-500-normal-2j5mBUwD.woff                 7.19 kB
+out/renderer/assets/inter-greek-ext-600-normal-B8X0CLgF.woff                 7.21 kB
+out/renderer/assets/jetbrains-mono-latin-ext-400-normal-Bc8Ftmh3.woff2       7.33 kB
+out/renderer/assets/KaTeX_Size3-Regular-DgpXs0kz.ttf                         7.58 kB
+out/renderer/assets/KaTeX_Caligraphic-Regular-CTRA-rTL.woff                  7.65 kB
+out/renderer/assets/inter-cyrillic-400-normal-obahsSVq.woff2                 7.71 kB
+out/renderer/assets/KaTeX_Caligraphic-Bold-BEiXGLvX.woff                     7.71 kB
+out/renderer/assets/inter-greek-400-normal-B4URO6DV.woff2                    7.77 kB
+out/renderer/assets/inter-cyrillic-500-normal-BasfLYem.woff2                 7.90 kB
+out/renderer/assets/inter-greek-500-normal-BIZE56-Y.woff2                    7.92 kB
+out/renderer/assets/inter-greek-600-normal-plRanbMR.woff2                    7.94 kB
+out/renderer/assets/inter-cyrillic-600-normal-CWCymEST.woff2                 7.97 kB
+out/renderer/assets/KaTeX_Script-Regular-D3wIWfF6.woff2                      9.64 kB
+out/renderer/assets/inter-cyrillic-400-normal-HOLc17fK.woff                  9.78 kB
+out/renderer/assets/inter-greek-400-normal-q2sYcFCs.woff                     9.92 kB
+out/renderer/assets/inter-cyrillic-600-normal-4D_pXhcN.woff                  9.93 kB
+out/renderer/assets/inter-cyrillic-500-normal-CxZf_p3X.woff                  9.94 kB
+out/renderer/assets/inter-greek-500-normal-Xzm54t5V.woff                     9.98 kB
+out/renderer/assets/inter-greek-600-normal-BZpKdvQh.woff                    10.03 kB
+out/renderer/assets/jetbrains-mono-latin-ext-400-normal-fXTG6kC5.woff       10.12 kB
+out/renderer/assets/inter-cyrillic-ext-400-normal-BQZuk6qB.woff2            10.23 kB
+out/renderer/assets/KaTeX_SansSerif-Regular-DDBCnlJ7.woff2                  10.34 kB
+out/renderer/assets/KaTeX_Size4-Regular-DWFBv043.ttf                        10.36 kB
+out/renderer/assets/inter-cyrillic-ext-500-normal-B0yAr1jD.woff2            10.43 kB
+out/renderer/assets/inter-cyrillic-ext-600-normal-Dfes3d0z.woff2            10.48 kB
+out/renderer/assets/KaTeX_Script-Regular-D5yQViql.woff                      10.58 kB
+out/renderer/assets/KaTeX_Fraktur-Regular-CTYiF6lA.woff2                    11.31 kB
+out/renderer/assets/KaTeX_Fraktur-Bold-CL6g_b3V.woff2                       11.34 kB
+out/renderer/assets/KaTeX_Size2-Regular-B7gKUWhC.ttf                        11.50 kB
+out/renderer/assets/KaTeX_SansSerif-Italic-C3H0VqGB.woff2                   12.02 kB
+out/renderer/assets/KaTeX_SansSerif-Bold-D1sUS0GD.woff2                     12.21 kB
+out/renderer/assets/KaTeX_Size1-Regular-Dbsnue_I.ttf                        12.22 kB
+out/renderer/assets/KaTeX_SansSerif-Regular-CS6fqUqJ.woff                   12.31 kB
+out/renderer/assets/KaTeX_Caligraphic-Regular-wX97UBjC.ttf                  12.34 kB
+out/renderer/assets/KaTeX_Caligraphic-Bold-ATXxdsX0.ttf                     12.36 kB
+out/renderer/assets/KaTeX_Fraktur-Regular-Dxdc4cR9.woff                     13.20 kB
+out/renderer/assets/KaTeX_Fraktur-Bold-BsDP51OF.woff                        13.29 kB
+out/renderer/assets/inter-cyrillic-ext-400-normal-DQukG94-.woff             13.33 kB
+out/renderer/assets/inter-cyrillic-ext-500-normal-BmqWE9Dz.woff             13.45 kB
+out/renderer/assets/inter-cyrillic-ext-600-normal-Bcila6Z-.woff             13.46 kB
+out/renderer/assets/KaTeX_Typewriter-Regular-CO6r4hn1.woff2                 13.56 kB
+out/renderer/assets/KaTeX_SansSerif-Italic-DN2j7dab.woff                    14.11 kB
+out/renderer/assets/KaTeX_SansSerif-Bold-DbIhKOiC.woff                      14.40 kB
+out/renderer/assets/KaTeX_Typewriter-Regular-C0xS9mPB.woff                  16.02 kB
+out/renderer/assets/KaTeX_Math-BoldItalic-CZnvNsCZ.woff2                    16.40 kB
+out/renderer/assets/KaTeX_Math-Italic-t53AETM-.woff2                        16.44 kB
+out/renderer/assets/KaTeX_Script-Regular-C5JkGWo-.ttf                       16.64 kB
+out/renderer/assets/KaTeX_Main-BoldItalic-DxDJ3AOS.woff2                    16.78 kB
+out/renderer/assets/KaTeX_Main-Italic-NWA7e6Wa.woff2                        16.98 kB
+out/renderer/assets/KaTeX_Math-BoldItalic-iY-2wyZ7.woff                     18.66 kB
+out/renderer/assets/KaTeX_Math-Italic-DA0__PXp.woff                         18.74 kB
+out/renderer/assets/KaTeX_Main-BoldItalic-SpSLRI95.woff                     19.41 kB
+out/renderer/assets/KaTeX_SansSerif-Regular-BNo7hRIc.ttf                    19.43 kB
+out/renderer/assets/KaTeX_Fraktur-Regular-CB_wures.ttf                      19.57 kB
+out/renderer/assets/KaTeX_Fraktur-Bold-BdnERNNW.ttf                         19.58 kB
+out/renderer/assets/KaTeX_Main-Italic-BMLOBm91.woff                         19.67 kB
+out/renderer/assets/jetbrains-mono-latin-400-normal-V6pRDFza.woff2          21.16 kB
+out/renderer/assets/KaTeX_SansSerif-Italic-YYjJ1zSn.ttf                     22.36 kB
+out/renderer/assets/inter-latin-400-normal-C38fXH4l.woff2                   23.66 kB
+out/renderer/assets/inter-latin-500-normal-Cerq10X2.woff2                   24.27 kB
+out/renderer/assets/inter-latin-600-normal-LgqL8muc.woff2                   24.45 kB
+out/renderer/assets/KaTeX_SansSerif-Bold-CFMepnvq.ttf                       24.50 kB
+out/renderer/assets/KaTeX_Main-Bold-Cx986IdX.woff2                          25.32 kB
+out/renderer/assets/KaTeX_Main-Regular-B22Nviop.woff2                       26.27 kB
+out/renderer/assets/jetbrains-mono-latin-400-normal-6-qcROiO.woff           27.49 kB
+out/renderer/assets/KaTeX_Typewriter-Regular-D3Ib7_Hf.ttf                   27.55 kB
+out/renderer/assets/KaTeX_AMS-Regular-BQhdFMY1.woff2                        28.07 kB
+out/renderer/assets/KaTeX_Main-Bold-Jm3AIy58.woff                           29.91 kB
+out/renderer/assets/inter-latin-400-normal-CyCys3Eg.woff                    30.69 kB
+out/renderer/assets/KaTeX_Main-Regular-Dr94JaBh.woff                        30.77 kB
+out/renderer/assets/KaTeX_Math-BoldItalic-B3XSjfu4.ttf                      31.19 kB
+out/renderer/assets/inter-latin-600-normal-CiBQ2DWP.woff                    31.26 kB
+out/renderer/assets/inter-latin-500-normal-BL9OpVg8.woff                    31.28 kB
+out/renderer/assets/KaTeX_Math-Italic-flOr_0UB.ttf                          31.30 kB
+out/renderer/assets/KaTeX_Main-BoldItalic-DzxPMmG6.ttf                      32.96 kB
+out/renderer/assets/KaTeX_AMS-Regular-DMm9YOAa.woff                         33.51 kB
+out/renderer/assets/KaTeX_Main-Italic-3WenGoN9.ttf                          33.58 kB
+out/renderer/assets/inter-latin-ext-400-normal-C1nco2VV.woff2               35.00 kB
+out/renderer/assets/inter-latin-ext-500-normal-CV4jyFjo.woff2               36.02 kB
+out/renderer/assets/inter-latin-ext-600-normal-D2bJ5OIk.woff2               36.26 kB
+out/renderer/assets/inter-latin-ext-400-normal-77YHD8bZ.woff                47.56 kB
+out/renderer/assets/inter-latin-ext-500-normal-BxGbmqWO.woff                48.49 kB
+out/renderer/assets/inter-latin-ext-600-normal-CIVaiw4L.woff                48.66 kB
+out/renderer/assets/KaTeX_Main-Bold-waoOVXN0.ttf                            51.33 kB
+out/renderer/assets/KaTeX_Main-Regular-ypZvNtVU.ttf                         53.58 kB
+out/renderer/assets/KaTeX_AMS-Regular-DRggAlZN.ttf                          63.63 kB
+out/renderer/assets/text-stats.worker-KjgHWC15.js                          580.66 kB
+out/renderer/assets/duckdb-browser-eh.worker-CwdVMcbT.js                   773.22 kB
+out/renderer/assets/icon-CzXCv3fk.png                                    1,449.27 kB
+out/renderer/assets/duckdb-eh-CfdE9-rk.wasm                             35,913.74 kB
+out/renderer/assets/CsvQueryTools-DrWn63IZ.css                               1.57 kB
+out/renderer/assets/CsvCharts-D-GTL6tS.css                                  14.37 kB
+out/renderer/assets/index-Bjdw7aRZ.css                                     147.02 kB
+out/renderer/assets/purify.es-BjD_weQk.js                                    0.05 kB
+out/renderer/assets/pie-XZMESJXO-BG4JRG0d.js                                 0.11 kB
+out/renderer/assets/info-OHQRW6UA-BIpsREot.js                                0.11 kB
+out/renderer/assets/radar-ABXABTNO-XHXYDKMj.js                               0.11 kB
+out/renderer/assets/packet-JDAUHWVQ-BTXx9K7N.js                              0.11 kB
+out/renderer/assets/cynefin-EF2NZ3EQ-BeVKysgH.js                             0.11 kB
+out/renderer/assets/treemap-SAJKECNS-CkioPp_B.js                             0.11 kB
+out/renderer/assets/wardley-7MLQ67FV-DmJfn4Ss.js                             0.11 kB
+out/renderer/assets/gitGraph-VSP46ZUC-g-Az1Y-L.js                            0.11 kB
+out/renderer/assets/railroad-I3PHUGI6-MLQJbW8V.js                            0.11 kB
+out/renderer/assets/treeView-D4JQ5SDB-B99gbPc1.js                            0.11 kB
+out/renderer/assets/railroad-peg-JR7BVNR7-Cr7WHIoe.js                        0.11 kB
+out/renderer/assets/architecture-WOLXFQ4H-DCev8mCD.js                        0.11 kB
+out/renderer/assets/railroad-abnf-LNEFI6M7-D7SdHBwy.js                       0.11 kB
+out/renderer/assets/railroad-ebnf-DWYD2UWJ-vAjUR9nf.js                       0.11 kB
+out/renderer/assets/eventmodeling-K75KTNOO-ef33wU7F.js                       0.12 kB
+out/renderer/assets/array-75Ih5Qg4.js                                        0.16 kB
+out/renderer/assets/channel-BAGbAOEf.js                                      0.29 kB
+out/renderer/assets/init-BplePOhs.js                                         0.31 kB
+out/renderer/assets/chunk-Y2CYZVJY-_WKz87cL.js                               0.42 kB
+out/renderer/assets/chunk-JWPE2WC7-D8YmdVM4.js                               0.46 kB
+out/renderer/assets/chunk-2Q5K7J3B-BLTsAQ0H.js                               0.48 kB
+out/renderer/assets/chunk-5VM5RSS4-prWcJqNH.js                               0.55 kB
+out/renderer/assets/chunk-XXDRQBXY-CdygPnAA.js                               0.62 kB
+out/renderer/assets/flowDiagram-IUGLLWBU-A9uzPWWW.js                         0.63 kB
+out/renderer/assets/chunk-OYAV6JZA-DYmNTAhc.js                               0.67 kB
+out/renderer/assets/infoDiagram-MVDRKAX5-BdfwR0sQ.js                         1.12 kB
+out/renderer/assets/swimlanesDiagram-AYQRV4AK-Q0tYhtvZ.js                    1.16 kB
+out/renderer/assets/chunk-3M4EKCLJ-DkROUKlM.js                               1.24 kB
+out/renderer/assets/chunk-VTWWFHGB-C6WXlbx4.js                               1.24 kB
+out/renderer/assets/chunk-OD3NTWWA-lMr8OExe.js                               1.26 kB
+out/renderer/assets/chunk-VQ5W62QI-Bpvo5K2w.js                               1.27 kB
+out/renderer/assets/chunk-VPELOWWC-DsOznoB4.js                               1.28 kB
+out/renderer/assets/chunk-53FOQ5SW-4wgNYAwC.js                               1.29 kB
+out/renderer/assets/chunk-VZTHESGH-zzUZ4sdQ.js                               1.29 kB
+out/renderer/assets/chunk-DUW6YSOI-C3w92-t_.js                               1.38 kB
+out/renderer/assets/chunk-QNH66VMT-CxksWAzQ.js                               1.49 kB
+out/renderer/assets/chunk-J5ZVWO5B-DppSBu9_.js                               1.69 kB
+out/renderer/assets/sizeCapture-INFHLROL-BOesgtPS.js                         1.72 kB
+out/renderer/assets/line-CUR-NADg.js                                         1.96 kB
+out/renderer/assets/rolldown-runtime-DbVrKiKs.js                             1.97 kB
+out/renderer/assets/chunk-KPI5JJXK-BG6YWYdd.js                               1.99 kB
+out/renderer/assets/chunk-YK26KJH5-CgSLhCSj.js                               2.01 kB
+out/renderer/assets/chunk-24IY7LWP-DV2P73Oa.js                               2.04 kB
+out/renderer/assets/ordinal-CAi64SpE.js                                      2.29 kB
+out/renderer/assets/chunk-ZO67DCNQ-MJLINHlu.js                               2.53 kB
+out/renderer/assets/chunk-BP2KR52E-rcvBH8Z2.js                               2.59 kB
+out/renderer/assets/chunk-ZAUX2LTX-DD8dGCgm.js                               2.65 kB
+out/renderer/assets/chunk-F6S3BTY2-BBPe9RPX.js                               2.69 kB
+out/renderer/assets/railroadDiagram-Y72NRBL7-CsETfyqa.js                     2.87 kB
+out/renderer/assets/preload-helper-CRqqVDM6.js                               3.29 kB
+out/renderer/assets/chunk-4S7OKTRW-BbG4Dx6w.js                               3.38 kB
+out/renderer/assets/abnfDiagram-WEYOIA3C-UiD-ZDYw.js                         3.45 kB
+out/renderer/assets/calculation-help-TLlollac.js                             3.55 kB
+out/renderer/assets/chunk-TPMEZKFX-zjWqSsIX.js                               3.58 kB
+out/renderer/assets/pegDiagram-ECIUJNBX-CU0ZsvOq.js                          3.68 kB
+out/renderer/assets/chunk-UHW7PFBP-CvXT7Tpj.js                               3.70 kB
+out/renderer/assets/chunk-55XCU76K-mSb-y6SX.js                               3.73 kB
+out/renderer/assets/ebnfDiagram-V4P3TTPT-DphbNtW8.js                         3.75 kB
+out/renderer/assets/path-Buz7z2yS.js                                         3.90 kB
+out/renderer/assets/dist-DiH-eo_h.js                                         4.08 kB
+out/renderer/assets/chunk-EJLWFMJV-ChNX6SRR.js                               4.97 kB
+out/renderer/assets/arc-BX_xvaGo.js                                          6.79 kB
+out/renderer/assets/diagram-I5XIIV2D-DtpJ0JzL.js                             7.37 kB
+out/renderer/assets/mermaid-parser.core-CFbyl6td.js                         10.16 kB
+out/renderer/assets/defaultLocale-C4-Sa4Sb.js                               10.29 kB
+out/renderer/assets/diagram-RJA3I4VV-pVHISgn1.js                            11.09 kB
+out/renderer/assets/chunk-4EMNKR2T-BbIwJSBB.js                              11.77 kB
+out/renderer/assets/pieDiagram-GNMPY74T-Cn9jY_jH.js                         12.10 kB
+out/renderer/assets/linear-COF7WqNK.js                                      12.85 kB
+out/renderer/assets/diagram-ODIL2UCW-Oe3zRBrj.js                            15.02 kB
+out/renderer/assets/chunk-YZO67HFG-CZnTkUY0.js                              15.24 kB
+out/renderer/assets/cynefinDiagram-WF24UDRP-BEAno5c4.js                     17.65 kB
+out/renderer/assets/diagram-PFBEJUXE-DpDLfwah.js                            20.47 kB
+out/renderer/assets/chunk-ZCHMQSOR-B91hTqjB.js                              20.93 kB
+out/renderer/assets/chunk-HNE4Q36P-C9Gxgscu.js                              27.04 kB
+out/renderer/assets/chunk-2E7WHVMD-lEuGKFLA.js                              28.41 kB
+out/renderer/assets/ishikawaDiagram-HPEHV2GE-CUm7DVif.js                    30.82 kB
+out/renderer/assets/diagram-CBK3MWTC-BSv8RUS3.js                            32.26 kB
+out/renderer/assets/kanban-definition-FNSA4HC5-DN4GEk2v.js                  34.00 kB
+out/renderer/assets/rough.esm-BuA9rPe2.js                                   38.37 kB
+out/renderer/assets/mindmap-definition-6OY57UG3-CpxZdhNF.js                 39.30 kB
+out/renderer/assets/journeyDiagram-BOSHW7O7-rlXG_mCc.js                     40.17 kB
+out/renderer/assets/sankeyDiagram-SY24JHO5-CgaLlFam.js                      42.38 kB
+out/renderer/assets/wardleyDiagram-IVAIDKWA-BN8eHh3n.js                     42.44 kB
+out/renderer/assets/requirementDiagram-EQYSW5RA-BKGdoGns.js                 51.69 kB
+out/renderer/assets/erDiagram-KYQIGQAA-u_8-relK.js                          52.52 kB
+out/renderer/assets/gitGraphDiagram-PDYL7XHY-CiN14-mV.js                    53.86 kB
+out/renderer/assets/timeline-definition-JXYKGLGB-djZHP_Mx.js                54.61 kB
+out/renderer/assets/quadrantDiagram-D57K4MC3-ypO9JPnZ.js                    58.25 kB
+out/renderer/assets/chunk-WQQL4CDK-CZIDz4tD.js                              60.73 kB
+out/renderer/assets/mermaid.core-JOp98QJI.js                                70.79 kB
+out/renderer/assets/stateDiagram-v2-A6IESKWZ-CPcOFQNe.js                    72.34 kB
+out/renderer/assets/blockDiagram-RJAE7QA3-1_Zk2hdP.js                       72.78 kB
+out/renderer/assets/chunk-7S6XSTFO-FAz25i1L.js                              74.34 kB
+out/renderer/assets/chunk-AQDTSKZB-IAnfjmUg.js                              75.96 kB
+out/renderer/assets/xychartDiagram-4URNHDU4-CitzVuUI.js                     77.74 kB
+out/renderer/assets/classDiagram-v2-4MYWR3UA-DiKTfqjn.js                    85.35 kB
+out/renderer/assets/purify.es-Cb_qU320.js                                   85.75 kB
+out/renderer/assets/src-CnO5s8ui.js                                         86.49 kB
+out/renderer/assets/vennDiagram-Q3Y3IDCW-Be8_Lwre.js                        89.44 kB
+out/renderer/assets/chunk-LNGE3PJU-BwzPWnIy.js                              98.77 kB
+out/renderer/assets/chunk-NQOKRVIF-H1HKmy0n.js                             106.95 kB
+out/renderer/assets/c4Diagram-XDPPPE54-YLH3NxZv.js                         108.77 kB
+out/renderer/assets/ganttDiagram-R7GPNTJY-C6DU-WMp.js                      125.83 kB
+out/renderer/assets/graphlib-CRPlZn3x.js                                   133.07 kB
+out/renderer/assets/sql-helpers-C7GkTE5z.js                                143.81 kB
+out/renderer/assets/diagram-TYUNFSNR-D0G9CwVO.js                           146.64 kB
+out/renderer/assets/dagre-NK4GIZVX-xxXWnNoc.js                             148.16 kB
+out/renderer/assets/cose-bilkent-JH36ORCC-DdXoa3GU.js                      165.74 kB
+out/renderer/assets/sequenceDiagram-BLEHNHQU-D4tzOLxQ.js                   194.28 kB
+out/renderer/assets/CsvQueryTools-B_9w2seb.js                              229.26 kB
+out/renderer/assets/chunk-HAGFOTED-Z2-cNGHv.js                             231.66 kB
+out/renderer/assets/swimlanes-B3ENRKFQ-F8pltVg5.js                         256.00 kB
+out/renderer/assets/chunk-DSNLSHJZ-eALeauft.js                             278.43 kB
+out/renderer/assets/architectureDiagram-ZHVYKT53-DZaX9onS.js               318.35 kB
+out/renderer/assets/usecaseDiagram-WPOLBNNX-SnZjo8FZ.js                    343.97 kB
+out/renderer/assets/analytics-DCW4krxs.js                                  390.82 kB
+out/renderer/assets/katex-CqVYZWRW.js                                      499.32 kB
+out/renderer/assets/cytoscape.esm-DC78owhe.js                              869.93 kB
+out/renderer/assets/chunk-NGNAAXSQ-DczWEEPJ.js                           1,070.81 kB
+out/renderer/assets/CsvCharts-CkduhOaD.js                                1,679.33 kB
+out/renderer/assets/elk-QONTBCTQ-DmV4huQE.js                             2,619.77 kB
+out/renderer/assets/index-BrmtMI15.js                                    3,785.13 kB
+
+✓ built in 1.19s
+
+Running 613 tests using 1 worker
+
+(node:42960) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓    1 [shell] › tests/e2e/app.spec.ts:39:1 › renderer aislado, documento Markdown editable y guardado real @package-smoke (1.5s)
+  ✓    2 [shell] › tests/e2e/app.spec.ts:67:1 › CSV: ceros, multilinea, filtro, edición por identificador y guardado @package-smoke (800ms)
+  ✓    3 [shell] › tests/e2e/app.spec.ts:89:1 › exportación PDF con varias páginas y texto recuperable @package-smoke (1.1s)
+  ✓    4 [shell] › tests/e2e/app.spec.ts:110:1 › exportación SVG independiente mantiene cambios pendientes (661ms)
+  ✓    5 [shell] › tests/e2e/app.spec.ts:124:1 › HTML autónomo incluye fuentes y SVG, excluye recursos remotos y scripts @package-smoke (672ms)
+  ✓    6 [shell] › tests/e2e/app.spec.ts:141:1 › recupera cambios tras caída como documento nuevo sin sobrescribir el original (4.3s)
+  ✓    7 [shell] › tests/e2e/app.spec.ts:169:1 › limita imágenes a la carpeta autorizada y rechaza argumentos IPC inválidos (718ms)
+  ✓    8 [shell] › tests/e2e/app.spec.ts:190:1 › exportar una vista CSV nunca reemplaza el archivo abierto (869ms)
+  ✓    9 [shell] › tests/e2e/app.spec.ts:210:1 › PNG usa el tamaño completo del SVG a escala 2x sin recorte al viewport (779ms)
+  ✓   10 [shell] › tests/e2e/app.spec.ts:223:1 › buscar archivos recorre carpetas cerradas y excluye ocultos y dependencias (669ms)
+  ✓   11 [shell] › tests/e2e/app.spec.ts:233:1 › guardar como protege otro documento abierto (733ms)
+  ✓   12 [shell] › tests/e2e/app.spec.ts:242:1 › reinterpretar CSV rechaza ediciones simultáneas y conserva todas las filas (770ms)
+  ✓   13 [shell] › tests/e2e/app.spec.ts:282:1 › PDF desde Markdown real conserva imagen local grande, fórmula y diagrama en varias páginas (2.3s)
+  ✓   14 [shell] › tests/e2e/application-close.spec.ts:26:1 › X prepara la celda activa y Cancelar conserva el documento completo (1.2s)
+  ✓   15 [shell] › tests/e2e/application-close.spec.ts:31:1 › Salir prepara el encabezado activo y Cancelar conserva datos y cambios (1.2s)
+  ✓   16 [shell] › tests/e2e/application-close.spec.ts:37:88 › close: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en es (2.9s)
+  ✓   17 [shell] › tests/e2e/application-close.spec.ts:37:88 › close: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en en (2.8s)
+  ✓   18 [shell] › tests/e2e/application-close.spec.ts:37:88 › quit: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en es (2.8s)
+  ✓   19 [shell] › tests/e2e/application-close.spec.ts:37:88 › quit: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en en (2.9s)
+  ✓   20 [shell] › tests/e2e/application-close.spec.ts:53:48 › S4 · código de rechazo en en › close: cruza el puente real y conserva el borrador @perf (3.5s)
+  ✓   21 [shell] › tests/e2e/application-close.spec.ts:53:48 › S4 · código de rechazo en en › quit: cruza el puente real y conserva el borrador @perf (3.4s)
+  ✓   22 [shell] › tests/e2e/application-close.spec.ts:53:48 › S4 · código de rechazo en en-XA › close: cruza el puente real y conserva el borrador @perf (3.5s)
+  ✓   23 [shell] › tests/e2e/application-close.spec.ts:53:48 › S4 · código de rechazo en en-XA › quit: cruza el puente real y conserva el borrador @perf (3.5s)
+  ✓   24 [shell] › tests/e2e/application-close.spec.ts:74:1 › Guardar A y Cancelar B conserva ambos y anuncia el guardado ya realizado (1.0s)
+  ✓   25 [shell] › tests/e2e/application-close.spec.ts:88:1 › un diálogo abierto rechaza el cierre con aviso accesible dentro del diálogo y sin perder foco (811ms)
+  ✓   26 [shell] › tests/e2e/application-close.spec.ts:95:1 › una composición activa rechaza el cierre sin descartar el texto ni mover el foco (1.2s)
+  ✓   27 [shell] › tests/e2e/application-close.spec.ts:105:48 › una apertura SO durante el cierre espera y se reanuda al cancelar (1.4s)
+  ✓   28 [shell] › tests/e2e/application-close.spec.ts:105:48 › una apertura SO durante el cierre espera y se ignora al confirmar Salir (1.3s)
+  ✓   29 [shell] › tests/e2e/application-close.spec.ts:129:1 › un ACK retenido anuncia preparación, vence a30s reales e ignora respuestas tardías antes de reintentar (31.5s)
+  ✓   30 [shell] › tests/e2e/bootstrap-documents.spec.ts:46:1 › el inventario inicial vacío retrasado conserva un documento abierto mientras arranca (1.1s)
+  ✓   31 [shell] › tests/e2e/bootstrap-documents.spec.ts:58:1 › el inventario inicial antiguo no sobrescribe una edición ni cambia el documento activo (1.1s)
+  ✓   32 [shell] › tests/e2e/bootstrap-documents.spec.ts:72:1 › el inventario inicial retrasado no resucita un documento cerrado durante el arranque (1.0s)
+  -   33 [shell] › tests/e2e/commands.spec.ts:49:1 › APP-01 M4: Word se descubre al iniciar y el menú exporta un DOCX real sin abrir la barra
+  ✓   34 [shell] › tests/e2e/commands.spec.ts:70:1 › APP-02: Acerca de muestra versión real, copia sólo diagnóstico y lee licencias del paquete @package-smoke (7.3s)
+  ✓   35 [shell] › tests/e2e/commands.spec.ts:127:1 › APP-01: menú nativo traducido ofrece acciones de documentos y ayuda (600ms)
+  ✓   36 [shell] › tests/e2e/commands.spec.ts:132:1 › APP-01: menú cambia de idioma y de documento, conserva Mermaid y la ayuda usa el mismo catálogo (2.1s)
+  ✓   37 [shell] › tests/e2e/commands.spec.ts:164:1 › APP-01: acciones de archivo y barra lateral se despachan una sola vez (1.2s)
+  ✓   38 [shell] › tests/e2e/commands.spec.ts:178:1 › APP-01: reciente eliminado se quita de la lista y avisa sin tocar otros archivos (962ms)
+  ✓   39 [shell] › tests/e2e/commands.spec.ts:188:1 › APP-01: elementos de archivo, búsqueda y navegación conservan sus acciones (1.5s)
+  ✓   40 [shell] › tests/e2e/commands.spec.ts:209:1 › APP-01: Ayuda sólo abre enlaces HTTPS fijos y no envía información (724ms)
+  ✓   41 [shell] › tests/e2e/commands.spec.ts:216:57 › APP-01 M5: edición markdown usa el historial CodeMirror y no el nativo (893ms)
+  ✓   42 [shell] › tests/e2e/commands.spec.ts:216:57 › APP-01 M5: edición mermaid usa el historial CodeMirror y no el nativo (828ms)
+  ✓   43 [shell] › tests/e2e/commands.spec.ts:216:57 › APP-01 M5: edición sql usa el historial CodeMirror y no el nativo (934ms)
+  ✓   44 [shell] › tests/e2e/commands.spec.ts:230:1 › APP-01 M5: campos nativos y celda CSV editan su campo, la rejilla usa el historial CSV (1.2s)
+  ✓   45 [shell] › tests/e2e/commands.spec.ts:248:1 › APP-01 M5: copiar, cortar y pegar sólo delegan el comando nativo elegido (844ms)
+  ✓   46 [shell] › tests/e2e/commands.spec.ts:259:1 › APP-01 integridad: Guardar aplica la celda activa antes de escribir el CSV (1.1s)
+  ✓   47 [shell] › tests/e2e/commands.spec.ts:266:1 › APP-01 integridad: Guardar aplica el encabezado activo antes de escribir el CSV (913ms)
+  ✓   48 [shell] › tests/e2e/commands.spec.ts:273:1 › APP-01 integridad: cambiar de documento desde Ventana conserva la celda activa (1.3s)
+  ✓   49 [shell] › tests/e2e/commands.spec.ts:283:1 › APP-01 integridad: la última elección de pestaña prevalece mientras se prepara la celda (1.1s)
+  ✓   50 [shell] › tests/e2e/commands.spec.ts:290:1 › APP-01 integridad: Guardar como conserva la fuente y copia el borrador de celda (1.1s)
+  ✓   51 [shell] › tests/e2e/commands.spec.ts:298:1 › APP-01 integridad: Cerrar prepara el borrador y permite cancelar la confirmación existente (1.1s)
+  ✓   52 [shell] › tests/e2e/commands.spec.ts:307:1 › APP-01 integridad: Exportar incluye la celda preparada sin guardar el original (1.1s)
+  ✓   53 [shell] › tests/e2e/commands.spec.ts:316:1 › APP-01 integridad: navegar siguiente y anterior prepara la celda en ambos sentidos (1.7s)
+  ✓   54 [shell] › tests/e2e/commands.spec.ts:326:1 › APP-01 integridad: un encabezado rechazado bloquea Guardar, Cerrar y navegar aunque pierda foco (1.2s)
+  ✓   55 [shell] › tests/e2e/commands.spec.ts:340:1 › APP-01 integridad: si preparar la celda falla, no guarda ni descarta el borrador (1.3s)
+  ✓   56 [shell] › tests/e2e/commands.spec.ts:348:1 › APP-03: el menú abre Ajustes y Escape devuelve el foco (735ms)
+  ✓   57 [shell] › tests/e2e/commands.spec.ts:355:1 › APP-03: Ajustes usa teclado, aplica apariencia y restablece sólo su sección @package-smoke (1.4s)
+  ✓   58 [shell] › tests/e2e/commands.spec.ts:374:1 › APP-03: Archivos y Avanzado confirman sus acciones y conservan los documentos (1.1s)
+  ✓   59 [shell] › tests/e2e/commands.spec.ts:405:1 › APP-03 S15-S16: todas las secciones conservan contraste, foco y espacio en es y en (7.4s)
+  ✓   60 [shell] › tests/e2e/commands.spec.ts:435:1 › APP-03: versión futura deja los ajustes de solo lectura y conserva todos sus bytes (1.5s)
+  ✓   61 [shell] › tests/e2e/commands.spec.ts:445:1 › APP-01: menú y ayuda conservan los identificadores en pseudolocalización (1.6s)
+  ✓   62 [shell] › tests/e2e/commands.spec.ts:465:1 › APP-03: migra el perfil anterior una vez y conserva ajustes sin modificar documentos (1.8s)
+  ✓   63 [shell] › tests/e2e/commands.spec.ts:501:1 › AC-03/04: el paquete lee los cinco CSL y el DOCX interno con sus hashes oficiales (563ms)
+  ✓   64 [shell] › tests/e2e/commands.spec.ts:525:1 › paleta CSV: búsqueda sin acentos, teclado, rango, foco y vista previa comparten edición y deshacer (1.3s)
+  ✓   65 [shell] › tests/e2e/commands.spec.ts:531:1 › paleta CSV: estructura usa filas y columnas marcadas, consulta y restauración sin mutar originales (1.6s)
+  ✓   66 [shell] › tests/e2e/commands.spec.ts:539:1 › paleta CSV: muestra bloquea edición y copia, conserva análisis y navegación en ambos temas @perf (1.5s)
+  ✓   67 [shell] › tests/e2e/commands.spec.ts:545:1 › paleta CSV: paginar deshabilita el rango sin perder foco y mantiene disponible Transformar (1.1s)
+  ✓   68 [shell] › tests/e2e/i18n.spec.ts:28:1 › I5/I6 · cambiar de idioma actualiza el piloto y los diálogos, sin tocar documentos (2.7s)
+  ✓   69 [shell] › tests/e2e/i18n.spec.ts:63:1 › I7/I13 · en-XA muestra el piloto expandido, sin desbordes ni selector prematuro (784ms)
+  ✓   70 [shell] › tests/e2e/i18n.spec.ts:72:1 › I9 · FREYALAB_LANG se ignora fuera de FREYALAB_TEST (550ms)
+  ✓   71 [shell] › tests/e2e/icons.spec.ts:31:1 › iconos: la bienvenida, un CSV y un Markdown no usan glifos ni exponen los SVG (918ms)
+  ✓   72 [shell] › tests/e2e/icons.spec.ts:45:1 › iconos: los avisos distinguen éxito y error con icono y texto, y Exportar deshabilitado no es azul (1.1s)
+  ✓   73 [shell] › tests/e2e/project-source.spec.ts:49:1 › registra un CSV con teclado, bloquea edición directa y deja guardar una copia exacta (1.2s)
+  ✓   74 [shell] › tests/e2e/project-source.spec.ts:81:1 › avisa cuando la fuente cambia y conserva la huella previa al volver a registrarla (1.3s)
+  ✓   75 [shell] › tests/e2e/project-source.spec.ts:97:1 › busca por huella dentro del proyecto y solo reenlaza tras confirmar (909ms)
+  ✓   76 [shell] › tests/e2e/project-source.spec.ts:116:1 › el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado (4.3s)
+  ✓   77 [shell] › tests/e2e/project-source.spec.ts:180:1 › una muestra conserva su alcance al protegerla y al cerrar el proyecto (1.7s)
+  ✓   78 [shell] › tests/e2e/project-source.spec.ts:207:45 › diálogo y fuente protegida en colores claro y oscuro [es] (1.0s)
+  ✓   79 [shell] › tests/e2e/project-source.spec.ts:207:45 › diálogo y fuente protegida en colores claro y oscuro [en-XA] (1.0s)
+  ✓   80 [shell] › tests/e2e/project.spec.ts:25:1 › crea con el teclado, abre por carpeta, manifiesto y menú de recientes (1.0s)
+  ✓   81 [shell] › tests/e2e/project.spec.ts:62:1 › una versión futura se abre en solo lectura y conserva todos sus bytes (782ms)
+  ✓   82 [shell] › tests/e2e/project.spec.ts:74:1 › Cancelar limpia la carpeta elegida y no crea el manifiesto (776ms)
+  ✓   83 [shell] › tests/e2e/project.spec.ts:85:45 › proyecto se muestra en los dos temas a 1440 × 900 [es] (927ms)
+  ✓   84 [shell] › tests/e2e/project.spec.ts:85:45 › proyecto se muestra en los dos temas a 1440 × 900 [en-XA] (953ms)
+  ✓   85 [shell] › tests/e2e/ui-u0.spec.ts:45:1 › U0: capturas de estados existentes y tipografía base sin modificar archivos (5.5s)
+  ✓   86 [shell] › tests/e2e/ui-u0.spec.ts:62:1 › U0: un primario Guardar/Exportar/Abrir con cajas y nombres estables en ambos temas (1.8s)
+  ✓   87 [shell] › tests/e2e/ui-u0.spec.ts:79:1 › U0: los botones deshabilitados visibles explican su motivo con title y descripción accesible (771ms)
+  ✓   88 [shell] › tests/e2e/ui-u0.spec.ts:87:1 › U0: contraste real, foco por teclado, pulsación y movimiento reducido (996ms)
+  ✓   89 [shell] › tests/e2e/ui-u0.spec.ts:106:1 › U0: idiomas en-XA y en conservan nombres, motivos y cajas de la barra (1.1s)
+  ✓   90 [shell] › tests/e2e/ui-u0.spec.ts:122:1 › U0: solo lectura conserva sus restricciones y Abrir como acción disponible @perf (1.0s)
+  ✓   91 [shell] › tests/e2e/ui-u0.spec.ts:128:1 › U0: Más opciones sigue visible con resumen paginado y controles de 13 px (3.0s)
+  ✓   92 [shell] › tests/e2e/ui-u0.spec.ts:137:1 › U0: la ayuda del gráfico se despliega debajo de su control y permite cerrarla (2.9s)
+  ✓   93 [shell] › tests/e2e/ui-u0.spec.ts:144:1 › U0: Calculando cabe en el botón real con en-XA, inglés y español (889ms)
+  ✓   94 [shell] › tests/e2e/ui-u0.spec.ts:158:45 › U0.1: campos legibles y orden a 1280 × 720 (es) (5.4s)
+  ✓   95 [shell] › tests/e2e/ui-u0.spec.ts:158:45 › U0.1: campos legibles y orden a 1280 × 720 (en-XA) (3.1s)
+  ✓   96 [shell] › tests/e2e/ui.spec.ts:23:1 › interfaz: crear, editar, visualizar, guardar y exportar Markdown en ambos temas (2.0s)
+  ✓   97 [shell] › tests/e2e/ui.spec.ts:52:1 › interfaz CSV: buscar, editar una fila filtrada, deshacer y guardar (1.8s)
+  ✓   98 [shell] › tests/e2e/ui.spec.ts:78:1 › interfaz Mermaid: renderizar y exportar SVG válido (1.3s)
+  ✓   99 [shell] › tests/e2e/ui.spec.ts:95:1 › formato Markdown: negritas y cursivas sin ocultar el explorador (1.4s)
+  ✓  100 [shell] › tests/e2e/ui.spec.ts:114:1 › barra Markdown: insertar sin sintaxis, conservar selección, deshacer y ver ejemplos (4.8s)
+  ✓  101 [shell] › tests/e2e/ui.spec.ts:152:1 › operaciones CSV: alcance explícito, fila filtrada, ceros iniciales, deshacer y guardar (1.8s)
+  ✓  102 [shell] › tests/e2e/ui.spec.ts:186:1 › operaciones CSV: duplicar filas y columnas conserva valores y permite deshacer estructura (1.4s)
+  ✓  103 [shell] › tests/e2e/ui.spec.ts:207:1 › estadísticas CSV: columnas, alcance completo, datos pendientes, temas y teclado (1.8s)
+  ✓  104 [shell] › tests/e2e/ui.spec.ts:249:1 › estadísticas CSV: cancelar descarta respuestas tardías y permite volver a analizar (870ms)
+  ✓  105 [shell] › tests/e2e/ui.spec.ts:269:1 › estadísticas CSV: muestra rotulada e IPC inválido rechazado @perf (1.0s)
+  ✓  106 [shell] › tests/e2e/ui.spec.ts:283:1 › estadísticas CSV: límite explícito y encabezados duplicados por índice (995ms)
+  ✓  107 [shell] › tests/e2e/ui.spec.ts:300:1 › CSV: pegar sigue filtros y orden, conserva filas ocultas y se deshace en un paso (1.6s)
+  ✓  108 [shell] › tests/e2e/ui.spec.ts:334:1 › exportación CSV: completo y filtrado conservan columnas; selección limita explícitamente (2.0s)
+  ✓  109 [shell] › tests/e2e/ui.spec.ts:366:1 › consulta CSV: formulario, orden múltiple exacto, exportación y pegado por vista (1.9s)
+  ✓  110 [shell] › tests/e2e/ui.spec.ts:402:1 › consulta CSV: condiciones O, errores visibles, limpiar y ordenar con Mayús (2.1s)
+  ✓  111 [shell] › tests/e2e/ui.spec.ts:427:1 › rangos CSV: selección por teclado, vista previa, filas ocultas, deshacer y exportar @solo (1.9s)
+  ✓  112 [shell] › tests/e2e/ui.spec.ts:456:1 › rangos CSV: arrastrar, contexto por teclado, cortar y pegar con revisión previa @solo (1.4s)
+  ✓  113 [shell] › tests/e2e/ui.spec.ts:472:1 › rangos CSV: teclado atraviesa páginas virtuales y una revisión nueva invalida la selección @solo (1.1s)
+  ✓  114 [shell] › tests/e2e/ui.spec.ts:484:1 › rangos CSV: si falla el portapapeles, cortar no vacía ni modifica el documento @solo (1.0s)
+  ✓  115 [shell] › tests/e2e/ui.spec.ts:494:1 › rangos CSV: arrastre desplaza el borde y conserva el rango al cargar otra página @solo (1.5s)
+  ✓  116 [shell] › tests/e2e/ui.spec.ts:509:1 › exploración CSV: perfil, frecuencias, distribución y Pearson conservan datos y alcance (1.7s)
+  ✓  117 [shell] › tests/e2e/ui.spec.ts:540:1 › exploración CSV: paginación, cancelación, muestra e IPC inválido @perf (1.4s)
+  ✓  118 [shell] › tests/e2e/ui.spec.ts:559:1 › perfil CSV: tipos probables, calidad y teclado sin modificar los datos (1.3s)
+  ✓  119 [shell] › tests/e2e/updates.spec.ts:27:1 › APP-04 U1/U2 · sesión sin red y las tres entradas abren el mismo flujo (1.2s)
+  ✓  120 [shell] › tests/e2e/updates.spec.ts:36:42 › SEG-S5b · consulta manual con ajustes futuros, resultado y cancelación en es (1.8s)
+  ✓  121 [shell] › tests/e2e/updates.spec.ts:36:42 › SEG-S5b · consulta manual con ajustes futuros, resultado y cancelación en en (1.8s)
+  ✓  122 [shell] › tests/e2e/updates.spec.ts:62:1 › APP-04 consumidor del cierre · el diálogo abierto bloquea X sin descartar el documento ni abortar la búsqueda (1.1s)
+  ✓  123 [shell] › tests/e2e/updates.spec.ts:78:1 › APP-04 U1/U7/U9/U15 · estados, enlaces limitados, reintentar y Esc cancela (913ms)
+  ✓  124 [shell] › tests/e2e/updates.spec.ts:89:1 › APP-04 U10/U11/U12 · aviso automático conserva el foco y omitir sobrevive al reinicio (2.7s)
+  ✓  125 [shell] › tests/e2e/updates.spec.ts:104:1 › APP-04 U13 · el idioma cambia durante la petición sin reiniciarla (825ms)
+  ✓  126 [shell] › tests/e2e/updates.spec.ts:112:2 › APP-04 U10/U15 · respuesta anterior de updates:skip no cierra un diálogo nuevo (970ms)
+  ✓  127 [shell] › tests/e2e/updates.spec.ts:112:2 › APP-04 U10/U15 · respuesta anterior de updates:remind no cierra un diálogo nuevo (930ms)
+  ✓  128 [shell] › tests/e2e/updates.spec.ts:145:1 › APP-04 U13/U15/U16 · cuatro estados sin desbordes y con contraste en es, en y en-XA (8.0s)
+(node:45824) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  129 [md] › tests/e2e/academic-citations.spec.ts:8:1 › AC-03 · citas, problemas y recarga bibliográfica conservan el archivo @package-smoke (1.7s)
+  ✓  130 [md] › tests/e2e/academic-citations.spec.ts:54:1 › AC-03 · HTML y PDF sin Pandoc usan la biblioteca actual aunque el Markdown no cambie @package-smoke (2.1s)
+  ✓  131 [md] › tests/e2e/academic-report.spec.ts:36:1 › AC-01 N1–N7 · pies, referencias, renumeración y HTML/PDF conservan el documento (2.3s)
+  ✓  132 [md] › tests/e2e/academic-report.spec.ts:56:1 › AC-01 N2,N7 · repetidos y ausentes son comprensibles; las etiquetas hostiles no crean HTML activo (1.0s)
+  ✓  133 [md] › tests/e2e/academic-report.spec.ts:66:1 › AC-02 C1–C5 · portada e índices optativos llegan a HTML y PDF sin contaminar el índice lateral (2.0s)
+  ✓  134 [md] › tests/e2e/academic-report.spec.ts:94:1 › AC-02 C4 · los metadatos hostiles son texto y las opciones desactivadas no generan secciones (1.4s)
+  -  135 [md] › tests/e2e/academic-word.spec.ts:48:1 › AC-04 D1/D2 · reporte real en DOCX, HTML y PDF con fuentes, índices, figuras y páginas
+  -  136 [md] › tests/e2e/academic-word.spec.ts:98:40 › SEG-S2a · metadatos XML imposibles conservan el documento
+  -  137 [md] › tests/e2e/academic-word.spec.ts:98:40 › SEG-S2a · estilos y metadatos XML imposibles conservan el documento
+  -  138 [md] › tests/e2e/academic-word.spec.ts:145:1 › SEG-S2a · sustitutos sueltos de custom-style se exportan como U+FFFD sin alterar el original
+  -  139 [md] › tests/e2e/academic-word.spec.ts:169:1 › SEG-S2b · límites nombran el campo en español e inglés sin DOCX parcial ni pérdida de texto
+  -  140 [md] › tests/e2e/academic-word.spec.ts:208:1 › SEG-S2d · Pandoc real avisa del TeX degradado y el control limpio conserva el resultado habitual
+  ✓  141 [md] › tests/e2e/editor-status.spec.ts:25:1 › H13-2: posición, selección, sangría y fin de línea de los cuatro editores (2.0s)
+  ✓  142 [md] › tests/e2e/editor-status.spec.ts:48:45 › H13-2: la barra cabe a 800 px y anuncia la conversión [en] (739ms)
+  ✓  143 [md] › tests/e2e/editor-status.spec.ts:48:45 › H13-2: la barra cabe a 800 px y anuncia la conversión [en-XA] (738ms)
+  ✓  144 [md] › tests/e2e/markdown-assets.spec.ts:31:1 › A1 A2 · Guardar como copia tres activos; cerrar y reabrir prueba que las imágenes siguen resolviéndose (1.4s)
+  ✓  145 [md] › tests/e2e/markdown-assets.spec.ts:43:1 › Buscar · el marcador permite elegir, copiar, deshacer y rehacer sin modificar el Markdown original en disco (2.2s)
+  ✓  146 [md] › tests/e2e/markdown-assets.spec.ts:55:1 › A3 · un recuperado sin ruta pide guardar antes de Buscar y no escribe activos en Documentos (4.1s)
+  ✓  147 [md] › tests/e2e/markdown-assets.spec.ts:67:1 › Guardar como bloquea temporalmente edición y conserva el historial anterior durante el selector (1.1s)
+  ✓  148 [md] › tests/e2e/markdown-assets.spec.ts:85:1 › Guardar sin cambiar fuente conserva las imágenes y el DOM; no vuelve a preparar recursos por el bloqueo (1.0s)
+  ✓  149 [md] › tests/e2e/markdown-assets.spec.ts:92:1 › una imagen enlazada coloca Buscar fuera del enlace y conserva su destino al reparar (1.4s)
+  ✓  150 [md] › tests/e2e/markdown-assets.spec.ts:98:1 › Buscar SVG conserva sus bytes y lo muestra como imagen sin ejecutar contenido (1.4s)
+  ✓  151 [md] › tests/e2e/markdown-assets.spec.ts:107:1 › A4 · Guardar como avisa de la imagen externa y refresca su resolución desde la carpeta nueva (1.3s)
+  ✓  152 [md] › tests/e2e/markdown-assets.spec.ts:117:1 › U1 · Guardar como nombra el activo propio ausente sin mostrar el prefijo remoto (811ms)
+  ✓  153 [md] › tests/e2e/markdown-assets.spec.ts:129:1 › U2 · el resumen conserva el detalle de cada imagen hasta cerrarlo y sobrevive a otro aviso (1.1s)
+  ✓  154 [md] › tests/e2e/markdown-date.spec.ts:36:1 › F1: Fecha de hoy inserta la fecha local fija en el cursor sin cambiar el original en disco (1.0s)
+  ✓  155 [md] › tests/e2e/markdown-date.spec.ts:47:1 › F2/F8: Fecha y hora reemplaza una selección multilínea, conserva CRLF y Unicode y deshacer la restaura completa (1.1s)
+  ✓  156 [md] › tests/e2e/markdown-date.spec.ts:56:1 › F3: dos inserciones son dos pasos de deshacer y rehacer mantiene el historial estándar (1.0s)
+  ✓  157 [md] › tests/e2e/markdown-date.spec.ts:66:1 › F3: insertar marca cambios; guardar escribe únicamente el resultado esperado (1.0s)
+  ✓  158 [md] › tests/e2e/markdown-date.spec.ts:75:1 › F1/F4: fecha local, medianoche, 23:59, cambio de año y ceros a la izquierda no dependen del idioma (1.2s)
+  ✓  159 [md] › tests/e2e/markdown-date.spec.ts:83:1 › F8: código y front matter reciben texto literal sin transformar el resto del documento (1.2s)
+  ✓  160 [md] › tests/e2e/markdown-date.spec.ts:90:1 › F6: muestra Markdown de solo lectura deshabilita las fechas y TXT/Mermaid no ofrecen estas acciones @perf (1.0s)
+  ✓  161 [md] › tests/e2e/markdown-date.spec.ts:103:1 › F7: ambas acciones se alcanzan por el orden de tabulación y devuelven el foco al editor (954ms)
+  ✓  162 [md] › tests/e2e/markdown-date.spec.ts:113:1 › F5: composición IME sintética bloquea la inserción; no acredita un IME físico (953ms)
+  ✓  163 [md] › tests/e2e/markdown-date.spec.ts:121:1 › menú y resultado permanecen claros en ambos temas a 1440×900 sin añadir altura de barra (1.7s)
+  ✓  164 [md] › tests/e2e/markdown-editing-performance.spec.ts:16:1 › ED-01: tiempos reales de plegar y desplegar con AST preparado, pequeño y 10 MiB @perf (8.1s)
+  ✓  165 [md] › tests/e2e/markdown-editing.spec.ts:32:1 › E1: Alt+clic edita dos cursores y un paso de deshacer conserva el original (944ms)
+  ✓  166 [md] › tests/e2e/markdown-editing.spec.ts:37:1 › E1: Mod+D reemplaza dos coincidencias y deja la tercera intacta con un único undo (921ms)
+  ✓  167 [md] › tests/e2e/markdown-editing.spec.ts:40:1 › E4: barra y atajos formatean sólo la principal y conservan la secundaria mapeada (1.7s)
+  ✓  168 [md] › tests/e2e/markdown-editing.spec.ts:49:1 › E4: título y estado activo siguen a la principal sin convertir la segunda línea (975ms)
+  ✓  169 [md] › tests/e2e/markdown-editing.spec.ts:53:1 › E4: pasar por vista previa y otra pestaña conserva múltiples selecciones de su documento (1.1s)
+  ✓  170 [md] › tests/e2e/markdown-editing.spec.ts:57:1 › E2/E7: plegar y desplegar con teclado anuncia en español sin cambiar fuente ni dirty (889ms)
+  ✓  171 [md] › tests/e2e/markdown-editing.spec.ts:62:1 › E2: flecha y widget de plegado no consumen el deshacer de una edición anterior (983ms)
+  ✓  172 [md] › tests/e2e/markdown-editing.spec.ts:66:1 › E2: CRLF y encabezados aparentes en código/details conservan la fuente exacta (895ms)
+  ✓  173 [md] › tests/e2e/markdown-editing.spec.ts:69:315 › E3 existente: Intro en viñetas (871ms)
+  ✓  174 [md] › tests/e2e/markdown-editing.spec.ts:69:315 › E3 existente: Intro en numeración (875ms)
+  ✓  175 [md] › tests/e2e/markdown-editing.spec.ts:69:315 › E3 existente: Intro en tareas (862ms)
+  ✓  176 [md] › tests/e2e/markdown-editing.spec.ts:69:315 › E3 existente: Intro en citas (888ms)
+  ✓  177 [md] › tests/e2e/markdown-editing.spec.ts:69:315 › E3 existente: Intro en vacío (904ms)
+  ✓  178 [md] › tests/e2e/markdown-editing.spec.ts:69:315 › E3 existente: Intro en segundo vacío (859ms)
+  ✓  179 [md] › tests/e2e/markdown-editing.spec.ts:69:315 › E3 existente: Intro en no compactas (877ms)
+  ✓  180 [md] › tests/e2e/markdown-editing.spec.ts:72:1 › E4: IME sintético no inserta formatos ni parte Unicode con varios cursores (930ms)
+  ✓  181 [md] › tests/e2e/markdown-editing.spec.ts:76:1 › E5: texto plano y Mermaid mantienen su comportamiento sin plegado ni continuación Markdown (904ms)
+  ✓  182 [md] › tests/e2e/markdown-editing.spec.ts:79:1 › E5: CSV-texto conserva su multicursor instalado y sus finales mixtos, sin plegado Markdown (925ms)
+  ✓  183 [md] › tests/e2e/markdown-editing.spec.ts:83:1 › E2/E7: aspecto claro y oscuro conserva nombres de plegado y foco (888ms)
+  ✓  184 [md] › tests/e2e/markdown-editing.spec.ts:87:1 › E2/E4: sólo lectura permite plegar sin aceptar ediciones ni formato @perf (1.2s)
+  ✓  185 [md] › tests/e2e/markdown-editing.spec.ts:95:1 › E2 inline: los cuatro formatos desde el interior de una palabra renderizan y deshacen en un paso (2.0s)
+  ✓  186 [md] › tests/e2e/markdown-editing.spec.ts:112:1 › E2 inline: selección inversa entre párrafos conserva CRLF, alterna por tramo y deshace en un paso (1.2s)
+  ✓  187 [md] › tests/e2e/markdown-editing.spec.ts:141:1 › H13-1: cuatro gestos de multicursor editan y deshacen en cada formato (2.2s)
+  ✓  188 [md] › tests/e2e/markdown-editing.spec.ts:177:1 › H13-1: teclear un par lo cierra, resalta y permite seguir dentro (834ms)
+  ✓  189 [md] › tests/e2e/markdown-editing.spec.ts:186:43 › H13-1b: Retroceso borra el par vacío en txt (811ms)
+  ✓  190 [md] › tests/e2e/markdown-editing.spec.ts:186:43 › H13-1b: Retroceso borra el par vacío en md (853ms)
+  ✓  191 [md] › tests/e2e/markdown-editing.spec.ts:186:43 › H13-1b: Retroceso borra el par vacío en mmd (788ms)
+  ✓  192 [md] › tests/e2e/markdown-editing.spec.ts:192:1 › H13-1b: los pares resaltados tienen contorno Highlight con colores forzados (804ms)
+  ✓  193 [md] › tests/e2e/markdown-editing.spec.ts:208:1 › H13-1: comentar alterna la sintaxis del formato y omite texto plano y CSV (1.4s)
+  ✓  194 [md] › tests/e2e/markdown-editing.spec.ts:226:1 › H13-1: Tab sangra según Ajustes y deja salir con Escape o Mayús+Tab (1.4s)
+  ✓  195 [md] › tests/e2e/markdown-paste.spec.ts:50:1 › P1: una URL con espacio se pega normalmente en vez de convertirse en enlace @solo (1.0s)
+  ✓  196 [md] › tests/e2e/markdown-paste.spec.ts:60:1 › P3: una URL válida crea el enlace; un deshacer restaura texto y selección y rehacer recupera el resultado @solo (1.1s)
+  ✓  197 [md] › tests/e2e/markdown-paste.spec.ts:69:1 › P4: paréntesis y corchetes se escapan sin cambiar el texto visible ni el destino del enlace @solo (1.0s)
+  ✓  198 [md] › tests/e2e/markdown-paste.spec.ts:77:1 › P1: esquemas no admitidos, controles, varias URLs, selección multilínea y selección vacía conservan el pegado normal @solo (1.5s)
+  ✓  199 [md] › tests/e2e/markdown-paste.spec.ts:86:1 › P2: código en línea, bloque, enlace existente y URL literal no se convierten en enlaces anidados @solo (1.4s)
+  ✓  200 [md] › tests/e2e/markdown-paste.spec.ts:98:1 › se puede enlazar texto dentro de negrita y dentro de un título conservando sus marcadores @solo (1.5s)
+  ✓  201 [md] › tests/e2e/markdown-paste.spec.ts:106:1 › pegar sin formato mediante Ctrl/Cmd Mayús V conserva la URL literal y no el texto seleccionado @solo (897ms)
+  ✓  202 [md] › tests/e2e/markdown-paste.spec.ts:117:1 › P5: HTML rico del portapapeles no se ejecuta ni provoca red y se usa su única URL de texto plano @solo (1.0s)
+  ✓  203 [md] › tests/e2e/markdown-paste.spec.ts:128:1 › P6: documento Markdown de solo lectura no cambia al pegar sobre su muestra @perf @solo (1.0s)
+  ✓  204 [md] › tests/e2e/markdown-paste.spec.ts:138:1 › IME sintético: no transforma en enlace durante composición y no acredita un IME físico @solo (817ms)
+  ✓  205 [md] › tests/e2e/markdown-paste.spec.ts:150:1 › enlace pegado y vista previa se conservan en claro y oscuro a 1440×900 @solo (1.2s)
+  ✓  206 [md] › tests/e2e/markdown-render.spec.ts:73:1 › A: propiedades plegadas y de solo lectura; abrir, guardar y exportar no reescriben ni filtran YAML al documento (1.9s)
+  ✓  207 [md] › tests/e2e/markdown-render.spec.ts:90:1 › B: enlaces con acentos, mayúsculas y porcentaje navegan y enfocan; huérfanos avisan y no son tabulables (5.2s)
+  ✓  208 [md] › tests/e2e/markdown-render.spec.ts:123:1 › C: notas al pie en español, sin doble prefijo ni índice; ida y vuelta también en HTML sin JavaScript (2.2s)
+  ✓  209 [md] › tests/e2e/markdown-render.spec.ts:144:1 › D: plegables nativos con Markdown, tres niveles y teclado; HTML conserva open y PDF incluye el contenido cerrado (3.1s)
+  ✓  210 [md] › tests/e2e/markdown-selection.spec.ts:102:38 › E1 · selección visible › light: doble clic, arrastre, teclado, ventana sin foco y colores forzados @solo (2.0s)
+  ✓  211 [md] › tests/e2e/markdown-selection.spec.ts:102:38 › E1 · selección visible › dark: doble clic, arrastre, teclado, ventana sin foco y colores forzados @solo (2.0s)
+  ✓  212 [md] › tests/e2e/markdown-selection.spec.ts:148:2 › E1 · selección visible › Mermaid, CSV Texto y vista previa conservan selección visible en ambos temas @solo (3.3s)
+  ✓  213 [md] › tests/e2e/markdown-sidebar.spec.ts:111:1 › P1/P2/P9: pestañas accesibles por teclado y ancho recuperado sin panel derecho (1.8s)
+  ✓  214 [md] › tests/e2e/markdown-sidebar.spec.ts:138:1 › P4/P8: Índice abre la barra oculta, alterna a Archivos y recuerda la pestaña al reabrir (1.1s)
+  ✓  215 [md] › tests/e2e/markdown-sidebar.spec.ts:146:61 › P5: preferencia ausente o inválida usa Archivos y una elección válida sobrevive a recargar (5.7s)
+  ✘  216 [md] › tests/e2e/markdown-sidebar.spec.ts:182:1 › P5: almacenamiento bloqueado no impide abrir el documento ni alternar las pestañas (819ms)
+(node:47192) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  217 [md] › tests/e2e/markdown-sidebar.spec.ts:201:1 › P3: CSV, texto y Mermaid muestran Archivos sin sobrescribir la preferencia de Markdown (1.9s)
+  ✓  218 [md] › tests/e2e/markdown-sidebar.spec.ts:211:1 › P6: las dos pestañas comparten ancho, límites y recuerdo del divisor (1.9s)
+  ✓  219 [md] › tests/e2e/markdown-sidebar.spec.ts:226:1 › P7: alternar conserva árbol expandido, búsqueda, resultados y desplazamiento de ambos paneles (1.4s)
+  ✓  220 [md] › tests/e2e/markdown-sidebar.spec.ts:243:1 › P7 activo: pulsar el documento ya activo conserva el índice y la fuente (1.1s)
+  ✓  221 [md] › tests/e2e/markdown-sidebar.spec.ts:249:1 › P9/P10: Índice disponible en ventana estrecha y demanda render en Editar solo mientras se ve (2.2s)
+  ✓  222 [md] › tests/e2e/markdown-tags.spec.ts:58:1 › B1 E6–E8/E10: chips fuera del article, propiedades cerradas/abiertas y exportaciones sin etiquetas ni ejecución (2.1s)
+  ✓  223 [md] › tests/e2e/markdown-tags.spec.ts:75:1 › B3 E9/E24: sin carpeta el chip avisa y no cambia filtro, pestaña, documento ni estado guardado (1.0s)
+  ✓  224 [md] › tests/e2e/markdown-tags.spec.ts:84:1 › B2 E9/E12: un chip abre Archivos desde Índice oculto, enfoca la consulta y conserva una etiqueta con espacios sin duplicarla (1.8s)
+  ✓  225 [md] › tests/e2e/markdown-tags.spec.ts:96:1 › D1 E17–E20/E23/E25: recuentos por documento, acentos, orden y filtros AND accesibles en ambos temas (2.8s)
+  ✓  226 [md] › tests/e2e/markdown-tags.spec.ts:112:1 › D2 E6/E21–E22: Actualizar relee el disco y guardar Markdown actualiza recuentos, sin usar cambios aún no guardados (2.4s)
+  ✓  227 [md] › tests/e2e/markdown-tasks.spec.ts:29:1 › C1/C2: una casilla modifica solo el marcador, marca cambios y se deshace en un paso (1.2s)
+  ✓  228 [md] › tests/e2e/markdown-tasks.spec.ts:37:1 › C1/C3: CRLF, YAML, citas, anidación y [X] conservan literalmente el resto (1.3s)
+  ✓  229 [md] › tests/e2e/markdown-tasks.spec.ts:49:1 › C1: mezcla LF/CRLF y un plegable compacto con marcador literal previo no eligen otra casilla (1.3s)
+  ✓  230 [md] › tests/e2e/markdown-tasks.spec.ts:56:1 › C2: Vista previa sin CodeMirror conserva teclado local e historial mediante el menú nativo (1.5s)
+  ✓  231 [md] › tests/e2e/markdown-tasks.spec.ts:75:1 › C2: guardar no borra el historial y cambiar pestaña no aplica un cambio a otro documento (2.3s)
+  ✓  232 [md] › tests/e2e/markdown-tasks.spec.ts:85:1 › C4: una edición entre render y clic avisa sin escribir sobre el snapshot anterior (1.3s)
+  ✓  233 [md] › tests/e2e/markdown-tasks.spec.ts:92:1 › C4: dos clics rápidos sobre un render no repiten la escritura ni alteran otra tarea idéntica (1.2s)
+  ✓  234 [md] › tests/e2e/markdown-tasks.spec.ts:98:1 › C5: solo lectura no habilita casillas ni escribe mediante teclado o eventos sintéticos @perf (1.6s)
+  ✓  235 [md] › tests/e2e/markdown-tasks.spec.ts:104:1 › C5: recargar una muestra que pasa a editable no deja bloqueado el estado compartido @perf (2.0s)
+  ✓  236 [md] › tests/e2e/markdown-tasks.spec.ts:110:1 › C5/C6: HTML y PDF conservan casillas deshabilitadas, sin metadatos internos ni scripts (1.9s)
+  ✓  237 [md] › tests/e2e/markdown-tasks.spec.ts:121:1 › C6: contenido hostil no crea controles con privilegios, código y tablas siguen literales (990ms)
+  ✓  238 [md] › tests/e2e/markdown-tasks.spec.ts:127:1 › el documento largo mantiene correspondencia al final; dos temas y misma altura de barra (2.1s)
+  ✓  239 [md] › tests/e2e/markdown-tasks.spec.ts:137:1 › integración con el contador: cada pestaña en Vista previa conserva su propia selección sin Editor montado (2.7s)
+  ✓  240 [md] › tests/e2e/markdown-toolbar.spec.ts:31:2 › formato Negrita: aplica, muestra estado, devuelve foco y revierte sin alterar Unicode (1.0s)
+  ✓  241 [md] › tests/e2e/markdown-toolbar.spec.ts:31:2 › formato Cursiva: aplica, muestra estado, devuelve foco y revierte sin alterar Unicode (945ms)
+  ✓  242 [md] › tests/e2e/markdown-toolbar.spec.ts:31:2 › formato Tachado: aplica, muestra estado, devuelve foco y revierte sin alterar Unicode (944ms)
+  ✓  243 [md] › tests/e2e/markdown-toolbar.spec.ts:31:2 › formato Código en línea: aplica, muestra estado, devuelve foco y revierte sin alterar Unicode (970ms)
+  ✓  244 [md] › tests/e2e/markdown-toolbar.spec.ts:38:1 › selector de bloque: títulos multilínea, cambio de nivel, párrafo y deshacer en un paso (978ms)
+  ✓  245 [md] › tests/e2e/markdown-toolbar.spec.ts:48:1 › Insertar: listas, tareas y citas aplican a líneas completas y vuelven al texto original (1.7s)
+  ✓  246 [md] › tests/e2e/markdown-toolbar.spec.ts:56:1 › enlace, separador y código con lenguaje se insertan sin escribir sintaxis y se deshacen en un paso (1.3s)
+  ✓  247 [md] › tests/e2e/markdown-toolbar.spec.ts:66:1 › estado activo y selector siguen al cursor y se reinician al cambiar de documento (2.0s)
+  ✓  248 [md] › tests/e2e/markdown-toolbar.spec.ts:77:1 › teclado: formatos y títulos tienen atajos; menú, lenguaje y acciones son alcanzables sin ratón (1.1s)
+  ✓  249 [md] › tests/e2e/markdown-toolbar.spec.ts:96:1 › selección que cruza un bloque cercado: títulos, listas y citas no alteran texto ni selección (1.1s)
+  ✓  250 [md] › tests/e2e/markdown-toolbar.spec.ts:102:1 › CRLF se conserva al formatear y guardar; el original no cambia hasta guardar (1.4s)
+  ✓  251 [md] › tests/e2e/markdown-toolbar.spec.ts:115:1 › solo lectura deshabilita todos los controles y vista previa oculta la barra @perf (1.3s)
+  ✓  252 [md] › tests/e2e/markdown-toolbar.spec.ts:137:1 › barra compacta, estado visible y foco en claro/oscuro a 1440×900 y 1280×720 (3.0s)
+  ✓  253 [md] › tests/e2e/markdown-toolbar.spec.ts:157:1 › composición IME sintética: los atajos no insertan marcadores y Unicode conserva el carácter completo (1.1s)
+  ✓  254 [md] › tests/e2e/markdown-toolbar.spec.ts:167:1 › documento de 10 MiB: el estado sigue al cursor sin bloquear la navegación @perf (3.5s)
+  ✓  255 [md] › tests/e2e/markdown-toolbar.spec.ts:191:1 › estado en límites: fuera de los marcadores no hay formato activo (1.2s)
+  ✓  256 [md] › tests/e2e/markdown-toolbar.spec.ts:203:2 › selección vacía Negrita: marcadores con cursor dentro, estado activo y alternancia (1.2s)
+  ✓  257 [md] › tests/e2e/markdown-toolbar.spec.ts:203:2 › selección vacía Cursiva: marcadores con cursor dentro, estado activo y alternancia (1.1s)
+  ✓  258 [md] › tests/e2e/markdown-toolbar.spec.ts:203:2 › selección vacía Tachado: marcadores con cursor dentro, estado activo y alternancia (1.1s)
+  ✓  259 [md] › tests/e2e/markdown-toolbar.spec.ts:203:2 › selección vacía Código en línea: marcadores con cursor dentro, estado activo y alternancia (1.1s)
+  ✓  260 [md] › tests/e2e/markdown-toolbar.spec.ts:226:1 › H14-1: las acciones caben a los seis anchos y Más conserva su acceso por teclado (1.1s)
+  ✓  261 [md] › tests/e2e/markdown-toolbar.spec.ts:269:45 › H14-1: TXT, Mermaid y CSV Texto conservan sus controles a los seis anchos (es) (1.2s)
+  ✓  262 [md] › tests/e2e/markdown-toolbar.spec.ts:269:45 › H14-1: TXT, Mermaid y CSV Texto conservan sus controles a los seis anchos (en-XA) (1.3s)
+  ✓  263 [md] › tests/e2e/markdown-toolbar.spec.ts:287:1 › H14-1: en-XA, colores forzados y movimiento reducido conservan todas las acciones (1.1s)
+  ✓  264 [md] › tests/e2e/mermaid-diagnostics.spec.ts:25:1 › D1 D3 D5 · .mmd marca EOF real, explica al cursor y corregir permite deshacer sin un paso extra (1.9s)
+  ✓  265 [md] › tests/e2e/mermaid-diagnostics.spec.ts:38:1 › D2 · dos bloques Markdown, lista/cita y cerca larga usan las líneas absolutas (1.0s)
+  ✓  266 [md] › tests/e2e/mermaid-diagnostics.spec.ts:44:1 › D3 · Editar valida solo los bloques y no publica el article oculto; no quedan marcas antiguas (1.6s)
+  ✓  267 [md] › tests/e2e/mermaid-diagnostics.spec.ts:53:1 › D6 · tamaño sin ubicación da aviso general y ninguna línea inventada (999ms)
+  ✓  268 [md] › tests/e2e/mermaid-diagnostics.spec.ts:58:37 › D4 · icono y contraste real en tema light (916ms)
+  ✓  269 [md] › tests/e2e/mermaid-diagnostics.spec.ts:58:37 › D4 · icono y contraste real en tema dark (1.0s)
+  ✓  270 [md] › tests/e2e/mermaid-diagnostics.spec.ts:67:1 › D3 · una respuesta de error retenida no resucita marcas de otra generación (1.3s)
+  ✓  271 [md] › tests/e2e/mermaid-diagnostics.spec.ts:89:1 › D6 · tipo desconocido sin línea del parser solo muestra un aviso general (898ms)
+  ✓  272 [md] › tests/e2e/mermaid-diagnostics.spec.ts:95:1 › D1 · .mmd CRLF marca la línea real sin normalizar la fuente del usuario (991ms)
+  ✓  273 [md] › tests/e2e/mermaid-errors.spec.ts:38:1 › último dibujo válido: romper y corregir conserva SVG atenuado, aviso español y selección de fuente (1.6s)
+  ✓  274 [md] › tests/e2e/mermaid-errors.spec.ts:54:1 › el EOF fuera del texto señala la última línea existente y conserva el número técnico original (948ms)
+  ✓  275 [md] › tests/e2e/mermaid-errors.spec.ts:61:2 › exportación svg: el error bloquea la última vista válida sin crear archivos ni cambiar el texto (1.4s)
+  ✓  276 [md] › tests/e2e/mermaid-errors.spec.ts:61:2 › exportación png: el error bloquea la última vista válida sin crear archivos ni cambiar el texto (1.4s)
+  ✓  277 [md] › tests/e2e/mermaid-errors.spec.ts:61:2 › exportación pdf: el error bloquea la última vista válida sin crear archivos ni cambiar el texto (1.4s)
+  ✓  278 [md] › tests/e2e/mermaid-errors.spec.ts:69:1 › exportar inmediatamente después de romper la fuente espera el render pendiente y no guarda el dibujo anterior (1.3s)
+  ✓  279 [md] › tests/e2e/mermaid-errors.spec.ts:87:1 › cerrar una pestaña limpia Mermaid mientras espera exportar cancela la salida de su vista destruida (777ms)
+  ✓  280 [md] › tests/e2e/mermaid-errors.spec.ts:87:1 › cerrar una pestaña limpia Markdown mientras espera exportar cancela la salida de su vista destruida (846ms)
+  ✓  281 [md] › tests/e2e/mermaid-errors.spec.ts:105:1 › primer error: ejemplo mínimo seleccionable por teclado y detalle técnico plegado sin inglés visible (1.0s)
+  ✓  282 [md] › tests/e2e/mermaid-errors.spec.ts:116:1 › fuente vacía y espacios: ayuda en español sin dibujo ficticio ni modificación del archivo (1.3s)
+  ✓  283 [md] › tests/e2e/mermaid-errors.spec.ts:129:1 › Markdown: varios errores, línea relativa al bloque y HTML técnico tratado como texto (1.2s)
+  ✓  284 [md] › tests/e2e/mermaid-errors.spec.ts:147:1 › Markdown sin ubicación conocida no añade un párrafo de ubicación vacío (960ms)
+  ✓  285 [md] › tests/e2e/mermaid-errors.spec.ts:155:1 › error sin parpadeo ni anuncios repetidos: el status permanece mientras cambia solo el detalle (1.4s)
+  ✓  286 [md] › tests/e2e/mermaid-errors.spec.ts:168:1 › Markdown: cambiar un párrafo o detalle conserva el anunciador y descarta renders obsoletos (2.4s)
+  ✓  287 [md] › tests/e2e/mermaid-errors.spec.ts:188:1 › debounce y generaciones: termina con la fuente más nueva sin que aparezca un error obsoleto (2.2s)
+  ✓  288 [md] › tests/e2e/mermaid-errors.spec.ts:197:1 › diagrama superior al límite real de Mermaid: no sustituye la última vista por un error SVG ni permite exportarlo (2.0s)
+  ✓  289 [md] › tests/e2e/mermaid-errors.spec.ts:213:1 › tema con error activo: conserva el dibujo, aviso accesible y contraste en claro y oscuro (1.5s)
+  ✓  290 [md] › tests/e2e/mermaid-expanded.spec.ts:63:1 › V1/V2: solo los dos diagramas válidos ofrecen Ampliar; diálogo accesible y Esc devuelve el foco (1.9s)
+  ✓  291 [md] › tests/e2e/mermaid-expanded.spec.ts:73:1 › V2: Enter abre, Tab y Mayús Tab quedan dentro, Cerrar restaura foco y Esc no cierra otro diálogo (2.0s)
+  ✓  292 [md] › tests/e2e/mermaid-expanded.spec.ts:87:1 › V3: el visor existente ajusta, amplía, vuelve al tamaño natural y permite desplazarse (2.2s)
+  ✓  293 [md] › tests/e2e/mermaid-expanded.spec.ts:99:1 › V4: el tema del sistema cambia con el diálogo abierto y conserva foco y ajuste (2.4s)
+  ✓  294 [md] › tests/e2e/mermaid-expanded.spec.ts:109:1 › V5: el segundo botón abre el diagrama de secuencia elegido y no el primero (2.0s)
+  ✓  295 [md] › tests/e2e/mermaid-expanded.spec.ts:117:1 › V5: una fuente modificada actualiza el visor o avisa, sin mostrar una copia obsoleta en silencio (1.9s)
+  ✓  296 [md] › tests/e2e/mermaid-expanded.spec.ts:133:1 › V5: ampliar el SVG anterior durante el debounce avisa del snapshot obsoleto (1.9s)
+  ✓  297 [md] › tests/e2e/mermaid-expanded.spec.ts:166:1 › V5: cerrar la pestaña limpia elimina el diálogo y permite editar el siguiente documento (2.1s)
+  ✓  298 [md] › tests/e2e/mermaid-expanded.spec.ts:183:1 › pantalla pequeña: diálogo contenido en el viewport, ajuste válido y cierre por teclado (1.9s)
+  ✓  299 [md] › tests/e2e/mermaid-expanded.spec.ts:189:1 › exportación HTML e impresión: el documento conserva sus SVG sin botones ni diálogo ampliado (2.4s)
+  ✓  300 [md] › tests/e2e/mermaid-export-theme.spec.ts:126:1 › E1/E4: SVG individual exportado desde oscuro tiene texto y flechas legibles sobre blanco (1.3s)
+  ✓  301 [md] › tests/e2e/mermaid-export-theme.spec.ts:138:1 › E1/E3: HTML, PNG blanco y PDF individual no alteran el SVG oscuro visible (3.2s)
+  ✓  302 [md] › tests/e2e/mermaid-export-theme.spec.ts:165:1 › E2/E3/E4: Markdown mixto exporta sus diagramas claros sin cambiar la vista oscura (2.7s)
+  ✓  303 [md] › tests/e2e/mermaid-export-theme.spec.ts:184:1 › más de 64 diagramas y dos bloques iguales conservan todas las fuentes y el orden al exportar (5.2s)
+  ✓  304 [md] › tests/e2e/mermaid-export-theme.spec.ts:195:1 › la directiva de tema del autor se conserva y su excepción de contraste queda medida (1.4s)
+  ✓  305 [md] › tests/e2e/mermaid-export-theme.spec.ts:204:2 › E5: svg rechaza una fuente inválida sin exportar la última versión válida (1.5s)
+  ✓  306 [md] › tests/e2e/mermaid-export-theme.spec.ts:204:2 › E5: png rechaza una fuente inválida sin exportar la última versión válida (1.4s)
+  ✓  307 [md] › tests/e2e/mermaid-export-theme.spec.ts:204:2 › E5: pdf rechaza una fuente inválida sin exportar la última versión válida (1.4s)
+  ✓  308 [md] › tests/e2e/mermaid-export-theme.spec.ts:204:2 › E5: html rechaza una fuente inválida sin exportar la última versión válida (1.4s)
+  ✓  309 [md] › tests/e2e/mermaid-export-theme.spec.ts:216:1 › exportar durante el debounce espera la fuente actual y no reutiliza el SVG viejo (1.7s)
+  ✓  310 [md] › tests/e2e/mermaid-export-theme.spec.ts:224:1 › cambiar el tema mientras se prepara la exportación mantiene la salida clara y la elección del usuario (1.6s)
+  ✓  311 [md] › tests/e2e/mermaid-export-theme.spec.ts:238:1 › cerrar la pestaña mientras espera el render cancela la salida de la vista destruida (794ms)
+  ✓  312 [md] › tests/e2e/mermaid-export-theme.spec.ts:253:1 › cancelar el diálogo de destino no altera la pantalla ni crea archivos (1.2s)
+  ✓  313 [md] › tests/e2e/mermaid-fit.spec.ts:66:2 › J1: Ajustar encuadra el diagrama ancho completo, centrado y sin desplazamiento (1.6s)
+  ✓  314 [md] › tests/e2e/mermaid-fit.spec.ts:66:2 › J1: Ajustar encuadra el diagrama alto completo, centrado y sin desplazamiento (969ms)
+  ✓  315 [md] › tests/e2e/mermaid-fit.spec.ts:73:1 › J2/J4: fit sigue el tamaño del panel hasta que se cambia el zoom manualmente (1.8s)
+  ✓  316 [md] › tests/e2e/mermaid-fit.spec.ts:85:1 › J3/J5: 100 % restaura escala natural y origen; atajos se usan con foco en el lienzo (1.1s)
+  ✓  317 [md] › tests/e2e/mermaid-fit.spec.ts:104:1 › el modo ajustado se conserva al volver a la pestaña y cambiar modos o tema (1.9s)
+  ✓  318 [md] › tests/e2e/mermaid-fit.spec.ts:115:1 › J4: un diagrama con cientos de nodos puede ajustarse por debajo del antiguo mínimo del 20 % (2.0s)
+  ✓  319 [md] › tests/e2e/mermaid-fit.spec.ts:122:1 › viewBox ausente, geometría 1×1 y panel temporalmente cerrado no generan dimensiones inválidas (1.2s)
+  ✓  320 [md] › tests/e2e/mermaid-fit.spec.ts:137:1 › un documento vacío mantiene la ayuda de error y no permite ajustar un dibujo inexistente (927ms)
+  ✓  321 [md] › tests/e2e/mermaid-fit.spec.ts:145:1 › ajustar no modifica la fuente ni el SVG exportado que guarda el renderizador (1.3s)
+  ✓  322 [md] › tests/e2e/mermaid-fit.spec.ts:158:1 › J1–J5: ambos temas y tamaños conservan encuadre y controles; capturas 1440×900 y 1280×800 (1.4s)
+  ✓  323 [md] › tests/e2e/mermaid-fit.spec.ts:166:1 › el ajuste sigue siendo geométrico al aumentar el zoom de Chromium al 150 % (995ms)
+  ✓  324 [md] › tests/e2e/mermaid-fit.spec.ts:174:1 › zoom manual desde un ajuste 1×1 mantiene la dirección de acercar y alejar (1.1s)
+  ✓  325 [md] › tests/e2e/missing-resources.spec.ts:19:1 › una imagen local ausente no bloquea Mermaid ni la exportación y no revela rutas (1.6s)
+  ✓  326 [md] › tests/e2e/missing-resources.spec.ts:39:1 › un documento sin imágenes ausentes se exporta sin avisos de recursos (1.2s)
+  ✓  327 [md] › tests/e2e/outline.spec.ts:53:1 › A1/A7: el índice tiene nombre accesible y no marca sección antes del primer umbral (1.1s)
+  ✓  328 [md] › tests/e2e/outline.spec.ts:62:1 › A1/A2: la sección cambia al cruzar el 30 % medido con geometría real (1.1s)
+  ✓  329 [md] › tests/e2e/outline.spec.ts:70:1 › A2: rueda, teclado, índice y enlace interno mantienen la sección actual (3.0s)
+  ✓  330 [md] › tests/e2e/outline.spec.ts:80:1 › A4: al final se marca el último título aunque nunca alcance el umbral (1.1s)
+  ✓  331 [md] › tests/e2e/outline.spec.ts:87:1 › A6: títulos de details cerrado no cuentan; abrir y cerrar reconstruye la geometría (2.1s)
+  ✓  332 [md] › tests/e2e/outline.spec.ts:98:1 › A6: el último título DOM cerrado nunca gana la sección al final del documento (1.2s)
+  ✓  333 [md] › tests/e2e/outline.spec.ts:109:1 › A5: recursos tardíos recalculan posiciones sin retrasar el texto saneado (1.3s)
+  ✓  334 [md] › tests/e2e/outline.spec.ts:124:1 › A3/A5: mil títulos no provocan lecturas de headings DOM durante scroll y la fila se desplaza lo mínimo (1.4s)
+  ✓  335 [md] › tests/e2e/outline.spec.ts:144:1 › A: usar el índice no modifica la fuente, dirty ni el HTML exportado (2.1s)
+  ✓  336 [md] › tests/e2e/outline.spec.ts:152:1 › A: indicador visible en claro/oscuro dentro de la barra izquierda (1.6s)
+  ✓  337 [md] › tests/e2e/outline.spec.ts:186:1 › A: cambiar a un documento sin títulos no conserva una sección obsoleta (1.6s)
+  ✓  338 [md] › tests/e2e/outline.spec.ts:192:1 › A3: al reaparecer el panel, la sección que cambió oculta queda visible (1.1s)
+  ✓  339 [md] › tests/e2e/outline.spec.ts:199:1 › B1/B2: contraer una rama oculta descendientes y mantiene botones separados (1.1s)
+  ✓  340 [md] › tests/e2e/outline.spec.ts:211:1 › B1: niveles ausentes y saltos no crean filas vacías y conservan la jerarquía (1.1s)
+  ✓  341 [md] › tests/e2e/outline.spec.ts:222:1 › B1/B5: títulos repetidos en otros padres y hermanos tienen contracción independiente (1.1s)
+  ✓  342 [md] › tests/e2e/outline.spec.ts:230:1 › B2/B3: Tab recorre flecha y título; Intro y Espacio alternan sin perder el foco (1.1s)
+  ✓  343 [md] › tests/e2e/outline.spec.ts:240:1 › B4: se marca el ancestro cerrado sin expandirlo y se recupera el hijo al abrir (1.2s)
+  ✓  344 [md] › tests/e2e/outline.spec.ts:250:1 › B5: contracción por documento sobrevive tema y pestañas y se descarta al cerrar (2.4s)
+  ✓  345 [md] › tests/e2e/outline.spec.ts:260:1 › B5: la ruta conserva contracción cuando otra sección cambia los ids globales (1.4s)
+  ✓  346 [md] › tests/e2e/outline.spec.ts:269:1 › B5: renombrar o eliminar una ruta descarta su estado en lugar de transferirlo (2.1s)
+  ✓  347 [md] › tests/e2e/outline.spec.ts:276:1 › B6: títulos largos muestran dos líneas, tooltip y nombre completo en claro/oscuro (1.4s)
+  ✓  348 [md] › tests/e2e/outline.spec.ts:290:1 › B: contraer ramas no modifica fuente, dirty ni HTML exportado (1.4s)
+  ✓  349 [md] › tests/e2e/outline.spec.ts:297:1 › C1: el índice permanece disponible en Editar y el botón Índice lo alterna (1.1s)
+  ✓  350 [md] › tests/e2e/outline.spec.ts:306:1 › C2/C5: navegar enfoca el inicio del título arriba sin editar ni crear pasos de deshacer (1.7s)
+  ✓  351 [md] › tests/e2e/outline.spec.ts:322:1 › C4: ATX, Setext, duplicados, front matter, Unicode y contenedores llevan a su línea real (3.0s)
+  ✓  352 [md] › tests/e2e/outline.spec.ts:344:1 › C3: la sección actual sigue la primera línea realmente visible, no el margen virtualizado (1.5s)
+  ✓  353 [md] › tests/e2e/outline.spec.ts:359:1 › C3: títulos dentro de cita y lista marcan su sección al inicio real de la línea (1.2s)
+  ✓  354 [md] › tests/e2e/outline.spec.ts:370:1 › C4: el título HTML sin pareja y sus duplicados avisan sin mover el cursor a otro título (1.2s)
+  ✓  355 [md] › tests/e2e/outline.spec.ts:382:1 › C4: una entrada del render anterior se rechaza antes de actualizar el índice (1.1s)
+  ✓  356 [md] › tests/e2e/outline.spec.ts:397:1 › C4: el árbol incompleto termina cubriendo el título mil sin saltos aproximados ni cambios (1.5s)
+  ✓  357 [md] › tests/e2e/outline.spec.ts:408:1 › C5: Dividido y Vista previa conservan el desplazamiento de lectura sin mover el cursor (3.2s)
+  ✓  358 [md] › tests/e2e/outline.spec.ts:418:1 › C: un clic durante composición IME sintética no roba el foco ni mueve el cursor (1.3s)
+  ✓  359 [md] › tests/e2e/outline.spec.ts:429:1 › C: modo Editar conserva contraste, árbol y barra en claro/oscuro a 1440 por 900 (1.3s)
+  ✓  360 [md] › tests/e2e/outline.spec.ts:441:1 › C2: el título final sin cuerpo queda arriba del editor y navegar no consume el siguiente deshacer (1.6s)
+  ✓  361 [md] › tests/e2e/pandoc-export.spec.ts:8:1 › AC-00 P1/P5 · Pandoc opcional explica DOCX sin bloquear PDF, con diálogo accesible @package-smoke (875ms)
+  ✓  362 [md] › tests/e2e/preview-edit.spec.ts:43:1 › abrir un segundo Markdown en Editar no renderiza el article oculto; Dividido y Vista previa sí lo muestran (1.3s)
+  ✓  363 [md] › tests/e2e/preview-edit.spec.ts:56:1 › editar con la vista previa oculta conserva su article y al mostrarla usa la fuente nueva (1.3s)
+  ✓  364 [md] › tests/e2e/preview-edit.spec.ts:68:1 › exportar HTML desde Editar prepara la fuente actual, Mermaid e imágenes sin activar el render oculto permanente (2.4s)
+  ✓  365 [md] › tests/e2e/preview-progressive.spec.ts:8:1 › el párrafo nuevo aparece mientras las imágenes siguen pendientes, sin depender de su latencia (7.7s)
+  ✓  366 [md] › tests/e2e/text-encoding.spec.ts:66:3 › Guardado en curso conserva las ediciones posteriores (carrera.txt) (1.1s)
+  ✓  367 [md] › tests/e2e/text-encoding.spec.ts:66:3 › Guardado en curso conserva las ediciones posteriores (carrera.mmd) (1.1s)
+  ✓  368 [md] › tests/e2e/text-encoding.spec.ts:66:3 › Guardado en curso conserva las ediciones posteriores (carrera.csv) (1.2s)
+  ✓  369 [md] › tests/e2e/text-encoding.spec.ts:95:1 › Guardar con codificación aplica la firma y conserva las ediciones posteriores (1.1s)
+  ✓  370 [md] › tests/e2e/text-encoding.spec.ts:121:1 › Markdown sigue bloqueado mientras espera la confirmación de guardado (1.1s)
+  ✓  371 [md] › tests/e2e/text-encoding.spec.ts:139:1 › H13-2: un Markdown legado requiere confirmación y conserva los bytes al guardarlo (1.0s)
+  ✓  372 [md] › tests/e2e/text-encoding.spec.ts:170:34 › H13-2: UTF-16 BE muestra su firma, guarda intacto y protege el BOM [en] (828ms)
+  ✓  373 [md] › tests/e2e/text-encoding.spec.ts:170:34 › H13-2: UTF-16 BE muestra su firma, guarda intacto y protege el BOM [en-XA] (896ms)
+  ✓  374 [md] › tests/e2e/text-stats.spec.ts:87:1 › W1/W3: escribir Hola mundo muestra dos palabras y menos de un minuto en la barra (1.6s)
+  ✓  375 [md] › tests/e2e/text-stats.spec.ts:94:1 › W2: títulos, listas, tablas y prosa cuentan; YAML, código cercado, indentado y Mermaid se excluyen (1.6s)
+  ✓  376 [md] › tests/e2e/text-stats.spec.ts:101:1 › W4: selección CRLF al final del documento conserva offsets, Unicode y el original sin cambios pendientes (1.7s)
+  ✓  377 [md] › tests/e2e/text-stats.spec.ts:115:1 › W4: una selección que cruza código usa las mismas exclusiones que el total (1.6s)
+  ✓  378 [md] › tests/e2e/text-stats.spec.ts:125:1 › deshacer y rehacer actualizan el contador y conservan un historial de edición (4.1s)
+  ✓  379 [md] › tests/e2e/text-stats.spec.ts:135:1 › W5: cambiar de documento termina el Worker y descarta una respuesta real anterior retenida (3.7s)
+  ✓  380 [md] › tests/e2e/text-stats.spec.ts:172:1 › W6: el anuncio cortés cambia de documento y permanece estable al escribir o mover la selección (3.3s)
+  ✓  381 [md] › tests/e2e/text-stats.spec.ts:188:1 › MD y TXT muestran estadísticas también en Vista previa; CSV y Mermaid no las muestran (2.7s)
+  ✓  382 [md] › tests/e2e/text-stats.spec.ts:198:1 › W1/W3: puntuación, acentos, vacío y límites de lectura siguen la regla de 200 palabras por minuto (5.7s)
+  ✓  383 [md] › tests/e2e/text-stats.spec.ts:206:1 › una muestra TXT de solo lectura cuenta el primer MiB y lo identifica sin presentar el total del archivo @perf (1.1s)
+  ✓  384 [md] › tests/e2e/text-stats.spec.ts:219:1 › W6: ayuda en español, ambos temas y barra sin desbordamiento a 1440 y 1280 px (1.6s)
+(node:50313) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  385 [csv] › tests/e2e/analysis-dock.spec.ts:25:1 › las secciones de la pestaña de análisis se alcanzan y activan con teclado (1.4s)
+  ✓  386 [csv] › tests/e2e/analysis-dock.spec.ts:49:1 › cambiar de sección conserva la configuración del gráfico y el borrador SQL (1.2s)
+  ✓  387 [csv] › tests/e2e/analysis-dock.spec.ts:62:1 › las secciones visitadas se conservan y cerrar análisis las desmonta y devuelve el foco al CSV (1.1s)
+  ✓  388 [csv] › tests/e2e/analysis-tab.spec.ts:63:1 › AN-1a abre una pestaña única, enfoca su sección y solo calcula por petición (1.5s)
+  ✓  389 [csv] › tests/e2e/analysis-tab.spec.ts:87:1 › AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta la configuración (5.8s)
+  ✓  390 [csv] › tests/e2e/analysis-tab.spec.ts:112:1 › AN-1a reutiliza filtros, columnas y rango de la tabla e invalida los resultados al editar (1.5s)
+  ✓  391 [csv] › tests/e2e/analysis-tab.spec.ts:147:1 › AN-1a cancelar análisis no modifica el CSV y cerrar un CSV solo elimina su propio análisis (1.4s)
+  ✓  392 [csv] › tests/e2e/analysis-tab.spec.ts:169:1 › AN-1a archivo grande abre análisis manual y conserva SQL (3.2s)
+  ✓  393 [csv] › tests/e2e/analysis-tab.spec.ts:186:1 › AN-1a paleta y pestañas con teclado, Escape conserva la pestaña y capturas de idiomas (871ms)
+  ✓  394 [csv] › tests/e2e/analysis-tab.spec.ts:214:1 › AN-1b ignora la disposición antigua del panel al abrir un perfil existente (1.3s)
+  ✓  395 [csv] › tests/e2e/calculated-column.spec.ts:63:1 › H15-1 IPC: rechaza solicitudes inválidas y un archivo reemplazado tras la vista previa (1.3s)
+  ✓  396 [csv] › tests/e2e/calculated-column.spec.ts:98:1 › H15-1 IPC: cancelar con progreso real durante la vista previa y al aplicar conserva el CSV (3.1s)
+  ✓  397 [csv] › tests/e2e/calculated-column.spec.ts:128:1 › H15-1 IPC: guardar añade solo el campo calculado en TSV, Windows-1252 y UTF-16 LE (2.5s)
+  ✓  398 [csv] › tests/e2e/calculated-column.spec.ts:163:1 › H15-2: encabezado y paleta explican los bloqueos del cálculo (1.5s)
+  ✓  399 [csv] › tests/e2e/chart-fields.spec.ts:18:1 › F2b: herramientas con nombre, ayuda inmediata al foco y controles sin pintura nativa (3.0s)
+  ✓  400 [csv] › tests/e2e/chart-fields.spec.ts:31:1 › F2b: sugerencia inicial y dos acciones cambian qué se grafica sin Más opciones (5.0s)
+  ✓  401 [csv] › tests/e2e/chart-fields.spec.ts:48:1 › F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones (6.7s)
+  ✓  402 [csv] › tests/e2e/chart-fields.spec.ts:65:1 › F2b: cada Resumir por coincide con datos independientes y porcentajes solo aditivos (16.0s)
+  ✓  403 [csv] › tests/e2e/chart-fields.spec.ts:76:1 › F2b: texto no se suma, mapa solo cuenta y símbolos no se convierten (3.0s)
+  ✓  404 [csv] › tests/e2e/chart-fields.spec.ts:86:1 › F2b: 842 grupos conservan truncado y tabla paginada; Otros solo sobre resultados completos aditivos (7.2s)
+  ✓  405 [csv] › tests/e2e/chart-fields.spec.ts:97:1 › F2b: filtros reutilizados, exportación y datos originales intactos (5.8s)
+  ✓  406 [csv] › tests/e2e/chart-fields.spec.ts:108:1 › F2b: estrecho conserva foco al editar campos, inglés natural y resultado completo (4.9s)
+  ✓  407 [csv] › tests/e2e/chart-fields.spec.ts:116:1 › F2b: actualizar una celda no sustituye el resumen elegido ni guarda el CSV (6.3s)
+  ✓  408 [csv] › tests/e2e/chart-fields.spec.ts:121:1 › F2b: 200 campos, nombres Unicode, idioma seudolocalizado y tamaños accesibles (5.8s)
+  ✓  409 [csv] › tests/e2e/chart-fields.spec.ts:133:1 › F2b: en-XA real, tema oscuro y ventana estrecha no recortan el resultado (4.1s)
+  ✓  410 [csv] › tests/e2e/chart-fields.spec.ts:141:1 › F2b: contraste de textos y controles medido contra sus fondos reales en ambos temas (2.9s)
+  ✓  411 [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (5.1s)
+  ✓  412 [csv] › tests/e2e/chart-review.spec.ts:46:1 › Revisión108 · motivo con línea propia y sin solapes a1280×720 (4.8s)
+  ✓  413 [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 (5.0s)
+  ✓  414 [csv] › tests/e2e/chart-review.spec.ts:69:1 › Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario (4.9s)
+  ✓  415 [csv] › tests/e2e/chart-review.spec.ts:81:1 › Revisión108 · tabla, total, marcas y eje conservan el formato numérico al cambiar campo e idioma (10.7s)
+  ✓  416 [csv] › tests/e2e/chart-review.spec.ts:103:31 › Revisión108 final · Total completo dentro del área visible a1280×720 (4.9s)
+  ✓  417 [csv] › tests/e2e/chart-review.spec.ts:103:31 › Revisión108 final · Total completo dentro del área visible a800×720 (5.1s)
+  ✓  418 [csv] › tests/e2e/chart-review.spec.ts:121:1 › Revisión108 final · el aviso explica el campo de orden y los empates de Suma y Cuenta en es/en (14.1s)
+  ✓  419 [csv] › tests/e2e/charts.spec.ts:21:1 › seis gráficos calculan sobre datos completos, con cuartiles, huecos y categorías exactas (4.3s)
+  ✓  420 [csv] › tests/e2e/charts.spec.ts:32:1 › gráficos visuales: seis SVG, temas, teclado, exportación e invalidación (11.7s)
+  ✓  421 [csv] › tests/e2e/charts.spec.ts:52:1 › gráficos distinguen vacío, constante, límite de puntos y etiquetas no ejecutables (4.6s)
+  ✓  422 [csv] › tests/e2e/charts.spec.ts:60:1 › histograma agrega un millón de filas completo aunque la tabla sea de solo lectura @perf (7.1s)
+  ✘  423 [csv] › tests/e2e/charts.spec.ts:73:1 › gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial @perf (16.4s)
+(node:51699) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  424 [csv] › tests/e2e/charts.spec.ts:89:1 › exportar un gráfico rechaza destinos de documentos abiertos y revisiones obsoletas (912ms)
+  ✓  425 [csv] › tests/e2e/charts.spec.ts:96:1 › constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones (15.4s)
+  ✓  426 [csv] › tests/e2e/charts.spec.ts:121:1 › vista filtrada usa todas las coincidencias con filtros combinados, fechas y revisión actual (1.9s)
+  ✓  427 [csv] › tests/e2e/charts.spec.ts:133:1 › ayuda y selección de valores impiden cálculos incompatibles y explican columnas sin números (5.1s)
+  ✓  428 [csv] › tests/e2e/charts.spec.ts:142:1 › series por categoría: siete cálculos por combinación, líneas y puntos con valores exactos (6.3s)
+  ✓  429 [csv] › tests/e2e/charts.spec.ts:153:1 › series visuales: leyenda y teclado sincronizados, filtros, exportación y límite comprensible (8.6s)
+  ✓  430 [csv] › tests/e2e/charts.spec.ts:170:1 › series: 3 000 y 100 000 registros conservan sumas por combinación y respuesta de la interfaz (2.7s)
+  ✓  431 [csv] › tests/e2e/charts.spec.ts:189:1 › fechas: día, mes y año contrastan cálculos, fechas inválidas y huecos por serie sin alterar el CSV (6.9s)
+  ✓  432 [csv] › tests/e2e/charts.spec.ts:201:1 › calendario temporal acotado: extremos 0001–9999 y fechas ausentes no generan resultados masivos (3.5s)
+  ✓  433 [csv] › tests/e2e/charts.spec.ts:210:1 › constructor temporal: clics, series, filtros, errores y exportación con nombres y alcance claros (6.9s)
+  ✓  434 [csv] › tests/e2e/charts.spec.ts:228:1 › filtros propios: editor reutilizado, borradores, Escape, alcance y exportación sin cambiar la tabla (7.4s)
+  ✓  435 [csv] › tests/e2e/charts.spec.ts:245:1 › filtros de análisis: grupos O independientes, fechas y límites de IPC conservan resultados y fuente (1.3s)
+  ✓  436 [csv] › tests/e2e/charts.spec.ts:255:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV (5.6s)
+  ✓  437 [csv] › tests/e2e/charts.spec.ts:268:1 › configuraciones: columnas incompatibles y duplicadas, IPC inválido y biblioteca dañada preservados (1.4s)
+  ✓  438 [csv] › tests/e2e/charts.spec.ts:279:1 › resultados exportados: interfaz, agregados completos, CSV y contexto, informe y fórmulas preservan el original (6.0s)
+  ✓  439 [csv] › tests/e2e/charts.spec.ts:291:1 › resultados exportados: filtros independientes, fechas, límite de diez mil, nulos e IPC válido (2.1s)
+  ✓  440 [csv] › tests/e2e/charts.spec.ts:300:1 › resultados exportados: muestra lee la fuente completa sin permitir guardar el CSV parcial @perf (6.8s)
+  ✓  441 [csv] › tests/e2e/charts.spec.ts:334:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales (4.4s)
+  ✓  442 [csv] › tests/e2e/column-menu.spec.ts:27:1 › cada cabecera tiene un menú ▾ visible con ordenar, filtrar, estadísticas y limpieza (1.0s)
+  ✓  443 [csv] › tests/e2e/column-menu.spec.ts:36:1 › el menú se maneja con teclado: Enter lo abre, las flechas recorren y Escape devuelve el foco al botón (995ms)
+  ✓  444 [csv] › tests/e2e/column-menu.spec.ts:44:1 › mayúsculas en la columna: alcance, vista previa antes → después, recuento, confirmación y un paso de deshacer (1.1s)
+  ✓  445 [csv] › tests/e2e/column-menu.spec.ts:60:1 › quitar espacios y minúsculas: tres interacciones desde el menú y solo tocan esa columna (1.2s)
+  ✓  446 [csv] › tests/e2e/column-menu.spec.ts:74:1 › con una búsqueda activa solo cambian las filas visibles y el diálogo avisa de las ocultas (1.3s)
+  ✓  447 [csv] › tests/e2e/column-menu.spec.ts:85:1 › si no hay nada que cambiar la vista previa lo dice y no deja confirmar (1.1s)
+  ✓  448 [csv] › tests/e2e/column-menu.spec.ts:92:1 › «Filtrar esta columna» muestra los filtros y lleva el foco al de esa columna (1.0s)
+  ✘  449 [csv] › tests/e2e/column-menu.spec.ts:98:1 › «Estadísticas de la columna» abre el panel de resumen con esa columna marcada (16.0s)
+(node:52247) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  450 [csv] › tests/e2e/column-menu.spec.ts:106:1 › «Quitar filas duplicadas de la columna…» abre la transformación con la columna ya elegida y sin cambiar nada (1.1s)
+  ✓  451 [csv] › tests/e2e/columns-overview.spec.ts:23:1 › panorámica: tipos, calidad, alcance, explicación por teclado, informe y documento intacto (1.7s)
+  ✓  452 [csv] › tests/e2e/columns-overview.spec.ts:33:1 › panorámica: páginas, nombres duplicados, columnas marcadas y detalle conservan el alcance (1.4s)
+  ✘  453 [csv] › tests/e2e/columns-overview.spec.ts:39:1 › panorámica: cancelar o cambiar revisión descarta respuestas tardías y no continúa columnas (803ms)
+(node:52309) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  454 [csv] › tests/e2e/columns-overview.spec.ts:49:1 › panorámica: una solicitud reemplazada con igual revisión aborta; una cardinalidad alta solo limita esa columna @perf (2.3s)
+  ✓  455 [csv] › tests/e2e/columns-overview.spec.ts:58:1 › panorámica: muestra etiquetada incluso durante el cálculo y presupuesto sin totales inventados @perf (1.8s)
+  ✓  456 [csv] › tests/e2e/columns-overview.spec.ts:66:1 › panorámica: mide 3 000, 100 000 y un millón de filas completas con una columna @perf (2.6s)
+  ✓  457 [csv] › tests/e2e/columns-overview.spec.ts:77:1 › panorámica: abrir un millón de filas y explorar inmediatamente no compite con la carga inicial de la grilla @perf (1.7s)
+  ✓  458 [csv] › tests/e2e/columns-overview.spec.ts:86:1 › panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance (1.5s)
+  ✓  459 [csv] › tests/e2e/compact-toolbar.spec.ts:34:1 › una sola fila de herramientas deja la tabla a 110 px del borde superior o menos (1.6s)
+  ✓  460 [csv] › tests/e2e/compact-toolbar.spec.ts:45:1 › las cinco acciones principales se ven a la vez y lo demás está en menús con su nombre de siempre (898ms)
+  ✓  461 [csv] › tests/e2e/compact-toolbar.spec.ts:65:1 › la codificación, el separador, el encabezado y los recuentos viven en la barra de estado (985ms)
+  ✓  462 [csv] › tests/e2e/compact-toolbar.spec.ts:77:1 › Analizar abre una pestaña a petición y permite volver a la tabla con el foco en su pestaña (894ms)
+  ✓  463 [csv] › tests/e2e/compact-toolbar.spec.ts:94:1 › un filtro activo queda a la vista como etiqueta y se quita con un clic (1.4s)
+  ✓  464 [csv] › tests/e2e/csv-summary.spec.ts:21:1 › AN-1b: pestaña de análisis crea gráfico y resumen a petición, con opciones plegadas y fuente intacta @package-smoke (2.9s)
+  ✓  465 [csv] › tests/e2e/csv-summary.spec.ts:42:1 › F2a: suma por serie, total real, porcentajes y seis tipos alcanzables con teclado (4.6s)
+  ✓  466 [csv] › tests/e2e/csv-summary.spec.ts:52:1 › F2a: cuatro capturas reales, resultado y límites visibles en ambos temas sin desplazar (5.1s)
+  ✓  467 [csv] › tests/e2e/csv-summary.spec.ts:75:1 › F2a: estados vacío, error numérico, truncado y ventana estrecha con captura (6.7s)
+  ✓  468 [csv] › tests/e2e/csv-summary.spec.ts:90:1 › F2a: cargando con cancelar y reintento explícito en 100.000 filas, sin escribir el original (3.1s)
+  ✓  469 [csv] › tests/e2e/csv-summary.spec.ts:106:1 › F2a: idioma inglés, foco, anuncios y ventana de 800 px (4.8s)
+  ✓  470 [csv] › tests/e2e/csv-summary.spec.ts:120:1 › F2a: en-XA real no recorta el resultado ni desborda los controles (3.7s)
+  ✓  471 [csv] › tests/e2e/csv-summary.spec.ts:129:1 › F2a: filtros del gráfico se pueden operar en inglés sin cambiar la tabla (6.6s)
+  ✓  472 [csv] › tests/e2e/csv-summary.spec.ts:136:1 › F2a: elegir Líneas aplica la agrupación mensual sugerida para fechas ISO (2.9s)
+  ✓  473 [csv] › tests/e2e/csv-summary.spec.ts:143:1 › F2a: pocas filas con celdas grandes conservan vista previa manual y límites explicados (2.5s)
+  ✓  474 [csv] › tests/e2e/csv-summary.spec.ts:151:1 › F2a: cambiar desde una celda en edición confirma el borrador sin guardar el archivo (3.0s)
+  ✓  475 [csv] › tests/e2e/csv-summary.spec.ts:157:1 › F2a: las herramientas de tabla siguen completas dentro de ambos anchos (783ms)
+  ✓  476 [csv] › tests/e2e/csv-summary.spec.ts:165:1 › AN-1b: desde Texto con cambios, Cancelar conserva el borrador y descartar abre análisis sin escribir (3.4s)
+  ✓  477 [csv] › tests/e2e/csv-summary.spec.ts:176:1 › F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor (8.6s)
+  ✓  478 [csv] › tests/e2e/csv-summary.spec.ts:205:1 › F2a: alternar Tabla y Resumen es presentación, sin reinterpretar el CSV por IPC (2.9s)
+  ✓  479 [csv] › tests/e2e/csv-text.spec.ts:19:1 › A: el conmutador Tabla Texto conserva una pestaña y recuerda el modo (1.8s)
+  ✓  480 [csv] › tests/e2e/csv-text.spec.ts:25:1 › A: menú de CSV y TSV ofrece ambos modos y teclado devuelve el foco (1.0s)
+  ✓  481 [csv] › tests/e2e/csv-text.spec.ts:29:1 › A: más de 10 MiB deshabilita Texto en la barra y el menú con ayuda explícita (996ms)
+  ✓  482 [csv] › tests/e2e/csv-text.spec.ts:33:1 › B: texto exacto conserva saltos mixtos, pegado, undo y opciones apagadas (1.3s)
+  ✓  483 [csv] › tests/e2e/csv-text.spec.ts:53:1 › B: buscar reemplazar con expresión regular e ir a línea usan CodeMirror en español (1.2s)
+  ✓  484 [csv] › tests/e2e/csv-text.spec.ts:59:1 › C: cancelar, descartar y guardar al cambiar conservan un documento y su contenido (1.5s)
+  ✓  485 [csv] › tests/e2e/csv-text.spec.ts:68:1 › C: un guardado no representable mantiene el diálogo y el texto pendiente (1.1s)
+  ✓  486 [csv] › tests/e2e/csv-text.spec.ts:72:1 › C: recuperación tras interrupción conserva Texto y UTF-16 con BOM como copia (4.7s)
+  ✓  487 [csv] › tests/e2e/csv-text.spec.ts:82:32 › D: comilla sin cerrar se abre como Texto, se corrige y vuelve a Tabla (1.4s)
+  ✓  488 [csv] › tests/e2e/csv-text.spec.ts:82:32 › D: comilla suelta se abre como Texto, se corrige y vuelve a Tabla (1.4s)
+  ✓  489 [csv] › tests/e2e/csv-text.spec.ts:82:32 › D: texto después de comilla se abre como Texto, se corrige y vuelve a Tabla (1.4s)
+  ✓  490 [csv] › tests/e2e/csv-text.spec.ts:92:1 › D: apertura inicial múltiple conserva los archivos válidos tras un CSV fallido (1.6s)
+  ✓  491 [csv] › tests/e2e/csv-text.spec.ts:96:1 › B: Buscar Todas permite editar varios rangos y deshacer en un paso (1.3s)
+  ✓  492 [csv] › tests/e2e/csv-text.spec.ts:103:1 › C: cambiar espera la celda enfocada y conserva su valor al cancelar, descartar o guardar (1.8s)
+  ✓  493 [csv] › tests/e2e/csv-text.spec.ts:112:1 › C: una edición rechazada por tamaño no permite guardar, cerrar ni cambiar con el texto anterior (2.5s)
+  ✓  494 [csv] › tests/e2e/csv-text.spec.ts:118:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar (1.1s)
+  ✓  495 [csv] › tests/e2e/csv-text.spec.ts:144:1 › TXT-02a: colores por columna y ubicación persistente sin cambiar el CSV (2.0s)
+  ✓  496 [csv] › tests/e2e/csv-text.spec.ts:191:77 › TXT-02a: separador detectado en datos.tsv abierto directamente como Texto (763ms)
+  ✓  497 [csv] › tests/e2e/csv-text.spec.ts:191:77 › TXT-02a: separador detectado en punto-y-coma.csv abierto directamente como Texto (790ms)
+  ✓  498 [csv] › tests/e2e/csv-text.spec.ts:200:1 › TXT-02a: filas irregulares y un documento sin encabezado conservan su columna (1.1s)
+  ✓  499 [csv] › tests/e2e/csv-text.spec.ts:219:1 › TXT-02a: saltar lejos no pierde la columna de un campo con varias líneas (932ms)
+  ✓  500 [csv] › tests/e2e/csv-text.spec.ts:230:1 › TXT-02a: pinta las columnas al desplazarse horizontalmente (839ms)
+  ✓  501 [csv] › tests/e2e/descriptive-percentiles.spec.ts:27:1 › percentiles: perfil filtrado, ayuda por teclado e informe preservan valores y procedencia (1.4s)
+  ✓  502 [csv] › tests/e2e/descriptive-percentiles.spec.ts:39:1 › percentiles: columnas marcadas, controles progresivos y rango comparten método sin recalcular al mostrar (1.3s)
+  ✓  503 [csv] › tests/e2e/descriptive-percentiles.spec.ts:48:1 › percentiles: vacío, un solo número y muestra limitada no inventan población completa @perf (1.6s)
+  ✓  504 [csv] › tests/e2e/extract.spec.ts:33:1 › el botón de extracción solo existe en archivos grandes (749ms)
+  ✓  505 [csv] › tests/e2e/extract.spec.ts:38:1 › cuenta, previsualiza y extrae filas completas: bytes idénticos, original intacto y extracto editable (1.1s)
+  ✓  506 [csv] › tests/e2e/extract.spec.ts:64:1 › elegir columnas reescribe el CSV y lo avisa: valores iguales, formato normalizado (987ms)
+  ✓  507 [csv] › tests/e2e/extract.spec.ts:79:1 › un extracto grande se abre en modo grande y lo dice (871ms)
+  ✓  508 [csv] › tests/e2e/extract.spec.ts:88:1 › cancelar a mitad no deja archivo ni temporal y el original sigue igual (1.6s)
+  ✓  509 [csv] › tests/e2e/extract.spec.ts:102:1 › no se extrae sobre el propio original ni sobre un archivo abierto (1.4s)
+  ✓  510 [csv] › tests/e2e/extract.spec.ts:111:1 › una condición mal formada se explica y no crea nada (964ms)
+  ✓  511 [csv] › tests/e2e/extract.spec.ts:120:1 › un CSV con una comilla sin cerrar no se indexa como grande: muestra con la posición del problema (746ms)
+  ✓  512 [csv] › tests/e2e/large-file.spec.ts:25:1 › un CSV por encima del umbral se abre como archivo grande: aviso, recuento exacto y sin el límite de 200 filas (837ms)
+  ✓  513 [csv] › tests/e2e/large-file.spec.ts:35:1 › «Ir a la fila»: botón, menú, validación, foco y Escape (970ms)
+  ✓  514 [csv] › tests/e2e/large-file.spec.ts:48:1 › lo que aún no existe en archivos grandes está deshabilitado y el documento no cambia (1.0s)
+  ✓  515 [csv] › tests/e2e/large-file.spec.ts:66:1 › llega a cualquier fila de un archivo de 700 000 filas, más allá del techo de altura de Chromium (1.2s)
+  ✓  516 [csv] › tests/e2e/large-filter.spec.ts:27:1 › Filtrar en grande abre condiciones que se aplican explícitamente y se combinan con la búsqueda aplicada (3.1s)
+  ✓  517 [csv] › tests/e2e/large-filter.spec.ts:38:1 › el menú de columna precarga la columna y un error conserva la vista anterior sin iniciar un recorrido (1.9s)
+  ✓  518 [csv] › tests/e2e/large-filter.spec.ts:46:1 › Extraer precarga la regla aplicada y recorre todo aunque la vista tenga tope (2.5s)
+  ✓  519 [csv] › tests/e2e/large-search.spec.ts:37:1 › buscar en archivo grande se aplica explícitamente con Enter (1.2s)
+  ✓  520 [csv] › tests/e2e/large-search.spec.ts:53:1 › sin coincidencias permite ir a una fila original; vacío y Escape quitan la vista (2.0s)
+  ✓  521 [csv] › tests/e2e/large-search.spec.ts:66:1 › ver en el documento completo desde la fila y el atajo conserva número y foco (1.6s)
+  ✓  522 [csv] › tests/e2e/large-search.spec.ts:75:1 › una vista se recupera al volver a su pestaña sin iniciar otro recorrido (1.2s)
+  ✓  523 [csv] › tests/e2e/large-search.spec.ts:83:1 › cancelar conserva un parcial honesto y una búsqueda nueva no recibe resultados anteriores (13.2s)
+  ✓  524 [csv] › tests/e2e/large-search.spec.ts:96:1 › el tope de coincidencias conserva una vista parcial y mantiene bloqueadas las mutaciones (1.8s)
+  ✓  525 [csv] › tests/e2e/large-search.spec.ts:109:1 › pedir otra página invalida la vista si el archivo cambió y no mezcla versiones (1.1s)
+  ✓  526 [csv] › tests/e2e/large-search.spec.ts:116:1 › un registro inválido sin la aguja detiene la búsqueda sin presentarla como completa (1.1s)
+  ✓  527 [csv] › tests/e2e/ordering.spec.ts:26:1 › orden visual: mueve filas marcadas y columnas, limpia filtros, conserva valores y guarda con deshacer (1.8s)
+  ✓  528 [csv] › tests/e2e/ordering.spec.ts:38:1 › orden visual: rango por teclado, intervalo original, vista previa en temas y rechazo de ausencia destructiva (2.0s)
+  ✓  529 [csv] › tests/e2e/ordering.spec.ts:48:1 › orden visual: multisort estable, guardar vista intacta, rechazo con filtros y fijación explícita recuperable (4.8s)
+  ✓  530 [csv] › tests/e2e/ordering.spec.ts:58:1 › orden: recuperación anterior real, archivo incompatible conservado y preparación cancelable con IPC validado (1.4s)
+  ✓  531 [csv] › tests/e2e/range-cancellation.spec.ts:15:1 › rangos: los controles cancelan vista previa y aplicación, permiten reintentar y conservan originales (1.8s)
+  ✓  532 [csv] › tests/e2e/range-cancellation.spec.ts:25:1 › rangos: cancelar trabajo iniciado, rechazar edición en cola y validar requestId no cambia datos ni recuperación (1.0s)
+  ✓  533 [csv] › tests/e2e/range-cancellation.spec.ts:38:1 › rangos: cancelar o cerrar durante copiar impide el borrado; espera la respuesta y conserva el portapapeles válido @solo (1.2s)
+  ✓  534 [csv] › tests/e2e/range-cancellation.spec.ts:51:1 › rangos: restaurar el foco una vez permite desplazar la tabla sin recuperarlo después (1.1s)
+  ✓  535 [csv] › tests/e2e/search.spec.ts:16:1 › buscar CSV: teclado, coincidencias por celda, texto hostil y temas conservan los datos (2.1s)
+  ✓  536 [csv] › tests/e2e/search.spec.ts:24:1 › reemplazo CSV: vista previa explícita incluye filas ocultas, limita columnas y se deshace completo (1.5s)
+  ✓  537 [csv] › tests/e2e/search.spec.ts:34:1 › buscar muestra CSV no habilita reemplazo ni pierde la marca de alcance parcial @perf (1.1s)
+  ✓  538 [csv] › tests/e2e/search.spec.ts:39:1 › buscar y filtrar CSV grande usa el worker distribuido también dentro del paquete (2.0s)
+  ✓  539 [csv] › tests/e2e/seg-csv-text.spec.ts:28:46 › S1a: explorador confirma cambios de Tabla y Cancelar conserva el documento (1.2s)
+  ✓  540 [csv] › tests/e2e/seg-csv-text.spec.ts:28:46 › S1a: explorador confirma cambios de Texto y Cancelar conserva el documento (1.1s)
+  ✓  541 [csv] › tests/e2e/seg-csv-text.spec.ts:46:1 › S1a: explorador cambia un documento limpio en la misma pestaña (1.1s)
+  ✓  542 [csv] › tests/e2e/seg-csv-text.spec.ts:53:1 › S1b: guardar un CSV inválido mantiene Texto limpio con un solo aviso y detalle (1.2s)
+  ✓  543 [csv] › tests/e2e/seg-csv-text.spec.ts:72:1 › S1b: un aviso anterior no oculta un fallo nuevo tras guardar el CSV corregido (1.3s)
+  ✓  544 [csv] › tests/e2e/seg-csv-text.spec.ts:93:1 › S1b: la ruta limpia tampoco conserva un aviso anterior de formato CSV (1.3s)
+  ✓  545 [csv] › tests/e2e/seg-csv-text.spec.ts:110:1 › S1b: el fallo desde el explorador activa el CSV de destino y conserva el otro documento (1.3s)
+  ✓  546 [csv] › tests/e2e/selection-statistics.spec.ts:17:1 › estadísticas del rango: vista ordenada/filtrada, resumen conjunto y por columnas con datos intactos (2.2s)
+  ✓  547 [csv] › tests/e2e/selection-statistics.spec.ts:33:1 › estadísticas del rango: cancelar interrumpe y reintentar conserva la selección al paginar (1.2s)
+  ✓  548 [csv] › tests/e2e/selection-statistics.spec.ts:41:1 › estadísticas del rango: muestra limitada, campos nuevos y validación IPC sin atribuir totales globales @perf (1.1s)
+  ✓  549 [csv] › tests/e2e/selection-statistics.spec.ts:47:1 › estadísticas del rango: resumen de más de cien columnas sin expandir el límite del panel por columna (1.5s)
+  ✓  550 [csv] › tests/e2e/sql-queue.spec.ts:28:1 › un segundo análisis espera al primero: ninguno se cancela y nunca hay dos motores (1.9s)
+  ✓  551 [csv] › tests/e2e/sql-queue.spec.ts:36:1 › el resultado paginable de un análisis sigue disponible mientras se ejecuta otro (1.8s)
+  ✓  552 [csv] › tests/e2e/sql-queue.spec.ts:43:1 › cancelar un análisis en cola no toca el que está en curso ni arranca otro motor (1.3s)
+  ✓  553 [csv] › tests/e2e/sql-queue.spec.ts:50:1 › cancelar el análisis en curso libera el motor y deja pasar al siguiente (1.6s)
+  ✓  554 [csv] › tests/e2e/sql-queue.spec.ts:58:1 › generar un gráfico y exportar sus resultados a la vez: ambos terminan (3.0s)
+  ✓  555 [csv] › tests/e2e/sql-queue.spec.ts:67:1 › lo interactivo pasa por delante de una exportación que espera (2.4s)
+  ✓  556 [csv] › tests/e2e/sql-queue.spec.ts:73:1 › solo se conservan los resultados más recientes (3.9s)
+  ✓  557 [csv] › tests/e2e/sql-queue.spec.ts:81:1 › cerrar la aplicación con un análisis en curso y otro en cola termina sin motores huérfanos (1.0s)
+  ✓  558 [csv] › tests/e2e/sql-queue.spec.ts:87:1 › muchas solicitudes a la vez: todas devuelven su resultado aunque superen los resultados que se conservan (3.8s)
+  ✓  559 [csv] › tests/e2e/sql-queue.spec.ts:93:1 › una exportación en cola no espera indefinidamente aunque sigan llegando consultas interactivas (7.0s)
+  ✓  560 [csv] › tests/e2e/sql-queue.spec.ts:108:1 › cerrar un documento cancela sus solicitudes en cola sin esperar su turno (1.3s)
+  ✓  561 [csv] › tests/e2e/sql.spec.ts:17:1 › SQL visual: agrupación, pivot, cruce, borrador, temas y documentos intactos (4.1s)
+  ✓  562 [csv] › tests/e2e/sql.spec.ts:37:1 › SQL: valores exactos, cambios pendientes, Unicode, límites, páginas y rechazo de operaciones (8.4s)
+  ✓  563 [csv] › tests/e2e/sql.spec.ts:50:1 › SQL: aislamiento de Chromium, bloqueo de red/disco y cancelación real con recuperación del motor (1.8s)
+  ✓  564 [csv] › tests/e2e/sql.spec.ts:62:1 › SQL: mide fuentes completas hasta un millón por cuatro columnas y distingue la muestra @perf (9.3s)
+  ✓  565 [csv] › tests/e2e/sql.spec.ts:87:1 › informe SQL reúne todas las páginas, preserva cambios y valores, se recupera, guarda y exporta (5.9s)
+  ✓  566 [csv] › tests/e2e/sql.spec.ts:102:1 › informe SQL rotula las 10 000 filas conservadas y rechaza resultados cancelados o de otra revisión (3.9s)
+  ✓  567 [csv] › tests/e2e/sql.spec.ts:112:1 › informe SQL desde un CSV mayor de 50 MiB identifica la fuente completa sin habilitar guardar su muestra @perf (5.3s)
+  ✓  568 [csv] › tests/e2e/statistics-reports.spec.ts:19:1 › informe general editable: PDF/HTML, recuperación y guardado sin alterar el CSV pendiente (6.2s)
+  ✓  569 [csv] › tests/e2e/statistics-reports.spec.ts:30:1 › informe del rango fija búsqueda, posiciones y revisión; editar invalida el resultado (1.6s)
+  ✘  570 [csv] › tests/e2e/statistics-reports.spec.ts:36:1 › informes del explorador: perfil, distribución, Pearson y página parcial con texto hostil abreviado (31.1s)
+(node:54159) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  571 [csv] › tests/e2e/statistics-reports.spec.ts:42:1 › informe de muestra exportable con alcance explícito sin habilitar la exportación del CSV parcial @perf (1.4s)
+  ✓  572 [csv] › tests/e2e/structural-context.spec.ts:19:1 › la lectura de filas recupera una consulta sustituida por una recarga (1.2s)
+  ✓  573 [csv] › tests/e2e/structural-context.spec.ts:40:1 › menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar (2.0s)
+  ✓  574 [csv] › tests/e2e/structural-context.spec.ts:47:1 › menú de columnas: teclado, insertar a ambos lados, conservar valores y respetar selección múltiple (1.3s)
+  ✓  575 [csv] › tests/e2e/structural-context.spec.ts:55:1 › menús estructurales: muestras bloquean cambios y conservan orden de vista, temas y foco @perf (1.5s)
+  ✓  576 [csv] › tests/e2e/structural-context.spec.ts:61:1 › menú estructural: restaura foco si desaparece el origen y rechaza inserciones ambiguas por IPC (1.0s)
+  ✓  577 [csv] › tests/e2e/structure.spec.ts:30:1 › H15-1: la transformación calculada conserva decimales exactos (1.3s)
+  ✓  578 [csv] › tests/e2e/structure.spec.ts:44:1 › H15-1: las fórmulas que salen de la expresión escalar se rechazan sin cambios (3.3s)
+  ✓  579 [csv] › tests/e2e/structure.spec.ts:66:1 › H15-1 interfaz: vista previa de filas filtradas, cambio pendiente, guardar y deshacer (2.5s)
+  ✓  580 [csv] › tests/e2e/structure.spec.ts:108:45 › H15-1 interfaz: traducción, fórmula con acento y medios accesibles [en] (2.7s)
+  ✓  581 [csv] › tests/e2e/structure.spec.ts:108:45 › H15-1 interfaz: traducción, fórmula con acento y medios accesibles [en-XA] (2.7s)
+  ✓  582 [csv] › tests/e2e/structure.spec.ts:136:1 › H15-1 interfaz: explica la fila corta y desactiva el cálculo en una muestra (1.8s)
+  ✓  583 [csv] › tests/e2e/structure.spec.ts:154:1 › H15-2: los ocho ejemplos eligen columnas, ajustan la lectura y calculan (7.6s)
+  ✓  584 [csv] › tests/e2e/structure.spec.ts:178:1 › H15-2b: los ejemplos encuentran cantidades aunque haya más de 100 000 valores distintos (1.2s)
+  ✓  585 [csv] › tests/e2e/structure.spec.ts:194:1 › H15-2b: el ejemplo Condition calcula en el idioma de la interfaz [en] (1.7s)
+  ✓  586 [csv] › tests/e2e/structure.spec.ts:209:1 › H15-2: cerrar Análisis cancela su perfilado y permite preparar la fórmula (3.9s)
+  ✓  587 [csv] › tests/e2e/structure.spec.ts:260:1 › H15-2: el encabezado inserta a su derecha y distingue vacío de campo ausente (1.9s)
+  ✓  588 [csv] › tests/e2e/structure.spec.ts:284:1 › H15-2: paleta CSV y ayuda por teclado con colores forzados [en-XA] (1.2s)
+  ✓  589 [csv] › tests/e2e/structure.spec.ts:308:1 › transformaciones visuales: documento completo, originales, Unicode, encabezados, duplicados y deshacer (2.6s)
+  ✓  590 [csv] › tests/e2e/structure.spec.ts:323:1 › transformaciones: cancela trabajo real, invalida revisión obsoleta y rechaza mensajes inválidos (1.3s)
+  ✓  591 [csv] › tests/e2e/structure.spec.ts:336:1 › transformación conserva recuperación, un paso de deshacer y guardado en disco (3.7s)
+  ✓  592 [csv] › tests/e2e/structure.spec.ts:345:1 › transformaciones: el menú abre durante la paginación, con ratón y teclado, sin cambiar el rango ni los datos (1.3s)
+  ✓  593 [csv] › tests/e2e/virtual-scroll-columns.spec.ts:39:2 › editable · 999 999 filas × 2 columnas (barra escalada) › la última fila es alcanzable y las filas visibles son contiguas (2.0s)
+  ✓  594 [csv] › tests/e2e/virtual-scroll-columns.spec.ts:45:2 › editable · 999 999 filas × 2 columnas (barra escalada) › ir a la última columna no rompe el desplazamiento vertical (2.1s)
+  ✓  595 [csv] › tests/e2e/virtual-scroll-columns.spec.ts:62:2 › editable · 999 999 filas × 2 columnas (barra escalada) › al cambiar el alto de la ventana la última fila sigue alcanzable (2.1s)
+  ✓  596 [csv] › tests/e2e/virtual-scroll-columns.spec.ts:69:2 › editable · 999 999 filas × 2 columnas (barra escalada) › al agrandar la ventana estando al final la última fila se queda a la vista sin volver a desplazar (2.0s)
+  ✓  597 [csv] › tests/e2e/virtual-scroll-columns.spec.ts:39:2 › editable · 249 999 filas × 8 columnas (límite de celdas) › la última fila es alcanzable y las filas visibles son contiguas (1.7s)
+  ✓  598 [csv] › tests/e2e/virtual-scroll-columns.spec.ts:45:2 › editable · 249 999 filas × 8 columnas (límite de celdas) › ir a la última columna no rompe el desplazamiento vertical (2.0s)
+  ✓  599 [csv] › tests/e2e/virtual-scroll-columns.spec.ts:62:2 › editable · 249 999 filas × 8 columnas (límite de celdas) › al cambiar el alto de la ventana la última fila sigue alcanzable (1.8s)
+  ✓  600 [csv] › tests/e2e/virtual-scroll-columns.spec.ts:69:2 › editable · 249 999 filas × 8 columnas (límite de celdas) › al agrandar la ventana estando al final la última fila se queda a la vista sin volver a desplazar (1.7s)
+  ✓  601 [csv] › tests/e2e/virtual-scroll-columns.spec.ts:39:2 › grande · 700 000 filas × 8 columnas (barra escalada) › la última fila es alcanzable y las filas visibles son contiguas (988ms)
+  ✓  602 [csv] › tests/e2e/virtual-scroll-columns.spec.ts:45:2 › grande · 700 000 filas × 8 columnas (barra escalada) › ir a la última columna no rompe el desplazamiento vertical (1.2s)
+  ✓  603 [csv] › tests/e2e/virtual-scroll-columns.spec.ts:62:2 › grande · 700 000 filas × 8 columnas (barra escalada) › al cambiar el alto de la ventana la última fila sigue alcanzable (1.1s)
+  ✓  604 [csv] › tests/e2e/virtual-scroll-columns.spec.ts:69:2 › grande · 700 000 filas × 8 columnas (barra escalada) › al agrandar la ventana estando al final la última fila se queda a la vista sin volver a desplazar (1.4s)
+  ✓  605 [csv] › tests/e2e/virtual-scroll.spec.ts:32:1 › se llega a la última fila de un millón de filas sin un elemento más alto que el límite de Chromium @perf (1.8s)
+  ✓  606 [csv] › tests/e2e/virtual-scroll.spec.ts:40:1 › Ctrl/⌘ + Fin lleva el foco a la última fila y la deja a la vista @perf (1.8s)
+  ✓  607 [csv] › tests/e2e/virtual-scroll.spec.ts:49:1 › a mitad del recorrido las filas son contiguas, están separadas 32 px y la posición es proporcional @perf (1.8s)
+  ✓  608 [csv] › tests/e2e/virtual-scroll.spec.ts:57:1 › la selección sigue en su fila al alejarse y volver @perf (1.8s)
+  ✓  609 [csv] › tests/e2e/virtual-scroll.spec.ts:67:1 › una muesca de la rueda mueve las filas que dice la rueda, no miles @perf (1.7s)
+  ✓  610 [csv] › tests/e2e/virtual-scroll.spec.ts:77:1 › con un filtro o un orden la tabla sigue siendo correcta @perf (5.4s)
+  ✓  611 [csv] › tests/e2e/virtual-scroll.spec.ts:89:1 › recorrer el archivo entero deja ver todas las filas en orden y sin huecos @perf (1.8s)
+  ✓  612 [csv] › tests/e2e/virtual-scroll.spec.ts:101:1 › al cambiar el alto de la ventana con la barra escalada la última fila sigue alcanzable @perf (2.2s)
+  ✓  613 [csv] › tests/e2e/virtual-scroll.spec.ts:108:1 › al agrandar la ventana estando al final la última fila se queda a la vista sin volver a desplazar @perf (1.7s)
+
+
+  1) [md] › tests/e2e/markdown-sidebar.spec.ts:182:1 › P5: almacenamiento bloqueado no impide abrir el documento ni alternar las pestañas
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      193 |   let read=false,write=false;try{localStorage.getItem('__storage_test__')}catch{read=true}try{localStorage.setItem('__storage_test__','value')}catch{write=true}
+      194 |   return{...initial,read,write}
+    > 195 |  });expect(blocked.beforeBootstrap).toBe(true);expect(blocked.reads).toBeGreaterThan(0);expect(blocked.read).toBe(true);expect(blocked.write).toBe(true);await evidence('md007-p-storage-blocked',{...blocked,scope:'Denegación comprobada antes del bootstrap, incluidas lecturas iniciales de la aplicación.'})
+          |                                                                      ^
+      196 |  const{doc,path}=await open(layoutSource);await expect(filesTab()).toHaveAttribute('aria-selected','true')
+      197 |  await indexTab().click();await expect(indexPanel()).toContainText('Manual de FreyaLab');await filesTab().click();await expect(filesTab()).toHaveAttribute('aria-selected','true')
+      198 |  expect(errors).toEqual([]);expect(await source(doc.id)).toBe(layoutSource);expect(await readFile(path,'utf8')).toBe(layoutSource)
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/markdown-sidebar.spec.ts:195:70
+
+    Error Context: test-results/markdown-sidebar-P5-almace-aa2b8-to-ni-alternar-las-pestañas-md/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/markdown-sidebar-P5-almace-aa2b8-to-ni-alternar-las-pestañas-md/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/markdown-sidebar-P5-almace-aa2b8-to-ni-alternar-las-pestañas-md/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/charts.spec.ts:73:1 › gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial @perf
+
+    Error: expect(locator).toHaveJSProperty(expected) failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByLabel('Alcance del gráfico').locator('option[value="filtered"]')
+    Expected: true
+    Received: false
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveJSProperty" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByLabel('Alcance del gráfico').locator('option[value="filtered"]') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByLabel('Alcance del gráfico').locator('option[value="filtered"]')
+        33 × locator resolved to <option value="filtered">Vista filtrada actual</option>
+           - unexpected value "false"
+
+
+      75 |  const text='ID,N,Nota\n'+Array.from({length:2400},(_,i)=>`${String(i).padStart(5,'0')},${i%100},${'x'.repeat(23000)}`).join('\n')+'\n',{doc,path}=await open(text,'large.csv'),before=await stat(path),beforeDocuments=await page.evaluate(()=>window.freya.documents())
+      76 |  const {createHash}=await import('node:crypto'),originalHash=createHash('sha256').update(text).digest('hex');expect(before.size).toBeGreaterThan(50*1024*1024);expect(doc).toMatchObject({readonly:true,large:true,rowCount:2400,dirty:false})
+    > 77 |  await showPanel(page,'Gráficos');const panel=chartPanel(page);await expect(panel.getByLabel('Alcance del gráfico').locator('option[value="filtered"]')).toHaveJSProperty('disabled',true);await expect(page.evaluate(id=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id,revision:0,query:{offset:0,limit:1,requestId:1,search:'0'}}],sql:'SELECT COUNT(*) FROM datos'}),doc.id)).rejects.toThrow('no está disponible en archivos grandes');await panel.getByLabel('Tipo de gráfico',{exact:true}).selectOption('histogram');await panel.getByLabel('Columna Y del gráfico',{exact:true}).selectOption('1');await chartGenerate(page).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:90000});await chartDetails(panel);await expect(panel.locator('.chart-info .scope').last()).toContainText('Fuente completa desde disco');await panel.locator('.chart-info>summary').click();await chartDetails(panel);await expect(panel.locator('.chart-info .scope').last()).toContainText(/2[,.]400 filas/)
+         |                                                                                                                                                          ^
+      78 |  await panel.locator('.chart-info>summary').click();await showTable(page);await expect(page.getByRole('button',{name:'Exportar',exact:true})).toBeDisabled();await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled();await showPanel(page,'Gráficos')
+      79 |  for(const format of ['SVG','PNG','PDF']){await panel.getByRole('button',{name:`Exportar gráfico ${format}`,exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText(`large.${format.toLowerCase()}`,{timeout:30000});const bytes=await readFile(join(folder,'exports',`large.${format.toLowerCase()}`));expect(bytes.byteLength).toBeGreaterThan(1000);await writeFile(test.info().outputPath(`large-chart.${format.toLowerCase()}`),bytes)}
+      80 |  const svg=await readFile(join(folder,'exports','large.svg'),'utf8');expect(svg).toContain('2,400 filas fuente');expect(svg).toContain('@font-face');expect(svg).toContain('data:font/woff2;base64,');expect(svg).not.toContain('<script');const png=await app.evaluate(({nativeImage},path)=>{const image=nativeImage.createFromPath(path),bytes=image.toBitmap(),colors=new Set<string>();for(let i=0;i<bytes.length;i+=4)colors.add(bytes.subarray(i,i+4).toString('hex'));return{size:image.getSize(),colors:colors.size}},join(folder,'exports','large.png'));expect(png.size.width).toBeGreaterThan(500);expect(png.colors).toBeGreaterThan(20)
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/charts.spec.ts:77:154
+
+    Error Context: test-results/charts-gráficos-de-un-CSV--08ef6-in-habilitar-el-CSV-parcial-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/charts-gráficos-de-un-CSV--08ef6-in-habilitar-el-CSV-parcial-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/charts-gráficos-de-un-CSV--08ef6-in-habilitar-el-CSV-parcial-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/column-menu.spec.ts:98:1 › «Estadísticas de la columna» abre el panel de resumen con esa columna marcada
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('tablist', { name: 'Herramientas de análisis' })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('tablist', { name: 'Herramientas de análisis' }) with timeout 15000ms
+      - waiting for getByRole('tablist', { name: 'Herramientas de análisis' })
+
+
+      100 |  await open()
+      101 |  await columnButton('Ciudad').click();await menu().getByRole('menuitem',{name:'Estadísticas de la columna',exact:true}).click()
+    > 102 |  const tabs=page.getByRole('tablist',{name:'Herramientas de análisis'});await expect(tabs).toBeVisible();await expect(tabs.getByRole('tab',{name:'Resumen',exact:true})).toHaveAttribute('aria-selected','true')
+          |                                                                                            ^
+      103 |  await expect(page.getByLabel('Seleccionar columna Ciudad',{exact:true})).toBeChecked();await expect(page.getByLabel('Seleccionar columna Folio',{exact:true})).not.toBeChecked()
+      104 | })
+      105 |
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/column-menu.spec.ts:102:92
+
+    Error Context: test-results/column-menu-«Estadísticas--a8729-men-con-esa-columna-marcada-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/column-menu-«Estadísticas--a8729-men-con-esa-columna-marcada-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/column-menu-«Estadísticas--a8729-men-con-esa-columna-marcada-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [csv] › tests/e2e/columns-overview.spec.ts:39:1 › panorámica: cancelar o cambiar revisión descarta respuestas tardías y no continúa columnas
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Explorando columna 1 de 5…"
+    Received: "Datos o alcance actualizados. Pulsa Explorar columnas."
+
+      40 |  const {doc,path}=await open(),panel=await overview()
+      41 |  await panel.evaluate(element=>{element.querySelector<HTMLFormElement>('form')!.requestSubmit();queueMicrotask(()=>{Reflect.set(window,'overviewCancelledPhase',element.querySelector('[role=status]')?.textContent);const button=[...element.querySelectorAll('button')].find(button=>button.textContent==='Cancelar exploración de columnas');if(!button)throw new Error('Sin cancelación durante el análisis');button.click()})})
+    > 42 |  expect(await page.evaluate(()=>Reflect.get(window,'overviewCancelledPhase'))).toBe('Explorando columna 1 de 5…');await expect(panel.getByRole('status')).toHaveText('Exploración de columnas cancelada.');await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:1,requestId:999}),doc.id);await expect(panel.locator('tbody tr')).toHaveCount(0);await expect(panel.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true})).toBeDisabled()
+         |                                                                                ^
+      43 |  await panel.evaluate((element,id)=>{element.querySelector<HTMLFormElement>('form')!.requestSubmit();queueMicrotask(()=>Reflect.set(window,'overviewPendingEdit',window.freya.tableEdit(id,{type:'cell',rowId:'1',column:2,value:'99'})))},doc.id)
+      44 |  await page.evaluate(async()=>await Reflect.get(window,'overviewPendingEdit'));await expect(panel.getByRole('status')).toHaveText(/^(Datos o alcance actualizados\. Pulsa Explorar columnas\.|La tabla cambió\. Vuelve a analizar\.|Los datos cambiaron\. Vuelve a explorar\.|Análisis cancelado: la tabla cambió o se recibió otra solicitud\.)$/);await expect(panel.locator('tbody tr')).toHaveCount(0);await expect(panel.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true})).toBeDisabled();expect(await readFile(path,'utf8')).toBe(source)
+      45 |  // La edición directa prueba el rechazo del motor; reabrir sincroniza sus metadatos con la interfaz.
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/columns-overview.spec.ts:42:80
+
+    Error Context: test-results/columns-overview-panorámic-d3f87-días-y-no-continúa-columnas-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/columns-overview-panorámic-d3f87-días-y-no-continúa-columnas-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/columns-overview-panorámic-d3f87-días-y-no-continúa-columnas-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [csv] › tests/e2e/statistics-reports.spec.ts:36:1 › informes del explorador: perfil, distribución, Pearson y página parcial con texto hostil abreviado
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('region', { name: 'Estadísticas por columna', exact: true }).locator('summary').filter({ hasText: 'Explorar una columna' })
+
+
+      15 | async function report(panel:Locator){await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();await expect(page.locator('.cm-content')).toContainText('#');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).filter(d=>d.kind==='markdown'&&d.dirty).length).toBeGreaterThan(0);return(await page.evaluate(()=>window.freya.documents())).filter(d=>d.kind==='markdown').at(-1)!}
+      16 | async function csvTab(){await showTable(page,'data.csv')}
+    > 17 | async function explore(column='0',view='profile',other?:string){const stats=await statistics();await stats.locator('summary').filter({hasText:'Explorar una columna'}).click();const explorer=page.getByRole('region',{name:'Exploración de columna',exact:true});await explorer.getByLabel('Columna para explorar',{exact:true}).selectOption(column);await explorer.getByRole('button',{name:{profile:'Perfil',frequencies:'Frecuencias',distribution:'Distribución',correlation:'Correlación'}[view],exact:true}).click();if(other)await explorer.getByLabel('Columna para correlación',{exact:true}).selectOption(other);await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer.getByRole('status')).toHaveText('Exploración completa.');return explorer}
+         |                                                                                                                                                                        ^
+      18 |
+      19 | test('informe general editable: PDF/HTML, recuperación y guardado sin alterar el CSV pendiente',async()=>{
+      20 |  const source='ID,X,Y,Z\r\n00123,2,3,4\r\n9007199254740993,4,6,8\r\n', {doc,path}=await open(source);await page.getByRole('gridcell',{name:'Fila 1, X',exact:true}).dblclick();await page.getByLabel('Editar celda',{exact:true}).fill('8');await page.getByLabel('Editar celda',{exact:true}).press('Enter');await expect(page.locator('.dirty-badge')).toBeVisible();const before=(await page.evaluate(()=>window.freya.documents()))[0],panel=await statistics();await expect(panel.getByRole('button',{name:'Abrir informe Markdown',exact:true})).toBeDisabled();await analyze(panel);for(const [theme,width,height] of [['light',1440,900],['dark',1280,800]] as const){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.setViewportSize({width,height});await page.screenshot({path:test.info().outputPath(`csv-report-tools-${theme}-${width}x${height}.png`)})}const output=await report(panel)
+        at explore (/private/tmp/freyalab-alpha4-an1b/tests/e2e/statistics-reports.spec.ts:17:168)
+        at /private/tmp/freyalab-alpha4-an1b/tests/e2e/statistics-reports.spec.ts:38:135
+
+    Error Context: test-results/statistics-reports-informe-f593e--con-texto-hostil-abreviado-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/statistics-reports-informe-f593e--con-texto-hostil-abreviado-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/statistics-reports-informe-f593e--con-texto-hostil-abreviado-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5 failed
+    [md] › tests/e2e/markdown-sidebar.spec.ts:182:1 › P5: almacenamiento bloqueado no impide abrir el documento ni alternar las pestañas
+    [csv] › tests/e2e/charts.spec.ts:73:1 › gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial @perf
+    [csv] › tests/e2e/column-menu.spec.ts:98:1 › «Estadísticas de la columna» abre el panel de resumen con esa columna marcada
+    [csv] › tests/e2e/columns-overview.spec.ts:39:1 › panorámica: cancelar o cambiar revisión descarta respuestas tardías y no continúa columnas
+    [csv] › tests/e2e/statistics-reports.spec.ts:36:1 › informes del explorador: perfil, distribución, Pearson y página parcial con texto hostil abreviado
+  7 skipped
+  601 passed (22.6m)

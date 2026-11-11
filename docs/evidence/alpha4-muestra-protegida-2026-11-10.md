@@ -39,7 +39,7 @@ macOS Apple silicon, Node.js 24, perfiles temporales y archivos sintéticos.
 | Tipos finales, con `91d4070` | 0 errores y 0 avisos |
 | Construcción final, con `91d4070` | Completada |
 
-La omisión corresponde al caso HTTP de Pandoc, porque el binario local 3.12.1 carece de ese soporte. Una primera ejecución del nuevo E2E encontró dos botones «Analizar». El selector se acotó al panel de Proyecto antes de capturar la reproducción roja válida del aviso.
+La omisión corresponde al caso de `tests/package-smoke.test.ts` exclusivo de Windows (`skipIf(process.platform !== 'win32')`). Pandoc real se ejecutó; el binario local 3.12.1 carece de soporte HTTP y la prueba lo registra como límite de la comprobación del sandbox HTTP, sin omitir ese caso. Una primera ejecución del nuevo E2E encontró dos botones «Analizar». El selector se acotó al panel de Proyecto antes de capturar la reproducción roja válida del aviso.
 
 La unitaria distingue fuente completa protegida, muestra normal, muestra protegida, fuente completa de proyecto cerrado, muestra de proyecto cerrado, metadatos pendientes y revisión obsoleta. La E2E usa el registro real de fuentes. Comprueba Información, vista filtrada, Estadísticas, perfil e informe Markdown, Gráficos y etiqueta SQL sobre una fuente completa. Otro recorrido verifica una muestra antes y después de protegerla y después de cerrar su proyecto. Los archivos originales se comparan byte por byte.
 

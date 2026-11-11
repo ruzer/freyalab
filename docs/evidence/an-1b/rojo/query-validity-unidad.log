@@ -1,0 +1,43 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-alpha4-an1b
+
+ ❯ tests/csv-analysis-view.test.ts (18 tests | 10 failed) 5ms
+   × la validez compartida conserva página distinta de la misma consulta sin confundir paginación con cambios de datos 2ms
+   × la validez compartida conserva búsqueda nueva sin confundir paginación con cambios de datos 0ms
+   × la validez compartida conserva filtro nuevo sin confundir paginación con cambios de datos 0ms
+   × la validez compartida conserva condición nueva sin confundir paginación con cambios de datos 0ms
+   × la validez compartida conserva modo de filtros nuevo sin confundir paginación con cambios de datos 0ms
+   × la validez compartida conserva orden simple nuevo sin confundir paginación con cambios de datos 0ms
+   × la validez compartida conserva orden múltiple nuevo sin confundir paginación con cambios de datos 0ms
+   × la validez compartida conserva vista grande distinta sin confundir paginación con cambios de datos 0ms
+   × la validez compartida conserva metadatos desconocidos sin confundir paginación con cambios de datos 0ms
+   × la validez compartida conserva revisión distinta sin confundir paginación con cambios de datos 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/csv-analysis-view.test.ts > la validez compartida conserva página distinta de la misma consulta sin confundir paginación con cambios de datos
+ FAIL  tests/csv-analysis-view.test.ts > la validez compartida conserva búsqueda nueva sin confundir paginación con cambios de datos
+ FAIL  tests/csv-analysis-view.test.ts > la validez compartida conserva filtro nuevo sin confundir paginación con cambios de datos
+ FAIL  tests/csv-analysis-view.test.ts > la validez compartida conserva condición nueva sin confundir paginación con cambios de datos
+ FAIL  tests/csv-analysis-view.test.ts > la validez compartida conserva modo de filtros nuevo sin confundir paginación con cambios de datos
+ FAIL  tests/csv-analysis-view.test.ts > la validez compartida conserva orden simple nuevo sin confundir paginación con cambios de datos
+ FAIL  tests/csv-analysis-view.test.ts > la validez compartida conserva orden múltiple nuevo sin confundir paginación con cambios de datos
+ FAIL  tests/csv-analysis-view.test.ts > la validez compartida conserva vista grande distinta sin confundir paginación con cambios de datos
+ FAIL  tests/csv-analysis-view.test.ts > la validez compartida conserva metadatos desconocidos sin confundir paginación con cambios de datos
+ FAIL  tests/csv-analysis-view.test.ts > la validez compartida conserva revisión distinta sin confundir paginación con cambios de datos
+TypeError: csvAnalysisQueryReady is not a function
+ ❯ tests/csv-analysis-view.test.ts:52:9
+     50|  const doc={revision:3} as DocumentInfo
+     51|  const meta={matched:10000,revision,requestId,sample:false,query}
+     52|  expect(csvAnalysisQueryReady(doc,{...query,...change} as TableQuery,m…
+       |         ^
+     53| })
+     54|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 8 passed (18)
+   Start at  23:05:33
+   Duration  126ms (transform 54%, import 21%, tests 16%, worker 7%)

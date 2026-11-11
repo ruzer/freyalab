@@ -1,0 +1,238 @@
+{
+  "base": "fb2c73c493842b1985647b63f6b6d4114471f910",
+  "head": "d2109ba14adc2314f911d3d5da982b97f34ea227",
+  "antes": 629,
+  "despues": 613,
+  "retiradasOReescritas": [
+    {
+      "proyecto": "csv",
+      "archivo": "analysis-dock.spec.ts",
+      "suite": [],
+      "titulo": "cambiar de pestaña conserva la configuración del gráfico y el borrador SQL"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "analysis-dock.spec.ts",
+      "suite": [],
+      "titulo": "con el panel acoplado a 1366×768 la tabla sigue mostrando al menos tres columnas y no queda debajo del panel"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "analysis-dock.spec.ts",
+      "suite": [],
+      "titulo": "con un panel de análisis abierto la tabla conserva las filas que tenía sin panel"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "analysis-dock.spec.ts",
+      "suite": [],
+      "titulo": "el gráfico generado en el panel acoplado no se desplaza en horizontal y queda a la vista"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "analysis-dock.spec.ts",
+      "suite": [],
+      "titulo": "las herramientas son pestañas accesibles con activación manual por teclado"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "analysis-dock.spec.ts",
+      "suite": [],
+      "titulo": "las pestañas visitadas siguen montadas y ocultas; cerrar el panel las desmonta y devuelve el foco"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "column-menu.spec.ts",
+      "suite": [],
+      "titulo": "«Estadísticas de la columna» abre el panel de resumen con esa columna marcada"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "compact-toolbar.spec.ts",
+      "suite": [],
+      "titulo": "Analizar abre el panel en la pestaña recordada y vuelve a cerrarlo con el foco en su botón"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "csv-summary.spec.ts",
+      "suite": [],
+      "titulo": "F2a: desde Texto con cambios, Cancelar conserva el borrador y descartar abre Resumen sin escribir"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "csv-summary.spec.ts",
+      "suite": [],
+      "titulo": "F2a: pestaña hermana muestra gráfico y resumen sin generar, con opciones plegadas y fuente intacta"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-expanded.spec.ts",
+      "suite": [],
+      "titulo": "Escape en la vista ampliada vuelve a acoplar y un segundo Escape cierra el panel"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-expanded.spec.ts",
+      "suite": [],
+      "titulo": "a 900×600 los tres paneles son utilizables en la vista ampliada"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-expanded.spec.ts",
+      "suite": [],
+      "titulo": "ampliar y volver a la tabla conserva búsqueda, selección y posición de desplazamiento"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-expanded.spec.ts",
+      "suite": [],
+      "titulo": "en una ventana estrecha el panel se abre ampliado con un aviso y al ensanchar vuelve a acoplarse sin perder nada"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-expanded.spec.ts",
+      "suite": [],
+      "titulo": "en una ventana estrecha «Volver a la tabla» cierra el panel y devuelve el foco a su botón"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-expanded.spec.ts",
+      "suite": [],
+      "titulo": "la vista ampliada no se guarda: tras reiniciar el panel vuelve acoplado"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-expanded.spec.ts",
+      "suite": [],
+      "titulo": "los comandos amplían y acoplan el panel, y solo están disponibles cuando tienen sentido"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-resize.spec.ts",
+      "suite": [],
+      "titulo": "el divisor expone su estado y se mueve con el teclado dentro del rango"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-resize.spec.ts",
+      "suite": [],
+      "titulo": "el divisor se arrastra con el puntero y solo guarda al soltar"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-resize.spec.ts",
+      "suite": [],
+      "titulo": "el panel abierto, su pestaña y su ancho pasan de un documento a otro sin llevar el foco al panel"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-resize.spec.ts",
+      "suite": [],
+      "titulo": "tras reiniciar con el mismo perfil se restauran visibilidad, pestaña y ancho, y solo se guarda eso"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-resize.spec.ts",
+      "suite": [],
+      "titulo": "un valor guardado corrupto o de otra versión se ignora sin avisos y se usan los valores por defecto"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-startup.spec.ts",
+      "suite": [],
+      "titulo": "arrancó cerrado por la ventana estrecha: ensanchar la ventana después no lo abre solo"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-startup.spec.ts",
+      "suite": [],
+      "titulo": "con una ventana ancha el mismo panel guardado se restaura abierto y acoplado"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-startup.spec.ts",
+      "suite": [],
+      "titulo": "restaurado abierto en una ventana ancha: estrechar la ventana lo amplía y ensancharla lo acopla, sin cerrarlo"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "dock-startup.spec.ts",
+      "suite": [],
+      "titulo": "un panel guardado como abierto arranca cerrado si la ventana es estrecha y conserva lo guardado"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "structure.spec.ts",
+      "suite": [],
+      "titulo": "H15-2: dejar Resumen cancela su perfilado y permite preparar la fórmula"
+    }
+  ],
+  "nuevasOReescritas": [
+    {
+      "proyecto": "csv",
+      "archivo": "analysis-dock.spec.ts",
+      "suite": [],
+      "titulo": "cambiar de sección conserva la configuración del gráfico y el borrador SQL"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "analysis-dock.spec.ts",
+      "suite": [],
+      "titulo": "las secciones de la pestaña de análisis se alcanzan y activan con teclado"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "analysis-dock.spec.ts",
+      "suite": [],
+      "titulo": "las secciones visitadas se conservan y cerrar análisis las desmonta y devuelve el foco al CSV"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "analysis-tab.spec.ts",
+      "suite": [],
+      "titulo": "AN-1b ignora la disposición antigua del panel al abrir un perfil existente"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "column-menu.spec.ts",
+      "suite": [],
+      "titulo": "«Estadísticas de la columna» abre Análisis con esa columna marcada"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "compact-toolbar.spec.ts",
+      "suite": [],
+      "titulo": "Analizar abre una pestaña a petición y permite volver a la tabla con el foco en su pestaña"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "csv-summary.spec.ts",
+      "suite": [],
+      "titulo": "AN-1b: desde Texto con cambios, Cancelar conserva el borrador y descartar abre análisis sin escribir"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "csv-summary.spec.ts",
+      "suite": [],
+      "titulo": "AN-1b: pestaña de análisis crea gráfico y resumen a petición, con opciones plegadas y fuente intacta"
+    },
+    {
+      "proyecto": "shell",
+      "archivo": "project-source.spec.ts",
+      "suite": [],
+      "titulo": "el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado"
+    },
+    {
+      "proyecto": "shell",
+      "archivo": "project-source.spec.ts",
+      "suite": [],
+      "titulo": "una muestra conserva su alcance al protegerla y al cerrar el proyecto"
+    },
+    {
+      "proyecto": "csv",
+      "archivo": "structure.spec.ts",
+      "suite": [],
+      "titulo": "H15-2: cerrar Análisis cancela su perfilado y permite preparar la fórmula"
+    }
+  ]
+}
