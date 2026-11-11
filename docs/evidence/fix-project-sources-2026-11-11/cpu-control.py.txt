@@ -1,0 +1,27 @@
+import json,os,pathlib,resource,signal,subprocess,sys,time
+name=sys.argv[1];rate=float(sys.argv[2]) if len(sys.argv)>2 else .08
+root=pathlib.Path('/private/tmp/freyalab-project-sources-evidence');log=root/(name+'.log')
+node='/Users/ruzer/.npm/_npx/387698761821791d/node_modules/node/bin/node'
+argv=[node,'node_modules/vitest/vitest.mjs','run','tests/project-sources.test.ts','--testNamePattern=cancela la huella al primer bloque','--reporter=verbose']
+env=dict(os.environ);env['PATH']=str(pathlib.Path(node).parent)+os.pathsep+env['PATH']
+before=resource.getrusage(resource.RUSAGE_CHILDREN);started=time.monotonic();forced=False
+with log.open('wb') as output:
+ child=subprocess.Popen(argv,cwd='/private/tmp/freyalab-fix-project-sources',env=env,stdout=output,stderr=subprocess.STDOUT,start_new_session=True)
+ try:
+  while child.poll() is None:
+   if time.monotonic()-started>45:
+    forced=True;os.killpg(child.pid,signal.SIGCONT);os.killpg(child.pid,signal.SIGTERM);break
+   try:
+    os.killpg(child.pid,signal.SIGCONT);time.sleep(.1*rate)
+    if child.poll() is None:os.killpg(child.pid,signal.SIGSTOP);time.sleep(.1*(1-rate))
+   except (ProcessLookupError,PermissionError):
+    if child.poll() is None:raise
+    break
+ finally:
+  try:os.killpg(child.pid,signal.SIGCONT)
+  except (ProcessLookupError,PermissionError):
+   if child.poll() is None:raise
+ child.wait(timeout=10)
+after=resource.getrusage(resource.RUSAGE_CHILDREN);wall=time.monotonic()-started;cpu=after.ru_utime+after.ru_stime-before.ru_utime-before.ru_stime
+value={'argv':argv,'node':node,'duty_cycle':rate,'quantum_seconds':.1,'wall_seconds':wall,'cpu_seconds':cpu,'cpu_per_wall':cpu/wall,'exit_code':child.returncode,'external_watchdog_fired':forced}
+(root/(name+'.json')).write_text(json.dumps(value,indent=2)+'\n');print(json.dumps(value));print(log.read_text()[-2200:])

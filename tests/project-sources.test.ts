@@ -41,7 +41,8 @@ describe('PRJ-01b · huella y formato de fuentes',()=>{
   await expect(fingerprintCsvSource(file,{signal:control.signal,progress:done=>{events.push(done);control.abort()}})).rejects.toHaveProperty('name','AbortError')
   expect(events).toHaveLength(1)
   expect(events[0]).toBeLessThan(original.length)
-  expect(await readFile(file)).toEqual(original)
+  // Compara cada byte en nativo sin enumerar los 400 000 índices del Buffer en JavaScript.
+  expect((await readFile(file)).equals(original)).toBe(true)
  })
  it.skipIf(process.platform==='win32')('omite directorios enlazados fuera del proyecto',async()=>{
   const external=join(root,'fuera');await mkdir(external);const path=join(external,'datos.csv');await writeFile(path,'ID\n1\n')

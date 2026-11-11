@@ -1,0 +1,22 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-fix-project-sources
+
+ ✓ tests/files.test.ts > guardado seguro > calcula la huella completa por bloques y propaga errores de lectura 7ms
+ ✓ tests/files.test.ts > guardado seguro > rechaza conflicto y conserva el archivo externo 22ms
+ ✓ tests/files.test.ts > guardado seguro > reemplaza completo y no deja temporales ante fallo de destino 26ms
+ ✓ tests/files.test.ts > guardado seguro > autoriza solo rutas contenidas 2ms
+ ✓ tests/files.test.ts > guardado seguro > conserva el original y limpia el temporal si falla la escritura por disco lleno 15ms
+ ✓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > fija la codificación, el esquema físico y la huella sin alterar el CSV 13ms
+ ✓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > no guarda encabezados inventados al corregir un CSV sin encabezado 2ms
+ ✓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > rechaza una vista previa cuyo primer registro queda cortado 116ms
+ ✓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > cancela la huella al primer bloque y conserva el archivo 6ms
+ ✓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > omite directorios enlazados fuera del proyecto 2ms
+ ✓ tests/project-sources.test.ts > PRJ-01b · huella y formato de fuentes > solo reenlaza dentro del proyecto por tamaño y SHA-256 completo 4ms
+ ✓ tests/project-sources.test.ts > PRJ-01b · registro en un proyecto > cancela antes de guardar y registra después con ruta relativa e historial 71ms
+ ✓ tests/project-sources.test.ts > PRJ-01b · registro en un proyecto > una ruta externa de un manifiesto carece de permiso hasta confirmarla en el selector 32ms
+
+ Test Files  2 passed (2)
+      Tests  13 passed (13)
+   Start at  12:41:25
+   Duration  475ms (tests 62%, import 23%, transform 14%, worker 1%)
+
