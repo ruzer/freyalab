@@ -1,12 +1,14 @@
 # AN-1b · Alcance y reutilización
 
-Base de alpha.4 `fb2c73c493842b1985647b63f6b6d4114471f910`. La historia AN-1 tiene SHA-256 `fd3ca895546ffebbcfc1671e0bc60fbcc292d88304f974c8c4e038e77e718760`.
+Base de alpha.4 `fb2c73c493842b1985647b63f6b6d4114471f910`. La historia AN-1 tiene SHA-256 `c38bf3d0f1b2983924ec328d1de5ef54ae31aa433650d3857cb3c960a2825d75`.
 
 Se elimina el panel lateral y la vista «Resumen y gráfico» del documento CSV. Los accesos existentes abren la pestaña de análisis de AN-1a, en su sección correspondiente. La vista de tabla compartida conserva filtros, orden, marcas y rango. Los componentes de resultados y sus exportaciones se reutilizan.
 
 Las pruebas observan las interfaces fijadas en la historia. El recorrido de Electron comprueba navegación, foco, permisos de edición, cancelación y resultados. Las unitarias conservan los contratos de pestañas y estado compartido. El inventario previo y posterior identifica cada caso por proyecto, archivo, suites y título.
 
-La retirada prevista comprende 19 E2E de la disposición antigua y 16 unitarias de su ancho. Se reescriben cuatro casos de navegación y se añade uno de compatibilidad con perfiles anteriores. Las comprobaciones de datos se conservan. Los cinco archivos con entradas directas a la interfaz antigua esperan la decisión del propietario sobre su adaptación.
+La retirada prevista comprende 19 E2E de la disposición antigua y 16 unitarias de su ancho. Se reescriben cuatro casos de navegación y se añade uno de compatibilidad con perfiles anteriores. Las comprobaciones de datos se conservan. El propietario autoriza adaptar navegación e interfaz retirada en csv-summary, chart-fields, ui-u0, large-file y chart-review mediante el ayudante común, conservando las comprobaciones de datos, guardado, seguridad y límites. Los otros diez archivos de datos permanecen intactos. Ocho requieren aclarar accesos directos y aserciones de navegación retirada; search y commands se mantienen mediante el ayudante común.
+
+El análisis solicitado desde CSV Texto utiliza el diálogo de cambio ya existente, antes de abrir la pestaña. La paleta de ese modo reutiliza CsvCommands y habilita únicamente el comando nativo de paleta, sin habilitar las demás operaciones de Tabla ni añadir canales. Los accesos por botón, paleta y pestaña comparten esa confirmación. Cancelar conserva el texto y no crea análisis.
 
 ## Siete respuestas del ADR 0021
 
