@@ -1,0 +1,233 @@
+{
+  "base": "fb2c73c493842b1985647b63f6b6d4114471f910",
+  "archivo": "tests/workspace-layout.test.ts",
+  "ordinarias": 16,
+  "entradasTabla": 14,
+  "totalExpandido": 30,
+  "casos": [
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "sin valor guardado usa los valores por defecto",
+      "linea": 8
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "recupera un valor válido",
+      "linea": 12
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "texto vacío → valores por defecto",
+      "linea": 16,
+      "entrada": "texto vacío"
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "JSON roto → valores por defecto",
+      "linea": 16,
+      "entrada": "JSON roto"
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "no es un objeto → valores por defecto",
+      "linea": 16,
+      "entrada": "no es un objeto"
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "un número → valores por defecto",
+      "linea": 16,
+      "entrada": "un número"
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "null → valores por defecto",
+      "linea": 16,
+      "entrada": "null"
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "otra versión → valores por defecto",
+      "linea": 16,
+      "entrada": "otra versión"
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "sin versión → valores por defecto",
+      "linea": 16,
+      "entrada": "sin versión"
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "sin dock → valores por defecto",
+      "linea": 16,
+      "entrada": "sin dock"
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "dock no es un objeto → valores por defecto",
+      "linea": 16,
+      "entrada": "dock no es un objeto"
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "pestaña desconocida → valores por defecto",
+      "linea": 16,
+      "entrada": "pestaña desconocida"
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "visible no es booleano → valores por defecto",
+      "linea": 16,
+      "entrada": "visible no es booleano"
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "ancho de texto → valores por defecto",
+      "linea": 16,
+      "entrada": "ancho de texto"
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "ancho nulo → valores por defecto",
+      "linea": 16,
+      "entrada": "ancho nulo"
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "sin ancho → valores por defecto",
+      "linea": 16,
+      "entrada": "sin ancho"
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "recorta un ancho fuera de rango y redondea uno fraccionario",
+      "linea": 22
+    },
+    {
+      "suite": [
+        "layout del panel de análisis: lectura segura"
+      ],
+      "titulo": "ignora y no vuelve a escribir claves ajenas (nunca datos del documento)",
+      "linea": 27
+    },
+    {
+      "suite": [
+        "rango y pasos del divisor"
+      ],
+      "titulo": "el panel nunca baja de su mínimo ni deja la tabla por debajo de la suya",
+      "linea": 36
+    },
+    {
+      "suite": [
+        "rango y pasos del divisor"
+      ],
+      "titulo": "flechas: ← ensancha y → estrecha, 16 px (64 con Mayús), siempre dentro del rango",
+      "linea": 42
+    },
+    {
+      "suite": [
+        "rango y pasos del divisor"
+      ],
+      "titulo": "Inicio va al mínimo, Fin al máximo e Intro restablece el ancho por defecto",
+      "linea": 50
+    },
+    {
+      "suite": [
+        "rango y pasos del divisor"
+      ],
+      "titulo": "otras teclas no cambian nada",
+      "linea": 55
+    },
+    {
+      "suite": [
+        "rango y pasos del divisor"
+      ],
+      "titulo": "un ancho guardado mayor que el sitio disponible se recorta al rango",
+      "linea": 56
+    },
+    {
+      "suite": [
+        "modo del panel: acoplado, ampliado u oculto"
+      ],
+      "titulo": "por debajo de 520 + 600 px no hay sitio para acoplarlo junto a la tabla",
+      "linea": 60
+    },
+    {
+      "suite": [
+        "modo del panel: acoplado, ampliado u oculto"
+      ],
+      "titulo": "oculto si no está abierto, aunque la ventana sea estrecha",
+      "linea": 66
+    },
+    {
+      "suite": [
+        "modo del panel: acoplado, ampliado u oculto"
+      ],
+      "titulo": "acoplado cuando cabe y la persona no lo amplió",
+      "linea": 70
+    },
+    {
+      "suite": [
+        "modo del panel: acoplado, ampliado u oculto"
+      ],
+      "titulo": "ampliado si la persona lo pide o si no cabe; al ensanchar vuelve a acoplarse",
+      "linea": 75
+    },
+    {
+      "suite": [
+        "arranque con el panel restaurado"
+      ],
+      "titulo": "un panel guardado como abierto arranca abierto si el área de trabajo lo admite",
+      "linea": 83
+    },
+    {
+      "suite": [
+        "arranque con el panel restaurado"
+      ],
+      "titulo": "arranca cerrado si la ventana es estrecha: abrirlo ampliado ocultaría la tabla al abrir el archivo",
+      "linea": 88
+    },
+    {
+      "suite": [
+        "arranque con el panel restaurado"
+      ],
+      "titulo": "uno guardado como cerrado sigue cerrado, y sin medir el área se respeta lo guardado",
+      "linea": 93
+    }
+  ]
+}

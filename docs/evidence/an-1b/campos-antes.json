@@ -1,0 +1,44 @@
+{
+  "procedencia": "an1b-fields-layout extraído de trace.zip de la prueba roja, antes de compactar la cabecera",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "medidas": {
+    ":scope": {
+      "y": 184.5,
+      "height": 504.5,
+      "bottom": 689,
+      "client": 505
+    },
+    ".field-list": {
+      "y": 260.5,
+      "height": 256,
+      "bottom": 516.5,
+      "scroll": 324,
+      "client": 256
+    },
+    ".zone-content": {
+      "y": 545.5,
+      "height": 135.5,
+      "bottom": 681,
+      "scroll": 199,
+      "client": 136
+    },
+    ".zones": {
+      "y": 545.5,
+      "height": 199.296875,
+      "bottom": 744.796875
+    },
+    ".zone:nth-child(3)": {
+      "y": 612.5,
+      "height": 81.8984375,
+      "bottom": 694.3984375
+    },
+    ".zone:nth-child(4)": {
+      "y": 700.3984375,
+      "height": 44.3984375,
+      "bottom": 744.796875
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  ":scope": {
+    "y": 120,
+    "height": 569,
+    "bottom": 689,
+    "scroll": 569,
+    "client": 569
+  },
+  ".field-header": {
+    "y": 128,
+    "height": 29.5,
+    "bottom": 157.5,
+    "scroll": 30,
+    "client": 30
+  },
+  "input": {
+    "y": 161.5,
+    "height": 29.5,
+    "bottom": 191,
+    "scroll": 28,
+    "client": 28
+  },
+  ".field-list": {
+    "y": 196,
+    "height": 256,
+    "bottom": 452,
+    "scroll": 324,
+    "client": 256
+  },
+  ".organize": {
+    "y": 456,
+    "height": 21,
+    "bottom": 477,
+    "scroll": 21,
+    "client": 21
+  },
+  ".zone-content": {
+    "y": 481,
+    "height": 200,
+    "bottom": 681,
+    "scroll": 200,
+    "client": 200
+  },
+  ".zones": {
+    "y": 481,
+    "height": 199.296875,
+    "bottom": 680.296875,
+    "scroll": 199,
+    "client": 199
+  },
+  ".zone:nth-child(1)": {
+    "y": 481,
+    "height": 61,
+    "bottom": 542,
+    "scroll": 59,
+    "client": 59
+  },
+  ".zone:nth-child(2)": {
+    "y": 481,
+    "height": 61,
+    "bottom": 542,
+    "scroll": 59,
+    "client": 59
+  },
+  ".zone:nth-child(3)": {
+    "y": 548,
+    "height": 81.8984375,
+    "bottom": 629.8984375,
+    "scroll": 80,
+    "client": 80
+  },
+  ".zone:nth-child(4)": {
+    "y": 635.8984375,
+    "height": 44.3984375,
+    "bottom": 680.296875,
+    "scroll": 42,
+    "client": 42
+  }
+}
