@@ -1,0 +1,84 @@
+
+Running 2 tests using 1 worker
+
+(node:18726) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/analysis-describe.spec.ts:93:1 › AN-2 Información presenta dimensiones, tipos y calidad sin modificar los distintos anteriores (17.6s)
+(node:18777) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/columns-overview.spec.ts:28:1 › panorámica: tipos, calidad, alcance, explicación por teclado, informe y documento intacto (15.9s)
+
+
+  1) [csv] › tests/e2e/analysis-describe.spec.ts:93:1 › AN-2 Información presenta dimensiones, tipos y calidad sin modificar los distintos anteriores 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  getByRole('region', { name: 'Vista general de columnas', exact: true }).locator('tbody tr').nth(4).locator('td').nth(4).locator('summary')
+    Expected: "2"
+    Received: "3"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" getByRole('region', { name: 'Vista general de columnas', exact: true }).locator('tbody tr').nth(4).locator('td').nth(4).locator('summary') with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Vista general de columnas', exact: true }).locator('tbody tr').nth(4).locator('td').nth(4).locator('summary')
+        34 × locator resolved to <summary class="svelte-1alawu2" aria-label="3 · Detalle de valores distintos de Mixta">3</summary>
+           - unexpected value "3"
+
+
+      106 |  await expect(mixed.locator('td').nth(2)).toHaveText('3')
+      107 |  await expect(mixed.locator('td').nth(3).locator('summary')).toHaveText('3')
+    > 108 |  await expect(mixed.locator('td').nth(4).locator('summary')).toHaveText('2')
+          |                                                              ^
+      109 |  await expect(mixed.locator('.quality-breakdown>summary')).toHaveAccessibleName('3 · Desglose de vacíos de Mixta');await expect(mixed.locator('.distinct-detail>summary')).toHaveAccessibleName('2 · Detalle de valores distintos sin vacíos de Mixta')
+      110 |  expect(await readFile(path,'utf8')).toBe(source)
+      111 | })
+        at /private/tmp/freyalab-distintos-sin-vacio/tests/e2e/analysis-describe.spec.ts:108:62
+
+    Error Context: test-results/analysis-describe-AN-2-Inf-9c94b-ar-los-distintos-anteriores-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-describe-AN-2-Inf-9c94b-ar-los-distintos-anteriores-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-describe-AN-2-Inf-9c94b-ar-los-distintos-anteriores-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/columns-overview.spec.ts:28:1 › panorámica: tipos, calidad, alcance, explicación por teclado, informe y documento intacto 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('[id="workspace-panel-analysis:11f34d09-e696-4e86-8476-b4b17b68a5fb"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').nth(4).locator('.distinct-detail>summary')
+    Expected: "1"
+    Received: "3"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" locator('[id="workspace-panel-analysis:11f34d09-e696-4e86-8476-b4b17b68a5fb"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').nth(4).locator('.distinct-detail>summary') with timeout 15000ms
+      - waiting for locator('[id="workspace-panel-analysis:11f34d09-e696-4e86-8476-b4b17b68a5fb"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').nth(4).locator('.distinct-detail>summary')
+        34 × locator resolved to <summary class="svelte-1alawu2" aria-label="3 · Detalle de valores distintos de Opcional">3</summary>
+           - unexpected value "3"
+
+
+      29 |  const {doc,path}=await open(),before=await page.evaluate(()=>window.freya.documents()),panel=await overview();await explore(panel)
+      30 |  const rows=panel.locator('tbody tr');await expect(rows).toHaveCount(5);await expect(rows.nth(0)).toContainText('Posible identificador');await expect(rows.nth(1)).toContainText('Categórico');await expect(rows.nth(2)).toContainText('Numérico');await expect(rows.nth(3)).toContainText('Mixto')
+    > 31 |  await expect(rows.nth(4).locator('.non-empty')).toHaveText('1');await expect(rows.nth(4).locator('.distinct-detail>summary')).toHaveText('1');await rows.nth(4).locator('.quality-breakdown>summary').click();await expect(rows.nth(4).locator('.quality-breakdown dd')).toHaveText(['1','1','1'])
+         |                                                                                                                                ^
+      32 |  const explanation=rows.nth(0).locator('.type-explanation>summary');await explanation.focus();await explanation.press('Enter');await expect(rows.nth(0)).toContainText('ceros iniciales');await expect(rows.nth(0).locator('.type-explanation')).toHaveAttribute('open','')
+      33 |  for(const [theme,width,height] of [['light',1440,900],['dark',1280,800]] as const){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.setViewportSize({width,height});await panel.scrollIntoViewIfNeeded();await page.screenshot({animations:'disabled',path:test.info().outputPath(`dw04b-overview-${theme}-${width}x${height}.png`)})}
+      34 |  await showTable(page);await page.getByLabel('Buscar en tabla',{exact:true}).fill('Oaxaca');await expect(page.locator('footer')).toContainText('3 de 4 filas');await overview();await expect(rows).toHaveCount(5);await panel.getByLabel('Alcance de la vista general',{exact:true}).selectOption('view');await explore(panel);await expect(panel.locator('.scope')).toContainText('Vista filtrada');await expect(panel.locator('.scope')).toContainText('3 filas por columna')
+        at /private/tmp/freyalab-distintos-sin-vacio/tests/e2e/columns-overview.spec.ts:31:128
+
+    Error Context: test-results/columns-overview-panorámic-24553-informe-y-documento-intacto-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/columns-overview-panorámic-24553-informe-y-documento-intacto-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/columns-overview-panorámic-24553-informe-y-documento-intacto-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/analysis-describe.spec.ts:93:1 › AN-2 Información presenta dimensiones, tipos y calidad sin modificar los distintos anteriores 
+    [csv] › tests/e2e/columns-overview.spec.ts:28:1 › panorámica: tipos, calidad, alcance, explicación por teclado, informe y documento intacto 

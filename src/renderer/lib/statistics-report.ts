@@ -78,11 +78,11 @@ export function columnOverviewReport(context:ReportContext,rows:ColumnOverviewRo
  let text=preamble(context,'Vista general de columnas CSV')+`Columnas solicitadas: ${rows.length}. Analizadas: ${rows.length-failed}. No disponibles: ${failed}.\n\n`
  if(failed)text+='**COBERTURA PARCIAL:** algunas columnas no pudieron analizarse. Sus recuentos no se sustituyen por ceros.\n\n'
  text+='El informe incluye todas las columnas solicitadas, independientemente de la búsqueda de nombres o página mostrada. Los tipos son sugerencias sobre el alcance capturado, sin convertir el CSV.\n\n'
- text+=table([['Columna','Tipo probable','Filas','Con contenido','Ausentes','Vacíos exactos','Solo espacios','Distintos exactos','Repeticiones adicionales','Interpretación'],Array(10).fill('---'),...rows.map(row=>{
+ text+=table([['Columna','Tipo probable','Filas','Con contenido','Ausentes','Vacíos exactos','Solo espacios',t('info.report.unique'),t('info.report.repetitions'),'Interpretación'],Array(10).fill('---'),...rows.map(row=>{
   const name=`${row.column+1}. ${row.name||'Columna '+(row.column+1)}`
   if('error'in row)return[literal(name),'No disponible',...Array(7).fill('—'),literal(row.error)]
   const result=row.result,summary=columnSummary(result)
-  return[literal(name),summary.label,String(result.cells),String(result.cells-result.empty),String(result.missing),String(result.empty-result.missing-result.whitespace),String(result.whitespace),String(result.unique),String(result.extraDuplicates),literal(summary.reason)]
+  return[literal(name),summary.label,String(result.cells),String(result.cells-result.empty),String(result.missing),String(result.empty-result.missing-result.whitespace),String(result.whitespace),String(result.profile.distinctNonEmpty),String(result.extraDuplicates),literal(summary.reason)]
  })])
- return text+notes(context)
+ return text+t('info.distinctExplanation')+'\n\n'+notes(context)
 }

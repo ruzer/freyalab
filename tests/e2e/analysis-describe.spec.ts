@@ -12,7 +12,7 @@ const source='Producto,Precio,Cantidad,Alta,Mixta\na,10,1,2026-01-02,1\nb,20,2,2
 test.beforeEach(async()=>{
  folder=await mkdtemp(join(tmpdir(),'freya-describe-ui-'));path=join(folder,'datos.csv');await writeFile(path,source)
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
- app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:test.info().title.includes('en-XA')?'en-XA':'es',FREYALAB_USER_DATA:join(folder,'profile')},timeout:60000})
+ app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:test.info().title.match(/\((es|en|en-XA)\)$/)?.[1]??'es',FREYALAB_USER_DATA:join(folder,'profile')},timeout:60000})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900});await page.evaluate(path=>window.freya.openPaths([path]),path)
 })
 test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
@@ -90,7 +90,7 @@ test('AN-2 coordina el cálculo avanzado con describe sin lanzar consultas al de
  expect(await readFile(path,'utf8')).toBe(source)
 })
 
-test('AN-2 Información presenta dimensiones, tipos y calidad sin modificar los distintos anteriores',async()=>{
+test('AN-2 Información presenta dimensiones, tipos y calidad con distintos sin vacíos',async()=>{
  await openAnalysis(page,'Información')
  const panel=page.getByRole('region',{name:'Vista general de columnas',exact:true})
  await expect(panel.getByRole('button',{name:'Obtener información',exact:true})).toBeEnabled()
@@ -105,8 +105,8 @@ test('AN-2 Información presenta dimensiones, tipos y calidad sin modificar los 
  const mixed=panel.locator('tbody tr').nth(4)
  await expect(mixed.locator('td').nth(2)).toHaveText('3')
  await expect(mixed.locator('td').nth(3).locator('summary')).toHaveText('3')
- await expect(mixed.locator('td').nth(4).locator('summary')).toHaveText('3')
- await expect(mixed.locator('.quality-breakdown>summary')).toHaveAccessibleName('3 · Desglose de vacíos de Mixta');await expect(mixed.locator('.distinct-detail>summary')).toHaveAccessibleName('3 · Detalle de valores distintos de Mixta')
+ await expect(mixed.locator('td').nth(4).locator('summary')).toHaveText('2')
+ await expect(mixed.locator('.quality-breakdown>summary')).toHaveAccessibleName('3 · Desglose de vacíos de Mixta');await expect(mixed.locator('.distinct-detail>summary')).toHaveAccessibleName('2 · Detalle de valores distintos sin vacíos de Mixta')
  expect(await readFile(path,'utf8')).toBe(source)
 })
 
@@ -229,4 +229,22 @@ test('AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes 
  const file=join(folder,'posiciones.csv'),text=Array.from({length:100},(_,i)=>'Campo '+i).join(',')+'\n'+'1\n'.repeat(20001);await writeFile(file,text);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),file);expect(doc).toMatchObject({readonly:false,rowCount:20001});await spy();await openAnalysis(page,'Estadísticas')
  await page.getByRole('button',{name:'Calcular',exact:true}).click();await expect(page.locator('.toast[role=status]>span')).toHaveText(t('info.error.cells'))
  expect(await calls()).toEqual([]);expect(await readFile(file,'utf8')).toBe(text)
+})
+
+
+for(const language of ['es','en','en-XA'] as const)test(`Información: distintos sin vacíos conserva repeticiones y el archivo (${language})`,async()=>{
+ const tr=(key:string,parameters:Record<string,string|number>={})=>t(key,parameters,language)
+ await openAnalysis(page,'Información');const panel=page.getByRole('region',{name:tr('info.title'),exact:true})
+ await panel.getByRole('button',{name:tr('info.calculate'),exact:true}).click();await expect(panel.getByRole('status')).toHaveText(tr('info.complete'))
+ const mixed=panel.locator('tbody tr').nth(4),detail=mixed.locator('.distinct-detail')
+ await expect(detail.locator('summary')).toHaveText('2');await expect(detail.locator('summary')).toHaveAccessibleName('2 · '+tr('info.distinctHelp',{name:'Mixta'}))
+ await detail.locator('summary').focus();await detail.locator('summary').press('Enter')
+ await expect(detail.locator('p').first()).toHaveText(tr('info.distinctExplanation'))
+ await expect(detail.locator('p').nth(1)).toHaveText(tr('info.repetitions',{count:'3'}))
+ await panel.getByRole('button',{name:tr('info.report'),exact:true}).click()
+ await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)?.text).toContain(tr('info.report.unique'))
+ const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
+ expect(report).toContain(tr('info.report.unique'));expect(report).toContain(tr('info.report.repetitions'))
+ expect(report.split('\n').find(line=>line.includes('5. Mixta'))).toContain('| 6 | 3 | 0 | 3 | 0 | 2 | 3 |')
+ expect(await readFile(path,'utf8')).toBe(source)
 })

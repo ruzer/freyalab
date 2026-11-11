@@ -93,7 +93,7 @@
      <td><details class="type-explanation"><summary>{t('info.type.'+entry.result.profile.kind)}</summary><p>{summary.reason}</p></details></td>
      <td class="non-empty">{number(entry.result.cells-entry.result.empty)}</td>
      <td><details class="quality-breakdown"><summary aria-label={number(entry.result.empty)+' · '+t('info.emptyHelp',{name:entry.name})}>{number(entry.result.empty)}</summary><dl>{#each [['missing',entry.result.missing],['exact',entry.result.empty-entry.result.missing-entry.result.whitespace],['spaces',entry.result.whitespace]] as [kind,value]}<div><dt>{t('info.empty.'+kind)}</dt><dd>{number(Number(value))}</dd></div>{/each}</dl></details></td>
-     <td><details class="distinct-detail"><summary aria-label={number(entry.result.unique)+' · '+t('info.distinctHelp',{name:entry.name})}>{number(entry.result.unique)}</summary><p>{t('info.distinctExplanation')}</p><p>{t('info.repetitions',{count:number(entry.result.extraDuplicates)})}</p></details></td>
+     <td><details class="distinct-detail"><summary aria-label={number(entry.result.profile.distinctNonEmpty)+' · '+t('info.distinctHelp',{name:entry.name})}>{number(entry.result.profile.distinctNonEmpty)}</summary><p>{t('info.distinctExplanation')}</p><p>{t('info.repetitions',{count:number(entry.result.extraDuplicates)})}</p></details></td>
     {:else}<td>{t('info.unavailable')}</td><td colspan="3" class="unavailable">{entry.error}</td>{/if}
     <td><button {...controlHint(busy?'busy':null)} type="button" disabled={busy} aria-label={t('info.inspect',{index:entry.column+1})} onclick={()=>oninspect(entry.column,scope)}>{t('info.detail')}</button></td>
    </tr>{/each}</tbody>
