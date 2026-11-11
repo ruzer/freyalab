@@ -63,3 +63,13 @@ it('un guardado fallido conserva las configuraciones previas y permite volver a 
  try{await expect(library.save({name:'Fallida',configuration},configuration.headers)).rejects.toThrow('Disco lleno');expect(await readFile(path,'utf8')).toBe(before);expect(await library.list()).toEqual([saved])}finally{write.mockRestore()}
  await library.save({name:'Reintento',configuration},configuration.headers);expect(await library.list()).toHaveLength(2)
 })
+it('conserva presets anteriores sin tendencia y guarda su opción booleana sin aceptar otros tipos',async()=>{
+ const {path,library}=await fixture(),old=await library.save({name:'Anterior',configuration},configuration.headers)
+ const next={...configuration,options:{...configuration.options,kind:'scatter' as const,x:1,y:2,series:-1,trend:true}}
+ const saved=await library.save({name:'Tendencia',configuration:next},configuration.headers)
+ expect(await new ChartPresets(path).list()).toEqual([old,saved])
+ expect(old.configuration.options).not.toHaveProperty('trend')
+ expect(saved.configuration.options.trend).toBe(true)
+ await expect(library.save({name:'Inválida',configuration:{...next,options:{...next.options,trend:'true'}}},configuration.headers)).rejects.toThrow()
+ expect(await library.list()).toEqual([old,saved])
+})

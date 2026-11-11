@@ -1,0 +1,108 @@
+
+Running 7 tests using 1 worker
+
+(node:24703) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/chart-trend.spec.ts:58:1 › TEN-1 cinco pares: petición, teclado, exportaciones completas y preset (5.9s)
+  ✓  2 [csv] › tests/e2e/chart-trend.spec.ts:95:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (7.1s)
+  ✓  3 [csv] › tests/e2e/chart-trend.spec.ts:109:1 › TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia (5.4s)
+  ✘  4 [csv] › tests/e2e/chart-trend.spec.ts:126:1 › TEN-1 cancelar descarta la respuesta tardía y editar exige actualizar la revisión (18.4s)
+(node:24818) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  5 [csv] › tests/e2e/chart-trend.spec.ts:138:1 › TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra (1.3s)
+(node:24831) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  6 [csv] › tests/e2e/chart-trend.spec.ts:151:47 › TEN-1 capturas, teclado y bloque legible en es (2.4s)
+Testing stopped early after 3 maximum allowed failures.
+
+
+  1) [csv] › tests/e2e/chart-trend.spec.ts:126:1 › TEN-1 cancelar descarta la respuesta tardía y editar exige actualizar la revisión 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.manual')
+    Expected substring: "Los datos cambiaron"
+    Received string:    "Generar gráficoOpciones o datos actualizados. Pulsa Generar gráfico."
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.manual') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.manual')
+        34 × locator resolved to <div class="manual svelte-1wo6u31">…</div>
+           - unexpected value "Generar gráficoOpciones o datos actualizados. Pulsa Generar gráfico."
+
+
+      131 |  await generate();await showTable(page)
+      132 |  const cell=page.getByRole('gridcell',{name:'Fila 1, Y',exact:true});await cell.dblclick();await cell.getByRole('textbox').fill('12');await cell.getByRole('textbox').press('Enter')
+    > 133 |  await openAnalysis(page,'Gráficos');await expect(trend()).toHaveCount(0);await expect(panel().locator('.manual')).toContainText('Los datos cambiaron')
+          |                                                                                                                    ^
+      134 |  await generate();await expect(trend()).toContainText('y = -1.4·x + 10.2')
+      135 |  expect(await readFile(path,'utf8')).toBe(five)
+      136 | })
+        at /private/tmp/freyalab-ten-1/tests/e2e/chart-trend.spec.ts:133:116
+
+    Error Context: ../ten1-e2e-segundo/chart-trend-TEN-1-cancelar-bc241-xige-actualizar-la-revisión-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../ten1-e2e-segundo/chart-trend-TEN-1-cancelar-bc241-xige-actualizar-la-revisión-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../ten1-e2e-segundo/chart-trend-TEN-1-cancelar-bc241-xige-actualizar-la-revisión-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/chart-trend.spec.ts:138:1 › TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra 
+
+    Error: expect(received).not.toBe(expected) // Object.is equality
+
+    Expected: not true
+
+      138 | test('TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra',async()=>{
+      139 |  const pairs=Array.from({length:300000},(_,i)=>[i%1000-500,3*(i%1000-500)+1+((i*17)%23-11)/100]),content='X,Y,A,B,C,D,E\n'+pairs.map(pair=>pair.join(',')+',a,b,c,d,e\n').join(''),{doc,path}=await open(content,'many.csv')
+    > 140 |  expect(doc.readonly).toBe(true);expect(doc.large).not.toBe(true);expect(doc.rowCount).toBe(200)
+          |                                                        ^
+      141 |  const checkbox=await configure();await checkbox.check();await generate()
+      142 |  await expect(trend()).toContainText('Dibujados 2,000 de 300,000 puntos; la tendencia usa todos');await expect(trend()).toContainText('archivo completo desde disco');await expect(trend()).not.toContainText('muestra')
+      143 |  await expect(panel().locator('.result-status')).toContainText('Muestra')
+        at /private/tmp/freyalab-ten-1/tests/e2e/chart-trend.spec.ts:140:56
+
+    Error Context: ../ten1-e2e-segundo/chart-trend-TEN-1-300-000--c6bc9-or-solo-muestra-una-muestra-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../ten1-e2e-segundo/chart-trend-TEN-1-300-000--c6bc9-or-solo-muestra-una-muestra-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../ten1-e2e-segundo/chart-trend-TEN-1-300-000--c6bc9-or-solo-muestra-una-muestra-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/chart-trend.spec.ts:151:47 › TEN-1 capturas, teclado y bloque legible en es ─
+
+    Error: Expect "toHaveJSProperty": Attempting to serialize unexpected value at position "sample": function Number() { [native code] }
+
+      156 |   await page.getByLabel('Tema',{exact:true}).selectOption(theme)
+      157 |   await expect(trend()).toBeInViewport({ratio:1});await expect(panel().locator('.plot-scroll')).toBeInViewport({ratio:1})
+    > 158 |   await expect(panel().locator('.plot-scroll')).toHaveJSProperty('clientHeight',expect.any(Number))
+          |                                                 ^
+      159 |   expect((await panel().locator('.plot-scroll').boundingBox())!.height).toBeGreaterThanOrEqual(170)
+      160 |   await page.screenshot({path:test.info().outputPath(`ten1-${language}-${theme}-1440x900.png`)})
+      161 |  }
+        at /private/tmp/freyalab-ten-1/tests/e2e/chart-trend.spec.ts:158:49
+
+    Error Context: ../ten1-e2e-segundo/chart-trend-TEN-1-capturas-teclado-y-bloque-legible-en-es-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../ten1-e2e-segundo/chart-trend-TEN-1-capturas-teclado-y-bloque-legible-en-es-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../ten1-e2e-segundo/chart-trend-TEN-1-capturas-teclado-y-bloque-legible-en-es-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [csv] › tests/e2e/chart-trend.spec.ts:126:1 › TEN-1 cancelar descarta la respuesta tardía y editar exige actualizar la revisión 
+    [csv] › tests/e2e/chart-trend.spec.ts:138:1 › TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra 
+    [csv] › tests/e2e/chart-trend.spec.ts:151:47 › TEN-1 capturas, teclado y bloque legible en es ──
+  1 did not run
+  3 passed (41.6s)
+  1 error was not a part of any test, see above for details

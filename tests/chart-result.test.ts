@@ -32,3 +32,10 @@ it('exporta vacíos con metadatos y rechaza filas incompletas o revisiones incor
  const empty={...data,points:0,total:0,usable:0,rows:[]};expect(JSON.parse(chartResult(request,result,empty,false).content).rows).toEqual([]);expect(parse(chartResult({...request,format:'csv'},result,empty,false).content)).toHaveLength(1)
  expect(()=>chartResult(request,result,{...data,rows:[]},false)).toThrow('incompleto');expect(()=>chartResult({...request,revision:2},result,data,false)).toThrow('incompleto')
 })
+it('exporta la tendencia completa en JSON y el contexto del CSV estándar, y la explica en Markdown',()=>{
+ const config={...request.configuration,options:{...request.configuration.options,kind:'scatter' as const,trend:true}},trend={slope:.6,intercept:2.2,r2:.5999999999999999,r:Math.sqrt(.6),n:6,xMin:1,xMax:6,constantY:false},plotted={...data,trend},expected={slope:trend.slope,intercept:trend.intercept,r2:trend.r2,r:trend.r,n:6}
+ const output=(format:ChartResultRequest['format'])=>chartResult({...request,configuration:config,format},result,plotted,false)
+ expect(JSON.parse(output('json').content).trend).toEqual(expected)
+ const csv=output('csv');expect(JSON.parse(csv.context!).trend).toEqual(expected);expect(parse(csv.content)).toHaveLength(7);expect(csv.content).not.toContain('trend')
+ expect(output('md').content).toContain('y = 0.6·x + 2.2');expect(output('md').content).toContain(String(trend.r2));expect(output('md').content).toContain('Relación no es causa.')
+})

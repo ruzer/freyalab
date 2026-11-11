@@ -1,0 +1,54 @@
+
+Running 7 tests using 1 worker
+
+(node:32067) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/chart-trend.spec.ts:58:1 › TEN-1 cinco pares: petición, teclado, exportaciones completas y preset (5.8s)
+  ✓  2 [csv] › tests/e2e/chart-trend.spec.ts:95:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (7.1s)
+  ✓  3 [csv] › tests/e2e/chart-trend.spec.ts:109:1 › TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia (5.4s)
+  ✓  4 [csv] › tests/e2e/chart-trend.spec.ts:127:1 › TEN-1 cancelar descarta la respuesta tardía y editar exige actualizar la revisión (4.8s)
+  ✘  5 [csv] › tests/e2e/chart-trend.spec.ts:139:1 › TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra (23.1s)
+(node:32252) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  6 [csv] › tests/e2e/chart-trend.spec.ts:154:47 › TEN-1 capturas, teclado y bloque legible en es (2.9s)
+  ✓  7 [csv] › tests/e2e/chart-trend.spec.ts:154:47 › TEN-1 capturas, teclado y bloque legible en en-XA (3.2s)
+
+
+  1) [csv] › tests/e2e/chart-trend.spec.ts:139:1 › TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.result-status')
+    Expected substring: "Muestra"
+    Received string:    "Análisis de muestra ·300,000 filas · 300000 grupos · El archivo no se modifica"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.result-status') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.result-status')
+        26 × locator resolved to <p title="Documento completo" class="result-status svelte-1wo6u31">…</p>
+           - unexpected value "Análisis de muestra ·300,000 filas · 300000 grupos · El archivo no se modifica"
+
+
+      144 |  const checkbox=await configure();await checkbox.check();await generate()
+      145 |  await expect(trend()).toContainText('Dibujados 2,000 de 300,000 puntos; la tendencia usa todos');await expect(trend()).toContainText('archivo completo desde disco');await expect(trend()).not.toContainText('muestra')
+    > 146 |  await expect(panel().locator('.result-status')).toContainText('Muestra')
+          |                                                  ^
+      147 |  await analysisResultExport(page).locator('summary').click();await analysisResultExport(page).getByRole('button',{name:'Exportar resultados',exact:true}).click()
+      148 |  await expect(panel().locator('.chart-result>.result-announcement')).toContainText('many.analisis.json',{timeout:30000})
+      149 |  const output=JSON.parse(await readFile(join(folder,'exports','many.analisis.json'),'utf8')),regression=linearRegression(pairs)
+        at /private/tmp/freyalab-ten-1/tests/e2e/chart-trend.spec.ts:146:50
+
+    Error Context: ../ten1-e2e-tercero/chart-trend-TEN-1-300-000--c6bc9-or-solo-muestra-una-muestra-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../ten1-e2e-tercero/chart-trend-TEN-1-300-000--c6bc9-or-solo-muestra-una-muestra-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../ten1-e2e-tercero/chart-trend-TEN-1-300-000--c6bc9-or-solo-muestra-una-muestra-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-trend.spec.ts:139:1 › TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra 
+  6 passed (53.1s)

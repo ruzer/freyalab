@@ -1,0 +1,73 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-ten-1
+
+ ❯ tests/chart-result.test.ts (7 tests | 1 failed) 14ms
+   × exporta la tendencia completa en JSON y el contexto del CSV estándar, y la explica en Markdown 3ms
+ ❯ tests/chart-presentation.test.ts (17 tests | 1 failed) 39ms
+   × la tendencia cubre los extremos completos y exporta ecuación, leyenda y descripción accesible 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-presentation.test.ts > la tendencia cubre los extremos completos y exporta ecuación, leyenda y descripción accesible
+AssertionError: expected [ { type: 'scatter', …(2) } ] to match object [ { type: 'scatter' }, …(1) ]
+
+- Expected
++ Received
+
+  [
+    {
+-     "type": "scatter",
+-   },
+-   {
+      "data": [
+        [
+          1,
+-         2.8,
++         2,
+        ],
+        [
+-         300000,
+-         180002.2,
++         2,
++         4,
+        ],
+      ],
+-     "name": "Tendencia",
+-     "showSymbol": false,
+-     "type": "line",
++     "symbolSize": 7,
++     "type": "scatter",
+    },
+  ]
+
+ ❯ tests/chart-presentation.test.ts:72:22
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/chart-result.test.ts > exporta la tendencia completa en JSON y el contexto del CSV estándar, y la explica en Markdown
+AssertionError: expected undefined to deeply equal { slope: 0.6, intercept: 2.2, …(3) }
+
+- Expected:
+{
+  "intercept": 2.2,
+  "n": 6,
+  "r": 0.7745966692414834,
+  "r2": 0.5999999999999999,
+  "slope": 0.6,
+}
+
++ Received:
+undefined
+
+ ❯ tests/chart-result.test.ts:38:51
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 22 passed (24)
+   Start at  12:51:19
+   Duration  217ms (tests 38%, transform 35%, import 25%, worker 3%)
+

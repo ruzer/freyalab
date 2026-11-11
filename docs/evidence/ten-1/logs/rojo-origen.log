@@ -1,0 +1,54 @@
+
+Running 1 test using 1 worker
+
+(node:31829) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-trend.spec.ts:109:1 › TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia (18.2s)
+
+
+  1) [csv] › tests/e2e/chart-trend.spec.ts:109:1 › TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.trend-result')
+    Timeout: 15000ms
+    - Expected substring  - 1
+    + Received string     + 4
+
+    - Fuente: documento en memoria
+    + y = 0.6·x + 2.2
+    + R² = 0.5999999999999999 · r = 0.7745966692414833 · 5 puntos
+    + La recta explica el 59.999999999999986% de la variación de Y. A más X, más Y.
+    + Relación no es causa. y = 0.6·x + 2.2R² = 0.6 · r = 0.7746 · 5 puntosLa recta explica el 60% de la variación de Y. A más X, más Y.Relación no es causa. Calculada sobre el documento en memoria, revisión 0 · Vista filtrada actual 
+
+    Call log:
+      - Expect "toContainText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.trend-result') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.trend-result')
+        34 × locator resolved to <section aria-live="polite" aria-atomic="true" aria-label="Tendencia lineal" class="trend-result svelte-1wo6u31" aria-describedby="trend-full-45ebf3e9-beb1-48c7-b03f-e85e54d03d60" title="y = 0.6·x + 2.2↵R² = 0.5999999999999999 · r = 0.7745966692414833 · 5 puntos↵La recta explica el 59.999999999999986% de la variación de Y. A más X, más Y.↵Relación no es causa.">…</section>
+           - unexpected value "y = 0.6·x + 2.2
+    R² = 0.5999999999999999 · r = 0.7745966692414833 · 5 puntos
+    La recta explica el 59.999999999999986% de la variación de Y. A más X, más Y.
+    Relación no es causa. y = 0.6·x + 2.2R² = 0.6 · r = 0.7746 · 5 puntosLa recta explica el 60% de la variación de Y. A más X, más Y.Relación no es causa. Calculada sobre el documento en memoria, revisión 0 · Vista filtrada actual "
+
+
+      113 |  const checkbox=await configure();await panel().getByLabel('Alcance del gráfico',{exact:true}).selectOption('filtered');await checkbox.check();await generate()
+      114 |  await expect(trend()).toContainText('5 puntos');await expect(trend()).toContainText('y = 0.6·x + 2.2');await expect(trend()).toContainText('Vista filtrada actual')
+    > 115 |  await expect(trend()).toContainText('Fuente: documento en memoria');await expect(trend()).not.toContainText('Calculada sobre')
+          |                        ^
+      116 |  await panel().getByLabel('Alcance del gráfico',{exact:true}).selectOption('all')
+      117 |  await panel().getByRole('button',{name:'Filtros del gráfico',exact:true}).click()
+      118 |  const filter=panel().getByRole('region',{name:'Filtros del gráfico',exact:true})
+        at /private/tmp/freyalab-ten-1/tests/e2e/chart-trend.spec.ts:115:24
+
+    Error Context: ../ten1-e2e-rojo-origen/chart-trend-TEN-1-filtros--bea68-ar-por-bloquea-la-tendencia-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../ten1-e2e-rojo-origen/chart-trend-TEN-1-filtros--bea68-ar-por-bloquea-la-tendencia-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../ten1-e2e-rojo-origen/chart-trend-TEN-1-filtros--bea68-ar-por-bloquea-la-tendencia-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-trend.spec.ts:109:1 › TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia 

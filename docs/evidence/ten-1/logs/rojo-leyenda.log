@@ -1,0 +1,69 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-ten-1
+
+ ❯ tests/chart-presentation.test.ts (18 tests | 2 failed) 42ms
+   × la tendencia cubre los extremos completos y conserva una leyenda legible del color de la línea; oscuro=false 5ms
+   × la tendencia cubre los extremos completos y conserva una leyenda legible del color de la línea; oscuro=true 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-presentation.test.ts > la tendencia cubre los extremos completos y conserva una leyenda legible del color de la línea; oscuro=false
+AssertionError: expected [ { type: 'scatter', …(2) }, …(1) ] to match object [ { type: 'scatter' }, …(1) ]
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+@@ -11,13 +11,10 @@
+        [
+          300000,
+          180002.2,
+        ],
+      ],
+-     "itemStyle": {
+-       "color": "#25252b",
+-     },
+      "lineStyle": {
+        "color": "#25252b",
+        "type": "dashed",
+      },
+      "name": "Tendencia",
+
+ ❯ tests/chart-presentation.test.ts:72:22
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/chart-presentation.test.ts > la tendencia cubre los extremos completos y conserva una leyenda legible del color de la línea; oscuro=true
+AssertionError: expected [ { type: 'scatter', …(2) }, …(1) ] to match object [ { type: 'scatter' }, …(1) ]
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+@@ -11,13 +11,10 @@
+        [
+          300000,
+          180002.2,
+        ],
+      ],
+-     "itemStyle": {
+-       "color": "#f5f5f7",
+-     },
+      "lineStyle": {
+        "color": "#f5f5f7",
+        "type": "dashed",
+      },
+      "name": "Tendencia",
+
+ ❯ tests/chart-presentation.test.ts:72:22
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 16 passed (18)
+   Start at  13:08:08
+   Duration  236ms (tests 50%, transform 27%, import 20%, worker 3%)
+
