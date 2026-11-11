@@ -2,6 +2,8 @@ import { app, BrowserWindow, dialog, ipcMain, shell, clipboard, Menu } from 'ele
 import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve, relative, isAbsolute, extname, basename } from 'node:path'
 import { z } from 'zod'
+import {ProjectStore} from './projects'
+import {projectFile,projectName,type ProjectRecent} from '../shared/project'
 import {col,query,conditionGroup} from './query-schema'
 import {ChartPresets,chartConfiguration} from './chart-presets'
 import {exportChartResult} from './chart-result-export'
@@ -36,6 +38,7 @@ const here=dirname(fileURLToPath(import.meta.url))
 if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FREYALAB_USER_DATA))
 let window:BrowserWindow|undefined,windowReady:Promise<void>|undefined,docs:Documents,analytics:SqlService,presets:ChartPresets,settings:SettingsStore,updates:UpdatesService,settingsStartupNotice:string|undefined,quitting=false,quitRequested=false,closingWindow=false
 let menuState:ApplicationUiState={activeId:null,mode:'split',focus:'none',locked:false,canEdit:false},menuSettings:SettingsState,menuRecents:string[]=[],menuSignature=''
+let projects:ProjectStore,projectDraftFolder:string|undefined,menuProjectRecents:ProjectRecent[]=[]
 let menuPandocAvailable=false
 const menuPandoc=new MenuPandocAvailability(detectPandoc,()=>docs?.pandocPath,value=>{docs.pandocPath=value},value=>{menuPandocAvailable=value;refreshApplicationMenu()})
 const nativeEdits=new MenuNativeEdits()
@@ -61,21 +64,43 @@ const edits=z.discriminatedUnion('type',[rangeEdit,structureEdit,
  z.object({type:z.literal('insertRow'),afterId:z.string().max(100).optional(),beforeId:z.string().min(1).max(100).optional()}).refine(value=>value.beforeId===undefined||value.afterId===undefined),z.object({type:z.literal('deleteRows'),ids:rows}),
  z.object({type:z.literal('insertColumn'),index:col,name:z.string().max(10000)}),z.object({type:z.literal('deleteColumn'),index:col}),z.object({type:z.literal('header'),index:col,name:z.string().max(10000)}),z.object({type:z.literal('replace'),find:z.string().min(1).max(10000),replacement:z.string().max(1024*1024),column:col.optional()})])
 const tableExport=z.object({range:range.optional(),scope:z.enum(['all','filtered','selection']),query:query.optional(),rowIds:rows.optional(),columns:z.array(col).optional(),delimiter:z.enum([',',';','\t','|']).optional()})
-async function openPaths(paths:string[]){const result=[];for(const p of paths){if(!await docs.allowed(p))throw new Error('Abre el archivo desde el selector o arrástralo a la ventana.');const document=await docs.open(p);result.push(document);window?.webContents.send('freya:event',{type:'opened',document})}return result}
+async function publishProject(){
+ const project=projects.active,recents=await projects.recents()
+ menuProjectRecents=recents
+ if(project)docs.roots.add(project.path)
+ window?.webContents.send('freya:event',{type:'project',project,projectRecents:recents})
+ if(project&&projects.recentWriteFailed)window?.webContents.send('freya:event',{type:'error',message:t('project.error.recentWrite')})
+ refreshApplicationMenu()
+}
+async function openProjectFolder(folder:string,optional=false){
+ try{const project=await(optional?projects.maybeOpen(folder):projects.open(folder));if(project)await publishProject()}
+ catch(error){
+  const options:Electron.MessageBoxOptions={type:'error',title:t('project.error.title'),message:error instanceof Error?error.message:String(error),buttons:[t('project.showFolder'),t('dialog.cancel')],defaultId:1,cancelId:1}
+  const result=window?await dialog.showMessageBox(window,options):await dialog.showMessageBox(options)
+  if(result.response===0)await shell.openPath(folder)
+ }
+}
+async function pickFolder(newProject=false){
+ if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_FOLDER)return resolve(process.env.FREYALAB_TEST_FOLDER)
+ const result=await dialog.showOpenDialog(window!,{title:t(newProject?'project.pickFolder':'dialog.folder.title'),buttonLabel:t('dialog.open.button'),properties:newProject?['openDirectory','createDirectory']:['openDirectory']})
+ return result.canceled?null:result.filePaths[0]??null
+}
+async function openPaths(paths:string[]){const result=[];for(const p of paths){if(!await docs.allowed(p))throw new Error('Abre el archivo desde el selector o arrástralo a la ventana.');if(basename(p)===projectFile){await openProjectFolder(dirname(p));continue}const document=await docs.open(p);result.push(document);window?.webContents.send('freya:event',{type:'opened',document})}return result}
 function assertSender(event:Electron.IpcMainInvokeEvent|Electron.IpcMainEvent){if(!window||event.sender!==window.webContents||event.senderFrame!==window.webContents.mainFrame)throw new Error('Origen no autorizado.')}
 function applicationContext():ApplicationMenuContext {
  const documents=docs?[...docs.records.values()].map(({info:{id,name,kind,readonly,dirty,csvView}})=>({id,name,kind,readonly,dirty,...(kind==='csv'?{csvView:csvView??'table'}:{})})):[]
- return{...menuState,documents,recents:menuRecents,theme:menuSettings.values.tema,sidebar:menuSettings.values.barraLateral.visible,development:!app.isPackaged,showDevTools:menuSettings.values.avanzado.herramientasDeDesarrollo,updatesReady:true,docxAvailable:menuPandocAvailable}
+ return{...menuState,documents,recents:menuRecents,projectRecents:menuProjectRecents,theme:menuSettings.values.tema,sidebar:menuSettings.values.barraLateral.visible,development:!app.isPackaged,showDevTools:menuSettings.values.avanzado.herramientasDeDesarrollo,updatesReady:true,docxAvailable:menuPandocAvailable}
 }
 function refreshApplicationMenu(){
  const context=applicationContext(),signature=languageState().language+'\n'+menuFingerprint(context)
  if(signature===menuSignature)return;menuSignature=signature
- Menu.setApplicationMenu(Menu.buildFromTemplate(applicationMenu(context,(id,argument)=>{const recent=id==='file.openRecent'&&typeof argument==='number'?context.recents[argument]:undefined;void dispatchApplicationCommand(id,argument,recent).catch(error=>window?.webContents.send('freya:event',{type:'error',message:error.message}))})))
+ Menu.setApplicationMenu(Menu.buildFromTemplate(applicationMenu(context,(id,argument)=>{const recent=typeof argument==='number'?(id==='file.openRecent'?context.recents[argument]:id==='file.openRecentProject'?context.projectRecents?.[argument]?.path:undefined):undefined;void dispatchApplicationCommand(id,argument,recent).catch(error=>window?.webContents.send('freya:event',{type:'error',message:error.message}))})))
 }
 async function refreshMenuRecents(){menuRecents=z.array(path).safeParse(await docs.recents()).data??[];refreshApplicationMenu()}
 async function dispatchApplicationCommand(id:string,argument?:string|number,recent?:string){
  const command=applicationCommandSchema.parse({id,...(argument!==undefined?{argument}:{})})
  const target=await createApplicationWindow()
+ if(id==='file.openRecentProject'){if(recent){await projects.openRecent(recent);await publishProject()}return}
  if(id==='file.openRecent'){
   if(!recent)return;docs.grants.add(resolve(recent))
   try{await openPaths([recent])}catch(error){
@@ -126,13 +151,25 @@ async function handle(operation:string,args:unknown[]){
   return menuPandoc.choose(selected.filePaths[0])
  }
  case'pandocTest':{z.tuple([]).parse(args);const status=await menuPandoc.refresh();if(!status.available)throw new Error(status.reason);return testPandoc(status.path)}
- case'open':{const result=await dialog.showOpenDialog(window!,{title:t('dialog.open.title'),buttonLabel:t('dialog.open.button'),properties:['openFile','multiSelections'],filters:[{name:t('dialog.open.filter'),extensions:['md','markdown','txt','mmd','mermaid','csv','tsv']}]});for(const p of result.filePaths)docs.grants.add(resolve(p));return result.canceled?[]:openPaths(result.filePaths)}
+ case'open':{const result=await dialog.showOpenDialog(window!,{title:t('dialog.open.title'),buttonLabel:t('dialog.open.button'),properties:['openFile','multiSelections'],filters:[{name:t('dialog.open.filter'),extensions:['md','markdown','txt','mmd','mermaid','csv','tsv','freyalab']}]});for(const p of result.filePaths)docs.grants.add(resolve(p));return result.canceled?[]:openPaths(result.filePaths)}
  case'openPaths':return openPaths(z.array(path).max(100).parse(a))
  case'csvOpen':{const target=path.parse(a),view=csvView.parse(b);if(!await docs.allowed(target))throw new Error(t('csvText.openAuthorized'));const previous=new Map([...docs.records].map(([key,record])=>[key,record.info.csvView??'table'])),document=await docs.open(target,view);if(previous.has(document.id)&&previous.get(document.id)!==document.csvView)analytics.forget(document.id);window?.webContents.send('freya:event',{type:'opened',document});return document}
  case'csvView':{const key=id.parse(a),before=docs.info(key).csvView,document=await docs.setCsvView(key,csvView.parse(b),z.enum(['save','discard']).optional().parse(c));if(before!==document.csvView)analytics.forget(key);return document}
  case'csvViewInfo':{const target=path.parse(a);if(!await docs.allowed(target))throw new Error(t('csvText.openAuthorized'));return docs.csvViewInfo(target)}
  case'new':return docs.create(z.enum(['markdown','text','mermaid','csv']).parse(a) as Kind)
- case'folder':{if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_FOLDER){const folder=resolve(process.env.FREYALAB_TEST_FOLDER);docs.roots.add(folder);return folder}const result=await dialog.showOpenDialog(window!,{title:t('dialog.folder.title'),buttonLabel:t('dialog.open.button'),properties:['openDirectory']});if(result.canceled)return null;docs.roots.add(result.filePaths[0]);return result.filePaths[0]}
+ case'folder':{const folder=await pickFolder();if(folder){docs.roots.add(folder);await openProjectFolder(folder,true)}return folder}
+ case'project:state':{z.tuple([]).parse(args);return{project:projects.active,recents:await projects.recents()}}
+ case'project:pickFolder':{z.tuple([]).parse(args);const folder=await pickFolder(true);if(!folder)return null;projectDraftFolder=folder;return{path:folder,name:basename(folder)}}
+ case'project:cancelCreate':{z.tuple([]).parse(args);projectDraftFolder=undefined;return}
+ case'project:create':{const[name,suggested]=z.tuple([projectName,z.boolean()]).parse(args),folder=projectDraftFolder;projectDraftFolder=undefined;if(!folder)throw new Error(t('project.pickFolder'));await projects.create(folder,name,suggested);await publishProject();return}
+ case'project:close':{const[key]=z.tuple([z.string().min(1).max(32768)]).parse(args);await projects.close(key);await publishProject();return}
+ case'project:rename':{
+  const[key,name]=z.tuple([z.string().min(1).max(100),projectName]).parse(args)
+  await projects.rename(key,name,async()=>{const result=await dialog.showMessageBox(window!,{type:'warning',message:t('project.error.changed'),buttons:[t('project.reload'),t('project.keepMine')],defaultId:0,cancelId:0});return result.response===1})
+  await publishProject();return
+ }
+ case'project:openRecent':{const[target]=z.tuple([path]).parse(args);await projects.openRecent(target);await publishProject();return}
+ case'project:forgetRecent':{const[target]=z.tuple([path]).parse(args);await projects.forgetRecent(target);menuProjectRecents=await projects.recents();window?.webContents.send('freya:event',{type:'project',projectRecents:menuProjectRecents});refreshApplicationMenu();return}
  case'tree':return docs.tree(path.parse(a))
  case'findFiles':return docs.findFiles(path.parse(a),z.string().min(1).max(500).parse(b))
  case'cancelFileSearch':return docs.cancelFileSearch()
@@ -202,6 +239,7 @@ app.whenReady().then(async()=>{
  updates=new UpdatesService(settings,app.getVersion())
  const initialSettings=await settings.get();settingsStartupNotice=initialSettings.notice;menuSettings=initialSettings
  initializeLanguage(app.getPreferredSystemLanguages(),process.env,initialSettings.values.idioma)
+ projects=new ProjectStore(app.getPath('userData'));menuProjectRecents=await projects.recents().catch(()=>[])
  docs=new Documents(event=>{window?.webContents.send('freya:event',event);refreshApplicationMenu()})
  if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_PANDOC_PATH)docs.pandocPath=process.env.FREYALAB_TEST_PANDOC_PATH
  void menuPandoc.refresh().catch(error=>window?.webContents.send('freya:event',{type:'error',message:error.message}))

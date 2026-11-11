@@ -8,7 +8,7 @@ export const applicationUiStateSchema:z.ZodType<ApplicationUiState>=z.object({
 }).strict()
 export const applicationCommandSchema=z.object({id:z.string().refine(isApplicationCommand),argument:z.union([z.string(),z.number()]).optional()}).strict().refine(command=>{
  if(command.id==='window.document')return z.uuid().safeParse(command.argument).success
- if(command.id==='file.openRecent')return z.number().int().min(0).max(9).safeParse(command.argument).success
+ if(command.id==='file.openRecent'||command.id==='file.openRecentProject')return z.number().int().min(0).max(9).safeParse(command.argument).success
  return command.argument===undefined
 })
 
