@@ -37,6 +37,7 @@ Como estudiante que limpia un dataset, quiero ver cuántos datos faltan en cada 
   - «Se rellenarán 3 celdas: 1 vacía, 1 con solo espacios y 1 que faltaba (la fila era más corta)».
   - Hasta 5 filas de ejemplo, antes y después.
   - En «El valor anterior», también: «1 queda vacía porque no hay valor anterior».
+  - Si una fila corta tiene que alargarse más de un campo: «1 fila corta se alarga hasta Mixta; Cantidad y Alta quedan vacías en esa fila».
 - **Botones:** «Rellenar» y «Cancelar».
 - **Al aplicar:** un solo paso de deshacer, sin guardar hasta pulsar Guardar.
 
@@ -62,7 +63,11 @@ Como estudiante que limpia un dataset, quiero ver cuántos datos faltan en cada 
 - **El valor anterior:** necesita su propia operación (`fillPrevious`), que recorre el orden del documento. Es determinista.
 - **Eliminar:** usa una operación por consulta (por ejemplo, `deleteRowsWhere` con la condición), no una lista de identificadores enviada desde la interfaz. Debe valer hasta los límites de edición (50 MiB y 2 millones de celdas).
 - **Integridad:** las celdas y columnas no afectadas quedan **idénticas**. También se conservan `00123`, los identificadores largos, los campos multilínea, el BOM y los finales de línea.
-- **Completar un campo ausente** alarga solo esa fila hasta esa columna. No inventa campos vacíos en otras columnas.
+- **Completar un campo ausente** alarga solo esa fila y solo hasta la columna que se rellena:
+  - Si entre el final de la fila y esa columna faltan más campos, se crean vacíos. Ya se leían como vacíos, así que el total de «Vacíos» de esas columnas no cambia; en su desglose pasan de «ausente» a «vacío exacto».
+  - Es lo que la app ya hace al editar una celda a mano o con «Rellenar rango»: la mutación `cell` de `src/main/table-engine.ts:441` rellena con `''` hasta la columna, y el inverso guarda `length` para devolver la fila a su longitud.
+  - No se alarga ninguna otra fila ni se pasa de esa columna. Deshacer devuelve la fila a su longitud original.
+  - No confundir con mover columnas (`table-engine.ts:277`), que sí rechaza convertir ausentes en vacíos: allí sería un efecto que nadie pidió; aquí es necesario para escribir el valor pedido, y la vista previa lo avisa.
 - **Validación:** IPC validado con zod, como las demás ediciones.
 - **Sin dependencias nuevas.**
 
@@ -85,13 +90,18 @@ d,60
    - El resto de bytes no cambia.
    - Deshacer devuelve el archivo idéntico (hash).
 4. Con la casilla de espacios desmarcada se rellenan 2 celdas, y la fila 6 conserva `"  "`.
-5. «El valor anterior» en Cantidad rellena las filas 5, 6 y 7 con `4`. Si la primera fila de datos estuviera vacía, la vista previa diría «1 queda vacía».
-6. «Eliminar filas con vacío» en Cantidad deja 4 filas. Con Precio y Cantidad marcadas: «en cualquiera» elimina 3 filas y «en todas» solo 1 (la 5).
-7. Un paso de deshacer por acción. Guardar escribe exactamente lo que muestra la vista previa (comprueba los bytes, con CRLF y con BOM).
-8. Con fuente protegida, archivo grande o cambios de Texto sin confirmar, se cumple lo de «Cuándo no se puede».
-9. En la paleta, «fillna», «dropna» e «isnull» encuentran las tres acciones.
-10. Con la pestaña de análisis abierta, después de rellenar aparece el aviso de datos cambiados, y al recalcular los números son los nuevos.
-11. Teclado de principio a fin. Capturas en claro y oscuro, en es y en-XA, a 1440×900.
+5. «Rellenar vacíos» de Mixta con `0` (fila corta que se alarga más de un campo):
+   - La vista previa dice 4 celdas (3 vacías y 1 que faltaba) y «1 fila corta se alarga hasta Mixta; Cantidad y Alta quedan vacías en esa fila».
+   - Al aplicar, la fila 7 queda `d,60,,,0`. Ninguna otra fila cambia de longitud.
+   - Cantidad sigue con «Vacíos 3» (ahora 0 ausentes, 2 vacíos exactos y 1 solo espacios) y Alta con 1 (vacío exacto).
+   - Deshacer devuelve `d,60` y el hash original.
+6. «El valor anterior» en Cantidad rellena las filas 5, 6 y 7 con `4`. Si la primera fila de datos estuviera vacía, la vista previa diría «1 queda vacía».
+7. «Eliminar filas con vacío» en Cantidad deja 4 filas. Con Precio y Cantidad marcadas: «en cualquiera» elimina 3 filas y «en todas» solo 1 (la 5).
+8. Un paso de deshacer por acción. Guardar escribe exactamente lo que muestra la vista previa (comprueba los bytes, con CRLF y con BOM).
+9. Con fuente protegida, archivo grande o cambios de Texto sin confirmar, se cumple lo de «Cuándo no se puede».
+10. En la paleta, «fillna», «dropna» e «isnull» encuentran las tres acciones.
+11. Con la pestaña de análisis abierta, después de rellenar aparece el aviso de datos cambiados, y al recalcular los números son los nuevos.
+12. Teclado de principio a fin. Capturas en claro y oscuro, en es y en-XA, a 1440×900.
 
 ## Casos límite
 - Una columna con todo vacío: «Rellenar» funciona y «El valor anterior» deja todo vacío, con su recuento.
