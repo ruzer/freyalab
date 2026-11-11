@@ -103,7 +103,16 @@ Los tres arreglos se concentran en **082780b8ae2fde4eb0defe4c96717cf07ee066c4**.
 | `npm test` | 143 archivos; **2.688 aprobadas y 1 omitida**, 25,53 s. Única omisión: prueba Windows de package-smoke |
 | Unitarias enfocadas describe/report/i18n | 47/47 aprobadas, 442 ms |
 | Enfocadas tras cambios (describe, fuentes, informes, selección) | 27 aprobadas y 1 montaje nuevo corregido por condición, sin cambio de producto |
-| `npx playwright test tests/e2e/analysis-describe.spec.ts tests/e2e/project-source.spec.ts --grep 'AN-2 revisión:…' --retries=0` (tres casos y fuente completa protegida) | **4/4 aprobadas**, 9,1 s; sin reintento |
+| Cuatro E2E finales: tres casos y fuente completa protegida (comando exacto debajo) | **4/4 aprobadas**, 9,1 s; sin reintento |
 | `npm run build` del código final 082780b | Completado |
 
 No se repitieron las 625 E2E locales: se mantiene su SHA real y las correcciones posteriores tienen sus enfocadas. La CI completa del head final sigue pendiente; tampoco se empaquetó ni instaló este sucesor. Las ocho capturas corresponden a 250 × 100 datos completos y a la presentación inicial: los tres arreglos no alteran esa pantalla numérica completa. Las métricas antiguas y las explicaciones/informes legacy permanecen bajo Más estadísticas. El reconocimiento del límite textual por mensaje español es un shortcut heredado, señalado para migrar a código estable antes de traducir el backend.
+
+
+Comando exacto de las cuatro comprobaciones finales:
+
+```sh
+npx playwright test tests/e2e/analysis-describe.spec.ts tests/e2e/project-source.spec.ts --grep 'AN-2 revisión:|el análisis distingue una fuente completa protegida' --retries=0
+```
+
+El aviso del test nuevo de presupuesto se acota al span de texto del toast (el nombre accesible del botón de cierre no forma parte de su texto). El rojo conservado demuestra ausencia del aviso; el verde exige el mensaje exacto, cero llamadas y bytes intactos. La aserción del límite sigue siendo dura.
