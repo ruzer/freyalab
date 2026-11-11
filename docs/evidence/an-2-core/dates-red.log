@@ -1,0 +1,41 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-alpha4-an2
+
+ ❯ tests/describe-summary.test.ts (7 tests | 1 failed) 9ms
+   × describe compara fechas ISO con espacios exteriores y omite siempre su top y frecuencia 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/describe-summary.test.ts > describe compara fechas ISO con espacios exteriores y omite siempre su top y frecuencia
+AssertionError: expected { Object (count, unique, ...) } to deeply equal { Object (count, unique, ...) }
+
+- Expected
++ Received
+
+  {
+    "count": 4,
+-   "dateMax": "2026-03-04",
+-   "dateMin": "2026-01-02",
++   "dateMax": null,
++   "dateMin": null,
+    "freq": null,
+    "top": null,
+    "unique": 3,
+  }
+
+ ❯ tests/describe-summary.test.ts:46:26
+     44|  const source=rows([[' 2026-01-30 '],['2026-03-04'],['2026-01-02'],['2…
+     45|  const result=await analyzeColumn(source,undefined,request,()=>{},'Alt…
+     46|  expect(result.describe).toEqual({count:4,unique:3,top:null,freq:null,…
+       |                          ^
+     47|  expect(result.profile).toMatchObject({kind:'date',dates:4,invalidDate…
+     48|  expect(result.frequencies.find(entry=>entry.value==='2026-03-04')?.co…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  23:52:45
+   Duration  125ms (transform 39%, import 36%, tests 19%, worker 5%)
+
