@@ -82,4 +82,3 @@ Error: listen EPERM: operation not permitted 127.0.0.1
 
     Isolate  144 workers spawned · ~179ms startup each (spawn + environment, per file)
              at least ~2.17s faster with isolate: false — reuses workers across files instead of one per file
-

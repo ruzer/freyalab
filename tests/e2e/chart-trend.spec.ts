@@ -1,6 +1,6 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
-import {mkdtemp,mkdir,writeFile,readFile,rm,stat} from 'node:fs/promises'
+import {mkdtemp,mkdir,writeFile,readFile,rm,stat,copyFile} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {linearRegression,linearRegressionLine,rSquared} from 'simple-statistics'
@@ -74,6 +74,7 @@ test('TEN-1 cinco pares: petición, teclado, exportaciones completas y preset',a
  const svg=await readFile(join(folder,'exports','trend.svg'),'utf8');expect(svg).toContain('y = 0.6·x + 2.2');expect(svg).toContain('stroke-dasharray')
  const images=await app.evaluate(()=>Reflect.get(globalThis,'trendImages') as GraphicExportRequest[])
  expect(images.map(image=>image.format)).toEqual(['svg','png']);expect(images.every(image=>image.svg.includes('y = 0.6·x + 2.2'))).toBe(true)
+ for(const format of ['svg','png'])await copyFile(join(folder,'exports','trend.'+format),test.info().outputPath('trend-export.'+format))
  await analysisResultExport(page).locator('summary').click()
  for(const format of ['json','csv','md']){
   await analysisResultExport(page).getByLabel('Formato de resultados del gráfico',{exact:true}).selectOption(format)

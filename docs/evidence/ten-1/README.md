@@ -16,7 +16,7 @@ JSON y contexto JSON del CSV contienen `trend: {slope, intercept, r2, r, n}` sin
 
 ## Rojo y verde durante los bloques
 
-Las salidas sin modificar están en [logs](logs/). Las trazas completas de Electron se conservan en las carpetas temporales citadas en sus salidas; las capturas finales de la leyenda están en esta carpeta. Son verificaciones de desarrollo, todavía separadas del cierre integral y de la CI del head final.
+Las copias de salida están en [logs](logs/); normalizan exclusivamente blancos al final de línea y un salto final. Los originales y las trazas completas de Electron se conservan intactos en las rutas `/private/tmp/ten1-*` citadas en sus salidas; las capturas finales de la leyenda están en esta carpeta. Son verificaciones de desarrollo, todavía separadas del cierre integral y de la CI del head final.
 
 | Comprobación | Resultado observado |
 | --- | --- |
@@ -46,6 +46,27 @@ El primer arranque de Electron terminó antes de probar el producto: 3 SIGABRT/E
 La única omisión de la repetición unitaria es la prueba de paquete exclusiva de Windows. Pandoc 3.12.1 real se ejecutó; su binario carece de HTTP, por lo que continúa pendiente medir ese aislamiento con otro binario, como declara la prueba anterior. No equivale a haber verificado E2E de Word.
 
 Permanecen separados el cierre integral del SHA congelado, CI remota, otras plataformas, paquete/instalación y lector de pantalla manual. No se publicó, instaló ni actualizó FreyaLab.
+
+## Cierre con Node 24 LTS
+
+Tras el commit de producto `d0025f8`, se incorporó mecánicamente `main` `85760f2` (PR #165) en `9dbae3cb5bb1b56ac5564bd5045a121bb586abc4`. La historia TEN-1 conserva SHA-256 `f139e5a7dd9cb8472cae1398423f3e0ec99fd7b02b9a163b6892c6d556bf8b89`.
+
+Con `PATH=/Users/ruzer/.npm/_npx/387698761821791d/node_modules/node/bin:$PATH`, cada salida de cierre comienza comprobando `node --version`: **v24.22.1**. `npm run check` terminó con 0 errores/avisos. `npm test` completo: **144 archivos, 2 707 casos verdes y 1 omitido, 16,08 s**, con Pandoc real. `npm run build` completó la construcción.
+
+El fixture puro de cinco puntos se copió a una base aislada `a8dfc7f`, omitiendo solo las importaciones de helpers nuevos que ese caso no usa. Con Node 24 produjo el mismo rojo lógico: falta `trend`, sin cambiar el código base. No se repitieron las demás pruebas rojas de desarrollo con Node 24; sus salidas de Node 26 permanecen separadas.
+
+Sobre la construcción actualizada, **14/14 E2E verdes en 1,4 min**, un worker y cero reintentos: los siete recorridos TEN-1 (cinco puntos, degenerados, filtros/series, respuesta tardía/cancelación/revisión, 300 000 filas y capturas es/en-XA) más siete regresiones existentes de seis tipos de gráfico, leyenda/teclado, exportación/revisiones, presets y resultados CSV/JSON/Markdown/IPC. El fixture de 300 000 filas conserva el oráculo completo incluso cuando el editor muestra solo 200 filas. No es una ejecución integral de todas las E2E.
+
+Comando de la tanda E2E:
+
+```sh
+playwright test tests/e2e/chart-trend.spec.ts tests/e2e/charts.spec.ts \
+  --project=csv \
+  --grep 'TEN-1|seis gráficos calculan|gráficos visuales:|series visuales:|configuraciones: reinicio|exportar un gráfico rechaza|resultados exportados: interfaz|resultados exportados: filtros' \
+  --workers=1 --retries=0 --max-failures=3
+```
+
+Las [salidas Node 24](logs/node24-e2e.log) y las capturas de esta carpeta corresponden al cierre con ese runtime. El [PNG real](trend-export.png) y el [SVG real](trend-export.svg) se copiaron del primer fixture después de exportarlos, antes de limpiar su perfil temporal; no se regeneraron para la documentación. La suite integral local permanece pendiente de la última integración coordinada con LIM-1. La CI se registrará en el PR sobre su head congelado.
 
 ## Capturas de la leyenda final
 

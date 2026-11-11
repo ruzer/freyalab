@@ -16,7 +16,7 @@ Running 7 tests using 1 worker
 Testing stopped early after 3 maximum allowed failures.
 
 
-  1) [csv] › tests/e2e/chart-trend.spec.ts:126:1 › TEN-1 cancelar descarta la respuesta tardía y editar exige actualizar la revisión 
+  1) [csv] › tests/e2e/chart-trend.spec.ts:126:1 › TEN-1 cancelar descarta la respuesta tardía y editar exige actualizar la revisión
 
     Error: expect(locator).toContainText(expected) failed
 
@@ -51,7 +51,7 @@ Testing stopped early after 3 maximum allowed failures.
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
-  2) [csv] › tests/e2e/chart-trend.spec.ts:138:1 › TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra 
+  2) [csv] › tests/e2e/chart-trend.spec.ts:138:1 › TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra
 
     Error: expect(received).not.toBe(expected) // Object.is equality
 
@@ -100,8 +100,8 @@ Testing stopped early after 3 maximum allowed failures.
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
   3 failed
-    [csv] › tests/e2e/chart-trend.spec.ts:126:1 › TEN-1 cancelar descarta la respuesta tardía y editar exige actualizar la revisión 
-    [csv] › tests/e2e/chart-trend.spec.ts:138:1 › TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra 
+    [csv] › tests/e2e/chart-trend.spec.ts:126:1 › TEN-1 cancelar descarta la respuesta tardía y editar exige actualizar la revisión
+    [csv] › tests/e2e/chart-trend.spec.ts:138:1 › TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra
     [csv] › tests/e2e/chart-trend.spec.ts:151:47 › TEN-1 capturas, teclado y bloque legible en es ──
   1 did not run
   3 passed (41.6s)

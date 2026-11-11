@@ -75,4 +75,3 @@ AssertionError: expected { Object (total, usable, ...) } to match object { trend
       Tests  1 failed (1)
    Start at  12:47:32
    Duration  764ms (tests 76%, import 15%, transform 8%)
-

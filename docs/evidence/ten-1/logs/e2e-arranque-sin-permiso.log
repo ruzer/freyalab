@@ -13,7 +13,7 @@ Running 7 tests using 1 worker
 Testing stopped early after 3 maximum allowed failures.
 
 
-  1) [csv] › tests/e2e/chart-trend.spec.ts:58:1 › TEN-1 cinco pares: petición, teclado, exportaciones completas y preset 
+  1) [csv] › tests/e2e/chart-trend.spec.ts:58:1 › TEN-1 cinco pares: petición, teclado, exportaciones completas y preset
 
     Error: Process failed to launch!
 
@@ -49,7 +49,7 @@ Testing stopped early after 3 maximum allowed failures.
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
-  2) [csv] › tests/e2e/chart-trend.spec.ts:95:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción 
+  2) [csv] › tests/e2e/chart-trend.spec.ts:95:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción
 
     Error: Process failed to launch!
 
@@ -85,7 +85,7 @@ Testing stopped early after 3 maximum allowed failures.
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
-  3) [csv] › tests/e2e/chart-trend.spec.ts:109:1 › TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia 
+  3) [csv] › tests/e2e/chart-trend.spec.ts:109:1 › TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia
 
     Error: Process failed to launch!
 
@@ -122,8 +122,8 @@ Testing stopped early after 3 maximum allowed failures.
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
   3 failed
-    [csv] › tests/e2e/chart-trend.spec.ts:58:1 › TEN-1 cinco pares: petición, teclado, exportaciones completas y preset 
-    [csv] › tests/e2e/chart-trend.spec.ts:95:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción 
-    [csv] › tests/e2e/chart-trend.spec.ts:109:1 › TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia 
+    [csv] › tests/e2e/chart-trend.spec.ts:58:1 › TEN-1 cinco pares: petición, teclado, exportaciones completas y preset
+    [csv] › tests/e2e/chart-trend.spec.ts:95:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción
+    [csv] › tests/e2e/chart-trend.spec.ts:109:1 › TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia
   4 did not run
   1 error was not a part of any test, see above for details

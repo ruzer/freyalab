@@ -15,4 +15,3 @@ AC-00 HTTP: Pandoc sin soporte HTTP; eficacia del sandbox HTTP pendiente de otro
 
     Isolate  144 workers spawned · ~170ms startup each (spawn + environment, per file)
              at least ~2.06s faster with isolate: false — reuses workers across files instead of one per file
-

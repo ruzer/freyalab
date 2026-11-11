@@ -66,4 +66,3 @@ AssertionError: expected [ { type: 'scatter', …(2) }, …(1) ] to match object
       Tests  2 failed | 16 passed (18)
    Start at  13:08:08
    Duration  236ms (tests 50%, transform 27%, import 20%, worker 3%)
-

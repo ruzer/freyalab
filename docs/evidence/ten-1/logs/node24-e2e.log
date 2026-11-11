@@ -1,0 +1,22 @@
+v24.22.1
+
+Running 14 tests using 1 worker
+
+(node:36344) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/chart-trend.spec.ts:58:1 › TEN-1 cinco pares: petición, teclado, exportaciones completas y preset (5.9s)
+  ✓   2 [csv] › tests/e2e/chart-trend.spec.ts:96:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (7.0s)
+  ✓   3 [csv] › tests/e2e/chart-trend.spec.ts:110:1 › TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia (5.4s)
+  ✓   4 [csv] › tests/e2e/chart-trend.spec.ts:128:1 › TEN-1 cancelar descarta la respuesta tardía y editar exige actualizar la revisión (4.7s)
+  ✓   5 [csv] › tests/e2e/chart-trend.spec.ts:140:1 › TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra (15.9s)
+  ✓   6 [csv] › tests/e2e/chart-trend.spec.ts:155:47 › TEN-1 capturas, teclado y bloque legible en es (2.7s)
+  ✓   7 [csv] › tests/e2e/chart-trend.spec.ts:155:47 › TEN-1 capturas, teclado y bloque legible en en-XA (3.2s)
+  ✓   8 [csv] › tests/e2e/charts.spec.ts:21:1 › seis gráficos calculan sobre datos completos, con cuartiles, huecos y categorías exactas (4.2s)
+  ✓   9 [csv] › tests/e2e/charts.spec.ts:32:1 › gráficos visuales: seis SVG, temas, teclado, exportación e invalidación (11.6s)
+  ✓  10 [csv] › tests/e2e/charts.spec.ts:94:1 › exportar un gráfico rechaza destinos de documentos abiertos y revisiones obsoletas (840ms)
+  ✓  11 [csv] › tests/e2e/charts.spec.ts:158:1 › series visuales: leyenda y teclado sincronizados, filtros, exportación y límite comprensible (8.5s)
+  ✓  12 [csv] › tests/e2e/charts.spec.ts:260:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV (5.6s)
+  ✓  13 [csv] › tests/e2e/charts.spec.ts:284:1 › resultados exportados: interfaz, agregados completos, CSV y contexto, informe y fórmulas preservan el original (6.0s)
+  ✓  14 [csv] › tests/e2e/charts.spec.ts:296:1 › resultados exportados: filtros independientes, fechas, límite de diez mil, nulos e IPC válido (2.1s)
+
+  14 passed (1.4m)
