@@ -77,7 +77,17 @@ Como persona que trabaja con un CSV, quiero que el archivo se abra solo con la t
 
 ## Entrega en 2 PR (borrador, base `main`, pruebas rojas primero)
 1. **AN-1a (solo añade):** tipo de pestaña, almacén de vista, botón y comandos «Analizar», secciones con los componentes actuales, gráficos sin dibujo al entrar, cierre ligado. El panel lateral y «Resumen y gráfico» siguen existiendo.
-2. **AN-1b (quita):** elimina «Resumen y gráfico» y el panel lateral, redirige los comandos y migra las 28 referencias E2E sin rebajar lo que comprueban.
+2. **AN-1b (quita):** elimina «Resumen y gráfico» y el panel lateral y redirige los comandos. Las pruebas se borran **en este mismo PR**, junto con el código que probaban, nunca antes ni con `test.skip`. Reparto, contado sobre main 3a2404a:
+
+   | Qué hacer | Pruebas | Motivo |
+   |---|---|---|
+   | **Borrar** | `dock-expanded.spec.ts` (7), `dock-startup.spec.ts` (4), `dock-resize.spec.ts` (5) y `tests/workspace-layout.test.ts` (16 unitarias), junto con `workspace-layout.ts` si queda sin uso | Prueban el panel lateral en sí: ampliar, acoplar, divisor, ancho guardado y arranque según la ventana. Con la pestaña ya no existe nada de eso |
+   | **Borrar** | En `analysis-dock.spec.ts`: «la tabla conserva las filas que tenía sin panel» (:41), «a 1366×768… tres columnas» (:53) y «el gráfico… no se desplaza en horizontal» (:93) | Hablan de compartir el ancho con la tabla |
+   | **Reescribir para la pestaña** | El resto de `analysis-dock.spec.ts`: secciones accesibles por teclado (:61), cambiar de sección conserva el gráfico y el borrador SQL (:73), cerrar desmonta y devuelve el foco (:83). En `compact-toolbar.spec.ts`: «Analizar abre el panel…» (:76) | El comportamiento sigue existiendo en la pestaña. Coincide con los criterios 2, 7 y 11 de AN-1 |
+   | **No tocar la prueba, solo el ayudante** | `charts`, `csv-summary`, `chart-fields`, `sql`, `ui`, `ui-u0`, `structure`, `statistics-reports`, `selection-statistics`, `search`, `descriptive-percentiles`, `commands`, `columns-overview`, `large-file`, `chart-review` | Prueban resultados (sumas, percentiles, SQL, exportaciones) que siguen igual. Casi todas entran por `showPanel` y `analyzeButton` de `tests/e2e/panel.ts`: cambia ese ayudante para que abra la pestaña «Análisis» en la sección pedida. Si una prueba solo comprueba la navegación antigua, pasa a la fila de reescribir |
+   | **Añadir** | Una prueba: un perfil con el `workspace` del panel guardado por una versión anterior arranca sin errores y lo ignora | Sustituye a la de «valor guardado corrupto» de `dock-resize.spec.ts` |
+
+   Quita también las entradas de los archivos borrados en el mapa de áreas de CI (`tests/ci-areas.test.ts` y su configuración). En la CI de macOS ARM, los archivos borrados suman unos 2 minutos de E2E por corrida (corrida 42772526410). En el PR: la lista de pruebas borradas con su motivo y el recuento antes y después.
 
 ## Aceptación
 1. Abrir el CSV, desplazarse, editar y guardar no llama a `analyzeColumn`, `stats` ni `sqlRun`. Compruébalo con un espía de IPC, como el de H15-2.
@@ -104,7 +114,7 @@ Como persona que trabaja con un CSV, quiero que el archivo se abra solo con la t
 ## Plan de pruebas
 - Unitarias: modelo de pestañas (abrir, reutilizar, cerrar en cascada, no restaurar) y almacén de vista por documento.
 - E2E nuevas (`tests/e2e/analysis-tab.spec.ts`): criterios 1 a 11, con el espía de IPC.
-- E2E migradas en AN-1b: las 28 referencias, con las mismas comprobaciones de datos.
+- AN-1b: borra, reescribe o adapta según la tabla de «Entrega». Las pruebas de datos no pierden ninguna aserción; solo cambia cómo llegan a la sección.
 
 ## Fuera de alcance
 - Abrir el análisis en una ventana del sistema aparte (más adelante, solo si se pide).
