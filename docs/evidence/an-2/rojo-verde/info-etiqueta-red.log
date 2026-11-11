@@ -1,0 +1,40 @@
+
+Running 1 test using 1 worker
+
+(node:62767) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/analysis-describe.spec.ts:60:1 › AN-2 Información presenta dimensiones, tipos y calidad sin modificar los distintos anteriores (5.5m)
+
+
+  1) [csv] › tests/e2e/analysis-describe.spec.ts:60:1 › AN-2 Información presenta dimensiones, tipos y calidad sin modificar los distintos anteriores 
+
+    Test timeout of 90000ms exceeded.
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('region', { name: 'Vista general de columnas', exact: true }).getByRole('button', { name: 'Obtener información', exact: true })
+
+
+      61 |  await openAnalysis(page,'Información')
+      62 |  const panel=page.getByRole('region',{name:'Vista general de columnas',exact:true})
+    > 63 |  await panel.getByRole('button',{name:'Obtener información',exact:true}).click()
+         |                                                                          ^
+      64 |  await expect(panel.locator('.file-summary')).toContainText('6 filas × 5 columnas')
+      65 |  await expect(panel.locator('.file-summary')).toContainText('UTF-8')
+      66 |  await expect(panel.locator('.type-chips')).toContainText('2 numéricas')
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:63:74
+
+    Error Context: ../freyalab-an2-core-evidence.tWy5z7/info-red/analysis-describe-AN-2-Inf-9c94b-ar-los-distintos-anteriores-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-an2-core-evidence.tWy5z7/info-red/analysis-describe-AN-2-Inf-9c94b-ar-los-distintos-anteriores-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-an2-core-evidence.tWy5z7/info-red/analysis-describe-AN-2-Inf-9c94b-ar-los-distintos-anteriores-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  Slow test file: [csv] › tests/e2e/analysis-describe.spec.ts (5.5m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 failed
+    [csv] › tests/e2e/analysis-describe.spec.ts:60:1 › AN-2 Información presenta dimensiones, tipos y calidad sin modificar los distintos anteriores 

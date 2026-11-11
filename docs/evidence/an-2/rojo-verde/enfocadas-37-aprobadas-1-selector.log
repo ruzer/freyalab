@@ -1,0 +1,91 @@
+
+Running 38 tests using 1 worker
+
+(node:73901) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [shell] › tests/e2e/project-source.spec.ts:49:1 › registra un CSV con teclado, bloquea edición directa y deja guardar una copia exacta (1.6s)
+  ✓   2 [shell] › tests/e2e/project-source.spec.ts:81:1 › avisa cuando la fuente cambia y conserva la huella previa al volver a registrarla (1.3s)
+  ✓   3 [shell] › tests/e2e/project-source.spec.ts:97:1 › busca por huella dentro del proyecto y solo reenlaza tras confirmar (995ms)
+  ✓   4 [shell] › tests/e2e/project-source.spec.ts:116:1 › el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado (4.6s)
+  ✓   5 [shell] › tests/e2e/project-source.spec.ts:189:1 › una muestra conserva su alcance al protegerla y al cerrar el proyecto (1.7s)
+  ✓   6 [shell] › tests/e2e/project-source.spec.ts:216:45 › diálogo y fuente protegida en colores claro y oscuro [es] (1.1s)
+  ✓   7 [shell] › tests/e2e/project-source.spec.ts:216:45 › diálogo y fuente protegida en colores claro y oscuro [en-XA] (1.1s)
+(node:77826) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   8 [csv] › tests/e2e/analysis-describe.spec.ts:36:1 › AN-2 muestra describe por petición con el fixture aprobado y conserva la fuente (1.3s)
+  ✓   9 [csv] › tests/e2e/analysis-describe.spec.ts:68:1 › AN-2 coordina el cálculo avanzado con describe sin lanzar consultas al desplegar (1.0s)
+  ✓  10 [csv] › tests/e2e/analysis-describe.spec.ts:93:1 › AN-2 Información presenta dimensiones, tipos y calidad sin modificar los distintos anteriores (1.0s)
+  ✓  11 [csv] › tests/e2e/analysis-describe.spec.ts:113:1 › AN-2 cancelar conserva la fuente y permite pasar a la vista avanzada sin respuestas tardías (911ms)
+  ✓  12 [csv] › tests/e2e/analysis-describe.spec.ts:128:1 › AN-2 entrar en el explorador cancela describe pendiente antes de activar el otro análisis (1.0s)
+  ✓  13 [csv] › tests/e2e/analysis-describe.spec.ts:141:1 › AN-2 descarta la respuesta anterior cuando cambia la revisión y recalcula con los valores actuales (1.1s)
+  ✓  14 [csv] › tests/e2e/analysis-describe.spec.ts:155:1 › AN-2 la paleta describe abre estadísticas sin empezar a calcular (855ms)
+  ✓  15 [csv] › tests/e2e/analysis-describe.spec.ts:162:1 › AN-2 describe conserva el ámbito filtrado, el informe y las columnas marcadas (1.7s)
+  ✓  16 [csv] › tests/e2e/analysis-describe.spec.ts:176:47 › AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (es) (2.2s)
+  ✓  17 [csv] › tests/e2e/analysis-describe.spec.ts:176:47 › AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (en-XA) (3.0s)
+  ✓  18 [csv] › tests/e2e/analysis-describe.spec.ts:190:1 › AN-2 ciento veinte columnas se rechazan antes de consultar y conservan el archivo (1.5s)
+  ✘  19 [csv] › tests/e2e/analysis-describe.spec.ts:196:1 › AN-2 la cardinalidad textual no disponible no elimina las estadísticas numéricas exactas (17.0s)
+(node:78465) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  20 [csv] › tests/e2e/analysis-tab.spec.ts:63:1 › AN-1a abre una pestaña única, enfoca su sección y solo calcula por petición (1.5s)
+  ✓  21 [csv] › tests/e2e/analysis-tab.spec.ts:90:1 › AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta la configuración (6.0s)
+  ✓  22 [csv] › tests/e2e/analysis-tab.spec.ts:115:1 › AN-1a reutiliza filtros, columnas y rango de la tabla e invalida los resultados al editar (1.5s)
+  ✓  23 [csv] › tests/e2e/analysis-tab.spec.ts:150:1 › AN-1a cancelar análisis no modifica el CSV y cerrar un CSV solo elimina su propio análisis (1.5s)
+  ✓  24 [csv] › tests/e2e/analysis-tab.spec.ts:172:1 › AN-1a archivo grande abre análisis manual y conserva SQL (3.1s)
+  ✓  25 [csv] › tests/e2e/analysis-tab.spec.ts:189:1 › AN-1a paleta y pestañas con teclado, Escape conserva la pestaña y capturas de idiomas (978ms)
+  ✓  26 [csv] › tests/e2e/analysis-tab.spec.ts:217:1 › AN-1b ignora la disposición antigua del panel al abrir un perfil existente (2.0s)
+  ✓  27 [csv] › tests/e2e/columns-overview.spec.ts:28:1 › panorámica: tipos, calidad, alcance, explicación por teclado, informe y documento intacto (3.3s)
+  ✓  28 [csv] › tests/e2e/columns-overview.spec.ts:38:1 › panorámica: páginas, nombres duplicados, columnas marcadas y detalle conservan el alcance (1.9s)
+  ✓  29 [csv] › tests/e2e/columns-overview.spec.ts:44:1 › panorámica: cancelar o cambiar revisión descarta respuestas tardías y no continúa columnas (1.9s)
+  ✓  30 [csv] › tests/e2e/columns-overview.spec.ts:92:1 › panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance (2.1s)
+  ✓  31 [csv] › tests/e2e/descriptive-percentiles.spec.ts:27:1 › percentiles: perfil filtrado, ayuda por teclado e informe preservan valores y procedencia (2.9s)
+  ✓  32 [csv] › tests/e2e/descriptive-percentiles.spec.ts:39:1 › percentiles: columnas marcadas, controles progresivos y rango comparten método sin recalcular al mostrar (1.3s)
+  ✓  33 [csv] › tests/e2e/selection-statistics.spec.ts:17:1 › estadísticas del rango: vista ordenada/filtrada, resumen conjunto y por columnas con datos intactos (2.3s)
+  ✓  34 [csv] › tests/e2e/selection-statistics.spec.ts:33:1 › estadísticas del rango: cancelar interrumpe y reintentar conserva la selección al paginar (1.4s)
+  ✓  35 [csv] › tests/e2e/selection-statistics.spec.ts:47:1 › estadísticas del rango: resumen de más de cien columnas sin expandir el límite del panel por columna (1.6s)
+  ✓  36 [csv] › tests/e2e/statistics-reports.spec.ts:19:1 › informe general editable: PDF/HTML, recuperación y guardado sin alterar el CSV pendiente (6.6s)
+  ✓  37 [csv] › tests/e2e/statistics-reports.spec.ts:30:1 › informe del rango fija búsqueda, posiciones y revisión; editar invalida el resultado (1.8s)
+  ✓  38 [csv] › tests/e2e/statistics-reports.spec.ts:36:1 › informes del explorador: perfil, distribución, Pearson y página parcial con texto hostil abreviado (2.5s)
+
+
+  1) [csv] › tests/e2e/analysis-describe.spec.ts:196:1 › AN-2 la cardinalidad textual no disponible no elimina las estadísticas numéricas exactas 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: getByRole('region', { name: 'Resumen estadístico', exact: true }).locator('tbody tr').nth(1).locator('td')
+    Timeout: 15000ms
+    - Expected  - 1
+    + Received  + 1
+
+      Array [
+    -   "50,000",
+    +   "—",
+        "—",
+      ]
+
+    Call log:
+      - Expect "toHaveText" getByRole('region', { name: 'Resumen estadístico', exact: true }).locator('tbody tr').nth(1).locator('td') with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Resumen estadístico', exact: true }).locator('tbody tr').nth(1).locator('td')
+        34 × locator resolved to 2 elements
+
+
+      196 | test('AN-2 la cardinalidad textual no disponible no elimina las estadísticas numéricas exactas',async()=>{
+      197 |  const file=join(folder,'muchos-distintos.csv'),text='Medida,Texto\n'+Array.from({length:100001},(_,i)=>i+',valor-'+i).join('\n')+'\n';await writeFile(file,text);await page.evaluate(path=>window.freya.openPaths([path]),file);await spy();await openAnalysis(page,'Estadísticas')
+    > 198 |  const panel=page.getByRole('region',{name:'Resumen estadístico',exact:true});await panel.getByRole('checkbox',{name:'Incluir texto y fechas',exact:true}).check();await panel.getByRole('button',{name:'Calcular',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Resumen parcial: algunas columnas no tienen un resumen exacto disponible.');await expect(panel.locator('tbody tr').nth(1).locator('td')).toHaveText(['50,000','—']);await expect(panel.locator('thead th').last()).toContainText('No disponible');expect(await calls()).toHaveLength(4);expect(await readFile(file,'utf8')).toBe(text)
+          |                                                                                                                                                                                                                                                                                                                                                                                                                                      ^
+      199 | })
+      200 |
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:198:422
+
+    Error Context: test-results/analysis-describe-AN-2-la--75881-adísticas-numéricas-exactas-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-describe-AN-2-la--75881-adísticas-numéricas-exactas-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-describe-AN-2-la--75881-adísticas-numéricas-exactas-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/analysis-describe.spec.ts:196:1 › AN-2 la cardinalidad textual no disponible no elimina las estadísticas numéricas exactas 
+  37 passed (1.5m)

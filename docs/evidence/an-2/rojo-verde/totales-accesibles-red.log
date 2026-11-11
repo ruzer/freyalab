@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:70267) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/analysis-describe.spec.ts:93:1 › AN-2 Información presenta dimensiones, tipos y calidad sin modificar los distintos anteriores (16.4s)
+
+
+  1) [csv] › tests/e2e/analysis-describe.spec.ts:93:1 › AN-2 Información presenta dimensiones, tipos y calidad sin modificar los distintos anteriores 
+
+    Error: expect(locator).toHaveAccessibleName(expected) failed
+
+    Locator:  getByRole('region', { name: 'Vista general de columnas', exact: true }).locator('tbody tr').nth(4).locator('.quality-breakdown>summary')
+    Expected: "3 · Desglose de vacíos de Mixta"
+    Received: "Desglose de vacíos de Mixta"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAccessibleName" getByRole('region', { name: 'Vista general de columnas', exact: true }).locator('tbody tr').nth(4).locator('.quality-breakdown>summary') with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Vista general de columnas', exact: true }).locator('tbody tr').nth(4).locator('.quality-breakdown>summary')
+        34 × locator resolved to <summary class="svelte-1alawu2" aria-label="Desglose de vacíos de Mixta">3</summary>
+           - unexpected value "Desglose de vacíos de Mixta"
+
+
+      107 |  await expect(mixed.locator('td').nth(3).locator('summary')).toHaveText('3')
+      108 |  await expect(mixed.locator('td').nth(4).locator('summary')).toHaveText('3')
+    > 109 |  await expect(mixed.locator('.quality-breakdown>summary')).toHaveAccessibleName('3 · Desglose de vacíos de Mixta');await expect(mixed.locator('.distinct-detail>summary')).toHaveAccessibleName('3 · Detalle de valores distintos de Mixta')
+          |                                                            ^
+      110 |  expect(await readFile(path,'utf8')).toBe(source)
+      111 | })
+      112 |
+        at /private/tmp/freyalab-alpha4-an2/tests/e2e/analysis-describe.spec.ts:109:60
+
+    Error Context: test-results/analysis-describe-AN-2-Inf-9c94b-ar-los-distintos-anteriores-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-describe-AN-2-Inf-9c94b-ar-los-distintos-anteriores-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-describe-AN-2-Inf-9c94b-ar-los-distintos-anteriores-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/analysis-describe.spec.ts:93:1 › AN-2 Información presenta dimensiones, tipos y calidad sin modificar los distintos anteriores 

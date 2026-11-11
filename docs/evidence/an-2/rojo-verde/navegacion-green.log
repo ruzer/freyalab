@@ -1,0 +1,12 @@
+
+Running 5 tests using 1 worker
+
+(node:80670) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [shell] › tests/e2e/ui-u0.spec.ts:144:1 › U0: Calculando cabe en el botón real con en-XA, inglés y español (1.9s)
+  ✓  2 [shell] › tests/e2e/ui.spec.ts:207:1 › estadísticas CSV: columnas, alcance completo, datos pendientes, temas y teclado (2.0s)
+  ✓  3 [shell] › tests/e2e/ui.spec.ts:250:1 › estadísticas CSV: cancelar descarta respuestas tardías y permite volver a analizar (949ms)
+  ✓  4 [shell] › tests/e2e/ui.spec.ts:270:1 › estadísticas CSV: muestra rotulada e IPC inválido rechazado @perf (1.2s)
+  ✓  5 [shell] › tests/e2e/ui.spec.ts:284:1 › estadísticas CSV: límite explícito y encabezados duplicados por índice (1.2s)
+
+  5 passed (7.6s)
