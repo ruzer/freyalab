@@ -1,4 +1,4 @@
-import {chartPanel,chartSuggestion,openAnalysis,showTable,createSuggestedChart,analyzeButton} from './panel'
+import {chartPanel,chartSuggestion,openAnalysis,showTable,createSuggestedChart,chartGenerate,analyzeButton} from './panel'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import { closeElectron } from './close-electron'
 import electronPath from 'electron'
@@ -116,7 +116,7 @@ test('F2b: estrecho conserva foco al editar campos, inglés natural y resultado 
 test('F2b: actualizar una celda no sustituye el resumen elegido ni guarda el CSV',async()=>{
  const panel=chartPanel(page);await expect(panel.locator('.pivot-result')).toBeVisible();await panel.getByLabel('Resumir Ventas por',{exact:true}).selectOption('average');await expect(panel.locator('.pivot-result tfoot')).toContainText('900')
  await showTable(page);await page.getByRole('gridcell').filter({hasText:'1200'}).first().dblclick();const editor=page.getByRole('textbox',{name:'Editar celda',exact:true});await editor.fill('1500');await editor.press('Enter')
- await openAnalysis(page,'Gráficos');await expect(panel.getByLabel('Resumir Ventas por',{exact:true})).toHaveValue('average');await expect(panel.locator('.pivot-result tfoot')).toContainText('937.5');expect(await readFile(path,'utf8')).toBe(original)
+ await openAnalysis(page,'Gráficos');await expect(panel.getByLabel('Resumir Ventas por',{exact:true})).toHaveValue('average');await chartGenerate(page).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await expect(panel.locator('.pivot-result tfoot')).toContainText('937.5');expect(await readFile(path,'utf8')).toBe(original)
 })
 test('F2b: 200 campos, nombres Unicode, idioma seudolocalizado y tamaños accesibles',async()=>{
  const file=join(folder,'campos.csv'),headers=Array.from({length:200},(_,i)=>i===198?'Crédito «México» "ñ"':'Campo '+i),content=headers.join(',').replace('Crédito «México» "ñ"','"Crédito «México» ""ñ"""')+'\n'+Array.from({length:3},()=>Array(200).fill('x').join(',')).join('\n')+'\n';await writeFile(file,content);await page.evaluate(file=>window.freya.openPaths([file]),file)

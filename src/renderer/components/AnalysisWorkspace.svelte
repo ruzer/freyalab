@@ -25,18 +25,19 @@
 
 <div class="analysis-workspace" role="tabpanel" id={'workspace-panel-'+tab.id} aria-labelledby={'workspace-tab-'+tab.id} hidden={!shown}>
  <header>
-  <p>{t('analysis.tab.source',{name:doc.name,rows:formatNumber(doc.rowCount??0)})}</p>
-  <div class="header-actions"><div bind:this={exportHost} hidden={section!=='charts'}></div><button type="button" onclick={onreturn}><Icon name="table" size={14}/>{t('analysis.tab.return')}</button></div>
+  <div class="analysis-heading"><h2 tabindex="-1" bind:this={heading}>{t('analysis.tab.section.'+section)}</h2><p>{t('analysis.tab.source',{name:doc.name,rows:formatNumber(doc.rowCount??0)})}</p></div>
+  <div class="analysis-toolbar">
+   <div class="analysis-sections" role="group" aria-label={t('analysis.tab.sections')}>
+    {#each sections as item (item)}
+     <button type="button" aria-pressed={item===section} disabled={unavailable(item)} title={unavailable(item)?t('analysis.tab.large'):undefined} aria-describedby={unavailable(item)?'analysis-large-'+tab.id:undefined} onclick={()=>onsection(item)}>{t('analysis.tab.section.'+item)}</button>
+    {/each}
+    {#if doc.large}<span id={'analysis-large-'+tab.id} class="sr-only">{t('analysis.tab.large')}</span>{/if}
+   </div>
+   <div class="header-actions"><div bind:this={exportHost} hidden={section!=='charts'}></div><button type="button" onclick={onreturn}><Icon name="table" size={14}/>{t('analysis.tab.return')}</button></div>
+  </div>
  </header>
  {#if external}<p class="analysis-warning" role="status">{t('analysis.tab.external')}</p>{/if}
  {#if csvAnalysisSample(doc,view.viewMeta)===true}<p class="analysis-warning" role="status">{t('charts.fields.sample')}</p>{/if}
- <div class="analysis-sections" role="group" aria-label={t('analysis.tab.sections')}>
-  {#each sections as item (item)}
-   <button type="button" aria-pressed={item===section} disabled={unavailable(item)} title={unavailable(item)?t('analysis.tab.large'):undefined} aria-describedby={unavailable(item)?'analysis-large-'+tab.id:undefined} onclick={()=>onsection(item)}>{t('analysis.tab.section.'+item)}</button>
-  {/each}
-  {#if doc.large}<span id={'analysis-large-'+tab.id} class="sr-only">{t('analysis.tab.large')}</span>{/if}
- </div>
- <h2 tabindex="-1" bind:this={heading}>{t('analysis.tab.section.'+section)}</h2>
  {#if doc.csvView==='text'}
   <p class="analysis-warning" role="status">{t('analysis.tab.textView')}</p>
  {:else}
@@ -58,20 +59,24 @@
 <style>
  .analysis-workspace{flex:1;display:flex;flex-direction:column;min-height:0;min-width:0;background:var(--panel)}
  .analysis-workspace[hidden],.analysis-section[hidden]{display:none}
- header{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--border)}
+ header{display:flex;flex-direction:column;gap:2px;padding:0 12px;border-bottom:1px solid var(--border)}
+ .analysis-heading{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+ .analysis-heading p{flex:1;min-width:0;line-height:1.5}
+ .analysis-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+ header button{min-height:24px;padding:2px 6px}
+ .header-actions :global(.header-export>summary){margin-block:0;min-height:24px;padding:2px 6px}
  header p{margin:0;overflow-wrap:anywhere}
  .header-actions,.header-actions button,.analysis-sections{display:flex;align-items:center;gap:6px}
  .header-actions>div{position:relative}
- .analysis-sections{flex-wrap:wrap;padding:8px 16px}
+ .analysis-sections{flex-wrap:wrap;padding:0}
  .analysis-sections button[aria-pressed=true]{color:var(--accent);border-color:var(--accent)}
- h2{margin:0;padding:2px 16px 8px;font-size:16px}
+ h2{margin:0;padding:0;font-size:var(--font-ui);line-height:1.5;flex-shrink:0}
  .analysis-section{flex:1;min-height:0;min-width:0;overflow:auto}
  .charts-section{display:flex;flex-direction:column}.info-section{padding-inline:16px}
  .analysis-warning{margin:0;padding:8px 16px;background:var(--hover)}
  /* La cabecera de la pestaña deja espacio al gráfico y al pie de la tabla paginada. */
  .charts-section :global(.pivot-result){flex-shrink:1;min-height:100px}
  .charts-section :global(.chart-info summary){margin-block:0}
- @media(max-height:760px){header{padding-block:4px}.analysis-sections{padding-block:4px}h2{padding-bottom:4px}}
 
  .analysis-section :global(section.sql-panel),.analysis-section :global(section.statistics-panel){max-height:none;overflow:visible;border-bottom:0}
 </style>
