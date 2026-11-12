@@ -54,12 +54,19 @@ const textEncoding=z.enum(textEncodings)
 const range=z.object({top:z.number().int().nonnegative(),bottom:z.number().int().nonnegative(),left:col,right:col,query,revision:z.number().int().nonnegative()})
 const rangeEdit=z.object({type:z.literal('range'),requestId:z.uuid().optional(),range,operation:z.enum(['fill','clear','trim','upper','lower','replace','paste']),value:z.string().max(1024*1024).optional(),find:z.string().max(10000).optional(),values:z.array(z.array(z.string().max(1024*1024)).max(100000)).max(100000).optional()})
 const structureEdit=z.object({type:z.literal('structure'),operation:z.enum(['split','combine','deduplicate','normalize','headers','moveRows','moveColumns','commitOrder']),columns:z.array(col).max(200),revision:z.number().int().nonnegative(),requestId:z.uuid(),separator:z.string().max(64).optional(),name:z.string().max(10000).optional(),rowIds:rows.optional(),range:range.optional(),destination:z.number().int().nonnegative().optional(),query:query.optional()})
+const emptyBase={type:z.literal('structure'),columns:z.array(col).min(1).max(2_000_000),revision:z.number().int().nonnegative(),requestId:id,includeSpaces:z.boolean()}
+const emptyEdit=z.discriminatedUnion('operation',[
+ z.strictObject({...emptyBase,operation:z.literal('fillEmpty'),columns:z.array(col).length(1),value:z.string().max(1024*1024)}),
+ z.strictObject({...emptyBase,operation:z.literal('fillPrevious'),columns:z.array(col).length(1)}),
+ z.strictObject({...emptyBase,operation:z.literal('deleteRowsWhere'),match:z.enum(['any','all'])})
+])
 const calculation=z.strictObject({
  type:z.literal('structure'),operation:z.literal('calculate'),name:z.string().min(1).max(10000),position:z.number().int().min(0).max(199),
  expression:z.string().trim().min(1).max(100000),columns:z.array(z.strictObject({index:z.number().int().min(0).max(198),read:z.enum(['text','number','date']),scale:z.number().int().min(0).max(12).optional()})).max(199),
  onError:z.enum(['empty','abort']),revision:z.number().int().nonnegative(),requestId:id
 })
 function isCalculation(value:unknown){return !!value&&typeof value==='object'&&'operation'in value&&value.operation==='calculate'}
+function isEmptyCleanup(value:unknown){return !!value&&typeof value==='object'&&'operation'in value&&['fillEmpty','fillPrevious','deleteRowsWhere'].includes(value.operation as string)}
 const edits=z.discriminatedUnion('type',[rangeEdit,structureEdit,
  z.object({type:z.literal('cell'),rowId:z.string().max(100),column:col,value:z.string().max(1024*1024)}),
  z.object({type:z.literal('paste'),rowId:z.string().max(100),column:col,values:z.array(z.array(z.string().max(1024*1024)).max(100000)).max(100000),view:z.object({query,revision:z.number().int().nonnegative()}).optional()}),
@@ -272,7 +279,7 @@ async function handle(operation:string,args:unknown[]){
  case'saveTextEncoding':{const[key,encoding]=z.tuple([id,textEncoding]).parse(args);return docs.saveTextEncoding(key,encoding)}
  case'copyTable':{docs.requireTable(id.parse(a));const options=tableExport.parse(b),format=z.enum(['tsv','markdown']).parse(c),output=await docs.table.call<string>(format==='markdown'?'markdown':'clipboard',a,options);if(Buffer.byteLength(output,'utf8')>8*1024*1024)throw new Error('La copia supera 8 MiB. Reduce la selección o expórtala.');await clipboard.writeText(output);return}
  case'pasteTable':{const key=id.parse(a);docs.assertProjectEditable(key);docs.requireTable(key);const selected=range.parse(b);await docs.table.call('rangePreview',a,{type:'range',range:selected,operation:'clear'});const content=await clipboard.readText();if(Buffer.byteLength(content,'utf8')>8*1024*1024)throw new Error('El portapapeles supera 8 MiB. Pega un bloque menor.');return content}
- case'transformPreview':{const key=id.parse(a);docs.assertProjectEditable(key);if(isCalculation(b))return analytics.calculatePreview(key,calculation.parse(b));docs.requireTable(key);return docs.table.call('transformPreview',key,structureEdit.parse(b) as TableTransformEdit)}
+ case'transformPreview':{const key=id.parse(a);docs.assertProjectEditable(key);if(isCalculation(b))return analytics.calculatePreview(key,calculation.parse(b));docs.requireTable(key);return docs.table.call('transformPreview',key,isEmptyCleanup(b)?emptyEdit.parse(b):structureEdit.parse(b))}
  case'rangePreview':{const key=id.parse(a);docs.assertProjectEditable(key);docs.requireTable(key);return docs.table.call('rangePreview',key,rangeEdit.parse(b) as TableRangeEdit)}
  case'rangeClipboard':docs.requireTable(id.parse(a));return docs.table.call('rangeClipboard',a,range.parse(b) as TableRange)
  case'page':docs.requireTable(id.parse(a));return docs.table.call('page',a,query.parse(b) as TableQuery)
@@ -280,7 +287,7 @@ async function handle(operation:string,args:unknown[]){
  case'viewState':docs.requireTable(id.parse(a));return docs.table.call('viewState',a)
  case'viewCancel':docs.requireTable(id.parse(a));return docs.table.call('viewCancel',a,z.uuid().parse(b))
  case'viewClear':docs.requireTable(id.parse(a));return docs.table.call('viewClear',a)
- case'edit':{const key=id.parse(a);return isCalculation(b)?analytics.calculateApply(key,calculation.parse(b)):docs.tableEdit(key,edits.parse(b) as TableEdit)}
+ case'edit':{const key=id.parse(a);return isCalculation(b)?analytics.calculateApply(key,calculation.parse(b)):docs.tableEdit(key,(isEmptyCleanup(b)?emptyEdit.parse(b):edits.parse(b)) as TableEdit)}
  case'options':return docs.tableOptions(id.parse(a),z.object({encoding:z.enum(['utf8','utf16le','win1252']).optional(),delimiter:z.enum([',',';','\t','|']).optional(),header:z.boolean().optional()}).parse(b) as TableOptions)
  case'undo':return docs.undo(id.parse(a),z.boolean().optional().parse(b))
  case'chartPresets':return presets.list()

@@ -1,6 +1,8 @@
 import {SvelteMap} from 'svelte/reactivity'
 import type {DocumentInfo,TableQuery,TableRange,TableViewMeta} from '../../shared/types'
 
+export interface CsvEmptyIntent {action:'view'|'fill'|'delete';column:number;revision:number}
+
 export interface CsvAnalysisView {
  query:TableQuery
  queryValid:boolean

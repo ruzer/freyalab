@@ -1,35 +1,41 @@
 <script lang="ts">
- import {formatNumber,t} from '../lib/i18n.svelte'
+ import {formatNumber,formatList,plural,t} from '../lib/i18n.svelte'
  import {controlHint} from '../lib/control-hint'
  import {onMount,onDestroy,tick,untrack} from 'svelte'
- import type {CalculatedColumnPreview,DocumentInfo,TableTransformEdit,TableTransformPreview,TableQuery,TableRange} from '../../shared/types'
+ import type {CalculatedColumnPreview,DocumentInfo,TableTransformEdit,TableTransformPreview,TableEmptyEdit,TableEmptyPreview,TableQuery,TableRange} from '../../shared/types'
  import {readCalculationError,type CalculateColumnEdit,type ColumnRead} from '../../shared/calculated-column'
+ import {readEmptyError} from '../../shared/empty-values'
  import {sqlColumns} from '../../shared/sql-helpers'
  import CsvCalculationFields from './CsvCalculationFields.svelte'
- type Edit=TableTransformEdit|CalculateColumnEdit
- let {doc,initialColumns,initialOperation,initialCalculationPosition,initialRows,initialRange,viewQuery,onapply,onclose,onerror}:{doc:DocumentInfo;initialColumns:number[];initialOperation?:Edit['operation'];initialCalculationPosition?:number;initialRows:string[];initialRange:TableRange|null;viewQuery:TableQuery;onapply:(edit:Edit)=>Promise<string|null>;onclose:()=>void;onerror:(message:string)=>void}=$props()
+ type Edit=TableTransformEdit|CalculateColumnEdit|TableEmptyEdit
+ let {doc,initialColumns,initialOperation,initialCalculationPosition,initialEmptyColumn,initialEmptyMarked=false,initialRows,initialRange,viewQuery,onapply,onclose,onerror}:{doc:DocumentInfo;initialColumns:number[];initialOperation?:Edit['operation'];initialCalculationPosition?:number;initialEmptyColumn?:number;initialEmptyMarked?:boolean;initialRows:string[];initialRange:TableRange|null;viewQuery:TableQuery;onapply:(edit:Edit)=>Promise<string|null>;onclose:()=>void;onerror:(message:string)=>void}=$props()
  const calculation=untrack(()=>initialOperation==='calculate')
- let operation=$state<TableTransformEdit['operation']>(untrack(()=>initialOperation==='calculate'?'split':initialOperation??'split')),columns=$state<number[]>(untrack(()=>initialColumns.length?[...initialColumns]:[0])),separator=$state(';'),custom=$state(''),name=$state('Combinada')
- let preview=$state<TableTransformPreview|CalculatedColumnPreview|null>(null),prepared=$state<Edit|null>(null),busy=$state(false),processed=$state(0),message=$state('Elige la operación y revisa su vista previa.'),external=$state(false),dialog:HTMLDialogElement
+ const empties=untrack(()=>['fillEmpty','fillPrevious','deleteRowsWhere'].includes(initialOperation??'')),deleting=untrack(()=>initialOperation==='deleteRowsWhere'),emptyTarget=untrack(()=>initialEmptyColumn??initialColumns[0]??0),markedColumns=untrack(()=>[...new Set(initialColumns)])
+ const emptyBlockedReason=$derived(!empties?'':doc.projectSource==='protected'?t('empty.protected'):doc.projectSource==='closed'?t('ui.reason.projectClosed'):doc.large?t('empty.large'):doc.readonly?t('empty.readonly'):'')
+ let operation=$state<TableTransformEdit['operation']|TableEmptyEdit['operation']>(untrack(()=>initialOperation==='calculate'?'split':initialOperation??'split')),columns=$state<number[]>(untrack(()=>initialColumns.length?[...initialColumns]:[0])),separator=$state(';'),custom=$state(''),name=$state('Combinada')
+ let preview=$state<TableTransformPreview|CalculatedColumnPreview|TableEmptyPreview|null>(null),prepared=$state<Edit|null>(null),busy=$state(false),processed=$state(0),message=$state(untrack(()=>empties?t('empty.review'):'Elige la operación y revisa su vista previa.')),external=$state(false),dialog:HTMLDialogElement
+ let emptyValue=$state(''),includeSpaces=$state(true),emptyScope=$state<'column'|'marked'>(untrack(()=>initialEmptyMarked?'marked':'column')),emptyMatch=$state<'any'|'all'>('any'),emptyError=$state('')
  let calculationName=$state(''),expression=$state(''),reads=$state<ColumnRead[]>([]),onError=$state<CalculateColumnEdit['onError']>('empty'),calculationError=$state<{text:string;detail?:string}|null>(null)
  let previewButton=$state<HTMLButtonElement>(),applyButton=$state<HTMLButtonElement>(),cancelButton=$state<HTMLButtonElement>()
  const calculated=$derived(preview&&'emptyRows'in preview?preview:null)
+ const emptyPreview=$derived(preview&&'withoutPrevious'in preview?preview:null)
+ const emptyLabel=(index:number)=>{const name=doc.headers?.[index]??'';return name&&(doc.headers??[]).filter(header=>header===name).length===1?name:t('empty.columnAt',{position:formatNumber(index+1),name:name||t('empty.unnamed')})}
  const names=$derived(calculation?sqlColumns(doc.headers??[]):[])
  const markedRows=untrack(()=>[...initialRows]),markedRange=untrack(()=>initialRange?structuredClone($state.snapshot(initialRange)):null)
  const hasSelection=markedRows.length>0||!!markedRange
  let rowScope=$state(hasSelection?'selection':'range'),from=$state(1),to=$state(1),destination=$state(1)
  const viewKey=$derived(JSON.stringify([viewQuery.search,viewQuery.filters,viewQuery.sort,viewQuery.order,viewQuery.conditions,viewQuery.filterMode]))
  const ordering=$derived(['moveRows','moveColumns','commitOrder'].includes(operation))
- let active:string|undefined,applying=false,closeAfterApply=false
+ let active:string|undefined,applying=false,closeAfterApply=false,cancelRequested=false
  const operations={split:'Dividir una columna',combine:'Combinar columnas',deduplicate:'Eliminar filas duplicadas',normalize:'Componer texto Unicode (NFC)',headers:'Normalizar encabezados',moveRows:'Mover filas',moveColumns:'Mover columnas',commitOrder:'Fijar orden de la vista en el documento'} as const
  const selectedSeparator=$derived(separator==='custom'?custom:separator)
  function cancel(){const id=active??(calculation?prepared?.requestId:undefined);active=undefined;busy=false;if(id)void window.freya.cancelAnalysis(doc.id,id).catch(()=>{})}
- function cancelPreparation(){if(applying&&active){message=calculation?t('calculate.progress.stopping'):'Solicitando cancelación. Si el cambio ya se aplicó, se podrá deshacer.';void window.freya.cancelAnalysis(doc.id,active).catch(error=>onerror(String(error)));return}cancel();preview=null;prepared=null;calculationError=null;message=calculation?t('calculate.error.cancelled'):'Preparación cancelada. Revisa una nueva vista previa para aplicar.';if(calculation)void tick().then(()=>previewButton?.focus())}
- function requestClose(){if(calculation&&applying){closeAfterApply=true;cancelPreparation();return}onclose()}
- function invalidate(){cancel();preview=null;prepared=null;calculationError=null;message=calculation?t('calculate.progress.review'):'Opciones o datos actualizados. Pulsa Vista previa.'}
- $effect(()=>{void doc.revision;if(calculation){void calculationName;void expression;void reads;void onError}else{void operation;void columns;void separator;void custom;void name;void rowScope;void from;void to;void destination;void viewKey}if(!applying)untrack(invalidate)})
+ function cancelPreparation(){if(applying&&active){cancelRequested=true;message=calculation?t('calculate.progress.stopping'):empties?t('empty.progress.stopping'):'Solicitando cancelación. Si el cambio ya se aplicó, se podrá deshacer.';void window.freya.cancelAnalysis(doc.id,active).catch(error=>onerror(String(error)));return}cancel();preview=null;prepared=null;calculationError=null;emptyError='';message=calculation?t('calculate.error.cancelled'):empties?t('empty.progress.cancelled'):'Preparación cancelada. Revisa una nueva vista previa para aplicar.';if(calculation||empties)void tick().then(()=>previewButton?.focus())}
+ function requestClose(){if((calculation||empties)&&applying){closeAfterApply=true;cancelPreparation();return}onclose()}
+ function invalidate(){cancel();preview=null;prepared=null;calculationError=null;emptyError='';message=calculation?t('calculate.progress.review'):empties?emptyBlockedReason||t('empty.review'):'Opciones o datos actualizados. Pulsa Vista previa.'}
+ $effect(()=>{void doc.revision;if(calculation){void calculationName;void expression;void reads;void onError}else if(empties){void emptyBlockedReason;void operation;void emptyValue;void includeSpaces;void emptyScope;void emptyMatch}else{void operation;void columns;void separator;void custom;void name;void rowScope;void from;void to;void destination;void viewKey}if(!applying)untrack(invalidate)})
  onDestroy(cancel)
- onMount(()=>{dialog.showModal();return window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress&&event.progress.requestId===active){processed=event.progress.rows;message=event.progress.phase.startsWith('calculate.')?t(event.progress.phase):event.progress.phase}else if(event.type==='external'&&event.id===doc.id){invalidate();external=true;message=calculation?t('calculate.error.disk'):'El archivo cambió en disco. Cierra este diálogo y revisa o recarga el documento antes de transformar.'}})})
+ onMount(()=>{dialog.showModal();if(empties&&!deleting)dialog.querySelector<HTMLTextAreaElement>('[data-empty-value]')?.focus();return window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress&&event.progress.requestId===active){processed=event.progress.rows;message=event.progress.phase.startsWith('calculate.')||event.progress.phase.startsWith('empty.')?t(event.progress.phase):event.progress.phase}else if(event.type==='external'&&event.id===doc.id){invalidate();external=true;message=calculation?t('calculate.error.disk'):empties?t('empty.error.disk'):'El archivo cambió en disco. Cierra este diálogo y revisa o recarga el documento antes de transformar.'}})})
  function explain(error:unknown){
   const known=readCalculationError(error)
   if(known)return {text:t('calculate.error.'+known.code,{column:known.column??'',row:known.row??''}),detail:known.detail}
@@ -37,8 +43,10 @@
   const localized=['changed','disk','timeout','result','preview','cancelled','sandbox'].map(key=>t('calculate.error.'+key)).find(text=>text===detail)
   return localized?{text:localized}:{text:t('calculate.error.generic'),detail}
  }
+ function explainEmpty(error:unknown){const known=readEmptyError(error);return t('empty.error.'+(known?.code??'generic'))}
+ function describeEmpty(result:TableEmptyPreview){return deleting?t('empty.preview.delete',{deleted:formatNumber(result.deletedRows),rows:formatNumber(result.rows)}):t('empty.preview.fill',{cells:plural('empty.cells',result.cells),exact:plural('empty.exact',result.empty.exact),spaces:plural('empty.spaces',result.empty.spaces),missing:plural('empty.missing',result.empty.missing)})}
  async function inspect(){
-  if(busy||external)return;cancel();preview=null;prepared=null;calculationError=null;processed=0;busy=true
+  if(busy||external||emptyBlockedReason)return;cancel();cancelRequested=false;preview=null;prepared=null;calculationError=null;emptyError='';processed=0;busy=true
   if(calculation){
    const request:CalculateColumnEdit={type:'structure',operation:'calculate',name:calculationName,position:initialCalculationPosition??doc.headers?.length??0,expression,columns:$state.snapshot(reads),onError,revision:doc.revision,requestId:crypto.randomUUID()}
    active=request.requestId;message=t('calculate.progress.starting')
@@ -54,6 +62,16 @@
    finally{if(active===request.requestId){const focus=document.activeElement===cancelButton;active=undefined;busy=false;if(focus)void tick().then(()=>(applyButton?.disabled?previewButton:applyButton)?.focus())}}
    return
   }
+  if(operation==='fillEmpty'||operation==='fillPrevious'||operation==='deleteRowsWhere'){
+   const base={type:'structure' as const,columns:operation==='deleteRowsWhere'&&emptyScope==='marked'?[...markedColumns]:[emptyTarget],revision:doc.revision,requestId:crypto.randomUUID(),includeSpaces}
+   const request:TableEmptyEdit=operation==='fillEmpty'?{...base,operation,value:emptyValue}:operation==='fillPrevious'?{...base,operation}:{...base,operation,match:emptyMatch}
+   active=request.requestId;message=t('empty.progress.preparing')
+   void tick().then(()=>{if(active===request.requestId)cancelButton?.focus()})
+   try{const result=await window.freya.transformPreview(doc.id,request);if(active===request.requestId){preview=result;prepared=request;message=t('empty.preview.ready')+' '+describeEmpty(result)}}
+   catch(error){if(active===request.requestId){message='';emptyError=explainEmpty(error)}}
+   finally{if(active===request.requestId){const focus=document.activeElement===cancelButton;active=undefined;busy=false;if(focus)void tick().then(()=>(applyButton?.disabled?previewButton:applyButton)?.focus())}}
+   return
+  }
   const request:TableTransformEdit={type:'structure',operation,columns:operation==='headers'?[0]:operation==='moveRows'||operation==='commitOrder'?[]:[...columns],revision:doc.revision,requestId:crypto.randomUUID(),separator:selectedSeparator,name}
   if(operation==='moveRows'){request.destination=destination-1;if(rowScope==='selection'){if(markedRows.length)request.rowIds=[...markedRows];else request.range=markedRange??undefined}else request.range={top:from-1,bottom:to-1,left:0,right:0,revision:doc.revision,query:{offset:0,limit:200,requestId:0}}}
   if(operation==='moveColumns')request.destination=destination-1
@@ -62,16 +80,16 @@
   try{const result=await window.freya.transformPreview(doc.id,request);if(active===request.requestId){preview=result;prepared=request;message='Vista previa lista. El documento sigue intacto.'}}catch(error){if(active===request.requestId){message=String(error).replace(/^.*Error: /,'');onerror(message)}}finally{if(active===request.requestId){active=undefined;busy=false}}
  }
  async function apply(){
-  if(!preview||!prepared||busy||external)return
-  const edit={...$state.snapshot(prepared),requestId:crypto.randomUUID()};active=edit.requestId;applying=true;busy=true;processed=0;message=calculation?t('calculate.progress.applying'):'Preparando el cambio…'
-  if(calculation)void tick().then(()=>{if(active===edit.requestId)cancelButton?.focus()})
-  try{const error=await onapply(edit);if(active!==edit.requestId)return;if(error===null||closeAfterApply)onclose();else{preview=null;prepared=null;if(calculation){message='';calculationError=explain(error);void tick().then(()=>previewButton?.focus())}else message='No se aplicó el cambio. '+error}}finally{applying=false;if(active===edit.requestId){active=undefined;busy=false}}
+  if(!preview||!prepared||busy||external||emptyBlockedReason)return
+  const edit={...$state.snapshot(prepared),requestId:crypto.randomUUID()};active=edit.requestId;cancelRequested=false;applying=true;busy=true;processed=0;message=calculation?t('calculate.progress.applying'):empties?t('empty.progress.applying'):'Preparando el cambio…'
+  if(calculation||empties)void tick().then(()=>{if(active===edit.requestId)cancelButton?.focus()})
+  try{const error=await onapply(edit);if(active!==edit.requestId)return;if(error===null||closeAfterApply)onclose();else{preview=null;prepared=null;if(calculation){message='';calculationError=explain(error);void tick().then(()=>previewButton?.focus())}else if(empties){message='';emptyError=cancelRequested?t('empty.progress.cancelled'):explainEmpty(error);void tick().then(()=>previewButton?.focus())}else message='No se aplicó el cambio. '+error}}finally{applying=false;if(active===edit.requestId){active=undefined;busy=false}}
  }
  const changes=$derived(!!preview&&(preview.cells>0||preview.addedColumns>0||preview.deletedRows>0||preview.changedHeaders>0||preview.movedRows>0||preview.movedColumns>0))
  const blocked=$derived(onError==='abort'&&!!calculated?.failures)
 </script>
-<dialog bind:this={dialog} class:calculation aria-labelledby="csv-transform-title" oncancel={event=>{event.preventDefault();requestClose()}}>
- <h3 id="csv-transform-title">{calculation?t('calculate.action'):'Transformar documento CSV'}</h3>
+<dialog bind:this={dialog} class:calculation={calculation||empties} class:empty-values={empties} aria-labelledby="csv-transform-title" oncancel={event=>{event.preventDefault();requestClose()}}>
+ <h3 id="csv-transform-title">{calculation?t('calculate.action'):empties?deleting?t('empty.deleteTitle'):t('empty.fillTitle',{column:emptyLabel(emptyTarget)}):'Transformar documento CSV'}</h3>
  {#if calculation}
   <div class="calculation-content">
   <p class="notice">{t('calculate.scope')}</p>
@@ -101,6 +119,34 @@
   {/if}
   </div>
   <div class="actions"><button bind:this={applyButton} class="primary" aria-busy={busy} aria-describedby={blocked?'calculation-failures':undefined} disabled={busy||external||!changes||blocked} onclick={()=>void apply()}>{t('calculate.apply')}</button><button onclick={requestClose}>{t('calculate.close')}</button></div>
+ {:else if empties}
+  <div class="calculation-content">
+   <p class="notice">{t('empty.scope')}</p>
+   <form onsubmit={event=>{event.preventDefault();void inspect()}}>
+    <fieldset disabled={busy||external||!!emptyBlockedReason}><legend class="sr-only">{t(deleting?'empty.deleteTitle':'empty.fillTitle',{column:emptyLabel(emptyTarget)})}</legend>
+     {#if deleting}
+      <label>{t('empty.where')} <select aria-label={t('empty.where')} bind:value={emptyScope}><option value="column">{t('empty.inColumn',{column:emptyLabel(emptyTarget)})}</option><option value="marked" disabled={!markedColumns.length}>{t('empty.inMarked')}</option></select></label>
+      {#if emptyScope==='marked'}<p>{t('empty.marked',{columns:formatList(markedColumns.map(emptyLabel))})}</p><label>{t('empty.match')} <select aria-label={t('empty.match')} bind:value={emptyMatch}><option value="any">{t('empty.any')}</option><option value="all">{t('empty.all')}</option></select></label>{/if}
+     {:else}
+      <label>{t('empty.fillWith')} <select aria-label={t('empty.fillWith')} bind:value={operation}><option value="fillEmpty">{t('empty.literal')}</option><option value="fillPrevious">{t('empty.previous')}</option></select></label>
+      {#if operation==='fillEmpty'}<label>{t('empty.value')} <textarea data-empty-value aria-label={t('empty.value')} rows="3" bind:value={emptyValue}></textarea></label>{:else}<p>{t('empty.previousHelp')}</p>{/if}
+     {/if}
+     <label class="empty-space"><input type="checkbox" bind:checked={includeSpaces}/>{t('empty.includeSpaces')}</label>
+     <button bind:this={previewButton} type="submit" aria-busy={busy}>{t('empty.preview')}</button>
+    </fieldset>
+   </form>
+   <p role="status">{message}</p>
+   {#if busy}<div class="progress"><progress aria-label={t('empty.progress.preparing')}></progress><span>{t('empty.progress.rows',{rows:formatNumber(processed)})}</span><button bind:this={cancelButton} class="btn-ghost" onclick={cancelPreparation}>{t('empty.cancelPreparation')}</button></div>{/if}
+   {#if emptyError}<p role="alert">{emptyError}</p>{/if}
+   {#if emptyPreview}
+    {#if emptyPreview.withoutPrevious}<p>{plural('empty.withoutPrevious',emptyPreview.withoutPrevious)}</p>{/if}
+    {#if emptyPreview.intermediateColumns.length}<p class="notice">{t(emptyPreview.extendedRows===1?'empty.intermediateOne':'empty.intermediateMany',{rows:plural('empty.extendedRows',emptyPreview.extendedRows,{target:emptyLabel(emptyTarget)}),columns:formatList(emptyPreview.intermediateColumns.map(emptyLabel))})}</p>{/if}
+    {#if emptyPreview.samples.length}<div class="preview-scroll"><table><caption>{t('empty.preview.examples')}</caption><thead><tr><th scope="col">{t('empty.preview.position')}</th><th scope="col">{t('empty.preview.before')}</th><th scope="col">{t('empty.preview.after')}</th></tr></thead><tbody>
+     {#each emptyPreview.samples.slice(0,5) as sample}<tr><th scope="row">{t('empty.preview.row',{row:formatNumber((sample.row??0)+1)})}{#if sample.column!==null} / {t('empty.preview.column',{column:formatNumber(sample.column+1)})}{/if}</th><td><pre>{sample.missing?t('empty.preview.absent'):sample.before===''?t('empty.preview.blank'):sample.before}</pre></td><td><pre>{deleting?t('empty.preview.removed'):sample.after===''?t('empty.preview.blank'):sample.after}</pre></td></tr>{/each}
+    </tbody></table></div>{/if}
+   {/if}
+  </div>
+  <div class="actions"><button bind:this={applyButton} class="primary" aria-busy={busy} disabled={busy||external||!!emptyBlockedReason||!changes} onclick={()=>void apply()}>{t(deleting?'empty.applyDelete':'empty.applyFill')}</button><button onclick={requestClose}>{t('empty.cancel')}</button></div>
  {:else}
  {#if ordering}<p class="notice"><strong>Cambiar orden del documento:</strong> se conserva el contenido; Guardar persistirá el nuevo orden. Después de aplicar se muestra el documento completo sin filtros ni orden de vista. Un paso de deshacer.</p>{:else}<p class="notice"><strong>Documento completo:</strong> incluye filas ocultas por búsqueda o filtros; excluye encabezados salvo que elijas normalizarlos. No usa el rango de filas seleccionado. Un paso de deshacer.</p>{/if}
  <form onsubmit={event=>{event.preventDefault();void inspect()}}>
@@ -130,6 +176,7 @@
  {/if}
 </dialog>
 <style>
+ .empty-values .empty-space{flex-direction:row;align-items:center}.empty-values textarea{padding:7px;font:inherit;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:var(--radius-control);resize:vertical}.empty-values button{min-height:24px}
  dialog.calculation[open]{display:flex;flex-direction:column;max-height:calc(100dvh - 48px);overflow:hidden}
  .calculation-content{min-height:0;overflow:auto;padding:4px}
  .calculation-content :is(dt,pre){overflow-wrap:anywhere}

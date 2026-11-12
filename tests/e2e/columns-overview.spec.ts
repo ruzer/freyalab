@@ -21,7 +21,8 @@ async function explore(panel:Locator){await panel.getByRole('button',{name:'Obte
 async function report(panel:Locator){await panel.getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true}).click();await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')?.text).toContain('# Vista general de columnas CSV');return(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')!}
 async function expectCounts(row:Locator,[content,missing,exact,spaces,unique,repetitions]:[string,string,string,string,string,string]){
  await expect(row.locator('.non-empty')).toHaveText(content)
- await row.locator('.quality-breakdown>summary').click();await expect(row.locator('.quality-breakdown dd')).toHaveText([missing,exact,spaces])
+ if([missing,exact,spaces].every(count=>count==='0')){await expect(row.locator('td').nth(3)).toHaveText('0');await expect(row.locator('.quality-breakdown')).toHaveCount(0)}
+ else{await row.locator('.quality-breakdown>summary').click();await expect(row.locator('.quality-breakdown dd')).toHaveText([missing,exact,spaces])}
  await row.locator('.distinct-detail>summary').click();await expect(row.locator('.distinct-detail>summary')).toHaveText(unique);await expect(row.locator('.distinct-detail p').nth(1)).toHaveText('Repeticiones adicionales (incluidos vacíos): '+repetitions)
 }
 

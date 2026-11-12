@@ -32,7 +32,7 @@
  import CsvTable from './components/CsvTable.svelte'
  import CsvCommands from './components/CsvCommands.svelte'
  import AnalysisWorkspace from './components/AnalysisWorkspace.svelte'
- import {csvAnalysisViews,emptyCsvAnalysisView} from './lib/csv-analysis-view'
+ import {csvAnalysisViews,emptyCsvAnalysisView,type CsvEmptyIntent} from './lib/csv-analysis-view'
  import {workspaceTabs,openAnalysisTab,closeDocumentAnalysis,type AnalysisTab,type AnalysisSection,type AnalysisStatistics,type WorkspaceTab} from './lib/workspace-tabs'
  import CsvFileMenu from './components/CsvFileMenu.svelte'
  import CsvViewDialog from './components/CsvViewDialog.svelte'
@@ -261,6 +261,13 @@
  function analysisSection(id:string,section:AnalysisSection){analyses=analyses.map(tab=>tab.id===id?{...tab,section}:tab)}
  async function focusDocumentTab(id:string){await tick();document.getElementById('workspace-tab-'+id)?.focus()}
  async function returnToCsv(id:string){await activate(id);if(activeId===id&&!selectedAnalysisId)await focusDocumentTab(id)}
+ async function openEmptyAction(id:string,intent:CsvEmptyIntent){await action(async()=>{
+  const captured=documents.find(doc=>doc.id===id)
+  if(!captured||!isTableDocument(captured)||captured.revision!==intent.revision)throw new Error(t('empty.error.changed'))
+  await returnToCsv(id);await tick()
+  if(activeId!==id||selectedAnalysisId||!csv)throw new Error(t('empty.error.changed'))
+  await csv.openEmpty(intent)
+ })}
  async function closeAnalysis(tab:AnalysisTab){
   analyses=analyses.filter(value=>value.id!==tab.id)
   if(selectedAnalysisId===tab.id){selectedAnalysisId='';await focusDocumentTab(tab.source.documentId)}
@@ -632,7 +639,7 @@
    {/if}
    {#each analyses as tab (tab.id)}
     {@const doc=documents.find(value=>value.id===tab.source.documentId)}
-    {#if doc}<AnalysisWorkspace {tab} {doc} shown={activeAnalysis?.id===tab.id} view={csvAnalysisViews.get(doc.id)??emptyCsvAnalysisView(doc)} external={external.includes(doc.id)} onsection={section=>analysisSection(tab.id,section)} onreturn={()=>void returnToCsv(doc.id)} onerror={error} onreport={openStatisticsReport}/>{/if}
+    {#if doc}<AnalysisWorkspace {tab} {doc} shown={activeAnalysis?.id===tab.id} view={csvAnalysisViews.get(doc.id)??emptyCsvAnalysisView(doc)} external={external.includes(doc.id)} onsection={section=>analysisSection(tab.id,section)} onreturn={()=>void returnToCsv(doc.id)} onempty={intent=>void openEmptyAction(doc.id,intent)} onerror={error} onreport={openStatisticsReport}/>{/if}
    {/each}
   </main>
  </div>

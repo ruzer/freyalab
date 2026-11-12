@@ -1,6 +1,6 @@
 <script lang="ts">
  import {controlHint} from '../lib/control-hint'
- import {csvAnalysisViews,csvAnalysisQueryReady} from '../lib/csv-analysis-view'
+ import {csvAnalysisViews,csvAnalysisQueryReady,type CsvEmptyIntent} from '../lib/csv-analysis-view'
  import type {AnalysisSection,AnalysisStatistics} from '../lib/workspace-tabs'
  import Icon from './Icon.svelte'
  import {t} from '../lib/i18n.svelte'
@@ -17,13 +17,13 @@
  import CsvExtract from './CsvExtract.svelte'
  import {fidelityLabel} from '../../shared/operations'
  import {parse} from 'csv-parse/browser/esm/sync'
- import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit,LargeViewState,LargeViewQuery} from '../../shared/types'
+ import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit,TableEmptyEdit,LargeViewState,LargeViewQuery} from '../../shared/types'
  import type {CalculateColumnEdit} from '../../shared/calculated-column'
  let {doc,externalChange=false,onanalysis,analysisHidden=false,onchange,onerror,onstatus,viewControls,commandTitle=(_id:string,label:string)=>label}:{doc:DocumentInfo;externalChange?:boolean;onanalysis:(section?:AnalysisSection,statistics?:AnalysisStatistics)=>void;analysisHidden?:boolean;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;viewControls?:Snippet;commandTitle?:(id:string,label:string)=>string}=$props()
  let showExtract=$state(false),extractButton=$state<HTMLButtonElement>()
  let showCommands=$state(false),commandsButton=$state<HTMLButtonElement>(),commandReturn:HTMLElement|null=null
- type TransformOperation=import('../../shared/types').TableTransformEdit['operation']|'calculate'
- let showTransform=$state(false),transformStart=$state<TransformOperation>(),calculationPosition=$state<number>(),transformReturn:HTMLElement|null=null
+ type TransformOperation=import('../../shared/types').TableTransformEdit['operation']|TableEmptyEdit['operation']|'calculate'
+ let showTransform=$state(false),transformStart=$state<TransformOperation>(),calculationPosition=$state<number>(),emptyColumn=$state<number>(),emptyMarked=$state(false),transformReturn:HTMLElement|null=null
  // Las páginas grandes usan la vista aplicada; escribir en el buscador no inicia un recorrido.
  const large=$derived(!!doc.large)
  let largeView=$state<LargeViewState|null>(null),viewReady=$state(false),changingView=$state(false),viewAnnouncement=$state(''),viewGeneration=0
@@ -59,6 +59,10 @@
  const rangeActions=[['copy','Copiar rango'],['cut','Cortar rango…'],['paste','Pegar en rango…'],['fill','Rellenar rango…'],['clear','Vaciar rango…'],['trim','Quitar espacios del rango…'],['upper','Mayúsculas en el rango…'],['lower','Minúsculas en el rango…'],['replace','Reemplazar en el rango…'],['transformations','Transformar documento…']] as const
  // Columna sobre la que actúan las acciones de limpieza: la del menú ▾ de su cabecera o, desde la paleta, la única columna marcada.
  const targetColumn=$derived(context?.kind==='columns'&&context.column!==undefined?context.column:selectedColumns.length===1?selectedColumns[0]:undefined)
+ const emptyTarget=$derived(context?.column??context?.headerColumn??(selectedColumns.length===1?selectedColumns[0]:undefined))
+ const emptyReason=$derived(doc.projectSource==='protected'?t('empty.protected'):doc.projectSource==='closed'?t('ui.reason.projectClosed'):large?t('empty.large'):doc.readonly?t('empty.readonly'):externalChange?t('empty.error.disk'):locked||busy?t('ui.reason.busy'):'')
+ const emptyLabel=(index:number)=>{const name=doc.headers?.[index]??'';return name&&(doc.headers??[]).filter(header=>header===name).length===1?name:t('empty.columnAt',{position:index+1,name:name||t('empty.unnamed')})}
+ const emptyIntent=(action:CsvEmptyIntent['action'])=>{const column=action==='delete'?emptyTarget??selectedColumns[0]:emptyTarget;if(column!==undefined)return openEmpty({action,column,revision:doc.revision},action==='delete'&&emptyTarget===undefined&&selectedColumns.length>1,context?contextReturn:commandsButton??null)}
  const columnLabel=(index:number)=>doc.headers?.[index]||`Columna ${index+1}`
  // La columna entera de la vista actual: el mismo rango que una selección de celdas, así la vista previa y el deshacer son los de siempre.
  const columnRange=(index:number):TableRange=>({top:0,bottom:Math.max(page.matched-1,0),left:index,right:index,query:$state.snapshot(pageQuery),revision:page.revision})
@@ -91,8 +95,11 @@
   {id:'charts',label:'Gráficos',detail:'Mostrar u ocultar histogramas, barras, líneas, dispersión, mapas de calor y cajas',disabled:false,run:()=>analyze('charts')},
   {id:'columnFilter',label:'Filtrar esta columna',detail:large?'Abre las condiciones con esta columna seleccionada':'Muestra los filtros por columna y lleva el foco al de esta columna',disabled:interpreting||targetColumn===undefined||large&&(!viewReady||changingView),run:filterColumn},
   {id:'columnStats',label:'Estadísticas de la columna',detail:'Abre el resumen con esta columna marcada: faltantes, únicos, duplicados y distribución',disabled:large||targetColumn===undefined,run:columnStatistics},
+  {id:'emptyView',label:t('empty.viewColumn'),detail:t('empty.command.view'),disabled:emptyTarget===undefined||interpreting||large&&(!viewReady||changingView),disabledReason:emptyTarget===undefined?t('empty.columnRequired'):undefined,run:()=>emptyIntent('view')},
+  {id:'emptyFill',label:t('empty.fillColumn'),detail:t('empty.command.fill'),disabled:emptyTarget===undefined||!!emptyReason,disabledReason:emptyReason|| (emptyTarget===undefined?t('empty.columnRequired'):undefined),run:()=>emptyIntent('fill')},
+  {id:'emptyDelete',label:t('empty.deleteColumn'),detail:t('empty.command.delete'),disabled:emptyTarget===undefined&&!selectedColumns.length||!!emptyReason,disabledReason:emptyReason|| (emptyTarget===undefined&&!selectedColumns.length?t('empty.columnRequired'):undefined),run:()=>emptyIntent('delete')},
   ...([['upper','Mayúsculas en la columna…','Convertir a mayúsculas'],['lower','Minúsculas en la columna…','Convertir a minúsculas'],['trim','Quitar espacios en la columna…','Quitar espacios al inicio y al final']] as const).map(([operation,label,title])=>({id:'column-'+operation,label,detail:`${title} en toda la columna de la vista actual · vista previa antes → después, recuento y un paso de deshacer`,disabled:locked||busy||!page.matched||targetColumn===undefined,run:()=>cleanColumn(operation)})),
-  {id:'columnDuplicates',label:'Quitar filas duplicadas de la columna…',detail:'Compara el texto exacto de esta columna y conserva la primera fila · vista previa, recuento y un paso de deshacer',disabled:locked||targetColumn===undefined,run:()=>openTransform('deduplicate')},
+  {id:'columnDuplicates',label:'Quitar filas duplicadas de la columna…',detail:'Compara el texto exacto de esta columna y conserva la primera fila · vista previa, recuento y un paso de deshacer',disabled:locked||targetColumn===undefined,run:()=>{if(targetColumn!==undefined)selectedColumns=[targetColumn];openTransform('deduplicate')}},
   {id:'transformations',label:'Transformar documento…',detail:'Asistente para dividir/combinar columnas, normalizar, eliminar duplicados, mover filas/columnas y fijar orden · vista previa · Ctrl/⌘ + Mayús + T',disabled:locked||(doc.headers?.length??0)>200,run:openTransform},
   {id:'calculate',label:t('calculate.action'),detail:calculationDisabled||t('calculate.actionHint'),disabled:!!calculationDisabled,disabledReason:calculationDisabled,run:()=>openCalculation(undefined,commandReturn?.isConnected?commandReturn:commandsButton??null)},
   {id:'insertRow',label:'Añadir fila',detail:'Después de la última fila marcada por número; sin marcas, al final del documento',disabled:locked,run:()=>edit({type:'insertRow',afterId:selectedRows.at(-1)})},
@@ -116,12 +123,12 @@
   {id:'describe',label:t('describe.command'),detail:large?t('analysis.tab.large'):t('describe.commandHelp',{command:'describe'}),disabled:large,run:()=>analyze('statistics')},
   {id:'openAnalysis',label:t('analysis.tab.command'),detail:t('analysis.tab.search'),disabled:false,run:()=>analyze()}
  ])
- const contextCommands=$derived((context?.kind==='rows'?[...(large&&viewActive?['viewDocument']:[]),'insertRowBefore','insertRowAfter','duplicateRows','deleteRows','rows-trim','rows-upper','rows-lower','transformations','copyMarkdown','undo','redo']:context?.kind==='columns'?['sortAscending','sortDescending','columnFilter','columnStats','column-upper','column-lower','column-trim','columnDuplicates','insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn','transformations','copyMarkdown','undo','redo']:[]).map(id=>commands.find(command=>command.id===id)!))
+ const contextCommands=$derived((context?.kind==='rows'?[...(large&&viewActive?['viewDocument']:[]),'insertRowBefore','insertRowAfter','duplicateRows','deleteRows','rows-trim','rows-upper','rows-lower','transformations','copyMarkdown','undo','redo']:context?.kind==='columns'?['sortAscending','sortDescending','columnFilter','columnStats','emptyView','emptyFill','emptyDelete','column-upper','column-lower','column-trim','columnDuplicates','insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn','transformations','copyMarkdown','undo','redo']:[]).map(id=>commands.find(command=>command.id===id)!))
  const rangeCommands=$derived([...rangeActions.map(([action])=>commands.find(command=>command.id===action)!),commands.find(command=>command.id==='rangeStatistics')!])
  function openCommands(){if(showTransform||rangeDialog)return;commandReturn=document.activeElement instanceof HTMLElement?document.activeElement:null;pendingCell=null;context=null;dragging=false;showCommands=true}
  async function closeCommands(){showCommands=false;await tick();if(commandReturn?.isConnected)commandReturn.focus();else commandsButton?.focus()}
  function commandDisabled(id:string){return commands.find(command=>command.id===id)?.disabled??true}
- async function runCommand(id:string){const command=commands.find(command=>command.id===id);if(!command||command.disabled)return;context=null;pendingCell=null;try{await command.run()}catch(error){onerror(String(error))}}
+ async function runCommand(id:string){const command=commands.find(command=>command.id===id);if(!command||command.disabled)return;const fromContext=!!context;pendingCell=null;try{const result=command.run();if(fromContext)closeContext();await result}catch(error){if(fromContext)closeContext();onerror(String(error))}}
  async function chooseCommand(id:string){const command=commands.find(command=>command.id===id);if(!command||command.disabled)return;await closeCommands();await runCommand(id)}
  function inside(row:number,column:number){return !!cellRange&&row>=cellRange.top&&row<=cellRange.bottom&&column>=cellRange.left&&column<=cellRange.right}
  function selectCell(row:number,column:number,extend=false){
@@ -147,7 +154,7 @@
  function columnMenu(event:MouseEvent,index:number){
   event.stopPropagation();if(queryError||page.revision!==doc.revision)return
   if(context?.kind==='columns'&&context.column===index){closeContext();return}
-  selection=null;context=null;selectedColumns=[index];void stats()
+  selection=null;context=null;if(!selectedColumns.includes(index))selectedColumns=[index];void stats()
   const origin=event.currentTarget as HTMLElement,rect=origin.getBoundingClientRect()
   openContext(rect.left,rect.bottom+4,'columns',origin,index)
  }
@@ -162,7 +169,25 @@
    rangeDialog={edit:{type:'range',range:$state.snapshot(cellRange),operation:(action==='cut'?'clear':action) as TableRangeEdit['operation'],value:'',find:''},cut:action==='cut'}
   }catch(error){onerror(action==='paste'?'No se pudo leer el portapapeles. Usa Ctrl/⌘ + V sobre la tabla.':String(error))}
  }
- function openTransform(start?:TransformOperation){if(locked)return;transformStart=start;if((doc.headers?.length??0)>200){onerror('Estas transformaciones admiten hasta 200 columnas por documento.');return}context=null;pendingCell=null;showTransform=true}
+ function openTransform(start?:TransformOperation,column?:number,marked=false){if(locked)return;transformStart=start;emptyColumn=column;emptyMarked=marked;if((doc.headers?.length??0)>200&&!['fillEmpty','fillPrevious','deleteRowsWhere'].includes(start??'')){onerror('Estas transformaciones admiten hasta 200 columnas por documento.');return}context=null;pendingCell=null;showTransform=true}
+ export async function openEmpty(intent:CsvEmptyIntent,marked=false,origin?:HTMLElement|null){
+  const headers=JSON.stringify(doc.headers),id=doc.id
+  if(intent.revision!==doc.revision||!Number.isInteger(intent.column)||intent.column<0||intent.column>=(doc.headers?.length??0))throw new Error(t('empty.error.changed'))
+  await flushEditing()
+  if(doc.id!==id||doc.revision!==intent.revision||JSON.stringify(doc.headers)!==headers)throw new Error(t('empty.error.changed'))
+  if(intent.action==='view'){
+   if(interpreting||large&&(!viewReady||changingView))throw new Error(t('ui.reason.busy'))
+   context=null;pendingCell=null;selection=null;selectedRows=[];search='';filters={};sort=undefined;order=[];announcement=''
+   const next:TableFilter[]=[{column:intent.column,op:'empty'}]
+   if(large){if(!await startView({conditions:next,filterMode:'all'}))return}
+   else applyQuery(next,[],'all')
+   announcement=t('empty.viewApplied',{column:emptyLabel(intent.column)})
+   await tick();searchInput?.focus();return
+  }
+  if(emptyReason)throw new Error(emptyReason)
+  transformReturn=origin??(document.activeElement instanceof HTMLElement?document.activeElement:null)
+  openTransform(intent.action==='fill'?'fillEmpty':'deleteRowsWhere',intent.column,marked)
+ }
  function openCalculation(position:number|undefined,trigger:HTMLElement|null){
   if(calculationDisabled)return
   calculationPosition=position;transformReturn=trigger;announcement='';openTransform('calculate')
@@ -171,8 +196,8 @@
   const menu=event.currentTarget.closest('details')
   menu?.removeAttribute('open');openCalculation(undefined,menu?.querySelector('summary')??null)
  }
- async function applyTransform(change:import('../../shared/types').TableTransformEdit|CalculateColumnEdit){const error=await edit(change);if(error===null){if(['moveRows','moveColumns','commitOrder'].includes(change.operation)){search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}selection=null;selectedRows=[];selectedColumns=[];selectionStats=null;await load(0);scrollElement?.scrollTo({top:0,left:0});if(change.operation==='calculate')announcement=t('calculate.progress.applied')}return error}
- function closeTransform(){showTransform=false;transformStart=undefined;calculationPosition=undefined;if(transformReturn){const trigger=transformReturn;transformReturn=null;void tick().then(()=>{if(trigger.isConnected)trigger.focus();else commandsButton?.focus()})}else if(selection)focusCell(selection.end.row,selection.end.column,true);else document.querySelector<HTMLElement>('[aria-label="Operaciones CSV"]')?.focus()}
+ async function applyTransform(change:import('../../shared/types').TableTransformEdit|CalculateColumnEdit|TableEmptyEdit){const error=await edit(change);if(error===null){if(['moveRows','moveColumns','commitOrder'].includes(change.operation)){search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}selection=null;selectedRows=[];selectedColumns=[];selectionStats=null;await load(0);scrollElement?.scrollTo({top:0,left:0});if(change.operation==='calculate')announcement=t('calculate.progress.applied');else if(['fillEmpty','fillPrevious','deleteRowsWhere'].includes(change.operation))announcement=t('empty.progress.applied')}return error}
+ function closeTransform(){showTransform=false;transformStart=undefined;calculationPosition=undefined;emptyColumn=undefined;emptyMarked=false;if(transformReturn){const trigger=transformReturn;transformReturn=null;void tick().then(()=>{if(trigger.isConnected)trigger.focus();else commandsButton?.focus()})}else if(selection)focusCell(selection.end.row,selection.end.column,true);else document.querySelector<HTMLElement>('[aria-label="Operaciones CSV"]')?.focus()}
  function preparePaste(text:string){if(!cellRange||locked)return;try{rangeDialog={edit:{type:'range',range:$state.snapshot(cellRange),operation:'paste',values:parse(text,{delimiter:'\t',relax_column_count:true,skip_empty_lines:false}) as string[][]}}}catch(error){onerror(String(error))}}
  async function applyRange(change:TableRangeEdit,cancelled:()=>boolean){try{if(rangeDialog?.cut)await window.freya.tableCopy(doc.id,{scope:'selection',range:change.range},'tsv');if(cancelled())return 'Preparación del rango cancelada.';return await edit(change)}catch(error){const message=String(error).replace(/^.*Error: /,'');onerror(message);return message}}
  function closeRangeDialog(){const documentScope=rangeDialog?.documentScope,fromColumn=!!rangeDialog?.column;rangeDialog=null;if(documentScope)void tick().then(()=>replaceInput?.focus());else if(selection)focusCell(selection.end.row,selection.end.column,true);else if(fromColumn)void tick().then(()=>{if(contextReturn?.isConnected)contextReturn.focus()})}
@@ -285,16 +310,18 @@
  $effect(()=>{const items=$rowsVirtual.getVirtualItems(),first=items[0]?.index??0,last=items.at(-1)?.index??0;if(items.length&&!busy&&(!large||viewReady&&(!largeView||hasViewPage(largeView)))&&(first<pageOffset||last>=pageOffset+page.rows.length))untrack(()=>void load(Math.floor(first/100)*100))})
  onDestroy(()=>{requestId++;viewGeneration++}) // Switching tabs preserves the backend job; closing the document releases it there.
  async function startView(nextQuery:LargeViewQuery={search:search||undefined,conditions:$state.snapshot(largeView?.query.conditions),filterMode:largeView?.query.filterMode},fromFilters=false){
-  if(!large||!viewReady||changingView||interpreting)return
-  if(!nextQuery.search&&!nextQuery.conditions?.length){if(await clearView())showQuery=false;return}
+  if(!large||!viewReady||changingView||interpreting)return false
+  if(!nextQuery.search&&!nextQuery.conditions?.length){const cleared=await clearView();if(cleared)showQuery=false;return cleared}
   const generation=++viewGeneration,revision=doc.revision;requestId++;busy=false;changingView=true;viewAnnouncement=''
   try{
    const next=await window.freya.tableViewStart(doc.id,{requestId:crypto.randomUUID(),revision,...nextQuery})
-   if(generation!==viewGeneration)return
+   if(generation!==viewGeneration)return false
    queryError='';filterError='';if(fromFilters)showQuery=false;resetViewPosition();pageOffset=0;page={...page,rows:[],matched:0};receiveView(next)
    if(next.status!=='invalidated'&&hasViewPage(next))await load(0)
    await tick();if(fromFilters)queryButton?.focus();else searchInput?.focus()
+   return next.status!=='error'&&next.status!=='invalidated'
   }catch(error){if(generation===viewGeneration){const message=String(error).replace(/^.*Error: /,'');if(fromFilters)filterError=message;else{queryError=message;onerror(queryError)}}}finally{if(generation===viewGeneration)changingView=false}
+  return false
  }
  async function cancelView(){
   const current=largeView;if(!current||!viewRunning||changingView)return
@@ -349,7 +376,7 @@
  function update(updated:DocumentInfo){if(updated.headers?.length!==doc.headers?.length){filters={};sort=undefined;conditions=[];order=[];showQuery=false;selectedColumns=[]}onchange(updated)}
  let pendingEdit:Promise<string|null>|null=null
  function edit(change:TableEdit|CalculateColumnEdit){const task=editNow(change);pendingEdit=task;void task.finally(()=>{if(pendingEdit===task)pendingEdit=null}).catch(()=>{});return task}
- async function editNow(change:TableEdit|CalculateColumnEdit){if(locked)return 'La vista no permite editar.';try{update(await window.freya.tableEdit(doc.id,$state.snapshot(change)));editing=null;await load(pageOffset);await stats();return null}catch(error){const message=String(error).replace(/^.*Error: /,'');if(!('operation'in change&&change.operation==='calculate'))onerror(message);return message}}
+ async function editNow(change:TableEdit|CalculateColumnEdit){if(locked)return 'La vista no permite editar.';try{update(await window.freya.tableEdit(doc.id,$state.snapshot(change)));editing=null;await load(pageOffset);await stats();return null}catch(error){const message=String(error).replace(/^.*Error: /,'');if(!('operation'in change&&['calculate','fillEmpty','fillPrevious','deleteRowsWhere'].includes(change.operation)))onerror(message);return message}}
  async function stats(){if(large||!selectedRows.length){selectionStats=null;return}try{selectionStats=await window.freya.stats(doc.id,$state.snapshot(selectedRows),selectedColumns.length?$state.snapshot(selectedColumns):(doc.headers??[]).map((_,i)=>i))}catch(error){onerror(String(error))}}
  function selectRow(id:string,add:boolean){selection=null;context=null;selectedRows=add?(selectedRows.includes(id)?selectedRows.filter(x=>x!==id):[...selectedRows,id]):[id];void stats()}
  function selectColumn(index:number,replace=false){selection=null;context=null;selectedColumns=replace?[index]:selectedColumns.includes(index)?selectedColumns.filter(x=>x!==index):[...selectedColumns,index];void stats()}
@@ -367,6 +394,7 @@
  function closeMenu(event:KeyboardEvent){if(event.key!=='Escape')return false;const menu=openMenus()[0];if(!menu)return false;event.preventDefault();menu.removeAttribute('open');menu.querySelector('summary')?.focus();return true}
  // También sirve a comandos/accesibilidad que activan Texto sin trasladar el foco.
  export async function flushEditing(){
+  if(showTransform&&['fillEmpty','fillPrevious','deleteRowsWhere'].includes(transformStart??''))throw new Error(t('empty.error.dialog'))
   const waiting=await pendingEdit;if(waiting)throw new Error(waiting)
   const input=editing?scrollElement?.querySelector<HTMLInputElement>('.cell-input'):editingHeader?scrollElement?.querySelector<HTMLInputElement>('.column-filter:not([data-column-filter])'):null
   if(input){input.focus({preventScroll:true});input.blur();const failure=await pendingEdit;if(failure)throw new Error(failure)}
@@ -396,20 +424,20 @@
  {#if calculationDisabled}<span class="dropdown-note" role="presentation" id="context-calculation-disabled">{calculationDisabled}</span>{/if}
 {/snippet}
 {#if showCommands}<CsvCommands {commands} context={doc.projectSource?t('ui.reason.'+readonlyReason):doc.readonly?page.sample?'Muestra de solo lectura: edición y copia tabular bloqueadas.':doc.warning??t('ui.reason.readonly'):interpreting?'Interpretando el archivo; edición bloqueada.':queryError?'Consulta no válida: corrige o quita los filtros antes de editar.':busy?'Cargando página; las acciones del rango esperan.':cellRange?`Rango: filas ${cellRange.top+1}–${cellRange.bottom+1}, columnas ${cellRange.left+1}–${cellRange.right+1}.`:`${selectedRows.length} filas marcadas por número · ${selectedColumns.length} columnas marcadas.`} onexecute={id=>void chooseCommand(id)} onclose={()=>void closeCommands()}/>{/if}
-{#if showTransform}<CsvTransform {doc} initialOperation={transformStart} initialCalculationPosition={calculationPosition} initialRows={selectedRows} initialRange={cellRange} viewQuery={query()} initialColumns={selectedColumns.length?selectedColumns:cellRange?Array.from({length:cellRange.right-cellRange.left+1},(_,i)=>cellRange.left+i):[]} onapply={applyTransform} onclose={closeTransform} {onerror}/>{/if}
+{#if showTransform}<CsvTransform {doc} initialOperation={transformStart} initialCalculationPosition={calculationPosition} initialEmptyColumn={emptyColumn} initialEmptyMarked={emptyMarked} initialRows={selectedRows} initialRange={cellRange} viewQuery={query()} initialColumns={selectedColumns.length?selectedColumns:cellRange?Array.from({length:cellRange.right-cellRange.left+1},(_,i)=>cellRange.left+i):[]} onapply={applyTransform} onclose={closeTransform} {onerror}/>{/if}
 {#if rangeDialog}<CsvRangePreview id={doc.id} initial={rangeDialog.edit} cut={rangeDialog.cut} documentScope={rangeDialog.documentScope} column={rangeDialog.column} onapply={applyRange} onclose={closeRangeDialog} {onerror}/>{/if}
 {#if context}<div bind:this={contextMenu} class="range-context" role="menu" aria-label={context.kind==='rows'?'Acciones de filas':context.kind==='columns'?'Acciones de columnas':'Acciones del rango'} tabindex="-1" style:left={`${context.x}px`} style:top={`${context.y}px`} onkeydown={event=>{const buttons=Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')),index=buttons.indexOf(document.activeElement as HTMLButtonElement);if(event.key==='Escape'){event.preventDefault();closeContext()}else if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();buttons[event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(event.key==='ArrowDown'?1:buttons.length-1))%buttons.length]?.focus()}else if(event.key==='Tab')context=null}}>
  {#if context.kind==='range'}{@render rangeButtons(true)}
  {:else if context.kind==='columns'&&context.column!==undefined}
   <span class="dropdown-label" role="presentation">Columna «{columnLabel(context.column)}» · {page.matched.toLocaleString()} {page.matched===1?'fila':'filas'}</span>
-  {#each [['Vista de la tabla',['sortAscending','sortDescending','columnFilter','columnStats']],['Limpiar la columna · con vista previa',['column-upper','column-lower','column-trim','columnDuplicates']],['Estructura',['insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn']],['Más',['transformations','copyMarkdown','undo','redo']]] as [title,ids]}
+  {#each [['Vista de la tabla',['sortAscending','sortDescending','columnFilter','columnStats','emptyView']],['Limpiar la columna · con vista previa',['emptyFill','emptyDelete','column-upper','column-lower','column-trim','columnDuplicates']],['Estructura',['insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn']],['Más',['transformations','copyMarkdown','undo','redo']]] as [title,ids]}
    <span class="dropdown-label" role="presentation">{title}</span>
    {#each contextCommands.filter(command=>(ids as string[]).includes(command.id)) as command}
-    <button {...controlHint(!command.disabled?null:doc.readonly?readonlyReason:busy||interpreting?'busy':'context', (command.detail))} role="menuitem" disabled={command.disabled} onclick={()=>{closeContext();void runCommand(command.id)}}>{command.label}</button>
+    <button {...(command.disabledReason?{title:command.disabledReason,'aria-describedby':'csv-context-reason-'+command.id}:controlHint(!command.disabled?null:doc.readonly?readonlyReason:busy||interpreting?'busy':'context', (command.detail)))} role="menuitem" disabled={command.disabled} onclick={()=>void runCommand(command.id)}>{command.label}</button>{#if command.disabledReason}<span class="sr-only" id={'csv-context-reason-'+command.id}>{command.disabledReason}</span>{/if}
    {/each}
    {#if title==='Estructura'}{@render calculateMenuItem(context.column)}{/if}
   {/each}
- {:else}<span class="dropdown-label" role="presentation">{selectedRows.length} filas · {selectedColumns.length?`${selectedColumns.length} columnas`:'todas las columnas'}</span>{#each contextCommands as command}<button {...controlHint(!command.disabled?null:doc.readonly?readonlyReason:busy||interpreting?'busy':'context', (command.detail))} role="menuitem"  disabled={command.disabled} onclick={()=>{closeContext();void runCommand(command.id)}}>{command.label}</button>{/each}
+ {:else}<span class="dropdown-label" role="presentation">{selectedRows.length} filas · {selectedColumns.length?`${selectedColumns.length} columnas`:'todas las columnas'}</span>{#each contextCommands as command}<button {...(command.disabledReason?{title:command.disabledReason,'aria-describedby':'csv-context-reason-'+command.id}:controlHint(!command.disabled?null:doc.readonly?readonlyReason:busy||interpreting?'busy':'context', (command.detail)))} role="menuitem" disabled={command.disabled} onclick={()=>void runCommand(command.id)}>{command.label}</button>{#if command.disabledReason}<span class="sr-only" id={'csv-context-reason-'+command.id}>{command.disabledReason}</span>{/if}{/each}
   {#if context.headerColumn!==undefined}{@render calculateMenuItem(context.headerColumn)}{/if}
  {/if}
 </div>{/if}

@@ -1,12 +1,12 @@
 <script lang="ts">
  import {t,formatNumber,plural} from '../lib/i18n.svelte'
- import {csvAnalysisSample,csvAnalysisQueryReady,csvAnalysisQueryKey as viewKey} from '../lib/csv-analysis-view'
+ import {csvAnalysisSample,csvAnalysisQueryReady,csvAnalysisQueryKey as viewKey,type CsvEmptyIntent} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
  import {onDestroy,untrack} from 'svelte'
  import {columnSummary} from '../../shared/column-profile'
  import {columnOverviewReport,type ReportContext} from '../lib/statistics-report'
  import type {DocumentInfo,TableQuery,ColumnOverviewRow,TableViewMeta} from '../../shared/types'
- let {doc,columns,query,queryValid,viewMeta,onerror,onreport,oninspect}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;oninspect:(column:number,scope:'all'|'view')=>void}=$props()
+ let {doc,columns,query,queryValid,viewMeta,external=false,onerror,onreport,oninspect,onempty}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;external?:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;oninspect:(column:number,scope:'all'|'view')=>void;onempty:(intent:CsvEmptyIntent)=>void}=$props()
  let scope=$state<'all'|'view'>('all'),selection=$state('all'),busy=$state(false),reporting=$state(false),results=$state<ColumnOverviewRow[]>([])
  let message=$state('info.idle'),errorMessage=$state(''),total=$state(0),rowCount=$state(0),search=$state(''),offset=$state(0),context=$state<ReportContext|null>(null)
  let serial=0,active:{id:string;requestId:string}|null=null,timer:ReturnType<typeof setTimeout>|undefined
@@ -17,6 +17,8 @@
  const selectionKey=$derived(selection==='selected'?JSON.stringify(columns):'all')
  const visible=$derived(results.filter(row=>`${row.column+1}. ${row.name}`.toLocaleLowerCase().includes(search.toLocaleLowerCase())))
  const failed=$derived(results.filter(row=>'error'in row).length)
+ const emptyReason=$derived(doc.projectSource==='protected'?t('empty.protected'):doc.projectSource==='closed'?t('ui.reason.projectClosed'):doc.large?t('empty.large'):doc.readonly?t('empty.readonly'):external?t('empty.error.disk'):'')
+ const emptyCount=(empty:number,cells:number)=>empty?t('empty.countPercent',{count:formatNumber(empty),percent:formatNumber(cells?empty/cells*100:0,{maximumFractionDigits:0})}):formatNumber(0)
  const kinds=['number','date','identifier','category','text','mixed','empty'] as const
  const typeCounts=$derived(results.reduce((counts,entry)=>{if('result'in entry){const kind=entry.result.profile.kind;counts[kind]=(counts[kind]??0)+1}return counts},{} as Partial<Record<typeof kinds[number],number>>))
  function cancel(){serial++;clearTimeout(timer);if(active)void window.freya.cancelAnalysis(active.id,active.requestId).catch(()=>{});active=null;busy=false;results=[];context=null;offset=0;errorMessage=''}
@@ -92,7 +94,14 @@
     {#if 'result'in entry}{@const summary=columnSummary(entry.result)}
      <td><details class="type-explanation"><summary>{t('info.type.'+entry.result.profile.kind)}</summary><p>{summary.reason}</p></details></td>
      <td class="non-empty">{number(entry.result.cells-entry.result.empty)}</td>
-     <td><details class="quality-breakdown"><summary aria-label={number(entry.result.empty)+' · '+t('info.emptyHelp',{name:entry.name})}>{number(entry.result.empty)}</summary><dl>{#each [['missing',entry.result.missing],['exact',entry.result.empty-entry.result.missing-entry.result.whitespace],['spaces',entry.result.whitespace]] as [kind,value]}<div><dt>{t('info.empty.'+kind)}</dt><dd>{number(Number(value))}</dd></div>{/each}</dl></details></td>
+     <td>{#if entry.result.empty}<details class="quality-breakdown"><summary aria-label={emptyCount(entry.result.empty,entry.result.cells)+' · '+t('info.emptyHelp',{name:entry.name})}>{emptyCount(entry.result.empty,entry.result.cells)}</summary><dl>{#each [['missing',entry.result.missing],['exact',entry.result.empty-entry.result.missing-entry.result.whitespace],['spaces',entry.result.whitespace]] as [kind,value]}<div><dt>{t('info.empty.'+kind)}</dt><dd>{number(Number(value))}</dd></div>{/each}</dl>
+      <p>{t('empty.pandas')}</p><p>{t('empty.scope')}</p>
+      <div class="empty-actions">
+       <button type="button" disabled={busy} onclick={()=>onempty({action:'view',column:entry.column,revision:entry.result.revision})}>{t('empty.view')}</button>
+       <button type="button" disabled={busy||!!emptyReason} title={emptyReason||undefined} aria-describedby={emptyReason?'empty-reason-'+doc.id+'-'+entry.column:undefined} onclick={()=>onempty({action:'fill',column:entry.column,revision:entry.result.revision})}>{t('empty.fill')}</button>
+       <button type="button" disabled={busy||!!emptyReason} title={emptyReason||undefined} aria-describedby={emptyReason?'empty-reason-'+doc.id+'-'+entry.column:undefined} onclick={()=>onempty({action:'delete',column:entry.column,revision:entry.result.revision})}>{t('empty.delete')}</button>
+      </div>{#if emptyReason}<p id={'empty-reason-'+doc.id+'-'+entry.column}>{emptyReason}</p>{/if}
+     </details>{:else}{number(0)}{/if}</td>
      <td><details class="distinct-detail"><summary aria-label={number(entry.result.profile.distinctNonEmpty)+' · '+t('info.distinctHelp',{name:entry.name})}>{number(entry.result.profile.distinctNonEmpty)}</summary><p>{t('info.distinctExplanation')}</p><p>{t('info.repetitions',{count:number(entry.result.extraDuplicates)})}</p></details></td>
     {:else}<td>{t('info.unavailable')}</td><td colspan="3" class="unavailable">{entry.error}</td>{/if}
     <td><button {...controlHint(busy?'busy':null)} type="button" disabled={busy} aria-label={t('info.inspect',{index:entry.column+1})} onclick={()=>oninspect(entry.column,scope)}>{t('info.detail')}</button></td>
@@ -103,5 +112,6 @@
  <details><summary>{t('info.how')}</summary><p>{t('info.help')}</p></details>
 </section>
 <style>
+ .empty-actions{display:flex;flex-direction:column;align-items:flex-start;gap:6px}.quality-breakdown>p{max-width:300px;white-space:normal}.empty-actions button{white-space:normal;text-align:left;min-height:24px}
  .columns-overview{font-size:11px;padding:8px 0}.columns-overview p{color:var(--muted);line-height:1.5;margin:8px 0}form,.pagination{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}label{display:inline-flex;gap:6px;align-items:center}button,input,select{font:inherit;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:var(--radius-control);padding:5px 8px}input{max-width:240px}button:disabled{opacity:.5}.columns-overview :focus-visible{outline:2px solid var(--accent);outline-offset:2px}progress{width:90px}.notice{border-left:3px solid var(--accent);padding-left:8px}.scope{font-weight:600}.overview-scroll{max-height:180px;overflow:auto;border:1px solid var(--border);border-radius:var(--radius-control)}table{border-collapse:collapse;white-space:nowrap;width:100%}caption{text-align:left;color:var(--muted);padding:6px;white-space:normal}th,td{padding:6px 8px;border-bottom:1px solid var(--border);text-align:right}th:first-child,td:nth-child(2){text-align:left}thead th{position:sticky;top:0;background:var(--panel)}.file-summary{font-weight:600;color:var(--text)}.type-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.type-chips span{padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-control);background:var(--input)}.quality-breakdown dl{margin:6px 0}.quality-breakdown dl div{display:flex;justify-content:space-between;gap:12px}.quality-breakdown dd{margin:0}.quality-breakdown,.distinct-detail{text-align:left}.quality-breakdown dl,.distinct-detail p{max-width:280px;white-space:normal}.columns-overview{height:100%;display:flex;flex-direction:column;min-height:0}.columns-overview>form,.columns-overview>p,.columns-overview>.type-chips,.columns-overview>label,.columns-overview>.pagination,.columns-overview>details{flex-shrink:0}.overview-scroll{flex:1;min-height:140px;max-height:none}.type-explanation p{white-space:normal;max-width:300px;min-width:180px;text-align:left}.unavailable{white-space:normal;max-width:320px;text-align:left}
 </style>

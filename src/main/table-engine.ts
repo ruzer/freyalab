@@ -13,11 +13,12 @@ import {buildIndex,readRecords,recordByteOffsets,splitFields,indexUnchanged,Larg
 import {runOperation,OperationCancelled} from './operations'
 import {metadata,prefix,endsWithEol,validDelimiter,type Metadata} from './csv-file-format'
 import {calculatedRecordBytes} from './calculated-csv-bytes'
+import {EmptyError} from '../shared/empty-values'
 import {LargeViews} from './large-view'
 import type {EngineOperation,OperationResult} from '../shared/operations'
 import {analyzeColumn,numeric,descriptive} from './table-analysis'
-import type {CalculatedColumnPreview,ColumnAnalysisRequest,ColumnAnalysis,ColumnProfileRequest,ColumnProfileHint,TableTransformEdit,TableTransformPreview,SqlProgress} from '../shared/types'
-import {CalculationError,type CalculateColumnEdit,type CalculatedValue} from '../shared/calculated-column'
+import type {CalculatedColumnPreview,ColumnAnalysisRequest,ColumnAnalysis,ColumnProfileRequest,ColumnProfileHint,TableTransformEdit,TableTransformPreview,TableEmptyEdit,TableEmptyPreview,SqlProgress} from '../shared/types'
+import {CalculationError,readCalculationError,type CalculateColumnEdit,type CalculatedValue} from '../shared/calculated-column'
 import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableConditionGroup, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview,TableStatsOptions,LargeViewRequest } from '../shared/types'
 
 export const TABLE_LIMITS = { bytes: 50 * 1024 * 1024, cells: 2_000_000, record: 1024 * 1024, sampleBytes: 8 * 1024 * 1024, sampleRows: 200 }
@@ -49,6 +50,7 @@ function copyRow(row: TableRow): TableRow { return { id: row.id, cells: [...row.
 function permutation(order:number[],size:number){if(!Array.isArray(order)||order.length!==size||new Set(order).size!==size||order.some(index=>!Number.isSafeInteger(index)||index<0||index>=size))throw new Error('La secuencia de posiciones no es válida.');return order}
 function preservesMissing(order:number[],length:number){for(let i=0;i<length;i++)if(order[i]>=length)return false;return true}
 function recordBytes(record:string[],encoding:Encoding,delimiter:string){return record.reduce((total,field)=>total+(encoding==='utf8'?Buffer.byteLength(field,'utf8'):field.length*(encoding==='utf16le'?2:1))+delimiter.length,0)}
+function isEmptyEdit(edit:TableTransformEdit|TableEmptyEdit):edit is TableEmptyEdit{return ['fillEmpty','fillPrevious','deleteRowsWhere'].includes(edit.operation)}
 
 export class TableEngine {
  // `largeBytes` e `indexChunk` solo los cambian las pruebas: fuerzan el modo grande con archivos pequeños.
@@ -56,7 +58,7 @@ export class TableEngine {
  private diskViews:LargeViews
  private states = new Map<string, State>()
  private sources=new WeakMap<State,CsvSource & {layout:RecordLayout}>()
- // Only a successfully applied calculated column keeps lexical bytes for saving and crash recovery.
+ // Only an applied calculation or empty-value cleanup keeps lexical bytes for saving and recovery.
  private lossless=new WeakMap<State,OriginalBytes|undefined>()
  private queries = new Map<string, number>()
  private openings = new Map<string, number>()
@@ -310,7 +312,77 @@ export class TableEngine {
    return{forward,backward,preview}
   }finally{if(this.analyses.get(id)===edit.requestId)this.analyses.delete(id)}
  }
- async transformPreview(id:string,edit:TableTransformEdit){return(await this.structurePlan(id,edit)).preview}
+ transformPreview(id:string,edit:TableTransformEdit):Promise<TableTransformPreview>
+ transformPreview(id:string,edit:TableEmptyEdit):Promise<TableEmptyPreview>
+ async transformPreview(id:string,edit:TableTransformEdit|TableEmptyEdit){return isEmptyEdit(edit)?(await this.emptyPlan(id,edit)).preview:(await this.structurePlan(id,edit)).preview}
+
+ private async emptyPlan(id:string,edit:TableEmptyEdit){
+  let s:State
+  try{s=this.editable(id)}catch{throw new EmptyError('changed')}
+  const revision=s.revision,columns=[...new Set(edit.columns)].sort((a,b)=>a-b)
+  if(edit.revision!==revision)throw new EmptyError('changed')
+  if(!columns.length||edit.operation!=='deleteRowsWhere'&&columns.length!==1||columns.some(column=>!Number.isInteger(column)||column<0||column>=s.headers.length))throw new EmptyError('columns')
+  if(edit.operation==='deleteRowsWhere'&&!['any','all'].includes(edit.match))throw new EmptyError('columns')
+  if(typeof edit.includeSpaces!=='boolean'||edit.operation==='fillEmpty'&&(typeof edit.value!=='string'||Buffer.byteLength(edit.value,'utf8')>TABLE_LIMITS.record))throw new EmptyError('value')
+  const preview:TableEmptyPreview={revision,rows:s.rows.length,affected:0,cells:0,addedColumns:0,deletedRows:0,changedHeaders:0,movedRows:0,movedColumns:0,samples:[],empty:{missing:0,exact:0,spaces:0},withoutPrevious:0,extendedRows:0,intermediateColumns:[]}
+  const forward:Mutation[]=[],backward:Mutation[]=[],intermediate=new Set<number>()
+  this.analyses.set(id,edit.requestId)
+  const ensure=()=>{if(this.analyses.get(id)!==edit.requestId||this.states.get(id)!==s||s.revision!==revision)throw new EmptyError('changed')}
+  let reviewed=0
+  const progress=async(rows:number)=>{reviewed=Math.max(reviewed,rows);this.progress({requestId:edit.requestId,phase:'empty.progress.preparing',rows:reviewed});await yieldTurn();ensure()}
+  try{
+   await progress(0)
+   const original=await this.calculationOriginal(s,this.sources.get(s)),origins=fieldOrigins(s,original)
+   ensure()
+   let bytes=bomLength(s),count=0,previousCR=false,budget=0
+   const add=(a:Mutation,b:Mutation)=>{budget+=Buffer.byteLength(JSON.stringify(a),'utf8')+Buffer.byteLength(JSON.stringify(b),'utf8')+2;if(budget>20*1024*1024-1024)throw new EmptyError('undoLimit');forward.push(a);backward.push(b)}
+   const isEmpty=(value:string|undefined)=>value===undefined||value===''||edit.includeSpaces&&!value.trim()
+   const measure=(cells:string[],endOfRecord:boolean,rowId?:string)=>{
+    count+=cells.length;if(count>TABLE_LIMITS.cells)throw new EmptyError('cellsLimit')
+    const part=calculatedRecordBytes(originalRecord(original,rowId),s,cells,origins,endOfRecord,previousCR),unit=s.encoding==='utf16le'?2:1
+    previousCR=endOfRecord&&part[part.length-unit]===13&&(unit===1||part[part.length-1]===0)
+    bytes+=part.length;if(bytes>TABLE_LIMITS.bytes)throw new EmptyError('bytesLimit')
+   }
+   const removed:number[]=[]
+   if(edit.operation==='deleteRowsWhere'){
+    for(const [index,row] of s.rows.entries()){
+     if(edit.match==='all'?columns.every(column=>isEmpty(row.cells[column])):columns.some(column=>isEmpty(row.cells[column]))){removed.push(index);if(preview.samples.length<5)preview.samples.push({row:index,column:null,before:JSON.stringify(row.cells).slice(0,256),after:''})}
+     if(index%512===0)await progress(index+1)
+    }
+    let groups=0
+    for(let end=removed.length-1;end>=0;){let start=end;while(start>0&&removed[start-1]===removed[start]-1)start--;const index=removed[start],rows=s.rows.slice(index,removed[end]+1).map(copyRow);add({type:'rows',index,remove:rows.length,rows:[]},{type:'rows',index,remove:0,rows});end=start-1;if(++groups%512===0)await progress(s.rows.length)}
+    preview.deletedRows=preview.affected=removed.length
+   }
+   const remaining=s.rows.length-removed.length
+   if(s.header&&s.headerWidth>0)measure(s.headers.slice(0,s.headerWidth),s.finalEol||remaining>0)
+   const column=columns[0];let previous:string|undefined
+   let removeAt=0,kept=0
+   for(const [index,row] of s.rows.entries()){
+    if(removed[removeAt]===index){removeAt++;continue}
+    let projected=row.cells
+    if(edit.operation!=='deleteRowsWhere'){
+     const before=row.cells[column]??'',missing=column>=row.cells.length,empty=isEmpty(row.cells[column])
+     if(!empty)previous=before
+     const after=edit.operation==='fillEmpty'?edit.value:previous
+     if(empty&&after===undefined)preview.withoutPrevious++
+     if(empty&&after!==undefined&&(before!==after||missing)){
+      projected=[...row.cells];while(projected.length<column)projected.push('');projected[column]=after
+      add({type:'cell',id:row.id,column,value:after},{type:'cell',id:row.id,column,value:before,length:row.cells.length})
+      preview.affected++;preview.cells++;preview.empty[missing?'missing':before?'spaces':'exact']++
+      if(missing){preview.extendedRows++;for(let c=row.cells.length;c<column;c++)intermediate.add(c)}
+      if(preview.samples.length<5)preview.samples.push({row:index,column,before:before.slice(0,256),after:after.slice(0,256),...(missing?{missing:true}:{})})
+     }
+    }
+    measure(projected,s.finalEol||++kept<remaining,row.id)
+    if(index%512===0)await progress(index+1)
+   }
+   preview.intermediateColumns=[...intermediate].sort((a,b)=>a-b)
+   await progress(s.rows.length)
+   const change=forward.length?this.prepareChange(s,forward,backward.reverse()):undefined
+   return {s,preview,change,original}
+  }catch(error){const code=readCalculationError(error)?.code;if(code==='disk'||code==='encoding'||code==='recordLimit')throw new EmptyError(code);if(error instanceof UndoLimitError)throw new EmptyError('undoLimit');throw error}
+  finally{if(this.analyses.get(id)===edit.requestId)this.analyses.delete(id)}
+ }
 
  private calculationTable(id:string,edit:CalculateColumnEdit){
   const s=this.editable(id)
@@ -439,7 +511,9 @@ export class TableEngine {
   if(rowChanges.length===mutations.length&&mutations.length>1&&rowChanges.every((m,i)=>m.remove>0&&!m.rows.length&&(i===0||m.index<rowChanges[i-1].index))){const ranges=[...rowChanges].reverse(),rows:TableRow[]=[];let cursor=0;for(const m of ranges){while(cursor<m.index)rows.push(s.rows[cursor++]);cursor+=m.remove}while(cursor<s.rows.length)rows.push(s.rows[cursor++]);s.rows=rows;return}
   if(rowChanges.length===mutations.length&&(mutations.length>1||rowChanges[0]?.rows.length>1024)&&rowChanges.every((m,i)=>m.remove===0&&(i===0||m.index>=rowChanges[i-1].index))){const rows:TableRow[]=[];let cursor=0,inserted=0;for(const m of rowChanges){const at=m.index-inserted;while(cursor<at)rows.push(s.rows[cursor++]);for(const row of m.rows)rows.push(copyRow(row));inserted+=m.rows.length}while(cursor<s.rows.length)rows.push(s.rows[cursor++]);s.rows=rows;return}
   const indexed=mutations.length>16?new Map(s.rows.map(row=>[row.id,row])):undefined;for(const mutation of mutations){switch(mutation.type){case'rowOrder':{const order=permutation(mutation.order,s.rows.length);s.rows=order.map(index=>s.rows[index]);break}case'columnOrder':{const order=permutation(mutation.order,s.headers.length);if(!preservesMissing(order,s.headerWidth)||s.rows.some(row=>!preservesMissing(order,row.cells.length)))throw new Error('El orden no conserva los campos o encabezados ausentes.');const headers=order.map(index=>s.headers[index]),rows=s.rows.map(row=>({id:row.id,cells:order.slice(0,row.cells.length).map(index=>row.cells[index])}));s.columnIds=order.map(index=>s.columnIds[index]);s.headers=headers;s.rows=rows;break}case'cell':{const row=indexed?.get(mutation.id)??s.rows.find(row=>row.id===mutation.id);if(!row)throw new Error('Fila no encontrada.');while(row.cells.length<mutation.column)row.cells.push('');row.cells[mutation.column]=mutation.value;if(mutation.length!==undefined)row.cells.length=mutation.length;break}case'header':s.headers[mutation.column]=mutation.value;s.headerWidth=mutation.headerWidth??Math.max(s.headerWidth,mutation.column+1);break;case'rows':s.rows.splice(mutation.index,mutation.remove,...mutation.rows.map(copyRow));break;case'column':if(mutation.remove){s.columnIds.splice(mutation.index,1);s.headers.splice(mutation.index,1);s.rows.forEach((row,i)=>{row.cells.splice(mutation.index,1);if(mutation.lengths)row.cells.length=mutation.lengths[i]})}else{const columnId=mutation.columnId??s.nextColumn;s.columnIds.splice(mutation.index,0,columnId);s.nextColumn=Math.max(s.nextColumn,columnId+1);s.headers.splice(mutation.index,0,mutation.name);s.rows.forEach((row,i)=>{while(row.cells.length<mutation.index)row.cells.push('');row.cells.splice(mutation.index,0,mutation.cells[i]??'');if(mutation.lengths)row.cells.length=mutation.lengths[i]})}s.headerWidth=mutation.headerWidth??s.headers.length;break}}}
- async edit(id:string,edit:TableEdit){const s=this.editable(id);const revision=s.revision;let forward:Mutation[]=[],backward:Mutation[]=[]
+ async edit(id:string,edit:TableEdit){
+  if(edit.type==='structure'&&isEmptyEdit(edit)){const plan=await this.emptyPlan(id,edit);if(!plan.change)return this.info(id);const applied=this.commitChange(id,plan.s,edit.revision,plan.change);this.lossless.set(plan.s,plan.original);return applied}
+  const s=this.editable(id);const revision=s.revision;let forward:Mutation[]=[],backward:Mutation[]=[]
   const add=(a:Mutation,b:Mutation)=>{forward.push(a);backward.push(b)}
   const rowIndex=(rowId:string)=>{const i=s.rows.findIndex(row=>row.id===rowId);if(i<0)throw new Error('Fila no encontrada.');return i}
   const column=(index:number,insert=false)=>{if(!Number.isInteger(index)||index<0||index>s.headers.length-(insert?0:1))throw new Error('Columna no válida.')}
