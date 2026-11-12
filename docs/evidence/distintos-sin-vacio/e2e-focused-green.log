@@ -1,0 +1,33 @@
+
+Running 26 tests using 1 worker
+
+(node:19821) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/analysis-describe.spec.ts:36:1 › AN-2 muestra describe por petición con el fixture aprobado y conserva la fuente (1.3s)
+  ✓   2 [csv] › tests/e2e/analysis-describe.spec.ts:68:1 › AN-2 coordina el cálculo avanzado con describe sin lanzar consultas al desplegar (920ms)
+  ✓   3 [csv] › tests/e2e/analysis-describe.spec.ts:93:1 › AN-2 Información presenta dimensiones, tipos y calidad con distintos sin vacíos (945ms)
+  ✓   4 [csv] › tests/e2e/analysis-describe.spec.ts:113:1 › AN-2 cancelar conserva la fuente y permite pasar a la vista avanzada sin respuestas tardías (962ms)
+  ✓   5 [csv] › tests/e2e/analysis-describe.spec.ts:128:1 › AN-2 entrar en el explorador cancela describe pendiente antes de activar el otro análisis (993ms)
+  ✓   6 [csv] › tests/e2e/analysis-describe.spec.ts:141:1 › AN-2 descarta la respuesta anterior cuando cambia la revisión y recalcula con los valores actuales (1.2s)
+  ✓   7 [csv] › tests/e2e/analysis-describe.spec.ts:155:1 › AN-2 la paleta describe abre estadísticas sin empezar a calcular (831ms)
+  ✓   8 [csv] › tests/e2e/analysis-describe.spec.ts:162:1 › AN-2 describe conserva el ámbito filtrado, el informe y las columnas marcadas (1.7s)
+  ✓   9 [csv] › tests/e2e/analysis-describe.spec.ts:176:47 › AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (es) (2.1s)
+  ✓  10 [csv] › tests/e2e/analysis-describe.spec.ts:176:47 › AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (en-XA) (2.1s)
+  ✓  11 [csv] › tests/e2e/analysis-describe.spec.ts:190:1 › AN-2 ciento veinte columnas se rechazan antes de consultar y conservan el archivo (937ms)
+  ✓  12 [csv] › tests/e2e/analysis-describe.spec.ts:196:1 › AN-2 la cardinalidad textual no disponible no elimina las estadísticas numéricas exactas (1.4s)
+  ✓  13 [csv] › tests/e2e/analysis-describe.spec.ts:202:1 › AN-2 revisión: una muestra conserva su ámbito en selector, caption e informe (1.4s)
+  ✓  14 [csv] › tests/e2e/analysis-describe.spec.ts:219:1 › AN-2 revisión: std de un valor y top/freq de fecha se presentan vacíos (1.1s)
+  ✓  15 [csv] › tests/e2e/analysis-describe.spec.ts:228:1 › AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes de consultar (1.0s)
+  ✓  16 [csv] › tests/e2e/analysis-describe.spec.ts:235:52 › Información: distintos sin vacíos conserva repeticiones y el archivo (es) (1.2s)
+  ✓  17 [csv] › tests/e2e/analysis-describe.spec.ts:235:52 › Información: distintos sin vacíos conserva repeticiones y el archivo (en) (1.1s)
+  ✓  18 [csv] › tests/e2e/analysis-describe.spec.ts:235:52 › Información: distintos sin vacíos conserva repeticiones y el archivo (en-XA) (1.2s)
+  ✓  19 [csv] › tests/e2e/columns-overview.spec.ts:28:1 › panorámica: tipos, calidad, alcance, explicación por teclado, informe y documento intacto (1.7s)
+  ✓  20 [csv] › tests/e2e/columns-overview.spec.ts:38:1 › panorámica: páginas, nombres duplicados, columnas marcadas y detalle conservan el alcance (1.4s)
+  ✓  21 [csv] › tests/e2e/columns-overview.spec.ts:44:1 › panorámica: cancelar o cambiar revisión descarta respuestas tardías y no continúa columnas (1.3s)
+  ✓  22 [csv] › tests/e2e/columns-overview.spec.ts:55:1 › panorámica: una solicitud reemplazada con igual revisión aborta; una cardinalidad alta solo limita esa columna @perf (2.5s)
+  ✓  23 [csv] › tests/e2e/columns-overview.spec.ts:64:1 › panorámica: muestra etiquetada incluso durante el cálculo y presupuesto sin totales inventados @perf (1.8s)
+  ✓  24 [csv] › tests/e2e/columns-overview.spec.ts:72:1 › panorámica: mide 3 000, 100 000 y un millón de filas completas con una columna @perf (2.7s)
+  ✓  25 [csv] › tests/e2e/columns-overview.spec.ts:83:1 › panorámica: abrir un millón de filas y explorar inmediatamente no compite con la carga inicial de la grilla @perf (1.8s)
+  ✓  26 [csv] › tests/e2e/columns-overview.spec.ts:92:1 › panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance (1.6s)
+
+  26 passed (37.6s)

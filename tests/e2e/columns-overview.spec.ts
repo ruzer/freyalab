@@ -22,13 +22,13 @@ async function report(panel:Locator){await panel.getByRole('button',{name:'Abrir
 async function expectCounts(row:Locator,[content,missing,exact,spaces,unique,repetitions]:[string,string,string,string,string,string]){
  await expect(row.locator('.non-empty')).toHaveText(content)
  await row.locator('.quality-breakdown>summary').click();await expect(row.locator('.quality-breakdown dd')).toHaveText([missing,exact,spaces])
- await row.locator('.distinct-detail>summary').click();await expect(row.locator('.distinct-detail>summary')).toHaveText(unique);await expect(row.locator('.distinct-detail p').nth(1)).toHaveText('Repeticiones adicionales: '+repetitions)
+ await row.locator('.distinct-detail>summary').click();await expect(row.locator('.distinct-detail>summary')).toHaveText(unique);await expect(row.locator('.distinct-detail p').nth(1)).toHaveText('Repeticiones adicionales (incluidos vacíos): '+repetitions)
 }
 
 test('panorámica: tipos, calidad, alcance, explicación por teclado, informe y documento intacto',async()=>{
  const {doc,path}=await open(),before=await page.evaluate(()=>window.freya.documents()),panel=await overview();await explore(panel)
  const rows=panel.locator('tbody tr');await expect(rows).toHaveCount(5);await expect(rows.nth(0)).toContainText('Posible identificador');await expect(rows.nth(1)).toContainText('Categórico');await expect(rows.nth(2)).toContainText('Numérico');await expect(rows.nth(3)).toContainText('Mixto')
- await expect(rows.nth(4).locator('.non-empty')).toHaveText('1');await rows.nth(4).locator('.quality-breakdown>summary').click();await expect(rows.nth(4).locator('.quality-breakdown dd')).toHaveText(['1','1','1'])
+ await expect(rows.nth(4).locator('.non-empty')).toHaveText('1');await expect(rows.nth(4).locator('.distinct-detail>summary')).toHaveText('1');await rows.nth(4).locator('.quality-breakdown>summary').click();await expect(rows.nth(4).locator('.quality-breakdown dd')).toHaveText(['1','1','1'])
  const explanation=rows.nth(0).locator('.type-explanation>summary');await explanation.focus();await explanation.press('Enter');await expect(rows.nth(0)).toContainText('ceros iniciales');await expect(rows.nth(0).locator('.type-explanation')).toHaveAttribute('open','')
  for(const [theme,width,height] of [['light',1440,900],['dark',1280,800]] as const){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.setViewportSize({width,height});await panel.scrollIntoViewIfNeeded();await page.screenshot({animations:'disabled',path:test.info().outputPath(`dw04b-overview-${theme}-${width}x${height}.png`)})}
  await showTable(page);await page.getByLabel('Buscar en tabla',{exact:true}).fill('Oaxaca');await expect(page.locator('footer')).toContainText('3 de 4 filas');await overview();await expect(rows).toHaveCount(5);await panel.getByLabel('Alcance de la vista general',{exact:true}).selectOption('view');await explore(panel);await expect(panel.locator('.scope')).toContainText('Vista filtrada');await expect(panel.locator('.scope')).toContainText('3 filas por columna')

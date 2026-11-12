@@ -1,4 +1,5 @@
 import {describe,it,expect} from 'vitest'
+import {analyzeColumn} from '../src/main/table-analysis'
 import {columnOverviewReport,type ReportContext} from '../src/renderer/lib/statistics-report'
 import {markdownHTML} from '../src/renderer/lib/render'
 import type {ColumnOverviewResult,ColumnOverviewRow,ColumnProfile} from '../src/shared/types'
@@ -29,7 +30,7 @@ describe('informe de vista general de columnas',()=>{
 
  it('separa campos ausentes, vacíos exactos y espacios sin alterar el total',()=>{
   const text=columnOverviewReport(context,[row(0,'Importe')])
-  expect(text).toContain('| Filas | Con contenido | Ausentes | Vacíos exactos | Solo espacios | Distintos exactos | Repeticiones adicionales |')
+  expect(text).toContain('| Filas | Con contenido | Ausentes | Vacíos exactos | Solo espacios | Distintos sin vacíos | Repeticiones adicionales (incluidos vacíos) |')
   expect(text).toContain('| Numérico | 20 | 13 | 2 | 2 | 3 | 9 | 4 |')
   expect(text).toContain('Los 13 valores con contenido son números utilizables')
  })
@@ -83,4 +84,17 @@ describe('informe de vista general de columnas',()=>{
   expect(text).toContain('3 valores numéricos tienen ceros iniciales');expect(text).toContain('2 enteros exceden el rango numérico seguro')
   expect(text).toContain('No se propone como medida automáticamente')
  })
+})
+
+
+it('Información excluye ausentes, vacíos y solo espacios de distintos sin alterar repeticiones ni el motor',async()=>{
+ const rows=[['1'],['x'],['1'],[''],['  '],[]].map((cells,index)=>({id:String(index+1),cells})),before=JSON.stringify(rows)
+ const analysis=await analyzeColumn(rows,undefined,{column:0,revision:12,requestId:'info-distinct',frequencyOffset:0,duplicatesOnly:false,bins:4},()=>{},'Mixta')
+ expect(analysis).toMatchObject({unique:4,extraDuplicates:2,profile:{distinctNonEmpty:2},describe:{unique:2}})
+ const text=columnOverviewReport(context,[row(0,'Mixta',{...analysis,revision:12,sample:false,filtered:false})])
+ expect.soft(text).toContain('| Distintos sin vacíos | Repeticiones adicionales (incluidos vacíos) |')
+ expect.soft(text).toContain('| 6 | 3 | 1 | 1 | 1 | 2 | 2 |')
+ expect.soft(text).toContain('Distintos excluye campos ausentes, vacíos y con solo espacios.')
+ expect.soft(text).toContain('Las repeticiones adicionales sí incluyen esos casos.')
+ expect(analysis.unique).toBe(4);expect(analysis.extraDuplicates).toBe(2);expect(JSON.stringify(rows)).toBe(before)
 })

@@ -1,0 +1,194 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-distintos-sin-vacio
+
+ ❯ tests/column-overview-report.test.ts (8 tests | 1 failed) 69ms
+   × Información excluye ausentes, vacíos y solo espacios de distintos sin alterar repeticiones ni el motor 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/column-overview-report.test.ts > Información excluye ausentes, vacíos y solo espacios de distintos sin alterar repeticiones ni el motor
+AssertionError: expected '# Vista general de columnas CSV\n\nIn…' to contain '| Distintos sin vacíos | Repeticiones…'
+
+- Expected
++ Received
+
+- | Distintos sin vacíos | Repeticiones adicionales (incluidos vacíos) |
++ # Vista general de columnas CSV
++
++ Informe estático del análisis completado. No modifica el CSV; abrirlo no vuelve a calcular los resultados.
++
++ | Procedencia | Valor |
++ | --- | --- |
++ | Archivo | ` "ventas.csv" ` |
++ | Revisión de la sesión | 12 |
++ | Alcance | ` "Documento completo · Todas las columnas" ` |
++ | Cambios sin guardar al iniciar | Sí |
++ | Análisis iniciado (UTC) | ` "2026-10-23T00:00:00.000Z" ` |
++
++ Columnas solicitadas: 1. Analizadas: 1. No disponibles: 0.
++
++ El informe incluye todas las columnas solicitadas, independientemente de la búsqueda de nombres o página mostrada. Los tipos son sugerencias sobre el alcance capturado, sin convertir el CSV.
++
++ | Columna | Tipo probable | Filas | Con contenido | Ausentes | Vacíos exactos | Solo espacios | Distintos exactos | Repeticiones adicionales | Interpretación |
++ | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
++ | ` "1. Mixta" ` | Mixto o con valores incompatibles | 6 | 3 | 1 | 1 | 1 | 4 | 2 | ` "Se observaron 2 números utilizables, 0 fechas ISO y 1 valores de otros formatos." ` |
++
++ ## Interpretación y límites
++
++ Cálculos aproximados con punto decimal. Se excluyen textos y enteros fuera del rango numérico seguro. Vacíos incluye campos ausentes y solo espacios; únicos compara el texto exacto. — indica un resultado no disponible o no representable. La desviación poblacional usa n y la muestral n−1; esta última necesita al menos dos valores numéricos.
++
++ Los textos entre comillas usan escapes JSON para distinguir vacíos, saltos de línea y barras. Los valores numéricos del informe no sustituyen el texto original del CSV.
++
++
+
+ ❯ tests/column-overview-report.test.ts:95:20
+     93|  expect(analysis).toMatchObject({unique:4,extraDuplicates:2,profile:{d…
+     94|  const text=columnOverviewReport(context,[row(0,'Mixta',{...analysis,r…
+     95|  expect.soft(text).toContain('| Distintos sin vacíos | Repeticiones ad…
+       |                    ^
+     96|  expect.soft(text).toContain('| 6 | 3 | 1 | 1 | 1 | 2 | 2 |')
+     97|  expect.soft(text).toContain('Distintos excluye campos ausentes, vacío…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/column-overview-report.test.ts > Información excluye ausentes, vacíos y solo espacios de distintos sin alterar repeticiones ni el motor
+AssertionError: expected '# Vista general de columnas CSV\n\nIn…' to contain '| 6 | 3 | 1 | 1 | 1 | 2 | 2 |'
+
+- Expected
++ Received
+
+- | 6 | 3 | 1 | 1 | 1 | 2 | 2 |
++ # Vista general de columnas CSV
++
++ Informe estático del análisis completado. No modifica el CSV; abrirlo no vuelve a calcular los resultados.
++
++ | Procedencia | Valor |
++ | --- | --- |
++ | Archivo | ` "ventas.csv" ` |
++ | Revisión de la sesión | 12 |
++ | Alcance | ` "Documento completo · Todas las columnas" ` |
++ | Cambios sin guardar al iniciar | Sí |
++ | Análisis iniciado (UTC) | ` "2026-10-23T00:00:00.000Z" ` |
++
++ Columnas solicitadas: 1. Analizadas: 1. No disponibles: 0.
++
++ El informe incluye todas las columnas solicitadas, independientemente de la búsqueda de nombres o página mostrada. Los tipos son sugerencias sobre el alcance capturado, sin convertir el CSV.
++
++ | Columna | Tipo probable | Filas | Con contenido | Ausentes | Vacíos exactos | Solo espacios | Distintos exactos | Repeticiones adicionales | Interpretación |
++ | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
++ | ` "1. Mixta" ` | Mixto o con valores incompatibles | 6 | 3 | 1 | 1 | 1 | 4 | 2 | ` "Se observaron 2 números utilizables, 0 fechas ISO y 1 valores de otros formatos." ` |
++
++ ## Interpretación y límites
++
++ Cálculos aproximados con punto decimal. Se excluyen textos y enteros fuera del rango numérico seguro. Vacíos incluye campos ausentes y solo espacios; únicos compara el texto exacto. — indica un resultado no disponible o no representable. La desviación poblacional usa n y la muestral n−1; esta última necesita al menos dos valores numéricos.
++
++ Los textos entre comillas usan escapes JSON para distinguir vacíos, saltos de línea y barras. Los valores numéricos del informe no sustituyen el texto original del CSV.
++
++
+
+ ❯ tests/column-overview-report.test.ts:96:20
+     94|  const text=columnOverviewReport(context,[row(0,'Mixta',{...analysis,r…
+     95|  expect.soft(text).toContain('| Distintos sin vacíos | Repeticiones ad…
+     96|  expect.soft(text).toContain('| 6 | 3 | 1 | 1 | 1 | 2 | 2 |')
+       |                    ^
+     97|  expect.soft(text).toContain('Distintos excluye campos ausentes, vacío…
+     98|  expect.soft(text).toContain('Las repeticiones adicionales sí incluyen…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/column-overview-report.test.ts > Información excluye ausentes, vacíos y solo espacios de distintos sin alterar repeticiones ni el motor
+AssertionError: expected '# Vista general de columnas CSV\n\nIn…' to contain 'Distintos excluye campos ausentes, va…'
+
+- Expected
++ Received
+
+- Distintos excluye campos ausentes, vacíos y con solo espacios.
++ # Vista general de columnas CSV
++
++ Informe estático del análisis completado. No modifica el CSV; abrirlo no vuelve a calcular los resultados.
++
++ | Procedencia | Valor |
++ | --- | --- |
++ | Archivo | ` "ventas.csv" ` |
++ | Revisión de la sesión | 12 |
++ | Alcance | ` "Documento completo · Todas las columnas" ` |
++ | Cambios sin guardar al iniciar | Sí |
++ | Análisis iniciado (UTC) | ` "2026-10-23T00:00:00.000Z" ` |
++
++ Columnas solicitadas: 1. Analizadas: 1. No disponibles: 0.
++
++ El informe incluye todas las columnas solicitadas, independientemente de la búsqueda de nombres o página mostrada. Los tipos son sugerencias sobre el alcance capturado, sin convertir el CSV.
++
++ | Columna | Tipo probable | Filas | Con contenido | Ausentes | Vacíos exactos | Solo espacios | Distintos exactos | Repeticiones adicionales | Interpretación |
++ | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
++ | ` "1. Mixta" ` | Mixto o con valores incompatibles | 6 | 3 | 1 | 1 | 1 | 4 | 2 | ` "Se observaron 2 números utilizables, 0 fechas ISO y 1 valores de otros formatos." ` |
++
++ ## Interpretación y límites
++
++ Cálculos aproximados con punto decimal. Se excluyen textos y enteros fuera del rango numérico seguro. Vacíos incluye campos ausentes y solo espacios; únicos compara el texto exacto. — indica un resultado no disponible o no representable. La desviación poblacional usa n y la muestral n−1; esta última necesita al menos dos valores numéricos.
++
++ Los textos entre comillas usan escapes JSON para distinguir vacíos, saltos de línea y barras. Los valores numéricos del informe no sustituyen el texto original del CSV.
++
++
+
+ ❯ tests/column-overview-report.test.ts:97:20
+     95|  expect.soft(text).toContain('| Distintos sin vacíos | Repeticiones ad…
+     96|  expect.soft(text).toContain('| 6 | 3 | 1 | 1 | 1 | 2 | 2 |')
+     97|  expect.soft(text).toContain('Distintos excluye campos ausentes, vacío…
+       |                    ^
+     98|  expect.soft(text).toContain('Las repeticiones adicionales sí incluyen…
+     99|  expect(analysis.unique).toBe(4);expect(analysis.extraDuplicates).toBe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/column-overview-report.test.ts > Información excluye ausentes, vacíos y solo espacios de distintos sin alterar repeticiones ni el motor
+AssertionError: expected '# Vista general de columnas CSV\n\nIn…' to contain 'Las repeticiones adicionales sí inclu…'
+
+- Expected
++ Received
+
+- Las repeticiones adicionales sí incluyen esos casos.
++ # Vista general de columnas CSV
++
++ Informe estático del análisis completado. No modifica el CSV; abrirlo no vuelve a calcular los resultados.
++
++ | Procedencia | Valor |
++ | --- | --- |
++ | Archivo | ` "ventas.csv" ` |
++ | Revisión de la sesión | 12 |
++ | Alcance | ` "Documento completo · Todas las columnas" ` |
++ | Cambios sin guardar al iniciar | Sí |
++ | Análisis iniciado (UTC) | ` "2026-10-23T00:00:00.000Z" ` |
++
++ Columnas solicitadas: 1. Analizadas: 1. No disponibles: 0.
++
++ El informe incluye todas las columnas solicitadas, independientemente de la búsqueda de nombres o página mostrada. Los tipos son sugerencias sobre el alcance capturado, sin convertir el CSV.
++
++ | Columna | Tipo probable | Filas | Con contenido | Ausentes | Vacíos exactos | Solo espacios | Distintos exactos | Repeticiones adicionales | Interpretación |
++ | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
++ | ` "1. Mixta" ` | Mixto o con valores incompatibles | 6 | 3 | 1 | 1 | 1 | 4 | 2 | ` "Se observaron 2 números utilizables, 0 fechas ISO y 1 valores de otros formatos." ` |
++
++ ## Interpretación y límites
++
++ Cálculos aproximados con punto decimal. Se excluyen textos y enteros fuera del rango numérico seguro. Vacíos incluye campos ausentes y solo espacios; únicos compara el texto exacto. — indica un resultado no disponible o no representable. La desviación poblacional usa n y la muestral n−1; esta última necesita al menos dos valores numéricos.
++
++ Los textos entre comillas usan escapes JSON para distinguir vacíos, saltos de línea y barras. Los valores numéricos del informe no sustituyen el texto original del CSV.
++
++
+
+ ❯ tests/column-overview-report.test.ts:98:20
+     96|  expect.soft(text).toContain('| 6 | 3 | 1 | 1 | 1 | 2 | 2 |')
+     97|  expect.soft(text).toContain('Distintos excluye campos ausentes, vacío…
+     98|  expect.soft(text).toContain('Las repeticiones adicionales sí incluyen…
+       |                    ^
+     99|  expect(analysis.unique).toBe(4);expect(analysis.extraDuplicates).toBe…
+    100| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 passed (8)
+   Start at  12:37:36
+   Duration  505ms (import 58%, transform 25%, tests 16%, worker 1%)
+

@@ -1,0 +1,85 @@
+
+> freyalab@0.1.0-alpha.4 test
+> vitest run
+
+
+ RUN  v5.0.5 /private/tmp/freyalab-distintos-sin-vacio
+
+ ❯ tests/updates.test.ts (39 tests | 26 failed) 29ms
+   ❯ APP-04 · versiones y frontera de confianza (29)
+     × U3 · una sola GET sin datos personales, cuerpo, cookies ni credenciales 11ms
+     × U4/U9 · HTTP 403 falla sin seguir redirecciones 7ms
+     × U4/U9 · HTTP 429 falla sin seguir redirecciones 0ms
+     × U4/U9 · HTTP 500 falla sin seguir redirecciones 0ms
+     × U4/U9 · HTTP 302 falla sin seguir redirecciones 0ms
+     × U4 · rechaza JSON, esquema o URL inválidos 0ms
+     × U4 · rechaza JSON, esquema o URL inválidos 0ms
+     × U4 · rechaza JSON, esquema o URL inválidos 0ms
+     × U4 · rechaza JSON, esquema o URL inválidos 0ms
+     × U4 · limita los bytes efectivos aunque Content-Length no exista 0ms
+     × U4 · rechaza Content-Length mayor de 1 MiB sin esperar el cuerpo 0ms
+     × U1/U15 · cancelar aborta una respuesta pendiente 0ms
+     × U4/U9 · el máximo de 10 segundos también cubre una respuesta que no termina 0ms
+     × U2/U8/U10 · cero peticiones por omisión, 24 h y persistencia sólo en settings.json 0ms
+     × U10 · reloj atrasado y ajustes de versión futura no disparan la red 0ms
+     × U1/U15 · cancelar durante la persistencia no cancela una nueva búsqueda inmediata 0ms
+   ❯ SEG-S5b · consulta manual con ajustes futuros intactos (10)
+     × P2 · cambio a futuro antes de guardar la fecha manual, cancelar=false 0ms
+     × P2 · cambio a futuro antes de guardar la fecha manual, cancelar=true 0ms
+     × available: consulta manual, aviso de fecha no guardada y cero red al iniciar 0ms
+     × current: consulta manual, aviso de fecha no guardada y cero red al iniciar 0ms
+     × si el archivo pasa de válido a futuro entre startup y check, no hace red automática 0ms
+     × startup no hereda la consulta manual pendiente cuando los ajustes pasaron a una versión futura 0ms
+     × cancelar mientras se leen ajustes futuros no envía la petición ni devuelve un aviso tardío 0ms
+     × un error HTTP real conserva su causa y la advertencia de ajustes, sin detalles privados 0ms
+     × dos consultas manuales readonly comparten una sola petición y el aviso de ese resultado 0ms
+     × un fallo de escritura en ajustes editables conserva su error y no abre la red 0ms
+ ❯ tests/pandoc-real.test.ts (9 tests | 9 skipped) 12ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/pandoc-real.test.ts > AC-00 · P4 con Pandoc real
+Error: listen EPERM: operation not permitted 127.0.0.1
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/27]⎯
+
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 26 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U3 · una sola GET sin datos personales, cuerpo, cookies ni credenciales
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U4/U9 · HTTP 403 falla sin seguir redirecciones
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U4/U9 · HTTP 429 falla sin seguir redirecciones
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U4/U9 · HTTP 500 falla sin seguir redirecciones
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U4/U9 · HTTP 302 falla sin seguir redirecciones
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U4 · rechaza JSON, esquema o URL inválidos
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U4 · rechaza JSON, esquema o URL inválidos
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U4 · rechaza JSON, esquema o URL inválidos
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U4 · rechaza JSON, esquema o URL inválidos
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U4 · limita los bytes efectivos aunque Content-Length no exista
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U4 · rechaza Content-Length mayor de 1 MiB sin esperar el cuerpo
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U1/U15 · cancelar aborta una respuesta pendiente
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U4/U9 · el máximo de 10 segundos también cubre una respuesta que no termina
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U2/U8/U10 · cero peticiones por omisión, 24 h y persistencia sólo en settings.json
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U10 · reloj atrasado y ajustes de versión futura no disparan la red
+ FAIL  tests/updates.test.ts > APP-04 · versiones y frontera de confianza > U1/U15 · cancelar durante la persistencia no cancela una nueva búsqueda inmediata
+ FAIL  tests/updates.test.ts > SEG-S5b · consulta manual con ajustes futuros intactos > P2 · cambio a futuro antes de guardar la fecha manual, cancelar=false
+ FAIL  tests/updates.test.ts > SEG-S5b · consulta manual con ajustes futuros intactos > P2 · cambio a futuro antes de guardar la fecha manual, cancelar=true
+ FAIL  tests/updates.test.ts > SEG-S5b · consulta manual con ajustes futuros intactos > available: consulta manual, aviso de fecha no guardada y cero red al iniciar
+ FAIL  tests/updates.test.ts > SEG-S5b · consulta manual con ajustes futuros intactos > current: consulta manual, aviso de fecha no guardada y cero red al iniciar
+ FAIL  tests/updates.test.ts > SEG-S5b · consulta manual con ajustes futuros intactos > si el archivo pasa de válido a futuro entre startup y check, no hace red automática
+ FAIL  tests/updates.test.ts > SEG-S5b · consulta manual con ajustes futuros intactos > startup no hereda la consulta manual pendiente cuando los ajustes pasaron a una versión futura
+ FAIL  tests/updates.test.ts > SEG-S5b · consulta manual con ajustes futuros intactos > cancelar mientras se leen ajustes futuros no envía la petición ni devuelve un aviso tardío
+ FAIL  tests/updates.test.ts > SEG-S5b · consulta manual con ajustes futuros intactos > un error HTTP real conserva su causa y la advertencia de ajustes, sin detalles privados
+ FAIL  tests/updates.test.ts > SEG-S5b · consulta manual con ajustes futuros intactos > dos consultas manuales readonly comparten una sola petición y el aviso de ese resultado
+ FAIL  tests/updates.test.ts > SEG-S5b · consulta manual con ajustes futuros intactos > un fallo de escritura en ajustes editables conserva su error y no abre la red
+Error: listen EPERM: operation not permitted 127.0.0.1
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/27]⎯
+
+
+ Test Files  2 failed | 141 passed (143)
+      Tests  26 failed | 2654 passed | 10 skipped (2690)
+   Start at  12:39:43
+   Duration  18.10s (tests 85%, import 11%, transform 4%)
+
+    Isolate  143 workers spawned · ~79ms startup each (spawn + environment, per file)
+             at least ~948ms faster with isolate: false — reuses workers across files instead of one per file
+
