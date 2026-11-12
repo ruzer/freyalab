@@ -55,7 +55,7 @@ test('lo que aún no existe en archivos grandes está deshabilitado y el documen
  await expect(page.locator('.sort-button').first()).toBeDisabled() // la cabecera ya no ordena
  await page.getByRole('button',{name:'Acciones de la columna id',exact:true}).click()
  const menu=page.getByRole('menu',{name:'Acciones de columnas',exact:true});await expect(menu).toBeVisible()
- for(const item of await menu.getByRole('menuitem').all())if(await item.textContent()==='Filtrar esta columna')await expect(item).toBeEnabled();else await expect(item).toBeDisabled()
+ for(const item of await menu.getByRole('menuitem').all())if(['Filtrar esta columna','Ver filas vacías de la columna'].includes(await item.textContent()??''))await expect(item).toBeEnabled();else await expect(item).toBeDisabled()
  await page.keyboard.press('Escape');await expect(menu).toHaveCount(0)
  await cell(2).dblclick();await expect(page.getByLabel('Editar celda',{exact:true})).toHaveCount(0)
  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click();await expect(page.getByRole('alert')).toHaveCount(0) // sin error por pedir estadísticas

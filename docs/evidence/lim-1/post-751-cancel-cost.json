@@ -1,0 +1,153 @@
+{
+  "node": "24.22.1",
+  "platform": "darwin arm64",
+  "fixtureRows": 110000,
+  "cancelAfterRows": 100000,
+  "source": "instrumentaci\u00f3n en copia privada del test; sin cambiar producto",
+  "phases": [
+    {
+      "mode": "preview",
+      "operation": "fillEmpty",
+      "phase": "write/open",
+      "ms": 128.40925000000001,
+      "cpuMs": 242.265,
+      "heap": 77124448
+    },
+    {
+      "mode": "preview",
+      "operation": "fillEmpty",
+      "phase": "snapshotBefore",
+      "ms": 74.246125,
+      "cpuMs": 81.126,
+      "heap": 91301192
+    },
+    {
+      "mode": "preview",
+      "operation": "fillEmpty",
+      "phase": "stringifyBefore",
+      "ms": 12.810208999999986,
+      "cpuMs": 12.658,
+      "heap": 95048320
+    },
+    {
+      "mode": "preview",
+      "operation": "fillEmpty",
+      "phase": "bufferBefore",
+      "ms": 0.9233330000000137,
+      "cpuMs": 0.837,
+      "heap": 95050792
+    },
+    {
+      "mode": "preview",
+      "operation": "fillEmpty",
+      "phase": "prepare/scan/serializeToCancellation",
+      "ms": 397.43591699999996,
+      "cpuMs": 574.217,
+      "heap": 110669816
+    },
+    {
+      "mode": "preview",
+      "operation": "fillEmpty",
+      "phase": "snapshotAfter",
+      "ms": 67.65895799999998,
+      "cpuMs": 67.379,
+      "heap": 143715904
+    },
+    {
+      "mode": "preview",
+      "operation": "fillEmpty",
+      "phase": "stringifyAfter",
+      "ms": 13.02941700000008,
+      "cpuMs": 12.958,
+      "heap": 147457648
+    },
+    {
+      "mode": "preview",
+      "operation": "fillEmpty",
+      "phase": "nativeStateComparison",
+      "ms": 1.3417909999999438,
+      "cpuMs": 1.268,
+      "heap": 147465112
+    },
+    {
+      "mode": "preview",
+      "operation": "fillEmpty",
+      "phase": "diskComparison",
+      "ms": 0.8727499999999964,
+      "cpuMs": 0.951,
+      "heap": 148051816
+    },
+    {
+      "mode": "apply",
+      "operation": "fillEmpty",
+      "phase": "write/open",
+      "ms": 92.24379199999998,
+      "cpuMs": 137.41,
+      "heap": 174668968
+    },
+    {
+      "mode": "apply",
+      "operation": "fillEmpty",
+      "phase": "snapshotBefore",
+      "ms": 77.44895800000006,
+      "cpuMs": 97.942,
+      "heap": 167504528
+    },
+    {
+      "mode": "apply",
+      "operation": "fillEmpty",
+      "phase": "stringifyBefore",
+      "ms": 11.92145800000003,
+      "cpuMs": 11.798,
+      "heap": 171246672
+    },
+    {
+      "mode": "apply",
+      "operation": "fillEmpty",
+      "phase": "bufferBefore",
+      "ms": 0.9393749999999272,
+      "cpuMs": 0.893,
+      "heap": 171249224
+    },
+    {
+      "mode": "apply",
+      "operation": "fillEmpty",
+      "phase": "prepare/scan/serializeToCancellation",
+      "ms": 368.211,
+      "cpuMs": 390.209,
+      "heap": 193724224
+    },
+    {
+      "mode": "apply",
+      "operation": "fillEmpty",
+      "phase": "snapshotAfter",
+      "ms": 71.33241700000008,
+      "cpuMs": 69.666,
+      "heap": 226758424
+    },
+    {
+      "mode": "apply",
+      "operation": "fillEmpty",
+      "phase": "stringifyAfter",
+      "ms": 14.164957999999842,
+      "cpuMs": 13.625,
+      "heap": 230500104
+    },
+    {
+      "mode": "apply",
+      "operation": "fillEmpty",
+      "phase": "nativeStateComparison",
+      "ms": 1.1979170000001886,
+      "cpuMs": 1.138,
+      "heap": 230507616
+    },
+    {
+      "mode": "apply",
+      "operation": "fillEmpty",
+      "phase": "diskComparison",
+      "ms": 0.7866669999998521,
+      "cpuMs": 0.898,
+      "heap": 231089904
+    }
+  ]
+}

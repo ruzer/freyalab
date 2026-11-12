@@ -7,10 +7,11 @@
  import {STATISTICS_FIELDS,NUMERIC_DETAIL_FIELDS,NUMERIC_DETAIL_HELP,statisticsReport,type ReportContext,type StatisticsRow} from '../lib/statistics-report'
  import CsvColumnAnalysis from './CsvColumnAnalysis.svelte'
  import CsvColumnsOverview from './CsvColumnsOverview.svelte'
+ import type {CsvEmptyIntent} from '../lib/csv-analysis-view'
  import CsvDescribe from './CsvDescribe.svelte'
  import type {AnalysisStatistics} from '../lib/workspace-tabs'
  import type {DocumentInfo,TableQuery,TableRange,TableViewMeta} from '../../shared/types'
- let {doc,autofocus=true,embedded=false,inspection,entry,columns,range,query,queryValid,viewMeta,onclose,onerror,onreport}:{doc:DocumentInfo;autofocus?:boolean;embedded?:boolean;inspection?:{column:number;scope:'all'|'view'};entry?:AnalysisStatistics;columns:number[];range:TableRange|null;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
+ let {doc,autofocus=true,embedded=false,inspection,entry,columns,range,query,queryValid,viewMeta,onclose,onerror,onreport,onempty}:{doc:DocumentInfo;autofocus?:boolean;embedded?:boolean;inspection?:{column:number;scope:'all'|'view'};entry?:AnalysisStatistics;columns:number[];range:TableRange|null;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;onempty:(intent:CsvEmptyIntent)=>void}=$props()
  const titleId=$derived(embedded?'analysis-statistics-'+doc.id:'csv-statistics-title')
  $effect(()=>{if(inspection){explorationColumn=inspection.column;explorationScope=inspection.scope;exploring=true}})
  let exploring=$state(false),overviewing=$state(false),advancedOpen=$state(false),explorationColumn=$state(0),explorationScope=$state<'all'|'view'>('all')
@@ -81,7 +82,7 @@
  </table>{:else}<p>Los resultados del rango aparecerán aquí al pulsar Analizar.</p>{/if}</div>{/if}
  {/if}
  {#if !overviewing}<details bind:open={exploring}><summary>{exploring?'Volver a estadísticas generales':'Explorar una columna: frecuencias, calidad y distribución'}</summary>{#if exploring}<CsvColumnAnalysis {doc} {query} {queryValid} {viewMeta} {onerror} {onreport} bind:column={explorationColumn} bind:scope={explorationScope}/>{/if}</details>{/if}
- {#if !embedded&&!exploring}<details bind:open={overviewing}><summary>{overviewing?'Volver a estadísticas generales':'Comprender todas las columnas'}</summary>{#if overviewing}<CsvColumnsOverview {doc} {columns} {query} {queryValid} {viewMeta} {onerror} {onreport} oninspect={inspectColumn}/>{/if}</details>{/if}
+ {#if !embedded&&!exploring}<details bind:open={overviewing}><summary>{overviewing?'Volver a estadísticas generales':'Comprender todas las columnas'}</summary>{#if overviewing}<CsvColumnsOverview {doc} {columns} {query} {queryValid} {viewMeta} {onerror} {onreport} {onempty} oninspect={inspectColumn}/>{/if}</details>{/if}
  {#if !exploring&&!overviewing}<details><summary>Cómo interpretar los resultados</summary><p class="statistics-note">Solo consulta: los valores del archivo se conservan. Vacíos incluye campos ausentes o con espacios; Únicos compara el texto exacto. Ausentes y Solo espacios son subconjuntos de Vacíos. Los cálculos son aproximados y usan punto decimal; Excluidos cuenta textos y números fuera del rango seguro, incluidos identificadores grandes. — indica falta de datos o un resultado no representable. Cancelar descarta los resultados y evita continuar con las siguientes columnas.</p></details>{/if}
  </section></details>
 </section>

@@ -1,0 +1,108 @@
+Run 43163603026, attempt1, frozen head 751098f90e3913de1251f901e6f96c7206269f5d.
+Source: complete GitHub job log fetched via GitHub connector. Narrow exact excerpts below.
+...unit summary...
+2026-11-12T05:48:05.2582781Z  Test Files  144 passed | 1 skipped (145)
+2026-11-12T05:48:05.2591426Z       Tests  2730 passed | 10 skipped (2740)
+...17 LIM cases...
+2026-11-12T06:06:59.3028420Z   ✓  488 [csv] › tests/e2e/empty-values.spec.ts:31:1 › LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar (1.6s)
+2026-11-12T06:07:00.1490203Z   ✓  489 [csv] › tests/e2e/empty-values.spec.ts:55:1 › LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos (840ms)
+2026-11-12T06:07:01.4889142Z   ✓  490 [csv] › tests/e2e/empty-values.spec.ts:85:1 › LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva bytes tras guardar (1.3s)
+2026-11-12T06:07:03.0219910Z   ✓  491 [csv] › tests/e2e/empty-values.spec.ts:103:1 › LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo (1.5s)
+2026-11-12T06:07:04.6210619Z   ✓  492 [csv] › tests/e2e/empty-values.spec.ts:121:1 › LIM-1 elimina por cualquiera o todas las columnas marcadas y restaura filas completas (1.6s)
+2026-11-12T06:07:06.2437739Z   ✓  493 [csv] › tests/e2e/empty-values.spec.ts:137:1 › LIM-1 fuente protegida permite ver vacíos y bloquea las mutaciones también por el puente (1.6s)
+2026-11-12T06:07:07.4715385Z   ✓  494 [csv] › tests/e2e/empty-values.spec.ts:165:1 › LIM-1 archivo grande permite el filtro completo y explica que limpiar requiere extraer (1.2s)
+2026-11-12T06:07:08.4235982Z   ✓  495 [csv] › tests/e2e/empty-values.spec.ts:177:1 › LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio (946ms)
+2026-11-12T06:07:09.6570097Z   ✓  496 [csv] › tests/e2e/empty-values.spec.ts:194:1 › LIM-1 Texto sin confirmar conserva el diálogo y Cancelar no pierde el borrador (1.2s)
+2026-11-12T06:07:10.8393876Z   ✓  497 [csv] › tests/e2e/empty-values.spec.ts:208:1 › LIM-1 cancelar descarta una vista previa tardía y deja reintentar sin modificar el CSV (1.2s)
+2026-11-12T06:07:12.0618091Z   ✓  498 [csv] › tests/e2e/empty-values.spec.ts:240:1 › LIM-1 la paleta encuentra isnull, fillna y dropna y conserva la selección múltiple (1.2s)
+2026-11-12T06:07:13.2646895Z   ✓  499 [csv] › tests/e2e/empty-values.spec.ts:256:1 › LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas (1.2s)
+2026-11-12T06:07:14.3322668Z   ✓  500 [csv] › tests/e2e/empty-values.spec.ts:270:1 › LIM-1 una protección recibida con el diálogo abierto invalida su vista previa (1.1s)
+2026-11-12T06:07:15.8925563Z   ✓  501 [csv] › tests/e2e/empty-values.spec.ts:285:1 › LIM-1 rellenar desde Información actúa sobre todo el documento y pide actualizar el análisis (1.6s)
+2026-11-12T06:07:17.8075230Z   ✓  502 [csv] › tests/e2e/empty-values.spec.ts:306:57 › LIM-1 teclado, idiomas y temas (es) (1.9s)
+2026-11-12T06:07:19.7156038Z   ✓  503 [csv] › tests/e2e/empty-values.spec.ts:306:57 › LIM-1 teclado, idiomas y temas (en) (1.9s)
+2026-11-12T06:07:21.5513702Z   ✓  504 [csv] › tests/e2e/empty-values.spec.ts:306:57 › LIM-1 teclado, idiomas y temas (en-XA) (1.8s)
+...seven E2E skips...
+2026-11-12T05:49:26.1046276Z   -   29 [shell] › tests/e2e/commands.spec.ts:49:1 › APP-01 M4: Word se descubre al iniciar y el menú exporta un DOCX real sin abrir la barra
+2026-11-12T05:52:13.3884148Z   -  122 [md] › tests/e2e/academic-word.spec.ts:48:1 › AC-04 D1/D2 · reporte real en DOCX, HTML y PDF con fuentes, índices, figuras y páginas
+2026-11-12T05:52:13.3932535Z   -  123 [md] › tests/e2e/academic-word.spec.ts:98:40 › SEG-S2a · metadatos XML imposibles conservan el documento
+2026-11-12T05:52:13.3973949Z   -  124 [md] › tests/e2e/academic-word.spec.ts:98:40 › SEG-S2a · estilos y metadatos XML imposibles conservan el documento
+2026-11-12T05:52:13.4039931Z   -  125 [md] › tests/e2e/academic-word.spec.ts:145:1 › SEG-S2a · sustitutos sueltos de custom-style se exportan como U+FFFD sin alterar el original
+2026-11-12T05:52:13.4098693Z   -  126 [md] › tests/e2e/academic-word.spec.ts:169:1 › SEG-S2b · límites nombran el campo en español e inglés sin DOCX parcial ni pérdida de texto
+2026-11-12T05:52:13.4139595Z   -  127 [md] › tests/e2e/academic-word.spec.ts:208:1 › SEG-S2d · Pandoc real avisa del TeX degradado y el control limpio conserva el resultado habitual
+...failure and retries...
+2026-11-12T06:11:43.8684018Z   1) [csv] › tests/e2e/large-file.spec.ts:48:1 › lo que aún no existe en archivos grandes está deshabilitado y el documento no cambia
+2026-11-12T06:11:43.8684590Z
+2026-11-12T06:11:43.8684828Z     Error: expect(locator).toBeDisabled() failed
+2026-11-12T06:11:43.8685030Z
+2026-11-12T06:11:43.8685332Z     Locator:  getByRole('menu', { name: 'Acciones de columnas', exact: true }).getByRole('menuitem').nth(4)
+2026-11-12T06:11:43.8685867Z     Expected: disabled
+2026-11-12T06:11:43.8686132Z     Received: enabled
+2026-11-12T06:11:43.8686367Z     Timeout:  15000ms
+2026-11-12T06:11:43.8686774Z
+2026-11-12T06:11:43.8686853Z     Call log:
+2026-11-12T06:11:43.8687393Z       - Expect "toBeDisabled" getByRole('menu', { name: 'Acciones de columnas', exact: true }).getByRole('menuitem').nth(4) with timeout 15000ms
+2026-11-12T06:11:43.8687974Z       - waiting for getByRole('menu', { name: 'Acciones de columnas', exact: true }).getByRole('menuitem').nth(4)
+2026-11-12T06:11:43.8688744Z         34 × locator resolved to <button role="menuitem" class="svelte-auiwhu" title="Vacíos, nulos, faltantes, isnull · filtra esta columna sin cambiar el archivo">Ver filas vacías de la columna</button>
+2026-11-12T06:11:43.8689190Z            - unexpected value "enabled"
+2026-11-12T06:11:43.8689300Z
+2026-11-12T06:11:43.8689304Z
+2026-11-12T06:11:43.8689484Z       56 |  await page.getByRole('button',{name:'Acciones de la columna id',exact:true}).click()
+2026-11-12T06:11:43.8689892Z       57 |  const menu=page.getByRole('menu',{name:'Acciones de columnas',exact:true});await expect(menu).toBeVisible()
+2026-11-12T06:11:43.8690465Z     > 58 |  for(const item of await menu.getByRole('menuitem').all())if(await item.textContent()==='Filtrar esta columna')await expect(item).toBeEnabled();else await expect(item).toBeDisabled()
+2026-11-12T06:11:43.8691695Z          |                                                                                                                                                                         ^
+2026-11-12T06:11:43.8692206Z       59 |  await page.keyboard.press('Escape');await expect(menu).toHaveCount(0)
+2026-11-12T06:11:43.8692769Z       60 |  await cell(2).dblclick();await expect(page.getByLabel('Editar celda',{exact:true})).toHaveCount(0)
+2026-11-12T06:11:43.8693781Z       61 |  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click();await expect(page.getByRole('alert')).toHaveCount(0) // sin error por pedir estadísticas
+2026-11-12T06:11:43.8694746Z         at /home/runner/work/freyalab/freyalab/tests/e2e/large-file.spec.ts:58:169
+2026-11-12T06:11:43.8695016Z
+2026-11-12T06:11:43.8695482Z     Error Context: test-results-fast/large-file-lo-que-aún-no-e-f9d86-do-y-el-documento-no-cambia-csv/error-context.md
+2026-11-12T06:11:43.8695881Z
+2026-11-12T06:11:43.8696271Z     attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-11-12T06:11:43.8696953Z     test-results-fast/large-file-lo-que-aún-no-e-f9d86-do-y-el-documento-no-cambia-csv/trace.zip
+2026-11-12T06:11:43.8697381Z     Usage:
+2026-11-12T06:11:43.8697488Z
+2026-11-12T06:11:43.8697979Z         npx playwright show-trace test-results-fast/large-file-lo-que-aún-no-e-f9d86-do-y-el-documento-no-cambia-csv/trace.zip
+2026-11-12T06:11:43.8698402Z
+2026-11-12T06:11:43.8698722Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-11-12T06:11:43.8698963Z
+2026-11-12T06:11:43.8699312Z     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+2026-11-12T06:11:43.8699569Z
+2026-11-12T06:11:43.8699711Z     Error: expect(locator).toBeDisabled() failed
+2026-11-12T06:11:43.8699919Z
+2026-11-12T06:11:43.8700238Z     Locator:  getByRole('menu', { name: 'Acciones de columnas', exact: true }).getByRole('menuitem').nth(4)
+2026-11-12T06:11:43.8700660Z     Expected: disabled
+2026-11-12T06:11:43.8700877Z     Received: enabled
+2026-11-12T06:11:43.8701243Z     Timeout:  15000ms
+2026-11-12T06:11:43.8701358Z
+2026-11-12T06:11:43.8701435Z     Call log:
+2026-11-12T06:11:43.8701913Z       - Expect "toBeDisabled" getByRole('menu', { name: 'Acciones de columnas', exact: true }).getByRole('menuitem').nth(4) with timeout 15000ms
+2026-11-12T06:11:43.8702603Z       - waiting for getByRole('menu', { name: 'Acciones de columnas', exact: true }).getByRole('menuitem').nth(4)
+2026-11-12T06:11:43.8703730Z         34 × locator resolved to <button role="menuitem" class="svelte-auiwhu" title="Vacíos, nulos, faltantes, isnull · filtra esta columna sin cambiar el archivo">Ver filas vacías de la columna</button>
+2026-11-12T06:11:43.8704458Z            - unexpected value "enabled"
+2026-11-12T06:11:43.8704839Z
+2026-11-12T06:11:43.8704844Z
+2026-11-12T06:11:43.8705129Z       56 |  await page.getByRole('button',{name:'Acciones de la columna id',exact:true}).click()
+2026-11-12T06:11:43.8705788Z       57 |  const menu=page.getByRole('menu',{name:'Acciones de columnas',exact:true});await expect(menu).toBeVisible()
+2026-11-12T06:11:43.8706747Z     > 58 |  for(const item of await menu.getByRole('menuitem').all())if(await item.textContent()==='Filtrar esta columna')await expect(item).toBeEnabled();else await expect(item).toBeDisabled()
+2026-11-12T06:11:43.8707614Z          |                                                                                                                                                                         ^
+2026-11-12T06:11:43.8708148Z       59 |  await page.keyboard.press('Escape');await expect(menu).toHaveCount(0)
+2026-11-12T06:11:43.8708739Z       60 |  await cell(2).dblclick();await expect(page.getByLabel('Editar celda',{exact:true})).toHaveCount(0)
+2026-11-12T06:11:43.8709771Z       61 |  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click();await expect(page.getByRole('alert')).toHaveCount(0) // sin error por pedir estadísticas
+2026-11-12T06:11:43.8710579Z         at /home/runner/work/freyalab/freyalab/tests/e2e/large-file.spec.ts:58:169
+2026-11-12T06:11:43.8710856Z
+2026-11-12T06:11:43.8711574Z     Error Context: test-results-fast/large-file-lo-que-aún-no-e-f9d86-do-y-el-documento-no-cambia-csv-retry1/error-context.md
+2026-11-12T06:11:43.8712014Z
+2026-11-12T06:11:43.8712399Z     attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-11-12T06:11:43.8713131Z     test-results-fast/large-file-lo-que-aún-no-e-f9d86-do-y-el-documento-no-cambia-csv-retry1/trace.zip
+2026-11-12T06:11:43.8713587Z     Usage:
+2026-11-12T06:11:43.8713688Z
+2026-11-12T06:11:43.8714404Z         npx playwright show-trace test-results-fast/large-file-lo-que-aún-no-e-f9d86-do-y-el-documento-no-cambia-csv-retry1/trace.zip
+2026-11-12T06:11:43.8714880Z
+2026-11-12T06:11:43.8715215Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-11-12T06:11:43.8715469Z
+2026-11-12T06:11:43.8715546Z   1 failed
+2026-11-12T06:11:43.8716138Z     [csv] › tests/e2e/large-file.spec.ts:48:1 › lo que aún no existe en archivos grandes está deshabilitado y el documento no cambia
+2026-11-12T06:11:43.8716614Z   7 skipped
+2026-11-12T06:11:43.8716812Z   590 passed (23.6m)
+...perf/solo summary...
+2026-11-12T06:14:55.8670376Z   59 passed (3.1m)

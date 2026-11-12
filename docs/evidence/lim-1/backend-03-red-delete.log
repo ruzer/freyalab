@@ -1,0 +1,41 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-lim-1
+
+stderr | tests/table-empty.test.ts > elimina por consulta de vacíos [ 2 ] / any / espacios=true, conserva y deshace
+Missing translation: empty.error.columns
+
+stderr | tests/table-empty.test.ts > elimina por consulta de vacíos [ 1, 2 ] / any / espacios=true, conserva y deshace
+Missing translation: empty.error.columns
+
+stderr | tests/table-empty.test.ts > elimina por consulta de vacíos [ 1, 2 ] / all / espacios=true, conserva y deshace
+Missing translation: empty.error.columns
+
+stderr | tests/table-empty.test.ts > elimina por consulta de vacíos [ 2 ] / any / espacios=false, conserva y deshace
+Missing translation: empty.error.columns
+
+ ❯ tests/table-empty.test.ts (6 tests | 4 failed) 32ms
+   × elimina por consulta de vacíos [ 2 ] / any / espacios=true, conserva y deshace 5ms
+   × elimina por consulta de vacíos [ 1, 2 ] / any / espacios=true, conserva y deshace 2ms
+   × elimina por consulta de vacíos [ 1, 2 ] / all / espacios=true, conserva y deshace 2ms
+   × elimina por consulta de vacíos [ 2 ] / any / espacios=false, conserva y deshace 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/table-empty.test.ts > elimina por consulta de vacíos [ 2 ] / any / espacios=true, conserva y deshace
+ FAIL  tests/table-empty.test.ts > elimina por consulta de vacíos [ 1, 2 ] / any / espacios=true, conserva y deshace
+ FAIL  tests/table-empty.test.ts > elimina por consulta de vacíos [ 1, 2 ] / all / espacios=true, conserva y deshace
+ FAIL  tests/table-empty.test.ts > elimina por consulta de vacíos [ 2 ] / any / espacios=false, conserva y deshace
+Error: empty.error.columns
+ ❯ TableEngine.emptyPlan src/main/table-engine.ts:322:172
+
+ ❯ TableEngine.transformPreview src/main/table-engine.ts:317:112
+ ❯ tests/table-empty.test.ts:53:102
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 2 passed (6)
+   Start at  22:40:39
+   Duration  230ms (import 52%, transform 25%, tests 21%, worker 2%)
+

@@ -1,0 +1,62 @@
+[
+  {
+    "language": "es",
+    "theme": "light",
+    "contrast": [
+      {
+        "element": "DIALOG",
+        "foreground": "rgb(37, 37, 43)",
+        "background": "rgb(242, 242, 247)",
+        "ratio": 13.65530438837685
+      },
+      {
+        "element": "P",
+        "foreground": "rgb(102, 102, 114)",
+        "background": "rgb(242, 242, 247)",
+        "ratio": 5.074681026839759
+      },
+      {
+        "element": "BUTTON",
+        "foreground": "rgb(255, 255, 255)",
+        "background": "rgb(37, 99, 235)",
+        "ratio": 5.168555560022562
+      },
+      {
+        "element": "TEXTAREA",
+        "foreground": "rgb(37, 37, 43)",
+        "background": "rgb(255, 255, 255)",
+        "ratio": 15.23755670944588
+      }
+    ]
+  },
+  {
+    "language": "es",
+    "theme": "dark",
+    "contrast": [
+      {
+        "element": "DIALOG",
+        "foreground": "rgb(232, 232, 237)",
+        "background": "rgb(32, 32, 36)",
+        "ratio": 13.29474932910281
+      },
+      {
+        "element": "P",
+        "foreground": "rgb(147, 147, 159)",
+        "background": "rgb(32, 32, 36)",
+        "ratio": 5.345778015752227
+      },
+      {
+        "element": "BUTTON",
+        "foreground": "rgb(11, 18, 32)",
+        "background": "rgb(48, 139, 255)",
+        "ratio": 5.583696114085693
+      },
+      {
+        "element": "TEXTAREA",
+        "foreground": "rgb(232, 232, 237)",
+        "background": "rgb(36, 36, 41)",
+        "ratio": 12.65036310287001
+      }
+    ]
+  }
+]

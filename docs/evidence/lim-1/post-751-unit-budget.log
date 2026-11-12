@@ -1,0 +1,39 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-lim-1
+
+ ✓ tests/table-empty.test.ts > rellena Mixta, avisa los campos intermedios y deshace a la longitud y bytes originales 19ms
+ ✓ tests/table-empty.test.ts > usa el valor anterior del archivo completo y deja intacto el vacío que no tiene anterior 3ms
+ ✓ tests/table-empty.test.ts > elimina por consulta de vacíos [ 2 ] / any / espacios=true, conserva y deshace 3ms
+ ✓ tests/table-empty.test.ts > elimina por consulta de vacíos [ 1, 2 ] / any / espacios=true, conserva y deshace 3ms
+ ✓ tests/table-empty.test.ts > elimina por consulta de vacíos [ 1, 2 ] / all / espacios=true, conserva y deshace 2ms
+ ✓ tests/table-empty.test.ts > elimina por consulta de vacíos [ 2 ] / any / espacios=false, conserva y deshace 2ms
+ ✓ tests/table-empty.test.ts > conserva bytes léxicos, BOM y finales mixtos en utf8 al guardar, reabrir, recuperar y deshacer 3ms
+ ✓ tests/table-empty.test.ts > conserva bytes léxicos, BOM y finales mixtos en win1252 al guardar, reabrir, recuperar y deshacer 3ms
+ ✓ tests/table-empty.test.ts > conserva bytes léxicos, BOM y finales mixtos en utf16le al guardar, reabrir, recuperar y deshacer 2ms
+ ✓ tests/table-empty.test.ts > materializa el campo ausente incluso al rellenar con texto vacío, pero no cambia otros campos 2ms
+ ✓ tests/table-empty.test.ts > respeta la casilla de espacios y no inventa un valor anterior en una columna totalmente vacía 2ms
+ ✓ tests/table-empty.test.ts > devuelve un código estable con interfaz es, sin texto traducido en el worker 2ms
+ ✓ tests/table-empty.test.ts > devuelve un código estable con interfaz en, sin texto traducido en el worker 1ms
+ ✓ tests/table-empty.test.ts > devuelve un código estable con interfaz en-XA, sin texto traducido en el worker 1ms
+ ✓ tests/table-empty.test.ts > valida la selección y los valores antes de preparar una mutación 2ms
+ ✓ tests/table-empty.test.ts > rechaza revisiones antiguas y cambios externos incluso con una base léxica ya guardada 2ms
+ ✓ tests/table-empty.test.ts > cancela preview de fillEmpty después de cien mil filas, con progreso e historial intactos 566ms
+ ✓ tests/table-empty.test.ts > cancela apply de fillEmpty después de cien mil filas, con progreso e historial intactos 509ms
+ ✓ tests/table-empty.test.ts > cancela preview de fillPrevious después de cien mil filas, con progreso e historial intactos 328ms
+ ✓ tests/table-empty.test.ts > cancela apply de fillPrevious después de cien mil filas, con progreso e historial intactos 339ms
+ ✓ tests/table-empty.test.ts > cancela preview de deleteRowsWhere después de cien mil filas, con progreso e historial intactos 248ms
+ ✓ tests/table-empty.test.ts > cancela apply de deleteRowsWhere después de cien mil filas, con progreso e historial intactos 266ms
+ ✓ tests/table-empty.test.ts > elimina más de cien mil filas en grupos y restaura con un solo deshacer, también desde recuperación 598ms
+ ✓ tests/table-empty.test.ts > no aplica un plan si otra edición cambia la revisión mientras se prepara 15ms
+ ✓ tests/table-empty.test.ts > actúa por posición sobre columnas duplicadas, vacías y mayores de doscientas 4ms
+ ✓ tests/table-empty.test.ts > rechaza valores, registros escapados, codificación e historial que no caben, antes de modificar 72ms
+ ✓ tests/table-empty.test.ts > no materializa campos si el resultado supera dos millones de celdas 316ms
+ ✓ tests/table-empty.test.ts > rechaza el resultado mayor de 50 MiB aunque cada registro y el historial sí caben 75ms
+ ✓ tests/table-empty.test.ts > mantiene código estable al rechazar el documento closed por ambas entradas 3ms
+ ✓ tests/table-empty.test.ts > mantiene código estable al rechazar el documento large por ambas entradas 11ms
+ ✓ tests/table-empty.test.ts > mantiene código estable al rechazar el documento sample por ambas entradas 84ms
+
+ Test Files  1 passed (1)
+      Tests  31 passed (31)
+   Start at  00:16:25
+   Duration  3.66s (tests 97%, import 2%, transform 1%)

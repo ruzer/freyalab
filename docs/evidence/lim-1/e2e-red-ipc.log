@@ -1,0 +1,33 @@
+
+Running 1 test using 1 worker
+
+(node:81268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/empty-values.spec.ts:49:1 › LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos (798ms)
+
+
+  1) [csv] › tests/e2e/empty-values.spec.ts:49:1 › LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos
+
+    Error: page.evaluate: Error: Datos de operación no válidos.
+
+      48 |
+      49 | test('LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos',async()=>{
+    > 50 |  const result=await page.evaluate(async()=>{
+         |                          ^
+      51 |   const [doc]=await window.freya.documents()
+      52 |   const edit={type:'structure' as const,operation:'fillEmpty' as const,columns:[2],revision:doc.revision,requestId:crypto.randomUUID(),includeSpaces:true,value:'0'}
+      53 |   return await window.freya.transformPreview(doc.id,edit)
+        at /private/tmp/freyalab-lim1-base-rojo/tests/e2e/empty-values.spec.ts:50:26
+
+    Error Context: ../freyalab-lim1-e2e-red/ipc-results/empty-values-LIM-1-el-puen-b17af-ión-y-rechaza-campos-ajenos-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-lim1-e2e-red/ipc-results/empty-values-LIM-1-el-puen-b17af-ión-y-rechaza-campos-ajenos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-lim1-e2e-red/ipc-results/empty-values-LIM-1-el-puen-b17af-ión-y-rechaza-campos-ajenos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/empty-values.spec.ts:49:1 › LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos

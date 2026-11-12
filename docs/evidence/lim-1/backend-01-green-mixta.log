@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-lim-1
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  22:38:50
+   Duration  264ms (import 50%, transform 39%, tests 10%, worker 1%)
+

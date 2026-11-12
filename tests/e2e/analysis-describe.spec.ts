@@ -104,9 +104,9 @@ test('AN-2 Información presenta dimensiones, tipos y calidad con distintos sin 
  await expect(panel.locator('thead th')).toHaveText(['#','Columna','Tipo probable','Con contenido','Vacíos','Distintos','Detalle'])
  const mixed=panel.locator('tbody tr').nth(4)
  await expect(mixed.locator('td').nth(2)).toHaveText('3')
- await expect(mixed.locator('td').nth(3).locator('summary')).toHaveText('3')
+ await expect(mixed.locator('td').nth(3).locator('summary')).toHaveText('3 · 50 %')
  await expect(mixed.locator('td').nth(4).locator('summary')).toHaveText('2')
- await expect(mixed.locator('.quality-breakdown>summary')).toHaveAccessibleName('3 · Desglose de vacíos de Mixta');await expect(mixed.locator('.distinct-detail>summary')).toHaveAccessibleName('2 · Detalle de valores distintos sin vacíos de Mixta')
+ await expect(mixed.locator('.quality-breakdown>summary')).toHaveAccessibleName('3 · 50 % · Desglose de vacíos de Mixta');await expect(mixed.locator('.distinct-detail>summary')).toHaveAccessibleName('2 · Detalle de valores distintos sin vacíos de Mixta')
  expect(await readFile(path,'utf8')).toBe(source)
 })
 

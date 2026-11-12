@@ -1,0 +1,26 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-lim-1
+
+stderr | tests/table-empty.test.ts > usa el valor anterior del archivo completo y deja intacto el vacío que no tiene anterior
+Missing translation: empty.error.columns
+
+ ❯ tests/table-empty.test.ts (2 tests | 1 failed) 23ms
+   × usa el valor anterior del archivo completo y deja intacto el vacío que no tiene anterior 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/table-empty.test.ts > usa el valor anterior del archivo completo y deja intacto el vacío que no tiene anterior
+Error: empty.error.columns
+ ❯ TableEngine.emptyPlan src/main/table-engine.ts:322:146
+
+ ❯ TableEngine.transformPreview src/main/table-engine.ts:317:112
+ ❯ tests/table-empty.test.ts:38:68
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  22:39:25
+   Duration  187ms (import 54%, transform 25%, tests 19%, worker 2%)
+

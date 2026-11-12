@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:89554) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/empty-values.spec.ts:177:1 › LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio (16.0s)
+
+
+  1) [csv] › tests/e2e/empty-values.spec.ts:177:1 › LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByRole('status').filter({ hasText: 'Mostrando filas vacías de Cantidad. Solo cambia la vista; el archivo se conserva.' })
+    Expected: 0
+    Received: 1
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveCount" getByRole('status').filter({ hasText: 'Mostrando filas vacías de Cantidad. Solo cambia la vista; el archivo se conserva.' }) with timeout 15000ms
+      - waiting for getByRole('status').filter({ hasText: 'Mostrando filas vacías de Cantidad. Solo cambia la vista; el archivo se conserva.' })
+        34 × locator resolved to 1 element
+           - unexpected value "1"
+
+
+      187 |  await page.getByRole('menuitem',{name:'Ver filas vacías de la columna',exact:true}).click()
+      188 |  await expect(page.getByRole('alert').filter({hasText:'Filtro rechazado en la prueba'}).first()).toBeVisible()
+    > 189 |  await expect(page.getByRole('status').filter({hasText:t('empty.viewApplied',{column:'Cantidad'})})).toHaveCount(0)
+          |                                                                                                      ^
+      190 |  expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)
+      191 |  expect(digest(await readFile(path))).toBe(digest(source))
+      192 | })
+        at /private/tmp/freyalab-lim-1/tests/e2e/empty-values.spec.ts:189:102
+
+    Error Context: ../freyalab-lim1-e2e-red/filter-results/empty-values-LIM-1-archivo-e5fac-cado-cuando-falla-su-inicio-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-lim1-e2e-red/filter-results/empty-values-LIM-1-archivo-e5fac-cado-cuando-falla-su-inicio-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-lim1-e2e-red/filter-results/empty-values-LIM-1-archivo-e5fac-cado-cuando-falla-su-inicio-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/empty-values.spec.ts:177:1 › LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio
