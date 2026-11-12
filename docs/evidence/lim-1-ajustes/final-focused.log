@@ -1,0 +1,27 @@
+
+Running 20 tests using 1 worker
+
+(node:15111) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/empty-values.spec.ts:31:1 › LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar (1.7s)
+  ✓   2 [csv] › tests/e2e/empty-values.spec.ts:55:1 › LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos (738ms)
+  ✓   3 [csv] › tests/e2e/empty-values.spec.ts:85:1 › LIM-1 ajustes: Un valor vacío bloquea preparar y rellenar con un motivo accesible (987ms)
+  ✓   4 [csv] › tests/e2e/empty-values.spec.ts:101:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es) (1.5s)
+  ✓   5 [csv] › tests/e2e/empty-values.spec.ts:101:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (en) (1.5s)
+  ✓   6 [csv] › tests/e2e/empty-values.spec.ts:134:1 › LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva bytes tras guardar (1.3s)
+  ✓   7 [csv] › tests/e2e/empty-values.spec.ts:152:1 › LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo (1.5s)
+  ✓   8 [csv] › tests/e2e/empty-values.spec.ts:171:1 › LIM-1 elimina por cualquiera o todas las columnas marcadas y restaura filas completas (1.2s)
+  ✓   9 [csv] › tests/e2e/empty-values.spec.ts:187:1 › LIM-1 fuente protegida permite ver vacíos y bloquea las mutaciones también por el puente (1.4s)
+  ✓  10 [csv] › tests/e2e/empty-values.spec.ts:215:1 › LIM-1 archivo grande permite el filtro completo y explica que limpiar requiere extraer (1.2s)
+  ✓  11 [csv] › tests/e2e/empty-values.spec.ts:227:1 › LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio (830ms)
+  ✓  12 [csv] › tests/e2e/empty-values.spec.ts:244:1 › LIM-1 Texto sin confirmar conserva el diálogo y Cancelar no pierde el borrador (995ms)
+  ✓  13 [csv] › tests/e2e/empty-values.spec.ts:258:1 › LIM-1 cancelar descarta una vista previa tardía y deja reintentar sin modificar el CSV (958ms)
+  ✓  14 [csv] › tests/e2e/empty-values.spec.ts:290:1 › LIM-1 la paleta encuentra isnull, fillna y dropna y conserva la selección múltiple (965ms)
+  ✓  15 [csv] › tests/e2e/empty-values.spec.ts:306:1 › LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas (1.1s)
+  ✓  16 [csv] › tests/e2e/empty-values.spec.ts:320:1 › LIM-1 una protección recibida con el diálogo abierto invalida su vista previa (904ms)
+  ✓  17 [csv] › tests/e2e/empty-values.spec.ts:335:1 › LIM-1 rellenar desde Información actúa sobre todo el documento y pide actualizar el análisis (1.3s)
+  ✓  18 [csv] › tests/e2e/empty-values.spec.ts:356:57 › LIM-1 teclado, idiomas y temas (es) (1.6s)
+  ✓  19 [csv] › tests/e2e/empty-values.spec.ts:356:57 › LIM-1 teclado, idiomas y temas (en) (1.6s)
+  ✓  20 [csv] › tests/e2e/empty-values.spec.ts:356:57 › LIM-1 teclado, idiomas y temas (en-XA) (1.7s)
+
+  20 passed (25.4s)

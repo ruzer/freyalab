@@ -15,6 +15,7 @@
  let operation=$state<TableTransformEdit['operation']|TableEmptyEdit['operation']>(untrack(()=>initialOperation==='calculate'?'split':initialOperation??'split')),columns=$state<number[]>(untrack(()=>initialColumns.length?[...initialColumns]:[0])),separator=$state(';'),custom=$state(''),name=$state('Combinada')
  let preview=$state<TableTransformPreview|CalculatedColumnPreview|TableEmptyPreview|null>(null),prepared=$state<Edit|null>(null),busy=$state(false),processed=$state(0),message=$state(untrack(()=>empties?t('empty.review'):'Elige la operación y revisa su vista previa.')),external=$state(false),dialog:HTMLDialogElement
  let emptyValue=$state(''),includeSpaces=$state(true),emptyScope=$state<'column'|'marked'>(untrack(()=>initialEmptyMarked?'marked':'column')),emptyMatch=$state<'any'|'all'>('any'),emptyError=$state('')
+ const emptyValueRequired=$derived(empties&&operation==='fillEmpty'&&emptyValue==='')
  let calculationName=$state(''),expression=$state(''),reads=$state<ColumnRead[]>([]),onError=$state<CalculateColumnEdit['onError']>('empty'),calculationError=$state<{text:string;detail?:string}|null>(null)
  let previewButton=$state<HTMLButtonElement>(),applyButton=$state<HTMLButtonElement>(),cancelButton=$state<HTMLButtonElement>()
  const calculated=$derived(preview&&'emptyRows'in preview?preview:null)
@@ -44,9 +45,13 @@
   return localized?{text:localized}:{text:t('calculate.error.generic'),detail}
  }
  function explainEmpty(error:unknown){const known=readEmptyError(error);return t('empty.error.'+(known?.code??'generic'))}
- function describeEmpty(result:TableEmptyPreview){return deleting?t('empty.preview.delete',{deleted:formatNumber(result.deletedRows),rows:formatNumber(result.rows)}):t('empty.preview.fill',{cells:plural('empty.cells',result.cells),exact:plural('empty.exact',result.empty.exact),spaces:plural('empty.spaces',result.empty.spaces),missing:plural('empty.missing',result.empty.missing)})}
+ function describeEmpty(result:TableEmptyPreview){
+  if(deleting)return plural('empty.preview.delete',result.deletedRows,{rows:plural('info.count.rows',result.rows)})
+  const categories=(['exact','spaces','missing'] as const).filter(kind=>result.empty[kind]>0).map(kind=>plural('empty.'+kind,result.empty[kind]))
+  return plural(categories.length?'empty.preview.fillDetails':'empty.preview.fill',result.cells,{cells:plural('empty.cells',result.cells),categories:formatList(categories)})
+ }
  async function inspect(){
-  if(busy||external||emptyBlockedReason)return;cancel();cancelRequested=false;preview=null;prepared=null;calculationError=null;emptyError='';processed=0;busy=true
+  if(busy||external||emptyBlockedReason||emptyValueRequired)return;cancel();cancelRequested=false;preview=null;prepared=null;calculationError=null;emptyError='';processed=0;busy=true
   if(calculation){
    const request:CalculateColumnEdit={type:'structure',operation:'calculate',name:calculationName,position:initialCalculationPosition??doc.headers?.length??0,expression,columns:$state.snapshot(reads),onError,revision:doc.revision,requestId:crypto.randomUUID()}
    active=request.requestId;message=t('calculate.progress.starting')
@@ -80,7 +85,7 @@
   try{const result=await window.freya.transformPreview(doc.id,request);if(active===request.requestId){preview=result;prepared=request;message='Vista previa lista. El documento sigue intacto.'}}catch(error){if(active===request.requestId){message=String(error).replace(/^.*Error: /,'');onerror(message)}}finally{if(active===request.requestId){active=undefined;busy=false}}
  }
  async function apply(){
-  if(!preview||!prepared||busy||external||emptyBlockedReason)return
+  if(!preview||!prepared||busy||external||emptyBlockedReason||emptyValueRequired)return
   const edit={...$state.snapshot(prepared),requestId:crypto.randomUUID()};active=edit.requestId;cancelRequested=false;applying=true;busy=true;processed=0;message=calculation?t('calculate.progress.applying'):empties?t('empty.progress.applying'):'Preparando el cambio…'
   if(calculation||empties)void tick().then(()=>{if(active===edit.requestId)cancelButton?.focus()})
   try{const error=await onapply(edit);if(active!==edit.requestId)return;if(error===null||closeAfterApply)onclose();else{preview=null;prepared=null;if(calculation){message='';calculationError=explain(error);void tick().then(()=>previewButton?.focus())}else if(empties){message='';emptyError=cancelRequested?t('empty.progress.cancelled'):explainEmpty(error);void tick().then(()=>previewButton?.focus())}else message='No se aplicó el cambio. '+error}}finally{applying=false;if(active===edit.requestId){active=undefined;busy=false}}
@@ -132,9 +137,10 @@
       {#if operation==='fillEmpty'}<label>{t('empty.value')} <textarea data-empty-value aria-label={t('empty.value')} rows="3" bind:value={emptyValue}></textarea></label>{:else}<p>{t('empty.previousHelp')}</p>{/if}
      {/if}
      <label class="empty-space"><input type="checkbox" bind:checked={includeSpaces}/>{t('empty.includeSpaces')}</label>
-     <button bind:this={previewButton} type="submit" aria-busy={busy}>{t('empty.preview')}</button>
+     <button bind:this={previewButton} type="submit" aria-busy={busy} disabled={emptyValueRequired} title={emptyValueRequired?t('empty.valueRequired'):undefined} aria-describedby={emptyValueRequired?'empty-value-required-'+doc.id:undefined}>{t('empty.preview')}</button>
     </fieldset>
    </form>
+   {#if emptyValueRequired}<p id={'empty-value-required-'+doc.id}>{t('empty.valueRequired')}</p>{/if}
    <p role="status">{message}</p>
    {#if busy}<div class="progress"><progress aria-label={t('empty.progress.preparing')}></progress><span>{t('empty.progress.rows',{rows:formatNumber(processed)})}</span><button bind:this={cancelButton} class="btn-ghost" onclick={cancelPreparation}>{t('empty.cancelPreparation')}</button></div>{/if}
    {#if emptyError}<p role="alert">{emptyError}</p>{/if}
@@ -142,11 +148,11 @@
     {#if emptyPreview.withoutPrevious}<p>{plural('empty.withoutPrevious',emptyPreview.withoutPrevious)}</p>{/if}
     {#if emptyPreview.intermediateColumns.length}<p class="notice">{t(emptyPreview.extendedRows===1?'empty.intermediateOne':'empty.intermediateMany',{rows:plural('empty.extendedRows',emptyPreview.extendedRows,{target:emptyLabel(emptyTarget)}),columns:formatList(emptyPreview.intermediateColumns.map(emptyLabel))})}</p>{/if}
     {#if emptyPreview.samples.length}<div class="preview-scroll"><table><caption>{t('empty.preview.examples')}</caption><thead><tr><th scope="col">{t('empty.preview.position')}</th><th scope="col">{t('empty.preview.before')}</th><th scope="col">{t('empty.preview.after')}</th></tr></thead><tbody>
-     {#each emptyPreview.samples.slice(0,5) as sample}<tr><th scope="row">{t('empty.preview.row',{row:formatNumber((sample.row??0)+1)})}{#if sample.column!==null} / {t('empty.preview.column',{column:formatNumber(sample.column+1)})}{/if}</th><td><pre>{sample.missing?t('empty.preview.absent'):sample.before===''?t('empty.preview.blank'):sample.before}</pre></td><td><pre>{deleting?t('empty.preview.removed'):sample.after===''?t('empty.preview.blank'):sample.after}</pre></td></tr>{/each}
+     {#each emptyPreview.samples.slice(0,5) as sample}<tr><th scope="row">{t('empty.preview.row',{row:formatNumber((sample.row??0)+1)})}{#if sample.column!==null}{' / '}{t('empty.preview.column',{column:formatNumber(sample.column+1)})}{/if}</th><td><pre>{sample.missing?t('empty.preview.absent'):sample.before===''?t('empty.preview.blank'):sample.before}</pre></td><td><pre>{deleting?t('empty.preview.removed'):sample.after===''?t('empty.preview.blank'):sample.after}</pre></td></tr>{/each}
     </tbody></table></div>{/if}
    {/if}
   </div>
-  <div class="actions"><button bind:this={applyButton} class="primary" aria-busy={busy} disabled={busy||external||!!emptyBlockedReason||!changes} onclick={()=>void apply()}>{t(deleting?'empty.applyDelete':'empty.applyFill')}</button><button onclick={requestClose}>{t('empty.cancel')}</button></div>
+  <div class="actions"><button bind:this={applyButton} class="primary" aria-busy={busy} disabled={busy||external||!!emptyBlockedReason||emptyValueRequired||!changes} title={emptyValueRequired?t('empty.valueRequired'):undefined} aria-describedby={emptyValueRequired?'empty-value-required-'+doc.id:undefined} onclick={()=>void apply()}>{t(deleting?'empty.applyDelete':'empty.applyFill')}</button><button onclick={requestClose}>{t('empty.cancel')}</button></div>
  {:else}
  {#if ordering}<p class="notice"><strong>Cambiar orden del documento:</strong> se conserva el contenido; Guardar persistirá el nuevo orden. Después de aplicar se muestra el documento completo sin filtros ni orden de vista. Un paso de deshacer.</p>{:else}<p class="notice"><strong>Documento completo:</strong> incluye filas ocultas por búsqueda o filtros; excluye encabezados salvo que elijas normalizarlos. No usa el rango de filas seleccionado. Un paso de deshacer.</p>{/if}
  <form onsubmit={event=>{event.preventDefault();void inspect()}}>
