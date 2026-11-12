@@ -66,6 +66,16 @@ it('los dos ejes de dispersión formatean números sin cambiar las coordenadas',
  for(const axis of [plot.xAxis,plot.yAxis] as {axisLabel:{formatter:(value:number,index:number)=>string}}[])expect(axis.axisLabel.formatter(285600,0)).toBe('285,600')
  expect(plot.series).toMatchObject([{data:[[1200,285600]]}])
 })
+it.each([false,true])('la tendencia cubre los extremos completos y conserva una leyenda legible del color de la línea; oscuro=%s',dark=>{
+ const data:ChartData={total:300000,usable:300000,points:300000,limited:true,columns:['x','value'],rows:[['1','2'],['2','4']],trend:{slope:.6,intercept:2.2,r2:.6,r:Math.sqrt(.6),n:300000,xMin:1,xMax:300000,constantY:false}}
+ const text=dark?'#f5f5f7':colors.text,background=dark?'#202024':colors.background,plot=chartOption(data,{...options,kind:'scatter',trend:true},{...colors,text,background,dark},['Precio','Ventas'],'Documento completo')
+ expect(plot.series).toMatchObject([{type:'scatter'},{name:'Tendencia',type:'line',data:[[1,expect.closeTo(2.8,12)],[300000,expect.closeTo(180002.2,12)]],showSymbol:false,lineStyle:{color:text,type:'dashed'},itemStyle:{color:text}}])
+ const a=luminance(text),b=luminance(background);expect((Math.max(a,b)+.05)/(Math.min(a,b)+.05)).toBeGreaterThanOrEqual(3)
+ expect(plot.legend).toMatchObject({data:['Tendencia'],selected:{Tendencia:true}})
+ expect(chartOption(data,{...options,kind:'scatter',trend:true},{...colors,text,background,dark},['Precio','Ventas'],'Documento completo',['Tendencia']).legend).toMatchObject({selected:{Tendencia:false}})
+ expect(JSON.stringify(plot.title)).toContain('y = 0.6·x + 2.2')
+ expect(plot.aria).toMatchObject({label:{description:expect.stringContaining('Relación no es causa.')}})
+})
 it('las etiquetas numéricas del mapa no formatean sus identificadores de categoría',()=>{
  const data:ChartData={total:1200,usable:1200,points:1,limited:false,columns:['x','value','y'],rows:[['00123','1200','90071992547409931234']]}
  const plot=chartOption(data,{...options,kind:'heatmap'},colors)

@@ -4,7 +4,9 @@ export const chartKinds={histogram:'Histograma',bar:'Barras',line:'Líneas',scat
 export type ChartKind=keyof typeof chartKinds
 export const chartAggregates={count:'Conteo de filas',distinct:'Valores únicos',sum:'Suma',average:'Promedio',min:'Mínimo',max:'Máximo',median:'Mediana'} as const
 export const chartTimeGroups={none:'Sin agrupar fechas',day:'Día',month:'Mes',year:'Año'} as const
-export interface ChartOptions {kind:ChartKind;x:number;y:number;bins:number;aggregate:keyof typeof chartAggregates;descending:boolean;measureType:'text'|'number';series?:number;time?:keyof typeof chartTimeGroups}
+export interface ChartOptions {kind:ChartKind;x:number;y:number;bins:number;aggregate:keyof typeof chartAggregates;descending:boolean;measureType:'text'|'number';series?:number;time?:keyof typeof chartTimeGroups;trend?:boolean}
+export interface ChartTrend {slope:number|null;intercept:number|null;r2:number|null;r:number|null;n:number;xMin:number|null;xMax:number|null;constantY:boolean}
+const trendColumns=['trend_n','trend_slope','trend_intercept','trend_r2','trend_r','trend_x_min','trend_x_max','trend_y_min','trend_y_max']
 export const chartSeriesLimit=8
 export const chartLimit=(kind:ChartKind)=>kind==='line'||kind==='scatter'?2000:kind==='heatmap'?400:100
 
@@ -18,6 +20,7 @@ function chartQuery(headers:string[],options:ChartOptions,limit:number,totals:bo
  if(!Number.isInteger(options.bins)||options.bins<1||options.bins>30)throw new Error('Elige entre 1 y 30 intervalos.')
  if(!Object.hasOwn(chartAggregates,options.aggregate))throw new Error('Elige una agregación válida.')
  if(!['text','number'].includes(options.measureType))throw new Error('Elige texto o número para la medida.')
+ if(options.trend!==undefined&&typeof options.trend!=='boolean')throw new Error(t('charts.trend.invalidOption'))
  const time=options.time??'none'
  if(!Object.hasOwn(chartTimeGroups,time))throw new Error('Elige una agrupación temporal válida.')
  if(time!=='none'&&!['bar','line'].includes(options.kind))throw new Error('Este tipo de gráfico no admite agrupación temporal.')
@@ -75,7 +78,9 @@ function chartQuery(headers:string[],options:ChartOptions,limit:number,totals:bo
   points=`SELECT q.x, q.q1, q.median AS value, q.q3, MIN(b.ny) FILTER (WHERE b.ny>=q.q1-1.5*(q.q3-q.q1)) AS low, MAX(b.ny) FILTER (WHERE b.ny<=q.q3+1.5*(q.q3-q.q1)) AS high, COUNT(*) FILTER (WHERE ${outside}) AS outliers, COUNT(*) AS count, CAST(list_slice(LIST(b.ny ORDER BY b.ny) FILTER (WHERE ${outside}),1,20) AS VARCHAR) AS atypical FROM quartiles q JOIN base b ON b.x IS NOT DISTINCT FROM q.x WHERE b.ny IS NOT NULL GROUP BY q.x,q.q1,q.median,q.q3`
   extra=', p.q1, p.q3, p.low, p.high, p.outliers, p.count, p.atypical'
  }
- return `WITH ${cte}, points AS (${points}), stats AS (SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE ${usable}) AS usable FROM base) SELECT stats.total, stats.usable, (SELECT COUNT(*) FROM points) AS points, p.present, p.x, p.value${extra}${series?', p.series, (SELECT COUNT(*) FROM (SELECT DISTINCT series FROM base)) AS series_count':''} FROM stats LEFT JOIN (SELECT *, 1 AS present FROM points) p ON TRUE ORDER BY ${order} LIMIT ${limit+1};`
+ const trend=options.trend&&options.kind==='scatter'&&!split
+ const trendStats=trend?`, regr_count(ny,nx) AS trend_n, regr_slope(ny,nx) AS trend_slope, regr_intercept(ny,nx) AS trend_intercept, regr_r2(ny,nx) AS trend_r2, corr(ny,nx) AS trend_r, MIN(nx) FILTER (WHERE ${usable}) AS trend_x_min, MAX(nx) FILTER (WHERE ${usable}) AS trend_x_max, MIN(ny) FILTER (WHERE ${usable}) AS trend_y_min, MAX(ny) FILTER (WHERE ${usable}) AS trend_y_max`:''
+ return `WITH ${cte}, points AS (${points}), stats AS (SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE ${usable}) AS usable${trendStats} FROM base) SELECT stats.total, stats.usable, (SELECT COUNT(*) FROM points) AS points, p.present, p.x, p.value${extra}${series?', p.series, (SELECT COUNT(*) FROM (SELECT DISTINCT series FROM base)) AS series_count':''}${trend?', '+trendColumns.map(column=>'stats.'+column).join(', '):''} FROM stats LEFT JOIN (SELECT *, 1 AS present FROM points) p ON TRUE ORDER BY ${order} LIMIT ${limit+1};`
 }
 
 export function chartLabels(headers:string[],options:ChartOptions){
@@ -90,7 +95,7 @@ export function chartLabels(headers:string[],options:ChartOptions){
  return{x,y,summary:t('charts.labels.against',{x,y,split})}
 }
 
-export interface ChartData {total:number;usable:number;points:number;limited:boolean;rows:(string|null)[][];columns:string[];seriesCount?:number;invalidDates?:number}
+export interface ChartData {total:number;usable:number;points:number;limited:boolean;rows:(string|null)[][];columns:string[];seriesCount?:number;invalidDates?:number;trend?:ChartTrend}
 export function chartData(kind:ChartKind,columns:string[],rows:(string|null)[][],limit=chartLimit(kind)):ChartData{
  if(!Number.isInteger(limit)||limit<1||limit>10000)throw new Error('Límite de gráfico no válido.')
  if(!rows.length||columns.slice(0,6).join(',')!=='total,usable,points,present,x,value')throw new Error('El motor no devolvió datos de gráfico válidos.')
@@ -98,7 +103,16 @@ export function chartData(kind:ChartKind,columns:string[],rows:(string|null)[][]
  const total=count(rows[0][0]),usable=count(rows[0][1]),points=count(rows[0][2])
  const seriesIndex=columns.indexOf('series_count'),dateIndex=columns.indexOf('invalid_dates'),seriesCount=seriesIndex<0?undefined:count(rows[0][seriesIndex]),invalidDates=dateIndex<0?undefined:count(rows[0][dateIndex])
  if(invalidDates!==undefined&&(invalidDates>total||usable>total-invalidDates))throw new Error('Recuento de fechas no válido.')
- const visible=columns.flatMap((name,i)=>i>=4&&!['series_count','invalid_dates'].includes(name)?[i]:[])
+ let trend:ChartTrend|undefined
+ if(columns.includes('trend_n')){
+  if(kind!=='scatter'||trendColumns.some(column=>!columns.includes(column)))throw new Error(t('charts.trend.invalidResult'))
+  const field=(name:string)=>rows[0][columns.indexOf('trend_'+name)]
+  const finite=(value:string|null)=>value===null||!Number.isFinite(Number(value))?null:Number(value)
+  const yMin=finite(field('y_min')),yMax=finite(field('y_max')),constantY=yMin!==null&&yMin===yMax
+  trend={n:count(field('n')),slope:finite(field('slope')),intercept:finite(field('intercept')),r2:constantY?null:finite(field('r2')),r:finite(field('r')),xMin:finite(field('x_min')),xMax:finite(field('x_max')),constantY}
+  if(trend.n!==usable)throw new Error(t('charts.trend.invalidCount'))
+ }
+ const visible=columns.flatMap((name,i)=>i>=4&&!['series_count','invalid_dates',...trendColumns].includes(name)?[i]:[])
  if(seriesCount!==undefined&&seriesCount>chartSeriesLimit)throw new Error(`Hay ${seriesCount} series. Elige una columna con hasta ${chartSeriesLimit} categorías o limita la vista filtrada.`)
- return{total,usable,points,limited:points>limit,...seriesCount!==undefined?{seriesCount}:{},...invalidDates!==undefined?{invalidDates}:{},columns:visible.map(i=>columns[i]),rows:rows.filter(row=>row[3]!==null).slice(0,limit).map(row=>visible.map(i=>row[i]))}
+ return{total,usable,points,limited:points>limit,...seriesCount!==undefined?{seriesCount}:{},...invalidDates!==undefined?{invalidDates}:{},...trend?{trend}:{},columns:visible.map(i=>columns[i]),rows:rows.filter(row=>row[3]!==null).slice(0,limit).map(row=>visible.map(i=>row[i]))}
 }

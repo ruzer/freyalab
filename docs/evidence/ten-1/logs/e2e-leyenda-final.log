@@ -1,0 +1,9 @@
+
+Running 2 tests using 1 worker
+
+(node:33835) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/chart-trend.spec.ts:154:47 › TEN-1 capturas, teclado y bloque legible en es (3.0s)
+  ✓  2 [csv] › tests/e2e/chart-trend.spec.ts:154:47 › TEN-1 capturas, teclado y bloque legible en en-XA (3.1s)
+
+  2 passed (6.4s)

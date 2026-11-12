@@ -1,0 +1,25 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-ten-1
+
+ ❯ tests/chart-trend.test.ts (8 tests | 1 failed) 1018ms
+   × compara las 300 000 filas con el oráculo completo aunque solo se dibujen 2 000 351ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-trend.test.ts > compara las 300 000 filas con el oráculo completo aunque solo se dibujen 2 000
+AssertionError: expected 0.00013120675793898418 to be greater than 0.001
+ ❯ tests/chart-trend.test.ts:63:90
+     61|  expect(data.trend!.r2).toBeCloseTo(expected,12)
+     62|  const drawn=data.rows.map(row=>[Number(row[0]),Number(row[1])]),drawn…
+     63|  expect(Math.abs(data.trend!.r2!-rSquared(drawn,linearRegressionLine(d…
+       |                                                                                          ^
+     64| })
+     65|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 100 passed (101)
+   Start at  12:50:35
+   Duration  1.26s (tests 88%, import 9%, transform 3%)

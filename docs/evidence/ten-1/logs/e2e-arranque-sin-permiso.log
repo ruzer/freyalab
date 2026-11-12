@@ -1,0 +1,129 @@
+
+Running 7 tests using 1 worker
+
+(node:24434) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-trend.spec.ts:58:1 › TEN-1 cinco pares: petición, teclado, exportaciones completas y preset (394ms)
+(node:24437) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/chart-trend.spec.ts:95:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción (350ms)
+(node:24440) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [csv] › tests/e2e/chart-trend.spec.ts:109:1 › TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia (351ms)
+Testing stopped early after 3 maximum allowed failures.
+
+
+  1) [csv] › tests/e2e/chart-trend.spec.ts:58:1 › TEN-1 cinco pares: petición, teclado, exportaciones completas y preset
+
+    Error: Process failed to launch!
+
+    Error: electron.launch: Process failed to launch!
+    Call log:
+      - <launching> /private/tmp/freyalab-mac-install.n4NxFJ/build/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron --inspect=0 --remote-debugging-port=0 /private/tmp/freyalab-ten-1/out/main/index.js
+      - <launched> pid=24435
+      - [pid=24435] <kill>
+      - [pid=24435] <will force kill>
+      - [pid=24435] exception while trying to kill process: Error: kill EPERM
+      - [pid=24435] <process did exit: exitCode=null, signal=SIGABRT>
+      - [pid=24435] starting temporary directories cleanup
+      - [pid=24435] finished temporary directories cleanup
+
+
+      15 | async function launch(language:Language='es'){
+      16 |  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
+    > 17 |  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:language,FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000})
+         |      ^
+      18 |  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
+      19 | }
+      20 | test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-trend-'));await mkdir(join(folder,'exports'));await launch()})
+        at launch (/private/tmp/freyalab-ten-1/tests/e2e/chart-trend.spec.ts:17:6)
+        at /private/tmp/freyalab-ten-1/tests/e2e/chart-trend.spec.ts:20:115
+
+    Error Context: ../ten1-e2e-primero/chart-trend-TEN-1-cinco-pa-642fc-taciones-completas-y-preset-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../ten1-e2e-primero/chart-trend-TEN-1-cinco-pa-642fc-taciones-completas-y-preset-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../ten1-e2e-primero/chart-trend-TEN-1-cinco-pa-642fc-taciones-completas-y-preset-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/chart-trend.spec.ts:95:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción
+
+    Error: Process failed to launch!
+
+    Error: electron.launch: Process failed to launch!
+    Call log:
+      - <launching> /private/tmp/freyalab-mac-install.n4NxFJ/build/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron --inspect=0 --remote-debugging-port=0 /private/tmp/freyalab-ten-1/out/main/index.js
+      - <launched> pid=24438
+      - [pid=24438] <kill>
+      - [pid=24438] <will force kill>
+      - [pid=24438] exception while trying to kill process: Error: kill EPERM
+      - [pid=24438] <process did exit: exitCode=null, signal=SIGABRT>
+      - [pid=24438] starting temporary directories cleanup
+      - [pid=24438] finished temporary directories cleanup
+
+
+      15 | async function launch(language:Language='es'){
+      16 |  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
+    > 17 |  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:language,FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000})
+         |      ^
+      18 |  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
+      19 | }
+      20 | test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-trend-'));await mkdir(join(folder,'exports'));await launch()})
+        at launch (/private/tmp/freyalab-ten-1/tests/e2e/chart-trend.spec.ts:17:6)
+        at /private/tmp/freyalab-ten-1/tests/e2e/chart-trend.spec.ts:20:115
+
+    Error Context: ../ten1-e2e-primero/chart-trend-TEN-1-degenera-e3384-conservan-marcada-la-opción-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../ten1-e2e-primero/chart-trend-TEN-1-degenera-e3384-conservan-marcada-la-opción-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../ten1-e2e-primero/chart-trend-TEN-1-degenera-e3384-conservan-marcada-la-opción-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/chart-trend.spec.ts:109:1 › TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia
+
+    Error: Process failed to launch!
+
+    Error: electron.launch: Process failed to launch!
+    Call log:
+      - <launching> /private/tmp/freyalab-mac-install.n4NxFJ/build/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron --inspect=0 --remote-debugging-port=0 /private/tmp/freyalab-ten-1/out/main/index.js
+      - <launched> pid=24441
+      - [pid=24441] <kill>
+      - [pid=24441] <will force kill>
+      - [pid=24441] exception while trying to kill process: Error: kill EPERM
+      - [pid=24441] <process did exit: exitCode=null, signal=SIGABRT>
+      - [pid=24441] starting temporary directories cleanup
+      - [pid=24441] finished temporary directories cleanup
+
+
+      15 | async function launch(language:Language='es'){
+      16 |  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
+    > 17 |  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:language,FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000})
+         |      ^
+      18 |  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
+      19 | }
+      20 | test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-trend-'));await mkdir(join(folder,'exports'));await launch()})
+        at launch (/private/tmp/freyalab-ten-1/tests/e2e/chart-trend.spec.ts:17:6)
+        at /private/tmp/freyalab-ten-1/tests/e2e/chart-trend.spec.ts:20:115
+
+    Error Context: ../ten1-e2e-primero/chart-trend-TEN-1-filtros--bea68-ar-por-bloquea-la-tendencia-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../ten1-e2e-primero/chart-trend-TEN-1-filtros--bea68-ar-por-bloquea-la-tendencia-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../ten1-e2e-primero/chart-trend-TEN-1-filtros--bea68-ar-por-bloquea-la-tendencia-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [csv] › tests/e2e/chart-trend.spec.ts:58:1 › TEN-1 cinco pares: petición, teclado, exportaciones completas y preset
+    [csv] › tests/e2e/chart-trend.spec.ts:95:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción
+    [csv] › tests/e2e/chart-trend.spec.ts:109:1 › TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia
+  4 did not run
+  1 error was not a part of any test, see above for details

@@ -2,6 +2,7 @@ import {t,plural,formatNumber} from '../shared/i18n'
 import type {EChartsOption} from 'echarts'
 import type {ChartData,ChartOptions} from '../shared/charts'
 import {chartLabels} from '../shared/charts'
+import {chartTrendLine,chartTrendText} from '../shared/chart-trend'
 export const formatChartNumber=(value:number)=>formatNumber(value,{maximumSignificantDigits:12})
 const number=(v:string|null)=>{if(v===null)return null;const n=Number(v);if(!Number.isFinite(n))throw new Error('Un resultado numérico no se puede representar.');return n}
 const label=(value:string|null)=>value===null?t('charts.plot.missing'):value===''?t('charts.plot.empty'):value
@@ -41,7 +42,10 @@ export function chartOption(data:ChartData,options:ChartOptions,colors:{text:str
  if(temporal&&options.kind==='line')return{...common,series:[{type:'line',label:direct,connectNulls:false,showSymbol:rows.length<100,data:rows.map(row=>number(row[1]))}]}
  if(options.kind==='histogram')return{...common,xAxis:{...xName,type:'category',data:rows.map((r,i)=>`[${formatChartNumber(Number(r[0]))}, ${formatChartNumber(Number(r[2]))}${i===rows.length-1?']':')'}`),axisLabel:{...labels,rotate:25},axisLine},series:[{type:'bar',label:direct,barCategoryGap:0,data:rows.map(r=>number(r[1]))}]}
  if(options.kind==='bar')return{...common,series:[{type:'bar',label:direct,data:rows.map(r=>number(r[1]))}]}
- if(options.kind==='line'||options.kind==='scatter')return{...common,xAxis:{...xName,type:'value',scale:true,axisLabel:numericLabels,axisLine,splitLine},yAxis:{...yName,type:'value',scale:true,axisLabel:numericLabels,splitLine},series:options.kind==='line'?[{type:'line',label:direct,connectNulls:false,showSymbol:rows.length<100,data:rows.map(r=>[number(r[0]),number(r[1])])}]:[{type:'scatter',symbolSize:7,data:rows.map(r=>[number(r[0]),number(r[1])])}]}
+ if(options.kind==='line'||options.kind==='scatter'){
+  const trend=options.kind==='scatter'&&options.trend?data.trend:undefined,line=trend?chartTrendLine(trend):[],text=trend?chartTrendText(trend,headers,options,!compact):[],trendName=t('charts.trend.legend')
+  return{...common,...trend?{title:[...(Array.isArray(common.title)?common.title:common.title?[common.title]:[]),{text:text[0],left:85,right:40,top:compact?0:52,textStyle:{color:colors.text,fontSize:11,overflow:'break',width:450}}],grid:{left:85,right:40,top:compact?45:100,bottom:compact?60:85},aria:{enabled:true,label:{description:[(common.aria as {label:{description:string}}).label.description,...text].join(' ')}}}:{},...line.length?{legend:{data:[trendName],selected:{[trendName]:!hiddenSeries.includes(trendName)},top:compact?20:75,right:40,textStyle:{color:colors.text}}}:{},xAxis:{...xName,type:'value',scale:true,axisLabel:numericLabels,axisLine,splitLine},yAxis:{...yName,type:'value',scale:true,axisLabel:numericLabels,splitLine},series:options.kind==='line'?[{type:'line',label:direct,connectNulls:false,showSymbol:rows.length<100,data:rows.map(r=>[number(r[0]),number(r[1])])}]:[{type:'scatter',symbolSize:7,data:rows.map(r=>[number(r[0]),number(r[1])])},...line.length?[{name:trendName,type:'line' as const,data:line,showSymbol:false,lineStyle:{color:colors.text,type:'dashed' as const},itemStyle:{color:colors.text},z:3}]:[]]}
+ }
  if(options.kind==='heatmap'){
   // La escala clara conserva cifras negras legibles, independientemente del acento de los botones.
   const xs=[...new Set(rows.map(r=>r[0]))],ys=[...new Set(rows.map(r=>r[2]))],values=rows.map(r=>number(r[1])!)

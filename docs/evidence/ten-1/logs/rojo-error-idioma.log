@@ -1,0 +1,29 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-ten-1
+
+ ❯ tests/chart-trend.test.ts (15 tests | 1 failed) 923ms
+   × localiza los errores nuevos de la tendencia sin cambiar el contrato anterior 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-trend.test.ts > localiza los errores nuevos de la tendencia sin cambiar el contrato anterior
+AssertionError: expected [Function] to throw error including 'trend option' but got 'La opción de tendencia no es válida.'
+
+Expected: "trend option"
+Received: "La opción de tendencia no es válida."
+
+ ❯ tests/chart-trend.test.ts:101:71
+     99| it('localiza los errores nuevos de la tendencia sin cambiar el contrat…
+    100|  setLanguage('en')
+    101|  try{expect(()=>chartSQL(headers,{...options,trend:'true' as never})).…
+       |                                                                       ^
+    102|  finally{setLanguage('es')}
+    103| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 14 passed (15)
+   Start at  13:10:31
+   Duration  1.19s (tests 88%, import 9%, transform 2%)

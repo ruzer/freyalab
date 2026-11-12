@@ -18,6 +18,7 @@
  import {chartPivot,chartTop} from '../../shared/chart-pivot'
  import {suggest,type ChartColumn} from '../../shared/chart-suggest'
  import {chartOption,chartSeries,formatChartNumber} from '../chart-option'
+ import {chartTrendText,chartTrendLine} from '../../shared/chart-trend'
  import type {DocumentInfo,SqlResult,TableQuery,TableConditionGroup,TableViewMeta} from '../../shared/types'
  use([BarChart,LineChart,ScatterChart,HeatmapChart,BoxplotChart,GridComponent,TooltipComponent,VisualMapComponent,AriaComponent,TitleComponent,LegendComponent,SVGRenderer])
  let {doc,query,queryValid,viewMeta,visible=true,onDemand=false,exportHost,onclose,onerror}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;visible?:boolean;onDemand?:boolean;exportHost?:HTMLElement;onclose:()=>void;onerror:(message:string)=>void}=$props()
@@ -37,12 +38,14 @@
  let data=$state<ChartData|null>(null),source=$state<SqlResult['sources'][number]|null>(null),busy=$state(false),message=$state('charts.ui.initial'),tablePage=$state(0),ready=$state(false),zoom=$state(1),exporting=$state(false)
  let resultFormat=$state<'csv'|'json'|'md'>('json'),protectFormulas=$state(true),cancellingExport=$state(false),exportJob=$state<string>()
  let hiddenSeries=$state<string[]>([])
- const series=$derived(data?chartSeries(data):[])
+ const series=$derived(data?[...chartSeries(data),...data.trend&&chartTrendLine(data.trend).length?[{name:t('charts.trend.legend')}]:[]]:[])
  let element:HTMLDivElement,chart:ECharts|undefined,active:string|undefined,observedSignature:string|undefined,totalJob:string|undefined,fieldJob:{id:string;requestId:string}|undefined
  let totals=$state<Record<string,string|null>[]>([]),profiles=$state<ChartColumn[]>([]),pivotPage=$state(0),pivotSize=$state(5),fieldsOpen=$state(false),fieldsLoading=$state(true),announcement=$state(''),cancelledSignature=$state<string|null>(null),failed=$state(false),conversion=$state<number|null>(null),pendingFilter=$state<number|undefined>(),samples=$state<Record<number,string[]>>({}),interpretable=$state<Record<number,boolean>>({}),fieldErrors=$state<string[]>([])
  let fieldGeneration=0,fieldRevision:string|undefined,initializedDocument:string|undefined,filterReturn:HTMLElement|null=null,conversionReturn:HTMLElement|null=null
  const columns=$derived((doc.headers??[]).map((name,column)=>({column,name:columnLabel(column),profile:profiles.find(field=>field.column===column)?.profile})))
  const plotData=$derived(data?chartTop(data,options,totals):null)
+ const trendText=$derived.by(()=>{getUILanguage();return data?.trend?chartTrendText(data.trend,doc.headers??[],options):[]})
+ const trendFull=$derived.by(()=>{getUILanguage();return data?.trend?chartTrendText(data.trend,doc.headers??[],options,true).join('\n'):''})
  const summaryTitle=$derived(options.x<0||options.y===-2?t('charts.fields.emptyTitle'):aggregated?t(options.series!==undefined&&options.series>=0?'charts.fields.titleSplit':'charts.fields.titleResult',{summary:t('charts.aggregate.'+options.aggregate),field:options.y>=0?columnLabel(options.y):t('charts.fields.rowCount'),row:columnLabel(options.x),column:columnLabel(options.series??-1)}):axes.summary)
  const pivot=$derived(data?chartPivot(data,options,totals):null)
  const resultOrder=$derived.by(()=>{
@@ -93,7 +96,7 @@
    for(let offset=100;offset<first.returnedRows;offset+=100){const page=await window.freya.sqlPage(requestId,offset);if(active!==requestId)return;rows.push(...page.rows)}
    const result=chartData(options.kind,first.columns.map(c=>c.name),rows)
    if(temporal&&result.total>0&&result.points===0)throw new Error(t('charts.ui.dateError'))
-   if(result.total>0&&result.usable===0&&options.kind!=='heatmap'&&!(aggregated&&['count','distinct'].includes(options.aggregate)))throw new Error(t('charts.ui.numberError'))
+   if(result.total>0&&result.usable===0&&!result.trend&&options.kind!=='heatmap'&&!(aggregated&&['count','distinct'].includes(options.aggregate)))throw new Error(t('charts.ui.numberError'))
    const totalId=crypto.randomUUID();totalJob=totalId
    const summary=await window.freya.sqlRun({requestId:totalId,sources:[{id:doc.id,revision:doc.revision,...scope!=='all'?{query:$state.snapshot(analysisQuery)}:{},...where.conditions.length?{where:$state.snapshot(where)}:{}}],sql:chartTotalSQL(doc.headers??[],options)})
    if(active!==requestId)return
@@ -160,7 +163,7 @@
   announcement=t(previous>=0&&previous!==column?'charts.fields.replaced':'charts.fields.added',{field:name,previous:columnLabel(previous),zone:t('charts.fields.'+zone)})
  }
  function removeField(zone:ChartZone){const previous=zoneFields(options)[zone];options=removeFromZone($state.snapshot(options),zone);announcement=t('charts.fields.removed',{field:previous<0?t('charts.fields.rowCount'):columnLabel(previous),zone:t('charts.fields.'+zone)})}
- function clearFields(){options={...options,kind:'bar',x:-1,y:-2,series:-1,time:'none'};where={conditions:[],filterMode:'all'};failed=false;announcement=t('charts.fields.cleared')}
+ function clearFields(){options={...options,kind:'bar',x:-1,y:-2,series:-1,time:'none',trend:false};where={conditions:[],filterMode:'all'};failed=false;announcement=t('charts.fields.cleared')}
  function startSuggestion(){const first=startingSuggestion;if(first){started=true;stale=false;options=first;announcement=t('charts.fields.ready',{n:0})}}
  function changeAggregate(aggregate:ChartOptions['aggregate']){if(options.kind==='heatmap')return;if(!aggregated){options.kind='bar';options.time='none'}options.aggregate=aggregate;announcement=t('charts.fields.changed',{operation:t('charts.aggregate.'+aggregate)})}
  function openFilters(column?:number){filterReturn=document.activeElement as HTMLElement;pendingFilter=column;showFilters=true}
@@ -206,12 +209,19 @@
  {#if unavailable}<p role="alert">{t('charts.ui.unavailable')}</p>{/if}
  {#if tooWide}<p role="alert">{t('charts.ui.tooWide')}</p>{/if}
  <div class="chart-types" role="group" aria-label={t('charts.ui.chooseType')}>{#each Object.keys(typeIcons) as kind}<button {...controlHint(exporting?'busy':null)} aria-pressed={options.kind===kind} disabled={exporting} onclick={()=>chooseKind(kind as ChartOptions['kind'],true)}><Icon name={typeIcons[kind as keyof typeof typeIcons]} size={14}/>{kind==='box'?t('charts.ui.boxButton'):t('charts.kind.'+kind)}</button>{/each}</div>
+ {#if options.kind==='scatter'}<div class="trend-option"><label><input type="checkbox" bind:checked={options.trend} disabled={exporting||fieldsLoading||(options.series??-1)>=0} aria-describedby={(options.series??-1)>=0?'trend-series-'+doc.id:undefined}/>{t('charts.trend.option')}</label>{#if (options.series??-1)>=0}<span id={'trend-series-'+doc.id}>{t('charts.trend.series')}</span>{/if}</div>{/if}
  <p class="suggestion" title={reason}>{reason}</p>
  {#if !busy&&!fieldsLoading&&(!sql||data&&!data.rows.length)}<div class="empty-result"><p>{t('charts.ui.chooseField')}</p><button disabled={onDemand&&!startingSuggestion} onclick={startSuggestion}>{onDemand?t('analysis.tab.createChart',{chart:suggestedTitle}):t('charts.fields.start')}</button></div>{/if}
  {#if failed}<div class="error-result" role="alert"><p>{t('charts.fields.failed')}</p><button onclick={()=>void generate()}>{t('charts.fields.retry')}</button></div>{/if}
  {#if plotData?.top}<p class="top-notice" role="status">{t('charts.fields.top',{n:plotData.groups,other:plotData.other?t('charts.fields.topOther'):''})} <button onclick={()=>{fieldsOpen=true;tick().then(()=>document.querySelector<HTMLInputElement>('.chart-fields input')?.focus())}}>{t('charts.fields.changeRows')}</button></p>{/if}
  <!-- svelte-ignore a11y_no_noninteractive_tabindex (La región ampliada debe admitir desplazamiento con teclado.) -->
  <div class="plot-scroll" role="region" aria-label={t('charts.ui.area')} tabindex="0"><div class="plot" style:width={`${zoom*100}%`} bind:this={element}></div></div>
+ {#if data?.trend&&source}<section class="trend-result" aria-label={t('charts.trend.title')} title={trendFull} aria-describedby={'trend-full-'+doc.id} aria-live="polite" aria-atomic="true">
+  <span class="sr-only" id={'trend-full-'+doc.id}>{trendFull}</span>
+  {#each trendText as line,index}<p>{#if index===0}<strong>{line}</strong>{:else}{line}{/if}</p>{/each}
+  <p>{source.fromDisk?t('charts.trend.disk'):t('charts.trend.memory',{revision:source.revision})} · {scopeLabel}</p>
+  {#if data.limited}<p>{t('charts.trend.drawn',{drawn:formatNumber(data.rows.length),total:formatNumber(data.trend.n)})}</p>{/if}
+ </section>{/if}
  {#if pivot&&data?.rows.length}
  <section class="pivot-result" aria-label={t('charts.ui.pivot')}>
   <div class="pivot-heading"><strong>{t('charts.ui.pivot')}</strong><span>{t('charts.ui.groupsShown',{shown:Math.min(pivotSize,pivot.rows.length-pivotPage*pivotSize),total:pivot.rows.length})}</span></div>
@@ -266,6 +276,7 @@
  {#if conversion!==null}<div class="conversion-notice" role="region" aria-label={t('charts.fields.conversion')}><p>{t(interpretable[conversion]?'charts.fields.explicit':'charts.fields.symbols')}</p>{#if interpretable[conversion]}<button onclick={()=>{options={...options,kind:'bar',y:conversion!,measureType:'number',aggregate:'sum',time:'none'};void closeConversion()}}>{t('charts.fields.explicit')}</button>{/if}<button onclick={()=>void closeConversion()}>{t('charts.fields.close')}</button></div>{/if}
 </section>
 <style>
+ .trend-option{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:5px;font-size:11px;flex-shrink:0}.trend-option input{appearance:auto}.trend-option span{color:var(--muted)}.trend-result{flex-shrink:0;font-size:11px;line-height:1.4;margin-top:6px;overflow-wrap:anywhere}.trend-result p{margin:2px 0}
  .header-export .result-export-options{position:absolute;right:0;top:calc(100% + 6px);z-index:4;width:min(390px,75vw);padding:12px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-control);box-shadow:0 8px 20px #0003}.header-export summary{cursor:pointer}
  .charts-panel{padding:10px 14px;border-bottom:1px solid var(--border);background:var(--panel);font-size:12px;height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden;flex:1}.actions,fieldset{display:flex;align-items:center;gap:8px;flex-wrap:wrap}p{color:var(--text);line-height:1.5;margin:8px 0}fieldset{border:0;padding:0;margin:8px 0}label{display:flex;align-items:center;gap:6px}select{max-width:180px}input{width:60px}input[type=checkbox]{width:auto}select,input,button{font:inherit;color:var(--text);background:var(--input);border:1px solid var(--border);padding:5px 8px;border-radius:var(--radius-control)}button.btn-tint{background:var(--text);color:var(--panel)}button:disabled{opacity:.5}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.plot-scroll{position:relative;flex:1;min-height:160px;overflow:auto;border:1px solid var(--border);border-radius:6px}.plot{overflow:hidden;position:absolute;inset:0;height:100%;min-width:0}.actions{margin:8px 0}.scope{font-weight:600}.notice{border-left:3px solid var(--accent);padding-left:8px}summary{cursor:pointer;margin:8px 0}.table-scroll{max-height:180px;overflow:auto}table{border-collapse:collapse;width:100%}td,th{padding:6px;border:1px solid var(--border);text-align:left;overflow-wrap:anywhere;max-width:280px}caption{padding:6px;text-align:left;color:var(--muted)}pre{white-space:pre-wrap;overflow-wrap:anywhere}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
  .chart-intro{display:flex;align-items:center;gap:8px}.chart-description{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;font-size:13px;font-weight:600;color:var(--text)}.chart-info{position:relative}.chart-info summary{display:flex;padding:6px}.chart-info .info-content{position:absolute;max-height:55vh;overflow:auto;right:0;top:100%;width:260px;padding:12px;background:var(--panel);border:1px solid var(--border);z-index:3}.more-options{flex:0 1 auto;min-height:0;overflow:auto}.advanced-content{padding-bottom:8px}.manual,.progress{display:flex;align-items:center;gap:8px;margin-bottom:8px}.actions{flex-shrink:0} .chart-info summary:focus-visible{outline:2px solid var(--accent)}

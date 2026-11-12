@@ -1,0 +1,37 @@
+v24.22.1
+
+ RUN  v5.0.5 /private/tmp/freyalab-ten-1
+
+ ❯ tests/chart-presentation.test.ts (18 tests | 2 failed) 38ms
+   × la tendencia cubre los extremos completos y conserva una leyenda legible del color de la línea; oscuro=false 4ms
+   × la tendencia cubre los extremos completos y conserva una leyenda legible del color de la línea; oscuro=true 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-presentation.test.ts > la tendencia cubre los extremos completos y conserva una leyenda legible del color de la línea; oscuro=false
+ FAIL  tests/chart-presentation.test.ts > la tendencia cubre los extremos completos y conserva una leyenda legible del color de la línea; oscuro=true
+AssertionError: expected { Object (data, top, ...) } to match object { data: [ 'Tendencia' ], …(1) }
+(4 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "data": [
+      "Tendencia",
+    ],
+-   "selected": {
+-     "Tendencia": true,
+-   },
+  }
+
+ ❯ tests/chart-presentation.test.ts:74:22
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 16 passed (18)
+   Start at  13:29:48
+   Duration  159ms (tests 48%, transform 31%, import 18%, worker 3%)

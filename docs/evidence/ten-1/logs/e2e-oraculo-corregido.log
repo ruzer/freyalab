@@ -1,0 +1,8 @@
+
+Running 1 test using 1 worker
+
+(node:32400) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/chart-trend.spec.ts:139:1 › TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra (16.2s)
+
+  1 passed (16.9s)

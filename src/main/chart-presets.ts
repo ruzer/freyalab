@@ -12,7 +12,7 @@ const keys=<T extends Record<string,unknown>>(value:T)=>Object.keys(value) as [k
 const index=z.number().int().min(-1).max(199)
 export const chartConfiguration=z.object({
  headers:z.array(z.string().max(100000)).min(1).max(200),
- options:z.object({kind:z.enum(keys(chartKinds)),x:index.min(0),y:index,bins:z.number().int().min(1).max(30),aggregate:z.enum(keys(chartAggregates)),descending:z.boolean(),measureType:z.enum(['text','number']),series:index.optional(),time:z.enum(keys(chartTimeGroups)).optional()}).strict(),
+ options:z.object({kind:z.enum(keys(chartKinds)),x:index.min(0),y:index,bins:z.number().int().min(1).max(30),aggregate:z.enum(keys(chartAggregates)),descending:z.boolean(),measureType:z.enum(['text','number']),series:index.optional(),time:z.enum(keys(chartTimeGroups)).optional(),trend:z.boolean().optional()}).strict(),
  where:conditionGroup,
  view:query.pick({search:true,filters:true,conditions:true,filterMode:true}).strict().optional()
 }).strict()
