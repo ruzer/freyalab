@@ -94,7 +94,7 @@ test('LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva by
  await expect(dialog).not.toBeVisible()
  expect((await readTableRows(page,20))[6]).toEqual(['d','60','','','0'])
  expect(digest(await readFile(path))).toBe(digest(source))
- const expected='Producto,Precio,Cantidad,Alta,Mixta\na,10,1,2026-01-02,1\nb,20,2,2026-03-04,x\na,30,3,2026-02-01,1\nc,40,4,2026-01-15,0\na,,,2026-02-20,0\na,50,"  ",2026-01-30,0\nd,60,,,0\n'
+ const expected='Producto,Precio,Cantidad,Alta,Mixta\na,10,1,2026-01-02,1\nb,20,2,2026-03-04,x\na,30,3,2026-02-01,1\nc,40,4,2026-01-15,0\na,,,2026-02-20,0\na,50,"  ",2026-01-30,0\nd,60,,,0\n'.replaceAll('\n',source.includes(Buffer.from('\r\n'))?'\r\n':'\n')
  await save();expect((await readFile(path)).toString()).toBe(expected)
  await undo();expect((await readTableRows(page,20))[6]).toEqual(['d','60'])
  await save();expect(digest(await readFile(path))).toBe(digest(source))

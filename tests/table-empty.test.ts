@@ -28,7 +28,7 @@ it('rellena Mixta, avisa los campos intermedios y deshace a la longitud y bytes 
  expect((await cells()).at(-1)).toEqual(['d','60','','','0'])
  expect(await engine.stats('a',null,[2])).toMatchObject({empty:3,missing:0,whitespace:1})
  expect(await engine.stats('a',null,[3])).toMatchObject({empty:1,missing:0})
- const expected=source.toString().replace('c,40,4,2026-01-15,\n','c,40,4,2026-01-15,0\n').replace('a,,,2026-02-20,\n','a,,,2026-02-20,0\n').replace('a,50,"  ",2026-01-30,\n','a,50,"  ",2026-01-30,0\n').replace('d,60\n','d,60,,,0\n')
+ const expected=source.toString().replace('c,40,4,2026-01-15,','c,40,4,2026-01-15,0').replace('a,,,2026-02-20,','a,,,2026-02-20,0').replace('a,50,"  ",2026-01-30,','a,50,"  ",2026-01-30,0').replace('d,60','d,60,,,0')
  expect((await engine.serialize('a')).toString()).toBe(expected)
  expect((await readFile(path)).equals(source)).toBe(true)
  await engine.undo('a');expect((await cells()).at(-1)).toEqual(['d','60']);expect(hash(await engine.serialize('a'))).toBe(hash(source))
@@ -59,7 +59,7 @@ it.each([
  expect(await engine.snapshot('a')).toEqual(before)
  await engine.edit('a',request)
  expect((await engine.info('a')).rowCount).toBe(7-removed.length)
- const rows=source.toString().trimEnd().split('\n'),expected=rows.filter((_,i)=>i===0||!removed.includes(i-1 as never)).join('\n')+'\n'
+ const rows=source.toString().split(/(?<=\n)/),expected=rows.filter((_,i)=>i===0||!removed.includes(i-1 as never)).join('')
  expect((await engine.serialize('a')).toString()).toBe(expected)
  expect((await readFile(path)).equals(source)).toBe(true)
  await engine.undo('a');expect(hash(await engine.serialize('a'))).toBe(hash(source))
