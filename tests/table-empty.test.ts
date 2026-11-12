@@ -137,14 +137,16 @@ it('rechaza revisiones antiguas y cambios externos incluso con una base léxica 
  expect(Buffer.from(JSON.stringify(await engine.snapshot('a'))).equals(current)).toBe(true);expect((await readFile(path)).equals(external)).toBe(true)
 })
 
-it.each([
+// Windows: 5.387 ms × 2 = 10.774 ms; 12 s para recorrer 110.000 filas, no para responder a Cancelar.
+const emptyFillCancellationBudget=12_000
+for(const {mode,operation} of [
  {mode:'preview',operation:'fillEmpty'},
  {mode:'apply',operation:'fillEmpty'},
  {mode:'preview',operation:'fillPrevious'},
  {mode:'apply',operation:'fillPrevious'},
  {mode:'preview',operation:'deleteRowsWhere'},
  {mode:'apply',operation:'deleteRowsWhere'}
-] as const)('cancela $mode de $operation después de cien mil filas, con progreso e historial intactos',async({mode,operation})=>{
+] as const)it(`cancela ${mode} de ${operation} después de cien mil filas, con progreso e historial intactos`,async()=>{
  const source='ID,A\n'+'001,\n'.repeat(110000);let events=0,visited=0,cancel=true
  engine=new TableEngine(event=>{expect(event.phase).toBe('empty.progress.preparing');events++;visited=Math.max(visited,event.rows);if(cancel&&event.rows>100000)void engine.cancelAnalysis('a',event.requestId)})
  const path=await open(source),before=Buffer.from(JSON.stringify(await engine.snapshot('a'))),request=await edit(operation,[1],operation==='fillEmpty'?{value:'00'}:operation==='deleteRowsWhere'?{match:'any'}:{})
@@ -153,7 +155,7 @@ it.each([
  expect(Buffer.from(JSON.stringify(await engine.snapshot('a'))).equals(before)).toBe(true)
  expect((await readFile(path)).toString()).toBe(source)
  cancel=false
-})
+},operation==='fillEmpty'?emptyFillCancellationBudget:undefined)
 
 it('elimina más de cien mil filas en grupos y restaura con un solo deshacer, también desde recuperación',async()=>{
  const source='ID,A\n'+'001,\n'.repeat(55000)+'M,keep\n'+'002,\n'.repeat(55000),path=await open(source)
