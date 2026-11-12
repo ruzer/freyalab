@@ -1,0 +1,470 @@
+{
+  "runs": [
+    {
+      "log": "final-focused.log",
+      "cases": [
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-describe.spec.ts",
+          "reportedLine": 93,
+          "title": "AN-2 Información presenta dimensiones, tipos y calidad con distintos sin vacíos",
+          "duration": "2.2s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/columns-overview.spec.ts",
+          "reportedLine": 73,
+          "title": "panorámica: mide 3 000, 100 000 y un millón de filas completas con una columna @perf",
+          "duration": "4.2s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/columns-overview.spec.ts",
+          "reportedLine": 84,
+          "title": "panorámica: abrir un millón de filas y explorar inmediatamente no compite con la carga inicial de la grilla @perf",
+          "duration": "2.8s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 31,
+          "title": "LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar",
+          "duration": "1.9s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 55,
+          "title": "LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos",
+          "duration": "1.2s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 85,
+          "title": "LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva bytes tras guardar",
+          "duration": "2.5s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 103,
+          "title": "LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo",
+          "duration": "3.4s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 121,
+          "title": "LIM-1 elimina por cualquiera o todas las columnas marcadas y restaura filas completas",
+          "duration": "2.6s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 137,
+          "title": "LIM-1 fuente protegida permite ver vacíos y bloquea las mutaciones también por el puente",
+          "duration": "2.5s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 165,
+          "title": "LIM-1 archivo grande permite el filtro completo y explica que limpiar requiere extraer",
+          "duration": "2.0s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 177,
+          "title": "LIM-1 Texto sin confirmar conserva el diálogo y Cancelar no pierde el borrador",
+          "duration": "2.1s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 191,
+          "title": "LIM-1 cancelar descarta una vista previa tardía y deja reintentar sin modificar el CSV",
+          "duration": "6.1s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 223,
+          "title": "LIM-1 la paleta encuentra isnull, fillna y dropna y conserva la selección múltiple",
+          "duration": "1.5s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 239,
+          "title": "LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas",
+          "duration": "1.6s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 253,
+          "title": "LIM-1 una protección recibida con el diálogo abierto invalida su vista previa",
+          "duration": "768ms"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 268,
+          "title": "LIM-1 rellenar desde Información actúa sobre todo el documento y pide actualizar el análisis",
+          "duration": "1.7s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 289,
+          "title": "LIM-1 teclado, idiomas y temas (es)",
+          "duration": "1.4s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 289,
+          "title": "LIM-1 teclado, idiomas y temas (en)",
+          "duration": "1.3s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 289,
+          "title": "LIM-1 teclado, idiomas y temas (en-XA)",
+          "duration": "1.4s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/structural-context.spec.ts",
+          "reportedLine": 19,
+          "title": "la lectura de filas recupera una consulta sustituida por una recarga",
+          "duration": "1.1s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/structural-context.spec.ts",
+          "reportedLine": 40,
+          "title": "menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar",
+          "duration": "1.9s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/structural-context.spec.ts",
+          "reportedLine": 47,
+          "title": "menú de columnas: teclado, insertar a ambos lados, conservar valores y respetar selección múltiple",
+          "duration": "1.3s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/structural-context.spec.ts",
+          "reportedLine": 55,
+          "title": "menús estructurales: muestras bloquean cambios y conservan orden de vista, temas y foco @perf",
+          "duration": "1.5s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/structural-context.spec.ts",
+          "reportedLine": 61,
+          "title": "menú estructural: restaura foco si desaparece el origen y rechaza inserciones ambiguas por IPC",
+          "duration": "986ms"
+        }
+      ]
+    },
+    {
+      "log": "visual.log",
+      "cases": [
+        {
+          "project": "csv",
+          "file": "tests/e2e/columns-overview.spec.ts",
+          "reportedLine": 93,
+          "title": "panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance",
+          "duration": "1.8s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 31,
+          "title": "LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar",
+          "duration": "1.3s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 177,
+          "title": "LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio",
+          "duration": "870ms"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 306,
+          "title": "LIM-1 teclado, idiomas y temas (es)",
+          "duration": "1.3s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 306,
+          "title": "LIM-1 teclado, idiomas y temas (en)",
+          "duration": "1.3s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 306,
+          "title": "LIM-1 teclado, idiomas y temas (en-XA)",
+          "duration": "1.3s"
+        }
+      ]
+    },
+    {
+      "log": "contrast.log",
+      "cases": [
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 306,
+          "title": "LIM-1 teclado, idiomas y temas (es)",
+          "duration": "1.7s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 306,
+          "title": "LIM-1 teclado, idiomas y temas (en)",
+          "duration": "1.6s"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/empty-values.spec.ts",
+          "reportedLine": 306,
+          "title": "LIM-1 teclado, idiomas y temas (en-XA)",
+          "duration": "1.5s"
+        }
+      ]
+    }
+  ],
+  "uniqueCount": 26,
+  "limCount": 17,
+  "otherCount": 9,
+  "uniqueCases": [
+    {
+      "project": "csv",
+      "file": "tests/e2e/analysis-describe.spec.ts",
+      "title": "AN-2 Información presenta dimensiones, tipos y calidad con distintos sin vacíos",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/columns-overview.spec.ts",
+      "title": "panorámica: mide 3 000, 100 000 y un millón de filas completas con una columna @perf",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/columns-overview.spec.ts",
+      "title": "panorámica: abrir un millón de filas y explorar inmediatamente no compite con la carga inicial de la grilla @perf",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar",
+      "runs": [
+        "final-focused.log",
+        "visual.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva bytes tras guardar",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 elimina por cualquiera o todas las columnas marcadas y restaura filas completas",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 fuente protegida permite ver vacíos y bloquea las mutaciones también por el puente",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 archivo grande permite el filtro completo y explica que limpiar requiere extraer",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 Texto sin confirmar conserva el diálogo y Cancelar no pierde el borrador",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 cancelar descarta una vista previa tardía y deja reintentar sin modificar el CSV",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 la paleta encuentra isnull, fillna y dropna y conserva la selección múltiple",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 una protección recibida con el diálogo abierto invalida su vista previa",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 rellenar desde Información actúa sobre todo el documento y pide actualizar el análisis",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 teclado, idiomas y temas (es)",
+      "runs": [
+        "final-focused.log",
+        "visual.log",
+        "contrast.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 teclado, idiomas y temas (en)",
+      "runs": [
+        "final-focused.log",
+        "visual.log",
+        "contrast.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 teclado, idiomas y temas (en-XA)",
+      "runs": [
+        "final-focused.log",
+        "visual.log",
+        "contrast.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/structural-context.spec.ts",
+      "title": "la lectura de filas recupera una consulta sustituida por una recarga",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/structural-context.spec.ts",
+      "title": "menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/structural-context.spec.ts",
+      "title": "menú de columnas: teclado, insertar a ambos lados, conservar valores y respetar selección múltiple",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/structural-context.spec.ts",
+      "title": "menús estructurales: muestras bloquean cambios y conservan orden de vista, temas y foco @perf",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/structural-context.spec.ts",
+      "title": "menú estructural: restaura foco si desaparece el origen y rechaza inserciones ambiguas por IPC",
+      "runs": [
+        "final-focused.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/columns-overview.spec.ts",
+      "title": "panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance",
+      "runs": [
+        "visual.log"
+      ]
+    },
+    {
+      "project": "csv",
+      "file": "tests/e2e/empty-values.spec.ts",
+      "title": "LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio",
+      "runs": [
+        "visual.log"
+      ]
+    }
+  ]
+}

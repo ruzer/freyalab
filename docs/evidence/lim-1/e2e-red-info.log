@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:80548) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/empty-values.spec.ts:30:1 › LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar (17.7s)
+
+
+  1) [csv] › tests/e2e/empty-values.spec.ts:30:1 › LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  getByRole('region', { name: 'Vista general de columnas', exact: true }).getByRole('row').filter({ has: getByRole('rowheader', { name: 'Cantidad', exact: true }) }).locator('.quality-breakdown').locator('summary')
+    Expected: "3 · 43 %"
+    Received: "3"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" getByRole('region', { name: 'Vista general de columnas', exact: true }).getByRole('row').filter({ has: getByRole('rowheader', { name: 'Cantidad', exact: true }) }).locator('.quality-breakdown').locator('summary') with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Vista general de columnas', exact: true }).getByRole('row').filter({ has: getByRole('rowheader', { name: 'Cantidad', exact: true }) }).locator('.quality-breakdown').locator('summary')
+        33 × locator resolved to <summary class="svelte-1alawu2" aria-label="3 · Desglose de vacíos de Cantidad">3</summary>
+           - unexpected value "3"
+
+
+      31 |  const panel=await information(),row=panel.getByRole('row').filter({has:page.getByRole('rowheader',{name:'Cantidad',exact:true})})
+      32 |  const details=row.locator('.quality-breakdown')
+    > 33 |  await expect(details.locator('summary')).toHaveText('3 · 43 %')
+         |                                           ^
+      34 |  await details.locator('summary').click()
+      35 |  await expect(details.locator('dd')).toHaveText(['1','1','1'])
+      36 |  for(const name of ['Ver filas vacías','Rellenar vacíos…','Eliminar filas con vacío…'])await expect(details.getByRole('button',{name,exact:true})).toBeVisible()
+        at /private/tmp/freyalab-lim1-base-rojo/tests/e2e/empty-values.spec.ts:33:43
+
+    Error Context: ../freyalab-lim1-e2e-red/test-results/empty-values-LIM-1-Informa-d208b--y-filtra-vacíos-sin-editar-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-lim1-e2e-red/test-results/empty-values-LIM-1-Informa-d208b--y-filtra-vacíos-sin-editar-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-lim1-e2e-red/test-results/empty-values-LIM-1-Informa-d208b--y-filtra-vacíos-sin-editar-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/empty-values.spec.ts:30:1 › LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar

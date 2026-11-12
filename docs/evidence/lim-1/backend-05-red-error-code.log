@@ -1,0 +1,64 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-lim-1
+
+ ❯ tests/table-empty.test.ts (14 tests | 3 failed) 52ms
+   × devuelve un código estable con interfaz es, sin texto traducido en el worker 6ms
+   × devuelve un código estable con interfaz en, sin texto traducido en el worker 2ms
+   × devuelve un código estable con interfaz en-XA, sin texto traducido en el worker 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/table-empty.test.ts > devuelve un código estable con interfaz es, sin texto traducido en el worker
+AssertionError: expected [Function] to throw error including '[freya:EMPTY] {"code":"changed"}' but got 'La tabla cambió o ya no se puede edit…'
+
+Expected: "[freya:EMPTY] {"code":"changed"}"
+Received: "La tabla cambió o ya no se puede editar. Vuelve a preparar la vista previa."
+
+ ❯ tests/table-empty.test.ts:111:96
+    109| it.each(['es','en','en-XA'] as const)('devuelve un código estable con …
+    110|  await open('ID,A\n001,\n');setLanguage(language)
+    111|  await expect(engine.transformPreview('a',await edit('fillEmpty',[1],{…
+       |                                                                                                ^
+    112| })
+    113|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/table-empty.test.ts > devuelve un código estable con interfaz en, sin texto traducido en el worker
+AssertionError: expected [Function] to throw error including '[freya:EMPTY] {"code":"changed"}' but got 'The table changed or can no longer be…'
+
+Expected: "[freya:EMPTY] {"code":"changed"}"
+Received: "The table changed or can no longer be edited. Prepare the preview again."
+
+ ❯ tests/table-empty.test.ts:111:96
+    109| it.each(['es','en','en-XA'] as const)('devuelve un código estable con …
+    110|  await open('ID,A\n001,\n');setLanguage(language)
+    111|  await expect(engine.transformPreview('a',await edit('fillEmpty',[1],{…
+       |                                                                                                ^
+    112| })
+    113|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/table-empty.test.ts > devuelve un código estable con interfaz en-XA, sin texto traducido en el worker
+AssertionError: expected [Function] to throw error including '[freya:EMPTY] {"code":"changed"}' but got '[Thë táblë chángëd ör cán nö löngër b…'
+
+Expected: "[freya:EMPTY] {"code":"changed"}"
+Received: "[Thë táblë chángëd ör cán nö löngër bë ëdïtëd. Prëpárë thë prëvïëw ágáïn.~~~~~~~~~~~~~~~~~~~~~~]"
+
+ ❯ tests/table-empty.test.ts:111:96
+    109| it.each(['es','en','en-XA'] as const)('devuelve un código estable con …
+    110|  await open('ID,A\n001,\n');setLanguage(language)
+    111|  await expect(engine.transformPreview('a',await edit('fillEmpty',[1],{…
+       |                                                                                                ^
+    112| })
+    113|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 11 passed (14)
+   Start at  22:46:38
+   Duration  290ms (import 41%, transform 33%, tests 25%, worker 1%)
+

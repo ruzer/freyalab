@@ -1,0 +1,23 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-lim-1
+
+ ❯ tests/table-empty.test.ts (1 test | 1 failed) 18ms
+   × rellena Mixta, avisa los campos intermedios y deshace a la longitud y bytes originales 17ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/table-empty.test.ts > rellena Mixta, avisa los campos intermedios y deshace a la longitud y bytes originales
+Error: Transformación no válida.
+ ❯ TableEngine.structurePlan src/main/table-engine.ts:232:133
+
+ ❯ TableEngine.transformPreview src/main/table-engine.ts:313:78
+ ❯ tests/table-empty.test.ts:20:77
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  22:36:50
+   Duration  325ms (transform 52%, import 40%, tests 7%, worker 1%)
+

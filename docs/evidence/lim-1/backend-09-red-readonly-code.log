@@ -1,0 +1,85 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-lim-1
+
+ ❯ tests/table-empty.test.ts (31 tests | 3 failed) 3377ms
+   × mantiene código estable al rechazar el documento closed por ambas entradas 7ms
+   × mantiene código estable al rechazar el documento large por ambas entradas 18ms
+   × mantiene código estable al rechazar el documento sample por ambas entradas 81ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/table-empty.test.ts > mantiene código estable al rechazar el documento closed por ambas entradas
+AssertionError: expected [ Array(2) ] to deeply equal [ …(2) ]
+
+- Expected
++ Received
+
+  [
+-   "[freya:EMPTY] {\"code\":\"changed\"}",
+-   "[freya:EMPTY] {\"code\":\"changed\"}",
++   "La tabla ya no está abierta.",
++   "La tabla ya no está abierta.",
+  ]
+
+ ❯ tests/table-empty.test.ts:229:86
+    227|  if(kind==='closed')await engine.close('a');else expect((await engine.…
+    228|  const attempts=await Promise.allSettled([engine.transformPreview('a',…
+    229|  expect(attempts.map(result=>result.status==='rejected'?result.reason.…
+       |                                                                                      ^
+    230|  expect((await readFile(path)).toString()).toBe(source)
+    231| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/table-empty.test.ts > mantiene código estable al rechazar el documento large por ambas entradas
+AssertionError: expected [ …(2) ] to deeply equal [ …(2) ]
+
+- Expected
++ Received
+
+  [
+-   "[freya:EMPTY] {\"code\":\"changed\"}",
+-   "[freya:EMPTY] {\"code\":\"changed\"}",
++   "Esta función aún no está disponible en archivos grandes (solo lectura): el orden, las estadísticas y la edición llegan en fases posteriores.",
++   "Esta función aún no está disponible en archivos grandes (solo lectura): el orden, las estadísticas y la edición llegan en fases posteriores.",
+  ]
+
+ ❯ tests/table-empty.test.ts:229:86
+    227|  if(kind==='closed')await engine.close('a');else expect((await engine.…
+    228|  const attempts=await Promise.allSettled([engine.transformPreview('a',…
+    229|  expect(attempts.map(result=>result.status==='rejected'?result.reason.…
+       |                                                                                      ^
+    230|  expect((await readFile(path)).toString()).toBe(source)
+    231| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/table-empty.test.ts > mantiene código estable al rechazar el documento sample por ambas entradas
+AssertionError: expected [ …(2) ] to deeply equal [ …(2) ]
+
+- Expected
++ Received
+
+  [
+-   "[freya:EMPTY] {\"code\":\"changed\"}",
+-   "[freya:EMPTY] {\"code\":\"changed\"}",
++   "La muestra es de solo lectura.",
++   "La muestra es de solo lectura.",
+  ]
+
+ ❯ tests/table-empty.test.ts:229:86
+    227|  if(kind==='closed')await engine.close('a');else expect((await engine.…
+    228|  const attempts=await Promise.allSettled([engine.transformPreview('a',…
+    229|  expect(attempts.map(result=>result.status==='rejected'?result.reason.…
+       |                                                                                      ^
+    230|  expect((await readFile(path)).toString()).toBe(source)
+    231| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 28 passed (31)
+   Start at  22:54:52
+   Duration  3.59s (tests 96%, import 2%, transform 1%)
+

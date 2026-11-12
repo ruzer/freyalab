@@ -1,0 +1,13 @@
+
+Running 6 tests using 1 worker
+
+(node:90038) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/columns-overview.spec.ts:93:1 › panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance (1.8s)
+  ✓  2 [csv] › tests/e2e/empty-values.spec.ts:31:1 › LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar (1.3s)
+  ✓  3 [csv] › tests/e2e/empty-values.spec.ts:177:1 › LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio (870ms)
+  ✓  4 [csv] › tests/e2e/empty-values.spec.ts:306:57 › LIM-1 teclado, idiomas y temas (es) (1.3s)
+  ✓  5 [csv] › tests/e2e/empty-values.spec.ts:306:57 › LIM-1 teclado, idiomas y temas (en) (1.3s)
+  ✓  6 [csv] › tests/e2e/empty-values.spec.ts:306:57 › LIM-1 teclado, idiomas y temas (en-XA) (1.3s)
+
+  6 passed (8.2s)

@@ -1,0 +1,43 @@
+
+Running 1 test using 1 worker
+
+(node:85328) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/empty-values.spec.ts:234:1 › LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas (15.9s)
+
+
+  1) [csv] › tests/e2e/empty-values.spec.ts:234:1 › LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('dialog', { name: 'Rellenar vacíos de C0', exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('dialog', { name: 'Rellenar vacíos de C0', exact: true }) with timeout 15000ms
+      - waiting for getByRole('dialog', { name: 'Rellenar vacíos de C0', exact: true })
+
+
+      238 |  await headerAction('C0','Rellenar vacíos de la columna…')
+      239 |  const dialog=page.getByRole('dialog',{name:'Rellenar vacíos de C0',exact:true})
+    > 240 |  await expect(dialog).toBeVisible()
+          |                       ^
+      241 |  await dialog.getByRole('textbox',{name:'Valor',exact:true}).fill('00')
+      242 |  await previewEmpty(dialog);await dialog.getByRole('button',{name:'Rellenar',exact:true}).click()
+      243 |  const rows=await readTableRows(page,20);expect(rows[0]).toHaveLength(201);expect(rows[0][0]).toBe('00');expect(rows[0].slice(1)).toEqual(Array(200).fill('1'))
+        at /private/tmp/freyalab-lim-1/tests/e2e/empty-values.spec.ts:240:23
+
+    Error Context: ../freyalab-lim1-e2e-red/wide-results/empty-values-LIM-1-limpiar-e6725-ble-con-más-de-200-columnas-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-lim1-e2e-red/wide-results/empty-values-LIM-1-limpiar-e6725-ble-con-más-de-200-columnas-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-lim1-e2e-red/wide-results/empty-values-LIM-1-limpiar-e6725-ble-con-más-de-200-columnas-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/empty-values.spec.ts:234:1 › LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas

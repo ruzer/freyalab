@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:85644) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/empty-values.spec.ts:253:1 › LIM-1 una protección recibida con el diálogo abierto invalida su vista previa (16.3s)
+
+
+  1) [csv] › tests/e2e/empty-values.spec.ts:253:1 › LIM-1 una protección recibida con el diálogo abierto invalida su vista previa
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('dialog', { name: 'Rellenar vacíos de Cantidad', exact: true })
+    Expected substring: "Fuente protegida: usa Guardar como… y limpia la copia."
+    Received string:    "Rellenar vacíos de Cantidad Se aplica a todo el documento, no solo a la vista filtrada. Los encabezados se conservan. Un paso de deshacer; Guardar escribe los cambios. Rellenar vacíos de Cantidad Rellenar con Un valorEl valor anterior Valor  Contar las celdas con solo espacios como vacías Vista previa Revisa las opciones y pulsa Vista previa. El documento sigue intacto.    RellenarCancelar"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('dialog', { name: 'Rellenar vacíos de Cantidad', exact: true }) with timeout 15000ms
+      - waiting for getByRole('dialog', { name: 'Rellenar vacíos de Cantidad', exact: true })
+        34 × locator resolved to <dialog open="" aria-labelledby="csv-transform-title" class="svelte-w492we calculation empty-values">…</dialog>
+           - unexpected value "Rellenar vacíos de Cantidad Se aplica a todo el documento, no solo a la vista filtrada. Los encabezados se conservan. Un paso de deshacer; Guardar escribe los cambios. Rellenar vacíos de Cantidad Rellenar con Un valorEl valor anterior Valor  Contar las celdas con solo espacios como vacías Vista previa Revisa las opciones y pulsa Vista previa. El documento sigue intacto.    RellenarCancelar"
+
+
+      260 |  await expect(dialog.getByRole('button',{name:'Rellenar',exact:true})).toBeDisabled()
+      261 |  await expect(dialog.locator('table')).toHaveCount(0)
+    > 262 |  await expect(dialog).toContainText(t('empty.protected'))
+          |                       ^
+      263 |  await page.keyboard.press('Escape');expect(digest(await readFile(path))).toBe(digest(source))
+      264 | })
+      265 |
+        at /private/tmp/freyalab-lim-1/tests/e2e/empty-values.spec.ts:262:23
+
+    Error Context: ../freyalab-lim1-e2e-red/protected-results/empty-values-LIM-1-una-pro-8878f-to-invalida-su-vista-previa-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-lim1-e2e-red/protected-results/empty-values-LIM-1-una-pro-8878f-to-invalida-su-vista-previa-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-lim1-e2e-red/protected-results/empty-values-LIM-1-una-pro-8878f-to-invalida-su-vista-previa-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/empty-values.spec.ts:253:1 › LIM-1 una protección recibida con el diálogo abierto invalida su vista previa
