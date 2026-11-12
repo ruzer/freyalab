@@ -1,0 +1,95 @@
+
+ RUN  v5.0.5 /private/tmp/freyalab-lim1-crlf-h93fq6uh
+
+ × tests/table-empty.test.ts > rellena Mixta, avisa los campos intermedios y deshace a la longitud y bytes originales 25ms
+   → expected 'Producto,Precio,Cantidad,Alta,Mixta\r…' to be 'Producto,Precio,Cantidad,Alta,Mixta\r…' // Object.is equality
+ ↓ tests/table-empty.test.ts > usa el valor anterior del archivo completo y deja intacto el vacío que no tiene anterior
+ ✓ tests/table-empty.test.ts > elimina por consulta de vacíos [ 2 ] / any / espacios=true, conserva y deshace 4ms
+ ✓ tests/table-empty.test.ts > elimina por consulta de vacíos [ 1, 2 ] / any / espacios=true, conserva y deshace 6ms
+ × tests/table-empty.test.ts > elimina por consulta de vacíos [ 1, 2 ] / all / espacios=true, conserva y deshace 3ms
+   → expected 'Producto,Precio,Cantidad,Alta,Mixta\r…' to be 'Producto,Precio,Cantidad,Alta,Mixta\r…' // Object.is equality
+ ✓ tests/table-empty.test.ts > elimina por consulta de vacíos [ 2 ] / any / espacios=false, conserva y deshace 4ms
+ ↓ tests/table-empty.test.ts > conserva bytes léxicos, BOM y finales mixtos en utf8 al guardar, reabrir, recuperar y deshacer
+ ↓ tests/table-empty.test.ts > conserva bytes léxicos, BOM y finales mixtos en win1252 al guardar, reabrir, recuperar y deshacer
+ ↓ tests/table-empty.test.ts > conserva bytes léxicos, BOM y finales mixtos en utf16le al guardar, reabrir, recuperar y deshacer
+ ↓ tests/table-empty.test.ts > materializa el campo ausente incluso al rellenar con texto vacío, pero no cambia otros campos
+ ↓ tests/table-empty.test.ts > respeta la casilla de espacios y no inventa un valor anterior en una columna totalmente vacía
+ ↓ tests/table-empty.test.ts > devuelve un código estable con interfaz es, sin texto traducido en el worker
+ ↓ tests/table-empty.test.ts > devuelve un código estable con interfaz en, sin texto traducido en el worker
+ ↓ tests/table-empty.test.ts > devuelve un código estable con interfaz en-XA, sin texto traducido en el worker
+ ↓ tests/table-empty.test.ts > valida la selección y los valores antes de preparar una mutación
+ ↓ tests/table-empty.test.ts > rechaza revisiones antiguas y cambios externos incluso con una base léxica ya guardada
+ ↓ tests/table-empty.test.ts > cancela preview de fillEmpty después de cien mil filas, con progreso e historial intactos
+ ↓ tests/table-empty.test.ts > cancela apply de fillEmpty después de cien mil filas, con progreso e historial intactos
+ ↓ tests/table-empty.test.ts > cancela preview de fillPrevious después de cien mil filas, con progreso e historial intactos
+ ↓ tests/table-empty.test.ts > cancela apply de fillPrevious después de cien mil filas, con progreso e historial intactos
+ ↓ tests/table-empty.test.ts > cancela preview de deleteRowsWhere después de cien mil filas, con progreso e historial intactos
+ ↓ tests/table-empty.test.ts > cancela apply de deleteRowsWhere después de cien mil filas, con progreso e historial intactos
+ ↓ tests/table-empty.test.ts > elimina más de cien mil filas en grupos y restaura con un solo deshacer, también desde recuperación
+ ↓ tests/table-empty.test.ts > no aplica un plan si otra edición cambia la revisión mientras se prepara
+ ↓ tests/table-empty.test.ts > actúa por posición sobre columnas duplicadas, vacías y mayores de doscientas
+ ↓ tests/table-empty.test.ts > rechaza valores, registros escapados, codificación e historial que no caben, antes de modificar
+ ↓ tests/table-empty.test.ts > no materializa campos si el resultado supera dos millones de celdas
+ ↓ tests/table-empty.test.ts > rechaza el resultado mayor de 50 MiB aunque cada registro y el historial sí caben
+ ↓ tests/table-empty.test.ts > mantiene código estable al rechazar el documento closed por ambas entradas
+ ↓ tests/table-empty.test.ts > mantiene código estable al rechazar el documento large por ambas entradas
+ ↓ tests/table-empty.test.ts > mantiene código estable al rechazar el documento sample por ambas entradas
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/table-empty.test.ts > rellena Mixta, avisa los campos intermedios y deshace a la longitud y bytes originales
+AssertionError: expected 'Producto,Precio,Cantidad,Alta,Mixta\r…' to be 'Producto,Precio,Cantidad,Alta,Mixta\r…' // Object.is equality
+
+- Expected
++ Received
+
+  Producto,Precio,Cantidad,Alta,Mixta
+  a,10,1,2026-01-02,1
+  b,20,2,2026-03-04,x
+  a,30,3,2026-02-01,1
+- c,40,4,2026-01-15,
++ c,40,4,2026-01-15,0
+- a,,,2026-02-20,
++ a,,,2026-02-20,0
+- a,50,"  ",2026-01-30,
++ a,50,"  ",2026-01-30,0
+- d,60
++ d,60,,,0
+
+
+ ❯ tests/table-empty.test.ts:32:51
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/table-empty.test.ts > elimina por consulta de vacíos [ 1, 2 ] / all / espacios=true, conserva y deshace
+AssertionError: expected 'Producto,Precio,Cantidad,Alta,Mixta\r…' to be 'Producto,Precio,Cantidad,Alta,Mixta\r…' // Object.is equality
+
+- Expected
++ Received
+
+@@ -2,7 +2,7 @@
+  a,10,1,2026-01-02,1
+  b,20,2,2026-03-04,x
+  a,30,3,2026-02-01,1
+  c,40,4,2026-01-15,
+  a,50,"  ",2026-01-30,
+- d,60
++ d,60
+
+
+ ❯ tests/table-empty.test.ts:63:51
+     61|  expect((await engine.info('a')).rowCount).toBe(7-removed.length)
+     62|  const rows=source.toString().trimEnd().split('\n'),expected=rows.filt…
+     63|  expect((await engine.serialize('a')).toString()).toBe(expected)
+       |                                                   ^
+     64|  expect((await readFile(path)).equals(source)).toBe(true)
+     65|  await engine.undo('a');expect(hash(await engine.serialize('a'))).toBe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 passed | 26 skipped (31)
+   Start at  23:54:00
+   Duration  375ms (transform 55%, import 29%, tests 15%, worker 1%)

@@ -1,0 +1,144 @@
+2026-11-12T05:50:19.5072810Z ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+2026-11-12T05:50:19.5073331Z
+2026-11-12T05:50:19.5078132Z  FAIL  tests/table-empty.test.ts > rellena Mixta, avisa los campos intermedios y deshace a la longitud y bytes originales
+2026-11-12T05:50:19.5085745Z AssertionError: expected 'Producto,Precio,Cantidad,Alta,Mixta\r…' to be 'Producto,Precio,Cantidad,Alta,Mixta\r…' // Object.is equality
+2026-11-12T05:50:19.5086829Z
+2026-11-12T05:50:19.5087081Z - Expected
+2026-11-12T05:50:19.5087501Z + Received
+2026-11-12T05:50:19.5087763Z
+2026-11-12T05:50:19.5088109Z   Producto,Precio,Cantidad,Alta,Mixta
+2026-11-12T05:50:19.5088688Z
+2026-11-12T05:50:19.5089146Z   a,10,1,2026-01-02,1
+2026-11-12T05:50:19.5089592Z
+2026-11-12T05:50:19.5090049Z   b,20,2,2026-03-04,x
+2026-11-12T05:50:19.5090471Z
+2026-11-12T05:50:19.5090923Z   a,30,3,2026-02-01,1
+2026-11-12T05:50:19.5091362Z
+2026-11-12T05:50:19.5091812Z - c,40,4,2026-01-15,
+2026-11-12T05:50:19.5092239Z
+2026-11-12T05:50:19.5092775Z + c,40,4,2026-01-15,0
+2026-11-12T05:50:19.5093270Z
+2026-11-12T05:50:19.5093666Z - a,,,2026-02-20,
+2026-11-12T05:50:19.5094100Z
+2026-11-12T05:50:19.5094557Z + a,,,2026-02-20,0
+2026-11-12T05:50:19.5095378Z
+2026-11-12T05:50:19.5095838Z - a,50,"  ",2026-01-30,
+2026-11-12T05:50:19.5096381Z
+2026-11-12T05:50:19.5096928Z + a,50,"  ",2026-01-30,0
+2026-11-12T05:50:19.5097434Z
+2026-11-12T05:50:19.5097869Z - d,60
+2026-11-12T05:50:19.5098185Z
+2026-11-12T05:50:19.5098568Z + d,60,,,0
+2026-11-12T05:50:19.5099001Z
+2026-11-12T05:50:19.5099216Z
+2026-11-12T05:50:19.5099223Z
+2026-11-12T05:50:19.5099731Z  ❯ tests/table-empty.test.ts:32:51
+2026-11-12T05:50:19.5216729Z
+2026-11-12T05:50:19.5220634Z
+2026-11-12T05:50:19.5223664Z ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+2026-11-12T05:50:19.5224261Z
+2026-11-12T05:50:19.5225630Z  FAIL  tests/table-empty.test.ts > elimina por consulta de vacíos [ 1, 2 ] / all / espacios=true, conserva y deshace
+2026-11-12T05:50:19.5230197Z AssertionError: expected 'Producto,Precio,Cantidad,Alta,Mixta\r…' to be 'Producto,Precio,Cantidad,Alta,Mixta\r…' // Object.is equality
+2026-11-12T05:50:19.5231876Z
+2026-11-12T05:50:19.5233209Z - Expected
+2026-11-12T05:50:19.5234054Z + Received
+2026-11-12T05:50:19.5234536Z
+2026-11-12T05:50:19.5235275Z @@ -2,7 +2,7 @@
+2026-11-12T05:50:19.5235969Z   a,10,1,2026-01-02,1
+2026-11-12T05:50:19.5236621Z
+2026-11-12T05:50:19.5237276Z   b,20,2,2026-03-04,x
+2026-11-12T05:50:19.5237878Z
+2026-11-12T05:50:19.5238488Z   a,30,3,2026-02-01,1
+2026-11-12T05:50:19.5239084Z
+2026-11-12T05:50:19.5239682Z   c,40,4,2026-01-15,
+2026-11-12T05:50:19.5240294Z
+2026-11-12T05:50:19.5240887Z   a,50,"  ",2026-01-30,
+2026-11-12T05:50:19.5241531Z
+2026-11-12T05:50:19.5242081Z - d,60
+2026-11-12T05:50:19.5242619Z + d,60
+2026-11-12T05:50:19.5243109Z
+2026-11-12T05:50:19.5243415Z
+2026-11-12T05:50:19.5243578Z
+2026-11-12T05:50:19.5244171Z  ❯ tests/table-empty.test.ts:63:51
+2026-11-12T05:50:19.5245345Z      61|  expect((await engine.info('a')).rowCount).toBe(7-removed.length)
+2026-11-12T05:50:19.5246852Z      62|  const rows=source.toString().trimEnd().split('\n'),expected=rows.filt…
+2026-11-12T05:50:19.5247443Z
+2026-11-12T05:50:19.5248432Z      63|  expect((await engine.serialize('a')).toString()).toBe(expected)
+2026-11-12T05:50:19.5249512Z        |                                                   ^
+2026-11-12T05:50:19.5250507Z      64|  expect((await readFile(path)).equals(source)).toBe(true)
+2026-11-12T05:50:19.5251667Z      65|  await engine.undo('a');expect(hash(await engine.serialize('a'))).toBe…
+2026-11-12T05:50:19.5252357Z
+2026-11-12T05:50:19.5252913Z ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+2026-11-12T05:50:19.5253404Z
+2026-11-12T05:50:19.5254745Z  FAIL  tests/table-empty.test.ts > cancela preview de fillEmpty después de cien mil filas, con progreso e historial intactos
+2026-11-12T05:50:19.5257230Z  FAIL  tests/table-empty.test.ts > cancela apply de fillEmpty después de cien mil filas, con progreso e historial intactos
+2026-11-12T05:50:19.5270598Z  Test Files  1 failed | 143 passed | 1 skipped (145)
+2026-11-12T05:50:19.5271895Z Error: Test timed out in 5000ms.
+2026-11-12T05:50:19.5273513Z If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+2026-11-12T05:50:19.5276936Z  ❯ tests/table-empty.test.ts:147:12
+2026-11-12T05:50:19.5277558Z
+2026-11-12T05:50:19.5279082Z
+2026-11-12T05:50:19.5280159Z ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+2026-11-12T05:50:19.5280727Z
+2026-11-12T05:50:19.5289977Z       Tests  4 failed | 2722 passed | 14 skipped (2740)
+2026-11-12T05:50:19.5291382Z    Start at  05:48:17
+2026-11-12T05:50:19.5300262Z    Duration  121.88s (tests 86%, import 12%, transform 2%)
+2026-11-12T05:50:19.5322074Z
+2026-11-12T05:50:19.5323031Z     Isolate  145 workers spawned · ~193ms startup each (spawn + environment, per file)
+2026-11-12T05:50:19.5324690Z              at least ~9.16s faster with isolate: false — reuses workers across files instead of one per file
+2026-11-12T05:50:19.5325489Z
+2026-11-12T05:50:19.5355961Z
+2026-11-12T05:50:19.5389092Z ##[error]AssertionError: expected 'Producto,Precio,Cantidad,Alta,Mixta\r…' to be 'Producto,Precio,Cantidad,Alta,Mixta\r…' // Object.is equality
+
+- Expected
++ Received
+
+  Producto,Precio,Cantidad,Alta,Mixta
+  a,10,1,2026-01-02,1
+  b,20,2,2026-03-04,x
+  a,30,3,2026-02-01,1
+- c,40,4,2026-01-15,
++ c,40,4,2026-01-15,0
+- a,,,2026-02-20,
++ a,,,2026-02-20,0
+- a,50,"  ",2026-01-30,
++ a,50,"  ",2026-01-30,0
+- d,60
++ d,60,,,0
+
+
+ ❯ tests/table-empty.test.ts:32:51
+
+
+2026-11-12T05:50:19.5400682Z
+2026-11-12T05:50:19.5405603Z ##[error]AssertionError: expected 'Producto,Precio,Cantidad,Alta,Mixta\r…' to be 'Producto,Precio,Cantidad,Alta,Mixta\r…' // Object.is equality
+
+- Expected
++ Received
+
+@@ -2,7 +2,7 @@
+  a,10,1,2026-01-02,1
+  b,20,2,2026-03-04,x
+  a,30,3,2026-02-01,1
+  c,40,4,2026-01-15,
+  a,50,"  ",2026-01-30,
+- d,60
++ d,60
+
+
+ ❯ tests/table-empty.test.ts:63:51
+
+
+2026-11-12T05:50:19.5408234Z
+2026-11-12T05:50:19.5411399Z ##[error]Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/table-empty.test.ts:147:12
+
+
+2026-11-12T05:50:19.5413373Z
+2026-11-12T05:50:19.5416912Z ##[error]Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/table-empty.test.ts:147:12
+
+
+2026-11-12T05:50:19.6059283Z ##[error]Process completed with exit code 1.
