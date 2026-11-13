@@ -139,6 +139,8 @@ it('rechaza revisiones antiguas y cambios externos incluso con una base léxica 
 
 // Windows: 5.387 ms × 2 = 10.774 ms; 12 s para recorrer 110.000 filas, no para responder a Cancelar.
 const emptyFillCancellationBudget=12_000
+// Intel 43452894095 agotó 5 s (5.390/5.454 ms); doble del mayor registro, redondeado a 12 s.
+const emptyPreviousCancellationBudget=12_000
 for(const {mode,operation} of [
  {mode:'preview',operation:'fillEmpty'},
  {mode:'apply',operation:'fillEmpty'},
@@ -155,8 +157,10 @@ for(const {mode,operation} of [
  expect(Buffer.from(JSON.stringify(await engine.snapshot('a'))).equals(before)).toBe(true)
  expect((await readFile(path)).toString()).toBe(source)
  cancel=false
-},operation==='fillEmpty'?emptyFillCancellationBudget:undefined)
+},operation==='fillEmpty'?emptyFillCancellationBudget:operation==='fillPrevious'?emptyPreviousCancellationBudget:undefined)
 
+// Intel: 4.159 ms en push × 1,79 de variación × 2 de margen ≈ 14,9 s para 110.000 filas.
+const emptyDeleteRecoveryBudget=15_000
 it('elimina más de cien mil filas en grupos y restaura con un solo deshacer, también desde recuperación',async()=>{
  const source='ID,A\n'+'001,\n'.repeat(55000)+'M,keep\n'+'002,\n'.repeat(55000),path=await open(source)
  const request=await edit('deleteRowsWhere',[1],{match:'any'}),preview=await engine.transformPreview('a',request)
@@ -166,7 +170,7 @@ it('elimina más de cien mil filas en grupos y restaura con un solo deshacer, ta
  await engine.restore('b',recovery);await engine.undo('b');expect((await engine.serialize('b')).equals(Buffer.from(source))).toBe(true)
  await engine.undo('a');expect((await engine.serialize('a')).equals(Buffer.from(source))).toBe(true)
  await engine.undo('a',true);expect(await cells()).toEqual([['M','keep']]);expect((await readFile(path)).toString()).toBe(source)
-})
+},emptyDeleteRecoveryBudget)
 
 it('no aplica un plan si otra edición cambia la revisión mientras se prepara',async()=>{
  let concurrent=false
