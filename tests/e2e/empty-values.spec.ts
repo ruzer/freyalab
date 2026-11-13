@@ -82,6 +82,55 @@ async function previewEmpty(dialog:ReturnType<Page['getByRole']>){
 async function save(){await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)}
 async function undo(){await page.getByRole('button',{name:'Deshacer',exact:true}).click()}
 
+test('LIM-1 ajustes: Un valor vacío bloquea preparar y rellenar con un motivo accesible',async()=>{
+ await headerAction('Cantidad','Rellenar vacíos de la columna…')
+ const dialog=page.getByRole('dialog',{name:'Rellenar vacíos de Cantidad',exact:true}),value=dialog.getByRole('textbox',{name:'Valor',exact:true})
+ const preview=dialog.getByRole('button',{name:'Vista previa',exact:true}),fill=dialog.getByRole('button',{name:'Rellenar',exact:true})
+ await expect(value).toBeEnabled();await expect(value).toHaveValue('')
+ await expect(preview).toBeDisabled();await expect(fill).toBeDisabled()
+ for(const button of [preview,fill])await expect(button).toHaveAccessibleDescription('Escribe un valor para rellenar')
+ await value.fill('0');await previewEmpty(dialog);await expect(fill).toBeEnabled()
+ await value.clear();await expect(preview).toBeDisabled();await expect(fill).toBeDisabled()
+ for(const button of [preview,fill])await expect(button).toHaveAccessibleDescription('Escribe un valor para rellenar')
+ await value.fill(' ');await expect(preview).toBeEnabled()
+ await value.clear();await dialog.getByRole('combobox',{name:'Rellenar con',exact:true}).selectOption({label:'El valor anterior'})
+ await expect(preview).toBeEnabled();await previewEmpty(dialog)
+ await page.keyboard.press('Escape');expect(digest(await readFile(path))).toBe(digest(source))
+})
+
+for(const language of ['es','en'] as Language[])test(`LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (${language})`,async()=>{
+ const tr=(key:string,values:Record<string,string|number>={})=>t(key,values,language)
+ for(const [column,expected]of [
+  ['Precio',language==='es'?'Se rellenará 1 celda: 1 vacía.':'Will fill 1 cell: 1 empty.'],
+  ['Mixta',language==='es'?'Se rellenarán 4 celdas: 3 vacías y 1 que faltaba (la fila era más corta).':'Will fill 4 cells: 3 empty and 1 missing (the row was shorter).'],
+  ['Producto',language==='es'?'Se rellenarán 0 celdas.':'Will fill 0 cells.']
+ ]){
+  await headerAction(column,tr('empty.fillColumn'))
+  const dialog=page.getByRole('dialog',{name:tr('empty.fillTitle',{column}),exact:true})
+  await dialog.getByRole('textbox',{name:tr('empty.value'),exact:true}).fill('0')
+  await dialog.getByRole('button',{name:tr('empty.preview'),exact:true}).click()
+  await expect(dialog.getByRole('status')).toContainText(tr('empty.preview.ready'))
+  expect.soft(await dialog.getByRole('status').textContent()).toContain(expected)
+  if(column==='Mixta')expect.soft((await dialog.locator('tbody th').allTextContents())[0]).toBe(language==='es'?'Fila 4 / columna 5':'Row 4 / column 5')
+  if(column==='Producto')await expect(dialog.getByRole('button',{name:tr('empty.applyFill'),exact:true})).toBeDisabled()
+  await page.keyboard.press('Escape')
+ }
+ await headerAction('Precio',tr('empty.deleteColumn'))
+ const deletion=page.getByRole('dialog',{name:tr('empty.deleteTitle'),exact:true})
+ await deletion.getByRole('button',{name:tr('empty.preview'),exact:true}).click()
+ await expect(deletion.getByRole('status')).toContainText(tr('empty.preview.ready'))
+ expect.soft(await deletion.getByRole('status').textContent()).toContain(language==='es'?'Se eliminará 1 de 7 filas.':'Will delete 1 of 7 rows.')
+ await page.keyboard.press('Escape')
+ const single=join(folder,'una-fila.csv');await writeFile(single,'A\n""\n');await page.evaluate(path=>window.freya.openPaths([path]),single)
+ await headerAction('A',tr('empty.deleteColumn'))
+ const onlyRow=page.getByRole('dialog',{name:tr('empty.deleteTitle'),exact:true})
+ await onlyRow.getByRole('button',{name:tr('empty.preview'),exact:true}).click()
+ await expect(onlyRow.getByRole('status')).toContainText(tr('empty.preview.ready'))
+ expect.soft(await onlyRow.getByRole('status').textContent()).toContain(language==='es'?'Se eliminará 1 de 1 fila.':'Will delete 1 of 1 row.')
+ await page.keyboard.press('Escape');expect(await readFile(single,'utf8')).toBe('A\n""\n')
+ expect(digest(await readFile(path))).toBe(digest(source))
+})
+
 test('LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva bytes tras guardar',async()=>{
  await headerAction('Mixta','Rellenar vacíos de la columna…')
  const dialog=page.getByRole('dialog',{name:'Rellenar vacíos de Mixta',exact:true})
@@ -115,7 +164,8 @@ test('LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archi
  await dialog.getByRole('combobox',{name:'Rellenar con',exact:true}).selectOption({label:'El valor anterior'})
  await previewEmpty(dialog);await dialog.getByRole('button',{name:'Rellenar',exact:true}).click()
  expect((await readTableRows(page,20)).slice(4).map(row=>row[2])).toEqual(['4','4','4'])
- await undo();expect(digest(await readFile(path))).toBe(digest(source))
+ await save();expect(digest(await readFile(path))).not.toBe(digest(source))
+ await undo();await save();expect(digest(await readFile(path))).toBe(digest(source))
 })
 
 test('LIM-1 elimina por cualquiera o todas las columnas marcadas y restaura filas completas',async()=>{
@@ -313,6 +363,10 @@ for(const language of ['es','en','en-XA'] as Language[])test(`LIM-1 teclado, idi
   await commands.getByRole('searchbox',{name:'Buscar comando CSV',exact:true}).press('Enter')
   const dialog=page.getByRole('dialog',{name:tr('empty.fillTitle',{column:'Cantidad'}),exact:true})
   await expect(dialog.getByRole('textbox',{name:tr('empty.value'),exact:true})).toBeFocused()
+  for(const key of ['empty.preview','empty.applyFill']){
+   const button=dialog.getByRole('button',{name:tr(key),exact:true})
+   await expect(button).toBeDisabled();await expect(button).toHaveAccessibleDescription(tr('empty.valueRequired'))
+  }
   return dialog
  }
  for(const theme of ['light','dark']){

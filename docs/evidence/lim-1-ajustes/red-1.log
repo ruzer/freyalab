@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:13807) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/empty-values.spec.ts:85:1 › LIM-1 ajustes: Un valor vacío bloquea preparar y rellenar con un motivo accesible (17.5s)
+
+
+  1) [csv] › tests/e2e/empty-values.spec.ts:85:1 › LIM-1 ajustes: Un valor vacío bloquea preparar y rellenar con un motivo accesible
+
+    Error: expect(locator).toBeDisabled() failed
+
+    Locator:  getByRole('dialog', { name: 'Rellenar vacíos de Cantidad', exact: true }).getByRole('button', { name: 'Vista previa', exact: true })
+    Expected: disabled
+    Received: enabled
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeDisabled" getByRole('dialog', { name: 'Rellenar vacíos de Cantidad', exact: true }).getByRole('button', { name: 'Vista previa', exact: true }) with timeout 15000ms
+      - waiting for getByRole('dialog', { name: 'Rellenar vacíos de Cantidad', exact: true }).getByRole('button', { name: 'Vista previa', exact: true })
+        34 × locator resolved to <button type="submit" aria-busy="false" class="svelte-w492we">Vista previa</button>
+           - unexpected value "enabled"
+
+
+      88 |  const preview=dialog.getByRole('button',{name:'Vista previa',exact:true}),fill=dialog.getByRole('button',{name:'Rellenar',exact:true})
+      89 |  await expect(value).toBeEnabled();await expect(value).toHaveValue('')
+    > 90 |  await expect(preview).toBeDisabled();await expect(fill).toBeDisabled()
+         |                        ^
+      91 |  for(const button of [preview,fill])await expect(button).toHaveAccessibleDescription('Escribe un valor para rellenar')
+      92 |  await value.fill('0');await previewEmpty(dialog);await expect(fill).toBeEnabled()
+      93 |  await value.clear();await expect(preview).toBeDisabled();await expect(fill).toBeDisabled()
+        at /private/tmp/freyalab-lim-1-ajustes/tests/e2e/empty-values.spec.ts:90:24
+
+    Error Context: ../freyalab-lim1-ajustes-evidence/red-1-results/empty-values-LIM-1-ajustes-30a57-nar-con-un-motivo-accesible-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-lim1-ajustes-evidence/red-1-results/empty-values-LIM-1-ajustes-30a57-nar-con-un-motivo-accesible-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-lim1-ajustes-evidence/red-1-results/empty-values-LIM-1-ajustes-30a57-nar-con-un-motivo-accesible-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/empty-values.spec.ts:85:1 › LIM-1 ajustes: Un valor vacío bloquea preparar y rellenar con un motivo accesible

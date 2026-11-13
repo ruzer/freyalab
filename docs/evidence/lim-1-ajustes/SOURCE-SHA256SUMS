@@ -1,0 +1,4 @@
+4fafa7e59343eb24367d0aa2668d86f2ed24d981e830bf44395bd95d25c87fb0  src/renderer/components/CsvTransform.svelte
+ed49da42827f83714b52ade07f62ed32a91e17d7b6e2a65dd396725189212482  src/shared/i18n/es.json
+fc932f3a3985cc1ab17da0f818cddfebf747f3bf7a0d0c0849fee8dc621a694d  src/shared/i18n/en.json
+8c1aaf6c96eaeb58b4afa22059a8c1fef81133d824056ad7f8662d5d7247cc5f  tests/e2e/empty-values.spec.ts

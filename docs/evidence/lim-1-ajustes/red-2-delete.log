@@ -1,0 +1,92 @@
+
+Running 1 test using 1 worker
+
+(node:14267) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/empty-values.spec.ts:101:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es) (1.3s)
+
+
+  1) [csv] › tests/e2e/empty-values.spec.ts:101:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es)
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Se rellenará 1 celda: 1 vacía."
+    Received string:    "Vista previa lista. El documento sigue intacto. Se rellenarán 1 celda: 1 vacía, 0 con solo espacios y 0 que faltaban (las filas eran más cortas)."
+
+      111 |   await dialog.getByRole('button',{name:tr('empty.preview'),exact:true}).click()
+      112 |   await expect(dialog.getByRole('status')).toContainText(tr('empty.preview.ready'))
+    > 113 |   expect.soft(await dialog.getByRole('status').textContent()).toContain(expected)
+          |                                                               ^
+      114 |   if(column==='Mixta')expect.soft((await dialog.locator('tbody th').allTextContents())[0]).toBe(language==='es'?'Fila 4 / columna 5':'Row 4 / column 5')
+      115 |   if(column==='Producto')await expect(dialog.getByRole('button',{name:tr('empty.applyFill'),exact:true})).toBeDisabled()
+      116 |   await page.keyboard.press('Escape')
+        at /private/tmp/freyalab-lim-1-ajustes/tests/e2e/empty-values.spec.ts:113:63
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Se rellenarán 4 celdas: 3 vacías y 1 que faltaba (la fila era más corta)."
+    Received string:    "Vista previa lista. El documento sigue intacto. Se rellenarán 4 celdas: 3 vacías, 0 con solo espacios y 1 que faltaba (la fila era más corta)."
+
+      111 |   await dialog.getByRole('button',{name:tr('empty.preview'),exact:true}).click()
+      112 |   await expect(dialog.getByRole('status')).toContainText(tr('empty.preview.ready'))
+    > 113 |   expect.soft(await dialog.getByRole('status').textContent()).toContain(expected)
+          |                                                               ^
+      114 |   if(column==='Mixta')expect.soft((await dialog.locator('tbody th').allTextContents())[0]).toBe(language==='es'?'Fila 4 / columna 5':'Row 4 / column 5')
+      115 |   if(column==='Producto')await expect(dialog.getByRole('button',{name:tr('empty.applyFill'),exact:true})).toBeDisabled()
+      116 |   await page.keyboard.press('Escape')
+        at /private/tmp/freyalab-lim-1-ajustes/tests/e2e/empty-values.spec.ts:113:63
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Fila 4 / columna 5"
+    Received: "Fila 4/ columna 5"
+
+      112 |   await expect(dialog.getByRole('status')).toContainText(tr('empty.preview.ready'))
+      113 |   expect.soft(await dialog.getByRole('status').textContent()).toContain(expected)
+    > 114 |   if(column==='Mixta')expect.soft((await dialog.locator('tbody th').allTextContents())[0]).toBe(language==='es'?'Fila 4 / columna 5':'Row 4 / column 5')
+          |                                                                                            ^
+      115 |   if(column==='Producto')await expect(dialog.getByRole('button',{name:tr('empty.applyFill'),exact:true})).toBeDisabled()
+      116 |   await page.keyboard.press('Escape')
+      117 |  }
+        at /private/tmp/freyalab-lim-1-ajustes/tests/e2e/empty-values.spec.ts:114:92
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Se rellenarán 0 celdas."
+    Received string:    "Vista previa lista. El documento sigue intacto. Se rellenarán 0 celdas: 0 vacías, 0 con solo espacios y 0 que faltaban (las filas eran más cortas)."
+
+      111 |   await dialog.getByRole('button',{name:tr('empty.preview'),exact:true}).click()
+      112 |   await expect(dialog.getByRole('status')).toContainText(tr('empty.preview.ready'))
+    > 113 |   expect.soft(await dialog.getByRole('status').textContent()).toContain(expected)
+          |                                                               ^
+      114 |   if(column==='Mixta')expect.soft((await dialog.locator('tbody th').allTextContents())[0]).toBe(language==='es'?'Fila 4 / columna 5':'Row 4 / column 5')
+      115 |   if(column==='Producto')await expect(dialog.getByRole('button',{name:tr('empty.applyFill'),exact:true})).toBeDisabled()
+      116 |   await page.keyboard.press('Escape')
+        at /private/tmp/freyalab-lim-1-ajustes/tests/e2e/empty-values.spec.ts:113:63
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Se eliminará 1 de 7 filas."
+    Received string:    "Vista previa lista. El documento sigue intacto. Se eliminarán 1 de 7 filas."
+
+      120 |  await deletion.getByRole('button',{name:tr('empty.preview'),exact:true}).click()
+      121 |  await expect(deletion.getByRole('status')).toContainText(tr('empty.preview.ready'))
+    > 122 |  expect.soft(await deletion.getByRole('status').textContent()).toContain(language==='es'?'Se eliminará 1 de 7 filas.':'Will delete 1 of 7 rows.')
+          |                                                                ^
+      123 |  await page.keyboard.press('Escape')
+      124 |  expect(digest(await readFile(path))).toBe(digest(source))
+      125 | })
+        at /private/tmp/freyalab-lim-1-ajustes/tests/e2e/empty-values.spec.ts:122:64
+
+    Error Context: ../freyalab-lim1-ajustes-evidence/red-2-delete-results/empty-values-LIM-1-ajustes-dfb62-y-separa-fila-y-columna-es--csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-lim1-ajustes-evidence/red-2-delete-results/empty-values-LIM-1-ajustes-dfb62-y-separa-fila-y-columna-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-lim1-ajustes-evidence/red-2-delete-results/empty-values-LIM-1-ajustes-dfb62-y-separa-fila-y-columna-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/empty-values.spec.ts:101:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es)

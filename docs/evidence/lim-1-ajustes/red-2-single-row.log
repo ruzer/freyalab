@@ -1,0 +1,36 @@
+
+Running 1 test using 1 worker
+
+(node:14950) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/empty-values.spec.ts:101:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es) (1.5s)
+
+
+  1) [csv] › tests/e2e/empty-values.spec.ts:101:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es)
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Se eliminará 1 de 1 fila."
+    Received string:    "Vista previa lista. El documento sigue intacto. Se eliminará 1 de 1 filas."
+
+      127 |  await onlyRow.getByRole('button',{name:tr('empty.preview'),exact:true}).click()
+      128 |  await expect(onlyRow.getByRole('status')).toContainText(tr('empty.preview.ready'))
+    > 129 |  expect.soft(await onlyRow.getByRole('status').textContent()).toContain(language==='es'?'Se eliminará 1 de 1 fila.':'Will delete 1 of 1 row.')
+          |                                                               ^
+      130 |  await page.keyboard.press('Escape');expect(await readFile(single,'utf8')).toBe('A\n""\n')
+      131 |  expect(digest(await readFile(path))).toBe(digest(source))
+      132 | })
+        at /private/tmp/freyalab-lim-1-ajustes/tests/e2e/empty-values.spec.ts:129:63
+
+    Error Context: ../freyalab-lim1-ajustes-evidence/red-2-single-row-results/empty-values-LIM-1-ajustes-dfb62-y-separa-fila-y-columna-es--csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-lim1-ajustes-evidence/red-2-single-row-results/empty-values-LIM-1-ajustes-dfb62-y-separa-fila-y-columna-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-lim1-ajustes-evidence/red-2-single-row-results/empty-values-LIM-1-ajustes-dfb62-y-separa-fila-y-columna-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/empty-values.spec.ts:101:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es)
