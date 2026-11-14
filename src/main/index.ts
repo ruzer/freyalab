@@ -8,7 +8,7 @@ import {projectFile,projectName,projectSource,type ProjectInfo,type ProjectRecen
 import {col,query,conditionGroup} from './query-schema'
 import {ChartPresets,chartConfiguration} from './chart-presets'
 import {exportChartResult} from './chart-result-export'
-import { SqlService } from './sql-service'
+import { SqlService,type SqlTiming } from './sql-service'
 import appIcon from '../../build/icon.png?asset'
 import { Documents } from './documents'
 import {initializeLanguage,languageState,changeLanguage} from './language'
@@ -342,7 +342,9 @@ app.whenReady().then(async()=>{
  if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_PANDOC_PATH)docs.pandocPath=process.env.FREYALAB_TEST_PANDOC_PATH
  void menuPandoc.refresh().catch(error=>window?.webContents.send('freya:event',{type:'error',message:error.message}))
  presets=new ChartPresets(join(app.getPath('userData'),'chart-presets.json'))
- analytics=new SqlService(docs,progress=>window?.webContents.send('freya:event',{type:'analysis',progress}))
+ const analysisTimings:SqlTiming[]|undefined=process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_ANALYSIS_PROFILE==='1'?[]:undefined
+ if(analysisTimings)Reflect.set(globalThis,'freyaSQLTimings',analysisTimings)
+ analytics=new SqlService(docs,progress=>window?.webContents.send('freya:event',{type:'analysis',progress}),analysisTimings?value=>{analysisTimings.push(value);if(analysisTimings.length>100)analysisTimings.shift()}:undefined)
  ipcMain.handle('freya',async(event,operation,...args)=>{assertSender(event);try{const result=await handle(z.string().max(100).parse(operation),args);if(['open','openPaths','save','saveTextEncoding','recover','recents:clear'].includes(operation)){await refreshMenuRecents();if(operation==='recents:clear')window?.webContents.send('freya:event',{type:'recents'})}else if(['new','close','reload','reopenTextEncoding'].includes(operation))refreshApplicationMenu();return result}catch(e){throw new Error(e instanceof z.ZodError?t('error.invalidOperation'):(e as Error).message)}})
  ipcMain.on('freya:drop',(event,paths)=>{assertSender(event);for(const p of z.array(path).max(100).parse(paths))docs.grants.add(resolve(p))})
  ipcMain.on('freya:paste-plain',event=>{

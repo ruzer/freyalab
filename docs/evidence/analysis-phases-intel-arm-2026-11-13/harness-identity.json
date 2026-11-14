@@ -1,0 +1,14 @@
+{
+  "experiments/analysis-phases/analysis-phases.spec.ts": {
+    "3fadd6ac5fc134b077c6ecaa94afffc09510f680": "0b6febaf5ab265866bacb0deaacc81920d0371b812dc3c631e54adf269f2acae",
+    "070994ef8421d34d0d3dd75d7c011202a724e6b4": "0b6febaf5ab265866bacb0deaacc81920d0371b812dc3c631e54adf269f2acae"
+  },
+  "experiments/analysis-phases/playwright.config.ts": {
+    "3fadd6ac5fc134b077c6ecaa94afffc09510f680": "8072d399a5c0898dd2b097fe04f862b4ea9937687b1c6f7af25bd2020b569292",
+    "070994ef8421d34d0d3dd75d7c011202a724e6b4": "8072d399a5c0898dd2b097fe04f862b4ea9937687b1c6f7af25bd2020b569292"
+  },
+  "experiments/analysis-phases/tsconfig.json": {
+    "3fadd6ac5fc134b077c6ecaa94afffc09510f680": "f0c7aac80836fe4d8399a420a2a3d3ac04a08b1391522579c347aec1214e3d4f",
+    "070994ef8421d34d0d3dd75d7c011202a724e6b4": "f0c7aac80836fe4d8399a420a2a3d3ac04a08b1391522579c347aec1214e3d4f"
+  }
+}

@@ -1,0 +1,11 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 /private/tmp/freyalab-analisis-fases-intel
+
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  21:36:44
+   Duration  163ms (import 54%, transform 35%, tests 9%, worker 2%)

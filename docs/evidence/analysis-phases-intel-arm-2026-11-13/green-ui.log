@@ -1,0 +1,11 @@
+Running 5 tests using 1 worker
+
+(node:5462) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/chart-field-loading.spec.ts:12:1 › los 200 campos publican sus tipos juntos, sin una clasificación provisional durante la lectura (1.6s)
+  ✓  2 [csv] › tests/e2e/sql-progress-states.spec.ts:83:52 › SQL muestra fases reales en es, con resultado exacto y CSV intacto (2.2s)
+  ✓  3 [csv] › tests/e2e/sql-progress-states.spec.ts:83:52 › SQL muestra fases reales en en, con resultado exacto y CSV intacto (2.2s)
+  ✓  4 [csv] › tests/e2e/sql-progress-states.spec.ts:83:52 › SQL muestra fases reales en en-XA, con resultado exacto y CSV intacto (2.2s)
+  ✓  5 [csv] › tests/e2e/sql-progress-states.spec.ts:99:1 › el gráfico muestra la misma fase visible y anunciada antes de dibujar datos reales (3.3s)
+
+  5 passed (11.9s)

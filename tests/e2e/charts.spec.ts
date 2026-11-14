@@ -5,6 +5,7 @@ import {mkdtemp,writeFile,readFile,mkdir,rm,stat,readdir} from 'node:fs/promises
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {chartSQL,chartData,type ChartOptions} from '../../src/shared/charts'
+import {t} from '../../src/shared/i18n'
 import type {DocumentInfo,ChartResultRequest} from '../../src/shared/types'
 import {analysisResultExport,chartPanel,chartGenerate,menuItem,showTable,closeAnalysis,showPanel as showSummary} from './panel'
 async function chartDetails(panel:Locator){const info=panel.locator('.chart-info');if(await info.getAttribute('open')===null)await info.locator(':scope>summary').click()}
@@ -98,11 +99,19 @@ test('exportar un gráfico rechaza destinos de documentos abiertos y revisiones 
  const markdown=await page.evaluate(()=>window.freya.newDocument('markdown'));await expect(page.evaluate(({markdown,svg})=>window.freya.exportGraphic(markdown.id,{format:'svg',svg,revision:markdown.revision}),{markdown,svg})).rejects.toThrow('CSV abierto');expect(await readFile(path,'utf8')).toBe(original)
 })
 
-test('constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones',async()=>{
+test('constructor explícito: oráculos numéricos e identificadores sin mutaciones',async()=>{
  const {doc,path}=await open();const before=await page.evaluate(()=>window.freya.documents())
  for(const [aggregate,value] of [['count','5'],['distinct','5'],['sum','110.0'],['average','22.0'],['min','1.0'],['max','100.0'],['median','3.0']] as const){const data=await query(doc,{...options,kind:'bar',aggregate});expect(data.rows.find(row=>row[0]==='A')).toEqual(['A',value])}
  const text=await open('Ciudad,Código,Código\nOaxaca,001,extra\nOaxaca,1,extra\nOaxaca,9007199254740993,extra\nOaxaca,,extra\nOaxaca\n','ids.csv')
  const distinct=await query(text.doc,{...options,kind:'bar',aggregate:'distinct',y:1});expect(distinct.rows).toEqual([['Oaxaca','4']]);expect(distinct.usable).toBe(4)
+ expect(await readFile(path,'utf8')).toBe(original);expect((await page.evaluate(()=>window.freya.documents())).find(d=>d.id===doc.id)).toEqual(before.find(d=>d.id===doc.id))
+ await expect(page.evaluate(id=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id,revision:0,query:{offset:0,limit:1,requestId:1,conditions:[{column:999,op:'equals',value:'a'}]}}],sql:'SELECT * FROM datos'}),doc.id)).rejects.toThrow('Columna')
+ await expect(page.evaluate(id=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id,revision:0,query:{offset:-1,limit:1,requestId:1}}],sql:'SELECT * FROM datos'}),doc.id)).rejects.toThrow('Datos de operación')
+})
+
+test('constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones',async()=>{
+ const {doc,path}=await open();const before=await page.evaluate(()=>window.freya.documents())
+ await open('Ciudad,Código,Código\nOaxaca,001,extra\nOaxaca,1,extra\nOaxaca,9007199254740993,extra\nOaxaca,,extra\nOaxaca\n','ids.csv')
  await showPanel(page,'Gráficos');const panel=chartPanel(page)
  await panel.getByLabel('Tipo de gráfico',{exact:true}).selectOption('bar');await expect(panel.getByLabel('Resumen del gráfico').locator('option[value="sum"]')).toHaveJSProperty('disabled',true)
  await panel.getByLabel('Resumen del gráfico').selectOption('distinct');await panel.getByLabel('Columna Y del gráfico').selectOption('1');await expect(panel.getByLabel('Configuración del gráfico',{exact:true})).toContainText('Cuenta distintos de 2. Código por Ciudad')
@@ -119,8 +128,6 @@ test('constructor explícito: cálculos contrastados, identificadores y alcance 
  for(const [theme,width,height] of [['light',1440,900],['dark',1280,800]] as const){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.setViewportSize({width,height});await charts.evaluate(element=>element.scrollTop=0);await page.screenshot({path:test.info().outputPath(`builder-${theme}-${width}.png`)})}
  await charts.getByLabel('Columna Y del gráfico').selectOption('0');await expect(charts.getByLabel('Tipo de medida del gráfico')).toHaveValue('text');await expect(charts.getByLabel('Resumen del gráfico')).toHaveValue('count');await expect(charts.locator('.plot svg path')).toHaveCount(0)
  expect(await readFile(path,'utf8')).toBe(original);expect((await page.evaluate(()=>window.freya.documents())).find(d=>d.id===doc.id)).toEqual(before.find(d=>d.id===doc.id))
- await expect(page.evaluate(id=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id,revision:0,query:{offset:0,limit:1,requestId:1,conditions:[{column:999,op:'equals',value:'a'}]}}],sql:'SELECT * FROM datos'}),doc.id)).rejects.toThrow('Columna')
- await expect(page.evaluate(id=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id,revision:0,query:{offset:-1,limit:1,requestId:1}}],sql:'SELECT * FROM datos'}),doc.id)).rejects.toThrow('Datos de operación')
 })
 
 test('vista filtrada usa todas las coincidencias con filtros combinados, fechas y revisión actual',async()=>{
@@ -339,6 +346,6 @@ test('resultados exportados: muestra lee la fuente completa sin permitir guardar
 test('resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales',async()=>{
  const content='Grupo,Total\n'+Array.from({length:100000},(_,i)=>`G${i%10},${i%100}`).join('\n')+'\n',{doc,path}=await open(content,'export-cancel.csv')
  await showPanel(page,'Gráficos');const panel=chartPanel(page);await chartGenerate(page).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await analysisResultExport(page).locator('summary').click()
- await page.evaluate(()=>{Reflect.set(window,'exportReading',false);window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress?.phase.startsWith('Leyendo'))Reflect.set(window,'exportReading',true)})});await analysisResultExport(page).getByRole('button',{name:'Exportar resultados',exact:true}).click();await page.waitForFunction(()=>Reflect.get(window,'exportReading'));await analysisResultExport(page).getByRole('button',{name:'Cancelar exportación de resultados',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Exportación cancelada',{timeout:15000});expect(await readdir(join(folder,'exports'))).toEqual([])
+ await page.evaluate(loading=>{Reflect.set(window,'exportReading',false);window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress?.phase===loading&&event.progress.rows>0)Reflect.set(window,'exportReading',true)})},t('analysis.progress.loading'));await analysisResultExport(page).getByRole('button',{name:'Exportar resultados',exact:true}).click();await page.waitForFunction(()=>Reflect.get(window,'exportReading'));await analysisResultExport(page).getByRole('button',{name:'Cancelar exportación de resultados',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Exportación cancelada',{timeout:15000});expect(await readdir(join(folder,'exports'))).toEqual([])
  await analysisResultExport(page).getByRole('button',{name:'Exportar resultados',exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('export-cancel.analisis.json',{timeout:30000});const result=JSON.parse(await readFile(join(folder,'exports','export-cancel.analisis.json'),'utf8'));expect(result.metadata).toMatchObject({analyzedRows:100000,exportedElements:10,partial:false});expect(result.rows.every((row:string[])=>row[1]==='10000')).toBe(true);expect(await readFile(path,'utf8')).toBe(content);expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)).toMatchObject({dirty:false,revision:0})
 })
