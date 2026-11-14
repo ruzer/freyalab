@@ -98,11 +98,19 @@ test('exportar un gráfico rechaza destinos de documentos abiertos y revisiones 
  const markdown=await page.evaluate(()=>window.freya.newDocument('markdown'));await expect(page.evaluate(({markdown,svg})=>window.freya.exportGraphic(markdown.id,{format:'svg',svg,revision:markdown.revision}),{markdown,svg})).rejects.toThrow('CSV abierto');expect(await readFile(path,'utf8')).toBe(original)
 })
 
-test('constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones',async()=>{
+test('constructor explícito: oráculos numéricos e identificadores sin mutaciones',async()=>{
  const {doc,path}=await open();const before=await page.evaluate(()=>window.freya.documents())
  for(const [aggregate,value] of [['count','5'],['distinct','5'],['sum','110.0'],['average','22.0'],['min','1.0'],['max','100.0'],['median','3.0']] as const){const data=await query(doc,{...options,kind:'bar',aggregate});expect(data.rows.find(row=>row[0]==='A')).toEqual(['A',value])}
  const text=await open('Ciudad,Código,Código\nOaxaca,001,extra\nOaxaca,1,extra\nOaxaca,9007199254740993,extra\nOaxaca,,extra\nOaxaca\n','ids.csv')
  const distinct=await query(text.doc,{...options,kind:'bar',aggregate:'distinct',y:1});expect(distinct.rows).toEqual([['Oaxaca','4']]);expect(distinct.usable).toBe(4)
+ expect(await readFile(path,'utf8')).toBe(original);expect((await page.evaluate(()=>window.freya.documents())).find(d=>d.id===doc.id)).toEqual(before.find(d=>d.id===doc.id))
+ await expect(page.evaluate(id=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id,revision:0,query:{offset:0,limit:1,requestId:1,conditions:[{column:999,op:'equals',value:'a'}]}}],sql:'SELECT * FROM datos'}),doc.id)).rejects.toThrow('Columna')
+ await expect(page.evaluate(id=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id,revision:0,query:{offset:-1,limit:1,requestId:1}}],sql:'SELECT * FROM datos'}),doc.id)).rejects.toThrow('Datos de operación')
+})
+
+test('constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones',async()=>{
+ const {doc,path}=await open();const before=await page.evaluate(()=>window.freya.documents())
+ await open('Ciudad,Código,Código\nOaxaca,001,extra\nOaxaca,1,extra\nOaxaca,9007199254740993,extra\nOaxaca,,extra\nOaxaca\n','ids.csv')
  await showPanel(page,'Gráficos');const panel=chartPanel(page)
  await panel.getByLabel('Tipo de gráfico',{exact:true}).selectOption('bar');await expect(panel.getByLabel('Resumen del gráfico').locator('option[value="sum"]')).toHaveJSProperty('disabled',true)
  await panel.getByLabel('Resumen del gráfico').selectOption('distinct');await panel.getByLabel('Columna Y del gráfico').selectOption('1');await expect(panel.getByLabel('Configuración del gráfico',{exact:true})).toContainText('Cuenta distintos de 2. Código por Ciudad')
@@ -119,8 +127,6 @@ test('constructor explícito: cálculos contrastados, identificadores y alcance 
  for(const [theme,width,height] of [['light',1440,900],['dark',1280,800]] as const){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.setViewportSize({width,height});await charts.evaluate(element=>element.scrollTop=0);await page.screenshot({path:test.info().outputPath(`builder-${theme}-${width}.png`)})}
  await charts.getByLabel('Columna Y del gráfico').selectOption('0');await expect(charts.getByLabel('Tipo de medida del gráfico')).toHaveValue('text');await expect(charts.getByLabel('Resumen del gráfico')).toHaveValue('count');await expect(charts.locator('.plot svg path')).toHaveCount(0)
  expect(await readFile(path,'utf8')).toBe(original);expect((await page.evaluate(()=>window.freya.documents())).find(d=>d.id===doc.id)).toEqual(before.find(d=>d.id===doc.id))
- await expect(page.evaluate(id=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id,revision:0,query:{offset:0,limit:1,requestId:1,conditions:[{column:999,op:'equals',value:'a'}]}}],sql:'SELECT * FROM datos'}),doc.id)).rejects.toThrow('Columna')
- await expect(page.evaluate(id=>window.freya.sqlRun({requestId:crypto.randomUUID(),sources:[{id,revision:0,query:{offset:-1,limit:1,requestId:1}}],sql:'SELECT * FROM datos'}),doc.id)).rejects.toThrow('Datos de operación')
 })
 
 test('vista filtrada usa todas las coincidencias con filtros combinados, fechas y revisión actual',async()=>{

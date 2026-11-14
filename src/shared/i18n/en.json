@@ -1382,5 +1382,9 @@
  "empty.error.encoding": "The chosen encoding cannot represent this value. The document is preserved.",
  "empty.error.disk": "The file changed outside FreyaLab. Close the dialog and review or reload the document.",
  "empty.error.dialog": "Close the empty-cells dialog before changing documents. Your data is preserved.",
- "empty.error.generic": "Could not prepare the change. The document is preserved; review the preview again."
+ "empty.error.generic": "Could not prepare the change. The document is preserved; review the preview again.",
+ "analysis.progress.engine": "Preparing local engine",
+ "analysis.progress.loading": "Loading data",
+ "analysis.progress.query": "Running the query",
+ "analysis.progress.results": "Preparing results"
 }

@@ -23,3 +23,15 @@ Cada proceso mide duraciones en su propio reloj. `window` abarca crear/cargar la
 En navegador se separan creación de opciones, `setOption`, evento `rendered` y dos `requestAnimationFrame`. La última medida indica oportunidad de presentar el SVG, no una medición de píxeles en un monitor físico. Cada nombre conserva una entrada; el observador de la sonda registra la serie. Main conserva como máximo 100 registros por instancia de prueba.
 
 Los fixtures, hashes, repeticiones, contexto desarrollo/paquete y versiones acompañan cada observación. La sonda diagnóstica puede observar hasta el límite real del producto; no sustituye ni relaja las aserciones originales de aceptación.
+
+## Decisiones tras la medición inicial
+
+Sonda `43550207123`, SHA `3fadd6ac5fc134b077c6ecaa94afffc09510f680`: 36 observaciones completas, tres por arquitectura/caso/contexto. Los seis fixtures mantienen hash y mtime.
+
+- **200 campos:** Intel tarda 14,120 s en perfiles, de los que 0,573 s están dentro de los 200 handlers principales. Se conservan las llamadas existentes en serie (el motor cancela solicitudes paralelas del mismo documento) y se publican los perfiles, muestras y tipos juntos. No se añade IPC batch ni caché.
+- **Tendencia:** se cargaban las 300.000 filas dos veces; 22,394 s de carga acumulada Intel frente a 1,325 s de consulta. Dispersión y líneas sin agrupación no tienen total: se omite solo su segunda consulta, cuyo resultado anterior siempre era nulo. Barras, fechas, histogramas, cajas y mapas conservan sus totales calculados por el motor.
+- **SQL de 55.227.700 bytes:** Intel dedica 11,634 s al append y 0,057 s a la consulta. Se elimina el callback JavaScript por byte usando `Uint8Array.fromBase64`, disponible en el Chromium 152 del Electron 44.9.2 bloqueado. El append incluye transporte/Arrow/inserción; la medida no aísla el coste de decodificar. La comprobación real de bytes, Unicode y consultas decide la equivalencia; el mock de Node solo comprueba el adaptador.
+- **Constructor:** los 14 motores de la ruta UI acumulan 32,281 s de arranque Intel, frente a 2,881 s de consulta y 0,367 s hasta presentar los gráficos. Una actualización individual tarda 5–8 s en esta sonda. La prueba añadía ocho oráculos SQL dentro del mismo plazo global de 90 s; se separan oráculos y recorrido visual sin aumentar esperas y conservando sus 62 nodos `expect` originales. No se añade un motor persistente: cambiaría el ciclo de aislamiento y memoria. Tampoco se unen consultas, pues dos resultados válidos separados podrían exceder juntos el límite de 8 MiB.
+- **Estado visible:** carga, consulta y preparación de resultados tienen mensajes es/en/en-XA propios. La cancelación se comprueba antes de publicar avances tras un append; la prueba verifica que no haya eventos tardíos.
+
+Estas cifras son medianas de tres observaciones en runners compartidos. No son garantías para equipos de usuarios ni califican por sí solas la CI del head de entrega.

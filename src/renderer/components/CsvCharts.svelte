@@ -82,7 +82,7 @@
   chart.on('legendselectchanged',event=>{const {selected}=event as {selected:Record<string,boolean>};hiddenSeries=Object.keys(selected).filter(name=>!selected[name])})
   const resize=new ResizeObserver(()=>chart?.resize());resize.observe(element)
   const theme=new MutationObserver(()=>draw());theme.observe(document.documentElement,{attributes:true,attributeFilter:['class']})
-  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress&&(event.progress.requestId===active||event.progress.requestId===totalJob||event.progress.requestId===exportJob))message='charts.ui.prepare';else if(event.id===doc.id&&event.type==='external'){cancel();if(onDemand&&started)stale=true;message='charts.ui.external'}})
+  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress&&(event.progress.requestId===active||event.progress.requestId===totalJob||event.progress.requestId===exportJob))message=event.progress.phase;else if(event.id===doc.id&&event.type==='external'){cancel();if(onDemand&&started)stale=true;message='charts.ui.external'}})
   return()=>{resize.disconnect();theme.disconnect();unsubscribe();chart?.dispose();chart=undefined}
  })
  function draw(compact=true){
@@ -110,12 +110,15 @@
    analysisMeasure('chartRows',rowsStarted,{rows:rows.length})
    if(temporal&&result.total>0&&result.points===0)throw new Error(t('charts.ui.dateError'))
    if(result.total>0&&result.usable===0&&!result.trend&&options.kind!=='heatmap'&&!(aggregated&&['count','distinct'].includes(options.aggregate)))throw new Error(t('charts.ui.numberError'))
-   const totalId=crypto.randomUUID();totalJob=totalId
-   const summary=await window.freya.sqlRun({requestId:totalId,sources:[{id:doc.id,revision:doc.revision,...scope!=='all'?{query:$state.snapshot(analysisQuery)}:{},...where.conditions.length?{where:$state.snapshot(where)}:{}}],sql:chartTotalSQL(doc.headers??[],options)})
-   if(active!==requestId)return
-   const totalRows=[...summary.rows]
-   for(let offset=100;offset<summary.returnedRows;offset+=100){const page=await window.freya.sqlPage(totalId,offset);if(active!==requestId)return;totalRows.push(...page.rows)}
-   totals=totalRows.map(row=>Object.fromEntries(summary.columns.map((column,index)=>[column.name,row[index]])))
+   // Dispersión y líneas sin agrupar solo tendrían un total nulo: no recargar la fuente para calcularlo.
+   if(options.kind!=='scatter'&&(options.kind!=='line'||temporal)){
+    const totalId=crypto.randomUUID();totalJob=totalId
+    const summary=await window.freya.sqlRun({requestId:totalId,sources:[{id:doc.id,revision:doc.revision,...scope!=='all'?{query:$state.snapshot(analysisQuery)}:{},...where.conditions.length?{where:$state.snapshot(where)}:{}}],sql:chartTotalSQL(doc.headers??[],options)})
+    if(active!==requestId)return
+    const totalRows=[...summary.rows]
+    for(let offset=100;offset<summary.returnedRows;offset+=100){const page=await window.freya.sqlPage(totalId,offset);if(active!==requestId)return;totalRows.push(...page.rows)}
+    totals=totalRows.map(row=>Object.fromEntries(summary.columns.map((column,index)=>[column.name,row[index]])))
+   }
    data=result;source=first.sources[0];message='charts.ui.ready';zoom=1
   }catch(error){if(active===requestId){data=null;failed=true;message=String(error).replace(/^.*Error: /,'');onerror(t('charts.fields.failed'))}}
   finally{if(active===requestId){active=undefined;busy=false;void window.freya.sqlCancel(requestId).catch(()=>{});if(totalJob){void window.freya.sqlCancel(totalJob).catch(()=>{});totalJob=undefined}}}
@@ -144,18 +147,20 @@
   cancelFields();const token=fieldGeneration,id=doc.id,revision=doc.revision;fieldsLoading=true;profiles=[];samples={};interpretable={};fieldErrors=[]
   if(sample===undefined){fieldsLoading=false;return}
   if(!automatic||tooWide){if(initializedDocument!==id){if(!onDemand)options={kind:'bar',x:0,y:-1,bins:10,aggregate:'count',descending:false,measureType:'text',series:-1,time:'none'};initializedDocument=id}fieldsLoading=false;return}
+  const nextProfiles:ChartColumn[]=[],nextSamples:Record<number,string[]>={},nextInterpretable:Record<number,boolean>={},nextErrors:string[]=[]
   try{
    for(const column of (doc.headers??[]).map((_,i)=>i).slice(0,200)){
     const requestId=crypto.randomUUID();fieldJob={id,requestId}
     try{
      const started=performance.now(),result=await window.freya.analyzeColumn(id,{column,revision,requestId,frequencyOffset:0,duplicatesOnly:false,bins:10});ipcMs+=performance.now()-started;calls++
      if(token!==fieldGeneration||id!==doc.id||revision!==doc.revision)return
-     profiles=[...profiles,{column,name:(doc.headers??[])[column],profile:result.profile}]
-     interpretable[column]=result.numeric>0&&result.excluded===0
-     samples[column]=result.frequencies.filter(value=>!value.truncated).slice(0,3).map(value=>value.value)
-    }catch(error){if(token!==fieldGeneration)return;fieldErrors=[...fieldErrors,`${columnLabel(column)}: ${String(error).replace(/^.*Error: /,'')}`]}
+     nextProfiles.push({column,name:(doc.headers??[])[column],profile:result.profile})
+     nextInterpretable[column]=result.numeric>0&&result.excluded===0
+     nextSamples[column]=result.frequencies.filter(value=>!value.truncated).slice(0,3).map(value=>value.value)
+    }catch(error){if(token!==fieldGeneration)return;nextErrors.push(`${columnLabel(column)}: ${String(error).replace(/^.*Error: /,'')}`)}
    }
    if(token!==fieldGeneration)return
+   profiles=nextProfiles;samples=nextSamples;interpretable=nextInterpretable;fieldErrors=nextErrors
    if(initializedDocument!==id){const first=initialChart($state.snapshot(columns));if(first&&!onDemand)options=first;initializedDocument=id}
   }finally{if(token===fieldGeneration){fieldJob=undefined;fieldsLoading=false;analysisMeasure('profiles',begun,{calls,ipcMs,columns:profiles.length})}}
  }
@@ -213,7 +218,7 @@
  {#if data&&source}<p class="scope">{source.name} · {scopeLabel} · {source.fromDisk?t('charts.ui.disk'):t('charts.ui.revision',{revision:source.revision})} · {t('charts.ui.dataStatus',{total:formatNumber(data.total),usable:formatNumber(data.usable),omitted:formatNumber(data.total-data.usable),drawn:data.rows.length,points:formatNumber(data.points)})}{#if data.invalidDates!==undefined} · {t('charts.ui.invalidDates',{n:data.invalidDates})}{/if}{#if data.seriesCount!==undefined} · {t('charts.ui.seriesCount',{drawn:series.length,total:data.seriesCount})}{/if}.</p>{/if}
  {#if hiddenSeries.length}<p>{plural('charts.ui.hidden',hiddenSeries.length)}</p>{/if}
 </div></details></div>
- <p class="result-status" title={scopeLabel}>{#if sample===true}{t('charts.fields.sample')} · {/if}{#if scope!=='all'}{scope==='saved'?t('charts.fields.savedScope'):t('charts.fields.filteredScope')} · {/if}{data?t('charts.fields.status',{n:formatNumber(data.total),g:plotData?.groups??0}):fieldsLoading?t('charts.fields.loading'):busy?t('charts.ui.prepare'):t('charts.fields.unchanged')}</p>
+ <p class="result-status" title={scopeLabel}>{#if sample===true}{t('charts.fields.sample')} · {/if}{#if scope!=='all'}{scope==='saved'?t('charts.fields.savedScope'):t('charts.fields.filteredScope')} · {/if}{data?t('charts.fields.status',{n:formatNumber(data.total),g:plotData?.groups??0}):fieldsLoading?t('charts.fields.loading'):busy?resultAnnouncement:t('charts.fields.unchanged')}</p>
  <p class="sr-only result-announcement" role="status" aria-live="polite" aria-atomic="true">{resultAnnouncement}</p>
  <p class="sr-only analysis-announcement" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
  {#if data?.limited}<p class="truncated notice" role="status">{#if !['bar','heatmap'].includes(options.kind)}{t('charts.ui.partial',{n:formatNumber(chartLimit(options.kind))})}{' '}{/if}{t(['bar','heatmap'].includes(options.kind)?resultOrder.tie?'charts.fields.truncatedTies':'charts.fields.truncated':'charts.ui.truncated',{shown:formatNumber(data.rows.length),total:formatNumber(data.points),...resultOrder})}</p>{/if}

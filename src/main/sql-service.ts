@@ -72,7 +72,7 @@ export class SqlService {
   const owner=new BrowserWindow({show:false,webPreferences:{sandbox:true,contextIsolation:true,nodeIntegration:false,partition:'freyalab-analysis',backgroundThrottling:false}});job.window=owner
   owner.webContents.setWindowOpenHandler(()=>({action:'deny'}));owner.webContents.on('will-navigate',event=>event.preventDefault())
   owner.webContents.on('render-process-gone',()=>{if(job.window!==owner)return;job.error='El motor de análisis se cerró. Los documentos siguen intactos.';this.cancel(job.id)})
-  this.progress({requestId:job.id,phase:job.calculation?'calculate.progress.engine':'Preparando motor local',rows:0})
+  this.progress({requestId:job.id,phase:job.calculation?'calculate.progress.engine':t('analysis.progress.engine'),rows:0})
   await owner.loadURL(origin+'/analytics.html')
   if(job.timing)job.timing.phases.window+=performance.now()-started
   await this.timed(job,'engine',()=>owner.webContents.executeJavaScript('new Promise(resolve=>{const timer=setInterval(()=>{if(globalThis.freyaSQL){clearInterval(timer);resolve(true)}},10)})'))
@@ -84,6 +84,7 @@ export class SqlService {
   const call=<T>(method:string,...args:unknown[])=>contents.executeJavaScript(`globalThis.freyaSQL.${method}(...${JSON.stringify(args)})`) as Promise<T>
   let cells=0
   const loadingStarted=performance.now()
+  this.progress({requestId:job.id,phase:t('analysis.progress.loading'),rows:0})
   for(const [index,input] of request.sources.entries()){
    this.check(job);const record=this.docs.get(input.id);if(!isTableDocument(record.info)||record.info.revision!==input.revision)throw new Error('Una fuente no es CSV o cambió de revisión.')
    const ticket=randomUUID(),table=index===0?'datos':`tabla_${index+1}`
@@ -100,12 +101,13 @@ export class SqlService {
      const encodingStarted=performance.now(),encoded=Buffer.from(batch.data!).toString('base64')
      if(job.timing){job.timing.phases.sourceEncode+=performance.now()-encodingStarted;job.timing.bytes+=batch.data!.byteLength}
      await this.timed(job,'sourceAppend',()=>call('append',table,encoded))
-     source.rows+=batch.rows;if(source.rows%10000===0)this.progress({requestId:job.id,phase:`Leyendo ${source.name}`,rows:source.rows})
+     this.check(job)
+     source.rows+=batch.rows;if(source.rows===batch.rows||source.rows%10000===0)this.progress({requestId:job.id,phase:t('analysis.progress.loading'),rows:job.sources.reduce((n,s)=>n+s.rows,0)})
     }
    }finally{await this.docs.table.call('analysisClose',ticket)}
   }
   if(job.timing)job.timing.phases.sourceLoad=performance.now()-loadingStarted
-  this.check(job);const version=await this.timed(job,'seal',()=>call<string>('seal'));this.progress({requestId:job.id,phase:'Ejecutando consulta de solo lectura',rows:job.sources.reduce((n,s)=>n+s.rows,0)})
+  this.check(job);const version=await this.timed(job,'seal',()=>call<string>('seal'));this.progress({requestId:job.id,phase:t('analysis.progress.query'),rows:job.sources.reduce((n,s)=>n+s.rows,0)})
   let raw:unknown
   if(job.timing){
    const begun=performance.now()
@@ -113,6 +115,7 @@ export class SqlService {
    job.timing.phases.query=response.timing.query;job.timing.phases.materialize=response.timing.materialize
    job.timing.phases.resultTransfer=Math.max(0,performance.now()-begun-response.workerMs);raw=response.value
   }else raw=await call('query',request.sql)
+  this.check(job);this.progress({requestId:job.id,phase:t('analysis.progress.results'),rows:job.sources.reduce((n,s)=>n+s.rows,0)})
   const output=z.object({columns:z.array(z.object({name:z.string().max(100000),type:z.string().max(1000)})).min(1).max(200),rows:z.array(z.array(z.string().max(8*1024*1024).nullable()).max(200)).max(10000),limited:z.boolean()}).parse(raw);if(output.rows.some(row=>row.length!==output.columns.length)||output.rows.reduce((n,row)=>n+row.reduce((m,v)=>m+(v===null?0:Buffer.byteLength(v,'utf8')),0),0)>8*1024*1024)throw new Error('El motor devolvió un resultado no válido o demasiado grande.');this.check(job)
   job.result={requestId:job.id,sources:job.sources,version,columns:output.columns,rows:output.rows,returnedRows:output.rows.length,limited:output.limited,offset:0,completedAt:new Date().toISOString()}
  }

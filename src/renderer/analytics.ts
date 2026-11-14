@@ -1,3 +1,4 @@
+/// <reference lib="esnext.typedarrays" />
 import {AsyncDuckDB,VoidLogger} from '@duckdb/duckdb-wasm'
 import wasmURL from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url'
 import workerURL from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url'
@@ -33,7 +34,7 @@ async function* calculatedRows(stream:AsyncRecordBatchStreamReader,columns:Calcu
 
 globalThis.freyaSQL={
  async table(name:string,columns:string[]){await connection.query(`CREATE TABLE ${quoteIdentifier('_'+name)} (${columns.map((_,i)=>`c${i+1} VARCHAR`).join(',')})`);await connection.query(`CREATE VIEW ${quoteIdentifier(name)} AS SELECT ${columns.map((column,i)=>`c${i+1} AS ${quoteIdentifier(column)}`).join(',')} FROM ${quoteIdentifier('_'+name)}`)},
- async append(name:string,base64:string){await connection.insertArrowFromIPCStream(Uint8Array.from(atob(base64),char=>char.charCodeAt(0)),{name:'_'+name,create:false})},
+ async append(name:string,base64:string){await connection.insertArrowFromIPCStream(Uint8Array.fromBase64(base64),{name:'_'+name,create:false})},
  async seal(){await connection.query('SET lock_configuration=true');return db.getVersion()},
  async query(input:string){
   const begun=performance.now()
