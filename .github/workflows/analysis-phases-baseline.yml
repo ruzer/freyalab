@@ -1,0 +1,57 @@
+name: Analysis phase baseline
+on:
+  push:
+    branches: [codex/analysis-phases-baseline]
+permissions:
+  contents: read
+jobs:
+  phase-baseline:
+    name: Baseline ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15-intel
+            executable: release/mac/FreyaLab.app/Contents/MacOS/FreyaLab
+          - os: macos-15
+            executable: release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    env:
+      FREYALAB_PHASE_LABEL: before
+      ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/freyalab-electron-builder
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+        with:
+          path: ~/Library/Caches/electron
+          key: electron-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+        with:
+          path: ${{ runner.temp }}/freyalab-electron-builder
+          key: electron-builder-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build
+      - name: Measure development application, three observations
+        run: npx playwright test --config experiments/analysis-phases/playwright.config.ts --output=phase-results/development
+      - run: npm run licenses
+      - name: Package the same source
+        run: |
+          node --input-type=commonjs -e "const {build}=require('electron-builder');build({dir:true,config:{electronDownload:{force:false,checksums:require('electron/checksums.json')}}}).catch(error=>{console.error(error);process.exitCode=1})"
+      - name: Measure packaged application, three observations
+        env:
+          FREYALAB_EXECUTABLE: ${{ github.workspace }}/${{ matrix.executable }}
+        run: npx playwright test --config experiments/analysis-phases/playwright.config.ts --grep 'Constructor|SQL' --output=phase-results/packaged
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: analysis-before-${{ matrix.os }}
+          path: phase-results/
+          if-no-files-found: error
