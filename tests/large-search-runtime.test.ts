@@ -6,11 +6,10 @@ import {build} from 'rolldown'
 import {parse} from 'csv-parse/sync'
 import {LargeViews} from '../src/main/large-view'
 import {waitForView} from './helpers/view-state'
+import {blockingTimeout} from './helpers/blocking-timeout'
 import {buildIndex} from '../src/main/large-table'
 import {compileTableQuery} from '../src/main/table-query'
 let folder:string,workerPath:string,standard:Awaited<ReturnType<typeof fixture>>,singleRecordBatch:Awaited<ReturnType<typeof fixture>>
-// Intel 43263234108/43452894095: 18,763 s × 1,79087 de variación observada × 2 ≈ 67,2 s; cortes a 29/30 s → 75 s.
-const SLOW_INTEL_SEARCH_TIMEOUT_MS=75_000
 async function fixture(name:string,count:number){
  const path=join(folder,name)
  const examples=['0001,Kelvin,İSTANBUL,"a\r\nb"','0002,ASCII K,ASCII I,','0003,ñ,"dice ""hola""",fin','0004,,,','0005,corto','0006,extra,k,a,b']
@@ -29,9 +28,8 @@ beforeAll(async()=>{
 })
 afterAll(async()=>{await rm(folder,{recursive:true,force:true})})
 for(const workers of [1,2,4,8])for(const batchRecords of [1,3,2000]){
- const budgetMs=workers===1&&batchRecords===1?60_000:(workers===1&&batchRecords===3||workers===2&&batchRecords===1)?SLOW_INTEL_SEARCH_TIMEOUT_MS:30_000
  it(`${workers} rangos reales, lote ${batchRecords}: Unicode y separación parcial conservan todas las filas en orden`,async()=>{
- const deadline=performance.now()+budgetMs-1_000 // Se conserva 1 s del presupuesto para cerrar los hilos.
+ const deadline=performance.now()+blockingTimeout-1_000 // Se conserva 1 s del presupuesto para cerrar los hilos.
  const {path,source,index,rows}=workers===1&&batchRecords===1?singleRecordBatch:standard
  const views=new LargeViews({workers,workerPath,batchRecords,chunk:30,prefilter:batchRecords!==3,partial:batchRecords!==2000}),queries=[{search:'k'},{search:'i'},{conditions:[{column:2,op:'contains' as const,value:'k'}],filterMode:'all' as const},{conditions:[{column:4,op:'empty' as const}],filterMode:'any' as const}]
  try{
@@ -47,5 +45,5 @@ for(const workers of [1,2,4,8])for(const batchRecords of [1,3,2000]){
   }
   expect(await readFile(path,'utf8')).toBe(source)
  }finally{await views.stop()}
- },budgetMs)
+ })
 }

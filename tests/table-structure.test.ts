@@ -62,7 +62,7 @@ it('elimina y restaura muchos grupos de filas sin splices cuadráticos ni expans
  await engine.edit('a',await edit('deduplicate'));expect((await engine.info('a')).rowCount).toBe(50000)
  await engine.undo('a');expect((await engine.serialize('a')).toString()).toBe(source);await engine.undo('a',true);expect((await engine.info('a')).rowCount).toBe(50000)
  await open('A\n'+'x\n'.repeat(140000));await engine.edit('a',await edit('deduplicate'));expect((await engine.info('a')).rowCount).toBe(1);await engine.undo('a');expect((await engine.info('a')).rowCount).toBe(140000)
-},30000)
+})
 
 it('rechaza registros resultantes demasiado grandes y mantiene los límites de estructura',async()=>{
  await open('A,B\n'+ 'a'.repeat(300000)+','+'b'.repeat(300000)+'\n');const before=await engine.snapshot('a')

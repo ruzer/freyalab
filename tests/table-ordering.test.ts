@@ -92,7 +92,7 @@ it('reordena 40 MiB de valores sin duplicarlos en el historial; deshacer reprodu
  const source='ID,Texto\n'+Array.from({length:20000},(_,i)=>String(i).padStart(6,'0')+','+'á'.repeat(1100)).join('\n')+'\n';expect(Buffer.byteLength(source)).toBeGreaterThan(40*1024*1024);await open(source)
  await engine.edit('a',await request('moveRows',{rowIds:['1'],destination:20000}));const snapshot=await engine.snapshot('a');expect(Buffer.byteLength(JSON.stringify(snapshot.state.history))).toBeLessThan(300000);expect(snapshot.state.history).toHaveLength(1)
  await engine.undo('a');expect((await engine.serialize('a')).toString()).toBe(source)
-},30000)
+})
 
 it('fijar orden conserva su consulta aunque lleguen peticiones de páginas durante el cálculo',async()=>{
  await open('ID\n'+Array.from({length:20000},(_,i)=>String(i).padStart(5,'0')).join('\n')+'\n')

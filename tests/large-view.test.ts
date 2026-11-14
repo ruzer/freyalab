@@ -8,6 +8,7 @@ import iconv from 'iconv-lite'
 import {TableEngine} from '../src/main/table-engine'
 import type {LargeViewRequest} from '../src/shared/types'
 import {waitForView} from './helpers/view-state'
+import {blockingTimeout} from './helpers/blocking-timeout'
 let workerFolder:string,workerPath:string
 beforeAll(async()=>{
  workerFolder=await mkdtemp(join(tmpdir(),'freya-view-worker-'));workerPath=join(workerFolder,'worker.mjs')
@@ -15,8 +16,8 @@ beforeAll(async()=>{
  await build({input:'src/main/large-search-worker.ts',platform:'node',external:id=>!id.startsWith('.')&&!isAbsolute(id),output:{file:workerPath,format:'esm'}})
 })
 afterAll(async()=>{await rm(workerFolder,{recursive:true,force:true})})
-async function finished(engine:TableEngine,id='a'){for(let i=0;i<300;i++){const state=await engine.viewState(id);if(state?.status!=='running')return state;await new Promise(resolve=>setTimeout(resolve,5))}throw new Error('La búsqueda no terminó')}
-async function scanned(engine:TableEngine,id='a'){for(let i=0;i<300;i++){const state=await engine.viewState(id);if(state?.scanned)return state;await new Promise(resolve=>setTimeout(resolve,5))}throw new Error('No avanzó la búsqueda')}
+async function finished(engine:TableEngine,id='a'){return waitForView(()=>engine.viewState(id),performance.now()+blockingTimeout-1_000)}
+async function scanned(engine:TableEngine,id='a'){const deadline=performance.now()+blockingTimeout-1_000;while(performance.now()<deadline){const state=await engine.viewState(id);if(state?.scanned)return state;await new Promise(resolve=>setTimeout(resolve,5))}throw new Error('No avanzó la búsqueda')}
 const request=(search:string,extra:Partial<LargeViewRequest>={})=>({requestId:crypto.randomUUID(),revision:0,search,...extra})
 const table=(count:number)=>'id,text\n'+Array.from({length:count},(_,i)=>`${String(i+1).padStart(6,'0')},grupo ${i%2?'b':'a'}`).join('\n')+'\n'
 
@@ -107,9 +108,8 @@ for(const [encoding,bom] of [['utf8',false],['utf8',true],['utf16le',true],['win
  }finally{await large.close('a');await small.close('a');await rm(folder,{recursive:true,force:true})}
 })
 
-const FILTER_PARITY_BUDGET_MS=10_000
 for(const encoding of ['utf8','utf16le'] as const)it(`${encoding}: paridad de 330 consultas de filtros por operador y grupos de 2 a 20 condiciones`,async()=>{
- const deadline=performance.now()+FILTER_PARITY_BUDGET_MS
+ const deadline=performance.now()+blockingTimeout-1_000
  // Cede al worker y a la E/S sin un temporizador por cada consulta pequeña.
  const clock={now:()=>performance.now(),pause:()=>new Promise<void>(resolve=>setImmediate(resolve))}
  const {compileTableQuery}=await import('../src/main/table-query'),{LargeViews}=await import('../src/main/large-view'),{buildIndex}=await import('../src/main/large-table')
@@ -126,7 +126,7 @@ for(const encoding of ['utf8','utf16le'] as const)it(`${encoding}: paridad de 33
   }
   expect(await readFile(path)).toEqual(data)
  }finally{await views.stop();await small.close('a');await rm(folder,{recursive:true,force:true})}
-},FILTER_PARITY_BUDGET_MS)
+})
 
 it('cancelar o cerrar un documento no cancela la búsqueda de otro; reinterpretar elimina la vista antigua',async()=>{
  const folder=await mkdtemp(join(tmpdir(),'freya-view-lifecycle-')),path=join(folder,'data.csv'),text=table(4000),engine=new TableEngine(()=>{},{largeBytes:1,viewWorkerPath:workerPath,viewWorkers:2,viewBatch:10,viewDelayMs:1})

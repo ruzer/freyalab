@@ -22,4 +22,4 @@ it('termina el proceso de prueba si Electron no confirma el cierre', async ({ on
   await closed
   expect(close).toHaveBeenCalledOnce()
   expect(child.signalCode ?? child.exitCode).not.toBeNull()
-}, 8000)
+})

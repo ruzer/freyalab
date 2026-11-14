@@ -68,7 +68,7 @@ it('rechaza una cardinalidad excesiva con error explícito y conserva el documen
  await open('A\n'+Array.from({length:100001},(_,i)=>String(i)).join('\n')+'\n')
  await expect(engine.analyzeColumn('a',request())).rejects.toThrow('100 000 valores distintos')
  expect((await engine.info('a')).dirty).toBe(false);expect((await engine.page('a',{offset:100000,limit:1,requestId:1})).rows[0].cells[0]).toBe('100000')
-},15000)
+})
 
 
 it('clasifica un CSV de 150 000 valores distintos sin ampliar el límite de frecuencias',async()=>{
@@ -81,7 +81,7 @@ it('clasifica un CSV de 150 000 valores distintos sin ampliar el límite de frec
  }
  expect((await engine.info('a')).dirty).toBe(false)
  expect(await readFile(path,'utf8')).toBe(source)
-},15000)
+})
 
 
 it.each([

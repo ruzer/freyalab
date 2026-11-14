@@ -65,7 +65,7 @@ describe('APP-04 · versiones y frontera de confianza',()=>{
  it('U4/U9 · el máximo de 10 segundos también cubre una respuesta que no termina',async()=>{
   const env=await local((_request,response)=>response.write('[')),started=Date.now()
   expect(await checkUpdates(current,new AbortController().signal,env)).toMatchObject({status:'error',code:'timeout'});expect(Date.now()-started).toBeLessThan(11000)
- },12000)
+ })
  it('U2/U8/U10 · cero peticiones por omisión, 24 h y persistencia sólo en settings.json',async()=>{
   let count=0;const env=await local((_request,response)=>{count++;response.end(JSON.stringify([release(nextVersion)]))})
   folder=await mkdtemp(join(tmpdir(),'freya-updates-'));const store=new SettingsStore(join(folder,'settings.json'));await store.migrate({})

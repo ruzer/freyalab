@@ -3,6 +3,7 @@ import {readFileSync} from 'node:fs'
 import {createRequire} from 'node:module'
 import {dirname} from 'node:path'
 import {expect,it} from 'vitest'
+import {blockingTimeout} from './helpers/blocking-timeout'
 
 type Job={os:string;part?:string;projects?:string;executable?:string}
 type Suite={title:string;suites?:Suite[];specs?:{file:string;title:string;tests:{projectName:string}[]}[]}
@@ -25,7 +26,7 @@ function identities(suite:Suite,parents:string[]=[]):string[]{
 
 function list(...args:string[]):string[]{
  const report=JSON.parse(execFileSync(process.execPath,[require.resolve('@playwright/test/cli'),'test','--list','--reporter=json',...args],{
-  encoding:'utf8',timeout:30_000,maxBuffer:4*1024*1024,
+  encoding:'utf8',timeout:blockingTimeout-1_000,maxBuffer:4*1024*1024,
   // La enumeración importa los specs sin lanzar Electron ni necesitar su binario.
   env:{...process.env,ELECTRON_OVERRIDE_DIST_PATH:dirname(require.resolve('electron'))}
  })) as {suites:Suite[]}
@@ -46,7 +47,7 @@ it('Intel conserva las identidades de desarrollo en dos partes y prueba el paque
  expect(second.length).toBeGreaterThan(0)
  expect(perf.length).toBeGreaterThan(0)
  expect([...first,...second,...perf].sort()).toEqual(all)
-},60_000)
+})
 
 it('Ubuntu solo reparte los push y conserva la misma selección de pruebas que Intel',()=>{
  const [scheduled,pr,push]=matrices.map(rows=>rows.filter(job=>job.os==='ubuntu-24.04'))
