@@ -41,4 +41,4 @@ it.skipIf(process.platform !== 'win32')('Windows: un hijo sobreviviente al timeo
   if (pid) try { process.kill(pid) } catch {}
   await rm(directory, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 })
  }
-}, 30_000)
+})

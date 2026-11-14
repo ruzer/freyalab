@@ -4,11 +4,10 @@ import {join} from 'node:path'
 import {tmpdir} from 'node:os'
 import {TableEngine} from '../src/main/table-engine'
 import type {LargeViewState} from '../src/shared/types'
+import {blockingTimeout} from './helpers/blocking-timeout'
 
 let workerFolder:string,workerPath:string
 const count=12000,source='id,text\n'+'x,target\n'.repeat(count)
-// En CI Intel, confirmar los ocho rangos puede superar 5 s con la suite completa.
-const viewWaitMs=25_000
 const wait=()=>new Promise(resolve=>setTimeout(resolve,5))
 beforeAll(async()=>{
  workerFolder=await mkdtemp(join(tmpdir(),'freya-view-order-worker-'))
@@ -67,7 +66,7 @@ for(const workers of [1,2,4,8])for(const limit of [3,7])it(`${workers} hilos, to
   if(workers===1)await writeFile(release,'')
   const opened=await engine.open('a',path);expect(opened.large).toBe(true)
   const requestId=crypto.randomUUID();await engine.viewStart('a',{requestId,revision:0,search:'target'})
-  const deadline=performance.now()+viewWaitMs
+  const deadline=performance.now()+blockingTimeout-1_000
   const assigned=await assignedRanges(folder,workers,deadline)
   // Hay doce checkpoints: las ocho configuraciones deben usar sus rangos
   // reales, sin convertir silenciosamente el caso paralelo en uno serial.
@@ -96,4 +95,4 @@ for(const workers of [1,2,4,8])for(const limit of [3,7])it(`${workers} hilos, to
  }finally{
   await writeFile(release,'');await engine.close('a');await rm(folder,{recursive:true,force:true})
  }
-},30_000)
+})

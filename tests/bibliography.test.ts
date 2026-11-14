@@ -158,7 +158,7 @@ describe('B1 · bytes, codificación, JSON y snapshot',()=>{
    expect(await file.read()).toMatchObject({ok:false,error:{code:'syntax',location:{line:count+2,column:padding+1}}})
    expect(parse.mock.calls.length).toBeLessThanOrEqual(32)
   }finally{parse.mockRestore()}
- },10_000)
+ })
  it('traduce los mensajes en origen y conserva los códigos y ubicación estructurada',async()=>{
   setLanguage('en');const file=await fixture('[\r\n  {"id":"a","type":"book"},\r\n]'),result=await file.read()
   expect(result).toMatchObject({ok:false,error:{code:'syntax',location:{line:3,column:1}}})

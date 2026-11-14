@@ -113,7 +113,7 @@ describe('FL-MD-009 C · búsqueda por etiquetas',()=>{
  it('no lee más de 5.000 archivos Markdown',async()=>{
   const path=await file('modelo.md',header('[otra]'));vi.spyOn(docs,'tree').mockResolvedValue(Array.from({length:5001},(_,index)=>({name:`nota${index}.md`,path,directory:false})))
   expect(await docs.findFiles(root,'#ausente')).toEqual({entries:[],limited:true});expect(io.opens).toHaveLength(5000);expect(io.closed).toBe(5000)
- },20000)
+ })
  it('limita a ocho las lecturas simultáneas y cancelFileSearch cierra los handles sin iniciar el siguiente lote',async()=>{
   for(let index=0;index<20;index++)await file(`${index}.md`)
   const held=gate();io.onRead=()=>held.pending
@@ -205,11 +205,11 @@ describe('FL-MD-009 D · inventario de etiquetas',()=>{
  it('comparte el presupuesto de 5.000 archivos y devuelve recuentos parciales explícitos',async()=>{
   const path=await file('modelo.md');vi.spyOn(docs,'tree').mockResolvedValue(Array.from({length:5001},(_,index)=>({name:`nota${index}.md`,path,directory:false})))
   expect(await docs.listTags(root)).toEqual({tags:[{tag:'proyecto',count:5000}],limited:true});expect(io.opens).toHaveLength(5000);expect(io.closed).toBe(5000)
- },20000)
+ })
  it('los archivos vacíos también consumen el presupuesto de 5.000 documentos',async()=>{
   const path=await file('vacio.md','');vi.spyOn(docs,'tree').mockResolvedValue(Array.from({length:5001},(_,index)=>({name:`nota${index}.md`,path,directory:false})))
   expect(await docs.listTags(root)).toEqual({tags:[],limited:true});expect(io.opens).toHaveLength(5000);expect(io.closed).toBe(5000)
- },20000)
+ })
  it('cancelTagList detiene el siguiente lote y cierra las ocho lecturas en vuelo',async()=>{
   for(let index=0;index<20;index++)await file(`${index}.md`)
   const held=gate();io.onRead=()=>held.pending

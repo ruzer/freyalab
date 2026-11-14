@@ -23,6 +23,8 @@ Al cierre de la rama de integración y de la última tarea del lote: `npm run ch
 
 Congela el SHA enviado a CI. Mientras se califica, continúa el código en otra rama y worktree; no cambies el head evaluado ni sus fuentes de medición. Un nuevo SHA o una integración diferente necesita su propia calificación. Registra el resultado de CI en el PR sin crear un commit solo para cambiar su estado en la evidencia.
 
+Las unitarias funcionales y sus hooks comparten un límite de bloqueo de **120 segundos**, tanto localmente como en CI, definido en `tests/helpers/blocking-timeout.ts`. No añadas plazos por caso ni por plataforma. Las esperas internas funcionales usan ese mismo límite y reservan un segundo para cerrar recursos; una prueba termina en cuanto completa sus comprobaciones, sin esperar al límite. Este temporizador detecta bloqueos: los requisitos de velocidad, cancelación y memoria se comprueban con aserciones independientes y conservan sus límites. Si un trabajo correcto agota el límite común, diagnostica o divide el escenario antes de proponer otra política; no encadenes excepciones por prueba. Esta regla no cambia los plazos de Playwright ni los del producto.
+
 `npm run test:e2e:fast` ejecuta las E2E salvo `@perf` y `@solo`. La CI ejecuta después `npm run test:e2e:perf` en solitario con un worker. La fase rápida conserva dos workers en macOS Apple silicon y uno en Windows, Linux y macOS Intel.
 
 Cada ejecución de Playwright en CI se detiene tras tres fallos definitivos. El cierre de Electron de prueba intenta salir normalmente y, tras cinco segundos sin confirmación, termina el proceso de esa prueba si sigue activo.

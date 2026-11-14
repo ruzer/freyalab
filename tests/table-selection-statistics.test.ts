@@ -71,4 +71,4 @@ it('limita celdas lógicas de tablas irregulares antes de devolver un resumen pa
  await expect(engine.stats('a',null,[],await options({top:0,bottom:count-1,left:0,right:width-1,revision:0,query}))).rejects.toThrow('dos millones')
  await expect(engine.stats('a',Array.from({length:count},(_,i)=>String(i+1)),columns)).rejects.toThrow('dos millones')
  expect(await engine.snapshot('a')).toEqual(before);expect(await engine.stats('a',['1'],columns)).toMatchObject({cells:2000,missing:1999,empty:1999,numeric:1,median:1})
-},30000)
+})

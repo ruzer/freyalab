@@ -8,8 +8,6 @@ import {setLanguage} from '../src/shared/i18n'
 
 let connection:DuckDBConnection,close:()=>void
 const headers=['X','Y'],options:ChartOptions={kind:'scatter',x:0,y:1,bins:10,aggregate:'count',descending:false,measureType:'number',series:-1,trend:true}
-// Intel nocturno 43452894095: 6 840 ms; margen de 2× = 13 680 ms, redondeado a 15 s sin reducir el oráculo.
-const FULL_TREND_TIMEOUT_MS=15_000
 beforeAll(async()=>{
  const require=createRequire(import.meta.url),db=await createDuckDB({mvp:{mainModule:require.resolve('@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm'),mainWorker:require.resolve('@duckdb/duckdb-wasm/dist/duckdb-node-mvp.worker.cjs')},eh:{mainModule:require.resolve('@duckdb/duckdb-wasm/dist/duckdb-eh.wasm'),mainWorker:require.resolve('@duckdb/duckdb-wasm/dist/duckdb-node-eh.worker.cjs')}},new VoidLogger(),NODE_RUNTIME)
  await db.instantiate();db.open({});connection=db.connect();close=()=>{connection.close();db.reset()}
@@ -65,7 +63,7 @@ it('compara las 300 000 filas con el oráculo completo aunque solo se dibujen 2 
  expect(data.trend!.r2).toBeCloseTo(expected,12)
  const drawn=data.rows.map(row=>[Number(row[0]),Number(row[1])]),drawnRegression=linearRegression(drawn)
  expect(Math.abs(data.trend!.r2!-rSquared(drawn,linearRegressionLine(drawnRegression)))).toBeGreaterThan(0.00001)
-},FULL_TREND_TIMEOUT_MS)
+})
 
 it.each([
  ['X constante',"('2','1'),('2','2'),('2','3')",'Todas las X son iguales',false],
