@@ -176,7 +176,7 @@ La sonda posterior pasó; **aún no acredita una corrida Intel completa sin rein
 | SHA final con evidencia | Pendiente del commit de documentación. |
 | CI Ubuntu / Windows / macOS ARM del head final | Pendiente. |
 | Corrida completa Intel sin `retry #1` | Pendiente. |
-| Suite E2E local completa | En curso; se observó un fallo ED-01 fuera del cambio, detallado debajo. |
+| Suite E2E local completa | Terminada: 659 passed, 7 skipped y 2 failed sobre 2661e8e; ver actualización de validación. |
 
 En el caso ED-01 (línea 33), la prueba no obtuvo foco en GRANDE antes de medir el plegado. La traza registra 106 clics y comprobaciones de foco, pero no contiene DOM ni captura que permita demostrar la causa exacta. No se atribuye a un bloqueo del motor, al tamaño por sí solo ni a estas correcciones CSV. No se modifica ese caso dentro de este bloque.
 
@@ -184,7 +184,7 @@ No se verifica aquí instalación, Gatekeeper, hardware Intel físico del usuari
 
 ## Integridad de registros utilizados
 
-Hashes de los registros terminados incluidos en esta entrega. Los logs versionados eliminan únicamente colores ANSI y espacios finales; los originales sin normalizar siguen conservados en la evidencia local. La suite completa sigue en curso: no se fija ni se publica un hash provisional suyo; su conclusión se registrará en el PR. Los hashes de registros originales de la sonda están en el JSON compacto y se verificaron contra sus bytes.
+Hashes de los registros terminados incluidos en esta entrega. Los logs versionados eliminan únicamente colores ANSI y espacios finales; los originales sin normalizar siguen conservados en la evidencia local. La conclusión de la suite completa se conserva en la actualización de validación; no se publica un hash provisional. Los hashes de registros originales de la sonda están en el JSON compacto y se verificaron contra sus bytes.
 
 | Registro | SHA-256 |
 |---|---|
@@ -200,3 +200,22 @@ Hashes de los registros terminados incluidos en esta entrega. Los logs versionad
 | `final-unit.log` | `2754ff1c775f21eb5a37cecb5644788231ecd6ba5f5fd6c1f23de08c8c27dfd2` |
 | `focused-e2e.log` | `c51bb6b09a1ae71265eb942376eba0604cd23662e989aa9298f07a1790de153a` |
 | `frozen-check.log` | `3b80d44be67f88fc9da4bbd10a7d957cb8156545c108e3632fd03ac945b7a20f` |
+
+## Actualización de validación: consumidor del progreso
+
+La suite completa sobre `2661e8e` terminó con **659 passed, 7 skipped y 2 failed en 26,5 min**, sin reintentos. Las siete omisiones son las E2E Word condicionadas al ejecutable de Pandoc real configurado para esas pruebas; no se añadieron omisiones. La prueba ED-01 no llegó a medir el plegado grande: falló al obtener foco. Su comparación con la base queda pendiente; Editor/App/outline no cambiaron.
+
+El segundo fallo sí corresponde a esta entrega: `charts.spec.ts`, cancelación de exportación, buscaba `phase.startsWith('Leyendo')` después de haber localizado ese estado como «Cargando los datos». Se conservaron el rojo completo y la traza; se incluye `red-export-cancel.log` con el fallo y el resumen. Se revisaron todas las referencias a los mensajes anteriores en src/tests/experiments y no se encontró otro consumidor.
+
+La prueba ahora compara con `t('analysis.progress.loading')` y exige `rows > 0`: debe haberse leído un lote real antes de cancelar. No cambia el fixture de 100.000 filas, la espera, el teclado, el reintento de la exportación ni ninguna aserción de archivos parciales, números o integridad.
+
+| Comprobación posterior | Resultado real | Registro |
+|---|---|---|
+| Caso de cancelación, `--repeat-each=10 --workers=1 --retries=0` | 10 passed, 53,4 s | `export-cancel-green.log` |
+| `npm run check` | 0 errores / advertencias | `validation-check.log` |
+| `npm test` completo | 149 archivos, 2.757 passed, 1 skipped exclusivo de Windows; 22,04 s | `validation-unit.log` |
+| `npm run build` | Correcto | `validation-build.log` |
+
+La aplicación no cambia en este ajuste: solo el consumidor de la fase en esa prueba. Las mediciones antes/después siguen correspondiendo a fuentes de producto idénticas. La suite completa local no se renombra como verde por repetir el caso; la nueva CI calificará el nuevo SHA.
+
+Las corridas [43554355799](https://github.com/ruzer/freyalab/actions/runs/43554355799) y [43554373514](https://github.com/ruzer/freyalab/actions/runs/43554373514) se cancelaron al sustituir el head: no son evidencia verde. Antes de cancelar, Intel CSV presentó un retry en AN-1a (`analysis-tab.spec.ts:97`): agotó 15 s con perfiles completos y estado «Ejecutando la consulta»; pasó al reintento. La traza no distingue consulta principal de totales ni prueba su causa interna; no se amplía ese plazo por intuición. La aceptación pendiente sigue siendo una corrida completa de Intel con cero retry #1 sobre el código final.
