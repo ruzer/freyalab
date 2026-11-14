@@ -36,6 +36,7 @@ globalThis.freyaSQL={
  async append(name:string,base64:string){await connection.insertArrowFromIPCStream(Uint8Array.from(atob(base64),char=>char.charCodeAt(0)),{name:'_'+name,create:false})},
  async seal(){await connection.query('SET lock_configuration=true');return db.getVersion()},
  async query(input:string){
+  const begun=performance.now()
   await connection.query('BEGIN TRANSACTION READ ONLY')
   try{
    const statement=await connection.prepare(input);await statement.close()
@@ -49,7 +50,9 @@ globalThis.freyaSQL={
    // SQL casts preserve decimal scales and long integers; Arrow scalar String() does not.
    const query=`SELECT ${columns.map(column=>`CAST(${quoteIdentifier(column.name)} AS VARCHAR) AS ${quoteIdentifier(column.name)}`).join(',')} FROM ${body} LIMIT 10001`
    const result=await connection.query(query),rows:(string|null)[][]=[];let size=0
+   const queried=performance.now()
    for(let i=0;i<Math.min(result.numRows,10000);i++){const row=columns.map((_,col)=>{const value=result.getChildAt(col)!.get(i) as string|null;size+=value===null?0:new TextEncoder().encode(value).length;return value});if(size>8*1024*1024)throw new Error('El resultado supera 8 MiB. Reduce las columnas o filas de la consulta.');rows.push(row)}
+   if(globalThis.freyaSQLProfile)globalThis.freyaSQLTiming={query:queried-begun,materialize:performance.now()-queried}
    return{columns,rows,limited:result.numRows>10000}
   }finally{await connection.query('ROLLBACK')}
  },
@@ -86,7 +89,7 @@ globalThis.freyaSQL={
   return {rows:[],done:true}
  }
 }
-declare global{var freyaSQL:{
+declare global{var freyaSQLProfile:boolean|undefined;var freyaSQLTiming:{query:number;materialize:number};var freyaSQL:{
  table:(name:string,columns:string[])=>Promise<void>;append:(name:string,base64:string)=>Promise<void>;seal:()=>Promise<string>
  query:(sql:string)=>Promise<{columns:{name:string;type:string}[];rows:(string|null)[][];limited:boolean}>
  calculateStart:(expression:string,columns:CalculationColumn[],rowColumn:string)=>Promise<void>

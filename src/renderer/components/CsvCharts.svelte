@@ -1,5 +1,6 @@
 <script lang="ts">
  import {csvAnalysisSample} from '../lib/csv-analysis-view'
+ import {analysisMeasure} from '../lib/analysis-measure'
  import {controlHint} from '../lib/control-hint'
  import Icon from './Icon.svelte'
  import {t,plural,getUILanguage,formatNumber} from '../lib/i18n.svelte'
@@ -84,7 +85,17 @@
   const unsubscribe=window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress&&(event.progress.requestId===active||event.progress.requestId===totalJob||event.progress.requestId===exportJob))message='charts.ui.prepare';else if(event.id===doc.id&&event.type==='external'){cancel();if(onDemand&&started)stale=true;message='charts.ui.external'}})
   return()=>{resize.disconnect();theme.disconnect();unsubscribe();chart?.dispose();chart=undefined}
  })
- function draw(compact=true){getUILanguage();if(!chart||!data)return;try{const css=getComputedStyle(element);chart.setOption(chartOption(plotData!.data,$state.snapshot(options),{text:css.getPropertyValue('--text').trim(),background:css.getPropertyValue('--panel').trim(),accent:css.getPropertyValue('--accent').trim(),dark:document.documentElement.classList.contains('dark'),compact},(doc.headers??[]).map((_,column)=>columnLabel(column)),scopeLabel,hiddenSeries),{notMerge:true})}catch(error){chart.clear();data=null;message=String(error);onerror(message)}}
+ function draw(compact=true){
+  getUILanguage();if(!chart||!data)return
+  const begun=performance.now(),measured=Reflect.get(globalThis,'freyaAnalysisProfile')===true
+  const rendered=()=>{chart?.off('rendered',rendered);analysisMeasure('chartRendered',begun);requestAnimationFrame(()=>requestAnimationFrame(()=>analysisMeasure('chartPainted',begun)))}
+  try{
+   const css=getComputedStyle(element),prepared=chartOption(plotData!.data,$state.snapshot(options),{text:css.getPropertyValue('--text').trim(),background:css.getPropertyValue('--panel').trim(),accent:css.getPropertyValue('--accent').trim(),dark:document.documentElement.classList.contains('dark'),compact},(doc.headers??[]).map((_,column)=>columnLabel(column)),scopeLabel,hiddenSeries)
+   analysisMeasure('chartOptions',begun)
+   if(measured)chart.on('rendered',rendered)
+   const setting=performance.now();chart.setOption(prepared,{notMerge:true});analysisMeasure('chartSetOption',setting)
+  }catch(error){chart.off('rendered',rendered);chart.clear();data=null;message=String(error);onerror(message)}
+ }
  $effect(()=>{if(ready){if(data)draw();else chart?.clear()}})
  async function generate(){
   if(busy||fieldsLoading||exporting||!sql||tooWide||unavailable)return;started=true;stale=false;cancelledSignature=null;cancel();const requestId=crypto.randomUUID();active=requestId;busy=true;failed=false;message='charts.ui.prepare'
@@ -92,9 +103,11 @@
    const first=await window.freya.sqlRun({requestId,sources:[{id:doc.id,revision:doc.revision,...scope!=='all'?{query:$state.snapshot(analysisQuery)}:{},...where.conditions.length?{where:$state.snapshot(where)}:{}}],sql})
    if(active!==requestId)return
    if(first.limited||first.returnedRows>chartLimit(options.kind)+1)throw new Error(t('charts.ui.limitError'))
+   const rowsStarted=performance.now()
    const rows=[...first.rows]
    for(let offset=100;offset<first.returnedRows;offset+=100){const page=await window.freya.sqlPage(requestId,offset);if(active!==requestId)return;rows.push(...page.rows)}
    const result=chartData(options.kind,first.columns.map(c=>c.name),rows)
+   analysisMeasure('chartRows',rowsStarted,{rows:rows.length})
    if(temporal&&result.total>0&&result.points===0)throw new Error(t('charts.ui.dateError'))
    if(result.total>0&&result.usable===0&&!result.trend&&options.kind!=='heatmap'&&!(aggregated&&['count','distinct'].includes(options.aggregate)))throw new Error(t('charts.ui.numberError'))
    const totalId=crypto.randomUUID();totalJob=totalId
@@ -127,6 +140,7 @@
  function announce(text:string){announcement=text}
  function cancelFields(){fieldGeneration++;if(fieldJob){void window.freya.cancelAnalysis(fieldJob.id,fieldJob.requestId).catch(()=>{});fieldJob=undefined}fieldsLoading=false}
  async function loadFields(){
+  const begun=performance.now();let calls=0,ipcMs=0
   cancelFields();const token=fieldGeneration,id=doc.id,revision=doc.revision;fieldsLoading=true;profiles=[];samples={};interpretable={};fieldErrors=[]
   if(sample===undefined){fieldsLoading=false;return}
   if(!automatic||tooWide){if(initializedDocument!==id){if(!onDemand)options={kind:'bar',x:0,y:-1,bins:10,aggregate:'count',descending:false,measureType:'text',series:-1,time:'none'};initializedDocument=id}fieldsLoading=false;return}
@@ -134,7 +148,7 @@
    for(const column of (doc.headers??[]).map((_,i)=>i).slice(0,200)){
     const requestId=crypto.randomUUID();fieldJob={id,requestId}
     try{
-     const result=await window.freya.analyzeColumn(id,{column,revision,requestId,frequencyOffset:0,duplicatesOnly:false,bins:10})
+     const started=performance.now(),result=await window.freya.analyzeColumn(id,{column,revision,requestId,frequencyOffset:0,duplicatesOnly:false,bins:10});ipcMs+=performance.now()-started;calls++
      if(token!==fieldGeneration||id!==doc.id||revision!==doc.revision)return
      profiles=[...profiles,{column,name:(doc.headers??[])[column],profile:result.profile}]
      interpretable[column]=result.numeric>0&&result.excluded===0
@@ -143,7 +157,7 @@
    }
    if(token!==fieldGeneration)return
    if(initializedDocument!==id){const first=initialChart($state.snapshot(columns));if(first&&!onDemand)options=first;initializedDocument=id}
-  }finally{if(token===fieldGeneration){fieldJob=undefined;fieldsLoading=false}}
+  }finally{if(token===fieldGeneration){fieldJob=undefined;fieldsLoading=false;analysisMeasure('profiles',begun,{calls,ipcMs,columns:profiles.length})}}
  }
  $effect(()=>{
   if(!visible){

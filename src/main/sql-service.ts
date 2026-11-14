@@ -14,7 +14,8 @@ import {JobQueue,type Priority} from './job-queue'
 
 const origin='freyalab-analysis://engine',scheme='freyalab-analysis'
 protocol.registerSchemesAsPrivileged([{scheme,privileges:{standard:true,secure:true,supportFetchAPI:true}}])
-interface Job {id:string;documents:string[];sources:SqlSource[];window?:BrowserWindow;timer?:NodeJS.Timeout;used:number;result?:SqlResult;error?:string;calculation?:string;disk:Map<string,{size:number;mtimeMs:number}>}
+export interface SqlTiming {requestId:string;phases:Record<'window'|'engine'|'sourceStart'|'sourceRead'|'sourceEncode'|'sourceAppend'|'sourceLoad'|'seal'|'query'|'materialize'|'resultTransfer'|'total'|'waiting',number>;rows:number;bytes:number;returnedRows:number;complete:boolean}
+interface Job {id:string;documents:string[];sources:SqlSource[];window?:BrowserWindow;timer?:NodeJS.Timeout;used:number;result?:SqlResult;error?:string;calculation?:string;disk:Map<string,{size:number;mtimeMs:number}>;timing?:SqlTiming}
 // Resultados terminados que se conservan para paginarlos: el panel SQL, el gráfico y la exportación pueden tener uno cada uno.
 // Peor caso del esquema (10 000 filas × 200 columnas): unos 62 MiB de memoria por resultado, ver docs/evidence/sql-job-queue-2026-10-23.md.
 const retained=3
@@ -29,7 +30,7 @@ export class SqlService {
  private tick=0
  private preparedCalculation?:{id:string;requestId:string;key:string;values:CalculatedValue[]}
  private applyingCalculation=new Map<string,{id:string;abort:AbortController}>()
- constructor(private docs:Documents,private progress:(event:SqlProgress)=>void){
+ constructor(private docs:Documents,private progress:(event:SqlProgress)=>void,private measure?:(timing:SqlTiming)=>void){
   this.queue=new JobQueue(1,requestId=>progress({requestId,phase:this.jobs.get(requestId)?.calculation?'calculate.progress.waiting':'En cola: hay otro análisis en curso',rows:0}))
   const isolated=session.fromPartition('freyalab-analysis'),root=fileURLToPath(new URL('../renderer',import.meta.url))
   isolated.protocol.handle(scheme,request=>{try{const url=new URL(request.url),target=resolve(root,'.'+decodeURIComponent(url.pathname)),path=relative(root,target);if(url.hostname!=='engine'||path.startsWith('..')||isAbsolute(path))return new Response('No autorizado',{status:403});const dev=process.env.ELECTRON_RENDERER_URL;return net.fetch(dev?new URL(url.pathname,dev).href:pathToFileURL(target).href)}catch{return new Response('Ruta no válida',{status:400})}})
@@ -37,6 +38,11 @@ export class SqlService {
   isolated.setPermissionRequestHandler((_window,_permission,callback)=>callback(false));isolated.setPermissionCheckHandler(()=>false)
  }
  private check(job:Job){if(this.jobs.get(job.id)!==job)throw new Error('Análisis cancelado.');for(const source of job.sources)if(this.docs.get(source.id).info.revision!==source.revision)throw new Error('Una fuente cambió. Ejecuta de nuevo el análisis.')}
+ private async timed<T>(job:Job,phase:keyof SqlTiming['phases'],work:()=>Promise<T>):Promise<T>{
+  if(!job.timing)return work()
+  const start=performance.now()
+  try{return await work()}finally{job.timing.phases[phase]+=performance.now()-start}
+ }
  cancel(requestId:string){if(!this.jobs.delete(requestId))return;this.queue.cancel(requestId)}
  cancelCalculation(id:string,requestId:string){
   const job=this.jobs.get(requestId),applying=this.applyingCalculation.get(requestId)
@@ -53,37 +59,61 @@ export class SqlService {
   if(app.commandLine.hasSwitch('no-sandbox'))throw new Error('El análisis SQL requiere el aislamiento de Chromium. Inicia FreyaLab sin la opción --no-sandbox.')
   for(const source of request.sources){const record=this.docs.get(source.id);if(!isTableDocument(record.info)||record.info.revision!==source.revision)throw new Error('Una fuente no es CSV o cambió de revisión.')}
   this.cancel(request.requestId);const job:Job={id:request.requestId,documents:request.sources.map(source=>source.id),sources:[],used:0,disk:new Map()};this.jobs.set(job.id,job)
-  const start=()=>{job.timer=setTimeout(()=>{job.error='El análisis superó dos minutos. Reduce las fuentes o la consulta.';this.cancel(job.id)},120000);return this.execute(job,request)}
+  const begun=performance.now()
+  if(this.measure)job.timing={requestId:job.id,phases:{window:0,engine:0,sourceStart:0,sourceRead:0,sourceEncode:0,sourceAppend:0,sourceLoad:0,seal:0,query:0,materialize:0,resultTransfer:0,total:0,waiting:0},rows:0,bytes:0,returnedRows:0,complete:false}
+  const start=()=>{if(job.timing)job.timing.phases.waiting=performance.now()-begun;job.timer=setTimeout(()=>{job.error='El análisis superó dos minutos. Reduce las fuentes o la consulta.';this.cancel(job.id)},120000);return this.execute(job,request)}
   const dispose=()=>{clearTimeout(job.timer);const owner=job.window;job.window=undefined;owner?.destroy()}
   try{await this.queue.run(job.id,priority,start,dispose);job.used=++this.tick;this.trim();return await this.page(job.id,0)}
   catch(error){if(this.jobs.get(job.id)===job)this.jobs.delete(job.id);throw new Error(job.error??(error as Error).message)}
+  finally{if(job.timing){job.timing.phases.total=performance.now()-begun;job.timing.rows=job.sources.reduce((n,s)=>n+s.rows,0);job.timing.returnedRows=job.result?.returnedRows??0;job.timing.complete=!!job.result;this.measure?.(job.timing)}}
  }
  private async openEngine(job:Job){
+  const started=performance.now()
   const owner=new BrowserWindow({show:false,webPreferences:{sandbox:true,contextIsolation:true,nodeIntegration:false,partition:'freyalab-analysis',backgroundThrottling:false}});job.window=owner
   owner.webContents.setWindowOpenHandler(()=>({action:'deny'}));owner.webContents.on('will-navigate',event=>event.preventDefault())
   owner.webContents.on('render-process-gone',()=>{if(job.window!==owner)return;job.error='El motor de análisis se cerró. Los documentos siguen intactos.';this.cancel(job.id)})
   this.progress({requestId:job.id,phase:job.calculation?'calculate.progress.engine':'Preparando motor local',rows:0})
   await owner.loadURL(origin+'/analytics.html')
-  await owner.webContents.executeJavaScript('new Promise(resolve=>{const timer=setInterval(()=>{if(globalThis.freyaSQL){clearInterval(timer);resolve(true)}},10)})')
+  if(job.timing)job.timing.phases.window+=performance.now()-started
+  await this.timed(job,'engine',()=>owner.webContents.executeJavaScript('new Promise(resolve=>{const timer=setInterval(()=>{if(globalThis.freyaSQL){clearInterval(timer);resolve(true)}},10)})'))
+  if(job.timing)await owner.webContents.executeJavaScript('globalThis.freyaSQLProfile=true')
   return owner.webContents
  }
  private async execute(job:Job,request:SqlRequest):Promise<void>{
   const contents=await this.openEngine(job)
   const call=<T>(method:string,...args:unknown[])=>contents.executeJavaScript(`globalThis.freyaSQL.${method}(...${JSON.stringify(args)})`) as Promise<T>
   let cells=0
+  const loadingStarted=performance.now()
   for(const [index,input] of request.sources.entries()){
    this.check(job);const record=this.docs.get(input.id);if(!isTableDocument(record.info)||record.info.revision!==input.revision)throw new Error('Una fuente no es CSV o cambió de revisión.')
    const ticket=randomUUID(),table=index===0?'datos':`tabla_${index+1}`
    try{
-    const meta=await this.docs.table.call<{headers:string[];revision:number;readonly:boolean;large?:boolean}>('analysisStart',input.id,ticket,input.revision,record.info.path,input.query,input.where)
+    const meta=await this.timed(job,'sourceStart',()=>this.docs.table.call<{headers:string[];revision:number;readonly:boolean;large?:boolean}>('analysisStart',input.id,ticket,input.revision,record.info.path,input.query,input.where))
     const source:SqlSource={id:input.id,name:record.info.name,revision:input.revision,table,columns:sqlColumns(meta.headers),rows:0,fromDisk:meta.readonly,large:meta.large,filtered:!!input.query||!!input.where?.conditions.length,...input.where?.conditions.length?{where:input.where}:{}};job.sources.push(source)
     if(meta.readonly&&record.info.path){const info=await stat(record.info.path);job.disk.set(input.id,{size:info.size,mtimeMs:info.mtimeMs})}
     await call('table',table,source.columns.map(column=>column.name))
-    while(true){this.check(job);const batch=await this.docs.table.call<{data?:Uint8Array;rows:number;done:boolean}>('analysisNext',ticket);if(batch.done)break;cells+=batch.rows*source.columns.length;if(cells>8_000_000)throw new Error('El conjunto supera ocho millones de celdas. Reduce las fuentes.');await call('append',table,Buffer.from(batch.data!).toString('base64'));source.rows+=batch.rows;if(source.rows%10000===0)this.progress({requestId:job.id,phase:`Leyendo ${source.name}`,rows:source.rows})}
+    while(true){
+     this.check(job)
+     const batch=await this.timed(job,'sourceRead',()=>this.docs.table.call<{data?:Uint8Array;rows:number;done:boolean}>('analysisNext',ticket))
+     if(batch.done)break
+     cells+=batch.rows*source.columns.length;if(cells>8_000_000)throw new Error('El conjunto supera ocho millones de celdas. Reduce las fuentes.')
+     const encodingStarted=performance.now(),encoded=Buffer.from(batch.data!).toString('base64')
+     if(job.timing){job.timing.phases.sourceEncode+=performance.now()-encodingStarted;job.timing.bytes+=batch.data!.byteLength}
+     await this.timed(job,'sourceAppend',()=>call('append',table,encoded))
+     source.rows+=batch.rows;if(source.rows%10000===0)this.progress({requestId:job.id,phase:`Leyendo ${source.name}`,rows:source.rows})
+    }
    }finally{await this.docs.table.call('analysisClose',ticket)}
   }
-  this.check(job);const version=await call<string>('seal');this.progress({requestId:job.id,phase:'Ejecutando consulta de solo lectura',rows:job.sources.reduce((n,s)=>n+s.rows,0)})
-  const output=z.object({columns:z.array(z.object({name:z.string().max(100000),type:z.string().max(1000)})).min(1).max(200),rows:z.array(z.array(z.string().max(8*1024*1024).nullable()).max(200)).max(10000),limited:z.boolean()}).parse(await call('query',request.sql));if(output.rows.some(row=>row.length!==output.columns.length)||output.rows.reduce((n,row)=>n+row.reduce((m,v)=>m+(v===null?0:Buffer.byteLength(v,'utf8')),0),0)>8*1024*1024)throw new Error('El motor devolvió un resultado no válido o demasiado grande.');this.check(job)
+  if(job.timing)job.timing.phases.sourceLoad=performance.now()-loadingStarted
+  this.check(job);const version=await this.timed(job,'seal',()=>call<string>('seal'));this.progress({requestId:job.id,phase:'Ejecutando consulta de solo lectura',rows:job.sources.reduce((n,s)=>n+s.rows,0)})
+  let raw:unknown
+  if(job.timing){
+   const begun=performance.now()
+   const response=await contents.executeJavaScript(`(async()=>{const started=performance.now();const value=await globalThis.freyaSQL.query(${JSON.stringify(request.sql)});return{value,timing:globalThis.freyaSQLTiming,workerMs:performance.now()-started}})()`) as {value:unknown;timing:{query:number;materialize:number};workerMs:number}
+   job.timing.phases.query=response.timing.query;job.timing.phases.materialize=response.timing.materialize
+   job.timing.phases.resultTransfer=Math.max(0,performance.now()-begun-response.workerMs);raw=response.value
+  }else raw=await call('query',request.sql)
+  const output=z.object({columns:z.array(z.object({name:z.string().max(100000),type:z.string().max(1000)})).min(1).max(200),rows:z.array(z.array(z.string().max(8*1024*1024).nullable()).max(200)).max(10000),limited:z.boolean()}).parse(raw);if(output.rows.some(row=>row.length!==output.columns.length)||output.rows.reduce((n,row)=>n+row.reduce((m,v)=>m+(v===null?0:Buffer.byteLength(v,'utf8')),0),0)>8*1024*1024)throw new Error('El motor devolvió un resultado no válido o demasiado grande.');this.check(job)
   job.result={requestId:job.id,sources:job.sources,version,columns:output.columns,rows:output.rows,returnedRows:output.rows.length,limited:output.limited,offset:0,completedAt:new Date().toISOString()}
  }
  async calculatePreview(id:string,edit:CalculateColumnEdit):Promise<CalculatedColumnPreview>{
