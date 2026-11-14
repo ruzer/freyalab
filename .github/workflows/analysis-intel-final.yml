@@ -1,0 +1,204 @@
+name: Analysis Intel full verification
+on:
+  push:
+    branches: [codex/analysis-intel-final]
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  areas:
+    name: Calculate PR areas
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    outputs:
+      plan: ${{ steps.plan.outputs.plan }}
+      package: ${{ steps.plan.outputs.package }}
+      docs_only: ${{ steps.plan.outputs.docs_only }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Classify changed paths
+        id: plan
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          plan=$(git diff --name-only --no-renames -z "$BASE_SHA...$HEAD_SHA" | node scripts/ci-areas.mjs --stdin)
+          node --input-type=module - "$plan" <<'NODE' >> "$GITHUB_OUTPUT"
+          import {areaCommand} from './scripts/ci-e2e-area.mjs'
+          const {e2e,full,package:pack,docsOnly}=JSON.parse(process.argv[2])
+          if(typeof pack!=='boolean'||typeof docsOnly!=='boolean'||(docsOnly&&(full||pack||e2e.length))){
+            throw new Error('Plan de CI inválido')
+          }
+          const plan=JSON.stringify({e2e,full})
+          const projects=areaCommand(plan,[]).slice(2).join(' ')
+          console.error(docsOnly?'Solo documentación: Verify se omite.':'Proyectos E2E: '+projects+' | Paquete: '+(pack||full))
+          console.log('plan='+plan)
+          console.log('package='+(pack||full))
+          console.log('docs_only='+docsOnly)
+          NODE
+  verify:
+    needs: areas
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || (needs.areas.result == 'success' && needs.areas.outputs.docs_only == 'false')) }}
+    name: Verify ${{ matrix.os }}${{ matrix.part && format(' ({0})', matrix.part) || '' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Intel reparte la suite en main y de noche; Ubuntu reparte los push a main.
+        include:
+          - os: macos-15-intel
+            part: shell-md
+            projects: --project=shell --project=md
+          - os: macos-15-intel
+            part: csv
+            projects: --project=csv
+          - os: macos-15-intel
+            part: package
+            executable: release/mac/FreyaLab.app/Contents/MacOS/FreyaLab
+    runs-on: ${{ matrix.os }}
+    env:
+      FREYALAB_E2E_FAST_WORKERS: ${{ matrix.os == 'macos-15' && '2' || '1' }}
+    # Gate exige la confirmación de las tres plataformas, incluso si una queda cancelada en cola.
+    outputs:
+      ubuntu: ${{ github.event_name == 'pull_request' && matrix.os == 'ubuntu-24.04' && job.status == 'success' && 'passed' || '' }}
+      windows: ${{ github.event_name == 'pull_request' && matrix.os == 'windows-2025' && job.status == 'success' && 'passed' || '' }}
+      macos: ${{ github.event_name == 'pull_request' && matrix.os == 'macos-15' && job.status == 'success' && 'passed' || '' }}
+    # Las partes Intel conservan el límite del job anterior. Ubuntu completo (PR) tiene 60 como Windows; sus partes de main, 45.
+    timeout-minutes: ${{ matrix.os == 'macos-15-intel' && 90 || matrix.os == 'macos-15' && 75 || ((matrix.os == 'windows-2025' || startsWith(matrix.os, 'macos-') || !matrix.part) && 60 || 45) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Cache Electron downloads
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ runner.os == 'macOS' && '~/Library/Caches/electron' || runner.os == 'Windows' && '~/AppData/Local/electron/Cache' || '~/.cache/electron' }}
+          key: electron-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
+      - name: Cache electron-builder downloads
+        if: matrix.executable && (github.event_name != 'pull_request' || needs.areas.outputs.package == 'true')
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ runner.temp }}/freyalab-electron-builder
+          key: electron-builder-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
+      - run: npm ci
+      - name: Prepare Electron sandbox helper (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          node -e "require('electron')"
+          sudo chown root:root node_modules/electron/dist/chrome-sandbox
+          sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
+      - run: npm run check
+        if: ${{ !matrix.part || matrix.part == 'shell-md' }}
+      - run: npm test
+        if: ${{ !matrix.part || matrix.part == 'shell-md' }}
+      - name: Large-file editor experiments (correctness on small hostile fixtures)
+        if: ${{ !matrix.part || matrix.part == 'shell-md' }}
+        run: node --test experiments/large-file-editor/tests/overlay.test.mjs
+      - run: npm run licenses
+        if: matrix.executable
+      - name: E2E fast (PR areas)
+        id: e2e_fast_pr
+        if: github.event_name == 'pull_request'
+        env:
+          FREYALAB_CI_AREAS: ${{ needs.areas.outputs.plan }}
+          PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-fast
+        run: ${{ runner.os == 'Linux' && 'xvfb-run -a ' || '' }}npm run test:e2e:area -- --phase=fast --workers=${{ env.FREYALAB_E2E_FAST_WORKERS }} --output=test-results-fast
+      - name: E2E fast (Linux)
+        id: e2e_fast_linux
+        if: github.event_name != 'pull_request' && runner.os == 'Linux'
+        env:
+          PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-fast
+        run: xvfb-run -a npm run test:e2e:fast -- --workers=${{ env.FREYALAB_E2E_FAST_WORKERS }} --output=test-results-fast ${{ matrix.projects }}
+      - name: E2E fast (macOS and Windows)
+        id: e2e_fast_desktop
+        if: github.event_name != 'pull_request' && runner.os != 'Linux' && matrix.part != 'package'
+        env:
+          PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-fast
+        run: npm run test:e2e:fast -- --workers=${{ env.FREYALAB_E2E_FAST_WORKERS }} --output=test-results-fast ${{ matrix.projects }}
+      - name: E2E perf and solo (PR areas)
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && (steps.e2e_fast_pr.outcome == 'success' || steps.e2e_fast_pr.outcome == 'failure') }}
+        env:
+          FREYALAB_CI_AREAS: ${{ needs.areas.outputs.plan }}
+          PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo
+        run: ${{ runner.os == 'Linux' && 'xvfb-run -a ' || '' }}npm run test:e2e:area -- --phase=serial --workers=1 --output=test-results-solo
+      - name: E2E perf and solo (Linux)
+        if: ${{ !cancelled() && runner.os == 'Linux' && matrix.part != 'shell-md' && (steps.e2e_fast_linux.outcome == 'success' || steps.e2e_fast_linux.outcome == 'failure') }}
+        env:
+          PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo
+        run: xvfb-run -a npm run test:e2e:perf -- --workers=1 --output=test-results-solo
+      - name: E2E perf and solo (macOS and Windows)
+        if: ${{ !cancelled() && runner.os != 'Linux' && matrix.part != 'shell-md' && (steps.e2e_fast_desktop.outcome == 'success' || steps.e2e_fast_desktop.outcome == 'failure') }}
+        env:
+          PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo
+        run: npm run test:e2e:perf -- --workers=1 --output=test-results-solo
+      - run: npm run build
+        if: matrix.part == 'package'
+      - name: Package application directory
+        id: package
+        if: matrix.executable && (github.event_name != 'pull_request' || needs.areas.outputs.package == 'true')
+        env:
+          ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/freyalab-electron-builder
+        # El lockfile ya fija las sumas de Electron. Pasarlas evita descargar SHASUMS256.txt aun con el ZIP en caché.
+        run: |
+          node --input-type=commonjs -e "
+            const {build} = require('electron-builder');
+            build({dir: true, config: {electronDownload: {force: false, checksums: require('electron/checksums.json')}}})
+              .catch(error => { console.error(error); process.exitCode = 1; });
+          "
+      - name: Prepare packaged sandbox helper (Linux)
+        if: runner.os == 'Linux' && steps.package.outcome == 'success'
+        run: |
+          sudo chown root:root release/linux-unpacked/chrome-sandbox
+          sudo chmod 4755 release/linux-unpacked/chrome-sandbox
+      - name: CSV analysis and transforms in packaged application (Linux)
+        if: runner.os == 'Linux' && steps.package.outcome == 'success'
+        env:
+          FREYALAB_EXECUTABLE: ${{ github.workspace }}/${{ matrix.executable }}
+        run: xvfb-run -a npx playwright test tests/e2e/structural-context.spec.ts tests/e2e/commands.spec.ts tests/e2e/search.spec.ts tests/e2e/sql.spec.ts tests/e2e/charts.spec.ts tests/e2e/structure.spec.ts tests/e2e/ordering.spec.ts tests/e2e/range-cancellation.spec.ts tests/e2e/selection-statistics.spec.ts tests/e2e/statistics-reports.spec.ts --output=packaged-test-results
+      - name: CSV analysis and transforms in packaged application (macOS and Windows)
+        if: runner.os != 'Linux' && steps.package.outcome == 'success'
+        env:
+          FREYALAB_EXECUTABLE: ${{ github.workspace }}/${{ matrix.executable }}
+        run: npx playwright test tests/e2e/structural-context.spec.ts tests/e2e/commands.spec.ts tests/e2e/search.spec.ts tests/e2e/sql.spec.ts tests/e2e/charts.spec.ts tests/e2e/structure.spec.ts tests/e2e/ordering.spec.ts tests/e2e/range-cancellation.spec.ts tests/e2e/selection-statistics.spec.ts tests/e2e/statistics-reports.spec.ts --output=packaged-test-results
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-${{ matrix.os }}${{ matrix.part && format('-{0}', matrix.part) || '' }}-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+            playwright-report-fast/
+            playwright-report-solo/
+            test-results-fast/
+            test-results-solo/
+            packaged-test-results/
+          if-no-files-found: warn
+  gate:
+    name: Gate
+    needs: [areas, verify]
+    if: ${{ always() && github.event_name == 'pull_request' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require the plan and its expected verification
+        env:
+          AREAS_RESULT: ${{ needs.areas.result }}
+          DOCS_ONLY: ${{ needs.areas.outputs.docs_only }}
+          VERIFY_RESULT: ${{ needs.verify.result }}
+          UBUNTU: ${{ needs.verify.outputs.ubuntu }}
+          WINDOWS: ${{ needs.verify.outputs.windows }}
+          MACOS: ${{ needs.verify.outputs.macos }}
+        run: |
+          case "$AREAS_RESULT/$DOCS_ONLY/$VERIFY_RESULT/$UBUNTU/$WINDOWS/$MACOS" in
+            success/true/skipped///|success/false/success/passed/passed/passed) exit 0 ;;
+          esac
+          echo "Gate falló. Áreas: $AREAS_RESULT. Solo documentación: ${DOCS_ONLY:-sin plan}. Matriz: $VERIFY_RESULT. Ubuntu: ${UBUNTU:-sin éxito}. Windows: ${WINDOWS:-sin éxito}. macOS: ${MACOS:-sin éxito}."
+          exit 1
