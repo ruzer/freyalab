@@ -1,0 +1,28 @@
+2) [csv] › tests/e2e/charts.spec.ts:345:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales
+
+    TimeoutError: page.waitForFunction: Timeout 30000ms exceeded.
+
+      346 |  const content='Grupo,Total\n'+Array.from({length:100000},(_,i)=>`G${i%10},${i%100}`).join('\n')+'\n',{doc,path}=await open(content,'export-cancel.csv')
+      347 |  await showPanel(page,'Gráficos');const panel=chartPanel(page);await chartGenerate(page).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await analysisResultExport(page).locator('summary').click()
+    > 348 |  await page.evaluate(()=>{Reflect.set(window,'exportReading',false);window.freya.onEvent(event=>{if(event.type==='analysis'&&event.progress?.phase.startsWith('Leyendo'))Reflect.set(window,'exportReading',true)})});await analysisResultExport(page).getByRole('button',{name:'Exportar resultados',exact:true}).click();await page.waitForFunction(()=>Reflect.get(window,'exportReading'));await analysisResultExport(page).getByRole('button',{name:'Cancelar exportación de resultados',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Exportación cancelada',{timeout:15000});expect(await readdir(join(folder,'exports'))).toEqual([])
+          |                                                                                                                                                                                                                                                                                                                                       ^
+      349 |  await analysisResultExport(page).getByRole('button',{name:'Exportar resultados',exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('export-cancel.analisis.json',{timeout:30000});const result=JSON.parse(await readFile(join(folder,'exports','export-cancel.analisis.json'),'utf8'));expect(result.metadata).toMatchObject({analyzedRows:100000,exportedElements:10,partial:false});expect(result.rows.every((row:string[])=>row[1]==='10000')).toBe(true);expect(await readFile(path,'utf8')).toBe(content);expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)).toMatchObject({dirty:false,revision:0})
+      350 | })
+      351 |
+        at /private/tmp/freyalab-analisis-fases-intel/tests/e2e/charts.spec.ts:348:327
+
+    Error Context: ../freyalab-analysis-phases-evidence/full-e2e-results/charts-resultados-exportad-ec1a9-ntar-sin-archivos-parciales-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-analysis-phases-evidence/full-e2e-results/charts-resultados-exportad-ec1a9-ntar-sin-archivos-parciales-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-analysis-phases-evidence/full-e2e-results/charts-resultados-exportad-ec1a9-ntar-sin-archivos-parciales-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [md] › tests/e2e/markdown-editing-performance.spec.ts:16:1 › ED-01: tiempos reales de plegar y desplegar con AST preparado, pequeño y 10 MiB @perf
+    [csv] › tests/e2e/charts.spec.ts:345:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales
+  7 skipped
+  659 passed (26.5m)

@@ -1,0 +1,69 @@
+Running 2 tests using 1 worker
+
+(node:7145) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › scatter sin fechas carga la fuente una vez y conserva observaciones y totales nulos (3.5s)
+(node:7329) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › line sin fechas carga la fuente una vez y conserva observaciones y totales nulos (3.1s)
+
+
+  1) [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › scatter sin fechas carga la fuente una vez y conserva observaciones y totales nulos
+
+    Error: El total nulo no necesita otra sqlRun ni otra carga de la fuente.
+
+    expect(received).toHaveLength(expected)
+
+    Expected length: 1
+    Received length: 2
+    Received array:  [{"requestId": "72993dea-efc5-4b40-a063-a3c903f81bd3", "sources": [{"id": "d865094d-adf3-467d-967f-06617ce7ac18", "revision": 0}], "sql": "WITH raw AS (SELECT row_number() OVER () AS fila, \"X\" AS x, \"Y\" AS y FROM datos), base AS (SELECT *, CASE WHEN regexp_full_match(TRIM(x), '[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?') AND ABS(TRY_CAST(x AS DOUBLE)) <= 9007199254740991 THEN TRY_CAST(x AS DOUBLE) END AS nx, CASE WHEN regexp_full_match(TRIM(y), '[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?') AND ABS(TRY_CAST(y AS DOUBLE)) <= 9007199254740991 THEN TRY_CAST(y AS DOUBLE) END AS ny FROM raw), points AS (SELECT nx AS x, ny AS value, fila FROM base WHERE nx IS NOT NULL AND ny IS NOT NULL), stats AS (SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE nx IS NOT NULL AND ny IS NOT NULL) AS usable FROM base) SELECT stats.total, stats.usable, (SELECT COUNT(*) FROM points) AS points, p.present, p.x, p.value, p.fila FROM stats LEFT JOIN (SELECT *, 1 AS present FROM points) p ON TRUE ORDER BY p.x ASC, p.fila ASC LIMIT 2001;"}, {"requestId": "e63a65c8-8dda-4f68-b622-ba298dd589b1", "sources": [{"id": "d865094d-adf3-467d-967f-06617ce7ac18", "revision": 0}], "sql": "WITH raw AS (SELECT row_number() OVER () AS fila, \"X\" AS x, \"Y\" AS y FROM datos), base AS (SELECT *, CASE WHEN regexp_full_match(TRIM(x), '[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?') AND ABS(TRY_CAST(x AS DOUBLE)) <= 9007199254740991 THEN TRY_CAST(x AS DOUBLE) END AS nx, CASE WHEN regexp_full_match(TRIM(y), '[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?') AND ABS(TRY_CAST(y AS DOUBLE)) <= 9007199254740991 THEN TRY_CAST(y AS DOUBLE) END AS ny FROM raw) SELECT 1 AS grand, MAX(NULL::DOUBLE) AS value FROM base WHERE TRUE;"}]
+
+      72 |  expect({revision:current.revision,dirty:current.dirty}).toEqual({revision:doc.revision,dirty:doc.dirty})
+      73 |  expect(await readFile(path,'utf8')).toBe(original)
+    > 74 |  expect(loads.requests,'El total nulo no necesita otra sqlRun ni otra carga de la fuente.').toHaveLength(1)
+         |                                                                                             ^
+      75 | })
+      76 |
+        at /private/tmp/freyalab-analisis-fases-intel/tests/e2e/chart-single-load.spec.ts:74:93
+
+    Error Context: ../freyalab-analysis-phases-evidence/red-single-load-results/chart-single-load-scatter--4b5fd-servaciones-y-totales-nulos-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-analysis-phases-evidence/red-single-load-results/chart-single-load-scatter--4b5fd-servaciones-y-totales-nulos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-analysis-phases-evidence/red-single-load-results/chart-single-load-scatter--4b5fd-servaciones-y-totales-nulos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › line sin fechas carga la fuente una vez y conserva observaciones y totales nulos
+
+    Error: El total nulo no necesita otra sqlRun ni otra carga de la fuente.
+
+    expect(received).toHaveLength(expected)
+
+    Expected length: 1
+    Received length: 2
+    Received array:  [{"requestId": "8f07e999-613c-4ff8-b8c3-004a24ade1ce", "sources": [{"id": "8e4aaf49-f5d1-4a3a-9da5-2e54b185fca1", "revision": 0}], "sql": "WITH raw AS (SELECT row_number() OVER () AS fila, \"X\" AS x, \"Y\" AS y FROM datos), base AS (SELECT *, CASE WHEN regexp_full_match(TRIM(x), '[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?') AND ABS(TRY_CAST(x AS DOUBLE)) <= 9007199254740991 THEN TRY_CAST(x AS DOUBLE) END AS nx, CASE WHEN regexp_full_match(TRIM(y), '[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?') AND ABS(TRY_CAST(y AS DOUBLE)) <= 9007199254740991 THEN TRY_CAST(y AS DOUBLE) END AS ny FROM raw), points AS (SELECT nx AS x, ny AS value, fila FROM base WHERE nx IS NOT NULL), stats AS (SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE nx IS NOT NULL AND ny IS NOT NULL) AS usable FROM base) SELECT stats.total, stats.usable, (SELECT COUNT(*) FROM points) AS points, p.present, p.x, p.value, p.fila FROM stats LEFT JOIN (SELECT *, 1 AS present FROM points) p ON TRUE ORDER BY p.x ASC, p.fila ASC LIMIT 2001;"}, {"requestId": "7e38e5e7-6cb3-460a-9ed7-5b4777205060", "sources": [{"id": "8e4aaf49-f5d1-4a3a-9da5-2e54b185fca1", "revision": 0}], "sql": "WITH raw AS (SELECT row_number() OVER () AS fila, \"X\" AS x, \"Y\" AS y FROM datos), base AS (SELECT *, CASE WHEN regexp_full_match(TRIM(x), '[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?') AND ABS(TRY_CAST(x AS DOUBLE)) <= 9007199254740991 THEN TRY_CAST(x AS DOUBLE) END AS nx, CASE WHEN regexp_full_match(TRIM(y), '[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?') AND ABS(TRY_CAST(y AS DOUBLE)) <= 9007199254740991 THEN TRY_CAST(y AS DOUBLE) END AS ny FROM raw) SELECT 1 AS grand, MAX(NULL::DOUBLE) AS value FROM base WHERE TRUE;"}]
+
+      72 |  expect({revision:current.revision,dirty:current.dirty}).toEqual({revision:doc.revision,dirty:doc.dirty})
+      73 |  expect(await readFile(path,'utf8')).toBe(original)
+    > 74 |  expect(loads.requests,'El total nulo no necesita otra sqlRun ni otra carga de la fuente.').toHaveLength(1)
+         |                                                                                             ^
+      75 | })
+      76 |
+        at /private/tmp/freyalab-analisis-fases-intel/tests/e2e/chart-single-load.spec.ts:74:93
+
+    Error Context: ../freyalab-analysis-phases-evidence/red-single-load-results/chart-single-load-line-sin-d84ae-servaciones-y-totales-nulos-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-analysis-phases-evidence/red-single-load-results/chart-single-load-line-sin-d84ae-servaciones-y-totales-nulos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-analysis-phases-evidence/red-single-load-results/chart-single-load-line-sin-d84ae-servaciones-y-totales-nulos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › scatter sin fechas carga la fuente una vez y conserva observaciones y totales nulos
+    [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › line sin fechas carga la fuente una vez y conserva observaciones y totales nulos

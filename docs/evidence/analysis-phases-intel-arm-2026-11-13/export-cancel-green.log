@@ -1,0 +1,34 @@
+Running 10 tests using 1 worker
+
+(node:19591) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/charts.spec.ts:346:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales (5.0s)
+(node:19630) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 [csv] › tests/e2e/charts.spec.ts:346:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales (4.5s)
+(node:19656) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   3 [csv] › tests/e2e/charts.spec.ts:346:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales (4.5s)
+(node:19674) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   4 [csv] › tests/e2e/charts.spec.ts:346:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales (4.9s)
+(node:19722) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   5 [csv] › tests/e2e/charts.spec.ts:346:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales (4.4s)
+(node:19736) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   6 [csv] › tests/e2e/charts.spec.ts:346:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales (5.0s)
+(node:19756) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [csv] › tests/e2e/charts.spec.ts:346:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales (4.5s)
+(node:19795) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   8 [csv] › tests/e2e/charts.spec.ts:346:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales (5.6s)
+(node:19856) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [csv] › tests/e2e/charts.spec.ts:346:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales (6.4s)
+(node:20000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  10 [csv] › tests/e2e/charts.spec.ts:346:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales (5.5s)
+
+  10 passed (53.4s)

@@ -1,0 +1,35 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 /private/tmp/freyalab-analisis-fases-intel
+
+ ❯ tests/sql-progress.test.ts (5 tests | 1 failed) 12ms
+   × cancelar durante la carga conserva el rechazo y no anuncia consulta ni resultados tardíos 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sql-progress.test.ts > cancelar durante la carga conserva el rechazo y no anuncia consulta ni resultados tardíos
+AssertionError: expected [ …(3) ] to have a length of 2 but got 3
+
+- Expected
++ Received
+
+- 2
++ 3
+
+ ❯ tests/sql-progress.test.ts:91:26
+     89|   await appending;progressAtCancel=native.progress.length;service.canc…
+     90|  }finally{release();await finished}
+     91|  expect(native.progress).toHaveLength(progressAtCancel)
+       |                          ^
+     92|  expect(native.progress.map(event=>event.phase)).not.toContain(expecte…
+     93|  expect(native.progress.map(event=>event.phase)).not.toContain(expecte…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  21:36:34
+   Duration  175ms (import 50%, transform 34%, tests 13%, worker 3%)

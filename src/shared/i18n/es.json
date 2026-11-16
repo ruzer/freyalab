@@ -1382,5 +1382,9 @@
  "empty.error.encoding": "La codificación elegida no puede representar el valor. El documento se conserva.",
  "empty.error.disk": "El archivo cambió fuera de FreyaLab. Cierra el diálogo y revisa o recarga el documento.",
  "empty.error.dialog": "Cierra el diálogo de vacíos antes de cambiar de documento. Tus datos se conservan.",
- "empty.error.generic": "No se pudo preparar el cambio. El documento se conserva; vuelve a revisar la vista previa."
+ "empty.error.generic": "No se pudo preparar el cambio. El documento se conserva; vuelve a revisar la vista previa.",
+ "analysis.progress.engine": "Preparando motor local",
+ "analysis.progress.loading": "Cargando los datos",
+ "analysis.progress.query": "Ejecutando la consulta",
+ "analysis.progress.results": "Preparando los resultados"
 }

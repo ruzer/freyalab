@@ -1,0 +1,61 @@
+Running 1 test using 1 worker
+
+(node:82689) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-field-loading.spec.ts:12:1 › los 200 campos publican sus tipos juntos, sin una clasificación provisional durante la lectura (4.0s)
+
+
+  1) [csv] › tests/e2e/chart-field-loading.spec.ts:12:1 › los 200 campos publican sus tipos juntos, sin una clasificación provisional durante la lectura
+
+    Error: Durante «Leyendo los tipos de campo…» no se deben presentar tipos parcialmente calculados.
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  1
+    + Received  + 22
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "fields": 200,
+    +     "numeric": 1,
+    +   },
+    +   Object {
+    +     "fields": 200,
+    +     "numeric": 2,
+    +   },
+    +   Object {
+    +     "fields": 200,
+    +     "numeric": 3,
+    +   },
+    +   Object {
+    +     "fields": 200,
+    +     "numeric": 4,
+    +   },
+    +   Object {
+    +     "fields": 200,
+    +     "numeric": 5,
+    +   },
+    + ]
+
+      45 |   await info.attach('publicacion-de-perfiles',{body:JSON.stringify(observation,null,2),contentType:'application/json'})
+      46 |  }
+    > 47 |  expect(observation.provisional,'Durante «Leyendo los tipos de campo…» no se deben presentar tipos parcialmente calculados.').toEqual([])
+         |                                                                                                                               ^
+      48 |  const fields=chartPanel(page).getByRole('complementary',{name:'Campos y zonas',exact:true})
+      49 |  await expect(fields.getByRole('listitem')).toHaveCount(200)
+      50 |  const badge=(name:string)=>fields.getByRole('listitem').filter({has:page.getByText(name,{exact:true})}).locator('.field-badge')
+        at /private/tmp/freyalab-analisis-fases-intel/tests/e2e/chart-field-loading.spec.ts:47:127
+
+    Error Context: ../freyalab-analysis-phases-evidence/red-fields-results/chart-field-loading-los-20-f3791-visional-durante-la-lectura-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../freyalab-analysis-phases-evidence/red-fields-results/chart-field-loading-los-20-f3791-visional-durante-la-lectura-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../freyalab-analysis-phases-evidence/red-fields-results/chart-field-loading-los-20-f3791-visional-durante-la-lectura-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-field-loading.spec.ts:12:1 › los 200 campos publican sus tipos juntos, sin una clasificación provisional durante la lectura
