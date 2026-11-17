@@ -1,1 +1,3 @@
 src/main/csl/*.csl text eol=lf
+tests/fixtures/prj02-censo.csv -text
+experiments/prj02-reference/* text eol=lf
