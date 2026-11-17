@@ -21,7 +21,7 @@ const sampling=z.union([
  z.strictObject({method:z.literal('random'),rows,seed}),
  z.strictObject({method:z.literal('random'),percent,seed})
 ])
-const step=z.union([
+export const projectRecipeStep=z.union([
  z.strictObject({op:z.literal('filter'),mode:z.enum(['all','any']),conditions:z.array(z.strictObject({column,op:z.enum(filterOperators.map(([value])=>value)),value:z.string(),caseSensitive:z.boolean()}))}),
  z.strictObject({op:z.literal('select'),columns:z.array(column)}),
  z.strictObject({op:z.literal('order'),by:z.array(z.strictObject({column,descending:z.boolean(),numeric:z.boolean()}))}),
@@ -31,11 +31,13 @@ export const projectSource=z.strictObject({
  id,path:path.regex(/\.[cCtT][sS][vV]$/),external:z.boolean(),protection:z.literal('readonly'),bytes:count,sha256:hash,registeredAt:time,
  quick:z.strictObject({mtimeMs:z.number(),headSha256:hash,tailSha256:hash}),
  format:z.strictObject({encoding:z.enum(['utf8','utf16le','win1252']),bom:z.boolean(),delimiter:z.enum([',',';','\t','|']),header:z.boolean(),eol:z.enum(['\n','\r\n','\r']),finalEol:z.boolean()}),
- schema:z.strictObject({sha256:hash,columns:z.array(column)}),
+ schema:z.strictObject({sha256:hash,columns:z.array(column).refine(columns=>columns.every((column,index)=>column.position===index+1))}),
  history:z.array(hash).optional()
 })
-const recipeFields={id,name:storedName,sourceSha256:hash,semantics:count.min(1),steps:z.array(step),createdAt:time}
-const recipe=z.union([z.strictObject({...recipeFields,sourceId:id}),z.strictObject({...recipeFields,baseRecipeId:id})])
+const recipeFields={id,name:storedName,sourceSha256:hash,semantics:count.min(1),steps:z.array(projectRecipeStep),createdAt:time}
+export const projectRecipe=z.union([z.strictObject({...recipeFields,sourceId:id}),z.strictObject({...recipeFields,baseRecipeId:id})])
+const draftFields={id:id.optional(),name:projectName,steps:z.array(projectRecipeStep)}
+export const projectRecipeDraft=z.union([z.strictObject({...draftFields,sourceId:id}),z.strictObject({...draftFields,baseRecipeId:id})])
 const coverageFields={matched:count,scanned:count}
 const coverage=z.union([
  z.strictObject({...coverageFields,kind:z.enum(['full','filtered']),total:count,complete:z.literal(true)}),
@@ -51,7 +53,7 @@ const result=z.strictObject({
  })
 })
 export const projectManifest=z.strictObject({format:z.literal(format),version:z.literal(1),id,name:storedName,createdAt:time,
- sources:z.array(projectSource),recipes:z.array(recipe),results:z.array(result)}).superRefine((value,context)=>{
+ sources:z.array(projectSource),recipes:z.array(projectRecipe),results:z.array(result)}).superRefine((value,context)=>{
  const issue=(key:string,index:number)=>context.addIssue({code:'custom',path:[key,index],message:t('project.error.reference')})
  const sources=new Map(value.sources.map(source=>[source.id,source]))
  const recipes=new Map(value.recipes.map(recipe=>[recipe.id,recipe]))
@@ -71,12 +73,16 @@ export const projectManifest=z.strictObject({format:z.literal(format),version:z.
  for(const [index,result] of value.results.entries())if(!recipes.has(result.recipeId))issue('results',index)
 })
 export const projectManifestJSONSchema={...z.toJSONSchema(projectManifest,{reused:'ref'}),
- $comment:'El validador de FreyaLab también verifica rutas, referencias entre registros y profundidad de recetas.'}
+ $comment:'El validador de FreyaLab también verifica posiciones físicas consecutivas, rutas, referencias entre registros y profundidad de recetas.'}
 export const projectEnvelope=z.looseObject({format:z.literal(format),version:count.min(1),id:z.unknown().optional(),name:z.unknown().optional()})
+export type ProjectColumn=z.infer<typeof column>
+export type ProjectRecipeStep=z.infer<typeof projectRecipeStep>
+export type ProjectRecipe=z.infer<typeof projectRecipe>
+export type ProjectRecipeDraft=z.infer<typeof projectRecipeDraft>
 export type ProjectManifest=z.infer<typeof projectManifest>
 export type ProjectSource=z.infer<typeof projectSource>
 export type ProjectSourceView=Pick<ProjectSource,'id'|'path'|'external'|'bytes'|'format'>&{
- name:string;columnCount:number;overAnalysis:boolean;status:'verified'|'changed'|'missing'|'external'
+ name:string;columnCount:number;columns:ProjectColumn[];documentId?:string;overAnalysis:boolean;status:'verified'|'changed'|'missing'|'external'
 }
 export type ProjectSourceDraft={
  id:string;path:string;bytes:number;external:boolean

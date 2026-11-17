@@ -1,6 +1,7 @@
 // Lectura de CSV/TSV grandes por posición (L2 del RFC `docs/design/LARGE-FILE-EDITOR-RFC.md`): el archivo no se carga entero,
 // se recorre una vez en flujo para guardar la posición de cada 1024.º registro y las páginas se leen saltando a esa posición.
 import {open,stat} from 'node:fs/promises'
+import type {FileHandle} from 'node:fs/promises'
 import iconv from 'iconv-lite'
 import type {Encoding} from '../shared/types'
 
@@ -107,15 +108,16 @@ export async function buildIndex(path: string, options: IndexOptions): Promise<L
 export interface RecordBatch { first: number; records: Buffer[]; position: number }
 // Recorre el archivo entero en flujo y entrega los registros EXACTOS (bytes, con su fin de línea) en lotes. Es la base de la extracción:
 // el mismo escáner que el índice, así que ambos delimitan igual los registros. Falla si el archivo termina con una comilla sin cerrar.
-export async function* recordBatches(index: LargeIndex, options: {batchRecords?: number;batchBytes?:number; chunk?: number; cancelled?: () => boolean;from?:number;to?:number;first?:number} = {}): AsyncGenerator<RecordBatch> {
+export async function* recordBatches(index: Pick<LargeIndex,'path'|'size'|'bomLength'|'unit'|'maxRecord'>, options: {batchRecords?: number;firstBatchRecords?:number;batchBytes?:number; chunk?: number; cancelled?: () => boolean;from?:number;to?:number;first?:number;handle?:FileHandle;onRead?:(bytes:Buffer,position:number)=>void} = {}): AsyncGenerator<RecordBatch> {
  const {batchRecords = 2000,batchBytes=Infinity,chunk = 4 * 1024 * 1024,from=index.bomLength,to=index.size,first:initial=0} = options
- const handle = await open(index.path, 'r')
+ const handle = options.handle??await open(index.path, 'r')
  try {
   const state: ScanState = {inQuotes: false}
   let position = from, recordStart = position, ordinal = initial, first = initial, batch: Buffer[] = [], carry: Buffer[] = [],batchSize=0
   while (position < to) {
    if (options.cancelled?.()) throw new OpenCancelled('Operación cancelada.')
    const buffer = Buffer.allocUnsafe(Math.min(chunk,to-position)), {bytesRead} = await handle.read(buffer, 0, buffer.length, position); if (!bytesRead) break
+   options.onRead?.(buffer.subarray(0,bytesRead),position)
    const usable = index.unit === 2 ? bytesRead - (bytesRead % 2) : bytesRead, ends: number[] = []
    scan(buffer, usable, position, state, index.unit, end => ends.push(end))
    let cursor = position
@@ -123,7 +125,7 @@ export async function* recordBatches(index: LargeIndex, options: {batchRecords?:
     if(end-recordStart>index.maxRecord)throw new RecordTooLargeError(ordinal,recordStart,index.maxRecord)
     const part = buffer.subarray(cursor - position, end - position)
     const raw=carry.length?Buffer.concat([...carry,part]):part;batch.push(raw);batchSize+=raw.length;carry = []; cursor = end; recordStart = end; ordinal++
-    if (batch.length >= batchRecords||batchSize>=batchBytes) { yield {first, records: batch, position: end}; first = ordinal; batch = [];batchSize=0 }
+    if (batch.length >= (first===initial?(options.firstBatchRecords??batchRecords):batchRecords)||batchSize>=batchBytes) { yield {first, records: batch, position: end}; first = ordinal; batch = [];batchSize=0 }
    }
    if (cursor < position + usable) carry.push(buffer.subarray(cursor - position, usable))
    position += usable
@@ -133,7 +135,7 @@ export async function* recordBatches(index: LargeIndex, options: {batchRecords?:
   if (state.inQuotes) throw new UnclosedQuoteError(ordinal, recordStart)
   if (carry.length) { batch.push(Buffer.concat(carry)); ordinal++ } // último registro sin salto de línea
   if (batch.length) yield {first, records: batch, position: to}
- } finally { await handle.close() }
+ } finally { if(!options.handle)await handle.close() }
 }
 
 // Posición [inicio, fin) de `count` registros desde el ordinal `from`, leyendo desde el punto de control anterior.

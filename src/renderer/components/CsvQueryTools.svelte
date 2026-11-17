@@ -1,6 +1,7 @@
 <script lang="ts">
  import {controlHint} from '../lib/control-hint'
  import Icon from './Icon.svelte'
+ import CsvOrderFields from './CsvOrderFields.svelte'
  import {t} from '../lib/i18n.svelte'
  import {onMount,untrack} from 'svelte'
  import {filterOperators} from '../../shared/table-conditions'
@@ -28,13 +29,7 @@
   </div>{/each}
   <button {...controlHint(!headers.length?'columns':conditions.length>=20?'filterLimit':null)} type="button" disabled={conditions.length>=20||!headers.length} onclick={()=>conditions=[...conditions,{column:0,op:'contains',value:''}]}>{text('Añadir condición','add')}</button>
   {#if !filtersOnly&&!large}<h4>Orden por prioridad</h4>
-  {#each order as item,index}<div class="rule">
-   <span>{index+1}.</span><select aria-label={`Columna de orden ${index+1}`} bind:value={item.column}>{#each headers as name,column}<option value={column}>{column+1}. {name||text('Sin encabezado','blankHeader')}</option>{/each}</select>
-   <select aria-label={`Dirección de orden ${index+1}`} bind:value={item.descending}><option value={false}>Ascendente</option><option value={true}>Descendente</option></select>
-   <label><input type="checkbox" aria-label={`Orden numérico ${index+1}`} bind:checked={item.numeric}/>Numérico exacto</label>
-   <button title={(`Quitar orden ${index+1}`)} type="button" aria-label={`Quitar orden ${index+1}`} onclick={()=>order=order.filter((_,i)=>i!==index)}><Icon name="x" size={14}/></button>
-  </div>{/each}
-  <button {...controlHint(!headers.length?'columns':order.length>=20?'sortLimit':null)} type="button" disabled={order.length>=20||!headers.length} onclick={()=>order=[...order,{column:0,descending:false,numeric:false}]}>Añadir orden</button>{/if}
+  <CsvOrderFields {headers} bind:order/>{/if}
   {#if large}<p>Solo cambia la vista; el archivo sigue en solo lectura. Fechas AAAA-MM-DD, números con punto decimal y regex RE2. Ordenar llega con L5c.</p>{:else if filtersOnly}<p>{t('charts.filter.help')}</p>{:else}<p>Solo cambia la vista. Guardar conserva el orden del documento. Mayús + clic en un encabezado añade un criterio. Fechas ISO AAAA-MM-DD; los campos con otra fecha no coinciden. La búsqueda global y los filtros de encabezado se combinan con esta consulta mediante Y.</p>{/if}
   {#if error}<p role="alert" class="query-error">{error}</p>{/if}
   </div>

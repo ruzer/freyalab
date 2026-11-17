@@ -1,5 +1,5 @@
 <script module lang="ts">
- export interface CsvCommand {id:string;label:string;detail:string;disabled:boolean;disabledReason?:string;run:()=>unknown}
+ export interface CsvCommand {id:string;label:string;detail:string;keywords?:string;disabled:boolean;disabledReason?:string;run:()=>unknown}
 </script>
 <script lang="ts">
  import {controlHint} from '../lib/control-hint'
@@ -9,7 +9,7 @@
  let search=$state(''),dialog:HTMLDialogElement
  const fold=(text:string)=>text.normalize('NFD').replace(/\p{M}/gu,'').toLocaleLowerCase()
  const terms=$derived(fold(search).trim().split(/\s+/).filter(Boolean))
- const matches=$derived(commands.filter(command=>terms.every(term=>fold(command.label+' '+command.detail).includes(term))))
+ const matches=$derived(commands.filter(command=>terms.every(term=>fold(command.label+' '+command.detail+' '+(command.keywords??'')).includes(term))))
  onMount(()=>{dialog.showModal();dialog.querySelector('input')?.focus()})
  $effect(()=>{void matches;if(dialog?.open&&(!dialog.contains(document.activeElement)||document.activeElement?.matches(':disabled')))dialog.querySelector('input')?.focus()})
  function keydown(event:KeyboardEvent){
@@ -27,7 +27,7 @@
  <p role="status">{matches.length} comandos encontrados. Las acciones deshabilitadas necesitan otro contexto.</p>
  <ul class="command-list">{#each matches as command (command.id)}
   {@const hint=command.disabledReason?{title:command.disabledReason,'aria-describedby':'csv-command-reason-'+command.id}:controlHint(command.disabled?'context':null)}
-  <li><button {...hint} aria-label={command.disabledReason?command.label:undefined} disabled={command.disabled} onclick={()=>onexecute(command.id)}><strong>{command.label}</strong><small id={command.disabledReason?'csv-command-reason-'+command.id:undefined}>{command.detail}</small></button></li>
+  <li><button {...hint} aria-label={command.disabledReason?command.label:undefined} disabled={command.disabled} onclick={()=>onexecute(command.id)}><strong>{command.label}</strong><small id={command.disabledReason?'csv-command-reason-'+command.id:undefined}>{command.disabledReason??command.detail}</small></button></li>
  {/each}</ul>
  {#if !matches.length}<p>No hay comandos que coincidan. Prueba con otra palabra.</p>{/if}
  <p>↑ ↓ para recorrer · Enter para ejecutar · Escape para cerrar. Los cambios usan el historial y las vistas previas existentes.</p>
