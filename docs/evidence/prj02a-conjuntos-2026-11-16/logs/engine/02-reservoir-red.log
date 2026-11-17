@@ -1,0 +1,36 @@
+> freyalab@0.1.0-alpha.4 test
+> vitest run --run tests/recipe-operation.test.ts
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <WORKTREE>
+
+ ❯ tests/recipe-operation.test.ts (2 tests | 1 failed) 11ms
+   ❯ PRJ-02a · ejecución de conjuntos (2)
+     × muestra de tres con semilla 7 coincide con el vector previo y conserva orden de llegada 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/recipe-operation.test.ts > PRJ-02a · ejecución de conjuntos > muestra de tres con semilla 7 coincide con el vector previo y conserva orden de llegada
+RecipeOperationError: plan
+ ❯ error src/main/recipe-operation.ts:12:106
+     10| type Row={cells:string[];ordinal:number;arrival:number}
+     11| type Compiled={step:RecipeStep;matches?:(row:Row)=>boolean;compare?:(a…
+     12| const error=(code:ConstructorParameters<typeof RecipeOperationError>[0…
+       |                                                                                                          ^
+     13| const increment=(value:number)=>{if(value>=Number.MAX_SAFE_INTEGER)thr…
+     14| const ordinal=(a:string,b:string)=>a<b?-1:a>b?1:0
+ ❯ src/main/recipe-operation.ts:46:9
+ ❯ prepare src/main/recipe-operation.ts:24:34
+ ❯ runRecipe src/main/recipe-operation.ts:64:27
+ ❯ tests/recipe-operation.test.ts:40:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  08:29:05
+   Duration  110ms (import 38%, transform 36%, tests 22%, worker 3%)

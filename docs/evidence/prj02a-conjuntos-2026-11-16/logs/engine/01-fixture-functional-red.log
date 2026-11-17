@@ -1,0 +1,23 @@
+RUN  v5.0.5 <WORKTREE>
+
+ ❯ tests/recipe-operation.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/recipe-operation.test.ts [ tests/recipe-operation.test.ts ]
+Error: Cannot find module '../src/main/recipe-operation' imported from <WORKTREE>/tests/recipe-operation.test.ts
+ ❯ tests/recipe-operation.test.ts:6:1
+      4| import {join} from 'node:path'
+      5| import {createHash} from 'node:crypto'
+      6| import {runRecipe} from '../src/main/recipe-operation'
+       | ^
+      7| import type {RecipeOperationSource} from '../src/shared/recipe-operati…
+      8| import type {ProjectManifest} from '../src/shared/project'
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  08:27:07
+   Duration  104ms (worker 97%, environment 3%)

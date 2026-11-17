@@ -1,0 +1,45 @@
+Running 1 test using 1 worker
+
+(node:71555) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/project-subsets.spec.ts:291:47 › PRJ-02a: Proyecto presenta una cadena de tres niveles sin abrir la fuente [en-XA]
+  1) [csv] › tests/e2e/project-subsets.spec.ts:291:47 › PRJ-02a: Proyecto presenta una cadena de tres niveles sin abrir la fuente [en-XA]
+
+    Error: expect(locator).toBeInViewport() failed
+
+    Locator:  getByRole('tabpanel', { name: '[Pröjëct~~~]', exact: true }).getByText('Adultos', { exact: true })
+    Expected: in viewport
+    Received: viewport ratio 0
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeInViewport" getByRole('tabpanel', { name: '[Pröjëct~~~]', exact: true }).getByText('Adultos', { exact: true }) with timeout 15000ms
+      - waiting for getByRole('tabpanel', { name: '[Pröjëct~~~]', exact: true }).getByText('Adultos', { exact: true })
+        33 × locator resolved to <strong>Adultos</strong>
+           - unexpected value "viewport ratio 0"
+
+
+      303 |   await expect.poll(()=>page.locator('html').evaluate(html=>html.classList.contains('dark'))).toBe(theme==='dark')
+      304 |   await projectPanel().getByText('Identificador y nota',{exact:true}).scrollIntoViewIfNeeded()
+    > 305 |   for(const name of ['Adultos','Muestra estable','Identificador y nota'])await expect(projectPanel().getByText(name,{exact:true})).toBeInViewport({ratio:1})
+          |                                                                                                                                    ^
+      306 |   if(process.env.FREYALAB_PRJ02_EVIDENCE)await page.screenshot({path:info.outputPath(`prj02a-project-chain-${language}-${theme}-${width}x${width===1440?900:720}.png`),animations:'disabled'})
+      307 |  }
+      308 |  expect(await page.evaluate(()=>window.freya.documents())).toEqual([])
+        at <WORKTREE>/tests/e2e/project-subsets.spec.ts:305:132
+
+    Error Context: test-results/project-subsets-PRJ-02a-Pr-43401--sin-abrir-la-fuente-en-XA--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/project-subsets-PRJ-02a-Pr-43401--sin-abrir-la-fuente-en-XA--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/project-subsets-PRJ-02a-Pr-43401--sin-abrir-la-fuente-en-XA--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [csv] › tests/e2e/project-subsets.spec.ts:291:47 › PRJ-02a: Proyecto presenta una cadena de tres niveles sin abrir la fuente [en-XA]

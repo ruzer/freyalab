@@ -1,0 +1,106 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <WORKTREE>
+
+ ❯ tests/project-subsets.test.ts (8 tests | 2 failed) 64ms
+   ❯ PRJ-02a · coordinador de lectura sin permisos de escritura (8)
+     × no degrada a v1 un conjunto guardado con semántica desconocida 5ms
+     × la excepción futura solo prueba definiciones v1 guardadas sin cambiar sus pasos 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/project-subsets.test.ts > PRJ-02a · coordinador de lectura sin permisos de escritura > no degrada a v1 un conjunto guardado con semántica desconocida
+AssertionError: promise resolved "{ headers: [ 'ID' ], …(11) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "bytesRead": 10,
++   "cancelled": false,
++   "columns": [
++     {
++       "name": "ID",
++       "position": 1,
++     },
++   ],
++   "complete": true,
++   "eligible": 1,
++   "headers": [
++     "ID",
++   ],
++   "resultCount": 1,
++   "rows": [
++     [
++       "00123",
++     ],
++   ],
++   "sampling": [],
++   "scanned": 1,
++   "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++   "sourceVersionDifferent": false,
+  }
+
+ ❯ tests/project-subsets.test.ts:59:72
+     57|   const {service,store,call}=setup()
+     58|   store.recipes.push({...draft,id:'futuro',semantics:2,createdAt:'2026…
+     59|   await expect(service.try('project',{...draft,id:'futuro'},'request')…
+       |                                                                        ^
+     60|   expect(call).not.toHaveBeenCalled()
+     61|  })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/project-subsets.test.ts > PRJ-02a · coordinador de lectura sin permisos de escritura > la excepción futura solo prueba definiciones v1 guardadas sin cambiar sus pasos
+AssertionError: promise resolved "{ headers: [ 'ID' ], …(11) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "bytesRead": 10,
++   "cancelled": false,
++   "columns": [
++     {
++       "name": "ID",
++       "position": 1,
++     },
++   ],
++   "complete": true,
++   "eligible": 1,
++   "headers": [
++     "ID",
++   ],
++   "resultCount": 1,
++   "rows": [
++     [
++       "00123",
++     ],
++   ],
++   "sampling": [],
++   "scanned": 1,
++   "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++   "sourceVersionDifferent": false,
+  }
+
+ ❯ tests/project-subsets.test.ts:66:53
+     64|   store.active!.readonly=true
+     65|   store.recipes.push({...draft,id:'conocido',semantics:1,createdAt:'20…
+     66|   await expect(service.try('project',draft,'nuevo')).rejects.toThrow()
+       |                                                     ^
+     67|   await expect(service.try('project',{...draft,id:'conocido',steps:[{o…
+     68|   expect(call).not.toHaveBeenCalled()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 6 passed (8)
+   Start at  08:46:58
+   Duration  173ms (tests 66%, transform 18%, import 15%, worker 2%)

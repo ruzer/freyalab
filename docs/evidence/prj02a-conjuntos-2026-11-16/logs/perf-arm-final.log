@@ -1,0 +1,10 @@
+Running 3 tests using 1 worker
+
+(node:72651) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/3] [csv] › tests/e2e/project-subsets-perf.spec.ts:86:1 › PRJ-02a 1 GB: primeras dos filas leen solo un prefijo y no afirman identidad completa @perf
+[2/3] [csv] › tests/e2e/project-subsets-perf.spec.ts:94:1 › PRJ-02a 1 GB: depósito de diez mil, cien ejemplos y fuente completa verificada @perf
+[3/3] [csv] › tests/e2e/project-subsets-perf.spec.ts:104:1 › PRJ-02a 1 GB: cancelar a mitad conserva cobertura parcial y no crea archivos @perf
+  3 passed (33.9s)

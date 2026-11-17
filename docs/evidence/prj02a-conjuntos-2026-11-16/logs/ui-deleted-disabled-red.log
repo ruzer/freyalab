@@ -1,0 +1,86 @@
+Running 2 tests using 1 worker
+
+(node:65793) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/2] [csv] › tests/e2e/project-subsets.spec.ts:427:1 › PRJ-02a: una columna eliminada permanece pendiente hasta elegir Todas las columnas explícitamente
+  1) [csv] › tests/e2e/project-subsets.spec.ts:427:1 › PRJ-02a: una columna eliminada permanece pendiente hasta elegir Todas las columnas explícitamente
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('region', { name: 'Conjunto', exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('region', { name: 'Conjunto', exact: true }) with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Conjunto', exact: true })
+
+
+      55 | }
+      56 | const recipeRow=(name:string)=>projectPanel().getByText(name,{exact:true}).locator('..')
+    > 57 | async function openStored(name:string){await recipeRow(name).locator(':scope > .actions').getByRole('button',{name:'Abrir',exact:true}).press('Enter');await expect(subsetPanel()).toBeVisible()}
+         |                                                                                                                                                                                    ^
+      58 |
+      59 | test('PRJ-02a: guarda la consulta de la fuente como conjunto, prueba sus siete registros y conserva el original',async()=>{
+      60 |  await registerFixture()
+        at openStored (<WORKTREE>/tests/e2e/project-subsets.spec.ts:57:180)
+        at <WORKTREE>/tests/e2e/project-subsets.spec.ts:432:2
+
+    Error Context: test-results/project-subsets-PRJ-02a-un-8f270-las-columnas-explícitamente-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/project-subsets-PRJ-02a-un-8f270-las-columnas-explícitamente-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/project-subsets-PRJ-02a-un-8f270-las-columnas-explícitamente-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:65814) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/2] [csv] › tests/e2e/project-subsets.spec.ts:444:1 › PRJ-02a: la paleta describe por qué no puede guardar como conjunto un CSV sin registrar
+  2) [csv] › tests/e2e/project-subsets.spec.ts:444:1 › PRJ-02a: la paleta describe por qué no puede guardar como conjunto un CSV sin registrar
+
+    Error: expect(locator).toHaveAccessibleDescription(expected) failed
+
+    Locator:  getByRole('dialog', { name: 'Comandos CSV', exact: true }).getByRole('button', { name: 'Guardar como conjunto…', exact: true })
+    Expected: "Añade este archivo como fuente del proyecto para guardar conjuntos."
+    Received: "Conserva condiciones, columnas y orden con un nombre, sin modificar la fuente."
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAccessibleDescription" getByRole('dialog', { name: 'Comandos CSV', exact: true }).getByRole('button', { name: 'Guardar como conjunto…', exact: true }) with timeout 15000ms
+      - waiting for getByRole('dialog', { name: 'Comandos CSV', exact: true }).getByRole('button', { name: 'Guardar como conjunto…', exact: true })
+        34 × locator resolved to <button disabled class="svelte-ki85c0" aria-label="Guardar como conjunto…" aria-describedby="csv-command-reason-saveSubset" title="Añade este archivo como fuente del proyecto para guardar conjuntos.">…</button>
+           - unexpected value "Conserva condiciones, columnas y orden con un nombre, sin modificar la fuente."
+
+
+      450 |   const button=palette.getByRole('button',{name,exact:true})
+      451 |   await expect(button).toBeDisabled()
+    > 452 |   await expect(button).toHaveAccessibleDescription(t('subset.addSource'))
+          |                        ^
+      453 |   await expect(button.locator('small')).toHaveText(t('subset.addSource'))
+      454 |  }
+      455 |  expect((await manifest()).recipes).toEqual([]);expect(await readFile(source)).toEqual(original);expect(await readFile(other)).toEqual(original)
+        at <WORKTREE>/tests/e2e/project-subsets.spec.ts:452:24
+
+    Error Context: test-results/project-subsets-PRJ-02a-la-700e9-njunto-un-CSV-sin-registrar-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/project-subsets-PRJ-02a-la-700e9-njunto-un-CSV-sin-registrar-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/project-subsets-PRJ-02a-la-700e9-njunto-un-CSV-sin-registrar-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  2 failed
+    [csv] › tests/e2e/project-subsets.spec.ts:427:1 › PRJ-02a: una columna eliminada permanece pendiente hasta elegir Todas las columnas explícitamente
+    [csv] › tests/e2e/project-subsets.spec.ts:444:1 › PRJ-02a: la paleta describe por qué no puede guardar como conjunto un CSV sin registrar

@@ -1,0 +1,94 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <WORKTREE>
+
+ ❯ tests/project-subsets.test.ts (10 tests | 2 failed) 117ms
+   ❯ PRJ-02a · coordinador de lectura sin permisos de escritura (10)
+     × descarta un resultado completo que estaba en tránsito cuando se canceló 58ms
+     × no acepta un resultado tras reabrir el mismo id y ruta en otra sesión 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/project-subsets.test.ts > PRJ-02a · coordinador de lectura sin permisos de escritura > descarta un resultado completo que estaba en tránsito cuando se canceló
+AssertionError: expected { headers: [ 'ID' ], …(11) } to match object { cancelled: true, …(3) }
+(8 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "cancelled": true,
+-   "complete": false,
+-   "resultCount": 0,
+-   "rows": [],
++   "cancelled": false,
++   "complete": true,
++   "resultCount": 1,
++   "rows": [
++     [
++       "00123",
++     ],
++   ],
+  }
+
+ ❯ tests/project-subsets.test.ts:79:21
+     77|   await service.cancel('request');finish(result)
+     78|   const cancelled=await pending
+     79|   expect(cancelled).toMatchObject({cancelled:true,complete:false,rows:…
+       |                     ^
+     80|   expect(cancelled).not.toHaveProperty('sha256')
+     81|  })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/project-subsets.test.ts > PRJ-02a · coordinador de lectura sin permisos de escritura > no acepta un resultado tras reabrir el mismo id y ruta en otra sesión
+AssertionError: promise resolved "{ headers: [ 'ID' ], …(11) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "bytesRead": 10,
++   "cancelled": false,
++   "columns": [
++     {
++       "name": "ID",
++       "position": 1,
++     },
++   ],
++   "complete": true,
++   "eligible": 1,
++   "headers": [
++     "ID",
++   ],
++   "resultCount": 1,
++   "rows": [
++     [
++       "00123",
++     ],
++   ],
++   "sampling": [],
++   "scanned": 1,
++   "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++   "sourceVersionDifferent": false,
+  }
+
+ ❯ tests/project-subsets.test.ts:85:55
+     83|   const {service,store,call}=setup()
+     84|   call.mockImplementationOnce(async()=>{Object.defineProperty(store,'a…
+     85|   await expect(service.try('project',draft,'request')).rejects.toThrow…
+       |                                                       ^
+     86|  })
+     87| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 8 passed (10)
+   Start at  08:51:48
+   Duration  232ms (tests 76%, transform 12%, import 10%, worker 1%)

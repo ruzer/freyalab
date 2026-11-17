@@ -1,0 +1,4 @@
+autocrlf=true bytes: 220 sha256: 54510d0b8ba4f44f6b4cc3b969cdb8f3282292fc5699dfd6274597068f88a6a3
+Traceback (most recent call last):
+  File "<stdin>", line 4, in <module>
+AssertionError

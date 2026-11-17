@@ -1,0 +1,64 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <WORKTREE>
+
+ ❯ tests/project-sources.test.ts (9 tests | 1 failed | 8 skipped) 54ms
+   ❯ PRJ-01b · registro en un proyecto (3)
+     × PRJ-02a identifica el documento por id y autoriza una receta solo sobre una fuente vigente 54ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/project-sources.test.ts > PRJ-01b · registro en un proyecto > PRJ-02a identifica el documento por id y autoriza una receta solo sobre una fuente vigente
+AssertionError: expected { …(9) } to match object { …(2) }
+(15 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "columns": [
+-     {
+-       "name": "ID",
+-       "position": 1,
+-     },
+-     {
+-       "name": "Grupo",
+-       "position": 2,
++   "bytes": 22,
++   "columnCount": 2,
++   "external": false,
++   "format": {
++     "bom": false,
++     "delimiter": ",",
++     "encoding": "utf8",
++     "eol": "
++ ",
++     "finalEol": true,
++     "header": true,
+    },
+-   ],
+-   "documentId": "documento-abierto",
++   "id": "5ac61a6d-a37f-4983-a965-90fb6a97c382",
++   "name": "datos.csv",
++   "overAnalysis": false,
++   "path": "datos.csv",
++   "status": "verified",
+  }
+
+ ❯ tests/project-sources.test.ts:77:38
+     75|   await registry.register(project.id,draft.id,{},undefined,undefined,a…
+     76|   const [source]=store.sources
+     77|   expect((await registry.list())[0]).toMatchObject({documentId:'docume…
+       |                                      ^
+     78|   await expect(registry.recipeSource(project.id,source.id)).resolves.t…
+     79|   await expect(registry.recipeSource('otro',source.id)).rejects.toThro…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 skipped (9)
+   Start at  08:32:27
+   Duration  244ms (import 43%, tests 31%, transform 25%, worker 1%)

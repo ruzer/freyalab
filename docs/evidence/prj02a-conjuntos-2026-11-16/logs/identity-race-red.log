@@ -1,0 +1,72 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <WORKTREE>
+
+ ❯ tests/recipe-identity.test.ts (1 test | 1 failed) 19ms
+   × reemplazo entre quick y worker no debe aceptar otro inode en first parcial 18ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/recipe-identity.test.ts > reemplazo entre quick y worker no debe aceptar otro inode en first parcial
+AssertionError: promise resolved "{ headers: [ 'ID', 'Value' ], …(9) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "bytesRead": 42,
++   "cancelled": false,
++   "columns": [
++     {
++       "name": "ID",
++       "position": 1,
++     },
++     {
++       "name": "Value",
++       "position": 2,
++     },
++   ],
++   "complete": false,
++   "eligible": 1,
++   "headers": [
++     "ID",
++     "Value",
++   ],
++   "resultCount": 1,
++   "rows": [
++     [
++       "1",
++       "changed!",
++     ],
++   ],
++   "sampling": [
++     {
++       "eligible": 1,
++       "method": "first",
++       "requestedRows": 1,
++       "selected": 1,
++       "step": 0,
++     },
++   ],
++   "scanned": 1,
+  }
+
+ ❯ tests/recipe-identity.test.ts:22:76
+     20|   const after=await stat(path)
+     21|   expect(before.ino).not.toBe(after.ino);expect(before.size).toBe(afte…
+     22|   await expect(runRecipe(descriptor,[{op:'sample',method:'first',rows:…
+       |                                                                            ^
+     23|  }finally{await rm(folder,{recursive:true,force:true})}
+     24| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  08:49:17
+   Duration  261ms (import 58%, transform 31%, tests 10%, worker 1%)

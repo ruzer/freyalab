@@ -1,0 +1,190 @@
+Running 21 tests using 1 worker
+
+(node:64602) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/21] [csv] › tests/e2e/project-subsets.spec.ts:59:1 › PRJ-02a: guarda la consulta de la fuente como conjunto, prueba sus siete registros y conserva el original
+[2/21] [csv] › tests/e2e/project-subsets.spec.ts:99:1 › PRJ-02a: semilla 7 repite la muestra y Escape permite conservar o descartar el borrador sin escribir
+[3/21] [csv] › tests/e2e/project-subsets.spec.ts:122:1 › PRJ-02a: la búsqueda no entra al conjunto y el orden aleatorio no acotado se explica antes de ejecutar
+[4/21] [csv] › tests/e2e/project-subsets.spec.ts:144:52 › PRJ-02a: controles alcanzables, temas y disposición del conjunto [es]
+  1) [csv] › tests/e2e/project-subsets.spec.ts:144:52 › PRJ-02a: controles alcanzables, temas y disposición del conjunto [es]
+
+    Error: expect(locator).toBeInViewport() failed
+
+    Locator: getByRole('region', { name: 'Conjunto', exact: true }).getByRole('button', { name: 'Cerrar conjunto', exact: true })
+    Expected: in viewport
+    Error: strict mode violation: getByRole('region', { name: 'Conjunto', exact: true }).getByRole('button', { name: 'Cerrar conjunto', exact: true }) resolved to 2 elements:
+        1) <button type="button" class="svelte-ege1hi" aria-label="Cerrar conjunto">…</button> aka getByLabel('Cerrar conjunto')
+        2) <button type="button" class="svelte-ege1hi">Cerrar conjunto</button> aka getByText('Cerrar conjunto')
+
+    Call log:
+      - Expect "toBeInViewport" getByRole('region', { name: 'Conjunto', exact: true }).getByRole('button', { name: 'Cerrar conjunto', exact: true }) with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Conjunto', exact: true }).getByRole('button', { name: 'Cerrar conjunto', exact: true })
+
+
+      154 |   await expect.poll(()=>page.locator('html').evaluate(html=>html.classList.contains('dark'))).toBe(theme==='dark')
+      155 |   await expect.poll(async()=>{const box=await panel.locator('footer').boundingBox();return !!box&&box.y>=0&&box.y+box.height<=await page.evaluate(()=>innerHeight)}).toBe(true)
+    > 156 |   for(const name of [tr('subset.try'),t('dialog.save',{},language),tr('subset.close')])await expect(panel.getByRole('button',{name,exact:true})).toBeInViewport({ratio:1})
+          |                                                                                                                                                  ^
+      157 |   if(process.env.FREYALAB_PRJ02_EVIDENCE)await page.screenshot({path:info.outputPath(`prj02a-subset-${language}-${theme}-${width}x${width===1440?900:720}.png`),animations:'disabled'})
+      158 |  }
+      159 |  await page.emulateMedia({forcedColors:'active',reducedMotion:'reduce'})
+        at <WORKTREE>/tests/e2e/project-subsets.spec.ts:156:146
+
+    Error Context: test-results/project-subsets-PRJ-02a-co-fcb11-isposición-del-conjunto-es--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/project-subsets-PRJ-02a-co-fcb11-isposición-del-conjunto-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/project-subsets-PRJ-02a-co-fcb11-isposición-del-conjunto-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:64643) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[5/21] [csv] › tests/e2e/project-subsets.spec.ts:144:52 › PRJ-02a: controles alcanzables, temas y disposición del conjunto [en]
+  2) [csv] › tests/e2e/project-subsets.spec.ts:144:52 › PRJ-02a: controles alcanzables, temas y disposición del conjunto [en]
+
+    Error: expect(locator).toBeInViewport() failed
+
+    Locator: getByRole('region', { name: 'Subset', exact: true }).getByRole('button', { name: 'Close subset', exact: true })
+    Expected: in viewport
+    Error: strict mode violation: getByRole('region', { name: 'Subset', exact: true }).getByRole('button', { name: 'Close subset', exact: true }) resolved to 2 elements:
+        1) <button type="button" class="svelte-ege1hi" aria-label="Close subset">…</button> aka getByLabel('Close subset')
+        2) <button type="button" class="svelte-ege1hi">Close subset</button> aka getByText('Close subset')
+
+    Call log:
+      - Expect "toBeInViewport" getByRole('region', { name: 'Subset', exact: true }).getByRole('button', { name: 'Close subset', exact: true }) with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Subset', exact: true }).getByRole('button', { name: 'Close subset', exact: true })
+
+
+      154 |   await expect.poll(()=>page.locator('html').evaluate(html=>html.classList.contains('dark'))).toBe(theme==='dark')
+      155 |   await expect.poll(async()=>{const box=await panel.locator('footer').boundingBox();return !!box&&box.y>=0&&box.y+box.height<=await page.evaluate(()=>innerHeight)}).toBe(true)
+    > 156 |   for(const name of [tr('subset.try'),t('dialog.save',{},language),tr('subset.close')])await expect(panel.getByRole('button',{name,exact:true})).toBeInViewport({ratio:1})
+          |                                                                                                                                                  ^
+      157 |   if(process.env.FREYALAB_PRJ02_EVIDENCE)await page.screenshot({path:info.outputPath(`prj02a-subset-${language}-${theme}-${width}x${width===1440?900:720}.png`),animations:'disabled'})
+      158 |  }
+      159 |  await page.emulateMedia({forcedColors:'active',reducedMotion:'reduce'})
+        at <WORKTREE>/tests/e2e/project-subsets.spec.ts:156:146
+
+    Error Context: test-results/project-subsets-PRJ-02a-co-30ce4-isposición-del-conjunto-en--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/project-subsets-PRJ-02a-co-30ce4-isposición-del-conjunto-en--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/project-subsets-PRJ-02a-co-30ce4-isposición-del-conjunto-en--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:64654) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[6/21] [csv] › tests/e2e/project-subsets.spec.ts:144:52 › PRJ-02a: controles alcanzables, temas y disposición del conjunto [en-XA]
+  3) [csv] › tests/e2e/project-subsets.spec.ts:144:52 › PRJ-02a: controles alcanzables, temas y disposición del conjunto [en-XA]
+
+    Error: expect(locator).toBeInViewport() failed
+
+    Locator: getByRole('region', { name: '[Sübsët~~]', exact: true }).getByRole('button', { name: '[Clösë sübsët~~~~]', exact: true })
+    Expected: in viewport
+    Error: strict mode violation: getByRole('region', { name: '[Sübsët~~]', exact: true }).getByRole('button', { name: '[Clösë sübsët~~~~]', exact: true }) resolved to 2 elements:
+        1) <button type="button" class="svelte-ege1hi" aria-label="[Clösë sübsët~~~~]">…</button> aka getByLabel('[Clösë sübsët~~~~]')
+        2) <button type="button" class="svelte-ege1hi">[Clösë sübsët~~~~]</button> aka getByText('[Clösë sübsët~~~~]')
+
+    Call log:
+      - Expect "toBeInViewport" getByRole('region', { name: '[Sübsët~~]', exact: true }).getByRole('button', { name: '[Clösë sübsët~~~~]', exact: true }) with timeout 15000ms
+      - waiting for getByRole('region', { name: '[Sübsët~~]', exact: true }).getByRole('button', { name: '[Clösë sübsët~~~~]', exact: true })
+
+
+      154 |   await expect.poll(()=>page.locator('html').evaluate(html=>html.classList.contains('dark'))).toBe(theme==='dark')
+      155 |   await expect.poll(async()=>{const box=await panel.locator('footer').boundingBox();return !!box&&box.y>=0&&box.y+box.height<=await page.evaluate(()=>innerHeight)}).toBe(true)
+    > 156 |   for(const name of [tr('subset.try'),t('dialog.save',{},language),tr('subset.close')])await expect(panel.getByRole('button',{name,exact:true})).toBeInViewport({ratio:1})
+          |                                                                                                                                                  ^
+      157 |   if(process.env.FREYALAB_PRJ02_EVIDENCE)await page.screenshot({path:info.outputPath(`prj02a-subset-${language}-${theme}-${width}x${width===1440?900:720}.png`),animations:'disabled'})
+      158 |  }
+      159 |  await page.emulateMedia({forcedColors:'active',reducedMotion:'reduce'})
+        at <WORKTREE>/tests/e2e/project-subsets.spec.ts:156:146
+
+    Error Context: test-results/project-subsets-PRJ-02a-co-f7366-osición-del-conjunto-en-XA--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/project-subsets-PRJ-02a-co-f7366-osición-del-conjunto-en-XA--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/project-subsets-PRJ-02a-co-f7366-osición-del-conjunto-en-XA--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:64664) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[7/21] [csv] › tests/e2e/project-subsets.spec.ts:163:1 › PRJ-02a: el borrador del conjunto sobrevive a cambiar de documento sin escribir en el proyecto
+[8/21] [csv] › tests/e2e/project-subsets.spec.ts:179:1 › PRJ-02a: la versión futura muestra el conjunto reconocido con base desconocida sin ocultarlo ni reescribirlo
+[9/21] [csv] › tests/e2e/project-subsets.spec.ts:198:1 › PRJ-02a: un conjunto manual con depósito antes del orden sigue siendo ejecutable en solo lectura
+[10/21] [csv] › tests/e2e/project-subsets.spec.ts:210:1 › PRJ-02a: una proyección hija no pierde columnas cuando su base ya no las conserva
+[11/21] [csv] › tests/e2e/project-subsets.spec.ts:228:1 › PRJ-02a: el prefijo manual conserva el límite del paso separado de las filas finales
+[12/21] [csv] › tests/e2e/project-subsets.spec.ts:241:1 › PRJ-02a: Proyecto prueba un prefijo sin abrir ni indexar la fuente como Tabla
+[13/21] [csv] › tests/e2e/project-subsets.spec.ts:258:1 › PRJ-02a: elegir una columna no autoriza sus renombres futuros al restaurar un borrador
+[14/21] [csv] › tests/e2e/project-subsets.spec.ts:279:1 › PRJ-02a: cerrar y reabrir la fuente conserva el borrador en memoria sin persistirlo
+[15/21] [csv] › tests/e2e/project-subsets.spec.ts:290:47 › PRJ-02a: Proyecto presenta una cadena de tres niveles sin abrir la fuente [es]
+[16/21] [csv] › tests/e2e/project-subsets.spec.ts:290:47 › PRJ-02a: Proyecto presenta una cadena de tres niveles sin abrir la fuente [en-XA]
+[17/21] [csv] › tests/e2e/project-subsets.spec.ts:319:1 › PRJ-02a: encadena dos mayores, equivale a pasos planos y confirma el impacto y la eliminación
+  4) [csv] › tests/e2e/project-subsets.spec.ts:319:1 › PRJ-02a: encadena dos mayores, equivale a pasos planos y confirma el impacto y la eliminación
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('dialog', { name: 'Este conjunto es base de otros', exact: true })
+    Expected substring: "Afecta a 1 conjunto: Dos mayores"
+    Received string:    "Este conjunto es base de otros Afecta a {n} conjunto: Dos mayores. Usará la nueva definición la próxima vez que se ejecute. CancelarGuardar"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('dialog', { name: 'Este conjunto es base de otros', exact: true }) with timeout 15000ms
+      - waiting for getByRole('dialog', { name: 'Este conjunto es base de otros', exact: true })
+        34 × locator resolved to <dialog open="" class="svelte-ege1hi" aria-labelledby="c5-confirm">…</dialog>
+           - unexpected value "Este conjunto es base de otros Afecta a {n} conjunto: Dos mayores. Usará la nueva definición la próxima vez que se ejecute. CancelarGuardar"
+
+
+      345 |  await panel.getByRole('button',{name:'Guardar',exact:true}).press('Enter')
+      346 |  const impact=page.getByRole('dialog',{name:'Este conjunto es base de otros',exact:true})
+    > 347 |  await expect(impact).toContainText('Afecta a 1 conjunto: Dos mayores')
+          |                       ^
+      348 |  await impact.getByRole('button',{name:'Guardar',exact:true}).press('Enter')
+      349 |  await expect(panel).toHaveCount(0)
+      350 |  await recipeRow('Dos mayores').locator(':scope > .actions').getByRole('button',{name:'Eliminar',exact:true}).press('Enter')
+        at <WORKTREE>/tests/e2e/project-subsets.spec.ts:347:23
+
+    Error Context: test-results/project-subsets-PRJ-02a-en-21e42-el-impacto-y-la-eliminación-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/project-subsets-PRJ-02a-en-21e42-el-impacto-y-la-eliminación-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/project-subsets-PRJ-02a-en-21e42-el-impacto-y-la-eliminación-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:64774) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[18/21] [csv] › tests/e2e/project-subsets.spec.ts:358:1 › PRJ-02a: un cambio de esquema marca la base y su hijo hasta reelegir la columna y guardar
+[19/21] [csv] › tests/e2e/project-subsets.spec.ts:381:1 › PRJ-02a: un cambio de celda exige registrar la fuente y avisa la versión distinta al volver a probar
+[20/21] [csv] › tests/e2e/project-subsets.spec.ts:396:1 › PRJ-02a: un conjunto conocido de proyecto futuro se abre y prueba sin permitir mutaciones
+[21/21] [csv] › tests/e2e/project-subsets.spec.ts:411:1 › PRJ-02a: la paleta encuentra los conjuntos con sinónimos y el nombre repetido bloquea guardar
+  4 failed
+    [csv] › tests/e2e/project-subsets.spec.ts:144:52 › PRJ-02a: controles alcanzables, temas y disposición del conjunto [es]
+    [csv] › tests/e2e/project-subsets.spec.ts:144:52 › PRJ-02a: controles alcanzables, temas y disposición del conjunto [en]
+    [csv] › tests/e2e/project-subsets.spec.ts:144:52 › PRJ-02a: controles alcanzables, temas y disposición del conjunto [en-XA]
+    [csv] › tests/e2e/project-subsets.spec.ts:319:1 › PRJ-02a: encadena dos mayores, equivale a pasos planos y confirma el impacto y la eliminación
+  17 passed (43.6s)

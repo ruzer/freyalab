@@ -2,7 +2,7 @@
 
 Fecha: 2026-11-16. Repositorio: `ruzer/freyalab`. Rama de trabajo: `codex/prj-02a-conjuntos`, worktree independiente `/private/tmp/freyalab-prj02a`.
 
-**Estado al corte:** implementación local completada; suite unitaria completa con 2.838 casos aprobados y una omisión de plataforma, 25 E2E enfocadas aprobadas y tres mediciones de 1 GB en ARM aprobadas. La suite E2E completa está en ejecución. CI del cambio, medición Intel y corrida Intel completa sin reintentos siguen pendientes. No se presenta esta entrega como integrada ni publicada.
+**Estado al corte:** implementación local completada; suite unitaria completa con 2.838 casos aprobados y una omisión de plataforma, 25 E2E enfocadas aprobadas y tres mediciones de 1 GB en ARM aprobadas. Después de esos resultados se corrigió un conflicto de borrador restaurado; su nueva corrida de **26 casos aprobó sin reintentos (3,6 min)**, incluida la confirmación y Cancelar sin escrituras. La suite E2E completa anterior se interrumpió voluntariamente para validar el nuevo cambio y se repetirá. CI del cambio, medición Intel y corrida Intel completa sin reintentos siguen pendientes. No se presenta esta entrega como integrada ni publicada.
 
 ## Identidad del código
 
@@ -14,6 +14,7 @@ Fecha: 2026-11-16. Repositorio: `ruzer/freyalab`. Rama de trabajo: `codex/prj-02
 | Separación de códigos internos y mensajes traducibles | `1affd5a058a52e10b3efa5e448d25cb047f7e4bc` |
 | Conservación de bytes del fixture entre plataformas | `9e20cc7f0c363ee10a02efb91e2e710c422d634c` |
 | Medición ARM final y recaptura de cadena | **`44cd46d6d14e62ffb2b9780f1ba7676112accfc9`** |
+| Defensa del borrador restaurado y E2E 26/26 | `5c67e93a38cbb6c69130527d9f24a115b4370a56` |
 
 Cada resultado se atribuye abajo al código que se ejecutó. Los JSON de rendimiento final registran ese último SHA y `sourceModified:false`. El commit que añada esta evidencia no cambia el producto, pero necesita la calificación remota correspondiente; el verde de otro SHA no se transfiere. Los resultados posteriores de la CI y del cierre E2E se registrarán en el PR, sin crear commits solo para cambiar su estado, conforme a CONTRIBUTING.
 
@@ -58,6 +59,7 @@ La revisión cruzada reprodujo y corrigió estos límites:
 - Publicar un proyecto vuelve a comprobar la generación después de esperar la cancelación, antes de cambiar las protecciones de documentos.
 - Los errores de comprobación rápida se presentan con mensajes de tarea; no se filtran rutas completas de errores crudos. Los errores del motor son codificados y se traducen en main.
 - El esquema completo se publica una sola vez por fuente, evitando multiplicarlo por cada conjunto.
+- Un borrador restaurado conserva la identidad de la definición sobre la que se editó. Si la definición guardada cambió externamente, muestra un aviso y exige confirmar el reemplazo con el diálogo existente antes de guardar. Cancelar conserva tanto el borrador como la definición externa; no se añadió ningún IPC ni una ruta nueva de escritura.
 
 Se mantienen guardas explícitas de solo lectura en todas las mutaciones: disponer de una proyección conocida de un manifiesto futuro no autoriza guardarlo.
 
@@ -65,7 +67,7 @@ El esquema físico exige posiciones consecutivas desde 1 antes de entrar a la in
 
 ## Rojo → verde real
 
-Los recuentos de cada fila son los de su ejecución enfocada; se solapan y **no se suman**. Los logs citados se conservan en [logs/](prj02a-conjuntos-2026-11-16/logs/). Solo se copiaron textos: se sustituyeron prefijos de rutas locales por `<WORKTREE>`, `<HOME>` o `<TMP>` y se revisaron patrones de tokens. No se copiaron trazas binarias ni perfiles de usuario.
+Los recuentos de cada fila son los de su ejecución enfocada; se solapan y **no se suman**. Los logs citados se conservan en [logs/](prj02a-conjuntos-2026-11-16/logs/). Solo se copiaron textos: se sustituyeron prefijos de rutas locales por `<WORKTREE>`, `<HOME>` o `<TMP>` se quitaron espacios finales y líneas vacías de borde, y se revisaron patrones de tokens. No se copiaron trazas binarias ni perfiles de usuario.
 
 | Bloque | Evidencia roja | Evidencia verde |
 |---|---|---|
@@ -94,6 +96,7 @@ Los recuentos de cada fila son los de su ejecución enfocada; se solapan y **no 
 | Códigos internos sin falsas cadenas de interfaz | [unit-full-76d80dc.log](prj02a-conjuntos-2026-11-16/logs/unit-full-76d80dc.log): 1 falla en i18n-pending, 2.837 pasan y 1 se omite | [i18n-code-builder-green.log](prj02a-conjuntos-2026-11-16/logs/i18n-code-builder-green.log): 48 pasan; suite completa posterior 2.838 pasan y 1 se omite |
 | Fixture estable con checkout CRLF | [fixture-checkout-red.log](prj02a-conjuntos-2026-11-16/logs/fixture-checkout-red.log): simulación autocrlf produce 220 B y SHA distinto | [fixture-checkout-green.log](prj02a-conjuntos-2026-11-16/logs/fixture-checkout-green.log): misma simulación conserva 211 B y SHA de referencia |
 | Tres niveles de cadena encuadrados | [capture-chain-red.log](prj02a-conjuntos-2026-11-16/logs/capture-chain-red.log): padre queda fuera del viewport en en-XA | [capture-chain-green.log](prj02a-conjuntos-2026-11-16/logs/capture-chain-green.log): 2 E2E pasan, es/en-XA, con ancho lateral 420 y ocho capturas renovadas |
+| Borrador restaurado frente a definición externa nueva | [draft-conflict-red.log](prj02a-conjuntos-2026-11-16/logs/draft-conflict-red.log): 1 E2E falla; no aparecía la confirmación | `ui-26-draft-conflict-green.log`: en ejecución al corte; pendiente, sin verde atribuido |
 
 [engine/06-integrity-regression.log](prj02a-conjuntos-2026-11-16/logs/engine/06-integrity-regression.log) y [engine/10-manual-negative-regression.log](prj02a-conjuntos-2026-11-16/logs/engine/10-manual-negative-regression.log) son regresiones que ya pasaban al añadirse: no se inventa un rojo. El último registra 30 casos de motor, incluyendo cadenas manuales repetidas, semilla negativa, CRLF/CR, UTF-16/BOM, win1252, números exactos y valores ausentes. Los vectores de semilla 0/7 están documentados antes del motor; la referencia negativa separada se conserva en `engine/negative-reference.py/.txt` y no importa el producto. La referencia independiente de semilla 7 y su desarrollo matemático están en `docs/stories/prj02-semantica-1*.md` y `experiments/prj02-reference/`.
 
@@ -113,7 +116,9 @@ Entorno local: macOS Apple silicon, Node de ejecución de comandos 24.22.1. No s
 | `node node_modules/playwright/cli.js test tests/e2e/project-subsets.spec.ts --project=csv --workers=1 --retries=0` | `76d80dc`: **25/25**, 33,6 s, sin `retry #1` | [ui-25-76d80dc.log](prj02a-conjuntos-2026-11-16/logs/ui-25-76d80dc.log) |
 | Recaptura enfocada de cadena, es/en-XA | App de `9e20cc7` con ajuste solo del test, posteriormente commit `44cd46d`: **2/2**, 4,1 s | [capture-chain-green.log](prj02a-conjuntos-2026-11-16/logs/capture-chain-green.log) |
 | `node node_modules/playwright/cli.js test tests/e2e/project-subsets-perf.spec.ts --project=csv --workers=1 --retries=0` | `44cd46d`: **3/3**, 33,9 s, sin `retry #1` | [perf-arm-final.log](prj02a-conjuntos-2026-11-16/logs/perf-arm-final.log) |
-| Suite E2E completa | En ejecución sobre `44cd46d` al cerrar este documento; **pendiente**, sin resultado atribuido | Resultado posterior en el PR |
+| Check tras el ajuste de borrador restaurado | 0 errores y 0 avisos de Svelte; TypeScript no informa errores | [check-draft-conflict.log](prj02a-conjuntos-2026-11-16/logs/check-draft-conflict.log) |
+| Build tras el ajuste de borrador restaurado | Finalizado correctamente | [build-draft-conflict.log](prj02a-conjuntos-2026-11-16/logs/build-draft-conflict.log) |
+| Suite E2E completa anterior, `44cd46d` | Interrumpida voluntariamente: **106 aprobadas, 1 omitida, 588 sin ejecutar y 1 interrumpida**; no constituye un fallo confirmado del producto ni una suite verde | [e2e-full-44cd46d.log](prj02a-conjuntos-2026-11-16/logs/e2e-full-44cd46d.log) |
 
 La única omisión de la suite unitaria local corresponde al caso exclusivo de Windows de `tests/package-smoke.test.ts`, condicionado por plataforma. No se añadió ninguna omisión para PRJ-02a. Pandoc real 3.12.1 estuvo disponible; el log advierte que ese binario no tiene soporte HTTP: no se atribuye a esta corrida una comprobación de eficacia del aislamiento HTTP con un binario que sí lo tenga.
 
@@ -162,11 +167,15 @@ Esto habilita continuar el desarrollo; **no cumple la aceptación de una corrida
 
 ## Pendiente / no verificado
 
-1. Suite E2E completa de integración sobre el producto congelado: en ejecución al cerrar esta evidencia. Registrar su resultado real posteriormente en el PR.
+1. Repetir la suite E2E completa de integración sobre el producto congelado y completar la nueva ejecución unitaria integral tras el ajuste de interfaz. La enfocada posterior ya pasó 26/26 sin reintentos. La ejecución de `44cd46d` se detuvo voluntariamente, no terminó en verde y no demuestra un fallo genuino. Registrar el resultado posterior en el PR.
 2. CI de las tres plataformas del PR sobre el head final. No existe todavía un resultado atribuido a PRJ-02a; no transferir verdes del main previo ni de otros SHA.
 3. Medición de 1 GB en Intel y comparación con ARM; corrida Intel completa del producto final sin `retry #1`. El requisito sigue abierto.
 4. Empaquetado y compatibilidad de esta función en Windows/Linux/Intel: no demostrados por los comandos locales anteriores. La simulación CRLF no sustituye Windows real.
 5. No se ejecutó una auditoría completa de seguridad ni traza de syscalls; no se midió un pico continuo entre muestras o disco frío, ni latencia independiente desde Cancelar.
 6. PRJ-02b, análisis/exportación del conjunto y resultados físicos permanecen fuera de alcance. Esta entrega no fusiona, publica ni actualiza la app instalada.
 
-Los logs y capturas demuestran los casos locales indicados. La validación pendiente impide declarar cumplidos todos los criterios multiplataforma de PRJ-02a. Los resultados remotos posteriores se consignarán en el PR sin modificar este documento solo para actualizar estados.
+Los logs y capturas demuestran los casos locales indicados. La validación pendiente impide declarar cumplidos todos los criterios multiplataforma de PRJ-02a. Las comprobaciones unitarias, E2E y de rendimiento anteriores conservan el SHA atribuido: no se trasladan en silencio al ajuste posterior de borrador. Los resultados posteriores se consignarán en el PR sin modificar este documento solo para actualizar estados.
+
+## Última comprobación antes de congelar el PR
+
+La corrección `5c67e93` pasó los 26 recorridos de `project-subsets.spec.ts`, sin reintentos: [ui-26-draft-conflict-green.log](prj02a-conjuntos-2026-11-16/logs/ui-26-draft-conflict-green.log). Dos cierres usaron la terminación de respaldo existente del ayudante tras cinco segundos; las aserciones terminaron aprobadas. Check y build posteriores están arriba. Las unitarias completas y E2E completas posteriores se registrarán con su resultado real en el PR; sus procesos todavía no habían finalizado al congelar este documento.
