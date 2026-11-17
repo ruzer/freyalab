@@ -209,13 +209,13 @@
   const project=activeProject
   if(!project||subsetAnalysisJob||!recipe.executable)return
   const existing=documents.find(doc=>doc.analysisSubset?.projectId===project.id&&doc.analysisSubset.recipeId===recipe.id)
-  if(existing){await openAnalysis(existing.id);return}
   const job={requestId:crypto.randomUUID(),projectId:project.id,cancelled:false,bytesRead:0,scanned:0,totalBytes:projectSources.find(source=>source.id===recipe.rootSourceId)?.bytes??0}
   subsetAnalysisJob=job
   try{
    const snapshot=await window.freya.projectRecipeAnalyze(project.id,recipe.id,job.requestId)
    if(subsetAnalysisJob?.requestId!==job.requestId||subsetAnalysisJob.cancelled||activeProject?.id!==project.id||activeProject.path!==project.path){await window.freya.close(snapshot.id);return}
    merge(snapshot,false);await openAnalysis(snapshot.id)
+   if(existing)await close(existing.id)
   }catch(cause){if(subsetAnalysisJob?.cancelled)notify(t('subset.analysis.cancelled'));else error(cause instanceof Error?cause.message:String(cause))}
   finally{if(subsetAnalysisJob?.requestId===job.requestId)subsetAnalysisJob=null}
  }

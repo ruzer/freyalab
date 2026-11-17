@@ -10,7 +10,7 @@ Los registros originales de desarrollo se conservan fuera del repositorio, agrup
 
 ## Qué cambia y qué se conserva
 
-- «Analizar» ejecuta la cadena guardada y abre una pestaña analítica de solo lectura, con Información, Estadísticas, Gráficos y SQL existentes. El snapshot completo permanece en el proceso de datos; la vista previa de cien filas no se usa como fuente del análisis. No se crea un CSV intermedio ni otro motor.
+- «Analizar» vuelve a ejecutar la cadena guardada y abre una pestaña analítica de solo lectura, con Información, Estadísticas, Gráficos y SQL existentes. El snapshot completo permanece en el proceso de datos; la vista previa de cien filas no se usa como fuente del análisis. No se crea un CSV intermedio ni otro motor.
 - Se aplican los límites existentes a la **fuente raíz antes de filtrar, seleccionar o muestrear**: 256 MiB, dos millones de filas, ocho millones de celdas y 200 columnas. Una muestra pequeña no permite saltarlos. No se amplían límites ni dependencias.
 - Analizar recorre la raíz completa, comprueba estructura y huella y solo publica un resultado íntegro. En «Probar», primeras N conserva su lectura parcial y no afirma una huella completa. Cancelar o cambiar proyecto, fuente o definición descarta el resultado obsoleto y libera sus recursos.
 - Se preservan ausencias frente a cadenas vacías, ceros iniciales, identificadores largos, Unicode, campos multilínea y orden del motor. El snapshot no permite editar, deshacer, guardar, serializar el CSV bruto ni acceder a imágenes o bibliografía por un id sin ruta.
@@ -20,6 +20,14 @@ Los registros originales de desarrollo se conservan fuera del repositorio, agrup
 ### Aclaración aprobada sobre proyectos futuros
 
 El propietario autorizó extender a «Analizar» la excepción de **conjuntos v1 íntegramente reconocidos en proyectos de versión futura**. Se permite la ejecución en memoria y se conservan los bytes del manifiesto futuro. Una semántica, paso o cadena desconocidos siguen bloqueados; el proyecto futuro permanece de solo lectura. Esto no autoriza migrar, reescribir ni guardar el proyecto futuro.
+
+### Reejecución después de guardar cambios
+
+La revisión final detectó una caché incorrecta por id: tras cambiar los pasos propios o una base, «Analizar» reabría el snapshot anterior sin ejecutar el motor. Se eliminó ese atajo. Pulsar «Analizar» vuelve a preparar los datos actuales y solo al éxito sustituye el snapshot previo; error y cancelación conservan el anterior. Navegar a una pestaña ya abierta no vuelve a ejecutar.
+
+La reproducción E2E con definición y nombre actualizados falló en ambos casos (`reexecute-red-actual.log`). El arreglo mínimo de dos líneas pasó las dos variantes tres veces: **6/6, 8,2 s, cero reintentos**, `reexecute-green.log`; se comprueban una fila, Edad 61, nombre actual, liberación del snapshot anterior y bytes de fuente/manifiesto intactos después del guardado intencional. La primera versión del escenario tenía dos errores de montaje (no esperaba la pestaña inicial y usaba posición proyectada en vez de la referencia raíz); esa salida no se cuenta como rojo del producto.
+
+La suite local sobre `fba72e9` se detuvo voluntariamente al encontrarlo: 453 pasan, 7 omisiones de plataforma, 1 interrumpida y 248 no ejecutadas; **no fue una ejecución completa ni un fallo del producto**. Se cancelaron las corridas remotas 44153467908 y 44154068152 del SHA anterior para no consumir recursos calificando código sustituido. Sus resultados no se transfieren. Se inicia de nuevo la suite completa sobre las fuentes corregidas.
 
 ## Rojo → verde por bloque
 
@@ -54,8 +62,8 @@ Entorno de las E2E medidas: macOS ARM64, Apple M2 Max, 12 CPU lógicas, 32 GiB, 
 
 | Comando / selección | Resultado real consultado | Alcance temporal |
 | --- | --- | --- |
-| `npm run check` | **0 errores y 0 avisos**; `check-closure.log` | Después de todos los cambios de producto |
-| `npm test` | **162 archivos; 2.933 pasan y 1 omisión; 19,37 s**; `unit-closure.log` | Después del ajuste de huellas y de todos los cambios de producto |
+| `npm run check` | **0 errores y 0 avisos**; `check-reexecute-final.log` | Después de todos los cambios de producto |
+| `npm test` | **162 archivos; 2.933 pasan y 1 omisión; 21,00 s**; `unit-reexecute-final.log` | Después del ajuste de huellas y de la reejecución de conjuntos editados |
 | `npm run build` | **Finalizó correctamente**; `build-closure.log`: renderer 2,76 s | Después de todos los cambios; no es una prueba del paquete ni del instalador |
 | `npm test -- tests/chart-result.test.ts` | 10/10; rojo previo 3 fallos; `chart-context/{red,green}.log` | Subbloque de procedencia |
 | `node_modules/.bin/vitest run tests/subset-summary.test.ts tests/subset-i18n.test.ts tests/subset-coverage.test.ts` | 45/45, 209 ms; `all-focused-green.log` | Subbloque de textos y cobertura |

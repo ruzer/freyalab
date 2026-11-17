@@ -237,6 +237,39 @@ test('PRJ-02b: cancelar la preparación no publica un análisis parcial ni escri
  expect(await readFile(join(folder,'proyecto.freyalab'))).toEqual(before)
 })
 
+for(const inherited of [false,true])test(`PRJ-02b: Analizar ejecuta los cambios guardados ${inherited?'de una base':'del conjunto'} y su nombre actual`,async()=>{
+ await registeredSubset()
+ const name=inherited?'Adultos ordenados':'Oaxaca, adultos'
+ if(inherited)await page.evaluate(async()=>{
+  const {project,recipes}=await window.freya.projectState()
+  await window.freya.projectSaveRecipe(project!.id,{name:'Adultos ordenados',baseRecipeId:recipes[0].id,steps:[{op:'order',by:[{column:{position:3,name:'Edad'},descending:true,numeric:true}]}]})
+ })
+ await subsetRow(name).locator(':scope > .actions').getByRole('button',{name:tr('analysis.tab.open'),exact:true}).press('Enter')
+ await expect(page.getByRole('tab',{name:t('analysis.tab.label',{name},locale),exact:true})).toBeVisible()
+ const first=(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.analysisSubset)!
+ expect(first.rowCount).toBe(3)
+ await page.evaluate(async name=>{
+  const {project,recipes}=await window.freya.projectState(),recipe=recipes.find(value=>value.name==='Oaxaca, adultos')!
+  await window.freya.projectSaveRecipe(project!.id,{id:recipe.id,name:recipe.name,sourceId:recipe.rootSourceId,steps:[
+   {op:'filter',mode:'all',conditions:[{column:{position:2,name:'Entidad'},op:'equals',value:'Oaxaca',caseSensitive:false},{column:{position:3,name:'Edad'},op:'greaterEqual',value:'60',caseSensitive:false}]},
+   {op:'select',columns:[{position:1,name:'ID'},{position:3,name:'Edad'},{position:5,name:'Nota'}]}
+  ]})
+  const current=(await window.freya.projectState()).recipes.find(value=>value.name===name)!
+  await window.freya.projectRenameRecipe(project!.id,current.id,name+' actualizado')
+ },name)
+ const manifest=await readFile(join(folder,'proyecto.freyalab'))
+ await page.getByRole('button',{name:tr('subset.analysis.return'),exact:true}).press('Enter')
+ await subsetRow(name+' actualizado').locator(':scope > .actions').getByRole('button',{name:tr('analysis.tab.open'),exact:true}).press('Enter')
+ const tab=page.getByRole('tab',{name:t('analysis.tab.label',{name:name+' actualizado'},locale),exact:true})
+ await expect(tab).toBeVisible()
+ await expect.poll(async()=>{const docs=await page.evaluate(()=>window.freya.documents());return docs.filter(doc=>doc.analysisSubset).map(doc=>({rows:doc.rowCount,name:doc.analysisSubset!.name}))}).toEqual([{rows:1,name:name+' actualizado'}])
+ const documents=await page.evaluate(()=>window.freya.documents()),current=documents.find(doc=>doc.analysisSubset)!
+ expect(current.id).not.toBe(first.id);expect(documents.some(doc=>doc.id===first.id)).toBe(false)
+ expect((await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:92}),current.id)).rows.map(row=>row.cells[1])).toEqual(['61'])
+ expect((await readFile(source)).equals(original)).toBe(true)
+ expect(await readFile(join(folder,'proyecto.freyalab'))).toEqual(manifest)
+})
+
 test('PRJ-02b: dos reaperturas superpuestas liberan el snapshot una vez y publican el último proyecto',async()=>{
  // Fronteras nativas de prueba: se retiene solo close(snapshot A). No cambia IPC ni producto.
  await app.evaluate(({utilityProcess})=>{
