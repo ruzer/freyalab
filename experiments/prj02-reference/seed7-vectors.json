@@ -1,0 +1,190 @@
+{
+  "semantics": 1,
+  "seed": 7,
+  "source": "prj02-censo-reference.csv",
+  "sourceBytes": 211,
+  "sourceSha256": "bde31aec296f4b09823b940e59f4cf1cdf4cddf66882578d3128d3fff2aa8bb8",
+  "words": [
+    {
+      "position": 1,
+      "state": "9e3779b97f4a7c1c",
+      "firstProduct": "2982a8f15bf3baf1",
+      "secondProduct": "63cbe1e49ea5ce1e",
+      "word": "63cbe1e459320dd7",
+      "decimal": "7191089600892374487"
+    },
+    {
+      "position": 2,
+      "state": "3c6ef372fe94f831",
+      "firstProduct": "da33f6679f0ea3aa",
+      "secondProduct": "044c3cd7fca41fb3",
+      "word": "044c3cd7f43c661c",
+      "decimal": "309689372594955804"
+    },
+    {
+      "position": 3,
+      "state": "daa66d2c7ddf7446",
+      "firstProduct": "6cf92923fcba657f",
+      "secondProduct": "e69840817781ab00",
+      "word": "e6984080bab12a02",
+      "decimal": "16616101746815609346"
+    },
+    {
+      "position": 4,
+      "state": "78dde6e5fd29f05b",
+      "firstProduct": "ce9cc3c2ba59626c",
+      "secondProduct": "953aeb714d4bff29",
+      "word": "953aeb70673e29cb",
+      "decimal": "10753165928301472203"
+    },
+    {
+      "position": 5,
+      "state": "1715609f7c746c70",
+      "firstProduct": "e20d7587020aa865",
+      "secondProduct": "73d33b668db85717",
+      "word": "73d33b666a1e21da",
+      "decimal": "8346079845500723674"
+    },
+    {
+      "position": 6,
+      "state": "b54cda58fbbee885",
+      "firstProduct": "6b9c7ffb124d9d36",
+      "secondProduct": "3fdabe86b40bd71c",
+      "word": "3fdabe86cbbeaa11",
+      "decimal": "4601199455465548305"
+    },
+    {
+      "position": 7,
+      "state": "538454127b09649a",
+      "firstProduct": "9c3ce28d25aaeb7b",
+      "secondProduct": "77cbc4a1dc5559b5",
+      "word": "77cbc4a133c2d0f6",
+      "decimal": "8632209307422871798"
+    }
+  ],
+  "reservoirRows3": {
+    "initialPositions": [
+      1,
+      2,
+      3
+    ],
+    "steps": [
+      {
+        "inputPosition": 4,
+        "word": "63cbe1e459320dd7",
+        "decimal": "7191089600892374487",
+        "limit": "18446744073709551616",
+        "quotient": "1797772400223093621",
+        "remainder": 3,
+        "before": [
+          1,
+          2,
+          3
+        ],
+        "after": [
+          1,
+          2,
+          3
+        ],
+        "replaced": false
+      },
+      {
+        "inputPosition": 5,
+        "word": "044c3cd7f43c661c",
+        "decimal": "309689372594955804",
+        "limit": "18446744073709551615",
+        "quotient": "61937874518991160",
+        "remainder": 4,
+        "before": [
+          1,
+          2,
+          3
+        ],
+        "after": [
+          1,
+          2,
+          3
+        ],
+        "replaced": false
+      },
+      {
+        "inputPosition": 6,
+        "word": "e6984080bab12a02",
+        "decimal": "16616101746815609346",
+        "limit": "18446744073709551612",
+        "quotient": "2769350291135934891",
+        "remainder": 0,
+        "before": [
+          1,
+          2,
+          3
+        ],
+        "after": [
+          6,
+          2,
+          3
+        ],
+        "replaced": true
+      },
+      {
+        "inputPosition": 7,
+        "word": "953aeb70673e29cb",
+        "decimal": "10753165928301472203",
+        "limit": "18446744073709551614",
+        "quotient": "1536166561185924600",
+        "remainder": 3,
+        "before": [
+          6,
+          2,
+          3
+        ],
+        "after": [
+          6,
+          2,
+          3
+        ],
+        "replaced": false
+      }
+    ],
+    "finalSlots": [
+      6,
+      2,
+      3
+    ],
+    "outputPositions": [
+      2,
+      3,
+      6
+    ],
+    "outputIds": [
+      "00124",
+      "9007199254740993",
+      "00128"
+    ]
+  },
+  "percent50": {
+    "threshold": "9223372036854775808",
+    "thresholdHex": "8000000000000000",
+    "comparison": "unsigned hash < threshold",
+    "outputPositions": [
+      1,
+      2,
+      5,
+      6,
+      7
+    ],
+    "outputIds": [
+      "00123",
+      "00124",
+      "00127",
+      "00128",
+      "00129"
+    ]
+  },
+  "verification": {
+    "referenceWords": 7,
+    "sameAsC": true,
+    "productCodeImported": false,
+    "productEngineExecuted": false
+  }
+}
