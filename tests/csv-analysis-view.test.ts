@@ -2,6 +2,15 @@ import {expect,it} from 'vitest'
 import {csvAnalysisQueryReady,csvAnalysisSample,csvAnalysisViews,emptyCsvAnalysisView} from '../src/renderer/lib/csv-analysis-view'
 import type {DocumentInfo,TableQuery} from '../src/shared/types'
 
+it('el conjunto analítico conoce sus tres filas completas sin montar la tabla original',()=>{
+ const doc={id:'subset',revision:0,readonly:true,rowCount:3,analysisSubset:{recipeId:'adults'}} as DocumentInfo
+ const view=emptyCsvAnalysisView(doc)
+ expect(view.queryValid).toBe(true)
+ expect(view.viewMeta.matched).toBe(3)
+ expect(csvAnalysisSample(doc,view.viewMeta)).toBe(false)
+ expect(csvAnalysisQueryReady(doc,view.query,view.viewMeta)).toBe(true)
+})
+
 it('mantiene la consulta y la selección separadas por CSV hasta que se cierre el documento',()=>{
  const a={id:'one',revision:3,readonly:false} as DocumentInfo
  const b={id:'two',revision:5,readonly:true} as DocumentInfo

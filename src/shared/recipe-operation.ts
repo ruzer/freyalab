@@ -11,11 +11,16 @@ export interface RecipeOperationResult {
  headers:string[];columns:RecipeColumn[];rows:(string|null)[][]
  scanned:number;eligible:number;resultCount:number;complete:boolean;cancelled:boolean;bytesRead:number;sha256?:string;sampling:RecipeSampling[]
 }
+export interface RecipeAnalysisContext {
+ projectId:string;recipeId:string;sourceId:string;name:string;sourceName:string;steps:RecipeStep[];stepOwners:string[]
+ coverage:Omit<RecipeOperationResult,'rows'>&{sourceVersionDifferent?:boolean}
+}
+export interface RecipeAnalysisPrepared {coverage:Omit<RecipeOperationResult,'rows'>}
 export interface RecipeOperationProgress {bytesRead:number;scanned:number;totalBytes:number}
 export interface RecipeOperationHooks {
  cancelled?:()=>boolean;progress?:(progress:RecipeOperationProgress)=>void;batchRecords?:number;chunk?:number
 }
-export type RecipeOperationErrorCode='schema'|'columns'|'plan'|'changed'|'csv'|'encoding'|'counter'|'unavailable'
+export type RecipeOperationErrorCode='schema'|'columns'|'plan'|'changed'|'csv'|'encoding'|'counter'|'unavailable'|'analysis-limit'|'analysis-structure'
 export class RecipeOperationError extends Error {
  constructor(readonly code:RecipeOperationErrorCode,readonly data:Record<string,unknown>={}){super(code);this.name='RecipeOperationError'}
 }

@@ -1,6 +1,6 @@
 import type {ProjectInfo,ProjectRecent,ProjectSourceDraft,ProjectSourceView} from './project'
 import type {ProjectRecipeDraft,ProjectRecipeView} from './project-recipes'
-import type {RecipeOperationResult,RecipeOperationProgress} from './recipe-operation'
+import type {RecipeOperationResult,RecipeOperationProgress,RecipeAnalysisContext} from './recipe-operation'
 import type {ChartConfiguration,ChartPreset} from './chart-presets'
 import type {LanguagePreference,LanguageState} from './i18n'
 import type {ApplicationInfo} from './app-info'
@@ -18,7 +18,7 @@ export type CsvViewDecision='save'|'discard'
 export interface CsvOpenError {path:string;name:string;message:string;reportedLine?:number;byteLength:number;textAllowed:boolean}
 export const CSV_TEXT_LIMIT=10*1024*1024
 export function isTableDocument(document:Pick<DocumentInfo,'kind'|'csvView'>){return document.kind==='csv'&&document.csvView!=='text'}
-export interface DocumentInfo { projectSource?:'protected'|'closed'; id:string; name:string; path:string|null; kind:Kind; csvView?:CsvView;byteLength?:number;text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:TextEncoding; bom?:boolean; encodingPending?:boolean; delimiter:string; headers?:string[]; hasHeader?:boolean; rowCount?:number; large?:boolean; extract?:ExtractOrigin }
+export interface DocumentInfo { analysisSubset?:RecipeAnalysisContext; projectSource?:'protected'|'closed'; id:string; name:string; path:string|null; kind:Kind; csvView?:CsvView;byteLength?:number;text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:TextEncoding; bom?:boolean; encodingPending?:boolean; delimiter:string; headers?:string[]; hasHeader?:boolean; rowCount?:number; large?:boolean; extract?:ExtractOrigin }
 export type AssetChange={from:number;to:number;insert:string}
 export type SaveOutcome=DocumentInfo&{assets?:{copied:number;warnings:string[];changes:AssetChange[]}}
 export interface TreeEntry { name:string; path:string; directory:boolean }
@@ -61,7 +61,7 @@ export interface ColumnAnalysis {
 export type ColumnOverviewResult=Pick<ColumnAnalysis,'profile'|'revision'|'sample'|'filtered'|'cells'|'empty'|'missing'|'whitespace'|'numeric'|'unique'|'extraDuplicates'>
 export type ColumnOverviewRow={column:number;name:string}&({result:ColumnOverviewResult}|{error:string})
 export interface SqlRequest {requestId:string;sources:{id:string;revision:number;query?:TableQuery;where?:TableConditionGroup}[];sql:string}
-export interface SqlSource {id:string;name:string;revision:number;table:string;columns:{name:string;original:string;index:number}[];rows:number;fromDisk:boolean;large?:boolean;filtered?:boolean;where?:TableConditionGroup}
+export interface SqlSource {analysisSubset?:RecipeAnalysisContext;id:string;name:string;revision:number;table:string;columns:{name:string;original:string;index:number}[];rows:number;fromDisk:boolean;large?:boolean;filtered?:boolean;where?:TableConditionGroup}
 export interface SqlResult {requestId:string;sources:SqlSource[];version:string;columns:{name:string;type:string}[];rows:(string|null)[][];returnedRows:number;limited:boolean;offset:number;completedAt:string}
 export interface SqlProgress {requestId:string;phase:string;rows:number}
 export type ProjectSourceOptions=TableOptions&{eol?:'\n'|'\r'|'\r\n'}
@@ -113,6 +113,7 @@ export interface FreyaAPI {
  projectOpenSource(sourceId:string):Promise<DocumentInfo|null>; projectShowSource(sourceId:string):Promise<void>; projectForgetSource(projectId:string,sourceId:string):Promise<void>;
  projectRelinkSource(projectId:string,sourceId:string,requestId:string):Promise<boolean>; projectCancelSource(requestId:string):Promise<void>;
  projectRecipeTry(projectId:string,draft:ProjectRecipeDraft,requestId:string):Promise<RecipeOperationResult&{sourceVersionDifferent:boolean}>;projectRecipeCancel(requestId:string):Promise<void>;
+ projectRecipeAnalyze(projectId:string,recipeId:string,requestId:string):Promise<DocumentInfo>;
  projectSaveRecipe(projectId:string,draft:ProjectRecipeDraft):Promise<boolean>;projectRenameRecipe(projectId:string,recipeId:string,name:string):Promise<boolean>;projectRemoveRecipe(projectId:string,recipeId:string):Promise<boolean>;
  onEvent(callback:(event:AppEvent)=>void):()=>void; droppedPaths(files:File[]):string[]
 }

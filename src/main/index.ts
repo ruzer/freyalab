@@ -83,7 +83,14 @@ async function publishProject(){
  const [recents,paths]=await Promise.all([projects.recents(),projectSources.protectedPaths()])
  if(generation!==projectPublishGeneration)return
  const closing=!!publishedProject&&(project?.id!==publishedProject.id||project?.path!==publishedProject.path||project?.version!==publishedProject.version||project?.readonly!==publishedProject.readonly)
- if(closing)await projectSubsets.cancelCurrent()
+ if(closing){
+  await projectSubsets.cancelCurrent()
+  if(generation!==projectPublishGeneration)return
+  for(const record of [...docs.records.values()])if(record.info.analysisSubset){
+   const id=record.info.id;analytics.forget(id)
+   await docs.close(id).catch(error=>{if(docs.records.has(id))throw error})
+  }
+ }
  if(generation!==projectPublishGeneration)return
  publishedProject=project;menuProjectRecents=recents
  docs.setProjectSources(paths,closing)
@@ -276,6 +283,7 @@ async function handle(operation:string,args:unknown[]){
  }
  case'project:cancelSource':{const[request]=z.tuple([id]).parse(args);if(projectSourceJob?.requestId===request)projectSourceJob.controller.abort();return}
  case'project:recipeTry':{const[project,draft,request]=z.tuple([z.string().min(1).max(100),projectRecipeDraft,id]).parse(args);try{return await projectSubsets.try(project,draft,request)}finally{await refreshProjectSources()}}
+ case'project:recipeAnalyze':{const[project,recipe,request]=z.tuple([z.string().min(1).max(100),z.string().min(1).max(100),id]).parse(args);try{return await projectSubsets.analyze(project,recipe,request)}finally{await refreshProjectSources()}}
  case'project:recipeCancel':{const[request]=z.tuple([id]).parse(args);return projectSubsets.cancel(request)}
  case'project:saveRecipe':{const[project,draft]=z.tuple([z.string().min(1).max(100),projectRecipeDraft]).parse(args);const saved=await projects.saveRecipe(project,draft,keepProjectChanges);await publishProject();return saved}
  case'project:renameRecipe':{const[project,recipe,name]=z.tuple([z.string().min(1).max(100),z.string().min(1).max(100),projectName]).parse(args);const saved=await projects.renameRecipe(project,recipe,name,keepProjectChanges);await publishProject();return saved}
@@ -355,7 +363,7 @@ app.whenReady().then(async()=>{
   if(event.type==='external'&&event.id&&docs.records.has(event.id)&&docs.info(event.id).projectSource==='protected')void refreshProjectSources().catch(()=>{})
  })
  projectSources=new ProjectSourceRegistry(projects,path=>docs.allowed(path),path=>docs.assertProjectSourceClean(path),path=>[...docs.records.values()].find(record=>record.info.path===path)?.info)
- projectSubsets=new ProjectSubsets(projects,projectSources,docs.table)
+ projectSubsets=new ProjectSubsets(projects,projectSources,docs.table,docs)
  docs.table.recipeProgress=recipeProgress=>window?.webContents.send('freya:event',{type:'project-recipe-progress',recipeProgress})
  if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_PANDOC_PATH)docs.pandocPath=process.env.FREYALAB_TEST_PANDOC_PATH
  void menuPandoc.refresh().catch(error=>window?.webContents.send('freya:event',{type:'error',message:error.message}))

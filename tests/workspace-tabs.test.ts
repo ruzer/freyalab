@@ -2,6 +2,12 @@ import {describe,expect,it} from 'vitest'
 import {closeDocumentAnalysis,openAnalysisTab,workspaceTabs} from '../src/renderer/lib/workspace-tabs'
 
 describe('pestañas de análisis',()=>{
+ it('un conjunto solo muestra su pestaña analítica y conserva los documentos normales',()=>{
+  const subset=openAnalysisTab([],{documentId:'subset'},'info')
+  const documents=[{id:'one'},{id:'subset',analysisSubset:{recipeId:'adults'}}]
+  expect(workspaceTabs(documents,subset.tabs)).toEqual([{type:'document',id:'one'},subset.tab])
+  expect(workspaceTabs(documents,[])).toEqual([{type:'document',id:'one'}])
+ })
  it('se abren a la derecha del documento y se reutilizan por origen',()=>{
   const first=openAnalysisTab([],{documentId:'one'},'info')
   const again=openAnalysisTab(first.tabs,{documentId:'one'},'charts')

@@ -19,10 +19,12 @@ import type {EngineOperation,OperationResult} from '../shared/operations'
 import {analyzeColumn,numeric,descriptive} from './table-analysis'
 import type {CalculatedColumnPreview,ColumnAnalysisRequest,ColumnAnalysis,ColumnProfileRequest,ColumnProfileHint,TableTransformEdit,TableTransformPreview,TableEmptyEdit,TableEmptyPreview,SqlProgress} from '../shared/types'
 import {CalculationError,readCalculationError,type CalculateColumnEdit,type CalculatedValue} from '../shared/calculated-column'
+import {t} from '../shared/i18n'
+import {RecipeOperationError,type RecipeOperationResult,type RecipeOperationSource} from '../shared/recipe-operation'
 import type { Encoding, TableEdit, TableExport, TableOptions, TablePage, TableQuery, TableConditionGroup, TableRow, TableStats, TableRange, TableRangeEdit, TableRangePreview,TableStatsOptions,LargeViewRequest } from '../shared/types'
 
 export const TABLE_LIMITS = { bytes: 50 * 1024 * 1024, cells: 2_000_000, record: 1024 * 1024, sampleBytes: 8 * 1024 * 1024, sampleRows: 200 }
-interface State extends Metadata { columnIds:number[]; nextColumn:number; rows: TableRow[]; headers: string[]; readonly: boolean; warning?: string; revision: number; nextId: number; token: number; savedToken: number; history: Change[]; future: Change[]; large?: {index:LargeIndex;rowCount:number} }
+interface State extends Metadata { columnIds:number[]; nextColumn:number; rows: TableRow[]; headers: string[]; readonly: boolean; analysisOnly?:boolean; warning?: string; revision: number; nextId: number; token: number; savedToken: number; history: Change[]; future: Change[]; large?: {index:LargeIndex;rowCount:number} }
 type Mutation = {type:'rowOrder'|'columnOrder';order:number[]} | { type: 'cell'; id: string; column: number; value: string; length?:number } | { type: 'header'; column: number; value: string; headerWidth?:number } | { type: 'rows'; index: number; remove: number; rows: TableRow[] } | { type: 'column'; index: number; remove: boolean; name: string; cells: string[]; headerWidth?:number; lengths?:number[]; columnId?:number }
 interface Change { forward: Mutation[]; backward: Mutation[]; before: number; after: number; bytes:number }
 interface CsvSource {path:string;hash:string}
@@ -46,7 +48,7 @@ function fieldOrigins(s:State,original:OriginalBytes|undefined):(number|null)[]{
 }
 class LimitError extends Error {}
 class UndoLimitError extends Error {}
-function copyRow(row: TableRow): TableRow { return { id: row.id, cells: [...row.cells] } }
+function copyRow(row: TableRow): TableRow { return { id: row.id, cells: row.cells.slice() } }
 function permutation(order:number[],size:number){if(!Array.isArray(order)||order.length!==size||new Set(order).size!==size||order.some(index=>!Number.isSafeInteger(index)||index<0||index>=size))throw new Error('La secuencia de posiciones no es válida.');return order}
 function preservesMissing(order:number[],length:number){for(let i=0;i<length;i++)if(order[i]>=length)return false;return true}
 function recordBytes(record:string[],encoding:Encoding,delimiter:string){return record.reduce((total,field)=>total+(encoding==='utf8'?Buffer.byteLength(field,'utf8'):field.length*(encoding==='utf16le'?2:1))+delimiter.length,0)}
@@ -68,7 +70,21 @@ export class TableEngine {
  private serial = 0
  // Un archivo grande no tiene `rows` en memoria: todo lo que lea o cambie datos debe rechazarlo (solo `info` y `page` lo admiten).
  private get(id: string, allowLarge = false): State { const s = this.states.get(id); if (!s) throw new Error('La tabla ya no está abierta.'); if (s.large && !allowLarge) throw new Error('Esta función aún no está disponible en archivos grandes (solo lectura): el orden, las estadísticas y la edición llegan en fases posteriores.'); return s }
- private editable(id: string): State { const s = this.get(id); if (s.readonly) throw new Error('La muestra es de solo lectura.'); return s }
+ private editable(id: string): State { const s = this.get(id); if(s.analysisOnly)throw new Error(t('project.recipe.analysis.readonly'));if (s.readonly) throw new Error('La muestra es de solo lectura.'); return s }
+ async installSubset(id:string,result:RecipeOperationResult,format?:RecipeOperationSource['format']){
+  if(!result.complete||result.cancelled||!result.sha256||result.rows.length!==result.resultCount||result.headers.length<1||result.headers.length>ANALYSIS_LIMITS.columns||result.rows.length>ANALYSIS_LIMITS.rows||result.rows.length*result.headers.length>ANALYSIS_LIMITS.cells)throw new RecipeOperationError('plan',{constraint:'analysis-incomplete'})
+  const rows=result.rows.map((values,index)=>{
+   if(values.length>result.headers.length||values.some(value=>value!==null&&typeof value!=='string'))throw new RecipeOperationError('analysis-structure')
+   const cells:string[]=[]
+   // A hole is absent, while an assigned empty string is an exact empty field. Do not pad short rows.
+   for(let column=0;column<values.length;column++)if(values[column]!==null)cells[column]=values[column]!
+   return{id:String(index+1),cells}
+  })
+  await this.close(id)
+  const width=result.headers.length
+  this.states.set(id,{encoding:format?.encoding??'utf8',delimiter:format?.delimiter??',',eol:format?.eol??'\n',bom:format?.bom??false,header:true,headerWidth:width,finalEol:true,columnIds:result.headers.map((_,index)=>index),nextColumn:width,rows,headers:[...result.headers],readonly:true,analysisOnly:true,revision:0,nextId:rows.length+1,token:0,savedToken:0,history:[],future:[]})
+  return this.info(id)
+ }
  async create(id: string) { await this.diskViews.clear(id);this.openings.set(id,++this.serial);this.views.delete(id);this.queries.delete(id);const revision=(this.states.get(id)?.revision??-1)+1;this.states.set(id, { encoding:'utf8', delimiter:',',eol:'\n',bom:false,header:true,finalEol:true,headerWidth:1,columnIds:[0],nextColumn:1,rows:[],headers:['Columna 1'],readonly:false,revision,nextId:1,token:0,savedToken:-1,history:[],future:[] }); return this.info(id) }
  async open(id: string, path: string, options: TableOptions = {}) {
   await this.diskViews.clear(id)
@@ -176,7 +192,7 @@ export class TableEngine {
   }
   ensure();this.views.set(id,{key,indices});return indices
  }
- async page(id:string,query:TableQuery):Promise<TablePage>{if(!Number.isInteger(query.offset)||query.offset<0||!Number.isInteger(query.limit)||query.limit<1||query.limit>1000)throw new Error('Página no válida.');const s=this.get(id,true);if(s.large)return this.largePage(id,s,query);const revision=s.revision;const indices=await this.indices(id,query);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('Consulta cancelada porque cambió la tabla.');return{rows:indices.slice(query.offset,query.offset+query.limit).map(i=>copyRow(s.rows[i])),total:s.rows.length,matched:indices.length,revision:s.revision,requestId:query.requestId,sample:s.readonly}}
+ async page(id:string,query:TableQuery):Promise<TablePage>{if(!Number.isInteger(query.offset)||query.offset<0||!Number.isInteger(query.limit)||query.limit<1||query.limit>1000)throw new Error('Página no válida.');const s=this.get(id,true);if(s.large)return this.largePage(id,s,query);const revision=s.revision;const indices=await this.indices(id,query);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('Consulta cancelada porque cambió la tabla.');return{rows:indices.slice(query.offset,query.offset+query.limit).map(i=>copyRow(s.rows[i])),total:s.rows.length,matched:indices.length,revision:s.revision,requestId:query.requestId,sample:s.readonly&&!s.analysisOnly}}
  private async rangeRows(id:string,range:TableRange,guard?:()=>void){
   const s=this.get(id),revision=s.revision
   if(range.revision!==revision)throw new Error('La tabla cambió desde que se seleccionó el rango. Vuelve a seleccionarlo.')
@@ -606,14 +622,15 @@ export class TableEngine {
  private async selected(id:string,options:TableExport){const s=this.get(id),revision=s.revision;if(s.readonly)throw new Error('La muestra no permite exportar el archivo ni selecciones.');let indices:number[];if(options.scope==='selection'&&options.range){const selected=await this.rangeRows(id,options.range);return{rows:selected.indices.map(i=>selected.columns.map(col=>s.rows[i].cells[col]??'')),headers:selected.columns.map(col=>s.headers[col])}}if(options.scope==='filtered')indices=await this.indices(id,options.query??{offset:0,limit:500,requestId:0});else if(options.scope==='selection'){const ids=new Set(options.rowIds??[]);indices=s.rows.flatMap((row,i)=>ids.has(row.id)?[i]:[])}else indices=s.rows.map((_,i)=>i);if(this.states.get(id)!==s||s.revision!==revision)throw new Error('La tabla cambió durante la exportación.');const columns=options.columns??s.headers.map((_,i)=>i);if(columns.some(i=>!Number.isInteger(i)||i<0||i>=s.headers.length))throw new Error('Selección de columnas no válida.');return{rows:indices.map(i=>columns.map(col=>s.rows[i].cells[col]??'')),headers:columns.map(col=>s.headers[col])}}
  async analysisStart(id:string,ticket:string,revision:number,path:string|null,query?:TableQuery,where?:TableConditionGroup){
   const s=this.get(id,true);if(s.revision!==revision)throw new Error('La tabla cambió. Vuelve a analizar.');if(s.headers.length>ANALYSIS_LIMITS.columns)throw new Error('El análisis admite hasta 200 columnas por fuente.')
-  if(s.readonly&&!path)throw new Error('La muestra necesita su archivo original para el análisis completo.')
-  if(s.readonly&&query)throw new Error(s.large?'La vista filtrada no está disponible en archivos grandes. Elige documento completo.':'La vista filtrada de una muestra no representa el archivo completo. Elige documento completo.')
+  const fromDisk=s.readonly&&!s.analysisOnly
+  if(fromDisk&&!path)throw new Error('La muestra necesita su archivo original para el análisis completo.')
+  if(fromDisk&&query)throw new Error(s.large?'La vista filtrada no está disponible en archivos grandes. Elige documento completo.':'La vista filtrada de una muestra no representa el archivo completo. Elige documento completo.')
   const ensure=()=>{const active=this.streams.get(ticket);if(!active||this.states.get(id)!==s||s.revision!==revision)throw new Error('Transferencia cancelada: cambió la fuente o la solicitud.')}
   const filter=where?.conditions.length?compileTableQuery({...where,offset:0,limit:1,requestId:0},s.headers.length).matches:undefined
   const indices=()=>this.indices(id,{...query!,order:[],sort:undefined},ensure)
-  const records=s.readonly?fileRecords(path!,s,ensure):(async function*(){for(const index of query?await indices():s.rows.keys()){ensure();yield s.rows[index].cells}})()
+  const records=fromDisk?fileRecords(path!,s,ensure):(async function*(){for(const index of query?await indices():s.rows.keys()){ensure();yield s.rows[index].cells}})()
   this.streams.set(ticket,{id,iterator:arrowBatches(records,s.headers.length,ensure,filter)})
-  return{headers:[...s.headers],revision:s.revision,readonly:s.readonly,large:s.large?true:undefined}
+  return{headers:[...s.headers],revision:s.revision,readonly:fromDisk,large:s.large?true:undefined}
  }
  async analysisNext(ticket:string){const active=this.streams.get(ticket);if(!active)throw new Error('La transferencia ya no está disponible.');try{const chunk=await active.iterator.next();if(chunk.done){this.streams.delete(ticket);return{done:true as const,rows:0}}return{done:false as const,...chunk.value}}catch(error){this.streams.delete(ticket);throw error}}
  async analysisClose(ticket:string){const active=this.streams.get(ticket);this.streams.delete(ticket);await active?.iterator.return().catch(()=>{})}
@@ -630,7 +647,7 @@ export class TableEngine {
    const header=s.headers[request.column]
    if('profileOnly' in request&&request.profileOnly===true)return await analyzeColumn(s.rows,indices,request,ensure,header)
    const result=await analyzeColumn(s.rows,indices,request,ensure,header);ensure()
-   return{...result,revision:s.revision,sample:s.readonly,filtered:!!request.query,column:request.column}
+   return{...result,revision:s.revision,sample:s.readonly&&!s.analysisOnly,filtered:!!request.query,column:request.column}
   }
   finally{if(this.analyses.get(id)===request.requestId)this.analyses.delete(id)}
  }
@@ -658,14 +675,14 @@ export class TableEngine {
     if(ids===null||ids.has(row.id))for(const col of selected){
      if(++cells>TABLE_LIMITS.cells)throw new Error(limitMessage)
      const value=row.cells[col]??'',number=numeric(value);unique.add(value)
-     if(!value.trim()){empty++;if(value.length)whitespace++}if(col>=row.cells.length)missing++
+     if(!value.trim()){empty++;if(value.length)whitespace++}if(!(col in row.cells))missing++
      if(number!==null&&(!Number.isInteger(number)||Number.isSafeInteger(number)))nums.push(number)
      if(cells%512===0)await progress(i+1)
     }
     if(i%2048===0){await yieldTurn();ensure()}
    }
    await progress(range?.indices.length??s.rows.length)
-   const result={...descriptive(nums),cells,empty,missing,whitespace,unique:unique.size,numeric:nums.length,excluded:cells-empty-nums.length,revision,sample:s.readonly}
+   const result={...descriptive(nums),cells,empty,missing,whitespace,unique:unique.size,numeric:nums.length,excluded:cells-empty-nums.length,revision,sample:s.readonly&&!s.analysisOnly}
    await yieldTurn();ensure();return result
   }finally{if(requestId&&this.analyses.get(id)===requestId)this.analyses.delete(id)}
  }
@@ -707,6 +724,7 @@ export class TableEngine {
  }
  async markSaved(id:string,expectedRevision?:number,source?:CsvSource){
   const s=this.get(id)
+  if(s.analysisOnly)throw new Error(t('project.recipe.analysis.readonly'))
   if(expectedRevision===undefined||s.revision===expectedRevision){
    // Saving updates the disk identity. The older lexical baseline can still contain rows or columns restored by undo.
    if(source)this.sources.set(s,{...source,layout:layout(s)})
@@ -720,6 +738,7 @@ export class TableEngine {
   return structuredClone({version:2,state:s,...(this.lossless.has(s)?{fidelity}:{})})
  }
  async restore(id:string,snapshot:unknown){
+  if(this.states.get(id)?.analysisOnly)throw new Error(t('project.recipe.analysis.readonly'))
   await this.diskViews.clear(id)
   const data=snapshot as {version?:number;state?:State;fidelity?:(RecordLayout & {bytes:string})|null}
   if(![1,2].includes(data?.version??0)||!data.state||!Array.isArray(data.state.rows)||!Array.isArray(data.state.headers))throw new Error('Formato de recuperación no compatible. El archivo se conserva.')

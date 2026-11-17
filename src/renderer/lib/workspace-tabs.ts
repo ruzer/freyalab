@@ -4,10 +4,11 @@ export type AnalysisStatistics = {scope:'all'|'selected'|'range'|'rangeColumns'}
 export type AnalysisTab = {type:'analysis';id:string;source:AnalysisSource;section:AnalysisSection;statistics?:AnalysisStatistics}
 export type WorkspaceTab = {type:'document';id:string}|AnalysisTab
 
-export function workspaceTabs(documents:readonly {id:string}[],analyses:readonly AnalysisTab[]):WorkspaceTab[]{
+export function workspaceTabs(documents:readonly {id:string;analysisSubset?:unknown}[],analyses:readonly AnalysisTab[]):WorkspaceTab[]{
  const byDocument=new Map(analyses.map(tab=>[tab.source.documentId,tab]))
- return documents.flatMap(({id}):WorkspaceTab[]=>{
+ return documents.flatMap(({id,analysisSubset}):WorkspaceTab[]=>{
   const document={type:'document',id} as const,analysis=byDocument.get(id)
+  if(analysisSubset)return analysis?[analysis]:[]
   return analysis?[document,analysis]:[document]
  })
 }

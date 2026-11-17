@@ -90,7 +90,7 @@ export class SqlService {
    const ticket=randomUUID(),table=index===0?'datos':`tabla_${index+1}`
    try{
     const meta=await this.timed(job,'sourceStart',()=>this.docs.table.call<{headers:string[];revision:number;readonly:boolean;large?:boolean}>('analysisStart',input.id,ticket,input.revision,record.info.path,input.query,input.where))
-    const source:SqlSource={id:input.id,name:record.info.name,revision:input.revision,table,columns:sqlColumns(meta.headers),rows:0,fromDisk:meta.readonly,large:meta.large,filtered:!!input.query||!!input.where?.conditions.length,...input.where?.conditions.length?{where:input.where}:{}};job.sources.push(source)
+    const source:SqlSource={id:input.id,name:record.info.name,revision:input.revision,table,columns:sqlColumns(meta.headers),rows:0,...record.info.analysisSubset?{analysisSubset:record.info.analysisSubset}:{},fromDisk:meta.readonly,large:meta.large,filtered:!!input.query||!!input.where?.conditions.length,...input.where?.conditions.length?{where:input.where}:{}};job.sources.push(source)
     if(meta.readonly&&record.info.path){const info=await stat(record.info.path);job.disk.set(input.id,{size:info.size,mtimeMs:info.mtimeMs})}
     await call('table',table,source.columns.map(column=>column.name))
     while(true){

@@ -4,6 +4,8 @@ import {parse} from 'csv-parse/sync'
 import {chartResult} from '../src/main/chart-result'
 import {chartSQL,chartData,type ChartData} from '../src/shared/charts'
 import type {ChartResultRequest,SqlResult} from '../src/shared/types'
+import type {RecipeAnalysisContext} from '../src/shared/recipe-operation'
+import {getLanguage,setLanguage} from '../src/shared/i18n'
 const request:ChartResultRequest={requestId:'request',revision:3,format:'json',protectFormulas:true,configuration:{headers:['Ciudad','Total'],options:{kind:'bar',x:0,y:1,bins:10,aggregate:'sum',descending:false,measureType:'number'},where:{conditions:[{column:0,op:'contains',value:'ñ'}],filterMode:'all'},view:{search:'texto',filters:{0:'ñ'}}}}
 const data:ChartData={total:8,usable:7,points:6,limited:false,columns:['x','value'],rows:[['00123','3.0'],['90071992547409931234','4.0'],['=HYPERLINK("x")','5.0'],['"á\n💜|`<img src=x>','6.0'],['',null],[null,'-1.0']]}
 const result:SqlResult={requestId:'request',sources:[{id:'csv',name:'datos.csv',revision:3,table:'datos',columns:[],rows:8,fromDisk:true,filtered:true}],version:'test',columns:[],rows:[],returnedRows:6,limited:false,offset:0,completedAt:'2026-10-22T00:00:00.000Z'}
@@ -38,4 +40,55 @@ it('exporta la tendencia completa en JSON y el contexto del CSV estándar, y la 
  expect(JSON.parse(output('json').content).trend).toEqual(expected)
  const csv=output('csv');expect(JSON.parse(csv.context!).trend).toEqual(expected);expect(parse(csv.content)).toHaveLength(7);expect(csv.content).not.toContain('trend')
  expect(output('md').content).toContain('y = 0.6·x + 2.2');expect(output('md').content).toContain(String(trend.r2));expect(output('md').content).toContain('Relación no es causa.')
+})
+
+const analysisSubset:RecipeAnalysisContext={
+ projectId:'project',recipeId:'recipe',sourceId:'source',name:'Clientes «Ñ» | 2026',sourceName:'datos-ñ.csv',
+ steps:[{op:'filter',mode:'all',conditions:[{column:{position:1,name:'Ciudad'},op:'contains',value:'ñ',caseSensitive:false}]},
+  {op:'order',by:[{column:{position:2,name:'Total'},descending:true,numeric:true}]},
+  {op:'select',columns:[{position:1,name:'Ciudad'},{position:2,name:'Total'}]},
+  {op:'sample',method:'random',rows:8,seed:7}],
+ stepOwners:['Base','Base','Clientes «Ñ» | 2026','Clientes «Ñ» | 2026'],
+ coverage:{headers:['Ciudad','Total'],columns:[{position:1,name:'Ciudad'},{position:2,name:'Total'}],scanned:842,eligible:125,resultCount:8,complete:true,cancelled:false,bytesRead:9412,sha256:'a'.repeat(64),sampling:[{step:3,method:'random',requestedRows:8,seed:7,eligible:125,selected:8}],sourceVersionDifferent:true},
+}
+
+it.each([
+ ['es','Conjunto de solo lectura en memoria; la fuente no se modifica','Conjunto completo'],
+ ['en','Read-only subset in memory; the source is not modified','Complete subset'],
+] as const)('el conjunto de solo lectura conserva su contexto en JSON, CSV agregado y Markdown (%s)',(language,origin,scope)=>{
+ const before=getLanguage();setLanguage(language)
+ try{
+  const source={...result.sources[0],name:analysisSubset.name,fromDisk:false,filtered:false,analysisSubset,path:'/private/no-exportar/datos-ñ.csv'}
+  const sql={...result,sources:[source]}, {view:_,...configuration}=request.configuration
+  for(const format of ['json','csv'] as const){
+   const output=chartResult({...request,format,configuration},sql,data,false)
+   const document=JSON.parse(format==='csv'?output.context!:output.content)
+   expect(document.metadata).toMatchObject({dirty:false,origin,scope,analysisSubset})
+   expect(document.metadata.analysisSubset).toEqual(analysisSubset)
+   expect(document.metadata.analysisSubset.coverage).not.toHaveProperty('rows')
+   expect(document.rows).toEqual(data.rows)
+   expect(document.metadata.origin).not.toMatch(/cambios pendientes|pending|muestra|sample/i)
+   expect(JSON.stringify(document)).not.toContain('/private/no-exportar')
+   if(format==='csv')expect(parse(output.content)).toHaveLength(data.rows.length+1)
+  }
+  const md=chartResult({...request,format:'md',configuration},sql,data,false).content
+  expect(md).toContain(origin);expect(md).toContain(scope)
+  expect(md).not.toContain('Documento en memoria; cambios pendientes incluidos')
+  expect(md).not.toContain('el editor solo muestra una muestra')
+  expect(md).not.toContain('/private/no-exportar')
+  const line=md.split('\n').find(line=>line.includes('analysisSubset'))
+  expect(line).toBeDefined()
+  const fence=line!.match(/^(`+) /)?.[1];expect(fence).toBeDefined()
+  const encoded=line!.slice(fence!.length+1,-fence!.length-1).replaceAll('\\|','|')
+  expect(JSON.parse(JSON.parse(encoded))).toEqual({analysisSubset})
+ }finally{setLanguage(before)}
+})
+
+it('la procedencia del conjunto prevalece sobre metadatos de vista de tabla y no cambia las exportaciones de documentos normales',()=>{
+ const sql={...result,sources:[{...result.sources[0],fromDisk:false,analysisSubset}]}
+ const subset=JSON.parse(chartResult(request,sql,data,false).content)
+ expect(subset.metadata.scope).toBe('Conjunto completo')
+ const normal=JSON.parse(chartResult(request,result,data,false).content)
+ expect(normal.metadata.scope).toBe('Filtros de tabla guardados para esta exportación')
+ expect(normal.metadata).not.toHaveProperty('analysisSubset')
 })

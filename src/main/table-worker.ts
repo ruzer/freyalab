@@ -1,5 +1,5 @@
 import { TableEngine } from './table-engine'
-import {runRecipe} from './recipe-operation'
+import {runRecipe,runRecipeAnalysis} from './recipe-operation'
 import {RecipeOperationError,type RecipeOperationSource} from '../shared/recipe-operation'
 import type {ProjectRecipeStep} from '../shared/project'
 const recipeJobs=new Map<string,{cancelled:boolean}>()
@@ -25,6 +25,19 @@ port.on('message', async ({data}: {data:{requestId:number;method:string;args:unk
     const result=await runRecipe(args[1] as RecipeOperationSource,args[2] as ProjectRecipeStep[],{cancelled:()=>control.cancelled,
      progress:progress=>port.postMessage({recipeProgress:{requestId:key,...progress}})})
     port.postMessage({requestId,result})
+   }finally{recipeJobs.delete(key)}
+   return
+  }
+  if(method==='recipeAnalysis'){
+   const key=String(args[0]),snapshotId=String(args[1]),control={cancelled:false};recipeJobs.set(key,control)
+   try{
+    const source=args[2] as RecipeOperationSource,result=await runRecipeAnalysis(source,args[3] as ProjectRecipeStep[],{cancelled:()=>control.cancelled,progress:progress=>port.postMessage({recipeProgress:{requestId:key,...progress}})})
+    if(result.complete&&!result.cancelled&&!control.cancelled){
+     await engine.installSubset(snapshotId,result,source.format)
+     if(control.cancelled)await engine.close(snapshotId)
+    }
+    const{rows,...coverage}=result
+    port.postMessage({requestId,result:{coverage:control.cancelled?{...coverage,complete:false,cancelled:true,sha256:undefined}:coverage}})
    }finally{recipeJobs.delete(key)}
    return
   }
