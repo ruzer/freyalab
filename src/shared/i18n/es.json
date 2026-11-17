@@ -1514,5 +1514,8 @@
  "subset.unavailableSection": "No disponibles",
  "subset.coveragePartialFirst": "Paso {step}: límite de {requested} primeras filas; {n} filas obtenidas",
  "subset.coveragePartialRandomRows": "Paso {step}: muestra parcial de {n} filas · semilla {seed}",
- "subset.coveragePartialRandomPercent": "Paso {step}: muestra aproximada del {percent}% · {n} filas obtenidas · semilla {seed}"
+ "subset.coveragePartialRandomPercent": "Paso {step}: muestra aproximada del {percent}% · {n} filas obtenidas · semilla {seed}",
+ "subset.draftChanged": "El conjunto guardado cambió mientras conservabas este borrador. Revisa ambas versiones antes de guardar.",
+ "subset.conflictTitle": "El conjunto cambió",
+ "subset.conflictQuestion": "Guardar este borrador reemplazará la definición guardada más reciente. Cancelar conserva ambas versiones sin escribir."
 }

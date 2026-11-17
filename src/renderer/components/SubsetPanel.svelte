@@ -2,7 +2,7 @@
  import type {TableQuery} from '../../shared/types'
  export interface SubsetIntent {draftId?:string;recipeId?:string;baseRecipeId?:string;blank?:boolean;autorun?:boolean;query?:TableQuery;ignoredSearch?:string[]}
  // Solo memoria de esta ventana; ni resultados ni borradores se escriben en el proyecto.
- type SubsetDraft={name:string;base:string;conditions:import('../../shared/types').TableFilter[];order:import('../../shared/types').TableSort[];mode:'all'|'any';allColumns:boolean;chosen:boolean[];extraSelected:import('../../shared/project').ProjectColumn[];keep:'all'|'first'|'randomRows'|'randomPercent';rows:number|undefined;percent:number|undefined;seed:number|undefined;acknowledged:number[];baseline:string;originalNames:[number,string][]}
+ type SubsetDraft={name:string;base:string;conditions:import('../../shared/types').TableFilter[];order:import('../../shared/types').TableSort[];mode:'all'|'any';allColumns:boolean;chosen:boolean[];extraSelected:import('../../shared/project').ProjectColumn[];keep:'all'|'first'|'randomRows'|'randomPercent';rows:number|undefined;percent:number|undefined;seed:number|undefined;acknowledged:number[];baseline:string;definition:string;originalNames:[number,string][]}
  const drafts=new Map<string,SubsetDraft>()
 </script>
 <script lang="ts">
@@ -22,6 +22,7 @@
  const original=initial.original
  const draftKey=untrack(()=>JSON.stringify([project.path,project.id,source.id,intent.recipeId??intent.draftId??'',intent.baseRecipeId??'',!!intent.blank]))
  const remembered=drafts.get(draftKey)
+ const draftDefinition=remembered?.definition??definition(original)
  const originalNames=new Map<number,string>(initial.source.columns.map(column=>[column.position-1,column.name]))
  for(const step of original?.steps??[]){const columns=step.op==='filter'?step.conditions.map(rule=>rule.column):step.op==='order'?step.by.map(rule=>rule.column):step.op==='select'?step.columns:[];for(const column of columns)originalNames.set(column.position-1,column.name)}
  for(const [position,name] of remembered?.originalNames??[])originalNames.set(position,name)
@@ -41,6 +42,7 @@
  let finished=false
  const titleId=$props.id(),reasonId=titleId+'-reason'
  const recipe=$derived(recipes.find(value=>value.id===intent.recipeId)??original)
+ const externalChange=$derived(!!recipe&&definition(recipe)!==draftDefinition)
  const baseRecipe=$derived(base.startsWith('recipe:')?recipes.find(value=>value.id===base.slice(7)):undefined)
  const available=$derived((baseRecipe?.columns??source.columns).map(column=>column.position-1))
  const headers=$derived(source.columns.map(column=>column.name))
@@ -68,6 +70,7 @@
  })
  const dirty=$derived(!!baseline&&JSON.stringify(draft)!==baseline)
  const dependents=$derived(recipe?.dependents.map(id=>recipes.find(value=>value.id===id)?.name??id)??[])
+ function definition(value?:ProjectRecipeView){return JSON.stringify(value?[value.id,value.name,value.createdAt,value.sourceSha256,value.semantics,'sourceId' in value?{sourceId:value.sourceId}:{baseRecipeId:value.baseRecipeId},value.steps]:null)}
  export function focusInitial(){if(immutable)region?.focus();else nameInput?.focus()}
  function newSeed(){return crypto.getRandomValues(new Int32Array(1))[0]}
  function anotherSeed(){const next=newSeed();seed=next===seed?next===2147483647?-2147483648:next+1:next;changed()}
@@ -84,7 +87,7 @@
  }
  $effect(()=>{const columns=source.columns,visible=available;untrack(()=>normalizeSelection(columns,visible))})
  onMount(()=>{if(remembered)({name,base,conditions,order,mode,allColumns,chosen,extraSelected,keep,rows,percent,seed,acknowledged,baseline}=structuredClone(remembered));else baseline=JSON.stringify($state.snapshot(draft));normalizeSelection(source.columns,available);focusInitial();if(!remembered&&intent.autorun&&!blocked)void run();return window.freya.onEvent(event=>{if(event.type==='project-recipe-progress'&&event.recipeProgress?.requestId===request)progress=event.recipeProgress})})
- onDestroy(()=>{if(!finished)drafts.set(draftKey,$state.snapshot({name,base,conditions,order,mode,allColumns,chosen,extraSelected,keep,rows,percent,seed,acknowledged,baseline,originalNames:[...originalNames]}));if(request)void oncancel(request).catch(()=>{})})
+ onDestroy(()=>{if(!finished)drafts.set(draftKey,$state.snapshot({name,base,conditions,order,mode,allColumns,chosen,extraSelected,keep,rows,percent,seed,acknowledged,baseline,definition:draftDefinition,originalNames:[...originalNames]}));if(request)void oncancel(request).catch(()=>{})})
  async function run(){
   if(busy||saving||blocked)return
   busy=true;result=null;message='';request=crypto.randomUUID();progress={bytesRead:0,scanned:0,totalBytes:source.bytes}
@@ -98,7 +101,7 @@
  function finishClose(){finished=true;drafts.delete(draftKey);const next=afterClose;afterClose=undefined;onclose();next?.()}
  export function closeThen(next?:()=>void){if(busy||saving){message=t('ui.reason.busy');return}afterClose=next;close()}
  function close(){if(busy||saving)return;if(dirty)void ask('discard');else finishClose()}
- async function save(){if(busy||saving||immutable||blocked)return;if(dependents.length)await ask('impact');else await persist()}
+ async function save(){if(busy||saving||immutable||blocked)return;if(externalChange||dependents.length)await ask('impact');else await persist()}
  async function persist(){
   if(confirmation){dialog?.close();confirmation=null}saving=true;message=''
   try{if(await onsave($state.snapshot(draft))){baseline=JSON.stringify($state.snapshot(draft));finishClose()}}
@@ -115,6 +118,7 @@
   <label>{t('subset.base')}<select bind:value={base} disabled={immutable||busy||saving} onchange={()=>{allColumns=true;chosen=[];changed()}}><option value={'source:'+source.id}>{t('subset.sourceOption',{name:source.name})}</option>{#each bases as value}<option value={'recipe:'+value.id}>{t('subset.subsetOption',{name:value.name})}</option>{/each}</select></label>
   {#if baseRecipe}<p class="base-description">{t('subset.baseDescription',{name:baseRecipe.name,steps:subsetSummary(baseRecipe.steps,getUILanguage())})}</p>{/if}
   {#if intent.ignoredSearch?.length}<p class="notice" role="note">{t('subset.searchIgnored',{search:intent.ignoredSearch.join(' · ')})}</p>{/if}
+  {#if externalChange&&!immutable}<p class="notice" role="note">{t('subset.draftChanged')}</p>{/if}
   {#if immutable}<p class="notice" role="note">{project.readonly?t('project.future',{version:formatNumber(project.version)}):t('subset.unsupported')}</p>{#if recipe}<p>{subsetSummary(recipe.steps,getUILanguage())}</p>{/if}{/if}
   <fieldset><legend>{t('subset.rows')}</legend><CsvConditionFields {headers} {available} {invalidColumns} disambiguate bind:conditions bind:mode disabled={immutable||busy||saving} onchange={changed} oncolumnchange={acknowledge}/></fieldset>
   <fieldset><legend>{t('subset.order')}</legend><CsvOrderFields {headers} {available} {invalidColumns} disambiguate bind:order disabled={immutable||busy||saving} onchange={changed} oncolumnchange={acknowledge}/><p>{t('subset.orderHelp')}</p></fieldset>
@@ -153,8 +157,11 @@
   {#if message}<span role="status" aria-live="polite">{message}</span>{/if}
  </footer>
  {#if confirmation}<dialog bind:this={dialog} aria-labelledby={titleId+'-confirm'} oncancel={event=>{event.preventDefault();void dismiss()}}>
-  <h3 id={titleId+'-confirm'}>{t(confirmation==='discard'?'subset.discardTitle':'subset.impactTitle')}</h3>
-  <p>{confirmation==='discard'?t('subset.discardQuestion'):plural('subset.impact',dependents.length,{names:dependents.join('; ')})}</p>
+  <h3 id={titleId+'-confirm'}>{t(confirmation==='discard'?'subset.discardTitle':externalChange?'subset.conflictTitle':'subset.impactTitle')}</h3>
+  {#if confirmation==='discard'}<p>{t('subset.discardQuestion')}</p>{:else}
+   {#if externalChange}<p>{t('subset.conflictQuestion')}</p>{/if}
+   {#if dependents.length}<p>{plural('subset.impact',dependents.length,{names:dependents.join('; ')})}</p>{/if}
+  {/if}
   <div class="actions"><button type="button" onclick={()=>void dismiss()}>{t('dialog.cancel')}</button><button type="button" class="btn-primary" onclick={()=>{if(confirmation==='discard'){dialog?.close();confirmation=null;finishClose()}else void persist()}}>{t(confirmation==='discard'?'subset.discard':'dialog.save')}</button></div>
  </dialog>{/if}
 </section>

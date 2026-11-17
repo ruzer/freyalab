@@ -1514,5 +1514,8 @@
  "subset.unavailableSection": "Unavailable",
  "subset.coveragePartialFirst": "Step {step}: first {requested} rows limit; {n} rows obtained",
  "subset.coveragePartialRandomRows": "Step {step}: partial sample of {n} rows · seed {seed}",
- "subset.coveragePartialRandomPercent": "Step {step}: approximate {percent}% sample · {n} rows obtained · seed {seed}"
+ "subset.coveragePartialRandomPercent": "Step {step}: approximate {percent}% sample · {n} rows obtained · seed {seed}",
+ "subset.draftChanged": "The saved subset changed while this draft was kept. Review both versions before saving.",
+ "subset.conflictTitle": "The subset changed",
+ "subset.conflictQuestion": "Saving this draft will replace the latest saved definition. Cancel keeps both versions without writing."
 }
