@@ -1,0 +1,43 @@
+Running 1 test using 1 worker
+
+(node:75169) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/project-subsets.spec.ts:495:1 › PRJ-02a: un borrador restaurado no sobrescribe una definición externa sin confirmarla
+  1) [csv] › tests/e2e/project-subsets.spec.ts:495:1 › PRJ-02a: un borrador restaurado no sobrescribe una definición externa sin confirmarla
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('dialog', { name: 'El conjunto cambió', exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('dialog', { name: 'El conjunto cambió', exact: true }) with timeout 15000ms
+      - waiting for getByRole('dialog', { name: 'El conjunto cambió', exact: true })
+
+
+      509 |  await panel.getByRole('button',{name:'Guardar',exact:true}).press('Enter')
+      510 |  const conflict=page.getByRole('dialog',{name:'El conjunto cambió',exact:true})
+    > 511 |  await expect(conflict).toBeVisible();await expect(conflict).toContainText('reemplazará la definición guardada')
+          |                         ^
+      512 |  expect(await readFile(join(folder,'proyecto.freyalab'))).toEqual(external)
+      513 |  await conflict.getByRole('button',{name:'Cancelar',exact:true}).press('Enter')
+      514 |  await expect(panel.getByRole('textbox',{name:'Nombre',exact:true})).toHaveValue('Mi borrador conservado')
+        at <WORKTREE>/tests/e2e/project-subsets.spec.ts:511:25
+
+    Error Context: test-results/project-subsets-PRJ-02a-un-8f849-ión-externa-sin-confirmarla-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/project-subsets-PRJ-02a-un-8f849-ión-externa-sin-confirmarla-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/project-subsets-PRJ-02a-un-8f849-ión-externa-sin-confirmarla-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [csv] › tests/e2e/project-subsets.spec.ts:495:1 › PRJ-02a: un borrador restaurado no sobrescribe una definición externa sin confirmarla

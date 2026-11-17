@@ -4,7 +4,9 @@ import { dirname, join, resolve, relative, isAbsolute, extname, basename } from 
 import { z } from 'zod'
 import {ProjectStore} from './projects'
 import {ProjectSourceRegistry} from './project-source-registry'
+import {ProjectSubsets} from './project-subsets'
 import {projectFile,projectName,projectSource,type ProjectInfo,type ProjectRecent} from '../shared/project'
+import {projectRecipeDraft} from '../shared/project-recipes'
 import {col,query,conditionGroup} from './query-schema'
 import {ChartPresets,chartConfiguration} from './chart-presets'
 import {exportChartResult} from './chart-result-export'
@@ -40,6 +42,7 @@ if(process.env.FREYALAB_USER_DATA)app.setPath('userData',resolve(process.env.FRE
 let window:BrowserWindow|undefined,windowReady:Promise<void>|undefined,docs:Documents,analytics:SqlService,presets:ChartPresets,settings:SettingsStore,updates:UpdatesService,settingsStartupNotice:string|undefined,quitting=false,quitRequested=false,closingWindow=false
 let menuState:ApplicationUiState={activeId:null,mode:'split',focus:'none',locked:false,canEdit:false},menuSettings:SettingsState,menuRecents:string[]=[],menuSignature=''
 let projects:ProjectStore,projectSources:ProjectSourceRegistry,projectDraftFolder:string|undefined,menuProjectRecents:ProjectRecent[]=[]
+let projectSubsets:ProjectSubsets
 let publishedProject:ProjectInfo|null=null,projectPublishGeneration=0
 let projectSourceJob:{requestId:string;controller:AbortController}|undefined
 const sourceFormat=projectSource.shape.format.pick({encoding:true,delimiter:true,header:true,eol:true}).partial()
@@ -79,19 +82,27 @@ async function publishProject(){
  const generation=++projectPublishGeneration,project=projects.active
  const [recents,paths]=await Promise.all([projects.recents(),projectSources.protectedPaths()])
  if(generation!==projectPublishGeneration)return
- const closing=!!publishedProject&&(project?.id!==publishedProject.id||project?.path!==publishedProject.path)
+ const closing=!!publishedProject&&(project?.id!==publishedProject.id||project?.path!==publishedProject.path||project?.version!==publishedProject.version||project?.readonly!==publishedProject.readonly)
+ if(closing)await projectSubsets.cancelCurrent()
+ if(generation!==projectPublishGeneration)return
  publishedProject=project;menuProjectRecents=recents
  docs.setProjectSources(paths,closing)
  if(project)docs.roots.add(project.path)
  const sources=await projectSources.list()
  if(generation!==projectPublishGeneration)return
- window?.webContents.send('freya:event',{type:'project',project,projectRecents:recents,projectSources:sources})
+ window?.webContents.send('freya:event',{type:'project',project,projectRecents:recents,projectSources:sources,projectRecipes:recipeViews(sources)})
  if(project&&projects.recentWriteFailed)window?.webContents.send('freya:event',{type:'error',message:t('project.error.recentWrite')})
  refreshApplicationMenu()
 }
 async function refreshProjectSources(){
  const generation=projectPublishGeneration,project=projects.active,projectSourcesNow=await projectSources.list()
- if(generation===projectPublishGeneration&&project===projects.active)window?.webContents.send('freya:event',{type:'project',projectSources:projectSourcesNow})
+ if(generation===projectPublishGeneration&&project===projects.active)window?.webContents.send('freya:event',{type:'project',projectSources:projectSourcesNow,projectRecipes:recipeViews(projectSourcesNow)})
+}
+function recipeViews(sources:Awaited<ReturnType<ProjectSourceRegistry['list']>>){
+ return projects.recipeViews().map(recipe=>{
+  const source=sources.find(source=>source.id===recipe.rootSourceId)
+  return{...recipe,sourceStatus:source?.status,executable:recipe.executable&&source?.status==='verified',reason:recipe.reason??(source?.status==='verified'?undefined:t(source?.status==='external'?'project.source.authorize':source?.status==='changed'?'project.source.changed':'project.source.missing'))}
+ })
 }
 async function keepProjectChanges(){
  const result=await dialog.showMessageBox(window!,{type:'warning',message:t('project.error.changed'),buttons:[t('project.reload'),t('project.keepMine')],defaultId:0,cancelId:0})
@@ -217,7 +228,7 @@ async function handle(operation:string,args:unknown[]){
  case'csvViewInfo':{const target=path.parse(a);if(!await docs.allowed(target))throw new Error(t('csvText.openAuthorized'));return docs.csvViewInfo(target)}
  case'new':return docs.create(z.enum(['markdown','text','mermaid','csv']).parse(a) as Kind)
  case'folder':{const folder=await pickFolder();if(folder){docs.roots.add(folder);await openProjectFolder(folder,true)}return folder}
- case'project:state':{z.tuple([]).parse(args);return{project:projects.active,recents:await projects.recents(),sources:await projectSources.list()}}
+ case'project:state':{z.tuple([]).parse(args);const sources=await projectSources.list();return{project:projects.active,recents:await projects.recents(),sources,recipes:recipeViews(sources)}}
  case'project:pickFolder':{z.tuple([]).parse(args);const folder=await pickFolder(true);if(!folder)return null;projectDraftFolder=folder;return{path:folder,name:basename(folder)}}
  case'project:cancelCreate':{z.tuple([]).parse(args);projectDraftFolder=undefined;return}
  case'project:create':{const[name,suggested]=z.tuple([projectName,z.boolean()]).parse(args),folder=projectDraftFolder;projectDraftFolder=undefined;if(!folder)throw new Error(t('project.pickFolder'));await projects.create(folder,name,suggested);await publishProject();return}
@@ -264,6 +275,11 @@ async function handle(operation:string,args:unknown[]){
   })}finally{release?.()}
  }
  case'project:cancelSource':{const[request]=z.tuple([id]).parse(args);if(projectSourceJob?.requestId===request)projectSourceJob.controller.abort();return}
+ case'project:recipeTry':{const[project,draft,request]=z.tuple([z.string().min(1).max(100),projectRecipeDraft,id]).parse(args);try{return await projectSubsets.try(project,draft,request)}finally{await refreshProjectSources()}}
+ case'project:recipeCancel':{const[request]=z.tuple([id]).parse(args);return projectSubsets.cancel(request)}
+ case'project:saveRecipe':{const[project,draft]=z.tuple([z.string().min(1).max(100),projectRecipeDraft]).parse(args);const saved=await projects.saveRecipe(project,draft,keepProjectChanges);await publishProject();return saved}
+ case'project:renameRecipe':{const[project,recipe,name]=z.tuple([z.string().min(1).max(100),z.string().min(1).max(100),projectName]).parse(args);const saved=await projects.renameRecipe(project,recipe,name,keepProjectChanges);await publishProject();return saved}
+ case'project:removeRecipe':{const[project,recipe]=z.tuple([z.string().min(1).max(100),z.string().min(1).max(100)]).parse(args);const saved=await projects.removeRecipe(project,recipe,keepProjectChanges);await publishProject();return saved}
  case'tree':return docs.tree(path.parse(a))
  case'findFiles':return docs.findFiles(path.parse(a),z.string().min(1).max(500).parse(b))
  case'cancelFileSearch':return docs.cancelFileSearch()
@@ -339,6 +355,8 @@ app.whenReady().then(async()=>{
   if(event.type==='external'&&event.id&&docs.records.has(event.id)&&docs.info(event.id).projectSource==='protected')void refreshProjectSources().catch(()=>{})
  })
  projectSources=new ProjectSourceRegistry(projects,path=>docs.allowed(path),path=>docs.assertProjectSourceClean(path),path=>[...docs.records.values()].find(record=>record.info.path===path)?.info)
+ projectSubsets=new ProjectSubsets(projects,projectSources,docs.table)
+ docs.table.recipeProgress=recipeProgress=>window?.webContents.send('freya:event',{type:'project-recipe-progress',recipeProgress})
  if(process.env.FREYALAB_TEST==='1'&&process.env.FREYALAB_TEST_PANDOC_PATH)docs.pandocPath=process.env.FREYALAB_TEST_PANDOC_PATH
  void menuPandoc.refresh().catch(error=>window?.webContents.send('freya:event',{type:'error',message:error.message}))
  presets=new ChartPresets(join(app.getPath('userData'),'chart-presets.json'))

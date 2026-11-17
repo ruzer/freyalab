@@ -29,7 +29,7 @@ Como persona que trabaja con datos originales, quiero crear conjuntos derivados,
 1. **Manifiesto único `proyecto.freyalab`**: JSON versionado, con rutas relativas cuando sea posible. La estructura de carpetas (`01_raw`, `02_datasets`, …) es una **plantilla opcional**, nunca una obligación.
 2. **Las fuentes están protegidas contra modificaciones hechas por FreyaLab.** No se promete protección frente a otros programas.
 3. **La primera versión respeta los límites actuales del motor.** Todo análisis indica si usa datos **completos, filtrados o una muestra**.
-4. **SHA-256 completo al registrar una fuente**, con progreso y cancelación. Las comprobaciones rápidas detectan posibles cambios, pero **no son prueba de identidad**; antes de una operación que exija identidad exacta se vuelve a verificar la huella completa.
+4. **SHA-256 completo al registrar una fuente**, con progreso y cancelación. Las comprobaciones rápidas detectan posibles cambios, pero **no son prueba de identidad**; antes de una operación que exija identidad exacta se vuelve a verificar la huella completa. La muestra de prefijo parcial aprobada para PRJ-02a declara expresamente que no realiza esa verificación completa (§4.6).
 
 El 2026-11-10 el propietario aprobó el camino AN-1 → PRJ-01 → PRJ-05 con DuckDB, ECharts y el constructor de FreyaLab. El contrato de PRJ-02 incorpora el muestreo y las recetas encadenadas antes de su implementación.
 
@@ -83,7 +83,7 @@ Claves en inglés (coinciden con los tipos del código); la interfaz habla espa�
 
 | Campo | Regla |
 |---|---|
-| `format`, `version` | Obligatorios. Una `version` mayor que la que entiende la aplicación abre el proyecto **solo para lectura**, conserva los campos desconocidos y **no ejecuta nada**. No se migra en silencio |
+| `format`, `version` | Obligatorios. Una `version` mayor que la que entiende la aplicación abre el proyecto **solo para lectura** y conserva los campos desconocidos. Excepción aprobada el 2026-11-16 para PRJ-02a: puede probar conjuntos íntegramente reconocidos y validados con `semantics: 1`; no ejecuta los desconocidos ni escribe el proyecto. No se migra en silencio |
 | `sources[].path` | Relativa al manifiesto si el archivo está dentro de la carpeta del proyecto; si está fuera se guarda absoluta con `"external": true` y la interfaz lo señala («otra persona no podrá abrir esta ruta») |
 | `sources[].protection` | Siempre `readonly` en la v1 (ver 4.3) |
 | `sources[].sha256` | Identidad del contenido: lo único que prueba que es «esa» fuente. Se calcula una sola vez al registrar (4.3) |
@@ -104,7 +104,7 @@ Claves en inglés (coinciden con los tipos del código); la interfaz habla espa�
 | Momento | Comprobación | Si algo no coincide |
 |---|---|---|
 | Abrir el proyecto o la fuente | Rápida (tamaño, `mtime`, extremos) | Aviso «la fuente cambió desde que se registró»; los resultados pasan a «posiblemente desactualizados» |
-| Antes de **ejecutar una receta, extraer, exportar con procedencia o generar un informe** | **SHA-256 completo otra vez**, con progreso y cancelación | La operación se detiene; se ofrece «volver a registrar la fuente» (crea una versión nueva) |
+| Antes de **ejecutar una receta, extraer, exportar con procedencia o generar un informe** | **SHA-256 completo otra vez**, con progreso y cancelación, salvo la muestra de prefijo parcial de PRJ-02a (decisión 2026-11-16, §4.6) | La operación se detiene; se ofrece «volver a registrar la fuente» (crea una versión nueva) |
 | Mostrar el estado de un resultado | Rápida, indicativa | «Posiblemente desactualizado»; se confirma con la completa si la persona lo pide |
 | Fuente que no está en su ruta | A petición de la persona, búsqueda en la carpeta del proyecto de un archivo con el mismo tamaño y confirmación con SHA-256 completo | Si no coincide, «fuente no encontrada»; nunca se enlaza por nombre ni se recorren otras carpetas |
 
@@ -135,8 +135,8 @@ Reglas del contrato:
 | Ejemplo | Regla |
 |---|---|
 | `{"op":"sample","method":"first","rows":10000}` | Toma las primeras N filas en el orden de llegada |
-| `{"op":"sample","method":"random","rows":10000,"seed":20261110}` | Muestreo de depósito (Algorithm R). Usa un generador fijado por la semántica. La propuesta para v1 es SplitMix64 inicializado con `seed`. Recorre una vez, retiene hasta N filas en memoria y las devuelve en el orden del archivo |
-| `{"op":"sample","method":"random","percent":5,"seed":20261110}` | Conserva la fila si `hash(seed, posición física) < umbral`. La posición corresponde a la fuente raíz. El porcentaje objetivo es aproximado. El contrato de semántica v1 fijará el hash y su umbral antes de implementar PRJ-02 |
+| `{"op":"sample","method":"random","rows":10000,"seed":20261110}` | Muestreo de depósito (Algorithm R). Usa un generador fijado por la semántica. La semántica v1 usa SplitMix64 inicializado con `seed`, según el [contrato matemático](prj02-semantica-1.md). Recorre una vez, retiene hasta N filas en memoria y las devuelve en el orden de llegada a ese paso (incluido un orden previo) |
+| `{"op":"sample","method":"random","percent":5,"seed":20261110}` | Conserva la fila si `hash(seed, posición física) < umbral`. La posición corresponde a la fuente raíz. El porcentaje objetivo es aproximado. El [contrato de semántica 1](prj02-semantica-1.md) fija el hash y su umbral antes de implementar PRJ-02 |
 
 `rows` es un entero de 1 a 1.000.000, `percent` va de 0,01 a 100 y `seed` es un entero de 32 bits. La misma fuente verificada, receta y semilla producen las mismas filas en el mismo orden. La interfaz propone la semilla, permite editarla y «Otra muestra» genera una nueva.
 
@@ -165,7 +165,7 @@ Todo análisis, gráfico, extracto e informe declara una de tres coberturas, vis
 | `sample`, `complete: true` | La receta tomó una muestra tras recorrer toda la fuente. `sampling` declara `method`, `rows` o `percent` y `seed` para el método aleatorio | «Muestra aleatoria: 10.000 de 72.465 filas · semilla 20261110» |
 | `sample`, `complete: false` | Solo se examinó parte de la fuente (límite del motor, muestra de solo lectura o cancelación) | «Muestra: 200 filas; total no determinado» |
 
-Si la lectura se canceló o solo hay una muestra parcial, se indica «parcial» y `M` queda sin determinar. Un muestreo por porcentaje identifica el porcentaje como aproximado. La cobertura acompaña a la receta, la extracción y el pie del gráfico. Las fuentes por encima de los límites de SQL y gráficos (256 MiB y 8 millones de celdas) se analizan a través de un conjunto extraído que quepa, con su cobertura declarada.
+Si la lectura se canceló o solo hay una muestra parcial, se indica «parcial» y `M` queda sin determinar. Decisión del propietario, 2026-11-16: `first` sin orden puede detenerse al obtener N; no afirma una verificación completa de la identidad en esa ejecución. Se comprueba el estado rápido y se declara que no se verificó el SHA-256 completo. Las ejecuciones completas sí comparan su huella durante el único recorrido y descartan los resultados si no coincide. Un muestreo por porcentaje identifica el porcentaje como aproximado. La cobertura acompaña a la receta, la extracción y el pie del gráfico. Las fuentes por encima de los límites de SQL y gráficos (256 MiB y 8 millones de celdas) se analizan a través de un conjunto extraído que quepa, con su cobertura declarada.
 
 #### 4.7 Obsolescencia y actualización
 
@@ -204,10 +204,10 @@ Se adopta [RECIPES-PRIVACY.md §7](../../experiments/large-data-extracts/RECIPES
 
 Lo que PRJ-01 a PRJ-07 deben cumplir y que Claude comprobará al revisar cada PR:
 
-- C1. **Un manifiesto v1 es válido solo si cumple la sección 4.2**; se publica un esquema JSON y un validador con pruebas, incluida una versión mayor desconocida (solo lectura, campos conservados, sin ejecutar).
+- C1. **Un manifiesto v1 es válido solo si cumple la sección 4.2**; se publica un esquema JSON y un validador con pruebas, incluida una versión mayor desconocida (solo lectura, campos conservados; no ejecuta datos desconocidos y solo permite probar conjuntos v1 íntegramente reconocidos, según la excepción aprobada de §4.2).
 - C2. **La fuente no se modifica nunca** desde FreyaLab: una prueba compara su SHA-256 antes y después de cada operación del proyecto, y los atajos de guardar, reemplazar y transformar sobre una fuente registrada están deshabilitados.
 - C3. **Una cancelación en el registro no deja fuente a medias**; el SHA-256 se calcula con progreso y es cancelable.
-- C4. **Antes de ejecutar, extraer o generar un informe se verifica el SHA-256 completo**; una huella rápida distinta nunca se presenta como prueba.
+- C4. **Antes de ejecutar, extraer o generar un informe se verifica el SHA-256 completo**; una huella rápida distinta nunca se presenta como prueba. Excepción PRJ-02a aprobada el 2026-11-16: una muestra de prefijo puede finalizar sin verificar todo el archivo, siempre declarada parcial y sin afirmar identidad completa (§4.6).
 - C5. **Misma receta, misma fuente verificada y misma `semantics` producen el mismo subconjunto y el mismo orden** (prueba contra un oráculo independiente, no solo por el hash de un CSV).
 - C6. **Ninguna receta contiene SQL, expresiones ni comandos.** Una receta con un paso desconocido o fuera de la lista se rechaza completa.
 - C7. **Los ceros iniciales y los identificadores largos sobreviven** (`00123`, `9007199254740993`), así como los campos multilínea y la diferencia entre ausente y vacío.
@@ -256,11 +256,11 @@ Cada historia lleva su prompt para Codex, su plan de pruebas y sus criterios de 
 
 PRJ-02 queda acotado a los métodos descritos. El muestreo estratificado o ponderado, los pasos con expresiones o SQL y las copias ocultas en caché quedan fuera de alcance. Materializar datos requiere una extracción explícita (PRJ-03).
 
-### 8. Decisiones por confirmar
+### 8. Decisiones confirmadas (2026-11-16)
 
-El propietario aprobó Q1 a Q4. E0 §8 pide además cuatro decisiones antes de implementar; propongo estos valores por defecto y los registraré como decididos cuando se confirmen:
+El propietario aprobó Q1 a Q4 y, el 2026-11-16, confirmó las cuatro decisiones de E0 §8 tal como se propusieron:
 
-| Decisión | Propuesta |
+| Decisión | Decidido por el propietario |
 |---|---|
 | Ubicación de los resultados | Dentro de la carpeta del proyecto, en la ruta que elija la persona; no hay carpeta administrada oculta |
 | Duración | Nada caduca ni se borra solo; cerrar una pestaña no borra ni retiene datos en silencio |

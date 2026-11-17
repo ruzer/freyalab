@@ -1,0 +1,65 @@
+> freyalab@0.1.0-alpha.4 test
+> vitest run tests/ci-arm-package.test.ts
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <PROPOSAL>
+
+ ❯ tests/ci-arm-package.test.ts (6 tests | 4 failed) 28ms
+   × ARM separa el paquete solo si el PR lo necesita y en todos los push, sin añadirse de noche 5ms
+   × el PR sin paquete conserva check, todas las unitarias y sus dos fases de áreas sin trabajo empaquetado 8ms
+   × ARM pull_request ejecuta exactamente una vez cada verificación y el mismo paquete en la unión de sus partes 1ms
+   × ARM push ejecuta exactamente una vez cada verificación y el mismo paquete en la unión de sus partes 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ci-arm-package.test.ts > ARM separa el paquete solo si el PR lo necesita y en todos los push, sin añadirse de noche
+AssertionError: expected [ { os: 'macos-15', …(1) } ] to deeply equal [ { os: 'macos-15' } ]
+
+- Expected
++ Received
+
+  [
+    {
++     "executable": "release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab",
+      "os": "macos-15",
+    },
+  ]
+
+ ❯ tests/ci-arm-package.test.ts:16:72
+     14| it('ARM separa el paquete solo si el PR lo necesita y en todos los pus…
+     15|  expect(matrix('schedule').filter(job=>job.os==='macos-15')).toEqual([…
+     16|  expect(matrix('pull_request',false).filter(job=>job.os==='macos-15'))…
+       |                                                                        ^
+     17|  for(const event of ['pull_request','push']){
+     18|   expect(matrix(event,true).filter(job=>job.os==='macos-15')).toEqual(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/ci-arm-package.test.ts > el PR sin paquete conserva check, todas las unitarias y sus dos fases de áreas sin trabajo empaquetado
+AssertionError: expected [ 'uses: actions/checkout@v4', …(10) ] to not include 'run: npm run licenses'
+ ❯ tests/ci-arm-package.test.ts:27:164
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/ci-arm-package.test.ts > ARM pull_request ejecuta exactamente una vez cada verificación y el mismo paquete en la unión de sus partes
+ FAIL  tests/ci-arm-package.test.ts > ARM push ejecuta exactamente una vez cada verificación y el mismo paquete en la unión de sus partes
+AssertionError: expected undefined to be defined
+ ❯ tests/ci-arm-package.test.ts:32:15
+     30| it.each(['pull_request','push'])('ARM %s ejecuta exactamente una vez c…
+     31|  const [main,pack]=matrix(event,true).filter(job=>job.os==='macos-15')
+     32|  expect(pack).toBeDefined()
+       |               ^
+     33|  const first=selected(main,event,true),second=selected(pack,event,true…
+     34|  const fast=event==='pull_request'?'E2E fast (PR areas)':'E2E fast (ma…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 2 passed (6)
+   Start at  01:12:26
+   Duration  128ms (tests 54%, transform 32%, import 11%, worker 3%)

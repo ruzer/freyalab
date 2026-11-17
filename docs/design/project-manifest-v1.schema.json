@@ -842,5 +842,5 @@
       }
     }
   },
-  "$comment": "El validador de FreyaLab también verifica rutas, referencias entre registros y profundidad de recetas."
+  "$comment": "El validador de FreyaLab también verifica posiciones físicas consecutivas, rutas, referencias entre registros y profundidad de recetas."
 }

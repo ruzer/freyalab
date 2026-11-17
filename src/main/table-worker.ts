@@ -1,4 +1,8 @@
 import { TableEngine } from './table-engine'
+import {runRecipe} from './recipe-operation'
+import {RecipeOperationError,type RecipeOperationSource} from '../shared/recipe-operation'
+import type {ProjectRecipeStep} from '../shared/project'
+const recipeJobs=new Map<string,{cancelled:boolean}>()
 const allowed = new Set(['analysisStart','analysisNext','analysisClose','calculationStart','calculationPreview','calculationApply','open','cancelOpen','create','info','transformPreview','rangePreview','rangeClipboard','clipboard','page','viewStart','viewState','viewCancel','viewClear','edit','undo','stats','analyzeColumn','cancelAnalysis','operation','cancelOperation','markdown','serialize','snapshot','restore','markSaved','close','checkpoint'])
 const port = process.parentPort
 if (!port) throw new Error('El motor tabular necesita un proceso de datos Electron.')
@@ -10,10 +14,24 @@ const engine = new TableEngine(progress=>port.postMessage({progress}), {viewWork
 port.on('message', async ({data}: {data:{requestId:number;method:string;args:unknown[]}}) => {
  const {requestId,method,args}=data
  try {
-  if(!Number.isSafeInteger(requestId)||!allowed.has(method)||!Array.isArray(args))throw new Error('Solicitud de tabla no válida.')
+  if(!Number.isSafeInteger(requestId)||!Array.isArray(args))throw new Error('Solicitud de tabla no válida.')
+  if(method==='recipeCancel'){
+   const job=recipeJobs.get(String(args[0]));if(job)job.cancelled=true
+   port.postMessage({requestId});return
+  }
+  if(method==='recipePreview'){
+   const key=String(args[0]),control={cancelled:false};recipeJobs.set(key,control)
+   try{
+    const result=await runRecipe(args[1] as RecipeOperationSource,args[2] as ProjectRecipeStep[],{cancelled:()=>control.cancelled,
+     progress:progress=>port.postMessage({recipeProgress:{requestId:key,...progress}})})
+    port.postMessage({requestId,result})
+   }finally{recipeJobs.delete(key)}
+   return
+  }
+  if(!allowed.has(method))throw new Error('Solicitud de tabla no válida.')
   const result=method==='checkpoint'
    ? JSON.stringify({version:1,info:args[1],savedAt:new Date().toISOString(),snapshot:await engine.snapshot(String(args[0]))})
    : await (engine[method as keyof TableEngine] as (...values:unknown[])=>Promise<unknown>).apply(engine,args)
   port.postMessage({requestId,result})
- } catch(error){port.postMessage({requestId,error:error instanceof Error?error.message:String(error)})}
+ } catch(error){port.postMessage({requestId,error:error instanceof Error?error.message:String(error),...(error instanceof RecipeOperationError?{code:error.code,data:error.data}:{})})}
 })

@@ -63,6 +63,8 @@ const api:FreyaAPI={
  projectRegisterSource:(id,draft,format,request)=>invoke('project:registerSource',id,draft,format,request),projectReregisterSource:(id,source,request)=>invoke('project:reregisterSource',id,source,request),
  projectOpenSource:source=>invoke('project:openSource',source),projectShowSource:source=>invoke('project:showSource',source),projectForgetSource:(id,source)=>invoke('project:forgetSource',id,source),
  projectRelinkSource:(id,source,request)=>invoke('project:relinkSource',id,source,request),projectCancelSource:request=>invoke('project:cancelSource',request),
+ projectRecipeTry:(id,draft,request)=>invoke('project:recipeTry',id,draft,request),projectRecipeCancel:request=>invoke('project:recipeCancel',request),
+ projectSaveRecipe:(id,draft)=>invoke('project:saveRecipe',id,draft),projectRenameRecipe:(id,recipe,name)=>invoke('project:renameRecipe',id,recipe,name),projectRemoveRecipe:(id,recipe)=>invoke('project:removeRecipe',id,recipe),
  recents:()=>invoke('recents'),recoveries:()=>invoke('recoveries'),recover:id=>invoke('recover',id),discardRecovery:id=>invoke('discardRecovery',id),
  onEvent(callback){const listener=(_:unknown,event:AppEvent)=>callback(event);ipcRenderer.on('freya:event',listener);return()=>ipcRenderer.removeListener('freya:event',listener)},
  droppedPaths(files){const paths=Array.from(files).map(f=>webUtils.getPathForFile(f)).filter(Boolean);ipcRenderer.send('freya:drop',paths);return paths}

@@ -15,12 +15,30 @@
  import CsvTransform from './CsvTransform.svelte'
  import CsvQueryTools from './CsvQueryTools.svelte'
  import CsvExtract from './CsvExtract.svelte'
+ import SubsetPanel,{type SubsetIntent} from './SubsetPanel.svelte'
+ import type {ProjectInfo,ProjectSourceView} from '../../shared/project'
+ import type {ProjectRecipeView} from '../../shared/project-recipes'
  import {fidelityLabel} from '../../shared/operations'
  import {parse} from 'csv-parse/browser/esm/sync'
  import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit,TableEmptyEdit,LargeViewState,LargeViewQuery} from '../../shared/types'
  import type {CalculateColumnEdit} from '../../shared/calculated-column'
- let {doc,externalChange=false,onanalysis,analysisHidden=false,onchange,onerror,onstatus,viewControls,commandTitle=(_id:string,label:string)=>label}:{doc:DocumentInfo;externalChange?:boolean;onanalysis:(section?:AnalysisSection,statistics?:AnalysisStatistics)=>void;analysisHidden?:boolean;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;viewControls?:Snippet;commandTitle?:(id:string,label:string)=>string}=$props()
+ let {doc,externalChange=false,onanalysis,analysisHidden=false,onchange,onerror,onstatus,viewControls,project=null,sourceInfo,recipes=[],commandTitle=(_id:string,label:string)=>label}:{doc:DocumentInfo;externalChange?:boolean;onanalysis:(section?:AnalysisSection,statistics?:AnalysisStatistics)=>void;analysisHidden?:boolean;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;viewControls?:Snippet;project?:ProjectInfo|null;sourceInfo?:ProjectSourceView;recipes?:ProjectRecipeView[];commandTitle?:(id:string,label:string)=>string}=$props()
  let showExtract=$state(false),extractButton=$state<HTMLButtonElement>()
+ let subset=$state<SubsetIntent|null>(null),subsetPanel=$state<SubsetPanel>(),subsetButton=$state<HTMLButtonElement>(),subsetContext=''
+ $effect(()=>{
+  const key=project&&sourceInfo?JSON.stringify([project.path,project.id,sourceInfo.id]):''
+  untrack(()=>{if(key===subsetContext)return;if(subsetContext&&subset)subsetDrafts.set(subsetContext,$state.snapshot(subset));subsetContext=key;subset=key?structuredClone(subsetDrafts.get(key)??null):null})
+ })
+ onDestroy(()=>{if(subsetContext&&subset)subsetDrafts.set(subsetContext,$state.snapshot(subset))})
+ function closeSubset(){if(subsetContext)subsetDrafts.delete(subsetContext);subset=null;subsetButton?.focus()}
+ export function closeSubsetThen(run:()=>void){withSubsetClosed(run)}
+ function withSubsetClosed(run:()=>void){if(subset&&subsetPanel)subsetPanel.closeThen(run);else run()}
+ export function openSubset(intent:SubsetIntent={}){
+  if(!project||!sourceInfo)return
+  const applied=large?{...$state.snapshot(largeView?.query??{}),offset:0,limit:200,requestId:0}:$state.snapshot(query())
+  const next={draftId:crypto.randomUUID(),...intent,...!intent.blank&&!intent.recipeId&&!intent.baseRecipeId?{query:applied,ignoredSearch:[applied.search??'',...Object.values('filters' in applied?applied.filters??{}:{})].filter(Boolean)}:{}}
+  withSubsetClosed(()=>{showExtract=false;showQuery=false;subset=next})
+ }
  let showCommands=$state(false),commandsButton=$state<HTMLButtonElement>(),commandReturn:HTMLElement|null=null
  type TransformOperation=import('../../shared/types').TableTransformEdit['operation']|TableEmptyEdit['operation']|'calculate'
  let showTransform=$state(false),transformStart=$state<TransformOperation>(),calculationPosition=$state<number>(),emptyColumn=$state<number>(),emptyMarked=$state(false),transformReturn:HTMLElement|null=null
@@ -37,6 +55,7 @@
  const initialView=untrack(()=>csvAnalysisViews.get(doc.id)),initialQuery=initialView?.query
  let firstLoad=true
  let conditions=$state<TableFilter[]>(initialQuery?.conditions??[]),order=$state<TableSort[]>(initialQuery?.order??[]),filterMode=$state<'all'|'any'>(initialQuery?.filterMode??'all'),showQuery=$state(false),queryError=$state(''),filterError=$state(''),queryButton=$state<HTMLElement>()
+ const subsetReason=$derived(!sourceInfo?t('subset.addSource'):project?.readonly?t('project.future',{version:project.version}):sourceInfo.status!=='verified'?t('subset.sourceUnavailable',{reason:t('project.source.status.'+sourceInfo.status)}):queryError?t('ui.reason.query'):'')
  const locked=$derived(doc.readonly||interpreting||!!queryError)
  const readonlyReason=$derived(doc.projectSource==='protected'?'projectProtected':doc.projectSource==='closed'?'projectClosed':'readonly')
  const calculationDisabled=$derived(doc.projectSource?t('ui.reason.'+readonlyReason):large||doc.readonly?t('calculate.readonly'):externalChange?t('calculate.error.disk'):(doc.headers?.length??0)>=200?t('calculate.error.limitColumns'):locked?t('ui.reason.busy'):'')
@@ -87,8 +106,9 @@
   {id:'viewDocument',label:'Ver en el documento completo',detail:'Quita la búsqueda y enfoca la fila original · Ctrl/⌘ + Mayús + G',disabled:!large||!viewActive||selectedRows.length!==1,run:()=>revealRow(Number(selectedRows[0]))},
   {id:'replaceDocument',label:'Reemplazar en documento…',detail:doc.projectSource?t('ui.reason.'+readonlyReason):'Documento completo, incluidas filas ocultas · vista previa · Ctrl/⌘ + Mayús + F',disabled:large||!!doc.projectSource,run:focusReplace},
   {id:'filters',label:'Filtros por columna',detail:large?'Usa Filtrar: en archivos grandes cada filtro recorre el archivo':'Mostrar u ocultar filtros de texto en encabezados',disabled:large,run:()=>showFilters=!showFilters},
-  {id:'query',label:large?'Filtrar archivo completo':'Consulta avanzada',detail:large?'Filtrar por texto, número, fecha o regex al pulsar Aplicar':'Filtrar por texto, número, fecha o regex; ordenar varias columnas · solo vista',disabled:large&&(!viewReady||changingView),run:()=>large?openLargeFilters():showQuery=!showQuery},
-  {id:'extract',label:'Extraer filas a un archivo nuevo…',detail:'Filtra por condiciones y columnas el archivo grande y crea un archivo nuevo; el original no se modifica',disabled:!large,run:()=>{showQuery=false;showExtract=!showExtract}},
+  {id:'query',label:large?'Filtrar archivo completo':'Consulta avanzada',detail:large?'Filtrar por texto, número, fecha o regex al pulsar Aplicar':'Filtrar por texto, número, fecha o regex; ordenar varias columnas · solo vista',disabled:large&&(!viewReady||changingView),run:()=>withSubsetClosed(()=>{if(large)void openLargeFilters();else showQuery=!showQuery})},
+  {id:'extract',label:'Extraer filas a un archivo nuevo…',detail:'Filtra por condiciones y columnas el archivo grande y crea un archivo nuevo; el original no se modifica',disabled:!large,run:()=>withSubsetClosed(()=>{showQuery=false;showExtract=!showExtract})},
+  ...project?[{id:'saveSubset',label:t('subset.saveAs'),detail:t('subset.saveAsHint'),keywords:'conjunto subconjunto muestra muestreo semilla subset sample dataset receta',disabled:!!subsetReason,disabledReason:subsetReason,run:()=>openSubset()},{id:'newSubset',label:t('subset.new'),detail:t('subset.newHint'),keywords:'conjunto subconjunto muestra muestreo semilla subset sample dataset receta',disabled:!!subsetReason,disabledReason:subsetReason,run:()=>openSubset({blank:true})}]:[],
   {id:'clearQuery',label:large?'Quitar búsqueda y filtros':'Quitar filtros y orden',detail:'Restaura la vista de todas las filas; no cambia el documento',disabled:large?!largeView:!search&&!Object.values(filters).some(Boolean)&&!sort&&!order.length&&!conditions.length,run:()=>{if(large)return clearView();search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}},
   {id:'sql',label:'Análisis SQL y asistentes',detail:'Mostrar u ocultar agrupaciones, tablas dinámicas (pivot) y cruces de archivos con DuckDB',disabled:false,run:()=>analyze('sql')},
   {id:'statistics',label:'Estadísticas y exploración',detail:large?'Las estadísticas llegan en una fase posterior':'Mostrar u ocultar perfiles, frecuencias, valores faltantes, duplicados y correlación',disabled:large,run:()=>analyze('statistics')},
@@ -472,6 +492,7 @@
    {@render item('copyMarkdown')}
   </div></details>
   {#if large}<button bind:this={extractButton} aria-label={t('charts.toolbar.extract')} data-tooltip={t('charts.toolbar.extract')} aria-expanded={showExtract} title="Crea un archivo nuevo con las filas que cumplan unas condiciones; el original no se modifica" onclick={()=>void runCommand('extract')}><Icon name="funnel" size={14}/><span class="tool-text">Extraer…</span></button>{/if}
+  {#if project}<span title={subsetReason||undefined}><button bind:this={subsetButton} type="button" aria-label={t('subset.saveAs')} disabled={!!subsetReason} aria-describedby={subsetReason?'subset-disabled-'+doc.id:undefined} onclick={()=>openSubset()}><Icon name="funnel" size={14}/><span class="tool-text">{t('subset.saveAs')}</span></button>{#if subsetReason}<span class="sr-only" id={'subset-disabled-'+doc.id}>{subsetReason}</span>{/if}</span>{/if}
   <span class="spacer"></span>
   <span class="goto-wrap"><button {...controlHint(!gotoTotal?'noRows':null, (commandTitle('go.row',t('charts.toolbar.goToRow'))))} bind:this={gotoButton} data-tooltip={commandTitle('go.row',t('charts.toolbar.goToRow'))} aria-label={t('charts.toolbar.goToRow')} aria-expanded={showGoto}  disabled={!gotoTotal} onclick={()=>void runCommand('goToRow')}><Icon name="arrow-down" size={14}/><span class="tool-text">{t('charts.toolbar.goToRow')}</span></button>{#if showGoto}<form class="goto-popover" novalidate onsubmit={event=>{event.preventDefault();void goToRow()}}><label>Ir a la fila <input bind:this={gotoInput} onkeydown={event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeGoto()}}} type="number" min="1" max={gotoTotal} step="1" inputmode="numeric" aria-label="Número de fila" aria-invalid={!!gotoError} bind:value={gotoValue} oninput={()=>gotoError=''}/></label><span class="muted">de {gotoTotal.toLocaleString()}</span><button type="submit">Ir</button><button type="button" onclick={closeGoto}>Cerrar</button>{#if gotoError}<span role="alert" class="goto-error">{gotoError}</span>{/if}</form>{/if}</span>
   <button bind:this={commandsButton} data-tooltip={commandTitle('edit.commandPalette',t('charts.toolbar.findAction'))} aria-label={t('charts.toolbar.findAction')} title={commandTitle('edit.commandPalette',t('charts.toolbar.findAction'))} onclick={openCommands}><Icon name="command" size={14}/><span class="tool-text">{t('charts.toolbar.findAction')}</span></button>
@@ -489,6 +510,7 @@
  </section>{/if}
  {#if large}<p id="large-search-announcement" class="sr-only" role="status">{viewAnnouncement}</p>{/if}
  {#if showExtract&&large}<CsvExtract {doc} {onerror} initialQuery={largeView?.query} partial={!!largeView&&largeView.status!=='complete'} onclose={()=>{showExtract=false;extractButton?.focus()}}/>{/if}
+ {#if subset&&project&&sourceInfo}{#key subset}<SubsetPanel bind:this={subsetPanel} {project} source={sourceInfo} {recipes} intent={subset} ontry={(draft,requestId)=>window.freya.projectRecipeTry(project!.id,draft,requestId)} oncancel={requestId=>window.freya.projectRecipeCancel(requestId)} onsave={draft=>window.freya.projectSaveRecipe(project!.id,draft)} onclose={closeSubset}/>{/key}{/if}
  {#if showQuery}<CsvQueryTools {large} total={doc.rowCount??page.total} error={filterError} applying={large&&changingView} headers={doc.headers??[]} initialConditions={conditions} initialOrder={activeOrder} initialMode={filterMode} onapply={applyQuery} onclose={()=>{showQuery=false;queryButton?.focus()}}/>{/if}
  {#if queryError}<div class="warning-banner" role="alert">{#if large}{queryError} <button {...controlHint(busy||changingView?'busy':null)} disabled={busy||changingView} onclick={()=>void startView()}>Volver a buscar</button>{:else}Consulta no aplicada. Se conserva la última vista válida. {queryError} Corrige o limpia la consulta para editar. <button {...controlHint(busy?'busy':null)} disabled={busy} onclick={()=>void load(0)}>Reintentar consulta</button>{/if}</div>{/if}
  {#if doc.extract}<div class="warning-banner extract-banner" role="note"><strong>Extracto de «{doc.extract.sourceName}»</strong> · {doc.extract.matched.toLocaleString('es')} de {doc.extract.total.toLocaleString('es')} filas{#if doc.extract.conditions} · {doc.extract.conditions}{/if}{#if doc.extract.columns} · columnas: {doc.extract.columns.join(', ')}{/if} · {fidelityLabel[doc.extract.fidelity]}.{#each doc.extract.normalization as note} {note}{/each}{#if doc.extract.irregularRows} {doc.extract.irregularRows.toLocaleString('es')} filas con distinto número de campos que el encabezado se conservaron como estaban.{/if} El original no se modificó.</div>{/if}
@@ -537,6 +559,8 @@
  <p id="dock-announcement" class="sr-only" role="status">{announcement}</p>
 </div>
 <script lang="ts" module>
+ // Un cambio de pestaña desmonta la tabla, pero conserva la intención de su borrador en esta ventana.
+ const subsetDrafts=new Map<string,import('./SubsetPanel.svelte').SubsetIntent>()
  function focus(node:HTMLInputElement){node.focus();node.select()}
  // Lleva el nodo a otro lugar del documento (la barra de estado de la ventana) y lo retira al desmontarse.
  function portal(node:HTMLElement,selector:string){document.querySelector(selector)?.appendChild(node);return{destroy(){node.remove()}}}

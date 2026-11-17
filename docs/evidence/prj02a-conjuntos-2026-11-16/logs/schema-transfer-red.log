@@ -1,0 +1,36 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <WORKTREE>
+
+ ❯ tests/projects.test.ts (9 tests | 1 failed) 974ms
+   ❯ PRJ-02a · persistencia pública de conjuntos (9)
+     × no multiplica por cada conjunto el esquema completo que ya publica la fuente 474ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/projects.test.ts > PRJ-02a · persistencia pública de conjuntos > no multiplica por cada conjunto el esquema completo que ya publica la fuente
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/projects.test.ts:65:59
+     63|   const views=store.recipeViews()
+     64|   expect(views).toHaveLength(40)
+     65|   expect(views.every(recipe=>recipe.columns===undefined)).toBe(true)
+       |                                                           ^
+     66|   expect(Buffer.byteLength(JSON.stringify(views))).toBeLessThan(30_000)
+     67|   expect(store.resolveRecipe(views[0].id).columns).toEqual(columns)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 passed (9)
+   Start at  21:05:03
+   Duration  1.17s (tests 89%, transform 5%, import 5%)

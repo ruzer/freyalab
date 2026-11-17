@@ -1,0 +1,43 @@
+Running 1 test using 1 worker
+
+(node:69047) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/project-subsets.spec.ts:320:1 › PRJ-02a: una transición futura no desbloquea una fuente abierta que deja de reconocerse
+  1) [csv] › tests/e2e/project-subsets.spec.ts:320:1 › PRJ-02a: una transición futura no desbloquea una fuente abierta que deja de reconocerse
+
+    Error: expect(received).toMatchObject(expected)
+
+    - Expected  - 2
+    + Received  + 1
+
+      Object {
+        "dirty": false,
+    -   "projectSource": "closed",
+    -   "readonly": true,
+    +   "readonly": false,
+      }
+
+      326 |  const after=await page.evaluate(()=>window.freya.projectState())
+      327 |  expect(after.project).toMatchObject({readonly:true,version:2});expect(after.sources).toEqual([])
+    > 328 |  expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toMatchObject({projectSource:'closed',readonly:true,dirty:false})
+          |                                                                                             ^
+      329 |  await expect(page.evaluate(id=>window.freya.tableEdit(id,{type:'cell',rowId:'1',column:0,value:'no escribir'}),doc.id)).rejects.toThrow()
+      330 |  expect(await readFile(source)).toEqual(original);expect(await readFile(join(folder,'proyecto.freyalab'),'utf8')).toBe(future)
+      331 | })
+        at <WORKTREE>/tests/e2e/project-subsets.spec.ts:328:93
+
+    Error Context: test-results/project-subsets-PRJ-02a-un-b1420-rta-que-deja-de-reconocerse-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/project-subsets-PRJ-02a-un-b1420-rta-que-deja-de-reconocerse-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/project-subsets-PRJ-02a-un-b1420-rta-que-deja-de-reconocerse-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [csv] › tests/e2e/project-subsets.spec.ts:320:1 › PRJ-02a: una transición futura no desbloquea una fuente abierta que deja de reconocerse

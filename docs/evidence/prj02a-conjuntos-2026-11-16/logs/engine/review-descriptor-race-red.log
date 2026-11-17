@@ -1,0 +1,68 @@
+RUN  v5.0.5 <WORKTREE>
+
+ ❯ ../freyalab-prj02-review/descriptor-race.test.ts (1 test | 1 failed) 16ms
+   × reemplazo entre quick y worker no debe aceptar otro inode en first parcial 15ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  ../freyalab-prj02-review/descriptor-race.test.ts > reemplazo entre quick y worker no debe aceptar otro inode en first parcial
+AssertionError: promise resolved "{ headers: [ 'ID', 'Value' ], …(9) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "bytesRead": 42,
++   "cancelled": false,
++   "columns": [
++     {
++       "name": "ID",
++       "position": 1,
++     },
++     {
++       "name": "Value",
++       "position": 2,
++     },
++   ],
++   "complete": false,
++   "eligible": 1,
++   "headers": [
++     "ID",
++     "Value",
++   ],
++   "resultCount": 1,
++   "rows": [
++     [
++       "1",
++       "changed!",
++     ],
++   ],
++   "sampling": [
++     {
++       "eligible": 1,
++       "method": "first",
++       "requestedRows": 1,
++       "selected": 1,
++       "step": 0,
++     },
++   ],
++   "scanned": 1,
+  }
+
+ ❯ ../freyalab-prj02-review/descriptor-race.test.ts:21:76
+     19|   const after=await stat(path)
+     20|   expect(before.ino).not.toBe(after.ino);expect(before.size).toBe(afte…
+     21|   await expect(runRecipe(descriptor,[{op:'sample',method:'first',rows:…
+       |                                                                            ^
+     22|  }finally{await rm(folder,{recursive:true,force:true})}
+     23| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  08:48:17
+   Duration  185ms (import 64%, transform 22%, tests 13%, worker 1%)

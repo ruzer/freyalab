@@ -1,0 +1,87 @@
+Running 2 tests using 1 worker
+
+(node:67782) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/2] [csv] › tests/e2e/project-subsets.spec.ts:427:1 › PRJ-02a: una columna eliminada permanece pendiente hasta elegir Todas las columnas explícitamente
+  1) [csv] › tests/e2e/project-subsets.spec.ts:427:1 › PRJ-02a: una columna eliminada permanece pendiente hasta elegir Todas las columnas explícitamente
+
+    Error: expect(locator).toBeDisabled() failed
+
+    Locator:  getByRole('region', { name: 'Conjunto', exact: true }).getByRole('button', { name: 'Probar', exact: true })
+    Expected: disabled
+    Received: enabled
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeDisabled" getByRole('region', { name: 'Conjunto', exact: true }).getByRole('button', { name: 'Probar', exact: true }) with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Conjunto', exact: true }).getByRole('button', { name: 'Probar', exact: true })
+        34 × locator resolved to <button type="button" class="btn-secondary svelte-ege1hi">Probar</button>
+           - unexpected value "enabled"
+
+
+      431 |  await projectPanel().getByRole('button',{name:'Volver a registrar',exact:true}).press('Enter')
+      432 |  await openStored('ID y Nota pendiente');const panel=subsetPanel()
+    > 433 |  await expect(panel.getByRole('button',{name:'Probar',exact:true})).toBeDisabled()
+          |                                                                     ^
+      434 |  await expect(panel.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled()
+      435 |  await expect(panel).toContainText('Revisa la columna 5')
+      436 |  expect((await manifest()).recipes[0].steps).toEqual([{op:'select',columns:[{position:1,name:'ID'},{position:5,name:'Nota'}]}])
+        at <WORKTREE>/tests/e2e/project-subsets.spec.ts:433:69
+
+    Error Context: test-results/project-subsets-PRJ-02a-un-8f270-las-columnas-explícitamente-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/project-subsets-PRJ-02a-un-8f270-las-columnas-explícitamente-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/project-subsets-PRJ-02a-un-8f270-las-columnas-explícitamente-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:67878) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/2] [csv] › tests/e2e/project-subsets.spec.ts:458:1 › PRJ-02a: reabrir el proyecto no revierte una columna ya reelegida en el borrador de una receta
+  2) [csv] › tests/e2e/project-subsets.spec.ts:458:1 › PRJ-02a: reabrir el proyecto no revierte una columna ya reelegida en el borrador de una receta
+
+    Error: expect(locator).toBeEnabled() failed
+
+    Locator:  getByRole('region', { name: 'Conjunto', exact: true }).getByRole('button', { name: 'Probar', exact: true })
+    Expected: enabled
+    Received: disabled
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeEnabled" getByRole('region', { name: 'Conjunto', exact: true }).getByRole('button', { name: 'Probar', exact: true }) with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Conjunto', exact: true }).getByRole('button', { name: 'Probar', exact: true })
+        34 × locator resolved to <button disabled type="button" aria-describedby="c5-reason" class="btn-secondary svelte-ege1hi">Probar</button>
+           - unexpected value "disabled"
+
+
+      469 |  await page.evaluate(path=>window.freya.projectOpenRecent(path),path)
+      470 |  await openStored('Edad por reparar');panel=subsetPanel()
+    > 471 |  await expect(panel.getByRole('button',{name:'Probar',exact:true})).toBeEnabled()
+          |                                                                     ^
+      472 |  await expect(panel.getByLabel('Columna de condición 1',{exact:true})).toHaveAttribute('aria-invalid','false')
+      473 |  expect((await manifest()).recipes[0].steps).toEqual([{op:'filter',mode:'all',conditions:[{column:{position:3,name:'Edad'},op:'greaterEqual',value:'18',caseSensitive:false}]}])
+      474 |  expect(await readFile(source)).toEqual(changed)
+        at <WORKTREE>/tests/e2e/project-subsets.spec.ts:471:69
+
+    Error Context: test-results/project-subsets-PRJ-02a-re-8f76b-n-el-borrador-de-una-receta-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/project-subsets-PRJ-02a-re-8f76b-n-el-borrador-de-una-receta-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/project-subsets-PRJ-02a-re-8f76b-n-el-borrador-de-una-receta-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  2 failed
+    [csv] › tests/e2e/project-subsets.spec.ts:427:1 › PRJ-02a: una columna eliminada permanece pendiente hasta elegir Todas las columnas explícitamente
+    [csv] › tests/e2e/project-subsets.spec.ts:458:1 › PRJ-02a: reabrir el proyecto no revierte una columna ya reelegida en el borrador de una receta

@@ -1,0 +1,10 @@
+negative seed words ['e4d971771b652c20', 'e99ff867dbf682c9', '382ff84cb27281e9', '6d1db36ccba982d2']
+arrival 3 word e4d971771b652c20 remainder 2
+arrival 4 word e99ff867dbf682c9 remainder 1
+arrival 5 word 382ff84cb27281e9 remainder 1
+reservoir(-1,2,[A..E]) ['A', 'E']
+percent(-1,50,[1..7]) [3, 4]
+arrival 3 word e220a8397b1dcdaf remainder 1
+arrival 4 word 6e789e6aa1b965f4 remainder 0
+arrival 5 word 06c45d188009454f remainder 4
+repeated seed0 reservoir after reverse ['C', 'B']

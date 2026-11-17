@@ -1,0 +1,9 @@
+ID,Entidad,Edad,Ingreso,Nota
+00123,Oaxaca,34,1200,"línea 1
+línea 2"
+00124,Oaxaca,17,0,
+9007199254740993,Puebla,45,3400,ok
+00126,Oaxaca,52,,ok
+00127,Chiapas,29,2100,ok
+00128,Oaxaca,61,5000
+00129,Puebla,15,0,ok

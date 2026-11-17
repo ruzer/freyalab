@@ -1,0 +1,9 @@
+Running 2 tests using 1 worker
+
+(node:72278) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/2] [csv] › tests/e2e/project-subsets.spec.ts:291:47 › PRJ-02a: Proyecto presenta una cadena de tres niveles sin abrir la fuente [es]
+[2/2] [csv] › tests/e2e/project-subsets.spec.ts:291:47 › PRJ-02a: Proyecto presenta una cadena de tres niveles sin abrir la fuente [en-XA]
+  2 passed (4.1s)

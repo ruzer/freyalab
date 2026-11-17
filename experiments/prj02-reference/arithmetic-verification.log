@@ -1,0 +1,125 @@
+{
+  "referenceWords": 7,
+  "CMatches": true,
+  "reservoirRows3": {
+    "initialPositions": [
+      1,
+      2,
+      3
+    ],
+    "steps": [
+      {
+        "inputPosition": 4,
+        "word": "63cbe1e459320dd7",
+        "decimal": "7191089600892374487",
+        "limit": "18446744073709551616",
+        "quotient": "1797772400223093621",
+        "remainder": 3,
+        "before": [
+          1,
+          2,
+          3
+        ],
+        "after": [
+          1,
+          2,
+          3
+        ],
+        "replaced": false
+      },
+      {
+        "inputPosition": 5,
+        "word": "044c3cd7f43c661c",
+        "decimal": "309689372594955804",
+        "limit": "18446744073709551615",
+        "quotient": "61937874518991160",
+        "remainder": 4,
+        "before": [
+          1,
+          2,
+          3
+        ],
+        "after": [
+          1,
+          2,
+          3
+        ],
+        "replaced": false
+      },
+      {
+        "inputPosition": 6,
+        "word": "e6984080bab12a02",
+        "decimal": "16616101746815609346",
+        "limit": "18446744073709551612",
+        "quotient": "2769350291135934891",
+        "remainder": 0,
+        "before": [
+          1,
+          2,
+          3
+        ],
+        "after": [
+          6,
+          2,
+          3
+        ],
+        "replaced": true
+      },
+      {
+        "inputPosition": 7,
+        "word": "953aeb70673e29cb",
+        "decimal": "10753165928301472203",
+        "limit": "18446744073709551614",
+        "quotient": "1536166561185924600",
+        "remainder": 3,
+        "before": [
+          6,
+          2,
+          3
+        ],
+        "after": [
+          6,
+          2,
+          3
+        ],
+        "replaced": false
+      }
+    ],
+    "finalSlots": [
+      6,
+      2,
+      3
+    ],
+    "outputPositions": [
+      2,
+      3,
+      6
+    ],
+    "outputIds": [
+      "00124",
+      "9007199254740993",
+      "00128"
+    ]
+  },
+  "percent50": {
+    "threshold": "9223372036854775808",
+    "thresholdHex": "8000000000000000",
+    "comparison": "unsigned hash < threshold",
+    "outputPositions": [
+      1,
+      2,
+      5,
+      6,
+      7
+    ],
+    "outputIds": [
+      "00123",
+      "00124",
+      "00127",
+      "00128",
+      "00129"
+    ]
+  },
+  "sourceBytes": 211,
+  "sourceSha256": "bde31aec296f4b09823b940e59f4cf1cdf4cddf66882578d3128d3fff2aa8bb8"
+}

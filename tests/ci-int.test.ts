@@ -4,13 +4,13 @@ import {createRequire} from 'node:module'
 import {dirname} from 'node:path'
 import {expect,it} from 'vitest'
 import {blockingTimeout} from './helpers/blocking-timeout'
+import {matrix,workflow} from './helpers/ci-workflow'
 
-type Job={os:string;part?:string;projects?:string;executable?:string}
 type Suite={title:string;suites?:Suite[];specs?:{file:string;title:string;tests:{projectName:string}[]}[]}
 const require=createRequire(import.meta.url)
-const workflow=readFileSync(new URL('../.github/workflows/ci.yml',import.meta.url),'utf8').replaceAll('\r\n','\n')
 const {scripts}=JSON.parse(readFileSync(new URL('../package.json',import.meta.url),'utf8'))
-const matrices=[...workflow.matchAll(/^\s*'(\[\{.*\}\])'(?:\s*\|\|)?[ \t]*$/gm)].map(([,rows])=>JSON.parse(rows) as Job[])
+// Selección contextual: PR con/sin paquete pueden tener matrices diferentes.
+const matrices=[matrix('schedule'),matrix('pull_request',true),matrix('push')]
 
 function selection(script:string){
  const filter=scripts[script]?.match(/ (--grep(?:-invert)?) "([^"]+)"$/)
@@ -37,6 +37,7 @@ it('Intel conserva las identidades de desarrollo en dos partes y prueba el paque
  const [scheduled,pr,push]=matrices.map(rows=>rows.filter(job=>job.os==='macos-15-intel'))
  expect(scheduled?.map(job=>[job.part,job.projects])).toEqual([['shell-md','--project=shell --project=md'],['csv','--project=csv'],['package',undefined]])
  expect(pr).toEqual([])
+ expect(matrix('pull_request',false).filter(job=>job.os==='macos-15-intel')).toEqual([])
  expect(push).toEqual(scheduled)
  expect(workflow).toMatch(/run: npm run test:e2e:fast -- [^\n]*\$\{\{ matrix\.projects \}\}/)
  const all=list().sort()

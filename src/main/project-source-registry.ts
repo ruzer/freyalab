@@ -7,6 +7,7 @@ import {projectSource,type ProjectInfo,type ProjectSource,type ProjectSourceDraf
 import {t} from '../shared/i18n'
 import {ANALYSIS_LIMITS} from './analysis-source'
 import type {DocumentInfo,TableOptions} from '../shared/types'
+import type {RecipeOperationSource} from '../shared/recipe-operation'
 
 type Options=Parameters<typeof fingerprintCsvSource>[1]
 type Progress=NonNullable<Options>['progress']
@@ -20,10 +21,11 @@ const relativePath=(root:string,path:string)=>relative(root,path).split(sep).joi
 export class ProjectSourceRegistry{
  private draft:{id:string;project:ProjectInfo;path:string;target:string;stamp:FileStamp}|undefined
  private external=new Map<string,string>()
- constructor(private projects:ProjectStore,private allowed:(path:string)=>Promise<boolean>,private assertClean:(path:string)=>void,private opened:(path:string)=>Pick<DocumentInfo,'rowCount'|'headers'>|undefined=()=>undefined){}
- private project(id?:string){
+ private recipeChanged=new Map<string,string>()
+ constructor(private projects:ProjectStore,private allowed:(path:string)=>Promise<boolean>,private assertClean:(path:string)=>void,private opened:(path:string)=>Pick<DocumentInfo,'rowCount'|'headers'>&{id?:string}|undefined=()=>undefined){}
+ private project(id?:string,readOnly=false){
   const project=this.projects.active
-  if(!project||project.readonly||id!==undefined&&project.id!==id)throw new Error(t('project.error.readonly'))
+  if(!project||project.readonly&&!readOnly||id!==undefined&&project.id!==id)throw new Error(t('project.error.readonly'))
   return project
  }
  private source(id:string){
@@ -41,7 +43,7 @@ export class ProjectSourceRegistry{
  }
  async list():Promise<ProjectSourceView[]>{
   const project=this.projects.active
-  if(!project||project.readonly)return []
+  if(!project)return []
   const results:ProjectSourceView[]=[]
   for(const source of this.projects.sources){
    const state=await this.target(project,source)
@@ -50,15 +52,16 @@ export class ProjectSourceRegistry{
     const info=await quickCsvSource(state.target).catch(()=>null)
     status=!info?'missing':info.bytes===source.bytes&&info.quick.mtimeMs===source.quick.mtimeMs&&info.quick.headSha256===source.quick.headSha256&&info.quick.tailSha256===source.quick.tailSha256?'verified':'changed'
    }
+   if(status==='verified'&&this.recipeChanged.get(source.id)===project.path+'\0'+source.sha256)status='changed'
    const table=state.target?this.opened(state.target):undefined,columns=source.schema.columns.length
    const overAnalysis=source.bytes>ANALYSIS_LIMITS.bytes||columns>ANALYSIS_LIMITS.columns||!!table&&((table.rowCount??0)>ANALYSIS_LIMITS.rows||(table.rowCount??0)*(table.headers?.length??columns)>ANALYSIS_LIMITS.cells)
-   results.push({id:source.id,name:basename(source.path),path:source.path,external:source.external,bytes:source.bytes,format:source.format,columnCount:columns,status,overAnalysis})
+   results.push({id:source.id,name:basename(source.path),path:source.path,external:source.external,bytes:source.bytes,format:source.format,columnCount:columns,columns:source.schema.columns,documentId:table?.id,status,overAnalysis})
   }
   return results
  }
  async protectedPaths(){
   const project=this.projects.active,paths=new Map<string,{sha256:string;format:TableOptions}>()
-  if(!project||project.readonly)return paths
+  if(!project)return paths
   for(const source of this.projects.sources){
    const state=await this.target(project,source)
    if(state.target)paths.set(state.target,source)
@@ -67,15 +70,25 @@ export class ProjectSourceRegistry{
   return paths
  }
  async openPath(id:string){
-  const state=await this.target(this.project(),this.source(id))
+  const state=await this.target(this.project(undefined,true),this.source(id))
   if(!state.target)throw new Error(t(state.status==='external'?'project.source.authorize':'project.source.missing'))
   return state.target
  }
  async authorizeExternal(id:string,selected:string){
-  const source=this.source(id),project=this.project(),expected=sourcePath(project.path,source)
+  const source=this.source(id),project=this.project(undefined,true),expected=sourcePath(project.path,source)
   if(!source.external||resolve(selected)!==expected)throw new Error(t('project.source.chooseSame'))
   this.external.set(expected,await realpath(selected))
  }
+ async recipeSource(projectId:string,id:string):Promise<RecipeOperationSource>{
+  const project=this.project(projectId,true),source=this.source(id),state=await this.target(project,source)
+  if(!state.target)throw new Error(t(state.status==='external'?'project.source.authorize':'project.source.missing'))
+  this.assertClean(state.target)
+  if(this.recipeChanged.get(id)===project.path+'\0'+source.sha256)throw new Error(t('project.source.changed'))
+  const current=await quickCsvSource(state.target).catch(()=>{throw new Error(t('project.source.missing'))})
+  if(current.bytes!==source.bytes||current.quick.mtimeMs!==source.quick.mtimeMs||current.quick.headSha256!==source.quick.headSha256||current.quick.tailSha256!==source.quick.tailSha256)throw new Error(t('project.source.changed'))
+  return{path:state.target,bytes:source.bytes,format:source.format,schema:source.schema,sha256:source.sha256,mtimeMs:current.quick.mtimeMs,dev:current.dev,ino:current.ino}
+ }
+ markRecipeChanged(id:string){const project=this.projects.active,source=this.projects.sources.find(source=>source.id===id);if(project&&source)this.recipeChanged.set(id,project.path+'\0'+source.sha256)}
  async prepare(path:string,options:SourceOptions={},nativeChoice=false):Promise<ProjectSourceDraft>{
   const project=this.project()
   if(!nativeChoice&&!await this.allowed(path))throw new Error(t('project.source.authorize'))
@@ -133,12 +146,14 @@ export class ProjectSourceRegistry{
  async reregister(projectId:string,id:string,signal:AbortSignal|undefined,progress:Progress,keepLocal:()=>Promise<boolean>){
   const project=this.project(projectId),before=this.source(id),target=await this.openPath(id)
   const source=await this.sourceRecord(project,sourcePath(project.path,before),target,id,before.format,undefined,signal,progress)
-  return this.projects.changeSources(project,entries=>{
+  const saved=await this.projects.changeSources(project,entries=>{
    signal?.throwIfAborted();this.assertClean(target)
    const current=entries.find(entry=>entry.id===id)
    if(!current||current.sha256!==before.sha256||current.path!==before.path)throw new Error(t('project.source.changed'))
    return entries.map(entry=>entry===current?{...source,history:[...(current.history??[]),current.sha256]}:entry)
   },keepLocal)
+  if(saved)this.recipeChanged.delete(id)
+  return saved
  }
  async forget(projectId:string,id:string,keepLocal:()=>Promise<boolean>){
   return this.projects.changeSources(this.project(projectId),entries=>entries.filter(entry=>entry.id!==id),keepLocal)

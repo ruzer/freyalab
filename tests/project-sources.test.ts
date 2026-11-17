@@ -22,7 +22,7 @@ describe('PRJ-01b · huella y formato de fuentes',()=>{
   const result=await fingerprintCsvSource(file,{progress:done=>events.push(done)})
   expect(result).toMatchObject({sha256:sha(original),quick:{headSha256:sha(original),tailSha256:sha(original)}})
   expect(events.at(-1)).toBe(original.length)
-  expect(await quickCsvSource(file)).toEqual({bytes:original.length,quick:result.quick})
+  expect(await quickCsvSource(file)).toEqual({bytes:original.length,mtimeMs:result.mtimeMs,dev:result.dev,ino:result.ino,quick:result.quick})
   expect(await readFile(file)).toEqual(original)
  })
  it('no guarda encabezados inventados al corregir un CSV sin encabezado',async()=>{
@@ -66,6 +66,20 @@ import {ProjectSourceRegistry} from '../src/main/project-source-registry'
 import {projectFile} from '../src/shared/project'
 
 describe('PRJ-01b · registro en un proyecto',()=>{
+ it('PRJ-02a identifica el documento por id y autoriza una receta solo sobre una fuente vigente',async()=>{
+  const profile=join(root,'profile');await mkdir(profile)
+  const store=new ProjectStore(profile),project=await store.create(folder,'Proyecto',false),file=join(folder,'datos.csv')
+  await writeFile(file,'ID,Grupo\n00123,Oaxaca\n')
+  const registry=new ProjectSourceRegistry(store,async()=>false,()=>{},()=>({id:'documento-abierto',rowCount:1,headers:['ID','Grupo']}))
+  const draft=await registry.prepare(file,{},true)
+  await registry.register(project.id,draft.id,{},undefined,undefined,async()=>false)
+  const [source]=store.sources
+  expect((await registry.list())[0]).toMatchObject({documentId:'documento-abierto',columns:source.schema.columns})
+  await expect(registry.recipeSource(project.id,source.id)).resolves.toMatchObject({path:await fs.realpath(file),sha256:source.sha256,schema:source.schema})
+  await expect(registry.recipeSource('otro',source.id)).rejects.toThrow()
+  await writeFile(file,'ID,Grupo\n00999,Puebla\n')
+  await expect(registry.recipeSource(project.id,source.id)).rejects.toThrow()
+ })
  it('cancela antes de guardar y registra después con ruta relativa e historial',async()=>{
   const profile=join(root,'profile');await mkdir(profile)
   const store=new ProjectStore(profile),project=await store.create(folder,'Proyecto',false)

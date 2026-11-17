@@ -79,7 +79,7 @@ export async function quickCsvSource(path:string){
  return withFile(path,async(file,info)=>{
   const length=Math.min(info.size,edge),head=await read(file,0,length)
   const tail=info.size<=edge?head:await read(file,info.size-length,length)
-  return{bytes:info.size,quick:{mtimeMs:info.mtimeMs,headSha256:sha(head),tailSha256:sha(tail)}}
+  return{...stamp(info),quick:{mtimeMs:info.mtimeMs,headSha256:sha(head),tailSha256:sha(tail)}}
  })
 }
 

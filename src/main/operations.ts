@@ -28,11 +28,11 @@ const bomBytes=(encoding:Encoding)=>encoding==='utf16le'?Buffer.from([0xff,0xfe]
 const decoderUtf8=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true})
 function decode(bytes:Buffer,encoding:Encoding){return encoding==='utf8'?decoderUtf8.decode(bytes):iconv.decode(bytes,encoding,{stripBOM:false})}
 const recordNumber=(ordinal:number)=>(ordinal+1).toLocaleString('es')
-function parseRecords(text:string,state:OperationSourceState){
+function parseRecords(text:string,state:Pick<OperationSourceState,'delimiter'>){
  return parseSync(text,{delimiter:state.delimiter,bom:false,relax_column_count:true,skip_empty_lines:false,record_delimiter:RECORD_DELIMITERS}) as string[][]
 }
 // Valida y separa en campos un lote de registros (bytes exactos). Si el lote falla, se localiza el primer registro culpable para dar su posición.
-function fieldsOf(raws:Buffer[],first:number,state:OperationSourceState):string[][]{
+export function fieldsOf(raws:Buffer[],first:number,state:Pick<OperationSourceState,'encoding'|'delimiter'>):string[][]{
  try {
   const rows=parseRecords(decode(Buffer.concat(raws),state.encoding),state)
   if(rows.length!==raws.length)throw new StrictRecordError(`El registro ${recordNumber(first)} y los siguientes no se pueden delimitar igual con el escáner y con el analizador estricto (${raws.length} frente a ${rows.length}).`)
@@ -40,9 +40,9 @@ function fieldsOf(raws:Buffer[],first:number,state:OperationSourceState):string[
  } catch(error) {
   for(let i=0;i<raws.length;i++){
    try { const rows=parseRecords(decode(raws[i],state.encoding),state); if(rows.length!==1)throw new Error(`${rows.length} registros`) }
-   catch(inner) { throw new StrictRecordError(`El registro ${recordNumber(first+i)} no es un CSV válido: ${(inner as Error).message.replace(/^.*?: /,'')}`) }
+   catch(inner) { throw new StrictRecordError(`El registro ${recordNumber(first+i)} no es un CSV válido: ${(inner as Error).message.replace(/^.*?: /,'')}`,{cause:inner}) }
   }
-  throw error instanceof StrictRecordError?error:new StrictRecordError(`El registro ${recordNumber(first)} y los siguientes no son un CSV válido: ${(error as Error).message}`)
+  throw error instanceof StrictRecordError?error:new StrictRecordError(`El registro ${recordNumber(first)} y los siguientes no son un CSV válido: ${(error as Error).message}`,{cause:error})
  }
 }
 export async function runOperation(state:OperationSourceState,request:EngineOperation,hooks:OperationHooks):Promise<OperationResult>{

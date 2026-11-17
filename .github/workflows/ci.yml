@@ -66,14 +66,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Intel reparte la suite en main y de noche; Ubuntu reparte los push a main.
+        # Intel reparte main/nocturna; Ubuntu reparte main; ARM separa el paquete cuando corresponde.
         include: >-
           ${{ fromJSON(
             github.event_name == 'schedule' &&
             '[{"os":"macos-15-intel","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15-intel","part":"csv","projects":"--project=csv"},{"os":"macos-15-intel","part":"package","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
+            github.event_name == 'pull_request' && needs.areas.outputs.package == 'true' &&
+            '[{"os":"ubuntu-24.04","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"macos-15"},{"os":"macos-15","part":"package","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
             github.event_name == 'pull_request' &&
-            '[{"os":"ubuntu-24.04","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"macos-15","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
-            '[{"os":"ubuntu-24.04","part":"shell-md","projects":"--project=shell --project=md"},{"os":"ubuntu-24.04","part":"csv-package","projects":"--project=csv","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"macos-15","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"},{"os":"macos-15-intel","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15-intel","part":"csv","projects":"--project=csv"},{"os":"macos-15-intel","part":"package","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]'
+            '[{"os":"ubuntu-24.04","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"macos-15"}]' ||
+            '[{"os":"ubuntu-24.04","part":"shell-md","projects":"--project=shell --project=md"},{"os":"ubuntu-24.04","part":"csv-package","projects":"--project=csv","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"macos-15"},{"os":"macos-15","part":"package","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"},{"os":"macos-15-intel","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15-intel","part":"csv","projects":"--project=csv"},{"os":"macos-15-intel","part":"package","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]'
           ) }}
     runs-on: ${{ matrix.os }}
     env:
@@ -120,7 +122,7 @@ jobs:
         if: matrix.executable
       - name: E2E fast (PR areas)
         id: e2e_fast_pr
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && matrix.part != 'package'
         env:
           FREYALAB_CI_AREAS: ${{ needs.areas.outputs.plan }}
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-fast
@@ -138,7 +140,7 @@ jobs:
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-fast
         run: npm run test:e2e:fast -- --workers=${{ env.FREYALAB_E2E_FAST_WORKERS }} --output=test-results-fast ${{ matrix.projects }}
       - name: E2E perf and solo (PR areas)
-        if: ${{ !cancelled() && github.event_name == 'pull_request' && (steps.e2e_fast_pr.outcome == 'success' || steps.e2e_fast_pr.outcome == 'failure') }}
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && matrix.part != 'package' && (steps.e2e_fast_pr.outcome == 'success' || steps.e2e_fast_pr.outcome == 'failure') }}
         env:
           FREYALAB_CI_AREAS: ${{ needs.areas.outputs.plan }}
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo

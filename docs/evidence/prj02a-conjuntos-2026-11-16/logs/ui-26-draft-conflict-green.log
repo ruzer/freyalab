@@ -1,0 +1,39 @@
+Running 26 tests using 1 worker
+
+(node:75452) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/26] [csv] › tests/e2e/project-subsets.spec.ts:59:1 › PRJ-02a: guarda la consulta de la fuente como conjunto, prueba sus siete registros y conserva el original
+[2/26] [csv] › tests/e2e/project-subsets.spec.ts:99:1 › PRJ-02a: semilla 7 repite la muestra y Escape permite conservar o descartar el borrador sin escribir
+[3/26] [csv] › tests/e2e/project-subsets.spec.ts:122:1 › PRJ-02a: la búsqueda no entra al conjunto y el orden aleatorio no acotado se explica antes de ejecutar
+[4/26] [csv] › tests/e2e/project-subsets.spec.ts:144:52 › PRJ-02a: controles alcanzables, temas y disposición del conjunto [es]
+[5/26] [csv] › tests/e2e/project-subsets.spec.ts:144:52 › PRJ-02a: controles alcanzables, temas y disposición del conjunto [en]
+[6/26] [csv] › tests/e2e/project-subsets.spec.ts:144:52 › PRJ-02a: controles alcanzables, temas y disposición del conjunto [en-XA]
+[7/26] [csv] › tests/e2e/project-subsets.spec.ts:164:1 › PRJ-02a: el borrador del conjunto sobrevive a cambiar de documento sin escribir en el proyecto
+[8/26] [csv] › tests/e2e/project-subsets.spec.ts:180:1 › PRJ-02a: la versión futura muestra el conjunto reconocido con base desconocida sin ocultarlo ni reescribirlo
+[9/26] [csv] › tests/e2e/project-subsets.spec.ts:199:1 › PRJ-02a: un conjunto manual con depósito antes del orden sigue siendo ejecutable en solo lectura
+[10/26] [csv] › tests/e2e/project-subsets.spec.ts:211:1 › PRJ-02a: una proyección hija no pierde columnas cuando su base ya no las conserva
+[11/26] [csv] › tests/e2e/project-subsets.spec.ts:229:1 › PRJ-02a: el prefijo manual conserva el límite del paso separado de las filas finales
+[12/26] [csv] › tests/e2e/project-subsets.spec.ts:242:1 › PRJ-02a: Proyecto prueba un prefijo sin abrir ni indexar la fuente como Tabla
+[13/26] [csv] › tests/e2e/project-subsets.spec.ts:259:1 › PRJ-02a: elegir una columna no autoriza sus renombres futuros al restaurar un borrador
+[14/26] [csv] › tests/e2e/project-subsets.spec.ts:280:1 › PRJ-02a: cerrar y reabrir la fuente conserva el borrador en memoria sin persistirlo
+[15/26] [csv] › tests/e2e/project-subsets.spec.ts:291:47 › PRJ-02a: Proyecto presenta una cadena de tres niveles sin abrir la fuente [es]
+[16/26] [csv] › tests/e2e/project-subsets.spec.ts:291:47 › PRJ-02a: Proyecto presenta una cadena de tres niveles sin abrir la fuente [en-XA]
+[17/26] [csv] › tests/e2e/project-subsets.spec.ts:325:1 › PRJ-02a: una transición futura no desbloquea una fuente abierta que deja de reconocerse
+[18/26] [csv] › tests/e2e/project-subsets.spec.ts:338:1 › PRJ-02a: encadena dos mayores, equivale a pasos planos y confirma el impacto y la eliminación
+[19/26] [csv] › tests/e2e/project-subsets.spec.ts:377:1 › PRJ-02a: un cambio de esquema marca la base y su hijo hasta reelegir la columna y guardar
+[20/26] [csv] › tests/e2e/project-subsets.spec.ts:400:1 › PRJ-02a: un cambio de celda exige registrar la fuente y avisa la versión distinta al volver a probar
+[21/26] [csv] › tests/e2e/project-subsets.spec.ts:415:1 › PRJ-02a: un conjunto conocido de proyecto futuro se abre y prueba sin permitir mutaciones
+[22/26] [csv] › tests/e2e/project-subsets.spec.ts:430:1 › PRJ-02a: la paleta encuentra los conjuntos con sinónimos y el nombre repetido bloquea guardar
+[23/26] [csv] › tests/e2e/project-subsets.spec.ts:445:1 › PRJ-02a: una columna eliminada permanece pendiente hasta elegir Todas las columnas explícitamente
+[24/26] [csv] › tests/e2e/project-subsets.spec.ts:462:1 › PRJ-02a: la paleta describe por qué no puede guardar como conjunto un CSV sin registrar
+[25/26] [csv] › tests/e2e/project-subsets.spec.ts:476:1 › PRJ-02a: reabrir el proyecto no revierte una columna ya reelegida en el borrador de una receta
+[csv] › tests/e2e/project-subsets.spec.ts:476:1 › PRJ-02a: reabrir el proyecto no revierte una columna ya reelegida en el borrador de una receta
+[e2e] Cierre de Electron incompleto. Terminando el proceso de prueba 76275.
+
+[26/26] [csv] › tests/e2e/project-subsets.spec.ts:495:1 › PRJ-02a: un borrador restaurado no sobrescribe una definición externa sin confirmarla
+[csv] › tests/e2e/project-subsets.spec.ts:495:1 › PRJ-02a: un borrador restaurado no sobrescribe una definición externa sin confirmarla
+[e2e] Cierre de Electron incompleto. Terminando el proceso de prueba 76312.
+
+  26 passed (3.6m)

@@ -1,0 +1,55 @@
+> freyalab@0.1.0-alpha.4 test
+> vitest run --run tests/recipe-operation.test.ts
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <WORKTREE>
+
+ ❯ tests/recipe-operation.test.ts (5 tests | 3 failed) 15ms
+   ❯ PRJ-02a · ejecución de conjuntos (5)
+     × porcentaje 50 y semilla 7 usa el ordinal raíz, no una cantidad redondeada 3ms
+     × porcentaje 100 y semilla 7 usa el ordinal raíz, no una cantidad redondeada 1ms
+     × filtrar antes del porcentaje mantiene el ordinal físico de la fuente 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/recipe-operation.test.ts > PRJ-02a · ejecución de conjuntos > porcentaje 50 y semilla 7 usa el ordinal raíz, no una cantidad redondeada
+ FAIL  tests/recipe-operation.test.ts > PRJ-02a · ejecución de conjuntos > porcentaje 100 y semilla 7 usa el ordinal raíz, no una cantidad redondeada
+RecipeOperationError: plan
+ ❯ error src/main/recipe-operation.ts:12:106
+     10| type Row={cells:string[];ordinal:number;arrival:number}
+     11| type Compiled={step:RecipeStep;matches?:(row:Row)=>boolean;compare?:(a…
+     12| const error=(code:ConstructorParameters<typeof RecipeOperationError>[0…
+       |                                                                                                          ^
+     13| const increment=(value:number)=>{if(value>=Number.MAX_SAFE_INTEGER)thr…
+     14| const ordinal=(a:string,b:string)=>a<b?-1:a>b?1:0
+ ❯ src/main/recipe-operation.ts:71:9
+ ❯ prepare src/main/recipe-operation.ts:45:34
+ ❯ runRecipe src/main/recipe-operation.ts:110:27
+ ❯ tests/recipe-operation.test.ts:51:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/recipe-operation.test.ts > PRJ-02a · ejecución de conjuntos > filtrar antes del porcentaje mantiene el ordinal físico de la fuente
+RecipeOperationError: plan
+ ❯ error src/main/recipe-operation.ts:12:106
+     10| type Row={cells:string[];ordinal:number;arrival:number}
+     11| type Compiled={step:RecipeStep;matches?:(row:Row)=>boolean;compare?:(a…
+     12| const error=(code:ConstructorParameters<typeof RecipeOperationError>[0…
+       |                                                                                                          ^
+     13| const increment=(value:number)=>{if(value>=Number.MAX_SAFE_INTEGER)thr…
+     14| const ordinal=(a:string,b:string)=>a<b?-1:a>b?1:0
+ ❯ src/main/recipe-operation.ts:71:9
+ ❯ prepare src/main/recipe-operation.ts:45:34
+ ❯ runRecipe src/main/recipe-operation.ts:110:27
+ ❯ tests/recipe-operation.test.ts:57:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 2 passed (5)
+   Start at  08:30:16
+   Duration  116ms (import 35%, transform 34%, tests 28%, worker 3%)

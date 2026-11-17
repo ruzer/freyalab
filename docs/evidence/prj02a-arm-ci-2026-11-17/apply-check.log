@@ -1,0 +1,2 @@
+git apply --check propuesta.patch sobre copia de 74b0ddd
+exit=0

@@ -1,0 +1,41 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <WORKTREE>
+
+ ❯ tests/project-subsets.test.ts (11 tests | 1 failed) 113ms
+   ❯ PRJ-02a · coordinador de lectura sin permisos de escritura (11)
+     × un fallo viejo no marca una fuente del proyecto que se abrió después 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/project-subsets.test.ts > PRJ-02a · coordinador de lectura sin permisos de escritura > un fallo viejo no marca una fuente del proyecto que se abrió después
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      "source",
+    ]
+
+
+Number of calls: 1
+
+ ❯ tests/project-subsets.test.ts:91:42
+     89|   call.mockImplementationOnce(async()=>{Object.defineProperty(store,'a…
+     90|   await expect(service.try('project',draft,'request')).rejects.toThrow…
+     91|   expect(registry.markRecipeChanged).not.toHaveBeenCalled()
+       |                                          ^
+     92|  })
+     93| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 passed (11)
+   Start at  09:03:56
+   Duration  245ms (tests 64%, transform 27%, import 9%, worker 1%)

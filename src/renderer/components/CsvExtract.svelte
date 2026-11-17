@@ -8,7 +8,8 @@
  import {controlHint} from '../lib/control-hint'
  import Icon from './Icon.svelte'
  import {onMount} from 'svelte'
- import {filterOperators} from '../../shared/table-conditions'
+ import CsvConditionFields from './CsvConditionFields.svelte'
+ import CsvColumnFields from './CsvColumnFields.svelte'
  import {PREVIEW_LIMIT,type OperationRequest,type PreviewResult} from '../../shared/operations'
  import type {DocumentInfo,LargeViewQuery} from '../../shared/types'
  // E1 · Extracto no destructivo de un archivo grande: filtros y columnas → recuento, vista previa o archivo NUEVO. El original no se modifica nunca.
@@ -53,20 +54,9 @@
  <p>Crea un archivo nuevo con las filas que cumplan las condiciones. <strong>El original no se modifica.</strong> Las filas se copian tal cual (bytes idénticos) salvo que elijas columnas: entonces el CSV se vuelve a escribir y se te avisa de qué se normaliza.</p>
  {#if search}<p>Búsqueda global aplicada: <strong class="search-needle">{search}</strong>. Se combina con las condiciones mediante Y para contar, previsualizar y extraer.</p>{/if}
  {#if partial}<p role="note">La vista es parcial. Extraer recorre todo el archivo con estas reglas; el extracto no se limita a las coincidencias mostradas en la tabla.</p>{/if}
- <div class="extract-body" oninput={changed} onchange={changed}>
-  <label>Coincidir <select aria-label="Combinar condiciones" bind:value={mode}><option value="all">Todas las condiciones (Y)</option><option value="any">Cualquier condición (O)</option></select></label>
-  {#each conditions as rule,index}<div class="rule">
-   <select aria-label={`Columna de condición ${index+1}`} bind:value={rule.column}>{#each headers as name,column}<option value={column}>{column+1}. {name||'Sin encabezado'}</option>{/each}</select>
-   <select aria-label={`Operador de condición ${index+1}`} bind:value={rule.op}>{#each filterOperators as [value,label]}<option {value}>{label}</option>{/each}</select>
-   {#if !['empty','notEmpty'].includes(rule.op)}<input aria-label={`Valor de condición ${index+1}`} bind:value={rule.value} required placeholder={rule.op.startsWith('date')?'AAAA-MM-DD':'Valor'} type={rule.op.startsWith('date')?'date':'text'}/>{/if}
-   {#if ['contains','equals','notEquals','starts','ends','regex'].includes(rule.op)}<label><input type="checkbox" bind:checked={rule.caseSensitive}/>Distinguir mayúsculas</label>{/if}
-   <button title={(`Quitar condición ${index+1}`)} type="button" aria-label={`Quitar condición ${index+1}`} onclick={()=>{conditions=conditions.filter((_,i)=>i!==index);changed()}}><Icon name="x" size={14}/></button>
-  </div>{/each}
-  <button {...controlHint(!headers.length?'columns':conditions.length>=20?'filterLimit':null)} type="button" disabled={conditions.length>=20||!headers.length} onclick={()=>{conditions=[...conditions,{column:0,op:'contains',value:''}];changed()}}>Añadir condición</button>
-  <fieldset><legend>Columnas del extracto</legend>
-   <label><input type="checkbox" aria-label="Todas las columnas" bind:checked={allColumns}/>Todas las columnas ({number(headers.length)})</label>
-   {#if !allColumns}<div class="column-list">{#each headers as name,index}<label><input type="checkbox" aria-label={`Incluir columna ${index+1}`} bind:checked={chosen[index]}/>{index+1}. {name||'Sin encabezado'}</label>{/each}</div>{#if noColumns}<span class="extract-error">Elige al menos una columna.</span>{/if}{/if}
-  </fieldset>
+ <div class="extract-body">
+  <CsvConditionFields {headers} bind:conditions bind:mode onchange={changed}/>
+  <CsvColumnFields {headers} bind:chosen bind:allColumns onchange={changed}/>
  </div>
  <form class="actions" onsubmit={event=>{event.preventDefault();void run('filter_extract')}}>
   <button {...controlHint(busy?'busy':noColumns?'columns':null)} type="button" disabled={!!busy||noColumns} onclick={()=>void run('count')}>Contar coincidencias</button>
@@ -85,5 +75,5 @@
  </div>{/if}
 </section>
 <style>
- .extract-tools{padding:10px 12px;border-bottom:1px solid var(--border);background:var(--panel);font-size:11px;max-height:60vh;overflow:auto;flex-shrink:0}.heading{display:flex;justify-content:space-between;align-items:center}.heading h3{font-size:12px;margin:0}.heading button{border:0;background:transparent}.rule,.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}label{display:inline-flex;align-items:center;gap:5px}.rule select{max-width:190px}.rule input[type=text],.rule input[type=date]{width:170px}p{line-height:1.5;color:var(--muted);max-width:850px;margin:6px 0}fieldset{margin:8px 0;border:1px solid var(--border);padding:8px}.column-list{display:flex;flex-wrap:wrap;gap:4px 14px;max-height:120px;overflow:auto;margin-top:6px}button,select,input{font-size:11px}button{appearance:none;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:var(--radius-control);padding:5px 8px}button.primary{color:white}.extract-error{color:var(--danger)}:global(:root.dark) .extract-error{color:var(--danger)}.extract-progress{display:flex;gap:8px;align-items:center}.preview-box{max-height:220px;overflow:auto;border:1px solid var(--border);margin:8px 0}.preview-box p{padding:0 8px}.preview-box table{border-collapse:collapse;width:max-content;min-width:100%}.preview-box th,.preview-box td{border-bottom:1px solid var(--border);padding:3px 8px;text-align:left;white-space:pre;max-width:260px;overflow:hidden;text-overflow:ellipsis}.preview-box th{position:sticky;top:0;background:var(--panel)}
+ .extract-tools{padding:10px 12px;border-bottom:1px solid var(--border);background:var(--panel);font-size:11px;max-height:60vh;overflow:auto;flex-shrink:0}.heading{display:flex;justify-content:space-between;align-items:center}.heading h3{font-size:12px;margin:0}.heading button{border:0;background:transparent}.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}p{line-height:1.5;color:var(--muted);max-width:850px;margin:6px 0}button{font-size:11px}button{appearance:none;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:var(--radius-control);padding:5px 8px}button.primary{color:white}.extract-error{color:var(--danger)}:global(:root.dark) .extract-error{color:var(--danger)}.extract-progress{display:flex;gap:8px;align-items:center}.preview-box{max-height:220px;overflow:auto;border:1px solid var(--border);margin:8px 0}.preview-box p{padding:0 8px}.preview-box table{border-collapse:collapse;width:max-content;min-width:100%}.preview-box th,.preview-box td{border-bottom:1px solid var(--border);padding:3px 8px;text-align:left;white-space:pre;max-width:260px;overflow:hidden;text-overflow:ellipsis}.preview-box th{position:sticky;top:0;background:var(--panel)}
 </style>
