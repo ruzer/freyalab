@@ -298,10 +298,15 @@ for(const language of ['es','en-XA'] as const)test(`PRJ-02a: Proyecto presenta u
  for(const name of ['Adultos','Muestra estable','Identificador y nota'])await expect(projectPanel().getByText(name,{exact:true})).toBeVisible()
  await expect(projectPanel().locator('ul.subsets ul.subsets ul.subsets')).toHaveCount(1)
  await expect(recipeRow('Adultos').locator(':scope > .actions').getByRole('button',{name:t('subset.remove',{},language),exact:true})).toBeDisabled()
+ const slider=page.getByRole('slider',{name:'Ancho del explorador',exact:true})
+ for(let step=0;step<24;step++)await slider.press('ArrowRight')
+ await expect(slider).toHaveAttribute('aria-valuenow','420')
  for(const width of [1440,1280])for(const theme of ['light','dark']){
   await page.setViewportSize({width,height:width===1440?900:720});await page.getByRole('combobox',{name:'Tema'}).selectOption(theme)
   await expect.poll(()=>page.locator('html').evaluate(html=>html.classList.contains('dark'))).toBe(theme==='dark')
   await projectPanel().getByText('Identificador y nota',{exact:true}).scrollIntoViewIfNeeded()
+  await projectPanel().getByText('Adultos',{exact:true}).scrollIntoViewIfNeeded()
+  for(const name of ['Adultos','Muestra estable','Identificador y nota'])await expect(projectPanel().getByText(name,{exact:true})).toBeInViewport({ratio:1})
   if(process.env.FREYALAB_PRJ02_EVIDENCE)await page.screenshot({path:info.outputPath(`prj02a-project-chain-${language}-${theme}-${width}x${width===1440?900:720}.png`),animations:'disabled'})
  }
  expect(await page.evaluate(()=>window.freya.documents())).toEqual([])
