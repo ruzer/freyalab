@@ -116,3 +116,9 @@ Las capturas tempranas fallaron durante la construcción de los escenarios de na
 - PRJ-03 a PRJ-06, exportar el conjunto bruto y ampliar los límites permanecen fuera de alcance. No se fusionó, publicó ni actualizó la aplicación instalada.
 
 Los resultados finales de CI se registrarán en el PR sobre el SHA congelado. No se crea un commit solo para cambiar un estado de CI en este documento.
+
+## Cierre de la primera suite completa
+
+La suite completa sobre `f4e83ba6` finalizó en 25,4 min: **703 pasan, 7 omisiones de plataforma y 1 fallo**. El fallo fue `project-subsets.spec.ts:352`: la prueba anterior esperaba `las 2 primeras de las 3 filas que cumplen`, mientras la redacción aprobada sin «Paso N» comienza `Las 2 primeras…`. La traza conserva las dos filas correctas; se actualiza solo la mayúscula de esa aserción literal, sin cambiar datos, plazos ni comportamiento. El rojo se conserva en `e2e-full-f4e83ba6.log`; el verde enfocado está en `coverage-chain-case-green.log`. Se volverá a calificar el head resultante; no se presenta esa corrida como verde.
+
+Una corrida local previa se había interrumpido por desalineación de build/HEAD en Acerca de: se construyó con `fba72e9` antes de crear `f4e83ba`. Al reconstruir desde el commit congelado, APP-02 pasó en 7,4 s. No se cambió esa prueba ni el producto para resolverlo.

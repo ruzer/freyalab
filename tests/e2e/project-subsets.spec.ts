@@ -349,7 +349,7 @@ test('PRJ-02a: encadena dos mayores, equivale a pasos planos y confirma el impac
  await panel.getByRole('spinbutton',{name:'Número de filas',exact:true}).fill('2')
  await panel.getByRole('button',{name:'Probar',exact:true}).press('Enter')
  await expect(panel.getByRole('table',{name:'Vista previa del conjunto',exact:true}).locator('tbody th')).toHaveText(['00128','00126'])
- await expect(panel.locator('.coverage')).toContainText('las 2 primeras de las 3 filas que cumplen')
+ await expect(panel.locator('.coverage')).toContainText('Las 2 primeras de las 3 filas que cumplen')
  const equivalent=await page.evaluate(async()=>{const state=await window.freya.projectState(),source=state.sources[0],base=state.recipes.find(recipe=>recipe.id==='oaxaca-base')!;return window.freya.projectRecipeTry(state.project!.id,{name:'Equivalencia plana',sourceId:source.id,steps:[...base.steps,{op:'sample',method:'first',rows:2}]},crypto.randomUUID())})
  expect(equivalent.rows.map(row=>row[0])).toEqual(['00128','00126']);expect(equivalent.complete).toBe(true)
  await panel.getByRole('button',{name:'Guardar',exact:true}).press('Enter')
