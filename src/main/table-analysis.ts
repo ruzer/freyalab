@@ -34,7 +34,7 @@ export async function analyzeColumn(rows:TableRow[],indices:number[]|undefined,r
   if(counts){
    if(found){found.count++;found.firstOriginalRow=Math.min(found.firstOriginalRow,index+1)}else{if(counts.size>=100000)throw new Error('La columna supera 100 000 valores distintos. Filtra los datos antes de explorarla.');counts.set(value,{count:1,firstRow:index+1,rowId:row.id,firstOriginalRow:index+1})}
    if(!trimmed&&missingRows.length<20)missingRows.push({row:index+1,rowId:row.id})
-   if(request.column>=row.cells.length)missing++
+   if(!(request.column in row.cells))missing++
    if(value.length&&!trimmed)whitespace++
    minLength=Math.min(minLength,value.length);maxLength=Math.max(maxLength,value.length)
   }else if(trimmed&&distinct.size<=20)distinct.add(value)

@@ -1,4 +1,5 @@
 <script lang="ts">
+ import {subsetCoverage} from '../lib/subset-coverage'
  import {csvAnalysisSample} from '../lib/csv-analysis-view'
  import {analysisMeasure} from '../lib/analysis-measure'
  import {controlHint} from '../lib/control-hint'
@@ -25,8 +26,9 @@
  let {doc,query,queryValid,viewMeta,visible=true,onDemand=false,exportHost,onclose,onerror}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;visible?:boolean;onDemand?:boolean;exportHost?:HTMLElement;onclose:()=>void;onerror:(message:string)=>void}=$props()
  let scope=$state<'all'|'filtered'|'saved'>('all'),savedView=$state<ChartView>()
  let where=$state<TableConditionGroup>({conditions:[],filterMode:'all'}),showFilters=$state(false),filtersButton=$state<HTMLButtonElement>()
+ const subsetCoverageText=$derived(doc.analysisSubset?subsetCoverage(doc.analysisSubset.coverage,doc.analysisSubset.steps,getUILanguage(),doc.analysisSubset.stepOwners):undefined)
  const sample=$derived(csvAnalysisSample(doc,viewMeta))
- const scopeLabel=$derived((sample===undefined?t('analysis.scope.pending'):scope==='all'?t('charts.ui.all'):scope==='saved'?t('charts.ui.saved'):t('charts.ui.filtered'))+(where.conditions.length?` · ${t('charts.ui.filterStatus',{n:where.conditions.length,mode:t(where.filterMode==='all'?'charts.ui.and':'charts.ui.or')})}`:''))
+ const scopeLabel=$derived((sample===undefined?t('analysis.scope.pending'):scope==='all'?t(doc.analysisSubset?'subset.analysis.scope':'charts.ui.all'):scope==='saved'?t('charts.ui.saved'):t('charts.ui.filtered'))+(where.conditions.length?` · ${t('charts.ui.filterStatus',{n:where.conditions.length,mode:t(where.filterMode==='all'?'charts.ui.and':'charts.ui.or')})}`:''))
  const viewSignature=$derived(JSON.stringify([query.search,query.filters,query.conditions,query.filterMode]))
  const unavailable=$derived(sample===undefined||(scope==='filtered'&&(!queryValid||sample||doc.large))||(scope==='saved'&&(!savedView||sample||doc.large)))
  const analysisQuery=$derived(scope==='saved'&&savedView?{...savedView,offset:0,limit:1000,requestId:0}:query)
@@ -66,7 +68,9 @@
  const valueLabel=(value:string|null)=>value===null?t('charts.plot.missing'):value===''?t('charts.plot.empty'):value
  function displayNumber(value:string|null){getUILanguage();return value===null?'—':formatChartNumber(Number(value))}
  // shortcut: auto hasta 3.000 filas, 1 MiB y 200.000 celdas; ampliar tras medir más equipos (experiments/analytics-f2a).
- const automatic=$derived(sample===false&&!doc.large&&doc.byteLength!==undefined&&doc.byteLength<=1024*1024&&doc.rowCount!==undefined&&doc.rowCount<=3000&&doc.rowCount*(doc.headers?.length??0)<=200000)
+ // La instantánea no es un archivo; su raíz verificada acota el tamaño para los mismos límites automáticos.
+ const sourceBytes=$derived(doc.byteLength??doc.analysisSubset?.coverage.bytesRead)
+ const automatic=$derived(sample===false&&!doc.large&&sourceBytes!==undefined&&sourceBytes<=1024*1024&&doc.rowCount!==undefined&&doc.rowCount<=3000&&doc.rowCount*(doc.headers?.length??0)<=200000)
  const tooWide=$derived((doc.headers?.length??0)>200)
  const sql=$derived.by(()=>{try{if(options.y===-2)return '';return chartSQL(doc.headers??[],options)}catch{return ''}})
  function cancel(){if(totalJob){void window.freya.sqlCancel(totalJob).catch(()=>{});totalJob=undefined}totals=[];pivotPage=0;const previous=active;active=undefined;busy=false;data=null;source=null;tablePage=0;hiddenSeries=[];if(previous)void window.freya.sqlCancel(previous).catch(()=>{});if(exportJob){void window.freya.sqlCancel(exportJob).catch(()=>{});exportJob=undefined;exporting=false;cancellingExport=false}}
@@ -215,9 +219,10 @@
 <p>{message.startsWith('charts.ui.')?t(message):message}</p>
  {#if data}<p>{scopeLabel} · {t('charts.ui.rowStatus',{total:formatNumber(data.total),usable:formatNumber(data.usable)})} · {t('charts.ui.dataStatus',{total:formatNumber(data.total),usable:formatNumber(data.usable),omitted:formatNumber(data.total-data.usable),drawn:data.rows.length,points:formatNumber(data.points)})}</p>{/if}
  {#if source}<p>{source.name} · {t('charts.ui.revision',{revision:source.revision})}</p>{/if}
- {#if data&&source}<p class="scope">{source.name} · {scopeLabel} · {source.fromDisk?t('charts.ui.disk'):t('charts.ui.revision',{revision:source.revision})} · {t('charts.ui.dataStatus',{total:formatNumber(data.total),usable:formatNumber(data.usable),omitted:formatNumber(data.total-data.usable),drawn:data.rows.length,points:formatNumber(data.points)})}{#if data.invalidDates!==undefined} · {t('charts.ui.invalidDates',{n:data.invalidDates})}{/if}{#if data.seriesCount!==undefined} · {t('charts.ui.seriesCount',{drawn:series.length,total:data.seriesCount})}{/if}.</p>{/if}
+ {#if data&&source}<p class="scope">{source.name} · {scopeLabel} · {doc.analysisSubset?t('subset.analysis.origin'):source.fromDisk?t('charts.ui.disk'):t('charts.ui.revision',{revision:source.revision})} · {t('charts.ui.dataStatus',{total:formatNumber(data.total),usable:formatNumber(data.usable),omitted:formatNumber(data.total-data.usable),drawn:data.rows.length,points:formatNumber(data.points)})}{#if data.invalidDates!==undefined} · {t('charts.ui.invalidDates',{n:data.invalidDates})}{/if}{#if data.seriesCount!==undefined} · {t('charts.ui.seriesCount',{drawn:series.length,total:data.seriesCount})}{/if}.</p>{/if}
  {#if hiddenSeries.length}<p>{plural('charts.ui.hidden',hiddenSeries.length)}</p>{/if}
 </div></details></div>
+ {#if subsetCoverageText}<p class="subset-chart-coverage">{subsetCoverageText.lines.join(' · ')} · {subsetCoverageText.identity}</p>{/if}
  <p class="result-status" title={scopeLabel}>{#if sample===true}{t('charts.fields.sample')} · {/if}{#if scope!=='all'}{scope==='saved'?t('charts.fields.savedScope'):t('charts.fields.filteredScope')} · {/if}{data?t('charts.fields.status',{n:formatNumber(data.total),g:plotData?.groups??0}):fieldsLoading?t('charts.fields.loading'):busy?resultAnnouncement:t('charts.fields.unchanged')}</p>
  <p class="sr-only result-announcement" role="status" aria-live="polite" aria-atomic="true">{resultAnnouncement}</p>
  <p class="sr-only analysis-announcement" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
@@ -238,7 +243,7 @@
  {#if data?.trend&&source}<section class="trend-result" aria-label={t('charts.trend.title')} title={trendFull} aria-describedby={'trend-full-'+doc.id} aria-live="polite" aria-atomic="true">
   <span class="sr-only" id={'trend-full-'+doc.id}>{trendFull}</span>
   {#each trendText as line,index}<p>{#if index===0}<strong>{line}</strong>{:else}{line}{/if}</p>{/each}
-  <p>{source.fromDisk?t('charts.trend.disk'):t('charts.trend.memory',{revision:source.revision})} · {scopeLabel}</p>
+  <p>{doc.analysisSubset?t('subset.analysis.origin'):source.fromDisk?t('charts.trend.disk'):t('charts.trend.memory',{revision:source.revision})} · {scopeLabel}</p>
   {#if data.limited}<p>{t('charts.trend.drawn',{drawn:formatNumber(data.rows.length),total:formatNumber(data.trend.n)})}</p>{/if}
  </section>{/if}
  {#if pivot&&data?.rows.length}
@@ -258,7 +263,7 @@
  {/if}
  <form onsubmit={event=>{event.preventDefault();void generate()}}>
   <fieldset disabled={exporting}><legend class="sr-only">{t('charts.ui.options')}</legend>
-   <label>{t('charts.ui.dataIncluded')} <select aria-label={t('charts.ui.scopeLabel')} bind:value={scope}><option value="all">{t(sample===undefined?'analysis.scope.pending':'charts.ui.all')}</option><option value="filtered" disabled={sample!==false||doc.large}>{t('charts.ui.filtered')}</option>{#if savedView}<option value="saved" disabled={sample!==false||doc.large}>{t('charts.ui.saved')}</option>{/if}</select></label>
+   <label>{t('charts.ui.dataIncluded')} <select aria-label={t('charts.ui.scopeLabel')} bind:value={scope}><option value="all">{t(sample===undefined?'analysis.scope.pending':doc.analysisSubset?'subset.analysis.scope':'charts.ui.all')}</option><option value="filtered" disabled={sample!==false||doc.large}>{t('charts.ui.filtered')}</option>{#if savedView}<option value="saved" disabled={sample!==false||doc.large}>{t('charts.ui.saved')}</option>{/if}</select></label>
    <label>{t('charts.ui.type')} <select aria-label={t('charts.ui.typeLabel')} bind:value={options.kind} onchange={event=>chooseKind(event.currentTarget.value as ChartOptions['kind'])}>{#each Object.entries(chartKinds) as [kind,title]}<option value={kind}>{t('charts.kind.'+kind)}</option>{/each}</select></label>
    {#if ['bar','line'].includes(options.kind)}<label>{t('charts.ui.groupDates')} <select aria-label={t('charts.ui.groupDatesLabel')} bind:value={options.time}>{#each Object.entries(chartTimeGroups) as [unit,title]}<option value={unit}>{t('charts.time.'+unit)}</option>{/each}</select></label>{/if}
    {#if options.kind!=='histogram'}<label>{temporal?t('charts.ui.xDate'):options.kind==='line'||options.kind==='scatter'?t('charts.ui.xNumber'):t('charts.ui.xCategory')} <select aria-label={t('charts.ui.xLabel')} bind:value={options.x}>{#each doc.headers??[] as header,index}<option value={index}>{columnLabel(index)}</option>{/each}</select></label>{/if}

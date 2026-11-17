@@ -35,3 +35,11 @@ Los textos de cobertura se comparten con el panel: sin números de paso, nombre 
 Se guardará salida roja antes de cada cambio y el resumen real de check, unitarias, E2E y build. El SHA final se congela para CI; los resultados se actualizan en el PR sin crear commits solo para cambiar el estado. Windows solo separará su paquete si esta entrega supera 55 minutos, según autorización expresa del propietario; sin subir plazos, workers o retries. La calificación incluye las tres plataformas y una sonda Intel completa sin retry #1.
 
 Fuera de alcance: exportar conjuntos, gráficos/informes guardados, cachés, ampliar límites, PRJ-03 a PRJ-06, nuevas dependencias, fusiones, releases o actualizar la app instalada. La evidencia anterior de #177 se conserva como histórica, no se transfiere al nuevo head.
+
+## Aclaración del propietario · 2026-11-17
+
+Se extiende la excepción de proyectos de una versión futura a **Analizar solo conjuntos v1 reconocidos íntegramente**. La ejecución y su snapshot permanecen en memoria, el manifiesto futuro conserva sus bytes y no se amplían límites. Las definiciones o cadenas desconocidas siguen bloqueadas. La prueba conserva una copia de los bytes del manifiesto y comprueba su igualdad después de analizar.
+
+## Continuación de la implementación
+
+El propietario fusionó #178 (solo documentación) durante el desarrollo. La implementación continúa desde `main 561ff098a13ef0bbf656d617cd44c62ef77d3d90`, sin diferencias de producto respecto a la base original, en `codex/prj-02b-analizar-conjunto-implementacion`, con otro PR en borrador y el mismo alcance.

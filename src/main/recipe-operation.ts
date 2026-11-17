@@ -5,6 +5,7 @@ import {setImmediate as yieldTurn} from 'node:timers/promises'
 import {fieldsOf} from './operations'
 import {recordBatches} from './large-table'
 import {compileTableQuery} from './table-query'
+import {ANALYSIS_LIMITS} from './analysis-source'
 import {RecipeOperationError,type RecipeColumn,type RecipeStep,type RecipeSampling,type RecipeOperationSource,type RecipeOperationHooks,type RecipeOperationResult} from '../shared/recipe-operation'
 
 type Row={cells:string[];ordinal:number;arrival:number}
@@ -154,7 +155,13 @@ function passes(item:Compiled,row:Row,index:number,sampling:RecipeSampling[]){
  return true
 }
 
-export async function runRecipe(source:RecipeOperationSource,steps:RecipeStep[],hooks:RecipeOperationHooks={}):Promise<RecipeOperationResult>{
+type RecipeAnalysisLimits=Pick<typeof ANALYSIS_LIMITS,'bytes'|'rows'|'cells'|'columns'>
+export function runRecipe(source:RecipeOperationSource,steps:RecipeStep[],hooks:RecipeOperationHooks={}):Promise<RecipeOperationResult>{return executeRecipe(source,steps,hooks)}
+// The worker uses the production limits; the optional argument lets unit tests exercise each boundary on small fixtures.
+export function runRecipeAnalysis(source:RecipeOperationSource,steps:RecipeStep[],hooks:RecipeOperationHooks={},limits:RecipeAnalysisLimits=ANALYSIS_LIMITS):Promise<RecipeOperationResult>{return executeRecipe(source,steps,hooks,limits)}
+async function executeRecipe(source:RecipeOperationSource,steps:RecipeStep[],hooks:RecipeOperationHooks,analysis?:RecipeAnalysisLimits):Promise<RecipeOperationResult>{
+ const limit=(kind:keyof RecipeAnalysisLimits,value:number)=>{if(analysis&&value>analysis[kind])throw failure('analysis-limit',{kind,limit:analysis[kind]})}
+ limit('bytes',source.bytes);limit('columns',source.schema.columns.length)
  const {columns,compiled}=prepare(source,steps),hash=createHash('sha256')
  const sampling:RecipeSampling[]=compiled.flatMap(({step},index)=>step.op==='sample'?[{step:index,method:step.method,...('rows'in step?{requestedRows:step.rows}:{percent:step.percent}),...('seed'in step?{seed:step.seed}:{}),eligible:0,selected:0}]:[])
  const block=compiled.findIndex(({step})=>step.op==='order'||step.op==='sample'&&'rows'in step),sampleStep=block<0?undefined:compiled[block].step
@@ -165,8 +172,8 @@ export async function runRecipe(source:RecipeOperationSource,steps:RecipeStep[],
  const first=sampleStep?.op==='sample'&&sampleStep.method==='first'?sampleStep:undefined,firstRows:Row[]=[]
  const prefix=compiled.slice(0,block<0?compiled.length:block)
  const order=middle.filter(item=>item.compare).reverse(),compare=(a:Row,b:Row)=>{for(const item of order){const n=item.compare!(a,b);if(n)return n}return a.arrival-b.arrival}
- const heap=topRows(boundedFirst?.op==='sample'&&boundedFirst.method==='first'?boundedFirst.rows:100,compare),cancelled=()=>hooks.cancelled?.()===true
- let scanned=0,resultCount=0,bytesRead=0,wasCancelled=false,lastPosition=0,hashedThrough=0
+ const heap=topRows(boundedFirst?.op==='sample'&&boundedFirst.method==='first'?boundedFirst.rows:analysis?.rows??100,compare),cancelled=()=>hooks.cancelled?.()===true
+ let scanned=0,resultCount=0,bytesRead=0,decodedBytes=0,wasCancelled=false,lastPosition=0,hashedThrough=0
  const progress=()=>hooks.progress?.({bytesRead,scanned,totalBytes:source.bytes})
  const read=(bytes:Buffer,position:number)=>{bytesRead+=bytes.length;hash.update(bytes.subarray(Math.max(0,hashedThrough-position)));hashedThrough=Math.max(hashedThrough,position+bytes.length);progress()}
  const before=await lstat(source.path).catch(()=>{throw failure('unavailable')})
@@ -180,7 +187,7 @@ export async function runRecipe(source:RecipeOperationSource,steps:RecipeStep[],
   if(unit===2&&(source.bytes-bomLength)%2)throw failure('encoding')
   if(bomLength){const signature=Buffer.alloc(bomLength);const n=await handle.read(signature,0,bomLength,0);read(signature.subarray(0,n.bytesRead),0);if(n.bytesRead!==bomLength||!signature.equals(Buffer.from(unit===2?[255,254]:[239,187,191])))throw failure('encoding')}
   lastPosition=bomLength
-  scanning:for await(const batch of recordBatches({path:source.path,size:source.bytes,bomLength,unit,maxRecord:1024*1024},{handle,onRead:read,firstBatchRecords:source.format.header?1:undefined,batchRecords:first?1:hooks.batchRecords,batchBytes:4*1024*1024,chunk:hooks.chunk})){
+  scanning:for await(const batch of recordBatches({path:source.path,size:source.bytes,bomLength,unit,maxRecord:1024*1024},{handle,onRead:read,firstBatchRecords:source.format.header?1:undefined,batchRecords:first&&!analysis?1:hooks.batchRecords,batchBytes:4*1024*1024,chunk:hooks.chunk})){
    if(cancelled()){wasCancelled=true;break}
    let parsed:string[][]
    try{parsed=fieldsOf(batch.records,batch.first,source.format)}catch(cause){throw failure(invalidEncoding(cause)?'encoding':'csv',{record:batch.first+1,detail:(cause as Error).message})}
@@ -193,12 +200,17 @@ export async function runRecipe(source:RecipeOperationSource,steps:RecipeStep[],
      continue
     }
     scanned=increment(scanned)
+    if(analysis){
+     limit('rows',scanned);limit('cells',scanned*source.schema.columns.length)
+     if(cells.length>source.schema.columns.length)throw failure('analysis-structure')
+     decodedBytes+=cells.reduce((sum,value)=>sum+Buffer.byteLength(value,'utf8'),0);limit('bytes',decodedBytes)
+    }
     const row={cells,ordinal:scanned,arrival:scanned}
     if(!prefix.every((item,index)=>passes(item,row,index,sampling)))continue
     if(sample)sample.offer(row)
     else if(first){
-     const stats=sampling.find(item=>item.step===block)!;stats.eligible=increment(stats.eligible);firstRows.push(row);stats.selected=firstRows.length
-     if(firstRows.length===first.rows)break scanning
+     const stats=sampling.find(item=>item.step===block)!;stats.eligible=increment(stats.eligible);if(firstRows.length<first.rows)firstRows.push(row);stats.selected=firstRows.length
+     if(firstRows.length===first.rows&&!analysis)break scanning
     }else{
      if(!middle.every((item,index)=>passes(item,row,block+index,sampling)))continue
      resultCount=increment(resultCount);heap.offer(row)
@@ -229,12 +241,12 @@ export async function runRecipe(source:RecipeOperationSource,steps:RecipeStep[],
   }catch(cause){if(cause!==cancelToken)throw cause;wasCancelled=true;rows=[];resultCount=0}
   if(!same(await handle.stat())||!same(await lstat(source.path).catch(()=>{throw failure('changed')})))throw failure('changed')
   const complete=!wasCancelled&&readComplete
-  const projected=rows.slice(0,100).map(row=>{
+  const projected=(analysis?(wasCancelled?[]:rows):rows.slice(0,100)).map(row=>{
    const values:(string|null)[]=columns.map(column=>row.cells[column.position-1]??null)
    if(!steps.some(step=>step.op==='select'))values.push(...row.cells.slice(source.schema.columns.length))
    return values
   })
-  return{headers:columns.map(column=>column.name),columns,rows:projected,scanned,eligible:sampling.at(-1)?.eligible??resultCount,resultCount,complete,cancelled:wasCancelled,bytesRead,...(complete&&sha256?{sha256}:{}),sampling}
+  return{headers:columns.map(column=>column.name),columns,rows:projected,scanned,eligible:sampling.at(-1)?.eligible??resultCount,resultCount:analysis&&wasCancelled?0:resultCount,complete,cancelled:wasCancelled,bytesRead,...(complete&&sha256?{sha256}:{}),sampling}
  }catch(cause){if(cause instanceof RecipeOperationError)throw cause;throw failure('csv',{detail:(cause as Error).message})}
  finally{await handle.close()}
 }

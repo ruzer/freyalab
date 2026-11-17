@@ -23,6 +23,7 @@ import {isCsvTextFormat,isTextFormat,type TextFormat} from '../shared/csv-text'
 import {csvOpenError} from './csv-open-error'
 import {readCalculationError,type CalculateColumnEdit,type CalculatedValue} from '../shared/calculated-column'
 import {isTableDocument,CSV_TEXT_LIMIT,type CsvView,type CsvViewDecision,type AppEvent,type DocumentInfo,type Kind,type RecoveryEntry,type TableOptions,type TableEdit,type TableExport,type TreeEntry,type TextEncoding} from '../shared/types'
+import type {RecipeAnalysisContext} from '../shared/recipe-operation'
 interface RecordDoc { info:DocumentInfo; hash?:string; text:string; textFormat?:TextFormat; encodingOverride?:TextEncoding;undo:string[]; redo:string[]; root:string; saving:boolean; timer?:ReturnType<typeof setTimeout>; watcher?:FSWatcher }
 const extensions:Record<string,Kind>={'.md':'markdown','.markdown':'markdown','.txt':'text','.mmd':'mermaid','.mermaid':'mermaid','.csv':'csv','.tsv':'csv'}
 const textLimit=10*1024*1024
@@ -114,6 +115,7 @@ export class Documents {
   try{return await operation()}finally{release()}
  }
  assertProjectEditable(id:string){
+  if(this.get(id).info.analysisSubset)throw new Error(t('project.recipe.analysis.readonly'))
   const record=this.get(id),status=this.sourceStatus(id,record.info.path)
   if(status||record.info.path&&this.registeringSources.has(record.info.path))throw new Error(t(status==='closed'?'project.source.closed':'project.source.protected'))
  }
@@ -184,6 +186,16 @@ export class Documents {
  })}
  async csvViewInfo(path:string){const canonical=await this.authorize(path);if(extensions[extname(canonical).toLowerCase()]!=='csv')throw new Error(t('csvText.chooseFile'));const info=await stat(canonical);if(!info.isFile())throw new Error(t('csvText.selectFile'));const document=[...this.records.values()].find(record=>record.info.path===canonical);return{byteLength:info.size,textAllowed:info.size<=CSV_TEXT_LIMIT,projectSource:this.projectSources.has(canonical)?'protected' as const:document?this.sourceStatus(document.info.id,canonical):undefined,...(document?{id:document.info.id}:{})}}
  async create(kind:Kind,csvView:CsvView='table'){return this.serial('create',()=>this.createNow(kind,csvView))}
+ async installSubset(snapshotId:string,context:RecipeAnalysisContext):Promise<DocumentInfo>{
+  if(this.applicationClose)throw new Error(t('menu.close.busy'))
+  if(this.records.has(snapshotId))throw new Error(t('project.error.reference'))
+  const table=await this.table.call<Partial<DocumentInfo>>('info',snapshotId)
+  if(this.applicationClose)throw new Error(t('menu.close.busy'))
+  if(this.records.has(snapshotId)||table.readonly!==true||table.dirty!==false||table.large||table.rowCount!==context.coverage.resultCount||!context.coverage.complete||context.coverage.cancelled)throw new Error(t('project.error.changed'))
+  const info:DocumentInfo={id:snapshotId,name:context.name,path:null,kind:'csv',csvView:'table',readonly:true,dirty:false,revision:table.revision??0,encoding:table.encoding??'utf8',delimiter:table.delimiter??',',headers:table.headers,hasHeader:true,rowCount:table.rowCount,analysisSubset:structuredClone(context)}
+  this.records.set(snapshotId,{info,text:'',undo:[],redo:[],root:'',saving:false})
+  return this.info(snapshotId)
+ }
  private async createNow(kind:Kind,csvView:CsvView='table'){const id=randomUUID();const extension=kind==='csv'?'csv':kind==='mermaid'?'mmd':kind==='text'?'txt':'md';const r:RecordDoc={info:{id,name:`Sin título.${extension}`,path:null,kind,csvView:kind==='csv'?csvView:undefined,byteLength:kind==='csv'?0:undefined,dirty:false,readonly:false,revision:0,encoding:'utf8',delimiter:','},text:'',undo:[],redo:[],root:app.getPath('documents'),saving:false};if(isTableDocument(r.info)){await this.table.call('create',id);Object.assign(r.info,await this.table.call('info',id))}else if(kind!=='csv'){r.textFormat=defaultTextFormat;r.info.bom=false}this.records.set(id,r);return this.info(id)}
  get(id:string){const r=this.records.get(id);if(!r)throw new Error('El documento ya no está abierto.');return r}
  requireTable(id:string){const record=this.get(id);if(!isTableDocument(record.info))throw new Error(t('csvText.tableOnly'));return record}
@@ -193,6 +205,7 @@ export class Documents {
  }
  async bibliography(id:string,source:string):Promise<DocumentBibliography>{
   const record=this.get(id),path=record.info.path,revision=record.info.revision
+  if(record.info.analysisSubset)throw new Error(t('project.recipe.analysis.readonly'))
   const assertCurrent=()=>{if(this.records.get(id)!==record||record.text!==source||record.info.path!==path||record.info.revision!==revision)throw new Error(t('bibliography.error.changedDocument'))}
   assertCurrent()
   const library=bibliographyPath(frontMatterOf(source).frontMatter)
@@ -518,6 +531,6 @@ export class Documents {
    await this.discardRecovery(id)
   }catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')this.emit({type:'error',message:t('csvText.recoveryCleanup')})}
  }
- async image(id:string,source:string){if(source.startsWith('data:image/')&&source.length<16*1024*1024)return source;if(/^[a-z]+:/i.test(source)||source.startsWith('//'))return null;const r=this.get(id);try{const file=resolve(r.root,decodeURIComponent(source.split(/[?#]/)[0]));if(!await contained(r.root,file))return null;const mime:Record<string,string>={'.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.gif':'image/gif','.webp':'image/webp','.svg':'image/svg+xml'};const type=mime[extname(file).toLowerCase()];if(!type||(await stat(file)).size>8*1024*1024)return null;return `data:${type};base64,${(await readFile(file)).toString('base64')}`}catch{return null}}
+ async image(id:string,source:string){if(this.get(id).info.analysisSubset)return null;if(source.startsWith('data:image/')&&source.length<16*1024*1024)return source;if(/^[a-z]+:/i.test(source)||source.startsWith('//'))return null;const r=this.get(id);try{const file=resolve(r.root,decodeURIComponent(source.split(/[?#]/)[0]));if(!await contained(r.root,file))return null;const mime:Record<string,string>={'.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.gif':'image/gif','.webp':'image/webp','.svg':'image/svg+xml'};const type=mime[extname(file).toLowerCase()];if(!type||(await stat(file)).size>8*1024*1024)return null;return `data:${type};base64,${(await readFile(file)).toString('base64')}`}catch{return null}}
  async shutdown(){for(const [id,r] of this.records){clearTimeout(r.timer);await this.checkpoint(id);await r.watcher?.close()}this.table.stop()}
 }

@@ -17,6 +17,7 @@
  import CsvOrderFields from './CsvOrderFields.svelte'
  import Icon from './Icon.svelte'
  import {subsetSummary} from '../lib/subset-summary'
+ import {subsetCoverage,subsetStepOwners} from '../lib/subset-coverage'
  let {project,source,recipes,intent,ontry,oncancel,onsave,onclose}:{project:ProjectInfo;source:ProjectSourceView;recipes:ProjectRecipeView[];intent:SubsetIntent;ontry:(draft:ProjectRecipeDraft,requestId:string)=>Promise<RecipeOperationResult&{sourceVersionDifferent?:boolean}>;oncancel:(requestId:string)=>Promise<void>;onsave:(draft:ProjectRecipeDraft)=>Promise<boolean>;onclose:()=>void}=$props()
  const initial=untrack(()=>({source,intent,original:recipes.find(recipe=>recipe.id===intent.recipeId)}))
  const original=initial.original
@@ -131,18 +132,13 @@
   <CsvColumnFields {headers} {available} {invalidColumns} disambiguate legend={t('subset.columns')} bind:chosen bind:allColumns disabled={immutable||busy||saving} onchange={changed} onallchange={all=>{if(all){extraSelected=[];chosen=chosen.map((on,index)=>available.includes(index)&&on)}changed()}} oncolumnchange={acknowledge}/>
   {#if blocked}<p id={reasonId} class="reason">{blocked}</p>{/if}
   {#if result}
+   {@const chain=subsetStepOwners(draft,recipes)}
+   {@const coverage=subsetCoverage(result,chain.steps,getUILanguage(),chain.stepOwners)}
    <div class="coverage" role="status">
     <p><strong>{t('subset.finalRows',{n:number(result.resultCount)})}</strong></p>
-    {#if result.cancelled}<p>{t('subset.coverageCancelled',{n:number(result.resultCount),scanned:number(result.scanned)})}</p>
-    {:else if !result.complete}<p>{t(!immutable&&keep==='first'?'subset.coverageFirst':'subset.coveragePartial',{n:number(result.resultCount),scanned:number(result.scanned)})}</p>
-    {:else if !result.sampling.length}<p>{t(result.resultCount===result.scanned&&!baseRecipe&&!draft.steps.some(step=>step.op==='filter')?'subset.coverageAll':'subset.coverageFiltered',{n:number(result.resultCount),total:number(result.scanned)})}</p>
-    {:else}
-     {#each result.sampling as sample}<p>{t(sample.method==='first'?'subset.coverageOrderedFirst':sample.percent===undefined?'subset.coverageRandomRows':'subset.coverageRandomPercent',{n:number(sample.selected),eligible:number(sample.eligible),percent:number(sample.percent??0),seed:String(sample.seed??0),step:sample.step+1})}{#if sample.requestedRows!==undefined&&sample.requestedRows>sample.eligible} {t('subset.tooFewRows',{requested:number(sample.requestedRows),available:number(sample.eligible)})}{/if}</p>{/each}
-     <p>{t('subset.examined',{n:number(result.scanned)})}</p>
-    {/if}
-    {#if !result.complete}{#each result.sampling as sample}<p>{t(sample.method==='first'?'subset.coveragePartialFirst':sample.percent===undefined?'subset.coveragePartialRandomRows':'subset.coveragePartialRandomPercent',{step:sample.step+1,n:number(sample.selected),requested:number(sample.requestedRows??sample.selected),percent:number(sample.percent??0),seed:String(sample.seed??0)})}</p>{/each}{/if}
+    {#each coverage.lines as line}<p>{line}</p>{/each}
     {#if draft.steps.length}<p>{subsetSummary(draft.steps,getUILanguage())}</p>{/if}
-    <p>{t('subset.bytesRead',{n:number(result.bytesRead)})} · {t(result.complete?'subset.verifiedIdentity':'subset.partialIdentity')}</p>
+    <p>{coverage.identity}</p>
     {#if result.sourceVersionDifferent}<p>{t('subset.sourceVersionDifferent',{name:source.name})}</p>{/if}
    </div>
    <!-- svelte-ignore a11y_no_noninteractive_tabindex (La vista previa desplazable admite navegación por teclado.) -->

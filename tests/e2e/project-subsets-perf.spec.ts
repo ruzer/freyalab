@@ -114,3 +114,20 @@ test('PRJ-02a 1 GB: cancelar a mitad conserva cobertura parcial y no crea archiv
  expect(response.result.scanned).toBeGreaterThanOrEqual(records/2);expect(response.result.scanned).toBeLessThan(records);expect(response.result.bytesRead).toBeGreaterThan(0);expect(response.result.bytesRead).toBeLessThan(source.bytes);expect(response.result).not.toHaveProperty('sha256')
  await recordResult('cancel',started,response.result,{progressAtCancel:response.progressAtCancel})
 })
+
+test('PRJ-02b 1 GB: una muestra no permite saltar el límite analítico de la raíz',{tag:'@perf'},async()=>{
+ try{
+  await page.evaluate(input=>window.freya.projectSaveRecipe(input.projectId,{name:'Dos filas desde un gigabyte',sourceId:input.sourceId,steps:[{op:'sample',method:'first',rows:2}]}),{projectId,sourceId})
+  const project=page.getByRole('tabpanel',{name:'Proyecto',exact:true}),row=project.getByText('Dos filas desde un gigabyte',{exact:true}).locator('..')
+  await expect(row.locator(':scope > .actions').getByRole('button',{name:'Analizar',exact:true})).toBeDisabled()
+  await expect(row).toContainText('La fuente supera el límite de análisis. Extrae las filas a un archivo nuevo y añádelo como fuente.')
+  const response=await page.evaluate(async projectId=>{
+   const state=await window.freya.projectState(),recipe=state.recipes.find(recipe=>recipe.name==='Dos filas desde un gigabyte')!
+   try{await window.freya.projectRecipeAnalyze(projectId,recipe.id,crypto.randomUUID());return'NO RECHAZADO'}catch(error){return String(error)}
+  },projectId)
+  expect(response).toContain('256 MiB')
+  expect(await page.evaluate(()=>window.freya.documents())).toEqual([])
+  expect(await app.evaluate(({app})=>app.getAppMetrics().some(metric=>metric.name==='FreyaLab CSV'))).toBe(false)
+  expect((await stat(path)).mtimeMs).toBe(source.quick.mtimeMs)
+ }finally{await page.evaluate(id=>window.freya.projectClose(id),projectId);await writeFile(join(folder,'proyecto.freyalab'),manifestBytes)}
+})

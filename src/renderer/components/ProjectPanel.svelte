@@ -4,7 +4,7 @@
  import type {ProjectInfo,ProjectSourceView} from '../../shared/project'
  import type {ProjectRecipeView} from '../../shared/project-recipes'
  import {subsetSummary} from '../lib/subset-summary'
- let{project,sources,recipes=[],onclose,onadd,onopen,onnewsubset,onopensubset}:{project:ProjectInfo;sources:ProjectSourceView[];recipes?:ProjectRecipeView[];onclose:()=>void;onadd:()=>void;onopen:(source:string,analyze:boolean)=>void;onnewsubset?:(source:string,base?:string)=>void;onopensubset?:(recipe:ProjectRecipeView)=>void}=$props()
+ let{project,sources,recipes=[],onclose,onadd,onopen,onnewsubset,onopensubset,onanalyzesubset,analysisBusy=false}:{project:ProjectInfo;sources:ProjectSourceView[];recipes?:ProjectRecipeView[];onclose:()=>void;onadd:()=>void;onopen:(source:string,analyze:boolean)=>void;onnewsubset?:(source:string,base?:string)=>void;onopensubset?:(recipe:ProjectRecipeView)=>void;onanalyzesubset?:(recipe:ProjectRecipeView)=>void;analysisBusy?:boolean}=$props()
  let editing=$state(false),busy=$state(false),name=$state(''),message=$state('')
  let request=$state<string|null>(null),operation=$state<'hash'|'find'|null>(null),progress=$state({bytes:0,total:0})
  let renaming=$state<string|null>(null),recipeName=$state(''),removing=$state<ProjectRecipeView|null>(null),removeDialog=$state<HTMLDialogElement>(),removeReturn:HTMLElement|null=null
@@ -100,6 +100,7 @@
 {#snippet recipeList(parent:string,flat?:ProjectRecipeView[])}
  <ul class="subsets">{#each flat??children.get(parent)??[] as recipe (recipe.id)}
   {@const unavailable=!sourceReady(recipe.rootSourceId)}
+  {@const analysisReason=recipe.reason??(sources.find(source=>source.id===recipe.rootSourceId)?.overAnalysis?t('subset.analysis.limit'):'')}
   {@const dependentNames=recipe.dependents.map(id=>recipes.find(value=>value.id===id)?.name??id).join('; ')}
   <li>
    {#if renaming===recipe.id}<form onsubmit={event=>void renameSubset(event,recipe)}><label>{t('subset.name')}<input bind:value={recipeName} maxlength="200" required disabled={busy}/></label><div class="actions"><button type="button" disabled={busy} onclick={()=>renaming=null}>{t('dialog.cancel')}</button><button type="submit" disabled={busy||!recipeName.trim()}>{t('dialog.save')}</button></div></form>{:else}<strong>{recipe.name}</strong>{/if}
@@ -108,10 +109,12 @@
    {#if !recipe.editable}<p>{t(recipe.executable?'subset.unsupported':'subset.unknown')}</p>{/if}
    <div class="actions">
     {#if onopensubset}<button disabled={busy||unavailable||!recipe.executable&&!recipe.editable} title={recipe.reason} onclick={()=>onopensubset?.(recipe)}>{t('dialog.open.button')}</button>{/if}
+    {#if onanalyzesubset}<button disabled={busy||analysisBusy||unavailable||!recipe.executable||!!analysisReason} aria-describedby={analysisReason?'subset-analysis-reason-'+recipe.id:undefined} onclick={()=>onanalyzesubset?.(recipe)}>{t('analysis.tab.open')}</button>{/if}
     {#if onnewsubset}<button disabled={busy||project.readonly||unavailable||recipe.depth>=8} aria-describedby={recipe.depth>=8?'subset-depth-'+recipe.id:undefined} title={mutationReason||undefined} onclick={()=>onnewsubset?.(recipe.rootSourceId,recipe.id)}>{t('subset.new')}</button>{/if}
     <button disabled={busy||project.readonly} title={mutationReason||undefined} onclick={()=>{renaming=recipe.id;recipeName=recipe.name;tick().then(()=>document.querySelector<HTMLInputElement>('.subsets form input')?.focus())}}>{t('subset.rename')}</button>
     <button disabled={busy||project.readonly||recipe.dependents.length>0} aria-describedby={recipe.dependents.length?'subset-dependents-'+recipe.id:undefined} title={mutationReason||undefined} onclick={()=>void askRemove(recipe)}>{t('subset.remove')}</button>
    </div>
+   {#if analysisReason}<p id={'subset-analysis-reason-'+recipe.id} class="reason">{analysisReason}</p>{/if}
    {#if recipe.depth>=8}<p id={'subset-depth-'+recipe.id} class="reason">{t('subset.maxDepth')}</p>{/if}
    {#if recipe.dependents.length}<p id={'subset-dependents-'+recipe.id} class="reason">{plural('subset.hasDependents',recipe.dependents.length,{names:dependentNames})}</p>{/if}
    {#if !flat&&recipe.depth<8&&children.has('recipe:'+recipe.id)}{@render recipeList('recipe:'+recipe.id)}{/if}
