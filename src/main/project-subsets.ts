@@ -36,7 +36,7 @@ export class ProjectSubsets{
    const failure=error as {code?:RecipeOperationErrorCode;data?:Record<string,unknown>}
    if(failure.code==='changed'&&sourceId&&this.projects.active===project)this.sources.markRecipeChanged(sourceId)
    if(failure.code==='schema'&&failure.data?.expectedColumns!==undefined)throw new Error(t('project.recipe.engine.schemaWidth',{expected:String(failure.data.expectedColumns),actual:String(failure.data.actualColumns)}))
-   if(failure.code==='plan'&&failure.data?.reason==='unbounded-order')throw new Error(t('project.recipe.engine.orderSample'))
+   if(failure.code==='plan'&&failure.data?.constraint==='unbounded-order')throw new Error(t('project.recipe.engine.orderSample'))
    const keys={schema:'project.recipe.engine.schema',columns:'project.recipe.engine.columns',plan:'project.recipe.engine.plan',changed:'project.source.changed',csv:'project.recipe.engine.csv',encoding:'project.recipe.engine.encoding',counter:'project.recipe.engine.counter',unavailable:'project.source.missing'}
    if(failure.code&&Object.hasOwn(keys,failure.code))throw new Error(t(keys[failure.code],{position:String(failure.data?.position??'—'),name:String(failure.data?.name??'—')}))
    throw error

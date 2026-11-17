@@ -122,7 +122,7 @@ describe('PRJ-02a · ejecución de conjuntos',()=>{
   const input=await source();input.path=join(folder,'no-existe.csv')
   await expect(runRecipe(input,[{op:'select',columns:[{position:3,name:'Años'}]}])).rejects.toMatchObject({code:'schema',data:{position:3,name:'Años',actualName:'Edad'}})
   await expect(runRecipe(input,[{op:'select',columns:[col(1)]},{op:'filter',mode:'all',conditions:[{column:col(2),op:'equals',value:'Oaxaca',caseSensitive:true}]}])).rejects.toMatchObject({code:'columns',data:{position:2}})
-  await expect(runRecipe(input,[{op:'order',by:[{column:col(3),descending:true,numeric:true}]},{op:'sample',method:'random',rows:2,seed:7}])).rejects.toMatchObject({code:'plan',data:{reason:'unbounded-order'}})
+  await expect(runRecipe(input,[{op:'order',by:[{column:col(3),descending:true,numeric:true}]},{op:'sample',method:'random',rows:2,seed:7}])).rejects.toMatchObject({code:'plan',data:{constraint:'unbounded-order'}})
  })
  it('la vista previa final tiene 100 filas y el recuento conserva todos los registros',async()=>{
   const input=await source('ID,Entidad,Edad,Ingreso,Nota\n'+Array.from({length:340},(_,index)=>`${index},Oaxaca,${index},0,ok\n`).join(''))
