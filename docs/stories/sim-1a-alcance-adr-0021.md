@@ -35,3 +35,15 @@ Después del rojo se migran selectores y rutas de las conductas vigentes, conser
 `structural-context.spec.ts:48` contiene expresiones después de `//` en la misma línea que hoy no se ejecutan. Su eventual restauración al migrar se registrará como cobertura restaurada, no como aserciones ya ejercidas ni como verde anterior. Esa spec no se modifica antes de obtener el rojo de SIM-1a.
 
 Estado al escribir este alcance: documentación previa a la interfaz. E2E roja, cambios de producción, capturas, suites completas y CI pendientes. Se ejecutarán las comprobaciones de CONTRIBUTING sobre el head correspondiente; no se trasladan verdes de g u otros SHA. Sin push, PR, fusión, publicación o instalación en esta fase.
+
+## Implementación local tras el rojo
+
+La raíz ejecutó los cinco casos nuevos sobre el producto sin modificar: cinco fallos por ausencia del menú esperado, sin fallos de preparación. Conservó el log, las trazas y la spec exacta (`30b54679dbb838dccc228fec5b2813bd06e18a16ded6354a85b5e4f797521ccd`). Después obtuvo las ocho capturas previas. La prueba temporal de observación se retiró de la suite; su copia queda en la evidencia privada.
+
+Se incorporó `main` `711f85f6d566935934cbc593889783e6ca9637a9` mediante fetch explícito y merge local normal, sin conflictos. Ese avance fusiona ayudas y pruebas de PR #182; no cambia producto. No se reescribe el rojo ni se atribuye su resultado a este nuevo árbol.
+
+La implementación reutiliza ContextMenu para la raíz y su hijo, con navegación por nivel y desactivados enfocables que conservan las guardas de activación. Las entradas, `targetColumn`, `emptyTarget`, los comandos y sus callbacks se mantienen. Los consumidores planos conservan su API; el padre opcional solo posiciona el hijo. Las etiquetas cortas son exclusivas del menú y no cambian las de la paleta ni de la barra.
+
+Se migran los nueve casos anteriores de `column-menu`, las rutas de `structural-context`, `empty-values` y las hojas bloqueadas de `large-file`. No se elimina ningún caso. Se retiran únicamente las expectativas del listado plano de limpieza, los nombres largos y las comillas del título, sustituidas por raíz/hijo y título exacto de SIM-1a. Se renombra el caso que decía «tres interacciones», porque la nueva jerarquía añade el acceso a Limpiar; conserva todos sus datos y comprobaciones. El tramo de `structural-context` que estaba después de `//` vuelve a ejecutar Escape/retorno de foco, orden descendente de vista, orden original de filas y dirty=false: es cobertura restaurada explícitamente. El resto de los oráculos de filas, bytes, previsualización, confirmación e historial se conserva.
+
+Se añaden dos casos de teclado/capturas posteriores es/en-XA, ambos temas y tamaños requeridos, y uno de colores forzados. Estado local previo a GUI: check y build con Node 24.22.1 pasaron; 56 unitarias de idiomas pasaron. Las E2E verdes, suites completas y CI de este cambio siguen pendientes. Ningún push ni PR todavía.
