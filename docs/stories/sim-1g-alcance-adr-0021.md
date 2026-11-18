@@ -23,5 +23,6 @@ La causa está en `button { display:inline-flex; justify-content:center }`: `tex
 - Primero rojo de DOM Range en Nuevo y en el menú de columna; solo después se modifica la interfaz. No basta comprobar `text-align` ni `justify-content`.
 - Capturas antes/después en claro y oscuro, es y en-XA, a 1440×900 y 1280×720. Se usan las mismas fuentes y fixtures sintéticos.
 - Se conservan las pruebas de teclado, foco y acciones existentes de los menús afectados; no se elimina ninguna prueba en SIM-1g.
-- Hay un punto del criterio geométrico pendiente de concretar antes de escribir la prueba: Nuevo muestra un icono delante del texto. El inicio de los glifos incluye ese ancho y separación; se ha comunicado a la coordinación para no interpretar en silencio el límite de 12 px.
+- **Decisión del propietario, 2026-11-18:** se conservan los iconos y se mide el bloque visual completo. El límite de 12 px corresponde al inicio del icono + texto cuando hay icono, o al inicio de los glifos cuando no lo hay. La prueba usa DOM Range sobre ese contenido; no descuenta a posteriori una separación observada ni lee solo CSS.
+- Antes de retirar la regla local de ContextMenu, la misma prueba cubre su herencia en el menú real de Archivos y conserva sus roles, recorrido con teclado y devolución del foco. No se cambian roles ni handlers.
 - Sin dependencias nuevas, cambios de CI, plazos, motor ni contratos. No se fusiona, publica ni actualiza la aplicación instalada.
