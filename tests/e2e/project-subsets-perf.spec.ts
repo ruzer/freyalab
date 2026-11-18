@@ -10,6 +10,7 @@ import type {ProjectManifest,ProjectSource} from '../../src/shared/project'
 import type {ProjectRecipeDraft} from '../../src/shared/project-recipes'
 import type {RecipeOperationResult} from '../../src/shared/recipe-operation'
 import {closeElectron} from './close-electron'
+import {projectTreeRow,openProjectRowMenu} from './project-panel'
 
 const records=1_000_000,lineBytes=1_000,sourceId='gb-source',projectId='gb-project'
 const payload='z'.repeat(991),columns=[{position:1,name:'ID'},{position:2,name:'Nota'}]
@@ -118,9 +119,11 @@ test('PRJ-02a 1 GB: cancelar a mitad conserva cobertura parcial y no crea archiv
 test('PRJ-02b 1 GB: una muestra no permite saltar el límite analítico de la raíz',{tag:'@perf'},async()=>{
  try{
   await page.evaluate(input=>window.freya.projectSaveRecipe(input.projectId,{name:'Dos filas desde un gigabyte',sourceId:input.sourceId,steps:[{op:'sample',method:'first',rows:2}]}),{projectId,sourceId})
-  const project=page.getByRole('tabpanel',{name:'Proyecto',exact:true}),row=project.getByText('Dos filas desde un gigabyte',{exact:true}).locator('..')
-  await expect(row.locator(':scope > .actions').getByRole('button',{name:'Analizar',exact:true})).toBeDisabled()
-  await expect(row).toContainText('La fuente supera el límite de análisis. Extrae las filas a un archivo nuevo y añádelo como fuente.')
+  const row=projectTreeRow(page,'Dos filas desde un gigabyte'),menu=await openProjectRowMenu(row)
+  const analyze=menu.getByRole('menuitem',{name:'Analizar',exact:true})
+  await expect(analyze).toBeDisabled()
+  await expect(analyze).toHaveAccessibleDescription('La fuente supera el límite de análisis. Extrae las filas a un archivo nuevo y añádelo como fuente.')
+  await menu.press('Escape')
   const response=await page.evaluate(async projectId=>{
    const state=await window.freya.projectState(),recipe=state.recipes.find(recipe=>recipe.name==='Dos filas desde un gigabyte')!
    try{await window.freya.projectRecipeAnalyze(projectId,recipe.id,crypto.randomUUID());return'NO RECHAZADO'}catch(error){return String(error)}

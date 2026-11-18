@@ -150,13 +150,31 @@ test('PRJ-01c C7: renombrar guarda con Intro, cancela con Escape o al salir y ex
  await expect(input).toHaveCount(0);await expect(projectPanel().getByRole('heading',{name:'Proyecto editado',exact:true})).toBeVisible()
  await chooseProjectAction(await openProjectMenu(page),'project.rename');await input.fill('Tampoco guardar');await projectPanel().getByRole('button',{name:'Acciones del proyecto',exact:true}).focus()
  await expect(input).toHaveCount(0)
- await chooseProjectAction(await openProjectRowMenu(row('Adultos')),'subset.rename')
- input=projectPanel().getByRole('textbox',{name:'Nombre',exact:true});await expect(input).toBeFocused();await input.fill('Muestra estable');await input.press('Enter')
- const error=projectPanel().getByRole('alert')
- await expect(error).toHaveText('Ya hay un conjunto con ese nombre. Elige otro nombre.')
- const inputBox=await input.boundingBox(),errorBox=await error.boundingBox()
- expect(inputBox).not.toBeNull();expect(errorBox).not.toBeNull();expect(errorBox!.y).toBeGreaterThanOrEqual(inputBox!.y+inputBox!.height)
- await input.press('Escape');await expect(input).toHaveCount(0);await expect(row('Adultos')).toBeFocused()
+ async function expectRenameContained(withError:boolean){
+  let snapshot:unknown
+  try{await expect.poll(async()=>{
+   const ownLine=row('Adultos').locator(':scope>.tree-item')
+   const [line,field,detail,next,error]=await Promise.all([ownLine.boundingBox(),input.boundingBox(),ownLine.locator('.node-detail').boundingBox(),row('Muestra estable').locator(':scope>.tree-item').boundingBox(),withError?projectPanel().getByRole('alert').boundingBox():Promise.resolve(null)])
+   snapshot={withError,line,field,detail,next,error}
+   if(!line||!field||!detail||!next||withError&&!error)return false
+   const inside=(box:{y:number;height:number})=>box.y>=line.y&&box.y+box.height<=line.y+line.height
+   return inside(field)&&inside(detail)&&(!error||inside(error)&&error.y>=field.y+field.height)&&next.y>=Math.max(line.y+line.height,detail.y+detail.height,error?error.y+error.height:0)
+  }).toBe(true)}finally{await test.info().attach(withError?'renombrado-error-cajas':'renombrado-campo-cajas',{body:Buffer.from(JSON.stringify(snapshot,null,2)),contentType:'application/json'})}
+ }
+ for(const width of [240,420]){
+  await page.evaluate(ancho=>window.freya.setSettings({barraLateral:{ancho}}),width)
+  await expect.poll(async()=>(await page.locator('.sidebar').boundingBox())?.width).toBe(width)
+  await chooseProjectAction(await openProjectRowMenu(row('Adultos')),'subset.rename')
+  input=projectPanel().getByRole('textbox',{name:'Nombre',exact:true});await expect(input).toBeFocused()
+  await expectRenameContained(false)
+  await input.fill('Muestra estable');await input.press('Enter')
+  const error=projectPanel().getByRole('alert')
+  await expect(error).toHaveText('Ya hay un conjunto con ese nombre. Elige otro nombre.')
+  const inputBox=await input.boundingBox(),errorBox=await error.boundingBox()
+  expect(inputBox).not.toBeNull();expect(errorBox).not.toBeNull();expect(errorBox!.y).toBeGreaterThanOrEqual(inputBox!.y+inputBox!.height)
+  await expectRenameContained(true)
+  await input.press('Escape');await expect(input).toHaveCount(0);await expect(row('Adultos')).toBeFocused()
+ }
  await chooseProjectAction(await openProjectRowMenu(row('Adultos')),'subset.rename');await input.fill('Personas adultas');await input.press('Enter')
  await expect(row('Personas adultas')).toBeVisible()
  expect(JSON.parse(await readFile(join(folder,'proyecto.freyalab'),'utf8')).recipes[0].name).toBe('Personas adultas')

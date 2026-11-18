@@ -79,7 +79,7 @@ La primera integración de las cinco specs dio 52/53: un locator buscaba el tít
 
 ## Capturas
 
-La tanda ampliada terminó en verde y generó 24 capturas nuevas: reposo, menú y fuente modificada en es/en-XA, claro/oscuro, 1440×900 y 1280×720. Se verificó la dimensión real de cada PNG antes de copiarlo; no son capturas de las tandas fallidas. Las pruebas esperan por condición el tema, el ancho de la barra, las fuentes y que no haya desbordamiento horizontal o un menú fuera de la ventana.
+La tanda ampliada inicial terminó en verde y generó 24 capturas. Los enlaces de esta sección se actualizaron con las 24 capturas de la nueva tanda enfocada de ajustes (10/10 en 15,5 s, sin reintentos), después de corregir la altura de la fila durante el renombrado: reposo, menú y fuente modificada en es/en-XA, claro/oscuro, 1440×900 y 1280×720. Se verificó la dimensión real de cada PNG antes de copiarlo; no son capturas de las tandas fallidas. Las pruebas esperan por condición el tema, el ancho de la barra, las fuentes y que no haya desbordamiento horizontal o un menú fuera de la ventana.
 
 | Estado e idioma | 1440×900 claro | 1440×900 oscuro | 1280×720 claro | 1280×720 oscuro |
 |---|---|---|---|---|
@@ -89,6 +89,49 @@ La tanda ampliada terminó en verde y generó 24 capturas nuevas: reposo, menú 
 | Menú · en-XA | [Captura](prj01c-2026-11-17/prj01c-menu-en-XA-light-1440x900.png) | [Captura](prj01c-2026-11-17/prj01c-menu-en-XA-dark-1440x900.png) | [Captura](prj01c-2026-11-17/prj01c-menu-en-XA-light-1280x720.png) | [Captura](prj01c-2026-11-17/prj01c-menu-en-XA-dark-1280x720.png) |
 | Fuente modificada · es | [Captura](prj01c-2026-11-17/prj01c-cambiada-es-light-1440x900.png) | [Captura](prj01c-2026-11-17/prj01c-cambiada-es-dark-1440x900.png) | [Captura](prj01c-2026-11-17/prj01c-cambiada-es-light-1280x720.png) | [Captura](prj01c-2026-11-17/prj01c-cambiada-es-dark-1280x720.png) |
 | Fuente modificada · en-XA | [Captura](prj01c-2026-11-17/prj01c-cambiada-en-XA-light-1440x900.png) | [Captura](prj01c-2026-11-17/prj01c-cambiada-en-XA-dark-1440x900.png) | [Captura](prj01c-2026-11-17/prj01c-cambiada-en-XA-light-1280x720.png) | [Captura](prj01c-2026-11-17/prj01c-cambiada-en-XA-dark-1280x720.png) |
+
+## Ajustes tras la primera validación integral (2026-11-18)
+
+La primera ejecución completa en el código `a14079b` **no terminó en verde**: `npm run test:e2e -- --workers=1 --retries=0 --output=../prj01c-evidence/final-e2e` registró **708 pasadas, 6 fallidas y 7 omitidas en 27,7 min**. Se conserva la [salida real saneada](prj01c-2026-11-17/integral-a14079b-rojo.log). No se añadieron omisiones ni reintentos. Los resultados enfocados siguientes no sustituyen esa ejecución completa.
+
+### Dos llamadores adicionales de la interfaz anterior
+
+- `tests/e2e/empty-values.spec.ts:197–198`: todavía buscaba «Verificada · 🔒 Protegida» y un botón Abrir en línea. Esos elementos se retiraron a propósito en PRJ-01c. Ahora comprueba ausencia de problemas, nota de protección única y visible y Abrir habilitado; lo activa mediante el ayudante común del menú.
+- `tests/e2e/project-subsets-perf.spec.ts:122–123`: todavía buscaba Analizar dentro de `.actions` y el motivo del límite como texto permanente de la fila. Ahora exige el mismo bloqueo y el motivo exacto como descripción accesible del menuitem, y cierra el menú con Escape antes de continuar.
+
+La [migración adicional por archivo y línea](prj01c-2026-11-17/migraciones-llamadores-adicionales.md) y su [comparación JSON](prj01c-2026-11-17/inventario-llamadores-adicionales.json) se añaden al inventario anterior, sin modificar las 25 migraciones de las cuatro specs originales. Estos dos archivos adicionales conservan **24→24 identidades exactas**. Sus llamadas estáticas a matcher pasan de **175 a 179**: **172 intactas literalmente**, **3 migraciones exclusivamente de interfaz** y **7 llamadas equivalentes o adicionales**. No son números de aserciones ejecutadas.
+
+El verde enfocado real pasó **los dos casos afectados, 2/2 en 4,5 s**, sin reintentos: [registro](prj01c-2026-11-17/llamadores-adicionales-green.log). Las comprobaciones de datos, protección, rechazo del puente, digest del original, límite de `256 MiB`, ausencia de documentos/proceso CSV y mtime permanecen literalmente iguales. No se afirma que esa tanda haya ejecutado las 24 identidades completas de ambos archivos.
+
+### Renombrado contenido en su fila
+
+La nueva comprobación geométrica produjo **1 fallo real** antes del ajuste: con una barra lateral de 240 px, la fila empezaba en `y=240` y terminaba en `284`, pero el campo comenzaba en `237,75` y el detalle terminaba en `286,25`. La altura fija de 44 px no contenía el campo y su detalle; el detalle invadía la fila siguiente. [Salida roja](prj01c-2026-11-17/rename-layout-red.log) y [cajas rojas](prj01c-2026-11-17/rename-layout-red-boxes.json).
+
+El ajuste sustituye la altura fija por una altura mínima de 44 px: conserva la altura en reposo y permite crecer a la fila al renombrar o mostrar un error. Las pruebas miden campo, detalle, error y fila siguiente a 240 y 420 px. Los valores de la [captura geométrica verde](prj01c-2026-11-17/rename-layout-green-boxes.json) son:
+
+| Barra | Estado | Alto de fila | Final de fila | Final del detalle | Inicio de la fila siguiente |
+|---|---|---:|---:|---:|---:|
+| 240 px | Campo, sin error | 56,5 | 296,5 | 292,5 | 296,5 |
+| 240 px | Campo con error | 114 | 354 | 350 | 354 |
+| 420 px | Campo, sin error | 56,5 | 296,5 | 292,5 | 296,5 |
+| 420 px | Campo con error | 81 | 321 | 317 | 321 |
+
+La [tanda enfocada del árbol](prj01c-2026-11-17/layout-tree-green.log) pasó **10/10 en 15,5 s**, sin reintentos, incluidos renombrado, captura de errores, teclado, anchos, progreso y las 24 capturas. El filtro de esa tanda no seleccionó los dos llamadores anteriores: por eso se informan por separado y no como una tanda de doce casos.
+
+### Cuatro incidencias fuera de esos ajustes: diagnóstico pendiente
+
+La misma ejecución integral registró también estos fallos. Se describe solamente lo observado; aún no se ha atribuido su causa ni se han cambiado estas pruebas:
+
+| Caso | Observable del fallo |
+|---|---|
+| `application-close.spec.ts:37`, `quit` en inglés, texto de más de 10 MiB | No apareció el aviso con rol `alert` que debía contener «10 MiB». |
+| `application-close.spec.ts:53`, S4 `quit` en inglés | Tras deshacer el texto rechazado y pedir cerrar la ventana, `page.isClosed()` no llegó a `true` durante la espera por condición de 15 s. |
+| `mermaid-export-theme.spec.ts:184`, más de 64 diagramas | `electron.launch` falló al conectar el depurador de la ventana: `WebSocket error: socket hang up`. El cuerpo de la prueba no se ejecutó. |
+| `analysis-describe.spec.ts:196`, cardinalidad textual no disponible | Se esperaba el resumen parcial y se observó «Analizando columnas: 0 de 2.»; el contexto se cerró durante la espera. |
+
+La repetición enfocada de los cuatro casos sobre la base `main d17cc81` pasó **4/4 en 14,2 s**, sin reintentos: [registro de la base](prj01c-2026-11-17/baseline-cuatro-green.log). Esto demuestra que pueden pasar en esa base y en esta máquina; no establece la causa de sus fallos en la tanda integral de la rama. Quedan pendientes la comparación con la rama ajustada y el diagnóstico. No se etiquetan aquí como fallos de infraestructura, carreras o regresiones confirmadas. La [CI de `a14079b`](https://github.com/ruzer/freyalab/actions/runs/44244200453) tampoco es una validación verde de los ajustes: corresponde al código anterior.
+
+Todavía no hay un SHA final de estos ajustes ni resultados de `check`, unitarias completas, E2E completas, build o CI sobre ese SHA. Se ejecutarán y registrarán después de crear y congelar el siguiente commit. No se traslada ningún verde de estas tandas al head futuro.
 
 ## Entorno, alcance de CI y pendientes
 

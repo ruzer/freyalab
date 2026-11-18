@@ -1,0 +1,1999 @@
+{
+  "summary": {
+    "beforeTests": 24,
+    "afterTests": 24,
+    "exactIdentityEquality": true,
+    "beforeMatchers": 175,
+    "afterMatchers": 179,
+    "unchangedMatcherTexts": 172,
+    "migratedUiMatchers": 3,
+    "addedOrReplacementMatchers": 7,
+    "files": [
+      {
+        "file": "tests/e2e/empty-values.spec.ts",
+        "before": 139,
+        "after": 143
+      },
+      {
+        "file": "tests/e2e/project-subsets-perf.spec.ts",
+        "before": 36,
+        "after": 36
+      }
+    ],
+    "guiExecuted": false
+  },
+  "identities": [
+    "empty-values.spec.ts\tLIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo\tcsv",
+    "empty-values.spec.ts\tLIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar\tcsv",
+    "empty-values.spec.ts\tLIM-1 Texto sin confirmar conserva el diálogo y Cancelar no pierde el borrador\tcsv",
+    "empty-values.spec.ts\tLIM-1 ajustes: Un valor vacío bloquea preparar y rellenar con un motivo accesible\tcsv",
+    "empty-values.spec.ts\tLIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (en)\tcsv",
+    "empty-values.spec.ts\tLIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es)\tcsv",
+    "empty-values.spec.ts\tLIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio\tcsv",
+    "empty-values.spec.ts\tLIM-1 archivo grande permite el filtro completo y explica que limpiar requiere extraer\tcsv",
+    "empty-values.spec.ts\tLIM-1 cancelar descarta una vista previa tardía y deja reintentar sin modificar el CSV\tcsv",
+    "empty-values.spec.ts\tLIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos\tcsv",
+    "empty-values.spec.ts\tLIM-1 elimina por cualquiera o todas las columnas marcadas y restaura filas completas\tcsv",
+    "empty-values.spec.ts\tLIM-1 fuente protegida permite ver vacíos y bloquea las mutaciones también por el puente\tcsv",
+    "empty-values.spec.ts\tLIM-1 la paleta encuentra isnull, fillna y dropna y conserva la selección múltiple\tcsv",
+    "empty-values.spec.ts\tLIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas\tcsv",
+    "empty-values.spec.ts\tLIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva bytes tras guardar\tcsv",
+    "empty-values.spec.ts\tLIM-1 rellenar desde Información actúa sobre todo el documento y pide actualizar el análisis\tcsv",
+    "empty-values.spec.ts\tLIM-1 teclado, idiomas y temas (en)\tcsv",
+    "empty-values.spec.ts\tLIM-1 teclado, idiomas y temas (en-XA)\tcsv",
+    "empty-values.spec.ts\tLIM-1 teclado, idiomas y temas (es)\tcsv",
+    "empty-values.spec.ts\tLIM-1 una protección recibida con el diálogo abierto invalida su vista previa\tcsv",
+    "project-subsets-perf.spec.ts\tPRJ-02a 1 GB: cancelar a mitad conserva cobertura parcial y no crea archivos\tcsv",
+    "project-subsets-perf.spec.ts\tPRJ-02a 1 GB: depósito de diez mil, cien ejemplos y fuente completa verificada\tcsv",
+    "project-subsets-perf.spec.ts\tPRJ-02a 1 GB: primeras dos filas leen solo un prefijo y no afirman identidad completa\tcsv",
+    "project-subsets-perf.spec.ts\tPRJ-02b 1 GB: una muestra no permite saltar el límite analítico de la raíz\tcsv"
+  ],
+  "preserved": [
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 28,
+        "text": "expect(panel.getByRole('status')).toHaveText(t('info.complete'))"
+      },
+      "after": {
+        "line": 29,
+        "text": "expect(panel.getByRole('status')).toHaveText(t('info.complete'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 34,
+        "text": "expect(details.locator('summary')).toHaveText('3 · 43 %')"
+      },
+      "after": {
+        "line": 35,
+        "text": "expect(details.locator('summary')).toHaveText('3 · 43 %')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 36,
+        "text": "expect(details.locator('dd')).toHaveText(['1','1','1'])"
+      },
+      "after": {
+        "line": 37,
+        "text": "expect(details.locator('dd')).toHaveText(['1','1','1'])"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 37,
+        "text": "expect(details.getByRole('button',{name,exact:true})).toBeVisible()"
+      },
+      "after": {
+        "line": 38,
+        "text": "expect(details.getByRole('button',{name,exact:true})).toBeVisible()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 40,
+        "text": "expect.poll(()=>page.locator('html').evaluate(element=>element.classList.contains('dark'))).toBe(theme==='dark')"
+      },
+      "after": {
+        "line": 41,
+        "text": "expect.poll(()=>page.locator('html').evaluate(element=>element.classList.contains('dark'))).toBe(theme==='dark')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 44,
+        "text": "expect(product.locator('.quality-breakdown')).toHaveCount(0)"
+      },
+      "after": {
+        "line": 45,
+        "text": "expect(product.locator('.quality-breakdown')).toHaveCount(0)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 46,
+        "text": "expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()"
+      },
+      "after": {
+        "line": 47,
+        "text": "expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 48,
+        "text": "expect(grid.locator('.csv-row')).toHaveCount(3)"
+      },
+      "after": {
+        "line": 49,
+        "text": "expect(grid.locator('.csv-row')).toHaveCount(3)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 49,
+        "text": "expect(grid.locator('.csv-row [data-column=\"0\"]>span')).toHaveText(['a','a','d'])"
+      },
+      "after": {
+        "line": 50,
+        "text": "expect(grid.locator('.csv-row [data-column=\"0\"]>span')).toHaveText(['a','a','d'])"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 50,
+        "text": "expect(grid.locator('.csv-row [data-column=\"1\"]>span')).toHaveText(['','50','60'])"
+      },
+      "after": {
+        "line": 51,
+        "text": "expect(grid.locator('.csv-row [data-column=\"1\"]>span')).toHaveText(['','50','60'])"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 51,
+        "text": "expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)"
+      },
+      "after": {
+        "line": 52,
+        "text": "expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 52,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 53,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 61,
+        "text": "expect(result).toMatchObject({rows:7,affected:3,cells:3,empty:{exact:1,missing:1,spaces:1}})"
+      },
+      "after": {
+        "line": 62,
+        "text": "expect(result).toMatchObject({rows:7,affected:3,cells:3,empty:{exact:1,missing:1,spaces:1}})"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 68,
+        "text": "expect(rejected).toEqual([true,true,true,true,true,true])"
+      },
+      "after": {
+        "line": 69,
+        "text": "expect(rejected).toEqual([true,true,true,true,true,true])"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 69,
+        "text": "expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)"
+      },
+      "after": {
+        "line": 70,
+        "text": "expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 70,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 71,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 80,
+        "text": "expect(dialog.getByRole('button',{name:/^(Rellenar|Eliminar filas)$/,exact:true})).toBeEnabled()"
+      },
+      "after": {
+        "line": 81,
+        "text": "expect(dialog.getByRole('button',{name:/^(Rellenar|Eliminar filas)$/,exact:true})).toBeEnabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 82,
+        "text": "expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)"
+      },
+      "after": {
+        "line": 83,
+        "text": "expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 89,
+        "text": "expect(value).toBeEnabled()"
+      },
+      "after": {
+        "line": 90,
+        "text": "expect(value).toBeEnabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 89,
+        "text": "expect(value).toHaveValue('')"
+      },
+      "after": {
+        "line": 90,
+        "text": "expect(value).toHaveValue('')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 90,
+        "text": "expect(preview).toBeDisabled()"
+      },
+      "after": {
+        "line": 91,
+        "text": "expect(preview).toBeDisabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 90,
+        "text": "expect(fill).toBeDisabled()"
+      },
+      "after": {
+        "line": 91,
+        "text": "expect(fill).toBeDisabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 91,
+        "text": "expect(button).toHaveAccessibleDescription('Escribe un valor para rellenar')"
+      },
+      "after": {
+        "line": 92,
+        "text": "expect(button).toHaveAccessibleDescription('Escribe un valor para rellenar')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 92,
+        "text": "expect(fill).toBeEnabled()"
+      },
+      "after": {
+        "line": 93,
+        "text": "expect(fill).toBeEnabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 93,
+        "text": "expect(preview).toBeDisabled()"
+      },
+      "after": {
+        "line": 94,
+        "text": "expect(preview).toBeDisabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 93,
+        "text": "expect(fill).toBeDisabled()"
+      },
+      "after": {
+        "line": 94,
+        "text": "expect(fill).toBeDisabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 94,
+        "text": "expect(button).toHaveAccessibleDescription('Escribe un valor para rellenar')"
+      },
+      "after": {
+        "line": 95,
+        "text": "expect(button).toHaveAccessibleDescription('Escribe un valor para rellenar')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 95,
+        "text": "expect(preview).toBeEnabled()"
+      },
+      "after": {
+        "line": 96,
+        "text": "expect(preview).toBeEnabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 97,
+        "text": "expect(preview).toBeEnabled()"
+      },
+      "after": {
+        "line": 98,
+        "text": "expect(preview).toBeEnabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 98,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 99,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 112,
+        "text": "expect(dialog.getByRole('status')).toContainText(tr('empty.preview.ready'))"
+      },
+      "after": {
+        "line": 113,
+        "text": "expect(dialog.getByRole('status')).toContainText(tr('empty.preview.ready'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 113,
+        "text": "expect.soft(await dialog.getByRole('status').textContent()).toContain(expected)"
+      },
+      "after": {
+        "line": 114,
+        "text": "expect.soft(await dialog.getByRole('status').textContent()).toContain(expected)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 114,
+        "text": "expect.soft((await dialog.locator('tbody th').allTextContents())[0]).toBe(language==='es'?'Fila 4 / columna 5':'Row 4 / column 5')"
+      },
+      "after": {
+        "line": 115,
+        "text": "expect.soft((await dialog.locator('tbody th').allTextContents())[0]).toBe(language==='es'?'Fila 4 / columna 5':'Row 4 / column 5')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 115,
+        "text": "expect(dialog.getByRole('button',{name:tr('empty.applyFill'),exact:true})).toBeDisabled()"
+      },
+      "after": {
+        "line": 116,
+        "text": "expect(dialog.getByRole('button',{name:tr('empty.applyFill'),exact:true})).toBeDisabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 121,
+        "text": "expect(deletion.getByRole('status')).toContainText(tr('empty.preview.ready'))"
+      },
+      "after": {
+        "line": 122,
+        "text": "expect(deletion.getByRole('status')).toContainText(tr('empty.preview.ready'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 122,
+        "text": "expect.soft(await deletion.getByRole('status').textContent()).toContain(language==='es'?'Se eliminará 1 de 7 filas.':'Will delete 1 of 7 rows.')"
+      },
+      "after": {
+        "line": 123,
+        "text": "expect.soft(await deletion.getByRole('status').textContent()).toContain(language==='es'?'Se eliminará 1 de 7 filas.':'Will delete 1 of 7 rows.')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 128,
+        "text": "expect(onlyRow.getByRole('status')).toContainText(tr('empty.preview.ready'))"
+      },
+      "after": {
+        "line": 129,
+        "text": "expect(onlyRow.getByRole('status')).toContainText(tr('empty.preview.ready'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 129,
+        "text": "expect.soft(await onlyRow.getByRole('status').textContent()).toContain(language==='es'?'Se eliminará 1 de 1 fila.':'Will delete 1 of 1 row.')"
+      },
+      "after": {
+        "line": 130,
+        "text": "expect.soft(await onlyRow.getByRole('status').textContent()).toContain(language==='es'?'Se eliminará 1 de 1 fila.':'Will delete 1 of 1 row.')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 130,
+        "text": "expect(await readFile(single,'utf8')).toBe('A\\n\"\"\\n')"
+      },
+      "after": {
+        "line": 131,
+        "text": "expect(await readFile(single,'utf8')).toBe('A\\n\"\"\\n')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 131,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 132,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 139,
+        "text": "expect(dialog).toContainText('4 celdas')"
+      },
+      "after": {
+        "line": 140,
+        "text": "expect(dialog).toContainText('4 celdas')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 140,
+        "text": "expect(dialog).toContainText('Cantidad')"
+      },
+      "after": {
+        "line": 141,
+        "text": "expect(dialog).toContainText('Cantidad')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 140,
+        "text": "expect(dialog).toContainText('Alta')"
+      },
+      "after": {
+        "line": 141,
+        "text": "expect(dialog).toContainText('Alta')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 141,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 142,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 143,
+        "text": "expect(dialog).not.toBeVisible()"
+      },
+      "after": {
+        "line": 144,
+        "text": "expect(dialog).not.toBeVisible()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 144,
+        "text": "expect((await readTableRows(page,20))[6]).toEqual(['d','60','','','0'])"
+      },
+      "after": {
+        "line": 145,
+        "text": "expect((await readTableRows(page,20))[6]).toEqual(['d','60','','','0'])"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 145,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 146,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 147,
+        "text": "expect((await readFile(path)).toString()).toBe(expected)"
+      },
+      "after": {
+        "line": 148,
+        "text": "expect((await readFile(path)).toString()).toBe(expected)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 148,
+        "text": "expect((await readTableRows(page,20))[6]).toEqual(['d','60'])"
+      },
+      "after": {
+        "line": 149,
+        "text": "expect((await readTableRows(page,20))[6]).toEqual(['d','60'])"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 149,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 150,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 157,
+        "text": "expect(dialog).toContainText('2 celdas')"
+      },
+      "after": {
+        "line": 158,
+        "text": "expect(dialog).toContainText('2 celdas')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 159,
+        "text": "expect((await readTableRows(page,20)).slice(4).map(row=>row[2])).toEqual(['00','  ','00'])"
+      },
+      "after": {
+        "line": 160,
+        "text": "expect((await readTableRows(page,20)).slice(4).map(row=>row[2])).toEqual(['00','  ','00'])"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 166,
+        "text": "expect((await readTableRows(page,20)).slice(4).map(row=>row[2])).toEqual(['4','4','4'])"
+      },
+      "after": {
+        "line": 167,
+        "text": "expect((await readTableRows(page,20)).slice(4).map(row=>row[2])).toEqual(['4','4','4'])"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 167,
+        "text": "expect(digest(await readFile(path))).not.toBe(digest(source))"
+      },
+      "after": {
+        "line": 168,
+        "text": "expect(digest(await readFile(path))).not.toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 168,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 169,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 181,
+        "text": "expect(await readTableRows(page,20)).toHaveLength(remaining)"
+      },
+      "after": {
+        "line": 182,
+        "text": "expect(await readTableRows(page,20)).toHaveLength(remaining)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 182,
+        "text": "expect(await readTableRows(page,20)).toEqual(original)"
+      },
+      "after": {
+        "line": 183,
+        "text": "expect(await readTableRows(page,20)).toEqual(original)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 184,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 185,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 201,
+        "text": "expect(quality.getByRole('button',{name:'Ver filas vacías',exact:true})).toBeEnabled()"
+      },
+      "after": {
+        "line": 208,
+        "text": "expect(quality.getByRole('button',{name:'Ver filas vacías',exact:true})).toBeEnabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 203,
+        "text": "expect(button).toBeDisabled()"
+      },
+      "after": {
+        "line": 210,
+        "text": "expect(button).toBeDisabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 203,
+        "text": "expect(button).toHaveAccessibleDescription(t('empty.protected'))"
+      },
+      "after": {
+        "line": 210,
+        "text": "expect(button).toHaveAccessibleDescription(t('empty.protected'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 209,
+        "text": "expect(attempts).toEqual(['rejected','rejected'])"
+      },
+      "after": {
+        "line": 216,
+        "text": "expect(attempts).toEqual(['rejected','rejected'])"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 211,
+        "text": "expect(page.getByRole('grid',{name:'Tabla de datos'}).locator('.csv-row')).toHaveCount(3)"
+      },
+      "after": {
+        "line": 218,
+        "text": "expect(page.getByRole('grid',{name:'Tabla de datos'}).locator('.csv-row')).toHaveCount(3)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 212,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 219,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 216,
+        "text": "expect((await page.evaluate(()=>window.freya.documents()))[0].large).toBe(true)"
+      },
+      "after": {
+        "line": 223,
+        "text": "expect((await page.evaluate(()=>window.freya.documents()))[0].large).toBe(true)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 219,
+        "text": "expect(button).toBeDisabled()"
+      },
+      "after": {
+        "line": 226,
+        "text": "expect(button).toBeDisabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 219,
+        "text": "expect(button).toHaveAccessibleDescription(t('empty.large'))"
+      },
+      "after": {
+        "line": 226,
+        "text": "expect(button).toHaveAccessibleDescription(t('empty.large'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 222,
+        "text": "expect(page.getByRole('region',{name:'Búsqueda en archivo grande'})).toContainText('3 de 7 filas')"
+      },
+      "after": {
+        "line": 229,
+        "text": "expect(page.getByRole('region',{name:'Búsqueda en archivo grande'})).toContainText('3 de 7 filas')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 223,
+        "text": "expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)"
+      },
+      "after": {
+        "line": 230,
+        "text": "expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 224,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 231,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 238,
+        "text": "expect(page.getByRole('alert').filter({hasText:'Filtro rechazado en la prueba'}).first()).toBeVisible()"
+      },
+      "after": {
+        "line": 245,
+        "text": "expect(page.getByRole('alert').filter({hasText:'Filtro rechazado en la prueba'}).first()).toBeVisible()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 239,
+        "text": "expect(page.getByRole('status').filter({hasText:t('empty.viewApplied',{column:'Cantidad'})})).toHaveCount(0)"
+      },
+      "after": {
+        "line": 246,
+        "text": "expect(page.getByRole('status').filter({hasText:t('empty.viewApplied',{column:'Cantidad'})})).toHaveCount(0)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 240,
+        "text": "expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)"
+      },
+      "after": {
+        "line": 247,
+        "text": "expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 241,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 248,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 248,
+        "text": "expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(true)"
+      },
+      "after": {
+        "line": 255,
+        "text": "expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(true)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 251,
+        "text": "expect(dialog.getByRole('button',{name,exact:true})).toBeVisible()"
+      },
+      "after": {
+        "line": 258,
+        "text": "expect(dialog.getByRole('button',{name,exact:true})).toBeVisible()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 253,
+        "text": "expect(editor).toContainText('nuevo,70')"
+      },
+      "after": {
+        "line": 260,
+        "text": "expect(editor).toContainText('nuevo,70')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 254,
+        "text": "expect(page.locator('.analysis-workspace:not([hidden])')).toHaveCount(0)"
+      },
+      "after": {
+        "line": 261,
+        "text": "expect(page.locator('.analysis-workspace:not([hidden])')).toHaveCount(0)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 255,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 262,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 276,
+        "text": "expect.poll(()=>app.evaluate(()=>!!Reflect.get(globalThis,'emptyHeld'))).toBe(true)"
+      },
+      "after": {
+        "line": 283,
+        "text": "expect.poll(()=>app.evaluate(()=>!!Reflect.get(globalThis,'emptyHeld'))).toBe(true)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 277,
+        "text": "expect(dialog.getByRole('progressbar')).toBeVisible()"
+      },
+      "after": {
+        "line": 284,
+        "text": "expect(dialog.getByRole('progressbar')).toBeVisible()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 279,
+        "text": "expect(dialog.getByRole('status')).toHaveText(t('empty.progress.cancelled'))"
+      },
+      "after": {
+        "line": 286,
+        "text": "expect(dialog.getByRole('status')).toHaveText(t('empty.progress.cancelled'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 281,
+        "text": "expect.poll(()=>app.evaluate(()=>!!Reflect.get(globalThis,'emptyReleased'))).toBe(true)"
+      },
+      "after": {
+        "line": 288,
+        "text": "expect.poll(()=>app.evaluate(()=>!!Reflect.get(globalThis,'emptyReleased'))).toBe(true)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 283,
+        "text": "expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)"
+      },
+      "after": {
+        "line": 290,
+        "text": "expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 284,
+        "text": "expect(dialog.getByRole('button',{name:'Rellenar',exact:true})).toBeDisabled()"
+      },
+      "after": {
+        "line": 291,
+        "text": "expect(dialog.getByRole('button',{name:'Rellenar',exact:true})).toBeDisabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 285,
+        "text": "expect(dialog.locator('table')).toHaveCount(0)"
+      },
+      "after": {
+        "line": 292,
+        "text": "expect(dialog.locator('table')).toHaveCount(0)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 286,
+        "text": "expect(dialog).toContainText('3 celdas')"
+      },
+      "after": {
+        "line": 293,
+        "text": "expect(dialog).toContainText('3 celdas')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 287,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 294,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 294,
+        "text": "expect(commands.locator('.command-list button')).toHaveCount(1)"
+      },
+      "after": {
+        "line": 301,
+        "text": "expect(commands.locator('.command-list button')).toHaveCount(1)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 294,
+        "text": "expect(commands.locator('.command-list button')).toContainText(label)"
+      },
+      "after": {
+        "line": 301,
+        "text": "expect(commands.locator('.command-list button')).toContainText(label)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 301,
+        "text": "expect(dialog.getByRole('combobox',{name:'Dónde mirar',exact:true})).toHaveValue('marked')"
+      },
+      "after": {
+        "line": 308,
+        "text": "expect(dialog.getByRole('combobox',{name:'Dónde mirar',exact:true})).toHaveValue('marked')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 302,
+        "text": "expect(dialog).toContainText('Precio')"
+      },
+      "after": {
+        "line": 309,
+        "text": "expect(dialog).toContainText('Precio')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 302,
+        "text": "expect(dialog).toContainText('Cantidad')"
+      },
+      "after": {
+        "line": 309,
+        "text": "expect(dialog).toContainText('Cantidad')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 303,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 310,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 312,
+        "text": "expect(dialog).toBeVisible()"
+      },
+      "after": {
+        "line": 319,
+        "text": "expect(dialog).toBeVisible()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 315,
+        "text": "expect(rows[0]).toHaveLength(201)"
+      },
+      "after": {
+        "line": 322,
+        "text": "expect(rows[0]).toHaveLength(201)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 315,
+        "text": "expect(rows[0][0]).toBe('00')"
+      },
+      "after": {
+        "line": 322,
+        "text": "expect(rows[0][0]).toBe('00')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 315,
+        "text": "expect(rows[0].slice(1)).toEqual(Array(200).fill('1'))"
+      },
+      "after": {
+        "line": 322,
+        "text": "expect(rows[0].slice(1)).toEqual(Array(200).fill('1'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 316,
+        "text": "expect(await readFile(wide,'utf8')).toBe(input)"
+      },
+      "after": {
+        "line": 323,
+        "text": "expect(await readFile(wide,'utf8')).toBe(input)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 317,
+        "text": "expect((await readTableRows(page,20))[0][0]).toBe('')"
+      },
+      "after": {
+        "line": 324,
+        "text": "expect((await readTableRows(page,20))[0][0]).toBe('')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 327,
+        "text": "expect(dialog.getByRole('button',{name:'Rellenar',exact:true})).toBeDisabled()"
+      },
+      "after": {
+        "line": 334,
+        "text": "expect(dialog.getByRole('button',{name:'Rellenar',exact:true})).toBeDisabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 328,
+        "text": "expect(dialog.getByRole('textbox',{name:'Valor',exact:true})).toBeDisabled()"
+      },
+      "after": {
+        "line": 335,
+        "text": "expect(dialog.getByRole('textbox',{name:'Valor',exact:true})).toBeDisabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 329,
+        "text": "expect(dialog.getByRole('button',{name:'Vista previa',exact:true})).toBeDisabled()"
+      },
+      "after": {
+        "line": 336,
+        "text": "expect(dialog.getByRole('button',{name:'Vista previa',exact:true})).toBeDisabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 330,
+        "text": "expect(dialog.locator('table')).toHaveCount(0)"
+      },
+      "after": {
+        "line": 337,
+        "text": "expect(dialog.locator('table')).toHaveCount(0)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 331,
+        "text": "expect(dialog).toContainText(t('empty.protected'))"
+      },
+      "after": {
+        "line": 338,
+        "text": "expect(dialog).toContainText(t('empty.protected'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 332,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 339,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 337,
+        "text": "expect(page.getByRole('grid',{name:'Tabla de datos'}).locator('.csv-row')).toHaveCount(4)"
+      },
+      "after": {
+        "line": 344,
+        "text": "expect(page.getByRole('grid',{name:'Tabla de datos'}).locator('.csv-row')).toHaveCount(4)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 341,
+        "text": "expect(page.locator('.analysis-workspace:not([hidden])')).toHaveCount(0)"
+      },
+      "after": {
+        "line": 348,
+        "text": "expect(page.locator('.analysis-workspace:not([hidden])')).toHaveCount(0)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 343,
+        "text": "expect(dialog).toContainText(t('empty.scope'))"
+      },
+      "after": {
+        "line": 350,
+        "text": "expect(dialog).toContainText(t('empty.scope'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 346,
+        "text": "expect((await readTableRows(page,20)).slice(4).map(row=>row[2])).toEqual(['0','0','0'])"
+      },
+      "after": {
+        "line": 353,
+        "text": "expect((await readTableRows(page,20)).slice(4).map(row=>row[2])).toEqual(['0','0','0'])"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 347,
+        "text": "expect(page.getByRole('textbox',{name:'Buscar en tabla',exact:true})).toHaveValue('a')"
+      },
+      "after": {
+        "line": 354,
+        "text": "expect(page.getByRole('textbox',{name:'Buscar en tabla',exact:true})).toHaveValue('a')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 348,
+        "text": "expect(panel.getByRole('status')).toHaveText(t('info.changed'))"
+      },
+      "after": {
+        "line": 355,
+        "text": "expect(panel.getByRole('status')).toHaveText(t('info.changed'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 349,
+        "text": "expect(panel.locator('tbody tr')).toHaveCount(0)"
+      },
+      "after": {
+        "line": 356,
+        "text": "expect(panel.locator('tbody tr')).toHaveCount(0)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 351,
+        "text": "expect(panel.getByRole('status')).toHaveText(t('info.complete'))"
+      },
+      "after": {
+        "line": 358,
+        "text": "expect(panel.getByRole('status')).toHaveText(t('info.complete'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 352,
+        "text": "expect(row.locator('td').nth(3)).toHaveText('0')"
+      },
+      "after": {
+        "line": 359,
+        "text": "expect(row.locator('td').nth(3)).toHaveText('0')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 353,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 360,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 365,
+        "text": "expect(dialog.getByRole('textbox',{name:tr('empty.value'),exact:true})).toBeFocused()"
+      },
+      "after": {
+        "line": 372,
+        "text": "expect(dialog.getByRole('textbox',{name:tr('empty.value'),exact:true})).toBeFocused()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 368,
+        "text": "expect(button).toBeDisabled()"
+      },
+      "after": {
+        "line": 375,
+        "text": "expect(button).toBeDisabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 368,
+        "text": "expect(button).toHaveAccessibleDescription(tr('empty.valueRequired'))"
+      },
+      "after": {
+        "line": 375,
+        "text": "expect(button).toHaveAccessibleDescription(tr('empty.valueRequired'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 374,
+        "text": "expect.poll(()=>page.locator('html').evaluate(element=>element.classList.contains('dark'))).toBe(theme==='dark')"
+      },
+      "after": {
+        "line": 381,
+        "text": "expect.poll(()=>page.locator('html').evaluate(element=>element.classList.contains('dark'))).toBe(theme==='dark')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 378,
+        "text": "expect(dialog.getByRole('button',{name:tr('empty.applyFill'),exact:true})).toBeEnabled()"
+      },
+      "after": {
+        "line": 385,
+        "text": "expect(dialog.getByRole('button',{name:tr('empty.applyFill'),exact:true})).toBeEnabled()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 379,
+        "text": "expect(dialog.getByRole('status')).toContainText(tr('empty.preview.ready'))"
+      },
+      "after": {
+        "line": 386,
+        "text": "expect(dialog.getByRole('status')).toContainText(tr('empty.preview.ready'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 380,
+        "text": "expect(dialog).not.toContainText('[freya:EMPTY]')"
+      },
+      "after": {
+        "line": 387,
+        "text": "expect(dialog).not.toContainText('[freya:EMPTY]')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 392,
+        "text": "expect(pair.ratio).toBeGreaterThanOrEqual(4.5)"
+      },
+      "after": {
+        "line": 399,
+        "text": "expect(pair.ratio).toBeGreaterThanOrEqual(4.5)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 394,
+        "text": "expect(bounds).toBeTruthy()"
+      },
+      "after": {
+        "line": 401,
+        "text": "expect(bounds).toBeTruthy()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 394,
+        "text": "expect(bounds!.x).toBeGreaterThanOrEqual(0)"
+      },
+      "after": {
+        "line": 401,
+        "text": "expect(bounds!.x).toBeGreaterThanOrEqual(0)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 394,
+        "text": "expect(bounds!.y+bounds!.height).toBeLessThanOrEqual(900)"
+      },
+      "after": {
+        "line": 401,
+        "text": "expect(bounds!.y+bounds!.height).toBeLessThanOrEqual(900)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 396,
+        "text": "expect(dialog).not.toBeVisible()"
+      },
+      "after": {
+        "line": 403,
+        "text": "expect(dialog).not.toBeVisible()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 397,
+        "text": "expect(page.getByRole('button',{name:tr('charts.toolbar.findAction'),exact:true})).toBeFocused()"
+      },
+      "after": {
+        "line": 404,
+        "text": "expect(page.getByRole('button',{name:tr('charts.toolbar.findAction'),exact:true})).toBeFocused()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 401,
+        "text": "expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].encoding).toBe('win1252')"
+      },
+      "after": {
+        "line": 408,
+        "text": "expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].encoding).toBe('win1252')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 404,
+        "text": "expect(value).toBeFocused()"
+      },
+      "after": {
+        "line": 411,
+        "text": "expect(value).toBeFocused()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 406,
+        "text": "expect(focus.style).not.toBe('none')"
+      },
+      "after": {
+        "line": 413,
+        "text": "expect(focus.style).not.toBe('none')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 406,
+        "text": "expect(focus.width).toBeGreaterThanOrEqual(2)"
+      },
+      "after": {
+        "line": 413,
+        "text": "expect(focus.width).toBeGreaterThanOrEqual(2)"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 408,
+        "text": "expect(dialog.getByRole('alert')).toContainText(tr('empty.error.encoding'))"
+      },
+      "after": {
+        "line": 415,
+        "text": "expect(dialog.getByRole('alert')).toContainText(tr('empty.error.encoding'))"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 409,
+        "text": "expect(dialog).not.toContainText('[freya:EMPTY]')"
+      },
+      "after": {
+        "line": 416,
+        "text": "expect(dialog).not.toContainText('[freya:EMPTY]')"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 410,
+        "text": "expect(dialog).not.toBeVisible()"
+      },
+      "after": {
+        "line": 417,
+        "text": "expect(dialog).not.toBeVisible()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 411,
+        "text": "expect(page.getByRole('button',{name:tr('charts.toolbar.findAction'),exact:true})).toBeFocused()"
+      },
+      "after": {
+        "line": 418,
+        "text": "expect(page.getByRole('button',{name:tr('charts.toolbar.findAction'),exact:true})).toBeFocused()"
+      }
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "before": {
+        "line": 412,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      },
+      "after": {
+        "line": 419,
+        "text": "expect(digest(await readFile(path))).toBe(digest(source))"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 38,
+        "text": "expect(info.size).toBe(1_000_000_008)"
+      },
+      "after": {
+        "line": 39,
+        "text": "expect(info.size).toBe(1_000_000_008)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 43,
+        "text": "expect(await fileSha(path)).toBe(source.sha256)"
+      },
+      "after": {
+        "line": 44,
+        "text": "expect(await fileSha(path)).toBe(source.sha256)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 55,
+        "text": "expect.poll(async()=>(await page.evaluate(()=>window.freya.projectState())).project?.id).toBe(projectId)"
+      },
+      "after": {
+        "line": 56,
+        "text": "expect.poll(async()=>(await page.evaluate(()=>window.freya.projectState())).project?.id).toBe(projectId)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 57,
+        "text": "expect(await page.evaluate(()=>window.freya.documents())).toEqual([])"
+      },
+      "after": {
+        "line": 58,
+        "text": "expect(await page.evaluate(()=>window.freya.documents())).toEqual([])"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 74,
+        "text": "expect(memory.processes.some((item:{name:string})=>item.name==='FreyaLab CSV')).toBe(true)"
+      },
+      "after": {
+        "line": 75,
+        "text": "expect(memory.processes.some((item:{name:string})=>item.name==='FreyaLab CSV')).toBe(true)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 75,
+        "text": "expect(await page.evaluate(()=>window.freya.documents())).toEqual([])"
+      },
+      "after": {
+        "line": 76,
+        "text": "expect(await page.evaluate(()=>window.freya.documents())).toEqual([])"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 76,
+        "text": "expect((await readdir(folder,{recursive:true})).sort()).toEqual(filesBefore)"
+      },
+      "after": {
+        "line": 77,
+        "text": "expect((await readdir(folder,{recursive:true})).sort()).toEqual(filesBefore)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 77,
+        "text": "expect((await readFile(join(folder,'proyecto.freyalab'))).equals(manifestBytes)).toBe(true)"
+      },
+      "after": {
+        "line": 78,
+        "text": "expect((await readFile(join(folder,'proyecto.freyalab'))).equals(manifestBytes)).toBe(true)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 78,
+        "text": "expect((await stat(path)).mtimeMs).toBe(source.quick.mtimeMs)"
+      },
+      "after": {
+        "line": 79,
+        "text": "expect((await stat(path)).mtimeMs).toBe(source.quick.mtimeMs)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 79,
+        "text": "expect(await fileSha(path)).toBe(source.sha256)"
+      },
+      "after": {
+        "line": 80,
+        "text": "expect(await fileSha(path)).toBe(source.sha256)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 88,
+        "text": "expect(result).toMatchObject({resultCount:2,scanned:2,complete:false,cancelled:false,sourceVersionDifferent:false})"
+      },
+      "after": {
+        "line": 89,
+        "text": "expect(result).toMatchObject({resultCount:2,scanned:2,complete:false,cancelled:false,sourceVersionDifferent:false})"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 89,
+        "text": "expect(result.rows).toEqual([['0000001',payload],['0000002',payload]])"
+      },
+      "after": {
+        "line": 90,
+        "text": "expect(result.rows).toEqual([['0000001',payload],['0000002',payload]])"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 90,
+        "text": "expect(result.bytesRead).toBeGreaterThan(0)"
+      },
+      "after": {
+        "line": 91,
+        "text": "expect(result.bytesRead).toBeGreaterThan(0)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 90,
+        "text": "expect(result.bytesRead).toBeLessThan(source.bytes)"
+      },
+      "after": {
+        "line": 91,
+        "text": "expect(result.bytesRead).toBeLessThan(source.bytes)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 90,
+        "text": "expect(result).not.toHaveProperty('sha256')"
+      },
+      "after": {
+        "line": 91,
+        "text": "expect(result).not.toHaveProperty('sha256')"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 96,
+        "text": "expect(result).toMatchObject({resultCount:10_000,scanned:records,eligible:records,complete:true,cancelled:false,bytesRead:source.bytes,sha256:source.sha256})"
+      },
+      "after": {
+        "line": 97,
+        "text": "expect(result).toMatchObject({resultCount:10_000,scanned:records,eligible:records,complete:true,cancelled:false,bytesRead:source.bytes,sha256:source.sha256})"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 97,
+        "text": "expect(result.sampling).toEqual([{step:0,method:'random',requestedRows:10_000,seed:7,eligible:records,selected:10_000}])"
+      },
+      "after": {
+        "line": 98,
+        "text": "expect(result.sampling).toEqual([{step:0,method:'random',requestedRows:10_000,seed:7,eligible:records,selected:10_000}])"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 98,
+        "text": "expect(result.rows).toHaveLength(100)"
+      },
+      "after": {
+        "line": 99,
+        "text": "expect(result.rows).toHaveLength(100)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 99,
+        "text": "expect(new Set(ids).size).toBe(100)"
+      },
+      "after": {
+        "line": 100,
+        "text": "expect(new Set(ids).size).toBe(100)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 99,
+        "text": "expect(ids).toEqual([...ids].sort((a,b)=>a-b))"
+      },
+      "after": {
+        "line": 100,
+        "text": "expect(ids).toEqual([...ids].sort((a,b)=>a-b))"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 100,
+        "text": "expect(ids[index]).toBeGreaterThanOrEqual(1)"
+      },
+      "after": {
+        "line": 101,
+        "text": "expect(ids[index]).toBeGreaterThanOrEqual(1)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 100,
+        "text": "expect(ids[index]).toBeLessThanOrEqual(records)"
+      },
+      "after": {
+        "line": 101,
+        "text": "expect(ids[index]).toBeLessThanOrEqual(records)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 100,
+        "text": "expect(row).toEqual([String(ids[index]).padStart(7,'0'),payload])"
+      },
+      "after": {
+        "line": 101,
+        "text": "expect(row).toEqual([String(ids[index]).padStart(7,'0'),payload])"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 113,
+        "text": "expect(response.requested).toBe(true)"
+      },
+      "after": {
+        "line": 114,
+        "text": "expect(response.requested).toBe(true)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 113,
+        "text": "expect(response.result).toMatchObject({cancelled:true,complete:false})"
+      },
+      "after": {
+        "line": 114,
+        "text": "expect(response.result).toMatchObject({cancelled:true,complete:false})"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 114,
+        "text": "expect(response.result.scanned).toBeGreaterThanOrEqual(records/2)"
+      },
+      "after": {
+        "line": 115,
+        "text": "expect(response.result.scanned).toBeGreaterThanOrEqual(records/2)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 114,
+        "text": "expect(response.result.scanned).toBeLessThan(records)"
+      },
+      "after": {
+        "line": 115,
+        "text": "expect(response.result.scanned).toBeLessThan(records)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 114,
+        "text": "expect(response.result.bytesRead).toBeGreaterThan(0)"
+      },
+      "after": {
+        "line": 115,
+        "text": "expect(response.result.bytesRead).toBeGreaterThan(0)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 114,
+        "text": "expect(response.result.bytesRead).toBeLessThan(source.bytes)"
+      },
+      "after": {
+        "line": 115,
+        "text": "expect(response.result.bytesRead).toBeLessThan(source.bytes)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 114,
+        "text": "expect(response.result).not.toHaveProperty('sha256')"
+      },
+      "after": {
+        "line": 115,
+        "text": "expect(response.result).not.toHaveProperty('sha256')"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 128,
+        "text": "expect(response).toContain('256 MiB')"
+      },
+      "after": {
+        "line": 131,
+        "text": "expect(response).toContain('256 MiB')"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 129,
+        "text": "expect(await page.evaluate(()=>window.freya.documents())).toEqual([])"
+      },
+      "after": {
+        "line": 132,
+        "text": "expect(await page.evaluate(()=>window.freya.documents())).toEqual([])"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 130,
+        "text": "expect(await app.evaluate(({app})=>app.getAppMetrics().some(metric=>metric.name==='FreyaLab CSV'))).toBe(false)"
+      },
+      "after": {
+        "line": 133,
+        "text": "expect(await app.evaluate(({app})=>app.getAppMetrics().some(metric=>metric.name==='FreyaLab CSV'))).toBe(false)"
+      }
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "before": {
+        "line": 131,
+        "text": "expect((await stat(path)).mtimeMs).toBe(source.quick.mtimeMs)"
+      },
+      "after": {
+        "line": 134,
+        "text": "expect((await stat(path)).mtimeMs).toBe(source.quick.mtimeMs)"
+      }
+    }
+  ],
+  "removed": [
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "line": 197,
+      "text": "expect(project.getByText('Verificada · 🔒 Protegida')).toBeVisible()"
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "line": 122,
+      "text": "expect(row.locator(':scope > .actions').getByRole('button',{name:'Analizar',exact:true})).toBeDisabled()"
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "line": 123,
+      "text": "expect(row).toContainText('La fuente supera el límite de análisis. Extrae las filas a un archivo nuevo y añádelo como fuente.')"
+    }
+  ],
+  "added": [
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "line": 199,
+      "text": "expect(sourceRow).not.toContainText(t('project.source.status.changed'))"
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "line": 200,
+      "text": "expect(sourceRow).not.toContainText(t('project.source.status.missing'))"
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "line": 201,
+      "text": "expect(project.getByTitle(t('project.source.protected'),{exact:true})).toHaveCount(1)"
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "line": 202,
+      "text": "expect(project.getByTitle(t('project.source.protected'),{exact:true})).toBeVisible()"
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "line": 204,
+      "text": "expect(menu.getByRole('menuitem',{name:'Abrir',exact:true})).toBeEnabled()"
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "line": 124,
+      "text": "expect(analyze).toBeDisabled()"
+    },
+    {
+      "file": "tests/e2e/project-subsets-perf.spec.ts",
+      "line": 125,
+      "text": "expect(analyze).toHaveAccessibleDescription('La fuente supera el límite de análisis. Extrae las filas a un archivo nuevo y añádelo como fuente.')"
+    }
+  ]
+}

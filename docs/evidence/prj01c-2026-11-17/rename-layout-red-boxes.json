@@ -1,0 +1,28 @@
+{
+  "withError": false,
+  "line": {
+    "x": 0,
+    "y": 240,
+    "width": 240,
+    "height": 44
+  },
+  "field": {
+    "x": 66,
+    "y": 237.75,
+    "width": 136,
+    "height": 30
+  },
+  "detail": {
+    "x": 66,
+    "y": 269.75,
+    "width": 136,
+    "height": 16.5
+  },
+  "next": {
+    "x": 0,
+    "y": 284,
+    "width": 240,
+    "height": 44
+  },
+  "error": null
+}
