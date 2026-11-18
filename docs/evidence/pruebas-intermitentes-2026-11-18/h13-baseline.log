@@ -1,0 +1,19 @@
+
+Running 3 tests using 1 worker
+
+(node:14242) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/3] [md] › tests/e2e/editor-status.spec.ts:25:1 › H13-2: posición, selección, sangría y fin de línea de los cuatro editores
+(node:14282) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/3] [md] › tests/e2e/editor-status.spec.ts:25:1 › H13-2: posición, selección, sangría y fin de línea de los cuatro editores
+(node:14293) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/3] [md] › tests/e2e/editor-status.spec.ts:25:1 › H13-2: posición, selección, sangría y fin de línea de los cuatro editores
+  3 passed (7.6s)

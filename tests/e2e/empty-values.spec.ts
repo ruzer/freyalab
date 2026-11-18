@@ -20,6 +20,7 @@ test.beforeEach(async()=>{
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya)
  await page.setViewportSize({width:1440,height:900})
  await page.evaluate(path=>window.freya.openPaths([path]),path)
+ await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true}).locator('.csv-row')).toHaveCount(7)
 })
 test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function information(){
@@ -367,6 +368,8 @@ for(const language of ['es','en','en-XA'] as Language[])test(`LIM-1 teclado, idi
  async function fromPalette(){
   const commands=await openCsvCommands(page,app)
   await commands.getByRole('searchbox',{name:'Buscar comando CSV',exact:true}).fill('fillna')
+  await expect(commands.locator('.command-list button')).toHaveCount(1)
+  await expect(commands.locator('.command-list button')).toBeEnabled()
   await commands.getByRole('searchbox',{name:'Buscar comando CSV',exact:true}).press('Enter')
   const dialog=page.getByRole('dialog',{name:tr('empty.fillTitle',{column:'Cantidad'}),exact:true})
   await expect(dialog.getByRole('textbox',{name:tr('empty.value'),exact:true})).toBeFocused()

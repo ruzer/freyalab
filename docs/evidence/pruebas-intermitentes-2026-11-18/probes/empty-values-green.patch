@@ -1,0 +1,88 @@
+--- a/tests/e2e/empty-values.spec.ts
++++ b/tests/e2e/empty-values.spec.ts
+@@ -18,7 +18,27 @@
+  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:test.info().title.match(/\((es|en|en-XA)\)$/)?.[1]??'es',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_FOLDER:folder,FREYALAB_TEST_PROJECT_SOURCE_PATH:path,FREYALAB_TEST_SAVE_PATH:join(folder,'copia.csv'),...(test.info().title.includes('archivo grande')?{FREYALAB_LARGE_BYTES:'1'}:{})},timeout:60000})
+  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya)
+  await page.setViewportSize({width:1440,height:900})
++ if(process.env.FREYALAB_GUI_RACE_PROBE==='header'){
++  await page.clock.install({time:0});await page.clock.pauseAt(1)
++  await app.evaluate(({ipcMain})=>{
++   type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
++   const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')!
++   const probe={first:true,release:()=>{}}
++   ;(globalThis as typeof globalThis&{headerPageProbe:typeof probe}).headerPageProbe=probe
++   handlers.set('freya',async(event,...args)=>{
++    const result=await original(event,...args)
++    if(args[0]==='page'&&probe.first){probe.first=false;await new Promise<void>(resolve=>{probe.release=resolve})}
++    return result
++   })
++  })
++ }
+  await page.evaluate(path=>window.freya.openPaths([path]),path)
++ if(process.env.FREYALAB_GUI_RACE_PROBE==='header'){
++  await page.clock.runFor(150)
++  await expect(page.locator('.csv-status').getByText('Procesando…',{exact:true})).toBeVisible()
++  await app.evaluate(()=> (globalThis as typeof globalThis&{headerPageProbe:{release:()=>void}}).headerPageProbe.release())
++  await page.clock.resume()
++ }
+  await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true}).locator('.csv-row')).toHaveCount(7)
+ })
+ test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+@@ -74,7 +94,17 @@
+ async function headerAction(column:string,action:string){
+  await showTable(page)
+  await page.getByRole('button',{name:'Acciones de la columna '+column,exact:true}).click()
+- await page.getByRole('menuitem',{name:action,exact:true}).click()
++ const item=page.getByRole('menuitem',{name:action,exact:true})
++ if(process.env.FREYALAB_GUI_RACE_PROBE==='header'&&await page.locator('.csv-row').count()===0){
++  await expect(item).toBeEnabled()
++  const box=(await item.boundingBox())!;await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down()
++  await page.clock.runFor(150)
++  await expect(item).toBeDisabled()
++  console.log('[GUI-RACE] header action became disabled between pointerdown and pointerup')
++  await page.mouse.up()
++  await app.evaluate(()=> (globalThis as typeof globalThis&{headerPageProbe:{release:()=>void}}).headerPageProbe.release())
++  await page.clock.resume()
++ }else await item.click()
+ }
+ async function previewEmpty(dialog:ReturnType<Page['getByRole']>){
+  await dialog.getByRole('button',{name:'Vista previa',exact:true}).click()
+@@ -361,8 +391,17 @@
+  async function fromPalette(){
+   const commands=await openCsvCommands(page,app)
+   await commands.getByRole('searchbox',{name:'Buscar comando CSV',exact:true}).fill('fillna')
+-  await expect(commands.locator('.command-list button')).toHaveCount(1)
+-  await expect(commands.locator('.command-list button')).toBeEnabled()
++  const fill=commands.locator('.command-list button')
++  await expect(fill).toHaveCount(1)
++  const ready=expect(fill).toBeEnabled()
++  if(process.env.FREYALAB_GUI_RACE_PROBE==='empty'){
++   const blocked=await app.evaluate(()=> (globalThis as typeof globalThis&{emptyPageProbe?:{blocked:boolean}}).emptyPageProbe?.blocked??false)
++   if(blocked){
++    console.log('[GUI-RACE] waiting for fill command',await fill.evaluateAll(buttons=>buttons.map(button=>({text:button.textContent,disabled:(button as HTMLButtonElement).disabled}))))
++    await app.evaluate(()=> (globalThis as typeof globalThis&{emptyPageProbe:{release:()=>void}}).emptyPageProbe.release())
++   }
++  }
++  await ready
+   await commands.getByRole('searchbox',{name:'Buscar comando CSV',exact:true}).press('Enter')
+   const dialog=page.getByRole('dialog',{name:tr('empty.fillTitle',{column:'Cantidad'}),exact:true})
+   await expect(dialog.getByRole('textbox',{name:tr('empty.value'),exact:true})).toBeFocused()
+@@ -400,6 +439,18 @@
+   await expect(page.getByRole('button',{name:tr('charts.toolbar.findAction'),exact:true})).toBeFocused()
+  }
+  await page.emulateMedia({forcedColors:'active',reducedMotion:'reduce'})
++ if(process.env.FREYALAB_GUI_RACE_PROBE==='empty')await app.evaluate(({ipcMain})=>{
++  type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
++  const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')!
++  const probe={armed:false,blocked:false,release:()=>{}}
++  ;(globalThis as typeof globalThis&{emptyPageProbe:typeof probe}).emptyPageProbe=probe
++  handlers.set('freya',async(event,...args)=>{
++   if(args[0]==='options')probe.armed=true
++   const result=await original(event,...args)
++   if(args[0]==='page'&&probe.armed){probe.blocked=true;await new Promise<void>(resolve=>{probe.release=resolve});probe.armed=false}
++   return result
++  })
++ })
+  await page.getByRole('combobox',{name:'Codificación',exact:true}).selectOption('win1252')
+  await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].encoding).toBe('win1252')
+  await page.getByRole('checkbox',{name:'Seleccionar columna Cantidad',exact:true}).check()

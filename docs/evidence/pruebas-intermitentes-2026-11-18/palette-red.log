@@ -1,0 +1,55 @@
+
+Running 1 test using 1 worker
+
+(node:15076) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/empty-values.spec.ts:380:57 › LIM-1 teclado, idiomas y temas (en-XA)
+[csv] › tests/e2e/empty-values.spec.ts:380:57 › LIM-1 teclado, idiomas y temas (en-XA)
+[GUI-RACE] palette before Enter [
+  {
+    text: '[Fïll ëmpty cëlls ïn thïs cölümn…~~~~~~~~~~][Wáït för thë cürrënt öpërátïön tö fïnïsh.~~~~~~~~~~~~~]',
+    disabled: true
+  }
+]
+
+[GUI-RACE] palette after Enter still visible true
+
+  1) [csv] › tests/e2e/empty-values.spec.ts:380:57 › LIM-1 teclado, idiomas y temas (en-XA) ────────
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator: getByRole('dialog', { name: '[Fïll ëmpty cëlls ïn Cantidad~~~~~~~~~]', exact: true }).getByRole('textbox', { name: '[Válüë~~]', exact: true })
+    Expected: focused
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: '[Fïll ëmpty cëlls ïn Cantidad~~~~~~~~~]', exact: true }).getByRole('textbox', { name: '[Válüë~~]', exact: true }) with timeout 15000ms
+      - waiting for getByRole('dialog', { name: '[Fïll ëmpty cëlls ïn Cantidad~~~~~~~~~]', exact: true }).getByRole('textbox', { name: '[Válüë~~]', exact: true })
+
+
+      395 |   }else await commands.getByRole('searchbox',{name:'Buscar comando CSV',exact:true}).press('Enter')
+      396 |   const dialog=page.getByRole('dialog',{name:tr('empty.fillTitle',{column:'Cantidad'}),exact:true})
+    > 397 |   await expect(dialog.getByRole('textbox',{name:tr('empty.value'),exact:true})).toBeFocused()
+          |                                                                                 ^
+      398 |   for(const key of ['empty.preview','empty.applyFill']){
+      399 |    const button=dialog.getByRole('button',{name:tr(key),exact:true})
+      400 |    await expect(button).toBeDisabled();await expect(button).toHaveAccessibleDescription(tr('empty.valueRequired'))
+        at fromPalette (<worktree>/tests/e2e/empty-values.spec.ts:397:81)
+        at <worktree>/tests/e2e/empty-values.spec.ts:447:15
+
+    Error Context: ../estabilidad-evidence/gui/empty-red/empty-values-LIM-1-teclado-idiomas-y-temas-en-XA--csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../estabilidad-evidence/gui/empty-red/empty-values-LIM-1-teclado-idiomas-y-temas-en-XA--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../estabilidad-evidence/gui/empty-red/empty-values-LIM-1-teclado-idiomas-y-temas-en-XA--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [csv] › tests/e2e/empty-values.spec.ts:380:57 › LIM-1 teclado, idiomas y temas (en-XA) ─────────

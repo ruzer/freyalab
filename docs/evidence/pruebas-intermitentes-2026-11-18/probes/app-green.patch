@@ -1,0 +1,27 @@
+--- a/tests/e2e/app.spec.ts
++++ b/tests/e2e/app.spec.ts
+@@ -66,6 +66,24 @@
+ })
+ 
+ test('CSV: ceros, multilinea, filtro, edición por identificador y guardado', { tag: '@package-smoke' }, async () => {
++  if(process.env.FREYALAB_GUI_RACE_PROBE==='app')await app.evaluate(({ipcMain})=>{
++    type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
++    const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')!
++    let rendererComplete=false
++    let waiting:{event:Electron.IpcMainInvokeEvent,args:unknown[],resolve:(value:unknown)=>void,reject:(error:unknown)=>void}|undefined
++    handlers.set('freya',async(event,...args)=>{
++      const query=args[2] as {limit?:number}|undefined
++      if(args[0]==='page'&&query?.limit===20&&!rendererComplete&&!waiting)return await new Promise((resolve,reject)=>{waiting={event,args,resolve,reject}})
++      if(args[0]==='page'&&query?.limit===200&&waiting){
++        const first=waiting;waiting=undefined
++        const testRead=original(first.event,...first.args)
++        const rendererRead=original(event,...args)
++        testRead.then(first.resolve,first.reject)
++        const result=await rendererRead;rendererComplete=true;return result
++      }
++      const result=await original(event,...args);if(args[0]==='page'&&query?.limit===200)rendererComplete=true;return result
++    })
++  })
+   const input = join(directory, 'inventario.csv')
+   await writeFile(input, 'Código,Artículo,Existencias\r\n000124,"Nombre, con coma",5\r\n000125,"Dos\nlineas",12\r\n')
+   const [doc] = await page.evaluate(path => window.freya.openPaths([path]), input)

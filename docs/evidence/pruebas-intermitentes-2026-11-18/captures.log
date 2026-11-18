@@ -1,0 +1,10 @@
+
+Running 2 tests using 1 worker
+
+(node:26536) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/2] [csv] › tests/e2e/_estabilidad-evidence.spec.ts:8:38 › contexto de estabilidad (es)
+[2/2] [csv] › tests/e2e/_estabilidad-evidence.spec.ts:8:38 › contexto de estabilidad (en-XA)
+  2 passed (3.7s)
