@@ -1,0 +1,274 @@
+{
+  "phase": "after",
+  "node": "24.22.1",
+  "method": "El mismo DOM Range sobre contenido visual completo del rojo, sin cambiar la prueba",
+  "acceptedOffset": {
+    "min": 0,
+    "max": 12
+  },
+  "testSha256": "922923a014789a70034c959ea994c19fb71c12fcf8dee9c5e374a8cfd27ae097",
+  "focusedSuite": {
+    "passed": 17,
+    "failed": 0,
+    "retry1": 0,
+    "seconds": 26.1
+  },
+  "measurements": [
+    {
+      "view": "es/light/1440x900",
+      "menu": "Nuevo",
+      "items": 4,
+      "minOffset": 10,
+      "maxOffset": 10,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/light/1440x900",
+      "menu": "Columna",
+      "items": 20,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/light/1440x900",
+      "menu": "Títulos de grupo",
+      "items": 5,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/light/1440x900",
+      "menu": "Archivos (ContextMenu)",
+      "items": 2,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/dark/1440x900",
+      "menu": "Nuevo",
+      "items": 4,
+      "minOffset": 10,
+      "maxOffset": 10,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/dark/1440x900",
+      "menu": "Columna",
+      "items": 20,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/dark/1440x900",
+      "menu": "Títulos de grupo",
+      "items": 5,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/dark/1440x900",
+      "menu": "Archivos (ContextMenu)",
+      "items": 2,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/light/1280x720",
+      "menu": "Nuevo",
+      "items": 4,
+      "minOffset": 10,
+      "maxOffset": 10,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/light/1280x720",
+      "menu": "Columna",
+      "items": 20,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/light/1280x720",
+      "menu": "Títulos de grupo",
+      "items": 5,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/light/1280x720",
+      "menu": "Archivos (ContextMenu)",
+      "items": 2,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/dark/1280x720",
+      "menu": "Nuevo",
+      "items": 4,
+      "minOffset": 10,
+      "maxOffset": 10,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/dark/1280x720",
+      "menu": "Columna",
+      "items": 20,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/dark/1280x720",
+      "menu": "Títulos de grupo",
+      "items": 5,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "es/dark/1280x720",
+      "menu": "Archivos (ContextMenu)",
+      "items": 2,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/light/1440x900",
+      "menu": "Nuevo",
+      "items": 4,
+      "minOffset": 10,
+      "maxOffset": 10,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/light/1440x900",
+      "menu": "Columna",
+      "items": 20,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/light/1440x900",
+      "menu": "Títulos de grupo",
+      "items": 5,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/light/1440x900",
+      "menu": "Archivos (ContextMenu)",
+      "items": 2,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/dark/1440x900",
+      "menu": "Nuevo",
+      "items": 4,
+      "minOffset": 10,
+      "maxOffset": 10,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/dark/1440x900",
+      "menu": "Columna",
+      "items": 20,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/dark/1440x900",
+      "menu": "Títulos de grupo",
+      "items": 5,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/dark/1440x900",
+      "menu": "Archivos (ContextMenu)",
+      "items": 2,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/light/1280x720",
+      "menu": "Nuevo",
+      "items": 4,
+      "minOffset": 10,
+      "maxOffset": 10,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/light/1280x720",
+      "menu": "Columna",
+      "items": 20,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/light/1280x720",
+      "menu": "Títulos de grupo",
+      "items": 5,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/light/1280x720",
+      "menu": "Archivos (ContextMenu)",
+      "items": 2,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/dark/1280x720",
+      "menu": "Nuevo",
+      "items": 4,
+      "minOffset": 10,
+      "maxOffset": 10,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/dark/1280x720",
+      "menu": "Columna",
+      "items": 20,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/dark/1280x720",
+      "menu": "Títulos de grupo",
+      "items": 5,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    },
+    {
+      "view": "en-XA/dark/1280x720",
+      "menu": "Archivos (ContextMenu)",
+      "items": 2,
+      "minOffset": 7,
+      "maxOffset": 7,
+      "outsideAcceptedRange": 0
+    }
+  ]
+}
