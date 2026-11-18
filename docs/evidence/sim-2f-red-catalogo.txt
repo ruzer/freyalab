@@ -1,0 +1,176 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <worktree>
+
+stderr | tests/sql-clarity.test.ts > SIM-2f: sql.ui.readonly conserva el contrato en español e inglés
+Missing translation: sql.ui.readonly
+
+stderr | tests/sql-clarity.test.ts > SIM-2f: sql.ui.empty conserva el contrato en español e inglés
+Missing translation: sql.ui.empty
+
+stderr | tests/sql-clarity.test.ts > SIM-2f: sql.ui.limits conserva el contrato en español e inglés
+Missing translation: sql.ui.limits
+
+stderr | tests/sql-clarity.test.ts > SIM-2f: sql.ui.resultDetails conserva el contrato en español e inglés
+Missing translation: sql.ui.resultDetails
+
+stderr | tests/sql-clarity.test.ts > SIM-2f: resultado conciso es / 1
+Missing translation: sql.ui.resultRows.one
+
+stderr | tests/sql-clarity.test.ts > SIM-2f: resultado conciso es / 240
+Missing translation: sql.ui.resultRows.other
+
+stderr | tests/sql-clarity.test.ts > SIM-2f: resultado conciso en / 1
+Missing translation: sql.ui.resultRows.one
+
+stderr | tests/sql-clarity.test.ts > SIM-2f: resultado conciso en / 240
+Missing translation: sql.ui.resultRows.other
+
+ ❯ tests/sql-clarity.test.ts (8 tests | 8 failed) 21ms
+   × SIM-2f: sql.ui.readonly conserva el contrato en español e inglés 4ms
+   × SIM-2f: sql.ui.empty conserva el contrato en español e inglés 1ms
+   × SIM-2f: sql.ui.limits conserva el contrato en español e inglés 0ms
+   × SIM-2f: sql.ui.resultDetails conserva el contrato en español e inglés 0ms
+   × SIM-2f: resultado conciso es / 1 13ms
+   × SIM-2f: resultado conciso es / 240 0ms
+   × SIM-2f: resultado conciso en / 1 1ms
+   × SIM-2f: resultado conciso en / 240 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sql-clarity.test.ts > SIM-2f: sql.ui.readonly conserva el contrato en español e inglés
+AssertionError: expected 'sql.ui.readonly' to be 'Solo lectura: tus consultas no cambia…' // Object.is equality
+
+Expected: "Solo lectura: tus consultas no cambian el archivo."
+Received: "sql.ui.readonly"
+
+ ❯ tests/sql-clarity.test.ts:10:25
+      8|  ['sql.ui.resultDetails','Detalles del resultado','Result details'],
+      9| ] as const)('SIM-2f: %s conserva el contrato en español e inglés',(key…
+     10|  expect(t(key,{},'es')).toBe(es);expect(t(key,{},'en')).toBe(en)
+       |                         ^
+     11|  const expanded=t(key,{},'en-XA');expect(expanded).toMatch(/^\[.+~+\]$…
+     12| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/sql-clarity.test.ts > SIM-2f: sql.ui.empty conserva el contrato en español e inglés
+AssertionError: expected 'sql.ui.empty' to be 'Escribe una consulta y pulsa Ejecutar…' // Object.is equality
+
+Expected: "Escribe una consulta y pulsa Ejecutar. Los resultados aparecen aquí."
+Received: "sql.ui.empty"
+
+ ❯ tests/sql-clarity.test.ts:10:25
+      8|  ['sql.ui.resultDetails','Detalles del resultado','Result details'],
+      9| ] as const)('SIM-2f: %s conserva el contrato en español e inglés',(key…
+     10|  expect(t(key,{},'es')).toBe(es);expect(t(key,{},'en')).toBe(en)
+       |                         ^
+     11|  const expanded=t(key,{},'en-XA');expect(expanded).toMatch(/^\[.+~+\]$…
+     12| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/sql-clarity.test.ts > SIM-2f: sql.ui.limits conserva el contrato en español e inglés
+AssertionError: expected 'sql.ui.limits' to be 'Límites' // Object.is equality
+
+Expected: "Límites"
+Received: "sql.ui.limits"
+
+ ❯ tests/sql-clarity.test.ts:10:25
+      8|  ['sql.ui.resultDetails','Detalles del resultado','Result details'],
+      9| ] as const)('SIM-2f: %s conserva el contrato en español e inglés',(key…
+     10|  expect(t(key,{},'es')).toBe(es);expect(t(key,{},'en')).toBe(en)
+       |                         ^
+     11|  const expanded=t(key,{},'en-XA');expect(expanded).toMatch(/^\[.+~+\]$…
+     12| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/sql-clarity.test.ts > SIM-2f: sql.ui.resultDetails conserva el contrato en español e inglés
+AssertionError: expected 'sql.ui.resultDetails' to be 'Detalles del resultado' // Object.is equality
+
+Expected: "Detalles del resultado"
+Received: "sql.ui.resultDetails"
+
+ ❯ tests/sql-clarity.test.ts:10:25
+      8|  ['sql.ui.resultDetails','Detalles del resultado','Result details'],
+      9| ] as const)('SIM-2f: %s conserva el contrato en español e inglés',(key…
+     10|  expect(t(key,{},'es')).toBe(es);expect(t(key,{},'en')).toBe(en)
+       |                         ^
+     11|  const expanded=t(key,{},'en-XA');expect(expanded).toMatch(/^\[.+~+\]$…
+     12| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/sql-clarity.test.ts > SIM-2f: resultado conciso es / 1
+AssertionError: expected 'sql.ui.resultRows.one' to be '1 fila de resultado' // Object.is equality
+
+Expected: "1 fila de resultado"
+Received: "sql.ui.resultRows.one"
+
+ ❯ tests/sql-clarity.test.ts:17:55
+     15|  ['en',1,'1 result row'],['en',240,'240 result rows'],
+     16| ] as const)('SIM-2f: resultado conciso %s / %d',(language,rows,expecte…
+     17|  expect(plural('sql.ui.resultRows',rows,{},language)).toBe(expected)
+       |                                                       ^
+     18| })
+     19|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  tests/sql-clarity.test.ts > SIM-2f: resultado conciso es / 240
+AssertionError: expected 'sql.ui.resultRows.other' to be '240 filas de resultado' // Object.is equality
+
+Expected: "240 filas de resultado"
+Received: "sql.ui.resultRows.other"
+
+ ❯ tests/sql-clarity.test.ts:17:55
+     15|  ['en',1,'1 result row'],['en',240,'240 result rows'],
+     16| ] as const)('SIM-2f: resultado conciso %s / %d',(language,rows,expecte…
+     17|  expect(plural('sql.ui.resultRows',rows,{},language)).toBe(expected)
+       |                                                       ^
+     18| })
+     19|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  tests/sql-clarity.test.ts > SIM-2f: resultado conciso en / 1
+AssertionError: expected 'sql.ui.resultRows.one' to be '1 result row' // Object.is equality
+
+Expected: "1 result row"
+Received: "sql.ui.resultRows.one"
+
+ ❯ tests/sql-clarity.test.ts:17:55
+     15|  ['en',1,'1 result row'],['en',240,'240 result rows'],
+     16| ] as const)('SIM-2f: resultado conciso %s / %d',(language,rows,expecte…
+     17|  expect(plural('sql.ui.resultRows',rows,{},language)).toBe(expected)
+       |                                                       ^
+     18| })
+     19|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  tests/sql-clarity.test.ts > SIM-2f: resultado conciso en / 240
+AssertionError: expected 'sql.ui.resultRows.other' to be '240 result rows' // Object.is equality
+
+Expected: "240 result rows"
+Received: "sql.ui.resultRows.other"
+
+ ❯ tests/sql-clarity.test.ts:17:55
+     15|  ['en',1,'1 result row'],['en',240,'240 result rows'],
+     16| ] as const)('SIM-2f: resultado conciso %s / %d',(language,rows,expecte…
+     17|  expect(plural('sql.ui.resultRows',rows,{},language)).toBe(expected)
+       |                                                       ^
+     18| })
+     19|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed (8)
+   Start at  12:57:52
+   Duration  179ms (transform 59%, tests 23%, import 16%, worker 2%)
+
