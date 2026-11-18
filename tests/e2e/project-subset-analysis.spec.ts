@@ -5,12 +5,13 @@ import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {closeElectron} from './close-electron'
 import {t,type Language} from '../../src/shared/i18n'
+import {projectTreeRow,openProjectRowMenu,chooseProjectAction} from './project-panel'
 
 let app:ElectronApplication,page:Page,root:string,folder:string,source:string,original:Buffer,locale:Language='es'
 let pageErrors:string[]=[]
 const panel=()=>page.getByRole('tabpanel',{name:t('project.tab',{},locale),exact:true})
 const tr=(key:string)=>t(key,{},locale)
-const subsetRow=(name:string)=>panel().getByText(name,{exact:true}).locator('..')
+const subsetRow=(name:string)=>projectTreeRow(page,name,locale)
 test.beforeEach(async({},info)=>{
  locale=info.title.endsWith('[en-XA]')?'en-XA':info.title.endsWith('[en]')?'en':'es'
  root=await mkdtemp(join(tmpdir(),'freya-subset-analysis-'));folder=join(root,'Censo');await mkdir(folder)
@@ -49,7 +50,7 @@ async function registeredSubset(){
 test('PRJ-02b: analizar usa las tres filas y columnas del conjunto, sin abrir ni modificar la fuente',async()=>{
  await registeredSubset()
  const before=await readFile(join(folder,'proyecto.freyalab'))
- await subsetRow('Oaxaca, adultos').locator(':scope > .actions').getByRole('button',{name:tr('analysis.tab.open'),exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(subsetRow('Oaxaca, adultos'),locale),'analysis.tab.open',locale)
  const analysis=page.getByRole('tab',{name:t('analysis.tab.label',{name:'Oaxaca, adultos'},locale),exact:true})
  await expect(analysis).toHaveAttribute('aria-selected','true')
  const workspace=page.locator('.analysis-workspace:not([hidden])')
@@ -66,7 +67,7 @@ test('PRJ-02b: analizar usa las tres filas y columnas del conjunto, sin abrir ni
 
 test('PRJ-02b: Gráficos identifica el conjunto completo y conserva su cobertura',async()=>{
  await registeredSubset()
- await subsetRow('Oaxaca, adultos').locator(':scope > .actions').getByRole('button',{name:tr('analysis.tab.open'),exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(subsetRow('Oaxaca, adultos'),locale),'analysis.tab.open',locale)
  const workspace=page.locator('.analysis-workspace:not([hidden])')
  await workspace.getByRole('button',{name:tr('analysis.tab.section.charts'),exact:true}).press('Enter')
  await expect(workspace.locator('.result-status')).toHaveAttribute('title','Conjunto completo')
@@ -75,7 +76,7 @@ test('PRJ-02b: Gráficos identifica el conjunto completo y conserva su cobertura
 
 test('PRJ-02b: SQL conserva valores y ausentes del conjunto sin afirmar que incluye cambios pendientes',async()=>{
  await registeredSubset()
- await subsetRow('Oaxaca, adultos').locator(':scope > .actions').getByRole('button',{name:tr('analysis.tab.open'),exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(subsetRow('Oaxaca, adultos'),locale),'analysis.tab.open',locale)
  const workspace=page.locator('.analysis-workspace:not([hidden])')
  await workspace.getByRole('button',{name:tr('analysis.tab.section.sql'),exact:true}).press('Enter')
  await expect(workspace.locator('.sql-panel > p').first()).not.toContainText('incluidos los cambios pendientes')
@@ -90,7 +91,7 @@ test('PRJ-02b: SQL conserva valores y ausentes del conjunto sin afirmar que incl
 
 test('PRJ-02b: reabrir una versión futura del mismo proyecto libera sus pestañas analíticas',async()=>{
  await registeredSubset()
- await subsetRow('Oaxaca, adultos').locator(':scope > .actions').getByRole('button',{name:tr('analysis.tab.open'),exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(subsetRow('Oaxaca, adultos'),locale),'analysis.tab.open',locale)
  const analysis=page.getByRole('tab',{name:t('analysis.tab.label',{name:'Oaxaca, adultos'},locale),exact:true})
  await expect(analysis).toBeVisible()
  const path=(await page.evaluate(()=>window.freya.projectState())).project!.path
@@ -101,7 +102,7 @@ test('PRJ-02b: reabrir una versión futura del mismo proyecto libera sus pestañ
  expect((await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.analysisSubset)).toEqual([])
  expect((await page.evaluate(()=>window.freya.projectState())).project).toMatchObject({id:manifest.id,version:2,readonly:true})
  const future=await readFile(file)
- await subsetRow('Oaxaca, adultos').locator(':scope > .actions').getByRole('button',{name:tr('analysis.tab.open'),exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(subsetRow('Oaxaca, adultos'),locale),'analysis.tab.open',locale)
  await expect(analysis).toBeVisible()
  expect(await readFile(file)).toEqual(future)
 })
@@ -110,7 +111,7 @@ test('PRJ-02b: el análisis usa más de cien filas, no la vista previa del conju
  original=Buffer.from('ID,Entidad,Edad,Ingreso,Nota\n'+Array.from({length:150},(_,index)=>`${String(index+1).padStart(5,'0')},Oaxaca,${20+index},10,nota`).join('\n')+'\n')
  await writeFile(source,original)
  await registeredSubset()
- await subsetRow('Oaxaca, adultos').locator(':scope > .actions').getByRole('button',{name:tr('analysis.tab.open'),exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(subsetRow('Oaxaca, adultos'),locale),'analysis.tab.open',locale)
  const workspace=page.locator('.analysis-workspace:not([hidden])')
  await workspace.getByRole('button',{name:tr('info.calculate'),exact:true}).press('Enter')
  await expect(workspace.locator('.file-summary')).toContainText('150 filas × 3 columnas')
@@ -128,7 +129,7 @@ test('PRJ-02b: una muestra se guarda y otro conjunto la ordena por edad sin camb
   const sample=(await window.freya.projectState()).recipes.find(recipe=>recipe.name==='Muestra, semilla 7')!
   await window.freya.projectSaveRecipe(project.id,{name:'Muestra ordenada',baseRecipeId:sample.id,steps:[{op:'order',by:[{column:{position:3,name:'Edad'},descending:true,numeric:true}]}]})
  })
- await subsetRow('Muestra ordenada').locator(':scope > .actions').getByRole('button',{name:tr('dialog.open.button'),exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(subsetRow('Muestra ordenada'),locale),'dialog.open.button',locale)
  const subset=page.getByRole('region',{name:tr('subset.title'),exact:true})
  await expect(subset.getByRole('table',{name:tr('subset.preview'),exact:true}).locator('tbody th')).toHaveText(['00128','9007199254740993','00124'])
  await expect(subset.locator('.coverage')).not.toContainText(/Paso \d|Step \d/)
@@ -159,7 +160,7 @@ async function ageHistogram(){
 
 test('PRJ-02b: el histograma de Edad representa 34, 52 y 61 y las estadísticas coinciden',async()=>{
  await registeredSubset()
- await subsetRow('Oaxaca, adultos').locator(':scope > .actions').getByRole('button',{name:tr('analysis.tab.open'),exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(subsetRow('Oaxaca, adultos'),locale),'analysis.tab.open',locale)
  await ageHistogram()
  const [document]=await page.evaluate(()=>window.freya.documents())
  const result=await page.evaluate(id=>window.freya.stats(id,null,[1]),document.id)
@@ -199,7 +200,7 @@ for(const language of ['es','en-XA'] as const)test(`PRJ-02b: teclado y capturas 
    if(process.env.FREYALAB_PRJ02B_EVIDENCE){await mkdir(process.env.FREYALAB_PRJ02B_EVIDENCE,{recursive:true});await copyFile(path,join(process.env.FREYALAB_PRJ02B_EVIDENCE,name))}
   }
  }
- await subsetRow('Oaxaca, adultos').locator(':scope > .actions').getByRole('button',{name:tr('analysis.tab.open'),exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(subsetRow('Oaxaca, adultos'),locale),'analysis.tab.open',locale)
  const workspace=page.locator('.analysis-workspace:not([hidden])')
  await expect(workspace.locator('h2')).toBeFocused()
  await workspace.getByRole('button',{name:tr('info.calculate'),exact:true}).press('Enter')
@@ -208,7 +209,7 @@ for(const language of ['es','en-XA'] as const)test(`PRJ-02b: teclado y capturas 
  await ageHistogram();await captures('histograma')
  await workspace.getByRole('button',{name:tr('subset.analysis.return'),exact:true}).press('Enter')
  await expect(page.getByRole('tab',{name:tr('project.tab'),exact:true})).toBeFocused()
- await subsetRow('Dos mayores de muestra').locator(':scope > .actions').getByRole('button',{name:tr('dialog.open.button'),exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(subsetRow('Dos mayores de muestra'),locale),'dialog.open.button',locale)
  const subset=page.getByRole('region',{name:tr('subset.title'),exact:true})
  await expect(subset.getByRole('table',{name:tr('subset.preview'),exact:true}).locator('tbody th')).toHaveText(['00128','9007199254740993'])
  await expect(subset.locator('.coverage')).not.toContainText(/Paso \d|Step \d/)
@@ -227,7 +228,7 @@ test('PRJ-02b: cancelar la preparación no publica un análisis parcial ni escri
  original=Buffer.from('ID,Entidad,Edad,Ingreso,Nota\n'+Array.from({length:100000},(_,index)=>`${String(index+1).padStart(6,'0')},Oaxaca,34,1200,${'x'.repeat(400)}`).join('\n')+'\n')
  await writeFile(source,original);await registeredSubset()
  const before=await readFile(join(folder,'proyecto.freyalab'))
- await subsetRow('Oaxaca, adultos').locator(':scope > .actions').getByRole('button',{name:tr('analysis.tab.open'),exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(subsetRow('Oaxaca, adultos'),locale),'analysis.tab.open',locale)
  const preparation=panel().locator('.subset-analysis-progress')
  await preparation.getByRole('button',{name:tr('dialog.cancel'),exact:true}).press('Enter')
  await expect(preparation).toHaveCount(0)
@@ -244,7 +245,7 @@ for(const inherited of [false,true])test(`PRJ-02b: Analizar ejecuta los cambios 
   const {project,recipes}=await window.freya.projectState()
   await window.freya.projectSaveRecipe(project!.id,{name:'Adultos ordenados',baseRecipeId:recipes[0].id,steps:[{op:'order',by:[{column:{position:3,name:'Edad'},descending:true,numeric:true}]}]})
  })
- await subsetRow(name).locator(':scope > .actions').getByRole('button',{name:tr('analysis.tab.open'),exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(subsetRow(name),locale),'analysis.tab.open',locale)
  await expect(page.getByRole('tab',{name:t('analysis.tab.label',{name},locale),exact:true})).toBeVisible()
  const first=(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.analysisSubset)!
  expect(first.rowCount).toBe(3)
@@ -259,7 +260,7 @@ for(const inherited of [false,true])test(`PRJ-02b: Analizar ejecuta los cambios 
  },name)
  const manifest=await readFile(join(folder,'proyecto.freyalab'))
  await page.getByRole('button',{name:tr('subset.analysis.return'),exact:true}).press('Enter')
- await subsetRow(name+' actualizado').locator(':scope > .actions').getByRole('button',{name:tr('analysis.tab.open'),exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(subsetRow(name+' actualizado'),locale),'analysis.tab.open',locale)
  const tab=page.getByRole('tab',{name:t('analysis.tab.label',{name:name+' actualizado'},locale),exact:true})
  await expect(tab).toBeVisible()
  await expect.poll(async()=>{const docs=await page.evaluate(()=>window.freya.documents());return docs.filter(doc=>doc.analysisSubset).map(doc=>({rows:doc.rowCount,name:doc.analysisSubset!.name}))}).toEqual([{rows:1,name:name+' actualizado'}])
@@ -323,7 +324,7 @@ test('PRJ-02b: dos reaperturas superpuestas liberan el snapshot una vez y public
    await window.freya.projectOpenRecent(a);return{a,b:opened[0],c:opened[1]}
   },{files:fixtures.map(value=>value.path),a})
   await expect(subsetRow('Oaxaca, adultos')).toBeVisible()
-  await subsetRow('Oaxaca, adultos').locator(':scope > .actions').getByRole('button',{name:tr('analysis.tab.open'),exact:true}).press('Enter')
+  await chooseProjectAction(await openProjectRowMenu(subsetRow('Oaxaca, adultos'),locale),'analysis.tab.open',locale)
   const analysis=page.getByRole('tab',{name:t('analysis.tab.label',{name:'Oaxaca, adultos'},locale),exact:true})
   await expect(analysis).toBeVisible()
   const snapshot=(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.analysisSubset)!
