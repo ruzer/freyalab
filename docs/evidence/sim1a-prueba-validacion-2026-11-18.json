@@ -1,0 +1,228 @@
+{
+  "finalCodeHead": "43e9dbb5ef233eb65d61d62c46a3da00f7012403",
+  "previousFocusedHead": "e1301a96ef69a7218c97e29f6da12d28ff46395c",
+  "red": {
+    "preservedAt": "2026-11-18T21:38:02.292Z",
+    "documentationCommit": "10a12797b5477cff848c78feef26fa9b119d7064",
+    "base": "fd4e2a46845de95d7f7274f52fbd26cb0f63fcbc",
+    "testSha256": "30b54679dbb838dccc228fec5b2813bd06e18a16ded6354a85b5e4f797521ccd",
+    "logSha256": "603ffb15c85a96a91a96df9077b602262be6d077ec6e342cf8f6a0f5304cbc4d",
+    "logLastModified": "2026-11-18T21:31:59.757Z",
+    "rootReportedExitCode": 1,
+    "result": "5 failed por lista antigua y ausencia del submenú/etiquetas SIM-1a",
+    "sourceUnchanged": true,
+    "report": "red-report",
+    "traces": "red-results"
+  },
+  "keyPlacement": [
+    {
+      "file": "src/shared/i18n/es.json",
+      "added_keys": 21,
+      "existing_values_changed": [],
+      "existing_keys_removed": [],
+      "identical_parsed_map": true,
+      "sha256_before": "ba083f94e962c0d7f21507c44e9ab3d7456297615aba99096dd902897e868b1a",
+      "sha256_after": "c23e62da99b43981ba11335a4d907fce9f6a0821803030f0a040741daa3be2f0",
+      "anchor": "csvText.menu"
+    },
+    {
+      "file": "src/shared/i18n/en.json",
+      "added_keys": 21,
+      "existing_values_changed": [],
+      "existing_keys_removed": [],
+      "identical_parsed_map": true,
+      "sha256_before": "378c53d5f6d506f942a2dae1e272c080ecc1da25d92b4a7cd5040be7c8251c91",
+      "sha256_after": "84fc83cc80011b1602e90974e3dea05dac819f721ea25acce8f323e5819fc6c9",
+      "anchor": "csvText.menu"
+    }
+  ],
+  "dryMergeStatistics": {
+    "sim1a_head": "43e9dbb5ef233eb65d61d62c46a3da00f7012403",
+    "statistics_head": "0af73fa5eefd0483443e370dfe2acb2de43da2cb",
+    "exit_code": 0,
+    "output": "7fa60c78de2cbe9e8bd59b45b3ca73b3470e9ddd\n\nAuto-merging src/shared/i18n/en.json\nAuto-merging src/shared/i18n/es.json\n",
+    "stderr": "",
+    "applied_to_worktree": false
+  },
+  "invariantsAgainstMain": {
+    "head": "e1301a96ef69a7218c97e29f6da12d28ff46395c",
+    "baseline": "23121eda41fb9380c533a25ef86723046b6d7639",
+    "identical": {
+      "targetColumn": true,
+      "emptyTarget": true,
+      "commands definitions/callbacks/guards": true,
+      "structuralContext": true,
+      "columnMenu": true,
+      "runCommand": true
+    }
+  },
+  "captures": [
+    {
+      "file": "sim1a-before-en-XA-dark-1280x720.png",
+      "phase": "before",
+      "head": "fd4e2a46845de95d7f7274f52fbd26cb0f63fcbc",
+      "width": 1280,
+      "height": 720,
+      "sha256": "31162fbb20713de643ba9abd55e8f9b85d3d73721bf2a8174a33e6ebbfc9f8d1",
+      "bytes": 118291
+    },
+    {
+      "file": "sim1a-before-en-XA-dark-1440x900.png",
+      "phase": "before",
+      "head": "fd4e2a46845de95d7f7274f52fbd26cb0f63fcbc",
+      "width": 1440,
+      "height": 900,
+      "sha256": "8ab22fd1d0473abdb92f5b50a4275e410ed3d6da13e388541c73787572534649",
+      "bytes": 125432
+    },
+    {
+      "file": "sim1a-before-en-XA-light-1280x720.png",
+      "phase": "before",
+      "head": "fd4e2a46845de95d7f7274f52fbd26cb0f63fcbc",
+      "width": 1280,
+      "height": 720,
+      "sha256": "80604f97a502e8dcf46f7abb648a98d84155303f1f2c03f9926166b47f8f06e1",
+      "bytes": 118241
+    },
+    {
+      "file": "sim1a-before-en-XA-light-1440x900.png",
+      "phase": "before",
+      "head": "fd4e2a46845de95d7f7274f52fbd26cb0f63fcbc",
+      "width": 1440,
+      "height": 900,
+      "sha256": "cce440911f58747b7aa9b1fe4a1908f6b3e092ac79023a41c59d819a40b70835",
+      "bytes": 125116
+    },
+    {
+      "file": "sim1a-before-es-dark-1280x720.png",
+      "phase": "before",
+      "head": "fd4e2a46845de95d7f7274f52fbd26cb0f63fcbc",
+      "width": 1280,
+      "height": 720,
+      "sha256": "8be4497570ad6a128552bcb7153b282a06b2d2da086099216af12e49512c3f9e",
+      "bytes": 113728
+    },
+    {
+      "file": "sim1a-before-es-dark-1440x900.png",
+      "phase": "before",
+      "head": "fd4e2a46845de95d7f7274f52fbd26cb0f63fcbc",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b3ddfce99670793ed1d7755b505cd557df46ce3c6f84d09017666b986136ca22",
+      "bytes": 120525
+    },
+    {
+      "file": "sim1a-before-es-light-1280x720.png",
+      "phase": "before",
+      "head": "fd4e2a46845de95d7f7274f52fbd26cb0f63fcbc",
+      "width": 1280,
+      "height": 720,
+      "sha256": "27d2fc2d9faa49eb2fcd591dd45bc32c3432f6351419dfaa97f5e5fc132fb34f",
+      "bytes": 114072
+    },
+    {
+      "file": "sim1a-before-es-light-1440x900.png",
+      "phase": "before",
+      "head": "fd4e2a46845de95d7f7274f52fbd26cb0f63fcbc",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a9e1a5af528c092ec07bace11c90cf813716955e0c91b22d173af44e9f0b7f65",
+      "bytes": 120606
+    },
+    {
+      "file": "sim1a-after-en-XA-dark-1280x720.png",
+      "phase": "after",
+      "head": "43e9dbb5ef233eb65d61d62c46a3da00f7012403",
+      "width": 1280,
+      "height": 720,
+      "sha256": "7bc154e0b5a692dedd4ea290c7beff64948ec224fd70b471a2cf4204a0cccd98",
+      "bytes": 115051
+    },
+    {
+      "file": "sim1a-after-en-XA-dark-1440x900.png",
+      "phase": "after",
+      "head": "43e9dbb5ef233eb65d61d62c46a3da00f7012403",
+      "width": 1440,
+      "height": 900,
+      "sha256": "fcd076135747d43eaffbe9590979e98ba54ad3532a905f03e7dfb4a4f6b53513",
+      "bytes": 119204
+    },
+    {
+      "file": "sim1a-after-en-XA-light-1280x720.png",
+      "phase": "after",
+      "head": "43e9dbb5ef233eb65d61d62c46a3da00f7012403",
+      "width": 1280,
+      "height": 720,
+      "sha256": "0a233f6ee39c105c3948ae05812a4b03120b9c709957e35ff09dce257b75c40d",
+      "bytes": 116427
+    },
+    {
+      "file": "sim1a-after-en-XA-light-1440x900.png",
+      "phase": "after",
+      "head": "43e9dbb5ef233eb65d61d62c46a3da00f7012403",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0a66d9aa58c786fd4a7d7032552ac2da4c552d8eff5f7efae5f929c99a7c3c05",
+      "bytes": 121045
+    },
+    {
+      "file": "sim1a-after-es-dark-1280x720.png",
+      "phase": "after",
+      "head": "43e9dbb5ef233eb65d61d62c46a3da00f7012403",
+      "width": 1280,
+      "height": 720,
+      "sha256": "6bd0ba0fcc817e126fbf644e8f77f84b3c29092f3a1255dc6f9f25450551ae2f",
+      "bytes": 101452
+    },
+    {
+      "file": "sim1a-after-es-dark-1440x900.png",
+      "phase": "after",
+      "head": "43e9dbb5ef233eb65d61d62c46a3da00f7012403",
+      "width": 1440,
+      "height": 900,
+      "sha256": "201502b993c33fb019439744804798df2959c6531a2a8627230c8aaa39063934",
+      "bytes": 105486
+    },
+    {
+      "file": "sim1a-after-es-light-1280x720.png",
+      "phase": "after",
+      "head": "43e9dbb5ef233eb65d61d62c46a3da00f7012403",
+      "width": 1280,
+      "height": 720,
+      "sha256": "73ed474881acc62f87c451db9f1805a125b24c861245bab44aad4e764b06842e",
+      "bytes": 103459
+    },
+    {
+      "file": "sim1a-after-es-light-1440x900.png",
+      "phase": "after",
+      "head": "43e9dbb5ef233eb65d61d62c46a3da00f7012403",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a2fbe0cf64bc2ad2e0d6ed544b1e43eab3ba9dd59e26a30cba105464e9241e82",
+      "bytes": 107558
+    }
+  ],
+  "validation": {
+    "e130": {
+      "fullUnitPassed": 2961,
+      "fullUnitSkipped": 1,
+      "skip": "Windows-only package-smoke on Mac",
+      "unitSeconds": 31.68,
+      "editedGuiPassed": 48,
+      "otherConsumerGuiPassed": 72,
+      "retries": 0
+    },
+    "43e9": {
+      "checkErrors": 0,
+      "checkWarnings": 0,
+      "i18nPassed": 43,
+      "i18nSeconds": 0.664,
+      "build": "passed",
+      "localeGuiPassed": 2,
+      "localeGuiSeconds": 3.7,
+      "retries": 0,
+      "afterCaptures": 8
+    }
+  },
+  "testTreeIdenticalE130to43e9": true
+}
