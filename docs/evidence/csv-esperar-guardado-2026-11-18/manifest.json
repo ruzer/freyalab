@@ -1,0 +1,31 @@
+{
+  "synthetic": true,
+  "probeV1": "678b083aa3d359ca4855acffbee4c0d8b91bc90811e70ae8e9a7f580f7afd7ea",
+  "probeV2": "3dec67180aa2e6bd09fdb8774e3fc65ccfb4a97daeb2e19c12b6ee8c3ff6001b",
+  "logs": [
+    {
+      "run": "baseline-held",
+      "privateOriginalSha256": "41534eb472e0ccf473cf88b9e492e350ac166c8cdc15c78a5004d529bc61c5e8",
+      "publishedSha256": "5b000af6c486b9e955648f0c46826485642532d323e80fc07d6c333973bba063",
+      "normalization": "solo códigos ANSI, prefijo de ruta privada y espacios finales"
+    },
+    {
+      "run": "sql-held",
+      "privateOriginalSha256": "5cb06ae37b329ef665604b4da362d23ba5ea2218803e7a817b5c35febb091172",
+      "publishedSha256": "1ff0744b53022801168f04cf1712a546e29ba4052938d956f4bf998975fba043",
+      "normalization": "solo códigos ANSI, prefijo de ruta privada y espacios finales"
+    },
+    {
+      "run": "baseline-wait-held",
+      "privateOriginalSha256": "d7b73b735c67967bf3af61b034481970a0c87813b9efa2530bec85af702b9153",
+      "publishedSha256": "14ccae512d3451fbfd9f2dcb65177b7235160c2dd4f6e8d1066ae50d78d4f0a8",
+      "normalization": "solo códigos ANSI, prefijo de ruta privada y espacios finales"
+    },
+    {
+      "run": "sql-wait-held",
+      "privateOriginalSha256": "d2c6a6d7ba1515cd0d631cc0aebdf2fa6cd315a82b45a5ee67dab711356e36ba",
+      "publishedSha256": "0a8c1b5526239be762e635cec6d5dc9c0ea720879a30195faeb767f919a973aa",
+      "normalization": "solo códigos ANSI, prefijo de ruta privada y espacios finales"
+    }
+  ]
+}

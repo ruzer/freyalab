@@ -1,0 +1,43 @@
+Running 1 test using 1 worker
+
+(node:64488) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/csv-save-observation.spec.ts:81:1 › observación privada: texto después de comilla se guarda y vuelve a Tabla
+  1) [csv] › tests/e2e/csv-save-observation.spec.ts:81:1 › observación privada: texto después de comilla se guarda y vuelve a Tabla
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('grid', { name: 'Tabla de datos', exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('grid', { name: 'Tabla de datos', exact: true }) with timeout 15000ms
+      - waiting for getByRole('grid', { name: 'Tabla de datos', exact: true })
+
+
+      114 |   await views().getByRole('button',{name:'Tabla',exact:true}).click()
+      115 |   // Aserción original: debe quedar roja si la hipótesis de respuesta retenida se reproduce.
+    > 116 |   await expect(table()).toBeVisible()
+          |                         ^
+      117 |   const values=await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:1}),current.id)
+      118 |   expect(values.rows.map(row=>row.cells)).toEqual([['1','abc'],['2','fin']])
+      119 |   expect(await readFile(previous,'utf8')).toBe('# Documento previo\nIntacto.\n')
+        at <worktrees>/csv-save-observation-sql/tests/e2e/csv-save-observation.spec.ts:116:25
+
+    Error Context: ../csv-save-observation-evidence/sql-held/csv-save-observation-obser-41735--se-guarda-y-vuelve-a-Tabla-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../csv-save-observation-evidence/sql-held/csv-save-observation-obser-41735--se-guarda-y-vuelve-a-Tabla-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../csv-save-observation-evidence/sql-held/csv-save-observation-obser-41735--se-guarda-y-vuelve-a-Tabla-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [csv] › tests/e2e/csv-save-observation.spec.ts:81:1 › observación privada: texto después de comilla se guarda y vuelve a Tabla
