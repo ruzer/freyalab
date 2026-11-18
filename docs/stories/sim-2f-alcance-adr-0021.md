@@ -25,3 +25,5 @@ Interfaces de prueba prescritas por la historia: sección SQL real (texto inicia
 ## Validación y límites de la entrega
 
 Rojo previo por la conducta nueva; E2E enfocadas de SQL y sus consumidores, tipos, unitarias y construcción. La integración ejecutará las suites y CI exigidas sobre el head final. Capturas de la sección en claro/oscuro, es/en-XA y 1440×900/1280×720. Los resultados locales, CI, fusión e instalación se informarán por separado; no se fusiona ni se publica automáticamente.
+
+Accesibilidad requerida al traducir SQL: el nombre accesible del mismo editor debe actualizarse al cambiar el idioma, conservando documento, selección e historial. Se comprueba es → en → es mediante la operación de idioma existente. El ajuste mínimo es un `Compartment` de atributos de CodeMirror y su reconfiguración al cambiar `label`; no se recrea el editor ni se escriben atributos por fuera de CodeMirror. Se coordina dentro del mismo perímetro de `Editor.svelte`; no añade capacidades del producto ni IPC.
