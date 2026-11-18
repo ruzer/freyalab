@@ -1,0 +1,40 @@
+
+Running 1 test using 1 worker
+
+(node:55845) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/project-tree.spec.ts:143:1 › PRJ-01c C7: renombrar guarda con Intro, cancela con Escape o al salir y explica los duplicados (15.4s)
+
+
+  1) [csv] › tests/e2e/project-tree.spec.ts:143:1 › PRJ-01c C7: renombrar guarda con Intro, cancela con Escape o al salir y explica los duplicados 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      160 |    const inside=(box:{y:number;height:number})=>box.y>=line.y&&box.y+box.height<=line.y+line.height
+      161 |    return inside(field)&&inside(detail)&&(!error||inside(error)&&error.y>=field.y+field.height)&&next.y>=Math.max(line.y+line.height,detail.y+detail.height,error?error.y+error.height:0)
+    > 162 |   }).toBe(true)}finally{await test.info().attach(withError?'renombrado-error-cajas':'renombrado-campo-cajas',{body:Buffer.from(JSON.stringify(snapshot,null,2)),contentType:'application/json'})}
+          |      ^
+      163 |  }
+      164 |  for(const width of [240,420]){
+      165 |   await page.evaluate(ancho=>window.freya.setSettings({barraLateral:{ancho}}),width)
+        at expectRenameContained (<WORKTREE_AJUSTES>/tests/e2e/project-tree.spec.ts:162:6)
+        at <WORKTREE_AJUSTES>/tests/e2e/project-tree.spec.ts:169:9
+
+    Error Context: <EVIDENCE>/rename-layout-red/project-tree-PRJ-01c-C7-re-10466-ir-y-explica-los-duplicados-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    <EVIDENCE>/rename-layout-red/project-tree-PRJ-01c-C7-re-10466-ir-y-explica-los-duplicados-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace <EVIDENCE>/rename-layout-red/project-tree-PRJ-01c-C7-re-10466-ir-y-explica-los-duplicados-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/project-tree.spec.ts:143:1 › PRJ-01c C7: renombrar guarda con Intro, cancela con Escape o al salir y explica los duplicados 

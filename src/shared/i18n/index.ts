@@ -31,5 +31,7 @@ export function plural(key:string,count:number,parameters:TranslationParameters=
  return t(`${key}.${form}`,{...parameters,count:formatNumber(count,undefined,locale)},locale)
 }
 export function formatNumber(value:number,options?:Intl.NumberFormatOptions,locale:Language=language):string {return new Intl.NumberFormat(locales[locale],options).format(value)}
+// Unidades decimales, como Finder y el Explorador en su vista de tamaño; por debajo de 1 kB, «211 B» (Intl diría «211 byte» en inglés).
+export function formatBytes(value:number,locale:Language=language):string {if(value<1e3)return formatNumber(value,undefined,locale)+' B';const[unit,base]:[string,number]=value>=1e9?['gigabyte',1e9]:value>=1e6?['megabyte',1e6]:['kilobyte',1e3];return formatNumber(value/base,{style:'unit',unit,unitDisplay:'short',maximumFractionDigits:1},locale)}
 export function formatDate(value:Date|number,options?:Intl.DateTimeFormatOptions,locale:Language=language):string {return new Intl.DateTimeFormat(locales[locale],options).format(value)}
 export function formatList(values:readonly string[],options?:Intl.ListFormatOptions,locale:Language=language):string {return new Intl.ListFormat(locales[locale],options).format(values)}

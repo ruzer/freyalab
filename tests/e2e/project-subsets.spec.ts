@@ -8,6 +8,7 @@ import type {ProjectManifest,ProjectRecipe} from '../../src/shared/project'
 import {closeElectron} from './close-electron'
 import {menuItem,openCsvCommands} from './panel'
 import {t,type Language} from '../../src/shared/i18n'
+import {projectTreeRow,openProjectMenu,openProjectRowMenu,chooseProjectAction} from './project-panel'
 
 let app:ElectronApplication,page:Page,root:string,folder:string,source:string,original:Buffer,locale:Language='es'
 let pageErrors:string[]=[],consoleErrors:string[]=[]
@@ -44,17 +45,24 @@ async function registerFixture(open=true){
  const sourceDialog=page.getByRole('dialog',{name:tr('project.source.add'),exact:true})
  await expect(sourceDialog.getByRole('listitem')).toHaveText(['ID','Entidad','Edad','Ingreso','Nota'])
  await sourceDialog.getByRole('button',{name:tr('project.source.register'),exact:true}).press('Enter')
- await expect(panel.getByText(tr('project.source.status.verified')+' · 🔒 '+tr('project.source.badge'))).toBeVisible()
- if(open){await panel.getByRole('button',{name:tr('dialog.open.button'),exact:true}).press('Enter');await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()}
+ const row=projectTreeRow(page,'censo.csv',locale)
+ await expect(row).not.toContainText(tr('project.source.status.changed'))
+ await expect(row).not.toContainText(tr('project.source.status.missing'))
+ await expect(panel.getByTitle(tr('project.source.protected'),{exact:true})).toBeVisible()
+ await expect(panel.getByTitle(tr('project.source.protected'),{exact:true})).toHaveCount(1)
+ const menu=await openProjectRowMenu(row,locale)
+ await expect(menu.getByRole('menuitem',{name:tr('dialog.open.button'),exact:true})).toBeEnabled()
+ if(open){await chooseProjectAction(menu,'dialog.open.button',locale);await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()}
+ else await page.keyboard.press('Escape')
 }
 
 async function seedRecipes(build:(source:ProjectManifest['sources'][number])=>ProjectRecipe[],version=1){
- const stored=await manifest(),path=(await page.evaluate(()=>window.freya.projectState())).project!.path;await projectPanel().getByRole('button',{name:t('project.close',{},locale),exact:true}).click()
+ const stored=await manifest(),path=(await page.evaluate(()=>window.freya.projectState())).project!.path;await chooseProjectAction(await openProjectMenu(page,locale),'project.close',locale)
  await writeFile(join(folder,'proyecto.freyalab'),JSON.stringify({...stored,version,recipes:build(stored.sources[0])},null,2)+'\n')
  await page.evaluate(path=>window.freya.projectOpenRecent(path),path)
 }
-const recipeRow=(name:string)=>projectPanel().getByText(name,{exact:true}).locator('..')
-async function openStored(name:string){const button=recipeRow(name).locator(':scope > .actions').getByRole('button',{name:'Abrir',exact:true});await expect(button).toBeEnabled();await button.press('Enter');await expect(subsetPanel()).toBeVisible()}
+const recipeRow=(name:string)=>projectTreeRow(page,name,locale)
+async function openStored(name:string){const menu=await openProjectRowMenu(recipeRow(name),locale),button=menu.getByRole('menuitem',{name:t('dialog.open.button',{},locale),exact:true});await expect(button).toBeEnabled();await chooseProjectAction(menu,'dialog.open.button',locale);await expect(subsetPanel()).toBeVisible()}
 
 test('PRJ-02a: guarda la consulta de la fuente como conjunto, prueba sus siete registros y conserva el original',async()=>{
  await registerFixture()
@@ -179,7 +187,7 @@ test('PRJ-02a: el borrador del conjunto sobrevive a cambiar de documento sin esc
 
 test('PRJ-02a: la versión futura muestra el conjunto reconocido con base desconocida sin ocultarlo ni reescribirlo',async()=>{
  await registerFixture();const stored=await manifest(),path=(await page.evaluate(()=>window.freya.projectState())).project!.path,rootSource=stored.sources[0],createdAt='2026-11-16T00:00:00.000Z'
- await projectPanel().getByRole('button',{name:t('project.close',{},locale),exact:true}).click()
+ await chooseProjectAction(await openProjectMenu(page,locale),'project.close',locale)
  const future={...stored,version:2,recipes:[
   {id:'future-base',name:'Instrucciones desconocidas',sourceId:rootSource.id,sourceSha256:rootSource.sha256,semantics:2,steps:[{op:'future-step',untouched:'conservar'}],createdAt},
   {id:'recognized-child',name:'Dependiente reconocido',baseRecipeId:'future-base',sourceSha256:rootSource.sha256,semantics:1,steps:[],createdAt}
@@ -191,8 +199,12 @@ test('PRJ-02a: la versión futura muestra el conjunto reconocido con base descon
  await expect(projectPanel().getByText('Dependiente reconocido',{exact:true})).toBeVisible()
  await expect(projectPanel().getByRole('heading',{name:'No disponibles',exact:true})).toBeVisible()
  await expect(projectPanel().getByText('Instrucciones desconocidas',{exact:true})).toHaveCount(0)
- await expect(projectPanel().getByRole('button',{name:'Renombrar',exact:true})).toBeDisabled()
- await expect(projectPanel().getByRole('button',{name:'Eliminar',exact:true})).toBeDisabled()
+ const menu=await openProjectRowMenu(recipeRow('Dependiente reconocido'),locale)
+ await expect(menu.getByRole('menuitem',{name:'Renombrar',exact:true})).toBeDisabled()
+ await expect(menu.getByRole('menuitem',{name:'Renombrar',exact:true})).toHaveAccessibleDescription(t('project.future',{version:2},locale))
+ await expect(menu.getByRole('menuitem',{name:'Eliminar',exact:true})).toBeDisabled()
+ await expect(menu.getByRole('menuitem',{name:'Eliminar',exact:true})).toHaveAccessibleDescription(t('project.future',{version:2},locale))
+ await page.keyboard.press('Escape')
  expect(await readFile(join(folder,'proyecto.freyalab'),'utf8')).toBe(untouched);expect(await readFile(source)).toEqual(original)
 })
 
@@ -243,7 +255,7 @@ test('PRJ-02a: el prefijo manual conserva el límite del paso separado de las fi
 test('PRJ-02a: Proyecto prueba un prefijo sin abrir ni indexar la fuente como Tabla',async()=>{
  await registerFixture(false)
  expect(await page.evaluate(()=>window.freya.documents())).toEqual([])
- await projectPanel().getByRole('button',{name:'Nuevo conjunto…',exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(projectTreeRow(page,'censo.csv',locale),locale),'subset.new',locale)
  const panel=subsetPanel(),host=page.getByRole('dialog',{name:'Conjunto · censo.csv',exact:true})
  await expect(host).toBeVisible();await expect(host).toContainText('Censo')
  await expect(panel.getByRole('textbox',{name:'Nombre',exact:true})).toBeFocused()
@@ -283,7 +295,7 @@ test('PRJ-02a: cerrar y reabrir la fuente conserva el borrador en memoria sin pe
  await subsetPanel().getByRole('textbox',{name:'Nombre',exact:true}).fill('Borrador de la fuente registrada')
  await page.getByRole('button',{name:'Cerrar censo.csv',exact:true}).click()
  await expect(page.getByRole('tab',{name:'censo.csv',exact:true})).toHaveCount(0)
- await projectPanel().locator('.sources').getByRole('button',{name:'Abrir',exact:true}).click()
+ await chooseProjectAction(await openProjectRowMenu(projectTreeRow(page,'censo.csv',locale),locale),'dialog.open.button',locale)
  await expect(subsetPanel()).toBeVisible()
  await expect(subsetPanel().getByRole('textbox',{name:'Nombre',exact:true})).toHaveValue('Borrador de la fuente registrada')
  expect((await manifest()).recipes).toEqual([]);expect(await readFile(source)).toEqual(original)
@@ -297,8 +309,16 @@ for(const language of ['es','en-XA'] as const)test(`PRJ-02a: Proyecto presenta u
   {id:'three-columns',name:'Identificador y nota',baseRecipeId:'three-sample',sourceSha256:source.sha256,semantics:1,createdAt:'2026-11-16T00:00:00.000Z',steps:[{op:'select',columns:[{position:1,name:'ID'},{position:5,name:'Nota'}]}]}
  ])
  for(const name of ['Adultos','Muestra estable','Identificador y nota'])await expect(projectPanel().getByText(name,{exact:true})).toBeVisible()
- await expect(projectPanel().locator('ul.subsets ul.subsets ul.subsets')).toHaveCount(1)
- await expect(recipeRow('Adultos').locator(':scope > .actions').getByRole('button',{name:t('subset.remove',{},language),exact:true})).toBeDisabled()
+ const sourceRow=projectTreeRow(page,'censo.csv',locale)
+ const adults=sourceRow.getByRole('group').getByRole('treeitem',{name:'Adultos',exact:true})
+ const sample=adults.getByRole('group').getByRole('treeitem',{name:'Muestra estable',exact:true})
+ const columns=sample.getByRole('group').getByRole('treeitem',{name:'Identificador y nota',exact:true})
+ await expect(columns).toHaveCount(1)
+ for(const [row,level] of [[sourceRow,1],[adults,2],[sample,3],[columns,4]] as const)await expect(row).toHaveAttribute('aria-level',String(level))
+ const menu=await openProjectRowMenu(recipeRow('Adultos'),locale),remove=menu.getByRole('menuitem',{name:t('subset.remove',{},language),exact:true})
+ await expect(remove).toBeDisabled()
+ await expect(remove).toHaveAccessibleDescription(t('subset.hasDependents.other',{count:2,names:'Muestra estable; Identificador y nota'},locale))
+ await page.keyboard.press('Escape')
  const slider=page.getByRole('slider',{name:'Ancho del explorador',exact:true})
  for(let step=0;step<24;step++)await slider.press('ArrowRight')
  await expect(slider).toHaveAttribute('aria-valuenow','420')
@@ -338,7 +358,7 @@ test('PRJ-02a: una transición futura no desbloquea una fuente abierta que deja 
 
 test('PRJ-02a: encadena dos mayores, equivale a pasos planos y confirma el impacto y la eliminación',async()=>{
  await registerFixture();await seedRecipes(source=>[oaxacaRecipe(source)])
- await recipeRow('Oaxaca, adultos').locator(':scope > .actions').getByRole('button',{name:'Nuevo conjunto…',exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(recipeRow('Oaxaca, adultos'),locale),'subset.newFromThis',locale)
  let panel=subsetPanel();await expect(panel.getByRole('textbox',{name:'Nombre',exact:true})).toBeFocused()
  await panel.getByRole('textbox',{name:'Nombre',exact:true}).fill('Dos mayores')
  await panel.getByRole('checkbox',{name:'Todas las columnas',exact:true}).uncheck()
@@ -356,9 +376,19 @@ test('PRJ-02a: encadena dos mayores, equivale a pasos planos y confirma el impac
  await expect(projectPanel().getByText('Dos mayores',{exact:true})).toBeVisible()
  const saved=await manifest(),child=saved.recipes.find(recipe=>recipe.name==='Dos mayores')!
  expect(child).toMatchObject({baseRecipeId:'oaxaca-base',steps:[{op:'sample',method:'first',rows:2}]})
- await expect(projectPanel().locator('.sources').getByRole('button',{name:'Quitar del proyecto',exact:true})).toBeDisabled()
- await expect(recipeRow('Oaxaca, adultos').locator(':scope > .actions').getByRole('button',{name:'Eliminar',exact:true})).toBeDisabled()
- await expect(recipeRow('Oaxaca, adultos').locator(':scope > p')).toContainText(['Entidad','Listo','No se puede eliminar: Dos mayores'])
+ const sourceMenu=await openProjectRowMenu(projectTreeRow(page,'censo.csv',locale),locale)
+ await expect(sourceMenu.getByRole('menuitem',{name:'Quitar del proyecto',exact:true})).toBeDisabled()
+ await page.keyboard.press('Escape')
+ const menu=await openProjectRowMenu(recipeRow('Oaxaca, adultos'),locale),remove=menu.getByRole('menuitem',{name:'Eliminar',exact:true})
+ await expect(remove).toBeDisabled()
+ await expect(recipeRow('Oaxaca, adultos')).toContainText('Entidad')
+ await expect(recipeRow('Oaxaca, adultos')).not.toContainText('Listo')
+ await expect(recipeRow('Oaxaca, adultos')).not.toContainText(t('project.source.status.changed',{},locale))
+ await expect(recipeRow('Oaxaca, adultos')).not.toContainText(t('project.source.status.missing',{},locale))
+ await expect(menu.getByRole('menuitem',{name:'Abrir',exact:true})).toBeEnabled()
+ await expect(menu.getByRole('menuitem',{name:'Analizar',exact:true})).toBeEnabled()
+ await expect(remove).toHaveAccessibleDescription(t('subset.hasDependents.one',{count:1,names:'Dos mayores'},locale))
+ await page.keyboard.press('Escape')
  await openStored('Oaxaca, adultos');panel=subsetPanel()
  await expect(panel.getByRole('combobox',{name:'Partir de',exact:true}).locator('option')).not.toContainText(['Dos mayores'])
  await panel.getByLabel('Valor de condición 2',{exact:true}).fill('20')
@@ -367,7 +397,7 @@ test('PRJ-02a: encadena dos mayores, equivale a pasos planos y confirma el impac
  await expect(impact).toContainText('Afecta a 1 conjunto: Dos mayores')
  await impact.getByRole('button',{name:'Guardar',exact:true}).press('Enter')
  await expect(panel).toHaveCount(0)
- await recipeRow('Dos mayores').locator(':scope > .actions').getByRole('button',{name:'Eliminar',exact:true}).press('Enter')
+ await chooseProjectAction(await openProjectRowMenu(recipeRow('Dos mayores'),locale),'subset.remove',locale)
  const confirmation=page.getByRole('dialog',{name:'Eliminar conjunto',exact:true})
  await expect(confirmation).toContainText('Solo se borra su definición del proyecto; la fuente y los archivos no cambian.')
  await confirmation.getByRole('button',{name:'Eliminar',exact:true}).press('Enter')
@@ -378,9 +408,10 @@ test('PRJ-02a: encadena dos mayores, equivale a pasos planos y confirma el impac
 test('PRJ-02a: un cambio de esquema marca la base y su hijo hasta reelegir la columna y guardar',async()=>{
  await registerFixture();await seedRecipes(source=>[oaxacaRecipe(source),firstChild(source)])
  const changed=Buffer.from(original.toString('utf8').replace('Edad','Años'));await writeFile(source,changed)
- await expect(projectPanel().getByText('Cambió desde que se registró · 🔒 Protegida',{exact:true})).toBeVisible()
- await projectPanel().getByRole('button',{name:'Volver a registrar',exact:true}).press('Enter')
- for(const name of ['Oaxaca, adultos','Dos mayores'])await expect(recipeRow(name).locator(':scope > p')).toContainText(['Las columnas de censo.csv cambiaron: la columna 3 era «Edad» y ahora es «Años»'])
+ await expect(projectTreeRow(page,'censo.csv',locale).getByText(t('project.source.status.changed',{},locale),{exact:true})).toBeVisible()
+ await expect(projectPanel().getByTitle(t('project.source.protected',{},locale),{exact:true})).toBeVisible()
+ await projectTreeRow(page,'censo.csv',locale).getByRole('button',{name:'Volver a registrar',exact:true}).press('Enter')
+ for(const name of ['Oaxaca, adultos','Dos mayores'])await expect(recipeRow(name)).toHaveAccessibleDescription(/Las columnas de censo\.csv cambiaron: la columna 3 era «Edad» y ahora es «Años»/)
  await openStored('Oaxaca, adultos');const panel=subsetPanel()
  await expect(panel.getByRole('button',{name:'Probar',exact:true})).toBeDisabled()
  await expect(panel.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled()
@@ -401,10 +432,13 @@ test('PRJ-02a: un cambio de esquema marca la base y su hijo hasta reelegir la co
 test('PRJ-02a: un cambio de celda exige registrar la fuente y avisa la versión distinta al volver a probar',async()=>{
  await registerFixture();await seedRecipes(source=>[oaxacaRecipe(source)])
  const stored=await manifest(),changed=Buffer.from(original.toString('utf8').replace('00124,Oaxaca,17','00124,Oaxaca,18'));await writeFile(source,changed)
- await expect(projectPanel().getByText('Cambió desde que se registró · 🔒 Protegida',{exact:true})).toBeVisible()
- await expect(recipeRow('Oaxaca, adultos').locator(':scope > .actions').getByRole('button',{name:'Abrir',exact:true})).toBeDisabled()
- await projectPanel().getByRole('button',{name:'Volver a registrar',exact:true}).press('Enter')
- await expect(recipeRow('Oaxaca, adultos').locator(':scope > p')).toContainText(['Versión distinta de la fuente'])
+ await expect(projectTreeRow(page,'censo.csv',locale).getByText(t('project.source.status.changed',{},locale),{exact:true})).toBeVisible()
+ await expect(projectPanel().getByTitle(t('project.source.protected',{},locale),{exact:true})).toBeVisible()
+ const menu=await openProjectRowMenu(recipeRow('Oaxaca, adultos'),locale)
+ await expect(menu.getByRole('menuitem',{name:'Abrir',exact:true})).toBeDisabled()
+ await page.keyboard.press('Escape')
+ await projectTreeRow(page,'censo.csv',locale).getByRole('button',{name:'Volver a registrar',exact:true}).press('Enter')
+ await expect(recipeRow('Oaxaca, adultos')).toHaveAttribute('title',/Versión distinta de la fuente/)
  await openStored('Oaxaca, adultos');const panel=subsetPanel()
  await expect(panel.getByRole('table',{name:'Vista previa del conjunto',exact:true}).locator('tbody th')).toHaveText(['00128','00126','00123','00124'])
  await expect(panel.locator('.coverage')).toContainText('«censo.csv» es una versión distinta de la usada al guardar')
@@ -416,8 +450,16 @@ test('PRJ-02a: un cambio de celda exige registrar la fuente y avisa la versión 
 test('PRJ-02a: un conjunto conocido de proyecto futuro se abre y prueba sin permitir mutaciones',async()=>{
  await registerFixture(false);await seedRecipes(source=>[{id:'future-known',name:'Dos conocidas',sourceId:source.id,sourceSha256:source.sha256,semantics:1,createdAt:'2026-11-16T00:00:00.000Z',steps:[{op:'sample',method:'first',rows:2}]}],2)
  const untouched=await readFile(join(folder,'proyecto.freyalab'),'utf8')
- await expect(projectPanel().locator('.sources').getByRole('button',{name:'Nuevo conjunto…',exact:true})).toBeDisabled()
- for(const name of ['Renombrar','Eliminar'])await expect(recipeRow('Dos conocidas').locator(':scope > .actions').getByRole('button',{name,exact:true})).toBeDisabled()
+ const sourceMenu=await openProjectRowMenu(projectTreeRow(page,'censo.csv',locale),locale)
+ await expect(sourceMenu.getByRole('menuitem',{name:'Nuevo conjunto…',exact:true})).toBeDisabled()
+ await expect(sourceMenu.getByRole('menuitem',{name:'Nuevo conjunto…',exact:true})).toHaveAccessibleDescription(t('project.future',{version:2},locale))
+ await page.keyboard.press('Escape')
+ const menu=await openProjectRowMenu(recipeRow('Dos conocidas'),locale)
+ for(const name of ['Renombrar','Eliminar']){
+  await expect(menu.getByRole('menuitem',{name,exact:true})).toBeDisabled()
+  await expect(menu.getByRole('menuitem',{name,exact:true})).toHaveAccessibleDescription(t('project.future',{version:2},locale))
+ }
+ await page.keyboard.press('Escape')
  await openStored('Dos conocidas');const panel=subsetPanel()
  await expect(panel.getByRole('textbox',{name:'Nombre',exact:true})).toBeDisabled()
  await expect(panel.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled()
@@ -446,8 +488,9 @@ test('PRJ-02a: la paleta encuentra los conjuntos con sinónimos y el nombre repe
 test('PRJ-02a: una columna eliminada permanece pendiente hasta elegir Todas las columnas explícitamente',async()=>{
  await registerFixture();await seedRecipes(source=>[{id:'deleted-column',name:'ID y Nota pendiente',sourceId:source.id,sourceSha256:source.sha256,semantics:1,createdAt:'2026-11-16T00:00:00.000Z',steps:[{op:'select',columns:[{position:1,name:'ID'},{position:5,name:'Nota'}]}]}])
  const changed=Buffer.from('ID,Entidad,Edad,Ingreso\n00123,Oaxaca,34,1200\n00124,Oaxaca,17,0\n9007199254740993,Puebla,45,3400\n00126,Oaxaca,52,\n00127,Chiapas,29,2100\n00128,Oaxaca,61,5000\n00129,Puebla,15,0\n');await writeFile(source,changed)
- await expect(projectPanel().getByText('Cambió desde que se registró · 🔒 Protegida',{exact:true})).toBeVisible()
- await projectPanel().getByRole('button',{name:'Volver a registrar',exact:true}).press('Enter')
+ await expect(projectTreeRow(page,'censo.csv',locale).getByText(t('project.source.status.changed',{},locale),{exact:true})).toBeVisible()
+ await expect(projectPanel().getByTitle(t('project.source.protected',{},locale),{exact:true})).toBeVisible()
+ await projectTreeRow(page,'censo.csv',locale).getByRole('button',{name:'Volver a registrar',exact:true}).press('Enter')
  await openStored('ID y Nota pendiente');const panel=subsetPanel()
  await expect(panel.getByRole('button',{name:'Probar',exact:true})).toBeDisabled()
  await expect(panel.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled()
@@ -477,8 +520,9 @@ test('PRJ-02a: la paleta describe por qué no puede guardar como conjunto un CSV
 test('PRJ-02a: reabrir el proyecto no revierte una columna ya reelegida en el borrador de una receta',async()=>{
  await registerFixture();await seedRecipes(source=>[{id:'repaired-draft',name:'Edad por reparar',sourceId:source.id,sourceSha256:source.sha256,semantics:1,createdAt:'2026-11-16T00:00:00.000Z',steps:[{op:'filter',mode:'all',conditions:[{column:{position:3,name:'Edad'},op:'greaterEqual',value:'18',caseSensitive:false}]}]}])
  const changed=Buffer.from(original.toString('utf8').replace('Edad','Años'));await writeFile(source,changed)
- await expect(projectPanel().getByText('Cambió desde que se registró · 🔒 Protegida',{exact:true})).toBeVisible()
- await projectPanel().getByRole('button',{name:'Volver a registrar',exact:true}).press('Enter')
+ await expect(projectTreeRow(page,'censo.csv',locale).getByText(t('project.source.status.changed',{},locale),{exact:true})).toBeVisible()
+ await expect(projectPanel().getByTitle(t('project.source.protected',{},locale),{exact:true})).toBeVisible()
+ await projectTreeRow(page,'censo.csv',locale).getByRole('button',{name:'Volver a registrar',exact:true}).press('Enter')
  await openStored('Edad por reparar');let panel=subsetPanel()
  await expect(panel.getByRole('button',{name:'Probar',exact:true})).toBeDisabled()
  await panel.getByLabel('Columna de condición 1',{exact:true}).selectOption('2')

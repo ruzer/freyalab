@@ -1,0 +1,17 @@
+
+Running 10 tests using 1 worker
+
+(node:56873) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/project-tree.spec.ts:43:1 › PRJ-01c C1: en reposo solo hay dos acciones, una protección y ningún estado normal repetido (1.5s)
+  ✓   2 [csv] › tests/e2e/project-tree.spec.ts:57:1 › PRJ-01c C9: las quince acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo (1.1s)
+  ✓   3 [csv] › tests/e2e/project-tree.spec.ts:80:1 › PRJ-01c C7: rechazar la sobrescritura externa conserva el borrador del nombre en su fila (951ms)
+  ✓   4 [csv] › tests/e2e/project-tree.spec.ts:97:1 › PRJ-01c C5: un fallo del explorador se anuncia junto a la fuente (888ms)
+  ✓   5 [csv] › tests/e2e/project-tree.spec.ts:105:1 › PRJ-01c C2/C3/C6: cuatro aperturas del menú, un punto de tabulación y navegación del árbol (1.4s)
+  ✓   6 [csv] › tests/e2e/project-tree.spec.ts:143:1 › PRJ-01c C7: renombrar guarda con Intro, cancela con Escape o al salir y explica los duplicados (1.5s)
+  ✓   7 [csv] › tests/e2e/project-tree.spec.ts:185:1 › PRJ-01c C11: nombres largos y menús caben con 240 y 420 píxeles de barra lateral (1.2s)
+  ✓   8 [csv] › tests/e2e/project-tree.spec.ts:202:47 › PRJ-01c C12: reposo, menú y fuente modificada en dos temas y tamaños [es] (2.7s)
+  ✓   9 [csv] › tests/e2e/project-tree.spec.ts:202:47 › PRJ-01c C12: reposo, menú y fuente modificada en dos temas y tamaños [en-XA] (2.5s)
+  ✓  10 [csv] › tests/e2e/project-tree.spec.ts:243:1 › PRJ-01c C5: el progreso y Cancelar pertenecen a la fuente y liberan la operación (1.4s)
+
+  10 passed (15.5s)
