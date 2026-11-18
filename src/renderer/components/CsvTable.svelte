@@ -617,6 +617,7 @@
  .csv-toolbar [data-tooltip]{position:relative;appearance:none;min-width:24px;min-height:24px}.csv-toolbar [data-tooltip]:hover::after,.csv-toolbar [data-tooltip]:focus::after{content:attr(data-tooltip);position:absolute;right:0;top:calc(100% + 7px);max-width:300px;padding:6px 9px;border-radius:var(--radius-control);background:var(--text);color:var(--panel);font-size:11px;white-space:normal;z-index:90;pointer-events:none;min-width:max-content}.csv-toolbar [data-tooltip]:focus-visible{outline:2px solid var(--accent)}
  @media(min-width:1280px){.csv-toolbar.compact .keep-label .tool-text{display:inline}}
  .csv-toolbar[role=toolbar] .tool-text.adapt-label{display:inline}
+ .csv-toolbar[role=toolbar]>button{flex-shrink:0}
  .csv-toolbar[role=toolbar] .adapt-label.hidden-label{display:none}
  .csv-toolbar details[open]>summary[data-tooltip]::after{display:none}
  .csv-toolbar .palette-shortcut{white-space:nowrap}

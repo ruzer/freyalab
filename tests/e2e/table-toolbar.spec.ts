@@ -44,7 +44,19 @@ async function geometry(){return bar().evaluate(element=>{
  const controls=[...element.children].map(node=>node.getBoundingClientRect()).filter(box=>box.width>0&&box.height>0)
  const labelVisible=(key:string)=>{const label=element.querySelector<HTMLElement>(`summary[aria-label=${JSON.stringify(key)}] .tool-text`);if(!label)return false;const box=label.getBoundingClientRect();return box.width>0&&box.height>0}
  const summaries=Array.from(element.querySelectorAll('details>summary'))
- return{width:bounds.width,height:bounds.height,inside:controls.every(box=>box.left>=bounds.left-1&&box.right<=bounds.right+1),oneRow:controls.every(box=>Math.abs((box.top+box.bottom-bounds.top-bounds.bottom)/2)<=1),labels:summaries.slice(0,3).map(summary=>({name:summary.getAttribute('aria-label'),text:summary.querySelector('.tool-text')?.textContent?.trim(),visible:labelVisible(summary.getAttribute('aria-label')??'')}))}
+ const textControls=Array.from(element.querySelectorAll<HTMLElement>('button,summary')).filter(control=>!control.closest('.dropdown,.goto-popover')&&control.getBoundingClientRect().width>0).map(control=>{
+  const box=control.getBoundingClientRect(),style=getComputedStyle(control),text=[]
+  const walker=document.createTreeWalker(control,NodeFilter.SHOW_TEXT)
+  for(let node=walker.nextNode();node;node=walker.nextNode()){
+   if(!node.textContent?.trim()||node.parentElement?.closest('.sr-only'))continue
+   const range=document.createRange();range.selectNodeContents(node)
+   for(const rect of range.getClientRects())if(rect.width>0&&rect.height>0)text.push({value:node.textContent.trim(),left:rect.left,right:rect.right,top:rect.top,bottom:rect.bottom})
+  }
+  return{label:control.getAttribute('aria-label')??control.textContent?.trim(),left:box.left,right:box.right,clientWidth:control.clientWidth,scrollWidth:control.scrollWidth,flexShrink:style.flexShrink,whiteSpace:style.whiteSpace,text}
+ })
+ const ancestors=[]
+ for(let parent:HTMLElement|null=element.parentElement;parent&&ancestors.length<5;parent=parent.parentElement){const box=parent.getBoundingClientRect(),style=getComputedStyle(parent);ancestors.push({className:parent.className,left:box.left,right:box.right,width:box.width,clientWidth:parent.clientWidth,scrollWidth:parent.scrollWidth,overflowX:style.overflowX,minWidth:style.minWidth,display:style.display})}
+ return{width:bounds.width,height:bounds.height,left:bounds.left,right:bounds.right,viewportWidth:innerWidth,clientWidth:element.clientWidth,scrollWidth:element.scrollWidth,barInsideViewport:bounds.left>=0&&bounds.right<=innerWidth,controlsInsideViewport:controls.every(box=>box.left>=0&&box.right<=innerWidth),textInsideControls:textControls.every(control=>control.text.every(text=>text.left>=control.left-1&&text.right<=control.right+1)),textInsideViewport:textControls.every(control=>control.text.every(text=>text.left>=0&&text.right<=innerWidth)),inside:controls.every(box=>box.left>=bounds.left-1&&box.right<=bounds.right+1),oneRow:controls.every(box=>Math.abs((box.top+box.bottom-bounds.top-bounds.bottom)/2)<=1),ancestors,textControls,labels:summaries.slice(0,3).map(summary=>({name:summary.getAttribute('aria-label'),text:summary.querySelector('.tool-text')?.textContent?.trim(),visible:labelVisible(summary.getAttribute('aria-label')??'')}))}
 })}
 async function settledGeometry(){
  let previous=''
@@ -68,6 +80,10 @@ for(const locale of ['es','en-XA'] as const)test(`SIM-1b capturas: barra, orden 
   if(process.env.FREYALAB_SIM1B_EVIDENCE){await mkdir(process.env.FREYALAB_SIM1B_EVIDENCE,{recursive:true});await copyFile(capture,join(process.env.FREYALAB_SIM1B_EVIDENCE,name))}
   const actions=await buttons.allTextContents();measured.push({locale,theme,viewport:{width,height},...shape,actions})
   expect.soft(shape.inside,'todos los controles caben dentro de la barra').toBe(true)
+  expect.soft(shape.barInsideViewport,'la barra completa cabe en la ventana, no solo en su propia caja').toBe(true)
+  expect.soft(shape.controlsInsideViewport,'ningún control queda fuera de la ventana').toBe(true)
+  expect.soft(shape.textInsideControls,'los glifos visibles caben dentro de su control').toBe(true)
+  expect.soft(shape.textInsideViewport,'ningún texto visible queda cortado por la ventana').toBe(true)
   expect.soft(shape.oneRow,'la barra conserva una sola fila').toBe(true)
   const [filter,cleanLabel,structure]=shape.labels
   if(!cleanLabel.visible)expect.soft(filter.visible,'se oculta Filtrar antes que Limpiar').toBe(false)
