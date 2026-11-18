@@ -1,0 +1,9 @@
+
+Running 2 tests using 1 worker
+
+(node:37712) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/project-tree.spec.ts:39:1 › PRJ-01c C1: en reposo solo hay dos acciones, una protección y ningún estado normal repetido (2.4s)
+  ✓  2 [csv] › tests/e2e/project-tree.spec.ts:53:1 › PRJ-01c C9: las quince acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo (1.2s)
+
+  2 passed (3.9s)

@@ -1,0 +1,124 @@
+[
+  {
+    "withError": false,
+    "line": {
+      "x": 0,
+      "y": 240,
+      "width": 240,
+      "height": 56.5
+    },
+    "field": {
+      "x": 66,
+      "y": 244,
+      "width": 136,
+      "height": 30
+    },
+    "detail": {
+      "x": 66,
+      "y": 276,
+      "width": 136,
+      "height": 16.5
+    },
+    "next": {
+      "x": 0,
+      "y": 296.5,
+      "width": 240,
+      "height": 44
+    },
+    "error": null
+  },
+  {
+    "withError": true,
+    "line": {
+      "x": 0,
+      "y": 240,
+      "width": 240,
+      "height": 114
+    },
+    "field": {
+      "x": 66,
+      "y": 244,
+      "width": 136,
+      "height": 30
+    },
+    "detail": {
+      "x": 66,
+      "y": 333.5,
+      "width": 136,
+      "height": 16.5
+    },
+    "next": {
+      "x": 0,
+      "y": 354,
+      "width": 240,
+      "height": 44
+    },
+    "error": {
+      "x": 66,
+      "y": 278,
+      "width": 136,
+      "height": 49.5
+    }
+  },
+  {
+    "withError": false,
+    "line": {
+      "x": 0,
+      "y": 240,
+      "width": 420,
+      "height": 56.5
+    },
+    "field": {
+      "x": 66,
+      "y": 244,
+      "width": 316,
+      "height": 30
+    },
+    "detail": {
+      "x": 66,
+      "y": 276,
+      "width": 316,
+      "height": 16.5
+    },
+    "next": {
+      "x": 0,
+      "y": 296.5,
+      "width": 420,
+      "height": 44
+    },
+    "error": null
+  },
+  {
+    "withError": true,
+    "line": {
+      "x": 0,
+      "y": 240,
+      "width": 420,
+      "height": 81
+    },
+    "field": {
+      "x": 66,
+      "y": 244,
+      "width": 316,
+      "height": 30
+    },
+    "detail": {
+      "x": 66,
+      "y": 300.5,
+      "width": 316,
+      "height": 16.5
+    },
+    "next": {
+      "x": 0,
+      "y": 321,
+      "width": 420,
+      "height": 44
+    },
+    "error": {
+      "x": 66,
+      "y": 278,
+      "width": 316,
+      "height": 16.5
+    }
+  }
+]

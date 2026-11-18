@@ -8,6 +8,7 @@ import {t,type Language} from '../../src/shared/i18n'
 import {closeElectron} from './close-electron'
 import {openAnalysis,showTable,openCsvCommands} from './panel'
 import {readTableRows} from './csv-rows'
+import {projectTreeRow,openProjectRowMenu,chooseProjectAction} from './project-panel'
 
 let app:ElectronApplication,page:Page,folder:string,path:string,source:Buffer
 const digest=(value:Buffer)=>createHash('sha256').update(value).digest('hex')
@@ -194,8 +195,14 @@ test('LIM-1 fuente protegida permite ver vacíos y bloquea las mutaciones tambi�
  await project.getByRole('button',{name:'Añadir fuente…',exact:true}).press('Enter')
  dialog=page.getByRole('dialog',{name:'Añadir fuente…',exact:true})
  await dialog.getByRole('button',{name:'Añadir y calcular huella',exact:true}).press('Enter')
- await expect(project.getByText('Verificada · 🔒 Protegida')).toBeVisible()
- await project.getByRole('button',{name:'Abrir',exact:true}).press('Enter')
+ const sourceRow=projectTreeRow(page,'datos.csv')
+ await expect(sourceRow).not.toContainText(t('project.source.status.changed'))
+ await expect(sourceRow).not.toContainText(t('project.source.status.missing'))
+ await expect(project.getByTitle(t('project.source.protected'),{exact:true})).toHaveCount(1)
+ await expect(project.getByTitle(t('project.source.protected'),{exact:true})).toBeVisible()
+ const menu=await openProjectRowMenu(sourceRow)
+ await expect(menu.getByRole('menuitem',{name:'Abrir',exact:true})).toBeEnabled()
+ await chooseProjectAction(menu,'dialog.open.button')
  const panel=await information(),row=panel.getByRole('row').filter({has:page.getByRole('rowheader',{name:'Cantidad',exact:true})}),quality=row.locator('.quality-breakdown')
  await quality.locator('summary').click()
  await expect(quality.getByRole('button',{name:'Ver filas vacías',exact:true})).toBeEnabled()

@@ -4,6 +4,7 @@ import {mkdtemp,mkdir,readFile,readdir,rm,writeFile} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {t} from '../../src/shared/i18n'
+import {openProjectMenu,chooseProjectAction} from './project-panel'
 
 let app:ElectronApplication,page:Page,root:string,folder:string
 const manifest=()=>join(folder,'proyecto.freyalab')
@@ -41,19 +42,19 @@ test('crea con el teclado, abre por carpeta, manifiesto y menú de recientes',as
  await expect(page.getByRole('tab',{name:'Archivos',exact:true})).toBeFocused()
  await page.getByRole('tab',{name:'Archivos',exact:true}).press('End')
  await expect(projectTab()).toBeFocused()
- await projectPanel().getByRole('button',{name:'Cerrar proyecto'}).press('Enter')
+ await chooseProjectAction(await openProjectMenu(page),'project.close')
  await expect(projectTab()).toHaveCount(0)
  await openNative('file.openFolder')
  await expect(projectTab()).toHaveAttribute('aria-selected','true')
- await projectPanel().getByRole('button',{name:'Cerrar proyecto'}).press('Enter')
+ await chooseProjectAction(await openProjectMenu(page),'project.close')
  await page.evaluate(path=>window.freya.openPaths([path]),manifest())
  await expect(projectTab()).toHaveAttribute('aria-selected','true')
- await projectPanel().getByRole('button',{name:'Cerrar proyecto'}).press('Enter')
+ await chooseProjectAction(await openProjectMenu(page),'project.close')
  await openNative('project.recent.0')
  await expect(projectPanel()).toContainText('Población')
  expect(await readFile(manifest(),'utf8')).toBe(original)
  await rm(folder,{recursive:true})
- await projectPanel().getByRole('button',{name:'Cerrar proyecto'}).press('Enter')
+ await chooseProjectAction(await openProjectMenu(page),'project.close')
  await expect(page.getByText('No está en su ruta: Censo',{exact:true})).toBeVisible()
  await page.getByRole('button',{name:'Quitar de recientes: Censo'}).press('Enter')
  await expect(page.getByText('No está en su ruta: Censo',{exact:true})).toHaveCount(0)
@@ -65,8 +66,10 @@ test('una versión futura se abre en solo lectura y conserva todos sus bytes',as
  await openNative('file.openFolder')
  await expect(projectPanel()).toContainText('El futuro')
  await expect(projectPanel().getByRole('status')).toContainText('solo lectura')
- await expect(projectPanel().getByRole('button',{name:'Renombrar proyecto'})).toHaveCount(0)
- await projectPanel().getByRole('button',{name:'Cerrar proyecto'}).click()
+ const menu=await openProjectMenu(page),rename=menu.getByRole('menuitem',{name:'Renombrar proyecto',exact:true})
+ await expect(rename).toBeDisabled()
+ await expect(rename).toHaveAccessibleDescription(t('project.future',{version:2}))
+ await chooseProjectAction(menu,'project.close')
  expect(await readFile(manifest(),'utf8')).toBe(original)
 })
 

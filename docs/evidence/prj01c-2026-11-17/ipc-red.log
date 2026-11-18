@@ -1,0 +1,127 @@
+
+> freyalab@0.1.0-alpha.4 test
+> vitest run tests/project-preload.test.ts tests/project-show-ipc.test.ts
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <worktree>
+
+ ❯ tests/project-preload.test.ts (2 tests | 2 failed) 16ms
+   × PRJ-01c · revela el proyecto por una operación fija con su id, sin exponer rutas 15ms
+   × PRJ-01c · conserva el error del proceso principal sin el prefijo de Electron 1ms
+ ❯ tests/project-show-ipc.test.ts (11 tests | 10 failed) 382ms
+   ❯ PRJ-01c · project:show por el IPC público (11)
+     × revela sólo el manifiesto del proyecto activo y no devuelve una ruta ni modifica sus bytes 257ms
+     × admite el id no UUID de una versión futura en solo lectura 22ms
+     × rechaza la operación sin proyecto activo 11ms
+     × rechaza otro id, incluido el de un proyecto ya cerrado 22ms
+     × valida la tupla y rechaza argumentos arbitrarios [] 8ms
+     × valida la tupla y rechaza argumentos arbitrarios [ '' ] 8ms
+     × valida la tupla y rechaza argumentos arbitrarios [ …(1) ] 10ms
+     × valida la tupla y rechaza argumentos arbitrarios [ null ] 7ms
+     × valida la tupla y rechaza argumentos arbitrarios [ { id: 'future', path: '/AJENO' } ] 7ms
+     × valida la tupla y rechaza argumentos arbitrarios [ 'future', '/AJENO' ] 7ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/project-preload.test.ts > PRJ-01c · revela el proyecto por una operación fija con su id, sin exponer rutas
+TypeError: api.projectShow is not a function
+ ❯ tests/project-preload.test.ts:11:19
+      9| it('PRJ-01c · revela el proyecto por una operación fija con su id, sin…
+     10|  native.invoke.mockResolvedValueOnce(undefined)
+     11|  expect(await api.projectShow('future')).toBeUndefined()
+       |                   ^
+     12|  expect(native.invoke).toHaveBeenCalledExactlyOnceWith('freya','projec…
+     13|  for(const key of ['invoke','showItemInFolder','projectShowPath'])expe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  tests/project-preload.test.ts > PRJ-01c · conserva el error del proceso principal sin el prefijo de Electron
+TypeError: api.projectShow is not a function
+ ❯ tests/project-preload.test.ts:17:19
+     15| it('PRJ-01c · conserva el error del proceso principal sin el prefijo d…
+     16|  native.invoke.mockRejectedValueOnce(new Error("Error invoking remote …
+     17|  await expect(api.projectShow('future')).rejects.toThrow('Referencia d…
+       |                   ^
+     18| })
+     19|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  tests/project-show-ipc.test.ts > PRJ-01c · project:show por el IPC público > revela sólo el manifiesto del proyecto activo y no devuelve una ruta ni modifica sus bytes
+Error: Operación no compatible.
+ ❯ src/main/index.ts:374:491
+
+ ❯ tests/project-show-ipc.test.ts:35:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  tests/project-show-ipc.test.ts > PRJ-01c · project:show por el IPC público > admite el id no UUID de una versión futura en solo lectura
+Error: Operación no compatible.
+ ❯ src/main/index.ts:374:491
+
+ ❯ tests/project-show-ipc.test.ts:42:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  tests/project-show-ipc.test.ts > PRJ-01c · project:show por el IPC público > rechaza la operación sin proyecto activo
+AssertionError: expected [Function] to throw error including 'Referencia de proyecto inválida.' but got 'Operación no compatible.'
+
+Expected: "Referencia de proyecto inválida."
+Received: "Operación no compatible."
+
+ ❯ tests/project-show-ipc.test.ts:46:48
+     44|  })
+     45|  it('rechaza la operación sin proyecto activo',async()=>{
+     46|   await expect(invoke('project:show','future')).rejects.toThrow('Refer…
+       |                                                ^
+     47|  })
+     48|  it('rechaza otro id, incluido el de un proyecto ya cerrado',async()=>{
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  tests/project-show-ipc.test.ts > PRJ-01c · project:show por el IPC público > rechaza otro id, incluido el de un proyecto ya cerrado
+AssertionError: expected [Function] to throw error including 'Referencia de proyecto inválida.' but got 'Operación no compatible.'
+
+Expected: "Referencia de proyecto inválida."
+Received: "Operación no compatible."
+
+ ❯ tests/project-show-ipc.test.ts:50:55
+     48|  it('rechaza otro id, incluido el de un proyecto ya cerrado',async()=>{
+     49|   const project=await create()
+     50|   await expect(invoke('project:show','otro-proyecto')).rejects.toThrow…
+       |                                                       ^
+     51|   await invoke('project:close',project.id)
+     52|   await expect(invoke('project:show',project.id)).rejects.toThrow('Ref…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  tests/project-show-ipc.test.ts > PRJ-01c · project:show por el IPC público > valida la tupla y rechaza argumentos arbitrarios []
+ FAIL  tests/project-show-ipc.test.ts > PRJ-01c · project:show por el IPC público > valida la tupla y rechaza argumentos arbitrarios [ '' ]
+ FAIL  tests/project-show-ipc.test.ts > PRJ-01c · project:show por el IPC público > valida la tupla y rechaza argumentos arbitrarios [ …(1) ]
+ FAIL  tests/project-show-ipc.test.ts > PRJ-01c · project:show por el IPC público > valida la tupla y rechaza argumentos arbitrarios [ null ]
+ FAIL  tests/project-show-ipc.test.ts > PRJ-01c · project:show por el IPC público > valida la tupla y rechaza argumentos arbitrarios [ { id: 'future', path: '/AJENO' } ]
+ FAIL  tests/project-show-ipc.test.ts > PRJ-01c · project:show por el IPC público > valida la tupla y rechaza argumentos arbitrarios [ 'future', '/AJENO' ]
+AssertionError: expected [Function] to throw error including 'Datos de operación no válidos.' but got 'Operación no compatible.'
+
+Expected: "Datos de operación no válidos."
+Received: "Operación no compatible."
+
+ ❯ tests/project-show-ipc.test.ts:55:47
+     53|  })
+     54|  it.each([[],[''],['x'.repeat(101)],[null],[{id:'future',path:'/AJENO'…
+     55|   await expect(invoke('project:show',...args)).rejects.toThrow('Datos …
+       |                                               ^
+     56|  })
+     57|  it('mantiene la validación de origen del canal',async()=>{
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  12 failed | 1 passed (13)
+   Start at  22:33:19
+   Duration  499ms (tests 90%, transform 6%, import 4%, worker 1%)
+

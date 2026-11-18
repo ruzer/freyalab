@@ -1,0 +1,21 @@
+{
+  "baselineCommit": "d17cc81cd279f3e8a0938077d0b8d55294f05e83",
+  "testIdentityEquality": true,
+  "beforeTests": 51,
+  "afterTests": 51,
+  "noDuplicates": true,
+  "beforeMatchers": 401,
+  "afterMatchers": 428,
+  "unchangedMatchers": 376,
+  "migratedUiMatchers": 25,
+  "additionalOrReplacementMatchers": 52,
+  "counts": {
+    "project.spec.ts": 28,
+    "project-source.spec.ts": 97,
+    "project-subsets.spec.ts": 214,
+    "project-subset-analysis.spec.ts": 89
+  },
+  "fixtureUnchanged": true,
+  "fixtureHash": "bde31aec296f4b09823b940e59f4cf1cdf4cddf66882578d3128d3fff2aa8bb8",
+  "guiExecuted": false
+}
