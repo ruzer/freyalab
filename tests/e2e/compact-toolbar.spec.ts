@@ -45,12 +45,12 @@ test('una sola fila de herramientas deja la tabla a 110 px del borde superior o 
 test('las cinco acciones principales se ven a la vez y lo demás está en menús con su nombre de siempre', async()=>{
  const bar=toolbar()
  await expect(bar.getByRole('textbox',{name:'Buscar en tabla',exact:true})).toBeVisible()
- for(const name of ['Reemplazar','Filtrar','Limpiar datos','Filas y columnas','Analizar'])await expect(bar.getByLabel(name,{exact:true})).toBeVisible()
+ for(const name of ['Reemplazar','Filtrar','Limpiar','Filas y columnas','Analizar'])await expect(bar.getByLabel(name,{exact:true})).toBeVisible()
  // Lo secundario ya no ocupa sitio en la barra.
  for(const name of ['Consulta avanzada','Estadísticas','Gráficos','Análisis','Comandos','Orden numérico'])await expect(bar.getByRole('button',{name,exact:true})).toHaveCount(0)
  const menus:Record<string,string[]>={
   'Filtrar':['Filtros por columna','Consulta avanzada','Orden numérico'],
-  'Limpiar datos':['Transformar documento…','Quitar espacios al inicio y final','Convertir a mayúsculas','Convertir a minúsculas'],
+  'Limpiar':['Transformar documento…','Quitar espacios al inicio y final','Convertir a mayúsculas','Convertir a minúsculas'],
   'Filas y columnas':['Añadir fila','Insertar fila arriba','Insertar fila abajo','Añadir columna','Duplicar filas seleccionadas','Duplicar columna seleccionada','Eliminar filas seleccionadas','Eliminar columna seleccionada']
  }
  for(const [menu,items] of Object.entries(menus)){

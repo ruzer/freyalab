@@ -85,8 +85,8 @@ export async function showPanel(page:Page,name:'Gráficos'|'Estadísticas'|'Aná
   if(await advanced.getAttribute('open')===null)await advanced.locator(':scope>summary').click()
  }
 }
-// Abre un menú de la barra de la tabla (Filtrar, Limpiar datos, Filas y columnas) y elige una de sus acciones.
-export async function menuItem(page:Page,menu:'Filtrar'|'Limpiar datos'|'Filas y columnas',item:string){
+// Abre un menú de la barra de la tabla (Filtrar, Limpiar, Filas y columnas) y elige una de sus acciones.
+export async function menuItem(page:Page,menu:'Filtrar'|'Limpiar'|'Filas y columnas',item:string){
  await page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true}).getByLabel(menu,{exact:true}).click()
  await page.getByRole('button',{name:item,exact:true}).click()
 }

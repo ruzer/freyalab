@@ -18,7 +18,7 @@ test.beforeEach(async()=>{
 })
 test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
 async function open(source=original){const path=join(folder,`data-${randomUUID()}.csv`);await writeFile(path,source);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);await expect(page.getByRole('grid',{name:'Tabla de datos'})).toBeVisible();return{doc,path}}
-async function dialog(operation:string){await page.getByLabel('Limpiar datos',{exact:true}).click();await page.getByRole('button',{name:'Transformar documento…',exact:true}).click();const panel=page.getByRole('dialog',{name:'Transformar documento CSV',exact:true});await panel.getByLabel('Transformación CSV',{exact:true}).selectOption(operation);return panel}
+async function dialog(operation:string){await page.getByLabel('Limpiar',{exact:true}).click();await page.getByRole('button',{name:'Transformar documento…',exact:true}).click();const panel=page.getByRole('dialog',{name:'Transformar documento CSV',exact:true});await panel.getByLabel('Transformación CSV',{exact:true}).selectOption(operation);return panel}
 async function preview(panel:ReturnType<Page['getByRole']>){await panel.getByRole('button',{name:'Vista previa',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Vista previa lista',{timeout:30000})}
 async function apply(panel:ReturnType<Page['getByRole']>){await panel.getByRole('button',{name:'Aplicar transformación',exact:true}).click();await expect(panel).toHaveCount(0)}
 async function rows(id:string){return page.evaluate(async id=>(await window.freya.tablePage(id,{offset:0,limit:100,requestId:1})).rows.map(row=>row.id),id)}
