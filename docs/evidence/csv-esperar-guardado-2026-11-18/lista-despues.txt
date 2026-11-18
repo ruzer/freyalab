@@ -1,0 +1,24 @@
+Listing tests:
+  [csv] › csv-text.spec.ts:19:1 › A: el conmutador Tabla Texto conserva una pestaña y recuerda el modo
+  [csv] › csv-text.spec.ts:25:1 › A: menú de CSV y TSV ofrece ambos modos y teclado devuelve el foco
+  [csv] › csv-text.spec.ts:29:1 › A: más de 10 MiB deshabilita Texto en la barra y el menú con ayuda explícita
+  [csv] › csv-text.spec.ts:33:1 › B: texto exacto conserva saltos mixtos, pegado, undo y opciones apagadas
+  [csv] › csv-text.spec.ts:53:1 › B: buscar reemplazar con expresión regular e ir a línea usan CodeMirror en español
+  [csv] › csv-text.spec.ts:59:1 › C: cancelar, descartar y guardar al cambiar conservan un documento y su contenido
+  [csv] › csv-text.spec.ts:68:1 › C: un guardado no representable mantiene el diálogo y el texto pendiente
+  [csv] › csv-text.spec.ts:72:1 › C: recuperación tras interrupción conserva Texto y UTF-16 con BOM como copia
+  [csv] › csv-text.spec.ts:82:32 › D: comilla sin cerrar se abre como Texto, se corrige y vuelve a Tabla
+  [csv] › csv-text.spec.ts:82:32 › D: comilla suelta se abre como Texto, se corrige y vuelve a Tabla
+  [csv] › csv-text.spec.ts:82:32 › D: texto después de comilla se abre como Texto, se corrige y vuelve a Tabla
+  [csv] › csv-text.spec.ts:94:1 › D: apertura inicial múltiple conserva los archivos válidos tras un CSV fallido
+  [csv] › csv-text.spec.ts:98:1 › B: Buscar Todas permite editar varios rangos y deshacer en un paso
+  [csv] › csv-text.spec.ts:105:1 › C: cambiar espera la celda enfocada y conserva su valor al cancelar, descartar o guardar
+  [csv] › csv-text.spec.ts:114:1 › C: una edición rechazada por tamaño no permite guardar, cerrar ni cambiar con el texto anterior
+  [csv] › csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar
+  [csv] › csv-text.spec.ts:146:1 › TXT-02a: colores por columna y ubicación persistente sin cambiar el CSV
+  [csv] › csv-text.spec.ts:193:77 › TXT-02a: separador detectado en datos.tsv abierto directamente como Texto
+  [csv] › csv-text.spec.ts:193:77 › TXT-02a: separador detectado en punto-y-coma.csv abierto directamente como Texto
+  [csv] › csv-text.spec.ts:202:1 › TXT-02a: filas irregulares y un documento sin encabezado conservan su columna
+  [csv] › csv-text.spec.ts:221:1 › TXT-02a: saltar lejos no pierde la columna de un campo con varias líneas
+  [csv] › csv-text.spec.ts:232:1 › TXT-02a: pinta las columnas al desplazarse horizontalmente
+Total: 22 tests in 1 file

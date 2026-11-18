@@ -1,0 +1,12 @@
+{
+  "method": "proyecto + archivo + suites/título; línea/columna se excluyen porque el await desplaza el código",
+  "identical": true,
+  "before": 22,
+  "after": 22,
+  "beforeLastLine": "Total: 22 tests in 1 file",
+  "afterLastLine": "Total: 22 tests in 1 file",
+  "lost": [],
+  "added": [],
+  "movedBetweenProjects": [],
+  "rawListByteEqual": false
+}

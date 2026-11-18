@@ -1,0 +1,12 @@
+{
+  "method": "AST TypeScript; expresiones matcher con raíz expect, whitespace normalizado",
+  "before": 196,
+  "after": 197,
+  "removed": [],
+  "added": [
+    {
+      "assertion": "expect(page.getByRole('button',{name:'Guardar',exact:true})).toHaveAttribute('aria-busy','false')",
+      "count": 1
+    }
+  ]
+}
