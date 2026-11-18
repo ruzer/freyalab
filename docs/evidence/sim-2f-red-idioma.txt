@@ -1,0 +1,44 @@
+
+Running 1 test using 1 worker
+
+(node:25077) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/sql-clarity.spec.ts:76:1 › SIM-2f: cambiar idioma actualiza el nombre accesible sin reemplazar el editor ni su historial
+  1) [csv] › tests/e2e/sql-clarity.spec.ts:76:1 › SIM-2f: cambiar idioma actualiza el nombre accesible sin reemplazar el editor ni su historial 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.sql-panel').getByRole('textbox', { name: 'SQL query', exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.sql-panel').getByRole('textbox', { name: 'SQL query', exact: true }) with timeout 15000ms
+      - waiting for locator('.sql-panel').getByRole('textbox', { name: 'SQL query', exact: true })
+
+
+      80 |  await expect(panel().getByRole('button',{name:'Run query',exact:true})).toBeVisible()
+      81 |  const englishEditor=panel().getByRole('textbox',{name:'SQL query',exact:true})
+    > 82 |  await expect(englishEditor).toBeVisible()
+         |                              ^
+      83 |  expect(await originalEditor!.evaluate(element=>element.isConnected)).toBe(true)
+      84 |  await expect(englishEditor).toHaveText('SELECT "Ingreso" FROM datos;',{useInnerText:true})
+      85 |  await englishEditor.press(`${modifier}+z`);await expect(englishEditor).toHaveText('SELECT * FROM datos;',{useInnerText:true})
+        at <worktree>/tests/e2e/sql-clarity.spec.ts:82:30
+
+    Error Context: ../sim2f-evidence/label-red/sql-clarity-SIM-2f-cambiar-2d7c7-r-el-editor-ni-su-historial-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2f-evidence/label-red/sql-clarity-SIM-2f-cambiar-2d7c7-r-el-editor-ni-su-historial-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2f-evidence/label-red/sql-clarity-SIM-2f-cambiar-2d7c7-r-el-editor-ni-su-historial-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [csv] › tests/e2e/sql-clarity.spec.ts:76:1 › SIM-2f: cambiar idioma actualiza el nombre accesible sin reemplazar el editor ni su historial 
