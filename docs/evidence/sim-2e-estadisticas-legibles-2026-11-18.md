@@ -1,6 +1,6 @@
 # SIM-2e · Estadísticas legibles — 2026-11-18
 
-Base `main d17cc81cd279f3e8a0938077d0b8d55294f05e83`. Rama independiente `codex/sim-2e-estadisticas-legibles`. Código de interfaz verificado: `f8c111d39d1b1ac71ec507a3ed2fbffb23cd2842`.
+Base `main d17cc81cd279f3e8a0938077d0b8d55294f05e83`. Rama independiente `codex/sim-2e-estadisticas-legibles`. Código de interfaz verificado: `f8c111d39d1b1ac71ec507a3ed2fbffb23cd2842`. Las dos adaptaciones E2E y sus capturas se guardan por separado en `5c704da8e8c3d6d19d75cd127bdc192106834981`.
 
 Historia original copiada sin editar en `docs/stories/historia-sim2-analisis-graficos-diseno-para-codex.md`, SHA-256 `c0fa99ec6c788ca4316d8cf1531dd69c1a88dcbfdccd2d1492b903b375f08273`. Decisiones del propietario de 2026-11-18 y siete respuestas de ADR 0021 en `docs/stories/sim-2e-alcance-adr-0021.md` (primer commit `7e49551`).
 
@@ -18,12 +18,14 @@ La tabla ajusta su ancho al contenido. El caption solo muestra alcance; revisió
 | E2E nueva es/en-XA sobre el build anterior | 2/2 fallan en las etiquetas; conserva 8 capturas de antes | Las tres nuevas es/en/en-XA pasan sin reintento; 12 capturas de después |
 | Tipos | — | `npm run check`: 0 errores y 0 avisos |
 | Construcción | — | `npm run build`: terminó correctamente |
-| E2E enfocadas de estadísticas | — | Primera corrida: 27/29 pasan, 2 fallan por expectativas de presentación pendientes de adaptar, detalladas abajo |
+| E2E enfocadas de estadísticas | — | Primera corrida: 27/29 pasan y 2 fallan por expectativas de presentación, detalladas abajo; tras adaptarlas, los dos casos y los tres nuevos pasan 5/5 en 7,4 s, sin reintento |
+| Unitarias completas (`npm test`) | — | 2.936 pasan / 1 omisión ambiental, 163 archivos, 19,41 s; incluye CSV |
 
 Comandos ejecutados:
 
 ```sh
 npx vitest run tests/describe-readable.test.ts tests/describe-table.test.ts tests/statistics-report.test.ts tests/describe-engine.test.ts tests/describe-summary.test.ts tests/descriptive-statistics.test.ts tests/i18n.test.ts tests/i18n-pending.test.ts
+npm test
 npm run check
 npm run build
 npx playwright test tests/e2e/statistics-readable.spec.ts tests/e2e/analysis-describe.spec.ts tests/e2e/descriptive-percentiles.spec.ts tests/e2e/statistics-reports.spec.ts tests/e2e/selection-statistics.spec.ts --grep-invert '@perf|@solo' --workers=1 --retries=0
@@ -40,7 +42,9 @@ La GUI la ejecutó la raíz, en Mac Apple silicon, de forma coordinada y exclusi
 - El perfil de columna, ajeno a esta presentación, conserva su formato anterior. Selección, límites, informes, recuperación, guardado e integridad del archivo conservan sus aserciones.
 - Nuevas: tres unitarias de informe y tres E2E de etiquetas/ayuda, teclado, precisión completa, alcance, estado accesible, geometría, colores forzados y archivo intacto.
 
-No se borró ninguna prueba ni aserción. La repetición enfocada de las dos adaptaciones y las nuevas está pendiente al escribir este documento; no se presenta la primera corrida 27/29 como verde completo.
+No se borró ninguna prueba ni aserción. La repetición enfocada posterior dio 5/5 en 7,4 s; la primera corrida sigue registrada como 27/29, no como un verde completo. No se repitieron los otros 24 casos sin cambios: las 29 conductas quedaron cubiertas entre ambas corridas, sin atribuir el resultado de un SHA a la CI de otro.
+
+La única omisión unitaria corresponde al sandbox HTTP: Pandoc local 3.12.1 carece de soporte HTTP. El resto de las pruebas reales de Pandoc se ejecutó; esta omisión no acredita la eficacia del sandbox ante un binario con HTTP.
 
 ## Capturas
 
@@ -48,6 +52,6 @@ No se borró ninguna prueba ni aserción. La repetición enfocada de las dos ada
 
 ## No verificado
 
-- Repetición de las dos adaptaciones, suite unitaria completa, E2E completa, perf/solo, paquete y CI de las tres plataformas/Intel.
+- Suite E2E completa, perf/solo, paquete y CI del head final en las tres plataformas. Intel no corre en PR por la política existente; no se lanzó una sonda Intel en esta entrega.
 - No se probaron instalación manual, Gatekeeper, SmartScreen ni integración del escritorio.
-- Sin push ni PR hasta revisión de la raíz; sin fusionar, publicar ni actualizar la app instalada.
+- Entrega autorizada en PR en borrador con base main; no fusionar, publicar ni actualizar la app instalada. La CI se enlaza y se actualiza en el PR, sin otro commit solo para declarar su estado.
