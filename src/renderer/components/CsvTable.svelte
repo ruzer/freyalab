@@ -461,7 +461,7 @@
 {#if context?.kind==='columns'&&menuColumn!==undefined}
  <ContextMenu x={context.x} y={context.y} label={t('csv.columnMenu.label')} onclose={closeColumnContext}>
   <div class="column-menu-items">
-   <span class="dropdown-label" role="presentation">{menuColumnLabel(menuColumn)}</span>
+   <span class="dropdown-label column-menu-title" role="presentation">{menuColumnLabel(menuColumn)}</span>
    {#each ['sortAscending','sortDescending','columnFilter','emptyView'] as id}{@render columnMenuItem(id)}{/each}
    <div class="column-menu-separator" role="separator"></div>
    <button bind:this={cleanButton} role="menuitem" tabindex="-1" aria-haspopup="menu" aria-expanded={cleanMenu} onclick={()=>cleanMenu=!cleanMenu} onkeydown={event=>{if(event.key==='ArrowRight'){event.preventDefault();event.stopPropagation();cleanMenu=true}}}>{t('csv.columnMenu.clean')}<Icon name="chevron-right" size={12}/></button>
@@ -590,7 +590,8 @@
 
 <style>
  .column-menu-items{display:flex;flex-direction:column;min-width:0}
- .column-menu-items button{padding:5px 7px}
+ .column-menu-items button{padding:5px 7px;white-space:normal;overflow-wrap:anywhere}
+ .column-menu-title{text-transform:none;letter-spacing:normal;overflow-wrap:anywhere}
  .column-menu-items button[aria-haspopup="menu"]{display:flex;align-items:center;gap:8px}
  .column-menu-items button[aria-haspopup="menu"] :global(svg){margin-left:auto;flex:none}
  .column-menu-separator{border-top:1px solid var(--border);margin:4px 2px}
