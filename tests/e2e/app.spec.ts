@@ -1,5 +1,6 @@
 import { test, expect, _electron as electron, type ElectronApplication, type Page } from '@playwright/test'
 import { closeElectron } from './close-electron'
+import { readTablePage } from './csv-rows'
 import electronPath from 'electron'
 import { mkdtemp, mkdir, readFile, readdir, rm, writeFile, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -67,16 +68,14 @@ test('renderer aislado, documento Markdown editable y guardado real', { tag: '@p
 test('CSV: ceros, multilinea, filtro, edición por identificador y guardado', { tag: '@package-smoke' }, async () => {
   const input = join(directory, 'inventario.csv')
   await writeFile(input, 'Código,Artículo,Existencias\r\n000124,"Nombre, con coma",5\r\n000125,"Dos\nlineas",12\r\n')
-  const result = await page.evaluate(async path => {
-    const [doc] = await window.freya.openPaths([path])
-    const query = { offset: 0, limit: 20, requestId: 1 }
-    const initial = await window.freya.tablePage(doc.id, query)
-    if (initial.rows[0].cells[0] !== '000124') throw new Error('Se perdieron ceros')
-    await window.freya.tableEdit(doc.id, { type: 'cell', rowId: initial.rows[1].id, column: 2, value: '14' })
-    const filtered = await window.freya.tablePage(doc.id, { ...query, requestId: 2, search: '000125' })
-    const saved = await window.freya.save(doc.id)
-    return { initial, filtered, saved }
-  }, input)
+  const [doc] = await page.evaluate(path => window.freya.openPaths([path]), input)
+  const query = { offset: 0, limit: 20, requestId: 1 }
+  const initial = await readTablePage(page,doc.id,query)
+  if (initial.rows[0].cells[0] !== '000124') throw new Error('Se perdieron ceros')
+  await page.evaluate(({id,rowId})=>window.freya.tableEdit(id,{type:'cell',rowId,column:2,value:'14'}),{id:doc.id,rowId:initial.rows[1].id})
+  const filtered = await readTablePage(page,doc.id,{...query,requestId:2,search:'000125'})
+  const saved = await page.evaluate(id=>window.freya.save(id),doc.id)
+  const result = {initial,filtered,saved}
   expect(result.filtered.matched).toBe(1)
   expect(result.filtered.rows[0].cells[2]).toBe('14')
   expect(result.saved?.dirty).toBe(false)

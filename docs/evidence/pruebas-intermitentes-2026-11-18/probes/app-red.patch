@@ -1,0 +1,54 @@
+--- a/tests/e2e/app.spec.ts
++++ b/tests/e2e/app.spec.ts
+@@ -1,6 +1,5 @@
+ import { test, expect, _electron as electron, type ElectronApplication, type Page } from '@playwright/test'
+ import { closeElectron } from './close-electron'
+-import { readTablePage } from './csv-rows'
+ import electronPath from 'electron'
+ import { mkdtemp, mkdir, readFile, readdir, rm, writeFile, stat } from 'node:fs/promises'
+ import { tmpdir } from 'node:os'
+@@ -66,16 +65,36 @@
+ })
+ 
+ test('CSV: ceros, multilinea, filtro, edición por identificador y guardado', { tag: '@package-smoke' }, async () => {
++  if(process.env.FREYALAB_GUI_RACE_PROBE==='app')await app.evaluate(({ipcMain})=>{
++    type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
++    const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')!
++    let rendererComplete=false
++    let waiting:{event:Electron.IpcMainInvokeEvent,args:unknown[],resolve:(value:unknown)=>void,reject:(error:unknown)=>void}|undefined
++    handlers.set('freya',async(event,...args)=>{
++      const query=args[2] as {limit?:number}|undefined
++      if(args[0]==='page'&&query?.limit===20&&!rendererComplete&&!waiting)return await new Promise((resolve,reject)=>{waiting={event,args,resolve,reject}})
++      if(args[0]==='page'&&query?.limit===200&&waiting){
++        const first=waiting;waiting=undefined
++        const testRead=original(first.event,...first.args)
++        const rendererRead=original(event,...args)
++        testRead.then(first.resolve,first.reject)
++        const result=await rendererRead;rendererComplete=true;return result
++      }
++      const result=await original(event,...args);if(args[0]==='page'&&query?.limit===200)rendererComplete=true;return result
++    })
++  })
+   const input = join(directory, 'inventario.csv')
+   await writeFile(input, 'Código,Artículo,Existencias\r\n000124,"Nombre, con coma",5\r\n000125,"Dos\nlineas",12\r\n')
+-  const [doc] = await page.evaluate(path => window.freya.openPaths([path]), input)
+-  const query = { offset: 0, limit: 20, requestId: 1 }
+-  const initial = await readTablePage(page,doc.id,query)
+-  if (initial.rows[0].cells[0] !== '000124') throw new Error('Se perdieron ceros')
+-  await page.evaluate(({id,rowId})=>window.freya.tableEdit(id,{type:'cell',rowId,column:2,value:'14'}),{id:doc.id,rowId:initial.rows[1].id})
+-  const filtered = await readTablePage(page,doc.id,{...query,requestId:2,search:'000125'})
+-  const saved = await page.evaluate(id=>window.freya.save(id),doc.id)
+-  const result = {initial,filtered,saved}
++  const result = await page.evaluate(async path => {
++    const [doc] = await window.freya.openPaths([path])
++    const query = { offset: 0, limit: 20, requestId: 1 }
++    const initial = await window.freya.tablePage(doc.id, query)
++    if (initial.rows[0].cells[0] !== '000124') throw new Error('Se perdieron ceros')
++    await window.freya.tableEdit(doc.id, { type: 'cell', rowId: initial.rows[1].id, column: 2, value: '14' })
++    const filtered = await window.freya.tablePage(doc.id, { ...query, requestId: 2, search: '000125' })
++    const saved = await window.freya.save(doc.id)
++    return { initial, filtered, saved }
++  }, input)
+   expect(result.filtered.matched).toBe(1)
+   expect(result.filtered.rows[0].cells[2]).toBe('14')
+   expect(result.saved?.dirty).toBe(false)

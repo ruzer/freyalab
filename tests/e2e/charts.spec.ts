@@ -30,22 +30,40 @@ test('seis gráficos calculan sobre datos completos, con cuartiles, huecos y cat
  expect(await page.evaluate(()=>window.freya.documents())).toEqual(before);expect(await readFile(path,'utf8')).toBe(original)
 })
 
-test('gráficos visuales: seis SVG, temas, teclado, exportación e invalidación',async()=>{
- const {doc,path}=await open();await showPanel(page,'Gráficos');const panel=chartPanel(page)
+// Cada conducta conserva el presupuesto funcional común. La traza 44134322627
+// completó los seis tipos a los 88,94 s: acumular temas, exportaciones y volver a
+// consultar dentro del mismo caso de 90 s cortaba trabajo correcto ya iniciado.
+async function visualChart(kind:ChartOptions['kind']){
+ const opened=await open();await showPanel(page,'Gráficos');const panel=chartPanel(page)
  await panel.getByLabel('Tipo de gráfico',{exact:true}).selectOption('histogram');await panel.getByLabel('Columna Y del gráfico',{exact:true}).selectOption('2')
- for(const kind of ['histogram','bar','line','scatter','heatmap','box']){
-  await panel.getByLabel('Tipo de gráfico',{exact:true}).selectOption(kind)
-  if(kind!=='histogram')await panel.getByLabel('Columna X del gráfico',{exact:true}).selectOption(kind==='line'||kind==='scatter'?'1':'0')
-  if(kind!=='bar')await panel.getByLabel('Columna Y del gráfico',{exact:true}).selectOption(kind==='heatmap'?'3':'2')
-  await chartGenerate(page).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await expect(panel.locator('.plot svg')).toBeVisible();expect(await panel.locator('.plot svg path').count()).toBeGreaterThan(0)
- }
+ await panel.getByLabel('Tipo de gráfico',{exact:true}).selectOption(kind)
+ if(kind!=='histogram')await panel.getByLabel('Columna X del gráfico',{exact:true}).selectOption(kind==='line'||kind==='scatter'?'1':'0')
+ if(kind!=='bar')await panel.getByLabel('Columna Y del gráfico',{exact:true}).selectOption(kind==='heatmap'?'3':'2')
+ await chartGenerate(page).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await expect(panel.locator('.plot svg')).toBeVisible();expect(await panel.locator('.plot svg path').count()).toBeGreaterThan(0)
+ return{...opened,panel}
+}
+
+for(const kind of ['histogram','bar','line','scatter','heatmap','box'] as const){
+ test(`gráficos visuales: SVG de ${kind}`,async()=>{await visualChart(kind)})
+}
+
+test('gráficos visuales: temas y tabla accesible',async()=>{
+ const {panel}=await visualChart('box')
  for(const theme of ['dark','light']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await panel.locator('.plot').scrollIntoViewIfNeeded();await page.screenshot({path:test.info().outputPath(`charts-${theme}-1440x900.png`)});await expect(panel.locator('.plot')).toHaveAttribute('aria-label',/Diagrama de caja/)}
  await page.setViewportSize({width:1280,height:800});await page.screenshot({path:test.info().outputPath('charts-light-1280x800.png')})
  await panel.getByText('Datos del gráfico: tabla accesible',{exact:true}).click();await expect(panel.locator('.more-options .table-scroll tbody tr')).toHaveCount(3);await expect(panel.locator('.more-options .table-scroll tbody tr').first()).toContainText('100.0')
+})
+
+test('gráficos visuales: exportación SVG, PNG y PDF',async()=>{
+ const {panel}=await visualChart('box')
  for(const format of ['SVG','PNG','PDF']){await panel.getByRole('button',{name:`Exportar gráfico ${format}`,exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText(`plots.${format.toLowerCase()}`,{timeout:15000});expect((await stat(join(folder,'exports',`plots.${format.toLowerCase()}`))).size).toBeGreaterThan(1000)}
  const pixels=await app.evaluate(({nativeImage},path)=>{const image=nativeImage.createFromPath(path),buffer=image.toBitmap(),colors=new Set<string>();for(let i=0;i<buffer.length;i+=4)colors.add(buffer.subarray(i,i+4).toString('hex'));return{size:image.getSize(),colors:colors.size}},join(folder,'exports','plots.png'));expect(pixels.size.width).toBeGreaterThan(500);expect(pixels.colors).toBeGreaterThan(20)
  expect((await readFile(join(folder,'exports','plots.pdf'))).subarray(0,5).toString()).toBe('%PDF-')
  const svg=await readFile(join(folder,'exports','plots.svg'),'utf8');expect(svg).toContain('<svg');expect(svg).not.toContain('<script')
+})
+
+test('gráficos visuales: invalidación tras editar, teclado y archivo intacto',async()=>{
+ const {path,panel}=await visualChart('box')
  await showTable(page);await menuItem(page,'Filas y columnas','Añadir fila');await showPanel(page,'Gráficos');await chartGenerate(page).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await expect(panel.locator('.plot svg path').first()).toBeAttached()
  await chartGenerate(page).focus();await page.keyboard.press('Escape');await expect(panel).toBeVisible();await showTable(page);await expect(page.locator('.tabs').getByRole('tab',{selected:true})).toBeFocused();expect(await readFile(path,'utf8')).toBe(original)
 })
