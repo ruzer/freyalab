@@ -1,0 +1,26 @@
+
+Running 18 tests using 1 worker
+
+(node:35452) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/18] [csv] › tests/e2e/sql-clarity.spec.ts:23:1 › SIM-2f: ayuda progresiva, estado inicial y acción principal
+[2/18] [csv] › tests/e2e/sql-clarity.spec.ts:36:1 › SIM-2f: fichas insertan el identificador escapado en el cursor, devuelven foco y deshacen en un paso
+[3/18] [csv] › tests/e2e/sql-clarity.spec.ts:47:1 › SIM-2f: ejecutar con teclado conserva resultados y solo anuncia cambios después de ejecutar
+[4/18] [csv] › tests/e2e/sql-clarity.spec.ts:58:47 › SIM-2f: sección legible y capturas en dos tamaños y temas (es)
+[5/18] [csv] › tests/e2e/sql-clarity.spec.ts:58:47 › SIM-2f: sección legible y capturas en dos tamaños y temas (en-XA)
+[6/18] [csv] › tests/e2e/sql-clarity.spec.ts:76:1 › SIM-2f: cambiar idioma actualiza el nombre accesible sin reemplazar el editor ni su historial
+[7/18] [csv] › tests/e2e/sql-clarity.spec.ts:91:1 › SIM-2f: el texto del botón principal contrasta en claro y oscuro
+[8/18] [csv] › tests/e2e/sql-progress-states.spec.ts:83:52 › SQL muestra fases reales en es, con resultado exacto y CSV intacto
+[9/18] [csv] › tests/e2e/sql-progress-states.spec.ts:83:52 › SQL muestra fases reales en en, con resultado exacto y CSV intacto
+[10/18] [csv] › tests/e2e/sql-progress-states.spec.ts:83:52 › SQL muestra fases reales en en-XA, con resultado exacto y CSV intacto
+[11/18] [csv] › tests/e2e/sql-progress-states.spec.ts:99:1 › el gráfico muestra la misma fase visible y anunciada antes de dibujar datos reales
+[12/18] [csv] › tests/e2e/sql.spec.ts:17:1 › SQL visual: agrupación, pivot, cruce, borrador, temas y documentos intactos
+[13/18] [csv] › tests/e2e/sql.spec.ts:37:1 › SQL: valores exactos, cambios pendientes, Unicode, límites, páginas y rechazo de operaciones
+[14/18] [csv] › tests/e2e/sql.spec.ts:50:1 › SQL: aislamiento de Chromium, bloqueo de red/disco y cancelación real con recuperación del motor
+[15/18] [csv] › tests/e2e/sql.spec.ts:62:1 › SQL: mide fuentes completas hasta un millón por cuatro columnas y distingue la muestra @perf
+[16/18] [csv] › tests/e2e/sql.spec.ts:87:1 › informe SQL reúne todas las páginas, preserva cambios y valores, se recupera, guarda y exporta
+[17/18] [csv] › tests/e2e/sql.spec.ts:102:1 › informe SQL rotula las 10 000 filas conservadas y rechaza resultados cancelados o de otra revisión
+[18/18] [csv] › tests/e2e/sql.spec.ts:112:1 › informe SQL desde un CSV mayor de 50 MiB identifica la fuente completa sin habilitar guardar su muestra @perf
+  18 passed (57.0s)

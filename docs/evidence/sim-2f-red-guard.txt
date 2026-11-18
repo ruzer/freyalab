@@ -1,0 +1,41 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <worktree>
+
+ ❯ tests/i18n-pending.test.ts (7 tests | 1 failed) 242ms
+   × conserva la fotografía inicial y comprueba los archivos actuales, sin ampliar pendientes 232ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/i18n-pending.test.ts > conserva la fotografía inicial y comprueba los archivos actuales, sin ampliar pendientes
+AssertionError: expected [ …(4) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "src/renderer/components/CsvSql.svelte: datos",
++   "src/renderer/components/CsvSql.svelte: tabla_",
++   "src/renderer/components/CsvSql.svelte: DuckDB",
++   "src/renderer/components/CsvSql.svelte: NULL",
++ ]
+
+ ❯ tests/i18n-pending.test.ts:34:49
+     32|  expect([...new Set(pending)].sort()).toEqual(pending)
+     33|  const sources=new Map(await Promise.all((await sourceFiles(root)).map…
+     34|  expect(pendingIssues(pending,initial,sources)).toEqual([])
+       |                                                 ^
+     35| })
+     36|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  13:05:26
+   Duration  597ms (tests 46%, import 45%, transform 9%)
+

@@ -1,0 +1,44 @@
+
+Running 1 test using 1 worker
+
+(node:19190) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/sql-clarity.spec.ts:23:1 › SIM-2f: ayuda progresiva, estado inicial y acción principal
+  1) [csv] › tests/e2e/sql-clarity.spec.ts:23:1 › SIM-2f: ayuda progresiva, estado inicial y acción principal 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.sql-panel').getByText('Solo lectura: tus consultas no cambian el archivo.', { exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.sql-panel').getByText('Solo lectura: tus consultas no cambian el archivo.', { exact: true }) with timeout 15000ms
+      - waiting for locator('.sql-panel').getByText('Solo lectura: tus consultas no cambian el archivo.', { exact: true })
+
+
+      22 |
+      23 | test('SIM-2f: ayuda progresiva, estado inicial y acción principal',async()=>{
+    > 24 |  await expect(panel().getByText('Solo lectura: tus consultas no cambian el archivo.',{exact:true})).toBeVisible()
+         |                                                                                                     ^
+      25 |  await expect(panel().getByRole('heading',{name:'Análisis local con DuckDB'})).toHaveCount(0)
+      26 |  const limits=panel().locator('details').filter({has:page.getByText('Límites',{exact:true})})
+      27 |  await expect(limits).not.toHaveAttribute('open')
+        at <worktree>/tests/e2e/sql-clarity.spec.ts:24:101
+
+    Error Context: ../sim2f-evidence/ui-red/sql-clarity-SIM-2f-ayuda-p-49a32--inicial-y-acción-principal-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2f-evidence/ui-red/sql-clarity-SIM-2f-ayuda-p-49a32--inicial-y-acción-principal-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2f-evidence/ui-red/sql-clarity-SIM-2f-ayuda-p-49a32--inicial-y-acción-principal-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [csv] › tests/e2e/sql-clarity.spec.ts:23:1 › SIM-2f: ayuda progresiva, estado inicial y acción principal 

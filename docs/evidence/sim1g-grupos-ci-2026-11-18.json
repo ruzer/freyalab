@@ -1,0 +1,40 @@
+{
+  "base": "fd4e2a46845de95d7f7274f52fbd26cb0f63fcbc",
+  "existingSpecFiles": 76,
+  "addedSpecFiles": 1,
+  "addedTests": 2,
+  "deletedTests": 0,
+  "movedExistingFiles": 0,
+  "oldSpecContents": "identical",
+  "newTestProject": "shell",
+  "newTestPlan": {
+    "checks": true,
+    "unit": true,
+    "e2e": [
+      "shell"
+    ],
+    "full": false,
+    "package": false,
+    "specs": [
+      "tests/e2e/menu-alignment.spec.ts"
+    ],
+    "docsOnly": false
+  },
+  "sharedChangePlan": {
+    "checks": true,
+    "unit": true,
+    "e2e": [
+      "shell",
+      "md",
+      "csv"
+    ],
+    "full": true,
+    "package": false,
+    "specs": [
+      "tests/e2e/menu-alignment.spec.ts"
+    ],
+    "docsOnly": false
+  },
+  "effectivePackageGate": true,
+  "effectivePackageReason": "ci.yml publica package = plan.package || plan.full"
+}
