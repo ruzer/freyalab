@@ -1,6 +1,6 @@
 # SIM-2e · Estadísticas legibles — 2026-11-18
 
-Base `main d17cc81cd279f3e8a0938077d0b8d55294f05e83`. Rama independiente `codex/sim-2e-estadisticas-legibles`. Código de interfaz verificado: `f8c111d39d1b1ac71ec507a3ed2fbffb23cd2842`. Las dos adaptaciones E2E y sus capturas se guardan por separado en `5c704da8e8c3d6d19d75cd127bdc192106834981`.
+Base inicial `main d17cc81cd279f3e8a0938077d0b8d55294f05e83`; actualizada mediante merge local con `main fd4e2a46845de95d7f7274f52fbd26cb0f63fcbc` tras #180. Rama independiente `codex/sim-2e-estadisticas-legibles`. Código de interfaz verificado: `f8c111d39d1b1ac71ec507a3ed2fbffb23cd2842`. Las dos adaptaciones E2E y sus capturas se guardan por separado en `5c704da8e8c3d6d19d75cd127bdc192106834981`.
 
 Historia original copiada sin editar en `docs/stories/historia-sim2-analisis-graficos-diseno-para-codex.md`, SHA-256 `c0fa99ec6c788ca4316d8cf1531dd69c1a88dcbfdccd2d1492b903b375f08273`. Decisiones del propietario de 2026-11-18 y siete respuestas de ADR 0021 en `docs/stories/sim-2e-alcance-adr-0021.md` (primer commit `7e49551`).
 
@@ -9,6 +9,25 @@ Historia original copiada sin editar en `docs/stories/historia-sim2-analisis-gra
 Las once filas de pandas tienen etiquetas en es/en y generación en-XA. El título y nombre accesible conservan su identificador pandas y ayuda. La pantalla usa máximo dos decimales y no añade decimales a enteros. Cada `title` conserva el valor completo; el informe mantiene `String(value)` y etiqueta «Media (mean)», etc. La matriz y los cálculos del motor permanecen iguales.
 
 La tabla ajusta su ancho al contenido. El caption solo muestra alcance; revisión pasa a «Cómo se calcula». Los mensajes de inicio y éxito permanecen disponibles al lector de pantalla sin ocupar una línea. Carga, error, cancelación y cobertura parcial siguen anunciándose. CsvStatistics se traduce y sale de pending-files. No hay cambios de motor, IPC, guardado, dependencias, plazos ni reintentos.
+
+## Validación final tras integrar main
+
+Código integrado y verificado: `5280a2d12792fe951540ebedb772500d72ce72b9`. El commit posterior añade solo esta evidencia. Se ejecutó con Node.js 24.22.1 en macOS Apple silicon; el build corresponde a ese código.
+
+Los únicos conflictos fueron `src/shared/i18n/es.json` y `en.json`: bloques finales de 73 claves de estadísticas y 8 de Proyecto. Se conservaron los textos de ambos bloques, con 1.610 claves por idioma. La comparación de tres vías dio cero claves modificadas por ambos lados, cero valores divergentes, cero duplicados y cero claves o valores inesperados. Ningún componente ni prueba se editó manualmente en esta integración.
+
+| Comprobación final | Resultado real |
+| --- | --- |
+| `npm run check` | 0 errores, 0 avisos |
+| Las ocho unitarias enfocadas del comando inferior | 81/81, 8 archivos, 0,746 s; main añadió casos de i18n respecto a los 75 iniciales |
+| `npm test` completo | 2.956 aprobadas / 1 omisión ambiental, 165 archivos, 17,48 s; incluye CSV |
+| `npm run build` | Correcto |
+| Los cinco archivos E2E enfocados del comando inferior | 29/29 en una corrida de 50,8 s, `--workers=1 --retries=0`; cero reintentos |
+| Capturas posteriores | Las 12 capturas es/en/en-XA, claro/oscuro y ambos tamaños coinciden byte por byte con las ya guardadas; no se sustituyen por duplicados |
+
+La raíz ejecutó la GUI en exclusiva. Se revisaron las capturas es/claro a 1440×900 y en-XA/oscuro a 1280×720, sin recortes observados en la tabla y sus controles. Esto no sustituye las comprobaciones geométricas y de precisión de las pruebas.
+
+El primer `npm test` de esta integración, sin permiso para abrir el servidor local de pruebas, terminó con `listen EPERM 127.0.0.1`: 26 fallos y un error de suite en updates/Pandoc. Se conserva como intento fallido ambiental, no como un verde ni una regresión del producto. El comando completo se repitió con permiso de loopback, sobre el mismo código y sin modificar aserciones, plazos o reintentos; dio el resultado de la tabla. Su única omisión se explica abajo.
 
 ## Rojo → verde real
 
@@ -49,6 +68,24 @@ La única omisión unitaria corresponde al sandbox HTTP: Pandoc local 3.12.1 car
 ## Capturas
 
 `sim-2e-antes-*.png` y `sim-2e-despues-*.png`, en esta carpeta: claro/oscuro, es/en-XA, 1440×900 y 1280×720. También se conservan las cuatro de inglés posteriores. Fixture sintético, sin datos de documentos del propietario.
+
+## CI anterior y nueva calificación pendiente
+
+La [corrida 44380410486](https://github.com/ruzer/freyalab/actions/runs/44380410486), SHA `320b2266ea3403aa326fd48e0f00bfdc10db629a`, terminó **failure**, no verde integral:
+
+| Job | Resultado | Duración | Reintentos de pruebas |
+| --- | --- | --- | --- |
+| Ubuntu | success | 42m04s | 0 |
+| Windows | success | 49m49s | 1 flaky |
+| macOS | success | 42m59s | 1 flaky |
+| macOS package | cancelled, sin runner ni pasos | 15m02s en cola, no tiempo de pruebas | No ejecutó pruebas |
+| Gate | failure, matriz abandoned | 5s | No aplica |
+
+La anotación del paquete fue «The job was not acquired by Runner of type hosted even after multiple attempts», con avisos de capacidad de macOS arm64. No se contó como paquete probado.
+
+Windows: `project-source.spec.ts:216:45`, diálogo y fuente protegida [es], no encontró «Añadir fuente…» en 15 s tras Enter; pasó al reintento. macOS: `mermaid-export-theme.spec.ts:138:1`, esquina PNG transparente `[0,0,0,0]` frente al blanco esperado `[255,255,255,255]`; pasó al reintento. Los logs identifican las señales, pero no demuestran su causa raíz ni que sean efecto de SIM-2e. No se arreglan fuera del alcance de esta entrega.
+
+Tras fusionarse #180, GitHub detectó conflicto con main. No se relanzó el paquete del SHA anterior: se integró main mecánicamente y el nuevo head requiere su propia CI. Los resultados de aquella corrida no se transfieren al código integrado. La CI del head final se enlaza y actualiza en el PR, sin crear otro commit solo para declarar su estado.
 
 ## No verificado
 
