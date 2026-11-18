@@ -1,0 +1,17 @@
+
+Running 1 test using 1 worker
+
+(node:16340) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/empty-values.spec.ts:387:57 › LIM-1 teclado, idiomas y temas (en-XA)
+[csv] › tests/e2e/empty-values.spec.ts:387:57 › LIM-1 teclado, idiomas y temas (en-XA)
+[GUI-RACE] waiting for fill command [
+  {
+    text: '[Fïll ëmpty cëlls ïn thïs cölümn…~~~~~~~~~~][Wáït för thë cürrënt öpërátïön tö fïnïsh.~~~~~~~~~~~~~]',
+    disabled: true
+  }
+]
+
+  1 passed (2.2s)

@@ -1,0 +1,34 @@
+
+Running 1 test using 1 worker
+
+(node:14810) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [shell] › tests/e2e/app.spec.ts:67:1 › CSV: ceros, multilinea, filtro, edición por identificador y guardado @package-smoke
+  1) [shell] › tests/e2e/app.spec.ts:67:1 › CSV: ceros, multilinea, filtro, edición por identificador y guardado @package-smoke 
+
+    Error: page.evaluate: Error: Consulta cancelada por una solicitud más reciente.
+
+      86 |   const input = join(directory, 'inventario.csv')
+      87 |   await writeFile(input, 'Código,Artículo,Existencias\r\n000124,"Nombre, con coma",5\r\n000125,"Dos\nlineas",12\r\n')
+    > 88 |   const result = await page.evaluate(async path => {
+         |                             ^
+      89 |     const [doc] = await window.freya.openPaths([path])
+      90 |     const query = { offset: 0, limit: 20, requestId: 1 }
+      91 |     const initial = await window.freya.tablePage(doc.id, query)
+        at <worktree>/tests/e2e/app.spec.ts:88:29
+
+    Error Context: ../estabilidad-evidence/gui/app-red/app-CSV-ceros-multilinea-f-dcec2-or-identificador-y-guardado-shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../estabilidad-evidence/gui/app-red/app-CSV-ceros-multilinea-f-dcec2-or-identificador-y-guardado-shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../estabilidad-evidence/gui/app-red/app-CSV-ceros-multilinea-f-dcec2-or-identificador-y-guardado-shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [shell] › tests/e2e/app.spec.ts:67:1 › CSV: ceros, multilinea, filtro, edición por identificador y guardado @package-smoke 

@@ -27,6 +27,7 @@
  let applying=false
  let plainPaste=false,diagnosticSummary=$state(''),generalDiagramError=$state(false)
  const permission=new Compartment()
+ const accessibility=new Compartment()
  const textDisplay=new Compartment()
  const indentation=new Compartment()
  const csvDisplay=new Compartment()
@@ -125,6 +126,11 @@
  function shortcut(action:MarkdownAction){return()=>{if(kind!=='markdown'||!view)return false;if(!view.composing&&!view.compositionStarted)format(action);return true}}
  export function undoEdit(){if(view) undo(view)}
  export function redoEdit(){if(view) redo(view)}
+ export function insertText(value:string){
+  if(!view||readonly||view.state.readOnly||isComposing())return false
+  view.dispatch({...view.state.replaceSelection(value),annotations:isolateHistory.of('full'),scrollIntoView:true,userEvent:'input'})
+  view.focus();return true
+ }
  export function focus(){view?.focus()}
  export function search(){if(view) openSearchPanel(view)}
  export function goToLine(){if(view)gotoLine(view)}
@@ -154,7 +160,7 @@
   const sessionAtMount=session,dispatch=ontransactions;mountedSession=sessionAtMount
   const textDocument=!sessionAtMount&&['markdown','text','mermaid','csv-text'].includes(kind)?csvTextDocument(text):undefined
   // Los números van antes del control de plegado para dejarlo fuera del separador lateral.
-  const extensions=[...(textDocument?.extensions??[]),textDisplay.of(displayExtensions(wrapLines,showWhitespace)),...(kind==='csv-text'?[csvDisplay.of(csvExtensions(csvDelimiter,csvHeader,csvColors))]:[]),indentation.of(editorIndentation(editing)),EditorView.contentAttributes.of({'aria-label':label}),lineNumbers(),editorEditingExtensions(kind),(['markdown','mermaid'].includes(kind)?diagramMarkExtensions:[]),outlinePadding.of(outlineEnabled?[scrollPastEnd(),EditorView.theme({'.cm-scroller':{paddingBottom:'1lh'}})]:[]),highlightActiveLine(),drawSelection(),...(!sessionAtMount?[history()]:[]),highlightSelectionMatches(),keymap.of([{key:'Mod-b',run:shortcut('bold')},{key:'Mod-i',run:shortcut('italic')},{key:'Mod-Shift-x',run:shortcut('strike')},...(['paragraph','heading1','heading2','heading3'] as const).map((action,index)=>({key:`Mod-Alt-${index}`,run:shortcut(action)})),...defaultKeymap,...historyKeymap,...searchKeymap]),syntaxHighlighting(defaultHighlightStyle),permission.of([EditorState.readOnly.of(readonly),EditorView.editable.of(!readonly)]),EditorView.theme({
+  const extensions=[...(textDocument?.extensions??[]),textDisplay.of(displayExtensions(wrapLines,showWhitespace)),...(kind==='csv-text'?[csvDisplay.of(csvExtensions(csvDelimiter,csvHeader,csvColors))]:[]),indentation.of(editorIndentation(editing)),accessibility.of(EditorView.contentAttributes.of({'aria-label':label})),lineNumbers(),editorEditingExtensions(kind),(['markdown','mermaid'].includes(kind)?diagramMarkExtensions:[]),outlinePadding.of(outlineEnabled?[scrollPastEnd(),EditorView.theme({'.cm-scroller':{paddingBottom:'1lh'}})]:[]),highlightActiveLine(),drawSelection(),...(!sessionAtMount?[history()]:[]),highlightSelectionMatches(),keymap.of([{key:'Mod-b',run:shortcut('bold')},{key:'Mod-i',run:shortcut('italic')},{key:'Mod-Shift-x',run:shortcut('strike')},...(['paragraph','heading1','heading2','heading3'] as const).map((action,index)=>({key:`Mod-Alt-${index}`,run:shortcut(action)})),...defaultKeymap,...historyKeymap,...searchKeymap]),syntaxHighlighting(defaultHighlightStyle),permission.of([EditorState.readOnly.of(readonly),EditorView.editable.of(!readonly)]),EditorView.theme({
    '&':{height:'100%',fontSize:'13px'},
    '.cm-scroller':{fontFamily:'"JetBrains Mono", monospace',lineHeight:'1.8'},
    '.cm-content':{padding:'20px 0'},
@@ -185,6 +191,7 @@
   return()=>{cancelOutline();window.removeEventListener('freya-paste-plain',plain);if(sessionAtMount){sessionAtMount.receive=undefined;dispatch?.([sessionAtMount.state.update({effects:sessionAtMount.ui.reconfigure([])})])}view?.destroy();view=undefined}
  })
  $effect(()=>{const enabled=outlineEnabled;cancelOutline();lastOutlineTree=undefined;lastOutlineDoc=undefined;lastVisibleLine=-1;if(view)view.dispatch({effects:outlinePadding.reconfigure(enabled?[scrollPastEnd(),EditorView.theme({'.cm-scroller':{paddingBottom:'1lh'}})]:[])});publishOutline();if(enabled)publishVisibleLine()})
+ $effect(()=>{const name=label;if(view)view.dispatch({effects:accessibility.reconfigure(EditorView.contentAttributes.of({'aria-label':name}))})})
  $effect(()=>{const locked=readonly;if(view)view.dispatch({effects:permission.reconfigure([EditorState.readOnly.of(locked),EditorView.editable.of(!locked)])})})
  $effect(()=>{const value=text;if(view&&!mountedSession&&value!==editorText(view.state)){applying=true;view.dispatch(view.state.field(csvLineEndings,false)?replaceCsvText(view.state,0,view.state.doc.length,value):{changes:{from:0,to:view.state.doc.length,insert:value}});applying=false}})
  $effect(()=>{const extensions=editorIndentation(editing);if(view)view.dispatch({effects:indentation.reconfigure(extensions)})})

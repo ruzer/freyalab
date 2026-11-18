@@ -148,3 +148,6 @@ body:has(dialog[open],.modal-backdrop) .toolbar button:is(.primary,.btn-primary)
 .btn-tint .busy-label::after{color:var(--accent-strong)}
 
 :root .app-shell .toolbar :is(.save-button,.export-button):not(.btn-primary){background:var(--input);color:var(--text);border-color:var(--control);box-shadow:var(--shadow-rest)}
+
+/* SIM-1g · La alineación de ContextMenu se comparte con los demás menús. */
+:is(.dropdown,.range-context,[role="menu"]) :is(button,[role="menuitem"]),.dropdown-label{justify-content:flex-start;text-align:left}

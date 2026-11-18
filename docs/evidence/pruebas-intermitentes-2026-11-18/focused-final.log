@@ -1,0 +1,93 @@
+
+Running 77 tests using 1 worker
+
+(node:19494) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/77] [shell] › tests/e2e/app.spec.ts:40:1 › renderer aislado, documento Markdown editable y guardado real @package-smoke
+[2/77] [shell] › tests/e2e/app.spec.ts:68:1 › CSV: ceros, multilinea, filtro, edición por identificador y guardado @package-smoke
+[3/77] [shell] › tests/e2e/app.spec.ts:88:1 › exportación PDF con varias páginas y texto recuperable @package-smoke
+[4/77] [shell] › tests/e2e/app.spec.ts:109:1 › exportación SVG independiente mantiene cambios pendientes
+[5/77] [shell] › tests/e2e/app.spec.ts:123:1 › HTML autónomo incluye fuentes y SVG, excluye recursos remotos y scripts @package-smoke
+[6/77] [shell] › tests/e2e/app.spec.ts:140:1 › recupera cambios tras caída como documento nuevo sin sobrescribir el original
+[7/77] [shell] › tests/e2e/app.spec.ts:168:1 › limita imágenes a la carpeta autorizada y rechaza argumentos IPC inválidos
+[8/77] [shell] › tests/e2e/app.spec.ts:189:1 › exportar una vista CSV nunca reemplaza el archivo abierto
+[9/77] [shell] › tests/e2e/app.spec.ts:209:1 › PNG usa el tamaño completo del SVG a escala 2x sin recorte al viewport
+[10/77] [shell] › tests/e2e/app.spec.ts:222:1 › buscar archivos recorre carpetas cerradas y excluye ocultos y dependencias
+[11/77] [shell] › tests/e2e/app.spec.ts:232:1 › guardar como protege otro documento abierto
+[12/77] [shell] › tests/e2e/app.spec.ts:241:1 › reinterpretar CSV rechaza ediciones simultáneas y conserva todas las filas
+[13/77] [shell] › tests/e2e/app.spec.ts:281:1 › PDF desde Markdown real conserva imagen local grande, fórmula y diagrama en varias páginas
+(node:19703) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[14/77] [md] › tests/e2e/editor-status.spec.ts:25:1 › H13-2: posición, selección, sangría y fin de línea de los cuatro editores
+[15/77] [md] › tests/e2e/editor-status.spec.ts:48:45 › H13-2: la barra cabe a 800 px y anuncia la conversión [en]
+[16/77] [md] › tests/e2e/editor-status.spec.ts:48:45 › H13-2: la barra cabe a 800 px y anuncia la conversión [en-XA]
+(node:19775) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[17/77] [csv] › tests/e2e/charts.spec.ts:22:1 › seis gráficos calculan sobre datos completos, con cuartiles, huecos y categorías exactas
+[18/77] [csv] › tests/e2e/charts.spec.ts:47:2 › gráficos visuales: SVG de histogram
+[19/77] [csv] › tests/e2e/charts.spec.ts:47:2 › gráficos visuales: SVG de bar
+[20/77] [csv] › tests/e2e/charts.spec.ts:47:2 › gráficos visuales: SVG de line
+[21/77] [csv] › tests/e2e/charts.spec.ts:47:2 › gráficos visuales: SVG de scatter
+[22/77] [csv] › tests/e2e/charts.spec.ts:47:2 › gráficos visuales: SVG de heatmap
+[23/77] [csv] › tests/e2e/charts.spec.ts:47:2 › gráficos visuales: SVG de box
+[24/77] [csv] › tests/e2e/charts.spec.ts:50:1 › gráficos visuales: temas y tabla accesible
+[25/77] [csv] › tests/e2e/charts.spec.ts:57:1 › gráficos visuales: exportación SVG, PNG y PDF
+[26/77] [csv] › tests/e2e/charts.spec.ts:65:1 › gráficos visuales: invalidación tras editar, teclado y archivo intacto
+[27/77] [csv] › tests/e2e/charts.spec.ts:71:1 › gráficos distinguen vacío, constante, límite de puntos y etiquetas no ejecutables
+[28/77] [csv] › tests/e2e/charts.spec.ts:79:1 › histograma agrega un millón de filas completo aunque la tabla sea de solo lectura @perf
+[29/77] [csv] › tests/e2e/charts.spec.ts:92:1 › gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial @perf
+[30/77] [csv] › tests/e2e/charts.spec.ts:113:1 › exportar un gráfico rechaza destinos de documentos abiertos y revisiones obsoletas
+[31/77] [csv] › tests/e2e/charts.spec.ts:120:1 › constructor explícito: oráculos numéricos e identificadores sin mutaciones
+[32/77] [csv] › tests/e2e/charts.spec.ts:130:1 › constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones
+[33/77] [csv] › tests/e2e/charts.spec.ts:151:1 › vista filtrada usa todas las coincidencias con filtros combinados, fechas y revisión actual
+[34/77] [csv] › tests/e2e/charts.spec.ts:163:1 › ayuda y selección de valores impiden cálculos incompatibles y explican columnas sin números
+[35/77] [csv] › tests/e2e/charts.spec.ts:172:1 › series por categoría: siete cálculos por combinación, líneas y puntos con valores exactos
+[36/77] [csv] › tests/e2e/charts.spec.ts:183:1 › series visuales: leyenda y teclado sincronizados, filtros, exportación y límite comprensible
+[37/77] [csv] › tests/e2e/charts.spec.ts:200:1 › series: 3 000 y 100 000 registros conservan sumas por combinación y respuesta de la interfaz
+[38/77] [csv] › tests/e2e/charts.spec.ts:219:1 › fechas: día, mes y año contrastan cálculos, fechas inválidas y huecos por serie sin alterar el CSV
+[39/77] [csv] › tests/e2e/charts.spec.ts:231:1 › calendario temporal acotado: extremos 0001–9999 y fechas ausentes no generan resultados masivos
+[40/77] [csv] › tests/e2e/charts.spec.ts:240:1 › constructor temporal: clics, series, filtros, errores y exportación con nombres y alcance claros
+[41/77] [csv] › tests/e2e/charts.spec.ts:258:1 › filtros propios: editor reutilizado, borradores, Escape, alcance y exportación sin cambiar la tabla
+[42/77] [csv] › tests/e2e/charts.spec.ts:275:1 › filtros de análisis: grupos O independientes, fechas y límites de IPC conservan resultados y fuente
+[43/77] [csv] › tests/e2e/charts.spec.ts:285:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV
+[44/77] [csv] › tests/e2e/charts.spec.ts:298:1 › configuraciones: columnas incompatibles y duplicadas, IPC inválido y biblioteca dañada preservados
+[45/77] [csv] › tests/e2e/charts.spec.ts:309:1 › resultados exportados: interfaz, agregados completos, CSV y contexto, informe y fórmulas preservan el original
+[46/77] [csv] › tests/e2e/charts.spec.ts:321:1 › resultados exportados: filtros independientes, fechas, límite de diez mil, nulos e IPC válido
+[47/77] [csv] › tests/e2e/charts.spec.ts:330:1 › resultados exportados: muestra lee la fuente completa sin permitir guardar el CSV parcial @perf
+[48/77] [csv] › tests/e2e/charts.spec.ts:364:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales
+[49/77] [csv] › tests/e2e/empty-values.spec.ts:32:1 › LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar
+[50/77] [csv] › tests/e2e/empty-values.spec.ts:56:1 › LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos
+[51/77] [csv] › tests/e2e/empty-values.spec.ts:86:1 › LIM-1 ajustes: Un valor vacío bloquea preparar y rellenar con un motivo accesible
+[52/77] [csv] › tests/e2e/empty-values.spec.ts:102:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es)
+[53/77] [csv] › tests/e2e/empty-values.spec.ts:102:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (en)
+[54/77] [csv] › tests/e2e/empty-values.spec.ts:135:1 › LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva bytes tras guardar
+[55/77] [csv] › tests/e2e/empty-values.spec.ts:153:1 › LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo
+[56/77] [csv] › tests/e2e/empty-values.spec.ts:172:1 › LIM-1 elimina por cualquiera o todas las columnas marcadas y restaura filas completas
+[57/77] [csv] › tests/e2e/empty-values.spec.ts:188:1 › LIM-1 fuente protegida permite ver vacíos y bloquea las mutaciones también por el puente
+[58/77] [csv] › tests/e2e/empty-values.spec.ts:216:1 › LIM-1 archivo grande permite el filtro completo y explica que limpiar requiere extraer
+[59/77] [csv] › tests/e2e/empty-values.spec.ts:228:1 › LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio
+[60/77] [csv] › tests/e2e/empty-values.spec.ts:245:1 › LIM-1 Texto sin confirmar conserva el diálogo y Cancelar no pierde el borrador
+[61/77] [csv] › tests/e2e/empty-values.spec.ts:259:1 › LIM-1 cancelar descarta una vista previa tardía y deja reintentar sin modificar el CSV
+[62/77] [csv] › tests/e2e/empty-values.spec.ts:291:1 › LIM-1 la paleta encuentra isnull, fillna y dropna y conserva la selección múltiple
+[63/77] [csv] › tests/e2e/empty-values.spec.ts:307:1 › LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas
+[64/77] [csv] › tests/e2e/empty-values.spec.ts:321:1 › LIM-1 una protección recibida con el diálogo abierto invalida su vista previa
+[65/77] [csv] › tests/e2e/empty-values.spec.ts:336:1 › LIM-1 rellenar desde Información actúa sobre todo el documento y pide actualizar el análisis
+[66/77] [csv] › tests/e2e/empty-values.spec.ts:357:57 › LIM-1 teclado, idiomas y temas (es)
+[67/77] [csv] › tests/e2e/empty-values.spec.ts:357:57 › LIM-1 teclado, idiomas y temas (en)
+[68/77] [csv] › tests/e2e/empty-values.spec.ts:357:57 › LIM-1 teclado, idiomas y temas (en-XA)
+[69/77] [csv] › tests/e2e/search.spec.ts:16:1 › buscar CSV: teclado, coincidencias por celda, texto hostil y temas conservan los datos
+[70/77] [csv] › tests/e2e/search.spec.ts:24:1 › reemplazo CSV: vista previa explícita incluye filas ocultas, limita columnas y se deshace completo
+[71/77] [csv] › tests/e2e/search.spec.ts:34:1 › buscar muestra CSV no habilita reemplazo ni pierde la marca de alcance parcial @perf
+[72/77] [csv] › tests/e2e/search.spec.ts:39:1 › buscar y filtrar CSV grande usa el worker distribuido también dentro del paquete
+[73/77] [csv] › tests/e2e/structural-context.spec.ts:19:1 › la lectura de filas recupera una consulta sustituida por una recarga
+[74/77] [csv] › tests/e2e/structural-context.spec.ts:40:1 › menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar
+[75/77] [csv] › tests/e2e/structural-context.spec.ts:47:1 › menú de columnas: teclado, insertar a ambos lados, conservar valores y respetar selección múltiple
+[76/77] [csv] › tests/e2e/structural-context.spec.ts:55:1 › menús estructurales: muestras bloquean cambios y conservan orden de vista, temas y foco @perf
+[77/77] [csv] › tests/e2e/structural-context.spec.ts:61:1 › menú estructural: restaura foco si desaparece el origen y rechaza inserciones ambiguas por IPC
+  77 passed (3.4m)

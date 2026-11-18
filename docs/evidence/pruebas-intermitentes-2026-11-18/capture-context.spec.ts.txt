@@ -1,0 +1,27 @@
+import {test,expect,_electron as electron} from '@playwright/test'
+import electronPath from 'electron'
+import {mkdtemp,rm,writeFile} from 'node:fs/promises'
+import {join,resolve} from 'node:path'
+import {tmpdir} from 'node:os'
+import {closeElectron} from './close-electron'
+import {showPanel,chartPanel} from './panel'
+for(const language of ['es','en-XA'])test(`contexto de estabilidad (${language})`,async()=>{
+ const folder=await mkdtemp(join(tmpdir(),'freya-estabilidad-evidence-')),path=join(folder,'encuesta.csv')
+ const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
+ const app=await electron.launch({chromiumSandbox:true,executablePath:electronPath as unknown as string,args:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:language,FREYALAB_USER_DATA:join(folder,'profile')}})
+ try{
+  const page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya)
+  await writeFile(path,'Grupo,Ventas\nNorte,10\nSur,20\nNorte,30\n')
+  await page.evaluate(path=>window.freya.openPaths([path]),path)
+  await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true}).locator('.csv-row')).toHaveCount(3)
+  await showPanel(page,'Gráficos');await expect(chartPanel(page).locator('.plot svg')).toBeVisible()
+  for(const theme of ['light','dark']){
+   await page.getByLabel('Tema',{exact:true}).selectOption(theme)
+   await expect.poll(()=>page.locator('html').evaluate(element=>element.classList.contains('dark'))).toBe(theme==='dark')
+   for(const [width,height]of [[1440,900],[1280,720]]){
+    await page.setViewportSize({width,height});await page.mouse.move(0,0)
+    await page.screenshot({animations:'disabled',path:test.info().outputPath(`estabilidad-${language}-${theme}-${width}x${height}.png`)})
+   }
+  }
+ }finally{await closeElectron(app);await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+})

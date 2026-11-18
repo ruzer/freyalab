@@ -1,0 +1,40 @@
+
+Running 1 test using 1 worker
+
+(node:15402) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/empty-values.spec.ts:176:1 › LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo
+[csv] › tests/e2e/empty-values.spec.ts:176:1 › LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo
+[GUI-RACE] header action became disabled between pointerdown and pointerup
+
+  1) [csv] › tests/e2e/empty-values.spec.ts:176:1 › LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo 
+
+    TimeoutError: locator.fill: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('dialog', { name: 'Rellenar vacíos de Cantidad', exact: true }).getByRole('textbox', { name: 'Valor', exact: true })
+
+
+      177 |  await headerAction('Cantidad','Rellenar vacíos de la columna…')
+      178 |  let dialog=page.getByRole('dialog',{name:'Rellenar vacíos de Cantidad',exact:true})
+    > 179 |  await dialog.getByRole('textbox',{name:'Valor',exact:true}).fill('00')
+          |                                                              ^
+      180 |  await dialog.getByRole('checkbox',{name:'Contar las celdas con solo espacios como vacías',exact:true}).uncheck()
+      181 |  await previewEmpty(dialog);await expect(dialog).toContainText('2 celdas')
+      182 |  await dialog.getByRole('button',{name:'Rellenar',exact:true}).click()
+        at <worktree>/tests/e2e/empty-values.spec.ts:179:62
+
+    Error Context: ../estabilidad-evidence/gui/header-red/empty-values-LIM-1-Cantida-454c7-or-usa-el-orden-del-archivo-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../estabilidad-evidence/gui/header-red/empty-values-LIM-1-Cantida-454c7-or-usa-el-orden-del-archivo-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../estabilidad-evidence/gui/header-red/empty-values-LIM-1-Cantida-454c7-or-usa-el-orden-del-archivo-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [csv] › tests/e2e/empty-values.spec.ts:176:1 › LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo 

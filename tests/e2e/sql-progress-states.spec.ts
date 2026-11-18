@@ -83,13 +83,13 @@ async function verifyPhases(visible:Locator,language:Language,announcement=visib
 for(const language of ['es','en','en-XA'] as const)test(`SQL muestra fases reales en ${language}, con resultado exacto y CSV intacto`,async()=>{
  const {path,doc}=await launch(language)
  await openAnalysis(page,'SQL')
- const panel=page.getByRole('region',{name:'Análisis SQL y asistentes',exact:true}),editor=panel.getByRole('textbox',{name:'Consulta SQL',exact:true})
+ const panel=page.getByRole('region',{name:t('sql.ui.region',{},language),exact:true}),editor=panel.getByRole('textbox',{name:t('sql.ui.query',{},language),exact:true})
  await editor.focus();await page.keyboard.press('ControlOrMeta+A');await page.keyboard.insertText('SELECT COUNT(*) AS Filas, SUM(CAST("Valor" AS BIGINT)) AS Total FROM datos')
  await installGates()
  try{
-  await panel.getByRole('button',{name:'Ejecutar consulta',exact:true}).click()
+  await panel.getByRole('button',{name:t('sql.ui.run',{},language),exact:true}).click()
   await verifyPhases(panel.getByRole('status'),language)
-  await expect(panel.getByRole('status')).toContainText('Consulta completa')
+  await expect(panel.getByRole('status')).toHaveText(t('sql.ui.complete',{},language))
   await expect.poll(()=>panel.locator('.sql-results tbody tr td').allTextContents()).toEqual(['2400','13200'])
   expect((await page.evaluate(()=>window.freya.documents())).find(current=>current.id===doc.id)).toMatchObject({dirty:false,revision:doc.revision,rowCount:2400})
   expect(await readFile(path,'utf8')).toBe(csv)

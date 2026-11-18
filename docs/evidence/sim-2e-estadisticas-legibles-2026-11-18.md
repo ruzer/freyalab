@@ -20,14 +20,14 @@ Los únicos conflictos fueron `src/shared/i18n/es.json` y `en.json`: bloques fin
 | --- | --- |
 | `npm run check` | 0 errores, 0 avisos |
 | Las ocho unitarias enfocadas del comando inferior | 81/81, 8 archivos, 0,746 s; main añadió casos de i18n respecto a los 75 iniciales |
-| `npm test` completo | 2.956 aprobadas / 1 omisión ambiental, 165 archivos, 17,48 s; incluye CSV |
+| `npm test` completo | 2.956 aprobadas / 1 prueba exclusiva de Windows omitida en Mac, 165 archivos, 17,48 s; incluye CSV |
 | `npm run build` | Correcto |
 | Los cinco archivos E2E enfocados del comando inferior | 29/29 en una corrida de 50,8 s, `--workers=1 --retries=0`; cero reintentos |
 | Capturas posteriores | Las 12 capturas es/en/en-XA, claro/oscuro y ambos tamaños coinciden byte por byte con las ya guardadas; no se sustituyen por duplicados |
 
 La raíz ejecutó la GUI en exclusiva. Se revisaron las capturas es/claro a 1440×900 y en-XA/oscuro a 1280×720, sin recortes observados en la tabla y sus controles. Esto no sustituye las comprobaciones geométricas y de precisión de las pruebas.
 
-El primer `npm test` de esta integración, sin permiso para abrir el servidor local de pruebas, terminó con `listen EPERM 127.0.0.1`: 26 fallos y un error de suite en updates/Pandoc. Se conserva como intento fallido ambiental, no como un verde ni una regresión del producto. El comando completo se repitió con permiso de loopback, sobre el mismo código y sin modificar aserciones, plazos o reintentos; dio el resultado de la tabla. Su única omisión se explica abajo.
+El primer `npm test` de esta integración, sin permiso para abrir el servidor local de pruebas, terminó con `listen EPERM 127.0.0.1`: 26 fallos y un error de suite en updates/Pandoc. Se conserva como intento fallido ambiental, no como un verde ni una regresión del producto. El comando completo se repitió con permiso de loopback, sobre el mismo código y sin modificar aserciones, plazos o reintentos; dio el resultado de la tabla. Su única omisión es la prueba exclusiva de Windows de `tests/package-smoke.test.ts`, omitida en Mac; no corresponde a Pandoc HTTP.
 
 ## Rojo → verde real
 
@@ -38,7 +38,7 @@ El primer `npm test` de esta integración, sin permiso para abrir el servidor lo
 | Tipos | — | `npm run check`: 0 errores y 0 avisos |
 | Construcción | — | `npm run build`: terminó correctamente |
 | E2E enfocadas de estadísticas | — | Primera corrida: 27/29 pasan y 2 fallan por expectativas de presentación, detalladas abajo; tras adaptarlas, los dos casos y los tres nuevos pasan 5/5 en 7,4 s, sin reintento |
-| Unitarias completas (`npm test`) | — | 2.936 pasan / 1 omisión ambiental, 163 archivos, 19,41 s; incluye CSV |
+| Unitarias completas (`npm test`) | — | 2.936 pasan / 1 prueba exclusiva de Windows omitida en Mac, 163 archivos, 19,41 s; incluye CSV |
 
 Comandos ejecutados:
 
@@ -63,7 +63,7 @@ La GUI la ejecutó la raíz, en Mac Apple silicon, de forma coordinada y exclusi
 
 No se borró ninguna prueba ni aserción. La repetición enfocada posterior dio 5/5 en 7,4 s; la primera corrida sigue registrada como 27/29, no como un verde completo. No se repitieron los otros 24 casos sin cambios: las 29 conductas quedaron cubiertas entre ambas corridas, sin atribuir el resultado de un SHA a la CI de otro.
 
-La única omisión unitaria corresponde al sandbox HTTP: Pandoc local 3.12.1 carece de soporte HTTP. El resto de las pruebas reales de Pandoc se ejecutó; esta omisión no acredita la eficacia del sandbox ante un binario con HTTP.
+La única omisión unitaria corresponde al caso exclusivo de Windows de `tests/package-smoke.test.ts` («Windows: un hijo sobreviviente al timeout bloquea el paquete hasta cerrarlo»), omitido en Mac. Por separado, Pandoc local 3.12.1 carece de soporte HTTP: esa comprobación retorna normalmente e informa una limitación de lo medido, pero no es el skipped que cuenta Vitest. El resto de las pruebas reales de Pandoc se ejecutó; no se acredita la eficacia del sandbox ante un binario con HTTP.
 
 ## Capturas
 

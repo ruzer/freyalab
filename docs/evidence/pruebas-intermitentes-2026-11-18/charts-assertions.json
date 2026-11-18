@@ -1,0 +1,43 @@
+{
+  "before": [
+    "expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000})",
+    "expect(panel.locator('.plot svg')).toBeVisible()",
+    "expect(await panel.locator('.plot svg path').count()).toBeGreaterThan(0)",
+    "expect(panel.locator('.plot')).toHaveAttribute('aria-label',/Diagrama de caja/)",
+    "expect(panel.locator('.more-options .table-scroll tbody tr')).toHaveCount(3)",
+    "expect(panel.locator('.more-options .table-scroll tbody tr').first()).toContainText('100.0')",
+    "expect(panel.locator('.chart-result>.result-announcement')).toContainText(`plots.${format.toLowerCase()}`,{timeout:15000})",
+    "expect((await stat(join(folder,'exports',`plots.${format.toLowerCase()}`))).size).toBeGreaterThan(1000)",
+    "expect(pixels.size.width).toBeGreaterThan(500)",
+    "expect(pixels.colors).toBeGreaterThan(20)",
+    "expect((await readFile(join(folder,'exports','plots.pdf'))).subarray(0,5).toString()).toBe('%PDF-')",
+    "expect(svg).toContain('<svg')",
+    "expect(svg).not.toContain('<script')",
+    "expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado')",
+    "expect(panel.locator('.plot svg path').first()).toBeAttached()",
+    "expect(panel).toBeVisible()",
+    "expect(page.locator('.tabs').getByRole('tab',{selected:true})).toBeFocused()",
+    "expect(await readFile(path,'utf8')).toBe(original)"
+  ],
+  "after": [
+    "expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000})",
+    "expect(panel.locator('.plot svg')).toBeVisible()",
+    "expect(await panel.locator('.plot svg path').count()).toBeGreaterThan(0)",
+    "expect(panel.locator('.plot')).toHaveAttribute('aria-label',/Diagrama de caja/)",
+    "expect(panel.locator('.more-options .table-scroll tbody tr')).toHaveCount(3)",
+    "expect(panel.locator('.more-options .table-scroll tbody tr').first()).toContainText('100.0')",
+    "expect(panel.locator('.chart-result>.result-announcement')).toContainText(`plots.${format.toLowerCase()}`,{timeout:15000})",
+    "expect((await stat(join(folder,'exports',`plots.${format.toLowerCase()}`))).size).toBeGreaterThan(1000)",
+    "expect(pixels.size.width).toBeGreaterThan(500)",
+    "expect(pixels.colors).toBeGreaterThan(20)",
+    "expect((await readFile(join(folder,'exports','plots.pdf'))).subarray(0,5).toString()).toBe('%PDF-')",
+    "expect(svg).toContain('<svg')",
+    "expect(svg).not.toContain('<script')",
+    "expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado')",
+    "expect(panel.locator('.plot svg path').first()).toBeAttached()",
+    "expect(panel).toBeVisible()",
+    "expect(page.locator('.tabs').getByRole('tab',{selected:true})).toBeFocused()",
+    "expect(await readFile(path,'utf8')).toBe(original)"
+  ],
+  "missing": []
+}
