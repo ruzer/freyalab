@@ -84,6 +84,19 @@ La CI inicial 44382276687 se canceló **deliberadamente** al encontrar este defe
 
 Los dos fallos intermedios provenían de ocultar con `display:none` el anunciador vacío. La solución fue mantenerlo registrado desde el principio como `role="status"`, con `sr-only` mientras no tiene mensaje, para que el primer cambio se pueda anunciar. No se dejó un selector `includeHidden` que ocultase ese defecto de accesibilidad. La primera corrida ya pasó fichas, idiomas/capturas y todos los consumidores de SQL; la final añade y pasa las dos regresiones accesibles de nombre y contraste.
 
+## Integración con main después de la fusión del propietario
+
+El propietario fusionó #180 en `fd4e2a46845de95d7f7274f52fbd26cb0f63fcbc`. Se incorporó ese main mediante el merge local `1612f9968c474d927f1cc07f57b619c011fc8822`, sin reescribir la rama. Los únicos conflictos fueron mecánicos en los catálogos: se conservaron las dos aportaciones y las eliminaciones intencionadas de main; no existía ningún valor distinto modificado por las dos ramas. Los catálogos finales tienen 1.623 claves por idioma y conservan su sangría original. No se cambió otro código de SQL ni de main para resolver la unión.
+
+| Comprobación tras integrar main, Node 24.22.1, macOS Apple silicon | Resultado real |
+| --- | --- |
+| `npm run check` | 0 errores y 0 avisos |
+| `npm test` completo | 2.961 pasan, 1 omisión HTTP de Pandoc, 165 archivos, 25,98 s |
+| `npm run build` | Correcto |
+| Las tres specs SQL anteriores, un worker y `--retries=0` | 18/18 pasan, 54,0 s; [salida](sim-2f-integracion-e2e.txt) |
+
+La medición de contraste corregida se repitió además cinco veces: **5/5, 6,5 s, cero reintentos**. La integral local de 711 aprobadas y 7 omisiones corresponde a la combinación anterior documentada arriba; no se traslada ese resultado a la integración nueva. El head que se publique necesita su propia CI y sus pruebas del paquete. No hay pruebas borradas ni cambios de plazos, workers o reintentos.
+
 ## No verificado todavía
 
 - La integral local sobre el código `88b279f` y head documental `5d605f7` terminó: `npm run test:e2e`, **711 aprobadas, 7 omisiones existentes Word/Pandoc, 25,6 min, cero fallos/reintentos**. Después solo cambió la prueba de contraste, verificada aparte como se indica arriba; no se volvió a ejecutar la integral local tras ese ajuste. La CI y el paquete del nuevo head permanecen pendientes. Los resultados locales no prueban Windows, Linux o Intel.
