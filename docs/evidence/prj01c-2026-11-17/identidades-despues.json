@@ -1,0 +1,308 @@
+[
+  {
+    "project": "shell",
+    "file": "project-source.spec.ts",
+    "suites": [],
+    "title": "registra un CSV con teclado, bloquea edición directa y deja guardar una copia exacta"
+  },
+  {
+    "project": "shell",
+    "file": "project-source.spec.ts",
+    "suites": [],
+    "title": "avisa cuando la fuente cambia y conserva la huella previa al volver a registrarla"
+  },
+  {
+    "project": "shell",
+    "file": "project-source.spec.ts",
+    "suites": [],
+    "title": "busca por huella dentro del proyecto y solo reenlaza tras confirmar"
+  },
+  {
+    "project": "shell",
+    "file": "project-source.spec.ts",
+    "suites": [],
+    "title": "el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado"
+  },
+  {
+    "project": "shell",
+    "file": "project-source.spec.ts",
+    "suites": [],
+    "title": "una muestra conserva su alcance al protegerla y al cerrar el proyecto"
+  },
+  {
+    "project": "shell",
+    "file": "project-source.spec.ts",
+    "suites": [],
+    "title": "diálogo y fuente protegida en colores claro y oscuro [es]"
+  },
+  {
+    "project": "shell",
+    "file": "project-source.spec.ts",
+    "suites": [],
+    "title": "diálogo y fuente protegida en colores claro y oscuro [en-XA]"
+  },
+  {
+    "project": "shell",
+    "file": "project.spec.ts",
+    "suites": [],
+    "title": "crea con el teclado, abre por carpeta, manifiesto y menú de recientes"
+  },
+  {
+    "project": "shell",
+    "file": "project.spec.ts",
+    "suites": [],
+    "title": "una versión futura se abre en solo lectura y conserva todos sus bytes"
+  },
+  {
+    "project": "shell",
+    "file": "project.spec.ts",
+    "suites": [],
+    "title": "Cancelar limpia la carpeta elegida y no crea el manifiesto"
+  },
+  {
+    "project": "shell",
+    "file": "project.spec.ts",
+    "suites": [],
+    "title": "proyecto se muestra en los dos temas a 1440 × 900 [es]"
+  },
+  {
+    "project": "shell",
+    "file": "project.spec.ts",
+    "suites": [],
+    "title": "proyecto se muestra en los dos temas a 1440 × 900 [en-XA]"
+  },
+  {
+    "project": "csv",
+    "file": "project-subset-analysis.spec.ts",
+    "suites": [],
+    "title": "PRJ-02b: analizar usa las tres filas y columnas del conjunto, sin abrir ni modificar la fuente"
+  },
+  {
+    "project": "csv",
+    "file": "project-subset-analysis.spec.ts",
+    "suites": [],
+    "title": "PRJ-02b: Gráficos identifica el conjunto completo y conserva su cobertura"
+  },
+  {
+    "project": "csv",
+    "file": "project-subset-analysis.spec.ts",
+    "suites": [],
+    "title": "PRJ-02b: SQL conserva valores y ausentes del conjunto sin afirmar que incluye cambios pendientes"
+  },
+  {
+    "project": "csv",
+    "file": "project-subset-analysis.spec.ts",
+    "suites": [],
+    "title": "PRJ-02b: reabrir una versión futura del mismo proyecto libera sus pestañas analíticas"
+  },
+  {
+    "project": "csv",
+    "file": "project-subset-analysis.spec.ts",
+    "suites": [],
+    "title": "PRJ-02b: el análisis usa más de cien filas, no la vista previa del conjunto"
+  },
+  {
+    "project": "csv",
+    "file": "project-subset-analysis.spec.ts",
+    "suites": [],
+    "title": "PRJ-02b: una muestra se guarda y otro conjunto la ordena por edad sin cambiar las filas elegidas"
+  },
+  {
+    "project": "csv",
+    "file": "project-subset-analysis.spec.ts",
+    "suites": [],
+    "title": "PRJ-02b: el histograma de Edad representa 34, 52 y 61 y las estadísticas coinciden"
+  },
+  {
+    "project": "csv",
+    "file": "project-subset-analysis.spec.ts",
+    "suites": [],
+    "title": "PRJ-02b: teclado y capturas de análisis y cadena de tres niveles [es]"
+  },
+  {
+    "project": "csv",
+    "file": "project-subset-analysis.spec.ts",
+    "suites": [],
+    "title": "PRJ-02b: teclado y capturas de análisis y cadena de tres niveles [en-XA]"
+  },
+  {
+    "project": "csv",
+    "file": "project-subset-analysis.spec.ts",
+    "suites": [],
+    "title": "PRJ-02b: cancelar la preparación no publica un análisis parcial ni escribe el proyecto"
+  },
+  {
+    "project": "csv",
+    "file": "project-subset-analysis.spec.ts",
+    "suites": [],
+    "title": "PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual"
+  },
+  {
+    "project": "csv",
+    "file": "project-subset-analysis.spec.ts",
+    "suites": [],
+    "title": "PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual"
+  },
+  {
+    "project": "csv",
+    "file": "project-subset-analysis.spec.ts",
+    "suites": [],
+    "title": "PRJ-02b: dos reaperturas superpuestas liberan el snapshot una vez y publican el último proyecto"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: guarda la consulta de la fuente como conjunto, prueba sus siete registros y conserva el original"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: semilla 7 repite la muestra y Escape permite conservar o descartar el borrador sin escribir"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: la búsqueda no entra al conjunto y el orden aleatorio no acotado se explica antes de ejecutar"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: controles alcanzables, temas y disposición del conjunto [es]"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: controles alcanzables, temas y disposición del conjunto [en]"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: controles alcanzables, temas y disposición del conjunto [en-XA]"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: el borrador del conjunto sobrevive a cambiar de documento sin escribir en el proyecto"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: la versión futura muestra el conjunto reconocido con base desconocida sin ocultarlo ni reescribirlo"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: un conjunto manual con depósito antes del orden sigue siendo ejecutable en solo lectura"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: una proyección hija no pierde columnas cuando su base ya no las conserva"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: el prefijo manual conserva el límite del paso separado de las filas finales"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: Proyecto prueba un prefijo sin abrir ni indexar la fuente como Tabla"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: elegir una columna no autoriza sus renombres futuros al restaurar un borrador"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: cerrar y reabrir la fuente conserva el borrador en memoria sin persistirlo"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: Proyecto presenta una cadena de tres niveles sin abrir la fuente [es]"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: Proyecto presenta una cadena de tres niveles sin abrir la fuente [en-XA]"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: una transición futura no desbloquea una fuente abierta que deja de reconocerse"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: encadena dos mayores, equivale a pasos planos y confirma el impacto y la eliminación"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: un cambio de esquema marca la base y su hijo hasta reelegir la columna y guardar"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: un cambio de celda exige registrar la fuente y avisa la versión distinta al volver a probar"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: un conjunto conocido de proyecto futuro se abre y prueba sin permitir mutaciones"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: la paleta encuentra los conjuntos con sinónimos y el nombre repetido bloquea guardar"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: una columna eliminada permanece pendiente hasta elegir Todas las columnas explícitamente"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: la paleta describe por qué no puede guardar como conjunto un CSV sin registrar"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: reabrir el proyecto no revierte una columna ya reelegida en el borrador de una receta"
+  },
+  {
+    "project": "csv",
+    "file": "project-subsets.spec.ts",
+    "suites": [],
+    "title": "PRJ-02a: un borrador restaurado no sobrescribe una definición externa sin confirmarla"
+  }
+]

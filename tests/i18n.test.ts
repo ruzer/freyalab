@@ -1,7 +1,7 @@
 import {afterEach,describe,it,expect,vi} from 'vitest'
 import es from '../src/shared/i18n/es.json'
 import en from '../src/shared/i18n/en.json'
-import {t,plural,formatNumber,formatDate,formatList,getLanguage,setLanguage,resolveLanguage} from '../src/shared/i18n'
+import {t,plural,formatNumber,formatBytes,formatDate,formatList,getLanguage,setLanguage,resolveLanguage} from '../src/shared/i18n'
 
 afterEach(()=>{setLanguage('es');vi.unstubAllEnvs();vi.restoreAllMocks()})
 describe('I18N-01 · catálogos y traducción',()=>{
@@ -59,6 +59,7 @@ describe('I18N-01 · resolución del idioma',()=>{
 describe('I18N-01 · plural y formato regional',()=>{
  it.each([['es',0,'0 filas'],['es',1,'1 fila'],['es',2,'2 filas'],['en',0,'0 rows'],['en',1,'1 row'],['en',2,'2 rows']] as const)('%s / %d',(language,count,expected)=>{setLanguage(language);expect(plural('filas',count)).toBe(expected)})
  it.each([['es',1234,'1,234 filas'],['es',1000000,'1,000,000 filas'],['en',1000000,'1,000,000 rows']] as const)('miles/millones %s/%d usan plural y formato regional',(language,count,expected)=>{setLanguage(language);expect(plural('filas',count)).toBe(expected)})
+ it.each([['es',211,'211 B'],['en',211,'211 B'],['es',1234,'1.2 kB'],['es',34_500_000,'34.5 MB'],['es',1_073_741_824,'1.1 GB'],['en',1_500_000,'1.5 MB']] as const)('formatBytes %s/%d',(language,value,expected)=>{setLanguage(language);expect(formatBytes(value)).toBe(expected)})
  it('no usa el idioma del sistema para números, fechas o listas',()=>{
   const value=new Date('2026-10-28T12:30:00Z'),options={dateStyle:'long',timeZone:'UTC'} as const
   setLanguage('es');expect(formatNumber(1234.56)).toBe(new Intl.NumberFormat('es-MX').format(1234.56));expect(formatDate(value,options)).toBe(new Intl.DateTimeFormat('es-MX',options).format(value));expect(formatList(['a','b'])).toBe('a y b')

@@ -1,0 +1,75 @@
+
+Running 2 tests using 1 worker
+
+(node:36123) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/project-tree.spec.ts:39:1 › PRJ-01c C1: en reposo solo hay dos acciones, una protección y ningún estado normal repetido (9.2s)
+(node:36137) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/project-tree.spec.ts:53:1 › PRJ-01c C9: las quince acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo (1.0m)
+
+
+  1) [csv] › tests/e2e/project-tree.spec.ts:39:1 › PRJ-01c C1: en reposo solo hay dos acciones, una protección y ningún estado normal repetido 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('button')
+    Expected: 2
+    Received: 24
+
+    Call log:
+      - Expect "toHaveCount" getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('button') with timeout 15000ms
+      - waiting for getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('button')
+        20 × locator resolved to 24 elements
+           - unexpected value "24"
+      - Target page, context or browser has been closed
+
+
+      39 | test('PRJ-01c C1: en reposo solo hay dos acciones, una protección y ningún estado normal repetido',async()=>{
+      40 |  await page.screenshot({animations:'disabled',path:test.info().outputPath('project-tree-reposo.png')})
+    > 41 |  await expect(projectPanel().getByRole('button')).toHaveCount(2)
+         |                                                   ^
+      42 |  await expect(projectPanel().getByRole('button',{name:'Acciones del proyecto',exact:true})).toBeVisible()
+      43 |  await expect(projectPanel().getByRole('button',{name:'Añadir fuente…',exact:true})).toBeVisible()
+      44 |  await expect(projectPanel().getByText('Listo',{exact:true})).toHaveCount(0)
+        at <worktree>/tests/e2e/project-tree.spec.ts:41:51
+
+    Error Context: <evidence>/tree-red/project-tree-PRJ-01c-C1-en-06032-ngún-estado-normal-repetido-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    <evidence>/tree-red/project-tree-PRJ-01c-C1-en-06032-ngún-estado-normal-repetido-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace <evidence>/tree-red/project-tree-PRJ-01c-C1-en-06032-ngún-estado-normal-repetido-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/project-tree.spec.ts:53:1 › PRJ-01c C9: las quince acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo 
+
+    TimeoutError: locator.press: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('button', { name: 'Acciones del proyecto', exact: true })
+
+
+      53 | test('PRJ-01c C9: las quince acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo',async()=>{
+      54 |  const before=await readFile(join(folder,'proyecto.freyalab'))
+    > 55 |  await projectPanel().getByRole('button',{name:'Acciones del proyecto',exact:true}).press('Enter')
+         |                                                                                     ^
+      56 |  let menu=projectPanel().getByRole('menu')
+      57 |  await expect(menu.getByRole('menuitem')).toHaveText(['Renombrar proyecto','Mostrar en la carpeta','Cerrar proyecto'])
+      58 |  await menu.press('Escape')
+        at <worktree>/tests/e2e/project-tree.spec.ts:55:85
+
+    Error Context: <evidence>/tree-red/project-tree-PRJ-01c-C9-la-2f7c0-oqueos-no-pierden-el-motivo-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    <evidence>/tree-red/project-tree-PRJ-01c-C9-la-2f7c0-oqueos-no-pierden-el-motivo-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace <evidence>/tree-red/project-tree-PRJ-01c-C9-la-2f7c0-oqueos-no-pierden-el-motivo-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/project-tree.spec.ts:39:1 › PRJ-01c C1: en reposo solo hay dos acciones, una protección y ningún estado normal repetido 
+    [csv] › tests/e2e/project-tree.spec.ts:53:1 › PRJ-01c C9: las quince acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo 

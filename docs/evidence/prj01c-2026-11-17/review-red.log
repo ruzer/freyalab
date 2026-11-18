@@ -1,0 +1,79 @@
+
+Running 2 tests using 1 worker
+
+(node:41115) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/project-tree.spec.ts:76:1 › PRJ-01c C7: rechazar la sobrescritura externa conserva el borrador del nombre en su fila (16.0s)
+(node:41180) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/project-tree.spec.ts:93:1 › PRJ-01c C5: un fallo del explorador se anuncia junto a la fuente (15.9s)
+
+
+  1) [csv] › tests/e2e/project-tree.spec.ts:76:1 › PRJ-01c C7: rechazar la sobrescritura externa conserva el borrador del nombre en su fila 
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator: getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('textbox', { name: 'Nombre', exact: true })
+    Expected: "Mi nombre sin guardar"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveValue" getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('textbox', { name: 'Nombre', exact: true }) with timeout 15000ms
+      - waiting for getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('textbox', { name: 'Nombre', exact: true })
+
+
+      86 |  await input.press('Enter')
+      87 |  await expect(projectPanel().getByText('Nombre desde otra aplicación',{exact:true})).toBeVisible()
+    > 88 |  await expect(input).toHaveValue('Mi nombre sin guardar')
+         |                      ^
+      89 |  await expect(input).toBeFocused()
+      90 |  expect(await readFile(path)).toEqual(external)
+      91 | })
+        at <worktree>/tests/e2e/project-tree.spec.ts:88:22
+
+    Error Context: <evidence>/review-red/project-tree-PRJ-01c-C7-re-dc20e-rador-del-nombre-en-su-fila-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    <evidence>/review-red/project-tree-PRJ-01c-C7-re-dc20e-rador-del-nombre-en-su-fila-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace <evidence>/review-red/project-tree-PRJ-01c-C7-re-dc20e-rador-del-nombre-en-su-fila-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/project-tree.spec.ts:93:1 › PRJ-01c C5: un fallo del explorador se anuncia junto a la fuente 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('treeitem', { name: 'prj02-censo.csv', exact: true }).getByRole('alert')
+    Expected pattern: /No se pudo mostrar la fuente/
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('treeitem', { name: 'prj02-censo.csv', exact: true }).getByRole('alert') with timeout 15000ms
+      - waiting for getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('treeitem', { name: 'prj02-censo.csv', exact: true }).getByRole('alert')
+
+
+      95 |  await row('prj02-censo.csv').press('Shift+F10')
+      96 |  await projectPanel().getByRole('menuitem',{name:'Mostrar en la carpeta',exact:true}).press('Enter')
+    > 97 |  await expect(row('prj02-censo.csv').getByRole('alert')).toHaveText(/No se pudo mostrar la fuente/)
+         |                                                          ^
+      98 | })
+      99 |
+        at <worktree>/tests/e2e/project-tree.spec.ts:97:58
+
+    Error Context: <evidence>/review-red/project-tree-PRJ-01c-C5-un-2731b-e-anuncia-junto-a-la-fuente-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    <evidence>/review-red/project-tree-PRJ-01c-C5-un-2731b-e-anuncia-junto-a-la-fuente-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace <evidence>/review-red/project-tree-PRJ-01c-C5-un-2731b-e-anuncia-junto-a-la-fuente-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/project-tree.spec.ts:76:1 › PRJ-01c C7: rechazar la sobrescritura externa conserva el borrador del nombre en su fila 
+    [csv] › tests/e2e/project-tree.spec.ts:93:1 › PRJ-01c C5: un fallo del explorador se anuncia junto a la fuente 

@@ -1,0 +1,15 @@
+
+Running 4 tests using 1 worker
+
+(node:57415) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [shell] › tests/e2e/application-close.spec.ts:37:88 › quit: texto rechazado de más de 10 MiB queda abierto y explica cómo corregirlo en en (3.0s)
+  ✓  2 [shell] › tests/e2e/application-close.spec.ts:53:48 › S4 · código de rechazo en en › quit: cruza el puente real y conserva el borrador @perf (3.6s)
+(node:57438) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [md] › tests/e2e/mermaid-export-theme.spec.ts:184:1 › más de 64 diagramas y dos bloques iguales conservan todas las fuentes y el orden al exportar (5.2s)
+(node:57472) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  4 [csv] › tests/e2e/analysis-describe.spec.ts:196:1 › AN-2 la cardinalidad textual no disponible no elimina las estadísticas numéricas exactas (1.4s)
+
+  4 passed (14.2s)

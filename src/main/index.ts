@@ -240,6 +240,7 @@ async function handle(operation:string,args:unknown[]){
  case'project:cancelCreate':{z.tuple([]).parse(args);projectDraftFolder=undefined;return}
  case'project:create':{const[name,suggested]=z.tuple([projectName,z.boolean()]).parse(args),folder=projectDraftFolder;projectDraftFolder=undefined;if(!folder)throw new Error(t('project.pickFolder'));await projects.create(folder,name,suggested);await publishProject();return}
  case'project:close':{const[key]=z.tuple([z.string().min(1).max(32768)]).parse(args);await projects.close(key);await publishProject();return}
+ case'project:show':{const[key]=z.tuple([z.string().min(1).max(32768)]).parse(args),project=projects.active;if(!project||project.id!==key)throw new Error(t('project.error.reference'));shell.showItemInFolder(join(project.path,projectFile));return}
  case'project:rename':{
   const[key,name]=z.tuple([z.string().min(1).max(100),projectName]).parse(args)
   await projects.rename(key,name,keepProjectChanges)
