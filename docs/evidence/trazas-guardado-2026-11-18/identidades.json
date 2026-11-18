@@ -1,0 +1,23 @@
+{
+  "before": 16,
+  "after": 16,
+  "identical": true,
+  "identities": [
+    "[md] › editor-status.spec.ts › H13-2: posición, selección, sangría y fin de línea de los cuatro editores",
+    "[md] › editor-status.spec.ts › H13-2: la barra cabe a 800 px y anuncia la conversión [en]",
+    "[md] › editor-status.spec.ts › H13-2: la barra cabe a 800 px y anuncia la conversión [en-XA]",
+    "[md] › markdown-tasks.spec.ts › C1/C2: una casilla modifica solo el marcador, marca cambios y se deshace en un paso",
+    "[md] › markdown-tasks.spec.ts › C1/C3: CRLF, YAML, citas, anidación y [X] conservan literalmente el resto",
+    "[md] › markdown-tasks.spec.ts › C1: mezcla LF/CRLF y un plegable compacto con marcador literal previo no eligen otra casilla",
+    "[md] › markdown-tasks.spec.ts › C2: Vista previa sin CodeMirror conserva teclado local e historial mediante el menú nativo",
+    "[md] › markdown-tasks.spec.ts › C2: guardar no borra el historial y cambiar pestaña no aplica un cambio a otro documento",
+    "[md] › markdown-tasks.spec.ts › C4: una edición entre render y clic avisa sin escribir sobre el snapshot anterior",
+    "[md] › markdown-tasks.spec.ts › C4: dos clics rápidos sobre un render no repiten la escritura ni alteran otra tarea idéntica",
+    "[md] › markdown-tasks.spec.ts › C5: solo lectura no habilita casillas ni escribe mediante teclado o eventos sintéticos",
+    "[md] › markdown-tasks.spec.ts › C5: recargar una muestra que pasa a editable no deja bloqueado el estado compartido",
+    "[md] › markdown-tasks.spec.ts › C5/C6: HTML y PDF conservan casillas deshabilitadas, sin metadatos internos ni scripts",
+    "[md] › markdown-tasks.spec.ts › C6: contenido hostil no crea controles con privilegios, código y tablas siguen literales",
+    "[md] › markdown-tasks.spec.ts › el documento largo mantiene correspondencia al final; dos temas y misma altura de barra",
+    "[md] › markdown-tasks.spec.ts › integración con el contador: cada pestaña en Vista previa conserva su propia selección sin Editor montado"
+  ]
+}

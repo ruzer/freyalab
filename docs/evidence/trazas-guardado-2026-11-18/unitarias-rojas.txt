@@ -1,0 +1,94 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <worktree>
+
+ ❯ tests/electron-trace.test.ts (8 tests | 8 failed) 8ms
+   ❯ traza del contexto real de Electron (8)
+     × inicia snapshots y fotogramas; descarta el ZIP si el caso pasa 3ms
+     × conserva y adjunta el ZIP cuando el resultado final es failed 0ms
+     × conserva y adjunta el ZIP cuando el resultado final es timedOut 0ms
+     × conserva y adjunta el ZIP cuando el resultado final es interrupted 0ms
+     × no sustituye un fallo si iniciar la captura falla 2ms
+     × no cambia passed si terminar la captura falla 0ms
+     × no cambia failed si terminar la captura falla 0ms
+     × conserva el resultado original si adjuntar el ZIP falla 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/electron-trace.test.ts > traza del contexto real de Electron > inicia snapshots y fotogramas; descarta el ZIP si el caso pasa
+AssertionError: expected "vi.fn()" to be called once with arguments: [ { screenshots: true, …(2) } ]
+
+Number of calls: 0
+
+ ❯ tests/electron-trace.test.ts:14:25
+     12|  it('inicia snapshots y fotogramas; descarta el ZIP si el caso pasa',a…
+     13|   const {tracing,info,context}=fixture(),stop=await traceElectronFailu…
+     14|   expect(tracing.start).toHaveBeenCalledExactlyOnceWith({screenshots:t…
+       |                         ^
+     15|   await stop();expect(tracing.stop).toHaveBeenCalledExactlyOnceWith();…
+     16|  })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/electron-trace.test.ts > traza del contexto real de Electron > conserva y adjunta el ZIP cuando el resultado final es failed
+ FAIL  tests/electron-trace.test.ts > traza del contexto real de Electron > conserva y adjunta el ZIP cuando el resultado final es timedOut
+ FAIL  tests/electron-trace.test.ts > traza del contexto real de Electron > conserva y adjunta el ZIP cuando el resultado final es interrupted
+AssertionError: expected "vi.fn()" to be called once with arguments: [ Array(1) ]
+
+Number of calls: 0
+
+ ❯ tests/electron-trace.test.ts:20:24
+     18|   const {tracing,info,context}=fixture(),stop=await traceElectronFailu…
+     19|   info.status=status;await stop()
+     20|   expect(tracing.stop).toHaveBeenCalledExactlyOnceWith({path:'/synthet…
+       |                        ^
+     21|   expect(info.attach).toHaveBeenCalledExactlyOnceWith('electron-contex…
+     22|  })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/electron-trace.test.ts > traza del contexto real de Electron > no sustituye un fallo si iniciar la captura falla
+AssertionError: expected [] to deeply equal [ { type: 'electron-trace', …(1) } ]
+
+- Expected
++ Received
+
+- [
+-   {
+-     "description": "No se pudo iniciar la traza del contexto de Electron.",
+-     "type": "electron-trace",
+-   },
+- ]
++ []
+
+ ❯ tests/electron-trace.test.ts:26:150
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/electron-trace.test.ts > traza del contexto real de Electron > no cambia passed si terminar la captura falla
+ FAIL  tests/electron-trace.test.ts > traza del contexto real de Electron > no cambia failed si terminar la captura falla
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ tests/electron-trace.test.ts:31:24
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/electron-trace.test.ts > traza del contexto real de Electron > conserva el resultado original si adjuntar el ZIP falla
+AssertionError: expected "vi.fn()" to be called once with arguments: [ Array(1) ]
+
+Number of calls: 0
+
+ ❯ tests/electron-trace.test.ts:36:24
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed (8)
+   Start at  17:06:38
+   Duration  118ms (transform 43%, tests 28%, import 22%, worker 7%)
+

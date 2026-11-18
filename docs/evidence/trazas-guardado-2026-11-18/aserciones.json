@@ -1,0 +1,16 @@
+{
+  "editor-status": {
+    "before": 34,
+    "after": 34,
+    "identical": true,
+    "beforeSha256": "64a2eb7de87f75593193f355dc378fdc174d5b3508071621d245cd658aee13b7",
+    "afterSha256": "64a2eb7de87f75593193f355dc378fdc174d5b3508071621d245cd658aee13b7"
+  },
+  "markdown-tasks": {
+    "before": 200,
+    "after": 200,
+    "identical": true,
+    "beforeSha256": "e936274ee6b53453c1d57ac8406a0858268f021f7d775016647902f1f3d359f2",
+    "afterSha256": "e936274ee6b53453c1d57ac8406a0858268f021f7d775016647902f1f3d359f2"
+  }
+}
