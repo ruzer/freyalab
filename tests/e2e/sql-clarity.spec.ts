@@ -89,13 +89,16 @@ test('SIM-2f: cambiar idioma actualiza el nombre accesible sin reemplazar el edi
 
 
 test('SIM-2f: el texto del botón principal contrasta en claro y oscuro',async()=>{
+ await page.emulateMedia({reducedMotion:'reduce'})
  const run=panel().getByRole('button',{name:'Ejecutar consulta',exact:true})
  const samples:{theme:string;ink:string;background:string;ratio:number}[]=[]
  const luminance=(rgb:string)=>rgb.match(/[\d.]+/g)!.slice(0,3).map(Number).map(value=>{value/=255;return value<=.04045?value/12.92:((value+.055)/1.055)**2.4}).reduce((sum,value,index)=>sum+value*[.2126,.7152,.0722][index],0)
  for(const theme of ['light','dark']){
   await page.getByLabel('Tema',{exact:true}).selectOption(theme)
+  await expect.poll(()=>page.locator('html').evaluate(element=>element.classList.contains('dark'))).toBe(theme==='dark')
+  await expect(run).toBeEnabled()
   await expect.poll(async()=>{const colors=await run.locator('span').last().evaluate(element=>({ink:getComputedStyle(element).color,background:getComputedStyle(element.closest('button')!).backgroundColor})),a=luminance(colors.ink),b=luminance(colors.background);return(Math.max(a,b)+.05)/(Math.min(a,b)+.05)}).toBeGreaterThanOrEqual(4.5)
-  const colors=await run.locator('span').last().evaluate(element=>({ink:getComputedStyle(element).color,background:getComputedStyle(element.closest('button')!).backgroundColor})),a=luminance(colors.ink),b=luminance(colors.background);samples.push({theme,...colors,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)})
+  const colors=await run.locator('span').last().evaluate(element=>({ink:getComputedStyle(element).color,background:getComputedStyle(element.closest('button')!).backgroundColor})),a=luminance(colors.ink),b=luminance(colors.background);samples.push({theme:await page.locator('html').evaluate(element=>element.classList.contains('dark')?'dark':'light'),...colors,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)})
  }
  await test.info().attach('sql-primary-contrast',{body:JSON.stringify(samples,null,2),contentType:'application/json'})
 })

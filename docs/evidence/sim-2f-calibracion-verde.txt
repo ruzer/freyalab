@@ -1,0 +1,1 @@
+Calibración correcta: la muestra oscura coincide con la paleta oscura real.

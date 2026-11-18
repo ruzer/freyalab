@@ -56,7 +56,20 @@ Se conservan ocho capturas anteriores de main y ocho finales del código `88b279
 | en-XA, claro | [Antes](sim-2f-before-en-XA-light-1440x900.png) · [Después](sim-2f-after-en-XA-light-1440x900.png) | [Antes](sim-2f-before-en-XA-light-1280x720.png) · [Después](sim-2f-after-en-XA-light-1280x720.png) |
 | en-XA, oscuro | [Antes](sim-2f-before-en-XA-dark-1440x900.png) · [Después](sim-2f-after-en-XA-dark-1440x900.png) | [Antes](sim-2f-before-en-XA-dark-1280x720.png) · [Después](sim-2f-after-en-XA-dark-1280x720.png) |
 
-El séptimo caso nuevo mide el color del texto **hijo** del botón y el fondo real mediante `getComputedStyle`, y exige ≥ 4,5:1 en ambos temas. La aserción pasó; el reporter de línea no conservó el adjunto en memoria con los RGB y ratios exactos. No se inventan esos valores ni se sustituye la medición del DOM por un cálculo sobre tokens.
+El séptimo caso mide el texto **hijo** y el fondo real mediante `getComputedStyle`. Al recuperar su adjunto de la integral, se detectó un defecto de la prueba: la muestra rotulada «dark» aún contenía blanco sobre el azul claro. Ese adjunto **no acreditaba el contraste oscuro**, aunque su cociente superase 4,5.
+
+La [calibración roja](sim-2f-calibracion-rojo.txt) contrasta el [adjunto anterior](sim-2f-contraste-antes.json) con la paleta oscura real. Se corrigió solo la prueba: esperar la clase de tema y el botón habilitado, reducir movimiento durante la medición para evitar colores transitorios y guardar el tema que realmente tiene el DOM. No se cambia la interfaz, los tokens, plazos ni reintentos.
+
+La [E2E corregida](sim-2f-contraste-temas-listos.txt) pasa (1/1, 1,8 s) y conserva estos [RGB y cocientes reales](sim-2f-contraste-despues.json):
+
+| Tema confirmado | Texto | Fondo | Contraste |
+| --- | --- | --- | ---: |
+| Claro | rgb(255, 255, 255) | rgb(37, 99, 235) | 5,1686:1 |
+| Oscuro | rgb(11, 18, 32) | rgb(48, 139, 255) | 5,5837:1 |
+
+Autocomprobación: `node docs/evidence/sim-2f-calibrar-contraste.mjs docs/evidence/sim-2f-contraste-antes.json` falla; con `sim-2f-contraste-despues.json` pasa. Los valores esperados calibran los tokens actuales; no se presentan como otro motor de color.
+
+La CI inicial 44382276687 se canceló **deliberadamente** al encontrar este defecto de medición. No fue una cancelación de infraestructura ni una prueba de producto fallida. El nuevo head deberá obtener su propia CI; no se traslada el verde de otro SHA.
 
 ## Salidas conservadas y primer intento de interfaz
 
@@ -73,6 +86,6 @@ Los dos fallos intermedios provenían de ocultar con `display:none` el anunciado
 
 ## No verificado todavía
 
-- La suite E2E local completa está en curso en la sesión de integración; no se atribuye todavía un resultado. Las pruebas del paquete y la CI de las tres plataformas sobre el head publicado están pendientes. Las mediciones locales corresponden a macOS Apple silicon y no prueban Windows, Linux o Intel.
+- La integral local sobre el código `88b279f` y head documental `5d605f7` terminó: `npm run test:e2e`, **711 aprobadas, 7 omisiones existentes Word/Pandoc, 25,6 min, cero fallos/reintentos**. Después solo cambió la prueba de contraste, verificada aparte como se indica arriba; no se volvió a ejecutar la integral local tras ese ajuste. La CI y el paquete del nuevo head permanecen pendientes. Los resultados locales no prueban Windows, Linux o Intel.
 - Se prepara un PR en borrador, base main. No se fusiona, publica una versión ni actualiza la aplicación instalada.
 - No se tradujeron los errores técnicos que proceden de los motores y módulos pendientes fuera de `CsvSql.svelte`; se mantiene su detalle original.
