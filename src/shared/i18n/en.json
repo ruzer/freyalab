@@ -1533,8 +1533,8 @@
  "project.tree.label": "Sources and subsets",
  "project.tree.more": "More actions for {name}",
  "project.tree.actions": "Actions for {name}",
- "project.tree.sourceDetail.one": "{count} column · {bytes} B",
- "project.tree.sourceDetail.other": "{count} columns · {bytes} B",
+ "project.tree.sourceDetail.one": "{count} column · {size}",
+ "project.tree.sourceDetail.other": "{count} columns · {size}",
  "project.tree.protection": "FreyaLab does not modify source files.",
  "subset.newFromThis": "New subset from this…"
 }

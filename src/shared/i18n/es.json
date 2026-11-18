@@ -1533,8 +1533,8 @@
  "project.tree.label": "Fuentes y conjuntos",
  "project.tree.more": "Más acciones de {name}",
  "project.tree.actions": "Acciones de {name}",
- "project.tree.sourceDetail.one": "{count} columna · {bytes} B",
- "project.tree.sourceDetail.other": "{count} columnas · {bytes} B",
+ "project.tree.sourceDetail.one": "{count} columna · {size}",
+ "project.tree.sourceDetail.other": "{count} columnas · {size}",
  "project.tree.protection": "FreyaLab no modifica las fuentes.",
  "subset.newFromThis": "Nuevo conjunto a partir de este…"
 }

@@ -11,3 +11,9 @@
 <div bind:this={menu} class="range-context" role="menu" aria-label={label} tabindex="-1" style:left={`${left}px`} style:top={`${top}px`} onkeydown={key}>
  {@render children()}
 </div>
+<style>
+ /* Los menús se leen de un vistazo alineados a la izquierda; lo no disponible se ve como desactivado aunque siga siendo enfocable. */
+ .range-context :global([role="menuitem"]){justify-content:flex-start;text-align:left}
+ .range-context :global([role="menuitem"][aria-disabled="true"]){opacity:.45;cursor:default}
+ .range-context :global([role="menuitem"][aria-disabled="true"]:hover){background:transparent}
+</style>
