@@ -1,0 +1,312 @@
+[
+  {
+    "run": "baseline-held",
+    "source": "711f85f6d566935934cbc593889783e6ca9637a9",
+    "mode": "held",
+    "platform": "darwin",
+    "runtimeCode": null,
+    "resultLines": [
+      "  1 failed"
+    ],
+    "guardRecords": [],
+    "snapshots": [
+      {
+        "label": "01-main-clean-before-table",
+        "msFromSaveRequest": 111,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": true,
+        "saveReplyReturned": false,
+        "saveBusy": "true",
+        "fileMatchesCorrected": true,
+        "dialog": false,
+        "table": false,
+        "originalEditorConnected": true,
+        "editorDOMRemovals": 0
+      },
+      {
+        "label": "03-before-reply-release",
+        "msFromSaveRequest": 15184,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": true,
+        "saveReplyReturned": false,
+        "saveBusy": "true",
+        "fileMatchesCorrected": true,
+        "dialog": true,
+        "table": false,
+        "originalEditorConnected": true,
+        "editorDOMRemovals": 0
+      },
+      {
+        "label": "04-after-reply-release",
+        "msFromSaveRequest": 15252,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": false,
+        "saveReplyReturned": true,
+        "saveBusy": "false",
+        "fileMatchesCorrected": true,
+        "dialog": true,
+        "table": false,
+        "originalEditorConnected": true,
+        "editorDOMRemovals": 0
+      }
+    ]
+  },
+  {
+    "run": "baseline-wait-held",
+    "source": "711f85f6d566935934cbc593889783e6ca9637a9",
+    "mode": "wait-held",
+    "platform": "darwin",
+    "runtimeCode": {
+      "head": "711f85f6d566935934cbc593889783e6ca9637a9",
+      "node": "v24.22.1",
+      "sourceDiff": "",
+      "appSha256": "927ddc55ea7647fe1963ca221d176b9537b2e5f2e4fa4d9b55073369f7afa674",
+      "editorSha256": "8065211a65b26bd43b8cf3e2dbaf433e0f75b846f0dc8ec162e8c543b6f86dbb",
+      "probeSha256": "3dec67180aa2e6bd09fdb8774e3fc65ccfb4a97daeb2e19c12b6ee8c3ff6001b"
+    },
+    "resultLines": [
+      "  1 passed (2.6s)"
+    ],
+    "guardRecords": [
+      {
+        "label": "guard-before-release",
+        "guardResolved": false,
+        "uiBusy": "true"
+      },
+      {
+        "label": "guard-after-release",
+        "guardResolved": true
+      }
+    ],
+    "snapshots": [
+      {
+        "label": "01-main-clean-before-table",
+        "msFromSaveRequest": 114,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": true,
+        "saveReplyReturned": false,
+        "saveBusy": "true",
+        "fileMatchesCorrected": true,
+        "dialog": false,
+        "table": false,
+        "originalEditorConnected": true,
+        "editorDOMRemovals": 0
+      },
+      {
+        "label": "02-guard-waiting-before-release",
+        "msFromSaveRequest": 176,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": true,
+        "saveReplyReturned": false,
+        "saveBusy": "true",
+        "fileMatchesCorrected": true,
+        "dialog": false,
+        "table": false,
+        "originalEditorConnected": true,
+        "editorDOMRemovals": 0
+      },
+      {
+        "label": "02-guard-resolved-before-table",
+        "msFromSaveRequest": 253,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": false,
+        "saveReplyReturned": true,
+        "saveBusy": "false",
+        "fileMatchesCorrected": true,
+        "dialog": false,
+        "table": false,
+        "originalEditorConnected": true,
+        "editorDOMRemovals": 0
+      },
+      {
+        "label": "03-before-reply-release",
+        "msFromSaveRequest": 367,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": false,
+        "saveReplyReturned": true,
+        "saveBusy": "false",
+        "fileMatchesCorrected": true,
+        "dialog": false,
+        "table": true,
+        "originalEditorConnected": false,
+        "editorDOMRemovals": 1
+      },
+      {
+        "label": "04-after-reply-release",
+        "msFromSaveRequest": 411,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": false,
+        "saveReplyReturned": true,
+        "saveBusy": "false",
+        "fileMatchesCorrected": true,
+        "dialog": false,
+        "table": true,
+        "originalEditorConnected": false,
+        "editorDOMRemovals": 1
+      }
+    ]
+  },
+  {
+    "run": "sql-held",
+    "source": "895de2d28303402436b36fd2c76811c7353c3e3f",
+    "mode": "held",
+    "platform": "darwin",
+    "runtimeCode": null,
+    "resultLines": [
+      "  1 failed"
+    ],
+    "guardRecords": [],
+    "snapshots": [
+      {
+        "label": "01-main-clean-before-table",
+        "msFromSaveRequest": 118,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": true,
+        "saveReplyReturned": false,
+        "saveBusy": "true",
+        "fileMatchesCorrected": true,
+        "dialog": false,
+        "table": false,
+        "originalEditorConnected": true,
+        "editorDOMRemovals": 0
+      },
+      {
+        "label": "03-before-reply-release",
+        "msFromSaveRequest": 15220,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": true,
+        "saveReplyReturned": false,
+        "saveBusy": "true",
+        "fileMatchesCorrected": true,
+        "dialog": true,
+        "table": false,
+        "originalEditorConnected": true,
+        "editorDOMRemovals": 0
+      },
+      {
+        "label": "04-after-reply-release",
+        "msFromSaveRequest": 15277,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": false,
+        "saveReplyReturned": true,
+        "saveBusy": "false",
+        "fileMatchesCorrected": true,
+        "dialog": true,
+        "table": false,
+        "originalEditorConnected": true,
+        "editorDOMRemovals": 0
+      }
+    ]
+  },
+  {
+    "run": "sql-wait-held",
+    "source": "895de2d28303402436b36fd2c76811c7353c3e3f",
+    "mode": "wait-held",
+    "platform": "darwin",
+    "runtimeCode": {
+      "head": "895de2d28303402436b36fd2c76811c7353c3e3f",
+      "node": "v24.22.1",
+      "sourceDiff": "",
+      "appSha256": "927ddc55ea7647fe1963ca221d176b9537b2e5f2e4fa4d9b55073369f7afa674",
+      "editorSha256": "8b43bc84f1cedbeb7e41166a01a7dff413d42487cffd988ed6b82ef800dbbd47",
+      "probeSha256": "3dec67180aa2e6bd09fdb8774e3fc65ccfb4a97daeb2e19c12b6ee8c3ff6001b"
+    },
+    "resultLines": [
+      "  1 passed (2.5s)"
+    ],
+    "guardRecords": [
+      {
+        "label": "guard-before-release",
+        "guardResolved": false,
+        "uiBusy": "true"
+      },
+      {
+        "label": "guard-after-release",
+        "guardResolved": true
+      }
+    ],
+    "snapshots": [
+      {
+        "label": "01-main-clean-before-table",
+        "msFromSaveRequest": 115,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": true,
+        "saveReplyReturned": false,
+        "saveBusy": "true",
+        "fileMatchesCorrected": true,
+        "dialog": false,
+        "table": false,
+        "originalEditorConnected": true,
+        "editorDOMRemovals": 0
+      },
+      {
+        "label": "02-guard-waiting-before-release",
+        "msFromSaveRequest": 178,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": true,
+        "saveReplyReturned": false,
+        "saveBusy": "true",
+        "fileMatchesCorrected": true,
+        "dialog": false,
+        "table": false,
+        "originalEditorConnected": true,
+        "editorDOMRemovals": 0
+      },
+      {
+        "label": "02-guard-resolved-before-table",
+        "msFromSaveRequest": 267,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": false,
+        "saveReplyReturned": true,
+        "saveBusy": "false",
+        "fileMatchesCorrected": true,
+        "dialog": false,
+        "table": false,
+        "originalEditorConnected": true,
+        "editorDOMRemovals": 0
+      },
+      {
+        "label": "03-before-reply-release",
+        "msFromSaveRequest": 375,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": false,
+        "saveReplyReturned": true,
+        "saveBusy": "false",
+        "fileMatchesCorrected": true,
+        "dialog": false,
+        "table": true,
+        "originalEditorConnected": false,
+        "editorDOMRemovals": 1
+      },
+      {
+        "label": "04-after-reply-release",
+        "msFromSaveRequest": 420,
+        "mainDirty": false,
+        "mainSavePrepared": true,
+        "replyHeld": false,
+        "saveReplyReturned": true,
+        "saveBusy": "false",
+        "fileMatchesCorrected": true,
+        "dialog": false,
+        "table": true,
+        "originalEditorConnected": false,
+        "editorDOMRemovals": 1
+      }
+    ]
+  }
+]

@@ -1,0 +1,35 @@
+{
+  "same": true,
+  "result": [
+    {
+      "ref": "711f85f6d566935934cbc593889783e6ca9637a9",
+      "hashes": {
+        "savingActive": "09fc41091af205fb2f67c06b89cffd8f595a550fad796d2e3ce035386493be39",
+        "chooseCsvView": "27275c6dc2a33dc80667b17ed2f6c91f00b1a6dc5b8b98cf96369bd72f192789",
+        "updateText": "48bf508b476e8d7ddc213065ce54833e10fe5f5e3f95105a1d8682387285f5f3",
+        "save": "12ae54d006cb26cbe6c7299ef03e97f02274c0a014e9175ddacf3593fb59ac5a"
+      },
+      "saveAriaBusyMarkup": true
+    },
+    {
+      "ref": "895de2d28303402436b36fd2c76811c7353c3e3f",
+      "hashes": {
+        "savingActive": "09fc41091af205fb2f67c06b89cffd8f595a550fad796d2e3ce035386493be39",
+        "chooseCsvView": "27275c6dc2a33dc80667b17ed2f6c91f00b1a6dc5b8b98cf96369bd72f192789",
+        "updateText": "48bf508b476e8d7ddc213065ce54833e10fe5f5e3f95105a1d8682387285f5f3",
+        "save": "12ae54d006cb26cbe6c7299ef03e97f02274c0a014e9175ddacf3593fb59ac5a"
+      },
+      "saveAriaBusyMarkup": true
+    },
+    {
+      "ref": "23121eda41fb9380c533a25ef86723046b6d7639",
+      "hashes": {
+        "savingActive": "09fc41091af205fb2f67c06b89cffd8f595a550fad796d2e3ce035386493be39",
+        "chooseCsvView": "27275c6dc2a33dc80667b17ed2f6c91f00b1a6dc5b8b98cf96369bd72f192789",
+        "updateText": "48bf508b476e8d7ddc213065ce54833e10fe5f5e3f95105a1d8682387285f5f3",
+        "save": "12ae54d006cb26cbe6c7299ef03e97f02274c0a014e9175ddacf3593fb59ac5a"
+      },
+      "saveAriaBusyMarkup": true
+    }
+  ]
+}
