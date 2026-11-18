@@ -1,0 +1,24 @@
+SIM-1g · validación enfocada real (2026-11-18)
+macOS 27.0.1 arm64; Node 24.22.1.
+Comando: FREYALAB_SIM1G_PHASE=after FREYALAB_SIM1G_EVIDENCE=docs/evidence npx playwright test tests/e2e/menu-alignment.spec.ts tests/e2e/structural-context.spec.ts tests/e2e/project-tree.spec.ts --project=shell --project=csv --workers=1 --retries=0 --max-failures=0
+Resultado: exit 0; 17 aprobadas en 26,1 s; 0 retry #1.
+Ocho capturas después; Nuevo: 10 px. Columna, títulos y ContextMenu de Archivos: 7 px.
+
+[1/17] [shell] › tests/e2e/menu-alignment.spec.ts:40:45 › SIM-1g: Nuevo, columna y Archivos alinean su contenido y conservan el teclado [es]
+[2/17] [shell] › tests/e2e/menu-alignment.spec.ts:40:45 › SIM-1g: Nuevo, columna y Archivos alinean su contenido y conservan el teclado [en-XA]
+[3/17] [csv] › tests/e2e/project-tree.spec.ts:43:1 › PRJ-01c C1: en reposo solo hay dos acciones, una protección y ningún estado normal repetido
+[4/17] [csv] › tests/e2e/project-tree.spec.ts:57:1 › PRJ-01c C9: las quince acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo
+[5/17] [csv] › tests/e2e/project-tree.spec.ts:80:1 › PRJ-01c C7: rechazar la sobrescritura externa conserva el borrador del nombre en su fila
+[6/17] [csv] › tests/e2e/project-tree.spec.ts:97:1 › PRJ-01c C5: un fallo del explorador se anuncia junto a la fuente
+[7/17] [csv] › tests/e2e/project-tree.spec.ts:105:1 › PRJ-01c C2/C3/C6: cuatro aperturas del menú, un punto de tabulación y navegación del árbol
+[8/17] [csv] › tests/e2e/project-tree.spec.ts:143:1 › PRJ-01c C7: renombrar guarda con Intro, cancela con Escape o al salir y explica los duplicados
+[9/17] [csv] › tests/e2e/project-tree.spec.ts:185:1 › PRJ-01c C11: nombres largos y menús caben con 240 y 420 píxeles de barra lateral
+[10/17] [csv] › tests/e2e/project-tree.spec.ts:202:47 › PRJ-01c C12: reposo, menú y fuente modificada en dos temas y tamaños [es]
+[11/17] [csv] › tests/e2e/project-tree.spec.ts:202:47 › PRJ-01c C12: reposo, menú y fuente modificada en dos temas y tamaños [en-XA]
+[12/17] [csv] › tests/e2e/project-tree.spec.ts:243:1 › PRJ-01c C5: el progreso y Cancelar pertenecen a la fuente y liberan la operación
+[13/17] [csv] › tests/e2e/structural-context.spec.ts:19:1 › la lectura de filas recupera una consulta sustituida por una recarga
+[14/17] [csv] › tests/e2e/structural-context.spec.ts:40:1 › menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar
+[15/17] [csv] › tests/e2e/structural-context.spec.ts:47:1 › menú de columnas: teclado, insertar a ambos lados, conservar valores y respetar selección múltiple
+[16/17] [csv] › tests/e2e/structural-context.spec.ts:55:1 › menús estructurales: muestras bloquean cambios y conservan orden de vista, temas y foco @perf
+[17/17] [csv] › tests/e2e/structural-context.spec.ts:61:1 › menú estructural: restaura foco si desaparece el origen y rechaza inserciones ambiguas por IPC
+  17 passed (26.1s)

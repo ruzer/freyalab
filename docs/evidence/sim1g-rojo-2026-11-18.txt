@@ -1,0 +1,40 @@
+SIM-1g · rojo geométrico (2026-11-18)
+Node 24.22.1; interfaz base main fd4e2a46845de95d7f7274f52fbd26cb0f63fcbc.
+Comando: FREYALAB_SIM1G_PHASE=before FREYALAB_SIM1G_EVIDENCE=docs/evidence npx playwright test tests/e2e/menu-alignment.spec.ts --project=shell --workers=1 --retries=0 --max-failures=0
+Resultado real de la segunda ejecución: exit 1; 2 pruebas fallan solo por las expectativas geométricas esperadas; 8 capturas antes completas.
+El test anterior, además del rojo geométrico, falló por el montaje: FREYALAB_TEST_FOLDER solo prepara el selector y no abre la carpeta. Se corrigió abriendo Abrir carpeta y esperando el archivo en el árbol. Ese fallo del montaje no se atribuye al producto.
+ContextMenu de Archivos completa los ocho escenarios, roles, End/Escape y devolución del foco con offset de 7 px.
+
+Vista | Menú | Elementos | Inicio mínimo | Inicio máximo | Fuera de 0–12 px
+es/light/1440x900 | Nuevo | 4 | 26.546875 | 64.8828125 | 4
+es/light/1440x900 | Columna | 20 | -1.4296875 | 59.0703125 | 17
+es/light/1440x900 | Títulos de grupo | 5 | 7 | 7 | 0
+es/light/1440x900 | Archivos (ContextMenu) | 2 | 7 | 7 | 0
+es/dark/1440x900 | Nuevo | 4 | 26.546875 | 64.8828125 | 4
+es/dark/1440x900 | Columna | 20 | -1.4296875 | 59.0703125 | 17
+es/dark/1440x900 | Títulos de grupo | 5 | 7 | 7 | 0
+es/dark/1440x900 | Archivos (ContextMenu) | 2 | 7 | 7 | 0
+es/light/1280x720 | Nuevo | 4 | 26.546875 | 64.8828125 | 4
+es/light/1280x720 | Columna | 20 | -1.4296875 | 59.0703125 | 17
+es/light/1280x720 | Títulos de grupo | 5 | 7 | 7 | 0
+es/light/1280x720 | Archivos (ContextMenu) | 2 | 7 | 7 | 0
+es/dark/1280x720 | Nuevo | 4 | 26.546875 | 64.8828125 | 4
+es/dark/1280x720 | Columna | 20 | -1.4296875 | 59.0703125 | 17
+es/dark/1280x720 | Títulos de grupo | 5 | 7 | 7 | 0
+es/dark/1280x720 | Archivos (ContextMenu) | 2 | 7 | 7 | 0
+en-XA/light/1440x900 | Nuevo | 4 | 26.546875 | 64.8828125 | 4
+en-XA/light/1440x900 | Columna | 20 | -91.375 | 59.0703125 | 17
+en-XA/light/1440x900 | Títulos de grupo | 5 | 7 | 7 | 0
+en-XA/light/1440x900 | Archivos (ContextMenu) | 2 | 7 | 7 | 0
+en-XA/dark/1440x900 | Nuevo | 4 | 26.546875 | 64.8828125 | 4
+en-XA/dark/1440x900 | Columna | 20 | -91.375 | 59.0703125 | 17
+en-XA/dark/1440x900 | Títulos de grupo | 5 | 7 | 7 | 0
+en-XA/dark/1440x900 | Archivos (ContextMenu) | 2 | 7 | 7 | 0
+en-XA/light/1280x720 | Nuevo | 4 | 26.546875 | 64.8828125 | 4
+en-XA/light/1280x720 | Columna | 20 | -91.375 | 59.0703125 | 17
+en-XA/light/1280x720 | Títulos de grupo | 5 | 7 | 7 | 0
+en-XA/light/1280x720 | Archivos (ContextMenu) | 2 | 7 | 7 | 0
+en-XA/dark/1280x720 | Nuevo | 4 | 26.546875 | 64.8828125 | 4
+en-XA/dark/1280x720 | Columna | 20 | -91.375 | 59.0703125 | 17
+en-XA/dark/1280x720 | Títulos de grupo | 5 | 7 | 7 | 0
+en-XA/dark/1280x720 | Archivos (ContextMenu) | 2 | 7 | 7 | 0
