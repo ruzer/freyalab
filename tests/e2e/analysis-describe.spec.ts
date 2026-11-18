@@ -147,7 +147,8 @@ test('AN-2 descarta la respuesta anterior cuando cambia la revisión y recalcula
  await expect(panel.getByRole('table')).toHaveCount(0)
  await panel.getByRole('button',{name:'Calcular',exact:true}).click()
  await expect(panel.locator('tbody tr').nth(1).locator('td').first()).toHaveText('32')
- await expect(panel.locator('caption')).toContainText('Revisión 1')
+ await panel.locator('summary').filter({hasText:'Cómo se calcula'}).click()
+ await expect(panel.locator('details')).toContainText('Revisión 1')
  expect(await readFile(path,'utf8')).toBe(source)
 })
 
