@@ -27,5 +27,71 @@
       "publishedSha256": "0a8c1b5526239be762e635cec6d5dc9c0ea720879a30195faeb767f919a973aa",
       "normalization": "solo códigos ANSI, prefijo de ruta privada y espacios finales"
     }
+  ],
+  "finalCode": "fb1da6107bd5f835790a0fa57888efa1cca7bf48",
+  "validationLogs": [
+    {
+      "log": "csv-text-focused.txt",
+      "privateOriginalSha256": "a99b3c15c6be8d4a53f49ad3124d96033b6e47839bcb4ac466a4dc538b9ffddd",
+      "publishedSha256": "2df0eae598574ffcdd1ba456399bc507a91698e19476e1b4a959eb66ca86f3ee",
+      "normalization": "ANSI, prefijo privado y espacios finales"
+    },
+    {
+      "log": "context.txt",
+      "privateOriginalSha256": "8e6ac7980b6f19c00b3dfd5f2aa53ef5a983b39c4d32ddf3373fc5f3020ed683",
+      "publishedSha256": "8f3282a38a9ea0d8b55dfdae971c8e068e8201452f62de4972c3d070c5606848",
+      "normalization": "ANSI, prefijo privado y espacios finales"
+    },
+    {
+      "log": "unit-full.txt",
+      "privateOriginalSha256": "6c7bc4c7e925e5bcb762685f0a573d19100437e06b338af39366014d3e9a71d5",
+      "publishedSha256": "e7c95831d4049fbdf7a05fb5f5acae4362ef5d80ead7f527b4cfda7c93c16a46",
+      "normalization": "ANSI, prefijo privado y espacios finales"
+    },
+    {
+      "log": "check.txt",
+      "privateOriginalSha256": "89345a8898b8c2f5bc4b17173f3b6e20daecf3d603668bac66654a5b8590e810",
+      "publishedSha256": "5dcd236fab8ed224afdd289fc6edf76696bfd50aedaef892256d1a99404cfdc2",
+      "normalization": "ANSI, prefijo privado y espacios finales"
+    },
+    {
+      "log": "build-final.txt",
+      "privateOriginalSha256": "eb28f64fcccf0c067b85c1a9cb48018e0d8911629ea9bfea86906b6417b72c2d",
+      "excerpt": "últimas seis líneas"
+    }
+  ],
+  "contextCaptures": [
+    {
+      "name": "contexto-en-XA-dark-1280x720.png",
+      "sha256": "1b0b205e125149d55ac5a6249318a56a5e713f0881d0aa087acbc318c49c7bd4"
+    },
+    {
+      "name": "contexto-en-XA-dark-1440x900.png",
+      "sha256": "63f3e7606dfe01b364fb2797672754684a140ff51e96d03108c95bedf1d3d148"
+    },
+    {
+      "name": "contexto-en-XA-light-1280x720.png",
+      "sha256": "2283f6e123f715d4c42676460bf55db0b3f286f3cfccd47084ab82e4d2043230"
+    },
+    {
+      "name": "contexto-en-XA-light-1440x900.png",
+      "sha256": "8346500834e236d372a9ac3c1579d9aed3dd8f7b45a504e2eec741871d604b45"
+    },
+    {
+      "name": "contexto-es-dark-1280x720.png",
+      "sha256": "be88090024bf8726eb25ed97ced7b4e129a04bda7f01398a6e4f8d9221cc0d24"
+    },
+    {
+      "name": "contexto-es-dark-1440x900.png",
+      "sha256": "7022e35f244a7417ef0e94e95ed92fa33c0f41bf77ac82092d0e4d4844256073"
+    },
+    {
+      "name": "contexto-es-light-1280x720.png",
+      "sha256": "ec227619935fa057cd30463b64a0cdfc656430a7975f7dc58298e752b62b416c"
+    },
+    {
+      "name": "contexto-es-light-1440x900.png",
+      "sha256": "af70fa1fe5b83fecd193123d15f90a9402b1552f32ea04ee6b89f0dfb1f841cd"
+    }
   ]
 }

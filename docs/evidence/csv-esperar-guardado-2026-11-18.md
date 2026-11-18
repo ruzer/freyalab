@@ -23,14 +23,34 @@ La traza de Ubuntu #183 en la [corrida 44396670322](https://github.com/ruzer/fre
 
 | Comprobación sobre esta rama | Resultado |
 |---|---|
-| Recuento e identidades de csv-text | Pendiente |
-| Todas las aserciones previas conservadas | Pendiente de comparar AST después de añadir el await |
-| `npm run check` | Pendiente |
-| `npm test` completo | Pendiente |
-| `npm run build` | Pendiente |
-| E2E csv-text completo, sin retry | Pendiente de raíz |
-| Ocho capturas de contexto | Pendiente de raíz |
+| Recuento e identidades de csv-text | 22 antes y 22 después; mismos proyecto, archivo y títulos; solo se desplazan líneas |
+| Todas las aserciones previas conservadas | AST: 196 originales intactas, 197 después; única añadida: aria-busy=false |
+| `npm run check` | 0 errores, 0 avisos |
+| `npm test` completo | 2.961 aprobadas, 1 omitida; 165 archivos, 18,61 s |
+| `npm run build` | Correcto |
+| E2E csv-text completo, sin retry | 22/22, 35,9 s, un worker y cero retries; ejecutado por raíz |
+| Ocho capturas de contexto | 8 PNG, es/en-XA, claro/oscuro, 1440×900 y 1280×720; 2 ejecuciones auxiliares privadas, 4,0 s |
 | CI del head final | Pendiente; no se transfiere otro SHA |
+
+Comprobaciones actuales sobre código `fb1da6107bd5f835790a0fa57888efa1cca7bf48`, Node 24.22.1 en Mac Apple silicon. La única omisión unitaria es el caso exclusivo de Windows en `tests/package-smoke.test.ts`. El mensaje de Pandoc 3.12.1 sin HTTP indica una limitación del sandbox no medido; esa función retorna normalmente y no cuenta como skipped.
+
+Comandos ejecutados hasta ahora:
+
+```sh
+npm run check
+npm test
+npm run build
+npx playwright test tests/e2e/csv-text.spec.ts --workers=1 --retries=0 --list
+npx playwright test tests/e2e/csv-text.spec.ts --workers=1 --retries=0 --reporter=line
+```
+
+Se conserva la comparación AST e identidades en la carpeta de evidencia. Ningún spec cambia de proyecto ni se añade o elimina un caso. Se conservan los logs de validación junto a la evidencia; los originales privados y sus SHA se mantienen en el manifest. La GUI la ejecutó únicamente la raíz.
+
+## Contextos visuales
+
+Los archivos `contexto-*.png` muestran Tabla después de completar el guardado visible y cambiar de modo. El fixture sintético usa el mismo CSV corregido de dos registros. Las ocho combinaciones mantienen `aria-busy=false` y el mismo SHA-256 del archivo; `contextos.json` registra dimensiones, tema, idioma y el código `fb1da61` ejecutado.
+
+La sonda auxiliar de capturas vive fuera del testDir y no se añade al repositorio ni al recuento de 22 pruebas. No usa el wrapper diagnóstico IPC. Las capturas no sustituyen los cuatro controles causales ni las comprobaciones de bytes y filas del archivo completo. Se revisaron es/claro 1440×900 y en-XA/oscuro 1280×720 como muestras estáticas; no es una validación de instalación, lector de pantalla físico o de toda la interfaz.
 
 ## Fuera de esta corrección
 

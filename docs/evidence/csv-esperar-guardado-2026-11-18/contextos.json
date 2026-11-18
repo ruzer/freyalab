@@ -1,0 +1,120 @@
+{
+  "code": "fb1da6107bd5f835790a0fa57888efa1cca7bf48",
+  "auxiliaryOnly": true,
+  "testCases": 2,
+  "capturedContexts": 8,
+  "contexts": [
+    {
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "saveBusy": "false",
+      "table": {
+        "x": 241,
+        "y": 110,
+        "width": 1199,
+        "height": 760
+      },
+      "fileSha256": "c417b89f56706704a877a71168c83ee8859cfa18106a870b76352c1c138b7502"
+    },
+    {
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "saveBusy": "false",
+      "table": {
+        "x": 241,
+        "y": 110,
+        "width": 1039,
+        "height": 580
+      },
+      "fileSha256": "c417b89f56706704a877a71168c83ee8859cfa18106a870b76352c1c138b7502"
+    },
+    {
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "saveBusy": "false",
+      "table": {
+        "x": 241,
+        "y": 110,
+        "width": 1199,
+        "height": 760
+      },
+      "fileSha256": "c417b89f56706704a877a71168c83ee8859cfa18106a870b76352c1c138b7502"
+    },
+    {
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "saveBusy": "false",
+      "table": {
+        "x": 241,
+        "y": 110,
+        "width": 1039,
+        "height": 580
+      },
+      "fileSha256": "c417b89f56706704a877a71168c83ee8859cfa18106a870b76352c1c138b7502"
+    },
+    {
+      "language": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "saveBusy": "false",
+      "table": {
+        "x": 241,
+        "y": 110,
+        "width": 1199,
+        "height": 760
+      },
+      "fileSha256": "c417b89f56706704a877a71168c83ee8859cfa18106a870b76352c1c138b7502"
+    },
+    {
+      "language": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "saveBusy": "false",
+      "table": {
+        "x": 241,
+        "y": 110,
+        "width": 1039,
+        "height": 580
+      },
+      "fileSha256": "c417b89f56706704a877a71168c83ee8859cfa18106a870b76352c1c138b7502"
+    },
+    {
+      "language": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "saveBusy": "false",
+      "table": {
+        "x": 241,
+        "y": 110,
+        "width": 1199,
+        "height": 760
+      },
+      "fileSha256": "c417b89f56706704a877a71168c83ee8859cfa18106a870b76352c1c138b7502"
+    },
+    {
+      "language": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "saveBusy": "false",
+      "table": {
+        "x": 241,
+        "y": 110,
+        "width": 1039,
+        "height": 580
+      },
+      "fileSha256": "c417b89f56706704a877a71168c83ee8859cfa18106a870b76352c1c138b7502"
+    }
+  ]
+}
