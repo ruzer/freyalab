@@ -56,7 +56,7 @@ Ejecutados sobre el código indicado, sin GUI concurrente durante las mediciones
 | `npx tsc --ignoreConfig --noEmit --strict --skipLibCheck --target ES2022 --module ESNext --moduleResolution Bundler tests/e2e/electron-trace.ts tests/electron-trace.test.ts` | Correcto, sin diagnósticos |
 | `npm test` completo, incluido CSV | **2.969 pasan / 1 omitida**, 166 archivos, 21,64 s; [salida](trazas-guardado-2026-11-18/unitarias-completas.txt) |
 | `npm run build` | Correcto; [cierre del build](trazas-guardado-2026-11-18/build-resumen.txt) |
-| `npx playwright test tests/e2e/editor-status.spec.ts tests/e2e/markdown-tasks.spec.ts --workers=1 --retries=0 --reporter=line` | **16 pasan**, 27,4 s; [salida](trazas-guardado-2026-11-18/e2e-enfocadas.txt) |
+| `npx playwright test tests/e2e/editor-status.spec.ts tests/e2e/markdown-tasks.spec.ts --project=md --workers=1 --retries=0 --output=../guardar-trazas-evidence/focused-results` | **16 pasan**, 27,4 s; [salida](trazas-guardado-2026-11-18/e2e-enfocadas.txt) |
 | `npx playwright test --config=../guardar-trazas-evidence/calibration.config.ts --workers=1 --retries=0` (configuración privada) | **1 fallo deliberado de persistencia**, 16,3 s; el reporter lo registra `unexpected=1` (sin `test.fails`). ZIP real adjunto y ninguna anotación de error de captura |
 | `playwright test … --list` antes/después | 16 mismas identidades |
 | `git diff --name-only -z 23121ed...HEAD \| node scripts/ci-areas.mjs --stdin` | full conservador; helper no clasificado |
