@@ -1,0 +1,18 @@
+
+Running 1 test using 1 worker
+
+(node:28029) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [md] › tests/e2e/editor-status.spec.ts:44:1 › H13-2: posición, selección, sangría y fin de línea de los cuatro editores
+[md] › tests/e2e/editor-status.spec.ts:44:1 › H13-2: posición, selección, sangría y fin de línea de los cuatro editores
+[H13-REAL-UNDO] after key {"state":{"seen":0,"released":0,"held":false,"events":[]},"current":"a,b\r\nc,d\ne,f","dom":[{"type":"keydown","key":"z","at":1795029672059,"trusted":true,"prevented":false}]}
+
+[H13-REAL-UNDO] after LF {"released":false,"nativeOnly":false,"state":{"seen":0,"released":0,"held":false,"events":[]}}
+
+[H13-REAL-UNDO] no genuine native command captured; no conclusion about double undo
+
+[H13-REAL-UNDO] before save {"current":"a,b\nc,d\ne,f","dom":[{"type":"keydown","key":"z","at":1795029672059,"trusted":true,"prevented":false}]}
+
+  1 passed (2.5s)
