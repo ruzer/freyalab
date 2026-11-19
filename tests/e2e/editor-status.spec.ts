@@ -1,5 +1,6 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import { closeElectron } from './close-electron'
+import {traceElectronFailure} from './electron-trace'
 import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -7,13 +8,15 @@ import {join,resolve} from 'node:path'
 import {t} from '../../src/shared/i18n'
 
 let app:ElectronApplication,page:Page,folder:string
+let stopTrace:(()=>Promise<void>)|undefined
 test.beforeEach(async()=>{
+ stopTrace=undefined
  folder=await mkdtemp(join(tmpdir(),'freya-editor-status-'))
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env,locale=test.info().title.match(/\[(en|en-XA)\]$/)?.[1]??'es'
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:locale,FREYALAB_USER_DATA:join(folder,'profile')}})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
 })
-test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+test.afterEach(async()=>{await stopTrace?.();await closeElectron(app);await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function open(name:string,source:string){
  const path=join(folder,name);await writeFile(path,source)
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path)
@@ -23,6 +26,7 @@ async function open(name:string,source:string){
 }
 
 test('H13-2: posición, selección, sangría y fin de línea de los cuatro editores',async()=>{
+ stopTrace=await traceElectronFailure(app.context(),test.info())
  const cases=[['datos.md','Markdown'],['datos.txt','Texto'],['datos.mmd','Mermaid'],['datos.csv','CSV Texto']]
  for(const [name,format] of cases){
   const {id,path}=await open(name,'a,b\r\nc,d\ne,f')

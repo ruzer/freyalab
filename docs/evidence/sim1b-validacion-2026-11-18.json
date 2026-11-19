@@ -1,0 +1,871 @@
+{
+  "codeSha": "ea19b6cdb23595b94fe879104f81232b84b78f4e",
+  "captures": {
+    "passed": 2,
+    "skipped": 0,
+    "durationReported": "5.4s"
+  },
+  "consumers": {
+    "passed": 137,
+    "skipped": 1,
+    "durationReported": "3.9m"
+  },
+  "uniqueIdentities": 140,
+  "detailedResults": 140,
+  "allSingleResultRetryZero": true,
+  "newCasesPassed": 9,
+  "existingCasesPassed": 130,
+  "skip": {
+    "project": "shell",
+    "file": "commands.spec.ts",
+    "line": 49,
+    "title": "APP-01 M4: Word se descubre al iniciar y el menú exporta un DOCX real sin abrir la barra",
+    "reason": "FREYALAB_PANDOC_TEST_PATH no proporcionado; guard explícito de commands.spec.ts:50."
+  },
+  "identities": [
+    {
+      "project": "csv",
+      "file": "table-toolbar.spec.ts",
+      "title": "SIM-1b capturas: barra, orden de ocultación y limpiezas [es]",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "table-toolbar.spec.ts",
+      "title": "SIM-1b capturas: barra, orden de ocultación y limpiezas [en-XA]",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 M4: Word se descubre al iniciar y el menú exporta un DOCX real sin abrir la barra",
+      "status": "skipped"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-02: Acerca de muestra versión real, copia sólo diagnóstico y lee licencias del paquete",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01: menú nativo traducido ofrece acciones de documentos y ayuda",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01: menú cambia de idioma y de documento, conserva Mermaid y la ayuda usa el mismo catálogo",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01: acciones de archivo y barra lateral se despachan una sola vez",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01: reciente eliminado se quita de la lista y avisa sin tocar otros archivos",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01: elementos de archivo, búsqueda y navegación conservan sus acciones",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01: Ayuda sólo abre enlaces HTTPS fijos y no envía información",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 M5: edición markdown usa el historial CodeMirror y no el nativo",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 M5: edición mermaid usa el historial CodeMirror y no el nativo",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 M5: edición sql usa el historial CodeMirror y no el nativo",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 M5: campos nativos y celda CSV editan su campo, la rejilla usa el historial CSV",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 M5: copiar, cortar y pegar sólo delegan el comando nativo elegido",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: Guardar aplica la celda activa antes de escribir el CSV",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: Guardar aplica el encabezado activo antes de escribir el CSV",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: cambiar de documento desde Ventana conserva la celda activa",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: la última elección de pestaña prevalece mientras se prepara la celda",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: Guardar como conserva la fuente y copia el borrador de celda",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: Cerrar prepara el borrador y permite cancelar la confirmación existente",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: Exportar incluye la celda preparada sin guardar el original",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: navegar siguiente y anterior prepara la celda en ambos sentidos",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: un encabezado rechazado bloquea Guardar, Cerrar y navegar aunque pierda foco",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01 integridad: si preparar la celda falla, no guarda ni descarta el borrador",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-03: el menú abre Ajustes y Escape devuelve el foco",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-03: Ajustes usa teclado, aplica apariencia y restablece sólo su sección",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-03: Archivos y Avanzado confirman sus acciones y conservan los documentos",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-03 S15-S16: todas las secciones conservan contraste, foco y espacio en es y en",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-03: versión futura deja los ajustes de solo lectura y conserva todos sus bytes",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-01: menú y ayuda conservan los identificadores en pseudolocalización",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "APP-03: migra el perfil anterior una vez y conserva ajustes sin modificar documentos",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "AC-03/04: el paquete lee los cinco CSL y el DOCX interno con sus hashes oficiales",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "paleta CSV: búsqueda sin acentos, teclado, rango, foco y vista previa comparten edición y deshacer",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "paleta CSV: estructura usa filas y columnas marcadas, consulta y restauración sin mutar originales",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "paleta CSV: muestra bloquea edición y copia, conserva análisis y navegación en ambos temas",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "commands.spec.ts",
+      "title": "paleta CSV: paginar deshabilita el rango sin perder foco y mantiene disponible Transformar",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "icons.spec.ts",
+      "title": "iconos: la bienvenida, un CSV y un Markdown no usan glifos ni exponen los SVG",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "icons.spec.ts",
+      "title": "iconos: los avisos distinguen éxito y error con icono y texto, y Exportar deshabilitado no es azul",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "interfaz: crear, editar, visualizar, guardar y exportar Markdown en ambos temas",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "interfaz CSV: buscar, editar una fila filtrada, deshacer y guardar",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "interfaz Mermaid: renderizar y exportar SVG válido",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "formato Markdown: negritas y cursivas sin ocultar el explorador",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "barra Markdown: insertar sin sintaxis, conservar selección, deshacer y ver ejemplos",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "operaciones CSV: alcance explícito, fila filtrada, ceros iniciales, deshacer y guardar",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "operaciones CSV: duplicar filas y columnas conserva valores y permite deshacer estructura",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "estadísticas CSV: columnas, alcance completo, datos pendientes, temas y teclado",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "estadísticas CSV: cancelar descarta respuestas tardías y permite volver a analizar",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "estadísticas CSV: muestra rotulada e IPC inválido rechazado",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "estadísticas CSV: límite explícito y encabezados duplicados por índice",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "CSV: pegar sigue filtros y orden, conserva filas ocultas y se deshace en un paso",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "exportación CSV: completo y filtrado conservan columnas; selección limita explícitamente",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "consulta CSV: formulario, orden múltiple exacto, exportación y pegado por vista",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "consulta CSV: condiciones O, errores visibles, limpiar y ordenar con Mayús",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "rangos CSV: selección por teclado, vista previa, filas ocultas, deshacer y exportar",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "rangos CSV: arrastrar, contexto por teclado, cortar y pegar con revisión previa",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "rangos CSV: teclado atraviesa páginas virtuales y una revisión nueva invalida la selección",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "rangos CSV: si falla el portapapeles, cortar no vacía ni modifica el documento",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "rangos CSV: arrastre desplaza el borde y conserva el rango al cargar otra página",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "exploración CSV: perfil, frecuencias, distribución y Pearson conservan datos y alcance",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "exploración CSV: paginación, cancelación, muestra e IPC inválido",
+      "status": "passed"
+    },
+    {
+      "project": "shell",
+      "file": "ui.spec.ts",
+      "title": "perfil CSV: tipos probables, calidad y teclado sin modificar los datos",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "column-menu.spec.ts",
+      "title": "cada cabecera tiene un menú ▾ visible con ordenar, filtrar, estadísticas y limpieza",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "column-menu.spec.ts",
+      "title": "el menú se maneja con teclado: Enter lo abre, las flechas recorren y Escape devuelve el foco al botón",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "column-menu.spec.ts",
+      "title": "mayúsculas en la columna: alcance, vista previa antes → después, recuento, confirmación y un paso de deshacer",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "column-menu.spec.ts",
+      "title": "quitar espacios y minúsculas: tres interacciones desde el menú y solo tocan esa columna",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "column-menu.spec.ts",
+      "title": "con una búsqueda activa solo cambian las filas visibles y el diálogo avisa de las ocultas",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "column-menu.spec.ts",
+      "title": "si no hay nada que cambiar la vista previa lo dice y no deja confirmar",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "column-menu.spec.ts",
+      "title": "«Filtrar esta columna» muestra los filtros y lleva el foco al de esa columna",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "column-menu.spec.ts",
+      "title": "«Estadísticas de la columna» abre Análisis con esa columna marcada",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "column-menu.spec.ts",
+      "title": "«Quitar filas duplicadas de la columna…» abre la transformación con la columna ya elegida y sin cambiar nada",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "compact-toolbar.spec.ts",
+      "title": "una sola fila de herramientas deja la tabla a 110 px del borde superior o menos",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "compact-toolbar.spec.ts",
+      "title": "las cinco acciones principales se ven a la vez y lo demás está en menús con su nombre de siempre",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "compact-toolbar.spec.ts",
+      "title": "la codificación, el separador, el encabezado y los recuentos viven en la barra de estado",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "compact-toolbar.spec.ts",
+      "title": "Analizar abre una pestaña a petición y permite volver a la tabla con el foco en su pestaña",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "compact-toolbar.spec.ts",
+      "title": "un filtro activo queda a la vista como etiqueta y se quita con un clic",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 ajustes: Un valor vacío bloquea preparar y rellenar con un motivo accesible",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es)",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (en)",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva bytes tras guardar",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 elimina por cualquiera o todas las columnas marcadas y restaura filas completas",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 fuente protegida permite ver vacíos y bloquea las mutaciones también por el puente",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 archivo grande permite el filtro completo y explica que limpiar requiere extraer",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 Texto sin confirmar conserva el diálogo y Cancelar no pierde el borrador",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 cancelar descarta una vista previa tardía y deja reintentar sin modificar el CSV",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 la paleta encuentra isnull, fillna y dropna y conserva la selección múltiple",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 una protección recibida con el diálogo abierto invalida su vista previa",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 rellenar desde Información actúa sobre todo el documento y pide actualizar el análisis",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 teclado, idiomas y temas (es)",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 teclado, idiomas y temas (en)",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "empty-values.spec.ts",
+      "title": "LIM-1 teclado, idiomas y temas (en-XA)",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "large-file.spec.ts",
+      "title": "un CSV por encima del umbral se abre como archivo grande: aviso, recuento exacto y sin el límite de 200 filas",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "large-file.spec.ts",
+      "title": "«Ir a la fila»: botón, menú, validación, foco y Escape",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "large-file.spec.ts",
+      "title": "lo que aún no existe en archivos grandes está deshabilitado y el documento no cambia",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "large-file.spec.ts",
+      "title": "llega a cualquier fila de un archivo de 700 000 filas, más allá del techo de altura de Chromium",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "large-search.spec.ts",
+      "title": "buscar en archivo grande se aplica explícitamente con Enter",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "large-search.spec.ts",
+      "title": "sin coincidencias permite ir a una fila original; vacío y Escape quitan la vista",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "large-search.spec.ts",
+      "title": "ver en el documento completo desde la fila y el atajo conserva número y foco",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "large-search.spec.ts",
+      "title": "una vista se recupera al volver a su pestaña sin iniciar otro recorrido",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "large-search.spec.ts",
+      "title": "cancelar conserva un parcial honesto y una búsqueda nueva no recibe resultados anteriores",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "large-search.spec.ts",
+      "title": "el tope de coincidencias conserva una vista parcial y mantiene bloqueadas las mutaciones",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "large-search.spec.ts",
+      "title": "pedir otra página invalida la vista si el archivo cambió y no mezcla versiones",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "large-search.spec.ts",
+      "title": "un registro inválido sin la aguja detiene la búsqueda sin presentarla como completa",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "ordering.spec.ts",
+      "title": "orden visual: mueve filas marcadas y columnas, limpia filtros, conserva valores y guarda con deshacer",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "ordering.spec.ts",
+      "title": "orden visual: rango por teclado, intervalo original, vista previa en temas y rechazo de ausencia destructiva",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "ordering.spec.ts",
+      "title": "orden visual: multisort estable, guardar vista intacta, rechazo con filtros y fijación explícita recuperable",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "ordering.spec.ts",
+      "title": "orden: recuperación anterior real, archivo incompatible conservado y preparación cancelable con IPC validado",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structural-context.spec.ts",
+      "title": "la lectura de filas recupera una consulta sustituida por una recarga",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structural-context.spec.ts",
+      "title": "menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structural-context.spec.ts",
+      "title": "menú de columnas: teclado, insertar a ambos lados, conservar valores y respetar selección múltiple",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structural-context.spec.ts",
+      "title": "menús estructurales: muestras bloquean cambios y conservan orden de vista, temas y foco",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structural-context.spec.ts",
+      "title": "menú estructural: restaura foco si desaparece el origen y rechaza inserciones ambiguas por IPC",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "H15-1: la transformación calculada conserva decimales exactos",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "H15-1: las fórmulas que salen de la expresión escalar se rechazan sin cambios",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "H15-1 interfaz: vista previa de filas filtradas, cambio pendiente, guardar y deshacer",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "H15-1 interfaz: traducción, fórmula con acento y medios accesibles [en]",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "H15-1 interfaz: traducción, fórmula con acento y medios accesibles [en-XA]",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "H15-1 interfaz: explica la fila corta y desactiva el cálculo en una muestra",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "H15-2: los ocho ejemplos eligen columnas, ajustan la lectura y calculan",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "H15-2b: los ejemplos encuentran cantidades aunque haya más de 100 000 valores distintos",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "H15-2b: el ejemplo Condition calcula en el idioma de la interfaz [en]",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "H15-2: cerrar Análisis cancela su perfilado y permite preparar la fórmula",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "H15-2: el encabezado inserta a su derecha y distingue vacío de campo ausente",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "H15-2: paleta CSV y ayuda por teclado con colores forzados [en-XA]",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "transformaciones visuales: documento completo, originales, Unicode, encabezados, duplicados y deshacer",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "transformaciones: cancela trabajo real, invalida revisión obsoleta y rechaza mensajes inválidos",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "transformación conserva recuperación, un paso de deshacer y guardado en disco",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "structure.spec.ts",
+      "title": "transformaciones: el menú abre durante la paginación, con ratón y teclado, sin cambiar el rango ni los datos",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "table-toolbar.spec.ts",
+      "title": "SIM-1b: sin celda activa las seis limpiezas explican el motivo aunque haya una columna marcada",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "table-toolbar.spec.ts",
+      "title": "SIM-1b: las seis limpiezas usan Ingreso activo y no la marca Ciudad ni alteran el archivo",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "table-toolbar.spec.ts",
+      "title": "SIM-1b: una celda activa basta sin marcas de encabezado",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "table-toolbar.spec.ts",
+      "title": "SIM-1b: «Quitar espacios al inicio y final» conserva el alcance de filas y columnas marcadas",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "table-toolbar.spec.ts",
+      "title": "SIM-1b: «Convertir a mayúsculas» conserva el alcance de filas y columnas marcadas",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "table-toolbar.spec.ts",
+      "title": "SIM-1b: «Convertir a minúsculas» conserva el alcance de filas y columnas marcadas",
+      "status": "passed"
+    },
+    {
+      "project": "csv",
+      "file": "table-toolbar.spec.ts",
+      "title": "SIM-1b: Ir a la fila conserva su acceso y Buscar acción muestra la tecla real del sistema",
+      "status": "passed"
+    }
+  ],
+  "resultStatusCounts": {
+    "passed": 139,
+    "skipped": 1
+  }
+}

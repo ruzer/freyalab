@@ -1,0 +1,820 @@
+SIM-1a · Evidencia curada; fuentes sintéticas, GUI exclusiva de la raíz
+Node 24.22.1 · macOS arm64
+Los encabezados separan qué SHA se probó; no se atribuyen los 120 resultados e130 al head43.
+
+ROJO INICIAL REAL (producto fd4 sin cambios)
+
+Running 5 tests using 1 worker
+
+(node:18580) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/5] [csv] › tests/e2e/column-menu.spec.ts:135:2 › SIM-1a › los cuatro accesos muestran la misma lista y el nombre sin filas, sin alterar el documento
+  1) [csv] › tests/e2e/column-menu.spec.ts:135:2 › SIM-1a › los cuatro accesos muestran la misma lista y el nombre sin filas, sin alterar el documento 
+
+    Error: right
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  8
+    + Received  + 17
+
+      Array [
+    -   "Ordenar de menor a mayor",
+    -   "Ordenar de mayor a menor",
+    +   "Ordenar columna ascendente (vista)",
+    +   "Ordenar columna descendente (vista)",
+        "Filtrar esta columna",
+    -   "Ver filas vacías",
+    -   "Limpiar",
+        "Estadísticas de la columna",
+    -   "Insertar a la izquierda",
+    -   "Insertar a la derecha",
+    -   "Duplicar columna",
+    +   "Ver filas vacías de la columna",
+    +   "Rellenar vacíos de la columna…",
+    +   "Eliminar filas con vacío en la columna…",
+    +   "Mayúsculas en la columna…",
+    +   "Minúsculas en la columna…",
+    +   "Quitar espacios en la columna…",
+    +   "Quitar filas duplicadas de la columna…",
+    +   "Insertar columna a la izquierda",
+    +   "Insertar columna a la derecha",
+    +   "Duplicar columna seleccionada",
+    +   "Eliminar columna seleccionada",
+    +   "Transformar documento…",
+    +   "Copiar como Markdown",
+    +   "Deshacer edición CSV",
+    +   "Rehacer edición CSV",
+        "Calcular columna a la derecha",
+    -   "Eliminar columna",
+      ]
+
+      144 |   }
+      145 |   for(const result of observed){
+    > 146 |    expect.soft(result.items,result.entry).toEqual(mainItems)
+          |                                           ^
+      147 |    expect.soft(result.lines,result.entry).toContain('Ciudad')
+      148 |    for(const obsolete of ['Vista de la tabla','Limpiar la columna · con vista previa','Estructura','Más'])expect.soft(result.lines,result.entry).not.toContain(obsolete)
+      149 |    expect.soft(result.lines.some(line=>/\b\d+\s+filas?\b/u.test(line)),result.entry).toBe(false)
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:146:43
+
+    Error: right
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected value: "Ciudad"
+    Received array: ["0 FILAS · 1 COLUMNAS", "Ordenar columna ascendente (vista)", "Ordenar columna descendente (vista)", "Filtrar esta columna", "Estadísticas de la columna", "Ver filas vacías de la columna", "Rellenar vacíos de la columna…", "Eliminar filas con vacío en la columna…", "Mayúsculas en la columna…", "Minúsculas en la columna…", …]
+
+      145 |   for(const result of observed){
+      146 |    expect.soft(result.items,result.entry).toEqual(mainItems)
+    > 147 |    expect.soft(result.lines,result.entry).toContain('Ciudad')
+          |                                           ^
+      148 |    for(const obsolete of ['Vista de la tabla','Limpiar la columna · con vista previa','Estructura','Más'])expect.soft(result.lines,result.entry).not.toContain(obsolete)
+      149 |    expect.soft(result.lines.some(line=>/\b\d+\s+filas?\b/u.test(line)),result.entry).toBe(false)
+      150 |   }
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:147:43
+
+    Error: button
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  8
+    + Received  + 17
+
+      Array [
+    -   "Ordenar de menor a mayor",
+    -   "Ordenar de mayor a menor",
+    +   "Ordenar columna ascendente (vista)",
+    +   "Ordenar columna descendente (vista)",
+        "Filtrar esta columna",
+    -   "Ver filas vacías",
+    -   "Limpiar",
+        "Estadísticas de la columna",
+    -   "Insertar a la izquierda",
+    -   "Insertar a la derecha",
+    -   "Duplicar columna",
+    +   "Ver filas vacías de la columna",
+    +   "Rellenar vacíos de la columna…",
+    +   "Eliminar filas con vacío en la columna…",
+    +   "Mayúsculas en la columna…",
+    +   "Minúsculas en la columna…",
+    +   "Quitar espacios en la columna…",
+    +   "Quitar filas duplicadas de la columna…",
+    +   "Insertar columna a la izquierda",
+    +   "Insertar columna a la derecha",
+    +   "Duplicar columna seleccionada",
+    +   "Eliminar columna seleccionada",
+        "Calcular columna a la derecha",
+    -   "Eliminar columna",
+    +   "Transformar documento…",
+    +   "Copiar como Markdown",
+    +   "Deshacer edición CSV",
+    +   "Rehacer edición CSV",
+      ]
+
+      144 |   }
+      145 |   for(const result of observed){
+    > 146 |    expect.soft(result.items,result.entry).toEqual(mainItems)
+          |                                           ^
+      147 |    expect.soft(result.lines,result.entry).toContain('Ciudad')
+      148 |    for(const obsolete of ['Vista de la tabla','Limpiar la columna · con vista previa','Estructura','Más'])expect.soft(result.lines,result.entry).not.toContain(obsolete)
+      149 |    expect.soft(result.lines.some(line=>/\b\d+\s+filas?\b/u.test(line)),result.entry).toBe(false)
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:146:43
+
+    Error: button
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected value: "Ciudad"
+    Received array: ["COLUMNA «CIUDAD» · 5 FILAS", "VISTA DE LA TABLA", "Ordenar columna ascendente (vista)", "Ordenar columna descendente (vista)", "Filtrar esta columna", "Estadísticas de la columna", "Ver filas vacías de la columna", "LIMPIAR LA COLUMNA · CON VISTA PREVIA", "Rellenar vacíos de la columna…", "Eliminar filas con vacío en la columna…", …]
+
+      145 |   for(const result of observed){
+      146 |    expect.soft(result.items,result.entry).toEqual(mainItems)
+    > 147 |    expect.soft(result.lines,result.entry).toContain('Ciudad')
+          |                                           ^
+      148 |    for(const obsolete of ['Vista de la tabla','Limpiar la columna · con vista previa','Estructura','Más'])expect.soft(result.lines,result.entry).not.toContain(obsolete)
+      149 |    expect.soft(result.lines.some(line=>/\b\d+\s+filas?\b/u.test(line)),result.entry).toBe(false)
+      150 |   }
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:147:43
+
+    Error: shift
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  8
+    + Received  + 17
+
+      Array [
+    -   "Ordenar de menor a mayor",
+    -   "Ordenar de mayor a menor",
+    +   "Ordenar columna ascendente (vista)",
+    +   "Ordenar columna descendente (vista)",
+        "Filtrar esta columna",
+    -   "Ver filas vacías",
+    -   "Limpiar",
+        "Estadísticas de la columna",
+    -   "Insertar a la izquierda",
+    -   "Insertar a la derecha",
+    -   "Duplicar columna",
+    +   "Ver filas vacías de la columna",
+    +   "Rellenar vacíos de la columna…",
+    +   "Eliminar filas con vacío en la columna…",
+    +   "Mayúsculas en la columna…",
+    +   "Minúsculas en la columna…",
+    +   "Quitar espacios en la columna…",
+    +   "Quitar filas duplicadas de la columna…",
+    +   "Insertar columna a la izquierda",
+    +   "Insertar columna a la derecha",
+    +   "Duplicar columna seleccionada",
+    +   "Eliminar columna seleccionada",
+    +   "Transformar documento…",
+    +   "Copiar como Markdown",
+    +   "Deshacer edición CSV",
+    +   "Rehacer edición CSV",
+        "Calcular columna a la derecha",
+    -   "Eliminar columna",
+      ]
+
+      144 |   }
+      145 |   for(const result of observed){
+    > 146 |    expect.soft(result.items,result.entry).toEqual(mainItems)
+          |                                           ^
+      147 |    expect.soft(result.lines,result.entry).toContain('Ciudad')
+      148 |    for(const obsolete of ['Vista de la tabla','Limpiar la columna · con vista previa','Estructura','Más'])expect.soft(result.lines,result.entry).not.toContain(obsolete)
+      149 |    expect.soft(result.lines.some(line=>/\b\d+\s+filas?\b/u.test(line)),result.entry).toBe(false)
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:146:43
+
+    Error: shift
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected value: "Ciudad"
+    Received array: ["0 FILAS · 1 COLUMNAS", "Ordenar columna ascendente (vista)", "Ordenar columna descendente (vista)", "Filtrar esta columna", "Estadísticas de la columna", "Ver filas vacías de la columna", "Rellenar vacíos de la columna…", "Eliminar filas con vacío en la columna…", "Mayúsculas en la columna…", "Minúsculas en la columna…", …]
+
+      145 |   for(const result of observed){
+      146 |    expect.soft(result.items,result.entry).toEqual(mainItems)
+    > 147 |    expect.soft(result.lines,result.entry).toContain('Ciudad')
+          |                                           ^
+      148 |    for(const obsolete of ['Vista de la tabla','Limpiar la columna · con vista previa','Estructura','Más'])expect.soft(result.lines,result.entry).not.toContain(obsolete)
+      149 |    expect.soft(result.lines.some(line=>/\b\d+\s+filas?\b/u.test(line)),result.entry).toBe(false)
+      150 |   }
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:147:43
+
+    Error: context
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  8
+    + Received  + 17
+
+      Array [
+    -   "Ordenar de menor a mayor",
+    -   "Ordenar de mayor a menor",
+    +   "Ordenar columna ascendente (vista)",
+    +   "Ordenar columna descendente (vista)",
+        "Filtrar esta columna",
+    -   "Ver filas vacías",
+    -   "Limpiar",
+        "Estadísticas de la columna",
+    -   "Insertar a la izquierda",
+    -   "Insertar a la derecha",
+    -   "Duplicar columna",
+    +   "Ver filas vacías de la columna",
+    +   "Rellenar vacíos de la columna…",
+    +   "Eliminar filas con vacío en la columna…",
+    +   "Mayúsculas en la columna…",
+    +   "Minúsculas en la columna…",
+    +   "Quitar espacios en la columna…",
+    +   "Quitar filas duplicadas de la columna…",
+    +   "Insertar columna a la izquierda",
+    +   "Insertar columna a la derecha",
+    +   "Duplicar columna seleccionada",
+    +   "Eliminar columna seleccionada",
+    +   "Transformar documento…",
+    +   "Copiar como Markdown",
+    +   "Deshacer edición CSV",
+    +   "Rehacer edición CSV",
+        "Calcular columna a la derecha",
+    -   "Eliminar columna",
+      ]
+
+      144 |   }
+      145 |   for(const result of observed){
+    > 146 |    expect.soft(result.items,result.entry).toEqual(mainItems)
+          |                                           ^
+      147 |    expect.soft(result.lines,result.entry).toContain('Ciudad')
+      148 |    for(const obsolete of ['Vista de la tabla','Limpiar la columna · con vista previa','Estructura','Más'])expect.soft(result.lines,result.entry).not.toContain(obsolete)
+      149 |    expect.soft(result.lines.some(line=>/\b\d+\s+filas?\b/u.test(line)),result.entry).toBe(false)
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:146:43
+
+    Error: context
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected value: "Ciudad"
+    Received array: ["0 FILAS · 1 COLUMNAS", "Ordenar columna ascendente (vista)", "Ordenar columna descendente (vista)", "Filtrar esta columna", "Estadísticas de la columna", "Ver filas vacías de la columna", "Rellenar vacíos de la columna…", "Eliminar filas con vacío en la columna…", "Mayúsculas en la columna…", "Minúsculas en la columna…", …]
+
+      145 |   for(const result of observed){
+      146 |    expect.soft(result.items,result.entry).toEqual(mainItems)
+    > 147 |    expect.soft(result.lines,result.entry).toContain('Ciudad')
+          |                                           ^
+      148 |    for(const obsolete of ['Vista de la tabla','Limpiar la columna · con vista previa','Estructura','Más'])expect.soft(result.lines,result.entry).not.toContain(obsolete)
+      149 |    expect.soft(result.lines.some(line=>/\b\d+\s+filas?\b/u.test(line)),result.entry).toBe(false)
+      150 |   }
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:147:43
+
+    Error Context: ../sim1a-evidence/red-results/column-menu-SIM-1a-los-cua-d3f16-as-sin-alterar-el-documento-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1a-evidence/red-results/column-menu-SIM-1a-los-cua-d3f16-as-sin-alterar-el-documento-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1a-evidence/red-results/column-menu-SIM-1a-los-cua-d3f16-as-sin-alterar-el-documento-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:18631) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/5] [csv] › tests/e2e/column-menu.spec.ts:154:2 › SIM-1a › las veinte acciones siguen alcanzables por su jerarquía y por las cuatro salidas existentes
+  2) [csv] › tests/e2e/column-menu.spec.ts:154:2 › SIM-1a › las veinte acciones siguen alcanzables por su jerarquía y por las cuatro salidas existentes 
+
+    Error: Ordenar de menor a mayor
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('menu', { name: 'Acciones de columnas', exact: true }).getByRole('menuitem', { name: 'Ordenar de menor a mayor', exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Ordenar de menor a mayor getByRole('menu', { name: 'Acciones de columnas', exact: true }).getByRole('menuitem', { name: 'Ordenar de menor a mayor', exact: true }) with timeout 15000ms
+      - waiting for getByRole('menu', { name: 'Acciones de columnas', exact: true }).getByRole('menuitem', { name: 'Ordenar de menor a mayor', exact: true })
+
+
+      165 |    }else if(route.place==='app')action=page.getByRole('button',{name:route.name,exact:true})
+      166 |    else{await toolbar.getByLabel(route.place==='document'?'Limpiar datos':'Filas y columnas',{exact:true}).click();action=toolbar.getByRole('button',{name:route.name,exact:true})}
+    > 167 |    await expect(action,route.name).toBeVisible();if(route.place!=='app')await expect(action,route.name).toBeEnabled()
+          |                                    ^
+      168 |    await page.getByLabel('Buscar en tabla',{exact:true}).click();await expect(page.getByRole('menu')).toHaveCount(0)
+      169 |   }
+      170 |   const root=await enter('button')
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:167:36
+
+    Error Context: ../sim1a-evidence/red-results/column-menu-SIM-1a-las-vei-0fed0-s-cuatro-salidas-existentes-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1a-evidence/red-results/column-menu-SIM-1a-las-vei-0fed0-s-cuatro-salidas-existentes-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1a-evidence/red-results/column-menu-SIM-1a-las-vei-0fed0-s-cuatro-salidas-existentes-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:18665) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/5] [csv] › tests/e2e/column-menu.spec.ts:176:2 › SIM-1a › el submenú respeta niveles de teclado, retorno de foco, Tab y cierre fuera
+  3) [csv] › tests/e2e/column-menu.spec.ts:176:2 › SIM-1a › el submenú respeta niveles de teclado, retorno de foco, Tab y cierre fuera 
+
+    TimeoutError: locator.focus: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('menu', { name: 'Acciones de columnas', exact: true }).getByRole('menuitem', { name: /^Limpiar(?:\s*[▸›])?$/ })
+
+
+      178 |   await button.focus();await page.keyboard.press('Enter');await expect(menu()).toBeVisible();await expect(menu().getByRole('menuitem').first()).toBeFocused()
+      179 |   await expect(button).toHaveAttribute('aria-haspopup','menu');await expect(button).toHaveAttribute('aria-expanded','true')
+    > 180 |   const trigger=cleaning(menu());await trigger.focus();await expect(trigger).toHaveAttribute('aria-haspopup',/^(menu|true)$/)
+          |                                                ^
+      181 |   await page.keyboard.press('ArrowRight');await expect(page.getByRole('menu')).toHaveCount(2);expect(await names(child())).toEqual(cleanItems)
+      182 |   await expect(trigger).toHaveAttribute('aria-expanded','true');await expect(child().getByRole('menuitem').first()).toBeFocused()
+      183 |   await page.keyboard.press('ArrowDown');await expect(child().getByRole('menuitem').nth(1)).toBeFocused()
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:180:48
+
+    Error Context: ../sim1a-evidence/red-results/column-menu-SIM-1a-el-subm-e711c--de-foco-Tab-y-cierre-fuera-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1a-evidence/red-results/column-menu-SIM-1a-el-subm-e711c--de-foco-Tab-y-cierre-fuera-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1a-evidence/red-results/column-menu-SIM-1a-el-subm-e711c--de-foco-Tab-y-cierre-fuera-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:18767) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[4/5] [csv] › tests/e2e/column-menu.spec.ts:198:2 › SIM-1a › raíz e hijo caben sin scroll a 1280×720 y el hijo cambia de lado según el espacio real
+  4) [csv] › tests/e2e/column-menu.spec.ts:198:2 › SIM-1a › raíz e hijo caben sin scroll a 1280×720 y el hijo cambia de lado según el espacio real 
+
+    TimeoutError: locator.focus: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('menu', { name: 'Acciones de columnas', exact: true }).getByRole('menuitem', { name: /^Limpiar(?:\s*[▸›])?$/ })
+
+
+      205 |    await expect.poll(()=>headerAt(x)).not.toBeNull();const header=await headerAt(x)
+      206 |    await page.mouse.click(x,(header!.top+header!.bottom)/2,{button:'right'});await expect(menu()).toBeVisible()
+    > 207 |    await cleaning(menu()).focus();await page.keyboard.press('ArrowRight');await expect(page.getByRole('menu')).toHaveCount(2)
+          |                           ^
+      208 |    const rootBox=await menu().boundingBox(),childBox=await child().boundingBox();expect(rootBox).not.toBeNull();expect(childBox).not.toBeNull()
+      209 |    if(edge==='left')expect(childBox!.x).toBeGreaterThanOrEqual(rootBox!.x+rootBox!.width-1)
+      210 |    else expect(childBox!.x+childBox!.width).toBeLessThanOrEqual(rootBox!.x+1)
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:207:27
+
+    Error Context: ../sim1a-evidence/red-results/column-menu-SIM-1a-raíz-e--a7731--lado-según-el-espacio-real-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1a-evidence/red-results/column-menu-SIM-1a-raíz-e--a7731--lado-según-el-espacio-real-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1a-evidence/red-results/column-menu-SIM-1a-raíz-e--a7731--lado-según-el-espacio-real-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:18848) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[5/5] [csv] › tests/e2e/column-menu.spec.ts:220:2 › SIM-1a › con marcas múltiples conserva los destinos y motivos distintos de cada entrada
+  5) [csv] › tests/e2e/column-menu.spec.ts:220:2 › SIM-1a › con marcas múltiples conserva los destinos y motivos distintos de cada entrada 
+
+    Error: expect(locator).toBeDisabled() failed
+
+    Locator: getByRole('menu', { name: 'Acciones de columnas', exact: true }).getByRole('menuitem', { name: 'Ordenar de menor a mayor', exact: true })
+    Expected: disabled
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeDisabled" getByRole('menu', { name: 'Acciones de columnas', exact: true }).getByRole('menuitem', { name: 'Ordenar de menor a mayor', exact: true }) with timeout 15000ms
+      - waiting for getByRole('menu', { name: 'Acciones de columnas', exact: true }).getByRole('menuitem', { name: 'Ordenar de menor a mayor', exact: true })
+
+
+      224 |    const root=await enter(entry)
+      225 |    await expect(folio).toBeChecked();await expect(city).toBeChecked()
+    > 226 |    await expect(root.getByRole('menuitem',{name:'Ordenar de menor a mayor',exact:true})).toBeDisabled();await expect(root.getByRole('menuitem',{name:'Duplicar columna',exact:true})).toBeDisabled()
+          |                                                                                          ^
+      227 |    for(const name of ['Filtrar esta columna','Estadísticas de la columna']){
+      228 |     const action=root.getByRole('menuitem',{name,exact:true})
+      229 |     if(entry==='button')await expect(action).toBeEnabled()
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:226:90
+
+    Error Context: ../sim1a-evidence/red-results/column-menu-SIM-1a-con-mar-99601-s-distintos-de-cada-entrada-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1a-evidence/red-results/column-menu-SIM-1a-con-mar-99601-s-distintos-de-cada-entrada-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1a-evidence/red-results/column-menu-SIM-1a-con-mar-99601-s-distintos-de-cada-entrada-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  5 failed
+    [csv] › tests/e2e/column-menu.spec.ts:135:2 › SIM-1a › los cuatro accesos muestran la misma lista y el nombre sin filas, sin alterar el documento 
+    [csv] › tests/e2e/column-menu.spec.ts:154:2 › SIM-1a › las veinte acciones siguen alcanzables por su jerarquía y por las cuatro salidas existentes 
+    [csv] › tests/e2e/column-menu.spec.ts:176:2 › SIM-1a › el submenú respeta niveles de teclado, retorno de foco, Tab y cierre fuera 
+    [csv] › tests/e2e/column-menu.spec.ts:198:2 › SIM-1a › raíz e hijo caben sin scroll a 1280×720 y el hijo cambia de lado según el espacio real 
+    [csv] › tests/e2e/column-menu.spec.ts:220:2 › SIM-1a › con marcas múltiples conserva los destinos y motivos distintos de cada entrada 
+
+
+PRIMER CANDIDATO 6f631cf: 15/17, dos fallos de presentación
+
+Running 17 tests using 1 worker
+
+(node:54254) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/17] [csv] › tests/e2e/column-menu.spec.ts:31:1 › cada cabecera tiene un menú ▾ visible con ordenar, filtrar, estadísticas y limpieza
+[2/17] [csv] › tests/e2e/column-menu.spec.ts:42:1 › el menú se maneja con teclado: Enter lo abre, las flechas recorren y Escape devuelve el foco al botón
+[3/17] [csv] › tests/e2e/column-menu.spec.ts:50:1 › mayúsculas en la columna: alcance, vista previa antes → después, recuento, confirmación y un paso de deshacer
+[4/17] [csv] › tests/e2e/column-menu.spec.ts:66:1 › quitar espacios y minúsculas: acceso desde Limpiar y solo tocan esa columna
+[5/17] [csv] › tests/e2e/column-menu.spec.ts:80:1 › con una búsqueda activa solo cambian las filas visibles y el diálogo avisa de las ocultas
+[6/17] [csv] › tests/e2e/column-menu.spec.ts:91:1 › si no hay nada que cambiar la vista previa lo dice y no deja confirmar
+[7/17] [csv] › tests/e2e/column-menu.spec.ts:98:1 › «Filtrar esta columna» muestra los filtros y lleva el foco al de esa columna
+[8/17] [csv] › tests/e2e/column-menu.spec.ts:104:1 › «Estadísticas de la columna» abre Análisis con esa columna marcada
+[9/17] [csv] › tests/e2e/column-menu.spec.ts:113:1 › «Quitar filas duplicadas de la columna…» abre la transformación con la columna ya elegida y sin cambiar nada
+[10/17] [csv] › tests/e2e/column-menu.spec.ts:139:2 › SIM-1a › los cuatro accesos muestran la misma lista y el nombre sin filas, sin alterar el documento
+  1) [csv] › tests/e2e/column-menu.spec.ts:139:2 › SIM-1a › los cuatro accesos muestran la misma lista y el nombre sin filas, sin alterar el documento 
+
+    Error: right
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected value: "Ciudad"
+    Received array: ["CIUDAD", "Ordenar de menor a mayor", "Ordenar de mayor a menor", "Filtrar esta columna", "Ver filas vacías", "Limpiar", "Estadísticas de la columna", "Insertar a la izquierda", "Insertar a la derecha", "Duplicar columna", …]
+
+      149 |   for(const result of observed){
+      150 |    expect.soft(result.items,result.entry).toEqual(mainItems)
+    > 151 |    expect.soft(result.lines,result.entry).toContain('Ciudad')
+          |                                           ^
+      152 |    for(const obsolete of ['Vista de la tabla','Limpiar la columna · con vista previa','Estructura','Más'])expect.soft(result.lines,result.entry).not.toContain(obsolete)
+      153 |    expect.soft(result.lines.some(line=>/\b\d+\s+filas?\b/u.test(line)),result.entry).toBe(false)
+      154 |   }
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:151:43
+
+    Error: button
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected value: "Ciudad"
+    Received array: ["CIUDAD", "Ordenar de menor a mayor", "Ordenar de mayor a menor", "Filtrar esta columna", "Ver filas vacías", "Limpiar", "Estadísticas de la columna", "Insertar a la izquierda", "Insertar a la derecha", "Duplicar columna", …]
+
+      149 |   for(const result of observed){
+      150 |    expect.soft(result.items,result.entry).toEqual(mainItems)
+    > 151 |    expect.soft(result.lines,result.entry).toContain('Ciudad')
+          |                                           ^
+      152 |    for(const obsolete of ['Vista de la tabla','Limpiar la columna · con vista previa','Estructura','Más'])expect.soft(result.lines,result.entry).not.toContain(obsolete)
+      153 |    expect.soft(result.lines.some(line=>/\b\d+\s+filas?\b/u.test(line)),result.entry).toBe(false)
+      154 |   }
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:151:43
+
+    Error: shift
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected value: "Ciudad"
+    Received array: ["CIUDAD", "Ordenar de menor a mayor", "Ordenar de mayor a menor", "Filtrar esta columna", "Ver filas vacías", "Limpiar", "Estadísticas de la columna", "Insertar a la izquierda", "Insertar a la derecha", "Duplicar columna", …]
+
+      149 |   for(const result of observed){
+      150 |    expect.soft(result.items,result.entry).toEqual(mainItems)
+    > 151 |    expect.soft(result.lines,result.entry).toContain('Ciudad')
+          |                                           ^
+      152 |    for(const obsolete of ['Vista de la tabla','Limpiar la columna · con vista previa','Estructura','Más'])expect.soft(result.lines,result.entry).not.toContain(obsolete)
+      153 |    expect.soft(result.lines.some(line=>/\b\d+\s+filas?\b/u.test(line)),result.entry).toBe(false)
+      154 |   }
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:151:43
+
+    Error: context
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected value: "Ciudad"
+    Received array: ["CIUDAD", "Ordenar de menor a mayor", "Ordenar de mayor a menor", "Filtrar esta columna", "Ver filas vacías", "Limpiar", "Estadísticas de la columna", "Insertar a la izquierda", "Insertar a la derecha", "Duplicar columna", …]
+
+      149 |   for(const result of observed){
+      150 |    expect.soft(result.items,result.entry).toEqual(mainItems)
+    > 151 |    expect.soft(result.lines,result.entry).toContain('Ciudad')
+          |                                           ^
+      152 |    for(const obsolete of ['Vista de la tabla','Limpiar la columna · con vista previa','Estructura','Más'])expect.soft(result.lines,result.entry).not.toContain(obsolete)
+      153 |    expect.soft(result.lines.some(line=>/\b\d+\s+filas?\b/u.test(line)),result.entry).toBe(false)
+      154 |   }
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:151:43
+
+    Error Context: ../sim1a-evidence/focused-results/column-menu-SIM-1a-los-cua-d3f16-as-sin-alterar-el-documento-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1a-evidence/focused-results/column-menu-SIM-1a-los-cua-d3f16-as-sin-alterar-el-documento-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1a-evidence/focused-results/column-menu-SIM-1a-los-cua-d3f16-as-sin-alterar-el-documento-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:56651) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[11/17] [csv] › tests/e2e/column-menu.spec.ts:158:2 › SIM-1a › las veinte acciones siguen alcanzables por su jerarquía y por las cuatro salidas existentes
+[12/17] [csv] › tests/e2e/column-menu.spec.ts:180:2 › SIM-1a › el submenú respeta niveles de teclado, retorno de foco, Tab y cierre fuera
+[13/17] [csv] › tests/e2e/column-menu.spec.ts:202:2 › SIM-1a › raíz e hijo caben sin scroll a 1280×720 y el hijo cambia de lado según el espacio real
+[14/17] [csv] › tests/e2e/column-menu.spec.ts:224:2 › SIM-1a › con marcas múltiples conserva los destinos y motivos distintos de cada entrada
+[15/17] [csv] › tests/e2e/column-menu.spec.ts:252:48 › SIM-1a › capturas posteriores y teclado conservan datos en ambos temas y tamaños (es)
+[16/17] [csv] › tests/e2e/column-menu.spec.ts:252:48 › SIM-1a › capturas posteriores y teclado conservan datos en ambos temas y tamaños (en-XA)
+  2) [csv] › tests/e2e/column-menu.spec.ts:252:48 › SIM-1a › capturas posteriores y teclado conservan datos en ambos temas y tamaños (en-XA) 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      269 |    await page.keyboard.press('ArrowUp');await expect(clean.getByRole('menuitem',{name:tr('csv.columnMenu.column-upper'),exact:true})).toBeFocused()
+      270 |    for(const pane of [root,clean]){
+    > 271 |     await expect.poll(()=>pane.evaluate(element=>element.scrollHeight<=element.clientHeight+1&&element.scrollWidth<=element.clientWidth+1)).toBe(true)
+          |                                                                                                                                             ^
+      272 |     const bounds=await pane.boundingBox();expect(bounds).not.toBeNull();expect(bounds!.x).toBeGreaterThanOrEqual(0);expect(bounds!.y).toBeGreaterThanOrEqual(0);expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(width+1);expect(bounds!.y+bounds!.height).toBeLessThanOrEqual(height+1)
+      273 |    }
+      274 |    const screenshot=join(destination,`sim1a-after-${language}-${theme}-${width}x${height}.png`)
+        at /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a/tests/e2e/column-menu.spec.ts:271:141
+
+    Error Context: ../sim1a-evidence/focused-results/column-menu-SIM-1a-captura-3dc10-mbos-temas-y-tamaños-en-XA--csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1a-evidence/focused-results/column-menu-SIM-1a-captura-3dc10-mbos-temas-y-tamaños-en-XA--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1a-evidence/focused-results/column-menu-SIM-1a-captura-3dc10-mbos-temas-y-tamaños-en-XA--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:60870) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[17/17] [csv] › tests/e2e/column-menu.spec.ts:284:2 › SIM-1a › colores forzados mantienen hojas, foco y cierre por nivel (es)
+  2 failed
+    [csv] › tests/e2e/column-menu.spec.ts:139:2 › SIM-1a › los cuatro accesos muestran la misma lista y el nombre sin filas, sin alterar el documento 
+    [csv] › tests/e2e/column-menu.spec.ts:252:48 › SIM-1a › capturas posteriores y teclado conservan datos en ambos temas y tamaños (en-XA) 
+  15 passed (37.8s)
+
+
+SONDA TEMPORAL DE DESBORDE, SIN CAMBIAR PRODUCTO
+
+Running 1 test using 1 worker
+
+(node:61793) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/sim1a-overflow-observation.spec.ts:10:1 › SIM-1a mide desborde y contrasta CSS local sin modificar producto
+  1 passed (1.3s)
+
+
+CORRECCIÓN 8a5c7ef: CINCO AFECTADOS
+
+Running 5 tests using 1 worker
+
+(node:64286) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/5] [csv] › tests/e2e/column-menu.spec.ts:139:2 › SIM-1a › los cuatro accesos muestran la misma lista y el nombre sin filas, sin alterar el documento
+[2/5] [csv] › tests/e2e/column-menu.spec.ts:202:2 › SIM-1a › raíz e hijo caben sin scroll a 1280×720 y el hijo cambia de lado según el espacio real
+[3/5] [csv] › tests/e2e/column-menu.spec.ts:252:48 › SIM-1a › capturas posteriores y teclado conservan datos en ambos temas y tamaños (es)
+[4/5] [csv] › tests/e2e/column-menu.spec.ts:252:48 › SIM-1a › capturas posteriores y teclado conservan datos en ambos temas y tamaños (en-XA)
+[5/5] [csv] › tests/e2e/column-menu.spec.ts:284:2 › SIM-1a › colores forzados mantienen hojas, foco y cierre por nivel (es)
+  5 passed (7.7s)
+
+
+INTEGRACIÓN e130: 48 E2E EDITADAS Y ALINEACIÓN
+
+Running 48 tests using 1 worker
+
+(node:84934) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/48] [shell] › tests/e2e/menu-alignment.spec.ts:40:45 › SIM-1g: Nuevo, columna y Archivos alinean su contenido y conservan el teclado [es]
+[2/48] [shell] › tests/e2e/menu-alignment.spec.ts:40:45 › SIM-1g: Nuevo, columna y Archivos alinean su contenido y conservan el teclado [en-XA]
+(node:84973) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/48] [csv] › tests/e2e/column-menu.spec.ts:31:1 › cada cabecera tiene un menú ▾ visible con ordenar, filtrar, estadísticas y limpieza
+[4/48] [csv] › tests/e2e/column-menu.spec.ts:42:1 › el menú se maneja con teclado: Enter lo abre, las flechas recorren y Escape devuelve el foco al botón
+[5/48] [csv] › tests/e2e/column-menu.spec.ts:50:1 › mayúsculas en la columna: alcance, vista previa antes → después, recuento, confirmación y un paso de deshacer
+[6/48] [csv] › tests/e2e/column-menu.spec.ts:66:1 › quitar espacios y minúsculas: acceso desde Limpiar y solo tocan esa columna
+[7/48] [csv] › tests/e2e/column-menu.spec.ts:80:1 › con una búsqueda activa solo cambian las filas visibles y el diálogo avisa de las ocultas
+[8/48] [csv] › tests/e2e/column-menu.spec.ts:91:1 › si no hay nada que cambiar la vista previa lo dice y no deja confirmar
+[9/48] [csv] › tests/e2e/column-menu.spec.ts:98:1 › «Filtrar esta columna» muestra los filtros y lleva el foco al de esa columna
+[10/48] [csv] › tests/e2e/column-menu.spec.ts:104:1 › «Estadísticas de la columna» abre Análisis con esa columna marcada
+[11/48] [csv] › tests/e2e/column-menu.spec.ts:113:1 › «Quitar filas duplicadas de la columna…» abre la transformación con la columna ya elegida y sin cambiar nada
+[12/48] [csv] › tests/e2e/column-menu.spec.ts:139:2 › SIM-1a › los cuatro accesos muestran la misma lista y el nombre sin filas, sin alterar el documento
+[13/48] [csv] › tests/e2e/column-menu.spec.ts:158:2 › SIM-1a › las veinte acciones siguen alcanzables por su jerarquía y por las cuatro salidas existentes
+[14/48] [csv] › tests/e2e/column-menu.spec.ts:180:2 › SIM-1a › el submenú respeta niveles de teclado, retorno de foco, Tab y cierre fuera
+[15/48] [csv] › tests/e2e/column-menu.spec.ts:202:2 › SIM-1a › raíz e hijo caben sin scroll a 1280×720 y el hijo cambia de lado según el espacio real
+[16/48] [csv] › tests/e2e/column-menu.spec.ts:224:2 › SIM-1a › con marcas múltiples conserva los destinos y motivos distintos de cada entrada
+[17/48] [csv] › tests/e2e/column-menu.spec.ts:252:48 › SIM-1a › capturas posteriores y teclado conservan datos en ambos temas y tamaños (es)
+[18/48] [csv] › tests/e2e/column-menu.spec.ts:252:48 › SIM-1a › capturas posteriores y teclado conservan datos en ambos temas y tamaños (en-XA)
+[19/48] [csv] › tests/e2e/column-menu.spec.ts:284:2 › SIM-1a › colores forzados mantienen hojas, foco y cierre por nivel (es)
+[20/48] [csv] › tests/e2e/empty-values.spec.ts:33:1 › LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar
+[21/48] [csv] › tests/e2e/empty-values.spec.ts:57:1 › LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos
+[22/48] [csv] › tests/e2e/empty-values.spec.ts:89:1 › LIM-1 ajustes: Un valor vacío bloquea preparar y rellenar con un motivo accesible
+[23/48] [csv] › tests/e2e/empty-values.spec.ts:105:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es)
+[24/48] [csv] › tests/e2e/empty-values.spec.ts:105:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (en)
+[25/48] [csv] › tests/e2e/empty-values.spec.ts:138:1 › LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva bytes tras guardar
+[26/48] [csv] › tests/e2e/empty-values.spec.ts:156:1 › LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo
+[27/48] [csv] › tests/e2e/empty-values.spec.ts:175:1 › LIM-1 elimina por cualquiera o todas las columnas marcadas y restaura filas completas
+[28/48] [csv] › tests/e2e/empty-values.spec.ts:191:1 › LIM-1 fuente protegida permite ver vacíos y bloquea las mutaciones también por el puente
+[29/48] [csv] › tests/e2e/empty-values.spec.ts:225:1 › LIM-1 archivo grande permite el filtro completo y explica que limpiar requiere extraer
+[30/48] [csv] › tests/e2e/empty-values.spec.ts:239:1 › LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio
+[31/48] [csv] › tests/e2e/empty-values.spec.ts:256:1 › LIM-1 Texto sin confirmar conserva el diálogo y Cancelar no pierde el borrador
+[32/48] [csv] › tests/e2e/empty-values.spec.ts:270:1 › LIM-1 cancelar descarta una vista previa tardía y deja reintentar sin modificar el CSV
+[33/48] [csv] › tests/e2e/empty-values.spec.ts:302:1 › LIM-1 la paleta encuentra isnull, fillna y dropna y conserva la selección múltiple
+[34/48] [csv] › tests/e2e/empty-values.spec.ts:318:1 › LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas
+[35/48] [csv] › tests/e2e/empty-values.spec.ts:332:1 › LIM-1 una protección recibida con el diálogo abierto invalida su vista previa
+[36/48] [csv] › tests/e2e/empty-values.spec.ts:347:1 › LIM-1 rellenar desde Información actúa sobre todo el documento y pide actualizar el análisis
+[37/48] [csv] › tests/e2e/empty-values.spec.ts:368:57 › LIM-1 teclado, idiomas y temas (es)
+[38/48] [csv] › tests/e2e/empty-values.spec.ts:368:57 › LIM-1 teclado, idiomas y temas (en)
+[39/48] [csv] › tests/e2e/empty-values.spec.ts:368:57 › LIM-1 teclado, idiomas y temas (en-XA)
+[40/48] [csv] › tests/e2e/large-file.spec.ts:25:1 › un CSV por encima del umbral se abre como archivo grande: aviso, recuento exacto y sin el límite de 200 filas
+[41/48] [csv] › tests/e2e/large-file.spec.ts:35:1 › «Ir a la fila»: botón, menú, validación, foco y Escape
+[42/48] [csv] › tests/e2e/large-file.spec.ts:48:1 › lo que aún no existe en archivos grandes está deshabilitado y el documento no cambia
+[43/48] [csv] › tests/e2e/large-file.spec.ts:70:1 › llega a cualquier fila de un archivo de 700 000 filas, más allá del techo de altura de Chromium
+[44/48] [csv] › tests/e2e/structural-context.spec.ts:19:1 › la lectura de filas recupera una consulta sustituida por una recarga
+[45/48] [csv] › tests/e2e/structural-context.spec.ts:40:1 › menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar
+[46/48] [csv] › tests/e2e/structural-context.spec.ts:47:1 › menú de columnas: teclado, insertar a ambos lados, conservar valores y respetar selección múltiple
+[47/48] [csv] › tests/e2e/structural-context.spec.ts:57:1 › menús estructurales: muestras bloquean cambios y conservan orden de vista, temas y foco @perf
+[48/48] [csv] › tests/e2e/structural-context.spec.ts:63:1 › menú estructural: restaura foco si desaparece el origen y rechaza inserciones ambiguas por IPC
+  48 passed (1.2m)
+
+
+INTEGRACIÓN e130: 72 CONSUMIDORES
+
+Running 72 tests using 1 worker
+
+(node:95213) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/72] [shell] › tests/e2e/project-source.spec.ts:61:1 › registra un CSV con teclado, bloquea edición directa y deja guardar una copia exacta
+[2/72] [shell] › tests/e2e/project-source.spec.ts:93:1 › avisa cuando la fuente cambia y conserva la huella previa al volver a registrarla
+[3/72] [shell] › tests/e2e/project-source.spec.ts:110:1 › busca por huella dentro del proyecto y solo reenlaza tras confirmar
+[4/72] [shell] › tests/e2e/project-source.spec.ts:130:1 › el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado
+[5/72] [shell] › tests/e2e/project-source.spec.ts:203:1 › una muestra conserva su alcance al protegerla y al cerrar el proyecto
+[6/72] [shell] › tests/e2e/project-source.spec.ts:230:45 › diálogo y fuente protegida en colores claro y oscuro [es]
+[7/72] [shell] › tests/e2e/project-source.spec.ts:230:45 › diálogo y fuente protegida en colores claro y oscuro [en-XA]
+(node:95499) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[8/72] [csv] › tests/e2e/analysis-dock.spec.ts:25:1 › las secciones de la pestaña de análisis se alcanzan y activan con teclado
+[9/72] [csv] › tests/e2e/analysis-dock.spec.ts:49:1 › cambiar de sección conserva la configuración del gráfico y el borrador SQL
+[10/72] [csv] › tests/e2e/analysis-dock.spec.ts:62:1 › las secciones visitadas se conservan y cerrar análisis las desmonta y devuelve el foco al CSV
+[11/72] [csv] › tests/e2e/calculated-column.spec.ts:63:1 › H15-1 IPC: rechaza solicitudes inválidas y un archivo reemplazado tras la vista previa
+[12/72] [csv] › tests/e2e/calculated-column.spec.ts:98:1 › H15-1 IPC: cancelar con progreso real durante la vista previa y al aplicar conserva el CSV
+[13/72] [csv] › tests/e2e/calculated-column.spec.ts:128:1 › H15-1 IPC: guardar añade solo el campo calculado en TSV, Windows-1252 y UTF-16 LE
+[14/72] [csv] › tests/e2e/calculated-column.spec.ts:163:1 › H15-2: encabezado y paleta explican los bloqueos del cálculo
+[15/72] [csv] › tests/e2e/csv-text.spec.ts:19:1 › A: el conmutador Tabla Texto conserva una pestaña y recuerda el modo
+[16/72] [csv] › tests/e2e/csv-text.spec.ts:25:1 › A: menú de CSV y TSV ofrece ambos modos y teclado devuelve el foco
+[17/72] [csv] › tests/e2e/csv-text.spec.ts:29:1 › A: más de 10 MiB deshabilita Texto en la barra y el menú con ayuda explícita
+[18/72] [csv] › tests/e2e/csv-text.spec.ts:33:1 › B: texto exacto conserva saltos mixtos, pegado, undo y opciones apagadas
+[19/72] [csv] › tests/e2e/csv-text.spec.ts:53:1 › B: buscar reemplazar con expresión regular e ir a línea usan CodeMirror en español
+[20/72] [csv] › tests/e2e/csv-text.spec.ts:59:1 › C: cancelar, descartar y guardar al cambiar conservan un documento y su contenido
+[21/72] [csv] › tests/e2e/csv-text.spec.ts:68:1 › C: un guardado no representable mantiene el diálogo y el texto pendiente
+[22/72] [csv] › tests/e2e/csv-text.spec.ts:72:1 › C: recuperación tras interrupción conserva Texto y UTF-16 con BOM como copia
+[23/72] [csv] › tests/e2e/csv-text.spec.ts:82:32 › D: comilla sin cerrar se abre como Texto, se corrige y vuelve a Tabla
+[24/72] [csv] › tests/e2e/csv-text.spec.ts:82:32 › D: comilla suelta se abre como Texto, se corrige y vuelve a Tabla
+[25/72] [csv] › tests/e2e/csv-text.spec.ts:82:32 › D: texto después de comilla se abre como Texto, se corrige y vuelve a Tabla
+[26/72] [csv] › tests/e2e/csv-text.spec.ts:92:1 › D: apertura inicial múltiple conserva los archivos válidos tras un CSV fallido
+[27/72] [csv] › tests/e2e/csv-text.spec.ts:96:1 › B: Buscar Todas permite editar varios rangos y deshacer en un paso
+[28/72] [csv] › tests/e2e/csv-text.spec.ts:103:1 › C: cambiar espera la celda enfocada y conserva su valor al cancelar, descartar o guardar
+[29/72] [csv] › tests/e2e/csv-text.spec.ts:112:1 › C: una edición rechazada por tamaño no permite guardar, cerrar ni cambiar con el texto anterior
+[30/72] [csv] › tests/e2e/csv-text.spec.ts:118:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar
+[31/72] [csv] › tests/e2e/csv-text.spec.ts:144:1 › TXT-02a: colores por columna y ubicación persistente sin cambiar el CSV
+[32/72] [csv] › tests/e2e/csv-text.spec.ts:191:77 › TXT-02a: separador detectado en datos.tsv abierto directamente como Texto
+[33/72] [csv] › tests/e2e/csv-text.spec.ts:191:77 › TXT-02a: separador detectado en punto-y-coma.csv abierto directamente como Texto
+[34/72] [csv] › tests/e2e/csv-text.spec.ts:200:1 › TXT-02a: filas irregulares y un documento sin encabezado conservan su columna
+[35/72] [csv] › tests/e2e/csv-text.spec.ts:219:1 › TXT-02a: saltar lejos no pierde la columna de un campo con varias líneas
+[36/72] [csv] › tests/e2e/csv-text.spec.ts:230:1 › TXT-02a: pinta las columnas al desplazarse horizontalmente
+[37/72] [csv] › tests/e2e/large-filter.spec.ts:27:1 › Filtrar en grande abre condiciones que se aplican explícitamente y se combinan con la búsqueda aplicada
+[38/72] [csv] › tests/e2e/large-filter.spec.ts:38:1 › el menú de columna precarga la columna y un error conserva la vista anterior sin iniciar un recorrido
+[39/72] [csv] › tests/e2e/large-filter.spec.ts:46:1 › Extraer precarga la regla aplicada y recorre todo aunque la vista tenga tope
+[40/72] [csv] › tests/e2e/project-tree.spec.ts:43:1 › PRJ-01c C1: en reposo solo hay dos acciones, una protección y ningún estado normal repetido
+[41/72] [csv] › tests/e2e/project-tree.spec.ts:57:1 › PRJ-01c C9: las quince acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo
+[42/72] [csv] › tests/e2e/project-tree.spec.ts:80:1 › PRJ-01c C7: rechazar la sobrescritura externa conserva el borrador del nombre en su fila
+[43/72] [csv] › tests/e2e/project-tree.spec.ts:97:1 › PRJ-01c C5: un fallo del explorador se anuncia junto a la fuente
+[44/72] [csv] › tests/e2e/project-tree.spec.ts:105:1 › PRJ-01c C2/C3/C6: cuatro aperturas del menú, un punto de tabulación y navegación del árbol
+[45/72] [csv] › tests/e2e/project-tree.spec.ts:143:1 › PRJ-01c C7: renombrar guarda con Intro, cancela con Escape o al salir y explica los duplicados
+[46/72] [csv] › tests/e2e/project-tree.spec.ts:185:1 › PRJ-01c C11: nombres largos y menús caben con 240 y 420 píxeles de barra lateral
+[47/72] [csv] › tests/e2e/project-tree.spec.ts:202:47 › PRJ-01c C12: reposo, menú y fuente modificada en dos temas y tamaños [es]
+[48/72] [csv] › tests/e2e/project-tree.spec.ts:202:47 › PRJ-01c C12: reposo, menú y fuente modificada en dos temas y tamaños [en-XA]
+[49/72] [csv] › tests/e2e/project-tree.spec.ts:243:1 › PRJ-01c C5: el progreso y Cancelar pertenecen a la fuente y liberan la operación
+[50/72] [csv] › tests/e2e/seg-csv-text.spec.ts:28:46 › S1a: explorador confirma cambios de Tabla y Cancelar conserva el documento
+[51/72] [csv] › tests/e2e/seg-csv-text.spec.ts:28:46 › S1a: explorador confirma cambios de Texto y Cancelar conserva el documento
+[52/72] [csv] › tests/e2e/seg-csv-text.spec.ts:46:1 › S1a: explorador cambia un documento limpio en la misma pestaña
+[53/72] [csv] › tests/e2e/seg-csv-text.spec.ts:53:1 › S1b: guardar un CSV inválido mantiene Texto limpio con un solo aviso y detalle
+[54/72] [csv] › tests/e2e/seg-csv-text.spec.ts:72:1 › S1b: un aviso anterior no oculta un fallo nuevo tras guardar el CSV corregido
+[55/72] [csv] › tests/e2e/seg-csv-text.spec.ts:93:1 › S1b: la ruta limpia tampoco conserva un aviso anterior de formato CSV
+[56/72] [csv] › tests/e2e/seg-csv-text.spec.ts:110:1 › S1b: el fallo desde el explorador activa el CSV de destino y conserva el otro documento
+[57/72] [csv] › tests/e2e/structure.spec.ts:30:1 › H15-1: la transformación calculada conserva decimales exactos
+[58/72] [csv] › tests/e2e/structure.spec.ts:44:1 › H15-1: las fórmulas que salen de la expresión escalar se rechazan sin cambios
+[59/72] [csv] › tests/e2e/structure.spec.ts:66:1 › H15-1 interfaz: vista previa de filas filtradas, cambio pendiente, guardar y deshacer
+[60/72] [csv] › tests/e2e/structure.spec.ts:108:45 › H15-1 interfaz: traducción, fórmula con acento y medios accesibles [en]
+[61/72] [csv] › tests/e2e/structure.spec.ts:108:45 › H15-1 interfaz: traducción, fórmula con acento y medios accesibles [en-XA]
+[62/72] [csv] › tests/e2e/structure.spec.ts:136:1 › H15-1 interfaz: explica la fila corta y desactiva el cálculo en una muestra
+[63/72] [csv] › tests/e2e/structure.spec.ts:154:1 › H15-2: los ocho ejemplos eligen columnas, ajustan la lectura y calculan
+[64/72] [csv] › tests/e2e/structure.spec.ts:178:1 › H15-2b: los ejemplos encuentran cantidades aunque haya más de 100 000 valores distintos
+[65/72] [csv] › tests/e2e/structure.spec.ts:194:1 › H15-2b: el ejemplo Condition calcula en el idioma de la interfaz [en]
+[66/72] [csv] › tests/e2e/structure.spec.ts:209:1 › H15-2: cerrar Análisis cancela su perfilado y permite preparar la fórmula
+[67/72] [csv] › tests/e2e/structure.spec.ts:260:1 › H15-2: el encabezado inserta a su derecha y distingue vacío de campo ausente
+[68/72] [csv] › tests/e2e/structure.spec.ts:284:1 › H15-2: paleta CSV y ayuda por teclado con colores forzados [en-XA]
+[69/72] [csv] › tests/e2e/structure.spec.ts:308:1 › transformaciones visuales: documento completo, originales, Unicode, encabezados, duplicados y deshacer
+[70/72] [csv] › tests/e2e/structure.spec.ts:323:1 › transformaciones: cancela trabajo real, invalida revisión obsoleta y rechaza mensajes inválidos
+[71/72] [csv] › tests/e2e/structure.spec.ts:336:1 › transformación conserva recuperación, un paso de deshacer y guardado en disco
+[72/72] [csv] › tests/e2e/structure.spec.ts:345:1 › transformaciones: el menú abre durante la paginación, con ratón y teclado, sin cambiar el rango ni los datos
+  72 passed (2.3m)
+
+
+e130: UNITARIAS COMPLETAS
+
+> freyalab@0.1.0-alpha.4 test
+> vitest run
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a
+
+AC-00 P4 real: darwin, {"available":true,"path":"/opt/homebrew/Cellar/pandoc/3.12.1/bin/pandoc","version":"3.12.1","license":"GPL-2.0-or-later"}
+AC-00 HTTP: Pandoc sin soporte HTTP; eficacia del sandbox HTTP pendiente de otro binario
+
+ Test Files  165 passed (165)
+      Tests  2961 passed | 1 skipped (2962)
+   Start at  16:16:56
+   Duration  31.68s (tests 86%, import 9%, transform 4%)
+
+
+
+43e9: CHECK
+
+> freyalab@0.1.0-alpha.4 check
+> svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json --noEmit
+
+Loading svelte-check in workspace: /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a
+Getting Svelte diagnostics...
+
+svelte-check found 0 errors and 0 warnings
+
+
+43e9: UNITARIAS I18N
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim1a
+
+
+ Test Files  2 passed (2)
+      Tests  43 passed (43)
+   Start at  16:47:17
+   Duration  664ms (import 40%, tests 40%, transform 19%, worker 1%)
+
+
+
+43e9: DOS LOCALES Y OCHO CAPTURAS
+
+Running 2 tests using 1 worker
+
+(node:35544) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/2] [csv] › tests/e2e/column-menu.spec.ts:252:48 › SIM-1a › capturas posteriores y teclado conservan datos en ambos temas y tamaños (es)
+[2/2] [csv] › tests/e2e/column-menu.spec.ts:252:48 › SIM-1a › capturas posteriores y teclado conservan datos en ambos temas y tamaños (en-XA)
+  2 passed (3.7s)
+
+
+43e9: BUILD (cola literal)
+out/renderer/assets/CsvCharts-SLA_RFm7.js                                1,685.22 kB
+out/renderer/assets/elk-QONTBCTQ-CMQXnjZg.js                             2,619.74 kB
+out/renderer/assets/index-CU6Rguw4.js                                    3,934.13 kB
+
+✓ built in 1.35s

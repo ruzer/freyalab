@@ -3,6 +3,8 @@
 // Cuadrícula de 24 px; Icon.svelte fija el trazo (1,75), el color (currentColor) y el tamaño.
 // filter: Feather v4.29.2, MIT; https://github.com/feathericons/feather/blob/v4.29.2/icons/filter.svg
 export const icons={
+ // https://github.com/lucide-icons/lucide/blob/1.61.0/icons/hash.svg · misma licencia ISC del registro.
+ 'hash':'<line x1="4" x2="20" y1="9" y2="9"/> <line x1="4" x2="20" y1="15" y2="15"/> <line x1="10" x2="8" y1="3" y2="21"/> <line x1="16" x2="14" y1="3" y2="21"/>',
  'filter':'<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>',
  'lock':'<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/> <path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
  'panel-left':'<rect width="18" height="18" x="3" y="3" rx="2"/> <path d="M9 3v18"/>',

@@ -34,7 +34,6 @@
   "src/renderer/components/CsvExtract.svelte",
   "src/renderer/components/CsvQueryTools.svelte",
   "src/renderer/components/CsvRangePreview.svelte",
-  "src/renderer/components/CsvStatistics.svelte",
   "src/renderer/components/CsvTable.svelte",
   "src/renderer/components/CsvTransform.svelte",
   "src/renderer/components/Diagram.svelte",
