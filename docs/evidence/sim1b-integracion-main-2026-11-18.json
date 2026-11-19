@@ -1,0 +1,134 @@
+{
+  "before": "ea19b6cdb23595b94fe879104f81232b84b78f4e",
+  "after": "2ac65ed233bf5a93ec735b8ec1e34951c29c0cae",
+  "integratedMain": "1bdf88c437079fadaf8ff9e121102ab370fae614",
+  "beforeSrcTree": "b9947622ca9263b84658da727b4a5a590ee8fec4",
+  "afterSrcTree": "b9947622ca9263b84658da727b4a5a590ee8fec4",
+  "sameSourceBytes": true,
+  "changedInputsOutsideDocs": [
+    "tests/e2e/csv-text.spec.ts"
+  ],
+  "explanation": "Solo se integra la espera aria-busy=false de Guardar antes de Tabla, procedente de #185. No se cambian aserciones de datos ni fuentes del producto.",
+  "validation": {
+    "passed": 22,
+    "skipped": 0,
+    "retriesUsed": 0,
+    "durationReported": "34.4s",
+    "command": "npx playwright test tests/e2e/csv-text.spec.ts --project=csv --workers=1 --retries=0",
+    "caseIdentities": [
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "A: el conmutador Tabla Texto conserva una pestaña y recuerda el modo"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "A: menú de CSV y TSV ofrece ambos modos y teclado devuelve el foco"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "A: más de 10 MiB deshabilita Texto en la barra y el menú con ayuda explícita"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "B: texto exacto conserva saltos mixtos, pegado, undo y opciones apagadas"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "B: buscar reemplazar con expresión regular e ir a línea usan CodeMirror en español"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "C: cancelar, descartar y guardar al cambiar conservan un documento y su contenido"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "C: un guardado no representable mantiene el diálogo y el texto pendiente"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "C: recuperación tras interrupción conserva Texto y UTF-16 con BOM como copia"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "D: comilla sin cerrar se abre como Texto, se corrige y vuelve a Tabla"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "D: comilla suelta se abre como Texto, se corrige y vuelve a Tabla"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "D: texto después de comilla se abre como Texto, se corrige y vuelve a Tabla"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "D: apertura inicial múltiple conserva los archivos válidos tras un CSV fallido"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "B: Buscar Todas permite editar varios rangos y deshacer en un paso"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "C: cambiar espera la celda enfocada y conserva su valor al cancelar, descartar o guardar"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "C: una edición rechazada por tamaño no permite guardar, cerrar ni cambiar con el texto anterior"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "TXT-02a: colores por columna y ubicación persistente sin cambiar el CSV"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "TXT-02a: separador detectado en datos.tsv abierto directamente como Texto"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "TXT-02a: separador detectado en punto-y-coma.csv abierto directamente como Texto"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "TXT-02a: filas irregulares y un documento sin encabezado conservan su columna"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "TXT-02a: saltar lejos no pierde la columna de un campo con varias líneas"
+      },
+      {
+        "project": "csv",
+        "file": "csv-text.spec.ts",
+        "title": "TXT-02a: pinta las columnas al desplazarse horizontalmente"
+      }
+    ]
+  },
+  "mainBundleSha256": "d6c486e6c6ca154222241c7b24595006b737b4098445d1f469818e4695e1b2ab",
+  "csvTextBlob": "a796e12b70a1190e57fafc41f944a9cc3b4d5a76",
+  "mainCsvTextBlob": "a796e12b70a1190e57fafc41f944a9cc3b4d5a76"
+}

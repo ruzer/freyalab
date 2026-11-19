@@ -1,0 +1,2074 @@
+{
+  "beforeSource": "23121eda41fb9380c533a25ef86723046b6d7639",
+  "before": [
+    {
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1199,
+      "height": 38,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "[Fïltër~~]",
+          "text": "[Fïltër~~]",
+          "visible": true
+        },
+        {
+          "name": "[Clëán dátá~~~]",
+          "text": "[Clëán dátá~~~]",
+          "visible": false
+        },
+        {
+          "name": "[Röws ánd cölümns~~~~~]",
+          "text": "[Röws ánd cölümns~~~~~]",
+          "visible": false
+        }
+      ],
+      "actions": [
+        "Transformar documento…",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas"
+      ]
+    },
+    {
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1199,
+      "height": 38,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "[Fïltër~~]",
+          "text": "[Fïltër~~]",
+          "visible": true
+        },
+        {
+          "name": "[Clëán dátá~~~]",
+          "text": "[Clëán dátá~~~]",
+          "visible": false
+        },
+        {
+          "name": "[Röws ánd cölümns~~~~~]",
+          "text": "[Röws ánd cölümns~~~~~]",
+          "visible": false
+        }
+      ],
+      "actions": [
+        "Transformar documento…",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas"
+      ]
+    },
+    {
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1039,
+      "height": 38,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "[Fïltër~~]",
+          "text": "[Fïltër~~]",
+          "visible": true
+        },
+        {
+          "name": "[Clëán dátá~~~]",
+          "text": "[Clëán dátá~~~]",
+          "visible": false
+        },
+        {
+          "name": "[Röws ánd cölümns~~~~~]",
+          "text": "[Röws ánd cölümns~~~~~]",
+          "visible": false
+        }
+      ],
+      "actions": [
+        "Transformar documento…",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas"
+      ]
+    },
+    {
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1039,
+      "height": 38,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "[Fïltër~~]",
+          "text": "[Fïltër~~]",
+          "visible": true
+        },
+        {
+          "name": "[Clëán dátá~~~]",
+          "text": "[Clëán dátá~~~]",
+          "visible": false
+        },
+        {
+          "name": "[Röws ánd cölümns~~~~~]",
+          "text": "[Röws ánd cölümns~~~~~]",
+          "visible": false
+        }
+      ],
+      "actions": [
+        "Transformar documento…",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas"
+      ]
+    },
+    {
+      "locale": "es",
+      "theme": "light",
+      "width": 1199,
+      "height": 38,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "Filtrar",
+          "text": "Filtrar",
+          "visible": true
+        },
+        {
+          "name": "Limpiar datos",
+          "text": "Limpiar datos",
+          "visible": false
+        },
+        {
+          "name": "Filas y columnas",
+          "text": "Filas y columnas",
+          "visible": false
+        }
+      ],
+      "actions": [
+        "Transformar documento…",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas"
+      ]
+    },
+    {
+      "locale": "es",
+      "theme": "dark",
+      "width": 1199,
+      "height": 38,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "Filtrar",
+          "text": "Filtrar",
+          "visible": true
+        },
+        {
+          "name": "Limpiar datos",
+          "text": "Limpiar datos",
+          "visible": false
+        },
+        {
+          "name": "Filas y columnas",
+          "text": "Filas y columnas",
+          "visible": false
+        }
+      ],
+      "actions": [
+        "Transformar documento…",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas"
+      ]
+    },
+    {
+      "locale": "es",
+      "theme": "light",
+      "width": 1039,
+      "height": 38,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "Filtrar",
+          "text": "Filtrar",
+          "visible": true
+        },
+        {
+          "name": "Limpiar datos",
+          "text": "Limpiar datos",
+          "visible": false
+        },
+        {
+          "name": "Filas y columnas",
+          "text": "Filas y columnas",
+          "visible": false
+        }
+      ],
+      "actions": [
+        "Transformar documento…",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas"
+      ]
+    },
+    {
+      "locale": "es",
+      "theme": "dark",
+      "width": 1039,
+      "height": 38,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "Filtrar",
+          "text": "Filtrar",
+          "visible": true
+        },
+        {
+          "name": "Limpiar datos",
+          "text": "Limpiar datos",
+          "visible": false
+        },
+        {
+          "name": "Filas y columnas",
+          "text": "Filas y columnas",
+          "visible": false
+        }
+      ],
+      "actions": [
+        "Transformar documento…",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas"
+      ]
+    }
+  ],
+  "insufficientOracleSource": "6ab74f29aedf6e578d5c6e729810f5554531391a",
+  "textRed": [
+    {
+      "locale": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "width": 1199,
+      "height": 38,
+      "left": 241,
+      "right": 1440,
+      "viewportWidth": 1440,
+      "clientWidth": 1199,
+      "scrollWidth": 1199,
+      "barInsideViewport": true,
+      "controlsInsideViewport": true,
+      "textInsideControls": true,
+      "textInsideViewport": true,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "[Fïltër~~]",
+          "text": "[Fïltër~~]",
+          "visible": true
+        },
+        {
+          "name": "[Clëán~~]",
+          "text": "[Clëán~~]",
+          "visible": true
+        },
+        {
+          "name": "[Röws ánd cölümns~~~~~]",
+          "text": "[Röws ánd cölümns~~~~~]",
+          "visible": true
+        }
+      ],
+      "actions": [
+        "[Fïll ëmpty cëlls ïn Ingreso…~~~~~~~~~]",
+        "[Dëlëtë röws wïth ëmpty cëlls ïn Ingreso…~~~~~~~~~~~~~]",
+        "[Rëmövë düplïcátë röws ïn Ingreso…~~~~~~~~~~~]",
+        "[Trïm spácës ïn Ingreso…~~~~~~~~]",
+        "[Üppërcásë ïn Ingreso…~~~~~~~]",
+        "[Löwërcásë ïn Ingreso…~~~~~~~]",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas",
+        "Transformar documento…"
+      ],
+      "textMetrics": [
+        {
+          "label": "[Táblë~~]",
+          "left": 254,
+          "right": 354.8046875,
+          "clientWidth": 101,
+          "scrollWidth": 101,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 284,
+          "textRight": 344.8046875
+        },
+        {
+          "label": "[Tëxt~~]",
+          "left": 354.8046875,
+          "right": 448.5859375,
+          "clientWidth": 94,
+          "scrollWidth": 94,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 384.8046875,
+          "textRight": 438.5859375
+        },
+        {
+          "label": "[Rëplácë~~~]",
+          "left": 648.5859375,
+          "right": 768.921875,
+          "clientWidth": 118,
+          "scrollWidth": 118,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 675.5859375,
+          "textRight": 760.921875
+        },
+        {
+          "label": "[Fïltër~~]",
+          "left": 774.921875,
+          "right": 875.7421875,
+          "clientWidth": 99,
+          "scrollWidth": 99,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 801.921875,
+          "textRight": 850.7421875
+        },
+        {
+          "label": "[Clëán~~]",
+          "left": 881.7421875,
+          "right": 986.21875,
+          "clientWidth": 102,
+          "scrollWidth": 102,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 908.7421875,
+          "textRight": 961.21875
+        },
+        {
+          "label": "[Röws ánd cölümns~~~~~]",
+          "left": 992.21875,
+          "right": 1186.34375,
+          "clientWidth": 192,
+          "scrollWidth": 192,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 1019.21875,
+          "textRight": 1161.34375
+        },
+        {
+          "label": "[Gö tö röw~~~]",
+          "left": 1220.5390625,
+          "right": 1260.5390625,
+          "clientWidth": 38,
+          "scrollWidth": 38,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "[Fïnd áctïön~~~~]",
+          "left": 1266.5390625,
+          "right": 1303.4296875,
+          "clientWidth": 35,
+          "scrollWidth": 35,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 1274.5390625,
+          "textRight": 1295.4296875
+        },
+        {
+          "label": "[Ánályzë~~~]",
+          "left": 1309.4296875,
+          "right": 1430,
+          "clientWidth": 119,
+          "scrollWidth": 119,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 1336.4296875,
+          "textRight": 1422
+        }
+      ]
+    },
+    {
+      "locale": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "width": 1199,
+      "height": 38,
+      "left": 241,
+      "right": 1440,
+      "viewportWidth": 1440,
+      "clientWidth": 1199,
+      "scrollWidth": 1199,
+      "barInsideViewport": true,
+      "controlsInsideViewport": true,
+      "textInsideControls": true,
+      "textInsideViewport": true,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "[Fïltër~~]",
+          "text": "[Fïltër~~]",
+          "visible": true
+        },
+        {
+          "name": "[Clëán~~]",
+          "text": "[Clëán~~]",
+          "visible": true
+        },
+        {
+          "name": "[Röws ánd cölümns~~~~~]",
+          "text": "[Röws ánd cölümns~~~~~]",
+          "visible": true
+        }
+      ],
+      "actions": [
+        "[Fïll ëmpty cëlls ïn Ingreso…~~~~~~~~~]",
+        "[Dëlëtë röws wïth ëmpty cëlls ïn Ingreso…~~~~~~~~~~~~~]",
+        "[Rëmövë düplïcátë röws ïn Ingreso…~~~~~~~~~~~]",
+        "[Trïm spácës ïn Ingreso…~~~~~~~~]",
+        "[Üppërcásë ïn Ingreso…~~~~~~~]",
+        "[Löwërcásë ïn Ingreso…~~~~~~~]",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas",
+        "Transformar documento…"
+      ],
+      "textMetrics": [
+        {
+          "label": "[Táblë~~]",
+          "left": 254,
+          "right": 354.8046875,
+          "clientWidth": 101,
+          "scrollWidth": 101,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 284,
+          "textRight": 344.8046875
+        },
+        {
+          "label": "[Tëxt~~]",
+          "left": 354.8046875,
+          "right": 448.5859375,
+          "clientWidth": 94,
+          "scrollWidth": 94,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 384.8046875,
+          "textRight": 438.5859375
+        },
+        {
+          "label": "[Rëplácë~~~]",
+          "left": 648.5859375,
+          "right": 768.921875,
+          "clientWidth": 118,
+          "scrollWidth": 118,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 675.5859375,
+          "textRight": 760.921875
+        },
+        {
+          "label": "[Fïltër~~]",
+          "left": 774.921875,
+          "right": 875.7421875,
+          "clientWidth": 99,
+          "scrollWidth": 99,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 801.921875,
+          "textRight": 850.7421875
+        },
+        {
+          "label": "[Clëán~~]",
+          "left": 881.7421875,
+          "right": 986.21875,
+          "clientWidth": 102,
+          "scrollWidth": 102,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 908.7421875,
+          "textRight": 961.21875
+        },
+        {
+          "label": "[Röws ánd cölümns~~~~~]",
+          "left": 992.21875,
+          "right": 1186.34375,
+          "clientWidth": 192,
+          "scrollWidth": 192,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 1019.21875,
+          "textRight": 1161.34375
+        },
+        {
+          "label": "[Gö tö röw~~~]",
+          "left": 1220.5390625,
+          "right": 1260.5390625,
+          "clientWidth": 38,
+          "scrollWidth": 38,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "[Fïnd áctïön~~~~]",
+          "left": 1266.5390625,
+          "right": 1303.4296875,
+          "clientWidth": 35,
+          "scrollWidth": 35,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 1274.5390625,
+          "textRight": 1295.4296875
+        },
+        {
+          "label": "[Ánályzë~~~]",
+          "left": 1309.4296875,
+          "right": 1430,
+          "clientWidth": 119,
+          "scrollWidth": 119,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 1336.4296875,
+          "textRight": 1422
+        }
+      ]
+    },
+    {
+      "locale": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "width": 1039,
+      "height": 38,
+      "left": 241,
+      "right": 1280,
+      "viewportWidth": 1280,
+      "clientWidth": 1039,
+      "scrollWidth": 1052,
+      "barInsideViewport": true,
+      "controlsInsideViewport": true,
+      "textInsideControls": false,
+      "textInsideViewport": false,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "[Fïltër~~]",
+          "text": "[Fïltër~~]",
+          "visible": true
+        },
+        {
+          "name": "[Clëán~~]",
+          "text": "[Clëán~~]",
+          "visible": true
+        },
+        {
+          "name": "[Röws ánd cölümns~~~~~]",
+          "text": "[Röws ánd cölümns~~~~~]",
+          "visible": true
+        }
+      ],
+      "actions": [
+        "[Fïll ëmpty cëlls ïn Ingreso…~~~~~~~~~]",
+        "[Dëlëtë röws wïth ëmpty cëlls ïn Ingreso…~~~~~~~~~~~~~]",
+        "[Rëmövë düplïcátë röws ïn Ingreso…~~~~~~~~~~~]",
+        "[Trïm spácës ïn Ingreso…~~~~~~~~]",
+        "[Üppërcásë ïn Ingreso…~~~~~~~]",
+        "[Löwërcásë ïn Ingreso…~~~~~~~]",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas",
+        "Transformar documento…"
+      ],
+      "textMetrics": [
+        {
+          "label": "[Táblë~~]",
+          "left": 254,
+          "right": 354.8046875,
+          "clientWidth": 101,
+          "scrollWidth": 101,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 284,
+          "textRight": 344.8046875
+        },
+        {
+          "label": "[Tëxt~~]",
+          "left": 354.8046875,
+          "right": 448.5859375,
+          "clientWidth": 94,
+          "scrollWidth": 94,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 384.8046875,
+          "textRight": 438.5859375
+        },
+        {
+          "label": "[Rëplácë~~~]",
+          "left": 648.5859375,
+          "right": 706.3515625,
+          "clientWidth": 56,
+          "scrollWidth": 80,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 644.3046875,
+          "textRight": 729.640625
+        },
+        {
+          "label": "[Fïltër~~]",
+          "left": 712.3515625,
+          "right": 813.171875,
+          "clientWidth": 99,
+          "scrollWidth": 99,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 739.3515625,
+          "textRight": 788.171875
+        },
+        {
+          "label": "[Clëán~~]",
+          "left": 819.171875,
+          "right": 923.6484375,
+          "clientWidth": 102,
+          "scrollWidth": 102,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 846.171875,
+          "textRight": 898.6484375
+        },
+        {
+          "label": "[Röws ánd cölümns~~~~~]",
+          "left": 929.6484375,
+          "right": 1123.7734375,
+          "clientWidth": 192,
+          "scrollWidth": 192,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 956.6484375,
+          "textRight": 1098.7734375
+        },
+        {
+          "label": "[Gö tö röw~~~]",
+          "left": 1135.7734375,
+          "right": 1175.7734375,
+          "clientWidth": 38,
+          "scrollWidth": 38,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "[Fïnd áctïön~~~~]",
+          "left": 1181.7734375,
+          "right": 1206.140625,
+          "clientWidth": 22,
+          "scrollWidth": 22,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 1183.515625,
+          "textRight": 1204.40625
+        },
+        {
+          "label": "[Ánályzë~~~]",
+          "left": 1212.140625,
+          "right": 1270,
+          "clientWidth": 56,
+          "scrollWidth": 80,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 1207.7890625,
+          "textRight": 1293.359375
+        }
+      ]
+    },
+    {
+      "locale": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "width": 1039,
+      "height": 38,
+      "left": 241,
+      "right": 1280,
+      "viewportWidth": 1280,
+      "clientWidth": 1039,
+      "scrollWidth": 1052,
+      "barInsideViewport": true,
+      "controlsInsideViewport": true,
+      "textInsideControls": false,
+      "textInsideViewport": false,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "[Fïltër~~]",
+          "text": "[Fïltër~~]",
+          "visible": true
+        },
+        {
+          "name": "[Clëán~~]",
+          "text": "[Clëán~~]",
+          "visible": true
+        },
+        {
+          "name": "[Röws ánd cölümns~~~~~]",
+          "text": "[Röws ánd cölümns~~~~~]",
+          "visible": true
+        }
+      ],
+      "actions": [
+        "[Fïll ëmpty cëlls ïn Ingreso…~~~~~~~~~]",
+        "[Dëlëtë röws wïth ëmpty cëlls ïn Ingreso…~~~~~~~~~~~~~]",
+        "[Rëmövë düplïcátë röws ïn Ingreso…~~~~~~~~~~~]",
+        "[Trïm spácës ïn Ingreso…~~~~~~~~]",
+        "[Üppërcásë ïn Ingreso…~~~~~~~]",
+        "[Löwërcásë ïn Ingreso…~~~~~~~]",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas",
+        "Transformar documento…"
+      ],
+      "textMetrics": [
+        {
+          "label": "[Táblë~~]",
+          "left": 254,
+          "right": 354.8046875,
+          "clientWidth": 101,
+          "scrollWidth": 101,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 284,
+          "textRight": 344.8046875
+        },
+        {
+          "label": "[Tëxt~~]",
+          "left": 354.8046875,
+          "right": 448.5859375,
+          "clientWidth": 94,
+          "scrollWidth": 94,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 384.8046875,
+          "textRight": 438.5859375
+        },
+        {
+          "label": "[Rëplácë~~~]",
+          "left": 648.5859375,
+          "right": 706.3515625,
+          "clientWidth": 56,
+          "scrollWidth": 80,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 644.3046875,
+          "textRight": 729.640625
+        },
+        {
+          "label": "[Fïltër~~]",
+          "left": 712.3515625,
+          "right": 813.171875,
+          "clientWidth": 99,
+          "scrollWidth": 99,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 739.3515625,
+          "textRight": 788.171875
+        },
+        {
+          "label": "[Clëán~~]",
+          "left": 819.171875,
+          "right": 923.6484375,
+          "clientWidth": 102,
+          "scrollWidth": 102,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 846.171875,
+          "textRight": 898.6484375
+        },
+        {
+          "label": "[Röws ánd cölümns~~~~~]",
+          "left": 929.6484375,
+          "right": 1123.7734375,
+          "clientWidth": 192,
+          "scrollWidth": 192,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 956.6484375,
+          "textRight": 1098.7734375
+        },
+        {
+          "label": "[Gö tö röw~~~]",
+          "left": 1135.7734375,
+          "right": 1175.7734375,
+          "clientWidth": 38,
+          "scrollWidth": 38,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "[Fïnd áctïön~~~~]",
+          "left": 1181.7734375,
+          "right": 1206.140625,
+          "clientWidth": 22,
+          "scrollWidth": 22,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 1183.515625,
+          "textRight": 1204.40625
+        },
+        {
+          "label": "[Ánályzë~~~]",
+          "left": 1212.140625,
+          "right": 1270,
+          "clientWidth": 56,
+          "scrollWidth": 80,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 1207.7890625,
+          "textRight": 1293.359375
+        }
+      ]
+    }
+  ],
+  "afterSource": "ea19b6cdb23595b94fe879104f81232b84b78f4e",
+  "after": [
+    {
+      "locale": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "width": 1199,
+      "height": 38,
+      "left": 241,
+      "right": 1440,
+      "viewportWidth": 1440,
+      "clientWidth": 1199,
+      "scrollWidth": 1199,
+      "barInsideViewport": true,
+      "controlsInsideViewport": true,
+      "textInsideControls": true,
+      "textInsideViewport": true,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "[Fïltër~~]",
+          "text": "[Fïltër~~]",
+          "visible": true
+        },
+        {
+          "name": "[Clëán~~]",
+          "text": "[Clëán~~]",
+          "visible": true
+        },
+        {
+          "name": "[Röws ánd cölümns~~~~~]",
+          "text": "[Röws ánd cölümns~~~~~]",
+          "visible": true
+        }
+      ],
+      "actions": [
+        "[Fïll ëmpty cëlls ïn Ingreso…~~~~~~~~~]",
+        "[Dëlëtë röws wïth ëmpty cëlls ïn Ingreso…~~~~~~~~~~~~~]",
+        "[Rëmövë düplïcátë röws ïn Ingreso…~~~~~~~~~~~]",
+        "[Trïm spácës ïn Ingreso…~~~~~~~~]",
+        "[Üppërcásë ïn Ingreso…~~~~~~~]",
+        "[Löwërcásë ïn Ingreso…~~~~~~~]",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas",
+        "Transformar documento…"
+      ],
+      "textMetrics": [
+        {
+          "label": "[Táblë~~]",
+          "left": 254,
+          "right": 354.8046875,
+          "clientWidth": 101,
+          "scrollWidth": 101,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 284,
+          "textRight": 344.8046875
+        },
+        {
+          "label": "[Tëxt~~]",
+          "left": 354.8046875,
+          "right": 448.5859375,
+          "clientWidth": 94,
+          "scrollWidth": 94,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 384.8046875,
+          "textRight": 438.5859375
+        },
+        {
+          "label": "[Rëplácë~~~]",
+          "left": 648.5859375,
+          "right": 768.921875,
+          "clientWidth": 118,
+          "scrollWidth": 118,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 675.5859375,
+          "textRight": 760.921875
+        },
+        {
+          "label": "[Fïltër~~]",
+          "left": 774.921875,
+          "right": 875.7421875,
+          "clientWidth": 99,
+          "scrollWidth": 99,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 801.921875,
+          "textRight": 850.7421875
+        },
+        {
+          "label": "[Clëán~~]",
+          "left": 881.7421875,
+          "right": 986.21875,
+          "clientWidth": 102,
+          "scrollWidth": 102,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 908.7421875,
+          "textRight": 961.21875
+        },
+        {
+          "label": "[Röws ánd cölümns~~~~~]",
+          "left": 992.21875,
+          "right": 1186.34375,
+          "clientWidth": 192,
+          "scrollWidth": 192,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 1019.21875,
+          "textRight": 1161.34375
+        },
+        {
+          "label": "[Gö tö röw~~~]",
+          "left": 1220.5390625,
+          "right": 1260.5390625,
+          "clientWidth": 38,
+          "scrollWidth": 38,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "[Fïnd áctïön~~~~]",
+          "left": 1266.5390625,
+          "right": 1303.4296875,
+          "clientWidth": 35,
+          "scrollWidth": 35,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1274.5390625,
+          "textRight": 1295.4296875
+        },
+        {
+          "label": "[Ánályzë~~~]",
+          "left": 1309.4296875,
+          "right": 1430,
+          "clientWidth": 119,
+          "scrollWidth": 119,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1336.4296875,
+          "textRight": 1422
+        }
+      ]
+    },
+    {
+      "locale": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "width": 1199,
+      "height": 38,
+      "left": 241,
+      "right": 1440,
+      "viewportWidth": 1440,
+      "clientWidth": 1199,
+      "scrollWidth": 1199,
+      "barInsideViewport": true,
+      "controlsInsideViewport": true,
+      "textInsideControls": true,
+      "textInsideViewport": true,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "[Fïltër~~]",
+          "text": "[Fïltër~~]",
+          "visible": true
+        },
+        {
+          "name": "[Clëán~~]",
+          "text": "[Clëán~~]",
+          "visible": true
+        },
+        {
+          "name": "[Röws ánd cölümns~~~~~]",
+          "text": "[Röws ánd cölümns~~~~~]",
+          "visible": true
+        }
+      ],
+      "actions": [
+        "[Fïll ëmpty cëlls ïn Ingreso…~~~~~~~~~]",
+        "[Dëlëtë röws wïth ëmpty cëlls ïn Ingreso…~~~~~~~~~~~~~]",
+        "[Rëmövë düplïcátë röws ïn Ingreso…~~~~~~~~~~~]",
+        "[Trïm spácës ïn Ingreso…~~~~~~~~]",
+        "[Üppërcásë ïn Ingreso…~~~~~~~]",
+        "[Löwërcásë ïn Ingreso…~~~~~~~]",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas",
+        "Transformar documento…"
+      ],
+      "textMetrics": [
+        {
+          "label": "[Táblë~~]",
+          "left": 254,
+          "right": 354.8046875,
+          "clientWidth": 101,
+          "scrollWidth": 101,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 284,
+          "textRight": 344.8046875
+        },
+        {
+          "label": "[Tëxt~~]",
+          "left": 354.8046875,
+          "right": 448.5859375,
+          "clientWidth": 94,
+          "scrollWidth": 94,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 384.8046875,
+          "textRight": 438.5859375
+        },
+        {
+          "label": "[Rëplácë~~~]",
+          "left": 648.5859375,
+          "right": 768.921875,
+          "clientWidth": 118,
+          "scrollWidth": 118,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 675.5859375,
+          "textRight": 760.921875
+        },
+        {
+          "label": "[Fïltër~~]",
+          "left": 774.921875,
+          "right": 875.7421875,
+          "clientWidth": 99,
+          "scrollWidth": 99,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 801.921875,
+          "textRight": 850.7421875
+        },
+        {
+          "label": "[Clëán~~]",
+          "left": 881.7421875,
+          "right": 986.21875,
+          "clientWidth": 102,
+          "scrollWidth": 102,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 908.7421875,
+          "textRight": 961.21875
+        },
+        {
+          "label": "[Röws ánd cölümns~~~~~]",
+          "left": 992.21875,
+          "right": 1186.34375,
+          "clientWidth": 192,
+          "scrollWidth": 192,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 1019.21875,
+          "textRight": 1161.34375
+        },
+        {
+          "label": "[Gö tö röw~~~]",
+          "left": 1220.5390625,
+          "right": 1260.5390625,
+          "clientWidth": 38,
+          "scrollWidth": 38,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "[Fïnd áctïön~~~~]",
+          "left": 1266.5390625,
+          "right": 1303.4296875,
+          "clientWidth": 35,
+          "scrollWidth": 35,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1274.5390625,
+          "textRight": 1295.4296875
+        },
+        {
+          "label": "[Ánályzë~~~]",
+          "left": 1309.4296875,
+          "right": 1430,
+          "clientWidth": 119,
+          "scrollWidth": 119,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1336.4296875,
+          "textRight": 1422
+        }
+      ]
+    },
+    {
+      "locale": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "width": 1039,
+      "height": 38,
+      "left": 241,
+      "right": 1280,
+      "viewportWidth": 1280,
+      "clientWidth": 1039,
+      "scrollWidth": 1039,
+      "barInsideViewport": true,
+      "controlsInsideViewport": true,
+      "textInsideControls": true,
+      "textInsideViewport": true,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "[Fïltër~~]",
+          "text": "[Fïltër~~]",
+          "visible": false
+        },
+        {
+          "name": "[Clëán~~]",
+          "text": "[Clëán~~]",
+          "visible": false
+        },
+        {
+          "name": "[Röws ánd cölümns~~~~~]",
+          "text": "[Röws ánd cölümns~~~~~]",
+          "visible": false
+        }
+      ],
+      "actions": [
+        "[Fïll ëmpty cëlls ïn Ingreso…~~~~~~~~~]",
+        "[Dëlëtë röws wïth ëmpty cëlls ïn Ingreso…~~~~~~~~~~~~~]",
+        "[Rëmövë düplïcátë röws ïn Ingreso…~~~~~~~~~~~]",
+        "[Trïm spácës ïn Ingreso…~~~~~~~~]",
+        "[Üppërcásë ïn Ingreso…~~~~~~~]",
+        "[Löwërcásë ïn Ingreso…~~~~~~~]",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas",
+        "Transformar documento…"
+      ],
+      "textMetrics": [
+        {
+          "label": "[Táblë~~]",
+          "left": 254,
+          "right": 354.8046875,
+          "clientWidth": 101,
+          "scrollWidth": 101,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 284,
+          "textRight": 344.8046875
+        },
+        {
+          "label": "[Tëxt~~]",
+          "left": 354.8046875,
+          "right": 448.5859375,
+          "clientWidth": 94,
+          "scrollWidth": 94,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 384.8046875,
+          "textRight": 438.5859375
+        },
+        {
+          "label": "[Rëplácë~~~]",
+          "left": 648.5859375,
+          "right": 768.921875,
+          "clientWidth": 118,
+          "scrollWidth": 118,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 675.5859375,
+          "textRight": 760.921875
+        },
+        {
+          "label": "[Fïltër~~]",
+          "left": 774.921875,
+          "right": 821.921875,
+          "clientWidth": 45,
+          "scrollWidth": 45,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "[Clëán~~]",
+          "left": 827.921875,
+          "right": 874.921875,
+          "clientWidth": 45,
+          "scrollWidth": 45,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "[Röws ánd cölümns~~~~~]",
+          "left": 880.921875,
+          "right": 927.921875,
+          "clientWidth": 45,
+          "scrollWidth": 45,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "[Gö tö röw~~~]",
+          "left": 1060.5390625,
+          "right": 1100.5390625,
+          "clientWidth": 38,
+          "scrollWidth": 38,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "[Fïnd áctïön~~~~]",
+          "left": 1106.5390625,
+          "right": 1143.4296875,
+          "clientWidth": 35,
+          "scrollWidth": 35,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1114.5390625,
+          "textRight": 1135.4296875
+        },
+        {
+          "label": "[Ánályzë~~~]",
+          "left": 1149.4296875,
+          "right": 1270,
+          "clientWidth": 119,
+          "scrollWidth": 119,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1176.4296875,
+          "textRight": 1262
+        }
+      ]
+    },
+    {
+      "locale": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "width": 1039,
+      "height": 38,
+      "left": 241,
+      "right": 1280,
+      "viewportWidth": 1280,
+      "clientWidth": 1039,
+      "scrollWidth": 1039,
+      "barInsideViewport": true,
+      "controlsInsideViewport": true,
+      "textInsideControls": true,
+      "textInsideViewport": true,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "[Fïltër~~]",
+          "text": "[Fïltër~~]",
+          "visible": false
+        },
+        {
+          "name": "[Clëán~~]",
+          "text": "[Clëán~~]",
+          "visible": false
+        },
+        {
+          "name": "[Röws ánd cölümns~~~~~]",
+          "text": "[Röws ánd cölümns~~~~~]",
+          "visible": false
+        }
+      ],
+      "actions": [
+        "[Fïll ëmpty cëlls ïn Ingreso…~~~~~~~~~]",
+        "[Dëlëtë röws wïth ëmpty cëlls ïn Ingreso…~~~~~~~~~~~~~]",
+        "[Rëmövë düplïcátë röws ïn Ingreso…~~~~~~~~~~~]",
+        "[Trïm spácës ïn Ingreso…~~~~~~~~]",
+        "[Üppërcásë ïn Ingreso…~~~~~~~]",
+        "[Löwërcásë ïn Ingreso…~~~~~~~]",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas",
+        "Transformar documento…"
+      ],
+      "textMetrics": [
+        {
+          "label": "[Táblë~~]",
+          "left": 254,
+          "right": 354.8046875,
+          "clientWidth": 101,
+          "scrollWidth": 101,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 284,
+          "textRight": 344.8046875
+        },
+        {
+          "label": "[Tëxt~~]",
+          "left": 354.8046875,
+          "right": 448.5859375,
+          "clientWidth": 94,
+          "scrollWidth": 94,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 384.8046875,
+          "textRight": 438.5859375
+        },
+        {
+          "label": "[Rëplácë~~~]",
+          "left": 648.5859375,
+          "right": 768.921875,
+          "clientWidth": 118,
+          "scrollWidth": 118,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 675.5859375,
+          "textRight": 760.921875
+        },
+        {
+          "label": "[Fïltër~~]",
+          "left": 774.921875,
+          "right": 821.921875,
+          "clientWidth": 45,
+          "scrollWidth": 45,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "[Clëán~~]",
+          "left": 827.921875,
+          "right": 874.921875,
+          "clientWidth": 45,
+          "scrollWidth": 45,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "[Röws ánd cölümns~~~~~]",
+          "left": 880.921875,
+          "right": 927.921875,
+          "clientWidth": 45,
+          "scrollWidth": 45,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "[Gö tö röw~~~]",
+          "left": 1060.5390625,
+          "right": 1100.5390625,
+          "clientWidth": 38,
+          "scrollWidth": 38,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "[Fïnd áctïön~~~~]",
+          "left": 1106.5390625,
+          "right": 1143.4296875,
+          "clientWidth": 35,
+          "scrollWidth": 35,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1114.5390625,
+          "textRight": 1135.4296875
+        },
+        {
+          "label": "[Ánályzë~~~]",
+          "left": 1149.4296875,
+          "right": 1270,
+          "clientWidth": 119,
+          "scrollWidth": 119,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1176.4296875,
+          "textRight": 1262
+        }
+      ]
+    },
+    {
+      "locale": "es",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "width": 1199,
+      "height": 38,
+      "left": 241,
+      "right": 1440,
+      "viewportWidth": 1440,
+      "clientWidth": 1199,
+      "scrollWidth": 1199,
+      "barInsideViewport": true,
+      "controlsInsideViewport": true,
+      "textInsideControls": true,
+      "textInsideViewport": true,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "Filtrar",
+          "text": "Filtrar",
+          "visible": true
+        },
+        {
+          "name": "Limpiar",
+          "text": "Limpiar",
+          "visible": true
+        },
+        {
+          "name": "Filas y columnas",
+          "text": "Filas y columnas",
+          "visible": true
+        }
+      ],
+      "actions": [
+        "Rellenar vacíos de Ingreso…",
+        "Eliminar filas con vacío en Ingreso…",
+        "Quitar filas duplicadas de Ingreso…",
+        "Quitar espacios de Ingreso…",
+        "Mayúsculas en Ingreso…",
+        "Minúsculas en Ingreso…",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas",
+        "Transformar documento…"
+      ],
+      "textMetrics": [
+        {
+          "label": "Tabla",
+          "left": 254,
+          "right": 327.6171875,
+          "clientWidth": 74,
+          "scrollWidth": 74,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 284,
+          "textRight": 317.6171875
+        },
+        {
+          "label": "Texto",
+          "left": 327.6171875,
+          "right": 402.0703125,
+          "clientWidth": 74,
+          "scrollWidth": 74,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 357.6171875,
+          "textRight": 392.0703125
+        },
+        {
+          "label": "Reemplazar",
+          "left": 602.0703125,
+          "right": 710.5078125,
+          "clientWidth": 106,
+          "scrollWidth": 106,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 629.0703125,
+          "textRight": 702.5078125
+        },
+        {
+          "label": "Filtrar",
+          "left": 716.5078125,
+          "right": 798.5546875,
+          "clientWidth": 80,
+          "scrollWidth": 80,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 743.5078125,
+          "textRight": 773.5546875
+        },
+        {
+          "label": "Limpiar",
+          "left": 804.5546875,
+          "right": 894.796875,
+          "clientWidth": 88,
+          "scrollWidth": 88,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 831.5546875,
+          "textRight": 869.796875
+        },
+        {
+          "label": "Filas y columnas",
+          "left": 900.796875,
+          "right": 1039.140625,
+          "clientWidth": 136,
+          "scrollWidth": 136,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 927.796875,
+          "textRight": 1014.140625
+        },
+        {
+          "label": "Ir a la fila",
+          "left": 1255.4609375,
+          "right": 1295.4609375,
+          "clientWidth": 38,
+          "scrollWidth": 38,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "Buscar acción",
+          "left": 1301.4609375,
+          "right": 1338.3515625,
+          "clientWidth": 35,
+          "scrollWidth": 35,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1309.4609375,
+          "textRight": 1330.3515625
+        },
+        {
+          "label": "Analizar",
+          "left": 1344.3515625,
+          "right": 1430,
+          "clientWidth": 84,
+          "scrollWidth": 84,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1371.3515625,
+          "textRight": 1422
+        }
+      ]
+    },
+    {
+      "locale": "es",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "width": 1199,
+      "height": 38,
+      "left": 241,
+      "right": 1440,
+      "viewportWidth": 1440,
+      "clientWidth": 1199,
+      "scrollWidth": 1199,
+      "barInsideViewport": true,
+      "controlsInsideViewport": true,
+      "textInsideControls": true,
+      "textInsideViewport": true,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "Filtrar",
+          "text": "Filtrar",
+          "visible": true
+        },
+        {
+          "name": "Limpiar",
+          "text": "Limpiar",
+          "visible": true
+        },
+        {
+          "name": "Filas y columnas",
+          "text": "Filas y columnas",
+          "visible": true
+        }
+      ],
+      "actions": [
+        "Rellenar vacíos de Ingreso…",
+        "Eliminar filas con vacío en Ingreso…",
+        "Quitar filas duplicadas de Ingreso…",
+        "Quitar espacios de Ingreso…",
+        "Mayúsculas en Ingreso…",
+        "Minúsculas en Ingreso…",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas",
+        "Transformar documento…"
+      ],
+      "textMetrics": [
+        {
+          "label": "Tabla",
+          "left": 254,
+          "right": 327.6171875,
+          "clientWidth": 74,
+          "scrollWidth": 74,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 284,
+          "textRight": 317.6171875
+        },
+        {
+          "label": "Texto",
+          "left": 327.6171875,
+          "right": 402.0703125,
+          "clientWidth": 74,
+          "scrollWidth": 74,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 357.6171875,
+          "textRight": 392.0703125
+        },
+        {
+          "label": "Reemplazar",
+          "left": 602.0703125,
+          "right": 710.5078125,
+          "clientWidth": 106,
+          "scrollWidth": 106,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 629.0703125,
+          "textRight": 702.5078125
+        },
+        {
+          "label": "Filtrar",
+          "left": 716.5078125,
+          "right": 798.5546875,
+          "clientWidth": 80,
+          "scrollWidth": 80,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 743.5078125,
+          "textRight": 773.5546875
+        },
+        {
+          "label": "Limpiar",
+          "left": 804.5546875,
+          "right": 894.796875,
+          "clientWidth": 88,
+          "scrollWidth": 88,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 831.5546875,
+          "textRight": 869.796875
+        },
+        {
+          "label": "Filas y columnas",
+          "left": 900.796875,
+          "right": 1039.140625,
+          "clientWidth": 136,
+          "scrollWidth": 136,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 927.796875,
+          "textRight": 1014.140625
+        },
+        {
+          "label": "Ir a la fila",
+          "left": 1255.4609375,
+          "right": 1295.4609375,
+          "clientWidth": 38,
+          "scrollWidth": 38,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "Buscar acción",
+          "left": 1301.4609375,
+          "right": 1338.3515625,
+          "clientWidth": 35,
+          "scrollWidth": 35,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1309.4609375,
+          "textRight": 1330.3515625
+        },
+        {
+          "label": "Analizar",
+          "left": 1344.3515625,
+          "right": 1430,
+          "clientWidth": 84,
+          "scrollWidth": 84,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1371.3515625,
+          "textRight": 1422
+        }
+      ]
+    },
+    {
+      "locale": "es",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "width": 1039,
+      "height": 38,
+      "left": 241,
+      "right": 1280,
+      "viewportWidth": 1280,
+      "clientWidth": 1039,
+      "scrollWidth": 1039,
+      "barInsideViewport": true,
+      "controlsInsideViewport": true,
+      "textInsideControls": true,
+      "textInsideViewport": true,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "Filtrar",
+          "text": "Filtrar",
+          "visible": true
+        },
+        {
+          "name": "Limpiar",
+          "text": "Limpiar",
+          "visible": true
+        },
+        {
+          "name": "Filas y columnas",
+          "text": "Filas y columnas",
+          "visible": true
+        }
+      ],
+      "actions": [
+        "Rellenar vacíos de Ingreso…",
+        "Eliminar filas con vacío en Ingreso…",
+        "Quitar filas duplicadas de Ingreso…",
+        "Quitar espacios de Ingreso…",
+        "Mayúsculas en Ingreso…",
+        "Minúsculas en Ingreso…",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas",
+        "Transformar documento…"
+      ],
+      "textMetrics": [
+        {
+          "label": "Tabla",
+          "left": 254,
+          "right": 327.6171875,
+          "clientWidth": 74,
+          "scrollWidth": 74,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 284,
+          "textRight": 317.6171875
+        },
+        {
+          "label": "Texto",
+          "left": 327.6171875,
+          "right": 402.0703125,
+          "clientWidth": 74,
+          "scrollWidth": 74,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 357.6171875,
+          "textRight": 392.0703125
+        },
+        {
+          "label": "Reemplazar",
+          "left": 602.0703125,
+          "right": 710.5078125,
+          "clientWidth": 106,
+          "scrollWidth": 106,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 629.0703125,
+          "textRight": 702.5078125
+        },
+        {
+          "label": "Filtrar",
+          "left": 716.5078125,
+          "right": 798.5546875,
+          "clientWidth": 80,
+          "scrollWidth": 80,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 743.5078125,
+          "textRight": 773.5546875
+        },
+        {
+          "label": "Limpiar",
+          "left": 804.5546875,
+          "right": 894.796875,
+          "clientWidth": 88,
+          "scrollWidth": 88,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 831.5546875,
+          "textRight": 869.796875
+        },
+        {
+          "label": "Filas y columnas",
+          "left": 900.796875,
+          "right": 1039.140625,
+          "clientWidth": 136,
+          "scrollWidth": 136,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 927.796875,
+          "textRight": 1014.140625
+        },
+        {
+          "label": "Ir a la fila",
+          "left": 1095.4609375,
+          "right": 1135.4609375,
+          "clientWidth": 38,
+          "scrollWidth": 38,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "Buscar acción",
+          "left": 1141.4609375,
+          "right": 1178.3515625,
+          "clientWidth": 35,
+          "scrollWidth": 35,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1149.4609375,
+          "textRight": 1170.3515625
+        },
+        {
+          "label": "Analizar",
+          "left": 1184.3515625,
+          "right": 1270,
+          "clientWidth": 84,
+          "scrollWidth": 84,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1211.3515625,
+          "textRight": 1262
+        }
+      ]
+    },
+    {
+      "locale": "es",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "width": 1039,
+      "height": 38,
+      "left": 241,
+      "right": 1280,
+      "viewportWidth": 1280,
+      "clientWidth": 1039,
+      "scrollWidth": 1039,
+      "barInsideViewport": true,
+      "controlsInsideViewport": true,
+      "textInsideControls": true,
+      "textInsideViewport": true,
+      "inside": true,
+      "oneRow": true,
+      "labels": [
+        {
+          "name": "Filtrar",
+          "text": "Filtrar",
+          "visible": true
+        },
+        {
+          "name": "Limpiar",
+          "text": "Limpiar",
+          "visible": true
+        },
+        {
+          "name": "Filas y columnas",
+          "text": "Filas y columnas",
+          "visible": true
+        }
+      ],
+      "actions": [
+        "Rellenar vacíos de Ingreso…",
+        "Eliminar filas con vacío en Ingreso…",
+        "Quitar filas duplicadas de Ingreso…",
+        "Quitar espacios de Ingreso…",
+        "Mayúsculas en Ingreso…",
+        "Minúsculas en Ingreso…",
+        "Quitar espacios al inicio y final",
+        "Convertir a mayúsculas",
+        "Convertir a minúsculas",
+        "Transformar documento…"
+      ],
+      "textMetrics": [
+        {
+          "label": "Tabla",
+          "left": 254,
+          "right": 327.6171875,
+          "clientWidth": 74,
+          "scrollWidth": 74,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 284,
+          "textRight": 317.6171875
+        },
+        {
+          "label": "Texto",
+          "left": 327.6171875,
+          "right": 402.0703125,
+          "clientWidth": 74,
+          "scrollWidth": 74,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 357.6171875,
+          "textRight": 392.0703125
+        },
+        {
+          "label": "Reemplazar",
+          "left": 602.0703125,
+          "right": 710.5078125,
+          "clientWidth": 106,
+          "scrollWidth": 106,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 629.0703125,
+          "textRight": 702.5078125
+        },
+        {
+          "label": "Filtrar",
+          "left": 716.5078125,
+          "right": 798.5546875,
+          "clientWidth": 80,
+          "scrollWidth": 80,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 743.5078125,
+          "textRight": 773.5546875
+        },
+        {
+          "label": "Limpiar",
+          "left": 804.5546875,
+          "right": 894.796875,
+          "clientWidth": 88,
+          "scrollWidth": 88,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 831.5546875,
+          "textRight": 869.796875
+        },
+        {
+          "label": "Filas y columnas",
+          "left": 900.796875,
+          "right": 1039.140625,
+          "clientWidth": 136,
+          "scrollWidth": 136,
+          "flexShrink": "1",
+          "textRectangles": 1,
+          "textLeft": 927.796875,
+          "textRight": 1014.140625
+        },
+        {
+          "label": "Ir a la fila",
+          "left": 1095.4609375,
+          "right": 1135.4609375,
+          "clientWidth": 38,
+          "scrollWidth": 38,
+          "flexShrink": "1",
+          "textRectangles": 0,
+          "textLeft": null,
+          "textRight": null
+        },
+        {
+          "label": "Buscar acción",
+          "left": 1141.4609375,
+          "right": 1178.3515625,
+          "clientWidth": 35,
+          "scrollWidth": 35,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1149.4609375,
+          "textRight": 1170.3515625
+        },
+        {
+          "label": "Analizar",
+          "left": 1184.3515625,
+          "right": 1270,
+          "clientWidth": 84,
+          "scrollWidth": 84,
+          "flexShrink": "0",
+          "textRectangles": 1,
+          "textLeft": 1211.3515625,
+          "textRight": 1262
+        }
+      ]
+    }
+  ],
+  "note": "En before, width/height son la caja de la barra (1199/1039 ×38), no el viewport. Los tamaños de captura constan en el manifiesto PNG. Las aserciones finales miden glifos con DOM Range además de cajas. Las métricas de texto se agregan por control a partir de sus nodos DOM Range; los registros completos se conservan en los informes originales.",
+  "beforeHead": "f0f9c5c84e13328ef173e87a7dc95d7e44942e11",
+  "beforeSourceTree": "3b7462046e4ca52d38732bce460486b172decd4a"
+}

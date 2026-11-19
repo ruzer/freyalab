@@ -1,0 +1,49 @@
+SIM-1b · extractos reales, sin rutas privadas. No son los registros completos.
+
+=== sim1b-red.log · Código de main231, HEAD documental f0f9c5c ===
+Running 8 tests using 1 worker
+    Expected: false
+    Received: true
+    Expected: "Limpiar"
+    Received: "Limpiar datos"
+    Expected: 10
+    Received: 4
+    Expected: true
+    Received: false
+    Received: 0
+    Received: undefined
+  5 failed
+  3 passed (43.7s)
+
+=== sim1b-active-red.log · Mismo baseline; celda activa sin marcas ===
+Running 1 test using 1 worker
+    Expected: 10
+    Received: 4
+  1 failed
+
+=== sim1b-l10n-red.log · Antes de localizar las cuatro ayudas ===
+Running 1 test using 1 worker
+  1 failed
+
+=== sim1b-green.log · 6ab74f2: verde insuficiente, oráculo de cajas ===
+Running 9 tests using 1 worker
+  9 passed (13.4s)
+
+=== sim1b-geometry-red.log · 6ab74f2: este ensayo PASÓ; tampoco prueba los glifos ===
+Running 1 test using 1 worker
+  1 passed (2.4s)
+
+=== sim1b-text-geometry-red.log · 6ab74f2: rojo real de DOM Range ===
+Running 1 test using 1 worker
+    Expected: true
+    Received: false
+  1 failed
+
+=== sim1b-final-geometry.log · ea19b6c: capturas finales ===
+Running 2 tests using 1 worker
+  2 passed (5.4s)
+
+=== sim1b-consumers-ea19.log · ea19b6c: siete casos nuevos y consumidores ===
+Running 138 tests using 1 worker
+  1 skipped
+  137 passed (3.9m)
