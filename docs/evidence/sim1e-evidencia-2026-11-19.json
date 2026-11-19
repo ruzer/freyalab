@@ -1,0 +1,534 @@
+{
+  "schema_version": 1,
+  "story": "SIM-1e",
+  "source": {
+    "initial_main": "0260a5d05341e98a8ea97d5ced7330aa97f413c4",
+    "scope_commit": "529f9ac817398ebbd986952859b03af0782201e1",
+    "feature_commit": "2348221296675469f730af7260fbdd587b9e61bf",
+    "merged_main": "39c2000936f1b03c00daee45bc0a257132fb26ab",
+    "validated_head": "aba1415129a2389318d708b8264672d6a3a15220",
+    "normal_merge_parents": [
+      "2348221296675469f730af7260fbdd587b9e61bf",
+      "39c2000936f1b03c00daee45bc0a257132fb26ab"
+    ],
+    "publication_head": "pending documentation commit and root publication",
+    "catalog_changes_vs_merged_main": [
+      {
+        "file": "src/shared/i18n/es.json",
+        "added_keys": [
+          "project.firstSource",
+          "project.startDescription"
+        ],
+        "modified_existing_keys": [],
+        "deleted_keys": []
+      },
+      {
+        "file": "src/shared/i18n/en.json",
+        "added_keys": [
+          "project.firstSource",
+          "project.startDescription"
+        ],
+        "modified_existing_keys": [],
+        "deleted_keys": []
+      }
+    ]
+  },
+  "comparison": {
+    "private_integration_head": "f8906fb94f06e5d06e71c4233a6923169f642a0a",
+    "identical_e_artifacts": [
+      {
+        "file": "src/renderer/App.svelte",
+        "sha256": "f4f1ec4e152dd335e1647907ffcdd4daa32d50f3fe76176fa2674207a26a48a4",
+        "identical_to_private_integration": true
+      },
+      {
+        "file": "src/renderer/components/ProjectDialog.svelte",
+        "sha256": "8cccc8f0b94c77bcf1fe54bae8db77731bc98af2dbb61e1f7d2455ac5363a839",
+        "identical_to_private_integration": true
+      },
+      {
+        "file": "tests/e2e/project-from-csv.spec.ts",
+        "sha256": "4b3fa91a8372f2170cd6acdbecc1a59b5f7d751c3109a4d9871fb127af5e9c1a",
+        "identical_to_private_integration": true
+      },
+      {
+        "file": "tests/e2e/project-source.spec.ts",
+        "sha256": "f18aba8ea9ae2c6579c4dc0660aff36d02d7c27aebd0848aea026c3fb12cc8f7",
+        "identical_to_private_integration": true
+      },
+      {
+        "file": "tests/fixtures/project-from-open.csv",
+        "sha256": "7101ed363dfac344f96ff4e6ad8925e7b3787fa55b53a8c7d17f42377494d20a",
+        "identical_to_private_integration": true
+      },
+      {
+        "file": "tests/fixtures/project-from-open.tsv",
+        "sha256": "8a63f5149fda4396a967be726d2b0ee0f4d20c895cc86013c7d3b9e671a25f19",
+        "identical_to_private_integration": true
+      },
+      {
+        "file": ".gitattributes",
+        "sha256": "10ad37f72d7c829e305c9fdf303e6cec4a34d86e61c09a7efab3c770b5d2345a",
+        "identical_to_private_integration": true
+      }
+    ],
+    "runtime_and_test_difference_count": 17,
+    "runtime_and_test_difference_scope": "SIM-1d not merged into main; path set equals the17 product/test paths of D.",
+    "runtime_and_test_difference_paths": [
+      "src/shared/chart-fields.ts",
+      "src/shared/chart-suggest.ts",
+      "src/shared/charts.ts",
+      "src/shared/i18n/en.json",
+      "src/shared/i18n/es.json",
+      "tests/chart-fields.test.ts",
+      "tests/chart-presentation.test.ts",
+      "tests/chart-suggest-sql.test.ts",
+      "tests/chart-suggest.test.ts",
+      "tests/e2e/analysis-tab.spec.ts",
+      "tests/e2e/chart-fields.spec.ts",
+      "tests/e2e/chart-review.spec.ts",
+      "tests/e2e/chart-sensible-suggestions.spec.ts",
+      "tests/e2e/charts.spec.ts",
+      "tests/e2e/sql-progress-states.spec.ts",
+      "tests/e2e/ui-u0.spec.ts",
+      "tests/fixtures/chart-suggestions-survey.csv"
+    ],
+    "additional_documentation_difference_count": 37
+  },
+  "validation": {
+    "environment": {
+      "platform": "macOS",
+      "node": "24.22.1",
+      "pandoc": "3.12.1 real"
+    },
+    "initial_red": {
+      "representative_failures": 2,
+      "other_new_cases_not_run_red": 7
+    },
+    "first_candidate_e2e": {
+      "passed": 9,
+      "seconds": 9.9,
+      "retries": 0,
+      "app_sha256": "e218a68e6e9a8b4df4e203ae613093414bcde352e574f19fe3ee0616d414ccbf"
+    },
+    "private_integral": {
+      "head": "f8906fb94f06e5d06e71c4233a6923169f642a0a",
+      "typecheck": {
+        "errors": 0,
+        "warnings": 0,
+        "seconds": 8.19
+      },
+      "unit": {
+        "passed": 2987,
+        "windows_only_skipped": 1,
+        "vitest_seconds": 16.5,
+        "process_seconds": 16.79
+      },
+      "e2e": {
+        "reported_passed": 782,
+        "expected_failure_included": "SEG-S2e marked test.fail; real limitation preserved and not resolved",
+        "report_minutes": 27.4,
+        "process_seconds": 1646.8,
+        "exit": 0,
+        "workers": 1,
+        "retries": 0
+      },
+      "build": {
+        "exit": 0,
+        "seconds": 2.07
+      }
+    },
+    "merged_e": {
+      "head": "aba1415129a2389318d708b8264672d6a3a15220",
+      "typecheck": {
+        "errors": 0,
+        "warnings": 0,
+        "process_seconds": 9.31
+      },
+      "unit": {
+        "passed": 2972,
+        "windows_only_skipped": 1,
+        "files": 167,
+        "vitest_seconds": 16.92,
+        "process_seconds": 17.23,
+        "exit": 0
+      },
+      "build": {
+        "exit": 0,
+        "process_seconds": 1.91
+      },
+      "focused": {
+        "files": [
+          "tests/e2e/project-from-csv.spec.ts",
+          "tests/e2e/project-source.spec.ts",
+          "tests/e2e/menu-alignment.spec.ts"
+        ],
+        "passed": 18,
+        "report_seconds": 26.3,
+        "process_seconds": 26.89,
+        "retries": 0
+      },
+      "captures": {
+        "cases_passed": 2,
+        "report_seconds": 3.4,
+        "process_seconds": 3.86,
+        "images": 16
+      }
+    }
+  },
+  "captures": [
+    {
+      "file": "sim1e-before-welcome-es-light-1440x900.png",
+      "phase": "before",
+      "stage": "welcome",
+      "language": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1733e8d21068aa3ec53a7d6f68cef2c875eb0a8ea34c42bda84af7b61ae48ecc"
+    },
+    {
+      "file": "sim1e-before-welcome-es-light-1280x720.png",
+      "phase": "before",
+      "stage": "welcome",
+      "language": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "8de0ed3dddbfdd94c080f78585ba2313d040efcd5fb77155290b053a59695243"
+    },
+    {
+      "file": "sim1e-before-welcome-es-dark-1440x900.png",
+      "phase": "before",
+      "stage": "welcome",
+      "language": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "fced3314d51c7d8433d34d25613ce10e83399c958b66e8b1f9cd5e49f792d980"
+    },
+    {
+      "file": "sim1e-before-welcome-es-dark-1280x720.png",
+      "phase": "before",
+      "stage": "welcome",
+      "language": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "e40c2aaf00e6c01dc0e03b5c2573ae1bccb4d8da844ac4adf7e1799e57df5044"
+    },
+    {
+      "file": "sim1e-before-welcome-en-XA-light-1440x900.png",
+      "phase": "before",
+      "stage": "welcome",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1d3bcbcd0f8bc154ca9b1fde3df9cfca2f67292f7601b5a7c0f96fdfb69d9c52"
+    },
+    {
+      "file": "sim1e-before-welcome-en-XA-light-1280x720.png",
+      "phase": "before",
+      "stage": "welcome",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "08d4255493b2863b61a152ebe995d84ec4ac93ccc466c2099e566aa0fd3e2d6e"
+    },
+    {
+      "file": "sim1e-before-welcome-en-XA-dark-1440x900.png",
+      "phase": "before",
+      "stage": "welcome",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "9513e3efe8b17e0eae16869a847d575ac3c115cd74c182794bd68ab5ee265a4b"
+    },
+    {
+      "file": "sim1e-before-welcome-en-XA-dark-1280x720.png",
+      "phase": "before",
+      "stage": "welcome",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "f9e74919b5ef378fc84f57435209e8d0d86d24227c0957fbd8f7bcd53cf2e004"
+    },
+    {
+      "file": "sim1e-before-project-es-light-1440x900.png",
+      "phase": "before",
+      "stage": "project",
+      "language": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e178bc17253cbc34131d69535df1740825230e765a9cf382e7c4f53df61dde94"
+    },
+    {
+      "file": "sim1e-before-project-es-light-1280x720.png",
+      "phase": "before",
+      "stage": "project",
+      "language": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "79fe1a4070d5d88d93a363acf01c56dce12858fda5bea594bec1e5e0955ddc13"
+    },
+    {
+      "file": "sim1e-before-project-es-dark-1440x900.png",
+      "phase": "before",
+      "stage": "project",
+      "language": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0418297076e70a064b61c9a601f10b1cac52da75f2e9c04dc1a187fbfbfbda93"
+    },
+    {
+      "file": "sim1e-before-project-es-dark-1280x720.png",
+      "phase": "before",
+      "stage": "project",
+      "language": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "bcb88dbb9974a6acfb2ebdc976967a8c2761e49d06df46475f8f7af80b2c8a35"
+    },
+    {
+      "file": "sim1e-before-project-en-XA-light-1440x900.png",
+      "phase": "before",
+      "stage": "project",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "70ef3361f7b02d80470fc22cfe286136d14f69dcbb0516843643074f4f3a8610"
+    },
+    {
+      "file": "sim1e-before-project-en-XA-light-1280x720.png",
+      "phase": "before",
+      "stage": "project",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "eb8a13700e4c06d96f05420dbab96e3c37faa76296b6f94b9a87c9c03d2b8f02"
+    },
+    {
+      "file": "sim1e-before-project-en-XA-dark-1440x900.png",
+      "phase": "before",
+      "stage": "project",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "18e58b0fe505a7c20f152c8f538f63f22bd452b9771408d8d14693b9478c5f28"
+    },
+    {
+      "file": "sim1e-before-project-en-XA-dark-1280x720.png",
+      "phase": "before",
+      "stage": "project",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "1ba0e072b291facb4155cf86cb793c6f1becb378867f24d00eabc6ef51be5416"
+    },
+    {
+      "file": "sim1e-after-welcome-es-light-1440x900.png",
+      "phase": "after",
+      "stage": "welcome",
+      "language": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "8214c88371f2f890609f1d14b98549fc9b18026323ccf26fbff3484a2c173de2"
+    },
+    {
+      "file": "sim1e-after-welcome-es-light-1280x720.png",
+      "phase": "after",
+      "stage": "welcome",
+      "language": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "0253de49613629c39a96d9bb6c74cd76a119efa1fb9b3015602024b3f77ac836"
+    },
+    {
+      "file": "sim1e-after-welcome-es-dark-1440x900.png",
+      "phase": "after",
+      "stage": "welcome",
+      "language": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "8dbe4ec5930d3a6fc510ddd2c79f1022e073e7e4f6059cd3373ef98548822039"
+    },
+    {
+      "file": "sim1e-after-welcome-es-dark-1280x720.png",
+      "phase": "after",
+      "stage": "welcome",
+      "language": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "95e585fca3d52121f206c04a84d0660d4cc10f7cfedc36ecb8d824795ace26db"
+    },
+    {
+      "file": "sim1e-after-welcome-en-XA-light-1440x900.png",
+      "phase": "after",
+      "stage": "welcome",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "cccdb12dd1454f9bc2127a1debbf5441784eaeda7445738dfbbcc72048ed6d4d"
+    },
+    {
+      "file": "sim1e-after-welcome-en-XA-light-1280x720.png",
+      "phase": "after",
+      "stage": "welcome",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "74692048690816475d88d18af4d3fb912173de5cacd6a41b118367133525b9a0"
+    },
+    {
+      "file": "sim1e-after-welcome-en-XA-dark-1440x900.png",
+      "phase": "after",
+      "stage": "welcome",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "adeb09a29b360d3ceb0af6be558137952e5305b5b7ac186921e73bff1f48dab8"
+    },
+    {
+      "file": "sim1e-after-welcome-en-XA-dark-1280x720.png",
+      "phase": "after",
+      "stage": "welcome",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "60ae5fd0c582ab4d1821f261ec14577e680aff2009e7d9a98289b60cc4bf6ff4"
+    },
+    {
+      "file": "sim1e-after-project-es-light-1440x900.png",
+      "phase": "after",
+      "stage": "project",
+      "language": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "81fcbd01645676257d30a2e880ecaf44c56e1581291635ee15a16091d4de66ba"
+    },
+    {
+      "file": "sim1e-after-project-es-light-1280x720.png",
+      "phase": "after",
+      "stage": "project",
+      "language": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "f2c91a7ba4dcc4e54b70865a6ff9e0786874b9a6a7daeba6c0030a21270487ff"
+    },
+    {
+      "file": "sim1e-after-project-es-dark-1440x900.png",
+      "phase": "after",
+      "stage": "project",
+      "language": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d1c2e2c075d41a1769628e6ac6ef3e75689baa3b39d3fe54b5d48e8aad76500f"
+    },
+    {
+      "file": "sim1e-after-project-es-dark-1280x720.png",
+      "phase": "after",
+      "stage": "project",
+      "language": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "84a9461dd5ef86e3050a0528774ef4dc79391ae227716261a35b80b4534c5eb3"
+    },
+    {
+      "file": "sim1e-after-project-en-XA-light-1440x900.png",
+      "phase": "after",
+      "stage": "project",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "dee0a55e6a6319d898d1aa33192599fb3c198af2b810e84afd44edb140f2e4b9"
+    },
+    {
+      "file": "sim1e-after-project-en-XA-light-1280x720.png",
+      "phase": "after",
+      "stage": "project",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "992c2b40ae4c14370a42cbf3e6d7728423d1db52c598b78ab1c8a329072ba8fd"
+    },
+    {
+      "file": "sim1e-after-project-en-XA-dark-1440x900.png",
+      "phase": "after",
+      "stage": "project",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "62319ea336faf4ff267f0cce4db1bf973b95ac3b67424c49709b767402d554ef"
+    },
+    {
+      "file": "sim1e-after-project-en-XA-dark-1280x720.png",
+      "phase": "after",
+      "stage": "project",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "a4738bc85dfa3be5e5f10b4abb61618f14a8880012c9b4c36a420cc40b6d8d8d"
+    }
+  ],
+  "historical_after": "Earlier after images are preserved privately as provisional history and excluded from this manifest.",
+  "limits": [
+    "No native Windows execution is claimed by the Git line-ending byte proof.",
+    "The782 report includes the preserved expected failure; it is not782 ordinary green outcomes.",
+    "Publication SHA and its CI remain pending; package/installer/installed app are not verified here."
+  ],
+  "capture_source_heads": {
+    "before": "0260a5d05341e98a8ea97d5ced7330aa97f413c4",
+    "after": "aba1415129a2389318d708b8264672d6a3a15220"
+  },
+  "reviews": {
+    "root_and_standards_pending_findings": 0,
+    "reviewed_source_head": "aba1415129a2389318d708b8264672d6a3a15220",
+    "scope": "Static review; no GUI race reproduction claimed for the original-path guard."
+  },
+  "legacy_consumer": {
+    "file": "tests/e2e/project-source.spec.ts",
+    "base_main": "39c2000936f1b03c00daee45bc0a257132fb26ab",
+    "helper_line": 32,
+    "uncheck_line": 38,
+    "caller_before_line": 218,
+    "caller_after_line": 219,
+    "change": "One opt-out setup before the preserved manual registration flow; no E data/assertion/title/timeout changes."
+  },
+  "root_visual_inspection": {
+    "inspected_images": [
+      "sim1e-after-project-en-XA-dark-1280x720.png",
+      "sim1e-after-welcome-es-light-1440x900.png",
+      "sim1e-after-welcome-en-XA-dark-1280x720.png"
+    ],
+    "observed": "New actions and checkbox visible; inspected modal fits.",
+    "limit": "No modal centering redesign or translation of preexisting pending App text is claimed."
+  }
+}
