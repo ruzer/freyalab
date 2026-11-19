@@ -1,0 +1,149 @@
+{
+  "base_head": "a85805755e8252fa6e3ff0eeba567c2e843bd3e4",
+  "file": "tests/e2e/empty-values.spec.ts",
+  "original_sha256": "9939db20c24b91c37e9bf9892d074ecef8756b652260e6e615ee6865e49d630b",
+  "one_line_wait_sha256": "c4fb4bcd9fa66f383c478a566fbcf6f99b6d04c67a98181c0ccd83cabe658ddd",
+  "exactly_one_line_inserted": true,
+  "inserted_after_second_open_before_headerAction": " await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true}).locator('.csv-row')).toHaveCount(1)",
+  "all_other_original_bytes_identical": true,
+  "original_assertion_calls": 156,
+  "current_assertion_calls": 157,
+  "original_assertion_calls_preserved": true,
+  "original_ui_action_sequence_identical": true,
+  "original_ui_action_calls": 94,
+  "test_title_expressions_identical": true,
+  "timeout_retry_properties_identical": true,
+  "product_and_config_diff": "",
+  "gui_or_test_cases_executed_by_preparer": false,
+  "local_qualification": {
+    "base_head": "a85805755e8252fa6e3ff0eeba567c2e843bd3e4",
+    "old_spec_sha256": "9939db20c24b91c37e9bf9892d074ecef8756b652260e6e615ee6865e49d630b",
+    "new_spec_sha256": "c4fb4bcd9fa66f383c478a566fbcf6f99b6d04c67a98181c0ccd83cabe658ddd",
+    "results": [
+      {
+        "name": "focused",
+        "command": [
+          "npx",
+          "playwright",
+          "test",
+          "tests/e2e/empty-values.spec.ts",
+          "tests/e2e/csv-format-load.spec.ts",
+          "--project=csv",
+          "--workers=1",
+          "--retries=0"
+        ],
+        "exit_code": 0,
+        "process_seconds": 29.052
+      },
+      {
+        "name": "repeat",
+        "command": [
+          "npx",
+          "playwright",
+          "test",
+          "tests/e2e/empty-values.spec.ts",
+          "--project=csv",
+          "--grep",
+          "vista previa concuerda",
+          "--repeat-each=10",
+          "--workers=1",
+          "--retries=0"
+        ],
+        "exit_code": 0,
+        "process_seconds": 35.741
+      },
+      {
+        "name": "check",
+        "command": [
+          "npm",
+          "run",
+          "check"
+        ],
+        "exit_code": 0,
+        "process_seconds": 8.583
+      },
+      {
+        "name": "unit",
+        "command": [
+          "npm",
+          "test"
+        ],
+        "exit_code": 0,
+        "process_seconds": 16.157
+      },
+      {
+        "name": "build-final",
+        "command": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "exit_code": 0,
+        "process_seconds": 1.767
+      }
+    ]
+  },
+  "private_red": {
+    "name": "red",
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "tests/e2e/local-empty104-probe.spec.ts",
+      "--project=csv",
+      "--grep",
+      "vista previa concuerda.*\\(en\\)$",
+      "--workers=1",
+      "--retries=0"
+    ],
+    "exit_code": 1,
+    "process_seconds": 32.896,
+    "observed": [
+      {
+        "mode": "red",
+        "pageCalls": 1,
+        "realReturned": true,
+        "realRows": 1,
+        "realMatched": 1,
+        "blocked": false,
+        "released": true,
+        "enabledBeforeDown": true,
+        "disabledBeforeUp": true,
+        "dialogAfterUp": 0,
+        "rowsAfterRelease": 1
+      }
+    ]
+  },
+  "private_green": {
+    "name": "green",
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "tests/e2e/local-empty104-probe.spec.ts",
+      "--project=csv",
+      "--grep",
+      "vista previa concuerda.*\\(en\\)$",
+      "--workers=1",
+      "--retries=0"
+    ],
+    "exit_code": 0,
+    "process_seconds": 2.265
+  },
+  "private_probe_sha256": "61d920a731f55e0727f2d81e6958b44c6c03526b8a75c69351571dbdd36db179",
+  "private_logs": {
+    "red.log": "c00daa2e374763d452162cba8d1f00aa1cf86793ff9ff921368a65f4b75143e0",
+    "green.log": "2d21fcc94f75e56125c7fc7aec2c303fef659c636aff0c48b4d2e2e4cadb20b4",
+    "focused.log": "0f72138360f2f325284a81b031727a16ffc03f80cb815f81ba0a035b9308cba2",
+    "repeat.log": "5e18beb0d5b5387a9e5df32f893e3041a6e195b6ad1bf4051d62dbf605343912",
+    "check.log": "ec679c9c352a6b51f245b9f265116585931947ec63920456a1ae94864a4c9012",
+    "unit.log": "5bf33d89fba9b9046828ae35e2ff032eb8cc2a050b651feb115f0f35ac892720",
+    "build-final.log": "c59058307cae4dec3e9c7ee3b6cdd456a56c3b3990a2dfadd5e6096900ba3a93"
+  },
+  "limits": [
+    "Reproduced mechanism does not establish missing DOM state in historical CI trace.",
+    "Private control is not an added public test.",
+    "No local Windows or Intel execution; new CI pending.",
+    "No additional complete local E2E suite after this test-only wait."
+  ]
+}
