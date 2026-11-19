@@ -74,8 +74,10 @@ test('LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza camp
 
 async function headerAction(column:string,action:string){
  await showTable(page)
- await page.getByRole('button',{name:'Acciones de la columna '+column,exact:true}).click()
- await page.getByRole('menuitem',{name:action,exact:true}).click()
+ const language=(test.info().title.match(/\((es|en|en-XA)\)$/)?.[1]??'es') as Language
+ await page.getByRole('button',{name:t('csv.columnMenu.open',{column},language),exact:true}).click()
+ await page.getByRole('menuitem',{name:t('csv.columnMenu.clean',{},language),exact:true}).click()
+ await page.getByRole('menu').last().getByRole('menuitem',{name:action,exact:true}).click()
 }
 async function previewEmpty(dialog:ReturnType<Page['getByRole']>){
  await dialog.getByRole('button',{name:'Vista previa',exact:true}).click()
@@ -85,7 +87,7 @@ async function save(){await page.getByRole('button',{name:'Guardar',exact:true})
 async function undo(){await page.getByRole('button',{name:'Deshacer',exact:true}).click()}
 
 test('LIM-1 ajustes: Un valor vacío bloquea preparar y rellenar con un motivo accesible',async()=>{
- await headerAction('Cantidad','Rellenar vacíos de la columna…')
+ await headerAction('Cantidad','Rellenar vacíos…')
  const dialog=page.getByRole('dialog',{name:'Rellenar vacíos de Cantidad',exact:true}),value=dialog.getByRole('textbox',{name:'Valor',exact:true})
  const preview=dialog.getByRole('button',{name:'Vista previa',exact:true}),fill=dialog.getByRole('button',{name:'Rellenar',exact:true})
  await expect(value).toBeEnabled();await expect(value).toHaveValue('')
@@ -107,7 +109,7 @@ for(const language of ['es','en'] as Language[])test(`LIM-1 ajustes: vista previ
   ['Mixta',language==='es'?'Se rellenarán 4 celdas: 3 vacías y 1 que faltaba (la fila era más corta).':'Will fill 4 cells: 3 empty and 1 missing (the row was shorter).'],
   ['Producto',language==='es'?'Se rellenarán 0 celdas.':'Will fill 0 cells.']
  ]){
-  await headerAction(column,tr('empty.fillColumn'))
+  await headerAction(column,tr('csv.columnMenu.emptyFill'))
   const dialog=page.getByRole('dialog',{name:tr('empty.fillTitle',{column}),exact:true})
   await dialog.getByRole('textbox',{name:tr('empty.value'),exact:true}).fill('0')
   await dialog.getByRole('button',{name:tr('empty.preview'),exact:true}).click()
@@ -117,14 +119,14 @@ for(const language of ['es','en'] as Language[])test(`LIM-1 ajustes: vista previ
   if(column==='Producto')await expect(dialog.getByRole('button',{name:tr('empty.applyFill'),exact:true})).toBeDisabled()
   await page.keyboard.press('Escape')
  }
- await headerAction('Precio',tr('empty.deleteColumn'))
+ await headerAction('Precio',tr('csv.columnMenu.emptyDelete'))
  const deletion=page.getByRole('dialog',{name:tr('empty.deleteTitle'),exact:true})
  await deletion.getByRole('button',{name:tr('empty.preview'),exact:true}).click()
  await expect(deletion.getByRole('status')).toContainText(tr('empty.preview.ready'))
  expect.soft(await deletion.getByRole('status').textContent()).toContain(language==='es'?'Se eliminará 1 de 7 filas.':'Will delete 1 of 7 rows.')
  await page.keyboard.press('Escape')
  const single=join(folder,'una-fila.csv');await writeFile(single,'A\n""\n');await page.evaluate(path=>window.freya.openPaths([path]),single)
- await headerAction('A',tr('empty.deleteColumn'))
+ await headerAction('A',tr('csv.columnMenu.emptyDelete'))
  const onlyRow=page.getByRole('dialog',{name:tr('empty.deleteTitle'),exact:true})
  await onlyRow.getByRole('button',{name:tr('empty.preview'),exact:true}).click()
  await expect(onlyRow.getByRole('status')).toContainText(tr('empty.preview.ready'))
@@ -134,7 +136,7 @@ for(const language of ['es','en'] as Language[])test(`LIM-1 ajustes: vista previ
 })
 
 test('LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva bytes tras guardar',async()=>{
- await headerAction('Mixta','Rellenar vacíos de la columna…')
+ await headerAction('Mixta','Rellenar vacíos…')
  const dialog=page.getByRole('dialog',{name:'Rellenar vacíos de Mixta',exact:true})
  await dialog.getByRole('textbox',{name:'Valor',exact:true}).fill('0')
  await previewEmpty(dialog)
@@ -152,7 +154,7 @@ test('LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva by
 })
 
 test('LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo',async()=>{
- await headerAction('Cantidad','Rellenar vacíos de la columna…')
+ await headerAction('Cantidad','Rellenar vacíos…')
  let dialog=page.getByRole('dialog',{name:'Rellenar vacíos de Cantidad',exact:true})
  await dialog.getByRole('textbox',{name:'Valor',exact:true}).fill('00')
  await dialog.getByRole('checkbox',{name:'Contar las celdas con solo espacios como vacías',exact:true}).uncheck()
@@ -161,7 +163,7 @@ test('LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archi
  expect((await readTableRows(page,20)).slice(4).map(row=>row[2])).toEqual(['00','  ','00'])
  await undo()
  await page.getByRole('button',{name:'Cantidad',exact:true}).click()
- await headerAction('Cantidad','Rellenar vacíos de la columna…')
+ await headerAction('Cantidad','Rellenar vacíos…')
  dialog=page.getByRole('dialog',{name:'Rellenar vacíos de Cantidad',exact:true})
  await dialog.getByRole('combobox',{name:'Rellenar con',exact:true}).selectOption({label:'El valor anterior'})
  await previewEmpty(dialog);await dialog.getByRole('button',{name:'Rellenar',exact:true}).click()
@@ -175,7 +177,7 @@ test('LIM-1 elimina por cualquiera o todas las columnas marcadas y restaura fila
  for(const [mode,remaining] of [['si falta en cualquiera',4],['si faltan en todas',6]] as const){
   await page.getByRole('checkbox',{name:'Seleccionar columna Precio',exact:true}).check()
   await page.getByRole('checkbox',{name:'Seleccionar columna Cantidad',exact:true}).check()
-  await headerAction('Cantidad','Eliminar filas con vacío en la columna…')
+  await headerAction('Cantidad','Eliminar filas con vacío…')
   const dialog=page.getByRole('dialog',{name:'Eliminar filas con vacío',exact:true})
   await dialog.getByRole('combobox',{name:'Dónde mirar',exact:true}).selectOption({label:'En las columnas marcadas'})
   await dialog.getByRole('combobox',{name:'Eliminar la fila',exact:true}).selectOption({label:mode})
@@ -223,10 +225,12 @@ test('LIM-1 fuente protegida permite ver vacíos y bloquea las mutaciones tambi�
 test('LIM-1 archivo grande permite el filtro completo y explica que limpiar requiere extraer',async()=>{
  expect((await page.evaluate(()=>window.freya.documents()))[0].large).toBe(true)
  await page.getByRole('button',{name:'Acciones de la columna Cantidad',exact:true}).click()
- for(const name of ['Rellenar vacíos de la columna…','Eliminar filas con vacío en la columna…']){
+ await page.getByRole('menuitem',{name:'Limpiar',exact:true}).click()
+ for(const name of ['Rellenar vacíos…','Eliminar filas con vacío…']){
   const button=page.getByRole('menuitem',{name,exact:true});await expect(button).toBeDisabled();await expect(button).toHaveAccessibleDescription(t('empty.large'))
  }
- await page.getByRole('menuitem',{name:'Ver filas vacías de la columna',exact:true}).click()
+ await page.keyboard.press('Escape')
+ await page.getByRole('menuitem',{name:'Ver filas vacías',exact:true}).click()
  await expect(page.getByRole('region',{name:'Búsqueda en archivo grande'})).toContainText('3 de 7 filas')
  expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)
  expect(digest(await readFile(path))).toBe(digest(source))
@@ -242,7 +246,7 @@ test('LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio'
   })
  })
  await page.getByRole('button',{name:'Acciones de la columna Cantidad',exact:true}).click()
- await page.getByRole('menuitem',{name:'Ver filas vacías de la columna',exact:true}).click()
+ await page.getByRole('menuitem',{name:'Ver filas vacías',exact:true}).click()
  await expect(page.getByRole('alert').filter({hasText:'Filtro rechazado en la prueba'}).first()).toBeVisible()
  await expect(page.getByRole('status').filter({hasText:t('empty.viewApplied',{column:'Cantidad'})})).toHaveCount(0)
  expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)
@@ -277,7 +281,7 @@ test('LIM-1 cancelar descarta una vista previa tardía y deja reintentar sin mod
    return result
   })
  })
- await headerAction('Cantidad','Rellenar vacíos de la columna…')
+ await headerAction('Cantidad','Rellenar vacíos…')
  const dialog=page.getByRole('dialog',{name:'Rellenar vacíos de Cantidad',exact:true})
  await dialog.getByRole('textbox',{name:'Valor',exact:true}).fill('0')
  await dialog.getByRole('button',{name:'Vista previa',exact:true}).click()
@@ -315,7 +319,7 @@ test('LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas
  await page.getByRole('button',{name:'Cerrar datos.csv',exact:true}).click()
  const wide=join(folder,'ancho.csv'),input=Array.from({length:201},(_,i)=>'C'+i).join(',')+'\n,'+Array(200).fill('1').join(',')+'\n'
  await writeFile(wide,input);await page.evaluate(path=>window.freya.openPaths([path]),wide)
- await headerAction('C0','Rellenar vacíos de la columna…')
+ await headerAction('C0','Rellenar vacíos…')
  const dialog=page.getByRole('dialog',{name:'Rellenar vacíos de C0',exact:true})
  await expect(dialog).toBeVisible()
  await dialog.getByRole('textbox',{name:'Valor',exact:true}).fill('00')
@@ -326,7 +330,7 @@ test('LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas
 })
 
 test('LIM-1 una protección recibida con el diálogo abierto invalida su vista previa',async()=>{
- await headerAction('Cantidad','Rellenar vacíos de la columna…')
+ await headerAction('Cantidad','Rellenar vacíos…')
  const dialog=page.getByRole('dialog',{name:'Rellenar vacíos de Cantidad',exact:true})
  await dialog.getByRole('textbox',{name:'Valor',exact:true}).fill('0');await previewEmpty(dialog)
  const [doc]=await page.evaluate(()=>window.freya.documents())

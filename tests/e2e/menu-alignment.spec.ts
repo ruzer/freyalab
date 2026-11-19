@@ -39,7 +39,7 @@ async function fitsViewport(menu:Locator){
 
 for(const locale of ['es','en-XA'] as const)test(`SIM-1g: Nuevo, columna y Archivos alinean su contenido y conservan el teclado [${locale}]`,async({},info)=>{
  const newButton=page.getByRole('button',{name:'Nuevo',exact:true}),newMenu=page.locator('.toolbar-left .dropdown')
- const columnButton=page.getByRole('button',{name:'Acciones de la columna Valor',exact:true}),columnMenu=page.getByRole('menu',{name:'Acciones de columnas',exact:true})
+ const columnButton=page.getByRole('button',{name:t('csv.columnMenu.open',{column:'Valor'},language),exact:true}),columnMenu=page.getByRole('menu',{name:t('csv.columnMenu.label',{},language),exact:true})
  const fileButton=page.locator('.tree-scroll').getByRole('button',{name:'encuesta.csv',exact:true})
  const measurements:{view:string;menu:string;items:Awaited<ReturnType<typeof contentOffsets>>}[]=[]
  for(const [width,height] of [[1440,900],[1280,720]])for(const theme of ['light','dark'] as const){
@@ -56,7 +56,7 @@ for(const locale of ['es','en-XA'] as const)test(`SIM-1g: Nuevo, columna y Archi
   const phase=process.env.FREYALAB_SIM1G_PHASE??'check',name=`sim1g-${phase}-${locale}-${theme}-${width}x${height}.png`,capture=info.outputPath(name)
   await page.screenshot({path:capture,animations:'disabled'})
   if(process.env.FREYALAB_SIM1G_EVIDENCE){await mkdir(process.env.FREYALAB_SIM1G_EVIDENCE,{recursive:true});await copyFile(capture,join(process.env.FREYALAB_SIM1G_EVIDENCE,name))}
-  for(const [menu,items] of [['Nuevo',newMenu.locator('button')],['Columna',columnMenu.getByRole('menuitem')],['Títulos de grupo',columnMenu.locator('.dropdown-label')]] as const){
+  for(const [menu,items] of [['Nuevo',newMenu.locator('button')],['Columna',columnMenu.getByRole('menuitem')],['Título de columna',columnMenu.locator('.dropdown-label')]] as const){
    const offsets=await contentOffsets(items);measurements.push({view:`${locale}/${theme}/${width}x${height}`,menu,items:offsets})
    expect.soft(offsets.length,`${menu}: hay contenido visible`).toBeGreaterThan(0)
    expect.soft(offsets.filter(item=>item.width<=0||item.height<=0||item.offset<0||item.offset>12),`${menu}: cada bloque visual empieza entre 0 y 12 px`).toEqual([])
