@@ -1,3 +1,5 @@
 src/main/csl/*.csl text eol=lf
 tests/fixtures/prj02-censo.csv -text
+tests/fixtures/project-from-open.csv -text
+tests/fixtures/project-from-open.tsv -text
 experiments/prj02-reference/* text eol=lf

@@ -1066,6 +1066,8 @@
  "project.noFolder": "No se ha elegido una carpeta.",
  "project.name": "Nombre",
  "project.suggested": "Crear estructura sugerida",
+ "project.firstSource": "Añadir «{name}» como primera fuente",
+ "project.startDescription": "Reúne fuentes y análisis en una carpeta",
  "project.privacy": "FreyaLab no controla carpetas sincronizadas ni copias de seguridad. Lo que guardes aquí puede copiarse a otros sitios.",
  "project.close": "Cerrar proyecto",
  "project.rename": "Renombrar proyecto",

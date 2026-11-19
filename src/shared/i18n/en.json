@@ -1066,6 +1066,8 @@
  "project.noFolder": "No folder selected.",
  "project.name": "Name",
  "project.suggested": "Create suggested folders",
+ "project.firstSource": "Add “{name}” as the first source",
+ "project.startDescription": "Keep sources and analyses in one folder",
  "project.privacy": "FreyaLab does not control synced folders or backups. Files you save here may be copied to other locations.",
  "project.close": "Close project",
  "project.rename": "Rename project",
