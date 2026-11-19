@@ -49,6 +49,8 @@
  const viewRunning=$derived(largeView?.status==='running')
  let showGoto=$state(false),gotoValue=$state<number|null>(null),gotoError=$state(''),gotoInput=$state<HTMLInputElement>(),gotoButton=$state<HTMLButtonElement>()
  let bodyWidth=$state(0),announcement=$state(''),interpreting=$state(false)
+ const delimiterLabel=$derived(doc.delimiter===','?t('project.source.comma'):doc.delimiter===';'?t('project.source.semicolon'):doc.delimiter==='\t'?t('project.source.tab'):doc.delimiter==='|'?t('project.source.pipe'):doc.delimiter)
+ const formatSummary=$derived(`${t('csvText.encoding.'+doc.encoding)} · ${delimiterLabel} · ${t(doc.hasHeader?'csv.format.withHeader':'csv.format.withoutHeader')}`)
  let toolbar=$state<HTMLDivElement>(),toolbarWidth=$state(0),hiddenToolbarLabels=$state(0),cleanButton=$state<HTMLElement>()
  const paletteShortcut=$derived(commandTitle('edit.commandPalette','').replace(/^\s*·\s*/,'').replaceAll('+',' '))
  const paletteTitle=$derived(paletteShortcut?`${t('charts.toolbar.findAction')} · ${paletteShortcut}`:t('charts.toolbar.findAction'))
@@ -458,7 +460,7 @@
  // Los menús de la barra y de la barra de estado son <details>: se cierran al pulsar fuera y con Escape (el foco vuelve a su botón).
  const openMenus=()=>document.querySelectorAll<HTMLDetailsElement>('.csv-toolbar details[open],.statusbar details[open]')
  function closeMenus(target?:Node){for(const menu of openMenus())if(!target||!menu.contains(target))menu.removeAttribute('open')}
- function closeMenu(event:KeyboardEvent){if(event.key!=='Escape')return false;const menu=openMenus()[0];if(!menu)return false;event.preventDefault();menu.removeAttribute('open');menu.querySelector('summary')?.focus();return true}
+ function closeMenu(event:KeyboardEvent){if(event.key!=='Escape'||event.target instanceof HTMLElement&&event.target.closest('dialog'))return false;const menu=openMenus()[0];if(!menu)return false;event.preventDefault();menu.removeAttribute('open');menu.querySelector('summary')?.focus();return true}
  // También sirve a comandos/accesibilidad que activan Texto sin trasladar el foco.
  export async function flushEditing(){
   if(showTransform&&['fillEmpty','fillPrevious','deleteRowsWhere'].includes(transformStart??''))throw new Error(t('empty.error.dialog'))
@@ -617,9 +619,12 @@
   {#if busy&&!large}<span role="status">Procesando…</span>{/if}
   {#if cellRange}<span role="status">Rango: filas {cellRange.top+1}–{cellRange.bottom+1}, columnas {cellRange.left+1}–{cellRange.right+1} · {((cellRange.bottom-cellRange.top+1)*(cellRange.right-cellRange.left+1)).toLocaleString()} celdas</span><details class="insert-menu"><summary aria-label="Acciones del rango">Rango <Icon name="chevron-down" size={12}/></summary><div class="dropdown">{@render rangeButtons()}</div></details>{:else if selectedRows.length}<span>{selectedRows.length} filas seleccionadas</span>{/if}
   {#if selectionStats}<span>Vacíos: {selectionStats.empty} · Únicos: {selectionStats.unique}</span>{#if selectionStats.numeric}<span class="truncate">Suma: {selectionStats.sum?.toLocaleString()} · Media: {selectionStats.average?.toLocaleString()} · Mín: {selectionStats.min?.toLocaleString()} · Máx: {selectionStats.max?.toLocaleString()}</span>{/if}{/if}
-  <label><span class="label-text">Codificación</span> <select aria-label="Codificación" value={doc.encoding} disabled={!!doc.projectSource||doc.dirty||interpreting} {...controlHint(doc.projectSource?readonlyReason:null)} onchange={e=>void options({encoding:e.currentTarget.value as Encoding})}><option value="utf8">UTF-8</option><option value="utf16le">UTF-16 LE</option><option value="win1252">Windows-1252</option></select></label>
-  <label><span class="label-text">Separador</span> <select aria-label="Separador" value={doc.delimiter} disabled={!!doc.projectSource||doc.dirty||interpreting} {...controlHint(doc.projectSource?readonlyReason:null)} onchange={e=>void options({delimiter:e.currentTarget.value})}><option value=",">Coma</option><option value=";">Punto y coma</option><option value={'\t'}>Tabulación</option><option value="|">Barra vertical</option></select></label>
-  <label title="Primera fila como encabezado"><input type="checkbox" aria-label="Primera fila como encabezado" bind:checked={header} disabled={!!doc.projectSource||doc.dirty||interpreting} {...controlHint(doc.projectSource?readonlyReason:null)} onchange={()=>void options({header})}/><span class="label-text">Encabezado</span></label>
+  <details class="insert-menu file-format"><summary aria-label={`${t('project.source.format')}: ${formatSummary}`}><span>{formatSummary}</span><Icon name="chevron-down" size={12}/></summary><div class="dropdown" role="group" aria-label={t('project.source.format')}>
+   <span class="dropdown-label">{t('project.source.format')}</span>
+   <label><span class="label-text">{t('project.source.encoding')}</span> <select aria-label={t('project.source.encoding')} value={doc.encoding} disabled={!!doc.projectSource||doc.dirty||interpreting} {...controlHint(doc.projectSource?readonlyReason:null)} onchange={e=>void options({encoding:e.currentTarget.value as Encoding})}><option value="utf8">{t('csvText.encoding.utf8')}</option><option value="utf16le">{t('csvText.encoding.utf16le')}</option><option value="win1252">{t('csvText.encoding.win1252')}</option></select></label>
+   <label><span class="label-text">{t('csv.format.separator')}</span> <select aria-label={t('csv.format.separator')} value={doc.delimiter} disabled={!!doc.projectSource||doc.dirty||interpreting} {...controlHint(doc.projectSource?readonlyReason:null)} onchange={e=>void options({delimiter:e.currentTarget.value})}><option value=",">{t('project.source.comma')}</option><option value=";">{t('project.source.semicolon')}</option><option value={'\t'}>{t('project.source.tab')}</option><option value="|">{t('project.source.pipe')}</option></select></label>
+   <label title={t('csv.format.firstRow')}><input type="checkbox" aria-label={t('csv.format.firstRow')} bind:checked={header} disabled={!!doc.projectSource||doc.dirty||interpreting} {...controlHint(doc.projectSource?readonlyReason:null)} onchange={()=>void options({header})}/><span class="label-text">{t('csv.format.header')}</span></label>
+  </div></details>
  </div>{/if}
   </div>
  </div>
@@ -652,4 +657,8 @@
  .csv-toolbar details[open]>summary[data-tooltip]::after{display:none}
  .csv-toolbar .palette-shortcut{white-space:nowrap}
  .csv-toolbar .dropdown hr{margin:3px 0;border:0;border-top:1px solid var(--border)}
+ .file-format .dropdown{left:auto;right:0;max-width:calc(100vw - 24px)}
+ .file-format .dropdown label{flex-direction:row}
+ .file-format .dropdown .label-text{display:inline}
+ .file-format select{max-width:none}
 </style>
