@@ -1,0 +1,8 @@
+out/renderer/assets/katex-BYUAFB3Y.js                                      499.30 kB
+out/renderer/assets/cytoscape.esm-CYLB7HaN.js                              869.90 kB
+out/renderer/assets/chunk-NGNAAXSQ-N_ytDWUp.js                           1,070.79 kB
+out/renderer/assets/CsvCharts-dsMML_8G.js                                1,685.22 kB
+out/renderer/assets/elk-QONTBCTQ-CMQXnjZg.js                             2,619.74 kB
+out/renderer/assets/index-CLPqQOZI.js                                    3,930.99 kB
+
+✓ built in 1.67s

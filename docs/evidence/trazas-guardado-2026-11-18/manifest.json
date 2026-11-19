@@ -1,0 +1,81 @@
+{
+  "codeSha": "532c3ad869ed47dc0cab0a2df5cddd61242a42eb",
+  "files": {
+    "unitarias-rojas.txt": {
+      "original": "unit-red-behavior.log",
+      "originalSha256": "dabf9d1f55252a9383c3e8c4e2a3ac949e270050ade69b5d4d18b203c7d3ce35",
+      "curatedSha256": "ebb30bcd9385de0dc4ce88168bcd1f22331ebb1ac9a1052ff445298109a229c4"
+    },
+    "unitarias-enfocadas.txt": {
+      "original": "unit-focused.log",
+      "originalSha256": "657f5ee0b22c9226c76c055a26ac80a58940dd8f4725fd39d11ef96e19a5f8ac",
+      "curatedSha256": "554d0ae7f4e7074c363ee25511fc6228d0eddf0d058c33a53714fdd39090c93d"
+    },
+    "unitarias-completas.txt": {
+      "original": "unit-full.log",
+      "originalSha256": "93ebcd8e37fb39aa6106e5775de0733daf96ca05d82ca8c8c3813ff8a7b27e19",
+      "curatedSha256": "4c519ed62b90f451ef53e8d5b0f0c49c5367d4f2be3d2c559219a00a766c61da"
+    },
+    "check.txt": {
+      "original": "check.log",
+      "originalSha256": "ab8c411acb99a62031c1dd06260ad3508ef5363474d42bad7227e92d45fd0006",
+      "curatedSha256": "7f631e59595272f1d944e60c28dee89b491482ed2fbf339768578c36cd1dd3dd"
+    },
+    "e2e-enfocadas.txt": {
+      "original": "focused.log",
+      "originalSha256": "f3158c22d473ea2b658316e6de60136be215cc0935ec9530c55401494c470bc5",
+      "curatedSha256": "f3158c22d473ea2b658316e6de60136be215cc0935ec9530c55401494c470bc5"
+    },
+    "calibracion-roja.txt": {
+      "original": "calibration.log",
+      "originalSha256": "664e5f3bb7ae571340c83de696a35e3180f1387a9a72eedd6fd7f3d3fe99cc50",
+      "curatedSha256": "8593725150a76cbf6d7b845f194793557b740fd041bad7979d1986a3761bf5ae"
+    },
+    "build-resumen.txt": {
+      "original": "build.log",
+      "originalSha256": "7e139cdfec88d5f18c934a404d143dd47e6cedd086d7db48f7560e90dd8d1444",
+      "curatedSha256": "5b8d2fd5a0b18281a13414337c2aac9ae8dcdc03466f60c2d8123207a16c151d",
+      "selection": "últimas ocho líneas"
+    },
+    "aserciones.json": {
+      "original": "assertions.json",
+      "originalSha256": "ea49e0bebf941158736db2dd88cb1ec20b454b9689a33834fadd8c7d5647a0c3",
+      "curatedSha256": "ea49e0bebf941158736db2dd88cb1ec20b454b9689a33834fadd8c7d5647a0c3"
+    },
+    "identidades.json": {
+      "original": "identities.json",
+      "originalSha256": "768d332f306978096d7cb87ce7f569ff20452500bdfdb19c41a8681740a48676",
+      "curatedSha256": "768d332f306978096d7cb87ce7f569ff20452500bdfdb19c41a8681740a48676"
+    }
+  },
+  "privateArtifacts": {
+    "electron-context.zip": {
+      "bytes": 579485,
+      "sha256": "da9c71806262969d10753151f5532060185ba80d6760c1d7e7b4f0900e8aac02",
+      "crcValid": true,
+      "frameSnapshots": 26,
+      "screencastFrames": 26,
+      "jpegResources": 25,
+      "beforeActions": 12,
+      "afterActions": 12,
+      "errorSnapshot": {
+        "callId": "yyiq@56",
+        "phase": "after",
+        "action": "click",
+        "selector": "internal:role=button[name=\"Guardar\"s]",
+        "message": "EACCES: permission denied, open '<fixture>/.tareas.md.<uuid>.tmp'"
+      },
+      "attachmentByteIdentical": true
+    },
+    "trace.zip": {
+      "bytes": 583747,
+      "sha256": "6aa4bb8ca44c5bc1f5ad60b9fc67d144ffd27f5650a674f18dc5367891ed1c4e",
+      "crcValid": true,
+      "frameSnapshots": 0,
+      "screencastFrames": 0,
+      "jpegResources": 0,
+      "beforeActions": 49,
+      "afterActions": 49
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import { closeElectron } from './close-electron'
+import {traceElectronFailure} from './electron-trace'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,readdir,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
@@ -12,14 +13,16 @@ const content=()=>page.locator('.cm-content')
 const source=()=>page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id)?.text,id)
 const info=()=>page.evaluate(async id=>(await window.freya.documents()).find(doc=>doc.id===id),id)
 const settled=()=>expect(page.locator('.preview .render-progress')).toHaveCount(0)
+let stopTrace:(()=>Promise<void>)|undefined
 test.beforeEach(async()=>{
+ stopTrace=undefined
  serial=0
  directory=await mkdtemp(join(tmpdir(),'freya-md004-'));await mkdir(join(directory,'exports'))
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(directory,'profile'),FREYALAB_TEST_EXPORT_DIR:join(directory,'exports')}})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})
 })
-test.afterEach(async()=>{await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+test.afterEach(async()=>{await stopTrace?.();await closeElectron(app);await rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
 async function open(text:string){const path=join(directory,`tareas-${++serial}.md`);await writeFile(path,text);const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);id=doc.id;await expect(article()).not.toBeEmpty();await settled();return{path,doc}}
 async function exportFile(format:'html'|'pdf'){
  const name=`tareas-${serial}.${format}`;await page.getByRole('button',{name:'Exportar',exact:true}).click();await page.getByRole('button',{name:format==='html'?'HTML autónomo':'Documento PDF',exact:true}).click()
@@ -73,6 +76,7 @@ test('C2: Vista previa sin CodeMirror conserva teclado local e historial mediant
 })
 
 test('C2: guardar no borra el historial y cambiar pestaña no aplica un cambio a otro documento',async()=>{
+ stopTrace=await traceElectronFailure(app.context(),test.info())
  const original='- [ ] Primera\n',{path}=await open(original);const firstId=id
  await boxes().first().click();await expect.poll(source).toBe('- [x] Primera\n');await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect.poll(()=>readFile(path,'utf8')).toBe('- [x] Primera\n')
  // El reemplazo en disco puede verse antes de que termine el guardado.

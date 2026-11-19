@@ -1,0 +1,46 @@
+
+Running 1 test using 1 worker
+
+(node:51860) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [observacion] › ../guardar-trazas-evidence/calibration.spec.ts:23:1 › calibración privada: el ayudante conserva el aviso de un fallo real de Guardar (16.3s)
+
+
+  1) [observacion] › ../guardar-trazas-evidence/calibration.spec.ts:23:1 › calibración privada: el ayudante conserva el aviso de un fallo real de Guardar
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    - Expected  - 1
+    + Received  + 1
+
+    - - [x] Primera
+    + - [ ] Primera
+      ↵
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      37 |  await page.screenshot({path:testInfo.outputPath('actual-save-error.png'),animations:'disabled'})
+      38 |  // La aserción de persistencia original debe quedar roja.
+    > 39 |  await expect.poll(()=>readFile(path,'utf8')).toBe(changed)
+         |                                               ^
+      40 | })
+      41 |
+        at <worktree>-evidence/calibration.spec.ts:39:47
+
+    attachment #2: electron-context (application/zip) ──────────────────────────────────────────────
+    ../guardar-trazas-evidence/calibration-results/calibration-calibración-pr-b2041-de-un-fallo-real-de-Guardar-observacion/attachments/electron-context-5d14ee318e41f1c936477f616ff7105c7f66a288.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../guardar-trazas-evidence/calibration-results/calibration-calibración-pr-b2041-de-un-fallo-real-de-Guardar-observacion/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../guardar-trazas-evidence/calibration-results/calibration-calibración-pr-b2041-de-un-fallo-real-de-Guardar-observacion/trace.zip
+    Usage:
+
+        npx playwright show-trace ../guardar-trazas-evidence/calibration-results/calibration-calibración-pr-b2041-de-un-fallo-real-de-Guardar-observacion/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [observacion] › ../guardar-trazas-evidence/calibration.spec.ts:23:1 › calibración privada: el ayudante conserva el aviso de un fallo real de Guardar

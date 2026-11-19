@@ -1,0 +1,45 @@
+{
+  "electron-context.zip": {
+    "bytes": 579485,
+    "sha256": "da9c71806262969d10753151f5532060185ba80d6760c1d7e7b4f0900e8aac02",
+    "crcValid": true,
+    "frameSnapshots": 26,
+    "screencastFrames": 26,
+    "jpegResources": 25,
+    "beforeActions": 12,
+    "afterActions": 12,
+    "errorSnapshot": {
+      "callId": "yyiq@56",
+      "phase": "after",
+      "action": "click",
+      "selector": "internal:role=button[name=\"Guardar\"s]",
+      "message": "EACCES: permission denied, open '<fixture>/.tareas.md.<uuid>.tmp'"
+    },
+    "attachmentByteIdentical": true
+  },
+  "trace.zip": {
+    "bytes": 583747,
+    "sha256": "6aa4bb8ca44c5bc1f5ad60b9fc67d144ffd27f5650a674f18dc5367891ed1c4e",
+    "crcValid": true,
+    "frameSnapshots": 0,
+    "screencastFrames": 0,
+    "jpegResources": 0,
+    "beforeActions": 49,
+    "afterActions": 49
+  },
+  "calibrationReporterStats": {
+    "total": 1,
+    "expected": 0,
+    "unexpected": 1,
+    "flaky": 0,
+    "skipped": 0,
+    "ok": false
+  },
+  "calibrationAnnotations": [],
+  "passingCaseZipCount": 0,
+  "codeSha": "532c3ad869ed47dc0cab0a2df5cddd61242a42eb",
+  "baseSha": "23121eda41fb9380c533a25ef86723046b6d7639",
+  "probeSha256": "c3c6c74b1926d5ded2e9ee341173c0430295113dcaa28a2ae634aed6759d44bb",
+  "helperSha256": "b41e3bce6ce959912db9931e30d70072baab019469faffb39763f47eec22295b",
+  "normalization": "ZIPs y capturas brutos privados; solo contadores, hashes y aviso con ruta/UUID sustituidos. Logs curados: ANSI, rutas locales y espacios finales retirados; ningún resultado se altera."
+}
