@@ -103,6 +103,7 @@ test('el gráfico muestra la misma fase visible y anunciada antes de dibujar dat
  try{
   await createSuggestedChart(page)
   await verifyPhases(panel.locator('.result-status'),'es',panel.locator('.result-announcement'))
+  await panel.getByRole('button',{name:'Añadir a… Valor',exact:true}).click();await panel.getByRole('menuitem',{name:'Añadir a Valores (recomendado)',exact:true}).click();await panel.getByLabel('Resumir Valor por',{exact:true}).selectOption('sum')
   await expect(panel.locator('.pivot-result tbody tr')).toHaveCount(2)
   await expect(panel.locator('.pivot-result tbody tr').filter({hasText:'Norte'}).locator('td').first()).toHaveText('6,000')
   await expect(panel.locator('.pivot-result tbody tr').filter({hasText:'Sur'}).locator('td').first()).toHaveText('7,200')

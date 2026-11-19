@@ -1,5 +1,7 @@
 import {afterAll,beforeAll,expect,it} from 'vitest'
 import {createRequire} from 'node:module'
+import {readFileSync} from 'node:fs'
+import {parse} from 'csv-parse/sync'
 import {createDuckDB,NODE_RUNTIME,VoidLogger,type DuckDBConnection} from '@duckdb/duckdb-wasm/blocking'
 import {suggest,type ChartColumn} from '../src/shared/chart-suggest'
 import {chartSQL,type ChartOptions} from '../src/shared/charts'
@@ -33,7 +35,7 @@ it.each(headers.flatMap((_,x)=>headers.map((_,y)=>({x,y}))))('DuckDB real acepta
 
 const manual:ChartOptions={kind:'bar',x:3,y:0,bins:10,aggregate:'sum',descending:false,measureType:'number',series:-1,time:'none'}
 it.each([
- {name:'suma por categoría',shelves:{x:3,y:0},options:manual,expected:[['Sur',2],['Norte',4.5]]},
+ {name:'promedio por categoría',shelves:{x:3,y:0},options:{...manual,aggregate:'average' as const},expected:[['Sur',2],['Norte',2.25]]},
  {name:'suma mensual',shelves:{x:1,y:0},options:{...manual,kind:'line' as const,x:1,time:'month' as const},expected:[['2026-01',1.5],['2026-02',5]]},
  {name:'conteo textual',shelves:{x:3},options:{...manual,y:-1,aggregate:'count' as const,measureType:'text' as const},expected:[['Sur',1],['Norte',2]]},
  {name:'pares numéricos',shelves:{x:0,y:7},options:{...manual,kind:'scatter' as const,x:0,y:7,aggregate:'count' as const},expected:[[1.5,10],[2,20],[3,30]]},
@@ -42,6 +44,36 @@ it.each([
  expect(chartSQL(headers,result.options!)).toBe(manualSQL)
  const rows=connection.query(manualSQL).toArray().map(row=>[row.x,Number(row.value)])
  expect(rows).toEqual(expected)
+})
+it('SIM-1d: Suma sigue disponible como cálculo explícito por categoría',()=>{
+ expect(connection.query(chartSQL(headers,manual)).toArray().map(row=>[row.x,Number(row.value)])).toEqual([['Sur',2],['Norte',4.5]])
+ expect(connection.query('SELECT * FROM datos ORDER BY rowid').toArray().map(row=>Object.values(row.toJSON()))).toEqual(cells)
+})
+
+it('SIM-1d: la encuesta calcula Promedio con un oráculo independiente y conserva ingresos vacíos e identificadores',async()=>{
+ const [names,...fixture]=parse(readFileSync(new URL('./fixtures/chart-suggestions-survey.csv',import.meta.url),'utf8')) as string[][]
+ const rows=fixture.map((cells,index)=>({id:String(index+1),cells}))
+ const profiled=await Promise.all(names.map(async(name,column)=>({column,name,profile:(await analyzeColumn(rows,undefined,{column,revision:0,requestId:'sim1d-survey',frequencyOffset:0,duplicatesOnly:false,bins:10},()=>{},name)).profile})))
+ expect(profiled[0].profile.kind).toBe('identifier');expect(profiled[3].profile.kind).toBe('number')
+ const expected=[['Oaxaca',200.5],['Puebla',600]]
+ const independent=['Oaxaca','Puebla'].map(city=>{
+  const values=fixture.filter(row=>row[1]===city&&row[3].trim()!=='').map(row=>Number(row[3]))
+  return[city,values.reduce((sum,value)=>sum+value,0)/values.length]
+ })
+ expect(independent).toEqual(expected)
+ const proposal=suggest(profiled,{x:1,y:3}).options!
+ expect(proposal).toMatchObject({kind:'bar',x:1,y:3,aggregate:'average',measureType:'number'})
+ connection.query('BEGIN')
+ try{
+  connection.query('DROP TABLE datos');connection.query('CREATE TABLE datos ('+sqlColumns(names).map(column=>quoteIdentifier(column.name)+' VARCHAR').join(',')+')')
+  const insert=connection.prepare('INSERT INTO datos VALUES ('+names.map(()=>'?').join(',')+')')
+  try{for(const row of fixture)insert.query(...row)}finally{insert.close()}
+  expect(connection.query(chartSQL(names,proposal)).toArray().map(row=>[row.x,Number(row.value)])).toEqual(expected)
+  expect(connection.query(chartSQL(names,{...proposal,aggregate:'sum'})).toArray().map(row=>[row.x,Number(row.value)])).toEqual([['Oaxaca',401],['Puebla',1200]])
+  expect(connection.query(chartSQL(names,{...proposal,y:-1,aggregate:'count',measureType:'text'})).toArray().map(row=>[row.x,Number(row.value)])).toEqual([['Puebla',2],['Oaxaca',3]])
+  expect(connection.query('SELECT * FROM datos ORDER BY rowid').toArray().map(row=>Object.values(row.toJSON()))).toEqual(fixture)
+ }finally{connection.query('ROLLBACK')}
+ expect(connection.query('SELECT * FROM datos ORDER BY rowid').toArray().map(row=>Object.values(row.toJSON()))).toEqual(cells)
 })
 
 it('equivalencia numérica de histograma y mapa de calor, incluidos encabezados duplicados',()=>{

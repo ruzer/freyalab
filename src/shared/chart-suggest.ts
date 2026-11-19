@@ -41,7 +41,7 @@ export function suggest(columns:readonly ChartColumn[],shelves:ChartShelves):Cha
   }}
  })
  if(y&&kind(y)==='number'){
-  const numeric:ChartOptions={...count,y:y.column,aggregate:'sum',measureType:'number'}
+  const numeric:ChartOptions={...count,y:y.column,aggregate:['text','category'].includes(kind(x)??'')?'average':'sum',measureType:'number'}
   const histogram:ChartOptions={...count,kind:'histogram',x:y.column,y:y.column,measureType:'number'}
   if(distribution&&groupedNumber&&shelves.multipleValuesPerGroup===true)return result({...numeric,kind:'box',aggregate:'count'},'charts.suggest.distribution',[numeric,histogram])
   const alternatives=distribution?[count,histogram]:[count]

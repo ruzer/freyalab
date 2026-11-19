@@ -9,10 +9,10 @@ async function column(column:number,name:string,values:string[]):Promise<ChartCo
  return{column,name,profile:result.profile}
 }
 
-it('propone sumar una medida numérica por una columna de texto usando las opciones del formulario actual',async()=>{
+it('SIM-1d: propone el promedio de una medida numérica por texto usando las opciones del formulario actual',async()=>{
  const columns=await Promise.all([column(0,'Ciudad',['Oaxaca','Puebla','Oaxaca']),column(1,'Total MXN',['12.5','20','3'])])
  const result=suggest(columns,{x:0,y:1})
- const manual:ChartOptions={kind:'bar',x:0,y:1,bins:10,aggregate:'sum',descending:false,measureType:'number',series:-1,time:'none'}
+ const manual:ChartOptions={kind:'bar',x:0,y:1,bins:10,aggregate:'average',descending:false,measureType:'number',series:-1,time:'none'}
  expect(result.options).toEqual(manual)
  expect(chartSQL(['Ciudad','Total MXN'],result.options!)).toBe(chartSQL(['Ciudad','Total MXN'],manual))
  expect(result.reason).toMatchObject({key:'charts.suggest.textNumber',parameters:{x:'Ciudad',y:'Total MXN'}})
@@ -77,6 +77,7 @@ it.each(combinations)('tabla: $x en X y $y en Y → $expected; opciones y altern
  const columns=await Promise.all([column(0,'Columna X',[...values[x]]),column(1,'Columna Y',[...values[y]])])
  const result=suggest(columns,{x:0,y:1})
  expect(result.options?.kind).toBe(expected)
+ if(y==='number')expect(result.options?.aggregate).toBe(x==='number'?'count':x==='text'||x==='category'?'average':'sum')
  if([x,y].some(kind=>['identifier','mixed','empty'].includes(kind))){expect(result.reason.key).toBe('charts.suggest.conservative');expect(result.alternatives.length).toBeGreaterThan(0)}
  for(const options of[result.options!,...result.alternatives]){
   expect(()=>chartSQL(['Columna X','Columna Y'],options)).not.toThrow()
@@ -121,7 +122,7 @@ it('200 columnas conservan posiciones y nombres y no se mutan ni se recorren cel
  const columns=Array.from({length:200},(_,column)=>({...text,column,name:`Campo ${column}`}));columns[198]=await column(198,'Medida Ω',['1','2','3'])
  const shelves={x:199,y:198},before=structuredClone({columns,shelves});freeze(columns);freeze(shelves)
  const result=suggest(columns,shelves)
- expect(result.options).toMatchObject({kind:'bar',x:199,y:198,aggregate:'sum',measureType:'number'})
+ expect(result.options).toMatchObject({kind:'bar',x:199,y:198,aggregate:'average',measureType:'number'})
  expect(()=>chartSQL(columns.map(column=>column.name),result.options!)).not.toThrow()
  expect({columns,shelves}).toEqual(before)
  result.options!.x=0;result.alternatives[0].x=0
@@ -131,7 +132,7 @@ it('encabezados duplicados, vacíos, comillas y Unicode se conservan por posici�
  const names=['Grupo "Ñ🐶"; SELECT 1 --','Medida "Ω"','Grupo "Ñ🐶"; SELECT 1 --','']
  const columns=await Promise.all(names.map((name,index)=>column(index,name,index===1?['1','2','3']:['Norte','Sur','Norte'])))
  const result=suggest(columns,{x:2,y:1})
- expect(result.options).toMatchObject({kind:'bar',x:2,y:1,aggregate:'sum'})
+ expect(result.options).toMatchObject({kind:'bar',x:2,y:1,aggregate:'average'})
  expect(result.reason.parameters).toMatchObject({x:names[2],y:names[1]})
  for(const options of[result.options!,...result.alternatives])expect(()=>chartSQL(names,options)).not.toThrow()
  expect(suggest(columns,{x:3}).options).toMatchObject({kind:'bar',x:3,y:-1,aggregate:'count'})
