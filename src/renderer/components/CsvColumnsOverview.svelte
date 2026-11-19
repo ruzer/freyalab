@@ -6,10 +6,11 @@
  import {columnSummary} from '../../shared/column-profile'
  import {columnOverviewReport,type ReportContext} from '../lib/statistics-report'
  import type {DocumentInfo,TableQuery,ColumnOverviewRow,TableViewMeta} from '../../shared/types'
- let {doc,columns,query,queryValid,viewMeta,external=false,onerror,onreport,oninspect,onempty}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;external?:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;oninspect:(column:number,scope:'all'|'view')=>void;onempty:(intent:CsvEmptyIntent)=>void}=$props()
+ let {doc,columns,query,queryValid,viewMeta,requested,external=false,onerror,onreport,oninspect,onempty}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;requested?:boolean;external?:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;oninspect:(column:number,scope:'all'|'view')=>void;onempty:(intent:CsvEmptyIntent)=>void}=$props()
  let scope=$state<'all'|'view'>('all'),selection=$state('all'),busy=$state(false),reporting=$state(false),results=$state<ColumnOverviewRow[]>([])
  let message=$state('info.idle'),errorMessage=$state(''),total=$state(0),rowCount=$state(0),search=$state(''),offset=$state(0),context=$state<ReportContext|null>(null)
  let serial=0,active:{id:string;requestId:string}|null=null,timer:ReturnType<typeof setTimeout>|undefined
+ let initialRequested=false,initialized=false,hadResult=$state(false)
  const sample=$derived(csvAnalysisSample(doc,viewMeta))
  const viewReady=$derived(queryValid&&sample!==undefined&&csvAnalysisQueryReady(doc,query,viewMeta))
  const scopeKey=$derived(scope==='view'?JSON.stringify([scope,viewKey(query),viewReady]):scope)
@@ -25,7 +26,14 @@
  onDestroy(cancel)
  // Cambiar de pestaña o de página no cambia la captura del análisis.
  const invalidationKey=$derived(JSON.stringify([doc.id,doc.revision,scopeKey,selectionKey]))
- $effect(()=>{void invalidationKey;untrack(()=>{cancel();message='info.changed'})})
+ $effect(()=>{void invalidationKey;untrack(()=>{cancel();message=initialized?'info.changed':'info.idle';initialized=true})})
+ $effect(()=>{
+  const selected=requested,ready=scopeReady
+  untrack(()=>{
+   if(selected===false&&busy){cancel();message='info.cancelled'}
+   else if(selected&&ready&&!initialRequested){initialRequested=true;void explore()}
+  })
+ })
  $effect(()=>{void search;offset=0})
  async function explore(){
   if(sample===undefined||!scopeReady){onerror(t('info.error.ready'));return}
@@ -61,7 +69,7 @@
      results=[...results,{column,name:headers[column],error:detail}]
     }finally{if(ticket===serial)active=null}
    }
-   message=failed?'info.partial':'info.complete'
+   message=failed?'info.partial':'info.complete';hadResult=true
   }catch(error){if(ticket===serial){results=[];context=null;errorMessage=String(error).replace(/^.*Error: /,'');message='info.error';onerror(errorMessage)}}
   finally{if(ticket===serial){clearTimeout(timer);active=null;busy=false}}
  }
@@ -74,9 +82,9 @@
  <form onsubmit={event=>{event.preventDefault();void explore()}}>
   <label>{t('info.columns')} <select aria-label={t('info.columnsLabel')} bind:value={selection} disabled={busy}><option value="all">{t('info.columns.all')}</option><option value="selected" disabled={!columns.length}>{t('info.columns.selected')}</option></select></label>
   <label>{t('info.rows')} <select aria-label={t('info.scopeLabel')} bind:value={scope} disabled={busy}><option value="all">{sample===undefined?t('analysis.scope.pending'):sample?t('info.scope.sample'):t('info.scope.all')}</option><option value="view">{sample?t('info.scope.sampleView'):t('info.scope.view')}</option></select></label>
-  <button aria-busy={busy} {...controlHint(busy?'busy':!scopeReady?'scope':null)} type="submit" disabled={busy||!scopeReady}>{#if busy}<span class="button-spinner" aria-hidden="true"></span>{/if}<span class:busy-label={busy} data-loading={t('ui.button.calculating')}>{t('info.calculate')}</span></button>
+  <button aria-busy={busy} {...controlHint(busy?'busy':!scopeReady?'scope':null)} type="submit" disabled={busy||!scopeReady}>{#if busy}<span class="button-spinner" aria-hidden="true"></span>{/if}<span class:busy-label={busy} data-loading={t('ui.button.calculating')}>{t(hadResult?'info.refresh':'info.calculate')}</span></button>
   {#if busy}<button class="btn-ghost" type="button" onclick={()=>{cancel();message='info.cancelled'}}>{t('info.cancel')}</button><progress aria-label={t('info.progressLabel')} value={results.length} max={total}></progress>{/if}
-  <button {...controlHint(busy||reporting?'busy':!context?'result':doc.revision!==context.revision?'refresh':null)} type="button" disabled={!context||busy||reporting||doc.revision!==context.revision} onclick={report}>{t('info.report')}</button>
+  {#if context&&results.length&&!busy&&doc.revision===context.revision}<button {...controlHint(busy||reporting?'busy':!context?'result':doc.revision!==context.revision?'refresh':null)} type="button" disabled={!context||busy||reporting||doc.revision!==context.revision} onclick={report}>{t('info.report')}</button>{/if}
  </form>
  <p role="status">{t(message,{done:message==='info.partial'?results.length-failed:results.length+1,total,failed})+(errorMessage?' '+errorMessage:'')}</p>
  {#if sample===true}<p class="notice">{t('info.sampleWarning')}</p>{/if}
@@ -107,7 +115,7 @@
     <td><button {...controlHint(busy?'busy':null)} type="button" disabled={busy} aria-label={t('info.inspect',{index:entry.column+1})} onclick={()=>oninspect(entry.column,scope)}>{t('info.detail')}</button></td>
    </tr>{/each}</tbody>
   </table></div>
-  <div class="pagination"><button {...controlHint(offset===0?'firstPage':null)} disabled={offset===0} onclick={()=>offset=Math.max(0,offset-50)}>{t('info.previous')}</button><span>{visible.length?offset+1:0}–{Math.min(offset+50,visible.length)} {t('info.of')} {number(visible.length)} {t('info.visibleColumns')}</span><button {...controlHint(offset+50>=visible.length?'lastPage':null)} disabled={offset+50>=visible.length} onclick={()=>offset+=50}>{t('info.next')}</button></div>
+  {#if visible.length>50}<div class="pagination"><button {...controlHint(offset===0?'firstPage':null)} disabled={offset===0} onclick={()=>offset=Math.max(0,offset-50)}>{t('info.previous')}</button><span>{visible.length?offset+1:0}–{Math.min(offset+50,visible.length)} {t('info.of')} {number(visible.length)} {t('info.visibleColumns')}</span><button {...controlHint(offset+50>=visible.length?'lastPage':null)} disabled={offset+50>=visible.length} onclick={()=>offset+=50}>{t('info.next')}</button></div>{/if}
  {/if}
  <details><summary>{t('info.how')}</summary><p>{t('info.help')}</p></details>
 </section>

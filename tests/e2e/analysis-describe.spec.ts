@@ -93,8 +93,8 @@ test('AN-2 coordina el cálculo avanzado con describe sin lanzar consultas al de
 test('AN-2 Información presenta dimensiones, tipos y calidad con distintos sin vacíos',async()=>{
  await openAnalysis(page,'Información')
  const panel=page.getByRole('region',{name:'Vista general de columnas',exact:true})
- await expect(panel.getByRole('button',{name:'Obtener información',exact:true})).toBeEnabled()
- await panel.getByRole('button',{name:'Obtener información',exact:true}).click()
+ await expect(panel.getByRole('status')).toHaveText(t('info.complete'))
+ await expect(panel.getByRole('button',{name:t('info.refresh'),exact:true})).toBeEnabled()
  await expect(panel.locator('.file-summary')).toContainText('6 filas × 5 columnas')
  await expect(panel.locator('.file-summary')).toContainText('UTF-8')
  await expect(panel.locator('.type-chips')).toContainText('2 numéricas')
@@ -183,7 +183,7 @@ for(const language of ['es','en-XA'] as const)test(`AN-2 cien columnas y teclado
  const sticky=await panel.locator('tbody th').first().boundingBox(),box=await scroller.boundingBox();expect(Math.abs(sticky!.x-box!.x)).toBeLessThan(2);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
  for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect.poll(()=>page.locator('html').evaluate(node=>node.classList.contains('dark'))).toBe(theme==='dark');await scroller.evaluate(node=>node.scrollLeft=0);await page.mouse.move(0,0);await page.screenshot({animations:'disabled',path:test.info().outputPath(`an2-describe-100-${language}-${theme}-1440x900.png`)})}
  await page.emulateMedia({forcedColors:'active'});await button.focus();await expect(button).toBeFocused();await expect(panel.getByRole('table')).toBeVisible();await page.emulateMedia({forcedColors:'none'})
- await openAnalysis(page,'Información');const info=page.getByRole('region',{name:tr('info.title'),exact:true}),infoButton=info.getByRole('button',{name:tr('info.calculate'),exact:true});await expect(infoButton).toBeEnabled();await infoButton.focus();await infoButton.press('Enter');await expect(info.getByRole('status')).toHaveText(tr('info.complete'));await expect(info.locator('tbody tr')).toHaveCount(50)
+ await openAnalysis(page,'Información');const info=page.getByRole('region',{name:tr('info.title'),exact:true}),infoButton=info.getByRole('button',{name:tr('info.refresh'),exact:true});await expect(info.getByRole('status')).toHaveText(tr('info.complete'));await expect(infoButton).toBeEnabled();await infoButton.focus();await expect(info.locator('tbody tr')).toHaveCount(50)
  for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect.poll(()=>page.locator('html').evaluate(node=>node.classList.contains('dark'))).toBe(theme==='dark');await page.mouse.move(0,0);await page.screenshot({animations:'disabled',path:test.info().outputPath(`an2-info-100-${language}-${theme}-1440x900.png`)})}
  expect(await readFile(wide,'utf8')).toBe(text)
 })
@@ -236,7 +236,7 @@ test('AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes 
 for(const language of ['es','en','en-XA'] as const)test(`Información: distintos sin vacíos conserva repeticiones y el archivo (${language})`,async()=>{
  const tr=(key:string,parameters:Record<string,string|number>={})=>t(key,parameters,language)
  await openAnalysis(page,'Información');const panel=page.getByRole('region',{name:tr('info.title'),exact:true})
- await panel.getByRole('button',{name:tr('info.calculate'),exact:true}).click();await expect(panel.getByRole('status')).toHaveText(tr('info.complete'))
+ await expect(panel.getByRole('status')).toHaveText(tr('info.complete'))
  const mixed=panel.locator('tbody tr').nth(4),detail=mixed.locator('.distinct-detail')
  await expect(detail.locator('summary')).toHaveText('2');await expect(detail.locator('summary')).toHaveAccessibleName('2 · '+tr('info.distinctHelp',{name:'Mixta'}))
  await detail.locator('summary').focus();await detail.locator('summary').press('Enter')
