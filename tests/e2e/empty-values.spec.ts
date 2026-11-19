@@ -411,7 +411,8 @@ for(const language of ['es','en','en-XA'] as Language[])test(`LIM-1 teclado, idi
   await expect(page.getByRole('button',{name:tr('charts.toolbar.findAction'),exact:true})).toBeFocused()
  }
  await page.emulateMedia({forcedColors:'active',reducedMotion:'reduce'})
- await page.getByRole('combobox',{name:'Codificación',exact:true}).selectOption('win1252')
+ await page.locator('footer').getByLabel(`${tr('project.source.format')}:`,{exact:false}).click()
+ await page.getByRole('group',{name:tr('project.source.format'),exact:true}).getByRole('combobox',{name:tr('project.source.encoding'),exact:true}).selectOption('win1252')
  await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents()))[0].encoding).toBe('win1252')
  await page.getByRole('checkbox',{name:'Seleccionar columna Cantidad',exact:true}).check()
  const dialog=await fromPalette(),value=dialog.getByRole('textbox',{name:tr('empty.value'),exact:true})
