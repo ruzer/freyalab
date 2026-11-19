@@ -63,14 +63,15 @@ test('las cinco acciones principales se ven a la vez y lo demás está en menús
 })
 
 test('la codificación, el separador, el encabezado y los recuentos viven en la barra de estado', async()=>{
- const bar=status()
- await expect(bar.getByLabel('Codificación',{exact:true})).toBeVisible()
- await expect(bar.getByLabel('Separador',{exact:true})).toBeVisible()
- await expect(bar.getByRole('checkbox',{name:'Primera fila como encabezado',exact:true})).toBeChecked()
+ const bar=status(),format=bar.getByRole('group',{name:'Formato del archivo',exact:true})
+ await bar.getByLabel('Formato del archivo:',{exact:false}).click()
+ await expect(format.getByLabel('Codificación',{exact:true})).toBeVisible()
+ await expect(format.getByLabel('Separador',{exact:true})).toBeVisible()
+ await expect(format.getByRole('checkbox',{name:'Primera fila como encabezado',exact:true})).toBeChecked()
  await expect(bar.getByText(/1[.,]240 de 1[.,]240 filas/)).toBeVisible()
  await expect(page.locator('.csv-workspace').getByLabel('Codificación',{exact:true})).toHaveCount(0)
  // Cambiar el separador sigue reinterpretando el archivo.
- await bar.getByLabel('Separador',{exact:true}).selectOption(';')
+ await format.getByLabel('Separador',{exact:true}).selectOption(';')
  await expect(page.getByRole('grid').getByRole('columnheader')).toHaveCount(1) // con «;» el archivo queda en una sola columna
 })
 

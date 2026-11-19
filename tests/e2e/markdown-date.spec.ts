@@ -69,7 +69,7 @@ test('F3: insertar marca cambios; guardar escribe únicamente el resultado esper
  await expect.poll(source).toBe('2024-02-29');expect((await documentInfo())?.dirty).toBe(true)
  expect(await readFile(path,'utf8')).toBe(original);await expect(page.locator('.statusbar')).toContainText('Cambios pendientes')
  await page.getByRole('button',{name:'Guardar',exact:true}).click();await expect.poll(()=>readFile(path,'utf8')).toBe('2024-02-29')
- await expect.poll(async()=>(await documentInfo())?.dirty).toBe(false);await expect(page.locator('.statusbar')).toContainText('Guardado')
+ await expect.poll(async()=>(await documentInfo())?.dirty).toBe(false);await expect(page.getByRole('button',{name:'Guardar',exact:true})).toHaveAttribute('aria-busy','false');await expect(page.locator('.save-button .button-label .visible')).toHaveText('Guardado')
 })
 
 test('F1/F4: fecha local, medianoche, 23:59, cambio de año y ceros a la izquierda no dependen del idioma',async()=>{
