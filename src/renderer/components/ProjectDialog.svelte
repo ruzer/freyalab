@@ -1,8 +1,8 @@
 <script lang="ts">
  import {onMount} from 'svelte'
  import {t} from '../lib/i18n.svelte'
- let{onclose}:{onclose:()=>void}=$props()
- let dialog:HTMLDialogElement,folder=$state(''),name=$state(''),suggested=$state(false),busy=$state(false),message=$state('')
+ let{sourceName,oncreated,onclose}:{sourceName?:string;oncreated:(includeSource:boolean)=>void;onclose:()=>void}=$props()
+ let dialog:HTMLDialogElement,folder=$state(''),name=$state(''),suggested=$state(false),includeSource=$state(true),busy=$state(false),message=$state('')
  const opener=document.activeElement as HTMLElement|null
  onMount(()=>{dialog.showModal();return()=>{void window.freya.projectCancelCreate().catch(()=>{});dialog.close();if(opener?.isConnected)opener.focus()}})
  async function choose(){
@@ -15,7 +15,7 @@
   event.preventDefault()
   if(!folder||!name.trim()||busy)return
   busy=true;message=''
-  try{await window.freya.projectCreate(name,suggested);onclose()}
+  try{await window.freya.projectCreate(name,suggested);oncreated(!!sourceName&&includeSource)}
   catch(error){message=error instanceof Error?error.message:String(error)}
   finally{busy=false}
  }
@@ -30,6 +30,7 @@
   </div>
   <label>{t('project.name')}<input bind:value={name} maxlength="200" required disabled={busy}/></label>
   <label class="check"><input type="checkbox" bind:checked={suggested} disabled={busy}/> {t('project.suggested')}</label>
+  {#if sourceName}<label class="check"><input type="checkbox" bind:checked={includeSource} disabled={busy}/> {t('project.firstSource',{name:sourceName})}</label>{/if}
   <p>{t('project.privacy')}</p>
   {#if message}<p role="alert">{message}</p>{/if}
   <div class="actions">

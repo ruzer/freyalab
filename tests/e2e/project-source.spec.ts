@@ -29,12 +29,13 @@ test.beforeEach(async({},info)=>{
 })
 test.afterEach(async()=>{try{await stopTrace?.()}finally{await closeElectron(app);await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:200})}})
 
-async function create(locale:'es'|'en-XA'='es'){
+async function create(locale:'es'|'en-XA'='es',withoutFirstSource?:string){
  const tr=(key:string)=>t(key,{},locale)
  await page.getByRole('button',{name:tr('project.create'),exact:true}).press('Enter')
  const dialog=page.getByRole('dialog',{name:tr('project.new'),exact:true})
  await dialog.getByRole('button',{name:tr('project.pickFolder')}).press('Enter')
  await expect(dialog.getByRole('textbox',{name:tr('project.name'),exact:true})).toHaveValue('Censo')
+ if(withoutFirstSource)await dialog.getByRole('checkbox',{name:t('project.firstSource',{name:withoutFirstSource},locale),exact:true}).uncheck()
  await dialog.getByRole('button',{name:tr('project.create'),exact:true}).press('Enter')
 }
 async function register(){
@@ -215,7 +216,7 @@ test('una muestra conserva su alcance al protegerla y al cerrar el proyecto',asy
  await expect(overview.locator('.scope')).toContainText('200 filas por columna')
  await expect(overview.locator('.scope')).toContainText('Muestra completa')
  await workspace.getByRole('button',{name:'Ir al CSV',exact:true}).click()
- await create();await register()
+ await create('es',document.name);await register()
  await chooseProjectAction(await openProjectRowMenu(projectTreeRow(page,'datos.csv')),'analysis.tab.open')
  expect((await page.evaluate(()=>window.freya.documents()))[0]).toMatchObject({readonly:true,projectSource:'protected',rowCount:200})
  await expect(workspace.locator('.analysis-warning')).toHaveText(t('charts.fields.sample'))
