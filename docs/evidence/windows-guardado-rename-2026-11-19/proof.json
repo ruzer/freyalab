@@ -1,0 +1,479 @@
+{
+  "schema": 1,
+  "date": "2026-11-19",
+  "status": "proposal for authorized draft PR; owner final review/merge pending",
+  "base_commit": "39c2000936f1b03c00daee45bc0a257132fb26ab",
+  "candidate_publication_commit": null,
+  "source_sha256": {
+    "src/main/files.ts": "c69759e44b9174b68faa8cae9650c5824527699e2764a93944aae34f22f3e06a",
+    "tests/files-windows-rename.test.ts": "545e7c6281a7177363c13014d685dbf3dfa52c348af67272d85cc60d16d2fede",
+    "tests/files-windows-rename-native.test.ts": "e4fcda23becbb39baca49140d6552a853941069d7b22bdd2ea7b3843a7a9b898"
+  },
+  "baseline_files_sha256": "725ef0af35a922eb9f9f92e204fcf740bd354dc1e701b50e5d4b9ef640f3417f",
+  "runtime_diff_files": [
+    "src/main/files.ts"
+  ],
+  "existing_e2e_dependencies_workflows_package_unchanged": true,
+  "policy": {
+    "expected": "original string hash only",
+    "platform": "win32",
+    "code": "EPERM",
+    "syscall": "rename",
+    "max_attempts_total": 3,
+    "delay_ms": [
+      50,
+      100
+    ],
+    "programmed_wait_total_ms": 150,
+    "total_latency_bound_claimed": false,
+    "same_temp_and_single_stream_consumption": true,
+    "hash_revalidated_before_each_attempt": true,
+    "undefined_and_null_no_new_retry": true
+  },
+  "observed_ci": {
+    "pr": 195,
+    "run_id": 44504974068,
+    "head": "fc208ab2db791f990f26f6bd5643198ac141fff6",
+    "windows_failures": [
+      {
+        "attempt": "initial",
+        "format": "Texto",
+        "extension": ".txt"
+      },
+      {
+        "attempt": "retry1",
+        "format": "Mermaid",
+        "extension": ".mmd"
+      }
+    ],
+    "observed_error": {
+      "code": "EPERM",
+      "syscall": "rename"
+    },
+    "main_lf_assertion_passed_for_each_reached_editor": true,
+    "disk_expected_utf8_hex": "612c620a632c640a652c66",
+    "disk_received_utf8_hex_reconstructed_from_ansi_trace": "612c620d0a632c640a652c66",
+    "ui_returned_dirty_after_error": true,
+    "native_probe_scope": "successful Markdown only",
+    "native_seen_zero_conclusion": "inconclusive",
+    "reason_for_rename_denial": "unknown",
+    "historical_h13_c2_causality": "not established"
+  },
+  "tdd": {
+    "initial_baseline": {
+      "source": "39c2000936f1b03c00daee45bc0a257132fb26ab",
+      "failed": 4,
+      "passed": 7,
+      "vitest_seconds": 0.196
+    },
+    "initial_candidate": {
+      "passed": 16,
+      "vitest_seconds": 0.651
+    },
+    "undefined_guard_red_on_prior_candidate": {
+      "failed": 1,
+      "not_selected": 11,
+      "vitest_seconds": 0.276
+    },
+    "narrowed_candidate": {
+      "passed": 17,
+      "vitest_seconds": 0.622
+    }
+  },
+  "final_local": {
+    "platform": "darwin",
+    "node": "24.22.1",
+    "pandoc": "3.12.1",
+    "focused": {
+      "label": "v3-focused",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "tests/files.test.ts",
+        "tests/files-windows-rename.test.ts",
+        "tests/files-windows-rename-native.test.ts"
+      ],
+      "exit_code": 0,
+      "process_seconds": 1.077,
+      "passed": 17,
+      "skipped": 1,
+      "native_skip": true,
+      "raw_vitest_seconds": 0.649
+    },
+    "check": {
+      "label": "v3-check",
+      "command": [
+        "npm",
+        "run",
+        "check"
+      ],
+      "exit_code": 0,
+      "process_seconds": 8.512,
+      "errors": 0,
+      "warnings": 0
+    },
+    "unit_full": {
+      "label": "v3-unit-full",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exit_code": 0,
+      "process_seconds": 16.01,
+      "pandoc_path_verified": true,
+      "files_passed": 168,
+      "files_skipped": 1,
+      "files_total": 169,
+      "tests_passed": 2984,
+      "tests_skipped": 2,
+      "skip_reasons": [
+        "existing Windows-only package case",
+        "new Windows-native rename case"
+      ],
+      "raw_vitest_seconds": 15.72,
+      "pandoc_version": "3.12.1"
+    },
+    "build": {
+      "label": "v3-build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exit_code": 0,
+      "process_seconds": 1.733
+    },
+    "native_windows_executed": false,
+    "native_stdout_observed": false
+  },
+  "test_model": {
+    "simulated": "real files, bytes, hashes, stream and cleanup; mocked rename failures and temporary platform descriptor; restored after each case",
+    "native": "Windows-only own readonly destination fixture, real rename/error, finally restores fixture mode; assertions require EPERM/rename and two real rename calls; skipped locally",
+    "native_output_fields": [
+      "code",
+      "syscall",
+      "renameCalls"
+    ],
+    "native_fixture_historical_cause_claimed": false
+  },
+  "focused_e2e": {
+    "command": "npx playwright test tests/e2e/editor-status.spec.ts tests/e2e/markdown-tasks.spec.ts --project=md --grep \"H13-2:|C2:\" --workers=1 --retries=0",
+    "platform": "darwin",
+    "source_sha256": "c69759e44b9174b68faa8cae9650c5824527699e2764a93944aae34f22f3e06a",
+    "passed": 6,
+    "failed": 0,
+    "retries": 0,
+    "report_seconds": 8.0,
+    "process_seconds": 8.45,
+    "scope": "compatibility, not Windows recovery"
+  },
+  "visual": {
+    "method": "private external visual probe; no public test added",
+    "before": {
+      "product_base_commit": "39c2000936f1b03c00daee45bc0a257132fb26ab",
+      "build_checkout_commit": "fc208ab2db791f990f26f6bd5643198ac141fff6",
+      "src_package_lock_diff_to_base_empty": true,
+      "files_sha256": "725ef0af35a922eb9f9f92e204fcf740bd354dc1e701b50e5d4b9ef640f3417f",
+      "passed": 2,
+      "report_seconds": 2.6,
+      "process_seconds": 3.103
+    },
+    "after": {
+      "source_sha256": "c69759e44b9174b68faa8cae9650c5824527699e2764a93944aae34f22f3e06a",
+      "passed": 2,
+      "report_seconds": 2.2,
+      "process_seconds": 2.633
+    },
+    "platform": "darwin",
+    "scope": "compatibility only, not Windows recovery",
+    "inspected_by_root": [
+      "after-es-light-1440x900.png",
+      "after-en-XA-dark-1280x720.png"
+    ],
+    "inspection_result": "no clipping in the two inspected images",
+    "images": [
+      {
+        "file": "after-en-XA-dark-1280x720.png",
+        "phase": "after",
+        "locale": "en-XA",
+        "theme": "dark",
+        "width": 1280,
+        "height": 720,
+        "bytes": 53867,
+        "sha256": "57e1f0b7c2fb81c0968604ab870113a558c669d4df2fc165a4d3f868a778213b",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "after-en-XA-dark-1440x900.png",
+        "phase": "after",
+        "locale": "en-XA",
+        "theme": "dark",
+        "width": 1440,
+        "height": 900,
+        "bytes": 56791,
+        "sha256": "2ba68825da2b24cf2e7cbda82e2ac48ccc2df76429cac0f51872fb62e9b85637",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "after-en-XA-light-1280x720.png",
+        "phase": "after",
+        "locale": "en-XA",
+        "theme": "light",
+        "width": 1280,
+        "height": 720,
+        "bytes": 55192,
+        "sha256": "7e19f5726467eff42eaa4d51ce03ca06db959e6bb42344ed1632e678c80308a7",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "after-en-XA-light-1440x900.png",
+        "phase": "after",
+        "locale": "en-XA",
+        "theme": "light",
+        "width": 1440,
+        "height": 900,
+        "bytes": 58205,
+        "sha256": "4f779b2e8494eee2036901ed4b8e4fefde9400f9a8bef9d79461145b677aa23d",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "after-es-dark-1280x720.png",
+        "phase": "after",
+        "locale": "es",
+        "theme": "dark",
+        "width": 1280,
+        "height": 720,
+        "bytes": 50686,
+        "sha256": "dca0f0775ff4c7f2432a2104a55b87eb219fb62c313deca17a9b4e91d6de7324",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "after-es-dark-1440x900.png",
+        "phase": "after",
+        "locale": "es",
+        "theme": "dark",
+        "width": 1440,
+        "height": 900,
+        "bytes": 53439,
+        "sha256": "ae4529ed3f39869667ff794fb17bf5c2d24574a21021266639c9fa3de32677a7",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "after-es-light-1280x720.png",
+        "phase": "after",
+        "locale": "es",
+        "theme": "light",
+        "width": 1280,
+        "height": 720,
+        "bytes": 52087,
+        "sha256": "2cc75a91fd6cb76684e55ad8f52047e83631c0c3a34536c4488901ec6ab3ea94",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "after-es-light-1440x900.png",
+        "phase": "after",
+        "locale": "es",
+        "theme": "light",
+        "width": 1440,
+        "height": 900,
+        "bytes": 54919,
+        "sha256": "f2b3b7c0bdca7847586a8ccd575fda6d6fd09cfb79ade5dd703650c8a3299d60",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "before-en-XA-dark-1280x720.png",
+        "phase": "before",
+        "locale": "en-XA",
+        "theme": "dark",
+        "width": 1280,
+        "height": 720,
+        "bytes": 53867,
+        "sha256": "57e1f0b7c2fb81c0968604ab870113a558c669d4df2fc165a4d3f868a778213b",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "before-en-XA-dark-1440x900.png",
+        "phase": "before",
+        "locale": "en-XA",
+        "theme": "dark",
+        "width": 1440,
+        "height": 900,
+        "bytes": 56791,
+        "sha256": "2ba68825da2b24cf2e7cbda82e2ac48ccc2df76429cac0f51872fb62e9b85637",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "before-en-XA-light-1280x720.png",
+        "phase": "before",
+        "locale": "en-XA",
+        "theme": "light",
+        "width": 1280,
+        "height": 720,
+        "bytes": 55192,
+        "sha256": "7e19f5726467eff42eaa4d51ce03ca06db959e6bb42344ed1632e678c80308a7",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "before-en-XA-light-1440x900.png",
+        "phase": "before",
+        "locale": "en-XA",
+        "theme": "light",
+        "width": 1440,
+        "height": 900,
+        "bytes": 58205,
+        "sha256": "4f779b2e8494eee2036901ed4b8e4fefde9400f9a8bef9d79461145b677aa23d",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "before-es-dark-1280x720.png",
+        "phase": "before",
+        "locale": "es",
+        "theme": "dark",
+        "width": 1280,
+        "height": 720,
+        "bytes": 50686,
+        "sha256": "dca0f0775ff4c7f2432a2104a55b87eb219fb62c313deca17a9b4e91d6de7324",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "before-es-dark-1440x900.png",
+        "phase": "before",
+        "locale": "es",
+        "theme": "dark",
+        "width": 1440,
+        "height": 900,
+        "bytes": 53439,
+        "sha256": "ae4529ed3f39869667ff794fb17bf5c2d24574a21021266639c9fa3de32677a7",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "before-es-light-1280x720.png",
+        "phase": "before",
+        "locale": "es",
+        "theme": "light",
+        "width": 1280,
+        "height": 720,
+        "bytes": 52087,
+        "sha256": "2cc75a91fd6cb76684e55ad8f52047e83631c0c3a34536c4488901ec6ab3ea94",
+        "copy_sha256_verified": true
+      },
+      {
+        "file": "before-es-light-1440x900.png",
+        "phase": "before",
+        "locale": "es",
+        "theme": "light",
+        "width": 1440,
+        "height": 900,
+        "bytes": 54919,
+        "sha256": "f2b3b7c0bdca7847586a8ccd575fda6d6fd09cfb79ade5dd703650c8a3299d60",
+        "copy_sha256_verified": true
+      }
+    ]
+  },
+  "private_raw_fingerprints": [
+    {
+      "name": "red.log",
+      "sha256": "1d4bb589c16efce33126c3cef5fdccd7223502675c283a2bb662f93fa46aab5c",
+      "bytes": 3748,
+      "retained": "private"
+    },
+    {
+      "name": "green-focused.log",
+      "sha256": "6c9bfad15d02a2dfe859c11139e1b2828680dd467ccdb907a53048c1a9dbcd62",
+      "bytes": 625,
+      "retained": "private"
+    },
+    {
+      "name": "v2-red-undefined.log",
+      "sha256": "3701030aa221bc6ab444d1b35cf7797ecf66f479abf64c4000ca520452a87d5d",
+      "bytes": 1539,
+      "retained": "private"
+    },
+    {
+      "name": "v2-focused.log",
+      "sha256": "3cccb0416b7c8964f8506aa1ce82f209de2347fb501cfc55de3b5f84f1fbd514",
+      "bytes": 625,
+      "retained": "private"
+    },
+    {
+      "name": "v3-focused.log",
+      "sha256": "b716b129ea116dc8facfa0cada72455267406eb8f39ffb88308e9e6df90f4b12",
+      "bytes": 649,
+      "retained": "private"
+    },
+    {
+      "name": "v3-check.log",
+      "sha256": "26f8140e03831f43f9effc54eddea4c83f7175d3313816c90f5622cd12d726ae",
+      "bytes": 338,
+      "retained": "private"
+    },
+    {
+      "name": "v3-unit-full.log",
+      "sha256": "097886ba585a7b67ea5375a28453cdb0b31f871f80cbef26d9e9567e58a6b9b1",
+      "bytes": 1127,
+      "retained": "private"
+    },
+    {
+      "name": "v3-build.log",
+      "sha256": "7733c065474dcf9f3949670f66999e3f38a23fce4e77087b213beb4d15dc5472",
+      "bytes": 22814,
+      "retained": "private"
+    },
+    {
+      "name": "v3-qualification.json",
+      "sha256": "0f8436dcbe3e80aa68ed634b156d4e425f739ff13a901682d11d0f96c5ff17d9",
+      "bytes": 2596,
+      "retained": "private"
+    },
+    {
+      "name": "focused-e2e.log",
+      "sha256": "4a994ec3f7f7788133007c7ae657d3d26b4cc890e158247d10be0857aca28187",
+      "bytes": 1086,
+      "retained": "private"
+    },
+    {
+      "name": "focused-e2e-result.json",
+      "sha256": "abfcfcdde777a9a096c084989397b521d5b8cf5d6612777f3f1857cfda299a6e",
+      "bytes": 269,
+      "retained": "private"
+    },
+    {
+      "name": "before-visual.log",
+      "sha256": "e8d8ebee88f1b2abf53d68c205f6113c6ebacb6d09d5299e64559b960acd7f2c",
+      "bytes": 376,
+      "retained": "private"
+    },
+    {
+      "name": "after-visual.log",
+      "sha256": "67ac3d093abb5e3d4ac15484fa0e016115fc0fb4872fa7c925698e4ce7c2d524",
+      "bytes": 377,
+      "retained": "private"
+    },
+    {
+      "name": "visual-qualification.json",
+      "sha256": "eecf3a7244b4f19a8b60240133cb73ecbbc2f07a5ad72ad75391bcc920a036d4",
+      "bytes": 872,
+      "retained": "private"
+    },
+    {
+      "name": "windows-test-trace-proof.json",
+      "sha256": "b8f38697d1c84304456591388744356ecd966ab33df98022de0cdd6e29631a68",
+      "bytes": 6625,
+      "retained": "private"
+    },
+    {
+      "name": "windows-dom-save-proof.json",
+      "sha256": "8d7ff0c11fe7af7da31a6ee32c88a16b5d7246aa8129c1ab25a84a04fb700cd7",
+      "bytes": 20651,
+      "retained": "private"
+    }
+  ],
+  "pending": [
+    "publication commit",
+    "Windows native execution and sanitized output",
+    "CI of publication head",
+    "package qualification"
+  ],
+  "new_local_full_e2e_run": false
+}
