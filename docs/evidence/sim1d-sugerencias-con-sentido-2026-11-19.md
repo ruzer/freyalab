@@ -40,7 +40,7 @@ El único fallo de aquella tanda fue `chart-review`: esperaba «Cuenta/Count» d
 
 ## Capturas
 
-[Catálogo de 32 PNG con SHA-256 y dimensiones](sim1d-capturas-2026-11-19.json): antes/después, propuesta/medida, es/en-XA, claro/oscuro, 1440×900/1280×720. Copias verificadas byte por byte. Las 16 «después» corresponden a la fuente final `4996`, después del ajuste de orden. Las capturas previas `a6ae` se conservaron solo en evidencia privada.
+[Catálogo de 32 PNG con SHA-256 y dimensiones](sim1d-capturas-2026-11-19.json): antes/después, propuesta/medida, es/en-XA, claro/oscuro, 1440×900/1280×720. Copias verificadas byte por byte. Las 16 «después» corresponden a la fuente final `4996`, después del ajuste de orden. Este catálogo final sustituye al registro provisional del candidato `a6ae`.
 
 - Propuesta, es claro1440: [antes](sim1d-before-proposal-es-light-1440x900.png) · [después](sim1d-after-proposal-es-light-1440x900.png).
 - Medida, es claro1440: [antes](sim1d-before-measure-es-light-1440x900.png) · [después](sim1d-after-measure-es-light-1440x900.png).
