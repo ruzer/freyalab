@@ -1,6 +1,6 @@
 # SIM-1b · Barra de la tabla con texto
 
-Fecha: 2026-11-18. Base `main 23121eda41fb9380c533a25ef86723046b6d7639`. Código comprobado: `ea19b6cdb23595b94fe879104f81232b84b78f4e`, en la rama independiente `codex/sim-1b-barra-tabla`. macOS arm64, Node 24.22.1; perfiles y CSV sintéticos.
+Fecha: 2026-11-18. Base inicial `main 23121eda41fb9380c533a25ef86723046b6d7639`; después se integró `main 1bdf88c437079fadaf8ff9e121102ab370fae614` mediante el merge normal `2ac65ed233bf5a93ec735b8ec1e34951c29c0cae`. Código comprobado: `ea19b6cdb23595b94fe879104f81232b84b78f4e`, en la rama independiente `codex/sim-1b-barra-tabla`. macOS arm64, Node 24.22.1; perfiles y CSV sintéticos.
 
 Los rojos iniciales se ejecutaron con HEAD documental `f0f9c5c84e13328ef173e87a7dc95d7e44942e11`: solo el alcance añadido a main, con el mismo árbol de código `3b7462046e4ca52d38732bce460486b172decd4a`. No se presenta como una corrida de CI de main.
 
@@ -68,6 +68,7 @@ Las ocho imágenes finales proceden exclusivamente del código `ea19b6c`, no del
 | `npm run build` | Correcto después del commit `ea19b6c`; la compilación incluye ese identificador |
 | E2E de capturas de `table-toolbar.spec.ts` | 2/2, 5,4 s, sin reintentos, sobre `ea19b6c` |
 | Siete casos nuevos restantes y consumidores | **137 aprobadas / 1 omisión, 3,9 min; sin reintentos**, sobre `ea19b6c` |
+| Integración de #185: `csv-text.spec.ts` | **22/22, 34,4 s, sin reintentos**, sobre el merge `2ac65ed`; compilación correcta de ese mismo commit |
 | CI | Pendiente; no se atribuye verde de otra rama o SHA |
 
 Las capturas se obtuvieron con `npx playwright test tests/e2e/table-toolbar.spec.ts --project=csv --grep 'SIM-1b capturas' --workers=1 --retries=0`. Se usaron los parámetros de evidencia para separar las imágenes iniciales, las insuficientes y las finales. Las pruebas de acciones añaden teclado, celda activa sin marcas, celda activa distinta de las marcas y las tres operaciones sobre filas y columnas marcadas, con oráculos independientes y deshacer.
@@ -79,6 +80,8 @@ npx playwright test tests/e2e/table-toolbar.spec.ts tests/e2e/compact-toolbar.sp
 ```
 
 Se omiten del ejemplo las rutas locales del intérprete, del informe HTML y de los resultados; los argumentos de selección son los ejecutados.
+
+Se integró #185 con un merge normal, sin reescribir historia. El árbol de `src` de `ea19b6c` y `2ac65ed` es idéntico (`b9947622ca9263b84658da727b4a5a590ee8fec4`). Fuera de documentación, solo se añadió la espera de `Guardar aria-busy=false` de `tests/e2e/csv-text.spec.ts`, procedente de main; se conservaron todas sus aserciones. Se compiló `2ac65ed` y se ejecutaron sus 22 casos de CSV Texto: 22 aprobados, 34,4 s, un resultado por caso y `retry=0`. No se presenta la corrida anterior de 140 casos como una ejecución del merge. [Prueba de equivalencia e inventario de integración](sim1b-integracion-main-2026-11-18.json).
 
 La omisión E2E es `commands.spec.ts:49`, «APP-01 M4: Word se descubre al iniciar y el menú exporta un DOCX real sin abrir la barra». Su guard exige `FREYALAB_PANDOC_TEST_PATH`, que no se proporcionó a esta corrida. No significa que Pandoc no esté instalado y no se cuenta como caso aprobado.
 
