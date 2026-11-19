@@ -1,10 +1,15 @@
 import {afterEach,it,expect} from 'vitest'
 import {chartOption} from '../src/renderer/chart-option'
 import {chartLabels,type ChartData,type ChartOptions} from '../src/shared/charts'
-import {setLanguage} from '../src/shared/i18n'
+import {setLanguage,t} from '../src/shared/i18n'
 const options:ChartOptions={kind:'bar',x:0,y:1,bins:10,aggregate:'sum',descending:false,measureType:'number'}
 const colors={text:'#25252b',background:'#f2f2f7',accent:'#007aff'}
 afterEach(()=>setLanguage('es'))
+it.each([{language:'es',label:'Número de filas',summary:'Número de filas por Ciudad',combo:'Cuenta'},{language:'en',label:'Number of rows',summary:'Number of rows by Ciudad',combo:'Count'}] as const)('SIM-1d: el conteo describe filas sin renombrar el cálculo del selector en $language',({language,label,summary,combo})=>{
+ setLanguage(language)
+ expect(chartLabels(['Ciudad','Ingreso'],{...options,y:-1,aggregate:'count',measureType:'text'})).toMatchObject({x:'Ciudad',y:label,summary})
+ expect(t('charts.aggregate.count')).toBe(combo)
+})
 it('muestra nombres sin numeración salvo etiquetas visualmente iguales',()=>{
  const data:ChartData={total:4,usable:4,points:4,limited:false,columns:['x','value'],rows:[['Norte','30'],['Sur','5'],[null,'1'],['(campo ausente)','2']]}
  expect(chartOption(data,options,colors).xAxis).toMatchObject({data:['Norte','Sur','3. (campo ausente)','4. (campo ausente)']})

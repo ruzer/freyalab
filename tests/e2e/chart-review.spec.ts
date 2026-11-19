@@ -12,6 +12,7 @@ async function assign(field:string,zone:string){
  await panel().locator('.field-list').getByRole('button',{name:new RegExp(`^(Añadir|Mover) a… ${field}$`)}).click()
  await page.getByRole('menuitem',{name:new RegExp(`^Añadir a ${zone}(?: |$)`)}).click()
 }
+async function sum(field:string){await assign(field,'Valores');await panel().getByLabel(`Resumir ${field} por`,{exact:true}).selectOption('sum')}
 test.beforeEach(async()=>{
  folder=await mkdtemp(join(tmpdir(),'freya-review-'));file=join(folder,'clientes.csv')
  original='Cliente,Ventas,Descuento,Canal,Fecha,Coste,Estado,Notas\n'+Array.from({length:842},(_,i)=>`C${i},${100+i*3},${(i%5+1)*10}%,${i%2?'Web':'Tienda'},2026-01-01,285600,Activo,Nota ${i}`).join('\n')+'\n'
@@ -22,7 +23,7 @@ test.beforeEach(async()=>{
  await page.evaluate(file=>window.freya.openPaths([file]),file)
  await openAnalysis(page,'Gráficos');await createSuggestedChart(page)
  await expect(panel().locator('.pivot-result')).toBeVisible()
- await assign('Cliente','Filas');await assign('Ventas','Valores')
+ await assign('Cliente','Filas');await sum('Ventas')
  await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('1,146,383')
 })
 test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
@@ -79,7 +80,7 @@ test('Revisión108 · cambiar una zona no atribuye una elección de tipo al usua
 })
 
 test('Revisión108 · tabla, total, marcas y eje conservan el formato numérico al cambiar campo e idioma',async()=>{
- await assign('Coste','Valores');await assign('Cliente','Filtros')
+ await sum('Coste');await assign('Cliente','Filtros')
  const filters=panel().getByRole('region',{name:'Filtros del gráfico',exact:true})
  await filters.getByLabel('Operador de condición 1',{exact:true}).selectOption('equals')
  await filters.getByLabel('Valor de condición 1',{exact:true}).fill('C0')
@@ -94,8 +95,8 @@ test('Revisión108 · tabla, total, marcas y eje conservan el formato numérico 
   await expect(panel().locator('.plot svg text').filter({hasText:/^285,600$/})).toHaveCount(1)
   await expect(panel().locator('.plot svg text').filter({hasText:/^300,000$/})).toHaveCount(1)
  }
- await assign('Ventas','Valores');await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('100')
- await assign('Coste','Valores');await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('285,600')
+ await sum('Ventas');await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('100')
+ await sum('Coste');await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('285,600')
  await expect(panel().locator('.plot svg text').filter({hasText:/^285,600$/})).toHaveCount(1)
  expect(await readFile(file,'utf8')).toBe(original)
 })
@@ -124,7 +125,7 @@ test('Revisión108 final · el aviso explica el campo de orden y los empates de 
   const aggregate=panel().getByRole('region',{name:language==='es'?'Valores':'Values',exact:true}).getByRole('combobox')
   for(const [operation,measure,total,labels] of [
    ['sum',language==='es'?'Suma de Ventas':'Sum of Ventas','1,146,383',['C0','C1','C2','C3','C4']],
-   ['count',language==='es'?'Cuenta':'Count','842',['C0','C1','C10','C100','C101']]
+   ['count',language==='es'?'Número de filas':'Number of rows','842',['C0','C1','C10','C100','C101']]
   ] as const){
    await aggregate.selectOption(operation);await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText(total)
    await expect(panel().locator('.truncated')).toContainText(language==='es'?`ordenados por «${measure}» (de menor a mayor); los empates, por «Cliente».`:`ordered by “${measure}” (ascending); ties by “Cliente”.`)

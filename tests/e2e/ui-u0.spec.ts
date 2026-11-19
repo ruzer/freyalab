@@ -213,6 +213,7 @@ for(const locale of ['es','en-XA'] as const)test(`U0.1: campos legibles y orden 
   await page.locator(`.field-entry[title="${field}"] button`).click()
   await page.getByRole('menuitem',{name:new RegExp(`^Añadir a ${zone}(?: |$)`)}).click()
  }
+ if(locale==='es')await chartPanel(page).getByLabel('Resumir Ventas por',{exact:true}).selectOption('sum')
  const entries=page.locator('.field-list .field-entry')
  await expect(entries).toHaveCount(4)
  for(const language of locale==='es'?['es','en']:['en-XA']){

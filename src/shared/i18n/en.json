@@ -605,6 +605,7 @@
  "charts.time.month": "Month",
  "charts.time.year": "Year",
  "charts.labels.aColumn": "a column",
+ "charts.labels.rows": "Number of rows",
  "charts.labels.split": ", split by {name}",
  "charts.labels.value": "{operation} of {column}",
  "charts.labels.period": "{period} of {column}",

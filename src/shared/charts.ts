@@ -86,7 +86,7 @@ function chartQuery(headers:string[],options:ChartOptions,limit:number,totals:bo
 export function chartLabels(headers:string[],options:ChartOptions){
  const x=headers[options.x]||t('charts.ui.column',{n:options.x+1}),y=options.y<0?t('charts.labels.aColumn'):headers[options.y]||t('charts.ui.column',{n:options.y+1})
  const split=options.series!==undefined&&options.series>=0?t('charts.labels.split',{name:headers[options.series]||t('charts.ui.column',{n:options.series+1})}):''
- const value=options.aggregate==='count'?t('charts.aggregate.count'):t('charts.labels.value',{operation:t('charts.aggregate.'+options.aggregate),column:y})
+ const value=options.aggregate==='count'?t('charts.labels.rows'):t('charts.labels.value',{operation:t('charts.aggregate.'+options.aggregate),column:y})
  if(options.time&&options.time!=='none'){const period=t('charts.time.'+options.time);return{x:t('charts.labels.period',{period,column:x}),y:value,summary:t('charts.labels.temporal',{value,period:period.toLowerCase(),column:x,split})}}
  if(options.kind==='histogram')return{x:t('charts.labels.bins',{column:y}),y:t('charts.labels.frequency'),summary:t('charts.labels.distribution',{column:y})}
  if(options.kind==='bar')return{x,y:value,summary:t('charts.labels.by',{value,column:x,split})}

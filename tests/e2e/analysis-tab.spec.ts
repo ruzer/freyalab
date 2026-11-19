@@ -95,7 +95,7 @@ test('AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta
  const panel=analysis().locator('.charts-panel'),suggestion=panel.getByRole('button',{name:/^Crear:/})
  await expect(suggestion).toBeEnabled();expect(await calls()).toContain('analyzeColumn');expect(await calls()).not.toContain('sqlRun')
  await expect(panel.locator('.pivot-result')).toHaveCount(0)
- await suggestion.click();await expect(panel.locator('.pivot-result tfoot')).toContainText('110')
+ await suggestion.click();await panel.getByRole('button',{name:'Añadir a… Valor',exact:true}).click();await panel.getByRole('menuitem',{name:'Añadir a Valores (recomendado)',exact:true}).click();await panel.getByLabel('Resumir Valor por',{exact:true}).selectOption('sum');await expect(panel.locator('.pivot-result tfoot')).toContainText('110')
  await panel.getByLabel('Resumir Valor por',{exact:true}).selectOption('average')
  await expect(panel.locator('.pivot-result tfoot')).toContainText('36.666')
  await expect(analysis().locator('header').getByText('Exportar resultados del análisis',{exact:true})).toBeVisible()

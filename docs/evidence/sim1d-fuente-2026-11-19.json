@@ -1,0 +1,62 @@
+{
+  "createdUtc": "2026-11-19T06:15:44.430486+00:00",
+  "base": "0260a5d05341e98a8ea97d5ced7330aa97f413c4",
+  "sourceSha256": "499636af962c785bad3ff59bd03c2cd7ec757a133ed66bf2c9e0f755a23b09fa",
+  "sourceFileCount": 197,
+  "changedFiles": [
+    {
+      "path": "src/shared/chart-fields.ts",
+      "sha256": "a92dbe1acdae222938ea4076a767e69e4fc9ad73ac9404671f9ed5abb0ce7251"
+    },
+    {
+      "path": "src/shared/chart-suggest.ts",
+      "sha256": "2897aecaed3c228e017061fd706934302718eb080cef1a130bcc7bb18fea6f8f"
+    },
+    {
+      "path": "src/shared/charts.ts",
+      "sha256": "7915f03a6fe1753924abf9240ee200543a41d5378e634472a6596e65adf53ac8"
+    },
+    {
+      "path": "src/shared/i18n/en.json",
+      "sha256": "db92879ada963397a203c390bc7e2bec27e21c8f73d377c4e83faff1df341c33"
+    },
+    {
+      "path": "src/shared/i18n/es.json",
+      "sha256": "3c359ed28ee6ff5b274db0f526b9ca834dcbdbba1a6d649c2868fc857d088c76"
+    }
+  ],
+  "sqlFunctions": {
+    "chartSQL": {
+      "byteIdentical": true,
+      "sha256": "0aeadfd4e3077952fac2a999c0a98fe5ba71d2342d55cf219fdc3e7cda1b89b2"
+    },
+    "chartTotalSQL": {
+      "byteIdentical": true,
+      "sha256": "a80134836766fd0a348a0b91d8263ad1cb000cd9b30f122371545f9116d7b0f7"
+    }
+  },
+  "publicSpecSha256": "fddd806157751e508ff55d0af8cc23b09b0c1c6fc0793c6feadbf0400749caf1",
+  "node": "v24.22.1",
+  "pandoc": "3.12.1",
+  "sourceFingerprintDefinition": "SHA256 of tracked src files in git ls-files order: file SHA256 + two spaces + repository path + newline.",
+  "localValidation": {
+    "units": {
+      "passed": 2987,
+      "skipped": 1,
+      "files": 167,
+      "seconds": 23.41
+    },
+    "check": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "build": "passed"
+  },
+  "pending": [
+    "127 affected GUI cases including the3new public cases on final4996source",
+    "16after recaptures on final4996source",
+    "CI qualification on frozen final commit",
+    "local full E2E not executed"
+  ],
+  "validated_code_commit": "6c5b97b013cd0e8c422432aebf864eb52a0b385e"
+}

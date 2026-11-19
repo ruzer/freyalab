@@ -23,7 +23,7 @@ export function addToZone(options:ChartOptions,zone:ChartZone,column:number,colu
   if(next.kind==='histogram'||next.x<0){if(numeric)return{...next,kind:'histogram',x:column,series:-1,time:'none'};next.kind='bar'}
  }else next.x=column
  const proposal=suggest(columns,{x:next.x,...next.y>=0?{y:next.y}:{}}).options
- if(proposal){next.kind=proposal.kind;next.time=proposal.time??'none'}
+ if(proposal){next.kind=proposal.kind;next.time=proposal.time??'none';if(proposal.aggregate==='average'&&((zone==='values'&&numeric)||(zone==='rows'&&options.kind==='histogram')))next.aggregate='average'}
  if((zone==='values'&&!numeric)||(zone==='rows'&&options.kind!=='heatmap'&&next.measureType==='text')){next.kind='bar';next.time='none'}
  if(zone==='rows'&&options.kind==='heatmap')next.kind='heatmap'
  if(next.kind==='heatmap'){next.series=-1;next.measureType='text';next.aggregate='count';next.time='none'}
@@ -39,7 +39,7 @@ export function swapZones(options:ChartOptions):ChartOptions{
  return options.kind==='heatmap'?{...options,x:options.y,y:options.x}:{...options,kind:'bar',time:'none',x:options.series??-1,series:options.x}
 }
 export function initialChart(columns:readonly ChartColumn[]){
- const category=['category','text','date','identifier'].map(kind=>columns.find(c=>c.profile?.kind===kind)).find(Boolean),number=columns.find(c=>c.profile?.kind==='number')
- const first=category??number??columns[0]
- return first?suggest(columns,{x:first.column,...number&&number!==first?{y:number.column}:{}}).options:null
+ const category=['category','text'].map(kind=>columns.find(c=>c.profile?.kind===kind)).find(Boolean),number=columns.find(c=>c.profile?.kind==='number')
+ const first=category??['date','identifier'].map(kind=>columns.find(c=>c.profile?.kind===kind)).find(Boolean)??number??columns[0]
+ return first?suggest(columns,{x:first.column,...!category&&number&&number!==first?{y:number.column}:{}}).options:null
 }
