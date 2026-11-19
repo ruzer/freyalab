@@ -1,0 +1,29 @@
+Running 22 tests using 1 worker
+
+(node:13262) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/22] [csv] › tests/e2e/csv-text.spec.ts:19:1 › A: el conmutador Tabla Texto conserva una pestaña y recuerda el modo
+[2/22] [csv] › tests/e2e/csv-text.spec.ts:25:1 › A: menú de CSV y TSV ofrece ambos modos y teclado devuelve el foco
+[3/22] [csv] › tests/e2e/csv-text.spec.ts:29:1 › A: más de 10 MiB deshabilita Texto en la barra y el menú con ayuda explícita
+[4/22] [csv] › tests/e2e/csv-text.spec.ts:33:1 › B: texto exacto conserva saltos mixtos, pegado, undo y opciones apagadas
+[5/22] [csv] › tests/e2e/csv-text.spec.ts:53:1 › B: buscar reemplazar con expresión regular e ir a línea usan CodeMirror en español
+[6/22] [csv] › tests/e2e/csv-text.spec.ts:59:1 › C: cancelar, descartar y guardar al cambiar conservan un documento y su contenido
+[7/22] [csv] › tests/e2e/csv-text.spec.ts:68:1 › C: un guardado no representable mantiene el diálogo y el texto pendiente
+[8/22] [csv] › tests/e2e/csv-text.spec.ts:72:1 › C: recuperación tras interrupción conserva Texto y UTF-16 con BOM como copia
+[9/22] [csv] › tests/e2e/csv-text.spec.ts:82:32 › D: comilla sin cerrar se abre como Texto, se corrige y vuelve a Tabla
+[10/22] [csv] › tests/e2e/csv-text.spec.ts:82:32 › D: comilla suelta se abre como Texto, se corrige y vuelve a Tabla
+[11/22] [csv] › tests/e2e/csv-text.spec.ts:82:32 › D: texto después de comilla se abre como Texto, se corrige y vuelve a Tabla
+[12/22] [csv] › tests/e2e/csv-text.spec.ts:94:1 › D: apertura inicial múltiple conserva los archivos válidos tras un CSV fallido
+[13/22] [csv] › tests/e2e/csv-text.spec.ts:98:1 › B: Buscar Todas permite editar varios rangos y deshacer en un paso
+[14/22] [csv] › tests/e2e/csv-text.spec.ts:105:1 › C: cambiar espera la celda enfocada y conserva su valor al cancelar, descartar o guardar
+[15/22] [csv] › tests/e2e/csv-text.spec.ts:114:1 › C: una edición rechazada por tamaño no permite guardar, cerrar ni cambiar con el texto anterior
+[16/22] [csv] › tests/e2e/csv-text.spec.ts:120:1 › C: el encabezado rechazado conserva su borrador y permite corregirlo antes de cambiar
+[17/22] [csv] › tests/e2e/csv-text.spec.ts:146:1 › TXT-02a: colores por columna y ubicación persistente sin cambiar el CSV
+[18/22] [csv] › tests/e2e/csv-text.spec.ts:193:77 › TXT-02a: separador detectado en datos.tsv abierto directamente como Texto
+[19/22] [csv] › tests/e2e/csv-text.spec.ts:193:77 › TXT-02a: separador detectado en punto-y-coma.csv abierto directamente como Texto
+[20/22] [csv] › tests/e2e/csv-text.spec.ts:202:1 › TXT-02a: filas irregulares y un documento sin encabezado conservan su columna
+[21/22] [csv] › tests/e2e/csv-text.spec.ts:221:1 › TXT-02a: saltar lejos no pierde la columna de un campo con varias líneas
+[22/22] [csv] › tests/e2e/csv-text.spec.ts:232:1 › TXT-02a: pinta las columnas al desplazarse horizontalmente
+  22 passed (35.9s)
