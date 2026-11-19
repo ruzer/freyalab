@@ -98,7 +98,7 @@
  let selection=$state<{anchor:Cell;end:Cell;query:TableQuery;revision:number}|null>(initialRange?{anchor:{row:initialRange.top,column:initialRange.left},end:{row:initialRange.bottom,column:initialRange.right},query:initialRange.query,revision:initialRange.revision}:null),dragging=$state(false),pendingCell=$state<Cell|null>(null)
  let rangeDialog=$state<{edit:TableRangeEdit;cut?:boolean;documentScope?:boolean;column?:{name:string;rows:number;hidden:number;title:string}}|null>(null),context=$state<{x:number;y:number;kind:'range'|'rows'|'columns';column?:number;headerColumn?:number}|null>(null)
  let contextMenu=$state<HTMLDivElement>(),contextReturn:HTMLElement|null=null
- let cleanMenu=$state(false),cleanButton=$state<HTMLButtonElement>()
+ let cleanMenu=$state(false),columnCleanButton=$state<HTMLButtonElement>()
  const menuColumn=$derived(context?.kind==='columns'?context.column??context.headerColumn:undefined)
  const menuColumnLabel=(index:number)=>doc.headers?.[index]||t('csv.columnMenu.unnamed',{position:index+1})
  let dragPoint={x:0,y:0}
@@ -227,7 +227,7 @@
  $effect(()=>{void busy;void contextCommands;const menu=contextMenu;if(context&&menu&&(!menu.contains(document.activeElement)||document.activeElement?.matches(':disabled')))(menu.querySelector<HTMLButtonElement>('button:not(:disabled)')??menu).focus()})
  $effect(()=>{if(!context)cleanMenu=false})
  function closeColumnContext(restoreFocus:boolean){if(restoreFocus)closeContext();else context=null}
- function closeCleanMenu(restoreFocus:boolean,all=false){if(all){context=null;return}cleanMenu=false;if(restoreFocus)cleanButton?.focus()}
+ function closeCleanMenu(restoreFocus:boolean,all=false){if(all){context=null;return}cleanMenu=false;if(restoreFocus)columnCleanButton?.focus()}
  function closeContext(){const kind=context?.kind;cleanMenu=false;context=null;if(kind==='range'&&selection)focusCell(selection.end.row,selection.end.column,true);else if(contextReturn?.isConnected)contextReturn.focus();else commandsButton?.focus()}
  async function rangeAction(action:string){
   context=null;pendingCell=null;if(!cellRange||locked||busy)return
@@ -504,15 +504,15 @@
    <span class="dropdown-label column-menu-title" role="presentation">{menuColumnLabel(menuColumn)}</span>
    {#each ['sortAscending','sortDescending','columnFilter','emptyView'] as id}{@render columnMenuItem(id)}{/each}
    <div class="column-menu-separator" role="separator"></div>
-   <button bind:this={cleanButton} role="menuitem" tabindex="-1" aria-haspopup="menu" aria-expanded={cleanMenu} onclick={()=>cleanMenu=!cleanMenu} onkeydown={event=>{if(event.key==='ArrowRight'){event.preventDefault();event.stopPropagation();cleanMenu=true}}}>{t('csv.columnMenu.clean')}<Icon name="chevron-right" size={12}/></button>
+   <button bind:this={columnCleanButton} role="menuitem" tabindex="-1" aria-haspopup="menu" aria-expanded={cleanMenu} onclick={()=>cleanMenu=!cleanMenu} onkeydown={event=>{if(event.key==='ArrowRight'){event.preventDefault();event.stopPropagation();cleanMenu=true}}}>{t('csv.columnMenu.clean')}<Icon name="chevron-right" size={12}/></button>
    {@render columnMenuItem('columnStats')}
    <div class="column-menu-separator" role="separator"></div>
    {#each ['insertColumnBefore','insertColumnAfter','duplicateColumn'] as id}{@render columnMenuItem(id)}{/each}
    {@render calculateMenuItem(menuColumn)}
    <div class="column-menu-separator" role="separator"></div>
    {@render columnMenuItem('deleteColumn')}
-   {#if cleanMenu&&cleanButton}
-    <ContextMenu x={context.x} y={context.y} parentItem={cleanButton} label={t('csv.columnMenu.cleanLabel',{column:menuColumnLabel(menuColumn)})} onclose={closeCleanMenu}>
+   {#if cleanMenu&&columnCleanButton}
+    <ContextMenu x={context.x} y={context.y} parentItem={columnCleanButton} label={t('csv.columnMenu.cleanLabel',{column:menuColumnLabel(menuColumn)})} onclose={closeCleanMenu}>
      <div class="column-menu-items">{#each ['emptyFill','emptyDelete','columnDuplicates','column-trim','column-upper','column-lower'] as id}{@render columnMenuItem(id)}{/each}</div>
     </ContextMenu>
    {/if}

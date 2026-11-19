@@ -167,7 +167,7 @@ test.describe('SIM-1a',()=>{
     if(route.place==='clean'){await cleaning(root).click();await expect(page.getByRole('menu')).toHaveCount(2);action=child().getByRole('menuitem',{name:route.name,exact:true})}
     else action=root.getByRole('menuitem',{name:route.name,exact:true})
    }else if(route.place==='app')action=page.getByRole('button',{name:route.name,exact:true})
-   else{await toolbar.getByLabel(route.place==='document'?'Limpiar datos':'Filas y columnas',{exact:true}).click();action=toolbar.getByRole('button',{name:route.name,exact:true})}
+   else{await toolbar.getByLabel(route.place==='document'?t('charts.toolbar.clean'):'Filas y columnas',{exact:true}).click();action=toolbar.getByRole('button',{name:route.name,exact:true})}
    await expect(action,route.name).toBeVisible();if(route.place!=='app')await expect(action,route.name).toBeEnabled()
    await page.getByLabel('Buscar en tabla',{exact:true}).click();await expect(page.getByRole('menu')).toHaveCount(0)
   }
