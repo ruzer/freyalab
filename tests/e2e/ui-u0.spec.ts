@@ -1,23 +1,26 @@
 import {chartPanel,openAnalysis,showPanel,showTable,createSuggestedChart} from './panel'
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
 import { closeElectron } from './close-electron'
+import {traceElectronFailure} from './electron-trace'
 import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm,truncate} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {runApplicationMenu} from './application-menu'
 let app:ElectronApplication,page:Page,folder:string,markdown:string,csv:string,saveTarget:string,saveSequence=0
+let stopTrace:(()=>Promise<void>)|undefined
 const text='# Documento de Freya\n\nUna idea **clara**, una lista y un ejemplo.\n\n- Consultar\n- Editar\n- Exportar\n\n## Siguiente paso\n\n```typescript\nconst nombre = "Freya"\n```\n'
 const table='Cliente,Ventas\n'+Array.from({length:842},(_,i)=>`C${i},${100+i*3}`).join('\n')+'\n'
-test.beforeEach(async()=>{
- saveSequence=0;folder=await mkdtemp(join(tmpdir(),'freya-u0-'));markdown=join(folder,'guia.md');csv=join(folder,'clientes.csv')
+test.beforeEach(async({},info)=>{
+ stopTrace=undefined;saveSequence=0;folder=await mkdtemp(join(tmpdir(),'freya-u0-'));markdown=join(folder,'guia.md');csv=join(folder,'clientes.csv')
  await mkdir(join(folder,'saved'));await writeFile(markdown,text);await writeFile(csv,table)
  const {ELECTRON_RUN_AS_NODE:_,FREYALAB_TEST_SAVE_DIR:__,...env}=process.env
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:test.info().title.includes('en-XA')?'en-XA':'es',FREYALAB_USER_DATA:join(folder,'profile')}})
  await app.evaluate(({dialog},file)=>{dialog.showSaveDialog=async()=>({canceled:false,filePath:file})},join(folder,'saved','nuevo.md'))
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.emulateMedia({reducedMotion:'reduce'});await page.setViewportSize({width:1280,height:720})
+ if(info.title==='U0: capturas de estados existentes y tipografía base sin modificar archivos')stopTrace=await traceElectronFailure(app.context(),info)
 })
-test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true})})
+test.afterEach(async()=>{try{await stopTrace?.()}finally{await closeElectron(app);await rm(folder,{recursive:true,force:true})}})
 const header=()=>page.locator('header.toolbar')
 const save=()=>header().getByRole('button',{name:'Guardar',exact:true})
 const exp=()=>header().getByRole('button',{name:'Exportar',exact:true})

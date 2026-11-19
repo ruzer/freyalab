@@ -8,23 +8,26 @@ import {join,resolve} from 'node:path'
 import {t} from '../../src/shared/i18n'
 import type {ProjectManifest} from '../../src/shared/project'
 import {closeElectron} from './close-electron'
+import {traceElectronFailure} from './electron-trace'
 import {projectTreeRow,openProjectMenu,openProjectRowMenu,chooseProjectAction} from './project-panel'
 
 let app:ElectronApplication,page:Page,root:string,folder:string,source:string,copy:string
+let stopTrace:(()=>Promise<void>)|undefined
 const fixture=Buffer.from('ID;ID;\r\n001;México;\r\n','utf8')
 const projectTab=()=>page.getByRole('tab',{name:'Proyecto',exact:true})
 const panel=()=>page.getByRole('tabpanel',{name:'Proyecto',exact:true})
 const manifest=async()=>JSON.parse(await readFile(join(folder,'proyecto.freyalab'),'utf8')) as ProjectManifest
 
 test.beforeEach(async({},info)=>{
- root=await mkdtemp(join(tmpdir(),'freya-source-e2e-'));folder=join(root,'Censo');await mkdir(folder)
+ stopTrace=undefined;root=await mkdtemp(join(tmpdir(),'freya-source-e2e-'));folder=join(root,'Censo');await mkdir(folder)
  source=join(folder,'datos.csv');copy=join(root,'copia.csv');await writeFile(source,fixture)
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,
   args:process.env.FREYALAB_EXECUTABLE?[]:[resolve(process.env.FREYALAB_TEST_PROJECT_ENTRY??'out/main/index.js')],
   env:{...process.env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:info.title.endsWith('[en-XA]')?'en-XA':'es',FREYALAB_USER_DATA:join(root,'profile'),FREYALAB_TEST_FOLDER:folder,FREYALAB_TEST_PROJECT_SOURCE_PATH:source,FREYALAB_TEST_SAVE_PATH:copy}})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya)
+ if(info.title==='el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado')stopTrace=await traceElectronFailure(app.context(),info)
 })
-test.afterEach(async()=>{await closeElectron(app);await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+test.afterEach(async()=>{try{await stopTrace?.()}finally{await closeElectron(app);await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:200})}})
 
 async function create(locale:'es'|'en-XA'='es'){
  const tr=(key:string)=>t(key,{},locale)
