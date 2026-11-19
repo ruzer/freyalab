@@ -44,11 +44,12 @@
  {#if csvAnalysisSample(doc,view.viewMeta)===true}<p class="analysis-warning" role="status">{t('charts.fields.sample')}</p>{/if}
  {#if doc.csvView==='text'}
   <p class="analysis-warning" role="status">{t('analysis.tab.textView')}</p>
- {:else}
-  {#each mounted as item (item)}
-   <div class="analysis-section" class:charts-section={item==='charts'} class:info-section={item==='info'} hidden={item!==section}>
+ {/if}
+ {#each mounted as item (item)}
+  {#if item==='info'||doc.csvView!=='text'}
+   <div class="analysis-section" class:charts-section={item==='charts'} class:info-section={item==='info'} hidden={doc.csvView==='text'||item!==section}>
     {#if !unavailable(item)}
-     {#if item==='info'}<CsvColumnsOverview {doc} {...view} {external} {onerror} {onreport} {onempty} oninspect={inspect}/>
+     {#if item==='info'}<CsvColumnsOverview {doc} {...view} requested={doc.csvView!=='text'&&section==='info'} {external} {onerror} {onreport} {onempty} oninspect={inspect}/>
      {:else if item==='statistics'}<CsvStatistics {doc} {...view} embedded autofocus={false} {inspection} entry={tab.statistics} {onerror} {onreport} {onempty} onclose={onreturn}/>
      {:else if item==='sql'}<CsvSql {doc} viewMeta={view.viewMeta} embedded {onerror} {onreport} onclose={onreturn}/>
      {:else}{#await import('./CsvCharts.svelte')}<p role="status">{t('charts.ui.prepare')}</p>{:then module}
@@ -56,8 +57,8 @@
      {:catch}<p role="alert">{t('charts.ui.loadError')}</p>{/await}{/if}
     {/if}
    </div>
-  {/each}
- {/if}
+  {/if}
+ {/each}
 </div>
 
 <style>
