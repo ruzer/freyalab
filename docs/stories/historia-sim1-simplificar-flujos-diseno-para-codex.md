@@ -85,10 +85,11 @@ Público (decisión del propietario, 2026-11-11): análisis de datos para prepa,
 ### SIM-1f · Barra de estado compacta
 - **Qué:**
   - Los tres controles de formato del CSV (Codificación, Separador y Encabezado) se sustituyen por un solo botón con su resumen: «UTF-8 · Coma · Con encabezado».
-  - El botón abre un panel pequeño, «Formato del archivo», con los mismos tres controles, que hacen lo mismo que hoy, incluida la confirmación de reinterpretar.
+  - El botón abre un panel pequeño, «Formato del archivo», con los mismos tres controles, que hacen lo mismo que hoy. Hoy no hay diálogo de confirmación: el cambio se aplica al momento porque solo vuelve a leer el archivo sin modificarlo, y se rechaza con el mismo mensaje si hay cambios sin guardar, si el archivo no tiene ruta, si cambió en disco o si es una fuente protegida del proyecto. No se añade ninguna confirmación (corrección del 2026-11-18).
   - Se quita de la barra de estado el «Guardado» repetido; se queda el de la barra superior.
 - **Aceptación:**
   - Cambiar el separador desde el panel reinterpreta igual que hoy: la prueba actual pasa por el panel.
+  - Con cambios sin guardar, cambiar el separador desde el panel muestra el mismo mensaje de hoy y el resumen no cambia.
   - El resumen se actualiza.
   - En la barra de estado no aparece «Guardado».
 
