@@ -26,7 +26,6 @@ test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:tru
 async function information(){
  await openAnalysis(page,'Información')
  const panel=page.getByRole('region',{name:'Vista general de columnas',exact:true})
- await panel.getByRole('button',{name:'Obtener información',exact:true}).click()
  await expect(panel.getByRole('status')).toHaveText(t('info.complete'))
  return panel
 }
@@ -359,7 +358,7 @@ test('LIM-1 rellenar desde Información actúa sobre todo el documento y pide ac
  await expect(page.getByRole('textbox',{name:'Buscar en tabla',exact:true})).toHaveValue('a')
  await openAnalysis(page,'Información');await expect(panel.getByRole('status')).toHaveText(t('info.changed'))
  await expect(panel.locator('tbody tr')).toHaveCount(0)
- await panel.getByRole('button',{name:'Obtener información',exact:true}).click()
+ await panel.getByRole('button',{name:t('info.refresh'),exact:true}).click()
  await expect(panel.getByRole('status')).toHaveText(t('info.complete'))
  await expect(row.locator('td').nth(3)).toHaveText('0')
  expect(digest(await readFile(path))).toBe(digest(source))

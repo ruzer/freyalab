@@ -24,7 +24,15 @@ export async function openAnalysis(page:Page,name:keyof typeof sections='Informa
  if(!await workspace(page).isVisible()){
   const analysis=await sourceAnalysisTab(page)
   if(await analysis.count())await analysis.click()
-  else await requestAnalysis(page)
+  else{
+   const toolbar=page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true})
+   if(name==='Información'||!await toolbar.isVisible())await requestAnalysis(page)
+   else{
+    await toolbar.getByRole('button',{name:await translated(page,'charts.toolbar.findAction'),exact:true}).click()
+    const search=page.getByRole('searchbox',{name:'Buscar comando CSV',exact:true})
+    await search.fill({'Gráficos':'Gráficos','Estadísticas':'Estadísticas y exploración','Análisis':'Análisis SQL y asistentes','SQL':'Análisis SQL y asistentes'}[name]);await search.press('Enter')
+   }
+  }
  }
  return selectAnalysis(page,name)
 }
