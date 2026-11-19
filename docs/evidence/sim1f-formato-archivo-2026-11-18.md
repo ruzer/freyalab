@@ -31,7 +31,7 @@ macOS, Node `24.22.1`, Pandoc real `3.12.1`. Todas las ejecuciones GUI pertenece
 | `npm run check` | Sin errores ni advertencias sobre la condición final de Escape. |
 | `npm run build` | Verde sobre el resumen nativo y la condición final de Escape (`CsvTable.svelte` SHA-256 `bb5f3c30…`). |
 | `npm test` con servidores locales autorizados y Pandoc real | Fuente final con condición de Escape: 167 archivos, 2972 aprobadas y una omitida específica de Windows, 17.99 s. La primera corrida, previa a los ajustes finales, queda registrada aparte. |
-| Catálogos y auditoría i18n | 56/56, antes de ese último ajuste exclusivamente CSS. |
+| Catálogos y auditoría i18n | 56/56; catálogos sin cambios tras esa ejecución; la condición final de Escape no modifica textos. |
 | Nuevas E2E y consumidores afectados | 23/23 juntos en 36.9 s sobre la fuente final: cinco nuevos casos y las mismas 18 identidades y aserciones de consumidores. Sin retries. El listado completo de los siete archivos contiene 92 identidades y no equivale al número ejecutado. |
 | Capturas y geometría | 2/2, 3.0 s, repetidos sobre la fuente final; ocho estados, panel y controles dentro del viewport, panel sobre el footer, etiquetas visibles y foco en colores forzados. Fixture y documento confirmado intactos. |
 | Revisiones independientes | Dos revisiones estáticas, de especificación y estándares, sin hallazgos reportados. No prueban interacción del hardware ni CI. |
