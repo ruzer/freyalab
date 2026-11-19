@@ -135,6 +135,20 @@ test('SIM-1b: una celda activa basta sin marcas de encabezado',async()=>{
  await expect(page.getByRole('checkbox',{name:'Seleccionar columna Ingreso',exact:true})).not.toBeChecked()
 })
 
+test('las referencias de Limpiar conservan el foco independiente de barra y columna',async()=>{
+ const before=await page.evaluate(()=>window.freya.documents()),column=page.getByRole('button',{name:'Acciones de la columna Ciudad',exact:true})
+ await column.press('Enter')
+ const menu=page.getByRole('menu',{name:'Acciones de columnas',exact:true}),submenu=menu.getByRole('menuitem',{name:'Limpiar',exact:true})
+ await submenu.focus();await submenu.press('ArrowRight');await expect(page.getByRole('menu')).toHaveCount(2)
+ await page.keyboard.press('Escape');await expect(page.getByRole('menu')).toHaveCount(1);await expect(submenu).toBeFocused()
+ await page.keyboard.press('Escape');await expect(page.getByRole('menu')).toHaveCount(0);await expect(column).toBeFocused()
+ await activeIncome();await openClean()
+ await cleanMenu().getByRole('button',{name:'Rellenar vacíos de Ingreso…',exact:true}).press('Enter')
+ const dialog=page.getByRole('dialog',{name:'Rellenar vacíos de Ingreso',exact:true});await expect(dialog).toBeVisible()
+ await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(clean()).toBeFocused()
+ expect(await page.evaluate(()=>window.freya.documents())).toEqual(before)
+})
+
 for(const [label,convert] of [
  ['Quitar espacios al inicio y final',(value:string)=>value.trim()],
  ['Convertir a mayúsculas',(value:string)=>value.toUpperCase()],
