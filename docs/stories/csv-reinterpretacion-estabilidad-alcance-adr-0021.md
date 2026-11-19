@@ -2,6 +2,8 @@
 
 Fecha: 2026-11-19. Rama `codex/csv-reinterpretacion-sin-recarga-doble`, base `main 39c2000936f1b03c00daee45bc0a257132fb26ab`, worktree privado de estabilidad. Es un seguimiento de Vacíos, separado de PR193/SIM-1e.
 
+Este documento conserva el alcance decidido en el primer commit `1f97cbe`, anterior al producto. Sus formulaciones condicionales y comprobaciones pendientes describen ese momento histórico. La implementación y sus resultados posteriores se registran en la [evidencia del A/B](../evidence/csv-reinterpretacion-recarga-2026-11-19.md).
+
 ## Observación y límite de la evidencia
 
 En main CI `44479652308`, Windows, `tests/e2e/empty-values.spec.ts:367`, caso en-XA, pasó la comprobación de que la acción estaba habilitada; después Enter no abrió el diálogo esperado. El reintento pasó. **No hay pérdida de datos demostrada ni causa histórica probada.**
@@ -18,7 +20,7 @@ Las pruebas conservan **todas** sus aserciones, datos, títulos y plazos. No se 
 
 ## Siete respuestas del ADR 0021
 
-1. **¿Existe herramienta?** Sí: el handler `options()`, `tick`, ya usado en el componente,, el timer del effect y `load()` ya cubren reinterpretación y recarga. Falta comprobar si una programación se duplica y, en ese caso, cancelar solo esa programación.
+1. **¿Existe herramienta?** Sí: el handler `options()`, `tick`, ya usado en el componente, el timer del effect y `load()` ya cubren reinterpretación y recarga. Falta comprobar si una programación se duplica y, en ese caso, cancelar solo esa programación.
 2. **¿Habilidad reutilizable?** Cambio mínimo completo y reproducción rojo→verde, con raíz como única ejecutora GUI. No se incorpora ninguna herramienta al runtime.
 3. **¿CLI, API o IPC?** Bastan los contratos existentes. No se crea operación de backend ni se amplía el puente.
 4. **¿Madurez, seguridad y licencia?** Se reutilizan mecanismos internos MIT y Svelte instalado, sin incorporar dependencias. Se preservan validación y errores. La observación de Windows y el A/B local se informan por separado; ninguno demuestra por sí solo la causa histórica.
@@ -28,4 +30,4 @@ Las pruebas conservan **todas** sus aserciones, datos, títulos y plazos. No se 
 
 ## Estado y comprobaciones posteriores
 
-Solo documentación de alcance; el mecanismo rojo está observado y el verde y la corrección siguen pendientes. Tras el rojo, corresponde comprobar los mismos cuerpos/aserciones, consumidores de carga y rechazos afectados sobre build de la fuente exacta. Tipos, unitarias, build y CI se registrarán cuando se ejecuten; no se prometen resultados. No hay commit ni publicación de este alcance en esta preparación.
+En `1f97cbe` se añadió únicamente documentación de alcance: el mecanismo rojo estaba observado y el verde y la corrección seguían pendientes. Ese estado histórico no describe el head actual. El producto mínimo ya existe en `3e6547c`; tipos, unitarias, build, nuevas regresiones y consumidores tienen resultados registrados en la evidencia enlazada. SHA de publicación y CI siguen pendientes.

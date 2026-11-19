@@ -1,0 +1,415 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-19",
+  "platform": "darwin",
+  "node": "24.22.1",
+  "base_main": "39c2000936f1b03c00daee45bc0a257132fb26ab",
+  "red_test_head": "4008f3c0fbf0dbe973a22fd019e24b490bdaf15d",
+  "feature_head": "3e6547c85f372808edbf373cf0daad6866c58f2f",
+  "publication_head": null,
+  "source_tree": "2e72ede42272c16f7077b94ea697e2a547c65ca1",
+  "source": {
+    "path": "src/renderer/components/CsvTable.svelte",
+    "sha256": "bde5de9d737b07541a6170b6c9c71a68b5d1ee58b68ef14e56c10900a6450178"
+  },
+  "public_spec": {
+    "path": "tests/e2e/csv-format-load.spec.ts",
+    "sha256": "d7afc90caa2bf0697944c3fa4a05b243059f0968af27be4fa7a57691b5d5d314",
+    "cases": 2
+  },
+  "fixture": {
+    "path": "tests/fixtures/empty-values.csv",
+    "sha256": "6fb73de2f8356d0ac1db7793bf87d326ffac23b29c76f8fa184762e4e8f5ecad"
+  },
+  "existing_empty_values_spec": {
+    "unchanged_from_base": true,
+    "sha256": "9939db20c24b91c37e9bf9892d074ecef8756b652260e6e615ee6865e49d630b"
+  },
+  "private_red": {
+    "cases": 1,
+    "same_query_except_request_id": true,
+    "page_calls": 2,
+    "revisions": [
+      1,
+      1
+    ],
+    "failure": "fill textbox absent after Enter",
+    "historical_cause_proven": false
+  },
+  "public_red": {
+    "cases": 2,
+    "outcome": "both failed at fill textbox focus",
+    "scalars": [
+      {
+        "language": "en-XA",
+        "scalars": {
+          "armed": true,
+          "optionsCalls": 1,
+          "totalPages": 2,
+          "sameQueryPages": 2,
+          "firstPageReturned": true,
+          "blocked": false,
+          "released": true,
+          "searchBPages": 0,
+          "enabledBeforeTimer": true,
+          "disabledAfterTimer": true,
+          "paletteAfterEnter": true,
+          "fillDialogsAfterRelease": 0
+        }
+      },
+      {
+        "language": "es",
+        "scalars": {
+          "armed": true,
+          "optionsCalls": 1,
+          "totalPages": 2,
+          "sameQueryPages": 2,
+          "firstPageReturned": true,
+          "blocked": false,
+          "released": true,
+          "searchBPages": 0,
+          "enabledBeforeTimer": true,
+          "disabledAfterTimer": true,
+          "paletteAfterEnter": true,
+          "fillDialogsAfterRelease": 0
+        }
+      }
+    ]
+  },
+  "public_green": {
+    "cases": 2,
+    "report_seconds": 3.8,
+    "process_seconds": 4.37,
+    "retries": 0,
+    "scalars": [
+      {
+        "language": "es",
+        "scalars": {
+          "armed": true,
+          "optionsCalls": 1,
+          "totalPages": 2,
+          "sameQueryPages": 1,
+          "firstPageReturned": true,
+          "blocked": false,
+          "released": true,
+          "searchBPages": 1,
+          "enabledBeforeTimer": true,
+          "disabledAfterTimer": false,
+          "paletteAfterEnter": false,
+          "fillDialogsAfterRelease": 1
+        }
+      },
+      {
+        "language": "en-XA",
+        "scalars": {
+          "armed": true,
+          "optionsCalls": 1,
+          "totalPages": 2,
+          "sameQueryPages": 1,
+          "firstPageReturned": true,
+          "blocked": false,
+          "released": true,
+          "searchBPages": 1,
+          "enabledBeforeTimer": true,
+          "disabledAfterTimer": false,
+          "paletteAfterEnter": false,
+          "fillDialogsAfterRelease": 1
+        }
+      }
+    ]
+  },
+  "consumers": {
+    "existing_cases": 72,
+    "files": 6,
+    "report_duration": "1.8m",
+    "process_seconds": 110.1,
+    "retries": 0,
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "tests/e2e/csv-file-format.spec.ts",
+      "tests/e2e/csv-text.spec.ts",
+      "tests/e2e/empty-values.spec.ts",
+      "tests/e2e/structural-context.spec.ts",
+      "tests/e2e/search.spec.ts",
+      "tests/e2e/structure.spec.ts",
+      "--project=csv",
+      "--workers=1",
+      "--retries=0"
+    ]
+  },
+  "public_identity_union": {
+    "new": 2,
+    "existing": 72,
+    "distinct": 74,
+    "single_run_of_74": false
+  },
+  "check": {
+    "errors": 0,
+    "warnings": 0,
+    "process_seconds": 8.66
+  },
+  "unit": {
+    "files_passed": 167,
+    "passed": 2972,
+    "skipped": 1,
+    "raw_seconds": 16.47,
+    "process_seconds": 16.77,
+    "exit": 0,
+    "pandoc_version": "3.12.1"
+  },
+  "build": {
+    "exit": 0,
+    "process_seconds": 1.84
+  },
+  "private_captures": {
+    "before": {
+      "executions": 2,
+      "outcome": "expected red at missing fill textbox, after taking images",
+      "images": 8
+    },
+    "after": {
+      "executions": 2,
+      "passed": 2,
+      "report_seconds": 4.8,
+      "process_seconds": 5.53,
+      "images": 8
+    },
+    "included_in_public_identity_union": false,
+    "temporary_copy_removed": true
+  },
+  "ci": "pending",
+  "historical_cause_proven": false,
+  "logs": [
+    {
+      "name": "check.log",
+      "bytes": 338,
+      "sha256": "ec679c9c352a6b51f245b9f265116585931947ec63920456a1ae94864a4c9012"
+    },
+    {
+      "name": "build.log",
+      "bytes": 22814,
+      "sha256": "8ea8e5ef955b2946d6070ae01d0839e46151601dd382a444dfdbb89b2b400675"
+    },
+    {
+      "name": "new-green.log",
+      "bytes": 510,
+      "sha256": "85ce64745ac1acea0a6006f61725f5b4d5249bfd0ac1948380a91d2ab7aabf12"
+    },
+    {
+      "name": "unit.log",
+      "bytes": 1115,
+      "sha256": "26ca09ca736d259eb0d8ad1e97448d6cf24e37901487568b77464108083f9c76"
+    },
+    {
+      "name": "consumers.log",
+      "bytes": 10752,
+      "sha256": "9c6a0b88740ae76b2d74b592314e7511e9c636c4335f2014fcc9d97f2be554d1"
+    },
+    {
+      "name": "capture-before.log",
+      "bytes": 7021,
+      "sha256": "963b852d32fa926a9dc563fa427917ceac83855ece86d3d0a3436f6834186faf"
+    },
+    {
+      "name": "capture-after.log",
+      "bytes": 522,
+      "sha256": "8f3413bc53dbd2c5ade49f0cadf1219280cf199471cbbaf76885cefde5a495fb"
+    }
+  ],
+  "images": [
+    {
+      "path": "before-es-light-1440x900.png",
+      "phase": "before",
+      "source_head": "4008f3c0fbf0dbe973a22fd019e24b490bdaf15d",
+      "language": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 94643,
+      "sha256": "e52700c595eb370b3270ceb43d00a8f29b1cbe7a0b41f1ae89a3a8ab53fa0f85"
+    },
+    {
+      "path": "before-es-light-1280x720.png",
+      "phase": "before",
+      "source_head": "4008f3c0fbf0dbe973a22fd019e24b490bdaf15d",
+      "language": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 87932,
+      "sha256": "8028fbcfe876530af340c0bf0c4109d7fee1143745838734748d54bc6c88a7d1"
+    },
+    {
+      "path": "before-es-dark-1440x900.png",
+      "phase": "before",
+      "source_head": "4008f3c0fbf0dbe973a22fd019e24b490bdaf15d",
+      "language": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 90333,
+      "sha256": "00e423d9c677eeec758c3e991996dd8974472e3560cad2801b1af232699a8260"
+    },
+    {
+      "path": "before-es-dark-1280x720.png",
+      "phase": "before",
+      "source_head": "4008f3c0fbf0dbe973a22fd019e24b490bdaf15d",
+      "language": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 83689,
+      "sha256": "d8a36e3e71cfe7a366ac153630cf708d5f2d623c1a18f0d1d4c9a1cf1613f099"
+    },
+    {
+      "path": "before-en-XA-light-1440x900.png",
+      "phase": "before",
+      "source_head": "4008f3c0fbf0dbe973a22fd019e24b490bdaf15d",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 100681,
+      "sha256": "f5afc8a300aea66259dcbcccf64466f1cf94e0fc51232e2a3bf70a13cdd57daa"
+    },
+    {
+      "path": "before-en-XA-light-1280x720.png",
+      "phase": "before",
+      "source_head": "4008f3c0fbf0dbe973a22fd019e24b490bdaf15d",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 91045,
+      "sha256": "5e76dccea0dfcecbe9800f943e90f7ed1fc8550457acf1ff92e5bf2fcd3f8883"
+    },
+    {
+      "path": "before-en-XA-dark-1440x900.png",
+      "phase": "before",
+      "source_head": "4008f3c0fbf0dbe973a22fd019e24b490bdaf15d",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 96845,
+      "sha256": "34640254ff6d98c0276a987ed3f2ab62407c5642b2d47c3b89628ec746ba4ba1"
+    },
+    {
+      "path": "before-en-XA-dark-1280x720.png",
+      "phase": "before",
+      "source_head": "4008f3c0fbf0dbe973a22fd019e24b490bdaf15d",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 87369,
+      "sha256": "c6de9fe06dfd8c0d47834efe1e377ce26b7067a8d1977b4ab7609b5a0d9f3347"
+    },
+    {
+      "path": "after-es-light-1440x900.png",
+      "phase": "after",
+      "source_head": "3e6547c85f372808edbf373cf0daad6866c58f2f",
+      "language": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 97222,
+      "sha256": "7e3147c6dc22fb14593e9879031b54068e3d640aa41f641a63673e19399b92f7"
+    },
+    {
+      "path": "after-es-light-1280x720.png",
+      "phase": "after",
+      "source_head": "3e6547c85f372808edbf373cf0daad6866c58f2f",
+      "language": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 88873,
+      "sha256": "8ab577a3d105e0763d80abf451ca34a80da472cb0cf6735df73dab89e7425137"
+    },
+    {
+      "path": "after-es-dark-1440x900.png",
+      "phase": "after",
+      "source_head": "3e6547c85f372808edbf373cf0daad6866c58f2f",
+      "language": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 92606,
+      "sha256": "5dbdcbac0ed6e8d75de4ea0753b64786ff32469f2aa6d2966bf553525d142691"
+    },
+    {
+      "path": "after-es-dark-1280x720.png",
+      "phase": "after",
+      "source_head": "3e6547c85f372808edbf373cf0daad6866c58f2f",
+      "language": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 84274,
+      "sha256": "9e9fd1bc82ac1ccd4bdd4d8cce14214e49c0efa6ade33b01cd6cf3f3f4f32c07"
+    },
+    {
+      "path": "after-en-XA-light-1440x900.png",
+      "phase": "after",
+      "source_head": "3e6547c85f372808edbf373cf0daad6866c58f2f",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 106147,
+      "sha256": "435d59fc30921eb770e3672d014de40030ab9b5ddf0d27e392164727adcc52c3"
+    },
+    {
+      "path": "after-en-XA-light-1280x720.png",
+      "phase": "after",
+      "source_head": "3e6547c85f372808edbf373cf0daad6866c58f2f",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 94532,
+      "sha256": "cdebf2a6c29ee17892afb05bb26af9b6cc81c792b84644c260cb71d99478ec4e"
+    },
+    {
+      "path": "after-en-XA-dark-1440x900.png",
+      "phase": "after",
+      "source_head": "3e6547c85f372808edbf373cf0daad6866c58f2f",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 101806,
+      "sha256": "ade7c475bce9bb3ebdf020a5cdd3459a57d8226fb66a7dd8fef6b0256a17a29d"
+    },
+    {
+      "path": "after-en-XA-dark-1280x720.png",
+      "phase": "after",
+      "source_head": "3e6547c85f372808edbf373cf0daad6866c58f2f",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 90370,
+      "sha256": "52e9ae05c631b29e07b78f0d69cb986960d427c70a155dc7b77dce437a36b214"
+    }
+  ],
+  "ci_plan": {
+    "head": "3e6547c85f372808edbf373cf0daad6866c58f2f",
+    "checks": true,
+    "unit": true,
+    "e2e": [
+      "shell",
+      "csv"
+    ],
+    "full": false,
+    "package": false,
+    "specs": [
+      "csv-format-load.spec.ts"
+    ],
+    "docsOnly": false,
+    "new_intel_evidence": false
+  }
+}
