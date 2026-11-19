@@ -21,10 +21,17 @@ export async function atomicWrite(path:string,data:Uint8Array|string|AsyncIterab
   try { mode=(await stat(path)).mode } catch(e){if((e as NodeJS.ErrnoException).code!=='ENOENT') throw e}
   handle=await open(temp,'wx',mode??0o600); await handle.writeFile(data); await handle.sync(); await handle.close(); handle=undefined
   if(mode!==undefined) await chmod(temp,mode)
-  if(typeof expected==='string'&&await digest(path)!==expected) throw new Error('El archivo cambió durante el guardado. Guarda una copia.')
   // A new manifest must never replace a concurrent creation.
   if(expected===null){await link(temp,path);await unlink(temp).catch(()=>{})}
-  else await rename(temp,path)
+  else for(let attempt=0;attempt<3;attempt++){
+   if(typeof expected==='string'&&await digest(path)!==expected) throw new Error('El archivo cambió durante el guardado. Guarda una copia.')
+   try{await rename(temp,path);break}
+   catch(error){
+    const failure=error as NodeJS.ErrnoException
+    if(typeof expected!=='string'||process.platform!=='win32'||failure?.code!=='EPERM'||failure?.syscall!=='rename'||attempt===2)throw error
+    await new Promise<void>(resolve=>setTimeout(resolve,attempt===0?50:100))
+   }
+  }
   // Persist directory metadata where the filesystem supports it; replacement is already complete.
   try { const dir=await open(dirname(path),'r');try {await dir.sync()}finally{await dir.close()} } catch {}
  } catch(e) {if(handle)await handle.close().catch(()=>{});await unlink(temp).catch(()=>{});throw e}
