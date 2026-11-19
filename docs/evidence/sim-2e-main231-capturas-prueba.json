@@ -1,0 +1,91 @@
+{
+  "testedHead": "acdf0772b66eb38ebcaead60b60f110978abf415",
+  "count": 12,
+  "allEqual": true,
+  "pairs": [
+    {
+      "versioned": "docs/evidence/sim-2e-despues-en-dark-1280x720.png",
+      "generatedSha256": "d46ac8b4f6ea2697eba1e1458c751493b65d0fd01a0d63d19071cb7586355b2d",
+      "versionedSha256": "d46ac8b4f6ea2697eba1e1458c751493b65d0fd01a0d63d19071cb7586355b2d",
+      "bytesEqual": true,
+      "bytes": 81167
+    },
+    {
+      "versioned": "docs/evidence/sim-2e-despues-en-dark-1440x900.png",
+      "generatedSha256": "4e6270c6bd6ed590745dbb467c227f00457d1b3b785e42daa1c5fd5e17432acb",
+      "versionedSha256": "4e6270c6bd6ed590745dbb467c227f00457d1b3b785e42daa1c5fd5e17432acb",
+      "bytesEqual": true,
+      "bytes": 84683
+    },
+    {
+      "versioned": "docs/evidence/sim-2e-despues-en-light-1280x720.png",
+      "generatedSha256": "0119ae6de10b365d75cb097c7cff8acde94bda4460ab2ef1cd1325aa3721821d",
+      "versionedSha256": "0119ae6de10b365d75cb097c7cff8acde94bda4460ab2ef1cd1325aa3721821d",
+      "bytesEqual": true,
+      "bytes": 80119
+    },
+    {
+      "versioned": "docs/evidence/sim-2e-despues-en-light-1440x900.png",
+      "generatedSha256": "bd3e81af2a78c68b18aec17fe02e9a546874d9bb8b6fda5407fb7be2e2a0debb",
+      "versionedSha256": "bd3e81af2a78c68b18aec17fe02e9a546874d9bb8b6fda5407fb7be2e2a0debb",
+      "bytesEqual": true,
+      "bytes": 83725
+    },
+    {
+      "versioned": "docs/evidence/sim-2e-despues-en-XA-dark-1280x720.png",
+      "generatedSha256": "7196c1c64e59f2e9b51438df039868ce24deda1070d2e701a15398a2e194a647",
+      "versionedSha256": "7196c1c64e59f2e9b51438df039868ce24deda1070d2e701a15398a2e194a647",
+      "bytesEqual": true,
+      "bytes": 94988
+    },
+    {
+      "versioned": "docs/evidence/sim-2e-despues-en-XA-dark-1440x900.png",
+      "generatedSha256": "0db070f07fb42161e9c203bd125553dc168b7bdde906129ca3f0bb8c3955ab7d",
+      "versionedSha256": "0db070f07fb42161e9c203bd125553dc168b7bdde906129ca3f0bb8c3955ab7d",
+      "bytesEqual": true,
+      "bytes": 98573
+    },
+    {
+      "versioned": "docs/evidence/sim-2e-despues-en-XA-light-1280x720.png",
+      "generatedSha256": "62a210f14118907fd8697db398d6a8836c85fd9e4d752885539db11153b2e6fa",
+      "versionedSha256": "62a210f14118907fd8697db398d6a8836c85fd9e4d752885539db11153b2e6fa",
+      "bytesEqual": true,
+      "bytes": 94488
+    },
+    {
+      "versioned": "docs/evidence/sim-2e-despues-en-XA-light-1440x900.png",
+      "generatedSha256": "fa6f9967e8a7e22e6bcbf72abbe5a63bee9eaf3a7195ecf5252f610746b7aa3a",
+      "versionedSha256": "fa6f9967e8a7e22e6bcbf72abbe5a63bee9eaf3a7195ecf5252f610746b7aa3a",
+      "bytesEqual": true,
+      "bytes": 98268
+    },
+    {
+      "versioned": "docs/evidence/sim-2e-despues-es-dark-1280x720.png",
+      "generatedSha256": "4b615f740ebec4f3f633e611ba49e9059f1462d584d474581d02dad84a40c1f1",
+      "versionedSha256": "4b615f740ebec4f3f633e611ba49e9059f1462d584d474581d02dad84a40c1f1",
+      "bytesEqual": true,
+      "bytes": 81898
+    },
+    {
+      "versioned": "docs/evidence/sim-2e-despues-es-dark-1440x900.png",
+      "generatedSha256": "ee3288b383cd936cda4a8b706bfe776c90d6ee3bbf0d4530ec31338ed2645cf7",
+      "versionedSha256": "ee3288b383cd936cda4a8b706bfe776c90d6ee3bbf0d4530ec31338ed2645cf7",
+      "bytesEqual": true,
+      "bytes": 85287
+    },
+    {
+      "versioned": "docs/evidence/sim-2e-despues-es-light-1280x720.png",
+      "generatedSha256": "c21a5ab0c40d3c45be20f439c2aff8b04490dc7fee5f019f6783272ef319eed0",
+      "versionedSha256": "c21a5ab0c40d3c45be20f439c2aff8b04490dc7fee5f019f6783272ef319eed0",
+      "bytesEqual": true,
+      "bytes": 81266
+    },
+    {
+      "versioned": "docs/evidence/sim-2e-despues-es-light-1440x900.png",
+      "generatedSha256": "bfc3f297162593aa0545707a3f5759b9b17b067d7ccfa015459ce1809048b173",
+      "versionedSha256": "bfc3f297162593aa0545707a3f5759b9b17b067d7ccfa015459ce1809048b173",
+      "bytesEqual": true,
+      "bytes": 84711
+    }
+  ]
+}

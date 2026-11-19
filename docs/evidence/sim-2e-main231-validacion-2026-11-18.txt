@@ -1,0 +1,99 @@
+SIM-2e · validación final tras main231
+Código integrado: acdf0772b66eb38ebcaead60b60f110978abf415
+Node24.22.1 · macOS arm64 · GUI ejecutada exclusivamente por la raíz
+
+CHECK
+
+> freyalab@0.1.0-alpha.4 check
+> svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json --noEmit
+
+Loading svelte-check in workspace: /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim2e
+Getting Svelte diagnostics...
+
+svelte-check found 0 errors and 0 warnings
+
+UNITARIAS ENFOCADAS
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim2e
+
+
+ Test Files  8 passed (8)
+      Tests  81 passed (81)
+   Start at  16:25:57
+   Duration  963ms (import 38%, transform 31%, tests 29%, worker 1%)
+
+
+UNITARIAS COMPLETAS (loopback permitido)
+
+> freyalab@0.1.0-alpha.4 test
+> vitest run
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 /Users/ruzer/.codex/visualizations/2026/10/20/01a15b98-21cd-73c1-9d21-54a67035a7fa/recovery/sim2e
+
+AC-00 P4 real: darwin, {"available":true,"path":"/opt/homebrew/Cellar/pandoc/3.12.1/bin/pandoc","version":"3.12.1","license":"GPL-2.0-or-later"}
+AC-00 HTTP: Pandoc sin soporte HTTP; eficacia del sandbox HTTP pendiente de otro binario
+
+ Test Files  166 passed (166)
+      Tests  2964 passed | 1 skipped (2965)
+   Start at  16:32:28
+   Duration  18.94s (tests 86%, import 13%, transform 1%)
+
+    Isolate  166 workers spawned · ~86ms startup each (spawn + environment, per file)
+             at least ~1.21s faster with isolate: false — reuses workers across files instead of one per file
+
+
+BUILD (cola literal)
+out/renderer/assets/CsvCharts-CylXZVyE.js                                1,685.22 kB
+out/renderer/assets/elk-QONTBCTQ-CMQXnjZg.js                             2,619.74 kB
+out/renderer/assets/index-Cgzh-xxJ.js                                    3,933.12 kB
+
+✓ built in 1.78s
+
+GUI 29 CASOS
+
+Running 29 tests using 1 worker
+
+(node:5734) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/29] [csv] › tests/e2e/analysis-describe.spec.ts:36:1 › AN-2 muestra describe por petición con el fixture aprobado y conserva la fuente
+[2/29] [csv] › tests/e2e/analysis-describe.spec.ts:68:1 › AN-2 coordina el cálculo avanzado con describe sin lanzar consultas al desplegar
+[3/29] [csv] › tests/e2e/analysis-describe.spec.ts:93:1 › AN-2 Información presenta dimensiones, tipos y calidad con distintos sin vacíos
+[4/29] [csv] › tests/e2e/analysis-describe.spec.ts:113:1 › AN-2 cancelar conserva la fuente y permite pasar a la vista avanzada sin respuestas tardías
+[5/29] [csv] › tests/e2e/analysis-describe.spec.ts:128:1 › AN-2 entrar en el explorador cancela describe pendiente antes de activar el otro análisis
+[6/29] [csv] › tests/e2e/analysis-describe.spec.ts:141:1 › AN-2 descarta la respuesta anterior cuando cambia la revisión y recalcula con los valores actuales
+[7/29] [csv] › tests/e2e/analysis-describe.spec.ts:156:1 › AN-2 la paleta describe abre estadísticas sin empezar a calcular
+[8/29] [csv] › tests/e2e/analysis-describe.spec.ts:163:1 › AN-2 describe conserva el ámbito filtrado, el informe y las columnas marcadas
+[9/29] [csv] › tests/e2e/analysis-describe.spec.ts:177:47 › AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (es)
+[10/29] [csv] › tests/e2e/analysis-describe.spec.ts:177:47 › AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (en-XA)
+[11/29] [csv] › tests/e2e/analysis-describe.spec.ts:191:1 › AN-2 ciento veinte columnas se rechazan antes de consultar y conservan el archivo
+[12/29] [csv] › tests/e2e/analysis-describe.spec.ts:197:1 › AN-2 la cardinalidad textual no disponible no elimina las estadísticas numéricas exactas
+[13/29] [csv] › tests/e2e/analysis-describe.spec.ts:203:1 › AN-2 revisión: una muestra conserva su ámbito en selector, caption e informe
+[14/29] [csv] › tests/e2e/analysis-describe.spec.ts:220:1 › AN-2 revisión: std de un valor y top/freq de fecha se presentan vacíos
+[15/29] [csv] › tests/e2e/analysis-describe.spec.ts:229:1 › AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes de consultar
+[16/29] [csv] › tests/e2e/analysis-describe.spec.ts:236:52 › Información: distintos sin vacíos conserva repeticiones y el archivo (es)
+[17/29] [csv] › tests/e2e/analysis-describe.spec.ts:236:52 › Información: distintos sin vacíos conserva repeticiones y el archivo (en)
+[18/29] [csv] › tests/e2e/analysis-describe.spec.ts:236:52 › Información: distintos sin vacíos conserva repeticiones y el archivo (en-XA)
+[19/29] [csv] › tests/e2e/descriptive-percentiles.spec.ts:28:1 › percentiles: perfil filtrado, ayuda por teclado e informe preservan valores y procedencia
+[20/29] [csv] › tests/e2e/descriptive-percentiles.spec.ts:40:1 › percentiles: columnas marcadas, controles progresivos y rango comparten método sin recalcular al mostrar
+[21/29] [csv] › tests/e2e/selection-statistics.spec.ts:17:1 › estadísticas del rango: vista ordenada/filtrada, resumen conjunto y por columnas con datos intactos
+[22/29] [csv] › tests/e2e/selection-statistics.spec.ts:33:1 › estadísticas del rango: cancelar interrumpe y reintentar conserva la selección al paginar
+[23/29] [csv] › tests/e2e/selection-statistics.spec.ts:47:1 › estadísticas del rango: resumen de más de cien columnas sin expandir el límite del panel por columna
+[24/29] [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (es)
+[25/29] [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (en)
+[26/29] [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (en-XA)
+[27/29] [csv] › tests/e2e/statistics-reports.spec.ts:19:1 › informe general editable: PDF/HTML, recuperación y guardado sin alterar el CSV pendiente
+[28/29] [csv] › tests/e2e/statistics-reports.spec.ts:30:1 › informe del rango fija búsqueda, posiciones y revisión; editar invalida el resultado
+[29/29] [csv] › tests/e2e/statistics-reports.spec.ts:36:1 › informes del explorador: perfil, distribución, Pearson y página parcial con texto hostil abreviado
+  29 passed (46.4s)
+
+CAPTURAS
+12/12 idénticas byte por byte; véase sim-2e-main231-capturas-prueba.json.

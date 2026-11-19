@@ -46,7 +46,7 @@ test('AN-2 muestra describe por petición con el fixture aprobado y conserva la 
  await expect(panel.locator('thead th>span')).toHaveText(['Precio','Cantidad'])
  await expect(panel.locator('thead th>small')).toHaveText(['Número','Número'])
  await expect(panel.locator('tbody tr')).toHaveCount(8)
- for(const [index,values] of [['5','4'],['30','2.5'],['15.8114','1.291'],['10','1'],['20','1.75'],['30','2.5'],['40','3.25'],['50','4']].entries())await expect(panel.locator('tbody tr').nth(index).locator('td')).toHaveText(values)
+ for(const [index,values] of [['5','4'],['30','2.5'],['15.81','1.29'],['10','1'],['20','1.75'],['30','2.5'],['40','3.25'],['50','4']].entries())await expect(panel.locator('tbody tr').nth(index).locator('td')).toHaveText(values)
  await expect(panel.locator('tbody tr').nth(2).locator('td').first()).toHaveAttribute('title','15.811388300841896')
  const numericCalls=await calls()
  expect(numericCalls).toHaveLength(7)
@@ -147,7 +147,8 @@ test('AN-2 descarta la respuesta anterior cuando cambia la revisión y recalcula
  await expect(panel.getByRole('table')).toHaveCount(0)
  await panel.getByRole('button',{name:'Calcular',exact:true}).click()
  await expect(panel.locator('tbody tr').nth(1).locator('td').first()).toHaveText('32')
- await expect(panel.locator('caption')).toContainText('Revisión 1')
+ await panel.locator('summary').filter({hasText:'Cómo se calcula'}).click()
+ await expect(panel.locator('details')).toContainText('Revisión 1')
  expect(await readFile(path,'utf8')).toBe(source)
 })
 
@@ -165,7 +166,7 @@ test('AN-2 describe conserva el ámbito filtrado, el informe y las columnas marc
  await panel.getByLabel('Alcance de las estadísticas',{exact:true}).selectOption('view');await panel.getByRole('button',{name:'Calcular',exact:true}).click()
  await expect(panel.locator('tbody tr').nth(0).locator('td')).toHaveText(['3','2','2']);await expect(panel.locator('tbody tr').nth(1).locator('td')).toHaveText(['30','2','1'])
  await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();const report=(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')!
- expect(report.text).toContain('"Vista filtrada"');expect(report.text).toContain('"search": "a"');expect(report.text).not.toContain('Rango de la vista');expect(report.text).toContain('| std | 20 | 1.4142135623730951 | 0 |')
+ expect(report.text).toContain('"Vista filtrada"');expect(report.text).toContain('"search": "a"');expect(report.text).not.toContain('Rango de la vista');expect(report.text).toContain('| Desviación estándar (std) | 20 | 1.4142135623730951 | 0 |')
  await page.getByRole('tab',{name:'Análisis de datos.csv',exact:true}).click();await showTable(page)
  await page.getByLabel('Buscar en tabla',{exact:true}).fill('b');await expect(page.locator('footer')).toContainText('1 de 6 filas');await openAnalysis(page,'Estadísticas')
  await expect(panel.getByRole('table')).toHaveCount(0);await panel.getByRole('button',{name:'Calcular',exact:true}).click();await expect(panel.locator('tbody tr').nth(0).locator('td')).toHaveText(['1','1']);await expect(panel.locator('tbody tr').nth(1).locator('td')).toHaveText(['20','2']);await expect(panel.locator('tbody tr').nth(2).locator('td')).toHaveText(['',''])
@@ -177,7 +178,7 @@ for(const language of ['es','en-XA'] as const)test(`AN-2 cien columnas y teclado
  const tr=(key:string)=>t(key,{},language),wide=join(folder,'cien.csv'),text=Array.from({length:100},(_,i)=>'Campo '+i).join(',')+'\n'+Array.from({length:250},(_,row)=>Array.from({length:100},(_,col)=>String(row+col)).join(',')).join('\n')+'\n'
  await writeFile(wide,text);await page.evaluate(path=>window.freya.openPaths([path]),wide);await openAnalysis(page,'Estadísticas');const panel=page.getByRole('region',{name:tr('describe.title'),exact:true}),button=panel.getByRole('button',{name:tr('describe.calculate'),exact:true})
  await expect(button).toBeEnabled();await button.focus();await button.press('Enter');await expect(panel.getByRole('status')).toHaveText(tr('describe.complete'));await expect(panel.locator('thead th')).toHaveCount(101);await expect(panel.locator('tbody tr')).toHaveCount(8)
- await expect(panel.getByRole('columnheader',{name:/Campo 0/})).toHaveAttribute('scope','col');await expect(panel.getByRole('rowheader',{name:/std/})).toHaveAttribute('scope','row');await expect(panel.getByRole('rowheader',{name:/std/})).toHaveAccessibleName('std · '+tr('describe.help.std'))
+ await expect(panel.getByRole('columnheader',{name:/Campo 0/})).toHaveAttribute('scope','col');await expect(panel.getByRole('rowheader',{name:/std/})).toHaveAttribute('scope','row');await expect(panel.getByRole('rowheader',{name:/std/})).toHaveAccessibleName(tr('describe.metric.std')+' · '+t('describe.pandasMetric',{metric:'std'},language)+' · '+tr('describe.help.std'))
  const scroller=panel.getByRole('region',{name:tr('describe.results'),exact:true});await scroller.focus();await scroller.press('ArrowRight');await expect.poll(()=>scroller.evaluate(node=>node.scrollLeft)).toBeGreaterThan(0)
  const sticky=await panel.locator('tbody th').first().boundingBox(),box=await scroller.boundingBox();expect(Math.abs(sticky!.x-box!.x)).toBeLessThan(2);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
  for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect.poll(()=>page.locator('html').evaluate(node=>node.classList.contains('dark'))).toBe(theme==='dark');await scroller.evaluate(node=>node.scrollLeft=0);await page.mouse.move(0,0);await page.screenshot({animations:'disabled',path:test.info().outputPath(`an2-describe-100-${language}-${theme}-1440x900.png`)})}
@@ -222,7 +223,7 @@ test('AN-2 revisión: std de un valor y top/freq de fecha se presentan vacíos',
  expect.soft(await panel.locator('tbody tr').nth(0).locator('td').allTextContents()).toEqual(['1','1','0'])
  for(const row of [2,3,5])expect.soft(await panel.locator('tbody tr').nth(row).locator('td').allTextContents()).toEqual(['','',''])
  await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
- expect.soft(report).toContain('| std |  |  |  |');expect.soft(report).toContain('| top |  |  |  |');expect.soft(report).not.toContain('—');expect(await readFile(file,'utf8')).toBe(text)
+ expect.soft(report).toContain('| Desviación estándar (std) |  |  |  |');expect.soft(report).toContain('| Más frecuente (top) |  |  |  |');expect.soft(report).not.toContain('—');expect(await readFile(file,'utf8')).toBe(text)
 })
 
 test('AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes de consultar',async()=>{
