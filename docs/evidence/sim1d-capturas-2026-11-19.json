@@ -1,0 +1,335 @@
+{
+  "created_utc": "2026-11-19T06:13:01.090832+00:00",
+  "baseline": "0260a5d05341e98a8ea97d5ced7330aa97f413c4",
+  "after_captured_source_sha256": "499636af962c785bad3ff59bd03c2cd7ec757a133ed66bf2c9e0f755a23b09fa",
+  "executor": "root only",
+  "before_run": "before-correct-probe.log:2 passed7.6s",
+  "after_run": "after-final.log:2 passed7.5s",
+  "count": 32,
+  "all_copies_byte_identical": true,
+  "captures": [
+    {
+      "path": "docs/evidence/sim1d-before-proposal-es-light-1440x900.png",
+      "phase": "before",
+      "stage": "proposal",
+      "locale": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "841ed15e691d7bc651625dffa6642ecc6e098c6d4d802bc634f905f90d056a42"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-proposal-es-light-1280x720.png",
+      "phase": "before",
+      "stage": "proposal",
+      "locale": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "b3501032c0789a05532b5d4c1595c98bfac5944aec972899e8a072e394d74dfb"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-proposal-es-dark-1440x900.png",
+      "phase": "before",
+      "stage": "proposal",
+      "locale": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "234e3a6034273fcf0100f0bdd9af1ef94cec5b9c7cd21658d794d34d1d4cd50a"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-proposal-es-dark-1280x720.png",
+      "phase": "before",
+      "stage": "proposal",
+      "locale": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "d8ccc64c0a317e79bef084d5e29687d1427b8884100ad8887983399b9d71802f"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-proposal-en-XA-light-1440x900.png",
+      "phase": "before",
+      "stage": "proposal",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d589e5de0559f4e082dff615fa2a08bb2b622ae82b8a17234b8637aff1d23460"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-proposal-en-XA-light-1280x720.png",
+      "phase": "before",
+      "stage": "proposal",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "c22ca004309c6a39b1b2a2675f01707395fb8224cd70c77a37ead1172df64673"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-proposal-en-XA-dark-1440x900.png",
+      "phase": "before",
+      "stage": "proposal",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "be63187383d881aa1129bef5d60c8ce65d71c7321860ea8f0738eee7d1800989"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-proposal-en-XA-dark-1280x720.png",
+      "phase": "before",
+      "stage": "proposal",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "3a8f4818e6b9b9b1968cce626670889432d46280c983e2f4c1bbf7d34275ee39"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-measure-es-light-1440x900.png",
+      "phase": "before",
+      "stage": "measure",
+      "locale": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "3d1a918036334e62c09d5ec88161bcc75e421f0b840384145be22160d214cd67"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-measure-es-light-1280x720.png",
+      "phase": "before",
+      "stage": "measure",
+      "locale": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "048dab615bf1b46a974cff5add856c9cb6052245a1a125b42670b287c1c11404"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-measure-es-dark-1440x900.png",
+      "phase": "before",
+      "stage": "measure",
+      "locale": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "688d1f69bc2d6bf010aeb81d9d1921aa620450206f6df86992a8bbd8ecbe866d"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-measure-es-dark-1280x720.png",
+      "phase": "before",
+      "stage": "measure",
+      "locale": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "43ef2ff0e55377fcf37aa89235c540394a19c3d4923f23f08e144f65184c32ea"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-measure-en-XA-light-1440x900.png",
+      "phase": "before",
+      "stage": "measure",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "da1ff2eacd53f9c8a64acb9ee9cce4f632487a6acc9209074d9e4bb7276952c3"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-measure-en-XA-light-1280x720.png",
+      "phase": "before",
+      "stage": "measure",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "e93fed5699d93250c2c79be59fc0b838f0e67c6de9c89b3730df03ceaaeb7c67"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-measure-en-XA-dark-1440x900.png",
+      "phase": "before",
+      "stage": "measure",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ab40540f7991ee8314581fefdc39cce4ba517f94d74f875cedd3100062c1b51e"
+    },
+    {
+      "path": "docs/evidence/sim1d-before-measure-en-XA-dark-1280x720.png",
+      "phase": "before",
+      "stage": "measure",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "41e30dea8d253d04e6bb527c6f9016082dfc6104620f9b0b4c538b593bbf87c0"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-proposal-es-light-1440x900.png",
+      "phase": "after",
+      "stage": "proposal",
+      "locale": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "74201916e87491ff6ed8e3db667e787f59483d4e1bc37cf9005f2838c720f9e1"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-proposal-es-light-1280x720.png",
+      "phase": "after",
+      "stage": "proposal",
+      "locale": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "45ebf509e748e77a60a28bf9d5cdb99563988b43e3e31e89677f2303224a1f8d"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-proposal-es-dark-1440x900.png",
+      "phase": "after",
+      "stage": "proposal",
+      "locale": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2a56411d68a57562e64d7209a9558a4cb8f13e87cd74d90c349733bc44249021"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-proposal-es-dark-1280x720.png",
+      "phase": "after",
+      "stage": "proposal",
+      "locale": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "3bb13387042ac0a7863f21de12e8c38c70303f3fa82eb8b95f411eb78a3ea026"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-proposal-en-XA-light-1440x900.png",
+      "phase": "after",
+      "stage": "proposal",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "885356096b94cd78304a802a32d4c8d5d399c2f94d34abbfac06e34836f7e2ca"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-proposal-en-XA-light-1280x720.png",
+      "phase": "after",
+      "stage": "proposal",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "6f012a527bae67877fc6c6c8c444cfab8eb9869544b26c4cf23f4e605c2a0204"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-proposal-en-XA-dark-1440x900.png",
+      "phase": "after",
+      "stage": "proposal",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "97a5e261c03cee1ab5780006e863af4a554374eacd20ffdca5a71e73fc24a7ef"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-proposal-en-XA-dark-1280x720.png",
+      "phase": "after",
+      "stage": "proposal",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "996f3bee29d89aab876c18878f8a9248977d4bc87141d3a749ba643f27c57772"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-measure-es-light-1440x900.png",
+      "phase": "after",
+      "stage": "measure",
+      "locale": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1e443b344e6924306aee019afbba77182dc05f3047644b18f4b103ce185430dc"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-measure-es-light-1280x720.png",
+      "phase": "after",
+      "stage": "measure",
+      "locale": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "c9361c04240eed093052d098691ecd38572a7a29fea21d70017af8a43e234bce"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-measure-es-dark-1440x900.png",
+      "phase": "after",
+      "stage": "measure",
+      "locale": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b3b3e0c01e78419e6127ab4585383113abb79448d98f0a21353874750ac14eb6"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-measure-es-dark-1280x720.png",
+      "phase": "after",
+      "stage": "measure",
+      "locale": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "bac19fe91e8cc9236a85fc7a7af0c40246679e8e88851e9f00dd2fb96f62c889"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-measure-en-XA-light-1440x900.png",
+      "phase": "after",
+      "stage": "measure",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "sha256": "569445547d29ba10b5bf9e689891a90988a32dfe3e17a35d9c0c61f1c93a597c"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-measure-en-XA-light-1280x720.png",
+      "phase": "after",
+      "stage": "measure",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "sha256": "d0672cc7246ef8ebfdf6a4db3e5653ef49962ace45c0e6b88ce9bc9b9e39de21"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-measure-en-XA-dark-1440x900.png",
+      "phase": "after",
+      "stage": "measure",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1c48648b7bca470c1a6732700ce23abe1871e969de6e0457a260bd6a5c683f9a"
+    },
+    {
+      "path": "docs/evidence/sim1d-after-measure-en-XA-dark-1280x720.png",
+      "phase": "after",
+      "stage": "measure",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "sha256": "b32ff410528f65bc744f43315838285090699b539bd2061846b1c6f8a5256f48"
+    }
+  ],
+  "updated_utc": "2026-11-19T06:30:06.416524+00:00",
+  "validated_code_commit": "6c5b97b013cd0e8c422432aebf864eb52a0b385e",
+  "status": "final; all32 PNG copies anddimensions verified"
+}

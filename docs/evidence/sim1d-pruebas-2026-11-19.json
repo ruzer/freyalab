@@ -1,0 +1,124 @@
+{
+  "validated_code_commit": "6c5b97b013cd0e8c422432aebf864eb52a0b385e",
+  "source_sha256": "499636af962c785bad3ff59bd03c2cd7ec757a133ed66bf2c9e0f755a23b09fa",
+  "runtime": {
+    "node": "24.22.1",
+    "pandoc": "3.12.1"
+  },
+  "checks": [
+    {
+      "command": [
+        "npm",
+        "test"
+      ],
+      "log": "unit-full-final-node24.log",
+      "exit_code": 0,
+      "summary": [
+        " Test Files  167 passed (167)",
+        "      Tests  2987 passed | 1 skipped (2988)",
+        "   Duration  23.41s (tests 81%, import 15%, transform 4%)"
+      ]
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "check"
+      ],
+      "log": "check-values-first-final.log",
+      "exit_code": 0,
+      "summary": [
+        "svelte-check found 0 errors and 0 warnings"
+      ]
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "log": "build-values-first-final.log",
+      "exit_code": 0,
+      "summary": [
+        "✓ built in 86ms",
+        "✓ built in 12ms",
+        "✓ built in 2.83s"
+      ]
+    }
+  ],
+  "consumer_run": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "tests/e2e/analysis-dock.spec.ts",
+      "tests/e2e/analysis-tab.spec.ts",
+      "tests/e2e/chart-field-loading.spec.ts",
+      "tests/e2e/chart-fields.spec.ts",
+      "tests/e2e/chart-review.spec.ts",
+      "tests/e2e/chart-single-load.spec.ts",
+      "tests/e2e/chart-trend.spec.ts",
+      "tests/e2e/charts.spec.ts",
+      "tests/e2e/csv-summary.spec.ts",
+      "tests/e2e/large-file.spec.ts",
+      "tests/e2e/sql-progress-states.spec.ts",
+      "tests/e2e/structure.spec.ts",
+      "tests/e2e/ui-u0.spec.ts",
+      "tests/e2e/chart-sensible-suggestions.spec.ts",
+      "--workers=1",
+      "--retries=0",
+      "--output",
+      "../sim1d-evidence/consumers-final-results"
+    ],
+    "exit": 1,
+    "elapsed_seconds": 497.99,
+    "files": [
+      "tests/e2e/analysis-dock.spec.ts",
+      "tests/e2e/analysis-tab.spec.ts",
+      "tests/e2e/chart-field-loading.spec.ts",
+      "tests/e2e/chart-fields.spec.ts",
+      "tests/e2e/chart-review.spec.ts",
+      "tests/e2e/chart-single-load.spec.ts",
+      "tests/e2e/chart-trend.spec.ts",
+      "tests/e2e/charts.spec.ts",
+      "tests/e2e/csv-summary.spec.ts",
+      "tests/e2e/large-file.spec.ts",
+      "tests/e2e/sql-progress-states.spec.ts",
+      "tests/e2e/structure.spec.ts",
+      "tests/e2e/ui-u0.spec.ts",
+      "tests/e2e/chart-sensible-suggestions.spec.ts"
+    ],
+    "planned_identities": 127
+  },
+  "consumer_summary": {
+    "passed": 126,
+    "failed": 1,
+    "reason": "Stale presentation expectation Cuenta/Count instead of Número de filas/Number of rows",
+    "retry_used": 0
+  },
+  "focused_and_captures": [
+    {
+      "name": "count-label-green",
+      "exit": 0,
+      "elapsed_seconds": 15.39
+    },
+    {
+      "name": "after-final",
+      "exit": 0,
+      "elapsed_seconds": 7.98
+    }
+  ],
+  "focused_command": [
+    "npx",
+    "playwright",
+    "test",
+    "tests/e2e/chart-review.spec.ts",
+    "--grep",
+    "el aviso explica el campo de orden",
+    "--workers=1",
+    "--retries=0"
+  ],
+  "passed_public_identity_union": 127,
+  "one_batch_127_green": false,
+  "ci_final_head": "pending"
+}
