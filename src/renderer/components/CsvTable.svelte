@@ -81,6 +81,7 @@
  }
  const initialView=untrack(()=>csvAnalysisViews.get(doc.id)),initialQuery=initialView?.query
  let firstLoad=true
+ let reloadTimer:ReturnType<typeof setTimeout>|undefined
  let conditions=$state<TableFilter[]>(initialQuery?.conditions??[]),order=$state<TableSort[]>(initialQuery?.order??[]),filterMode=$state<'all'|'any'>(initialQuery?.filterMode??'all'),showQuery=$state(false),queryError=$state(''),filterError=$state(''),queryButton=$state<HTMLElement>()
  const subsetReason=$derived(!sourceInfo?t('subset.addSource'):project?.readonly?t('project.future',{version:project.version}):sourceInfo.status!=='verified'?t('subset.sourceUnavailable',{reason:t('project.source.status.'+sourceInfo.status)}):queryError?t('ui.reason.query'):'')
  const locked=$derived(doc.readonly||interpreting||!!queryError)
@@ -347,7 +348,9 @@
  $effect(()=>{
   if(large)return
   const signature=JSON.stringify([doc.id,doc.revision,search,filters,sort,conditions,filterMode,order]);void signature
-  if(firstLoad)firstLoad=false;else untrack(resetViewPosition);const timer=setTimeout(()=>void load(0),150);return()=>clearTimeout(timer)
+  if(firstLoad)firstLoad=false;else untrack(resetViewPosition)
+  const timer=setTimeout(()=>void load(0),150);reloadTimer=timer
+  return()=>clearTimeout(timer)
  })
  $effect(()=>{
   const id=doc.id,revision=doc.revision;if(!large)return
@@ -456,7 +459,11 @@
  async function copyMarkdown(){try{await window.freya.tableCopy(doc.id,{scope:cellRange||selectedRows.length?'selection':'filtered',range:cellRange?$state.snapshot(cellRange):undefined,rowIds:$state.snapshot(selectedRows),columns:selectedColumns.length?$state.snapshot(selectedColumns):undefined,query:query()},'markdown');onstatus('Tabla Markdown copiada')}catch(error){onerror(String(error))}}
  async function paste(event:ClipboardEvent,rowId:string,column:number){if(locked)return;const value=event.clipboardData?.getData('text/plain');if(value===undefined)return;if((event.target as HTMLElement).tagName==='INPUT'&&!value.includes('\t')&&!value.includes('\n'))return;event.preventDefault();if(cellRange&&(event.target as HTMLElement).tagName!=='INPUT'){preparePaste(value);return}try{const lines=parse(value,{delimiter:'\t',relax_column_count:true,skip_empty_lines:false}) as string[][];await edit({type:'paste',rowId,column,values:lines,view:{query:pageQuery,revision:page.revision}})}catch(error){onerror(String(error))}}
  async function copyCells(){try{await window.freya.tableCopy(doc.id,{scope:'selection',rowIds:$state.snapshot(selectedRows),columns:selectedColumns.length?$state.snapshot(selectedColumns):undefined},'tsv');onstatus('Selección copiada')}catch(error){onerror(String(error))}}
- async function options(change:{encoding?:Encoding;delimiter?:string;header?:boolean}){if(interpreting)return;interpreting=true;editing=null;editingHeader=null;try{onchange(await window.freya.tableOptions(doc.id,change));await load(0)}catch(error){onerror(String(error))}finally{interpreting=false}}
+ async function options(change:{encoding?:Encoding;delimiter?:string;header?:boolean}){if(interpreting)return;interpreting=true;editing=null;editingHeader=null;try{
+  onchange(await window.freya.tableOptions(doc.id,change));await tick()
+  // La revisión ya programó esa recarga; la lectura inmediata la sustituye.
+  clearTimeout(reloadTimer);await load(0)
+ }catch(error){onerror(String(error))}finally{interpreting=false}}
  // Los menús de la barra y de la barra de estado son <details>: se cierran al pulsar fuera y con Escape (el foco vuelve a su botón).
  const openMenus=()=>document.querySelectorAll<HTMLDetailsElement>('.csv-toolbar details[open],.statusbar details[open]')
  function closeMenus(target?:Node){for(const menu of openMenus())if(!target||!menu.contains(target))menu.removeAttribute('open')}

@@ -125,6 +125,7 @@ for(const language of ['es','en'] as Language[])test(`LIM-1 ajustes: vista previ
  expect.soft(await deletion.getByRole('status').textContent()).toContain(language==='es'?'Se eliminará 1 de 7 filas.':'Will delete 1 of 7 rows.')
  await page.keyboard.press('Escape')
  const single=join(folder,'una-fila.csv');await writeFile(single,'A\n""\n');await page.evaluate(path=>window.freya.openPaths([path]),single)
+ await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true}).locator('.csv-row')).toHaveCount(1)
  await headerAction('A',tr('csv.columnMenu.emptyDelete'))
  const onlyRow=page.getByRole('dialog',{name:tr('empty.deleteTitle'),exact:true})
  await onlyRow.getByRole('button',{name:tr('empty.preview'),exact:true}).click()
