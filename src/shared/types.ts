@@ -1,5 +1,6 @@
 import type {ProjectInfo,ProjectRecent,ProjectSourceDraft,ProjectSourceView} from './project'
 import type {ProjectRecipeDraft,ProjectRecipeView} from './project-recipes'
+import type {ProjectExportOutcome,ProjectResultView} from './project-exports'
 import type {RecipeOperationResult,RecipeOperationProgress,RecipeAnalysisContext} from './recipe-operation'
 import type {ChartConfiguration,ChartPreset} from './chart-presets'
 import type {LanguagePreference,LanguageState} from './i18n'
@@ -18,7 +19,7 @@ export type CsvViewDecision='save'|'discard'
 export interface CsvOpenError {path:string;name:string;message:string;reportedLine?:number;byteLength:number;textAllowed:boolean}
 export const CSV_TEXT_LIMIT=10*1024*1024
 export function isTableDocument(document:Pick<DocumentInfo,'kind'|'csvView'>){return document.kind==='csv'&&document.csvView!=='text'}
-export interface DocumentInfo { analysisSubset?:RecipeAnalysisContext; projectSource?:'protected'|'closed'; id:string; name:string; path:string|null; kind:Kind; csvView?:CsvView;byteLength?:number;text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:TextEncoding; bom?:boolean; encodingPending?:boolean; delimiter:string; headers?:string[]; hasHeader?:boolean; rowCount?:number; large?:boolean; extract?:ExtractOrigin }
+export interface DocumentInfo { analysisSubset?:RecipeAnalysisContext; projectResult?:ProjectResultView&{projectId:string}; projectSource?:'protected'|'closed'; id:string; name:string; path:string|null; kind:Kind; csvView?:CsvView;byteLength?:number;text?:string; dirty:boolean; readonly:boolean; warning?:string; revision:number; encoding:TextEncoding; bom?:boolean; encodingPending?:boolean; delimiter:string; headers?:string[]; hasHeader?:boolean; rowCount?:number; large?:boolean; extract?:ExtractOrigin }
 export type AssetChange={from:number;to:number;insert:string}
 export type SaveOutcome=DocumentInfo&{assets?:{copied:number;warnings:string[];changes:AssetChange[]}}
 export interface TreeEntry { name:string; path:string; directory:boolean }
@@ -73,7 +74,7 @@ export type ExportOutcome=string|null|{path:string;mathWarnings:number}
 export interface ChartResultRequest {requestId:string;revision:number;configuration:ChartConfiguration;format:'csv'|'json'|'md';protectFormulas:boolean}
 export interface GraphicExportRequest {format:'svg'|'png'|'pdf';svg:string;revision:number}
 export interface RecoveryEntry { id:string; name:string; savedAt:string }
-export interface AppEvent { type:'project'|'project-source-progress'|'project-recipe-progress'|'opened'|'changed'|'external'|'error'|'analysis'|'language'|'csv-open-error'|'settings'|'recents'|'updates'|'close-status';update?:UpdateResult;project?:ProjectInfo|null;projectRecents?:ProjectRecent[];projectSources?:ProjectSourceView[];projectRecipes?:ProjectRecipeView[];recipeProgress?:(RecipeOperationProgress&{requestId:string});sourceProgress?:{requestId:string;bytes:number;total:number};closingKind?:'error'|'notice';csvOpenError?:CsvOpenError;settings?:SettingsState;language?:LanguageState;progress?:SqlProgress; document?:DocumentInfo; id?:string; message?:string }
+export interface AppEvent { type:'project'|'project-source-progress'|'project-recipe-progress'|'opened'|'changed'|'external'|'error'|'analysis'|'language'|'csv-open-error'|'settings'|'recents'|'updates'|'close-status';update?:UpdateResult;project?:ProjectInfo|null;projectRecents?:ProjectRecent[];projectSources?:ProjectSourceView[];projectRecipes?:ProjectRecipeView[];projectResults?:ProjectResultView[];recipeProgress?:(RecipeOperationProgress&{requestId:string});sourceProgress?:{requestId:string;bytes:number;total:number};closingKind?:'error'|'notice';csvOpenError?:CsvOpenError;settings?:SettingsState;language?:LanguageState;progress?:SqlProgress; document?:DocumentInfo; id?:string; message?:string }
 export interface FreyaAPI {
  setApplicationState(state:ApplicationUiState):Promise<void>;applicationShortcuts():Promise<ApplicationShortcuts>;
  onCommand(callback:(command:ApplicationCommand,delegate:()=>void)=>void):()=>void;
@@ -107,13 +108,15 @@ export interface FreyaAPI {
  export(id:string,request:ExportRequest&{format:Exclude<ExportRequest['format'],'docx'>}):Promise<string|null>;
  export(id:string,request:ExportRequest):Promise<ExportOutcome>; image(id:string,src:string):Promise<string|null>; openLink(url:string):Promise<void>;
  recents():Promise<string[]>; recoveries():Promise<RecoveryEntry[]>; recover(id:string):Promise<DocumentInfo>; discardRecovery(id:string):Promise<void>;
- projectState():Promise<{project:ProjectInfo|null;recents:ProjectRecent[];sources:ProjectSourceView[];recipes:ProjectRecipeView[]}>; projectPickFolder():Promise<{path:string;name:string}|null>; projectCancelCreate():Promise<void>; projectCreate(name:string,suggested:boolean):Promise<void>; projectClose(id:string):Promise<void>; projectShow(id:string):Promise<void>; projectRename(id:string,name:string):Promise<void>; projectOpenRecent(path:string):Promise<void>; projectForgetRecent(path:string):Promise<void>;
+ projectState():Promise<{project:ProjectInfo|null;recents:ProjectRecent[];sources:ProjectSourceView[];recipes:ProjectRecipeView[];results:ProjectResultView[]}>; projectPickFolder():Promise<{path:string;name:string}|null>; projectCancelCreate():Promise<void>; projectCreate(name:string,suggested:boolean):Promise<void>; projectClose(id:string):Promise<void>; projectShow(id:string):Promise<void>; projectRename(id:string,name:string):Promise<void>; projectOpenRecent(path:string):Promise<void>; projectForgetRecent(path:string):Promise<void>;
  projectPickSource(path?:string):Promise<ProjectSourceDraft|null>; projectInspectSource(draftId:string,format:ProjectSourceOptions):Promise<ProjectSourceDraft>; projectDiscardSourceDraft():Promise<void>;
  projectRegisterSource(projectId:string,draftId:string,format:ProjectSourceOptions,requestId:string):Promise<boolean>; projectReregisterSource(projectId:string,sourceId:string,requestId:string):Promise<boolean>;
  projectOpenSource(sourceId:string):Promise<DocumentInfo|null>; projectShowSource(sourceId:string):Promise<void>; projectForgetSource(projectId:string,sourceId:string):Promise<void>;
  projectRelinkSource(projectId:string,sourceId:string,requestId:string):Promise<boolean>; projectCancelSource(requestId:string):Promise<void>;
  projectRecipeTry(projectId:string,draft:ProjectRecipeDraft,requestId:string):Promise<RecipeOperationResult&{sourceVersionDifferent:boolean}>;projectRecipeCancel(requestId:string):Promise<void>;
  projectRecipeAnalyze(projectId:string,recipeId:string,requestId:string):Promise<DocumentInfo>;
+ projectRecipeExport(projectId:string,recipeId:string,requestId:string):Promise<ProjectExportOutcome|null>;projectRegisterResult(projectId:string,resultId:string):Promise<ProjectExportOutcome>;
+ projectOpenResult(projectId:string,resultId:string):Promise<DocumentInfo>;projectShowResult(projectId:string,resultId:string):Promise<void>;projectResultSource(projectId:string,resultId:string):Promise<ProjectSourceDraft>;projectForgetResult(projectId:string,resultId:string):Promise<boolean>;
  projectSaveRecipe(projectId:string,draft:ProjectRecipeDraft):Promise<boolean>;projectRenameRecipe(projectId:string,recipeId:string,name:string):Promise<boolean>;projectRemoveRecipe(projectId:string,recipeId:string):Promise<boolean>;
  onEvent(callback:(event:AppEvent)=>void):()=>void; droppedPaths(files:File[]):string[]
 }

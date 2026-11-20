@@ -5,6 +5,18 @@ import {subsetCoverage,subsetStepOwners,type SubsetCoverageResult} from '../src/
 const full:SubsetCoverageResult={scanned:7,resultCount:3,complete:true,cancelled:false,bytesRead:211,sampling:[{step:1,method:'random',requestedRows:3,seed:7,eligible:5,selected:3}]}
 const sampled:ProjectRecipeStep[]=[{op:'filter',mode:'all',conditions:[{column:{position:3,name:'Edad'},op:'greaterEqual',value:'18',caseSensitive:false}]},{op:'sample',method:'random',rows:3,seed:7}]
 
+it('PRJ-03: verificar todos los bytes no inventa un total para Primeras N y conserva la frase de Probar',()=>{
+ const steps:ProjectRecipeStep[]=[{op:'sample',method:'first',rows:2}]
+ const preview:SubsetCoverageResult={scanned:2,resultCount:2,complete:false,cancelled:false,bytesRead:128,sampling:[{step:0,method:'first',requestedRows:2,eligible:2,selected:2}]}
+ const exported={...preview,sha256:'a'.repeat(64)}
+ const original=JSON.stringify(exported),before=subsetCoverage(preview,steps,'es'),after=subsetCoverage(exported,steps,'es')
+ expect(after.lines).toEqual(before.lines)
+ expect(after.lines.join(' · ')).toContain('total no determinado')
+ expect(after.identity).toBe('Fuente verificada por completo')
+ expect(subsetCoverage(exported,steps,'en').identity).toBe('Source fully verified')
+ expect(JSON.stringify(exported)).toBe(original)
+})
+
 describe('cobertura compartida del conjunto y su análisis',()=>{
  it('explica una sola muestra sin números de paso ni prefijo y omite bytes en la verificación completa',()=>{
   const before=JSON.stringify({full,sampled})

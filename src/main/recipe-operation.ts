@@ -1,14 +1,17 @@
 import {constants} from 'node:fs'
-import {lstat,open} from 'node:fs/promises'
+import {lstat,open,realpath} from 'node:fs/promises'
+import {dirname,isAbsolute,relative,resolve} from 'node:path'
 import {createHash} from 'node:crypto'
 import {setImmediate as yieldTurn} from 'node:timers/promises'
-import {fieldsOf} from './operations'
+import {fieldsOf,createExtractWriter,extractBomBytes,extractValues} from './operations'
 import {recordBatches} from './large-table'
 import {compileTableQuery} from './table-query'
 import {ANALYSIS_LIMITS} from './analysis-source'
-import {RecipeOperationError,type RecipeColumn,type RecipeStep,type RecipeSampling,type RecipeOperationSource,type RecipeOperationHooks,type RecipeOperationResult} from '../shared/recipe-operation'
+import {TABLE_LIMITS} from './table-engine'
+import {t} from '../shared/i18n'
+import {RecipeOperationError,type RecipeColumn,type RecipeStep,type RecipeSampling,type RecipeOperationSource,type RecipeOperationHooks,type RecipeOperationResult,type RecipeExtractMode,type RecipeExtractResult} from '../shared/recipe-operation'
 
-type Row={cells:string[];ordinal:number;arrival:number}
+type Row={cells:string[];ordinal:number;arrival:number;raw?:Buffer;irregular?:boolean}
 type Compiled={step:RecipeStep;matches?:(row:Row)=>boolean;compare?:(a:Row,b:Row)=>number;threshold?:bigint}
 const failure=(code:ConstructorParameters<typeof RecipeOperationError>[0],data:Record<string,unknown>={})=>new RecipeOperationError(code,data)
 const increment=(value:number)=>{if(value>=Number.MAX_SAFE_INTEGER)throw failure('counter');return value+1}
@@ -41,7 +44,7 @@ function reservoir(capacity:number,seed:number,stats:RecipeSampling){
  }
 }
 
-function prepare(source:RecipeOperationSource,steps:RecipeStep[]){
+function prepare(source:RecipeOperationSource,steps:RecipeStep[],materializeOrder=false){
  const root=source.schema.columns,width=root.length
  if(root.some((column,index)=>column.position!==index+1))throw failure('schema')
  let columns=[...root],available=new Set(root.map(column=>column.position))
@@ -87,7 +90,7 @@ function prepare(source:RecipeOperationSource,steps:RecipeStep[]){
  for(const [index,{step}]of compiled.entries()){
   if(step.op==='order'&&!bounded)ordered=true
   if(step.op==='sample'&&'rows'in step){
-   if(ordered&&step.method==='random')throw failure('plan',{step:index,constraint:'unbounded-order'})
+   if(ordered&&step.method==='random'&&!materializeOrder)throw failure('plan',{step:index,constraint:'unbounded-order'})
    bounded=true
    ordered=false
   }
@@ -156,21 +159,45 @@ function passes(item:Compiled,row:Row,index:number,sampling:RecipeSampling[]){
 }
 
 type RecipeAnalysisLimits=Pick<typeof ANALYSIS_LIMITS,'bytes'|'rows'|'cells'|'columns'>
-export function runRecipe(source:RecipeOperationSource,steps:RecipeStep[],hooks:RecipeOperationHooks={}):Promise<RecipeOperationResult>{return executeRecipe(source,steps,hooks)}
+export function runRecipe(source:RecipeOperationSource,steps:RecipeStep[],hooks?:RecipeOperationHooks):Promise<RecipeOperationResult>
+export function runRecipe(source:RecipeOperationSource,steps:RecipeStep[],hooks:RecipeOperationHooks,mode:RecipeExtractMode):Promise<RecipeExtractResult>
+export function runRecipe(source:RecipeOperationSource,steps:RecipeStep[],hooks:RecipeOperationHooks={},mode?:RecipeExtractMode):Promise<RecipeOperationResult|RecipeExtractResult>{return executeRecipe(source,steps,hooks,undefined,mode)}
 // The worker uses the production limits; the optional argument lets unit tests exercise each boundary on small fixtures.
-export function runRecipeAnalysis(source:RecipeOperationSource,steps:RecipeStep[],hooks:RecipeOperationHooks={},limits:RecipeAnalysisLimits=ANALYSIS_LIMITS):Promise<RecipeOperationResult>{return executeRecipe(source,steps,hooks,limits)}
-async function executeRecipe(source:RecipeOperationSource,steps:RecipeStep[],hooks:RecipeOperationHooks,analysis?:RecipeAnalysisLimits):Promise<RecipeOperationResult>{
+export function runRecipeAnalysis(source:RecipeOperationSource,steps:RecipeStep[],hooks:RecipeOperationHooks={},limits:RecipeAnalysisLimits=ANALYSIS_LIMITS):Promise<RecipeOperationResult>{return executeRecipe(source,steps,hooks,limits) as Promise<RecipeOperationResult>}
+async function executeRecipe(source:RecipeOperationSource,steps:RecipeStep[],hooks:RecipeOperationHooks,analysis?:RecipeAnalysisLimits,extraction?:RecipeExtractMode):Promise<RecipeOperationResult|RecipeExtractResult>{
  const limit=(kind:keyof RecipeAnalysisLimits,value:number)=>{if(analysis&&value>analysis[kind])throw failure('analysis-limit',{kind,limit:analysis[kind]})}
  limit('bytes',source.bytes);limit('columns',source.schema.columns.length)
- const {columns,compiled}=prepare(source,steps),hash=createHash('sha256')
+ const {columns,compiled}=prepare(source,steps,!!extraction),hash=createHash('sha256')
  const sampling:RecipeSampling[]=compiled.flatMap(({step},index)=>step.op==='sample'?[{step:index,method:step.method,...('rows'in step?{requestedRows:step.rows}:{percent:step.percent}),...('seed'in step?{seed:step.seed}:{}),eligible:0,selected:0}]:[])
  const block=compiled.findIndex(({step})=>step.op==='order'||step.op==='sample'&&'rows'in step),sampleStep=block<0?undefined:compiled[block].step
- const firstAfterOrder=sampleStep?.op==='order'?compiled.findIndex(({step},index)=>index>block&&step.op==='sample'&&step.method==='first'):-1
+ let firstAfterOrder=sampleStep?.op==='order'?compiled.findIndex(({step},index)=>index>block&&step.op==='sample'&&step.method==='first'):-1
+ if(extraction&&firstAfterOrder>=0&&compiled.slice(block,firstAfterOrder).some(({step})=>step.op==='sample'&&step.method==='random'&&'rows'in step))firstAfterOrder=-1
  const boundedFirst=firstAfterOrder<0?undefined:compiled[firstAfterOrder].step
  const middle=sampleStep?.op==='order'?compiled.slice(block,firstAfterOrder<0?compiled.length:firstAfterOrder):[]
  const sample=sampleStep?.op==='sample'&&sampleStep.method==='random'&&'rows'in sampleStep?reservoir(sampleStep.rows,sampleStep.seed,sampling.find(item=>item.step===block)!):undefined
  const first=sampleStep?.op==='sample'&&sampleStep.method==='first'?sampleStep:undefined,firstRows:Row[]=[]
  const prefix=compiled.slice(0,block<0?compiled.length:block)
+ const wholeRecords=!steps.some(step=>step.op==='select'),streaming=!!extraction&&block<0
+ const exportRows:Row[]=[],unboundedOrder=!!extraction&&sampleStep?.op==='order'&&firstAfterOrder<0
+ const orderColumns=steps.slice(0,block).filter(step=>step.op==='select').at(-1)?.columns??source.schema.columns
+ const exportLimits=hooks.exportLimits??TABLE_LIMITS
+ let retainedBytes=0,retainedCells=0,irregularRows=0,missingFields=0,addedEol=false,pendingRaw:Buffer|undefined
+ let writer:Awaited<ReturnType<typeof createExtractWriter>>|undefined
+ let checkDestination:()=>Promise<void>=async()=>{}
+ let outputChunks:Buffer[]=[],outputBytes=0
+ const flushOutput=async()=>{if(outputBytes){await writer!.write(Buffer.concat(outputChunks));outputChunks=[];outputBytes=0}}
+ const writeOutput=async(bytes:Buffer)=>{outputChunks.push(bytes);outputBytes+=bytes.length;if(outputBytes>=1024*1024)await flushOutput()}
+ const normalizations:string[]=[],warnings:string[]=[]
+ const endsRecord=(raw:Buffer)=>{const unit=source.format.encoding==='utf16le'?2:1;return raw.length>=unit&&[10,13].includes(unit===2?raw.readUInt16LE(raw.length-2):raw[raw.length-1])}
+ const writeRaw=async(raw:Buffer)=>{if(pendingRaw){await writeOutput(pendingRaw);if(!endsRecord(pendingRaw)){await writeOutput(extractValues([[]],source.format));addedEol=true}}pendingRaw=raw}
+ const writeRow=async(row:Row)=>{
+  if(row.irregular)irregularRows++
+  if(wholeRecords){await writeRaw(row.raw!);return}
+  const values:(string|null)[]=columns.map(column=>row.cells[column.position-1]??null)
+  while(values.at(-1)===null)values.pop()
+  missingFields+=values.filter(value=>value===null).length
+  await writeOutput(extractValues([values.map(value=>value??'')],source.format))
+ }
  const order=middle.filter(item=>item.compare).reverse(),compare=(a:Row,b:Row)=>{for(const item of order){const n=item.compare!(a,b);if(n)return n}return a.arrival-b.arrival}
  const heap=topRows(boundedFirst?.op==='sample'&&boundedFirst.method==='first'?boundedFirst.rows:analysis?.rows??100,compare),cancelled=()=>hooks.cancelled?.()===true
  let scanned=0,resultCount=0,bytesRead=0,decodedBytes=0,wasCancelled=false,lastPosition=0,hashedThrough=0
@@ -183,6 +210,22 @@ async function executeRecipe(source:RecipeOperationSource,steps:RecipeStep[],hoo
  const same=(value:typeof before)=>value.isFile()&&value.dev===before.dev&&value.ino===before.ino&&value.size===before.size&&value.mtimeMs===before.mtimeMs
  try{
   if(!same(await handle.stat()))throw failure('changed')
+  if(extraction){
+   const parent=dirname(extraction.output),parentPath=await realpath(parent),parentStamp=await lstat(parentPath)
+   const root=extraction.projectRoot,rootStamp=root?await lstat(root):undefined
+   const confined=(path:string)=>{const part=relative(root!,path);return part!== '..'&&!part.startsWith('../')&&!part.startsWith('..\\')&&!isAbsolute(part)}
+   checkDestination=async()=>{
+    try{
+     if(root&&(!rootStamp?.isDirectory()||rootStamp.isSymbolicLink()||await realpath(root)!==resolve(root)||!confined(parentPath)||parentPath!==resolve(parent)))throw failure('destination-changed')
+     if(root){const current=await lstat(root);if(!current.isDirectory()||current.isSymbolicLink()||current.dev!==rootStamp!.dev||current.ino!==rootStamp!.ino)throw failure('destination-changed')}
+     const current=await lstat(parentPath)
+     if(await realpath(parent)!==parentPath||!current.isDirectory()||current.isSymbolicLink()||current.dev!==parentStamp.dev||current.ino!==parentStamp.ino)throw failure('destination-changed')
+     if((await lstat(extraction.output).catch(error=>{if((error as NodeJS.ErrnoException).code==='ENOENT')return null;throw error}))?.isSymbolicLink())throw failure('destination-changed')
+    }catch(cause){if(cause instanceof RecipeOperationError)throw cause;throw failure('destination-changed')}
+   }
+   writer=await createExtractWriter(extraction.output,source.bytes,{freeBytes:hooks.freeBytes,fingerprint:true,temporaryDirectory:root,beforeOpen:checkDestination})
+   if(source.format.bom)await writer.write(extractBomBytes(source.format.encoding))
+  }
   const unit=source.format.encoding==='utf16le'?2:1,bomLength=source.format.bom?(unit===2?2:3):0
   if(unit===2&&(source.bytes-bomLength)%2)throw failure('encoding')
   if(bomLength){const signature=Buffer.alloc(bomLength);const n=await handle.read(signature,0,bomLength,0);read(signature.subarray(0,n.bytesRead),0);if(n.bytesRead!==bomLength||!signature.equals(Buffer.from(unit===2?[255,254]:[239,187,191])))throw failure('encoding')}
@@ -197,6 +240,7 @@ async function executeRecipe(source:RecipeOperationSource,steps:RecipeStep[],hoo
     if(source.format.header&&batch.first+index===0){
      if(cells.length!==source.schema.columns.length)throw failure('schema',{expectedColumns:source.schema.columns.length,actualColumns:cells.length})
      for(const column of source.schema.columns)if(cells[column.position-1]!==column.name)throw failure('schema',{position:column.position,name:column.name,actualName:cells[column.position-1]??''})
+     if(writer){if(wholeRecords)await writeRaw(Buffer.from(batch.records[index]));else await writer.write(extractValues([columns.map(column=>column.name)],source.format))}
      continue
     }
     scanned=increment(scanned)
@@ -205,15 +249,22 @@ async function executeRecipe(source:RecipeOperationSource,steps:RecipeStep[],hoo
      if(cells.length>source.schema.columns.length)throw failure('analysis-structure')
      decodedBytes+=cells.reduce((sum,value)=>sum+Buffer.byteLength(value,'utf8'),0);limit('bytes',decodedBytes)
     }
-    const row={cells,ordinal:scanned,arrival:scanned}
+    const row:Row={cells,ordinal:scanned,arrival:scanned,...(extraction?{irregular:cells.length!==source.schema.columns.length,...(wholeRecords?{raw:Buffer.from(batch.records[index])}:{})}:{})}
     if(!prefix.every((item,index)=>passes(item,row,index,sampling)))continue
     if(sample)sample.offer(row)
     else if(first){
      const stats=sampling.find(item=>item.step===block)!;stats.eligible=increment(stats.eligible);if(firstRows.length<first.rows)firstRows.push(row);stats.selected=firstRows.length
      if(firstRows.length===first.rows&&!analysis)break scanning
     }else{
-     if(!middle.every((item,index)=>passes(item,row,block+index,sampling)))continue
-     resultCount=increment(resultCount);heap.offer(row)
+     if(!unboundedOrder&&!middle.every((item,index)=>passes(item,row,block+index,sampling)))continue
+     resultCount=increment(resultCount)
+     if(streaming)await writeRow(row)
+     else if(unboundedOrder){
+      retainedBytes+=wholeRecords?row.raw!.length:orderColumns.reduce((n,column)=>n+Buffer.byteLength(cells[column.position-1]??'','utf8'),0)
+      retainedCells+=wholeRecords?Math.max(orderColumns.length,cells.length):orderColumns.length
+      if(retainedBytes>exportLimits.bytes||retainedCells>exportLimits.cells)throw failure('export-limit')
+      exportRows.push(row)
+     }else heap.offer(row)
      if(firstAfterOrder>=0){const stats=sampling.find(item=>item.step===firstAfterOrder)!;stats.eligible=resultCount;stats.selected=Math.min(resultCount,stats.requestedRows!)}
     }
    }
@@ -221,10 +272,16 @@ async function executeRecipe(source:RecipeOperationSource,steps:RecipeStep[],hoo
    progress();await yieldTurn()
   }
   if(!same(await handle.stat())||!same(await lstat(source.path).catch(()=>{throw failure('changed')})))throw failure('changed')
-  const readComplete=!wasCancelled&&lastPosition===source.bytes,sha256=readComplete?hash.digest('hex'):undefined
+  const readComplete=!wasCancelled&&lastPosition===source.bytes
+  if(extraction&&!wasCancelled){
+   const chunk=Buffer.alloc(hooks.chunk??4*1024*1024)
+   while(hashedThrough<source.bytes){if(cancelled())throw failure('cancelled');const position=hashedThrough,{bytesRead:n}=await handle.read(chunk,0,Math.min(chunk.length,source.bytes-position),position);if(!n)throw failure('changed');read(chunk.subarray(0,n),position);await yieldTurn()}
+  }
+  const sha256=!wasCancelled&&(readComplete||!!extraction)?hash.digest('hex'):undefined
   if(sha256&&sha256!==source.sha256.toLowerCase())throw failure('changed')
-  const retained=sample?sample.finish():first?firstRows:heap.finish(),retainedCompare=sample||first?(a:Row,b:Row)=>a.arrival-b.arrival:compare
-  const rest=sample||first?block+1:firstAfterOrder>=0?firstAfterOrder+1:compiled.length
+  if(extraction&&wasCancelled)throw failure('cancelled')
+  const retained=sample?sample.finish():first?firstRows:unboundedOrder?exportRows:heap.finish(),retainedCompare=sample||first?(a:Row,b:Row)=>a.arrival-b.arrival:compare
+  const rest=unboundedOrder?block:sample||first?block+1:firstAfterOrder>=0?firstAfterOrder+1:compiled.length
   const cancelToken=Symbol(),checkpoint=async()=>{await yieldTurn();progress();if(cancelled())throw cancelToken}
   let rows:Row[]=[]
   if(wasCancelled){
@@ -236,17 +293,31 @@ async function executeRecipe(source:RecipeOperationSource,steps:RecipeStep[],hoo
     if(sample||first||firstAfterOrder>=0)resultCount=retained.length
    }
   }else try{
-   rows=await boundedRows(await sorted(retained,retainedCompare,checkpoint),compiled,rest,sampling,checkpoint)
-   if(sample||first||firstAfterOrder>=0)resultCount=rows.length
+   rows=await boundedRows(unboundedOrder?retained:await sorted(retained,retainedCompare,checkpoint),compiled,rest,sampling,checkpoint)
+   if(sample||first||firstAfterOrder>=0||unboundedOrder)resultCount=rows.length
   }catch(cause){if(cause!==cancelToken)throw cause;wasCancelled=true;rows=[];resultCount=0}
   if(!same(await handle.stat())||!same(await lstat(source.path).catch(()=>{throw failure('changed')})))throw failure('changed')
   const complete=!wasCancelled&&readComplete
+  if(extraction){
+   if(wasCancelled||cancelled())throw failure('cancelled')
+   if(!sha256)throw failure('changed')
+   if(!streaming)for(const row of rows){if(cancelled())throw failure('cancelled');await writeRow(row)}
+   if(pendingRaw)await writeOutput(pendingRaw)
+   await flushOutput()
+   if(addedEol)normalizations.push(t('project.export.normalized.finalEol'))
+   if(!wholeRecords)normalizations.push(t('project.export.normalized.columns'),t('project.export.normalized.quotes'),t('project.export.normalized.eol'),t('project.export.normalized.encoding'))
+   if(missingFields){const warning=t(missingFields===1?'project.export.normalized.missing':'project.export.normalized.missingMany',{n:missingFields});normalizations.push(warning);warnings.push(warning)}
+   if(!same(await handle.stat())||!same(await lstat(source.path).catch(()=>{throw failure('changed')})))throw failure('changed')
+   if(cancelled())throw failure('cancelled')
+   const published=(await writer!.publish(async()=>{await checkDestination();if(!same(await handle.stat())||!same(await lstat(source.path).catch(()=>{throw failure('changed')})))throw failure('changed');if(cancelled())throw failure('cancelled')}))!
+   return{operation:'recipe_extract',output:extraction.output,...published,sourceSha256:sha256,coverage:{headers:columns.map(column=>column.name),columns,scanned,eligible:sampling.at(-1)?.eligible??resultCount,resultCount,complete,cancelled:false,bytesRead,sha256,sampling},fidelity:{level:wholeRecords?'bytes':'values',normalization:normalizations,irregularRows},warnings}
+  }
   const projected=(analysis?(wasCancelled?[]:rows):rows.slice(0,100)).map(row=>{
    const values:(string|null)[]=columns.map(column=>row.cells[column.position-1]??null)
    if(!steps.some(step=>step.op==='select'))values.push(...row.cells.slice(source.schema.columns.length))
    return values
   })
   return{headers:columns.map(column=>column.name),columns,rows:projected,scanned,eligible:sampling.at(-1)?.eligible??resultCount,resultCount:analysis&&wasCancelled?0:resultCount,complete,cancelled:wasCancelled,bytesRead,...(complete&&sha256?{sha256}:{}),sampling}
- }catch(cause){if(cause instanceof RecipeOperationError)throw cause;throw failure('csv',{detail:(cause as Error).message})}
- finally{await handle.close()}
+ }catch(cause){if(extraction&&cancelled())throw failure('cancelled');if(cause instanceof RecipeOperationError||extraction)throw cause;throw failure('csv',{detail:(cause as Error).message})}
+ finally{await handle.close();await writer?.close()}
 }

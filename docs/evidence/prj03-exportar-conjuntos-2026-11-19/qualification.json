@@ -1,0 +1,450 @@
+{
+  "recordedAt": "2026-11-20T05:01:42.818098+00:00",
+  "productHead": "62bf3d81a2915b33821088da7cf50dd56ad27d2a",
+  "sourceTree": "ec12107e61373bea9556e5540f8f966690037508",
+  "sourceSHA256AtHead": {
+    "src/main/index.ts": "bd7fa7d171371083dbc72c151d5c64588040ee942b37d2f9ef7695326cfdb8e5",
+    "src/main/project-exports.ts": "424a7656398a75a0055008b45955caa114d9299286fe2680654f09d6925f2dd1",
+    "src/main/project-source-registry.ts": "c335c34276a470b6be07a4eb9b86537b673414f518a29497ab4bde30f0c74982",
+    "src/main/recipe-operation.ts": "42d75d31846984595db8fbdfe1b46274df43030f1023c2ad2e60fc6511dd96e3",
+    "src/main/operations.ts": "e302c74af1763a47fbfac3978e162617e9b2d72cc3975c8f2daa13f8bdc3c6e7",
+    "src/shared/project.ts": "97e37abc5bf2173006bddd05ece8a47c20d49ea59dd811adfb34dfd5b61b45ea",
+    "src/renderer/App.svelte": "523c7e38184cb279f180454e9b5706cef8145ef70ba586d19a91095f937c692b",
+    "src/renderer/components/ProjectPanel.svelte": "e62984f20fc9fd1e62fd71f687b3c102383e083b7569d8f4607abba477e09c7e",
+    "src/renderer/components/ProjectExportStatus.svelte": "33992d304e9d01e326af543abe058ecc8a7c221629a88469874ad155917000e8"
+  },
+  "historicalWholeUnit": {
+    "baseHead": "4a95c22dbd4209adf079bfba8d93a5e6f3b81f93",
+    "productUncommitted": true,
+    "passed": 3065,
+    "skipped": 2,
+    "failed": 0,
+    "filesPassed": 173,
+    "filesSkipped": 1,
+    "processSeconds": 17.673,
+    "notQualifiedAsWholeUnitForHead62bf": true
+  },
+  "humanIdsFocused": {
+    "passed": 39,
+    "files": 4,
+    "processSeconds": 1.937,
+    "vitestSeconds": 1.76,
+    "mainIndexMatches62bf": true
+  },
+  "headQualification": {
+    "check": {
+      "errors": 0,
+      "warnings": 0,
+      "processSeconds": 11.811
+    },
+    "build": {
+      "exitCode": 0,
+      "processSeconds": 2.506
+    },
+    "e2e": {
+      "passed": 13,
+      "unexpected": 0,
+      "skipped": 0,
+      "retries": 0,
+      "flaky": 0,
+      "processSeconds": 19.048,
+      "reportDurationMs": 18707.755999999998,
+      "cases": [
+        {
+          "title": "PRJ-03: el menú exporta todas las filas, registra procedencia y abre el resultado editable",
+          "status": "expected",
+          "expectedStatus": "passed",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1713
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [es]",
+          "status": "expected",
+          "expectedStatus": "passed",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1399
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [en]",
+          "status": "expected",
+          "expectedStatus": "passed",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1394
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [en-XA]",
+          "status": "expected",
+          "expectedStatus": "passed",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1361
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: cambios sin guardar del conjunto bloquean exportar sin cambiar la receta ni el archivo",
+          "status": "expected",
+          "expectedStatus": "passed",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1296
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: un archivo exportado cambia o falta aunque nunca se haya abierto",
+          "status": "expected",
+          "expectedStatus": "passed",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1522
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: editar y guardar un resultado conserva su advertencia y su huella histórica",
+          "status": "expected",
+          "expectedStatus": "passed",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1608
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: añadir como fuente reutiliza el registro y quitar olvida solo la procedencia",
+          "status": "expected",
+          "expectedStatus": "passed",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1391
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: una segunda exportación conserva ambas instantáneas y rechaza reemplazar la primera",
+          "status": "expected",
+          "expectedStatus": "passed",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1315
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: un proyecto futuro conserva las recetas v1 pero bloquea exportar con su motivo",
+          "status": "expected",
+          "expectedStatus": "passed",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1038
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: la paleta encuentra el conjunto por exportar, extraer, guardar como archivo, export, extract y csv",
+          "status": "expected",
+          "expectedStatus": "passed",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1518
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03 frontend: doble Enter en Registrar de nuevo envía una petición y conserva el éxito",
+          "status": "expected",
+          "expectedStatus": "passed",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1280
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: los ids de proyecto v1 válidos sin UUID conservan exportación, apertura y alta como fuente",
+          "status": "expected",
+          "expectedStatus": "passed",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1343
+            }
+          ]
+        }
+      ]
+    },
+    "head": "62bf3d81a2915b33821088da7cf50dd56ad27d2a"
+  },
+  "trustRegressionCases": {
+    "count": 4,
+    "postRenameMetadata": true,
+    "parentSwapBeforeEngine": true,
+    "prepareSourceCheckpoint1": true,
+    "prepareSourceCheckpoint2": true,
+    "allIncludedInFocused37": true,
+    "focusedProcessSeconds": 2.438,
+    "sourceUncommittedOnBase4a95": true,
+    "residualTOCTOUWindowAcknowledged": true
+  },
+  "oneGigabyte": {
+    "status": "ARM complete; Intel pending",
+    "head": "32f531b61809e89be3cf12001bccd252717e5237",
+    "bundleBuild": "62bf3d8",
+    "sourceTreeIdenticalTo62bf": true,
+    "sourceTree": "ec12107e61373bea9556e5540f8f966690037508",
+    "passed": 3,
+    "unexpected": 0,
+    "skipped": 0,
+    "retries": 0,
+    "flaky": 0,
+    "processSeconds": 69.521,
+    "reportDurationMs": 69219.70199999999,
+    "cases": [
+      {
+        "title": "PRJ-03 1 GB: exportar ID mayor que 500000 conserva medio millón de registros y sus bytes",
+        "attempts": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 22963
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03 1 GB: exportar muestra de diez mil con semilla 7 conserva orden, datos y procedencia",
+        "attempts": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 32687
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03 1 GB: cancelar una exportación a mitad no deja archivo, temporal ni resultado",
+        "attempts": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 11249
+          }
+        ]
+      }
+    ],
+    "C15Complete": true,
+    "C15HandoffSeparateMs": 697.8863750000019,
+    "previousRun62bf": {
+      "passed": 2,
+      "failed": 1,
+      "exitCode": 1,
+      "sample": "DOM wait expired at 15 s with ongoing progress; preserved as a failed run"
+    },
+    "intel": "not run"
+  },
+  "ci": {
+    "threePlatforms": "pending exact published head",
+    "intelFull": "pending without retry #1",
+    "runLaunchedByThisDocumentTask": false
+  },
+  "rawPrivateEvidenceSHA256": {
+    "backend-first-red.json": "2276164e62d9a49513cc3bbff046a236ab0b50b7639ac02a46650a3365ed2e0c",
+    "backend-first-red.log": "4d7592aa115fc0bb430b0ac214090bdccddc91078917fca63d066d4abda2f799",
+    "engine-candidate.json": "2eadcfc5d360c050a9d093362869303e01ba59a068f64abe78d063c4a4653ade",
+    "engine-candidate.log": "f85631cee69f439d260024ebbb4f6f8e50917ba376155567fc4271d7646b25b8",
+    "store-red.json": "7cec1e065e6094248376b9e682a384ee830ca7e8a87560db5541f1e253a9e1a4",
+    "store-green.json": "52ff3bb427daf3f693cd5b0bc0491d3f26181ec605ae5d38ecaa922c3265ce5f",
+    "store-final-focused.json": "d4eafcdcce1e16e4f578c5b9d27c64f9204452e639f404d4fee03b7cdb50bd5a",
+    "trust-red.json": "511a89bc774fe4648b848e086cb53c57bf0cc3e0990b4fd8fd27c754ae6c4e54",
+    "trust-red.log": "7213ef3f6d39fe23d957003ce3e11e861e28020ee8e501d24764c873ed8ffcae",
+    "trust-green.json": "8b890fb7ceb62ad18746d217c53afb3a428863541ab2a7b7cabc4ae3bb2ed88e",
+    "trust-green.log": "bc03d33acb3e9aa21e4e6a5f93427aca711c810a244712d0832480902b2b1ecc",
+    "backend-trust-closure-proof.json": "0947cbc1b97c308de8ffc3c964bc380e9c31500b31a3bdfa7269a265f6e85e93",
+    "prepare-source-race-red.json": "ec788a32816f9fcdda921e9f84b597b82c78f14f8ee63a7a192c7848e64d6c33",
+    "prepare-source-race-red.log": "ef16488117416765728187439d147a9f9a8e3b24272116277e691db22c3d160b",
+    "prepare-source-race-green.json": "a30d069fe38d7985e656c5ad8f15b6b8751c42940b44275a247e1951f3a4849b",
+    "prepare-source-final-focused.json": "b357dd40538171509d26394e24186a43d3db98cad9732221719a3581b688c445",
+    "backend-final-freeze-v2.json": "e323f314a52d228d9ebfb25f3ac0b6c11e1e2fa222a723fd35fb85b4c0ae7516",
+    "ui-first-red.json": "fb1b5126082b74761384c56362391152847149844d621c5dd463ecf8f8db2d92",
+    "ui-first-red-report.json": "53f45c6359b0cf531654f18db9d3da814ebb4e3751dab7ddc15fe39e0fad801b",
+    "retry-red-execution.json": "ab58d5a37cef0f9a2702a837f6722cc0fcfe47ca56022d9550ca2bdc0310bba3",
+    "retry-red-report.json": "e7d9965351a6dee0f442a3fa39437ac652e9d5f81d8ca81abbdc653d437c0d4c",
+    "first-all-gui-execution.json": "2de71e40c843f7888abbee68c3c75b4dc9b478860921b58aac769be0ac897429",
+    "first-all-gui-report.json": "d68b51dc768db0cfb927b95a2e70bd4408717c78888035ef2fa9b78248674b7b",
+    "ui-and-captures-execution.json": "ba180a5118dcac2a9da881fef37c936781f50ef54b8309b6715ad520141771ee",
+    "candidate-validation.json": "98b7d4825b613b99f40f2b74083c49f6d8c9f959c9e64f3205f85683f4e16923",
+    "candidate-full-unit.log": "a89b6dc7141f0c8d577d14f58abce65220c53e97cd606429bc24812a78b80468",
+    "candidate-unit-report.json": "c1b751140ed06d1675e7d42bdb0b86ae8daf55bc8056b5ca21219dc192a855b4",
+    "human-ids-red-execution.json": "41e731abeea31b58b7b55c1d0c55f1823c81797538051fe6755d2833d1a0a791",
+    "human-ids-red-report.json": "6a1257b3785a889e5cce24634496471abecea77dd1b61c5f1fa2bfb53431921e",
+    "human-ids-qualification.json": "9e024cbbd94d52b4fcd8907ed7c29855ba3cfbf3ca549933240818547ae15447",
+    "human-ids-focused-unit.log": "5bc7a8419351d7d11e47495d528c536cee3f1e893e3e6d0c58a319233e8a8f78",
+    "ids-qualification.json": "fcc84437497a65d976e66b3e9091a13b0505e0291d44f31f06cf9177bb87bbe5",
+    "ids-gui-report.json": "8600b16e4d242ea3e6140d6ee9f2885ab09767608c426f35d28403ae31ff182e",
+    "benchmark-arm-execution.json": "12e988f70e357aa44095945993a0db22306175be86109a6d4e87185009768e35",
+    "benchmark-arm-ids-execution.json": "e163cfc1d93126f32416af8d5c54d08f8ddbdc1d695712eb27c98bd027a526c1",
+    "benchmark-arm-ids-report.json": "c7fc67bd7122fa68b70f282d4e3b7b408358022bee49375ecd7f3db513db599c",
+    "capture-files.json": "a35be497495b04634d240ecab3ef622263be3ab2b7b956e0f7d9f7eb3d9cde35",
+    "benchmark-arm-complete-results/project-subsets-perf-PRJ-0-5f323-ón-de-registros-y-sus-bytes-csv/prj03-export-filter.json": "9d99e7c304dd54788bdb8110906ed73e579b09320eb6100fd96299d8f9b68ce2",
+    "benchmark-arm-complete-results/project-subsets-perf-PRJ-0-73307-a-orden-datos-y-procedencia-csv/prj03-export-random.json": "fcf44b0daf6e30b9b06d3aa2420d0b186b13f7e664b81bb3b5e0aeaa107edf56",
+    "benchmark-arm-complete-results/project-subsets-perf-PRJ-0-628b3-chivo-temporal-ni-resultado-csv/prj03-export-cancel.json": "5d3467bffec88d5d256b1a3132055c9539620d65aa489434daae191201f565aa",
+    "benchmark-arm-complete-results/project-subsets-perf-PRJ-0-73307-a-orden-datos-y-procedencia-csv/prj03-export-random-c15.json": "be3edc51e7d9b8be04fbe03199c29cd20a56be4d05b49e497b51951aa1525afa",
+    "benchmark-arm-complete-execution.json": "927d597216791f43ee44fd5ed0c05960a5135f4c6f4e586706f89aa1cb4efdac",
+    "benchmark-arm-complete-report.json": "7a7b9796bc0d1937d8bb41defe971c643aca2536fe8639a8cb4ca7f042e6a619",
+    "final-unit-complete.log": "9186052e7ddea396ce6aef9d72ef5ae8ccca0e34ce342c70e2f4afbb763c56a5",
+    "final-unit-complete-execution.json": "6c889176d9ae35b345490d489cb9c45a7302b23329029c8d7d2e07631d106ec4",
+    "completion-corrected-focused-report.json": "7728b408082262d2488c06a6433850e8de0b188bff7a96cbdf8305a647f5894f",
+    "completion-corrected-full-report.json": "a152a3488e982ad1e0a644b015522a65f04ff16df374e6a94bb7bac8443b54e5",
+    "integration-fresh-full-report.json": "af98ca836adac1f9ba91515a5440d03261800400323f4af9086632e6a9d5b42f",
+    "menu-consumers-report.json": "14289ddf2dffdd6378c4726908a80299f4d40e763a382c0d1cff8908d832f7ab",
+    "menu-availability-report.json": "f15dc0b6895aad1df166ea474c5d56d291935d99f3728f9325bf4d616008ac79",
+    "menu-keyboard-report.json": "d78a408b7ba7d248a3c36163d0555709b6b2bec199ec7df09d345a3c292a6398",
+    "completion-corrected-execution.json": "5ccdc3edd1246d5840b6f158307753ed37405fa19bdc2b01611765e2e591fb18",
+    "completion-execution.json": "20e0d7f3fc30ab101771d9beeb53722fa1d2112a1d9b5128915dc05c4d4a6d1e",
+    "integration-fresh-full-execution.json": "58e3f507ffa172e53980df87d4f0f42e2f2669c31df4cb43317ec640e66af40f",
+    "integration-fresh-build.json": "21fd919e5303c1e0a8b98275038aca1bb9786fa127a97891789a2d7de748230f",
+    "menu-consumers-execution.json": "3458a8ee9fbc888e817c2515b9e2917a52b7a299886aa076708d3cab708a7a67",
+    "menu-availability-execution.json": "d060c0176e3eec04f110d978a70e89801e688fda885233bdb5e4ed227e68bae7",
+    "menu-keyboard-execution.json": "76a8fd3d47eb57114079f68105d30bb6bffa53af957e03f4ac5f95e282e58d9c",
+    "completion-focused-oracle-correction.json": "4ccfe791edb0bae8bfe3170c848effaf83f5aad9ebaa1e3739bc10518a236253",
+    "completion-focused.log": "7f5eb8bb26d4aeebb1be6c553dd0eb8d69cfbb6acedac25ba7d6505d3d9974d8",
+    "completion-corrected-focused.log": "5f3cba4ea11c882d47bf32e401f03f46f5e042ba3b6dc3e1b8b84f8a5dadf2d9",
+    "menu-consumers-gui.log": "41501f143b8c82e3d74c3578666138f103eb790afeb5592606c4cad768455622",
+    "menu-availability-gui.log": "df7cd63cd47d38ac2efe40895fcd6d4cc2838d9dd3a122dd6061eadd77a4ef82",
+    "menu-keyboard-gui.log": "6ce2e9c3eda33d7d8b417ef66e04bfa77a59f7c6db2f6df826eda8476e83d2d9"
+  },
+  "captureManifest": "captures.json",
+  "limits": [
+    "Fresh complete integral c257 is not green; focused closure is a union of 25+1 across heads",
+    "No full E2E run on final fb8b after menu-only test corrections",
+    "No Intel measures or full Intel CI yet; temporary trigger explicitly authorized, not executed",
+    "No exact final-head 3OS CI",
+    "No manual screen-reader or installer proof",
+    "No new GUI/build/test execution or source edit by document writer",
+    "No commit/push/merge by document writer"
+  ],
+  "testHead": "fb8b260912341f026502272eb275c46c45fab61d",
+  "documentSHA256": "deb076ba19c2f2af6eed04718f6925c99d85f729e291e875464de4bfe6e7a5c4",
+  "coverageLimits": [
+    "ARIA announcement assertions do not prove manual screen-reader use",
+    "Fresh full c257 failed four obsolete exact menu arrays; focused followups close those identities across different heads, not a green integral",
+    "Final-head CI and Intel remain pending"
+  ],
+  "finalWholeUnit": {
+    "head": "32f531b61809e89be3cf12001bccd252717e5237",
+    "passed": 3065,
+    "skipped": 2,
+    "skipsExisting": true,
+    "failed": 0,
+    "filesPassed": 173,
+    "filesSkipped": 1,
+    "totalFiles": 174,
+    "vitestSeconds": 21.24,
+    "processSeconds": 21.562,
+    "exitCode": 0,
+    "pandoc": "real 3.12.1 detected in raw log",
+    "pandocHTTP": "binary lacks HTTP support; HTTP sandbox efficacy not qualified"
+  },
+  "finalHead": "fb8b260912341f026502272eb275c46c45fab61d",
+  "sharedSourceTrees": {
+    "product": "ec12107e61373bea9556e5540f8f966690037508",
+    "benchmark": "ec12107e61373bea9556e5540f8f966690037508",
+    "feature": "ec12107e61373bea9556e5540f8f966690037508",
+    "consumers": "ec12107e61373bea9556e5540f8f966690037508",
+    "availability": "ec12107e61373bea9556e5540f8f966690037508",
+    "final": "ec12107e61373bea9556e5540f8f966690037508"
+  },
+  "focusedC3C16": {
+    "head": "c2579806407c92a4413727f77b60f167a318386f",
+    "passed": 3,
+    "skipped": 0,
+    "retries": 0,
+    "flaky": 0,
+    "processSeconds": 4.353,
+    "cases": [
+      {
+        "title": "PRJ-03 C3: Nota antes de ID conserva el ausente y muestra la misma advertencia en resultado y origen",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1238
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03 C16: fuente changed bloquea Exportar en panel y menú sin cambiar el proyecto",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1205
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03 C16: fuente missing bloquea Exportar en panel y menú sin cambiar el proyecto",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1184
+          }
+        ]
+      }
+    ]
+  },
+  "fullSuiteSummary": "local-e2e-closure.json",
+  "fullSuiteGreen": false,
+  "consumerFollowupUniquePassed": 26,
+  "consumerFollowupSingleRun26Green": false,
+  "intelTemporaryAuthorization": "Explicit owner approval received for one temporary workflow_dispatch line and its subsequent removal; execution eligibility not yet tested. Prefer independent probe branch with identical product/tests; no main/candidate/fallback changes authorized.",
+  "localClosureSummarySHA256": "61709f39d43e27719f01bd56ab63b1acf1cc59a21bec8750e666e1e281dfc6b7",
+  "focusedSanitizedLogSHA256": "2a7607c7fb5e16241913d1d55a8670f3588f391afd4b2a3416176891e7acfd25"
+}

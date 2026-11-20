@@ -1,0 +1,206 @@
+=== completion-focused.log | original SHA256 7f5eb8bb26d4aeebb1be6c553dd0eb8d69cfbb6acedac25ba7d6505d3d9974d8 ===
+
+Running 3 tests using 1 worker
+
+(node:75595) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/project-exports.spec.ts:290:1 › PRJ-03 C3: Nota antes de ID conserva el ausente y muestra la misma advertencia en resultado y origen (1.1s)
+(node:75605) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [csv] › tests/e2e/project-exports.spec.ts:309:51 › PRJ-03 C16: fuente changed bloquea Exportar en panel y menú sin cambiar el proyecto (1.2s)
+  ✓  3 [csv] › tests/e2e/project-exports.spec.ts:309:51 › PRJ-03 C16: fuente missing bloquea Exportar en panel y menú sin cambiar el proyecto (1.2s)
+
+
+  1) [csv] › tests/e2e/project-exports.spec.ts:290:1 › PRJ-03 C3: Nota antes de ID conserva el ausente y muestra la misma advertencia en resultado y origen 
+
+    Error: expect(received).toMatchObject(expected)
+
+    - Expected  - 0
+    + Received  + 4
+
+    @@ -2,10 +2,14 @@
+        "bytes": 50,
+        "provenance": Object {
+          "fidelity": Object {
+            "level": "values",
+            "normalization": Array [
+    +         "Solo las columnas elegidas, en el orden elegido.",
+    +         "Comillado mínimo: solo se entrecomillan los campos que lo necesitan.",
+    +         "Se conserva el fin de línea de la fuente en todos los registros.",
+    +         "Se conservan la codificación y el BOM de la fuente.",
+              "1 campo ausente se escribió vacío porque va antes de otro campo",
+            ],
+          },
+          "sourceSha256": "bde31aec296f4b09823b940e59f4cf1cdf4cddf66882578d3128d3fff2aa8bb8",
+          "warnings": Array [
+
+      301 |  const saved=JSON.parse(await readFile(join(folder,'proyecto.freyalab'),'utf8'))
+      302 |  expect(saved.sources).toEqual(before.sources);expect(saved.recipes).toEqual(before.recipes);expect(saved.results).toHaveLength(1)
+    > 303 |  expect(saved.results[0]).toMatchObject({bytes:bytes.length,sha256:sha(bytes),provenance:{sourceSha256:sha(original),fidelity:{level:'values',normalization:[warning]},warnings:[warning]}})
+          |                           ^
+      304 |  await resultRow().press('Enter')
+      305 |  await expect(page.locator('.project-result-origin').getByText(warning,{exact:true})).toBeVisible()
+      306 |  expect(await readFile(output)).toEqual(bytes);expect(await readFile(source)).toEqual(original)
+        at tests/e2e/project-exports.spec.ts:303:27
+
+    Error Context: [private evidence]/completion-focused-results/project-exports-PRJ-03-C3--4e624-encia-en-resultado-y-origen-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    [private evidence]/completion-focused-results/project-exports-PRJ-03-C3--4e624-encia-en-resultado-y-origen-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace [private evidence]/completion-focused-results/project-exports-PRJ-03-C3--4e624-encia-en-resultado-y-origen-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/project-exports.spec.ts:290:1 › PRJ-03 C3: Nota antes de ID conserva el ausente y muestra la misma advertencia en resultado y origen 
+  2 passed (4.1s)
+
+
+=== completion-corrected-focused.log | original SHA256 5f3cba4ea11c882d47bf32e401f03f46f5e042ba3b6dc3e1b8b84f8a5dadf2d9 ===
+
+Running 3 tests using 1 worker
+
+(node:76708) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/project-exports.spec.ts:290:1 › PRJ-03 C3: Nota antes de ID conserva el ausente y muestra la misma advertencia en resultado y origen (1.2s)
+  ✓  2 [csv] › tests/e2e/project-exports.spec.ts:315:51 › PRJ-03 C16: fuente changed bloquea Exportar en panel y menú sin cambiar el proyecto (1.2s)
+  ✓  3 [csv] › tests/e2e/project-exports.spec.ts:315:51 › PRJ-03 C16: fuente missing bloquea Exportar en panel y menú sin cambiar el proyecto (1.2s)
+
+  3 passed (4.0s)
+
+
+=== menu-consumers-gui.log | original SHA256 41501f143b8c82e3d74c3578666138f103eb790afeb5592606c4cad768455622 ===
+
+Running 26 tests using 1 worker
+
+(node:539) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/project-exports.spec.ts:49:1 › PRJ-03: el menú exporta todas las filas, registra procedencia y abre el resultado editable (1.5s)
+  ✓   2 [csv] › tests/e2e/project-exports.spec.ts:91:51 › PRJ-03: panel, cobertura histórica y procedencia accesible [es] (1.2s)
+  ✓   3 [csv] › tests/e2e/project-exports.spec.ts:91:51 › PRJ-03: panel, cobertura histórica y procedencia accesible [en] (1.3s)
+  ✓   4 [csv] › tests/e2e/project-exports.spec.ts:91:51 › PRJ-03: panel, cobertura histórica y procedencia accesible [en-XA] (1.3s)
+  ✓   5 [csv] › tests/e2e/project-exports.spec.ts:113:1 › PRJ-03: cambios sin guardar del conjunto bloquean exportar sin cambiar la receta ni el archivo (1.2s)
+  ✓   6 [csv] › tests/e2e/project-exports.spec.ts:126:1 › PRJ-03: un archivo exportado cambia o falta aunque nunca se haya abierto (1.4s)
+  ✓   7 [csv] › tests/e2e/project-exports.spec.ts:139:1 › PRJ-03: editar y guardar un resultado conserva su advertencia y su huella histórica (1.5s)
+  ✓   8 [csv] › tests/e2e/project-exports.spec.ts:154:1 › PRJ-03: añadir como fuente reutiliza el registro y quitar olvida solo la procedencia (1.2s)
+  ✓   9 [csv] › tests/e2e/project-exports.spec.ts:171:1 › PRJ-03: una segunda exportación conserva ambas instantáneas y rechaza reemplazar la primera (1.2s)
+  ✓  10 [csv] › tests/e2e/project-exports.spec.ts:185:1 › PRJ-03: un proyecto futuro conserva las recetas v1 pero bloquea exportar con su motivo (912ms)
+  ✓  11 [csv] › tests/e2e/project-exports.spec.ts:196:1 › PRJ-03: la paleta encuentra el conjunto por exportar, extraer, guardar como archivo, export, extract y csv (1.3s)
+  ✓  12 [csv] › tests/e2e/project-exports.spec.ts:209:1 › PRJ-03 frontend: doble Enter en Registrar de nuevo envía una petición y conserva el éxito (1.1s)
+  ✓  13 [csv] › tests/e2e/project-exports.spec.ts:268:1 › PRJ-03: los ids de proyecto v1 válidos sin UUID conservan exportación, apertura y alta como fuente (1.2s)
+  ✓  14 [csv] › tests/e2e/project-exports.spec.ts:290:1 › PRJ-03 C3: Nota antes de ID conserva el ausente y muestra la misma advertencia en resultado y origen (1.1s)
+  ✓  15 [csv] › tests/e2e/project-exports.spec.ts:315:51 › PRJ-03 C16: fuente changed bloquea Exportar en panel y menú sin cambiar el proyecto (1.1s)
+  ✓  16 [csv] › tests/e2e/project-exports.spec.ts:315:51 › PRJ-03 C16: fuente missing bloquea Exportar en panel y menú sin cambiar el proyecto (1.2s)
+  ✓  17 [csv] › tests/e2e/project-tree.spec.ts:43:1 › PRJ-01c C1: en reposo solo hay dos acciones, una protección y ningún estado normal repetido (977ms)
+  ✘  18 [csv] › tests/e2e/project-tree.spec.ts:57:1 › PRJ-01c C9: las acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo (16.0s)
+(node:937) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  19 [csv] › tests/e2e/project-tree.spec.ts:83:1 › PRJ-01c C7: rechazar la sobrescritura externa conserva el borrador del nombre en su fila (1.0s)
+  ✓  20 [csv] › tests/e2e/project-tree.spec.ts:100:1 › PRJ-01c C5: un fallo del explorador se anuncia junto a la fuente (922ms)
+  ✓  21 [csv] › tests/e2e/project-tree.spec.ts:108:1 › PRJ-01c C2/C3/C6: cuatro aperturas del menú, un punto de tabulación y navegación del árbol (1.4s)
+  ✓  22 [csv] › tests/e2e/project-tree.spec.ts:146:1 › PRJ-01c C7: renombrar guarda con Intro, cancela con Escape o al salir y explica los duplicados (1.5s)
+  ✓  23 [csv] › tests/e2e/project-tree.spec.ts:188:1 › PRJ-01c C11: nombres largos y menús caben con 240 y 420 píxeles de barra lateral (1.1s)
+  ✓  24 [csv] › tests/e2e/project-tree.spec.ts:205:47 › PRJ-01c C12: reposo, menú y fuente modificada en dos temas y tamaños [es] (2.4s)
+  ✓  25 [csv] › tests/e2e/project-tree.spec.ts:205:47 › PRJ-01c C12: reposo, menú y fuente modificada en dos temas y tamaños [en-XA] (2.5s)
+  ✓  26 [csv] › tests/e2e/project-tree.spec.ts:246:1 › PRJ-01c C5: el progreso y Cancelar pertenecen a la fuente y liberan la operación (1.3s)
+
+
+  1) [csv] › tests/e2e/project-tree.spec.ts:57:1 › PRJ-01c C9: las acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem', { name: 'Exportar…', exact: true })
+    Expected: "false"
+    Received: ""
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem', { name: 'Exportar…', exact: true }) with timeout 15000ms
+      - waiting for getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem', { name: 'Exportar…', exact: true })
+        34 × locator resolved to <button type="button" role="menuitem" class="project-menu-item svelte-1qb62jv">Exportar…</button>
+           - unexpected value "null"
+
+
+      71 |  await expect(menu.getByRole('menuitem')).toHaveText(['Abrir','Analizar','Exportar…','Nuevo conjunto a partir de este…','Renombrar','Eliminar'])
+      72 |  const exportItem=menu.getByRole('menuitem',{name:'Exportar…',exact:true})
+    > 73 |  await expect(exportItem).toHaveAttribute('aria-disabled','false')
+         |                           ^
+      74 |  await menu.press('Home');await menu.press('ArrowDown');await menu.press('ArrowDown');await expect(exportItem).toBeFocused()
+      75 |  const remove=menu.getByRole('menuitem',{name:'Eliminar',exact:true})
+      76 |  await expect(remove).toHaveAttribute('aria-disabled','true');await expect(remove).toHaveAccessibleDescription(/Muestra estable/)
+        at tests/e2e/project-tree.spec.ts:73:27
+
+    Error Context: [private evidence]/menu-consumers-results/project-tree-PRJ-01c-C9-la-5a186-oqueos-no-pierden-el-motivo-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    [private evidence]/menu-consumers-results/project-tree-PRJ-01c-C9-la-5a186-oqueos-no-pierden-el-motivo-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace [private evidence]/menu-consumers-results/project-tree-PRJ-01c-C9-la-5a186-oqueos-no-pierden-el-motivo-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/project-tree.spec.ts:57:1 › PRJ-01c C9: las acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo 
+  25 passed (49.7s)
+
+
+=== menu-availability-gui.log | original SHA256 df7cd63cd47d38ac2efe40895fcd6d4cc2838d9dd3a122dd6061eadd77a4ef82 ===
+
+Running 1 test using 1 worker
+
+(node:1335) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/project-tree.spec.ts:57:1 › PRJ-01c C9: las acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo (16.3s)
+
+
+  1) [csv] › tests/e2e/project-tree.spec.ts:57:1 › PRJ-01c C9: las acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo 
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem', { name: 'Exportar…', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem', { name: 'Exportar…', exact: true }) with timeout 15000ms
+      - waiting for getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem', { name: 'Exportar…', exact: true })
+        34 × locator resolved to <button type="button" role="menuitem" class="project-menu-item svelte-1qb62jv">Exportar…</button>
+           - unexpected value "inactive"
+
+
+      72 |  const exportItem=menu.getByRole('menuitem',{name:'Exportar…',exact:true})
+      73 |  await expect(exportItem).toBeEnabled()
+    > 74 |  await menu.press('Home');await menu.press('ArrowDown');await menu.press('ArrowDown');await expect(exportItem).toBeFocused()
+         |                                                                                                                ^
+      75 |  const remove=menu.getByRole('menuitem',{name:'Eliminar',exact:true})
+      76 |  await expect(remove).toHaveAttribute('aria-disabled','true');await expect(remove).toHaveAccessibleDescription(/Muestra estable/)
+      77 |  await menu.press('End');await expect(remove).toBeFocused();await remove.press('Enter');await expect(page.getByRole('dialog')).toHaveCount(0)
+        at tests/e2e/project-tree.spec.ts:74:112
+
+    Error Context: [private evidence]/menu-availability-results/project-tree-PRJ-01c-C9-la-5a186-oqueos-no-pierden-el-motivo-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    [private evidence]/menu-availability-results/project-tree-PRJ-01c-C9-la-5a186-oqueos-no-pierden-el-motivo-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace [private evidence]/menu-availability-results/project-tree-PRJ-01c-C9-la-5a186-oqueos-no-pierden-el-motivo-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/project-tree.spec.ts:57:1 › PRJ-01c C9: las acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo 
+
+
+=== menu-keyboard-gui.log | original SHA256 6ce2e9c3eda33d7d8b417ef66e04bfa77a59f7c6db2f6df826eda8476e83d2d9 ===
+
+Running 1 test using 1 worker
+
+(node:1852) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/project-tree.spec.ts:57:1 › PRJ-01c C9: las acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo (1.1s)
+
+  1 passed (1.4s)

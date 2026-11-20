@@ -1,0 +1,79 @@
+{
+  "recordedAt": "2026-11-20T05:01:31.065Z",
+  "label": "export-cancel",
+  "sha": "32f531b61809e89be3cf12001bccd252717e5237",
+  "sourceModified": false,
+  "application": {
+    "version": "44.9.2",
+    "build": "62bf3d8",
+    "channel": "stable",
+    "electron": "44.9.2",
+    "chromium": "152.0.7977.167",
+    "node": "24.22.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "language": "es"
+  },
+  "machine": {
+    "platform": "darwin",
+    "architecture": "arm64",
+    "os": "27.0.0",
+    "cpu": "Apple M2 Max",
+    "logicalCpus": 12,
+    "totalMemoryBytes": 34359738368,
+    "node": "24.22.1",
+    "electron": "44.9.2"
+  },
+  "source": {
+    "bytes": 1000000008,
+    "records": 1000000,
+    "lineBytes": 1000,
+    "sha256": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540",
+    "sha256After": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540"
+  },
+  "execution": {
+    "freshApp": true,
+    "sourceOpenedAsDocument": false,
+    "prewarmedByFixtureHash": true,
+    "integrityChecksOutsideDuration": true,
+    "durationMs": 9492.571334,
+    "memory": {
+      "sampleIntervalMs": 50,
+      "samples": 187,
+      "peakAppSumWorkingSetKiB": 1185904,
+      "peakUtilitySumWorkingSetKiB": 685712,
+      "processes": [
+        {
+          "pid": 71855,
+          "name": "Network Service",
+          "peakObservedWorkingSetKiB": 48848,
+          "reportedPeakWorkingSetKiB": 48848
+        },
+        {
+          "pid": 71862,
+          "name": "FreyaLab CSV",
+          "peakObservedWorkingSetKiB": 636864,
+          "reportedPeakWorkingSetKiB": 639760
+        }
+      ]
+    }
+  },
+  "result": {
+    "outcome": {
+      "status": "cancelled"
+    },
+    "requested": true,
+    "progressAtCancel": {
+      "requestId": "05144c71-7cdd-4116-a537-d0d8b46b766a",
+      "bytesRead": 503316480,
+      "scanned": 498000,
+      "totalBytes": 1000000008
+    }
+  },
+  "output": {
+    "exists": false,
+    "bytes": 0,
+    "sha256": null
+  },
+  "manifestResults": []
+}

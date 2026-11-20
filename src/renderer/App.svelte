@@ -30,6 +30,9 @@
  import Outline from './components/Outline.svelte'
  import Diagram from './components/Diagram.svelte'
  import CsvTable from './components/CsvTable.svelte'
+ import ProjectResultOrigin from './components/ProjectResultOrigin.svelte'
+ import type {ProjectResultView,ProjectExportOutcome} from '../shared/project-exports'
+ import type {ProjectExportJob} from './lib/project-result'
  import CsvCommands from './components/CsvCommands.svelte'
  import AnalysisWorkspace from './components/AnalysisWorkspace.svelte'
  import {csvAnalysisViews,emptyCsvAnalysisView,type CsvEmptyIntent} from './lib/csv-analysis-view'
@@ -91,6 +94,9 @@
  let projectCandidate=$state<{id:string;path:string;name:string}|null>(null)
  let projectSources=$state<ProjectSourceView[]>([]),sourceDraft=$state<ProjectSourceDraft|null>(null)
  let projectRecipes=$state<ProjectRecipeView[]>([])
+ let projectResults=$state<ProjectResultView[]>([]),projectExportJobs=$state<Record<string,ProjectExportJob>>({}),projectExportAnnouncement=$state('')
+ const activeProjectExports=$derived(Object.values(projectExportJobs).filter(job=>job.projectId===activeProject?.id))
+ const registeringProjectResults=new Set<string>()
  let subsetAnalysisJob=$state<{requestId:string;projectId:string;cancelled:boolean;bytesRead:number;scanned:number;totalBytes:number}|null>(null)
  let projectSubset=$state<{projectId:string;projectPath:string;sourceId:string;intent:SubsetIntent}|null>(null),projectSubsetPanel=$state<SubsetPanel>(),projectSubsetReturn:HTMLElement|null=null
  const projectSubsetSource=$derived(projectSubset?projectSources.find(source=>source.id===projectSubset?.sourceId):undefined)
@@ -104,6 +110,7 @@
  let theme=$state<Settings['tema']>(initialSettings.tema),systemDark=$state(matchMedia('(prefers-color-scheme: dark)').matches)
  const dark=$derived(theme==='system'?systemDark:theme==='dark')
  const active=$derived(documents.find(doc=>doc.id===activeId))
+ const activeProjectResult=$derived(projectResults.find(result=>result.documentId===active?.id)??active?.projectResult)
  const csvText=$derived(active?.kind==='csv'&&active.csvView==='text')
  const csvTextReason=$derived(active?.projectSource==='protected'?'projectProtected':active?.projectSource==='closed'?'projectClosed':(active?.byteLength??0)>CSV_TEXT_LIMIT?'textLimit':null)
  const csvTextInfo=$derived(csvText?csvTextStatistics(active?.text??''):undefined)
@@ -176,13 +183,20 @@
   const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(index+(event.key==='ArrowLeft'?-1:1)+tabs.length)%tabs.length
   void selectSidebarTab(tabs[next],true)
  }
- async function receiveProject(project:ProjectInfo|null|undefined,recents:ProjectRecent[]|undefined,sources?:ProjectSourceView[],recipes?:ProjectRecipeView[]){
+ async function receiveProject(project:ProjectInfo|null|undefined,recents:ProjectRecent[]|undefined,sources?:ProjectSourceView[],recipes?:ProjectRecipeView[],results?:ProjectResultView[]){
   if(sources)projectSources=sources
   if(recipes)projectRecipes=recipes
+  if(results){
+   const removed=new Set(projectResults.filter(previous=>!results.some(result=>result.id===previous.id)).map(result=>result.id))
+   documents=documents.map(doc=>doc.projectResult&&removed.has(doc.projectResult.id)?{...doc,projectResult:undefined}:doc)
+   projectResults=results
+   for(const job of Object.values(projectExportJobs))if(job.outcome&&job.outcome.status!=='cancelled'&&removed.has(job.outcome.result.id))delete projectExportJobs[job.requestId]
+  }
   if(recents)projectRecents=recents
   if(project===undefined)return
   const changed=project?.id!==activeProject?.id||project?.path!==activeProject?.path||project?.version!==activeProject?.version||project?.readonly!==activeProject?.readonly,wasProject=showProject
   if(changed){
+   projectExportJobs={};projectExportAnnouncement=''
    if(subsetAnalysisJob)subsetAnalysisJob.cancelled=true
    const subsetIds=new Set(documents.filter(doc=>doc.analysisSubset).map(doc=>doc.id))
    documents=documents.filter(doc=>!subsetIds.has(doc.id));analyses=analyses.filter(tab=>!subsetIds.has(tab.source.documentId))
@@ -190,7 +204,7 @@
    if(subsetIds.has(activeId)){activeId=documents[0]?.id??'';selectedAnalysisId=''}
   }
   activeProject=project
-  if(!project){projectRecipes=[];showProject=false;if(wasProject)await selectSidebarTab('files',true);return}
+  if(!project){projectRecipes=[];projectResults=[];showProject=false;if(wasProject)await selectSidebarTab('files',true);return}
   if(!changed)return
   sidebar=true;showProject=true;remember({barraLateral:{visible:true}})
   if(folderPath!==project.path){folderPath=project.path;entries=[];const tree=await window.freya.tree(project.path);if(folderPath===project.path)entries=tree}
@@ -215,7 +229,7 @@
   if(candidate)void action(async()=>{
    await tick()
    const state=await window.freya.projectState()
-   await receiveProject(state.project,state.recents,state.sources,state.recipes)
+   await receiveProject(state.project,state.recents,state.sources,state.recipes,state.results)
    const current=documents.find(doc=>doc.id===candidate.id)
    if(current?.path!==candidate.path)throw new Error(t('document.actionChanged'))
    if(current.dirty)throw new Error(t('project.source.unsaved'))
@@ -232,6 +246,40 @@
   const document=await window.freya.projectOpenSource(source)
   if(document){merge(document,true);if(analyze)await openAnalysis(document.id)}
  })}
+ function updateProjectExport(job:ProjectExportJob){
+  projectExportJobs[job.requestId]=job
+  if(job.error)projectExportAnnouncement=job.error
+  else if(job.running)projectExportAnnouncement=t('project.export.running',{name:job.name})+' '+t('subset.progressBytes',{bytes:formatNumber(job.progress.bytesRead),total:formatNumber(job.progress.totalBytes)})
+  else if(job.outcome?.status==='cancelled')projectExportAnnouncement=t('project.export.cancelled')
+  else if(job.outcome?.status==='unregistered')projectExportAnnouncement=t('project.result.registerFailed',{path:job.outcome.result.path,error:job.outcome.error})
+  else if(job.outcome)projectExportAnnouncement=plural('project.export.finished',job.outcome.result.provenance.coverage.matched,{name:job.outcome.result.name})
+ }
+ async function exportProjectSubset(recipe:ProjectRecipeView){
+  const project=activeProject
+  if(!project||project.readonly||!recipe.executable)return
+  const requestId=crypto.randomUUID(),source=projectSources.find(source=>source.id===recipe.rootSourceId)
+  updateProjectExport({requestId,projectId:project.id,recipeId:recipe.id,name:recipe.name,running:true,progress:{bytesRead:0,scanned:0,totalBytes:source?.bytes??0}})
+  try{
+   const outcome=await window.freya.projectRecipeExport(project.id,recipe.id,requestId),job=projectExportJobs[requestId]
+   if(!job||activeProject?.id!==project.id)return
+   if(!outcome){delete projectExportJobs[requestId];projectExportAnnouncement='';return}
+   updateProjectExport({...job,running:false,outcome})
+  }catch(failure){const job=projectExportJobs[requestId];if(job)updateProjectExport({...job,running:false,error:failure instanceof Error?failure.message:String(failure)})}
+ }
+ async function cancelProjectExport(requestId:string){
+  try{await window.freya.projectRecipeCancel(requestId)}catch(failure){const job=projectExportJobs[requestId];if(job)updateProjectExport({...job,error:failure instanceof Error?failure.message:String(failure)})}
+ }
+ async function registerProjectResult(resultId:string){
+  const job=Object.values(projectExportJobs).find(job=>job.outcome&&job.outcome.status!=='cancelled'&&job.outcome.result.id===resultId),project=activeProject
+  if(!job||!project||job.outcome?.status!=='unregistered'||registeringProjectResults.has(job.requestId))return
+  registeringProjectResults.add(job.requestId)
+  try{const outcome=await window.freya.projectRegisterResult(project.id,resultId);if(projectExportJobs[job.requestId]&&activeProject?.id===project.id)updateProjectExport({...job,running:false,outcome,error:undefined})}
+  catch(failure){if(projectExportJobs[job.requestId])updateProjectExport({...job,error:failure instanceof Error?failure.message:String(failure)})}
+  finally{registeringProjectResults.delete(job.requestId)}
+ }
+ function openProjectResult(resultId:string){const project=activeProject;if(project)void action(async()=>{const doc=await window.freya.projectOpenResult(project.id,resultId);merge(doc,true)})}
+ function showProjectResult(resultId:string){const project=activeProject;if(project)void action(()=>window.freya.projectShowResult(project.id,resultId))}
+ function addProjectResultSource(resultId:string){const project=activeProject;if(project)void action(async()=>{const draft=await window.freya.projectResultSource(project.id,resultId);if(activeProject?.id===project.id)sourceDraft=draft})}
  async function analyzeProjectSubset(recipe:ProjectRecipeView){
   const project=activeProject
   if(!project||subsetAnalysisJob||!recipe.executable)return
@@ -292,7 +340,7 @@
   if(!after||before.csvView!==after.csvView||wasActive&&activeId!==id||owner&&csv!==owner)throw new Error(t('document.actionChanged'))
  }
  const closingFlow=new ApplicationClosing({
-  snapshot:()=>({documents,activeId,busy:busy||csvOpening||!!csvChange||Object.values(assetBusy).some(Boolean),modal:!!appDialog||projectDialog||!!sourceDraft||!!document.querySelector('dialog[open]'),composing:compositionActive||!!editor?.isComposing()}),
+  snapshot:()=>({documents,activeId,busy:busy||csvOpening||!!csvChange||Object.values(assetBusy).some(Boolean)||Object.values(projectExportJobs).some(job=>job.running),modal:!!appDialog||projectDialog||!!sourceDraft||!!document.querySelector('dialog[open]'),composing:compositionActive||!!editor?.isComposing()}),
   prepare:prepareDocumentAction,locked:value=>applicationClosing=value,notice:value=>{if(value?.kind==='error')toast='';closingNotice=value}
  })
  function placeClosingNotice(node:HTMLElement){
@@ -610,9 +658,9 @@
    }finally{closedDuringStartup=undefined}
    recent=await window.freya.recents();recoveries=await window.freya.recoveries()
    const generation=projectGeneration,state=await window.freya.projectState()
-   if(generation===projectGeneration)await receiveProject(state.project,state.recents,state.sources,state.recipes)
+   if(generation===projectGeneration)await receiveProject(state.project,state.recents,state.sources,state.recipes,state.results)
   })
-  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='project'){projectGeneration++;void action(()=>receiveProject(event.project,event.projectRecents,event.projectSources,event.projectRecipes))}else if(event.type==='project-recipe-progress'&&event.recipeProgress?.requestId===subsetAnalysisJob?.requestId&&subsetAnalysisJob){subsetAnalysisJob={...subsetAnalysisJob,...event.recipeProgress}}else if(event.type==='updates'&&event.update?.status==='available'){if(!updatesOpen)updateNotice=event.update}else if(event.type==='language'&&event.language){setUILanguage(event.language.language);refreshShortcuts()}else if(event.type==='recents'){void window.freya.recents().then(value=>recent=value).catch(value=>error(String(value)))}else if(event.type==='settings'&&event.settings)applySettings(event.settings);else if(event.type==='csv-open-error'&&event.csvOpenError)receiveCsvError(event.csvOpenError);else if(event.type==='opened'&&event.document){const document=event.document;void action(async()=>{await settingsReady;merge(document,true)})}else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='close-status'&&event.message)closingNotice={kind:event.closingKind??'notice',message:event.message};else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];notify(event.message??'El archivo cambió en otra aplicación. Al guardar se comprobarán los cambios.')}})
+  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='project'){projectGeneration++;void action(()=>receiveProject(event.project,event.projectRecents,event.projectSources,event.projectRecipes,event.projectResults))}else if(event.type==='project-recipe-progress'&&event.recipeProgress){const job=projectExportJobs[event.recipeProgress.requestId];if(job?.running)updateProjectExport({...job,progress:event.recipeProgress});if(subsetAnalysisJob?.requestId===event.recipeProgress.requestId)subsetAnalysisJob={...subsetAnalysisJob,...event.recipeProgress}}else if(event.type==='updates'&&event.update?.status==='available'){if(!updatesOpen)updateNotice=event.update}else if(event.type==='language'&&event.language){setUILanguage(event.language.language);refreshShortcuts()}else if(event.type==='recents'){void window.freya.recents().then(value=>recent=value).catch(value=>error(String(value)))}else if(event.type==='settings'&&event.settings)applySettings(event.settings);else if(event.type==='csv-open-error'&&event.csvOpenError)receiveCsvError(event.csvOpenError);else if(event.type==='opened'&&event.document){const document=event.document;void action(async()=>{await settingsReady;merge(document,true)})}else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='close-status'&&event.message)closingNotice={kind:event.closingKind??'notice',message:event.message};else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];notify(event.message??'El archivo cambió en otra aplicación. Al guardar se comprobarán los cambios.')}})
   return()=>{applicationReady=false;for(const event of contextEvents)document.removeEventListener(event,queueApplicationState);unsubscribeCommand();unsubscribeClose();closingFlow.abort();mq.removeEventListener('change',change);unsubscribe();clearTimeout(toastTimer)}
  })
  $effect(()=>{
@@ -665,7 +713,7 @@
     <div class="sidebar-label">EN ESTE DOCUMENTO</div>
     <Outline headings={outlineHeadings} current={mode==='edit'?editorHeading:previewHeading} collapsed={collapsedByDocument[activeId]??new Set()} oncollapse={next=>collapsedByDocument={...collapsedByDocument,[activeId]:next}} ready={headingDocument===activeId} shown={indexVisible} bind:container={indexScroll} onscroll={top=>sidebarScroll.outline=top} onselect={selectHeading} canselect={()=>mode!=='edit'||!editor?.isComposing()}/>
    </div>
-   {#if activeProject}<div id="freya-project-panel" class="sidebar-tab-panel" role="tabpanel" aria-label={t('project.tab')} hidden={effectiveSidebarTab!=='project'}>{#key activeProject.id}<ProjectPanel project={activeProject} sources={projectSources} recipes={projectRecipes} onclose={closeProject} onadd={()=>addProjectSource()} onopen={openProjectSource} onnewsubset={(sourceId,baseRecipeId)=>openProjectSubset(sourceId,{blank:true,...baseRecipeId?{baseRecipeId}:{}})} onopensubset={recipe=>openProjectSubset(recipe.rootSourceId,{recipeId:recipe.id,autorun:recipe.executable})} onanalyzesubset={recipe=>void analyzeProjectSubset(recipe)} analysisBusy={!!subsetAnalysisJob}/>{/key}{#if subsetAnalysisJob}<div class="subset-analysis-progress"><p role="status" aria-live="polite">{t('subset.analysis.preparing')} {t('subset.progressBytes',{bytes:formatNumber(subsetAnalysisJob.bytesRead),total:formatNumber(subsetAnalysisJob.totalBytes)})}</p><progress max={subsetAnalysisJob.totalBytes||1} value={subsetAnalysisJob.bytesRead} aria-label={t('subset.progress')}></progress><button type="button" onclick={()=>void action(cancelSubsetAnalysis)}>{t('dialog.cancel')}</button></div>{/if}</div>{/if}
+   {#if activeProject}<div id="freya-project-panel" class="sidebar-tab-panel" role="tabpanel" aria-label={t('project.tab')} hidden={effectiveSidebarTab!=='project'}>{#key activeProject.id}<ProjectPanel project={activeProject} sources={projectSources} recipes={projectRecipes} results={projectResults} exportJobs={activeProjectExports} onexportsubset={recipe=>void exportProjectSubset(recipe)} onopenresult={openProjectResult} onshowresult={showProjectResult} onaddresultsource={addProjectResultSource} onregisterresult={id=>void registerProjectResult(id)} oncancelexport={id=>void cancelProjectExport(id)} onclose={closeProject} onadd={()=>addProjectSource()} onopen={openProjectSource} onnewsubset={(sourceId,baseRecipeId)=>openProjectSubset(sourceId,{blank:true,...baseRecipeId?{baseRecipeId}:{}})} onopensubset={recipe=>openProjectSubset(recipe.rootSourceId,{recipeId:recipe.id,autorun:recipe.executable})} onanalyzesubset={recipe=>void analyzeProjectSubset(recipe)} analysisBusy={!!subsetAnalysisJob}/>{/key}{#if subsetAnalysisJob}<div class="subset-analysis-progress"><p role="status" aria-live="polite">{t('subset.analysis.preparing')} {t('subset.progressBytes',{bytes:formatNumber(subsetAnalysisJob.bytesRead),total:formatNumber(subsetAnalysisJob.totalBytes)})}</p><progress max={subsetAnalysisJob.totalBytes||1} value={subsetAnalysisJob.bytesRead} aria-label={t('subset.progress')}></progress><button type="button" onclick={()=>void action(cancelSubsetAnalysis)}>{t('dialog.cancel')}</button></div>{/if}</div>{/if}
    <div class="sidebar-bottom"><img class="brand-mark small" src={appIcon} alt=""/><button class="text-button" aria-label={t('about.title')} onclick={()=>appDialog='about'}>{t('about.product')}</button><span class="spacer"></span><select aria-label="Tema" value={theme} onchange={e=>themeChange(e.currentTarget.value)}><option value="system">Sistema</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></div>
   </aside><button class="resize-handle sidebar-handle" aria-valuenow={sidebarWidth} aria-valuemin="180" aria-valuemax="420" role="slider" aria-label="Ancho del explorador" aria-orientation="vertical" tabindex="0" onpointerdown={resizeSidebar} onkeydown={e=>{if(e.key==='ArrowRight')sidebarWidth=Math.min(420,sidebarWidth+10);if(e.key==='ArrowLeft')sidebarWidth=Math.max(180,sidebarWidth-10);if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();remember({barraLateral:{ancho:sidebarWidth}})}}}></button>{/if}
   <main class="main-area">
@@ -692,8 +740,9 @@
     {#key `${active.id}:${active.csvView??'table'}:${active.kind==='csv'?0:reopenedText}`}
      {#if active.kind==='csv'}
       {#if csvText}<div class="document-tools csv-text-tools">{@render csvViewControls()}<button class="analyze" title={t('analysis.tab.search')} onclick={()=>void openAnalysis(active!.id)}><Icon name="chart-column" size={14}/>{t('analysis.tab.open')}</button><span class="spacer"></span><details class="insert-menu csv-text-options" bind:this={csvOptions}><summary>{t('csvText.options')}</summary><div class="dropdown"><button class:btn-tint={csvWrap} aria-pressed={csvWrap} onclick={()=>textOption('wrap')}>{t('csvText.wrap')}</button><button class:btn-tint={csvSpaces} aria-pressed={csvSpaces} onclick={()=>textOption('spaces')}>{t('csvText.spaces')}</button><button class:btn-tint={preferencesState.values.editor.csvColumnColors} aria-pressed={preferencesState.values.editor.csvColumnColors} disabled={preferencesState.readonly} onclick={()=>textOption('colors')}>{t('csvText.columnColors')}</button><button onclick={()=>textOption('line')} title={t('csvText.goto.title')}>{t('csvText.goto')}</button></div></details><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> {t('csvText.search')}</button></div>{/if}
+      {#if activeProjectResult}<ProjectResultOrigin result={activeProjectResult} dirty={active.dirty}/>{/if}
       {#if csvText}{#if active.warning}<div class="warning-banner" style="color:var(--text)">{active.warning}</div>{/if}<div class="document-panes"><div class="editor-pane" style:width="100%"><div class="pane-caption">{t('csvText.caption')}{#if active.readonly}<span>{t('csvText.readonly')}</span>{/if}</div><Editor bind:this={editor} editing={preferencesState.values.editor} text={active.text??''} readonly={editingLocked} kind="csv-text" label={t('csvText.editorLabel')} wrapLines={csvWrap} showWhitespace={csvSpaces} csvDelimiter={active.delimiter} csvHeader={active.hasHeader!==false} csvColors={preferencesState.values.editor.csvColumnColors} onchange={text=>updateText(active!.id,text)}/></div></div>
-      {:else}<CsvTable bind:this={csv} doc={active} project={activeProject} sourceInfo={projectSources.find(source=>source.documentId===active.id)} recipes={projectRecipes} externalChange={external.includes(active.id)} onanalysis={(section,statistics)=>void openAnalysis(active!.id,section,statistics)} analysisHidden={!!activeAnalysis} {commandTitle} viewControls={csvViewControls} onchange={doc=>merge(doc)} onerror={error} onstatus={value=>status=value}/>{/if}
+      {:else}<CsvTable bind:this={csv} onexportsubset={recipe=>void exportProjectSubset(recipe)} doc={active} project={activeProject} sourceInfo={projectSources.find(source=>source.documentId===active.id)} recipes={projectRecipes} externalChange={external.includes(active.id)} onanalysis={(section,statistics)=>void openAnalysis(active!.id,section,statistics)} analysisHidden={!!activeAnalysis} {commandTitle} viewControls={csvViewControls} onchange={doc=>merge(doc)} onerror={error} onstatus={value=>status=value}/>{/if}
      {:else}
       <div class="document-tools" class:markdown-tools={active.kind==='markdown'}><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div>{#if active.kind==='markdown'&&mode!=='preview'}<MarkdownToolbar readonly={editingLocked} formatState={markdownState} onformat={(action,language)=>editor?.format(action,language)} onsearch={searchText} onindex={toggleIndex} {indexVisible}/>{:else}<span class="spacer"></span><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> Buscar</button>{#if active.kind==='markdown'}<button class="text-button" class:active={indexVisible} aria-pressed={indexVisible} onclick={toggleIndex}><Icon name="table-of-contents" size={14}/> Índice</button>{/if}{/if}</div>
       {#if active.warning}<div class="warning-banner"><span role={active.encodingPending?'status':undefined}>{active.warning}</span>{#if active.encodingPending} <button type="button" onclick={()=>encodingControl?.open()}>{t('textEncoding.confirm')}</button>{/if}</div>{/if}
@@ -713,11 +762,13 @@
    {/each}
   </main>
  </div>
+ {#if !projectSubset}<span class="sr-only" role="status" aria-live="polite" aria-atomic="true">{projectExportAnnouncement}</span>{/if}
  <footer class="statusbar"><span class="status-dot"></span><span class="truncate">{status}</span>{#if opening}<span role="status">{opening.phase}</span><button onclick={cancelOpening}>Cancelar apertura</button>{/if}<span class="spacer"></span><div id="document-status"></div>{#if active&&(active.kind==='markdown'||active.kind==='text')}<TextStats id={active.id} name={active.name} text={active.text??''} markdown={active.kind==='markdown'} partial={active.readonly} selection={textSelection}/>{/if}{#if active}{#if csvText&&csvTextInfo}<span role="status" aria-label={t('csvText.format')} aria-live="polite">{t(`csvText.encoding.${active.encoding}`)} · {plural('csvText.lines',csvTextInfo.lines)}</span>{:else if active.kind!=='csv'}{#key active.id}<TextEncodingControl bind:this={encodingControl} doc={active} locked={busy||savingActive||applicationClosing||!!assetBusy[active.id]} onreopen={reopenTextEncoding} onsave={async encoding=>!!(await save(false,encoding))}/>{/key}{/if}{#if active.readonly||!active.path||active.dirty}<span>{active.readonly?'Solo lectura':!active.path?'Sin guardar':'Cambios pendientes'}</span>{/if}{/if}<span>Local</span></footer>
  {#if projectSubset&&projectSubsetSource&&activeProject}
   <dialog class="project-subset-dialog" use:projectSubsetModal aria-label={t('subset.projectDialog',{source:projectSubsetSource.name})} aria-describedby="project-subset-context" oncancel={event=>{event.preventDefault();projectSubsetPanel?.closeThen()}}>
+   <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">{projectExportAnnouncement}</span>
    <p id="project-subset-context" class="project-subset-context">{t('subset.projectContext',{project:activeProject.name,source:projectSubsetSource.name})}</p>
-   {#key projectSubset}<SubsetPanel bind:this={projectSubsetPanel} project={activeProject} source={projectSubsetSource} recipes={projectRecipes} intent={projectSubset.intent} ontry={(draft,requestId)=>window.freya.projectRecipeTry(projectSubset!.projectId,draft,requestId)} oncancel={requestId=>window.freya.projectRecipeCancel(requestId)} onsave={draft=>window.freya.projectSaveRecipe(projectSubset!.projectId,draft)} onclose={()=>projectSubset=null}/>{/key}
+   {#key projectSubset}<SubsetPanel bind:this={projectSubsetPanel} project={activeProject} source={projectSubsetSource} recipes={projectRecipes} intent={projectSubset.intent} results={projectResults} exportJobs={activeProjectExports} onexport={id=>{const recipe=projectRecipes.find(recipe=>recipe.id===id);if(recipe)void exportProjectSubset(recipe)}} onopenresult={openProjectResult} onshowresult={showProjectResult} onaddresultsource={addProjectResultSource} onregisterresult={id=>void registerProjectResult(id)} oncancelexport={id=>void cancelProjectExport(id)} ontry={(draft,requestId)=>window.freya.projectRecipeTry(projectSubset!.projectId,draft,requestId)} oncancel={requestId=>window.freya.projectRecipeCancel(requestId)} onsave={draft=>window.freya.projectSaveRecipe(projectSubset!.projectId,draft)} onclose={()=>projectSubset=null}/>{/key}
   </dialog>
  {/if}
  {#if sourceDraft&&activeProject}<ProjectSourceDialog initial={sourceDraft} projectId={activeProject.id} onclose={()=>sourceDraft=null}/>{/if}

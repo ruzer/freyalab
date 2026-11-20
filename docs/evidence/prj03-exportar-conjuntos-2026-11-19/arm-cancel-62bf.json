@@ -1,0 +1,79 @@
+{
+  "recordedAt": "2026-11-20T04:59:03.514Z",
+  "label": "export-cancel",
+  "sha": "62bf3d81a2915b33821088da7cf50dd56ad27d2a",
+  "sourceModified": false,
+  "application": {
+    "version": "44.9.2",
+    "build": "62bf3d8",
+    "channel": "stable",
+    "electron": "44.9.2",
+    "chromium": "152.0.7977.167",
+    "node": "24.22.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "language": "es"
+  },
+  "machine": {
+    "platform": "darwin",
+    "architecture": "arm64",
+    "os": "27.0.0",
+    "cpu": "Apple M2 Max",
+    "logicalCpus": 12,
+    "totalMemoryBytes": 34359738368,
+    "node": "24.22.1",
+    "electron": "44.9.2"
+  },
+  "source": {
+    "bytes": 1000000008,
+    "records": 1000000,
+    "lineBytes": 1000,
+    "sha256": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540",
+    "sha256After": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540"
+  },
+  "execution": {
+    "freshApp": true,
+    "sourceOpenedAsDocument": false,
+    "prewarmedByFixtureHash": true,
+    "integrityChecksOutsideDuration": true,
+    "durationMs": 9262.326541999999,
+    "memory": {
+      "sampleIntervalMs": 50,
+      "samples": 182,
+      "peakAppSumWorkingSetKiB": 1190208,
+      "peakUtilitySumWorkingSetKiB": 685456,
+      "processes": [
+        {
+          "pid": 64988,
+          "name": "Network Service",
+          "peakObservedWorkingSetKiB": 48720,
+          "reportedPeakWorkingSetKiB": 48720
+        },
+        {
+          "pid": 64994,
+          "name": "FreyaLab CSV",
+          "peakObservedWorkingSetKiB": 636784,
+          "reportedPeakWorkingSetKiB": 644704
+        }
+      ]
+    }
+  },
+  "result": {
+    "outcome": {
+      "status": "cancelled"
+    },
+    "requested": true,
+    "progressAtCancel": {
+      "requestId": "937f4ff6-4a3d-4a66-907e-6b2bbe6472cc",
+      "bytesRead": 503316480,
+      "scanned": 498000,
+      "totalBytes": 1000000008
+    }
+  },
+  "output": {
+    "exists": false,
+    "bytes": 0,
+    "sha256": null
+  },
+  "manifestResults": []
+}

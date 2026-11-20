@@ -2,6 +2,7 @@ import { TableEngine } from './table-engine'
 import {runRecipe,runRecipeAnalysis} from './recipe-operation'
 import {RecipeOperationError,type RecipeOperationSource} from '../shared/recipe-operation'
 import type {ProjectRecipeStep} from '../shared/project'
+import {t} from '../shared/i18n'
 const recipeJobs=new Map<string,{cancelled:boolean}>()
 const allowed = new Set(['analysisStart','analysisNext','analysisClose','calculationStart','calculationPreview','calculationApply','open','cancelOpen','create','info','transformPreview','rangePreview','rangeClipboard','clipboard','page','viewStart','viewState','viewCancel','viewClear','edit','undo','stats','analyzeColumn','cancelAnalysis','operation','cancelOperation','markdown','serialize','snapshot','restore','markSaved','close','checkpoint'])
 const port = process.parentPort
@@ -18,6 +19,17 @@ port.on('message', async ({data}: {data:{requestId:number;method:string;args:unk
   if(method==='recipeCancel'){
    const job=recipeJobs.get(String(args[0]));if(job)job.cancelled=true
    port.postMessage({requestId});return
+  }
+  if(['recipePreview','recipeAnalysis','recipeExtract'].includes(method)&&recipeJobs.has(String(args[0])))throw new Error(t('project.export.duplicateRequest'))
+  if(method==='recipeExtract'){
+   if(typeof args[4]!=='string')throw new Error(t('project.export.inside'))
+   const key=String(args[0]),control={cancelled:false};recipeJobs.set(key,control)
+   try{
+    const result=await runRecipe(args[1] as RecipeOperationSource,args[2] as ProjectRecipeStep[],{cancelled:()=>control.cancelled,
+     progress:progress=>port.postMessage({recipeProgress:{requestId:key,...progress}})},{operation:'recipe_extract',output:String(args[3]),projectRoot:args[4]})
+    port.postMessage({requestId,result})
+   }finally{recipeJobs.delete(key)}
+   return
   }
   if(method==='recipePreview'){
    const key=String(args[0]),control={cancelled:false};recipeJobs.set(key,control)

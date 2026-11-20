@@ -1,0 +1,291 @@
+{
+  "files": 32,
+  "before": 16,
+  "after": 16,
+  "locales": [
+    "es",
+    "en-XA"
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "sizes": [
+    [
+      1440,
+      900
+    ],
+    [
+      1280,
+      720
+    ]
+  ],
+  "views": {
+    "before": [
+      "tree",
+      "source"
+    ],
+    "after": [
+      "tree",
+      "origin"
+    ]
+  },
+  "entries": [
+    {
+      "path": "before/before-en-XA-light-1440x900-source.png",
+      "sha256": "5f7f2770ce0811459e989bc719078199a8050cd0d15a390089d246188880c139",
+      "width": 1440,
+      "height": 900,
+      "bytes": 70735,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-en-XA-light-1440x900-tree.png",
+      "sha256": "762bff29e91fb0b24b9ed760410d5589775c814dc0945063ce840897d3e21c94",
+      "width": 1440,
+      "height": 900,
+      "bytes": 90747,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-en-XA-dark-1280x720-tree.png",
+      "sha256": "2dc2b8ad93d57e2204a80a910f02e2b61eb19946cca7f5603e9778d8c8434533",
+      "width": 1280,
+      "height": 720,
+      "bytes": 65340,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-en-XA-light-1280x720-source.png",
+      "sha256": "c9c459b076cfc79df6731ef1fd19d35fd8185552257802945714e47245890532",
+      "width": 1280,
+      "height": 720,
+      "bytes": 65476,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-en-XA-dark-1280x720-source.png",
+      "sha256": "a8e7f9e56413516a9d3c52ad886ded8b092be60afc9b630056e8edaec55b640a",
+      "width": 1280,
+      "height": 720,
+      "bytes": 65162,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-en-XA-dark-1440x900-tree.png",
+      "sha256": "933cf5e730f7ee33ef5d83f4708527f63b9a2c0bd01446614c2411f65722238a",
+      "width": 1440,
+      "height": 900,
+      "bytes": 70470,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-en-XA-dark-1440x900-source.png",
+      "sha256": "933cf5e730f7ee33ef5d83f4708527f63b9a2c0bd01446614c2411f65722238a",
+      "width": 1440,
+      "height": 900,
+      "bytes": 70470,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-en-XA-light-1280x720-tree.png",
+      "sha256": "22fd7cd8a026bcfdc36d08a7db8458ac77a2b2ca04b6131b7a24baff0813ba43",
+      "width": 1280,
+      "height": 720,
+      "bytes": 65600,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-es-dark-1280x720-source.png",
+      "sha256": "9373ab88ac209486995ced2c0b508bb3682d218ad6916ce68ec83e36b4a3e1e1",
+      "width": 1280,
+      "height": 720,
+      "bytes": 59877,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-es-dark-1280x720-tree.png",
+      "sha256": "c3e80d477c8f0a8d57e052174c7492dbb2133306d9d86e42595d3db3fedbbb0f",
+      "width": 1280,
+      "height": 720,
+      "bytes": 60005,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-es-dark-1440x900-source.png",
+      "sha256": "2b049bd305f41b4adfdcece9630be939b1ae5e52b5bf5e97a28b83de32067f25",
+      "width": 1440,
+      "height": 900,
+      "bytes": 62608,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-es-light-1440x900-tree.png",
+      "sha256": "3bd0670b3fa7149179505149830c7da914519a6edc03b9e9049879a172640f5e",
+      "width": 1440,
+      "height": 900,
+      "bytes": 86053,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-es-light-1280x720-tree.png",
+      "sha256": "fa6827fc8bcf9b47d49853076dad99778f26c27e5eeb8c915bc140c75878d84c",
+      "width": 1280,
+      "height": 720,
+      "bytes": 60125,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-es-light-1440x900-source.png",
+      "sha256": "3a8e6035a64edd65616ac57752c922b971105e4764ed444b54f55b88046a780d",
+      "width": 1440,
+      "height": 900,
+      "bytes": 62758,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-es-dark-1440x900-tree.png",
+      "sha256": "2b049bd305f41b4adfdcece9630be939b1ae5e52b5bf5e97a28b83de32067f25",
+      "width": 1440,
+      "height": 900,
+      "bytes": 62608,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "before/before-es-light-1280x720-source.png",
+      "sha256": "38729b7f44aa9cb12cf8ab9d10dbfedfb904a4e3ecf9cc76a258b6f90c0aae27",
+      "width": 1280,
+      "height": 720,
+      "bytes": 60018,
+      "phase": "baseline 401713d"
+    },
+    {
+      "path": "after/prj03-es-dark-1440x900-tree.png",
+      "sha256": "e1cfa9cfad63b581274144ab8b3740c890d6342ca89b4cbe180ba9ee121857e6",
+      "width": 1440,
+      "height": 900,
+      "bytes": 133675,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-es-light-1440x900-tree.png",
+      "sha256": "d68f3fffcd91be1b2e28ef87192db4bf7494e47a4013a1ad6bc509ad7a478956",
+      "width": 1440,
+      "height": 900,
+      "bytes": 133088,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-es-light-1280x720-tree.png",
+      "sha256": "dac80c4a62f44c35cb4bb8d99ccb3b706a800320f712e90327efb4995629f4dd",
+      "width": 1280,
+      "height": 720,
+      "bytes": 109042,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-es-dark-1280x720-origin.png",
+      "sha256": "277c851e842d415fef445dbb984edeeb105c3abb08a249ca2033b074817b4d7c",
+      "width": 1280,
+      "height": 720,
+      "bytes": 119087,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-es-light-1440x900-origin.png",
+      "sha256": "2f3f28b878759cf56f9762223e0ded7cf6e2ad70acd88ed9ff2aa2051f647adf",
+      "width": 1440,
+      "height": 900,
+      "bytes": 131400,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-es-dark-1440x900-origin.png",
+      "sha256": "f319932d83b303d1c4abaa82f8a72155f7df83f08df812921b839b1231ebc2d7",
+      "width": 1440,
+      "height": 900,
+      "bytes": 133220,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-es-dark-1280x720-tree.png",
+      "sha256": "25198013b2623ae156de737025215b0a898b9ea4396b0a585b6fdd77d598690a",
+      "width": 1280,
+      "height": 720,
+      "bytes": 109126,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-es-light-1280x720-origin.png",
+      "sha256": "dc8e2cc3ce121822704cdb4ee957ff456dc3a1b1c11f1feaf50eddfb2a7dd3c2",
+      "width": 1280,
+      "height": 720,
+      "bytes": 117083,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-en-XA-dark-1280x720-origin.png",
+      "sha256": "cd5d45206c245662a92abf484837deb08654935851a5f81effbb249eb69eea71",
+      "width": 1280,
+      "height": 720,
+      "bytes": 124010,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-en-XA-light-1440x900-origin.png",
+      "sha256": "a6d394ad755165f8d6d1af19a997e13e97a613df40042ea0145854a7f608cd7d",
+      "width": 1440,
+      "height": 900,
+      "bytes": 141149,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-en-XA-dark-1440x900-tree.png",
+      "sha256": "b2eea178ffb76e80aab4d8af7ec39f879825282c5edc49f966b82feafea2148b",
+      "width": 1440,
+      "height": 900,
+      "bytes": 139521,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-en-XA-light-1440x900-tree.png",
+      "sha256": "ea889a7756c4341e66ef9c64a2acf32369d4376863ba8b24efbadb4428f27842",
+      "width": 1440,
+      "height": 900,
+      "bytes": 138998,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-en-XA-dark-1440x900-origin.png",
+      "sha256": "5c72ba1f3c0775bd9a027bd94767e27091c90ce7665789bfc11088788d5e626e",
+      "width": 1440,
+      "height": 900,
+      "bytes": 143254,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-en-XA-light-1280x720-origin.png",
+      "sha256": "74606269ad0ea4c9560d8a5c3337caf198c62e0e63d506dc7fa029705c4a6a16",
+      "width": 1280,
+      "height": 720,
+      "bytes": 122101,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-en-XA-light-1280x720-tree.png",
+      "sha256": "25d0161cb8b8371ac1cbe2edeae4cf5866a4ad548e20779733af3e8fdb272c9f",
+      "width": 1280,
+      "height": 720,
+      "bytes": 114418,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    },
+    {
+      "path": "after/prj03-en-XA-dark-1280x720-tree.png",
+      "sha256": "6511df68cfe7f58625dc263a116887022550cce39c2ce76b610cc9693665ea49",
+      "width": 1280,
+      "height": 720,
+      "bytes": 114540,
+      "phase": "archived UI candidate; does not itself prove final backend or benchmark"
+    }
+  ]
+}

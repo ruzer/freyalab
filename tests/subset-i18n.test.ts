@@ -40,7 +40,7 @@ describe('rótulos compartidos de análisis de conjuntos',()=>{
   expect(plural('subset.analysis.source',3,{name:'Adultos «Ñ»'},'en')).toBe('Subset Adultos «Ñ» data · 3 rows · The source is not modified')
  })
  it('explica el límite sin dar a entender que una muestra agranda el alcance permitido',()=>{
-  expect(t('subset.analysis.limit',{},'es')).toBe('La fuente supera el límite de análisis. Extrae las filas a un archivo nuevo y añádelo como fuente.')
-  expect(t('subset.analysis.limit',{},'en')).toBe('The source exceeds the analysis limit. Extract the rows to a new file and add it as a source.')
+  expect(t('subset.analysis.limit',{},'es')).toBe('La fuente supera el límite de análisis. Exporta el conjunto a un archivo y añádelo como fuente.')
+  expect(t('subset.analysis.limit',{},'en')).toBe('The source exceeds the analysis limit. Export the subset to a file and add it as a source.')
  })
 })

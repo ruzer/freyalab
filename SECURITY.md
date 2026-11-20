@@ -25,3 +25,10 @@ Las versiones se mantienen mediante actualizaciones manuales de la alfa. Los avi
 Las órdenes internas `app.prepareClose` y `app.closeAborted` usan el canal de comandos existente y se distinguen de los comandos ordinarios, cuyo callback sigue siendo síncrono. Sólo `onPrepareClose` admite una respuesta asíncrona. El preload oculta el UUID emitido por Main y responde mediante `freya:close-prepared` con exactamente UUID y booleano; no acepta texto, rutas ni un verbo elegible. Main valida emisor/frame, UUID de un uso y dueño de ventana. El rechazo conserva la ventana; el motivo y el contenido permanecen en la interfaz. Un timeout no fuerza el cierre.
 
 Las confirmaciones de todos los documentos preceden a su disposición. Durante esa fase se impiden nuevas mutaciones en la cola de Documents; no se espera un motor SQL de lectura. Las aperturas nuevas del sistema se difieren, sin ampliar la autorización de rutas recibidas del renderer. Estas medidas no prometen una transacción del sistema de archivos ni rollback de un recurso ya liberado ante un fallo excepcional.
+
+
+## Exportaciones de conjuntos
+
+Las operaciones de resultados reciben ids validados; el renderer no proporciona la ruta de exportación. Main resuelve el proyecto y rechaza destinos fuera de él, fuentes protegidas, exportaciones registradas, documentos abiertos y enlaces simbólicos. Revalida el contexto al preparar una fuente y la identidad del padre antes de crear o publicar el archivo; el temporal queda en la raíz del proyecto para poder limpiarlo si cambia la carpeta de destino. No modifica la fuente original ni reemplaza una exportación registrada.
+
+Estas comprobaciones usan rutas y las API portables de Node. No equivalen a una garantía de confinamiento atómica del kernel frente a un proceso local que sustituya directorios entre la última comprobación y el syscall; ese límite TOCTOU se conserva explícito. El registro del manifiesto y la creación del archivo son dos fases: un fallo del registro conserva el archivo y ofrece reintentar tras verificar su huella. No se promete una transacción de ambos archivos.

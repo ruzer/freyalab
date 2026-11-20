@@ -76,7 +76,7 @@ test('PRJ-01c C1: en reposo solo hay dos acciones, una protección y ningún est
  for(const [name,level] of [['prj02-censo.csv','1'],['Adultos','2'],['Muestra estable','3'],['Identificador y nota','4']])await expect(row(name)).toHaveAttribute('aria-level',level)
 })
 
-test('PRJ-01c C9: las quince acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo',async()=>{
+test('PRJ-01c C9: las acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo',async()=>{
  const before=await readFile(join(folder,'proyecto.freyalab'))
  await projectPanel().getByRole('button',{name:'Acciones del proyecto',exact:true}).press('Enter')
  let menu=projectPanel().getByRole('menu')
@@ -90,7 +90,12 @@ test('PRJ-01c C9: las quince acciones siguen alcanzables en su menú y los bloqu
  await menu.press('End');await expect(forget).toBeFocused();await forget.press('Enter');await expect(menu).toBeVisible();await menu.press('Escape')
  await expect(row('prj02-censo.csv')).toBeFocused()
  await row('Adultos').press('Shift+F10');menu=projectPanel().getByRole('menu')
- await expect(menu.getByRole('menuitem')).toHaveText(['Abrir','Analizar','Nuevo conjunto a partir de este…','Renombrar','Eliminar'])
+ await expect(menu.getByRole('menuitem')).toHaveText(['Abrir','Analizar','Exportar…','Nuevo conjunto a partir de este…','Renombrar','Eliminar'])
+ const exportItem=menu.getByRole('menuitem',{name:'Exportar…',exact:true})
+ await expect(exportItem).toBeEnabled()
+ await menu.press('Home');await expect(menu.getByRole('menuitem',{name:'Abrir',exact:true})).toBeFocused()
+ await page.keyboard.press('ArrowDown');await expect(menu.getByRole('menuitem',{name:'Analizar',exact:true})).toBeFocused()
+ await page.keyboard.press('ArrowDown');await expect(exportItem).toBeFocused()
  const remove=menu.getByRole('menuitem',{name:'Eliminar',exact:true})
  await expect(remove).toHaveAttribute('aria-disabled','true');await expect(remove).toHaveAccessibleDescription(/Muestra estable/)
  await menu.press('End');await expect(remove).toBeFocused();await remove.press('Enter');await expect(page.getByRole('dialog')).toHaveCount(0)
@@ -125,7 +130,7 @@ test('PRJ-01c C5: un fallo del explorador se anuncia junto a la fuente',async()=
 
 
 test('PRJ-01c C2/C3/C6: cuatro aperturas del menú, un punto de tabulación y navegación del árbol',async()=>{
- const adult=row('Adultos'),menu=projectPanel().getByRole('menu'),items=['Abrir','Analizar','Nuevo conjunto a partir de este…','Renombrar','Eliminar']
+ const adult=row('Adultos'),menu=projectPanel().getByRole('menu'),items=['Abrir','Analizar','Exportar…','Nuevo conjunto a partir de este…','Renombrar','Eliminar']
  for(const method of ['more','context','shift','key']){
   await adult.focus()
   if(method==='more')await adult.getByRole('button',{name:'Más acciones de Adultos',exact:true}).click()
@@ -232,7 +237,7 @@ for(const language of ['es','en-XA'] as const)test(`PRJ-01c C12: reposo, menú y
   if(state==='menu'){
    await row('Adultos').press('Shift+F10')
    const menu=projectPanel().getByRole('menu')
-   await expect(menu.getByRole('menuitem')).toHaveText(['dialog.open.button','analysis.tab.open','subset.newFromThis','subset.rename','subset.remove'].map(tr))
+   await expect(menu.getByRole('menuitem')).toHaveText(['dialog.open.button','analysis.tab.open','project.export.action','subset.newFromThis','subset.rename','subset.remove'].map(tr))
    await expect.poll(()=>menu.evaluate(element=>{const box=element.getBoundingClientRect();return box.x>=0&&box.y>=0&&box.right<=innerWidth&&box.bottom<=innerHeight})).toBe(true)
   }else{
    await page.getByRole('tab',{name:tr('project.tab'),exact:true}).focus();await page.mouse.move(width-10,height-10)
