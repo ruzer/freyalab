@@ -286,3 +286,59 @@ test('PRJ-03: los ids de proyecto v1 válidos sin UUID conservan exportación, a
  await page.evaluate(()=>window.freya.projectReregisterSource('gb-project','gb-source',crypto.randomUUID()))
  expect(await readFile(source)).toEqual(original)
 })
+
+test('PRJ-03 C3: Nota antes de ID conserva el ausente y muestra la misma advertencia en resultado y origen',async()=>{
+ expect(await page.evaluate(async()=>{
+  const {project,recipes}=await window.freya.projectState(),recipe=recipes.find(recipe=>recipe.name==='Oaxaca, adultos')!
+  return window.freya.projectSaveRecipe(project!.id,{id:recipe.id,name:recipe.name,sourceId:recipe.rootSourceId,steps:recipe.steps.map(step=>step.op==='select'?{op:'select',columns:[{position:5,name:'Nota'},{position:1,name:'ID'}]}:step)})
+ })).toBe(true)
+ const before=JSON.parse(await readFile(join(folder,'proyecto.freyalab'),'utf8'))
+ await exportSaved()
+ const bytes=Buffer.from('Nota,ID\n,00128\nok,00126\n"línea 1\nlínea 2",00123\n'),warning='1 campo ausente se escribió vacío porque va antes de otro campo'
+ expect(await readFile(output)).toEqual(bytes)
+ await expect(panel().locator('.project-export-status').getByText(warning,{exact:true})).toBeVisible()
+ await expect(resultRow().getByText(warning,{exact:true})).toBeVisible()
+ const saved=JSON.parse(await readFile(join(folder,'proyecto.freyalab'),'utf8'))
+ expect(saved.sources).toEqual(before.sources);expect(saved.recipes).toEqual(before.recipes);expect(saved.results).toHaveLength(1)
+ expect(saved.results[0]).toMatchObject({bytes:bytes.length,sha256:sha(bytes),provenance:{sourceSha256:sha(original),fidelity:{level:'values',normalization:[
+  'Solo las columnas elegidas, en el orden elegido.',
+  'Comillado mínimo: solo se entrecomillan los campos que lo necesitan.',
+  'Se conserva el fin de línea de la fuente en todos los registros.',
+  'Se conservan la codificación y el BOM de la fuente.',
+  warning
+ ]},warnings:[warning]}})
+ await resultRow().press('Enter')
+ await expect(page.locator('.project-result-origin').getByText(warning,{exact:true})).toBeVisible()
+ expect(await readFile(output)).toEqual(bytes);expect(await readFile(source)).toEqual(original)
+})
+
+for(const status of ['changed','missing']as const)test('PRJ-03 C16: fuente '+status+' bloquea Exportar en panel y menú sin cambiar el proyecto',async()=>{
+ const manifestPath=join(folder,'proyecto.freyalab'),before=await readFile(manifestPath)
+ const context=await page.evaluate(async()=>{
+  const {project,recipes}=await window.freya.projectState(),recipe=recipes.find(recipe=>recipe.name==='Oaxaca, adultos')!
+  return{projectId:project!.id,sourceId:recipe.rootSourceId,draft:{id:recipe.id,name:recipe.name,sourceId:recipe.rootSourceId,steps:recipe.steps}}
+ })
+ await row('Oaxaca, adultos').press('Enter')
+ const dialog=page.getByRole('dialog',{name:t('subset.projectDialog',{source:'censo.csv'},locale),exact:true}),subset=dialog.locator('.subset-tools'),button=subset.getByRole('button',{name:tr('project.export.action'),exact:true})
+ await expect(subset.locator('.coverage')).toBeVisible();await expect(button).toBeEnabled()
+ const changed=Buffer.concat([original,Buffer.from('00199,Oaxaca,22,40,cambio externo\n')])
+ try{
+  if(status==='changed')await writeFile(source,changed);else await rm(source)
+  // La validación real publica el estado de las fuentes incluso al rechazar Probar.
+  const failure=await page.evaluate(async input=>{
+   try{await window.freya.projectRecipeTry(input.projectId,input.draft,crypto.randomUUID());return null}catch(error){return String(error)}
+  },context)
+  expect(failure).toContain(tr('project.source.'+status))
+  expect((await page.evaluate(()=>window.freya.projectState())).sources.find(source=>source.id===context.sourceId)?.status).toBe(status)
+  const panelReason=t('subset.sourceUnavailable',{reason:tr('project.source.status.'+status)},locale)
+  await expect(button).toBeDisabled();await expect(button).toHaveAccessibleDescription(panelReason)
+  await expect(subset.getByText(panelReason,{exact:true})).toBeVisible()
+  await subset.locator('footer').getByRole('button',{name:tr('subset.close'),exact:true}).press('Enter');await expect(dialog).toHaveCount(0)
+  const menu=await openProjectRowMenu(row('Oaxaca, adultos'),locale),action=menu.getByRole('menuitem',{name:tr('project.export.action'),exact:true}),reason=tr('project.source.'+status)
+  await expect(action).toBeDisabled();await expect(action).toHaveAccessibleDescription(reason)
+  const reasonId=await action.getAttribute('aria-describedby');expect(reasonId).toBeTruthy();await expect(menu.locator('[id='+JSON.stringify(reasonId)+']')).toBeVisible()
+  await menu.press('Escape')
+  expect(await readFile(manifestPath)).toEqual(before);expect(await readFile(output).catch(()=>null)).toBeNull()
+  if(status==='changed')expect(await readFile(source)).toEqual(changed);else expect(await readFile(source).catch(()=>null)).toBeNull()
+ }finally{await writeFile(source,original)}
+})
