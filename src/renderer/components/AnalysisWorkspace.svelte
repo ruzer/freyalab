@@ -1,9 +1,12 @@
 <script lang="ts">
- import {tick} from 'svelte'
+ import {tick,untrack} from 'svelte'
  import CsvStatistics from './CsvStatistics.svelte'
  import CsvColumnsOverview from './CsvColumnsOverview.svelte'
  import CsvSql from './CsvSql.svelte'
  import Icon from './Icon.svelte'
+ import ContextMenu from './ContextMenu.svelte'
+ import {controlHint} from '../lib/control-hint'
+ import type {AnalysisExportAction} from '../lib/analysis-export'
  import {subsetCoverage} from '../lib/subset-coverage'
  import {t,plural,formatNumber,getUILanguage} from '../lib/i18n.svelte'
  import type {AnalysisSection,AnalysisTab} from '../lib/workspace-tabs'
@@ -16,48 +19,67 @@
  const unavailable=(section:AnalysisSection)=>!!doc.large&&(section==='info'||section==='statistics')
  const section=$derived(unavailable(tab.section)?'charts':tab.section)
  let visited=$state<AnalysisSection[]>([])
- let heading:HTMLHeadingElement,exportHost=$state<HTMLDivElement>(),inspection=$state<{column:number;scope:'all'|'view'}>()
+ let heading:HTMLHeadingElement,sectionList:HTMLDivElement,exportButton:HTMLButtonElement,inspection=$state<{column:number;scope:'all'|'view'}>()
+ let information=$state<CsvColumnsOverview>(),statistics=$state<CsvStatistics>(),sql=$state<CsvSql>(),charts=$state<{exportActions:()=>AnalysisExportAction[]}>()
+ let exportMenu=$state<{x:number;y:number}>()
+ const exports:AnalysisExportAction[]|undefined=$derived(section==='info'?information?.exportActions():section==='statistics'?statistics?.exportActions():section==='sql'?sql?.exportActions():charts?.exportActions()??[
+  ...['PNG','SVG','PDF'].map(format=>({label:t('charts.ui.exportImage',{format}),disabledReason:'busy' as const,run:()=>{}})),
+  ...['json','csv','markdown'].map((format,index)=>({label:t('analysis.export.'+format),disabledReason:'busy' as const,run:()=>{},separator:index===0}))
+ ])
  const mounted=$derived(visited.includes(section)?visited:[...visited,section])
  $effect(()=>{
-  if(shown){const current=section;if(!visited.includes(current))visited=[...visited,current]
-   void tick().then(()=>{if(shown&&current===section)heading?.focus()})
+  if(shown){const current=section;untrack(()=>{
+   if(!visited.includes(current))visited=[...visited,current]
+   const fromTabs=sectionList?.contains(document.activeElement)
+   void tick().then(()=>{if(shown&&current===section){if(fromTabs)sectionList.querySelector<HTMLButtonElement>('[aria-selected="true"]')?.focus();else heading?.focus()}})
+  })
   }
  })
+ $effect(()=>{section;shown;exportMenu=undefined})
  function inspect(column:number,scope:'all'|'view'){inspection={column,scope};onsection('statistics')}
+ function sectionKey(event:KeyboardEvent){
+  if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return
+  event.preventDefault();event.stopPropagation()
+  const available=sections.filter(item=>!unavailable(item)),index=available.indexOf(section)
+  onsection(available[event.key==='Home'?0:event.key==='End'?available.length-1:(index+(event.key==='ArrowRight'?1:available.length-1))%available.length])
+ }
+ function openExport(){const bounds=exportButton.getBoundingClientRect();exportMenu=exportMenu?undefined:{x:bounds.left,y:bounds.bottom}}
+ function closeExport(restore:boolean){exportMenu=undefined;if(restore)void tick().then(()=>{if(shown)exportButton?.focus()})}
+ function runExport(action:AnalysisExportAction){if(action.disabledReason)return;closeExport(true);void action.run()}
 </script>
 
 <div class="analysis-workspace" role="tabpanel" id={'workspace-panel-'+tab.id} aria-labelledby={'workspace-tab-'+tab.id} hidden={!shown}>
  <header>
-  <div class="analysis-heading"><h2 tabindex="-1" bind:this={heading}>{t('analysis.tab.section.'+section)}</h2><p>{subset?plural('subset.analysis.source',doc.rowCount??0,{name:subset.name,rows:formatNumber(doc.rowCount??0)}):t('analysis.tab.source',{name:doc.name,rows:formatNumber(doc.rowCount??0)})}</p></div>
-  <div class="analysis-toolbar">
-   <div class="analysis-sections" role="group" aria-label={t('analysis.tab.sections')}>
+  <div class="analysis-heading"><h2 tabindex="-1" bind:this={heading}>{subset?plural('subset.analysis.source',doc.rowCount??0,{name:subset.name,rows:formatNumber(doc.rowCount??0)}):t('analysis.tab.source',{name:doc.name,rows:formatNumber(doc.rowCount??0)})}</h2>
+   <div class="header-actions"><button bind:this={exportButton} type="button" aria-haspopup="menu" aria-expanded={!!exportMenu} onclick={openExport}>{t('analysis.tab.export')}<Icon name="chevron-down" size={14}/></button><button type="button" onclick={onreturn}><Icon name="table" size={14}/>{t(subset?'subset.analysis.return':'analysis.tab.return')}</button></div>
+  </div>
+   <div bind:this={sectionList} class="analysis-sections" role="tablist" aria-label={t('analysis.tab.sections')}>
     {#each sections as item (item)}
-     <button type="button" aria-pressed={item===section} disabled={unavailable(item)} title={unavailable(item)?t('analysis.tab.large'):undefined} aria-describedby={unavailable(item)?'analysis-large-'+tab.id:undefined} onclick={()=>onsection(item)}>{t('analysis.tab.section.'+item)}</button>
+     <button type="button" role="tab" id={'analysis-section-'+tab.id+'-'+item} aria-controls={'analysis-panel-'+tab.id+'-'+item} aria-selected={item===section} tabindex={item===section?0:-1} aria-disabled={unavailable(item)} disabled={unavailable(item)} title={unavailable(item)?t('analysis.tab.large'):undefined} aria-describedby={unavailable(item)?'analysis-large-'+tab.id:undefined} onkeydown={sectionKey} onclick={()=>onsection(item)}>{t('analysis.tab.section.'+item)}</button>
     {/each}
     {#if doc.large}<span id={'analysis-large-'+tab.id} class="sr-only">{t('analysis.tab.large')}</span>{/if}
    </div>
-   <div class="header-actions"><div bind:this={exportHost} hidden={section!=='charts'}></div><button type="button" onclick={onreturn}><Icon name="table" size={14}/>{t(subset?'subset.analysis.return':'analysis.tab.return')}</button></div>
-  </div>
  </header>
+ {#if exportMenu}<ContextMenu x={exportMenu.x} y={exportMenu.y} label={t('analysis.tab.export')} onclose={closeExport}>
+  {#each exports??[] as action}{#if action.separator}<div role="separator"></div>{/if}<button type="button" role="menuitem" tabindex="-1" aria-disabled={!!action.disabledReason} {...controlHint(action.disabledReason,action.title)} onclick={()=>runExport(action)}>{action.label}</button>{/each}
+ </ContextMenu>{/if}
  {#if coverage}<div class="subset-analysis-coverage" role="status">{#each coverage.lines as line}<p>{line}</p>{/each}<p>{coverage.identity}</p>{#if subset?.coverage.sourceVersionDifferent}<p>{t('subset.sourceVersionDifferent',{name:subset.sourceName})}</p>{/if}</div>{/if}
  {#if external}<p class="analysis-warning" role="status">{t('analysis.tab.external')}</p>{/if}
  {#if csvAnalysisSample(doc,view.viewMeta)===true}<p class="analysis-warning" role="status">{t('charts.fields.sample')}</p>{/if}
  {#if doc.csvView==='text'}
   <p class="analysis-warning" role="status">{t('analysis.tab.textView')}</p>
  {/if}
- {#each mounted as item (item)}
-  {#if item==='info'||doc.csvView!=='text'}
-   <div class="analysis-section" class:charts-section={item==='charts'} class:info-section={item==='info'} hidden={doc.csvView==='text'||item!==section}>
-    {#if !unavailable(item)}
-     {#if item==='info'}<CsvColumnsOverview {doc} {...view} requested={doc.csvView!=='text'&&section==='info'} {external} {onerror} {onreport} {onempty} oninspect={inspect}/>
-     {:else if item==='statistics'}<CsvStatistics {doc} {...view} embedded autofocus={false} {inspection} entry={tab.statistics} {onerror} {onreport} {onempty} onclose={onreturn}/>
-     {:else if item==='sql'}<CsvSql {doc} viewMeta={view.viewMeta} embedded {onerror} {onreport} onclose={onreturn}/>
+ {#each sections as item (item)}
+   <div class="analysis-section" role="tabpanel" id={'analysis-panel-'+tab.id+'-'+item} aria-labelledby={'analysis-section-'+tab.id+'-'+item} class:charts-section={item==='charts'} class:info-section={item==='info'} hidden={doc.csvView==='text'||item!==section}>
+    {#if mounted.includes(item)&&!unavailable(item)&&(item==='info'||doc.csvView!=='text')}
+     {#if item==='info'}<CsvColumnsOverview bind:this={information} externalExports {doc} {...view} requested={doc.csvView!=='text'&&section==='info'} {external} {onerror} {onreport} {onempty} oninspect={inspect}/>
+     {:else if item==='statistics'}<CsvStatistics bind:this={statistics} {doc} {...view} embedded autofocus={false} {inspection} entry={tab.statistics} {onerror} {onreport} {onempty} onclose={onreturn}/>
+     {:else if item==='sql'}<CsvSql bind:this={sql} {doc} viewMeta={view.viewMeta} embedded {onerror} {onreport} onclose={onreturn}/>
      {:else}{#await import('./CsvCharts.svelte')}<p role="status">{t('charts.ui.prepare')}</p>{:then module}
-      {#key JSON.stringify(doc.headers)}<module.default {doc} query={view.query} queryValid={view.queryValid} viewMeta={view.viewMeta} visible={shown&&section==='charts'} onDemand {exportHost} {onerror} onclose={()=>heading?.focus()}/>{/key}
+      {#key JSON.stringify(doc.headers)}<module.default bind:this={charts} {doc} query={view.query} queryValid={view.queryValid} viewMeta={view.viewMeta} visible={shown&&section==='charts'} onDemand {onerror} onclose={()=>heading?.focus()}/>{/key}
      {:catch}<p role="alert">{t('charts.ui.loadError')}</p>{/await}{/if}
     {/if}
    </div>
-  {/if}
  {/each}
 </div>
 
@@ -65,17 +87,14 @@
  .analysis-workspace{flex:1;display:flex;flex-direction:column;min-height:0;min-width:0;background:var(--panel)}
  .analysis-workspace[hidden],.analysis-section[hidden]{display:none}
  header{display:flex;flex-direction:column;gap:2px;padding:0 12px;border-bottom:1px solid var(--border)}
- .analysis-heading{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
- .analysis-heading p{flex:1;min-width:0;line-height:1.5}
- .analysis-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+ .analysis-heading{display:flex;align-items:center;gap:10px;min-height:30px}
  header button{min-height:24px;padding:2px 6px}
- .header-actions :global(.header-export>summary){margin-block:0;min-height:24px;padding:2px 6px}
- header p{margin:0;overflow-wrap:anywhere}
  .header-actions,.header-actions button,.analysis-sections{display:flex;align-items:center;gap:6px}
- .header-actions>div{position:relative}
- .analysis-sections{flex-wrap:wrap;padding:0}
- .analysis-sections button[aria-pressed=true]{color:var(--accent);border-color:var(--accent)}
- h2{margin:0;padding:0;font-size:var(--font-ui);line-height:1.5;flex-shrink:0}
+ .header-actions{flex-shrink:0}
+ .analysis-sections{padding:0;gap:4px}
+ :global(:root .app-shell) .analysis-sections button{border:0;border-radius:4px 4px 0 0;border-bottom:2px solid transparent;background:transparent;padding:7px 9px;font-size:11px}
+ :global(:root .app-shell) .analysis-sections button[aria-selected=true]{border-bottom-color:var(--accent);background:var(--hover);font-weight:600}
+ h2{margin:0;padding:0;font-size:var(--font-ui);line-height:1.5;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:400}
  .analysis-section{flex:1;min-height:0;min-width:0;overflow:auto}
  .charts-section{display:flex;flex-direction:column}.info-section{padding-inline:16px}
  .subset-analysis-coverage{padding:4px 12px;font-size:12px;color:var(--muted);flex-shrink:0}.subset-analysis-coverage p{margin:0;line-height:1.5;overflow-wrap:anywhere}

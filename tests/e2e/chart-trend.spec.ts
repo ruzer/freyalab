@@ -7,7 +7,7 @@ import {linearRegression,linearRegressionLine,rSquared} from 'simple-statistics'
 import {t,type Language} from '../../src/shared/i18n'
 import type {SqlRequest,GraphicExportRequest} from '../../src/shared/types'
 import {closeElectron} from './close-electron'
-import {openAnalysis,chartPanel,chartGenerate,analysisResultExport,showTable,menuItem} from './panel'
+import {openAnalysis,chartPanel,chartGenerate,analysisResultExport,showTable,menuItem,exportAnalysis} from './panel'
 
 let app:ElectronApplication,page:Page,folder:string
 const five='X,Y\n1,2\n2,4\n3,5\n4,4\n5,5\n'
@@ -67,7 +67,7 @@ test('TEN-1 cinco pares: petición, teclado, exportaciones completas y preset',a
  await expect(panel().locator('.plot')).toHaveAttribute('aria-label',/Relación no es causa/)
  await expect(panel().locator('.plot svg text').filter({hasText:/^Tendencia$/})).toHaveCount(1)
  for(const format of ['SVG','PNG']){
-  await panel().getByRole('button',{name:`Exportar gráfico ${format}`,exact:true}).click()
+  await exportAnalysis(page,'charts.ui.exportImage',{format})
   await expect(panel().locator('.chart-result>.result-announcement')).toContainText(`trend.${format.toLowerCase()}`)
   expect((await stat(join(folder,'exports','trend.'+format.toLowerCase()))).size).toBeGreaterThan(1000)
  }
@@ -75,17 +75,15 @@ test('TEN-1 cinco pares: petición, teclado, exportaciones completas y preset',a
  const images=await app.evaluate(()=>Reflect.get(globalThis,'trendImages') as GraphicExportRequest[])
  expect(images.map(image=>image.format)).toEqual(['svg','png']);expect(images.every(image=>image.svg.includes('y = 0.6·x + 2.2'))).toBe(true)
  for(const format of ['svg','png'])await copyFile(join(folder,'exports','trend.'+format),test.info().outputPath('trend-export.'+format))
- await analysisResultExport(page).locator('summary').click()
  for(const format of ['json','csv','md']){
-  await analysisResultExport(page).getByLabel('Formato de resultados del gráfico',{exact:true}).selectOption(format)
-  await analysisResultExport(page).getByRole('button',{name:'Exportar resultados',exact:true}).click()
+  await exportAnalysis(page,'analysis.export.'+({json:'json',csv:'csv',md:'markdown'} as const)[format as 'json'|'csv'|'md'])
+  if(format==='csv')await analysisResultExport(page).getByRole('button',{name:'Exportar resultados',exact:true}).click()
   await expect(panel().locator('.chart-result>.result-announcement')).toContainText(`trend.analisis.${format}`)
  }
  const json=JSON.parse(await readFile(join(folder,'exports','trend.analisis.json'),'utf8')),context=JSON.parse(await readFile(join(folder,'exports','trend.analisis.csv.contexto.json'),'utf8'))
  expect(json.trend).toMatchObject({slope:expect.closeTo(.6,12),intercept:expect.closeTo(2.2,12),r2:expect.closeTo(.6,12),r:expect.closeTo(Math.sqrt(.6),12),n:5});expect(context.trend).toEqual(json.trend)
  const {parse}=await import('csv-parse/sync');expect(parse(await readFile(join(folder,'exports','trend.analisis.csv'),'utf8'))).toHaveLength(6)
  const markdown=await readFile(join(folder,'exports','trend.analisis.md'),'utf8');expect(markdown).toContain(String(json.trend.r2));expect(markdown).toContain('Relación no es causa.')
- await analysisResultExport(page).locator('summary').click()
  await panel().getByText('Configuraciones guardadas',{exact:true}).click();await panel().getByLabel('Nombre de configuración del gráfico').fill('Recta')
  await panel().getByRole('button',{name:'Guardar configuración',exact:true}).click()
  await expect.poll(()=>page.evaluate(()=>window.freya.chartPresets())).toHaveLength(1)
@@ -168,7 +166,7 @@ test('TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor
  const checkbox=await configure();await checkbox.check();await generate()
  await expect(trend()).toContainText('Dibujados 2,000 de 300,000 puntos; la tendencia usa todos');await expect(trend()).toContainText('archivo completo desde disco');await expect(trend()).not.toContainText('muestra')
  await expect(panel().locator('.result-status')).toContainText(t('charts.fields.sample'))
- await analysisResultExport(page).locator('summary').click();await analysisResultExport(page).getByRole('button',{name:'Exportar resultados',exact:true}).click()
+ await exportAnalysis(page,'analysis.export.json')
  await expect(panel().locator('.chart-result>.result-announcement')).toContainText('many.analisis.json',{timeout:30000})
  const output=JSON.parse(await readFile(join(folder,'exports','many.analisis.json'),'utf8')),regression=linearRegression(pairs)
  expect(output.trend.n).toBe(300000);expect(output.trend.slope).toBeCloseTo(regression.m,12);expect(output.trend.r2).toBeCloseTo(rSquared(pairs,linearRegressionLine(regression)),12);expect(output.metadata.origin).toContain('completo desde disco')

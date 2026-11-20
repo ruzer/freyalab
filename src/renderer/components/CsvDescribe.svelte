@@ -5,8 +5,9 @@
  import {describeTable,type DescribeEntry} from '../lib/describe-table'
  import {describeReport,type ReportContext} from '../lib/statistics-report'
  import {controlHint} from '../lib/control-hint'
+ import type {AnalysisExportAction} from '../lib/analysis-export'
  import type {DocumentInfo,TableQuery,TableViewMeta,ColumnAnalysisRequest,TableStatsOptions} from '../../shared/types'
- let {doc,columns,query,queryValid,viewMeta,onerror,onreport,busy=$bindable(false),blocked=false,shown=true}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;busy?:boolean;blocked?:boolean;shown?:boolean}=$props()
+ let {doc,columns,query,queryValid,viewMeta,onerror,onreport,busy=$bindable(false),blocked=false,shown=true,externalExports=false}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;busy?:boolean;blocked?:boolean;shown?:boolean;externalExports?:boolean}=$props()
  let scope=$state<'all'|'view'|'selected'>('all'),analyzedScope=$state<'all'|'view'|'selected'>('all'),includeText=$state(false),reporting=$state(false),entries=$state<DescribeEntry[]>([]),total=$state(0),status=$state('describe.idle'),context=$state<ReportContext|null>(null)
  let generation=0,active:{id:string;requestId:string}|undefined
  const sample=$derived(csvAnalysisSample(doc,viewMeta))
@@ -66,6 +67,7 @@
   finally{if(current()){active=undefined;busy=false}}
  }
  async function report(){if(!context||busy||reporting||doc.revision!==context.revision)return;reporting=true;try{await onreport(describeReport({...$state.snapshot(context),scope:scopeLabel(analyzedScope,context.sample)},$state.snapshot(entries),includeText))}catch(error){onerror(String(error))}finally{reporting=false}}
+ export function exportActions():AnalysisExportAction[]{return[{label:t('describe.report'),disabledReason:busy||reporting?'busy':!context||!matrix.columns.length?'result':doc.revision!==context.revision?'refresh':null,run:report}]}
  const full=(value:string|number|null)=>value===null?'':String(value)
 </script>
 
@@ -75,7 +77,7 @@
   <label><input type="checkbox" bind:checked={includeText} disabled={busy}/>{t('describe.includeText')}</label>
   <button type="submit" class="btn-tint" aria-busy={busy} disabled={!ready||busy||blocked} {...controlHint(busy||blocked?'busy':!ready?'scope':null)}>{t('describe.calculate')}</button>
   {#if busy}<button type="button" onclick={()=>{cancel();status='describe.cancelled'}}>{t('describe.cancel')}</button><progress aria-label={t('describe.progressLabel')} value={entries.length} max={total}></progress>{/if}
-  <button type="button" disabled={!context||busy||reporting||!matrix.columns.length} {...controlHint(busy||reporting?'busy':!context?'result':null)} onclick={report}>{t('describe.report')}</button>
+  {#if !externalExports}<button type="button" disabled={!context||busy||reporting||!matrix.columns.length} {...controlHint(busy||reporting?'busy':!context?'result':null)} onclick={report}>{t('describe.report')}</button>{/if}
  </form>
  <p role="status" aria-live="polite" class:sr-only={['describe.idle','describe.changed','describe.complete'].includes(status)}>{t(status,{done:formatNumber(entries.length),total:formatNumber(total)})}</p>
  {#if sample===true}<p class="notice">{t('charts.fields.sample')}</p>{/if}

@@ -102,6 +102,12 @@ test('SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabul
   await expect(selected).toBeFocused();await expect(selected).toHaveAttribute('aria-selected','true')
   await expect(sections().getByRole('tab',{selected:true})).toHaveCount(1);await expect(sections().locator('[tabindex="0"]')).toHaveCount(1)
  }
+ for(const theme of ['light','dark']as const){
+  await page.evaluate(theme=>window.freya.setSettings({tema:theme}),theme)
+  await expect.poll(()=>page.locator('html').evaluate(element=>element.classList.contains('dark'))).toBe(theme==='dark')
+  const accent=await page.getByRole('tab',{name:'Archivos',exact:true}).evaluate(element=>getComputedStyle(element).borderBottomColor)
+  await expect.poll(()=>tabs.evaluateAll(tabs=>tabs.map(tab=>({selected:tab.getAttribute('aria-selected')==='true',line:getComputedStyle(tab).borderBottomColor})))).toEqual(sectionNames.map(name=>({selected:name==='Información',line:name==='Información'?accent:'rgba(0, 0, 0, 0)'})))
+ }
  await page.keyboard.press('Tab');expect(await sections().evaluate(element=>element.contains(document.activeElement))).toBe(false)
  await page.keyboard.press('Shift+Tab');await expect(info).toBeFocused()
  await workspace().getByRole('button',{name:'Ir al CSV',exact:true}).click();await expect(page.locator('.tabs').getByRole('tab',{name:'encuesta.csv',exact:true})).toBeFocused()
@@ -220,4 +226,22 @@ test('SIM-2a: pestañas grandes conservan el motivo y las flechas omiten Informa
  await charts.focus();await page.keyboard.press('ArrowLeft');await expect(sql).toBeFocused();await expect(sql).toHaveAttribute('aria-selected','true')
  await page.keyboard.press('Home');await expect(charts).toBeFocused();await expect(charts).toHaveAttribute('aria-selected','true')
  await page.keyboard.press('End');await expect(sql).toBeFocused();await expect(sections().locator('[tabindex="0"]')).toHaveCount(1)
+})
+
+test('SIM-2a: explorar una columna después de elegir un rango conserva habilitado su informe contextual',async()=>{
+ const first=page.getByRole('gridcell',{name:'Fila 1, Ingreso',exact:true})
+ await first.click();await page.keyboard.press('Shift+ArrowDown')
+ await openAnalysis();await selectSection('Estadísticas');await workspace().locator('.advanced-statistics>summary').click()
+ const statistics=workspace().getByRole('region',{name:'Estadísticas por columna',exact:true})
+ await statistics.getByLabel('Columnas para estadísticas',{exact:true}).selectOption('range')
+ await expect(statistics.getByLabel('Columnas para estadísticas',{exact:true})).toHaveValue('range')
+ await statistics.getByText('Explorar una columna: frecuencias, calidad y distribución',{exact:true}).click()
+ const explorer=workspace().getByRole('region',{name:'Exploración de columna',exact:true})
+ await explorer.getByLabel('Columna para explorar',{exact:true}).selectOption('2');await explore()
+ await openExport();await expect(menu().getByRole('menuitem',{name:'Informe (Markdown)',exact:true})).toHaveAttribute('aria-disabled','false')
+ await page.keyboard.press('Escape')
+ const output=await report('Informe (Markdown)','Perfil de columna'),income=records.filter(row=>row[2]!=='').map(row=>Number(row[2]))
+ expect(output).toContain('Columna 3:');expect(output).toContain('| Filas | 240 |');expect(output).toContain('| Numéricos utilizables | 239 |')
+ expect(output).toContain(`| Media | ${income.reduce((sum,value)=>sum+value,0)/income.length} |`)
+ expect(output).not.toContain('Celdas del rango');expect(await readFile(path,'utf8')).toBe(source)
 })

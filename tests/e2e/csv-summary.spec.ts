@@ -106,7 +106,7 @@ test('F2a: cargando con cancelar y reintento explícito en 100.000 filas, sin es
 test('F2a: idioma inglés, foco, anuncios y ventana de 800 px',async()=>{
  const panel=await configureSum()
  await page.evaluate(()=>window.freya.setLanguage('en'))
- await expect(page.locator('.analysis-sections').getByRole('button',{name:'Charts',exact:true})).toHaveAttribute('aria-pressed','true')
+ await expect(page.locator('.analysis-sections').getByRole('tab',{name:'Charts',exact:true})).toHaveAttribute('aria-selected','true')
  await expect(panel.getByLabel('Chart configuration',{exact:true})).toHaveText('Sum of Ventas by Región · split by Canal')
  await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Result updated');await expect(panel.locator('.chart-result>.result-announcement')).toHaveAttribute('aria-live','polite')
  await panel.locator('.more-options>summary').focus();await page.keyboard.press('Enter');await expect(panel.getByLabel('Chart X column')).toBeVisible();await panel.locator('.more-options>summary').focus();await page.keyboard.press('Enter')
@@ -119,7 +119,7 @@ test('F2a: idioma inglés, foco, anuncios y ventana de 800 px',async()=>{
 
 test('F2a: en-XA real no recorta el resultado ni desborda los controles',async()=>{
  await app.evaluate(({app})=>app.exit(0));await app.close().catch(()=>{});await launch('en-XA','profile-XA')
- await openAnalysis(page,'Gráficos');await createSuggestedChart(page);await expect(page.locator('.analysis-sections button[aria-pressed=true]')).toContainText('Chárts')
+ await openAnalysis(page,'Gráficos');await createSuggestedChart(page);await expect(page.locator('.analysis-sections [role=tab][aria-selected=true]')).toContainText('Chárts')
  const panel=chartPanel(page);await expect(panel.locator('.plot svg path').first()).toBeAttached();await expect(panel.locator('.pivot-result')).toBeVisible()
  const box=await panel.locator('.pivot-result').boundingBox();expect(box!.y+box!.height).toBeLessThanOrEqual(720)
  expect(await panel.evaluate(e=>e.scrollWidth<=e.clientWidth)).toBe(true);await expect(panel.locator('.chart-result>.result-announcement')).toHaveAttribute('aria-live','polite')

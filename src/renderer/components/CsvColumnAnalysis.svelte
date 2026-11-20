@@ -2,11 +2,12 @@
  import {t} from '../lib/i18n.svelte'
  import {csvAnalysisSample} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
+ import type {AnalysisExportAction} from '../lib/analysis-export'
  import {PROFILE_FIELDS,NUMERIC_DETAIL_FIELDS,NUMERIC_DETAIL_HELP,columnReport,type ColumnReportContext} from '../lib/statistics-report'
  import {onDestroy} from 'svelte'
  import {columnSummary} from '../../shared/column-profile'
  import type {DocumentInfo,TableQuery,ColumnAnalysis,ColumnAnalysisRequest,TableViewMeta} from '../../shared/types'
- let {doc,query,queryValid,viewMeta,onerror,onreport,column=$bindable(0),scope=$bindable('all')}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;column?:number;scope?:'all'|'view';onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
+ let {doc,query,queryValid,viewMeta,onerror,onreport,column=$bindable(0),scope=$bindable('all'),externalExports=false}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;column?:number;scope?:'all'|'view';externalExports?:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>}=$props()
  let otherColumn=$state(-1),duplicatesOnly=$state(false),bins=$state(10)
  let result=$state<ColumnAnalysis|null>(null),busy=$state(false),message=$state('Elige una columna. El análisis no modifica los datos.'),page=$state<'profile'|'frequencies'|'distribution'|'correlation'>('profile')
  let reportContext=$state<ColumnReportContext|null>(null),reporting=$state(false)
@@ -26,6 +27,7 @@
   finally{if(active===request.requestId){active=null;busy=false}}
  }
  async function report(){if(!result||!reportContext||busy||reporting||doc.revision!==result.revision)return;reporting=true;try{await onreport(columnReport($state.snapshot(reportContext),$state.snapshot(result),page))}catch(error){onerror(String(error))}finally{reporting=false}}
+ export function exportActions():AnalysisExportAction[]{return[{label:t('describe.report'),disabledReason:busy||reporting?'busy':page==='correlation'&&!result?.correlation?'correlation':!result||!reportContext?'result':doc.revision!==result.revision?'refresh':null,title:t('analysis.export.explorationHelp'),run:report}]}
  const summary=$derived(result?columnSummary(result):null)
  const number=(value:number|null)=>value===null?'—':value.toLocaleString(undefined,{maximumSignificantDigits:12})
  const columnName=(index:number)=>`${index+1}. ${doc.headers?.[index]||`Columna ${index+1}`}`
@@ -37,7 +39,7 @@
   <label>Filas <select aria-label="Filas para explorar" bind:value={scope} disabled={busy}><option value="all">{sample===undefined?t('analysis.scope.pending'):sample?'Muestra completa':'Documento completo'}</option><option value="view">{sample?'Vista de la muestra':'Vista filtrada'}</option></select></label>
   <button aria-busy={busy} {...controlHint(busy?'busy':!queryValid?'scope':!Number.isInteger(bins)||bins<1||bins>30?'parameters':null)} type="submit" disabled={busy||!queryValid||!Number.isInteger(bins)||bins<1||bins>30}>{#if busy}<span class="button-spinner" aria-hidden="true"></span>{/if}<span class:busy-label={busy} data-loading={t('ui.button.calculating')}>Explorar columna</span></button>
   {#if busy}<button class="btn-ghost" type="button" onclick={()=>{cancel();message='Exploración cancelada.'}}>Cancelar exploración</button>{/if}
-  <button {...controlHint(busy||reporting?'busy':!result||!reportContext?'result':doc.revision!==result.revision?'refresh':page==='correlation'&&!result.correlation?'correlation':null, "Abrir como documento editable la vista actual; en frecuencias incluye solo la página cargada")} type="button"  disabled={!result||!reportContext||busy||reporting||doc.revision!==result.revision||page==='correlation'&&!result.correlation} onclick={report}>Abrir informe Markdown</button>
+  {#if !externalExports}<button {...controlHint(busy||reporting?'busy':!result||!reportContext?'result':doc.revision!==result.revision?'refresh':page==='correlation'&&!result.correlation?'correlation':null, t('analysis.export.explorationHelp'))} type="button"  disabled={!result||!reportContext||busy||reporting||doc.revision!==result.revision||page==='correlation'&&!result.correlation} onclick={report}>Abrir informe Markdown</button>{/if}
  </form>
  <p role="status">{message}</p>
  {#if sample===true}<p class="notice">Solo muestra: todos los resultados describen hasta 200 registros; no el archivo completo.</p>{/if}
