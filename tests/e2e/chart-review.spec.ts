@@ -55,6 +55,7 @@ test('Revisión108 · motivo con línea propia y sin solapes a1280×720',async()
 test('Revisión108 · seis campos y acciones fijas visibles a1280×720',async()=>{
  const fields=panel().getByRole('complementary');await fields.locator('.field-list').evaluate(node=>node.scrollTop=0)
  const visible=await fields.locator('.field-list').evaluate(node=>{const area=node.getBoundingClientRect();return[...node.querySelectorAll('.field-entry')].filter(row=>{const r=row.getBoundingClientRect();return r.top>=area.top&&r.bottom<=area.bottom}).length})
+ await writeFile(test.info().outputPath('fields-before.json'),JSON.stringify(await fields.evaluate(root=>[...root.querySelectorAll('.field-list,.field-list h4,.field-entry,.field-hint,.zone-content,.zones')].map(node=>{const r=node.getBoundingClientRect(),s=getComputedStyle(node);return{kind:node.className,text:node.textContent?.slice(0,50),top:r.top,bottom:r.bottom,height:r.height,lineHeight:s.lineHeight,padding:s.padding,margin:s.margin}})),null,2))
  expect(visible).toBeGreaterThanOrEqual(6)
  await writeFile(test.info().outputPath('fields-visible.json'),JSON.stringify({visible}))
  await expect(fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true})).toBeInViewport({ratio:1})
