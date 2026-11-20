@@ -1,3 +1,4 @@
+import {t} from '../../src/shared/i18n'
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
 import electronPath from 'electron'
 import {createHash} from 'node:crypto'
@@ -191,7 +192,7 @@ test('SIM-2b: Ajustes empieza cerrado al final de Campos y conserva controles ú
 test('SIM-2b: manual sin perfil conserva medida, ejes y agrupación explícitos sin nuevos barridos ni conversión de ID',async()=>{
  const {records}=await open('manual.csv',rows(3001)),before=(await calls()).filter(operation=>operation==='analyzeColumn')
  await openAnalysis(page,'Gráficos');await assign('Ciudad','Filas');await assign('Ingreso','Valores')
- await expect(panel().locator('.field-entry').filter({has:page.locator('.field-name').filter({hasText:/^ID$/})}).locator('.field-badge')).toHaveAccessibleName('Texto')
+ await expect(panel().locator('.field-entry').filter({has:page.locator('.field-name').filter({hasText:/^ID$/})}).locator('.field-badge')).toHaveAccessibleName(t('charts.fields.text'))
  await expect(panel().getByLabel('Resumir Ingreso por',{exact:true})).toHaveValue('count')
  await expect(panel().getByLabel('Resumir Ingreso por',{exact:true}).locator('option[value=sum]')).toBeDisabled()
  await expand(settings());for(const label of ['Columna X del gráfico','Columna Y del gráfico','Tipo de medida del gráfico','Agrupación temporal del gráfico'])await expect(settings().getByLabel(label,{exact:true})).toHaveCount(1)

@@ -1,3 +1,4 @@
+import {t} from '../../src/shared/i18n'
 import {test,expect,_electron as electron,type ElectronApplication} from '@playwright/test'
 import electronPath from 'electron'
 import {mkdtemp,readFile,rm,writeFile} from 'node:fs/promises'
@@ -51,7 +52,7 @@ test('los 200 campos publican sus tipos juntos, sin una clasificación provision
  await expect(badge('Ventas')).toHaveAccessibleName('Número')
  await expect(badge('Campo 199')).toHaveAccessibleName('Número')
  await expect(badge('Fecha')).toHaveAccessibleName('Fecha')
- await expect(badge('Código «México»')).toHaveAccessibleName('Texto')
+ await expect(badge('Código «México»')).toHaveAccessibleName(t('charts.fields.text'))
  await expect(badge('Grupo')).toHaveAccessibleName('Categoría')
  for(const name of ['Descuento','Importe']){
   await expect(badge(name)).toHaveAccessibleName('Categoría')
