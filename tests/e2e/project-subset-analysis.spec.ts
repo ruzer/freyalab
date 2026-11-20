@@ -1,4 +1,4 @@
-import {chartAssignColumn,openChartSettings,openChartDetails,openChartData,waitChartResult} from './panel'
+import {chartAssignColumn,openChartSettings,openChartDetails,openChartData,waitChartResult,chartTypeButton} from './panel'
 import {expect,test,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {copyFile,mkdtemp,mkdir,readFile,rm,writeFile} from 'node:fs/promises'
@@ -144,7 +144,7 @@ async function ageHistogram(){
  const initial=await openChartData(page);await expect.poll(()=>initial.locator('tbody tr').count()).toBeGreaterThan(0)
  await (await openChartDetails(page)).locator(':scope > summary').press('Enter')
  await chartAssignColumn(page,1,'values')
- await workspace.getByRole('button',{name:tr('charts.kind.histogram'),exact:true}).press('Enter')
+ await (await chartTypeButton(page,'histogram')).press('Enter')
  const settings=await openChartSettings(page)
  await settings.getByRole('spinbutton',{name:tr('charts.ui.binsLabel'),exact:true}).fill('3')
  await waitChartResult(page)

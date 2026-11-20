@@ -1,4 +1,4 @@
-import {chartPanel,openAnalysis,createSuggestedChart,openChartSettings} from './panel'
+import {chartPanel,openAnalysis,createSuggestedChart,openChartSettings,chartAssign,chartType} from './panel'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import { closeElectron } from './close-electron'
 import electronPath from 'electron'
@@ -8,9 +8,8 @@ import {join,resolve} from 'node:path'
 
 let app:ElectronApplication,page:Page,folder:string,file:string,original:string
 const panel=()=>chartPanel(page)
-async function assign(field:string,zone:string){
- await panel().locator('.field-list').getByRole('button',{name:new RegExp(`^(Añadir|Mover) a… ${field}$`)}).click()
- await page.getByRole('menuitem',{name:new RegExp(`^Añadir a ${zone}(?: |$)`)}).click()
+async function assign(field:string,zone:'Filas'|'Columnas'|'Valores'|'Filtros'){
+ await chartAssign(page,field,({Filas:'rows',Columnas:'columns',Valores:'values',Filtros:'filters'} as const)[zone])
 }
 async function sum(field:string){await assign(field,'Valores');await panel().getByLabel(`Resumir ${field} por`,{exact:true}).selectOption('sum')}
 test.beforeEach(async()=>{
@@ -71,9 +70,9 @@ test('Revisión108 · cambiar una zona no atribuye una elección de tipo al usua
  await assign('Descuento','Valores')
  await expect(panel().getByLabel('Resumir Descuento por',{exact:true})).toHaveValue('count')
  await expect(panel().locator('.suggestion')).not.toContainText('Elegiste')
- await expect(panel().locator('.field-badge.amount').first()).toHaveAttribute('title','Parece un monto o un porcentaje')
- await panel().locator('.chart-types').getByRole('button',{name:'Mapa de calor',exact:true}).click()
- await panel().locator('.chart-types').getByRole('button',{name:'Barras',exact:true}).click()
+ await expect(panel().locator('.field-amount').first()).toHaveAttribute('title','Parece un monto o un porcentaje')
+ await chartType(page,'heatmap')
+ await chartType(page,'bar')
  await expect(panel().locator('.suggestion')).toContainText('Elegiste Barras.')
  await assign('Ventas','Valores');await expect(panel().locator('.suggestion')).not.toContainText('Elegiste')
  expect(await readFile(file,'utf8')).toBe(original)

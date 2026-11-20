@@ -104,10 +104,12 @@ export async function openChartData(page:Page){
 }
 export async function chartAssign(page:Page,field:string,zone:'rows'|'columns'|'values'|'filters'){
  const fields=await openChartFields(page),entry=fields.locator('.field-entry').filter({has:page.getByTitle(field,{exact:true})})
- await entry.getByRole('button').click()
- const destination=await translated(page,'charts.fields.destination',{zone:await translated(page,'charts.fields.'+zone)}),recommended=await translated(page,'charts.fields.recommended')
+ await expect(fields.locator('.field-list')).toHaveAttribute('aria-busy','false')
+ await entry.hover()
+ await entry.getByRole('button',{name:await translated(page,'charts.fields.more',{field}),exact:true}).click()
+ const zoneLabel=await translated(page,'charts.fields.'+zone),destinations=await Promise.all(['charts.fields.destination','charts.fields.moveDestination'].map(key=>translated(page,key,{zone:zoneLabel}))),recommended=await translated(page,'charts.fields.recommended')
  const escaped=(value:string)=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')
- await page.getByRole('menuitem',{name:new RegExp('^'+escaped(destination)+'(?: '+escaped(recommended)+')?$')}).click()
+ await page.getByRole('menuitem',{name:new RegExp('^(?:'+destinations.map(escaped).join('|')+')(?: '+escaped(recommended)+')?$')}).click()
 }
 export async function chartSource(page:Page){
  const id=(await page.locator('.tabs[role=tablist]').getByRole('tab',{selected:true}).getAttribute('id'))?.replace('workspace-tab-analysis:','')
@@ -119,8 +121,13 @@ export async function chartAssignColumn(page:Page,column:number,zone:'rows'|'col
  const {headers}=await chartSource(page),name=headers![column]||await translated(page,'charts.fields.emptyHeader',{n:column+1})
  await chartAssign(page,headers!.filter(value=>value===headers![column]).length>1?`${column+1}. ${name}`:name,zone)
 }
+export async function chartTypeButton(page:Page,kind:ChartKind){
+ const name=await translated(page,kind==='box'?'charts.ui.boxButton':'charts.kind.'+kind),recommended=await translated(page,'charts.fields.recommended')
+ const escaped=(value:string)=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')
+ return chartPanel(page).getByRole('group',{name:await translated(page,'charts.ui.chooseType'),exact:true}).getByRole('button',{name:new RegExp('^'+escaped(name)+'(?: ?'+escaped(recommended)+')?$')})
+}
 export async function chartType(page:Page,kind:ChartKind){
- await chartPanel(page).getByRole('group',{name:await translated(page,'charts.ui.chooseType'),exact:true}).getByRole('button',{name:await translated(page,kind==='box'?'charts.ui.boxButton':'charts.kind.'+kind),exact:true}).click()
+ await(await chartTypeButton(page,kind)).click()
 }
 export async function chartAggregate(page:Page,field:string){
  await openChartFields(page);return chartPanel(page).getByLabel(await translated(page,'charts.fields.aggregate',{field}),{exact:true})

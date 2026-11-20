@@ -8,7 +8,7 @@ import {parse} from 'csv-parse/sync'
 import type {DocumentInfo} from '../../src/shared/types'
 import {t} from '../../src/shared/i18n'
 import {closeElectron} from './close-electron'
-import {requestAnalysis} from './panel'
+import {requestAnalysis,chartAssign} from './panel'
 
 let app:ElectronApplication,page:Page,folder:string,path:string,doc:DocumentInfo,errors:string[]
 // La misma encuesta sintética de 240 × 7 usada por table-toolbar conserva sus campos y valores originales.
@@ -79,9 +79,7 @@ async function explore(){
  await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer.getByRole('status')).toHaveText('Exploración completa.');return explorer
 }
 async function addField(field:string,zone:'Filas'|'Valores'){
- const chart=workspace().locator('.charts-panel')
- await chart.locator('.field-list').getByRole('button',{name:'Añadir a… '+field,exact:true}).click()
- await chart.getByRole('menuitem',{name:'Añadir a '+zone+' (recomendado)',exact:true}).click()
+ await chartAssign(page,field,({Filas:'rows',Valores:'values'} as const)[zone])
 }
 
 test('SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin',async()=>{

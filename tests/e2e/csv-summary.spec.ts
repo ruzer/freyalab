@@ -1,4 +1,4 @@
-import {chartPanel,openAnalysis,selectAnalysis,showPanel,showTable,requestAnalysis,requestAnalysisTab,createSuggestedChart,analyzeButton,chartAssign,chartAssignColumn,chartAggregate,chartType,openChartFields,openChartSettings,openChartDetails,waitChartResult,applyLegacyChartPreset} from './panel'
+import {chartPanel,openAnalysis,selectAnalysis,showPanel,showTable,requestAnalysis,requestAnalysisTab,createSuggestedChart,analyzeButton,chartAssign,chartAssignColumn,chartAggregate,chartType,openChartFields,openChartSettings,openChartDetails,waitChartResult,applyLegacyChartPreset,chartTypeButton} from './panel'
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
 import { closeElectron } from './close-electron'
 import electronPath from 'electron'
@@ -45,7 +45,7 @@ test('F2a: suma por serie, total real, porcentajes y seis tipos alcanzables con 
  await expect(table.locator('tfoot')).toContainText('4,400');await expect(table.locator('tfoot')).toContainText('2,800');await expect(table.locator('tfoot')).toContainText('7,200');await expect(table.locator('tfoot')).toContainText('100%')
  await expect(table.getByRole('columnheader',{name:'% del total',exact:true})).toBeVisible()
  const types=panel.getByRole('group',{name:'Formas de visualizar',exact:true});await expect(types.getByRole('button')).toHaveCount(6)
- await types.getByRole('button',{name:'Mapa de calor',exact:true}).focus();await page.keyboard.press('Enter');await expect(types.getByRole('button',{name:'Mapa de calor',exact:true})).toHaveAttribute('aria-pressed','true')
+ await (await chartTypeButton(page,'heatmap')).focus();await page.keyboard.press('Enter');await expect((await chartTypeButton(page,'heatmap'))).toHaveAttribute('aria-pressed','true')
  expect(await readFile(path,'utf8')).toBe(original)
 })
 
@@ -139,7 +139,7 @@ test('F2a: filtros del gráfico se pueden operar en inglés sin cambiar la tabla
 test('F2a: elegir Líneas aplica la agrupación mensual sugerida para fechas ISO',async()=>{
  const file=join(folder,'fechas.csv');await writeFile(file,'Fecha,Ventas\n2026-01-01,10\n2026-01-15,20\n2026-02-01,30\n');await page.evaluate(file=>window.freya.openPaths([file]),file)
  const panel=await summary();await chartAssignColumn(page,1,'values');await (await chartAggregate(page,'Ventas')).selectOption('sum');await chartType(page,'bar');const settings=await openChartSettings(page);await settings.getByLabel('Agrupación temporal del gráfico',{exact:true}).selectOption('none');await waitChartResult(page);await settings.locator(':scope > summary').click()
- await panel.locator('.chart-types').getByRole('button',{name:'Líneas',exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await expect(panel.locator('.pivot-result tbody tr')).toHaveCount(2)
+ await chartType(page,'line');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await expect(panel.locator('.pivot-result tbody tr')).toHaveCount(2)
  await expect(panel.locator('.pivot-result tbody tr').first()).toContainText('2026-01');await expect(panel.locator('.pivot-result tfoot')).toContainText('60')
 })
 
@@ -179,8 +179,8 @@ test('AN-1b: desde Texto con cambios, Cancelar conserva el borrador y descartar 
 test('F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor',async()=>{
  const file=join(folder,'series.csv');await writeFile(file,'Paso,Valor,Serie\n0,10,A\n1,20,A\n0,15,B\n1,25,B\n0,10,A\n');await page.evaluate(file=>window.freya.openPaths([file]),file)
  const panel=await summary();await chartAssignColumn(page,0,'rows');await chartAssignColumn(page,1,'values');await (await chartAggregate(page,'Valor')).selectOption('sum');await chartAssignColumn(page,2,'columns');await waitChartResult(page)
- await panel.locator('.chart-types').getByRole('button',{name:'Líneas',exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await expect(panel.locator('.plot svg [stroke-dasharray]').first()).toBeAttached();await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-line-patterns.png')})
- await panel.locator('.chart-types').getByRole('button',{name:'Mapa de calor',exact:true}).click();await chartAssignColumn(page,2,'columns');await waitChartResult(page)
+ await chartType(page,'line');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await expect(panel.locator('.plot svg [stroke-dasharray]').first()).toBeAttached();await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-line-patterns.png')})
+ await chartType(page,'heatmap');await chartAssignColumn(page,2,'columns');await waitChartResult(page)
  const readHeatmap=()=>panel.locator('.plot').evaluate(root=>{
    const shapes=[...root.querySelectorAll('svg path,svg rect')].map(node=>({fill:getComputedStyle(node).fill,box:node.getBoundingClientRect()}))
    const cells=[...root.querySelectorAll('svg text')].flatMap(node=>{

@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {parse} from 'csv-parse/sync'
 import {closeElectron} from './close-electron'
-import {openAnalysis,chartPanel,chartSuggestion,createSuggestedChart} from './panel'
+import {openAnalysis,chartPanel,chartSuggestion,createSuggestedChart,chartAssign,chartTypeButton} from './panel'
 
 type Call={operation:string;id:string;sql?:string}
 let app:ElectronApplication,page:Page,folder:string,path:string,original:Buffer,id:string,revision:number,errors:string[]
@@ -18,8 +18,7 @@ async function results(){
  return panel().locator('.pivot-result tbody tr').evaluateAll(rows=>Object.fromEntries(rows.map(row=>[row.querySelector('th')!.textContent!.trim(),row.querySelector('td')!.textContent!.trim()])))
 }
 async function add(field:string,zone:'Filas'|'Valores'){
- await panel().locator('.field-list').getByRole('button',{name:new RegExp(`^(Añadir|Mover) a… ${field}$`)}).click()
- await panel().getByRole('menuitem',{name:new RegExp(`^Añadir a ${zone}(?: |$)`)}).click()
+ await chartAssign(page,field,({Filas:'rows',Valores:'values'} as const)[zone])
 }
 test.beforeEach(async()=>{
  folder=await mkdtemp(join(tmpdir(),'freya-sim1d-'));path=join(folder,'encuesta.csv');errors=[]
@@ -86,7 +85,7 @@ test('SIM-1d: Ciudad e Ingreso usan Promedio independiente y permiten Suma expl�
 test('SIM-1d: Ingreso antes de Ciudad propone Promedio y cambiar Filas conserva Suma explícita',async()=>{
  await openAnalysis(page,'Gráficos');await expect(chartSuggestion(page)).toBeEnabled()
  await add('Ingreso','Valores')
- await expect(panel().locator('.chart-types button[aria-pressed=true]')).toHaveText('Histograma')
+ await expect(await chartTypeButton(page,'histogram')).toHaveAttribute('aria-pressed','true')
  await add('Ciudad','Filas')
  const aggregate=values().getByRole('combobox',{name:'Resumir Ingreso por',exact:true})
  await expect(aggregate).toHaveValue('average')
