@@ -166,3 +166,43 @@ test('SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva desti
  await entry.press('ContextMenu');await expect(menu()).toBeVisible();await menu().press('Escape');await expect(entry).toBeFocused()
  expect(await calls()).toEqual(before)
 })
+
+test('SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas',async()=>{
+ // La excepción aprobada valida solo estos botones con perfiles ya cargados.
+ // El motor, Generar y las configuraciones manuales/presets conservan su contrato.
+ await assign('Ciudad','Filas');await assign('Edad','Valores');await ready()
+ await expect(title()).toHaveText('Promedio de Edad por Ciudad')
+ const types=panel().locator('.chart-types'),button=(label:string)=>types.getByRole('button',{name:new RegExp('\\b'+label+'\\b')})
+ await expect(types.getByRole('button')).toHaveCount(6)
+ const matrix=[
+  {label:'Barras',available:true},
+  {label:'Líneas',available:false,reason:'Necesita un campo numérico o de fecha en Filas y un campo numérico en Valores'},
+  {label:'Dispersión',available:false,reason:'Necesita dos campos numéricos'},
+  {label:'Histograma',available:true},
+  {label:'Mapa de calor',available:true},
+  {label:'Caja',available:true}
+ ]as const
+ for(const entry of matrix){
+  const control=button(entry.label)
+  if(entry.available)await expect(control).toBeEnabled()
+  else{
+   await expect(control).toHaveAttribute('aria-disabled','true');await expect(control).not.toHaveAttribute('disabled')
+   await expect(control).toHaveAttribute('title',entry.reason);await expect(control).toHaveAttribute('aria-describedby',/\S+/)
+   await expect(control).toHaveAccessibleDescription(entry.reason)
+  }
+ }
+ const recommended=button('Barras')
+ await expect(recommended).toContainText(/recomendado/i);await expect(recommended).toHaveAccessibleName(/recomendado/i)
+ for(const entry of matrix.filter(entry=>entry.label!=='Barras')){await expect(button(entry.label)).not.toContainText(/recomendado/i);await expect(button(entry.label)).not.toHaveAccessibleName(/recomendado/i)}
+ await barrier();const before=await calls(),table=await panel().locator('.pivot-result').innerText()
+ await page.clock.install()
+ for(const label of ['Líneas','Dispersión']){
+  const unavailable=button(label);await unavailable.focus();await expect(unavailable).toBeFocused()
+  for(const key of ['Enter','Space']){
+   await unavailable.press(key);await drainPresentation()
+   expect(await calls()).toEqual(before);await expect(recommended).toHaveAttribute('aria-pressed','true')
+   await expect(unavailable).toHaveAttribute('aria-pressed','false');await expect(title()).toHaveText('Promedio de Edad por Ciudad')
+   expect(await panel().locator('.pivot-result').innerText()).toBe(table)
+  }
+ }
+})
