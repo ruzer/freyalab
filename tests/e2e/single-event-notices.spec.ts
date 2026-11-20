@@ -57,7 +57,7 @@ async function changeSource(){
 async function unchangedRegistration(record:ProjectManifest['sources'][number]){
  expect((await manifest()).sources[0]).toEqual(record);expect(record.sha256).toBe(digest(original));expect(digest(changed)).not.toBe(record.sha256);expect(await readFile(source)).toEqual(changed)
  expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.name==='encuesta.csv')).toMatchObject({projectSource:'protected',readonly:true,dirty:false,rowCount:2})
- await expect(page.getByRole('button',{name:'Guardar',exact:true})).toBeDisabled()
+ await expect(page.getByRole('button',{name:tr('toolbar.save'),exact:true})).toBeDisabled()
 }
 
 test.beforeEach(async({},info)=>{
@@ -95,6 +95,24 @@ for(const locale of ['es','en-XA'] as const){
 
 test('SIM-2g: éxito, información y error conservan iconos, teclado y duraciones sin copiarse al pie',async()=>{
  const path=join(root,'editable.csv');await writeFile(path,original);const[doc]=await page.evaluate(path=>window.freya.openPaths([path]),path),grid=page.getByRole('grid',{name:'Tabla de datos',exact:true});await expect(grid.locator('.csv-row')).toHaveCount(2)
+ await app.evaluate(({ipcMain},fixtureRoot)=>{
+  type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
+  const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')!
+  const calls:{operation:string;id?:string;args:unknown[];beginMs:number;endMs?:number;error?:string}[]=[];Reflect.set(globalThis,'singleNoticeIpc',calls)
+  const safe=(value:unknown):unknown=>{
+   if(typeof value==='string')return ['text','table','save','discard',''].includes(value)||/^[0-9a-f-]{36}$/i.test(value)?value:'[string]'
+   if(Array.isArray(value))return value.map(safe)
+   if(value&&typeof value==='object')return Object.fromEntries(['requestId','revision','offset','limit','column','rowId','type','operation'].filter(key=>Reflect.has(value,key)).map(key=>[key,Reflect.get(value,key)]))
+   return value
+  }
+  handlers.set('freya',async(event,...args)=>{
+   const call={operation:String(args[0]),id:typeof args[1]==='string'?safe(args[1]) as string:undefined,args:args.slice(2).map(safe),beginMs:performance.now(),endMs:undefined as number|undefined,error:undefined as string|undefined};calls.push(call)
+   try{return await original(event,...args)}
+   catch(error){call.error=String(error).replaceAll('/private'+fixtureRoot,'[fixture]').replaceAll(fixtureRoot,'[fixture]');throw error}
+   finally{call.endMs=performance.now()}
+  })
+ },root)
+ try{
  const cell=page.getByRole('gridcell',{name:'Fila 1, Ingreso',exact:true});await cell.dblclick();await page.getByRole('textbox',{name:'Editar celda',exact:true}).fill('150');await page.getByRole('textbox',{name:'Editar celda',exact:true}).press('Enter');await expect(cell).toHaveText('150');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)?.dirty).toBe(true)
  await page.clock.install({time:0});await page.clock.pauseAt(1)
  await page.getByRole('button',{name:'Guardar',exact:true}).press('Enter');await expect(toast()).toHaveClass(/\bsuccess\b/);await expect(toast()).toContainText('Archivo guardado');await iconFor(toast(),'success');await expect(footer().locator(':scope>.truncate')).not.toContainText('Archivo guardado')
@@ -109,4 +127,5 @@ test('SIM-2g: éxito, información y error conservan iconos, teclado y duracione
  await expect(toast()).toHaveClass(/\berror\b/);await expect(toast()).toContainText('Guarda los cambios antes de cambiar cómo se interpreta el archivo.');await iconFor(toast(),'error');await expect(footer().locator(':scope>.truncate')).toHaveText(state);await expect(cell).toHaveText('175');expect(await readFile(path)).toEqual(saved)
  await page.clock.runFor(6999);await expect(toast()).toBeVisible();await page.clock.runFor(1);await expect(toast()).toHaveCount(0);await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toMatchObject({dirty:true,delimiter:','});expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)?.projectSource).toBeUndefined()
  expect(await readFile(source)).toEqual(original)
+ }finally{await test.info().attach('notice-mode-ipc',{body:JSON.stringify(await app.evaluate(()=>Reflect.get(globalThis,'singleNoticeIpc')),null,2),contentType:'application/json'})}
 })
