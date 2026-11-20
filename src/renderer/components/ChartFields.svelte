@@ -23,7 +23,7 @@
  const valuesNumeric=$derived(options.measureType==='number')
  const label=(zone:string)=>t('charts.fields.'+zone)
  const heatHint=$props.id()
- const menuId=$props.id()
+ const menuId=heatHint+'-menu'
  function openMenu(column:number,origin:HTMLElement){
   focused=column
   if(disabled){onannounce(t('charts.fields.busy'));return}
