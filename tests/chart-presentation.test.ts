@@ -3,7 +3,7 @@ import {chartOption} from '../src/renderer/chart-option'
 import {chartLabels,type ChartData,type ChartOptions} from '../src/shared/charts'
 import {setLanguage,t} from '../src/shared/i18n'
 const options:ChartOptions={kind:'bar',x:0,y:1,bins:10,aggregate:'sum',descending:false,measureType:'number'}
-const colors={text:'#25252b',background:'#f2f2f7',accent:'#007aff'}
+const colors={text:'#25252b',background:'#f2f2f7',accent:'#007aff',width:900}
 afterEach(()=>setLanguage('es'))
 it.each([{language:'es',label:'Número de filas',summary:'Número de filas por Ciudad',combo:'Cuenta'},{language:'en',label:'Number of rows',summary:'Number of rows by Ciudad',combo:'Count'}] as const)('SIM-1d: el conteo describe filas sin renombrar el cálculo del selector en $language',({language,label,summary,combo})=>{
  setLanguage(language)

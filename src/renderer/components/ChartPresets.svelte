@@ -34,5 +34,6 @@
  <p aria-live="polite" aria-label={t('charts.presets.status')}>{message}</p>
 </details>
 <style>
+ .controls label{min-width:0;flex:1 1 100%;flex-wrap:wrap}.controls input,.controls select{min-width:0;max-width:100%;box-sizing:border-box}.controls input{flex:1}
  .presets{border:1px solid var(--border);border-radius:6px;padding:0 8px;margin:8px 0}summary{cursor:pointer;padding:8px 0}.controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:8px 0}label{display:flex;align-items:center;gap:6px}p{color:var(--muted);line-height:1.5}input,select,button{font:inherit;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:var(--radius-control);padding:5px 8px}select{max-width:240px}button:disabled{opacity:.5}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>
