@@ -1,6 +1,6 @@
 # SIM-2c · Campos más simples · Alcance y ADR 0021
 
-Preparación sin implementación. Rama codex/sim-2c-campos-simples; base fija eb64dd43b22bc3fb4fd3caec7fd4f5d95105c874, interfaz B verde que incorpora A. No se modifican B, A, P3 ni sus heads de CI. La [historia SIM-2](historia-sim2-analisis-graficos-diseno-para-codex.md), sección C y reglas comunes, es la referencia de aceptación.
+Candidato de implementación pendiente de calificación. Rama codex/sim-2c-campos-simples; base fija eb64dd43b22bc3fb4fd3caec7fd4f5d95105c874, interfaz B verde que incorpora A. No se modifican B, A, P3 ni sus heads de CI. La [historia SIM-2](historia-sim2-analisis-graficos-diseno-para-codex.md), sección C y reglas comunes, es la referencia de aceptación.
 
 ## Alcance
 
@@ -29,16 +29,16 @@ La sexta E2E fija los dos motivos exactos, tanto en title como en aria-described
 
 Si se necesita compartir la proyección, extraer solo el cuerpo puro actual de chooseKind a un helper que devuelva una copia de options, recibiendo el contexto ya disponible de sugerencia/perfiles. El handler conserva chosenTypeSignature. Los botones y el handler reutilizarían esa proyección; chartSQL/chartTotalSQL quedan sin cambios. La comprobación de perfiles se aplica únicamente a los botones y usa evidencia ya cargada; su ausencia no autoriza inventar un tipo ni lanzar un detector. Las configuraciones manuales y presets no atraviesan esa nueva guarda de botones.
 
-## Mapa mínimo previsto, sin aplicar
+## Mapa del candidato
 
-| Archivo | Cambio previsto |
+| Archivo | Cambio o límite |
 | --- | --- |
 | src/renderer/components/ChartFields.svelte | Activación de fila, menú de casa, roving, iconos de tipo, pista y zonas vacías; conservar muestras, warning monetario, chips, agregación, filtros y ajustes de B. |
 | src/renderer/components/CsvCharts.svelte | Marca recomendada y disponibilidad de botones; reutilizar la proyección sin cambiar cálculo, firma, cancelación, carga de perfiles, título ni exportaciones. |
-| src/shared/chart-fields.ts, solo si hace falta | Helper puro mínimo de proyección de tipo; recommendedZone, addToZone y sus 49 combinaciones conservan datos/semántica. |
+| src/shared/chart-fields.ts | Helper puro mínimo de proyección y elegibilidad del botón; recommendedZone, addToZone y sus 49 combinaciones conservan datos/semántica. |
 | src/shared/i18n/es.json y en.json | Pista, Vacía, Más acciones y motivos aprobados; en-XA usa generación existente. Retirar solo claves que queden sin consumidores. |
 | tests/e2e/chart-simple-fields.spec.ts | Seis pruebas nuevas de comportamiento, preparadas antes de fuente; las primeras cinco y el helper corregido en a5b1a6e se conservan al añadir la sexta. |
-| tests/chart-fields.test.ts y consumidores de tipo | Tras el rojo de la matriz aprobada: equivalencia de proyección y SQL, sin nuevo detector ni cambios de motor. |
+| tests/chart-fields.test.ts y consumidores de tipo | Sin cambios en este candidato. Su ejecución y la migración de selectores eliminados corresponden al cierre coordinado por raíz. |
 
 Consumidores actuales que pueden necesitar únicamente migración de selector tras el rojo: chart-clarity, analysis-sections, chart-field-loading, chart-review, sql-progress-states, analysis-tab, chart-fields y ui-u0. No se editan ahora. Se conservan sus oráculos de datos, consultas, cancelación, revisiones, formatos y archivos originales; solo se retiran expectativas del botón/etiqueta que esta historia elimina.
 
@@ -67,4 +67,8 @@ El observador de main delega siempre al handler original; no devuelve resultados
 
 ## Estado
 
-Producto intacto. Raíz ejecutó las cinco primeras pruebas sobre la base: cuatro fallos de conducta y un fallo de setup por el sufijo recomendado de assign. El checkpoint a5b1a6ef862c077f753763d614369c9750b7023d corrige solo ese helper; su cuerpo permanece intacto al añadir la sexta. Raíz ejecutará C4 de nuevo y la nueva matriz sobre el build de la base antes de autorizar interfaz. La aprobación de la política no equivale al rojo ni autoriza adelantar producto. Capturas y calificación por plataforma se incorporarán desde ejecuciones reales posteriores. Este bloque no ejecuta GUI, build, pruebas, commits, push ni PR.
+Raíz conservó los intentos de setup fallidos: no prueban que el problema fuera la puntuación del sufijo ni demuestran la causa de Intro. El diagnóstico por clic nativo mostró el menú con «(recomendado)». El setup usa ahora clic nativo y dos nombres exactos del catálogo; sus logs temporales se retiraron sin cambiar los seis cuerpos de prueba.
+
+Después, actionable-red alcanzó ambos oráculos reales: C4 llegó a Promedio de Ingreso por Ciudad y falló al activar una fila ya usada; la sexta llegó a Ciudad+Edad y falló porque Líneas no tenía aria-disabled. Las dos fallaron en 37,846 s. Con ese rojo y la decisión del propietario, raíz autorizó implementar C.
+
+El candidato reutiliza ContextMenu y sus motivos enfocables, un tabindex itinerante, iconos existentes, recommendedZone/addToZone y los callbacks de zonas/filtros actuales. projectChartKind extrae la misma proyección; chartKindUnavailable solo gobierna botones. No se cambian chartSQL/chartTotalSQL, Generar, manual ni presets. Se conservan los seis cuerpos E2E. Tipos, unitarias, build, GUI, capturas y calificación por plataforma siguen pendientes de raíz. No se ejecutaron en este bloque ni se creó commit, push o PR. Los dos ajustes compatibles de B y main vivo se integrarán después por fusión normal coordinada por raíz; no se da por calificada esa composición futura.

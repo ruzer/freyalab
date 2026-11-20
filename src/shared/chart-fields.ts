@@ -1,6 +1,6 @@
 import {suggest,type ChartColumn} from './chart-suggest'
 import {t} from './i18n'
-import type {ChartOptions} from './charts'
+import {chartSQL,type ChartOptions} from './charts'
 export type ChartZone='rows'|'columns'|'values'
 export function fieldGroup(field:ChartColumn){const kind=field.profile?.kind;return kind==='number'||kind==='date'||kind==='category'?kind:'text'}
 export function zoneFields(options:ChartOptions){
@@ -42,4 +42,31 @@ export function initialChart(columns:readonly ChartColumn[]){
  const category=['category','text'].map(kind=>columns.find(c=>c.profile?.kind===kind)).find(Boolean),number=columns.find(c=>c.profile?.kind==='number')
  const first=category??['date','identifier'].map(kind=>columns.find(c=>c.profile?.kind===kind)).find(Boolean)??number??columns[0]
  return first?suggest(columns,{x:first.column,...!category&&number&&number!==first?{y:number.column}:{}}).options:null
+}
+
+// Proyección de chooseKind: la selección de un tipo conserva la semántica vigente.
+export function projectChartKind(options:ChartOptions,kind:ChartOptions['kind'],columns:readonly ChartColumn[],suggestion:ChartOptions|null):ChartOptions{
+ const next={...options}
+ if(kind==='heatmap'){next.y=next.series!==undefined&&next.series>=0?next.series:next.y;next.aggregate='count';next.measureType='text'}
+ next.kind=kind
+ if(kind==='histogram'||kind==='scatter')next.aggregate='count'
+ if(kind==='box')next.aggregate='median'
+ if(!['bar','line','scatter'].includes(kind))next.series=-1
+ if(!['bar','line'].includes(kind))next.time='none'
+ if(kind==='line'&&next.time==='none'&&suggestion?.kind==='line')next.time=suggestion.time??'none'
+ if(kind==='histogram'&&next.y<0&&columns.some(column=>column.column===next.x&&column.profile?.kind==='number'))next.y=next.x
+ return next
+}
+
+// Solo para botones: no se aplica a Generar, presets ni configuraciones manuales.
+export function chartKindUnavailable(headers:string[],options:ChartOptions,kind:ChartOptions['kind'],columns:readonly ChartColumn[],suggestion:ChartOptions|null):string|null{
+ const next=projectChartKind(options,kind,columns,suggestion),reason='charts.kind.unavailable.'+kind
+ if(next.y===-2)return reason
+ try{chartSQL(headers,next)}catch{return reason}
+ const x=columns.find(column=>column.column===next.x)?.profile?.kind,y=columns.find(column=>column.column===next.y)?.profile?.kind
+ if(kind==='scatter'&&(x!==undefined&&x!=='number'||y!==undefined&&y!=='number'))return reason
+ if(kind==='line'&&(x!==undefined&&!['number','date'].includes(x)||y!==undefined&&y!=='number'))return reason
+ if((kind==='histogram'||kind==='box')&&y!==undefined&&y!=='number')return reason
+ if(kind==='bar'&&!['count','distinct'].includes(next.aggregate)&&y!==undefined&&y!=='number')return reason
+ return null
 }
