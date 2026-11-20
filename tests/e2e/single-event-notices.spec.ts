@@ -48,6 +48,8 @@ async function registeredSource(){
  await expect(toast()).toHaveCount(0);return{doc,record:(await manifest()).sources[0]}
 }
 async function changeSource(){
+ // Solo se pausa el renderer: la escritura y los watchers de main siguen siendo reales.
+ await page.clock.install({time:0});await page.clock.pauseAt(1)
  await writeFile(source,changed)
  await expect.poll(()=>page.evaluate(()=>Reflect.get(window,'singleNoticeEvents').filter((event:{matches:boolean})=>event.matches).length)).toBeGreaterThan(0)
  await expect(projectTreeRow(page,'encuesta.csv',language).getByText(tr('project.source.status.changed'),{exact:true})).toBeVisible()
@@ -73,7 +75,7 @@ for(const locale of ['es','en-XA'] as const){
  test('SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie ['+locale+']',async()=>{
   const{record}=await registeredSource(),before=await footer().innerText();await changeSource()
   const workspace=page.locator('.document-workspace:not([hidden])');await expect(workspace.locator('.external-banner')).toHaveCount(1);await expect(workspace.locator('.external-banner')).toBeVisible();await expect(workspace.locator('.warning-banner')).toHaveCount(2)
-  await expect(toast()).toHaveCount(0);await expect(footer()).toHaveText(before)
+  expect(await toast().count()).toBe(0);await expect.poll(()=>footer().innerText()).toBe(before)
   const text=await workspace.locator('.external-banner').innerText();expect(text).not.toContain('Al guardar se comprobarán')
   if(locale==='en-XA'){expect(text).toContain('Thïs fïlë chángëd öütsïdë FrëyáLáb.');expect(text).not.toContain('Este archivo cambió')}
   else expect(text).toContain('Este archivo cambió fuera de FreyaLab.')
@@ -85,7 +87,7 @@ for(const locale of ['es','en-XA'] as const){
   await expect(toast()).toHaveCount(1);await expect(toast()).toHaveClass(/\bwarning\b/);await iconFor(toast(),'warning');await expect(toast()).toContainText(doc.name)
   if(locale==='es')await expect(toast().locator(':scope>span')).toHaveText('encuesta.csv cambió fuera de FreyaLab.')
   else{await expect(toast()).toContainText('chángëd öütsïdë FrëyáLáb.');await expect(toast()).not.toContainText('cambió fuera')}
-  await expect(toast()).not.toContainText('Al guardar se comprobarán');await expect(toast()).not.toContainText(/when saving|ön sávïng|whën sávïng/i);await expect(footer()).toHaveText(before)
+  await expect(toast()).not.toContainText('Al guardar se comprobarán');await expect(toast()).not.toContainText(/when saving|ön sávïng|whën sávïng/i);await expect.poll(()=>footer().innerText()).toBe(before)
   await expect(page.locator('.document-workspace .external-banner')).toHaveCount(1);await expect(page.locator('.document-workspace .external-banner')).not.toBeVisible();await expect(page.locator('.tabs[role=tablist]').getByRole('tab',{selected:true})).toHaveAttribute('id',selected!)
   await toast().getByRole('button',{name:'Cerrar aviso',exact:true}).press('Enter');await expect(toast()).toHaveCount(0);await unchangedRegistration(record)
  })
