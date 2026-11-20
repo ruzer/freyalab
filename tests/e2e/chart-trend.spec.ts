@@ -28,9 +28,20 @@ async function open(content:string|Uint8Array=five,name='trend.csv'){
 async function configure(language:Language='es'){
  await openAnalysis(page,'Gráficos')
  await chartAssign(page,'X','rows');await chartAssign(page,'Y','values');await chartType(page,'scatter');await openChartSettings(page)
- return panel().getByRole('checkbox',{name:t('charts.trend.option',{},language),exact:true})
+ for(const [zone,field] of [['rows','X'],['values','Y']] as const)await expect(panel().getByRole('region',{name:t('charts.fields.'+zone,{},language),exact:true}).locator('.chip-name')).toHaveText(field)
+ await expect(panel().locator('.chart-types button[aria-pressed=true]')).toHaveText(t('charts.kind.scatter',{},language))
+ const query=panel().locator('.chart-info pre').filter({hasText:/^WITH raw/}),checkbox=panel().getByRole('checkbox',{name:t('charts.trend.option',{},language),exact:true})
+ await expect(query).toContainText('"X" AS x, "Y" AS y');await expect(query).not.toContainText('regr_slope')
+ await expect(checkbox).not.toBeChecked();await expect(trend()).toHaveCount(0)
+ return checkbox
 }
-async function result(language:Language='es'){await expect(trend()).toContainText(t('charts.trend.cause',{},language),{timeout:30000})}
+async function result(language:Language='es'){
+ const source=(await page.locator('.tabs[role=tablist]').getByRole('tab',{selected:true}).getAttribute('id'))?.replace('workspace-tab-analysis:','')
+ const message=t('charts.fields.ready',{n:'__COUNT__'},language),escaped=(value:string)=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')
+ const ready=new RegExp('^'+message.split('__COUNT__').map(escaped).join('.*')+'$')
+ const completed=panel().filter({has:page.locator('.chart-result>.result-announcement').filter({hasText:ready})}).filter({has:page.locator('.chart-info pre').filter({hasText:'regr_slope'})})
+ await expect(completed.locator('.trend-result[aria-describedby='+JSON.stringify('trend-full-'+source)+']')).toContainText(t('charts.trend.cause',{},language),{timeout:30000})
+}
 async function generate(language:Language='es'){await chartGenerate(page).click();await result(language)}
 async function spy(hold=false){
  await app.evaluate(({ipcMain},hold)=>{
