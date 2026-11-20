@@ -1,0 +1,394 @@
+[
+  [
+    "shell",
+    "application-close.spec.ts",
+    [
+      "S4 · código de rechazo en en"
+    ],
+    "close: cruza el puente real y conserva el borrador"
+  ],
+  [
+    "shell",
+    "application-close.spec.ts",
+    [
+      "S4 · código de rechazo en en"
+    ],
+    "quit: cruza el puente real y conserva el borrador"
+  ],
+  [
+    "shell",
+    "application-close.spec.ts",
+    [
+      "S4 · código de rechazo en en-XA"
+    ],
+    "close: cruza el puente real y conserva el borrador"
+  ],
+  [
+    "shell",
+    "application-close.spec.ts",
+    [
+      "S4 · código de rechazo en en-XA"
+    ],
+    "quit: cruza el puente real y conserva el borrador"
+  ],
+  [
+    "shell",
+    "commands.spec.ts",
+    [],
+    "paleta CSV: muestra bloquea edición y copia, conserva análisis y navegación en ambos temas"
+  ],
+  [
+    "shell",
+    "ui-u0.spec.ts",
+    [],
+    "U0: solo lectura conserva sus restricciones y Abrir como acción disponible"
+  ],
+  [
+    "shell",
+    "ui.spec.ts",
+    [],
+    "estadísticas CSV: muestra rotulada e IPC inválido rechazado"
+  ],
+  [
+    "shell",
+    "ui.spec.ts",
+    [],
+    "rangos CSV: selección por teclado, vista previa, filas ocultas, deshacer y exportar"
+  ],
+  [
+    "shell",
+    "ui.spec.ts",
+    [],
+    "rangos CSV: arrastrar, contexto por teclado, cortar y pegar con revisión previa"
+  ],
+  [
+    "shell",
+    "ui.spec.ts",
+    [],
+    "rangos CSV: teclado atraviesa páginas virtuales y una revisión nueva invalida la selección"
+  ],
+  [
+    "shell",
+    "ui.spec.ts",
+    [],
+    "rangos CSV: si falla el portapapeles, cortar no vacía ni modifica el documento"
+  ],
+  [
+    "shell",
+    "ui.spec.ts",
+    [],
+    "rangos CSV: arrastre desplaza el borde y conserva el rango al cargar otra página"
+  ],
+  [
+    "shell",
+    "ui.spec.ts",
+    [],
+    "exploración CSV: paginación, cancelación, muestra e IPC inválido"
+  ],
+  [
+    "md",
+    "markdown-date.spec.ts",
+    [],
+    "F6: muestra Markdown de solo lectura deshabilita las fechas y TXT/Mermaid no ofrecen estas acciones"
+  ],
+  [
+    "md",
+    "markdown-editing-performance.spec.ts",
+    [],
+    "ED-01: tiempos reales de plegar y desplegar con AST preparado, pequeño y 10 MiB"
+  ],
+  [
+    "md",
+    "markdown-editing.spec.ts",
+    [],
+    "E2/E4: sólo lectura permite plegar sin aceptar ediciones ni formato"
+  ],
+  [
+    "md",
+    "markdown-paste.spec.ts",
+    [],
+    "P1: una URL con espacio se pega normalmente en vez de convertirse en enlace"
+  ],
+  [
+    "md",
+    "markdown-paste.spec.ts",
+    [],
+    "P3: una URL válida crea el enlace; un deshacer restaura texto y selección y rehacer recupera el resultado"
+  ],
+  [
+    "md",
+    "markdown-paste.spec.ts",
+    [],
+    "P4: paréntesis y corchetes se escapan sin cambiar el texto visible ni el destino del enlace"
+  ],
+  [
+    "md",
+    "markdown-paste.spec.ts",
+    [],
+    "P1: esquemas no admitidos, controles, varias URLs, selección multilínea y selección vacía conservan el pegado normal"
+  ],
+  [
+    "md",
+    "markdown-paste.spec.ts",
+    [],
+    "P2: código en línea, bloque, enlace existente y URL literal no se convierten en enlaces anidados"
+  ],
+  [
+    "md",
+    "markdown-paste.spec.ts",
+    [],
+    "se puede enlazar texto dentro de negrita y dentro de un título conservando sus marcadores"
+  ],
+  [
+    "md",
+    "markdown-paste.spec.ts",
+    [],
+    "pegar sin formato mediante Ctrl/Cmd Mayús V conserva la URL literal y no el texto seleccionado"
+  ],
+  [
+    "md",
+    "markdown-paste.spec.ts",
+    [],
+    "P5: HTML rico del portapapeles no se ejecuta ni provoca red y se usa su única URL de texto plano"
+  ],
+  [
+    "md",
+    "markdown-paste.spec.ts",
+    [],
+    "P6: documento Markdown de solo lectura no cambia al pegar sobre su muestra"
+  ],
+  [
+    "md",
+    "markdown-paste.spec.ts",
+    [],
+    "IME sintético: no transforma en enlace durante composición y no acredita un IME físico"
+  ],
+  [
+    "md",
+    "markdown-paste.spec.ts",
+    [],
+    "enlace pegado y vista previa se conservan en claro y oscuro a 1440×900"
+  ],
+  [
+    "md",
+    "markdown-selection.spec.ts",
+    [
+      "E1 · selección visible"
+    ],
+    "light: doble clic, arrastre, teclado, ventana sin foco y colores forzados"
+  ],
+  [
+    "md",
+    "markdown-selection.spec.ts",
+    [
+      "E1 · selección visible"
+    ],
+    "dark: doble clic, arrastre, teclado, ventana sin foco y colores forzados"
+  ],
+  [
+    "md",
+    "markdown-selection.spec.ts",
+    [
+      "E1 · selección visible"
+    ],
+    "Mermaid, CSV Texto y vista previa conservan selección visible en ambos temas"
+  ],
+  [
+    "md",
+    "markdown-tasks.spec.ts",
+    [],
+    "C5: solo lectura no habilita casillas ni escribe mediante teclado o eventos sintéticos"
+  ],
+  [
+    "md",
+    "markdown-tasks.spec.ts",
+    [],
+    "C5: recargar una muestra que pasa a editable no deja bloqueado el estado compartido"
+  ],
+  [
+    "md",
+    "markdown-toolbar.spec.ts",
+    [],
+    "solo lectura deshabilita todos los controles y vista previa oculta la barra"
+  ],
+  [
+    "md",
+    "markdown-toolbar.spec.ts",
+    [],
+    "documento de 10 MiB: el estado sigue al cursor sin bloquear la navegación"
+  ],
+  [
+    "md",
+    "text-stats.spec.ts",
+    [],
+    "una muestra TXT de solo lectura cuenta el primer MiB y lo identifica sin presentar el total del archivo"
+  ],
+  [
+    "csv",
+    "charts.spec.ts",
+    [],
+    "histograma agrega un millón de filas completo aunque la tabla sea de solo lectura"
+  ],
+  [
+    "csv",
+    "charts.spec.ts",
+    [],
+    "gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial"
+  ],
+  [
+    "csv",
+    "charts.spec.ts",
+    [],
+    "resultados exportados: muestra lee la fuente completa sin permitir guardar el CSV parcial"
+  ],
+  [
+    "csv",
+    "columns-overview.spec.ts",
+    [],
+    "panorámica: una solicitud reemplazada con igual revisión aborta; una cardinalidad alta solo limita esa columna"
+  ],
+  [
+    "csv",
+    "columns-overview.spec.ts",
+    [],
+    "panorámica: muestra etiquetada incluso durante el cálculo y presupuesto sin totales inventados"
+  ],
+  [
+    "csv",
+    "columns-overview.spec.ts",
+    [],
+    "panorámica: mide 3 000, 100 000 y un millón de filas completas con una columna"
+  ],
+  [
+    "csv",
+    "columns-overview.spec.ts",
+    [],
+    "panorámica: abrir un millón de filas y explorar inmediatamente no compite con la carga inicial de la grilla"
+  ],
+  [
+    "csv",
+    "descriptive-percentiles.spec.ts",
+    [],
+    "percentiles: vacío, un solo número y muestra limitada no inventan población completa"
+  ],
+  [
+    "csv",
+    "project-subsets-perf.spec.ts",
+    [],
+    "PRJ-02a 1 GB: primeras dos filas leen solo un prefijo y no afirman identidad completa"
+  ],
+  [
+    "csv",
+    "project-subsets-perf.spec.ts",
+    [],
+    "PRJ-02a 1 GB: depósito de diez mil, cien ejemplos y fuente completa verificada"
+  ],
+  [
+    "csv",
+    "project-subsets-perf.spec.ts",
+    [],
+    "PRJ-02a 1 GB: cancelar a mitad conserva cobertura parcial y no crea archivos"
+  ],
+  [
+    "csv",
+    "project-subsets-perf.spec.ts",
+    [],
+    "PRJ-02b 1 GB: una muestra no permite saltar el límite analítico de la raíz"
+  ],
+  [
+    "csv",
+    "range-cancellation.spec.ts",
+    [],
+    "rangos: cancelar o cerrar durante copiar impide el borrado; espera la respuesta y conserva el portapapeles válido"
+  ],
+  [
+    "csv",
+    "search.spec.ts",
+    [],
+    "buscar muestra CSV no habilita reemplazo ni pierde la marca de alcance parcial"
+  ],
+  [
+    "csv",
+    "selection-statistics.spec.ts",
+    [],
+    "estadísticas del rango: muestra limitada, campos nuevos y validación IPC sin atribuir totales globales"
+  ],
+  [
+    "csv",
+    "sql.spec.ts",
+    [],
+    "SQL: mide fuentes completas hasta un millón por cuatro columnas y distingue la muestra"
+  ],
+  [
+    "csv",
+    "sql.spec.ts",
+    [],
+    "informe SQL desde un CSV mayor de 50 MiB identifica la fuente completa sin habilitar guardar su muestra"
+  ],
+  [
+    "csv",
+    "statistics-reports.spec.ts",
+    [],
+    "informe de muestra exportable con alcance explícito sin habilitar la exportación del CSV parcial"
+  ],
+  [
+    "csv",
+    "structural-context.spec.ts",
+    [],
+    "menús estructurales: muestras bloquean cambios y conservan orden de vista, temas y foco"
+  ],
+  [
+    "csv",
+    "virtual-scroll.spec.ts",
+    [],
+    "se llega a la última fila de un millón de filas sin un elemento más alto que el límite de Chromium"
+  ],
+  [
+    "csv",
+    "virtual-scroll.spec.ts",
+    [],
+    "Ctrl/⌘ + Fin lleva el foco a la última fila y la deja a la vista"
+  ],
+  [
+    "csv",
+    "virtual-scroll.spec.ts",
+    [],
+    "a mitad del recorrido las filas son contiguas, están separadas 32 px y la posición es proporcional"
+  ],
+  [
+    "csv",
+    "virtual-scroll.spec.ts",
+    [],
+    "la selección sigue en su fila al alejarse y volver"
+  ],
+  [
+    "csv",
+    "virtual-scroll.spec.ts",
+    [],
+    "una muesca de la rueda mueve las filas que dice la rueda, no miles"
+  ],
+  [
+    "csv",
+    "virtual-scroll.spec.ts",
+    [],
+    "con un filtro o un orden la tabla sigue siendo correcta"
+  ],
+  [
+    "csv",
+    "virtual-scroll.spec.ts",
+    [],
+    "recorrer el archivo entero deja ver todas las filas en orden y sin huecos"
+  ],
+  [
+    "csv",
+    "virtual-scroll.spec.ts",
+    [],
+    "al cambiar el alto de la ventana con la barra escalada la última fila sigue alcanzable"
+  ],
+  [
+    "csv",
+    "virtual-scroll.spec.ts",
+    [],
+    "al agrandar la ventana estando al final la última fila se queda a la vista sin volver a desplazar"
+  ]
+]

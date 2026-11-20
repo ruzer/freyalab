@@ -1,0 +1,449 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Observabilidad de C5; no es una corrección de la causa del timeout.",
+  "sanitization": {
+    "method": "Construcción explícita por lista de campos permitidos; no se copian objetos ni comandos privados completos.",
+    "allowed": "Identificadores públicos de CI/Git, rutas relativas del repositorio, SHA, contadores, estados, tiempos y límites descriptivos.",
+    "excluded": [
+      "Rutas locales y temporales",
+      "Nombres de usuario",
+      "URLs y URLs firmadas",
+      "Variables de entorno",
+      "Logs brutos",
+      "Contenido de archivos",
+      "Nombres o destinos elegidos por usuarios",
+      "Identificadores de proyecto, fuente o solicitud"
+    ]
+  },
+  "historicalCi": {
+    "runId": 44650561529,
+    "jobId": 136004086587,
+    "head": "056d28f3ad1177a1fd2bf393f27e7ac77e82af8d",
+    "conclusion": "cancelled",
+    "jobMaxSeconds": 4500,
+    "jobDurationIncludingCleanupSeconds": 4530.0,
+    "jobTimeoutAnnotationObserved": true,
+    "fastStepSeconds": 4020.0,
+    "fastReportDurationMs": 4010222.3170000003,
+    "fastIdentities": 721,
+    "fastStats": {
+      "expected": 711,
+      "unexpected": 1,
+      "flaky": 2,
+      "skipped": 7
+    },
+    "c5": {
+      "testFile": "tests/e2e/project-tree.spec.ts",
+      "sourceLine": 243,
+      "sourceSha256": "51122c6d45f32b75b97d305ee91c18df7454e01ded121bd4bb633a658f10041e",
+      "originalAssertions": 7,
+      "attempts": [
+        {
+          "attempt": 0,
+          "status": "timedOut",
+          "durationMs": 95341,
+          "evaluateDurationMs": 32.954,
+          "progressObservation": {
+            "count": 1,
+            "role": "status",
+            "live": "polite",
+            "cancelControlObserved": true
+          },
+          "lastBodyAssertionLine": 266,
+          "expectedCount": 0,
+          "receivedCountRecorded": false,
+          "lastAssertionDurationIncludingCloseMs": 89033.313,
+          "lastAssertionStartUtc": "2026-11-20T02:02:02.307Z",
+          "targetClosedRecorded": true,
+          "secondaryOriginalBytesEqualityFailed": true,
+          "trace": {
+            "sha256": "dd76f4dd88bddb63db11ee12856f3d6fc39b0dd53caaf69f8ce07929de393207",
+            "testTraceFiles": 1,
+            "browserFrameSnapshots": 0,
+            "screenshots": 0
+          },
+          "errorContextSha256": "eb06334dac22ecfabb59db3fc7cdaff5d0e5483e8488e483b39db33f81ae8d43"
+        },
+        {
+          "attempt": 1,
+          "status": "timedOut",
+          "durationMs": 95525,
+          "evaluateDurationMs": 20.439,
+          "progressObservation": {
+            "count": 1,
+            "role": "status",
+            "live": "polite",
+            "cancelControlObserved": true
+          },
+          "lastBodyAssertionLine": 266,
+          "expectedCount": 0,
+          "receivedCountRecorded": false,
+          "lastAssertionDurationIncludingCloseMs": 87763.067,
+          "lastAssertionStartUtc": "2026-11-20T02:03:41.236Z",
+          "targetClosedRecorded": true,
+          "secondaryOriginalBytesEqualityFailed": true,
+          "trace": {
+            "sha256": "c9306c28aee3972c2e2274c6efe91daefdd1a55adb3e3a207d0863f769d2b10a",
+            "testTraceFiles": 1,
+            "browserFrameSnapshots": 0,
+            "screenshots": 0
+          },
+          "errorContextSha256": "a5edaca19ba873a423d4d2ae5fb1480fe198d6b2555403043a09bc7f94fe435e"
+        }
+      ]
+    },
+    "artifact": {
+      "id": 14594881959,
+      "bytes": 41797878,
+      "sha256": "0004d1b37473d0162d84a90bbcac9d2d88ecaaeea832171e9e1464da2e431202",
+      "matchesRecordedGitHubDigest": true
+    },
+    "interpretation": [
+      "El evaluador252 resolvió y su comparación264 pasó en ambos intentos.",
+      "La última comprobación266 esperaba progreso0; el error no registra un contador recibido.",
+      "El caso había modificado deliberadamente la fuente; el fallo secundario de igualdad durante teardown no demuestra corrupción.",
+      "Las trazas históricas no contienen DOM final ni telemetría del motor; no prueban un engine hang ni una causa del SO."
+    ]
+  },
+  "localControls": {
+    "productBuild": {
+      "mainBundleSha256": "b1fd4f2190b6e71feb5c3fe022432d2276a59fa60b1308fb6fc0d91d9731f95c",
+      "sourceBuildHead": "401713dd98598eb6c451b134ac8479f5c3474c73",
+      "sameProductSourceAcrossHeads": [
+        "614e2f37d06275c83082255f1ed16a4ed1c19642",
+        "401713dd98598eb6c451b134ac8479f5c3474c73",
+        "056d28f3ad1177a1fd2bf393f27e7ac77e82af8d"
+      ],
+      "srcGitTree": "ea80304b8ea776c854b5a91ecbb5f72f90e520b3",
+      "sourceAndBuildConfigurationIdentityRecorded": true
+    },
+    "runs": [
+      {
+        "phase": "control",
+        "exitCode": 0,
+        "processSeconds": 2.589,
+        "passed": 1,
+        "unexpected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "reportSha256": "21b96195a7b64100f7b1499fe88fe81e3424b94aa1b41782a8c1194fd7ff324d"
+      },
+      {
+        "phase": "concurrent",
+        "exitCode": 0,
+        "processSeconds": 2.184,
+        "passed": 2,
+        "unexpected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "reportSha256": "6e65c23db435bfa6933a64c151b06e2bd1f3af7f5132fc85315d3ab1b5bc1b53"
+      },
+      {
+        "phase": "concurrent-cpu4",
+        "exitCode": 0,
+        "processSeconds": 2.809,
+        "passed": 2,
+        "unexpected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "reportSha256": "54f00832ecfcdf5b7c16c39ec0f920c8ac54f7caa67e476e37c4a2a1cd7039ed"
+      }
+    ],
+    "cases": [
+      {
+        "phase": "control",
+        "repeatIndex": 0,
+        "status": "passed",
+        "retry": 0,
+        "testDurationMs": 1934,
+        "cpu": {
+          "rendererRateRequested": 1,
+          "mainAndUtilityThrottlingRequested": false,
+          "awaitSendCompletionInferredFromEmbeddedSourceAndFollowingModeAttachment": false,
+          "separateCdpAckRecorded": false,
+          "effectiveRateMeasured": false
+        },
+        "reregister": {
+          "durationMs": 1.1004170000001068,
+          "result": false,
+          "completed": true
+        },
+        "cancel": {
+          "durationMs": 0.21183300000006966,
+          "completed": true
+        },
+        "progress": {
+          "initialCount": 1,
+          "finalZeroAssertionPassed": true,
+          "zeroAssertionDurationMs": 3.296
+        },
+        "focus": {
+          "documentSamples": 7,
+          "allDocumentSamplesFocused": true,
+          "allDocumentSamplesVisible": true,
+          "nativeWindowMeasured": false
+        },
+        "scalarLogSha256": "78fe6521a3e6dcbc22f98d84d80613798d3f9209f6f1c2a8716bae7d410ed755",
+        "manualContext": {
+          "sha256": "7c6ba0b20d37f83d67b2527fc931df547d7bc9af4fdfa1b23865e0ce49d4cb05",
+          "frameSnapshots": 60,
+          "screencastFrames": 38,
+          "sourceFiles": 3
+        }
+      },
+      {
+        "phase": "concurrent",
+        "repeatIndex": 0,
+        "status": "passed",
+        "retry": 0,
+        "testDurationMs": 1576,
+        "cpu": {
+          "rendererRateRequested": 1,
+          "mainAndUtilityThrottlingRequested": false,
+          "awaitSendCompletionInferredFromEmbeddedSourceAndFollowingModeAttachment": false,
+          "separateCdpAckRecorded": false,
+          "effectiveRateMeasured": false
+        },
+        "reregister": {
+          "durationMs": 1.1458330000000387,
+          "result": false,
+          "completed": true
+        },
+        "cancel": {
+          "durationMs": 0.1927499999999327,
+          "completed": true
+        },
+        "progress": {
+          "initialCount": 1,
+          "finalZeroAssertionPassed": true,
+          "zeroAssertionDurationMs": 3.539
+        },
+        "focus": {
+          "documentSamples": 7,
+          "allDocumentSamplesFocused": true,
+          "allDocumentSamplesVisible": true,
+          "nativeWindowMeasured": false
+        },
+        "scalarLogSha256": "e7274fa65041c9981aef8b6b21a7aedae34669d9a5ed54bdfd4d182f0dbd4764",
+        "manualContext": {
+          "sha256": "9447b1d968ee633dac57a53fbb5fc58ebade00be1a0484fac629f9f957c231e0",
+          "frameSnapshots": 60,
+          "screencastFrames": 39,
+          "sourceFiles": 3
+        }
+      },
+      {
+        "phase": "concurrent",
+        "repeatIndex": 1,
+        "status": "passed",
+        "retry": 0,
+        "testDurationMs": 1640,
+        "cpu": {
+          "rendererRateRequested": 1,
+          "mainAndUtilityThrottlingRequested": false,
+          "awaitSendCompletionInferredFromEmbeddedSourceAndFollowingModeAttachment": false,
+          "separateCdpAckRecorded": false,
+          "effectiveRateMeasured": false
+        },
+        "reregister": {
+          "durationMs": 1.208708999999999,
+          "result": false,
+          "completed": true
+        },
+        "cancel": {
+          "durationMs": 0.20304200000009587,
+          "completed": true
+        },
+        "progress": {
+          "initialCount": 1,
+          "finalZeroAssertionPassed": true,
+          "zeroAssertionDurationMs": 3.404
+        },
+        "focus": {
+          "documentSamples": 7,
+          "allDocumentSamplesFocused": true,
+          "allDocumentSamplesVisible": true,
+          "nativeWindowMeasured": false
+        },
+        "scalarLogSha256": "81e7363bd078cbe285923ddf2aea5b4ec0782cefaf6cabfd5096fa1ee945c574",
+        "manualContext": {
+          "sha256": "274cbfebd6ccc43b29e0753c7a0ea1e14c8abecd198fcd92000e40bc244e326b",
+          "frameSnapshots": 60,
+          "screencastFrames": 39,
+          "sourceFiles": 3
+        }
+      },
+      {
+        "phase": "concurrent-cpu4",
+        "repeatIndex": 0,
+        "status": "passed",
+        "retry": 0,
+        "testDurationMs": 2256,
+        "cpu": {
+          "rendererRateRequested": 4,
+          "mainAndUtilityThrottlingRequested": false,
+          "awaitSendCompletionInferredFromEmbeddedSourceAndFollowingModeAttachment": true,
+          "separateCdpAckRecorded": false,
+          "effectiveRateMeasured": false
+        },
+        "reregister": {
+          "durationMs": 13.291167000000087,
+          "result": true,
+          "completed": true
+        },
+        "cancel": {
+          "durationMs": 0.1958750000001146,
+          "completed": true
+        },
+        "progress": {
+          "initialCount": 1,
+          "finalZeroAssertionPassed": true,
+          "zeroAssertionDurationMs": 31.028
+        },
+        "focus": {
+          "documentSamples": 17,
+          "allDocumentSamplesFocused": true,
+          "allDocumentSamplesVisible": true,
+          "nativeWindowMeasured": false
+        },
+        "scalarLogSha256": "47b7eb6de5d90e6cd08b5521814ba16f389bd1caadc90ec608d659403d4c5597",
+        "manualContext": {
+          "sha256": "9fb920ab8b9fcdd0359b50cee95f35bfa0347f100a09a616bafae39e1fd9031d",
+          "frameSnapshots": 66,
+          "screencastFrames": 60,
+          "sourceFiles": 3
+        }
+      },
+      {
+        "phase": "concurrent-cpu4",
+        "repeatIndex": 1,
+        "status": "passed",
+        "retry": 0,
+        "testDurationMs": 2208,
+        "cpu": {
+          "rendererRateRequested": 4,
+          "mainAndUtilityThrottlingRequested": false,
+          "awaitSendCompletionInferredFromEmbeddedSourceAndFollowingModeAttachment": true,
+          "separateCdpAckRecorded": false,
+          "effectiveRateMeasured": false
+        },
+        "reregister": {
+          "durationMs": 14.694541999999956,
+          "result": true,
+          "completed": true
+        },
+        "cancel": {
+          "durationMs": 0.1929579999998623,
+          "completed": true
+        },
+        "progress": {
+          "initialCount": 1,
+          "finalZeroAssertionPassed": true,
+          "zeroAssertionDurationMs": 29.596
+        },
+        "focus": {
+          "documentSamples": 17,
+          "allDocumentSamplesFocused": true,
+          "allDocumentSamplesVisible": true,
+          "nativeWindowMeasured": false
+        },
+        "scalarLogSha256": "997a5d0d17dc9999f29bb45b1e6317b6613c11e869ea94c5f4b8de3020f199de",
+        "manualContext": {
+          "sha256": "f44122c0f63252d5e82e193177ca9593c59cd11dfcd0904c457273cd715dd493",
+          "frameSnapshots": 66,
+          "screencastFrames": 59,
+          "sourceFiles": 3
+        }
+      }
+    ],
+    "limits": [
+      "Son cinco controles locales cortos y no reproducen ni descartan el fallo ARM de CI.",
+      "La observación pasiva añade trabajo; los periodos100ms pueden omitir el breve progreso.",
+      "Las duraciones de la aserción no miden el instante exacto de retirada del progreso.",
+      "CPU4 fue solicitada solo al renderer. El await del comando precede al adjunto del modo; no hay acuse separado ni medición efectiva4x.",
+      "El foco observado es el del documento, no el foco nativo de BrowserWindow."
+    ]
+  },
+  "currentPatch": {
+    "testFile": "tests/e2e/project-tree.spec.ts",
+    "base": "056d28f3ad1177a1fd2bf393f27e7ac77e82af8d",
+    "addedLines": 23,
+    "removedLines": 1,
+    "sourceBeforeSha256": "51122c6d45f32b75b97d305ee91c18df7454e01ded121bd4bb633a658f10041e",
+    "sourceAfterSha256": "26df8740737adcec8a69cc9549c1eaebddb6b656064bacdd71596431cb5dd089",
+    "proposalPatchSha256": "0284083bd28c624b9fd2ca628a2d23e1db9110735a218a4e298d4d55dc168020",
+    "directTestCallsBefore": 8,
+    "directTestCallsAfter": 8,
+    "allOriginalTestCallsByteExact": true,
+    "baselineRuntimeIdentitiesFromCi": 10,
+    "baselineRuntimeEnumerationRepeated": false,
+    "originalC5AssertionsPreserved": 7,
+    "permanentTimersAdded": 0,
+    "sharedTraceHelper": "tests/e2e/electron-trace.ts",
+    "productCodeChanged": false,
+    "existingActionsAndTimeoutsPreserved": true,
+    "interpretation": "Los cinco controles anteriores usan instrumentación privada; no califican la ejecución del parche actual de23 líneas."
+  },
+  "currentPatchValidation": {
+    "check": {
+      "status": "passed",
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 0,
+      "processSeconds": 9.577,
+      "logSha256": "b306bfef822713d611f0be516286311741c3d2304af911c9480722f3af3c8d30"
+    },
+    "existingTraceHelperUnitTests": {
+      "testFile": "tests/electron-trace.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "passed": 8,
+      "vitestDurationMs": 101,
+      "processSeconds": 0.387,
+      "logSha256": "48ac3209f475b112ab1f96711288a21d36aa5d95471b5d3721a10678af56bfe4"
+    },
+    "sourceSha256BeforeAndAfter": "26df8740737adcec8a69cc9549c1eaebddb6b656064bacdd71596431cb5dd089",
+    "gui": "pending",
+    "build": "pending",
+    "newCi": "pending"
+  },
+  "privateEvidenceHashes": {
+    "historicalC5Extraction": "f54e6d4fac27ce77664f24ed818e10a77c59e298f8191fb42c360374b0f31432",
+    "localControlsObservation": "4f826b307e4765355cb5f86b18a9da8ee78be0e6be43c7e2fe3ebc894805710e",
+    "runtimeIdentity": "e592e0a0120272c78e41e8df667eb4a9a05b6f72574365c5558a916d22125dfa",
+    "staticPatchProof": "72bb1ba570973b0fa2d0baaf28ca411ec094908f45faaa9752bba10ad8028a71"
+  },
+  "actualCandidateQualification": {
+    "sourceSpecSHA256": "26df8740737adcec8a69cc9549c1eaebddb6b656064bacdd71596431cb5dd089",
+    "unitComplete": {
+      "passed": 3008,
+      "skipped": 2,
+      "vitestSeconds": 19.67,
+      "processSeconds": 19.982
+    },
+    "build": {
+      "exitCode": 0,
+      "seconds": 1.887
+    },
+    "gui": {
+      "passed": 4,
+      "retries": 0,
+      "workers": 2,
+      "repeatEach": 2,
+      "targetC5ProgressCases": 2,
+      "processSeconds": 3.295
+    },
+    "firstUnitAttemptRetained": {
+      "passed": 3005,
+      "failed": 3,
+      "skipped": 2,
+      "cause": "not established; no Sleep events observed in its time window"
+    },
+    "failedFilesFocusedRecheck": {
+      "passed": 23,
+      "processSeconds": 9.515
+    },
+    "historicalFailureReproduced": false,
+    "CI": "pending"
+  }
+}

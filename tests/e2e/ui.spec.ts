@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import {parse as parseCSV} from 'csv-parse/sync'
 import {stringify as stringifyCSV} from 'csv-stringify/sync'
-import {analyzeButton,closeAnalysis,menuItem,numericOrder,openAnalysis,showPanel,showTable} from './panel'
+import {analyzeButton,closeAnalysis,menuItem,numericOrder,openAnalysis,showPanel,showTable,exportAnalysis} from './panel'
 let app:ElectronApplication,page:Page,directory:string
 
 test.beforeEach(async()=>{
@@ -215,7 +215,7 @@ test('estadísticas CSV: columnas, alcance completo, datos pendientes, temas y t
  await expect(page.locator('footer')).toContainText('1 de 3 filas')
  await page.getByLabel('Seleccionar columna Valor',{exact:true}).check()
  await openAnalysis(page,'Estadísticas')
- await expect(page.getByRole('heading',{name:'Estadísticas',level:2,exact:true})).toBeFocused()
+ await expect(page.locator('.analysis-workspace:not([hidden]) header h2')).toBeFocused()
  await showPanel(page,'Estadísticas')
  const panel=page.getByRole('region',{name:'Estadísticas por columna',exact:true})
  await expect(panel).toContainText('incluye las filas ocultas')
@@ -571,5 +571,5 @@ test('perfil CSV: tipos probables, calidad y teclado sin modificar los datos',as
  await expect(summary).toContainText('Con contenido: 1 · Campos ausentes: 1 · Campos vacíos exactos: 1 · Solo espacios: 1')
  for(const [theme,width,height] of [['light',1440,900],['dark',1280,800]] as const){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.setViewportSize({width,height});await summary.scrollIntoViewIfNeeded();await page.screenshot({animations:'disabled',path:test.info().outputPath(`dw04a-column-type-${theme}-${width}x${height}.png`)})}
  expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toEqual(before);expect(await readFile(path,'utf8')).toBe(source)
- await explorer.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(value=>value.kind==='markdown')?.text).toContain('Tipo probable: **Texto**');const report=(await page.evaluate(()=>window.freya.documents())).find(value=>value.kind==='markdown')!;expect(report.text).toContain('| Campos ausentes | 1 |');expect(report.text).toContain('| Campos vacíos exactos | 1 |');expect(report.text).toContain('| Solo espacios | 1 |');expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toEqual(before);expect(await readFile(path,'utf8')).toBe(source)
+ await exportAnalysis(page,'describe.report');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(value=>value.kind==='markdown')?.text).toContain('Tipo probable: **Texto**');const report=(await page.evaluate(()=>window.freya.documents())).find(value=>value.kind==='markdown')!;expect(report.text).toContain('| Campos ausentes | 1 |');expect(report.text).toContain('| Campos vacíos exactos | 1 |');expect(report.text).toContain('| Solo espacios | 1 |');expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toEqual(before);expect(await readFile(path,'utf8')).toBe(source)
 })

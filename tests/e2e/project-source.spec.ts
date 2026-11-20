@@ -1,4 +1,4 @@
-import {openCsvCommands,showTable,openAnalysis,showPanel} from './panel'
+import {openCsvCommands,showTable,openAnalysis,showPanel,exportAnalysis} from './panel'
 import {expect,test,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {createHash} from 'node:crypto'
@@ -150,11 +150,11 @@ test('el análisis distingue una fuente completa protegida de una muestra, inclu
  await expect(overview.getByRole('status')).toHaveText('Exploración de columnas completa.')
  await expect(overview.locator('.scope')).toContainText('Vista filtrada')
  await expect(overview.locator('.scope')).not.toContainText('muestra')
- await workspace.getByRole('button',{name:'Estadísticas',exact:true}).click()
+ await workspace.getByRole('tab',{name:'Estadísticas',exact:true}).click()
  const describe=workspace.getByRole('region',{name:'Resumen estadístico',exact:true})
  await describe.getByRole('checkbox',{name:'Incluir texto y fechas',exact:true}).check();await describe.getByRole('button',{name:'Calcular',exact:true}).click()
  await expect(describe.getByRole('status')).toHaveText('Resumen calculado.');await expect(describe.locator('tbody tr').first().locator('td')).toHaveText(['1','1','0']);await expect(describe.locator('caption')).toContainText('Documento completo')
- await describe.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click()
+ await exportAnalysis(page,'describe.report')
  await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)?.text).toContain('# Resumen estadístico CSV')
  const describeReport=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!
  expect(describeReport.text).not.toContain('MUESTRA LIMITADA')
@@ -164,7 +164,7 @@ test('el análisis distingue una fuente completa protegida de una muestra, inclu
  await expect(statistics).not.toContainText('Solo muestra')
  await statistics.getByRole('button',{name:'Analizar',exact:true}).click()
  await expect(statistics.getByRole('status')).toHaveText('Análisis completo.')
- await statistics.getByRole('button',{name:'Abrir informe detallado',exact:true}).click()
+ await exportAnalysis(page,'describe.detailedReport')
  const statisticsReport=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!
  expect(statisticsReport.text).toContain('# Informe de estadísticas CSV')
  expect(statisticsReport.text).not.toContain('MUESTRA LIMITADA')
@@ -175,13 +175,13 @@ test('el análisis distingue una fuente completa protegida de una muestra, inclu
  await profile.getByRole('button',{name:'Explorar columna',exact:true}).click()
  await expect(profile.getByRole('status')).toHaveText('Exploración completa.')
  await expect(profile.locator('.scope')).toContainText('Documento completo')
- await profile.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click()
+ await exportAnalysis(page,'describe.report')
  const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!
  expect(report.text).toContain('Documento completo')
  expect(report.text).not.toContain('MUESTRA LIMITADA')
  expect(report.text).not.toContain('Muestra completa')
  await page.getByRole('tab',{name:'Análisis de datos.csv',exact:true}).click()
- await workspace.getByRole('button',{name:'Gráficos',exact:true}).click()
+ await workspace.getByRole('tab',{name:'Gráficos',exact:true}).click()
  const charts=workspace.getByRole('region',{name:'Gráficos del CSV',exact:true})
  await expect(charts.getByRole('button',{name:/^Crear:/})).toBeEnabled()
  await charts.getByRole('button',{name:/^Crear:/}).click()
@@ -189,12 +189,12 @@ test('el análisis distingue una fuente completa protegida de una muestra, inclu
  await expect(charts).not.toContainText('Análisis de muestra')
  await charts.locator('.more-options>summary').click()
  await expect(charts.getByLabel('Alcance del gráfico').locator('option[value="filtered"]')).toHaveJSProperty('disabled',false)
- await workspace.getByRole('button',{name:'SQL',exact:true}).click()
+ await workspace.getByRole('tab',{name:'SQL',exact:true}).click()
  await expect(workspace.getByRole('region',{name:'Análisis SQL y asistentes',exact:true})).toContainText('documento en memoria')
  await chooseProjectAction(await openProjectMenu(page),'project.close')
  expect((await page.evaluate(()=>window.freya.documents()))[0]).toMatchObject({projectSource:'closed',readonly:true})
  await expect(workspace.locator('.analysis-warning')).toHaveCount(0)
- await workspace.getByRole('button',{name:'Información',exact:true}).click()
+ await workspace.getByRole('tab',{name:'Información',exact:true}).click()
  await overview.getByLabel('Alcance de la vista general').selectOption('all')
  await overview.getByRole('button',{name:'Actualizar información',exact:true}).click()
  await expect(overview.getByRole('status')).toHaveText('Exploración de columnas completa.')

@@ -6,7 +6,7 @@ import {join,resolve} from 'node:path'
 import {chartSQL,chartData,type ChartOptions} from '../../src/shared/charts'
 import {chartPivot} from '../../src/shared/chart-pivot'
 import type {SqlRequest} from '../../src/shared/types'
-import {openAnalysis,chartPanel,chartSuggestion,chartGenerate} from './panel'
+import {openAnalysis,chartPanel,chartSuggestion,chartGenerate,exportAnalysis} from './panel'
 import {closeElectron} from './close-electron'
 
 let app:ElectronApplication|undefined,folder:string|undefined
@@ -64,7 +64,7 @@ for(const kind of ['scatter','line'] as const)test(`${kind} sin fechas carga la 
  expect(loads.requests[0].sql).toBe(sql)
  await expect.poll(()=>app!.evaluate(()=>Reflect.get(globalThis,'singleChartLoads').cancelled as string[])).toContain(loads.requests[0].requestId)
 
- await panel.getByRole('button',{name:'Exportar gráfico SVG',exact:true}).click()
+ await exportAnalysis(page,'charts.ui.exportImage',{format:'SVG'})
  await expect(panel.locator('.chart-result>.result-announcement')).toContainText('pares.svg')
  expect((await stat(join(folder,'exports','pares.svg'))).size).toBeGreaterThan(0)
  expect(await readFile(join(folder,'exports','pares.svg'),'utf8')).toContain('<svg')
