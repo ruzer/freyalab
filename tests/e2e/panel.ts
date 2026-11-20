@@ -85,7 +85,11 @@ export async function openChartFields(page:Page){
  const panel=chartPanel(page),fields=panel.getByRole('complementary',{name:await translated(page,'charts.fields.panel'),exact:true,includeHidden:true})
  await expect(panel).toBeVisible();await expect(fields).toBeAttached()
  if(!await fields.isVisible())await panel.getByRole('button',{name:await translated(page,'charts.fields.panel'),exact:true}).click()
- await expect(fields).toBeVisible();return fields
+ await expect(fields).toBeVisible()
+ const pending=(await translated(page,'analysis.scope.pending')).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')
+ await expect(panel.locator('.result-status')).toHaveAttribute('title',new RegExp('^(?!'+pending+').+'))
+ await expect(fields.getByText(await translated(page,'charts.fields.loading'),{exact:true})).toHaveCount(0)
+ return fields
 }
 export async function openChartSettings(page:Page){
  const fields=await openChartFields(page),settings=fields.locator('.chart-settings')
