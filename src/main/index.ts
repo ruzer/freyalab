@@ -47,6 +47,7 @@ let projectSubsets:ProjectSubsets
 let projectExports:ProjectExports
 let publishedProject:ProjectInfo|null=null,projectPublishGeneration=0
 let projectSourceJob:{requestId:string;controller:AbortController}|undefined
+const projectReference=projectSource.shape.id
 const sourceFormat=projectSource.shape.format.pick({encoding:true,delimiter:true,header:true,eol:true}).partial()
 let menuPandocAvailable=false
 const menuPandoc=new MenuPandocAvailability(detectPandoc,()=>docs?.pandocPath,value=>{docs.pandocPath=value},value=>{menuPandocAvailable=value;refreshApplicationMenu()})
@@ -245,7 +246,7 @@ async function handle(operation:string,args:unknown[]){
  case'project:close':{const[key]=z.tuple([z.string().min(1).max(32768)]).parse(args);await projects.close(key);await publishProject();return}
  case'project:show':{const[key]=z.tuple([z.string().min(1).max(32768)]).parse(args),project=projects.active;if(!project||project.id!==key)throw new Error(t('project.error.reference'));shell.showItemInFolder(join(project.path,projectFile));return}
  case'project:rename':{
-  const[key,name]=z.tuple([z.string().min(1).max(100),projectName]).parse(args)
+  const[key,name]=z.tuple([projectReference,projectName]).parse(args)
   await projects.rename(key,name,keepProjectChanges)
   await publishProject();return
  }
@@ -261,20 +262,20 @@ async function handle(operation:string,args:unknown[]){
  case'project:inspectSource':{const[draft,format]=z.tuple([id,sourceFormat]).parse(args);return projectSources.inspectDraft(draft,format)}
  case'project:discardSourceDraft':{z.tuple([]).parse(args);projectSources.cancelDraft();return}
  case'project:registerSource':{
-  const[project,draft,format,request]=z.tuple([id,id,sourceFormat,id]).parse(args)
+  const[project,draft,format,request]=z.tuple([projectReference,id,sourceFormat,id]).parse(args)
   const release=docs.reserveProjectSource(projectSources.registrationTarget(draft))
   try{return await projectSourceOperation(request,(signal,progress)=>projectSources.register(project,draft,format,signal,progress,keepProjectChanges))}
   finally{release()}
  }
  case'project:reregisterSource':{
-  const[project,source,request]=z.tuple([id,id,id]).parse(args)
+  const[project,source,request]=z.tuple([projectReference,projectReference,id]).parse(args)
   return projectSourceOperation(request,(signal,progress)=>projectSources.reregister(project,source,signal,progress,keepProjectChanges))
  }
- case'project:openSource':{const[source]=z.tuple([id]).parse(args);return openProjectSource(source)}
- case'project:showSource':{const[source]=z.tuple([id]).parse(args);shell.showItemInFolder(await projectSources.openPath(source));return}
- case'project:forgetSource':{const[project,source]=z.tuple([id,id]).parse(args);await projectSources.forget(project,source,keepProjectChanges);await publishProject();return}
+ case'project:openSource':{const[source]=z.tuple([projectReference]).parse(args);return openProjectSource(source)}
+ case'project:showSource':{const[source]=z.tuple([projectReference]).parse(args);shell.showItemInFolder(await projectSources.openPath(source));return}
+ case'project:forgetSource':{const[project,source]=z.tuple([projectReference,projectReference]).parse(args);await projectSources.forget(project,source,keepProjectChanges);await publishProject();return}
  case'project:relinkSource':{
-  const[project,source,request]=z.tuple([id,id,id]).parse(args)
+  const[project,source,request]=z.tuple([projectReference,projectReference,id]).parse(args)
   let release:(()=>void)|undefined
   try{return await projectSourceOperation(request,async signal=>{
    const candidate=await projectSources.find(source,signal)
@@ -286,18 +287,18 @@ async function handle(operation:string,args:unknown[]){
   })}finally{release?.()}
  }
  case'project:cancelSource':{const[request]=z.tuple([id]).parse(args);if(projectSourceJob?.requestId===request)projectSourceJob.controller.abort();return}
- case'project:recipeTry':{const[project,draft,request]=z.tuple([z.string().min(1).max(100),projectRecipeDraft,id]).parse(args);try{return await projectSubsets.try(project,draft,request)}finally{await refreshProjectSources()}}
- case'project:recipeAnalyze':{const[project,recipe,request]=z.tuple([z.string().min(1).max(100),z.string().min(1).max(100),id]).parse(args);try{return await projectSubsets.analyze(project,recipe,request)}finally{await refreshProjectSources()}}
+ case'project:recipeTry':{const[project,draft,request]=z.tuple([projectReference,projectRecipeDraft,id]).parse(args);try{return await projectSubsets.try(project,draft,request)}finally{await refreshProjectSources()}}
+ case'project:recipeAnalyze':{const[project,recipe,request]=z.tuple([projectReference,projectReference,id]).parse(args);try{return await projectSubsets.analyze(project,recipe,request)}finally{await refreshProjectSources()}}
  case'project:recipeCancel':{const[request]=z.tuple([id]).parse(args);await Promise.all([projectSubsets.cancel(request),projectExports.cancel(request)]);return}
- case'project:recipeExport':{const[project,recipe,request]=z.tuple([id,id,id]).parse(args);try{return await projectExports.export(project,recipe,request,keepProjectChanges)}finally{await publishProject()}}
- case'project:registerResult':{const[project,result]=z.tuple([id,id]).parse(args);try{return await projectExports.register(project,result,keepProjectChanges)}finally{await publishProject()}}
- case'project:openResult':{const[project,result]=z.tuple([id,id]).parse(args);try{return await projectExports.open(project,result)}finally{await publishProject()}}
- case'project:showResult':{const[project,result]=z.tuple([id,id]).parse(args);shell.showItemInFolder(await projectExports.path(project,result));return}
- case'project:resultSource':{const[project,result]=z.tuple([id,id]).parse(args);return projectExports.prepareSource(project,result)}
- case'project:forgetResult':{const[project,result]=z.tuple([id,id]).parse(args);const saved=await projectExports.forget(project,result,keepProjectChanges);await publishProject();return saved}
- case'project:saveRecipe':{const[project,draft]=z.tuple([z.string().min(1).max(100),projectRecipeDraft]).parse(args);const saved=await projects.saveRecipe(project,draft,keepProjectChanges);await publishProject();return saved}
- case'project:renameRecipe':{const[project,recipe,name]=z.tuple([z.string().min(1).max(100),z.string().min(1).max(100),projectName]).parse(args);const saved=await projects.renameRecipe(project,recipe,name,keepProjectChanges);await publishProject();return saved}
- case'project:removeRecipe':{const[project,recipe]=z.tuple([z.string().min(1).max(100),z.string().min(1).max(100)]).parse(args);const saved=await projects.removeRecipe(project,recipe,keepProjectChanges);await publishProject();return saved}
+ case'project:recipeExport':{const[project,recipe,request]=z.tuple([projectReference,projectReference,id]).parse(args);try{return await projectExports.export(project,recipe,request,keepProjectChanges)}finally{await publishProject()}}
+ case'project:registerResult':{const[project,result]=z.tuple([projectReference,projectReference]).parse(args);try{return await projectExports.register(project,result,keepProjectChanges)}finally{await publishProject()}}
+ case'project:openResult':{const[project,result]=z.tuple([projectReference,projectReference]).parse(args);try{return await projectExports.open(project,result)}finally{await publishProject()}}
+ case'project:showResult':{const[project,result]=z.tuple([projectReference,projectReference]).parse(args);shell.showItemInFolder(await projectExports.path(project,result));return}
+ case'project:resultSource':{const[project,result]=z.tuple([projectReference,projectReference]).parse(args);return projectExports.prepareSource(project,result)}
+ case'project:forgetResult':{const[project,result]=z.tuple([projectReference,projectReference]).parse(args);const saved=await projectExports.forget(project,result,keepProjectChanges);await publishProject();return saved}
+ case'project:saveRecipe':{const[project,draft]=z.tuple([projectReference,projectRecipeDraft]).parse(args);const saved=await projects.saveRecipe(project,draft,keepProjectChanges);await publishProject();return saved}
+ case'project:renameRecipe':{const[project,recipe,name]=z.tuple([projectReference,projectReference,projectName]).parse(args);const saved=await projects.renameRecipe(project,recipe,name,keepProjectChanges);await publishProject();return saved}
+ case'project:removeRecipe':{const[project,recipe]=z.tuple([projectReference,projectReference]).parse(args);const saved=await projects.removeRecipe(project,recipe,keepProjectChanges);await publishProject();return saved}
  case'tree':return docs.tree(path.parse(a))
  case'findFiles':return docs.findFiles(path.parse(a),z.string().min(1).max(500).parse(b))
  case'cancelFileSearch':return docs.cancelFileSearch()

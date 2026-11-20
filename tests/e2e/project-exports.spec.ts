@@ -282,7 +282,7 @@ test('PRJ-03: los ids de proyecto v1 válidos sin UUID conservan exportación, a
   await window.freya.projectRegisterSource('gb-project',draft.id,{encoding:'utf8',delimiter:',',header:true},crypto.randomUUID())
  },outcome.result.id)
  expect((await page.evaluate(()=>window.freya.projectState())).sources).toHaveLength(2)
- const originalSource=await page.evaluate(()=>window.freya.projectOpenSource('gb-source'));expect(originalSource.projectSource).toBe('protected')
+ const originalSource=await page.evaluate(()=>window.freya.projectOpenSource('gb-source'));expect(originalSource?.projectSource).toBe('protected')
  await page.evaluate(()=>window.freya.projectReregisterSource('gb-project','gb-source',crypto.randomUUID()))
  expect(await readFile(source)).toEqual(original)
 })
