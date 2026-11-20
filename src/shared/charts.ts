@@ -4,7 +4,7 @@ export const chartKinds={histogram:'Histograma',bar:'Barras',line:'Líneas',scat
 export type ChartKind=keyof typeof chartKinds
 export const chartAggregates={count:'Conteo de filas',distinct:'Valores únicos',sum:'Suma',average:'Promedio',min:'Mínimo',max:'Máximo',median:'Mediana'} as const
 export const chartTimeGroups={none:'Sin agrupar fechas',day:'Día',month:'Mes',year:'Año'} as const
-export interface ChartOptions {kind:ChartKind;x:number;y:number;bins:number;aggregate:keyof typeof chartAggregates;descending:boolean;measureType:'text'|'number';series?:number;time?:keyof typeof chartTimeGroups;trend?:boolean}
+export interface ChartOptions {kind:ChartKind;x:number;y:number;bins:number;aggregate:keyof typeof chartAggregates;descending:boolean;measureType:'text'|'number';series?:number;time?:keyof typeof chartTimeGroups;trend?:boolean;title?:string}
 export interface ChartTrend {slope:number|null;intercept:number|null;r2:number|null;r:number|null;n:number;xMin:number|null;xMax:number|null;constantY:boolean}
 const trendColumns=['trend_n','trend_slope','trend_intercept','trend_r2','trend_r','trend_x_min','trend_x_max','trend_y_min','trend_y_max']
 export const chartSeriesLimit=8

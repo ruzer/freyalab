@@ -112,6 +112,6 @@ it('SIM-2b: título literal en JSON, contexto CSV y Markdown conserva datos, has
  const markdown=chartResult({...titled,format:'md'},result,data,true).content
  expect(markdown).toContain('# Informe de datos del gráfico');expect(markdown).toContain('\\|');expect(markdown).toContain('código')
  const rendered=await markdownHTML(markdown)
- expect(rendered.html).toContain('&lt;img');expect(rendered.html).not.toMatch(/<(?:img|script|a)\b/i)
+ expect(rendered.html).toMatch(/(?:&lt;|&#x0*3c;|&#0*60;)img\b/i);expect(rendered.html).not.toMatch(/<(?:img|script|a)\b/i)
  expect(rendered.html).toContain('Descripción');expect(rendered.html).toContain('código')
 })
