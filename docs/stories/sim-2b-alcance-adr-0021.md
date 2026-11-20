@@ -30,15 +30,34 @@ Este bloque no modifica UI, firma de cálculo, rotación, distribución de contr
 | `tests/chart-presentation.test.ts` | Título propio como texto y fallback con los contratos reales actuales. |
 | `tests/chart-result.test.ts` | Descripción de JSON/contexto/Markdown, HTML literal seguro, CSV idéntico y consultas idénticas. |
 
-Los consumidores futuros de UI siguen siendo `CsvCharts`, `ChartFields`, `ChartPresets`, `tests/e2e/panel.ts` y los flujos de gráficos. Este bloque no los adapta ni declara su aceptación. `chartConfiguration` ya valida exportChartResult y presets en el puente actual; no necesita otro canal o esquema paralelo.
+Los consumidores futuros de UI siguen siendo `CsvCharts`, `ChartFields`, `ChartPresets`, `tests/e2e/panel.ts` y los flujos de gráficos. Este bloque no los adapta ni declara su aceptación. `chartConfiguration` ya valida exportChartResult y presets en el puente actual; no necesita otro canal o esquema paralelo. El siguiente bloque añade únicamente `tests/e2e/chart-clarity.spec.ts` y este alcance; la implementación de UI espera el rojo real de raíz.
 
 ## Conexiones de UI que quedan por concretar
 
 La edición del título deberá excluirlo de `signature`, que hoy serializa todo options, para evitar que renombrar cancele/recalcule. También deberá conservarlo al crear una sugerencia; `startSuggestion()` sustituye hoy el objeto completo. Esas modificaciones se harán con su rojo de comportamiento de UI, no dentro del bloque puro.
 
-El modo manual omite perfiles/samples/interpretable. Retirar el formulario sin una alternativa en los controles existentes perdería la elección explícita de medida numérica y algunos recorridos temporales. El agrupador de campos omite hoy none, que el formulario sí ofrece. La interfaz manual, la condición de fecha y la conservación de Sin agrupar se concretarán antes de retirar controles; no se resolverán mediante un barrido automático nuevo.
+El modo manual omite perfiles/samples/interpretable. `CsvCharts.svelte:74` limita el automático a fuentes completas de hasta 3000 filas, 1 MiB y 200 000 celdas; `loadFields` limpia esos tres estados en la línea 153 y retorna sin `analyzeColumn` en la 155. Sin perfil, `shared/chart-fields.ts:5,22,27` trata el campo como texto y añadirlo a Valores selecciona texto/conteo; `ChartFields.svelte:75` deshabilita suma/promedio. La agrupación de `ChartFields.svelte:78` solo aparece con perfil fecha y omite none. El aviso de conversión de `CsvCharts.svelte:305` no sustituye la elección manual: `interpretable` está vacío y no permite confirmarla.
+
+**Excepción mínima de conservación:** cuando el campo elegido no tenga perfil comprobado, Ajustes conserva los selectores actuales de tipo de medida, X/Y y agrupación temporal, incluido Sin agrupar fechas. Estos controles mantienen sus cambios actuales de options; no introducen un detector, barrido, conversor o clasificación automática de identificadores. Con perfil, Filas/Valores/Columnas y sus controles actuales sustituyen esos duplicados. Tipo sigue en los botones, Resumir en Valores, series en Columnas y Generar gráfico conserva el botón manual existente. No se añade una segunda selección de esas funciones. La prueba manual usa 3001 filas para omitir perfiles por el límite existente y exige que no aumenten las llamadas a `analyzeColumn`.
 
 Los siete pasos con clic simple dependen de la interacción de campos especificada en C. B conserva su alcance; no se presenta el doble clic actual como prueba del clic simple futuro. La rotación requiere medir el ancho real de pantalla/exportación y etiquetas; no se fija una heurística ni se modifica todavía.
+
+## Seis casos de UI preparados antes de fuente
+
+La fixture sintética conserva Ciudad, Ingreso, Fecha ISO, ID con ceros iniciales, Grupo y Edad; usa cinco ciudades y 50 filas. Las variantes tienen 3001 filas para modo manual y 60 filas con treinta nombres de 25 caracteres para Caja. No se modifica ningún caso anterior ni el helper común. Se usa el botón Añadir y su menú actual; no se adelanta el clic simple de C.
+
+| Caso nuevo en chart-clarity | Conducta y oráculo |
+| --- | --- |
+| Lápiz, Intro, Escape y vacío | Cambiar título enfoca Título del gráfico; Intro recorta y guarda, Escape cancela y blanco recupera el título automático mostrado como placeholder. SQL y operaciones de análisis/cancelación permanecen exactamente iguales; SVG y tabla no desaparecen. |
+| Campos, preset y exportaciones | Cambiar campos conserva el título; guardarlo y aplicar su preset lo recupera. SVG y SVG intermedio enviado al PNG incluyen el título. JSON y contexto CSV conservan descripción, revisión, configuración y 50 IDs originales; se comprueban todas las filas CSV, encabezados y SHA-256. |
+| Ajustes y Detalles | Ajustes empieza cerrado y está después de las zonas dentro de Campos y zonas. La unicidad se comprueba desde todo el panel de gráficos, incluidos zoom, series y presets; se recorren scope/orden, fecha/none, intervalos y tendencia. Fecha no aparece con Ciudad ni Edad, ni en Histograma/Dispersión/Mapa/Caja; intervalos solo aparece con Histograma. Tabla, consulta, filtros aplicados y vista recuperada quedan en Detalles del cálculo. |
+| Manual sin perfil | Los controles existentes de medida, ejes y agrupación siguen alcanzables en Ajustes. Número/Suma se eligen expresamente, se comprueban total, mes y fechas sin agrupar con datos exactos; ningún perfil adicional ni cambio del CSV/ID. |
+| Cinco ciudades | Barras muestra exactamente las cinco etiquetas, una por ciudad, a 0° cuando caben, a 1440 y 1280; el SVG exportado también conserva las cinco y sus ángulos. |
+| Treinta nombres | Caja muestra 25° a ambos anchos y al exportar; conserva treinta grupos. `chartTop` reduce Barras/Mapa a diez grupos, por lo que no se altera ese ranking para fabricar este oráculo. |
+
+Los únicos nombres accesibles nuevos previstos son Cambiar título, Título del gráfico y Ajustes del gráfico. Configuración del gráfico, Campos y zonas, Detalles del cálculo y todos los nombres de controles/exportación ya existen. El selector de datos usa la tabla real; el de rotación obtiene las matrices de transformación de los textos del SVG real, sin una API o hook de dimensiones. Los anchos observados del gráfico se adjuntan como diagnóstico, sin imponer una API a `chartOption` antes del rojo.
+
+El caso de renombrado instala `page.clock` únicamente en el renderer y después del gráfico real, con movimiento reducido. `documents()` por el mismo puente sirve de barrera FIFO antes de fotografiar el observador de main y después de cada `runFor(301)`, que agota el debounce actual de 300 ms. Un MutationObserver detecta la pérdida de SVG/tabla. Es control temporal de la prueba funcional, no una medición de latencia real ni una modificación de timeout, retries, reloj de main o producto. Los cinco casos restantes usan reloj real. JSON y CSV se exportan mediante el handler real por separado: sus datos, configuración y contexto coinciden, mientras cada completedAt debe ser una fecha válida de su propia ejecución.
 
 ## Rojo primero y evidencia
 
@@ -60,4 +79,6 @@ No se elimina ningún caso existente ni se cambian sus datos esperados. La migra
 
 ## Estado inicial
 
-Rojo puro registrado sobre la fuente inicial: 5 fallos de comportamiento y 48 casos aprobados en los tres archivos (53 casos, 0.819 s de proceso). Los fallos demuestran título ignorado en presentación/descripción y rechazo de title válido por el esquema estricto; no son errores de importación o preparación. Los cuatro archivos de producto conservaron sus SHA antes/después. Fuente de producto todavía sin cambios; se espera el checkpoint de raíz antes de implementar. La historia original y la rama de A permanecen intactas.
+Rojo puro registrado sobre la fuente inicial: 5 fallos de comportamiento y 48 casos aprobados en los tres archivos (53 casos, 0.819 s de proceso). Los fallos demuestran título ignorado en presentación/descripción y rechazo de title válido por el esquema estricto; no son errores de importación o preparación. Los cuatro archivos de producto conservaron sus SHA antes/después. El checkpoint documental y rojo fue `c54966e792eb8976831f36a9113640aacc611013`.
+
+Después del cambio puro pasan 53/53 casos (38 anteriores y 15 nuevos), tipos Node, renderer y consumidores. Se conserva también un primer intento de 52/53: la prueba nueva exigía `&lt;img` mientras el serializador existente emitía la codificación equivalente `&#x3C;img`. Se corrigió únicamente esa expectativa de representación, manteniendo título exacto, filas, CSV/hash y ausencia de etiquetas activas. La historia original y la rama congelada de A permanecen intactas. Las seis E2E nuevas están preparadas; su rojo y la implementación de UI siguen pendientes de la ejecución de raíz.
