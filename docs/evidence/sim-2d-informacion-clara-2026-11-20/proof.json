@@ -1,0 +1,1814 @@
+{
+  "task": "SIM-2d",
+  "status": "local pre-fix94 consumers and final focused shadow green+16final-matrix captures; CI final head pending",
+  "refs": {
+    "base": "4e3289fee36702935c3be9de4eecf420f16225d4",
+    "red": "67e0bf7a469990fc26d7c0bf22d63c422c4455d1",
+    "implementation": "233a739a658f2403943f5af03b2768ea39e2419c",
+    "integrated": "00b4329ca786c7c026b3b4f2abf4876a8184d1d4",
+    "final": "beaf15fed13225399a67119a74ddd770ff4004a6"
+  },
+  "source_trees": {
+    "base": "aea145d17ed183895aadca5fd3ae953cc58b8ff7",
+    "red": "aea145d17ed183895aadca5fd3ae953cc58b8ff7",
+    "implementation": "03d36ff36ddbe724a1e61b4d70005045f3f96200",
+    "integrated": "03d36ff36ddbe724a1e61b4d70005045f3f96200",
+    "final": "5bbede9487bc7647a86df587f95b42ac86eed0db"
+  },
+  "implementation_integrated_source_equal": true,
+  "fingerprints": {
+    "src/renderer/components/CsvColumnsOverview.svelte": {
+      "base": "3a2012d4553622b27b473d7633f377b8bf711f6be71c76fd7f98e907736fe002",
+      "red": "3a2012d4553622b27b473d7633f377b8bf711f6be71c76fd7f98e907736fe002",
+      "implementation": "e8248a44573881ce55e9e64a1b140ad907f340b9e37e395be400241068e1c588",
+      "integrated": "e8248a44573881ce55e9e64a1b140ad907f340b9e37e395be400241068e1c588",
+      "reviewed_before_shadow_fix": "e8248a44573881ce55e9e64a1b140ad907f340b9e37e395be400241068e1c588",
+      "final": "28b3f75de893c172821f106340c3e96100721f49100a0fe4771f14c9224ea71c",
+      "current": "28b3f75de893c172821f106340c3e96100721f49100a0fe4771f14c9224ea71c"
+    },
+    "src/shared/i18n/es.json": {
+      "base": "2b3ea3ce2a921bc4765b6c0883eef5299ba959cb06e18508d743303208cbcdd8",
+      "red": "2b3ea3ce2a921bc4765b6c0883eef5299ba959cb06e18508d743303208cbcdd8",
+      "implementation": "1268d1d3ce8acbea7fa4f915f208440f5858e4b097e040750055f93f9014ab80",
+      "integrated": "1268d1d3ce8acbea7fa4f915f208440f5858e4b097e040750055f93f9014ab80",
+      "reviewed_before_shadow_fix": "1268d1d3ce8acbea7fa4f915f208440f5858e4b097e040750055f93f9014ab80",
+      "final": "1268d1d3ce8acbea7fa4f915f208440f5858e4b097e040750055f93f9014ab80",
+      "current": "1268d1d3ce8acbea7fa4f915f208440f5858e4b097e040750055f93f9014ab80"
+    },
+    "src/shared/i18n/en.json": {
+      "base": "8b895917c8ee0e7a9e3609aa43a31ef0e7c198b7cb2b7edc8a04172fa4d5786a",
+      "red": "8b895917c8ee0e7a9e3609aa43a31ef0e7c198b7cb2b7edc8a04172fa4d5786a",
+      "implementation": "dde60d05d51dd1121e855da390eb712dd29ec8396cf008a225bb94aec8532fc9",
+      "integrated": "dde60d05d51dd1121e855da390eb712dd29ec8396cf008a225bb94aec8532fc9",
+      "reviewed_before_shadow_fix": "dde60d05d51dd1121e855da390eb712dd29ec8396cf008a225bb94aec8532fc9",
+      "final": "dde60d05d51dd1121e855da390eb712dd29ec8396cf008a225bb94aec8532fc9",
+      "current": "dde60d05d51dd1121e855da390eb712dd29ec8396cf008a225bb94aec8532fc9"
+    },
+    "src/shared/i18n/pending-files.json": {
+      "base": "425b05a23f31aa3846744328bf562042d87a6d653b7e7c2a2cf88ae87d0d47d4",
+      "red": "425b05a23f31aa3846744328bf562042d87a6d653b7e7c2a2cf88ae87d0d47d4",
+      "implementation": "d51203abd4a5bc06f95435aa684f0427328a026ab7ebdb0123bea01a5fd5f490",
+      "integrated": "d51203abd4a5bc06f95435aa684f0427328a026ab7ebdb0123bea01a5fd5f490",
+      "reviewed_before_shadow_fix": "d51203abd4a5bc06f95435aa684f0427328a026ab7ebdb0123bea01a5fd5f490",
+      "final": "d51203abd4a5bc06f95435aa684f0427328a026ab7ebdb0123bea01a5fd5f490",
+      "current": "d51203abd4a5bc06f95435aa684f0427328a026ab7ebdb0123bea01a5fd5f490"
+    },
+    "src/shared/column-profile.ts": {
+      "base": "f71bb9386242ffb776609447e39166f4e4386d1cd41a8c4d2417b9a41879f9fd",
+      "red": "f71bb9386242ffb776609447e39166f4e4386d1cd41a8c4d2417b9a41879f9fd",
+      "implementation": "f71bb9386242ffb776609447e39166f4e4386d1cd41a8c4d2417b9a41879f9fd",
+      "integrated": "f71bb9386242ffb776609447e39166f4e4386d1cd41a8c4d2417b9a41879f9fd",
+      "reviewed_before_shadow_fix": "f71bb9386242ffb776609447e39166f4e4386d1cd41a8c4d2417b9a41879f9fd",
+      "final": "f71bb9386242ffb776609447e39166f4e4386d1cd41a8c4d2417b9a41879f9fd",
+      "current": "f71bb9386242ffb776609447e39166f4e4386d1cd41a8c4d2417b9a41879f9fd"
+    },
+    "src/renderer/lib/statistics-report.ts": {
+      "base": "e995cc891903afafbedb2cfdcb154b24c0ca945d721295af74f73ab0d772a431",
+      "red": "e995cc891903afafbedb2cfdcb154b24c0ca945d721295af74f73ab0d772a431",
+      "implementation": "e995cc891903afafbedb2cfdcb154b24c0ca945d721295af74f73ab0d772a431",
+      "integrated": "e995cc891903afafbedb2cfdcb154b24c0ca945d721295af74f73ab0d772a431",
+      "reviewed_before_shadow_fix": "e995cc891903afafbedb2cfdcb154b24c0ca945d721295af74f73ab0d772a431",
+      "final": "e995cc891903afafbedb2cfdcb154b24c0ca945d721295af74f73ab0d772a431",
+      "current": "e995cc891903afafbedb2cfdcb154b24c0ca945d721295af74f73ab0d772a431"
+    },
+    "tests/fixtures/analysis-auto-info.csv": {
+      "base": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a",
+      "red": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a",
+      "implementation": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a",
+      "integrated": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a",
+      "reviewed_before_shadow_fix": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a",
+      "final": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a",
+      "current": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a"
+    },
+    "tests/e2e/information-clarity.spec.ts": {
+      "red": "baf9815aceb84e4491cb54e2d47ec387daae3fb88ce773f26a840768267217c0",
+      "implementation": "baf9815aceb84e4491cb54e2d47ec387daae3fb88ce773f26a840768267217c0",
+      "integrated": "baf9815aceb84e4491cb54e2d47ec387daae3fb88ce773f26a840768267217c0",
+      "reviewed_before_shadow_fix": "baf9815aceb84e4491cb54e2d47ec387daae3fb88ce773f26a840768267217c0",
+      "final": "7f18f3c2b4d08fb6de0359bd3f9de4614db0307cedc6795a8cff7b6a8a2f6971",
+      "current": "7f18f3c2b4d08fb6de0359bd3f9de4614db0307cedc6795a8cff7b6a8a2f6971"
+    }
+  },
+  "test_first": {
+    "initial": {
+      "head": "67e0bf7a469990fc26d7c0bf22d63c422c4455d1",
+      "result": {
+        "stats": {
+          "startTime": "2026-11-20T06:03:01.197Z",
+          "duration": 55913.159,
+          "expected": 0,
+          "skipped": 0,
+          "unexpected": 6,
+          "flaky": 0
+        },
+        "cases": [
+          {
+            "file": "information-clarity.spec.ts",
+            "line": 86,
+            "title": "SIM-2d: resultado completo compacto, alineación y revisión en ayuda [es]",
+            "project": "csv",
+            "status": "failed",
+            "retry": 0,
+            "duration_ms": 1540,
+            "errors": [
+              "Error: expect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 1\nReceived:    32.5\n\n  33 | })))}\n  34 | async function compactComplete(panel:Locator){\n> 35 |  expect(await flowFootprint(panel.locator(':scope>[role=status]'))).toBeLessThanOrEqual(1)\n     |                                                                     ^\n  36 |  expect(await flowFootprint(panel.locator(':scope>.scope'))).toBeLessThanOrEqual(1)\n  37 |  const gap=await panel.evaluate(element=>{\n  38 |   const chips=element.querySelector('.type-chips')!,table=element.querySelector('.overview-scroll')!,parent=getComputedStyle(element)\n    at compactComplete (<checkout>/tests/e2e/information-clarity.spec.ts:35:69)\n    at <checkout>/tests/e2e/information-clarity.spec.ts:88:2"
+            ],
+            "classification": "behavior"
+          },
+          {
+            "file": "information-clarity.spec.ts",
+            "line": 86,
+            "title": "SIM-2d: resultado completo compacto, alineación y revisión en ayuda [en]",
+            "project": "csv",
+            "status": "failed",
+            "retry": 0,
+            "duration_ms": 1320,
+            "errors": [
+              "Error: expect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 1\nReceived:    32.5\n\n  33 | })))}\n  34 | async function compactComplete(panel:Locator){\n> 35 |  expect(await flowFootprint(panel.locator(':scope>[role=status]'))).toBeLessThanOrEqual(1)\n     |                                                                     ^\n  36 |  expect(await flowFootprint(panel.locator(':scope>.scope'))).toBeLessThanOrEqual(1)\n  37 |  const gap=await panel.evaluate(element=>{\n  38 |   const chips=element.querySelector('.type-chips')!,table=element.querySelector('.overview-scroll')!,parent=getComputedStyle(element)\n    at compactComplete (<checkout>/tests/e2e/information-clarity.spec.ts:35:69)\n    at <checkout>/tests/e2e/information-clarity.spec.ts:88:2"
+            ],
+            "classification": "behavior"
+          },
+          {
+            "file": "information-clarity.spec.ts",
+            "line": 86,
+            "title": "SIM-2d: resultado completo compacto, alineación y revisión en ayuda [en-XA]",
+            "project": "csv",
+            "status": "failed",
+            "retry": 0,
+            "duration_ms": 1522,
+            "errors": [
+              "Error: expect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 1\nReceived:    32.5\n\n  33 | })))}\n  34 | async function compactComplete(panel:Locator){\n> 35 |  expect(await flowFootprint(panel.locator(':scope>[role=status]'))).toBeLessThanOrEqual(1)\n     |                                                                     ^\n  36 |  expect(await flowFootprint(panel.locator(':scope>.scope'))).toBeLessThanOrEqual(1)\n  37 |  const gap=await panel.evaluate(element=>{\n  38 |   const chips=element.querySelector('.type-chips')!,table=element.querySelector('.overview-scroll')!,parent=getComputedStyle(element)\n    at compactComplete (<checkout>/tests/e2e/information-clarity.spec.ts:35:69)\n    at <checkout>/tests/e2e/information-clarity.spec.ts:88:2"
+            ],
+            "classification": "behavior"
+          },
+          {
+            "file": "information-clarity.spec.ts",
+            "line": 103,
+            "title": "SIM-2d: detalles con chevron posterior, acciones y Explorar conservan teclado y datos",
+            "project": "csv",
+            "status": "failed",
+            "retry": 0,
+            "duration_ms": 16542,
+            "errors": [
+              "Error: expect(locator).toHaveCount(expected) failed\n\nLocator:  locator('[id=\"workspace-panel-analysis:bd8833b2-9cb7-4d14-9e0d-c6859a5cac81\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').first().locator('.type-explanation>summary').locator('svg.icon[aria-hidden=true]')\nExpected: 1\nReceived: 0\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toHaveCount\" locator('[id=\"workspace-panel-analysis:bd8833b2-9cb7-4d14-9e0d-c6859a5cac81\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').first().locator('.type-explanation>summary').locator('svg.icon[aria-hidden=true]') with timeout 15000ms\n  - waiting for locator('[id=\"workspace-panel-analysis:bd8833b2-9cb7-4d14-9e0d-c6859a5cac81\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').first().locator('.type-explanation>summary').locator('svg.icon[aria-hidden=true]')\n    34 × locator resolved to 0 elements\n       - unexpected value \"0\"\n\n\n  42 | }\n  43 | async function trailingChevron(summary:Locator){\n> 44 |  const icon=summary.locator('svg.icon[aria-hidden=true]');await expect(icon).toHaveCount(1)\n     |                                                                              ^\n  45 |  const geometry=await summary.evaluate(element=>{\n  46 |   const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT),rights:number[]=[]\n  47 |   while(walker.nextNode())if(walker.currentNode.textContent?.trim()&&!walker.currentNode.parentElement?.closest('svg,[aria-hidden=true]')){\n    at trailingChevron (<checkout>/tests/e2e/information-clarity.spec.ts:44:78)\n    at <checkout>/tests/e2e/information-clarity.spec.ts:105:8"
+            ],
+            "classification": "behavior"
+          },
+          {
+            "file": "information-clarity.spec.ts",
+            "line": 117,
+            "title": "SIM-2d: buscador desde 21 columnas y páginas desde 51 sin recortar datos",
+            "project": "csv",
+            "status": "failed",
+            "retry": 0,
+            "duration_ms": 31344,
+            "errors": [
+              "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.csv-toolbar,.csv-text-tools').getByRole('button', { name: /^(Analizar|Analyze|\\[Ánályzë~+\\])$/ })\n    - locator resolved to <button type=\"button\" aria-label=\"Analizar\" data-tooltip=\"Analizar\" class=\"keep-label svelte-auiwhu\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <dialog open=\"\" class=\"svelte-1cikorp\" aria-label=\"Nuevo proyecto\">…</dialog> intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <dialog open=\"\" class=\"svelte-1cikorp\" aria-label=\"Nuevo proyecto\">…</dialog> intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    58 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <dialog open=\"\" class=\"svelte-1cikorp\" aria-label=\"Nuevo proyecto\">…</dialog> intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n\n\n   at panel.ts:12\n\n  10 | export async function requestAnalysis(page:Page,app?:ElectronApplication){\n  11 |  if(app){const commands=await openCsvCommands(page,app);const search=commands.getByRole('searchbox',{name:'Buscar comando CSV',exact:true});await search.fill('info');await search.press('Enter')}\n> 12 |  else await analyzeButton(page).click()\n     |                                 ^\n  13 | }\n  14 | export async function openCsvCommands(page:Page,app:ElectronApplication){\n  15 |  await runApplicationMenu(app,'edit.commandPalette')\n    at requestAnalysis (<checkout>/tests/e2e/panel.ts:12:33)\n    at openAnalysis (<checkout>/tests/e2e/panel.ts:29:62)\n    at information (<checkout>/tests/e2e/information-clarity.spec.ts:23:30)\n    at <checkout>/tests/e2e/information-clarity.spec.ts:121:58"
+            ],
+            "classification": "setup"
+          },
+          {
+            "file": "information-clarity.spec.ts",
+            "line": 128,
+            "title": "SIM-2d: ocupado visible, alcance filtrado o marcado e informe mantienen sus recuentos",
+            "project": "csv",
+            "status": "failed",
+            "retry": 0,
+            "duration_ms": 1657,
+            "errors": [
+              "Error: expect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 1\nReceived:    32.5\n\n  130 |  try{\n  131 |   await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'informationClarityProbe').held)).toBe(true);await expect(panel.getByRole('status')).toHaveText(tr('info.progress',{done:2,total:6}));await expect(panel.locator('tbody tr')).toHaveCount(1)\n> 132 |   expect(await flowFootprint(panel.locator(':scope>[role=status]'))).toBeGreaterThan(1);expect(await flowFootprint(panel.locator(':scope>.scope'))).toBeLessThanOrEqual(1)\n      |                                                                                                                                                     ^\n  133 |   await expect(await analysisExportItem(page,'info.report')).toHaveAttribute('aria-disabled','true');await page.keyboard.press('Escape')\n  134 |  }finally{await release()}\n  135 |  await ready(panel,6);await compactComplete(panel)\n    at <checkout>/tests/e2e/information-clarity.spec.ts:132:149"
+            ],
+            "classification": "behavior"
+          }
+        ],
+        "top_level_errors": []
+      },
+      "behavior_red": 5,
+      "setup_failures": 1,
+      "setup_reason": "Nuevo Proyecto appeared transiently over Welcome before CSV became visible. The opening cause is not demonstrated. This attempt is retained and is not counted as a behavior RED."
+    },
+    "isolated_threshold": {
+      "head": "67e0bf7a469990fc26d7c0bf22d63c422c4455d1",
+      "stats": {
+        "startTime": "2026-11-20T06:13:19.514Z",
+        "duration": 17310.683,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "case_duration_ms": 16946,
+      "retry": 0,
+      "status": "failed",
+      "behavior_red": true,
+      "error": "Error: expect(locator).toHaveCount(expected) failed\n\nLocator:  locator('[id=\"workspace-panel-analysis:8da7e52b-74ec-4bbe-ad83-b8d35201e37a\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('searchbox', { name: 'Buscar nombres de columnas', exact: true })\nExpected: 0\nReceived: 1\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toHaveCount\" locator('[id=\"workspace-panel-analysis:8da7e52b-74ec-4bbe-ad83-b8d35201e37a\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('searchbox', { name: 'Buscar nombres de columnas', exact: true }) with timeout 15000ms\n  - waiting for locator('[id=\"workspace-panel-analysis:8da7e52b-74ec-4bbe-ad83-b8d35201e37a\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('searchbox', { name: 'Buscar nombres de columnas', exact: true })\n    34 × locator resolved to 1 element\n       - unexpected value \"1\"\n\n\n  120 |   const headers=Array.from({length:count},(_,index)=>'Campo '+(index+1)),source=[headers.join(','),headers.map((_,index)=>String(index)).join(','),headers.map((_,index)=>String(index+1)).join(',')].join('\\n')+'\\n'\n  121 |   await open('ancha-'+count+'.csv',source,2);const panel=await information();await ready(panel,count)\n> 122 |   const search=panel.getByRole('searchbox',{name:tr('info.searchLabel'),exact:true});await expect(search).toHaveCount(count>20?1:0);await expect(panel.locator('.pagination')).toHaveCount(count>50?1:0)\n      |                                                                                                           ^\n  123 |   await expect(panel.locator('tbody tr').first().getByRole('rowheader')).toHaveText('Campo 1');await expect(panel.locator('tbody tr').first().locator('.non-empty')).toHaveText('2')\n  124 |   if(count===51){await panel.getByRole('button',{name:tr('info.next'),exact:true}).click();await expect(panel.locator('tbody tr')).toHaveCount(1);await expect(panel.locator('tbody tr').first().getByRole('rowheader')).toHaveText('Campo 51');await expect(panel.locator('tbody tr').first().locator('td').first()).toHaveText('51');await search.fill('Campo 51');await expect(panel.locator('tbody tr')).toHaveCount(1);await expect(panel.locator('.pagination')).toHaveCount(0)}\n  125 |  }\n    at <checkout>/tests/e2e/information-clarity.spec.ts:122:107"
+    },
+    "green": {
+      "head": "233a739a658f2403943f5af03b2768ea39e2419c",
+      "result": {
+        "stats": {
+          "startTime": "2026-11-20T06:19:36.320Z",
+          "duration": 13620.144,
+          "expected": 6,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "cases": [
+          {
+            "file": "information-clarity.spec.ts",
+            "line": 86,
+            "title": "SIM-2d: resultado completo compacto, alineación y revisión en ayuda [es]",
+            "project": "csv",
+            "status": "passed",
+            "retry": 0,
+            "duration_ms": 2125,
+            "errors": []
+          },
+          {
+            "file": "information-clarity.spec.ts",
+            "line": 86,
+            "title": "SIM-2d: resultado completo compacto, alineación y revisión en ayuda [en]",
+            "project": "csv",
+            "status": "passed",
+            "retry": 0,
+            "duration_ms": 1727,
+            "errors": []
+          },
+          {
+            "file": "information-clarity.spec.ts",
+            "line": 86,
+            "title": "SIM-2d: resultado completo compacto, alineación y revisión en ayuda [en-XA]",
+            "project": "csv",
+            "status": "passed",
+            "retry": 0,
+            "duration_ms": 1679,
+            "errors": []
+          },
+          {
+            "file": "information-clarity.spec.ts",
+            "line": 103,
+            "title": "SIM-2d: detalles con chevron posterior, acciones y Explorar conservan teclado y datos",
+            "project": "csv",
+            "status": "passed",
+            "retry": 0,
+            "duration_ms": 1683,
+            "errors": []
+          },
+          {
+            "file": "information-clarity.spec.ts",
+            "line": 117,
+            "title": "SIM-2d: buscador desde 21 columnas y páginas desde 51 sin recortar datos",
+            "project": "csv",
+            "status": "passed",
+            "retry": 0,
+            "duration_ms": 3609,
+            "errors": []
+          },
+          {
+            "file": "information-clarity.spec.ts",
+            "line": 128,
+            "title": "SIM-2d: ocupado visible, alcance filtrado o marcado e informe mantienen sus recuentos",
+            "project": "csv",
+            "status": "passed",
+            "retry": 0,
+            "duration_ms": 2447,
+            "errors": []
+          }
+        ],
+        "top_level_errors": []
+      },
+      "wall_seconds_reported_by_root": 13.942,
+      "check_wall_seconds_reported_by_root": 9.866,
+      "build_wall_seconds_reported_by_root": 2.133
+    },
+    "unit": {
+      "head": "233a739a658f2403943f5af03b2768ea39e2419c",
+      "passed": 3008,
+      "skipped": 2,
+      "files_passed": 169,
+      "files_skipped": 1,
+      "seconds_from_log": 20.72
+    }
+  },
+  "integrated_consumers": {
+    "head": "00b4329ca786c7c026b3b4f2abf4876a8184d1d4",
+    "report": {
+      "stats": {
+        "startTime": "2026-11-20T06:32:52.034Z",
+        "duration": 154225.968,
+        "expected": 87,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "analysis-auto-info.spec.ts",
+          "line": 55,
+          "title": "SIM-1c: abrir no analiza y Analizar solicita una sola tanda con los seis oráculos de Información",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1282,
+          "errors": []
+        },
+        {
+          "file": "analysis-auto-info.spec.ts",
+          "line": 70,
+          "title": "SIM-1c: la paleta inicia una vez y el cálculo continúa oculto al paginar la misma vista",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1248,
+          "errors": []
+        },
+        {
+          "file": "analysis-auto-info.spec.ts",
+          "line": 84,
+          "title": "SIM-1c: editar datos o cambiar alcance avisa sin recalcular hasta Actualizar información",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1353,
+          "errors": []
+        },
+        {
+          "file": "analysis-auto-info.spec.ts",
+          "line": 96,
+          "title": "SIM-1c: cancelar no reintenta y el traspaso a Gráficos no inicia un gráfico ni revive una tanda",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1758,
+          "errors": []
+        },
+        {
+          "file": "analysis-auto-info.spec.ts",
+          "line": 109,
+          "title": "SIM-1c: informe solo con resultado, paginación solo si hace falta y límite sin modificar la fuente",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2047,
+          "errors": []
+        },
+        {
+          "file": "analysis-auto-info.spec.ts",
+          "line": 120,
+          "title": "SIM-1c: alternar Tabla y Texto no repite Información sin actualizar",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1436,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 36,
+          "title": "AN-2 muestra describe por petición con el fixture aprobado y conserva la fuente",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1043,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 68,
+          "title": "AN-2 coordina el cálculo avanzado con describe sin lanzar consultas al desplegar",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 969,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 93,
+          "title": "AN-2 Información presenta dimensiones, tipos y calidad con distintos sin vacíos",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 938,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 113,
+          "title": "AN-2 cancelar conserva la fuente y permite pasar a la vista avanzada sin respuestas tardías",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1009,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 128,
+          "title": "AN-2 entrar en el explorador cancela describe pendiente antes de activar el otro análisis",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1045,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 141,
+          "title": "AN-2 descarta la respuesta anterior cuando cambia la revisión y recalcula con los valores actuales",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1162,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 156,
+          "title": "AN-2 la paleta describe abre estadísticas sin empezar a calcular",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 852,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 163,
+          "title": "AN-2 describe conserva el ámbito filtrado, el informe y las columnas marcadas",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1761,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 177,
+          "title": "AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (es)",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2265,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 177,
+          "title": "AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (en-XA)",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2227,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 191,
+          "title": "AN-2 ciento veinte columnas se rechazan antes de consultar y conservan el archivo",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 998,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 197,
+          "title": "AN-2 la cardinalidad textual no disponible no elimina las estadísticas numéricas exactas",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1445,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 203,
+          "title": "AN-2 revisión: una muestra conserva su ámbito en selector, caption e informe",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1563,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 220,
+          "title": "AN-2 revisión: std de un valor y top/freq de fecha se presentan vacíos",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1152,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 229,
+          "title": "AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes de consultar",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1076,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 236,
+          "title": "Información: distintos sin vacíos conserva repeticiones y el archivo (es)",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1070,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 236,
+          "title": "Información: distintos sin vacíos conserva repeticiones y el archivo (en)",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1170,
+          "errors": []
+        },
+        {
+          "file": "analysis-describe.spec.ts",
+          "line": 236,
+          "title": "Información: distintos sin vacíos conserva repeticiones y el archivo (en-XA)",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1203,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 87,
+          "title": "SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1369,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 119,
+          "title": "SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro secciones",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1334,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 136,
+          "title": "SIM-2a: exportaciones sin resultado siguen enfocables, explican el motivo y no calculan al abrir ni activar",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1159,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 151,
+          "title": "SIM-2a: informes de columnas, resumen y detalle conservan sus datos y precisión desde Exportar",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1687,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 167,
+          "title": "SIM-2a: el informe contextual conserva Perfil, Frecuencias paginadas, Distribución y Correlación",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2403,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 185,
+          "title": "SIM-2a: informe SQL reúne todas las páginas y conserva identificadores y revisión",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2126,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 195,
+          "title": "SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6255,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 222,
+          "title": "SIM-2a: pestañas grandes conservan el motivo y las flechas omiten Información y Estadísticas [grande]",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 983,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 231,
+          "title": "SIM-2a: explorar una columna después de elegir un rango conserva habilitado su informe contextual",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1396,
+          "errors": []
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 63,
+          "title": "AN-1a abre una pestaña única, enfoca su sección y solo calcula por petición",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1419,
+          "errors": []
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 91,
+          "title": "AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta la configuración",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5858,
+          "errors": []
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 116,
+          "title": "AN-1a reutiliza filtros, columnas y rango de la tabla e invalida los resultados al editar",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1582,
+          "errors": []
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 152,
+          "title": "AN-1a cancelar análisis no modifica el CSV y cerrar un CSV solo elimina su propio análisis",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1693,
+          "errors": []
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 174,
+          "title": "AN-1a archivo grande abre análisis manual y conserva SQL",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3201,
+          "errors": []
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 191,
+          "title": "AN-1a paleta y pestañas con teclado, Escape conserva la pestaña y capturas de idiomas",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 923,
+          "errors": []
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 219,
+          "title": "AN-1b ignora la disposición antigua del panel al abrir un perfil existente",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1398,
+          "errors": []
+        },
+        {
+          "file": "columns-overview.spec.ts",
+          "line": 30,
+          "title": "panorámica: tipos, calidad, alcance, explicación por teclado, informe y documento intacto",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1737,
+          "errors": []
+        },
+        {
+          "file": "columns-overview.spec.ts",
+          "line": 40,
+          "title": "panorámica: páginas, nombres duplicados, columnas marcadas y detalle conservan el alcance",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1334,
+          "errors": []
+        },
+        {
+          "file": "columns-overview.spec.ts",
+          "line": 46,
+          "title": "panorámica: cancelar o cambiar revisión descarta respuestas tardías y no continúa columnas",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1346,
+          "errors": []
+        },
+        {
+          "file": "columns-overview.spec.ts",
+          "line": 68,
+          "title": "panorámica: una solicitud reemplazada con igual revisión aborta; una cardinalidad alta solo limita esa columna",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2216,
+          "errors": []
+        },
+        {
+          "file": "columns-overview.spec.ts",
+          "line": 77,
+          "title": "panorámica: muestra etiquetada incluso durante el cálculo y presupuesto sin totales inventados",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1723,
+          "errors": []
+        },
+        {
+          "file": "columns-overview.spec.ts",
+          "line": 85,
+          "title": "panorámica: mide 3 000, 100 000 y un millón de filas completas con una columna",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2903,
+          "errors": []
+        },
+        {
+          "file": "columns-overview.spec.ts",
+          "line": 96,
+          "title": "panorámica: abrir un millón de filas y explorar inmediatamente no compite con la carga inicial de la grilla",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1712,
+          "errors": []
+        },
+        {
+          "file": "columns-overview.spec.ts",
+          "line": 105,
+          "title": "panorámica: espera metadatos del filtro nuevo y conserva el análisis al paginar ese mismo alcance",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1682,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 32,
+          "title": "LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1439,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 56,
+          "title": "LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 999,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 88,
+          "title": "LIM-1 ajustes: Un valor vacío bloquea preparar y rellenar con un motivo accesible",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1288,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 104,
+          "title": "LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es)",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2054,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 104,
+          "title": "LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (en)",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2003,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 138,
+          "title": "LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva bytes tras guardar",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1529,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 156,
+          "title": "LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1780,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 175,
+          "title": "LIM-1 elimina por cualquiera o todas las columnas marcadas y restaura filas completas",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1531,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 191,
+          "title": "LIM-1 fuente protegida permite ver vacíos y bloquea las mutaciones también por el puente",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1706,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 225,
+          "title": "LIM-1 archivo grande permite el filtro completo y explica que limpiar requiere extraer",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1238,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 239,
+          "title": "LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 896,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 256,
+          "title": "LIM-1 Texto sin confirmar conserva el diálogo y Cancelar no pierde el borrador",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1203,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 270,
+          "title": "LIM-1 cancelar descarta una vista previa tardía y deja reintentar sin modificar el CSV",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1183,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 302,
+          "title": "LIM-1 la paleta encuentra isnull, fillna y dropna y conserva la selección múltiple",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1247,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 318,
+          "title": "LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1310,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 332,
+          "title": "LIM-1 una protección recibida con el diálogo abierto invalida su vista previa",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1162,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 347,
+          "title": "LIM-1 rellenar desde Información actúa sobre todo el documento y pide actualizar el análisis",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1512,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 368,
+          "title": "LIM-1 teclado, idiomas y temas (es)",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1785,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 368,
+          "title": "LIM-1 teclado, idiomas y temas (en)",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1753,
+          "errors": []
+        },
+        {
+          "file": "empty-values.spec.ts",
+          "line": 368,
+          "title": "LIM-1 teclado, idiomas y temas (en-XA)",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1879,
+          "errors": []
+        },
+        {
+          "file": "information-clarity.spec.ts",
+          "line": 86,
+          "title": "SIM-2d: resultado completo compacto, alineación y revisión en ayuda [es]",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1684,
+          "errors": []
+        },
+        {
+          "file": "information-clarity.spec.ts",
+          "line": 86,
+          "title": "SIM-2d: resultado completo compacto, alineación y revisión en ayuda [en]",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1670,
+          "errors": []
+        },
+        {
+          "file": "information-clarity.spec.ts",
+          "line": 86,
+          "title": "SIM-2d: resultado completo compacto, alineación y revisión en ayuda [en-XA]",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1741,
+          "errors": []
+        },
+        {
+          "file": "information-clarity.spec.ts",
+          "line": 103,
+          "title": "SIM-2d: detalles con chevron posterior, acciones y Explorar conservan teclado y datos",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1639,
+          "errors": []
+        },
+        {
+          "file": "information-clarity.spec.ts",
+          "line": 117,
+          "title": "SIM-2d: buscador desde 21 columnas y páginas desde 51 sin recortar datos",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3715,
+          "errors": []
+        },
+        {
+          "file": "information-clarity.spec.ts",
+          "line": 128,
+          "title": "SIM-2d: ocupado visible, alcance filtrado o marcado e informe mantienen sus recuentos",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2333,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 50,
+          "title": "PRJ-02b: analizar usa las tres filas y columnas del conjunto, sin abrir ni modificar la fuente",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1104,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 67,
+          "title": "PRJ-02b: Gráficos identifica el conjunto completo y conserva su cobertura",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1166,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 76,
+          "title": "PRJ-02b: SQL conserva valores y ausentes del conjunto sin afirmar que incluye cambios pendientes",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1972,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 91,
+          "title": "PRJ-02b: reabrir una versión futura del mismo proyecto libera sus pestañas analíticas",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1202,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 109,
+          "title": "PRJ-02b: el análisis usa más de cien filas, no la vista previa del conjunto",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1109,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 122,
+          "title": "PRJ-02b: una muestra se guarda y otro conjunto la ordena por edad sin cambiar las filas elegidas",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1144,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 159,
+          "title": "PRJ-02b: el histograma de Edad representa 34, 52 y 61 y las estadísticas coinciden",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4479,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 169,
+          "title": "PRJ-02b: teclado y capturas de análisis y cadena de tres niveles [es]",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6104,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 169,
+          "title": "PRJ-02b: teclado y capturas de análisis y cadena de tres niveles [en-XA]",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6147,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 224,
+          "title": "PRJ-02b: cancelar la preparación no publica un análisis parcial ni escribe el proyecto",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1173,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 238,
+          "title": "PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1184,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 238,
+          "title": "PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1236,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 271,
+          "title": "PRJ-02b: dos reaperturas superpuestas liberan el snapshot una vez y publican el último proyecto",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1470,
+          "errors": []
+        }
+      ],
+      "top_level_errors": []
+    },
+    "spec_counts": {
+      "analysis-auto-info.spec.ts": 6,
+      "analysis-describe.spec.ts": 18,
+      "analysis-sections.spec.ts": 9,
+      "analysis-tab.spec.ts": 7,
+      "columns-overview.spec.ts": 8,
+      "empty-values.spec.ts": 20,
+      "information-clarity.spec.ts": 6,
+      "project-subset-analysis.spec.ts": 13
+    },
+    "scope_warning": "CSV report selects eight files and87 cases; separate shell report now qualifies all7 project-source cases. Both run on00b4329;94 total unique cases,9 specs.",
+    "shell_report": {
+      "stats": {
+        "startTime": "2026-11-20T06:51:56.069Z",
+        "duration": 12991.755,
+        "expected": 7,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "project-source.spec.ts",
+          "line": 65,
+          "title": "registra un CSV con teclado, bloquea edición directa y deja guardar una copia exacta",
+          "project": "shell",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1245,
+          "errors": []
+        },
+        {
+          "file": "project-source.spec.ts",
+          "line": 97,
+          "title": "avisa cuando la fuente cambia y conserva la huella previa al volver a registrarla",
+          "project": "shell",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1415,
+          "errors": []
+        },
+        {
+          "file": "project-source.spec.ts",
+          "line": 114,
+          "title": "busca por huella dentro del proyecto y solo reenlaza tras confirmar",
+          "project": "shell",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1019,
+          "errors": []
+        },
+        {
+          "file": "project-source.spec.ts",
+          "line": 134,
+          "title": "el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado",
+          "project": "shell",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5233,
+          "errors": []
+        },
+        {
+          "file": "project-source.spec.ts",
+          "line": 206,
+          "title": "una muestra conserva su alcance al protegerla y al cerrar el proyecto",
+          "project": "shell",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1687,
+          "errors": []
+        },
+        {
+          "file": "project-source.spec.ts",
+          "line": 232,
+          "title": "diálogo y fuente protegida en colores claro y oscuro [es]",
+          "project": "shell",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1027,
+          "errors": []
+        },
+        {
+          "file": "project-source.spec.ts",
+          "line": 232,
+          "title": "diálogo y fuente protegida en colores claro y oscuro [en-XA]",
+          "project": "shell",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1025,
+          "errors": []
+        }
+      ],
+      "top_level_errors": []
+    },
+    "total_passed": 94,
+    "total_specs": 9,
+    "qualification_phase": "before final one-class shadow fix; no94-case rerun claimed on final head"
+  },
+  "consumer_ledger": [
+    {
+      "file": "tests/e2e/columns-overview.spec.ts",
+      "before_line": 37,
+      "after_line": 37,
+      "before": " await panel.getByLabel('Buscar nombres de columnas',{exact:true}).fill('Total');await expect(rows).toHaveCount(1);const output=await report(panel);expect(output.text).toContain('Columnas solicitadas: 5. Analizadas: 5. No disponibles: 0.');expect(output.text).toContain('\"search\": \"Oaxaca\"');expect(output.text).toContain('\"1. ID\"');expect(output.text).toContain('\"5. Opcional\"');expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toEqual(before[0]);expect(await readFile(path,'utf8')).toBe(source)",
+      "after": " await expect(panel.getByLabel('Buscar nombres de columnas',{exact:true})).toHaveCount(0);await expect(rows).toHaveCount(5);const output=await report(panel);expect(output.text).toContain('Columnas solicitadas: 5. Analizadas: 5. No disponibles: 0.');expect(output.text).toContain('\"search\": \"Oaxaca\"');expect(output.text).toContain('\"1. ID\"');expect(output.text).toContain('\"5. Opcional\"');expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toEqual(before[0]);expect(await readFile(path,'utf8')).toBe(source)",
+      "reason": "Retired search for a five-column result: require absence and five rows, retain full report and original data."
+    },
+    {
+      "file": "tests/e2e/columns-overview.spec.ts",
+      "before_line": 90,
+      "after_line": 90,
+      "before": "  const started=performance.now(),panel=await overview();await completed(panel);const exploreMs=performance.now()-started,heartbeat=await page.evaluate(()=>{const state=Reflect.get(window,'overviewTiming');clearInterval(state.timer);return{intervalMs:20,samples:state.gaps.length,maxGapMs:Math.max(0,...state.gaps)}});await expect(panel.locator('.scope')).toContainText(count.toLocaleString()+' filas por columna');await expectCounts(panel.locator('tbody tr').first(),[count.toLocaleString(),'0','0','0',(1000).toLocaleString(),(count-1000).toLocaleString()]);expect(await readFile(path,'utf8')).toBe(text);expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)?.dirty).toBe(false)",
+      "after": "  const started=performance.now(),panel=await overview();await completed(panel);const exploreMs=performance.now()-started,heartbeat=await page.evaluate(()=>{const state=Reflect.get(window,'overviewTiming');clearInterval(state.timer);return{intervalMs:20,samples:state.gaps.length,maxGapMs:Math.max(0,...state.gaps)}});await expect(panel.locator(':scope>details')).toContainText(count.toLocaleString()+' filas por columna');await expectCounts(panel.locator('tbody tr').first(),[count.toLocaleString(),'0','0','0',(1000).toLocaleString(),(count-1000).toLocaleString()]);expect(await readFile(path,'utf8')).toBe(text);expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)?.dirty).toBe(false)",
+      "reason": "Complete-file scope moves to interpretation help; same literal number or Documento completo and same data assertions."
+    },
+    {
+      "file": "tests/e2e/columns-overview.spec.ts",
+      "before_line": 101,
+      "after_line": 101,
+      "before": " await expect(panel.locator('.scope')).toContainText((1000000).toLocaleString()+' filas por columna');await expectCounts(panel.locator('tbody tr').first(),[(1000000).toLocaleString(),'0','0','0','1',(999999).toLocaleString()])",
+      "after": " await expect(panel.locator(':scope>details')).toContainText((1000000).toLocaleString()+' filas por columna');await expectCounts(panel.locator('tbody tr').first(),[(1000000).toLocaleString(),'0','0','0','1',(999999).toLocaleString()])",
+      "reason": "Complete-file scope moves to interpretation help; same literal number or Documento completo and same data assertions."
+    },
+    {
+      "file": "tests/e2e/project-source.spec.ts",
+      "before_line": 147,
+      "after_line": 147,
+      "before": " await expect(overview.locator('.scope')).toContainText('Documento completo')",
+      "after": " await expect(overview.locator(':scope>details')).toContainText('Documento completo')",
+      "reason": "Complete-file scope moves to interpretation help; same literal number or Documento completo and same data assertions."
+    },
+    {
+      "file": "tests/e2e/project-source.spec.ts",
+      "before_line": 201,
+      "after_line": 201,
+      "before": " await expect(overview.locator('.scope')).toContainText('Documento completo')",
+      "after": " await expect(overview.locator(':scope>details')).toContainText('Documento completo')",
+      "reason": "Complete-file scope moves to interpretation help; same literal number or Documento completo and same data assertions."
+    }
+  ],
+  "consumer_cases": {
+    "columns-overview.spec.ts": {
+      "before": 8,
+      "after": 8
+    },
+    "project-source.spec.ts": {
+      "before": 7,
+      "after": 7
+    }
+  },
+  "consumer_line_replacements": 5,
+  "consumer_diff_removed_plus_added_lines": 10,
+  "logs": {
+    "red-red.log": {
+      "source_sha256": "3e7d7491a3990e2f939e29b05bdcbdea81fad9cd6365a5a905d199b61ed7c169",
+      "sanitized_sha256": "6143ab4ae6a3c10c8bc475a277ae13749114151ae3aa15a9a2003eb21fb13028",
+      "bytes": 21114
+    },
+    "threshold-isolated.log": {
+      "source_sha256": "b97f95abc47ded2bd75815185dfeb98f5e0536f235e161a94a47e15677cab4dd",
+      "sanitized_sha256": "58db1385d280635c27b84ab511abcaa72cb5b15f0ed9f19e780f7395a296d24d",
+      "bytes": 22196
+    },
+    "green.log": {
+      "source_sha256": "14f615210d57dda978dd258e5e2f7e4b40899958073af55eca531afd5b70a39d",
+      "sanitized_sha256": "14f615210d57dda978dd258e5e2f7e4b40899958073af55eca531afd5b70a39d",
+      "bytes": 1134
+    },
+    "check.log": {
+      "source_sha256": "eb79957eda7085ef02cd049be788e1277461221e34ff96abb33b77d8f10db0f6",
+      "sanitized_sha256": "d5a290e1b46b1e67c76c242ffd539e8b094fcd9ba47e13a7ddf0322137dba0c5",
+      "bytes": 233
+    },
+    "build.log": {
+      "source_sha256": "f3163cabe79ef8b0fc5bc96a637f70987b13da37dc04e85bcdc450723a685ce1",
+      "sanitized_sha256": "d7250a4cfdcd613ae8016530a912041b9bdf36374ace7398bd1d9b5ac7a2a961",
+      "bytes": 22693
+    },
+    "full-unit.log": {
+      "source_sha256": "b08b71bee4f884c3141008003d36a7c8488d8617920d69022c9fe0cffeb3b11d",
+      "sanitized_sha256": "ba21d9bd65af125847f7f21a641d54f6d53e356150a9edef6709bf4f017f26e5",
+      "bytes": 1022
+    },
+    "integrated-check.log": {
+      "source_sha256": "eb79957eda7085ef02cd049be788e1277461221e34ff96abb33b77d8f10db0f6",
+      "sanitized_sha256": "d5a290e1b46b1e67c76c242ffd539e8b094fcd9ba47e13a7ddf0322137dba0c5",
+      "bytes": 233
+    },
+    "integrated-build.log": {
+      "source_sha256": "8287afe22a45cd751a286bb19dac9d0f33dd76a650afc850b711f1d98de3e708",
+      "sanitized_sha256": "6774efd4e492faa903fb161164eb98f6c7363dcc7f8f2ae54a7e5557638742d7",
+      "bytes": 22692
+    },
+    "consumers.log": {
+      "source_sha256": "d253af23d78efb2dc654823e2314314937eaffc75a0e399cd17e79809d6a9801",
+      "sanitized_sha256": "d253af23d78efb2dc654823e2314314937eaffc75a0e399cd17e79809d6a9801",
+      "bytes": 13914
+    },
+    "capture-before-setup.log": {
+      "source_sha256": "03cd28a066c1c57a5dfe7c9b7a1a83daae635cb7483843ecda6822ceb567232a",
+      "sanitized_sha256": "e40a4cb8de36f9def00884ea1e5a6585540a1c25d9bddd5c1374ea1c1ec960b3",
+      "bytes": 6162
+    },
+    "threshold-setup-observation.md": {
+      "source_sha256": "38d5bbeb8494ad8f61a671c1cf5061ef65bd2300f269a496019af15f1eabc1d0",
+      "sanitized_sha256": "38d5bbeb8494ad8f61a671c1cf5061ef65bd2300f269a496019af15f1eabc1d0",
+      "bytes": 1137
+    },
+    "threshold-setup-observation.json": {
+      "source_sha256": "44f5f3114e588c0fbe1520debb114ae917f2f1393158f6c8e125c6cdc5a84559",
+      "sanitized_sha256": "44f5f3114e588c0fbe1520debb114ae917f2f1393158f6c8e125c6cdc5a84559",
+      "bytes": 4325
+    },
+    "capture-before-corrected.log": {
+      "source_sha256": "e0a306a3afe4c53e9875d9e1632ad0985f3fce9709f32a769d0075891b380ba9",
+      "sanitized_sha256": "e0a306a3afe4c53e9875d9e1632ad0985f3fce9709f32a769d0075891b380ba9",
+      "bytes": 493
+    },
+    "capture-after-corrected.log": {
+      "source_sha256": "72250c9363fc9ba34e77b25093b5eea0ce9695315afdd0dbaca217513e49877c",
+      "sanitized_sha256": "72250c9363fc9ba34e77b25093b5eea0ce9695315afdd0dbaca217513e49877c",
+      "bytes": 491
+    },
+    "shell-consumers.log": {
+      "source_sha256": "40fca1f6de062b2520b3070c4a866f8f5db05be74e5c858d7f3d150cde6198ee",
+      "sanitized_sha256": "40fca1f6de062b2520b3070c4a866f8f5db05be74e5c858d7f3d150cde6198ee",
+      "bytes": 1242
+    },
+    "ghost-red.log": {
+      "source_sha256": "edc9bf77a3a34d72fd8f6d046edf11f5ce4a57f1042deafe43a1015c320e7248",
+      "sanitized_sha256": "21eaf334f2d9899eec38643568f78b6d221105518dd2d466a81d581da4de907a",
+      "bytes": 4763
+    },
+    "ghost-green.log": {
+      "source_sha256": "8f68ec6b61849746841e21f71f68495280d47fb5a080095c627d901749357532",
+      "sanitized_sha256": "8f68ec6b61849746841e21f71f68495280d47fb5a080095c627d901749357532",
+      "bytes": 375
+    },
+    "ghost-green-build.log": {
+      "source_sha256": "ae80cabde2c71b2c4dbf091cbb60df76da7b07ddd8bd0e08736c8e14bc1ae2c3",
+      "sanitized_sha256": "04f98ed02fa36d96f80cd8f281d5b97eeed323731fb9e3bd9cd8318f60955a3e",
+      "bytes": 22691
+    },
+    "capture-after-ghost.log": {
+      "source_sha256": "85193b8c00b3e572ce6a6eb666adc399c8e938c5d47556ffb439979e29791f00",
+      "sanitized_sha256": "85193b8c00b3e572ce6a6eb666adc399c8e938c5d47556ffb439979e29791f00",
+      "bytes": 491
+    }
+  },
+  "captures": {
+    "status": "completed root runs; original two probe setup failures preserved separately",
+    "expected_per_phase": 8,
+    "expected_total": 16,
+    "actual_total": 16,
+    "runs": {
+      "before": {
+        "tests_passed": 2,
+        "duration_from_log": "3.1s"
+      },
+      "after": {
+        "tests_passed": 2,
+        "duration_from_log": "2.9s",
+        "log": "logs/capture-after-ghost.log"
+      }
+    },
+    "matrices": {
+      "before": {
+        "head": "4e3289fee36702935c3be9de4eecf420f16225d4",
+        "manifests": [
+          {
+            "phase": "before",
+            "language": "es",
+            "head": "4e3289fee36702935c3be9de4eecf420f16225d4",
+            "fixtureSHA256": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a",
+            "mainEntrySHA256": "1f611e62345a551d8f0098aa90f450619e30c185aaae3eb09d91f78bcf175db1",
+            "captures": [
+              "before-es-light-1440x900-info.png",
+              "before-es-dark-1440x900-info.png",
+              "before-es-light-1280x720-info.png",
+              "before-es-dark-1280x720-info.png"
+            ]
+          },
+          {
+            "phase": "before",
+            "language": "en-XA",
+            "head": "4e3289fee36702935c3be9de4eecf420f16225d4",
+            "fixtureSHA256": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a",
+            "mainEntrySHA256": "1f611e62345a551d8f0098aa90f450619e30c185aaae3eb09d91f78bcf175db1",
+            "captures": [
+              "before-en-XA-light-1440x900-info.png",
+              "before-en-XA-dark-1440x900-info.png",
+              "before-en-XA-light-1280x720-info.png",
+              "before-en-XA-dark-1280x720-info.png"
+            ]
+          }
+        ],
+        "files": [
+          {
+            "name": "before-es-light-1440x900-info.png",
+            "width": 1440,
+            "height": 900,
+            "sha256": "3d5b4e1438d95ac0846c11f2513fc3dc90f78cc837147207a4e621bb05da7d44",
+            "bytes": 118531
+          },
+          {
+            "name": "before-es-dark-1440x900-info.png",
+            "width": 1440,
+            "height": 900,
+            "sha256": "030b3b61a0dc19cc7ca1a6e6be298ddc6407eec4fe3818c3e2d72f458bb5a988",
+            "bytes": 117200
+          },
+          {
+            "name": "before-es-light-1280x720-info.png",
+            "width": 1280,
+            "height": 720,
+            "sha256": "aa9b3fbc7cd9ee3458354864e22f3c20a17f245bd80f400dca7522cd43b9049a",
+            "bytes": 114283
+          },
+          {
+            "name": "before-es-dark-1280x720-info.png",
+            "width": 1280,
+            "height": 720,
+            "sha256": "2ba2708451bd7ae3ab2b2d35876c21c8774fc9d9770e4e29b2d3bec80d372484",
+            "bytes": 112952
+          },
+          {
+            "name": "before-en-XA-light-1440x900-info.png",
+            "width": 1440,
+            "height": 900,
+            "sha256": "5c7cd7c782168a1663fc3da275b0a29920c5d7df7eea0d21d42b00bc87924422",
+            "bytes": 137792
+          },
+          {
+            "name": "before-en-XA-dark-1440x900-info.png",
+            "width": 1440,
+            "height": 900,
+            "sha256": "55526bc2559e4e120d2ef449bed5658bbcd3a0fd79ef47412873667cda2c5c3d",
+            "bytes": 136071
+          },
+          {
+            "name": "before-en-XA-light-1280x720-info.png",
+            "width": 1280,
+            "height": 720,
+            "sha256": "156ae8dcd474d72f40b196825cfe2be2fa26a86ffc52308fb256113675266400",
+            "bytes": 132272
+          },
+          {
+            "name": "before-en-XA-dark-1280x720-info.png",
+            "width": 1280,
+            "height": 720,
+            "sha256": "ee688778db7189ea893b6fa843e5ea8230b37091433de73da9ba657391b07e70",
+            "bytes": 130639
+          }
+        ],
+        "PNG_count": 8
+      },
+      "after": {
+        "head": "beaf15fed13225399a67119a74ddd770ff4004a6",
+        "manifests": [
+          {
+            "phase": "after",
+            "language": "es",
+            "head": "beaf15fed13225399a67119a74ddd770ff4004a6",
+            "fixtureSHA256": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a",
+            "mainEntrySHA256": "0e29d75d235cc91148a6eb144ae51df5da7a52f4c64e576df008728f6bd30936",
+            "captures": [
+              "after-es-light-1440x900-info.png",
+              "after-es-dark-1440x900-info.png",
+              "after-es-light-1280x720-info.png",
+              "after-es-dark-1280x720-info.png"
+            ]
+          },
+          {
+            "phase": "after",
+            "language": "en-XA",
+            "head": "beaf15fed13225399a67119a74ddd770ff4004a6",
+            "fixtureSHA256": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a",
+            "mainEntrySHA256": "0e29d75d235cc91148a6eb144ae51df5da7a52f4c64e576df008728f6bd30936",
+            "captures": [
+              "after-en-XA-light-1440x900-info.png",
+              "after-en-XA-dark-1440x900-info.png",
+              "after-en-XA-light-1280x720-info.png",
+              "after-en-XA-dark-1280x720-info.png"
+            ]
+          }
+        ],
+        "files": [
+          {
+            "name": "after-es-light-1440x900-info.png",
+            "width": 1440,
+            "height": 900,
+            "sha256": "f340dd0116248d6f7445225b4d6bf6a0a679d444c2b223f2fca2053df7aca43b",
+            "bytes": 97958
+          },
+          {
+            "name": "after-es-dark-1440x900-info.png",
+            "width": 1440,
+            "height": 900,
+            "sha256": "ecf551fd3a9664c8907a541c1b7bae7e5188436976804beb6638a8069c8a51cc",
+            "bytes": 97930
+          },
+          {
+            "name": "after-es-light-1280x720-info.png",
+            "width": 1280,
+            "height": 720,
+            "sha256": "6d74ac0e863c073fc81a1a0dfe0c29cacfcc2febc6ff38bc2fdb2d924ab86896",
+            "bytes": 94310
+          },
+          {
+            "name": "after-es-dark-1280x720-info.png",
+            "width": 1280,
+            "height": 720,
+            "sha256": "b2ce8452cb9e4df8efd91e3446624942b066a9cbbb9a20ed2f2470372132f1d7",
+            "bytes": 94283
+          },
+          {
+            "name": "after-en-XA-light-1440x900-info.png",
+            "width": 1440,
+            "height": 900,
+            "sha256": "fcc35361921da992e2152a0a1081828d933dfd81f47beff184f0193fde4badee",
+            "bytes": 115168
+          },
+          {
+            "name": "after-en-XA-dark-1440x900-info.png",
+            "width": 1440,
+            "height": 900,
+            "sha256": "07dc3c3da8749c419b8961c63e0cffe350ca59ce80ec631de753d7d248fd0b11",
+            "bytes": 114914
+          },
+          {
+            "name": "after-en-XA-light-1280x720-info.png",
+            "width": 1280,
+            "height": 720,
+            "sha256": "9d567459fb96b8b44c037bd938772e96b2fcde28647678e80f0008b95fe3b922",
+            "bytes": 110823
+          },
+          {
+            "name": "after-en-XA-dark-1280x720-info.png",
+            "width": 1280,
+            "height": 720,
+            "sha256": "3c5aab849d0357d40457c4a4a1b22fac19b81cb99b4c06133c650966a9295747",
+            "bytes": 110497
+          }
+        ],
+        "PNG_count": 8
+      }
+    },
+    "visual_review": "Root found the prior shadow and verified final none via focused computed-style oracle. Reviewer also inspected final en-XA dark1280 PNG: Explore is flat; same synthetic4row6column document and no private paths. Before8 PNGs remain byte-identical; final after8 recaptured on beaf15f.",
+    "private_probe_sha256": "a2f7794659e9b25e167edca45c48a6b4c1c54826d4a2e03838681343d1601e3a",
+    "capture_method": "Existing private root probe, phase-specific built checkout; reduced motion, animation-disabled full-window PNG; original document and four rows/six columns verified before manifest write. No renderer data injection."
+  },
+  "limits": [
+    "CI pending for the final frozen head",
+    "No package/installer/platform claim from local checks",
+    "columnSummary legacy Spanish remains unchanged",
+    "Existing backend 100000-distinct-value message classification remains unchanged",
+    "No engine, parser, IPC, calculation, persistence or data-model changes",
+    "No old test removed; no timeout or retry change"
+  ],
+  "consumer_count_correction": "Initial literal-only inventory reported5 project-source cases and omitted2 language-parameterized cases. Actual shell report contains7; test bodies and identities were not changed.",
+  "reproduction_commands": {
+    "check": "npm run check",
+    "build": "npm run build",
+    "unit": "npm test",
+    "six_cases": "node node_modules/@playwright/test/cli.js test tests/e2e/information-clarity.spec.ts --project=csv --workers=1 --retries=0",
+    "isolated_red_threshold": "node node_modules/@playwright/test/cli.js test tests/e2e/information-clarity.spec.ts --project=csv --grep 'buscador desde 21' --workers=1 --retries=0",
+    "integrated_csv": "node node_modules/@playwright/test/cli.js test tests/e2e/analysis-auto-info.spec.ts tests/e2e/analysis-describe.spec.ts tests/e2e/analysis-sections.spec.ts tests/e2e/analysis-tab.spec.ts tests/e2e/columns-overview.spec.ts tests/e2e/empty-values.spec.ts tests/e2e/information-clarity.spec.ts tests/e2e/project-subset-analysis.spec.ts --project=csv --workers=1 --retries=0",
+    "integrated_shell": "node node_modules/@playwright/test/cli.js test tests/e2e/project-source.spec.ts --project=shell --workers=1 --retries=0",
+    "final_shadow_case": "node node_modules/@playwright/test/cli.js test tests/e2e/information-clarity.spec.ts --project=csv --grep \"detalles con chevron posterior\" --workers=1 --retries=0"
+  },
+  "final_shadow_fix": {
+    "head": "beaf15fed13225399a67119a74ddd770ff4004a6",
+    "source_tree": "5bbede9487bc7647a86df587f95b42ac86eed0db",
+    "reason": "Visual review of1280px en-XA capture found global U0 button box-shadow despite computed border0. Previous87CSV+7shell did not assert shadow.",
+    "red": {
+      "head": "00b4329ca786c7c026b3b4f2abf4876a8184d1d4",
+      "source_tree": "03d36ff36ddbe724a1e61b4d70005045f3f96200",
+      "report": {
+        "stats": {
+          "startTime": "2026-11-20T07:00:35.934Z",
+          "duration": 17813.381,
+          "expected": 0,
+          "skipped": 0,
+          "unexpected": 1,
+          "flaky": 0
+        },
+        "cases": [
+          {
+            "file": "information-clarity.spec.ts",
+            "line": 103,
+            "title": "SIM-2d: detalles con chevron posterior, acciones y Explorar conservan teclado y datos",
+            "project": "csv",
+            "status": "failed",
+            "retry": 0,
+            "duration_ms": 17354,
+            "errors": [
+              "Error: expect(locator).toHaveCSS(expected) failed\n\nLocator:  locator('[id=\"workspace-panel-analysis:923509a2-7e40-4400-8904-98b3e449ee9f\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').nth(5).getByRole('button', { name: 'Elegir columna 6 para explorar', exact: true })\nExpected: \"none\"\nReceived: \"rgba(16, 24, 40, 0.08) 0px 1px 1px 0px\"\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toHaveCSS\" locator('[id=\"workspace-panel-analysis:923509a2-7e40-4400-8904-98b3e449ee9f\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').nth(5).getByRole('button', { name: 'Elegir columna 6 para explorar', exact: true }) with timeout 15000ms\n  - waiting for locator('[id=\"workspace-panel-analysis:923509a2-7e40-4400-8904-98b3e449ee9f\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').nth(5).getByRole('button', { name: 'Elegir columna 6 para explorar', exact: true })\n    33 × locator resolved to <button type=\"button\" class=\"inspect svelte-1alawu2\" aria-label=\"Elegir columna 6 para explorar\">…</button>\n       - unexpected value \"rgba(16, 24, 40, 0.08) 0px 1px 1px 0px\"\n\n\n  111 |  const inspect=rows.nth(5).getByRole('button',{name:tr('info.inspect',{index:6}),exact:true});await expect(inspect).toHaveText(/^Explorar\\s*›?$/)\n  112 |  expect(await inspect.evaluate(element=>['borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth'].map(key=>parseFloat(Reflect.get(getComputedStyle(element),key))))).toEqual([0,0,0,0])\n> 113 |  await expect(inspect).toHaveCSS('box-shadow','none')\n      |                        ^\n  114 |  await inspect.focus();await inspect.press('Enter');const detail=page.getByRole('region',{name:'Exploración de columna',exact:true});await expect(detail.getByLabel('Columna para explorar',{exact:true})).toHaveValue('5');await expect(detail.getByLabel('Filas para explorar',{exact:true})).toHaveValue('all');await expect(page.locator('.analysis-workspace:not([hidden]) header h2')).toBeFocused()\n  115 |  await detail.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(detail.getByRole('status')).toHaveText('Exploración completa.')\n  116 | })\n    at <checkout>/tests/e2e/information-clarity.spec.ts:113:24"
+            ]
+          }
+        ],
+        "top_level_errors": []
+      }
+    },
+    "change": "Reuse existing btn-ghost on the single inspect button; no new CSS rule, calculation or handler. Add box-shadow:none oracle to existing detail case, preserving all previous assertions and identities.",
+    "product_diff": "diff --git a/src/renderer/components/CsvColumnsOverview.svelte b/src/renderer/components/CsvColumnsOverview.svelte\nindex 9b17bca..3740090 100644\n--- a/src/renderer/components/CsvColumnsOverview.svelte\n+++ b/src/renderer/components/CsvColumnsOverview.svelte\n@@ -115,7 +115,7 @@\n      </details>{:else}{number(0)}{/if}</td>\n      <td><details class=\"distinct-detail\"><summary class=\"cell-summary\" aria-label={number(entry.result.profile.distinctNonEmpty)+' · '+t('info.distinctHelp',{name:entry.name})}>{number(entry.result.profile.distinctNonEmpty)}<Icon name=\"chevron-down\" size={12}/></summary><p>{t('info.distinctExplanation')}</p><p>{t('info.repetitions',{count:number(entry.result.extraDuplicates)})}</p></details></td>\n     {:else}<td>{t('info.unavailable')}</td><td colspan=\"3\" class=\"unavailable\">{entry.error}</td>{/if}\n-    <td><button class=\"inspect\" {...controlHint(busy?'busy':null)} type=\"button\" disabled={busy} aria-label={t('info.inspect',{index:entry.column+1})} onclick={()=>oninspect(entry.column,scope)}>{t('info.detail')}<Icon name=\"chevron-right\" size={12}/></button></td>\n+    <td><button class=\"inspect btn-ghost\" {...controlHint(busy?'busy':null)} type=\"button\" disabled={busy} aria-label={t('info.inspect',{index:entry.column+1})} onclick={()=>oninspect(entry.column,scope)}>{t('info.detail')}<Icon name=\"chevron-right\" size={12}/></button></td>\n    </tr>{/each}</tbody>\n   </table></div>\n   {#if visible.length>50}<div class=\"pagination\"><button {...controlHint(offset===0?'firstPage':null)} disabled={offset===0} onclick={()=>offset=Math.max(0,offset-50)}>{t('info.previous')}</button><span>{visible.length?offset+1:0}–{Math.min(offset+50,visible.length)} {t('info.of')} {number(visible.length)} {t('info.visibleColumns')}</span><button {...controlHint(offset+50>=visible.length?'lastPage':null)} disabled={offset+50>=visible.length} onclick={()=>offset+=50}>{t('info.next')}</button></div>{/if}\n",
+    "green": {
+      "stats": {
+        "startTime": "2026-11-20T07:04:59.748Z",
+        "duration": 1964.91,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "information-clarity.spec.ts",
+          "line": 103,
+          "title": "SIM-2d: detalles con chevron posterior, acciones y Explorar conservan teclado y datos",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1649,
+          "errors": []
+        }
+      ],
+      "top_level_errors": []
+    },
+    "build_log": "logs/ghost-green-build.log",
+    "limits": "The94 integrated consumer cases and full unit/check runs precede this one-class final fix. Final source received build, focused1-case green and8after recaptures; no transfer of94-case or full-unit execution to final head."
+  },
+  "previous_after_captures": {
+    "head": "00b4329ca786c7c026b3b4f2abf4876a8184d1d4",
+    "manifests": [
+      {
+        "phase": "after",
+        "language": "es",
+        "head": "00b4329ca786c7c026b3b4f2abf4876a8184d1d4",
+        "fixtureSHA256": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a",
+        "mainEntrySHA256": "993405c4aa77d97bde8ee8ebe1d082c688be4daff37b0d79f0c3902816a06339",
+        "captures": [
+          "after-es-light-1440x900-info.png",
+          "after-es-dark-1440x900-info.png",
+          "after-es-light-1280x720-info.png",
+          "after-es-dark-1280x720-info.png"
+        ]
+      },
+      {
+        "phase": "after",
+        "language": "en-XA",
+        "head": "00b4329ca786c7c026b3b4f2abf4876a8184d1d4",
+        "fixtureSHA256": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a",
+        "mainEntrySHA256": "993405c4aa77d97bde8ee8ebe1d082c688be4daff37b0d79f0c3902816a06339",
+        "captures": [
+          "after-en-XA-light-1440x900-info.png",
+          "after-en-XA-dark-1440x900-info.png",
+          "after-en-XA-light-1280x720-info.png",
+          "after-en-XA-dark-1280x720-info.png"
+        ]
+      }
+    ],
+    "files": [
+      {
+        "name": "after-es-light-1440x900-info.png",
+        "width": 1440,
+        "height": 900,
+        "sha256": "c570c71fef75502882a2800e0f55d8262d0dd22af441f5967ca2a7a47c4347be",
+        "bytes": 99620
+      },
+      {
+        "name": "after-es-dark-1440x900-info.png",
+        "width": 1440,
+        "height": 900,
+        "sha256": "3bf838fa4f97becc27c267f302445a65c1795128ba70882bcf9f5217ca94e672",
+        "bytes": 99462
+      },
+      {
+        "name": "after-es-light-1280x720-info.png",
+        "width": 1280,
+        "height": 720,
+        "sha256": "3722b8b767a86a379eac5f721765756d1d798a6a59f56b4cc6def3e1e0895e64",
+        "bytes": 95872
+      },
+      {
+        "name": "after-es-dark-1280x720-info.png",
+        "width": 1280,
+        "height": 720,
+        "sha256": "76606d5518d1ec9e5c2d10f4a8652c8d6d5727953961a19f56bae780ccfc04ff",
+        "bytes": 95741
+      },
+      {
+        "name": "after-en-XA-light-1440x900-info.png",
+        "width": 1440,
+        "height": 900,
+        "sha256": "b879eb4a5550171976c503b8a814766354ea87705be8f64bc88b8c7cbbb1384a",
+        "bytes": 116972
+      },
+      {
+        "name": "after-en-XA-dark-1440x900-info.png",
+        "width": 1440,
+        "height": 900,
+        "sha256": "342b4b7f18c769daaa4e8c2590b68a0325cbcd01f241dc6cc8fe45f9b7dff3ae",
+        "bytes": 116608
+      },
+      {
+        "name": "after-en-XA-light-1280x720-info.png",
+        "width": 1280,
+        "height": 720,
+        "sha256": "c0576e05dee06bb530a57a87a81b71c4623937cad018eaf0b0123df72c386dc2",
+        "bytes": 112617
+      },
+      {
+        "name": "after-en-XA-dark-1280x720-info.png",
+        "width": 1280,
+        "height": 720,
+        "sha256": "c9cefabd85b53c66f3171d72a1f9c01a1481dbfdd62382c54b5088a2886f1a08",
+        "bytes": 112227
+      }
+    ],
+    "PNG_count": 8,
+    "status": "pre-shadow-fix phase retained privately; old PNG hashes remain here, final public after directory is replaced",
+    "public_PNGs": false
+  },
+  "build_artifacts_reviewed_after_capture": [
+    {
+      "path": "out/renderer/assets/index-jl_1UIaL.js",
+      "sha256": "b84bad19f6c110daf0909bec5739fcde259ff009d237317030ab2cd7bfdf7ac0",
+      "bytes": 3959071
+    },
+    {
+      "path": "out/main/index.js",
+      "sha256": "0e29d75d235cc91148a6eb144ae51df5da7a52f4c64e576df008728f6bd30936",
+      "bytes": 344284
+    }
+  ]
+}

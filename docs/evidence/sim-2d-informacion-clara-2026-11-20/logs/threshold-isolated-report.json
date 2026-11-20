@@ -1,0 +1,337 @@
+{
+  "config": {
+    "argv": [
+      "<home>/.local/share/mise/installs/node/24.22.1/bin/node",
+      "<checkout>/node_modules/@playwright/test/cli.js",
+      "test",
+      "tests/e2e/information-clarity.spec.ts",
+      "--project=csv",
+      "--grep",
+      "buscador desde 21 columnas",
+      "--workers=1",
+      "--retries=0",
+      "--reporter=list,json",
+      "--output=../sim2d-informacion-clara-evidence/threshold-isolated-results"
+    ],
+    "configFile": "<checkout>/playwright.config.ts",
+    "rootDir": "<checkout>/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "<checkout>-evidence/threshold-isolated-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "shell",
+        "name": "shell",
+        "testDir": "<checkout>/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/menu-alignment.spec.ts",
+          "**/app.spec.ts",
+          "**/icons.spec.ts",
+          "**/ui.spec.ts",
+          "**/ui-u0.spec.ts",
+          "**/i18n.spec.ts",
+          "**/commands.spec.ts",
+          "**/application-close.spec.ts",
+          "**/updates.spec.ts",
+          "**/bootstrap-documents.spec.ts",
+          "**/project.spec.ts",
+          "**/project-source.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "<checkout>-evidence/threshold-isolated-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "md",
+        "name": "md",
+        "testDir": "<checkout>/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/markdown-render.spec.ts",
+          "**/markdown-toolbar.spec.ts",
+          "**/markdown-editing.spec.ts",
+          "**/editor-status.spec.ts",
+          "**/markdown-selection.spec.ts",
+          "**/markdown-editing-performance.spec.ts",
+          "**/mermaid-errors.spec.ts",
+          "**/mermaid-export-theme.spec.ts",
+          "**/mermaid-fit.spec.ts",
+          "**/mermaid-diagnostics.spec.ts",
+          "**/mermaid-expanded.spec.ts",
+          "**/missing-resources.spec.ts",
+          "**/preview-edit.spec.ts",
+          "**/preview-progressive.spec.ts",
+          "**/text-stats.spec.ts",
+          "**/text-encoding.spec.ts",
+          "**/markdown-paste.spec.ts",
+          "**/markdown-date.spec.ts",
+          "**/markdown-tasks.spec.ts",
+          "**/markdown-sidebar.spec.ts",
+          "**/outline.spec.ts",
+          "**/markdown-tags.spec.ts",
+          "**/markdown-assets.spec.ts",
+          "**/academic-report.spec.ts",
+          "**/academic-citations.spec.ts",
+          "**/academic-word.spec.ts",
+          "**/pandoc-export.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "<checkout>-evidence/threshold-isolated-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "csv",
+        "name": "csv",
+        "testDir": "<checkout>/tests/e2e",
+        "testIgnore": [
+          "**/menu-alignment.spec.ts",
+          "**/app.spec.ts",
+          "**/icons.spec.ts",
+          "**/ui.spec.ts",
+          "**/ui-u0.spec.ts",
+          "**/i18n.spec.ts",
+          "**/commands.spec.ts",
+          "**/application-close.spec.ts",
+          "**/updates.spec.ts",
+          "**/bootstrap-documents.spec.ts",
+          "**/project.spec.ts",
+          "**/project-source.spec.ts",
+          "**/markdown-render.spec.ts",
+          "**/markdown-toolbar.spec.ts",
+          "**/markdown-editing.spec.ts",
+          "**/editor-status.spec.ts",
+          "**/markdown-selection.spec.ts",
+          "**/markdown-editing-performance.spec.ts",
+          "**/mermaid-errors.spec.ts",
+          "**/mermaid-export-theme.spec.ts",
+          "**/mermaid-fit.spec.ts",
+          "**/mermaid-diagnostics.spec.ts",
+          "**/mermaid-expanded.spec.ts",
+          "**/missing-resources.spec.ts",
+          "**/preview-edit.spec.ts",
+          "**/preview-progressive.spec.ts",
+          "**/text-stats.spec.ts",
+          "**/text-encoding.spec.ts",
+          "**/markdown-paste.spec.ts",
+          "**/markdown-date.spec.ts",
+          "**/markdown-tasks.spec.ts",
+          "**/markdown-sidebar.spec.ts",
+          "**/outline.spec.ts",
+          "**/markdown-tags.spec.ts",
+          "**/markdown-assets.spec.ts",
+          "**/academic-report.spec.ts",
+          "**/academic-citations.spec.ts",
+          "**/academic-word.spec.ts",
+          "**/pandoc-export.spec.ts"
+        ],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "<checkout>-evidence/threshold-isolated-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "csv",
+        "testDir": "<checkout>/tests/e2e",
+        "snapshotDir": "<checkout>/tests/e2e",
+        "testIgnore": [
+          "**/menu-alignment.spec.ts",
+          "**/app.spec.ts",
+          "**/icons.spec.ts",
+          "**/ui.spec.ts",
+          "**/ui-u0.spec.ts",
+          "**/i18n.spec.ts",
+          "**/commands.spec.ts",
+          "**/application-close.spec.ts",
+          "**/updates.spec.ts",
+          "**/bootstrap-documents.spec.ts",
+          "**/project.spec.ts",
+          "**/project-source.spec.ts",
+          "**/markdown-render.spec.ts",
+          "**/markdown-toolbar.spec.ts",
+          "**/markdown-editing.spec.ts",
+          "**/editor-status.spec.ts",
+          "**/markdown-selection.spec.ts",
+          "**/markdown-editing-performance.spec.ts",
+          "**/mermaid-errors.spec.ts",
+          "**/mermaid-export-theme.spec.ts",
+          "**/mermaid-fit.spec.ts",
+          "**/mermaid-diagnostics.spec.ts",
+          "**/mermaid-expanded.spec.ts",
+          "**/missing-resources.spec.ts",
+          "**/preview-edit.spec.ts",
+          "**/preview-progressive.spec.ts",
+          "**/text-stats.spec.ts",
+          "**/text-encoding.spec.ts",
+          "**/markdown-paste.spec.ts",
+          "**/markdown-date.spec.ts",
+          "**/markdown-tasks.spec.ts",
+          "**/markdown-sidebar.spec.ts",
+          "**/outline.spec.ts",
+          "**/markdown-tags.spec.ts",
+          "**/markdown-assets.spec.ts",
+          "**/academic-report.spec.ts",
+          "**/academic-citations.spec.ts",
+          "**/academic-word.spec.ts",
+          "**/pandoc-export.spec.ts"
+        ],
+        "testMatch": "**/*.spec.ts",
+        "timeout": 90000,
+        "use": {
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "csv"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "information-clarity.spec.ts",
+      "file": "information-clarity.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "SIM-2d: buscador desde 21 columnas y páginas desde 51 sin recortar datos",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "csv",
+              "projectName": "csv",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 16946,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[id=\"workspace-panel-analysis:8da7e52b-74ec-4bbe-ad83-b8d35201e37a\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('searchbox', { name: 'Buscar nombres de columnas', exact: true })\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('[id=\"workspace-panel-analysis:8da7e52b-74ec-4bbe-ad83-b8d35201e37a\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('searchbox', { name: 'Buscar nombres de columnas', exact: true }) with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('[id=\"workspace-panel-analysis:8da7e52b-74ec-4bbe-ad83-b8d35201e37a\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('searchbox', { name: 'Buscar nombres de columnas', exact: true })\u001b[22m\n\u001b[2m    34 × locator resolved to 1 element\u001b[22m\n\u001b[2m       - unexpected value \"1\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[id=\"workspace-panel-analysis:8da7e52b-74ec-4bbe-ad83-b8d35201e37a\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('searchbox', { name: 'Buscar nombres de columnas', exact: true })\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('[id=\"workspace-panel-analysis:8da7e52b-74ec-4bbe-ad83-b8d35201e37a\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('searchbox', { name: 'Buscar nombres de columnas', exact: true }) with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('[id=\"workspace-panel-analysis:8da7e52b-74ec-4bbe-ad83-b8d35201e37a\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('searchbox', { name: 'Buscar nombres de columnas', exact: true })\u001b[22m\n\u001b[2m    34 × locator resolved to 1 element\u001b[22m\n\u001b[2m       - unexpected value \"1\"\u001b[22m\n\n    at <checkout>/tests/e2e/information-clarity.spec.ts:122:107",
+                    "location": {
+                      "file": "<checkout>/tests/e2e/information-clarity.spec.ts",
+                      "column": 107,
+                      "line": 122
+                    },
+                    "snippet": "  120 |   const headers=Array.from({length:count},(_,index)=>'Campo '+(index+1)),source=[headers.join(','),headers.map((_,index)=>String(index)).join(','),headers.map((_,index)=>String(index+1)).join(',')].join('\\n')+'\\n'\n  121 |   await open('ancha-'+count+'.csv',source,2);const panel=await information();await ready(panel,count)\n> 122 |   const search=panel.getByRole('searchbox',{name:tr('info.searchLabel'),exact:true});await expect(search).toHaveCount(count>20?1:0);await expect(panel.locator('.pagination')).toHaveCount(count>50?1:0)\n      |                                                                                                           ^\n  123 |   await expect(panel.locator('tbody tr').first().getByRole('rowheader')).toHaveText('Campo 1');await expect(panel.locator('tbody tr').first().locator('.non-empty')).toHaveText('2')\n  124 |   if(count===51){await panel.getByRole('button',{name:tr('info.next'),exact:true}).click();await expect(panel.locator('tbody tr')).toHaveCount(1);await expect(panel.locator('tbody tr').first().getByRole('rowheader')).toHaveText('Campo 51');await expect(panel.locator('tbody tr').first().locator('td').first()).toHaveText('51');await search.fill('Campo 51');await expect(panel.locator('tbody tr')).toHaveCount(1);await expect(panel.locator('.pagination')).toHaveCount(0)}\n  125 |  }"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "<checkout>/tests/e2e/information-clarity.spec.ts",
+                        "column": 107,
+                        "line": 122
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[id=\"workspace-panel-analysis:8da7e52b-74ec-4bbe-ad83-b8d35201e37a\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('searchbox', { name: 'Buscar nombres de columnas', exact: true })\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('[id=\"workspace-panel-analysis:8da7e52b-74ec-4bbe-ad83-b8d35201e37a\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('searchbox', { name: 'Buscar nombres de columnas', exact: true }) with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('[id=\"workspace-panel-analysis:8da7e52b-74ec-4bbe-ad83-b8d35201e37a\"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).getByRole('searchbox', { name: 'Buscar nombres de columnas', exact: true })\u001b[22m\n\u001b[2m    34 × locator resolved to 1 element\u001b[22m\n\u001b[2m       - unexpected value \"1\"\u001b[22m\n\n\n  120 |   const headers=Array.from({length:count},(_,index)=>'Campo '+(index+1)),source=[headers.join(','),headers.map((_,index)=>String(index)).join(','),headers.map((_,index)=>String(index+1)).join(',')].join('\\n')+'\\n'\n  121 |   await open('ancha-'+count+'.csv',source,2);const panel=await information();await ready(panel,count)\n> 122 |   const search=panel.getByRole('searchbox',{name:tr('info.searchLabel'),exact:true});await expect(search).toHaveCount(count>20?1:0);await expect(panel.locator('.pagination')).toHaveCount(count>50?1:0)\n      |                                                                                                           ^\n  123 |   await expect(panel.locator('tbody tr').first().getByRole('rowheader')).toHaveText('Campo 1');await expect(panel.locator('tbody tr').first().locator('.non-empty')).toHaveText('2')\n  124 |   if(count===51){await panel.getByRole('button',{name:tr('info.next'),exact:true}).click();await expect(panel.locator('tbody tr')).toHaveCount(1);await expect(panel.locator('tbody tr').first().getByRole('rowheader')).toHaveText('Campo 51');await expect(panel.locator('tbody tr').first().locator('td').first()).toHaveText('51');await search.fill('Campo 51');await expect(panel.locator('tbody tr')).toHaveCount(1);await expect(panel.locator('.pagination')).toHaveCount(0)}\n  125 |  }\n    at <checkout>/tests/e2e/information-clarity.spec.ts:122:107"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-20T06:13:19.791Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "electron-context",
+                      "contentType": "application/zip",
+                      "path": "<checkout>-evidence/threshold-isolated-results/information-clarity-SIM-2d-bb0da-desde-51-sin-recortar-datos-csv/attachments/electron-context-e7398005fd1b5f45119b246800b063733901116d.zip"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "<checkout>-evidence/threshold-isolated-results/information-clarity-SIM-2d-bb0da-desde-51-sin-recortar-datos-csv/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "<checkout>-evidence/threshold-isolated-results/information-clarity-SIM-2d-bb0da-desde-51-sin-recortar-datos-csv/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "<checkout>/tests/e2e/information-clarity.spec.ts",
+                    "column": 107,
+                    "line": 122
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "d84ff739ee7d197937f3-ee0475770600f2dea397",
+          "file": "information-clarity.spec.ts",
+          "line": 117,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-20T06:13:19.514Z",
+    "duration": 17310.683,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

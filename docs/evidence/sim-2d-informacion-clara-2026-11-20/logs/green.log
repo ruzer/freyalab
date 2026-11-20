@@ -1,0 +1,13 @@
+
+Running 6 tests using 1 worker
+
+  ✓  1 [csv] › tests/e2e/information-clarity.spec.ts:86:50 › SIM-2d: resultado completo compacto, alineación y revisión en ayuda [es] (2.1s)
+  ✓  2 [csv] › tests/e2e/information-clarity.spec.ts:86:50 › SIM-2d: resultado completo compacto, alineación y revisión en ayuda [en] (1.7s)
+  ✓  3 [csv] › tests/e2e/information-clarity.spec.ts:86:50 › SIM-2d: resultado completo compacto, alineación y revisión en ayuda [en-XA] (1.7s)
+  ✓  4 [csv] › tests/e2e/information-clarity.spec.ts:103:1 › SIM-2d: detalles con chevron posterior, acciones y Explorar conservan teclado y datos (1.7s)
+  ✓  5 [csv] › tests/e2e/information-clarity.spec.ts:117:1 › SIM-2d: buscador desde 21 columnas y páginas desde 51 sin recortar datos (3.6s)
+  ✓  6 [csv] › tests/e2e/information-clarity.spec.ts:128:1 › SIM-2d: ocupado visible, alcance filtrado o marcado e informe mantienen sus recuentos (2.4s)
+
+  6 passed (13.6s)
+(node:6029) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
