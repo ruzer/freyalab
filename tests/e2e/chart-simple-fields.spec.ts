@@ -64,7 +64,7 @@ test.afterEach(async()=>{
 async function assign(name:string,destination:'Filas'|'Columnas'|'Valores'){
  // Setup compatible con B y C: solo abre el menú real del campo sin usar.
  await field(name).getByRole('button',{name:new RegExp('^(?:(?:Añadir|Mover) a… '+name+'|Más acciones de '+name+')$')}).press('Enter')
- await menu().getByRole('menuitem',{name:new RegExp('^Añadir a '+destination+'(?: [(]recomendado[)])?$')}).press('Enter')
+ await menu().getByRole('menuitem',{name:new RegExp('^Añadir a '+destination+'(?: recomendado)?$')}).press('Enter')
 }
 async function ready(){
  await expect(panel().locator('.pivot-result')).toBeVisible()
