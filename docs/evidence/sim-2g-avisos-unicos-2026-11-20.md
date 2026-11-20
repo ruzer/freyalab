@@ -105,3 +105,15 @@ Estas matrices aíslan G sobre P3 y se conservan como esas fases históricas; no
 | Análisis | en-XA | Oscuro | 1280×720 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-analysis-en-XA-dark-1280x720.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-analysis-en-XA-dark-1280x720.png) |
 
 Los [hashes, identidades y resultados acotados](sim-2g-avisos-unicos-2026-11-20/proof.json) y el [manifiesto de capturas](sim-2g-avisos-unicos-2026-11-20/captures.json) permiten comprobar esta evidencia sin publicar rutas locales, perfiles o logs brutos. No se declara la entrega publicada ni la CI aprobada.
+
+## Composición final para revisar el lote
+
+La rama incorpora PRJ-03 #202, B #203, C #204 y D #205 mediante merges normales; A, E y F ya proceden de main. La base sin G es `7d1be5f5c26c0b9b96a6e6dcda8be4c01eb9356f` y la composición con G y la corrección de foco C es `3d2511f7d08d36bad103e1a4cfc314c4270795f1`. La [comparación exclusiva de G](https://github.com/ruzer/freyalab/compare/7d1be5f5c26c0b9b96a6e6dcda8be4c01eb9356f...3d2511f7d08d36bad103e1a4cfc314c4270795f1) conserva cinco archivos de producto y dos de pruebas, además de su documentación; no reescribe las ramas individuales ni main. Orden de revisión: #202 → #203 → #204 → #205 → G, todos los PR pendientes en borrador y con base main. El propietario decide las fusiones.
+
+Sobre `3d2511f7d08d36bad103e1a4cfc314c4270795f1` se construyó de nuevo y se ejecutaron **4/4** casos privados para otras **16 capturas** de la composición, con la misma matriz Tabla/Análisis × es/en-XA × claro/oscuro × 1440×900/1280×720. Son una fase adicional; no sustituyen las 32 capturas aisladas históricas. El [manifiesto de composición](sim-2g-avisos-unicos-2026-11-20/composition/captures.json) fija las huellas del producto, construcción, fixture y PNG. Tiempo real: 10.700 s de reporte; 11.178 s de proceso; cero reintentos u omisiones.
+
+La revisión visual anterior de composición registró un límite menor: en Análisis en-XA a 1280×720 el aviso transitorio tapa la cola de la ayuda plegable inferior; los perfiles y el cierre permanecen visibles. No se afirma que ese solape sea una regresión nueva. No se cambia aquí la posición general de los avisos.
+
+La validación integral anterior sobre `26cb325` terminó tipos con 0 errores/0 avisos, 3096 unitarias aprobadas + 2 omitidas (174 archivos aprobados + 1 omitido) y build aprobado. Se interrumpió voluntariamente la E2E al confirmar el defecto de foco C: 95 aprobadas, 1 interrumpida, 742 sin ejecutar; exit 130 y 176,869 s. **No fue una suite integral aprobada.** C ya incorpora su corrección roja→verde en `937237a`: quince casos del archivo de campos y seis de campos simples pasaron en ejecuciones distintas. Esos resultados tampoco se presentan como la validación integral de G.
+
+La suite completa y la CI del head documental congelado se ejecutarán tras este checkpoint y se registrarán en el PR sin mover el head. Siguen sin acreditarse instaladores manuales, eficacia de Pandoc HTTP con otro binario, lectores externos o la resolución de las causas históricas intermitentes no reproducidas. No se modificó la app instalada ni se publicó una versión.

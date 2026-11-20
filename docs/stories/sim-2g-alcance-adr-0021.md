@@ -37,3 +37,7 @@ El consumidor deliberadamente afectado es `icons.spec.ts`, que hoy llama `.toast
 ## Estado inicial de preparación (primer checkpoint documental)
 
 En ese checkpoint solo había alcance, inventario y nuevas pruebas sin ejecutar; el producto y los consumidores anteriores seguían intactos. Raíz es la única ejecutora GUI. La implementación y sus resultados posteriores se registran en la [evidencia de G](../evidence/sim-2g-avisos-unicos-2026-11-20.md); capturas, suite integral y CI del SHA de publicación siguen pendientes. La calificación pertenece al SHA real y conserva su separación de PRJ-03 y de las otras partes SIM-2.
+
+## Actualización de composición
+
+El alcance G se conserva. La preparación final reúne #202 → #203 → #204 → #205 y G mediante merges normales, con base comparativa sin G `7d1be5f5c26c0b9b96a6e6dcda8be4c01eb9356f` y producto integrado `3d2511f7d08d36bad103e1a4cfc314c4270795f1`. No se añaden capacidades a las siete respuestas anteriores. Los cierres enfocados, los 32 PNG aislados y los 16 de composición están ligados a sus fases en la evidencia; la suite integral y la CI del head de publicación no se dan por aprobadas en este checkpoint. Ninguna prueba se elimina.

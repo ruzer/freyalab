@@ -1182,5 +1182,22 @@
       "reportSeconds": 48.707055,
       "processSeconds": 48.993
     }
+  },
+  "finalComposition": {
+    "baselineWithoutG": "7d1be5f5c26c0b9b96a6e6dcda8be4c01eb9356f",
+    "sourceCheckpoint": "3d2511f7d08d36bad103e1a4cfc314c4270795f1",
+    "sourceTreeSHA": "b31c3bae31d72ab5769e1175ef76a6db93f88ef7",
+    "includes": [
+      "PR202",
+      "PR203",
+      "PR204",
+      "PR205",
+      "SIM2g"
+    ],
+    "focusFix": "937237afaf4a5001d3db372098965fa02d3d57e0",
+    "captureManifest": "composition/captures.json",
+    "captureCount": 16,
+    "fullQualification": "pending publication head",
+    "manualInstallerValidation": "not run"
   }
 }

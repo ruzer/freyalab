@@ -1,0 +1,244 @@
+{
+  "formatVersion": 1,
+  "phase": "P3+B+C+D+G with focus fix937237a",
+  "baselineWithoutG": "7d1be5f5c26c0b9b96a6e6dcda8be4c01eb9356f",
+  "identity": {
+    "sourceReference": "3d2511f7d08d36bad103e1a4cfc314c4270795f1",
+    "sourceTreeSHA": "b31c3bae31d72ab5769e1175ef76a6db93f88ef7",
+    "productDiffEmpty": true,
+    "sources": [
+      {
+        "path": "src/renderer/App.svelte",
+        "sha256": "9d28a5541921ccb6af7eeb2bf1546d1bb90d2b956e5c1fb8ad8aaede54c2d28b"
+      },
+      {
+        "path": "src/renderer/lib/icons.ts",
+        "sha256": "581e0b83bd41ab653ae2390913d8a7eb2023d5b16dc77d3eb9c628c23366c792"
+      },
+      {
+        "path": "src/renderer/style.css",
+        "sha256": "ee3d319903cef5603cb74de31fa6f379f135c9a6a941c2ed984762d47326ac5b"
+      },
+      {
+        "path": "src/shared/i18n/es.json",
+        "sha256": "ead45448cd9074a4831f25e29702835efc9841e6e1b317312f405e8a99b150fd"
+      },
+      {
+        "path": "src/shared/i18n/en.json",
+        "sha256": "fe959e8f6761aebcebf8a2100b73df1b1fe7b206cf55a46e7c4841880988c576"
+      }
+    ],
+    "bundleFiles": 258,
+    "bundleManifestSHA256": "6a9aff8ff4a333a185a94b04e3c95ebf55eac7a3c9b060e1b5995885dc203b46"
+  },
+  "stats": {
+    "startTime": "2026-11-20T09:49:59.916Z",
+    "duration": 10699.94,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "execution": [
+    {
+      "label": "build",
+      "head": "3d2511f7d08d36bad103e1a4cfc314c4270795f1",
+      "exitCode": 0,
+      "processSeconds": 1.8628634580090875
+    },
+    {
+      "label": "captures",
+      "head": "3d2511f7d08d36bad103e1a4cfc314c4270795f1",
+      "exitCode": 0,
+      "processSeconds": 11.17758429099922
+    }
+  ],
+  "fixture": {
+    "originalSourceSHA256": "47178facea30f31b8dc9e3c757e9bbbf210fcb7be88c20fbab9869c00d287aad",
+    "modifiedSourceSHA256": "c04ac22bd2098bcfb3a094f65485670311a8861bbf8c75e3f40a0a96256dc71f",
+    "registeredSourceSHA256": "47178facea30f31b8dc9e3c757e9bbbf210fcb7be88c20fbab9869c00d287aad",
+    "manifestRegistrationUnchanged": true
+  },
+  "rendererClockAdvancedMsPerCase": 160,
+  "pngCount": 16,
+  "captures": [
+    {
+      "name": "after-analysis-en-XA-light-1440x900.png",
+      "phase": "after",
+      "view": "analysis",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 118672,
+      "sha256": "d3866074bb2e49cdfda27a24e9f343489aed05471e97e794382774be36aa22c4"
+    },
+    {
+      "name": "after-analysis-en-XA-light-1280x720.png",
+      "phase": "after",
+      "view": "analysis",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 113482,
+      "sha256": "21963a68ed78260da6963b1d2aaa4a163aeb94c20b75e2c24285ac5356b6ca2c"
+    },
+    {
+      "name": "after-analysis-en-XA-dark-1440x900.png",
+      "phase": "after",
+      "view": "analysis",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 117091,
+      "sha256": "9bcdae0cd1961ac6b5cea86527c5329f080c44e13c6783991028132b4ff97f7a"
+    },
+    {
+      "name": "after-analysis-en-XA-dark-1280x720.png",
+      "phase": "after",
+      "view": "analysis",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 111936,
+      "sha256": "c843dd68d0c74c743b0edae2572170cb5c6c3650368c2611553d54b998c8929a"
+    },
+    {
+      "name": "after-analysis-es-light-1440x900.png",
+      "phase": "after",
+      "view": "analysis",
+      "language": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 100351,
+      "sha256": "8feeb2eee24ceab008c0b785ded3e1c2e56e57a5d7bde12d4e4bd326f00e4e40"
+    },
+    {
+      "name": "after-analysis-es-light-1280x720.png",
+      "phase": "after",
+      "view": "analysis",
+      "language": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 97444,
+      "sha256": "b5353167e767f8bc94b4f9641838256e78727e1de79368c1f71449d24df8abd8"
+    },
+    {
+      "name": "after-analysis-es-dark-1440x900.png",
+      "phase": "after",
+      "view": "analysis",
+      "language": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 98461,
+      "sha256": "d59ecb2ed050d6b45d5d2f9b1f44b1062b4fba71d6f9348bf57f74e1abbb46cd"
+    },
+    {
+      "name": "after-analysis-es-dark-1280x720.png",
+      "phase": "after",
+      "view": "analysis",
+      "language": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 95600,
+      "sha256": "c4181a441bbc23706d23beed68e4da706fa1321bd1910ad45599a44278c3bf26"
+    },
+    {
+      "name": "after-table-en-XA-light-1440x900.png",
+      "phase": "after",
+      "view": "table",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 83367,
+      "sha256": "5716f88a89caa1b5797fcea084315fe05557493d64f26c698214bb5da6780db3"
+    },
+    {
+      "name": "after-table-en-XA-light-1280x720.png",
+      "phase": "after",
+      "view": "table",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 77548,
+      "sha256": "9cad34fee25984c635d5c6257b24509227b52b242f5daaf3afa86d9bc156c16b"
+    },
+    {
+      "name": "after-table-en-XA-dark-1440x900.png",
+      "phase": "after",
+      "view": "table",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 83284,
+      "sha256": "ae5a94cea8d32b28bc04821f956e49710fe802f6a72dc8661d225376c683db25"
+    },
+    {
+      "name": "after-table-en-XA-dark-1280x720.png",
+      "phase": "after",
+      "view": "table",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 77564,
+      "sha256": "b7af5cd6d8b9a1204aed6550d4e4db6a251524d1712ed0113ccbe45c603c2366"
+    },
+    {
+      "name": "after-table-es-light-1440x900.png",
+      "phase": "after",
+      "view": "table",
+      "language": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 73073,
+      "sha256": "bea5ba1b6862a4b507f14f41827a18bedd6a7c79b434696de45fe526850fbb60"
+    },
+    {
+      "name": "after-table-es-light-1280x720.png",
+      "phase": "after",
+      "view": "table",
+      "language": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 69951,
+      "sha256": "828f9920748b8605b682233442e3b3f021a8babf0e17a7416353d794f8256ec2"
+    },
+    {
+      "name": "after-table-es-dark-1440x900.png",
+      "phase": "after",
+      "view": "table",
+      "language": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 73159,
+      "sha256": "fc89eea0c6bc40f9a05d1743f9a4ed8413dbc6a16551a804ceb0ee5d97384500"
+    },
+    {
+      "name": "after-table-es-dark-1280x720.png",
+      "phase": "after",
+      "view": "table",
+      "language": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 70010,
+      "sha256": "92fe09c2e0ef6c742a948427343ff9796ec400ac727e0fa0133ea099acceaf59"
+    }
+  ],
+  "completeSuite": "pending final frozen publication head",
+  "manualInstallers": "not run"
+}
