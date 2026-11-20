@@ -75,7 +75,7 @@
  function applySettings(state:SettingsState){
   if(state.values.markdown.modoInicial!==preferencesState.values.markdown.modoInicial)nextMarkdownMode=state.values.markdown.modoInicial
   preferencesState=state;if(!settingsWrites){theme=state.values.tema;sidebar=state.values.barraLateral.visible;sidebarWidth=state.values.barraLateral.ancho;sidebarTab=state.values.barraLateral.pestana;split=state.values.division}
-  if(state.notice!==settingsNotice){settingsNotice=state.notice;if(state.notice)notify(state.notice)}
+  if(state.notice!==settingsNotice){settingsNotice=state.notice;if(state.notice)notify(state.notice,'info')}
  }
  async function savePreferences(patch:SettingsPatch){settingsWrites++;try{await settingsReady;applySettings(await window.freya.setSettings(patch))}finally{settingsWrites--;if(!settingsWrites)applySettings(preferencesState)}}
  function remember(patch:SettingsPatch){void action(()=>savePreferences(patch))}
@@ -106,7 +106,8 @@
  let folderTags=$state<{tag:string;count:number}[]>([]),tagsBusy=$state(false),tagsLimited=$state(false),tagsRefresh=$state(0),tagGeneration=0,tagFolder=''
  const activeTags=$derived(new Set(tokensFileQuery(filterFiles).filter(token=>token.tag).map(token=>normalizeTag(token.value))))
  let fileMatches=$state<TreeEntry[]>([]),fileSearchBusy=$state(false),fileSearchLimited=$state(false),fileSearchGeneration=0
- let mode=$state<'edit'|'preview'|'split'>(initialSettings.markdown.modoInicial),headings=$state<Heading[]>([]),headingDocument=$state(''),status=$state('Todo se procesa en este equipo'),toast=$state(''),toastKind=$state<'info'|'error'>('info'),busy=$state(false)
+ type ToastKind='success'|'info'|'warning'|'error'
+ let mode=$state<'edit'|'preview'|'split'>(initialSettings.markdown.modoInicial),headings=$state<Heading[]>([]),headingDocument=$state(''),status=$state('Todo se procesa en este equipo'),toast=$state(''),toastKind=$state<ToastKind>('info'),busy=$state(false)
  let theme=$state<Settings['tema']>(initialSettings.tema),systemDark=$state(matchMedia('(prefers-color-scheme: dark)').matches)
  const dark=$derived(theme==='system'?systemDark:theme==='dark')
  const active=$derived(documents.find(doc=>doc.id===activeId))
@@ -166,8 +167,8 @@
  let opening=$state<{id:string;phase:string}|null>(null)
  async function cancelOpening(){const id=opening?.id;if(id)await window.freya.cancelOpen(id).catch(()=>{})}
  let toastTimer:ReturnType<typeof setTimeout>
- function error(message:string){opening=null;const clean=visibleEditError(message.replace(/^Error:\s*/,''));if(csvFailure?.message===clean)return;toastKind='error';toast=clean;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',7000)}
- function notify(message:string){toastKind='info';status=message;toast=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',3500)}
+ function error(message:string){opening=null;const clean=visibleEditError(message.replace(/^Error:\s*/,''));if(csvFailure?.message===clean)return;notify(clean,'error')}
+ function notify(message:string,kind:ToastKind){toastKind=kind;toast=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast='',kind==='error'?7000:3500)}
  function toggleSidebar(){sidebar=!sidebar;remember({barraLateral:{visible:sidebar}})}
  async function selectSidebarTab(tab:WorkspaceSidebarTab,focus=false){
   if(tab==='outline'&&active?.kind!=='markdown'||tab==='project'&&!activeProject)return
@@ -291,7 +292,7 @@
    if(subsetAnalysisJob?.requestId!==job.requestId||subsetAnalysisJob.cancelled||activeProject?.id!==project.id||activeProject.path!==project.path){await window.freya.close(snapshot.id);return}
    merge(snapshot,false);await openAnalysis(snapshot.id)
    if(existing)await close(existing.id)
-  }catch(cause){if(subsetAnalysisJob?.cancelled)notify(t('subset.analysis.cancelled'));else error(cause instanceof Error?cause.message:String(cause))}
+  }catch(cause){if(subsetAnalysisJob?.cancelled)notify(t('subset.analysis.cancelled'),'info');else error(cause instanceof Error?cause.message:String(cause))}
   finally{if(subsetAnalysisJob?.requestId===job.requestId)subsetAnalysisJob=null}
  }
  async function cancelSubsetAnalysis(){if(subsetAnalysisJob){subsetAnalysisJob.cancelled=true;await window.freya.projectRecipeCancel(subsetAnalysisJob.requestId)}}
@@ -309,7 +310,7 @@
  }
  function toggleIndex(){if(indexVisible)void selectSidebarTab('files');else{sidebar=true;remember({barraLateral:{visible:true}});void selectSidebarTab('outline')}}
  async function filterByTag(tag:string){
-  if(!folderPath){notify('Abre una carpeta para filtrar por etiqueta');return}
+  if(!folderPath){notify('Abre una carpeta para filtrar por etiqueta','info');return}
   sidebar=true;remember({barraLateral:{visible:true}});await selectSidebarTab('files')
   if(!tokensFileQuery(filterFiles).some(token=>token.tag&&normalizeTag(token.value)===normalizeTag(tag)))filterFiles=[filterFiles.trim(),tagQueryToken(tag)].filter(Boolean).join(' ')
   await tick();document.querySelector<HTMLInputElement>('.sidebar-search input')?.focus()
@@ -328,7 +329,7 @@
   if(mode!=='edit'){preview?.scrollToHeading(heading.id);return}
   if(editor?.isComposing())return
   const from=headingPositions.get(heading.id)
-  if(from===undefined||!editor?.goToHeading(from,headingsSource))notify('Ese título no se puede localizar en el editor')
+  if(from===undefined||!editor?.goToHeading(from,headingsSource))notify('Ese título no se puede localizar en el editor','warning')
  }
  let activationGeneration=0
  async function prepareDocumentAction(id:string){
@@ -430,7 +431,7 @@
   const doc=documents.find(value=>value.id===id)
   if(!doc||id!==activeId||doc.kind!=='markdown'||doc.readonly||assetBusy[id])return false
   const session=textSession(doc),transaction=doc.text===snapshot?taskTransaction(session.state,snapshot,reference):undefined
-  if(!transaction){notify('La lista cambió. Espera a que se actualice la vista previa y vuelve a intentarlo.');return false}
+  if(!transaction){notify('La lista cambió. Espera a que se actualice la vista previa y vuelve a intentarlo.','warning');return false}
   receiveText(id)([transaction]);return true
  }
  async function searchText(){if(active?.kind==='markdown'&&mode==='preview'){mode='edit';await tick()}editor?.search()}
@@ -442,7 +443,7 @@
  async function action<T>(operation:()=>Promise<T>):Promise<T|undefined>{try{return await operation()}catch(e){error(e instanceof Error?e.message:String(e))}}
  async function open(){await action(async()=>{await settingsReady;for(const doc of await window.freya.open())merge(doc,true);recent=await window.freya.recents()})}
  async function openPath(path:string){await action(async()=>{await settingsReady;for(const doc of await window.freya.openPaths([path]))merge(doc,true)})}
- async function finishCsvView(doc:DocumentInfo){merge(doc,true);notify(t('csvText.viewAnnouncement',{view:t(doc.csvView==='text'?'csvText.text':'csvText.table')}));await tick();document.querySelector<HTMLButtonElement>('[data-csv-view] button[aria-pressed="true"]')?.focus()}
+ async function finishCsvView(doc:DocumentInfo){merge(doc,true);notify(t('csvText.viewAnnouncement',{view:t(doc.csvView==='text'?'csvText.text':'csvText.table')}),'info');await tick();document.querySelector<HTMLButtonElement>('[data-csv-view] button[aria-pressed="true"]')?.focus()}
  async function chooseCsvView(view:CsvView,path?:string){await action(async()=>{
   const id=path?(await window.freya.csvViewInfo(path)).id:active?.id,existing=documents.find(doc=>doc.id===id);if(existing?.id===active?.id&&existing&&isTableDocument(existing))await csv?.flushEditing();if(existing)await pending.get(existing.id)
   const current=existing?documents.find(doc=>doc.id===existing.id):undefined
@@ -469,7 +470,7 @@
  async function openFailedCsv(){
   const issue=csvFailure;if(!issue||csvOpening)return
   csvOpening=true
-  try{const doc=await window.freya.csvOpen(issue.path,'text');await finishCsvView(doc);if(csvFailure===issue)csvFailure=null;await tick();if(issue.reportedLine){if(editor?.goToPhysicalLine(issue.reportedLine))notify(t('csvText.error.openedLine',{line:issue.reportedLine}));else{editor?.focus();notify(t('csvText.error.noLine'))}}else editor?.focus()}
+  try{const doc=await window.freya.csvOpen(issue.path,'text');await finishCsvView(doc);if(csvFailure===issue)csvFailure=null;await tick();if(issue.reportedLine){if(editor?.goToPhysicalLine(issue.reportedLine))notify(t('csvText.error.openedLine',{line:issue.reportedLine}),'info');else{editor?.focus();notify(t('csvText.error.noLine'),'info')}}else editor?.focus()}
   catch(failure){error(failure instanceof Error?failure.message:String(failure))}finally{csvOpening=false}
  }
  function csvContext(event:MouseEvent|KeyboardEvent,path:string){if(!/\.(csv|tsv)$/i.test(path))return;event.preventDefault();const origin=event.currentTarget as HTMLElement,rect=origin.getBoundingClientRect();csvFileMenu={path,origin,x:event instanceof MouseEvent?event.clientX:rect.left,y:event instanceof MouseEvent?event.clientY:rect.bottom}}
@@ -483,7 +484,7 @@
   if(!active||editingLocked&&!(as&&projectCopy)||saving[active.id])return
   const id=active.id,markdown=active.kind==='markdown'
   if(encoding&&(compositionActive||editor?.isComposing()))throw new Error(t('textEncoding.finishWriting'))
-  if(markdown&&editor?.isComposing()){notify('Termina de escribir antes de guardar el documento.');return}
+  if(markdown&&editor?.isComposing()){notify('Termina de escribir antes de guardar el documento.','warning');return}
   saving[id]={primary:savePrimary}
   if(markdown)assetBusy[id]='Guardando…'
   const operation=async()=>{
@@ -497,7 +498,7 @@
     }else merge(doc,false,assets?{source:snapshot,changes:assets.changes,undoable:false}:undefined)
     external=external.filter(value=>value!==id);if(doc.kind==='markdown')tagsRefresh++
     if(assets){if(assets.warnings.length)assetWarnings[id]=assets.warnings;else delete assetWarnings[id]}
-    notify([encoding?t('textEncoding.saved'):'Archivo guardado',...(assets?.copied?[`${assets.copied===1?'Se copió':'Se copiaron'} ${assets.copied} ${assets.copied===1?'imagen':'imágenes'}`]:[]),...(assets?.warnings.length?[assets.warnings.length===1?'1 imagen no se copió':`${assets.warnings.length} imágenes no se copiaron`]:[])].join(' · '))
+    notify([encoding?t('textEncoding.saved'):'Archivo guardado',...(assets?.copied?[`${assets.copied===1?'Se copió':'Se copiaron'} ${assets.copied} ${assets.copied===1?'imagen':'imágenes'}`]:[]),...(assets?.warnings.length?[assets.warnings.length===1?'1 imagen no se copió':`${assets.warnings.length} imágenes no se copiaron`]:[])].join(' · '),assets?.warnings.length?'warning':'success')
    }
    return !!saved
   }
@@ -515,19 +516,19 @@
    if(reopened.dirty)return false
    textSessions.delete(id)
    merge(reopened);if(id===activeId)reopenedText++
-   external=external.filter(value=>value!==id);notify(t('textEncoding.reopened'));return true
+   external=external.filter(value=>value!==id);notify(t('textEncoding.reopened'),'info');return true
   }finally{delete assetBusy[id]}
  }
  async function locateImage(id:string,snapshot:string,source:string){
   const doc=documents.find(doc=>doc.id===id)
   if(!doc||id!==activeId||doc.readonly||assetBusy[id])return
-  if(doc.text!==snapshot){notify('La vista previa cambió. Espera a que termine de actualizarse y vuelve a buscar la imagen.');return}
-  if(!doc.path){notify('Guarda el documento para poder insertar imágenes');return}
-  if(editor?.isComposing()){notify('Termina de escribir antes de buscar la imagen.');return}
+  if(doc.text!==snapshot){notify('La vista previa cambió. Espera a que termine de actualizarse y vuelve a buscar la imagen.','warning');return}
+  if(!doc.path){notify('Guarda el documento para poder insertar imágenes','info');return}
+  if(editor?.isComposing()){notify('Termina de escribir antes de buscar la imagen.','warning');return}
   assetBusy[id]='Buscando imagen…'
   try{await action(async()=>{
    await pending.get(id);const found=await window.freya.locateImage(id,source)
-   if(found){const {assets,...updated}=found;merge(updated,false,assets?{source:snapshot,changes:assets.changes,undoable:true}:undefined);notify('Imagen copiada. Guarda el documento para conservar la nueva referencia.')}
+   if(found){const {assets,...updated}=found;merge(updated,false,assets?{source:snapshot,changes:assets.changes,undoable:true}:undefined);notify('Imagen copiada. Guarda el documento para conservar la nueva referencia.','success')}
   })}finally{delete assetBusy[id];if(activeId===id){await tick();if(mode==='preview')preview?.focus();else editor?.focus()}}
  }
  async function reload(id:string){if(assetBusy[id])return;await action(async()=>{merge(await window.freya.reload(id));external=external.filter(value=>value!==id)})}
@@ -552,7 +553,7 @@
    else{request.revision=current.revision;request.citationStyle=citationStyle;request.html=await documentPreview?.exportHTML()}
    if(active?.id!==id)throw new Error(t('bibliography.error.changedDocument'))
    const missing=kind==='markdown'?documentPreview?.missingImages()??0:0,result=await window.freya.export(id,request),path=typeof result==='string'?result:result?.path,mathWarnings=typeof result==='object'&&result?result.mathWarnings:0
-   if(path)notify(`Exportado: ${path}`+(missing?` · ${missing===1?'1 imagen no se encontró':`${missing} imágenes no se encontraron`}; se exportó con su texto alternativo`:'')+(mathWarnings?' · '+plural('report.mathWarnings',mathWarnings):''))
+   if(path)notify(`Exportado: ${path}`+(missing?` · ${missing===1?'1 imagen no se encontró':`${missing} imágenes no se encontraron`}; se exportó con su texto alternativo`:'')+(mathWarnings?' · '+plural('report.mathWarnings',mathWarnings):''),missing||mathWarnings?'warning':'success')
   })}finally{busy=false}
  }
  async function recover(id:string){await action(async()=>{merge(await window.freya.recover(id),true);recoveries=await window.freya.recoveries()})}
@@ -594,7 +595,7 @@
     case'app.settings':appDialog='settings';return
     case'help.shortcuts':appDialog='shortcuts';return
     case'file.newProject':await openProjectDialog();return
-    case'file.addProjectSource':if(active?.path)addProjectSource(active.path);else notify(t('project.source.saveFirst'));return
+    case'file.addProjectSource':if(active?.path)addProjectSource(active.path);else notify(t('project.source.saveFirst'),'info');return
     case'file.newMarkdown':await create('markdown');return
     case'file.newMermaid':await create('mermaid');return
     case'file.newCsv':await create('csv');return
@@ -660,7 +661,7 @@
    const generation=projectGeneration,state=await window.freya.projectState()
    if(generation===projectGeneration)await receiveProject(state.project,state.recents,state.sources,state.recipes,state.results)
   })
-  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='project'){projectGeneration++;void action(()=>receiveProject(event.project,event.projectRecents,event.projectSources,event.projectRecipes,event.projectResults))}else if(event.type==='project-recipe-progress'&&event.recipeProgress){const job=projectExportJobs[event.recipeProgress.requestId];if(job?.running)updateProjectExport({...job,progress:event.recipeProgress});if(subsetAnalysisJob?.requestId===event.recipeProgress.requestId)subsetAnalysisJob={...subsetAnalysisJob,...event.recipeProgress}}else if(event.type==='updates'&&event.update?.status==='available'){if(!updatesOpen)updateNotice=event.update}else if(event.type==='language'&&event.language){setUILanguage(event.language.language);refreshShortcuts()}else if(event.type==='recents'){void window.freya.recents().then(value=>recent=value).catch(value=>error(String(value)))}else if(event.type==='settings'&&event.settings)applySettings(event.settings);else if(event.type==='csv-open-error'&&event.csvOpenError)receiveCsvError(event.csvOpenError);else if(event.type==='opened'&&event.document){const document=event.document;void action(async()=>{await settingsReady;merge(document,true)})}else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='close-status'&&event.message)closingNotice={kind:event.closingKind??'notice',message:event.message};else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];notify(event.message??'El archivo cambió en otra aplicación. Al guardar se comprobarán los cambios.')}})
+  const unsubscribe=window.freya.onEvent(event=>{if(event.type==='project'){projectGeneration++;void action(()=>receiveProject(event.project,event.projectRecents,event.projectSources,event.projectRecipes,event.projectResults))}else if(event.type==='project-recipe-progress'&&event.recipeProgress){const job=projectExportJobs[event.recipeProgress.requestId];if(job?.running)updateProjectExport({...job,progress:event.recipeProgress});if(subsetAnalysisJob?.requestId===event.recipeProgress.requestId)subsetAnalysisJob={...subsetAnalysisJob,...event.recipeProgress}}else if(event.type==='updates'&&event.update?.status==='available'){if(!updatesOpen)updateNotice=event.update}else if(event.type==='language'&&event.language){setUILanguage(event.language.language);refreshShortcuts()}else if(event.type==='recents'){void window.freya.recents().then(value=>recent=value).catch(value=>error(String(value)))}else if(event.type==='settings'&&event.settings)applySettings(event.settings);else if(event.type==='csv-open-error'&&event.csvOpenError)receiveCsvError(event.csvOpenError);else if(event.type==='opened'&&event.document){const document=event.document;void action(async()=>{await settingsReady;merge(document,true)})}else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='close-status'&&event.message)closingNotice={kind:event.closingKind??'notice',message:event.message};else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];const changed=documents.find(doc=>doc.id===event.id),bannerVisible=!!changed&&changed.id===active?.id&&!activeAnalysis&&!changed.analysisSubset;if(!bannerVisible)notify(changed?t('app.external.changed',{name:changed.name}):t('app.external.changedUnknown'),'warning')}})
   return()=>{applicationReady=false;for(const event of contextEvents)document.removeEventListener(event,queueApplicationState);unsubscribeCommand();unsubscribeClose();closingFlow.abort();mq.removeEventListener('change',change);unsubscribe();clearTimeout(toastTimer)}
  })
  $effect(()=>{
@@ -734,7 +735,7 @@
    </div>{/if}
    {#if active}
     {#if !active.analysisSubset}<div class="document-workspace" id={'workspace-panel-'+active.id} role="tabpanel" aria-labelledby={'workspace-tab-'+active.id} hidden={!!activeAnalysis}>
-    {#if external.includes(active.id)}<div class="warning-banner external-banner"><span>Este archivo cambió fuera de FreyaLab.</span><button onclick={()=>reload(active!.id)}>Recargar</button><button onclick={()=>save(true)}>Guardar copia</button><button onclick={()=>external=external.filter(value=>value!==active!.id)}>Conservar mi edición</button></div>{/if}
+    {#if external.includes(active.id)}<div class="warning-banner external-banner"><span>{t('app.external.banner')}</span><button onclick={()=>reload(active!.id)}>Recargar</button><button onclick={()=>save(true)}>Guardar copia</button><button onclick={()=>external=external.filter(value=>value!==active!.id)}>Conservar mi edición</button></div>{/if}
     {#if assetWarnings[active.id]}<AssetWarnings warnings={assetWarnings[active.id]} ondismiss={()=>{delete assetWarnings[active!.id];if(mode==='preview')preview?.focus();else editor?.focus()}}/>{/if}
     {#snippet csvViewControls()}<div class="mode-switch" role="group" data-csv-view aria-label={t('csvText.viewGroup')}><button class:active={!csvText} aria-pressed={!csvText} aria-label={t('csvText.table')} title={t('csvText.table')} onclick={()=>{if(csvText)void chooseCsvView('table')}}><Icon name="table" size={14}/> <span>{t('csvText.table')}</span></button><button class:active={csvText} aria-pressed={csvText} aria-label={t('csvText.text')} disabled={!!csvTextReason} {...controlHint(csvTextReason,t('csvText.text'))} {...csvTextReason==='textLimit'?{title:t('csvText.limit')}: {}} onclick={()=>chooseCsvView('text')}><Icon name="file-text" size={14}/> <span>{t('csvText.text')}</span></button></div>{/snippet}
     {#key `${active.id}:${active.csvView??'table'}:${active.kind==='csv'?0:reopenedText}`}
@@ -776,7 +777,7 @@
  {#if textCommands}<CsvCommands commands={[{id:'openAnalysis',label:t('analysis.tab.command'),detail:t('analysis.tab.search'),disabled:false,run:chooseTextAnalysis}]} context={t('analysis.tab.textView')} onexecute={()=>void chooseTextAnalysis()} onclose={()=>void closeTextCommands()}/>{/if}
  {#if csvChange}<CsvViewDialog name={csvChange.name} busy={csvChange.busy} message={csvChange.message} onchoose={decision=>void resolveCsvChange(decision)}/>{/if}
  {#if csvFileMenu}<CsvFileMenu path={csvFileMenu.path} x={csvFileMenu.x} y={csvFileMenu.y} onopen={(path,view)=>void chooseCsvView(view,path)} onclose={closeCsvContext} onerror={error} onproject={activeProject&&!activeProject.readonly?addProjectSource:undefined}/>{/if}
- {#if toast}<div class="toast {toastKind}" role="status"><Icon name={toastKind==='error'?'triangle-alert':'circle-check'} size={16}/><span>{toast}</span><button title={"Cerrar aviso"} onclick={()=>toast=''} aria-label="Cerrar aviso"><Icon name="x" size={14}/></button></div>{/if}
+ {#if toast}<div class="toast {toastKind}" role="status"><Icon name={toastKind==='success'?'circle-check':toastKind==='info'?'info':'triangle-alert'} size={16}/><span>{toast}</span><button title={"Cerrar aviso"} onclick={()=>toast=''} aria-label="Cerrar aviso"><Icon name="x" size={14}/></button></div>{/if}
  {#if appDialog==='about'||appDialog==='licenses'}<AboutDialog initialLicenses={appDialog==='licenses'} onupdates={()=>openUpdates()} onclose={()=>appDialog=null}/>{:else if appDialog==='settings'}<SettingsDialog settings={preferencesState} onsave={savePreferences} onreset={resetPreferences} onclearrecents={clearRecentList} onshowdata={()=>window.freya.showDataFolder()} onupdates={()=>openUpdates()} onclose={()=>appDialog=null}/>{:else if appDialog==='shortcuts'}<ShortcutsDialog onclose={()=>appDialog=null}/>{/if}
  {#if updateNotice}<UpdateNotice release={updateNotice.release} onview={()=>openUpdates(updateNotice!)} ondismiss={()=>updateNotice=null}/>{/if}
  {#if updatesOpen}<UpdateDialog initialResult={updateInitial} onclose={()=>updatesOpen=false}/>{/if}

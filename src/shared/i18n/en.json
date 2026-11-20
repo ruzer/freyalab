@@ -1792,5 +1792,8 @@
  "project.result.fidelity.bytes": "bytes preserved",
  "project.result.fidelity.values": "values preserved; format normalized",
  "project.result.oldSample": "Sample of {n} rows · {total} records examined",
- "project.export.normalized.missingMany": "{n} missing fields were written empty because they come before other fields"
+ "project.export.normalized.missingMany": "{n} missing fields were written empty because they come before other fields",
+ "app.external.changed": "{name} changed outside FreyaLab.",
+ "app.external.changedUnknown": "A file changed outside FreyaLab.",
+ "app.external.banner": "This file changed outside FreyaLab."
 }

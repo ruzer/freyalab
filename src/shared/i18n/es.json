@@ -1792,5 +1792,8 @@
  "project.result.fidelity.bytes": "bytes conservados",
  "project.result.fidelity.values": "valores conservados; formato normalizado",
  "project.result.oldSample": "Muestra de {n} filas · {total} registros examinados",
- "project.export.normalized.missingMany": "{n} campos ausentes se escribieron vacíos porque van antes de otros campos"
+ "project.export.normalized.missingMany": "{n} campos ausentes se escribieron vacíos porque van antes de otros campos",
+ "app.external.changed": "{name} cambió fuera de FreyaLab.",
+ "app.external.changedUnknown": "Un archivo cambió fuera de FreyaLab.",
+ "app.external.banner": "Este archivo cambió fuera de FreyaLab."
 }
