@@ -219,6 +219,7 @@ test('PRJ-03 1 GB: exportar muestra de diez mil con semilla 7 conserva orden, da
   expect(info.size).toBe(10_000_008);expect(lines.pop()).toBe('');expect(lines.shift()).toBe('ID,Nota');expect(lines).toHaveLength(10_000)
   const ids=lines.map(line=>Number(line.slice(0,7)))
   expect(new Set(ids).size).toBe(10_000);expect(ids).toEqual([...ids].sort((a,b)=>a-b))
+  // Conserva los tres oráculos por fila sin generar 30.000 eventos de traza.
   for(const [index,line] of lines.entries()){assert.ok(ids[index]>=1);assert.ok(ids[index]<=records);assert.equal(line,`${String(ids[index]).padStart(7,'0')},${payload}`)}
   expect(result).toMatchObject({path:'02_datasets/'+name+'.csv',bytes:10_000_008,sha256:outputSha,provenance:{sourceSha256:source.sha256,coverage:{kind:'sample',matched:10_000,scanned:records,total:records,complete:true},fidelity:{level:'bytes'}}})
   expect(result.provenance.coverage.samplingStages).toEqual([{step:0,method:'random',requestedRows:10_000,seed:7,eligible:records,selected:10_000}])
