@@ -2,7 +2,7 @@ import {t,formatNumber,type Language} from '../../shared/i18n'
 import type {ProjectRecipe,ProjectRecipeDraft,ProjectRecipeStep} from '../../shared/project'
 import type {RecipeOperationResult} from '../../shared/recipe-operation'
 
-export type SubsetCoverageResult=Pick<RecipeOperationResult,'scanned'|'resultCount'|'complete'|'cancelled'|'bytesRead'|'sampling'>
+export type SubsetCoverageResult=Pick<RecipeOperationResult,'scanned'|'resultCount'|'complete'|'cancelled'|'sampling'>&Partial<Pick<RecipeOperationResult,'bytesRead'|'sha256'>>
 
 export function subsetCoverage(result:SubsetCoverageResult,steps:readonly ProjectRecipeStep[],language:Language,stepOwners:readonly string[]=[]):{lines:string[];identity:string}{
  const number=(value:number)=>formatNumber(value,undefined,language)
@@ -20,7 +20,7 @@ export function subsetCoverage(result:SubsetCoverageResult,steps:readonly Projec
   lines.push(result.sampling.length>1&&owner!==undefined?t('subset.coverageInSubset',{name:owner,coverage},language):coverage)
  }
  if(complete&&result.sampling.length)lines.push(t('subset.examined',{n:number(result.scanned)},language))
- const identity=complete?t('subset.verifiedIdentity',{},language):t('subset.bytesRead',{n:number(result.bytesRead)},language)+' · '+t('subset.partialIdentity',{},language)
+ const identity=complete||result.sha256?t('subset.verifiedIdentity',{},language):[result.bytesRead===undefined?'':t('subset.bytesRead',{n:number(result.bytesRead)},language),t('subset.partialIdentity',{},language)].filter(Boolean).join(' · ')
  return{lines,identity}
 }
 

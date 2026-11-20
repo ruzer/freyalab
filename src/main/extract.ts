@@ -5,22 +5,26 @@ import {lstat, realpath} from 'node:fs/promises'
 import type {Documents} from './documents'
 import {describeConditions} from '../shared/table-conditions'
 import type {OperationOutcome, OperationRequest, ExtractResult} from '../shared/operations'
+import {t} from '../shared/i18n'
 
 // E1 · Capa del proceso principal para las operaciones tipadas: elige y valida el destino (la interfaz nunca envía una ruta), delega el trabajo al
 // motor de tablas y abre el archivo NUEVO. El original no se toca: ni se escribe ni se reabre.
 async function destinationFor(sourceName: string) {
  const name = `${basename(sourceName, extname(sourceName))}.extracto${extname(sourceName).toLowerCase() === '.tsv' ? '.tsv' : '.csv'}`
+ return chooseExtractDestination(name)
+}
+export async function chooseExtractDestination(name:string,defaultPath=name,title='Guardar extracto'){
  if (process.env.FREYALAB_TEST === '1' && (process.env.FREYALAB_TEST_EXTRACT_PATH || process.env.FREYALAB_TEST_EXTRACT_DIR)) return process.env.FREYALAB_TEST_EXTRACT_PATH ?? join(process.env.FREYALAB_TEST_EXTRACT_DIR!, name)
  const owner = BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0]
- const result = await dialog.showSaveDialog(owner, {title: 'Guardar extracto', defaultPath: name, filters: [{name: 'CSV o TSV', extensions: ['csv', 'tsv']}]})
+ const result = await dialog.showSaveDialog(owner, {title, defaultPath, filters: [{name: 'CSV o TSV', extensions: ['csv', 'tsv']}]})
  return result.canceled ? null : result.filePath ?? null
 }
-async function validateDestination(docs: Documents, destination: string) {
- if ((await lstat(destination).catch(() => null))?.isSymbolicLink()) throw new Error('No se escribe sobre enlaces simbólicos.')
- if (!['.csv', '.tsv'].includes(extname(destination).toLowerCase())) throw new Error('El destino debe terminar en .csv o .tsv para poder abrirlo después.')
+export async function validateExtractDestination(docs: Pick<Documents,'assertWritableDestination'|'records'>, destination: string) {
+ if ((await lstat(destination).catch(() => null))?.isSymbolicLink()) throw new Error(t('extract.error.symlink'))
+ if (!['.csv', '.tsv'].includes(extname(destination).toLowerCase())) throw new Error(t('extract.error.extension'))
  const target = await realpath(destination).catch(() => resolve(destination))
  docs.assertWritableDestination(target)
- for (const r of docs.records.values()) if (r.info.path && target === (await realpath(r.info.path).catch(() => resolve(r.info.path!)))) throw new Error('El extracto debe ir a un archivo distinto de los que tienes abiertos: la extracción nunca modifica el original.')
+ for (const r of docs.records.values()) if (r.info.path && target === (await realpath(r.info.path).catch(() => resolve(r.info.path!)))) throw new Error(t('extract.error.open'))
 }
 
 export async function operateDocument(docs: Documents, id: string, request: OperationRequest): Promise<OperationOutcome> {
@@ -29,7 +33,7 @@ export async function operateDocument(docs: Documents, id: string, request: Oper
  if (request.operation !== 'filter_extract') return {result: await docs.table.call('operation', id, request)}
  const output = await destinationFor(source.info.name)
  if (!output) return null
- await validateDestination(docs, output)
+ await validateExtractDestination(docs, output)
  const result = await docs.writeProjectDestination(output,async()=>{
   await docs.verifyProjectSource(id)
   return docs.table.call<ExtractResult>('operation', id, {...request, output})

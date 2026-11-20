@@ -23,7 +23,7 @@
  import {parse} from 'csv-parse/browser/esm/sync'
  import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit,TableEmptyEdit,LargeViewState,LargeViewQuery} from '../../shared/types'
  import type {CalculateColumnEdit} from '../../shared/calculated-column'
- let {doc,externalChange=false,onanalysis,analysisHidden=false,onchange,onerror,onstatus,viewControls,project=null,sourceInfo,recipes=[],commandTitle=(_id:string,label:string)=>label}:{doc:DocumentInfo;externalChange?:boolean;onanalysis:(section?:AnalysisSection,statistics?:AnalysisStatistics)=>void;analysisHidden?:boolean;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;viewControls?:Snippet;project?:ProjectInfo|null;sourceInfo?:ProjectSourceView;recipes?:ProjectRecipeView[];commandTitle?:(id:string,label:string)=>string}=$props()
+ let {doc,externalChange=false,onanalysis,analysisHidden=false,onchange,onerror,onstatus,viewControls,project=null,sourceInfo,recipes=[],onexportsubset,commandTitle=(_id:string,label:string)=>label}:{doc:DocumentInfo;externalChange?:boolean;onanalysis:(section?:AnalysisSection,statistics?:AnalysisStatistics)=>void;analysisHidden?:boolean;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;viewControls?:Snippet;project?:ProjectInfo|null;sourceInfo?:ProjectSourceView;recipes?:ProjectRecipeView[];onexportsubset?:(recipe:ProjectRecipeView)=>void;commandTitle?:(id:string,label:string)=>string}=$props()
  let showExtract=$state(false),extractButton=$state<HTMLButtonElement>()
  let subset=$state<SubsetIntent|null>(null),subsetPanel=$state<SubsetPanel>(),subsetButton=$state<HTMLButtonElement>(),subsetContext=''
  $effect(()=>{
@@ -147,6 +147,17 @@
   return{id:'columnDuplicates',label:fromToolbar?toolbarCleanLabel('duplicates',column):'Quitar filas duplicadas de la columna…',detail:t('charts.toolbar.column.duplicatesHelp'),disabled:locked||column===undefined,disabledReason:fromToolbar&&column===undefined&&!locked&&!busy?t('charts.toolbar.columnRequired'):undefined,run:()=>{if(fromToolbar){transformReturn=cleanButton??null;openTransform('deduplicate',column)}else{if(column!==undefined)selectedColumns=[column];openTransform('deduplicate')}}}
  }
  const toolbarCleanCommands=$derived([emptyCommand('fill',toolbarColumn,true),emptyCommand('delete',toolbarColumn,true),columnDuplicatesCommand(toolbarColumn,true),...(['trim','upper','lower']as const).map(operation=>columnTextCommand(operation,toolbarColumn,true))])
+ const exportKeywords='exportar extraer guardar como archivo export extract csv conjunto subset'
+ const exportSubsetCommands=$derived.by<CsvCommand[]>(()=>{
+  if(!project)return[]
+  if(!recipes.length)return[{id:'exportSubset:none',label:t('project.export.action'),detail:t('project.export.commandHelp'),keywords:exportKeywords,disabled:true,disabledReason:t('project.export.noRecipes'),run:()=>{}}]
+  if(!onexportsubset)return[]
+  return recipes.map(recipe=>{
+   const status=recipe.sourceStatus??(sourceInfo?.id===recipe.rootSourceId?sourceInfo.status:undefined)
+   const reason=project!.readonly?t('project.future',{version:project!.version}):status&&status!=='verified'?recipe.reason??t('subset.sourceUnavailable',{reason:t('project.source.status.'+status)}):!recipe.executable?recipe.reason??t('subset.unknown'):''
+   return{id:'exportSubset:'+recipe.id,label:t('project.export.command',{name:recipe.name}),detail:t('project.export.commandHelp'),keywords:exportKeywords,disabled:!!reason,disabledReason:reason||undefined,run:()=>withSubsetClosed(()=>onexportsubset?.(recipe))}
+  })
+ })
  const commands=$derived<CsvCommand[]>([
   {id:'goToRow',label:'Ir a la fila…',detail:commandTitle('go.row','Salta a una fila por su número'),disabled:!gotoTotal,run:openGoto},
   {id:'search',label:'Buscar en tabla',detail:large?'Buscar en el archivo completo con Enter · Ctrl/⌘ + F':'Filtra filas · Ctrl/⌘ + F',disabled:large&&!viewReady,run:()=>{searchInput?.focus();searchInput?.select()}},
@@ -156,6 +167,7 @@
   {id:'query',label:large?'Filtrar archivo completo':'Consulta avanzada',detail:large?'Filtrar por texto, número, fecha o regex al pulsar Aplicar':'Filtrar por texto, número, fecha o regex; ordenar varias columnas · solo vista',disabled:large&&(!viewReady||changingView),run:()=>withSubsetClosed(()=>{if(large)void openLargeFilters();else showQuery=!showQuery})},
   {id:'extract',label:'Extraer filas a un archivo nuevo…',detail:'Filtra por condiciones y columnas el archivo grande y crea un archivo nuevo; el original no se modifica',disabled:!large,run:()=>withSubsetClosed(()=>{showQuery=false;showExtract=!showExtract})},
   ...project?[{id:'saveSubset',label:t('subset.saveAs'),detail:t('subset.saveAsHint'),keywords:'conjunto subconjunto muestra muestreo semilla subset sample dataset receta',disabled:!!subsetReason,disabledReason:subsetReason,run:()=>openSubset()},{id:'newSubset',label:t('subset.new'),detail:t('subset.newHint'),keywords:'conjunto subconjunto muestra muestreo semilla subset sample dataset receta',disabled:!!subsetReason,disabledReason:subsetReason,run:()=>openSubset({blank:true})}]:[],
+  ...exportSubsetCommands,
   {id:'clearQuery',label:large?'Quitar búsqueda y filtros':'Quitar filtros y orden',detail:'Restaura la vista de todas las filas; no cambia el documento',disabled:large?!largeView:!search&&!Object.values(filters).some(Boolean)&&!sort&&!order.length&&!conditions.length,run:()=>{if(large)return clearView();search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}},
   {id:'sql',label:'Análisis SQL y asistentes',detail:'Mostrar u ocultar agrupaciones, tablas dinámicas (pivot) y cruces de archivos con DuckDB',disabled:false,run:()=>analyze('sql')},
   {id:'statistics',label:'Estadísticas y exploración',detail:large?'Las estadísticas llegan en una fase posterior':'Mostrar u ocultar perfiles, frecuencias, valores faltantes, duplicados y correlación',disabled:large,run:()=>analyze('statistics')},
@@ -586,7 +598,7 @@
  </section>{/if}
  {#if large}<p id="large-search-announcement" class="sr-only" role="status">{viewAnnouncement}</p>{/if}
  {#if showExtract&&large}<CsvExtract {doc} {onerror} initialQuery={largeView?.query} partial={!!largeView&&largeView.status!=='complete'} onclose={()=>{showExtract=false;extractButton?.focus()}}/>{/if}
- {#if subset&&project&&sourceInfo}{#key subset}<SubsetPanel bind:this={subsetPanel} {project} source={sourceInfo} {recipes} intent={subset} ontry={(draft,requestId)=>window.freya.projectRecipeTry(project!.id,draft,requestId)} oncancel={requestId=>window.freya.projectRecipeCancel(requestId)} onsave={draft=>window.freya.projectSaveRecipe(project!.id,draft)} onclose={closeSubset}/>{/key}{/if}
+ {#if subset&&project&&sourceInfo}{#key subset}<SubsetPanel bind:this={subsetPanel} {project} source={sourceInfo} {recipes} intent={subset} onexport={id=>{const recipe=recipes.find(recipe=>recipe.id===id);if(recipe)onexportsubset?.(recipe)}} ontry={(draft,requestId)=>window.freya.projectRecipeTry(project!.id,draft,requestId)} oncancel={requestId=>window.freya.projectRecipeCancel(requestId)} onsave={draft=>window.freya.projectSaveRecipe(project!.id,draft)} onclose={closeSubset}/>{/key}{/if}
  {#if showQuery}<CsvQueryTools {large} total={doc.rowCount??page.total} error={filterError} applying={large&&changingView} headers={doc.headers??[]} initialConditions={conditions} initialOrder={activeOrder} initialMode={filterMode} onapply={applyQuery} onclose={()=>{showQuery=false;queryButton?.focus()}}/>{/if}
  {#if queryError}<div class="warning-banner" role="alert">{#if large}{queryError} <button {...controlHint(busy||changingView?'busy':null)} disabled={busy||changingView} onclick={()=>void startView()}>Volver a buscar</button>{:else}Consulta no aplicada. Se conserva la última vista válida. {queryError} Corrige o limpia la consulta para editar. <button {...controlHint(busy?'busy':null)} disabled={busy} onclick={()=>void load(0)}>Reintentar consulta</button>{/if}</div>{/if}
  {#if doc.extract}<div class="warning-banner extract-banner" role="note"><strong>Extracto de «{doc.extract.sourceName}»</strong> · {doc.extract.matched.toLocaleString('es')} de {doc.extract.total.toLocaleString('es')} filas{#if doc.extract.conditions} · {doc.extract.conditions}{/if}{#if doc.extract.columns} · columnas: {doc.extract.columns.join(', ')}{/if} · {fidelityLabel[doc.extract.fidelity]}.{#each doc.extract.normalization as note} {note}{/each}{#if doc.extract.irregularRows} {doc.extract.irregularRows.toLocaleString('es')} filas con distinto número de campos que el encabezado se conservaron como estaban.{/if} El original no se modificó.</div>{/if}

@@ -5,8 +5,10 @@ import {mkdtemp,mkdir,readFile,rm,writeFile} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {closeElectron} from './close-electron'
+import {openCsvCommands} from './panel'
 import {projectTreeRow,openProjectRowMenu} from './project-panel'
-import {t,type Language} from '../../src/shared/i18n'
+import {t,plural,type Language} from '../../src/shared/i18n'
+import type {ProjectExportOutcome} from '../../src/shared/project-exports'
 
 let app:ElectronApplication,page:Page,root:string,folder:string,source:string,output:string,original:Buffer,pageErrors:string[]=[],locale:Language='es'
 const tr=(key:string)=>t(key,{},locale)
@@ -65,4 +67,199 @@ test('PRJ-03: el menú exporta todas las filas, registra procedencia y abre el r
  const document=await page.evaluate(async()=> (await window.freya.documents()).find(doc=>doc.name==='Oaxaca, adultos.csv'))
  expect(document).toMatchObject({kind:'csv',readonly:false,dirty:false,rowCount:3})
  expect(await readFile(source)).toEqual(original)
+})
+
+async function exportSaved(name='Oaxaca, adultos'){
+ const menu=await openProjectRowMenu(row(name),locale)
+ await menu.getByRole('menuitem',{name:tr('project.export.action'),exact:true}).press('Enter')
+ await expect(row(name+'.csv')).toBeVisible()
+}
+const resultRow=(name='Oaxaca, adultos.csv')=>row(name).and(panel().locator('[data-project-node^="result:"]'))
+async function screenshotPair(stage:string,info:import('@playwright/test').TestInfo){
+ if(!process.env.FREYALAB_PRJ03_EVIDENCE)return
+ for(const theme of ['light','dark']as const){
+  await page.evaluate(theme=>window.freya.setSettings({tema:theme}),theme)
+  await expect.poll(()=>page.locator('html').evaluate(element=>element.classList.contains('dark'))).toBe(theme==='dark')
+  for(const [width,height]of [[1440,900],[1280,720]]){
+   await page.setViewportSize({width,height});await page.emulateMedia({reducedMotion:'reduce'})
+   await expect(panel()).toBeVisible()
+   await page.screenshot({path:info.outputPath(`prj03-${locale}-${theme}-${width}x${height}-${stage}.png`)})
+  }
+ }
+}
+
+for(const language of ['es','en','en-XA']as const)test(`PRJ-03: panel, cobertura histórica y procedencia accesible [${language}]`,async({},info)=>{
+ await row('Oaxaca, adultos').press('Enter')
+ const dialog=page.getByRole('dialog',{name:t('subset.projectDialog',{source:'censo.csv'},locale),exact:true}),subset=dialog.locator('.subset-tools')
+ await expect(subset.locator('.coverage')).toBeVisible()
+ const coverage=await subset.locator('.coverage p').nth(1).innerText()
+ await expect(subset.getByRole('button',{name:tr('project.export.action'),exact:true})).toBeEnabled()
+ await subset.getByRole('button',{name:tr('project.export.action'),exact:true}).press('Enter')
+ await expect(subset.locator('.project-export-status')).toContainText(plural('project.export.finished',3,{name:'Oaxaca, adultos.csv'},locale))
+ await expect(dialog.getByRole('status').filter({hasText:plural('project.export.finished',3,{name:'Oaxaca, adultos.csv'},locale)})).toHaveCount(1)
+ await subset.locator('footer').getByRole('button',{name:tr('subset.close'),exact:true}).press('Enter');await expect(dialog).toHaveCount(0)
+ expect(await resultRow().getAttribute('title')).toContain(coverage)
+ await expect(resultRow()).toHaveAttribute('aria-level','3')
+ if(language!=='en')await screenshotPair('tree',info)
+ await resultRow().press('Enter')
+ await expect(page.locator('.project-result-origin')).toContainText(coverage)
+ await expect(page.locator('.project-result-origin')).toHaveAccessibleName(tr('project.result.origin'))
+ if(language!=='en')await screenshotPair('origin',info)
+ const doc=await page.evaluate(async()=>(await window.freya.documents()).find(doc=>doc.name==='Oaxaca, adultos.csv'))
+ expect(doc).toMatchObject({readonly:false,dirty:false,rowCount:3})
+ expect(await readFile(output,'utf8')).toBe('ID,Edad,Nota\n00128,61\n00126,52,ok\n00123,34,"línea 1\nlínea 2"\n')
+})
+
+test('PRJ-03: cambios sin guardar del conjunto bloquean exportar sin cambiar la receta ni el archivo',async()=>{
+ await row('Oaxaca, adultos').press('Enter')
+ const subset=page.locator('.subset-tools'),button=subset.getByRole('button',{name:tr('project.export.action'),exact:true})
+ await expect(subset.locator('.coverage')).toBeVisible();await expect(button).toBeEnabled()
+ const before=await readFile(join(folder,'proyecto.freyalab'))
+ await subset.getByLabel(tr('subset.name'),{exact:true}).fill('Sin guardar')
+ await expect(button).toBeDisabled();await expect(button).toHaveAccessibleDescription(tr('project.export.unsaved'))
+ expect(await readFile(join(folder,'proyecto.freyalab'))).toEqual(before)
+ expect(await readFile(output).catch(()=>null)).toBeNull()
+ await subset.locator('footer').getByRole('button',{name:tr('subset.close'),exact:true}).press('Enter')
+ const discard=page.getByRole('dialog',{name:tr('subset.discardTitle'),exact:true});await discard.getByRole('button',{name:tr('subset.discard'),exact:true}).press('Enter')
+})
+
+test('PRJ-03: un archivo exportado cambia o falta aunque nunca se haya abierto',async()=>{
+ await exportSaved();expect(await page.evaluate(()=>window.freya.documents())).toEqual([])
+ await writeFile(output,'ID,Edad,Nota\nmodificado,99,nuevo\n')
+ await expect(resultRow()).toContainText(tr('project.export.changed'))
+ await resultRow().press('Enter');await expect(page.locator('.project-result-origin')).toContainText(tr('project.export.changed'))
+ const doc=await page.evaluate(async()=>(await window.freya.documents()).find(doc=>doc.name==='Oaxaca, adultos.csv'))
+ await page.evaluate(id=>window.freya.close(id),doc!.id)
+ await rm(output);await expect(resultRow()).toContainText(tr('project.export.missing'))
+ const menu=await openProjectRowMenu(resultRow(),locale)
+ await expect(menu.getByRole('menuitem',{name:tr('dialog.open.button'),exact:true})).toHaveAttribute('aria-disabled','true')
+ await page.keyboard.press('Escape')
+})
+
+test('PRJ-03: editar y guardar un resultado conserva su advertencia y su huella histórica',async()=>{
+ await exportSaved();await resultRow().press('Enter')
+ await expect(page.locator('.project-result-origin')).toBeVisible()
+ const stored=JSON.parse(await readFile(join(folder,'proyecto.freyalab'),'utf8')).results[0]
+ const cell=page.getByRole('gridcell',{name:'Fila 1, Edad',exact:true})
+ await cell.dblclick();await page.getByLabel('Editar celda',{exact:true}).fill('62');await page.getByLabel('Editar celda',{exact:true}).press('Enter')
+ await expect(cell).toContainText('62')
+ await expect(page.locator('.project-result-origin')).toContainText(tr('project.result.modifiedWarning'))
+ await page.getByRole('button',{name:tr('toolbar.save'),exact:true}).press('Enter')
+ await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.name==='Oaxaca, adultos.csv')?.dirty).toBe(false)
+ await expect(resultRow()).toContainText(tr('project.export.changed'));await expect(page.locator('.project-result-origin')).toContainText(tr('project.export.changed'))
+ expect(JSON.parse(await readFile(join(folder,'proyecto.freyalab'),'utf8')).results[0]).toEqual(stored)
+ expect(sha(await readFile(output))).not.toBe(stored.sha256)
+})
+
+test('PRJ-03: añadir como fuente reutiliza el registro y quitar olvida solo la procedencia',async()=>{
+ await exportSaved();let menu=await openProjectRowMenu(row('Oaxaca, adultos'),locale)
+ await expect(menu.getByRole('menuitem',{name:tr('subset.remove'),exact:true})).toHaveAttribute('aria-disabled','true');await page.keyboard.press('Escape')
+ menu=await openProjectRowMenu(resultRow(),locale);await menu.getByRole('menuitem',{name:tr('project.result.addSource'),exact:true}).press('Enter')
+ const dialog=page.getByRole('dialog',{name:tr('project.source.add'),exact:true});await expect(dialog.getByRole('listitem')).toHaveText(['ID','Edad','Nota'])
+ await dialog.getByRole('button',{name:tr('project.source.register'),exact:true}).press('Enter');await expect(dialog).toHaveCount(0)
+ await expect(resultRow()).toContainText(tr('project.result.alsoSource'))
+ menu=await openProjectRowMenu(resultRow(),locale);await expect(menu.getByRole('menuitem',{name:tr('project.result.addSource'),exact:true})).toHaveAttribute('aria-disabled','true')
+ await menu.getByRole('menuitem',{name:tr('project.source.forget'),exact:true}).press('Enter')
+ const forget=page.getByRole('dialog',{name:tr('project.result.forgetTitle'),exact:true});await expect(forget).toContainText(t('project.result.forgetQuestion',{name:'Oaxaca, adultos.csv'},locale))
+ const bytes=await readFile(output);await forget.getByRole('button',{name:tr('project.source.forget'),exact:true}).press('Enter')
+ await expect(resultRow()).toHaveCount(0);expect(await readFile(output)).toEqual(bytes)
+ const state=await page.evaluate(()=>window.freya.projectState());expect(state.results).toEqual([]);expect(state.sources).toHaveLength(2)
+ menu=await openProjectRowMenu(row('Oaxaca, adultos'),locale);await expect(menu.getByRole('menuitem',{name:tr('subset.remove'),exact:true})).not.toHaveAttribute('aria-disabled','true');await page.keyboard.press('Escape')
+})
+
+
+test('PRJ-03: una segunda exportación conserva ambas instantáneas y rechaza reemplazar la primera',async()=>{
+ await exportSaved();const first=await readFile(output),before=await page.evaluate(()=>window.freya.projectState())
+ await page.evaluate(async()=>{const state=await window.freya.projectState();await window.freya.projectRenameRecipe(state.project!.id,state.recipes[0].id,'Otra copia')})
+ await expect(row('Otra copia')).toBeVisible();await exportSaved('Otra copia')
+ const state=await page.evaluate(()=>window.freya.projectState());expect(state.results).toHaveLength(2)
+ expect(await readFile(output)).toEqual(first);expect(await readFile(join(folder,'02_datasets','Otra copia.csv'))).toEqual(first)
+ expect(state.results.find(result=>result.id===before.results[0].id)?.provenance.snapshot?.recipes.at(-1)?.name).toBe('Oaxaca, adultos')
+ const names=await panel().locator('[data-project-node^="result:"] .node-name').allTextContents();expect(names).toEqual(['Otra copia.csv','Oaxaca, adultos.csv'])
+ await app.evaluate((_electron,path)=>{process.env.FREYALAB_TEST_EXTRACT_PATH=path},output)
+ const menu=await openProjectRowMenu(row('Otra copia'),locale);await menu.getByRole('menuitem',{name:tr('project.export.action'),exact:true}).press('Enter')
+ await expect(panel().locator('.export-error')).toContainText(tr('project.export.previous'))
+ expect((await page.evaluate(()=>window.freya.projectState())).results).toHaveLength(2);expect(await readFile(output)).toEqual(first)
+})
+
+test('PRJ-03: un proyecto futuro conserva las recetas v1 pero bloquea exportar con su motivo',async()=>{
+ const manifestFile=join(folder,'proyecto.freyalab'),manifest=JSON.parse(await readFile(manifestFile,'utf8'))
+ await page.evaluate(async()=>{const state=await window.freya.projectState();await window.freya.projectClose(state.project!.id)})
+ const originalProject=JSON.stringify({...manifest,version:2,unknown:'preservar'});await writeFile(manifestFile,originalProject)
+ await page.evaluate(path=>window.freya.openPaths([path]),manifestFile)
+ await expect(row('Oaxaca, adultos')).toBeVisible();const menu=await openProjectRowMenu(row('Oaxaca, adultos'),locale)
+ const action=menu.getByRole('menuitem',{name:tr('project.export.action'),exact:true});await expect(action).toHaveAttribute('aria-disabled','true');await expect(action).toHaveAccessibleDescription(t('project.future',{version:'2'},locale))
+ await action.press('Enter');expect(await readFile(output).catch(()=>null)).toBeNull();expect(await readFile(manifestFile,'utf8')).toBe(originalProject);await page.keyboard.press('Escape')
+})
+
+
+test('PRJ-03: la paleta encuentra el conjunto por exportar, extraer, guardar como archivo, export, extract y csv',async()=>{
+ await row('censo.csv').press('Enter');await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()
+ for(const term of ['exportar','extraer','guardar como archivo','export','extract','csv']){
+  const dialog=await openCsvCommands(page,app)
+  await dialog.getByRole('searchbox',{name:'Buscar comando CSV',exact:true}).fill(term)
+  const action=dialog.getByRole('button',{name:/^Exportar conjunto «Oaxaca, adultos»/});await expect(action).toBeEnabled()
+  if(term==='csv'){await action.press('Enter');await expect(dialog).toHaveCount(0);await expect(resultRow()).toBeVisible()}
+  else await page.keyboard.press('Escape')
+ }
+ expect(await readFile(output,'utf8')).toContain('00128,61\n');expect(await readFile(source)).toEqual(original)
+})
+
+
+test('PRJ-03 frontend: doble Enter en Registrar de nuevo envía una petición y conserva el éxito',async()=>{
+ const projectId=(await page.evaluate(()=>window.freya.projectState())).project!.id
+ await app.evaluate(({ipcMain})=>{
+  type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
+  type Registered=Extract<ProjectExportOutcome,{status:'registered'}>
+  const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')
+  if(!original)throw new Error('Falta el handler IPC de la prueba.')
+  const probe:{requests:unknown[][];registered?:Registered;resolveFirst?:()=>void;rejectDuplicate?:()=>void;cleanup:()=>void}={
+   requests:[],cleanup:()=>{probe.resolveFirst?.();probe.rejectDuplicate?.();handlers.set('freya',original)}
+  }
+  Reflect.set(globalThis,'prj03RegisterProbe',probe)
+  handlers.set('freya',async(event,...args)=>{
+   if(args[0]==='project:recipeExport'){
+    // El backend crea y registra el archivo REAL. Solo degradamos la respuesta a la UI;
+    // este caso comprueba single-flight frontend, no una avería real del manifiesto.
+    const outcome=await original(event,...args) as ProjectExportOutcome|null
+    if(outcome?.status!=='registered')throw new Error('La exportación real debe quedar registrada antes del oráculo frontend.')
+    probe.registered=outcome
+    return{status:'unregistered',result:outcome.result,error:'Registro pendiente simulado por el oráculo frontend.'}
+   }
+   if(args[0]==='project:registerResult'){
+    probe.requests.push(structuredClone(args.slice(1)))
+    const registered=probe.registered
+    if(!registered)throw new Error('Falta la exportación real del fixture.')
+    if(probe.requests.length===1)return new Promise<Registered>(resolve=>{probe.resolveFirst=()=>resolve(registered)})
+    return new Promise<never>((_resolve,reject)=>{probe.rejectDuplicate=()=>reject(new Error('duplicate frontend registration'))})
+   }
+   return original(event,...args)
+  })
+ })
+ try{
+  await exportSaved()
+  const manifest=await readFile(join(folder,'proyecto.freyalab')),stored=JSON.parse(manifest.toString())
+  expect(stored.results).toHaveLength(1)
+  const resultId=stored.results[0].id,exported=await readFile(output),retry=panel().getByRole('button',{name:tr('project.result.retry'),exact:true})
+  await expect(retry).toHaveCount(1)
+  await retry.press('Enter');await retry.press('Enter')
+  // El mismo canal IPC ordena la barrera después de ambos Enter, sin sleeps
+  // y antes de resolver la primera solicitud.
+  await page.evaluate(()=>window.freya.projectState())
+  const requests=await app.evaluate(()=>Reflect.get(globalThis,'prj03RegisterProbe').requests as unknown[][])
+  expect(requests[0]).toEqual([projectId,resultId])
+  await app.evaluate(()=>Reflect.get(globalThis,'prj03RegisterProbe').resolveFirst?.())
+  await expect(retry).toHaveCount(0);await expect(panel().locator('.export-error')).toHaveCount(0)
+  // Si hubo otra solicitud, rechazarla DESPUÉS del éxito visible expone el
+  // outcome unregistered que el frontend anterior había capturado.
+  await app.evaluate(()=>Reflect.get(globalThis,'prj03RegisterProbe').rejectDuplicate?.())
+  await page.evaluate(()=>window.freya.projectState())
+  await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>resolve())))
+  expect({requests,retry:await retry.count(),errors:await panel().locator('.export-error').allTextContents()})
+   .toEqual({requests:[[projectId,resultId]],retry:0,errors:[]})
+  expect(await readFile(join(folder,'proyecto.freyalab'))).toEqual(manifest)
+  expect(await readFile(output)).toEqual(exported)
+ }finally{
+  await app.evaluate(()=>{Reflect.get(globalThis,'prj03RegisterProbe')?.cleanup();Reflect.deleteProperty(globalThis,'prj03RegisterProbe')})
+ }
 })

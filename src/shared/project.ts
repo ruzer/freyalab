@@ -38,25 +38,37 @@ const recipeFields={id,name:storedName,sourceSha256:hash,semantics:count.min(1),
 export const projectRecipe=z.union([z.strictObject({...recipeFields,sourceId:id}),z.strictObject({...recipeFields,baseRecipeId:id})])
 const draftFields={id:id.optional(),name:projectName,steps:z.array(projectRecipeStep)}
 export const projectRecipeDraft=z.union([z.strictObject({...draftFields,sourceId:id}),z.strictObject({...draftFields,baseRecipeId:id})])
-const coverageFields={matched:count,scanned:count}
+export const projectRecipeSampling=z.strictObject({step:count,method:z.enum(['first','random']),requestedRows:rows.optional(),percent:percent.optional(),seed:seed.optional(),eligible:count,selected:count}).refine(sample=>
+ sample.selected<=sample.eligible&&(sample.requestedRows===undefined||sample.selected<=sample.requestedRows)&&
+ (sample.method==='first'?sample.requestedRows!==undefined&&sample.percent===undefined&&sample.seed===undefined:
+ sample.seed!==undefined&&(sample.requestedRows===undefined)!==(sample.percent===undefined)))
+const coverageFields={matched:count,scanned:count,samplingStages:z.array(projectRecipeSampling).optional()}
 const coverage=z.union([
  z.strictObject({...coverageFields,kind:z.enum(['full','filtered']),total:count,complete:z.literal(true)}),
  z.strictObject({...coverageFields,kind:z.literal('sample'),total:count,complete:z.literal(true),sampling}),
  z.strictObject({...coverageFields,kind:z.literal('sample'),complete:z.literal(false)})
 ])
-const result=z.strictObject({
- id,kind:z.enum(['extract','chart','report']),recipeId:id,path,bytes:count,sha256:hash,createdAt:time,
+export const projectResult=z.strictObject({
+ id,kind:z.enum(['extract','chart','report']),recipeId:id,path,bytes:count,sha256:hash,mtimeMs:z.number().optional(),createdAt:time,
  provenance:z.strictObject({
   sourceSha256:hash,executedAt:time,engine:z.strictObject({app:z.string(),contract:z.string(),semantics:count.min(1)}),
   coverage,fidelity:z.strictObject({level:z.enum(['bytes','values']),normalization:z.array(z.string()),irregularRows:count}),
-  warnings:z.array(z.string()),chain:z.array(id).min(1).max(8).optional(),recipeSha256:z.record(id,hash).optional()
+  warnings:z.array(z.string()),chain:z.array(id).min(1).max(8).optional(),recipeSha256:z.record(id,hash).optional(),
+  snapshot:z.strictObject({sourceName:z.string(),columns:z.array(z.string()),recipes:z.array(projectRecipe).min(1).max(8)}).optional()
  })
+}).refine(result=>{
+ const snapshot=result.provenance.snapshot
+ if(!snapshot)return true
+ const chain=snapshot.recipes.map(recipe=>recipe.id)
+ return new Set(chain).size===chain.length&&chain.at(-1)===result.recipeId&&snapshot.recipes.every((recipe,index)=>index?'baseRecipeId'in recipe&&recipe.baseRecipeId===chain[index-1]:'sourceId'in recipe)&&
+  (!result.provenance.chain||result.provenance.chain.length===chain.length&&result.provenance.chain.every((id,index)=>id===chain[index]))
 })
 export const projectManifest=z.strictObject({format:z.literal(format),version:z.literal(1),id,name:storedName,createdAt:time,
- sources:z.array(projectSource),recipes:z.array(projectRecipe),results:z.array(result)}).superRefine((value,context)=>{
+ sources:z.array(projectSource),recipes:z.array(projectRecipe),results:z.array(projectResult)}).superRefine((value,context)=>{
  const issue=(key:string,index:number)=>context.addIssue({code:'custom',path:[key,index],message:t('project.error.reference')})
  const sources=new Map(value.sources.map(source=>[source.id,source]))
  const recipes=new Map(value.recipes.map(recipe=>[recipe.id,recipe]))
+ const results=new Map(value.results.map(result=>[result.id,result]))
  for(const [index,source] of value.sources.entries()){
   const absolute=/^(?:\/|[a-z]:[\\/]|\\\\)/i.test(source.path)
   const escapes=/^[a-z]:/i.test(source.path)||source.path.split(/[\\/]/).includes('..')||source.path.startsWith('\\')
@@ -70,7 +82,7 @@ export const projectManifest=z.strictObject({format:z.literal(format),version:z.
   }
   if(!current||!('sourceId' in current)||!sources.has(current.sourceId)||visited.size>=8||recipes.get(recipe.id)!==recipe)issue('recipes',index)
  }
- for(const [index,result] of value.results.entries())if(!recipes.has(result.recipeId))issue('results',index)
+ for(const [index,result] of value.results.entries())if(!recipes.has(result.recipeId)||results.get(result.id)!==result)issue('results',index)
 })
 export const projectManifestJSONSchema={...z.toJSONSchema(projectManifest,{reused:'ref'}),
  $comment:'El validador de FreyaLab también verifica posiciones físicas consecutivas, rutas, referencias entre registros y profundidad de recetas.'}
@@ -79,6 +91,8 @@ export type ProjectColumn=z.infer<typeof column>
 export type ProjectRecipeStep=z.infer<typeof projectRecipeStep>
 export type ProjectRecipe=z.infer<typeof projectRecipe>
 export type ProjectRecipeDraft=z.infer<typeof projectRecipeDraft>
+export type ProjectRecipeSampling=z.infer<typeof projectRecipeSampling>
+export type ProjectResult=z.infer<typeof projectResult>
 export type ProjectManifest=z.infer<typeof projectManifest>
 export type ProjectSource=z.infer<typeof projectSource>
 export type ProjectSourceView=Pick<ProjectSource,'id'|'path'|'external'|'bytes'|'format'>&{

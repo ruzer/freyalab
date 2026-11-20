@@ -24,7 +24,7 @@
       "$ref": "#/$defs/__schema10"
     },
     "results": {
-      "$ref": "#/$defs/__schema19"
+      "$ref": "#/$defs/__schema20"
     }
   },
   "required": [
@@ -242,87 +242,90 @@
     "__schema10": {
       "type": "array",
       "items": {
-        "anyOf": [
-          {
-            "type": "object",
-            "properties": {
-              "id": {
-                "$ref": "#/$defs/__schema2"
-              },
-              "name": {
-                "$ref": "#/$defs/__schema3"
-              },
-              "sourceSha256": {
-                "$ref": "#/$defs/__schema8"
-              },
-              "semantics": {
-                "$ref": "#/$defs/__schema11"
-              },
-              "steps": {
-                "$ref": "#/$defs/__schema12"
-              },
-              "createdAt": {
-                "$ref": "#/$defs/__schema4"
-              },
-              "sourceId": {
-                "$ref": "#/$defs/__schema2"
-              }
-            },
-            "required": [
-              "id",
-              "name",
-              "sourceSha256",
-              "semantics",
-              "steps",
-              "createdAt",
-              "sourceId"
-            ],
-            "additionalProperties": false
-          },
-          {
-            "type": "object",
-            "properties": {
-              "id": {
-                "$ref": "#/$defs/__schema2"
-              },
-              "name": {
-                "$ref": "#/$defs/__schema3"
-              },
-              "sourceSha256": {
-                "$ref": "#/$defs/__schema8"
-              },
-              "semantics": {
-                "$ref": "#/$defs/__schema11"
-              },
-              "steps": {
-                "$ref": "#/$defs/__schema12"
-              },
-              "createdAt": {
-                "$ref": "#/$defs/__schema4"
-              },
-              "baseRecipeId": {
-                "$ref": "#/$defs/__schema2"
-              }
-            },
-            "required": [
-              "id",
-              "name",
-              "sourceSha256",
-              "semantics",
-              "steps",
-              "createdAt",
-              "baseRecipeId"
-            ],
-            "additionalProperties": false
-          }
-        ]
+        "$ref": "#/$defs/__schema11"
       }
     },
     "__schema11": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/__schema2"
+            },
+            "name": {
+              "$ref": "#/$defs/__schema3"
+            },
+            "sourceSha256": {
+              "$ref": "#/$defs/__schema8"
+            },
+            "semantics": {
+              "$ref": "#/$defs/__schema12"
+            },
+            "steps": {
+              "$ref": "#/$defs/__schema13"
+            },
+            "createdAt": {
+              "$ref": "#/$defs/__schema4"
+            },
+            "sourceId": {
+              "$ref": "#/$defs/__schema2"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "sourceSha256",
+            "semantics",
+            "steps",
+            "createdAt",
+            "sourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/__schema2"
+            },
+            "name": {
+              "$ref": "#/$defs/__schema3"
+            },
+            "sourceSha256": {
+              "$ref": "#/$defs/__schema8"
+            },
+            "semantics": {
+              "$ref": "#/$defs/__schema12"
+            },
+            "steps": {
+              "$ref": "#/$defs/__schema13"
+            },
+            "createdAt": {
+              "$ref": "#/$defs/__schema4"
+            },
+            "baseRecipeId": {
+              "$ref": "#/$defs/__schema2"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "sourceSha256",
+            "semantics",
+            "steps",
+            "createdAt",
+            "baseRecipeId"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "__schema12": {
       "minimum": 1,
       "$ref": "#/$defs/__schema7"
     },
-    "__schema12": {
+    "__schema13": {
       "type": "array",
       "items": {
         "anyOf": [
@@ -453,10 +456,10 @@
             "type": "object",
             "properties": {
               "method": {
-                "$ref": "#/$defs/__schema13"
+                "$ref": "#/$defs/__schema14"
               },
               "rows": {
-                "$ref": "#/$defs/__schema14"
+                "$ref": "#/$defs/__schema15"
               },
               "op": {
                 "type": "string",
@@ -474,13 +477,13 @@
             "type": "object",
             "properties": {
               "method": {
-                "$ref": "#/$defs/__schema15"
+                "$ref": "#/$defs/__schema16"
               },
               "rows": {
-                "$ref": "#/$defs/__schema14"
+                "$ref": "#/$defs/__schema15"
               },
               "seed": {
-                "$ref": "#/$defs/__schema16"
+                "$ref": "#/$defs/__schema17"
               },
               "op": {
                 "type": "string",
@@ -499,13 +502,13 @@
             "type": "object",
             "properties": {
               "method": {
-                "$ref": "#/$defs/__schema17"
-              },
-              "percent": {
                 "$ref": "#/$defs/__schema18"
               },
+              "percent": {
+                "$ref": "#/$defs/__schema19"
+              },
               "seed": {
-                "$ref": "#/$defs/__schema16"
+                "$ref": "#/$defs/__schema17"
               },
               "op": {
                 "type": "string",
@@ -523,35 +526,35 @@
         ]
       }
     },
-    "__schema13": {
+    "__schema14": {
       "type": "string",
       "const": "first"
     },
-    "__schema14": {
+    "__schema15": {
       "type": "integer",
       "minimum": 1,
       "maximum": 1000000,
       "$ref": "#/$defs/__schema7"
     },
-    "__schema15": {
+    "__schema16": {
       "type": "string",
       "const": "random"
     },
-    "__schema16": {
+    "__schema17": {
       "type": "integer",
       "minimum": -2147483648,
       "maximum": 2147483647
     },
-    "__schema17": {
+    "__schema18": {
       "type": "string",
       "const": "random"
     },
-    "__schema18": {
+    "__schema19": {
       "type": "number",
       "minimum": 0.01,
       "maximum": 100
     },
-    "__schema19": {
+    "__schema20": {
       "type": "array",
       "items": {
         "type": "object",
@@ -560,12 +563,7 @@
             "$ref": "#/$defs/__schema2"
           },
           "kind": {
-            "type": "string",
-            "enum": [
-              "extract",
-              "chart",
-              "report"
-            ]
+            "$ref": "#/$defs/__schema21"
           },
           "recipeId": {
             "$ref": "#/$defs/__schema2"
@@ -579,253 +577,14 @@
           "sha256": {
             "$ref": "#/$defs/__schema8"
           },
+          "mtimeMs": {
+            "$ref": "#/$defs/__schema22"
+          },
           "createdAt": {
             "$ref": "#/$defs/__schema4"
           },
           "provenance": {
-            "type": "object",
-            "properties": {
-              "sourceSha256": {
-                "$ref": "#/$defs/__schema8"
-              },
-              "executedAt": {
-                "$ref": "#/$defs/__schema4"
-              },
-              "engine": {
-                "type": "object",
-                "properties": {
-                  "app": {
-                    "type": "string"
-                  },
-                  "contract": {
-                    "type": "string"
-                  },
-                  "semantics": {
-                    "minimum": 1,
-                    "$ref": "#/$defs/__schema7"
-                  }
-                },
-                "required": [
-                  "app",
-                  "contract",
-                  "semantics"
-                ],
-                "additionalProperties": false
-              },
-              "coverage": {
-                "anyOf": [
-                  {
-                    "type": "object",
-                    "properties": {
-                      "matched": {
-                        "$ref": "#/$defs/__schema7"
-                      },
-                      "scanned": {
-                        "$ref": "#/$defs/__schema7"
-                      },
-                      "kind": {
-                        "type": "string",
-                        "enum": [
-                          "full",
-                          "filtered"
-                        ]
-                      },
-                      "total": {
-                        "$ref": "#/$defs/__schema7"
-                      },
-                      "complete": {
-                        "type": "boolean",
-                        "const": true
-                      }
-                    },
-                    "required": [
-                      "matched",
-                      "scanned",
-                      "kind",
-                      "total",
-                      "complete"
-                    ],
-                    "additionalProperties": false
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "matched": {
-                        "$ref": "#/$defs/__schema7"
-                      },
-                      "scanned": {
-                        "$ref": "#/$defs/__schema7"
-                      },
-                      "kind": {
-                        "type": "string",
-                        "const": "sample"
-                      },
-                      "total": {
-                        "$ref": "#/$defs/__schema7"
-                      },
-                      "complete": {
-                        "type": "boolean",
-                        "const": true
-                      },
-                      "sampling": {
-                        "anyOf": [
-                          {
-                            "type": "object",
-                            "properties": {
-                              "method": {
-                                "$ref": "#/$defs/__schema13"
-                              },
-                              "rows": {
-                                "$ref": "#/$defs/__schema14"
-                              }
-                            },
-                            "required": [
-                              "method",
-                              "rows"
-                            ],
-                            "additionalProperties": false
-                          },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "method": {
-                                "$ref": "#/$defs/__schema15"
-                              },
-                              "rows": {
-                                "$ref": "#/$defs/__schema14"
-                              },
-                              "seed": {
-                                "$ref": "#/$defs/__schema16"
-                              }
-                            },
-                            "required": [
-                              "method",
-                              "rows",
-                              "seed"
-                            ],
-                            "additionalProperties": false
-                          },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "method": {
-                                "$ref": "#/$defs/__schema17"
-                              },
-                              "percent": {
-                                "$ref": "#/$defs/__schema18"
-                              },
-                              "seed": {
-                                "$ref": "#/$defs/__schema16"
-                              }
-                            },
-                            "required": [
-                              "method",
-                              "percent",
-                              "seed"
-                            ],
-                            "additionalProperties": false
-                          }
-                        ]
-                      }
-                    },
-                    "required": [
-                      "matched",
-                      "scanned",
-                      "kind",
-                      "total",
-                      "complete",
-                      "sampling"
-                    ],
-                    "additionalProperties": false
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "matched": {
-                        "$ref": "#/$defs/__schema7"
-                      },
-                      "scanned": {
-                        "$ref": "#/$defs/__schema7"
-                      },
-                      "kind": {
-                        "type": "string",
-                        "const": "sample"
-                      },
-                      "complete": {
-                        "type": "boolean",
-                        "const": false
-                      }
-                    },
-                    "required": [
-                      "matched",
-                      "scanned",
-                      "kind",
-                      "complete"
-                    ],
-                    "additionalProperties": false
-                  }
-                ]
-              },
-              "fidelity": {
-                "type": "object",
-                "properties": {
-                  "level": {
-                    "type": "string",
-                    "enum": [
-                      "bytes",
-                      "values"
-                    ]
-                  },
-                  "normalization": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "irregularRows": {
-                    "$ref": "#/$defs/__schema7"
-                  }
-                },
-                "required": [
-                  "level",
-                  "normalization",
-                  "irregularRows"
-                ],
-                "additionalProperties": false
-              },
-              "warnings": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "chain": {
-                "minItems": 1,
-                "maxItems": 8,
-                "type": "array",
-                "items": {
-                  "$ref": "#/$defs/__schema2"
-                }
-              },
-              "recipeSha256": {
-                "type": "object",
-                "propertyNames": {
-                  "$ref": "#/$defs/__schema2"
-                },
-                "additionalProperties": {
-                  "$ref": "#/$defs/__schema8"
-                }
-              }
-            },
-            "required": [
-              "sourceSha256",
-              "executedAt",
-              "engine",
-              "coverage",
-              "fidelity",
-              "warnings"
-            ],
-            "additionalProperties": false
+            "$ref": "#/$defs/__schema23"
           }
         },
         "required": [
@@ -840,6 +599,351 @@
         ],
         "additionalProperties": false
       }
+    },
+    "__schema21": {
+      "type": "string",
+      "enum": [
+        "extract",
+        "chart",
+        "report"
+      ]
+    },
+    "__schema22": {
+      "type": "number"
+    },
+    "__schema23": {
+      "type": "object",
+      "properties": {
+        "sourceSha256": {
+          "$ref": "#/$defs/__schema8"
+        },
+        "executedAt": {
+          "$ref": "#/$defs/__schema4"
+        },
+        "engine": {
+          "type": "object",
+          "properties": {
+            "app": {
+              "type": "string"
+            },
+            "contract": {
+              "type": "string"
+            },
+            "semantics": {
+              "minimum": 1,
+              "$ref": "#/$defs/__schema7"
+            }
+          },
+          "required": [
+            "app",
+            "contract",
+            "semantics"
+          ],
+          "additionalProperties": false
+        },
+        "coverage": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "matched": {
+                  "$ref": "#/$defs/__schema7"
+                },
+                "scanned": {
+                  "$ref": "#/$defs/__schema7"
+                },
+                "samplingStages": {
+                  "$ref": "#/$defs/__schema24"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "full",
+                    "filtered"
+                  ]
+                },
+                "total": {
+                  "$ref": "#/$defs/__schema7"
+                },
+                "complete": {
+                  "type": "boolean",
+                  "const": true
+                }
+              },
+              "required": [
+                "matched",
+                "scanned",
+                "kind",
+                "total",
+                "complete"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "matched": {
+                  "$ref": "#/$defs/__schema7"
+                },
+                "scanned": {
+                  "$ref": "#/$defs/__schema7"
+                },
+                "samplingStages": {
+                  "$ref": "#/$defs/__schema24"
+                },
+                "kind": {
+                  "type": "string",
+                  "const": "sample"
+                },
+                "total": {
+                  "$ref": "#/$defs/__schema7"
+                },
+                "complete": {
+                  "type": "boolean",
+                  "const": true
+                },
+                "sampling": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "$ref": "#/$defs/__schema14"
+                        },
+                        "rows": {
+                          "$ref": "#/$defs/__schema15"
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "rows"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "$ref": "#/$defs/__schema16"
+                        },
+                        "rows": {
+                          "$ref": "#/$defs/__schema15"
+                        },
+                        "seed": {
+                          "$ref": "#/$defs/__schema17"
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "rows",
+                        "seed"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "$ref": "#/$defs/__schema18"
+                        },
+                        "percent": {
+                          "$ref": "#/$defs/__schema19"
+                        },
+                        "seed": {
+                          "$ref": "#/$defs/__schema17"
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "percent",
+                        "seed"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "matched",
+                "scanned",
+                "kind",
+                "total",
+                "complete",
+                "sampling"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "matched": {
+                  "$ref": "#/$defs/__schema7"
+                },
+                "scanned": {
+                  "$ref": "#/$defs/__schema7"
+                },
+                "samplingStages": {
+                  "$ref": "#/$defs/__schema24"
+                },
+                "kind": {
+                  "type": "string",
+                  "const": "sample"
+                },
+                "complete": {
+                  "type": "boolean",
+                  "const": false
+                }
+              },
+              "required": [
+                "matched",
+                "scanned",
+                "kind",
+                "complete"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "fidelity": {
+          "type": "object",
+          "properties": {
+            "level": {
+              "type": "string",
+              "enum": [
+                "bytes",
+                "values"
+              ]
+            },
+            "normalization": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "irregularRows": {
+              "$ref": "#/$defs/__schema7"
+            }
+          },
+          "required": [
+            "level",
+            "normalization",
+            "irregularRows"
+          ],
+          "additionalProperties": false
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "chain": {
+          "minItems": 1,
+          "maxItems": 8,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/__schema2"
+          }
+        },
+        "recipeSha256": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/__schema2"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/__schema8"
+          }
+        },
+        "snapshot": {
+          "type": "object",
+          "properties": {
+            "sourceName": {
+              "type": "string"
+            },
+            "columns": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "recipes": {
+              "minItems": 1,
+              "maxItems": 8,
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/__schema11"
+              }
+            }
+          },
+          "required": [
+            "sourceName",
+            "columns",
+            "recipes"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "sourceSha256",
+        "executedAt",
+        "engine",
+        "coverage",
+        "fidelity",
+        "warnings"
+      ],
+      "additionalProperties": false
+    },
+    "__schema24": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "$ref": "#/$defs/__schema7"
+          },
+          "method": {
+            "$ref": "#/$defs/__schema25"
+          },
+          "requestedRows": {
+            "$ref": "#/$defs/__schema26"
+          },
+          "percent": {
+            "$ref": "#/$defs/__schema27"
+          },
+          "seed": {
+            "$ref": "#/$defs/__schema28"
+          },
+          "eligible": {
+            "$ref": "#/$defs/__schema7"
+          },
+          "selected": {
+            "$ref": "#/$defs/__schema7"
+          }
+        },
+        "required": [
+          "step",
+          "method",
+          "eligible",
+          "selected"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "__schema25": {
+      "type": "string",
+      "enum": [
+        "first",
+        "random"
+      ]
+    },
+    "__schema26": {
+      "$ref": "#/$defs/__schema15"
+    },
+    "__schema27": {
+      "$ref": "#/$defs/__schema19"
+    },
+    "__schema28": {
+      "$ref": "#/$defs/__schema17"
     }
   },
   "$comment": "El validador de FreyaLab también verifica posiciones físicas consecutivas, rutas, referencias entre registros y profundidad de recetas."

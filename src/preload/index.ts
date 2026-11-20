@@ -65,6 +65,8 @@ const api:FreyaAPI={
  projectRelinkSource:(id,source,request)=>invoke('project:relinkSource',id,source,request),projectCancelSource:request=>invoke('project:cancelSource',request),
  projectRecipeTry:(id,draft,request)=>invoke('project:recipeTry',id,draft,request),projectRecipeCancel:request=>invoke('project:recipeCancel',request),
  projectRecipeAnalyze:(id,recipe,request)=>invoke('project:recipeAnalyze',id,recipe,request),
+ projectRecipeExport:(id,recipe,request)=>invoke('project:recipeExport',id,recipe,request),projectRegisterResult:(id,result)=>invoke('project:registerResult',id,result),
+ projectOpenResult:(id,result)=>invoke('project:openResult',id,result),projectShowResult:(id,result)=>invoke('project:showResult',id,result),projectResultSource:(id,result)=>invoke('project:resultSource',id,result),projectForgetResult:(id,result)=>invoke('project:forgetResult',id,result),
  projectSaveRecipe:(id,draft)=>invoke('project:saveRecipe',id,draft),projectRenameRecipe:(id,recipe,name)=>invoke('project:renameRecipe',id,recipe,name),projectRemoveRecipe:(id,recipe)=>invoke('project:removeRecipe',id,recipe),
  recents:()=>invoke('recents'),recoveries:()=>invoke('recoveries'),recover:id=>invoke('recover',id),discardRecovery:id=>invoke('discardRecovery',id),
  onEvent(callback){const listener=(_:unknown,event:AppEvent)=>callback(event);ipcRenderer.on('freya:event',listener);return()=>ipcRenderer.removeListener('freya:event',listener)},

@@ -1,6 +1,6 @@
-import {open as openFile, rename, rm, statfs} from 'node:fs/promises'
-import {dirname} from 'node:path'
-import {randomUUID} from 'node:crypto'
+import {lstat,open as openFile, realpath, rename, rm, statfs} from 'node:fs/promises'
+import {dirname,join} from 'node:path'
+import {createHash,randomUUID} from 'node:crypto'
 import {setTimeout as sleep} from 'node:timers/promises'
 import {parse as parseSync} from 'csv-parse/sync'
 import {stringify} from 'csv-stringify/sync'
@@ -9,6 +9,7 @@ import {recordBatches,indexUnchanged,LargeFormatError,RECORD_DELIMITERS,type Lar
 import {compileTableQuery} from './table-query'
 import type {Encoding} from '../shared/types'
 import type {EngineOperation,OperationResult,Fidelity} from '../shared/operations'
+import {t} from '../shared/i18n'
 
 // E1 · Motor propio estricto para las operaciones sobre un archivo grande (src/shared/operations.ts).
 // El archivo se recorre UNA vez en flujo con el escáner de L2 (que delimita los registros por posición) y cada lote se valida con csv-parse, que rechaza
@@ -23,7 +24,32 @@ const mib=(bytes:number)=>`${Math.ceil(bytes/1048576).toLocaleString('es')} MiB`
 async function freeBytes(dir:string){try{const s=await statfs(dir);return Number(s.bavail)*Number(s.bsize)}catch{return Infinity}} // sistema de archivos sin statfs: no se bloquea
 
 const eolName=(eol:string)=>eol==='\r\n'?'CRLF':eol==='\n'?'LF':eol==='\r'?'CR':JSON.stringify(eol)
-const bomBytes=(encoding:Encoding)=>encoding==='utf16le'?Buffer.from([0xff,0xfe]):Buffer.from([0xef,0xbb,0xbf])
+export const extractBomBytes=(encoding:Encoding)=>encoding==='utf16le'?Buffer.from([0xff,0xfe]):Buffer.from([0xef,0xbb,0xbf])
+export function extractValues(rows:string[][],format:{encoding:Encoding;delimiter:string;eol:string}){
+ return iconv.encode(stringify(rows,{delimiter:format.delimiter,record_delimiter:format.eol,quoted_match:/[\r\n]/}),format.encoding)
+}
+export async function createExtractWriter(output:string,sourceBytes:number,options:{freeBytes?:(directory:string)=>Promise<number>;fingerprint?:boolean;temporaryDirectory?:string;beforeOpen?:()=>Promise<void>}={}){
+ for(const directory of new Set([dirname(output),options.temporaryDirectory??dirname(output)])){
+  const free=await(options.freeBytes??freeBytes)(directory)
+  if(free<sourceBytes+SPACE_MARGIN)throw new Error(`No hay espacio suficiente en el destino: el extracto puede ocupar hasta ${mib(sourceBytes)} y quedan ${mib(free)} libres.`)
+ }
+ const temporaryStamp=options.temporaryDirectory?await lstat(options.temporaryDirectory):undefined
+ await options.beforeOpen?.()
+ let temp:string|undefined=options.temporaryDirectory?join(options.temporaryDirectory,`freya-export-${randomUUID()}.tmp`):`${output}.${randomUUID()}.tmp`,handle:Awaited<ReturnType<typeof openFile>>|undefined=await openFile(temp,'wx'),bytes=0
+ const hash=options.fingerprint?createHash('sha256'):undefined
+ return{
+  get bytes(){return bytes},
+  async write(data:Buffer){let offset=0;while(offset<data.length){const written=await handle!.write(data,offset,data.length-offset);if(!written.bytesWritten)throw new Error(t('project.export.writeFailed'));offset+=written.bytesWritten}bytes+=data.length;hash?.update(data)},
+  async publish(beforeRename?:()=>void|Promise<void>){const stamp=options.fingerprint?await handle!.stat():undefined;await handle!.close();handle=undefined;await beforeRename?.();await rename(temp!,output);temp=undefined;return options.fingerprint?{bytes,sha256:hash!.digest('hex'),mtimeMs:stamp!.mtimeMs}:undefined},
+  async close(){
+   await handle?.close().catch(()=>{})
+   if(temp){
+    if(temporaryStamp){const path=options.temporaryDirectory!,current=await lstat(path);if(!current.isDirectory()||current.isSymbolicLink()||current.dev!==temporaryStamp.dev||current.ino!==temporaryStamp.ino||await realpath(path)!==path)throw new Error(t('project.export.destinationChanged'))}
+    await rm(temp,{force:true}).catch(()=>{})
+   }
+  }
+ }
+}
 // File signatures have already been skipped; preserve literal U+FEFF at batch boundaries.
 const decoderUtf8=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true})
 function decode(bytes:Buffer,encoding:Encoding){return encoding==='utf8'?decoderUtf8.decode(bytes):iconv.decode(bytes,encoding,{stripBOM:false})}
@@ -55,20 +81,16 @@ export async function runOperation(state:OperationSourceState,request:EngineOper
   return columns.map(column=>{ if(column>=fields.length)throw new StrictRecordError(`El registro ${recordNumber(ordinal)} solo tiene ${fields.length} campos y falta la columna ${column+1}: no se rellena en silencio.`); return fields[column] })
  }
  const wholeRecords=request.operation==='filter_extract'&&!columns
- let handle:Awaited<ReturnType<typeof openFile>>|undefined,temp:string|undefined,written=0
- const write=async(data:Buffer)=>{ if(data.length){ await handle!.write(data); written+=data.length } }
+ let writer:Awaited<ReturnType<typeof createExtractWriter>>|undefined
+ const write=async(data:Buffer)=>{if(data.length)await writer!.write(data)}
  const eol=state.eol
- const encode=(text:string)=>iconv.encode(text,state.encoding)
  let matched=0,scanned=0,irregular=0,headerFields:string[]|undefined,rows:string[][]=[]
  const limit=request.operation==='preview'?request.limit:Infinity
  let complete=true
  try {
   if(request.operation==='filter_extract'){
-   const free=await (hooks.freeBytes??freeBytes)(dirname(request.output))
-   if(free<state.index.size+SPACE_MARGIN)throw new Error(`No hay espacio suficiente en el destino: el extracto puede ocupar hasta ${mib(state.index.size)} y quedan ${mib(free)} libres.`)
-   temp=`${request.output}.${randomUUID()}.tmp`
-   handle=await openFile(temp,'wx')
-   if(state.bom)await write(bomBytes(state.encoding))
+    writer=await createExtractWriter(request.output,state.index.size,{freeBytes:hooks.freeBytes})
+    if(state.bom)await write(extractBomBytes(state.encoding))
   }
   scanning:
   for await(const batch of recordBatches(state.index,{batchRecords:hooks.batchRecords,cancelled:hooks.cancelled})){
@@ -89,7 +111,7 @@ export async function runOperation(state:OperationSourceState,request:EngineOper
     else if(request.operation==='filter_extract'){ if(wholeRecords)copied.push(batch.records[i]); else projected.push(project(fields,ordinal)) }
    }
    if(copied.length)await write(Buffer.concat(copied))
-   if(request.operation==='filter_extract'&&!wholeRecords&&projected.length)await write(encode(stringify(projected,{delimiter:state.delimiter,record_delimiter:eol,quoted_match:/[\r\n]/})))
+   if(request.operation==='filter_extract'&&!wholeRecords&&projected.length)await write(extractValues(projected,state))
    hooks.progress?.(Math.min(99,Math.floor(batch.position/state.index.size*100)))
    if(hooks.delayMs)await sleep(hooks.delayMs)
   }
@@ -100,8 +122,7 @@ export async function runOperation(state:OperationSourceState,request:EngineOper
    const names=state.header?(headerFields??state.headers):state.headers
    return {operation:'preview',headers:columns?columns.map(column=>names[column]??''):names,rows,found:rows.length,scanned,complete}
   }
-  await handle!.close();handle=undefined
-  await rename(temp!,request.output);temp=undefined
+   await writer!.publish()
   const normalization=wholeRecords?[]:[
    'Solo las columnas elegidas, en el orden elegido.',
    'Comillado mínimo: solo se entrecomillan los campos que lo necesitan.',
@@ -109,12 +130,11 @@ export async function runOperation(state:OperationSourceState,request:EngineOper
    ...(state.bom?['Se conserva la marca de orden de bytes (BOM) y la codificación del original.']:['Se conserva la codificación del original.'])
   ]
   const fidelity:Fidelity=wholeRecords?'bytes':'values'
-  return {operation:'filter_extract',output:request.output,matched,scanned,bytes:written,fidelity,normalization,irregularRows:irregular,elapsedMs:Math.round(performance.now()-started)}
+   return {operation:'filter_extract',output:request.output,matched,scanned,bytes:writer!.bytes,fidelity,normalization,irregularRows:irregular,elapsedMs:Math.round(performance.now()-started)}
  } catch(error) {
   if(error instanceof LargeFormatError)throw new StrictRecordError(error.message)
   throw error
  } finally {
-  await handle?.close().catch(()=>{})
-  if(temp)await rm(temp,{force:true}).catch(()=>{})
+   await writer?.close()
  }
 }

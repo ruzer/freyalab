@@ -10,6 +10,9 @@
  import {t,plural,formatNumber,getUILanguage} from '../lib/i18n.svelte'
  import type {ProjectInfo,ProjectSourceView,ProjectRecipeDraft,ProjectRecipeStep,ProjectColumn} from '../../shared/project'
  import type {ProjectRecipeView} from '../../shared/project-recipes'
+ import type {ProjectResultView} from '../../shared/project-exports'
+ import type {ProjectExportJob} from '../lib/project-result'
+ import ProjectExportStatus from './ProjectExportStatus.svelte'
  import type {RecipeOperationResult} from '../../shared/recipe-operation'
  import type {TableFilter,TableSort} from '../../shared/types'
  import CsvConditionFields from './CsvConditionFields.svelte'
@@ -18,7 +21,11 @@
  import Icon from './Icon.svelte'
  import {subsetSummary} from '../lib/subset-summary'
  import {subsetCoverage,subsetStepOwners} from '../lib/subset-coverage'
- let {project,source,recipes,intent,ontry,oncancel,onsave,onclose}:{project:ProjectInfo;source:ProjectSourceView;recipes:ProjectRecipeView[];intent:SubsetIntent;ontry:(draft:ProjectRecipeDraft,requestId:string)=>Promise<RecipeOperationResult&{sourceVersionDifferent?:boolean}>;oncancel:(requestId:string)=>Promise<void>;onsave:(draft:ProjectRecipeDraft)=>Promise<boolean>;onclose:()=>void}=$props()
+ let {project,source,recipes,intent,results=[],exportJobs=[],onexport=()=>{},onopenresult=()=>{},onshowresult=()=>{},onaddresultsource=()=>{},onregisterresult=()=>{},oncancelexport=()=>{},ontry,oncancel,onsave,onclose}:{
+  project:ProjectInfo;source:ProjectSourceView;recipes:ProjectRecipeView[];intent:SubsetIntent;results?:ProjectResultView[];exportJobs?:ProjectExportJob[]
+  onexport?:(id:string)=>void;onopenresult?:(id:string)=>void;onshowresult?:(id:string)=>void;onaddresultsource?:(id:string)=>void;onregisterresult?:(id:string)=>void;oncancelexport?:(requestId:string)=>void
+  ontry:(draft:ProjectRecipeDraft,requestId:string)=>Promise<RecipeOperationResult&{sourceVersionDifferent?:boolean}>;oncancel:(requestId:string)=>Promise<void>;onsave:(draft:ProjectRecipeDraft)=>Promise<boolean>;onclose:()=>void
+ }=$props()
  const initial=untrack(()=>({source,intent,original:recipes.find(recipe=>recipe.id===intent.recipeId)}))
  const original=initial.original
  const draftKey=untrack(()=>JSON.stringify([project.path,project.id,source.id,intent.recipeId??intent.draftId??'',intent.baseRecipeId??'',!!intent.blank]))
@@ -70,6 +77,12 @@
   return{...(recipe?{id:recipe.id}:{}),name:immutable&&recipe?recipe.name:name.trim(),...(base.startsWith('recipe:')?{baseRecipeId:base.slice(7)}:{sourceId:source.id}),steps} as ProjectRecipeDraft
  })
  const dirty=$derived(!!baseline&&JSON.stringify(draft)!==baseline)
+ const savedRecipe=$derived(recipes.find(value=>value.id===intent.recipeId))
+ const mutationReason=$derived(project.readonly?t('project.future',{version:formatNumber(project.version)}):'')
+ const exportReason=$derived(busy||saving?t('ui.reason.busy'):mutationReason||(!savedRecipe||dirty?t('project.export.unsaved'):externalChange?t('subset.draftChanged'):source.status!=='verified'?t('subset.sourceUnavailable',{reason:t('project.source.status.'+source.status)}):!savedRecipe.executable?savedRecipe.reason??t('subset.unknown'):''))
+ const recipeExportJobs=$derived(intent.recipeId?exportJobs.filter(job=>job.projectId===project.id&&job.recipeId===intent.recipeId):[])
+ const exportDescription=$derived(exportReason?exportReason===blocked?reasonId:titleId+'-export-reason':undefined)
+ function exportSaved(){if(!exportReason&&savedRecipe)onexport(savedRecipe.id)}
  const dependents=$derived(recipe?.dependents.map(id=>recipes.find(value=>value.id===id)?.name??id)??[])
  function definition(value?:ProjectRecipeView){return JSON.stringify(value?[value.id,value.name,value.createdAt,value.sourceSha256,value.semantics,'sourceId' in value?{sourceId:value.sourceId}:{baseRecipeId:value.baseRecipeId},value.steps]:null)}
  export function focusInitial(){if(immutable)region?.focus();else nameInput?.focus()}
@@ -148,9 +161,13 @@
  <footer>
   <button type="button" class="btn-secondary" disabled={busy||saving||!!blocked} aria-describedby={blocked?reasonId:undefined} onclick={()=>void run()}>{t('subset.try')}</button>
   <button type="button" class="btn-primary" disabled={busy||saving||immutable||!!blocked} aria-describedby={blocked?reasonId:undefined} onclick={()=>void save()}>{t('dialog.save')}</button>
+  <button type="button" class="btn-secondary subset-export" aria-disabled={exportReason?'true':undefined} aria-describedby={exportDescription} title={exportReason||undefined} onclick={exportSaved}>{t('project.export.action')}</button>
   <button type="button" disabled={busy||saving} onclick={close}>{t('subset.close')}</button>
   {#if busy}<button type="button" onclick={()=>void cancel()}>{t('dialog.cancel')}</button><progress max={progress.totalBytes||1} value={progress.bytesRead} aria-label={t('subset.progress')}></progress><span role="status" aria-live="polite">{t('subset.progressBytes',{bytes:number(progress.bytesRead),total:number(progress.totalBytes)})}</span>{/if}
   {#if message}<span role="status" aria-live="polite">{message}</span>{/if}
+  {#if exportReason&&exportReason!==blocked}<p id={titleId+'-export-reason'} class="reason export-reason">{exportReason}</p>{/if}
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex (La lista desplazable de exportaciones admite navegación por teclado.) -->
+  {#if recipeExportJobs.length}<div class="subset-export-jobs" role="region" aria-label={t('project.export.command',{name:recipe?.name??name})} tabindex="0"><ProjectExportStatus jobs={recipeExportJobs} {results} {mutationReason} {onopenresult} {onshowresult} {onaddresultsource} {onregisterresult} {oncancelexport}/></div>{/if}
  </footer>
  {#if confirmation}<dialog bind:this={dialog} aria-labelledby={titleId+'-confirm'} oncancel={event=>{event.preventDefault();void dismiss()}}>
   <h3 id={titleId+'-confirm'}>{t(confirmation==='discard'?'subset.discardTitle':externalChange?'subset.conflictTitle':'subset.impactTitle')}</h3>
@@ -163,4 +180,6 @@
 </section>
 <style>
  .subset-tools{display:flex;flex-direction:column;flex-shrink:0;max-height:min(72vh,660px);min-height:0;border-bottom:1px solid var(--border);background:var(--panel);font-size:var(--font-control,13px)}header,footer,.actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 12px}header{justify-content:space-between}h3{font-size:14px;margin:0}header button{background:transparent;border:0}.subset-body{overflow:auto;min-height:0;padding:0 12px}label{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;margin:4px 12px 4px 0}input,select{max-width:100%;min-height:28px}input{width:220px}input[type=number]{width:110px}fieldset{border:1px solid var(--border);margin:8px 0;padding:8px}legend{font-weight:600}p{margin:6px 0;line-height:1.5;overflow-wrap:anywhere}.notice,.reason{border-left:3px solid var(--accent);padding:5px 8px}.reason{color:var(--danger)}footer{flex-shrink:0;border-top:1px solid var(--border)}footer span{font-size:12px}button{min-height:28px}button:focus-visible,input:focus-visible,select:focus-visible,.preview-box:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.preview-box{max-height:190px;overflow:auto;border:1px solid var(--border);margin:8px 0}.preview-box table{border-collapse:collapse;min-width:100%}.preview-box th,.preview-box td{white-space:pre;max-width:300px;border-bottom:1px solid var(--border);padding:4px 8px;text-align:left}.preview-box thead th{position:sticky;top:0;background:var(--panel)}.coverage{font-size:12px}dialog{max-width:min(520px,90vw);border:1px solid var(--border);border-radius:var(--radius-control);color:var(--text);background:var(--panel);padding:16px}dialog::backdrop{background:#0006}dialog .actions{padding:8px 0 0;justify-content:flex-end}@media(max-width:800px){.subset-tools{max-height:76vh}.subset-body>label{display:flex}input,select{min-width:0}footer{gap:5px}}
+ .subset-export[aria-disabled="true"]{opacity:.5;cursor:default}.export-reason{flex:1 1 100%;margin:0}.subset-export-jobs{flex:1 1 100%;min-width:0;max-height:180px;overflow:auto}.subset-export-jobs:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+ @media(forced-colors:active){.subset-export[aria-disabled="true"]{color:GrayText;opacity:1}}
 </style>

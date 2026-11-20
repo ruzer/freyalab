@@ -1,12 +1,12 @@
 import {createHash,randomUUID} from 'node:crypto'
 import {constants} from 'node:fs'
 import {lstat,mkdir,open,readFile,realpath,rmdir} from 'node:fs/promises'
-import {basename,isAbsolute,join} from 'node:path'
+import {basename,isAbsolute,join,posix} from 'node:path'
 import {z} from 'zod'
 import {atomicWrite} from './files'
 import {resolveProjectRecipe,projectRecipeDependents,projectRecipeDraft,projectRecipeEditorCompatible,projectRecipeBounded,type ProjectRecipeDraft,type ProjectRecipeView} from '../shared/project-recipes'
 import {t} from '../shared/i18n'
-import {projectEnvelope,projectFile,projectFolders,projectManifest,projectName,projectRecipe,projectSource,type ProjectInfo,type ProjectManifest,type ProjectRecipe,type ProjectSource} from '../shared/project'
+import {projectEnvelope,projectFile,projectFolders,projectManifest,projectName,projectRecipe,projectResult,projectSource,type ProjectInfo,type ProjectManifest,type ProjectRecipe,type ProjectResult,type ProjectSource} from '../shared/project'
 
 const maxManifest=4*1024*1024
 const hash=(bytes:Uint8Array)=>createHash('sha256').update(bytes).digest('hex')
@@ -65,6 +65,7 @@ export class ProjectStore{
  get active(){return this.current?.info??null}
  get sources(){return this.current?.manifest?.sources??[]}
  get recipes():ProjectRecipe[]{return this.current?.manifest?.recipes??[]}
+ get results():ProjectResult[]{return this.current?.manifest?.results??[]}
  get recentWriteFailed(){return this.recentFailure}
  resolveRecipe(recipe:string|ProjectRecipe){
   if(!this.current?.manifest)throw new Error(t('project.error.reference'))
@@ -171,14 +172,14 @@ export class ProjectStore{
    this.current=await readProject(project.path);return true
   })
  }
- private changeRecipes(id:string,keepLocal:()=>Promise<boolean>,update:(manifest:ProjectManifest)=>ProjectRecipe[]){
+ private changeManifest(id:string,keepLocal:()=>Promise<boolean>,update:(manifest:ProjectManifest)=>ProjectManifest){
   return this.serial(async()=>{
    const before=this.current
    if(!before?.manifest||before.info.readonly||before.info.id!==id)throw new Error(t('project.error.readonly'))
    const latest=await readProject(before.info.path)
    if(latest.info.readonly||!latest.manifest||latest.info.id!==id){this.current=latest;throw new Error(t('project.error.changed'))}
    if(before.digest!==latest.digest&&!await keepLocal()){this.current=latest;return false}
-   const manifest=projectManifest.parse({...latest.manifest,recipes:update(latest.manifest)})
+   const manifest=projectManifest.parse(update(latest.manifest))
    const content=sortedJSON(manifest)
    if(Buffer.byteLength(content)>maxManifest)throw new Error(t('project.error.file'))
    await atomicWrite(join(latest.info.path,projectFile),content,latest.digest)
@@ -186,7 +187,7 @@ export class ProjectStore{
   })
  }
  saveRecipe(projectId:string,draft:ProjectRecipeDraft,keepLocal:()=>Promise<boolean>){
-  return this.changeRecipes(projectId,keepLocal,manifest=>{
+  return this.changeManifest(projectId,keepLocal,manifest=>{
    draft=projectRecipeDraft.parse(draft)
    const existing=draft.id?manifest.recipes.find(recipe=>recipe.id===draft.id):undefined
    if(draft.id&&!existing)throw new Error(t('project.error.reference'))
@@ -195,23 +196,39 @@ export class ProjectStore{
    if(manifest.recipes.some(item=>item.id!==recipe.id&&item.name.trim().toLowerCase()===recipe.name.toLowerCase()))throw new Error(t('project.recipe.error.name'))
    const recipes=[...manifest.recipes.filter(item=>item.id!==recipe.id),recipe]
    recipe.sourceSha256=resolveProjectRecipe({...manifest,recipes},recipe).source.sha256
-   return existing?manifest.recipes.map(item=>item.id===recipe.id?recipe:item):recipes
+   return{...manifest,recipes:existing?manifest.recipes.map(item=>item.id===recipe.id?recipe:item):recipes}
   })
  }
  renameRecipe(projectId:string,id:string,name:string,keepLocal:()=>Promise<boolean>){
-  return this.changeRecipes(projectId,keepLocal,manifest=>{
+  return this.changeManifest(projectId,keepLocal,manifest=>{
    if(!manifest.recipes.some(recipe=>recipe.id===id))throw new Error(t('project.error.reference'))
    const validName=projectName.parse(name)
    if(manifest.recipes.some(recipe=>recipe.id!==id&&recipe.name.trim().toLowerCase()===validName.toLowerCase()))throw new Error(t('project.recipe.error.name'))
-   return manifest.recipes.map(recipe=>recipe.id===id?{...recipe,name:validName}:recipe)
+   return{...manifest,recipes:manifest.recipes.map(recipe=>recipe.id===id?{...recipe,name:validName}:recipe)}
   })
  }
  removeRecipe(projectId:string,id:string,keepLocal:()=>Promise<boolean>){
-  return this.changeRecipes(projectId,keepLocal,manifest=>{
+  return this.changeManifest(projectId,keepLocal,manifest=>{
    if(!manifest.recipes.some(recipe=>recipe.id===id))throw new Error(t('project.error.reference'))
+   const results=manifest.results.filter(result=>result.recipeId===id).length
+   if(results)throw new Error(t('project.recipe.error.results',{n:results}))
    const dependents=projectRecipeDependents(manifest,id)
    if(dependents.length)throw new Error(t('project.recipe.error.dependents',{names:dependents.map(recipe=>recipe.name).join(', ')}))
-   return manifest.recipes.filter(recipe=>recipe.id!==id)
+   return{...manifest,recipes:manifest.recipes.filter(recipe=>recipe.id!==id)}
+  })
+ }
+ registerResult(projectId:string,result:ProjectResult,keepLocal:()=>Promise<boolean>){
+  return this.changeManifest(projectId,keepLocal,manifest=>{
+   result=projectResult.parse(result)
+   const path=result.path,key=(path:string)=>process.platform==='win32'?path.toLowerCase():path
+   if(isAbsolute(path)||/^[a-z]:/i.test(path)||path.includes('\\')||posix.normalize(path)!==path||path==='..'||path.startsWith('../')||!manifest.recipes.some(recipe=>recipe.id===result.recipeId)||manifest.results.some(item=>item.id===result.id||key(item.path)===key(path)))throw new Error(t('project.error.reference'))
+   return{...manifest,results:[...manifest.results,result]}
+  })
+ }
+ forgetResult(projectId:string,resultId:string,keepLocal:()=>Promise<boolean>){
+  return this.changeManifest(projectId,keepLocal,manifest=>{
+   if(!manifest.results.some(result=>result.id===resultId))throw new Error(t('project.error.reference'))
+   return{...manifest,results:manifest.results.filter(result=>result.id!==resultId)}
   })
  }
  close(id:string){return this.serial(async()=>{if(this.current?.info.id===id)this.current=undefined})}

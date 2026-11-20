@@ -20,6 +20,7 @@ const relativePath=(root:string,path:string)=>relative(root,path).split(sep).joi
 
 export class ProjectSourceRegistry{
  private draft:{id:string;project:ProjectInfo;path:string;target:string;stamp:FileStamp}|undefined
+ private draftGeneration=0
  private external=new Map<string,string>()
  private recipeChanged=new Map<string,string>()
  constructor(private projects:ProjectStore,private allowed:(path:string)=>Promise<boolean>,private assertClean:(path:string)=>void,private opened:(path:string)=>Pick<DocumentInfo,'rowCount'|'headers'>&{id?:string}|undefined=()=>undefined){}
@@ -90,12 +91,13 @@ export class ProjectSourceRegistry{
  }
  markRecipeChanged(id:string){const project=this.projects.active,source=this.projects.sources.find(source=>source.id===id);if(project&&source)this.recipeChanged.set(id,project.path+'\0'+source.sha256)}
  async prepare(path:string,options:SourceOptions={},nativeChoice=false):Promise<ProjectSourceDraft>{
-  const project=this.project()
+  const project=this.project(),generation=++this.draftGeneration
   if(!nativeChoice&&!await this.allowed(path))throw new Error(t('project.source.authorize'))
   const chosen=resolve(path),target=await realpath(chosen)
   this.assertClean(target)
   if((await this.protectedPaths()).has(target))throw new Error(t('project.source.duplicate'))
   const info=await prepareCsvSource(target,options),id=randomUUID()
+  if(generation!==this.draftGeneration||this.projects.active?.id!==project.id||this.projects.active.path!==project.path)throw new Error(t('project.error.changed'))
   this.draft={id,project,path:chosen,target,stamp:info}
   return this.describeDraft(this.draft,info)
  }
@@ -104,7 +106,7 @@ export class ProjectSourceRegistry{
   if(!matches(draft.stamp,info))throw new Error(t('project.source.changed'))
   return this.describeDraft(draft,info)
  }
- cancelDraft(){this.draft=undefined}
+ cancelDraft(){this.draftGeneration++;this.draft=undefined}
  registrationTarget(id:string){return this.getDraft(id).target}
  private getDraft(id:string){
   const draft=this.draft,project=this.project()
