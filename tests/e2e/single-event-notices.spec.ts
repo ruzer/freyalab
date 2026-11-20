@@ -95,6 +95,7 @@ for(const locale of ['es','en-XA'] as const){
 
 test('SIM-2g: éxito, información y error conservan iconos, teclado y duraciones sin copiarse al pie',async()=>{
  const path=join(root,'editable.csv');await writeFile(path,original);const[doc]=await page.evaluate(path=>window.freya.openPaths([path]),path),grid=page.getByRole('grid',{name:'Tabla de datos',exact:true});await expect(grid.locator('.csv-row')).toHaveCount(2)
+ await page.clock.install({time:0});await page.clock.pauseAt(1)
  await app.evaluate(({ipcMain},fixtureRoot)=>{
   type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
   const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')!
@@ -114,7 +115,6 @@ test('SIM-2g: éxito, información y error conservan iconos, teclado y duracione
  },root)
  try{
  const cell=page.getByRole('gridcell',{name:'Fila 1, Ingreso',exact:true});await cell.dblclick();await page.getByRole('textbox',{name:'Editar celda',exact:true}).fill('150');await page.getByRole('textbox',{name:'Editar celda',exact:true}).press('Enter');await expect(cell).toHaveText('150');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)?.dirty).toBe(true)
- await page.clock.install({time:0});await page.clock.pauseAt(1)
  await page.getByRole('button',{name:'Guardar',exact:true}).press('Enter');await expect(toast()).toHaveClass(/\bsuccess\b/);await expect(toast()).toContainText('Archivo guardado');await iconFor(toast(),'success');await expect(footer().locator(':scope>.truncate')).not.toContainText('Archivo guardado')
  const saved=Buffer.from(original.toString().replace('Oaxaca,100','Oaxaca,150'));expect(await readFile(path)).toEqual(saved);await page.clock.runFor(3499);await expect(toast()).toBeVisible();await page.clock.runFor(1);await expect(toast()).toHaveCount(0)
  await page.getByRole('button',{name:tr('csvText.text'),exact:true}).press('Enter');await expect(page.locator('.cm-content')).toBeVisible();await expect(toast()).toHaveClass(/\binfo\b/);await expect(toast()).toContainText(tr('csvText.viewAnnouncement',{view:tr('csvText.text')}));await iconFor(toast(),'info');await expect(footer().locator(':scope>.truncate')).not.toHaveText(tr('csvText.viewAnnouncement',{view:tr('csvText.text')}))
