@@ -1,3 +1,4 @@
+import {strict as assert} from 'node:assert'
 import {expect,test,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {createHash,randomUUID} from 'node:crypto'
@@ -218,7 +219,7 @@ test('PRJ-03 1 GB: exportar muestra de diez mil con semilla 7 conserva orden, da
   expect(info.size).toBe(10_000_008);expect(lines.pop()).toBe('');expect(lines.shift()).toBe('ID,Nota');expect(lines).toHaveLength(10_000)
   const ids=lines.map(line=>Number(line.slice(0,7)))
   expect(new Set(ids).size).toBe(10_000);expect(ids).toEqual([...ids].sort((a,b)=>a-b))
-  for(const [index,line] of lines.entries()){expect(ids[index]).toBeGreaterThanOrEqual(1);expect(ids[index]).toBeLessThanOrEqual(records);expect(line).toBe(`${String(ids[index]).padStart(7,'0')},${payload}`)}
+  for(const [index,line] of lines.entries()){assert.ok(ids[index]>=1);assert.ok(ids[index]<=records);assert.equal(line,`${String(ids[index]).padStart(7,'0')},${payload}`)}
   expect(result).toMatchObject({path:'02_datasets/'+name+'.csv',bytes:10_000_008,sha256:outputSha,provenance:{sourceSha256:source.sha256,coverage:{kind:'sample',matched:10_000,scanned:records,total:records,complete:true},fidelity:{level:'bytes'}}})
   expect(result.provenance.coverage.samplingStages).toEqual([{step:0,method:'random',requestedRows:10_000,seed:7,eligible:records,selected:10_000}])
   expect(response.progress).toMatchObject({bytesRead:source.bytes,scanned:records,totalBytes:source.bytes})
