@@ -37,6 +37,7 @@ async function create(locale:'es'|'en-XA'='es',withoutFirstSource?:string){
  await expect(dialog.getByRole('textbox',{name:tr('project.name'),exact:true})).toHaveValue('Censo')
  if(withoutFirstSource)await dialog.getByRole('checkbox',{name:t('project.firstSource',{name:withoutFirstSource},locale),exact:true}).uncheck()
  await dialog.getByRole('button',{name:tr('project.create'),exact:true}).press('Enter')
+ await expect(dialog).toHaveCount(0)
 }
 async function register(){
  await panel().getByRole('button',{name:'Añadir fuente…',exact:true}).press('Enter')
