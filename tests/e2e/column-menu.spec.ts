@@ -107,7 +107,7 @@ test('quitar espacios y minúsculas: acceso desde Limpiar y solo tocan esa colum
  }
 })
 
-test('una búsqueda cambiada durante la edición y otra posterior conservan la consulta vigente',async()=>{
+for(const locale of ['es','en-XA'])test('una búsqueda cambiada durante la edición y otra posterior conservan la consulta vigente ('+locale+')',async()=>{
  const {doc,path}=await open(),search=page.getByLabel('Buscar en tabla',{exact:true}),grid=page.getByRole('grid',{name:'Tabla de datos',exact:true})
  await expect(cell(1,'Ciudad')).toHaveText(' oaxaca de juárez ')
  await page.clock.install({time:0});await page.clock.pauseAt(1)
@@ -142,6 +142,15 @@ test('una búsqueda cambiada durante la edición y otra posterior conservan la c
   expect(await cities()).toEqual(['Oaxaca editada','GUADALAJARA','mérida  ','Cd. de México','PUEBLA'])
   expect(await page.evaluate(async()=>{const [doc]=await window.freya.documents();return(await window.freya.tablePage(doc.id,{offset:0,limit:5,requestId:992})).rows.map(row=>row.cells[0]+'|'+row.cells[2])})).toEqual(['00123|10','00124|20','00125|30','00126|40','00127|50'])
   expect((await state(doc.id))?.dirty).toBe(true);expect(await readFile(path,'utf8')).toBe(source)
+  await page.emulateMedia({reducedMotion:'reduce'})
+  for(const size of [{width:1440,height:900},{width:1280,height:720}])for(const theme of ['light','dark']){
+   await page.setViewportSize(size);await page.getByRole('combobox',{name:'Tema',exact:true}).selectOption(theme)
+   await expect.poll(()=>page.locator('html').evaluate(node=>node.classList.contains('dark'))).toBe(theme==='dark')
+   await page.evaluate(()=>document.fonts.ready)
+   await expect(cell(1,'Ciudad')).toHaveText('mérida  ')
+   await page.screenshot({path:test.info().outputPath('query-'+locale+'-'+theme+'-'+size.width+'x'+size.height+'.png'),animations:'disabled'})
+  }
+  expect(await readFile(path,'utf8')).toBe(source)
  }finally{
   try{try{
    const operations=await app.evaluate(()=>{const b=Reflect.get(globalThis,'columnQueryEditBarrier');return b?{held:b.held,edit:b.edit,edits:b.edits,pages:b.pages}:null})
