@@ -1,0 +1,49 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 [csv] › tests/e2e/information-clarity.spec.ts:103:1 › SIM-2d: detalles con chevron posterior, acciones y Explorar conservan teclado y datos (17.4s)
+
+
+  1) [csv] › tests/e2e/information-clarity.spec.ts:103:1 › SIM-2d: detalles con chevron posterior, acciones y Explorar conservan teclado y datos 
+
+    Error: expect(locator).toHaveCSS(expected) failed
+
+    Locator:  locator('[id="workspace-panel-analysis:923509a2-7e40-4400-8904-98b3e449ee9f"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').nth(5).getByRole('button', { name: 'Elegir columna 6 para explorar', exact: true })
+    Expected: "none"
+    Received: "rgba(16, 24, 40, 0.08) 0px 1px 1px 0px"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveCSS" locator('[id="workspace-panel-analysis:923509a2-7e40-4400-8904-98b3e449ee9f"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').nth(5).getByRole('button', { name: 'Elegir columna 6 para explorar', exact: true }) with timeout 15000ms
+      - waiting for locator('[id="workspace-panel-analysis:923509a2-7e40-4400-8904-98b3e449ee9f"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').nth(5).getByRole('button', { name: 'Elegir columna 6 para explorar', exact: true })
+        33 × locator resolved to <button type="button" class="inspect svelte-1alawu2" aria-label="Elegir columna 6 para explorar">…</button>
+           - unexpected value "rgba(16, 24, 40, 0.08) 0px 1px 1px 0px"
+
+
+      111 |  const inspect=rows.nth(5).getByRole('button',{name:tr('info.inspect',{index:6}),exact:true});await expect(inspect).toHaveText(/^Explorar\s*›?$/)
+      112 |  expect(await inspect.evaluate(element=>['borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth'].map(key=>parseFloat(Reflect.get(getComputedStyle(element),key))))).toEqual([0,0,0,0])
+    > 113 |  await expect(inspect).toHaveCSS('box-shadow','none')
+          |                        ^
+      114 |  await inspect.focus();await inspect.press('Enter');const detail=page.getByRole('region',{name:'Exploración de columna',exact:true});await expect(detail.getByLabel('Columna para explorar',{exact:true})).toHaveValue('5');await expect(detail.getByLabel('Filas para explorar',{exact:true})).toHaveValue('all');await expect(page.locator('.analysis-workspace:not([hidden]) header h2')).toBeFocused()
+      115 |  await detail.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(detail.getByRole('status')).toHaveText('Exploración completa.')
+      116 | })
+        at <checkout>/tests/e2e/information-clarity.spec.ts:113:24
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim2d-informacion-clara-evidence/ghost-red-results/information-clarity-SIM-2d-361cb-r-conservan-teclado-y-datos-csv/attachments/electron-context-ee1240c7aee96cbc36e1cb36c421760ea8a02920.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim2d-informacion-clara-evidence/ghost-red-results/information-clarity-SIM-2d-361cb-r-conservan-teclado-y-datos-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2d-informacion-clara-evidence/ghost-red-results/information-clarity-SIM-2d-361cb-r-conservan-teclado-y-datos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2d-informacion-clara-evidence/ghost-red-results/information-clarity-SIM-2d-361cb-r-conservan-teclado-y-datos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/information-clarity.spec.ts:103:1 › SIM-2d: detalles con chevron posterior, acciones y Explorar conservan teclado y datos 
+(node:13338) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

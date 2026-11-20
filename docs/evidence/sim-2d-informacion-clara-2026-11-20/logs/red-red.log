@@ -1,0 +1,251 @@
+
+Running 6 tests using 1 worker
+
+(node:2981) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/information-clarity.spec.ts:86:50 › SIM-2d: resultado completo compacto, alineación y revisión en ayuda [es] (1.5s)
+(node:2991) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/information-clarity.spec.ts:86:50 › SIM-2d: resultado completo compacto, alineación y revisión en ayuda [en] (1.3s)
+(node:3002) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [csv] › tests/e2e/information-clarity.spec.ts:86:50 › SIM-2d: resultado completo compacto, alineación y revisión en ayuda [en-XA] (1.5s)
+(node:3018) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  4 [csv] › tests/e2e/information-clarity.spec.ts:103:1 › SIM-2d: detalles con chevron posterior, acciones y Explorar conservan teclado y datos (16.5s)
+(node:3077) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  5 [csv] › tests/e2e/information-clarity.spec.ts:117:1 › SIM-2d: buscador desde 21 columnas y páginas desde 51 sin recortar datos (31.3s)
+(node:3175) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  6 [csv] › tests/e2e/information-clarity.spec.ts:128:1 › SIM-2d: ocupado visible, alcance filtrado o marcado e informe mantienen sus recuentos (1.7s)
+
+
+  1) [csv] › tests/e2e/information-clarity.spec.ts:86:50 › SIM-2d: resultado completo compacto, alineación y revisión en ayuda [es] 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1
+    Received:    32.5
+
+      33 | })))}
+      34 | async function compactComplete(panel:Locator){
+    > 35 |  expect(await flowFootprint(panel.locator(':scope>[role=status]'))).toBeLessThanOrEqual(1)
+         |                                                                     ^
+      36 |  expect(await flowFootprint(panel.locator(':scope>.scope'))).toBeLessThanOrEqual(1)
+      37 |  const gap=await panel.evaluate(element=>{
+      38 |   const chips=element.querySelector('.type-chips')!,table=element.querySelector('.overview-scroll')!,parent=getComputedStyle(element)
+        at compactComplete (<checkout>/tests/e2e/information-clarity.spec.ts:35:69)
+        at <checkout>/tests/e2e/information-clarity.spec.ts:88:2
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-6afb8-ión-y-revisión-en-ayuda-es--csv/attachments/electron-context-301e26c2f7b2a9e981c0312b10e38d5844b1dcba.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-6afb8-ión-y-revisión-en-ayuda-es--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-6afb8-ión-y-revisión-en-ayuda-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-6afb8-ión-y-revisión-en-ayuda-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/information-clarity.spec.ts:86:50 › SIM-2d: resultado completo compacto, alineación y revisión en ayuda [en] 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1
+    Received:    32.5
+
+      33 | })))}
+      34 | async function compactComplete(panel:Locator){
+    > 35 |  expect(await flowFootprint(panel.locator(':scope>[role=status]'))).toBeLessThanOrEqual(1)
+         |                                                                     ^
+      36 |  expect(await flowFootprint(panel.locator(':scope>.scope'))).toBeLessThanOrEqual(1)
+      37 |  const gap=await panel.evaluate(element=>{
+      38 |   const chips=element.querySelector('.type-chips')!,table=element.querySelector('.overview-scroll')!,parent=getComputedStyle(element)
+        at compactComplete (<checkout>/tests/e2e/information-clarity.spec.ts:35:69)
+        at <checkout>/tests/e2e/information-clarity.spec.ts:88:2
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-f87ab-ión-y-revisión-en-ayuda-en--csv/attachments/electron-context-20339e05fd564e540fd8dbec1294cb6f7935db4e.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-f87ab-ión-y-revisión-en-ayuda-en--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-f87ab-ión-y-revisión-en-ayuda-en--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-f87ab-ión-y-revisión-en-ayuda-en--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/information-clarity.spec.ts:86:50 › SIM-2d: resultado completo compacto, alineación y revisión en ayuda [en-XA] 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1
+    Received:    32.5
+
+      33 | })))}
+      34 | async function compactComplete(panel:Locator){
+    > 35 |  expect(await flowFootprint(panel.locator(':scope>[role=status]'))).toBeLessThanOrEqual(1)
+         |                                                                     ^
+      36 |  expect(await flowFootprint(panel.locator(':scope>.scope'))).toBeLessThanOrEqual(1)
+      37 |  const gap=await panel.evaluate(element=>{
+      38 |   const chips=element.querySelector('.type-chips')!,table=element.querySelector('.overview-scroll')!,parent=getComputedStyle(element)
+        at compactComplete (<checkout>/tests/e2e/information-clarity.spec.ts:35:69)
+        at <checkout>/tests/e2e/information-clarity.spec.ts:88:2
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-99093--y-revisión-en-ayuda-en-XA--csv/attachments/electron-context-0965e9339cc8a2e442adc193f19da7b17a01f5cd.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-99093--y-revisión-en-ayuda-en-XA--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-99093--y-revisión-en-ayuda-en-XA--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-99093--y-revisión-en-ayuda-en-XA--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [csv] › tests/e2e/information-clarity.spec.ts:103:1 › SIM-2d: detalles con chevron posterior, acciones y Explorar conservan teclado y datos 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('[id="workspace-panel-analysis:bd8833b2-9cb7-4d14-9e0d-c6859a5cac81"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').first().locator('.type-explanation>summary').locator('svg.icon[aria-hidden=true]')
+    Expected: 1
+    Received: 0
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveCount" locator('[id="workspace-panel-analysis:bd8833b2-9cb7-4d14-9e0d-c6859a5cac81"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').first().locator('.type-explanation>summary').locator('svg.icon[aria-hidden=true]') with timeout 15000ms
+      - waiting for locator('[id="workspace-panel-analysis:bd8833b2-9cb7-4d14-9e0d-c6859a5cac81"]').getByRole('region', { name: 'Vista general de columnas', exact: true, includeHidden: true }).locator('tbody tr').first().locator('.type-explanation>summary').locator('svg.icon[aria-hidden=true]')
+        34 × locator resolved to 0 elements
+           - unexpected value "0"
+
+
+      42 | }
+      43 | async function trailingChevron(summary:Locator){
+    > 44 |  const icon=summary.locator('svg.icon[aria-hidden=true]');await expect(icon).toHaveCount(1)
+         |                                                                              ^
+      45 |  const geometry=await summary.evaluate(element=>{
+      46 |   const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT),rights:number[]=[]
+      47 |   while(walker.nextNode())if(walker.currentNode.textContent?.trim()&&!walker.currentNode.parentElement?.closest('svg,[aria-hidden=true]')){
+        at trailingChevron (<checkout>/tests/e2e/information-clarity.spec.ts:44:78)
+        at <checkout>/tests/e2e/information-clarity.spec.ts:105:8
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-361cb-r-conservan-teclado-y-datos-csv/attachments/electron-context-7897c40e2985b66bbc65b796768bf536c448bc6b.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-361cb-r-conservan-teclado-y-datos-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-361cb-r-conservan-teclado-y-datos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-361cb-r-conservan-teclado-y-datos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [csv] › tests/e2e/information-clarity.spec.ts:117:1 › SIM-2d: buscador desde 21 columnas y páginas desde 51 sin recortar datos 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.csv-toolbar,.csv-text-tools').getByRole('button', { name: /^(Analizar|Analyze|\[Ánályzë~+\])$/ })
+        - locator resolved to <button type="button" aria-label="Analizar" data-tooltip="Analizar" class="keep-label svelte-auiwhu">…</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <dialog open="" class="svelte-1cikorp" aria-label="Nuevo proyecto">…</dialog> intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <dialog open="" class="svelte-1cikorp" aria-label="Nuevo proyecto">…</dialog> intercepts pointer events
+        - retrying click action
+          - waiting 100ms
+        58 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <dialog open="" class="svelte-1cikorp" aria-label="Nuevo proyecto">…</dialog> intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+
+
+       at panel.ts:12
+
+      10 | export async function requestAnalysis(page:Page,app?:ElectronApplication){
+      11 |  if(app){const commands=await openCsvCommands(page,app);const search=commands.getByRole('searchbox',{name:'Buscar comando CSV',exact:true});await search.fill('info');await search.press('Enter')}
+    > 12 |  else await analyzeButton(page).click()
+         |                                 ^
+      13 | }
+      14 | export async function openCsvCommands(page:Page,app:ElectronApplication){
+      15 |  await runApplicationMenu(app,'edit.commandPalette')
+        at requestAnalysis (<checkout>/tests/e2e/panel.ts:12:33)
+        at openAnalysis (<checkout>/tests/e2e/panel.ts:29:62)
+        at information (<checkout>/tests/e2e/information-clarity.spec.ts:23:30)
+        at <checkout>/tests/e2e/information-clarity.spec.ts:121:58
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-bb0da-desde-51-sin-recortar-datos-csv/attachments/electron-context-6588973a03f02797bb666b007a3650bfffbf65fe.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-bb0da-desde-51-sin-recortar-datos-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-bb0da-desde-51-sin-recortar-datos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-bb0da-desde-51-sin-recortar-datos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [csv] › tests/e2e/information-clarity.spec.ts:128:1 › SIM-2d: ocupado visible, alcance filtrado o marcado e informe mantienen sus recuentos 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1
+    Received:    32.5
+
+      130 |  try{
+      131 |   await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'informationClarityProbe').held)).toBe(true);await expect(panel.getByRole('status')).toHaveText(tr('info.progress',{done:2,total:6}));await expect(panel.locator('tbody tr')).toHaveCount(1)
+    > 132 |   expect(await flowFootprint(panel.locator(':scope>[role=status]'))).toBeGreaterThan(1);expect(await flowFootprint(panel.locator(':scope>.scope'))).toBeLessThanOrEqual(1)
+          |                                                                                                                                                     ^
+      133 |   await expect(await analysisExportItem(page,'info.report')).toHaveAttribute('aria-disabled','true');await page.keyboard.press('Escape')
+      134 |  }finally{await release()}
+      135 |  await ready(panel,6);await compactComplete(panel)
+        at <checkout>/tests/e2e/information-clarity.spec.ts:132:149
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-f8d5f-rme-mantienen-sus-recuentos-csv/attachments/electron-context-b9eb237ccc1718efa60e90ad7b057816922b9291.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-f8d5f-rme-mantienen-sus-recuentos-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-f8d5f-rme-mantienen-sus-recuentos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2d-informacion-clara-evidence/red-results/information-clarity-SIM-2d-f8d5f-rme-mantienen-sus-recuentos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6 failed
+    [csv] › tests/e2e/information-clarity.spec.ts:86:50 › SIM-2d: resultado completo compacto, alineación y revisión en ayuda [es] 
+    [csv] › tests/e2e/information-clarity.spec.ts:86:50 › SIM-2d: resultado completo compacto, alineación y revisión en ayuda [en] 
+    [csv] › tests/e2e/information-clarity.spec.ts:86:50 › SIM-2d: resultado completo compacto, alineación y revisión en ayuda [en-XA] 
+    [csv] › tests/e2e/information-clarity.spec.ts:103:1 › SIM-2d: detalles con chevron posterior, acciones y Explorar conservan teclado y datos 
+    [csv] › tests/e2e/information-clarity.spec.ts:117:1 › SIM-2d: buscador desde 21 columnas y páginas desde 51 sin recortar datos 
+    [csv] › tests/e2e/information-clarity.spec.ts:128:1 › SIM-2d: ocupado visible, alcance filtrado o marcado e informe mantienen sus recuentos 

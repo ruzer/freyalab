@@ -1,0 +1,100 @@
+{
+  "head": "67e0bf7a469990fc26d7c0bf22d63c422c4455d1",
+  "specSHA256": "baf9815aceb84e4491cb54e2d47ec387daae3fb88ce773f26a840768267217c0",
+  "status": "Setup failure; not a red for threshold behavior. No product or setup patch applied.",
+  "test": "SIM-2d: buscador desde 21 columnas y páginas desde 51 sin recortar datos",
+  "iteration": "First file ancha-20.csv; subsequent21/50/51 iterations not reached",
+  "chronology": [
+    {
+      "traceTimeMs": 23559.486,
+      "kind": "saved screencast",
+      "state": "Welcome, no modal visible"
+    },
+    {
+      "traceTimeMs": 23578.213,
+      "kind": "test call",
+      "state": "window.freya.openPaths ancha-20.csv begins; no preceding test click/keypress recorded"
+    },
+    {
+      "traceTimeMs": 23694.446,
+      "kind": "saved screencast",
+      "state": "Nuevo proyecto modal visible over Welcome"
+    },
+    {
+      "traceTimeMs": 23741.954,
+      "kind": "real IPC response",
+      "state": "openPaths returns CSV id b660bfb8-bb1b-498b-8f1c-7c9219448f32, nameancha-20.csv, rowCount2,20headers"
+    },
+    {
+      "traceTimeMs": 23748.936,
+      "kind": "saved screencast",
+      "state": "CSV grid behind existing modal; no rows matched while initial page loads"
+    },
+    {
+      "traceTimeMs": 23751.599,
+      "kind": "DOM snapshot",
+      "state": "DIALOG aria-label Nuevo proyecto has modal flag; source CSV workspace already rendered"
+    },
+    {
+      "traceTimeMs": 23961.512,
+      "kind": "assertion success",
+      "state": "CSV real initial page has2.csv-row"
+    },
+    {
+      "traceTimeMs": 23971.947,
+      "kind": "selected tab read",
+      "state": "workspace-tab-b660bfb8-bb1b-498b-8f1c-7c9219448f32"
+    },
+    {
+      "traceTimeMs": 23980.254,
+      "kind": "first test click attempt",
+      "state": "Analizar locator correct, modal intercepts; timeout30000ms"
+    }
+  ],
+  "conclusion": "Already matching selected document identity and real2rows do not remove an unrelated preexisting modal. Opening origin not captured; do not infer four-document loop or justify arbitrary identity wait, modal dismissal, sleeps, deadlines or product change.",
+  "nativeLimit": "Playwright context/test trace records test actions; it does not prove absence of native/menu input outside that channel.",
+  "nextRootCommand": "npx playwright test tests/e2e/information-clarity.spec.ts --project=csv --grep \"buscador desde 21 columnas\" --workers=1 --retries=0",
+  "nextRootCondition": "Use preserved fresh baseline build whose product source matches67e0bf7; execute only after other GUI run terminates. This is an isolated diagnostic, not a test/CI retry-policy change.",
+  "artifacts": [
+    {
+      "name": "red-report.json",
+      "sha256": "445b9bc3eb59072b2315fe18e3fdc8f316857c89e793f3d73ca900620c3688bd"
+    },
+    {
+      "name": "red-red.log",
+      "sha256": "3e7d7491a3990e2f939e29b05bdcbdea81fad9cd6365a5a905d199b61ed7c169"
+    },
+    {
+      "name": "red-results/information-clarity-SIM-2d-bb0da-desde-51-sin-recortar-datos-csv/trace.zip",
+      "sha256": "e9dbba875d20276253d8f887737fed1e21b9b38317a2ef31a827cc3b0b1cf7e2"
+    },
+    {
+      "name": "red-results/information-clarity-SIM-2d-bb0da-desde-51-sin-recortar-datos-csv/attachments/electron-context-6588973a03f02797bb666b007a3650bfffbf65fe.zip",
+      "sha256": "ef6d03289d453f310cd3f0822544852b2437c05a0343694338ed7b5c05c2014a"
+    },
+    {
+      "name": "red-results/information-clarity-SIM-2d-bb0da-desde-51-sin-recortar-datos-csv/error-context.md",
+      "sha256": "a84c0da199f1d5fef08a1f2e1f315f14c1fe8f01d30e992bf0346c72d31dc4c8"
+    },
+    {
+      "name": "threshold-setup/23559.486.jpeg",
+      "sha256": "433e926c5628b843eb7b188f679e021ef618cf5ffbf3ce017599080d063022e7"
+    },
+    {
+      "name": "threshold-setup/23694.446.jpeg",
+      "sha256": "d611e4f03d38bf54457a662ba956bfaf4c77e62be7ce1ad98be4b74bedeccbe7"
+    },
+    {
+      "name": "threshold-setup/23748.936.jpeg",
+      "sha256": "5e233414356fddadcd11919b0e084b1c6ac3019c5d2d306624de376d909ec110"
+    },
+    {
+      "name": "threshold-setup/snapshot-23557.028.json",
+      "sha256": "4bc843a42ced86820cc9a42182f034178b7f4b7491076105ace60441ee86a9e5"
+    },
+    {
+      "name": "threshold-setup/snapshot-23751.599.json",
+      "sha256": "8520a8c4f3e9c1488ffad3959967ff14c6b71a6c8af45ae2be7dd983cf19d73f"
+    }
+  ]
+}
