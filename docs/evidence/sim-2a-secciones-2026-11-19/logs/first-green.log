@@ -1,0 +1,55 @@
+
+Running 8 tests using 1 worker
+
+(node:79978) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/analysis-sections.spec.ts:87:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin (1.6s)
+  ✓  2 [csv] › tests/e2e/analysis-sections.spec.ts:113:1 › SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro secciones (1.3s)
+  ✓  3 [csv] › tests/e2e/analysis-sections.spec.ts:130:1 › SIM-2a: exportaciones sin resultado siguen enfocables, explican el motivo y no calculan al abrir ni activar (1.2s)
+  ✓  4 [csv] › tests/e2e/analysis-sections.spec.ts:145:1 › SIM-2a: informes de columnas, resumen y detalle conservan sus datos y precisión desde Exportar (1.7s)
+  ✘  5 [csv] › tests/e2e/analysis-sections.spec.ts:161:1 › SIM-2a: el informe contextual conserva Perfil, Frecuencias paginadas, Distribución y Correlación (17.0s)
+(node:80034) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  6 [csv] › tests/e2e/analysis-sections.spec.ts:179:1 › SIM-2a: informe SQL reúne todas las páginas y conserva identificadores y revisión (2.2s)
+  ✓  7 [csv] › tests/e2e/analysis-sections.spec.ts:189:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.2s)
+  ✓  8 [csv] › tests/e2e/analysis-sections.spec.ts:216:1 › SIM-2a: pestañas grandes conservan el motivo y las flechas omiten Información y Estadísticas [grande] (898ms)
+
+
+  1) [csv] › tests/e2e/analysis-sections.spec.ts:161:1 › SIM-2a: el informe contextual conserva Perfil, Frecuencias paginadas, Distribución y Correlación 
+
+    Error: expect(locator).toHaveAccessibleDescription(expected) failed
+
+    Locator:  getByRole('menu', { name: 'Exportar', exact: true }).getByRole('menuitem', { name: 'Informe (Markdown)', exact: true })
+    Expected: "No hay una correlación calculada para incluir en el informe."
+    Received: "Prepara un resultado antes de usar esta acción."
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAccessibleDescription" getByRole('menu', { name: 'Exportar', exact: true }).getByRole('menuitem', { name: 'Informe (Markdown)', exact: true }) with timeout 15000ms
+      - waiting for getByRole('menu', { name: 'Exportar', exact: true }).getByRole('menuitem', { name: 'Informe (Markdown)', exact: true })
+        34 × locator resolved to <button type="button" tabindex="-1" role="menuitem" aria-disabled="true" class="svelte-iqt1nb" aria-describedby="control-reason-result" title="Abrir como documento editable la vista actual; en frecuencias incluye solo la página cargada · Prepara un resultado antes de usar esta acción.">Informe (Markdown)</button>
+           - unexpected value "Prepara un resultado antes de usar esta acción."
+
+
+      172 |  await explorer.getByRole('button',{name:'Correlación',exact:true}).click();await openExport()
+      173 |  await expect(menu().getByRole('menuitem',{name:'Informe (Markdown)',exact:true})).toHaveAttribute('aria-disabled','true')
+    > 174 |  await expect(menu().getByRole('menuitem',{name:'Informe (Markdown)',exact:true})).toHaveAccessibleDescription(t('ui.reason.correlation'));await page.keyboard.press('Escape')
+          |                                                                                    ^
+      175 |  await explorer.getByLabel('Columna para correlación',{exact:true}).selectOption('3');await explore()
+      176 |  const correlation=await report('Informe (Markdown)','Correlación de Pearson');expect(correlation).toContain('"Edad"');expect(correlation).toContain('| Pares numéricos de la misma fila | 239 |')
+      177 | })
+        at tests/e2e/analysis-sections.spec.ts:174:84
+
+    Error Context: test-results/analysis-sections-SIM-2a-e-2b0bc--Distribución-y-Correlación-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-sections-SIM-2a-e-2b0bc--Distribución-y-Correlación-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-sections-SIM-2a-e-2b0bc--Distribución-y-Correlación-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/analysis-sections.spec.ts:161:1 › SIM-2a: el informe contextual conserva Perfil, Frecuencias paginadas, Distribución y Correlación 
+  7 passed (32.8s)

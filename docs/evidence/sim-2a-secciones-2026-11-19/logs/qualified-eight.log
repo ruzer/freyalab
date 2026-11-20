@@ -1,0 +1,15 @@
+
+Running 8 tests using 1 worker
+
+(node:1572) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/analysis-sections.spec.ts:87:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin (1.5s)
+  ✓  2 [csv] › tests/e2e/analysis-sections.spec.ts:113:1 › SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro secciones (1.1s)
+  ✓  3 [csv] › tests/e2e/analysis-sections.spec.ts:130:1 › SIM-2a: exportaciones sin resultado siguen enfocables, explican el motivo y no calculan al abrir ni activar (993ms)
+  ✓  4 [csv] › tests/e2e/analysis-sections.spec.ts:145:1 › SIM-2a: informes de columnas, resumen y detalle conservan sus datos y precisión desde Exportar (1.5s)
+  ✓  5 [csv] › tests/e2e/analysis-sections.spec.ts:161:1 › SIM-2a: el informe contextual conserva Perfil, Frecuencias paginadas, Distribución y Correlación (2.1s)
+  ✓  6 [csv] › tests/e2e/analysis-sections.spec.ts:179:1 › SIM-2a: informe SQL reúne todas las páginas y conserva identificadores y revisión (1.9s)
+  ✓  7 [csv] › tests/e2e/analysis-sections.spec.ts:189:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (6.1s)
+  ✓  8 [csv] › tests/e2e/analysis-sections.spec.ts:216:1 › SIM-2a: pestañas grandes conservan el motivo y las flechas omiten Información y Estadísticas [grande] (759ms)
+
+  8 passed (16.4s)
