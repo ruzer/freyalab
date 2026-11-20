@@ -2,10 +2,11 @@ import {it,expect} from 'vitest'
 import {createHash} from 'node:crypto'
 import {parse} from 'csv-parse/sync'
 import {chartResult} from '../src/main/chart-result'
-import {chartSQL,chartData,type ChartData} from '../src/shared/charts'
+import {chartSQL,chartTotalSQL,chartData,type ChartData} from '../src/shared/charts'
 import type {ChartResultRequest,SqlResult} from '../src/shared/types'
 import type {RecipeAnalysisContext} from '../src/shared/recipe-operation'
 import {getLanguage,setLanguage} from '../src/shared/i18n'
+import {markdownHTML} from '../src/renderer/lib/render'
 const request:ChartResultRequest={requestId:'request',revision:3,format:'json',protectFormulas:true,configuration:{headers:['Ciudad','Total'],options:{kind:'bar',x:0,y:1,bins:10,aggregate:'sum',descending:false,measureType:'number'},where:{conditions:[{column:0,op:'contains',value:'ñ'}],filterMode:'all'},view:{search:'texto',filters:{0:'ñ'}}}}
 const data:ChartData={total:8,usable:7,points:6,limited:false,columns:['x','value'],rows:[['00123','3.0'],['90071992547409931234','4.0'],['=HYPERLINK("x")','5.0'],['"á\n💜|`<img src=x>','6.0'],['',null],[null,'-1.0']]}
 const result:SqlResult={requestId:'request',sources:[{id:'csv',name:'datos.csv',revision:3,table:'datos',columns:[],rows:8,fromDisk:true,filtered:true}],version:'test',columns:[],rows:[],returnedRows:6,limited:false,offset:0,completedAt:'2026-10-22T00:00:00.000Z'}
@@ -91,4 +92,26 @@ it('la procedencia del conjunto prevalece sobre metadatos de vista de tabla y no
  const normal=JSON.parse(chartResult(request,result,data,false).content)
  expect(normal.metadata.scope).toBe('Filtros de tabla guardados para esta exportación')
  expect(normal.metadata).not.toHaveProperty('analysisSubset')
+})
+
+it.each(['bar','line','scatter','histogram','heatmap','box'] as const)('SIM-2b: un título no cambia SQL ni el total de %s',kind=>{
+ const plain={...request.configuration.options,kind},titled={...plain,title:'Título propio ñ'}
+ expect(chartSQL(request.configuration.headers,titled)).toBe(chartSQL(request.configuration.headers,plain))
+ expect(chartSQL(request.configuration.headers,titled,10000)).toBe(chartSQL(request.configuration.headers,plain,10000))
+ expect(chartTotalSQL(request.configuration.headers,titled)).toBe(chartTotalSQL(request.configuration.headers,plain))
+})
+
+it('SIM-2b: título literal en JSON, contexto CSV y Markdown conserva datos, hash y seguridad HTML',async()=>{
+ const title='<img src="https://evil.test/x"> | `código` [clic](https://evil.test/) <script>alert(1)</script>'
+ const titled={...request,configuration:{...request.configuration,options:{...request.configuration.options,title}}}
+ const json=JSON.parse(chartResult(titled,result,data,true).content),csv=chartResult({...titled,format:'csv'},result,data,true),context=JSON.parse(csv.context!)
+ expect(json.metadata.description).toBe(title);expect(context.metadata.description).toBe(title)
+ expect(json.rows).toEqual(data.rows);expect(context.rows).toEqual(data.rows)
+ expect(csv.content).toBe(chartResult({...request,format:'csv'},result,data,true).content)
+ expect(parse(csv.content)).toHaveLength(data.rows.length+1);expect(context.csv.sha256).toBe(createHash('sha256').update(csv.content).digest('hex'))
+ const markdown=chartResult({...titled,format:'md'},result,data,true).content
+ expect(markdown).toContain('# Informe de datos del gráfico');expect(markdown).toContain('\\|');expect(markdown).toContain('código')
+ const rendered=await markdownHTML(markdown)
+ expect(rendered.html).toContain('&lt;img');expect(rendered.html).not.toMatch(/<(?:img|script|a)\b/i)
+ expect(rendered.html).toContain('Descripción');expect(rendered.html).toContain('código')
 })

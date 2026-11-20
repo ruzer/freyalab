@@ -88,3 +88,18 @@ it('las etiquetas numéricas del mapa no formatean sus identificadores de catego
  expect(series.label.formatter({value:[0,0,1200]})).toBe('1,200')
  expect(plot.xAxis).toMatchObject({data:['00123']});expect(plot.yAxis).toMatchObject({data:['90071992547409931234']})
 })
+
+it.each(['es','en-XA'] as const)('SIM-2b: el título propio se muestra como dato y se anuncia sin traducirlo (%s)',language=>{
+ setLanguage(language)
+ const title='Ingreso medio por ciudad, 2026',titled={...options,title:'  '+title+'  '}
+ const data:ChartData={total:2,usable:2,points:2,limited:false,columns:['x','value'],rows:[['Oaxaca','30'],['Mérida','5']]}
+ const plot=chartOption(data,titled,colors,['Ciudad','Ingreso'])
+ expect(plot.title).toMatchObject({text:title});expect(plot.aria).toMatchObject({label:{description:expect.stringContaining(title)}})
+ expect(plot.series).toMatchObject([{data:[30,5]}]);expect(titled.title).toBe('  '+title+'  ')
+})
+
+it.each([undefined,'','   '])('SIM-2b: ausencia o blancos conservan el título automático (%s)',title=>{
+ const data:ChartData={total:1,usable:1,points:1,limited:false,columns:['x','value'],rows:[['Oaxaca','30']]},titled={...options,title}
+ const plot=chartOption(data,titled,colors,['Ciudad','Ingreso'])
+ expect(plot.title).toMatchObject({text:'Suma de Ingreso por Ciudad'})
+})
