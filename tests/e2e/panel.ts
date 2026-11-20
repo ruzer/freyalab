@@ -1,10 +1,10 @@
 import {runApplicationMenu} from './application-menu'
 import {expect,type Page,type ElectronApplication} from '@playwright/test'
 import {t} from '../../src/shared/i18n'
-import type {Language} from '../../src/shared/i18n'
+import type {Language,TranslationParameters} from '../../src/shared/i18n'
 const sections={'Información':'info','Gráficos':'charts','Estadísticas':'statistics','Análisis':'sql','SQL':'sql'} as const
 const workspace=(page:Page)=>page.locator('.analysis-workspace:not([hidden])')
-async function translated(page:Page,key:string){return t(key,{},(await page.locator('html').getAttribute('lang')??'es') as Language)}
+async function translated(page:Page,key:string,parameters:TranslationParameters={}){return t(key,parameters,(await page.locator('html').getAttribute('lang')??'es') as Language)}
 export const analyzeButton=(page:Page)=>page.locator('.csv-toolbar,.csv-text-tools').getByRole('button',{name:/^(Analizar|Analyze|\[Ánályzë~+\])$/})
 // Pedir el análisis puede abrir primero el diálogo de cambio desde CSV Texto.
 export async function requestAnalysis(page:Page,app?:ElectronApplication){
@@ -38,8 +38,8 @@ export async function openAnalysis(page:Page,name:keyof typeof sections='Informa
 }
 export async function selectAnalysis(page:Page,name:keyof typeof sections){
  await expect(workspace(page)).toBeVisible()
- const button=workspace(page).getByRole('group',{name:await translated(page,'analysis.tab.sections'),exact:true}).getByRole('button',{name:await translated(page,'analysis.tab.section.'+sections[name]),exact:true})
- if(await button.getAttribute('aria-pressed')!=='true')await button.click()
+ const button=workspace(page).getByRole('tablist',{name:await translated(page,'analysis.tab.sections'),exact:true}).getByRole('tab',{name:await translated(page,'analysis.tab.section.'+sections[name]),exact:true})
+ if(await button.getAttribute('aria-selected')!=='true')await button.click()
  return workspace(page)
 }
 export async function showTable(page:Page,name?:string){
@@ -67,7 +67,14 @@ export async function openColumnExplorer(page:Page){
  await expect(explorer).toBeVisible()
  return explorer
 }
-export const analysisResultExport=(page:Page)=>workspace(page).locator('.header-export')
+export const analysisResultExport=(page:Page)=>workspace(page).locator('.result-export-options')
+export async function openAnalysisExport(page:Page){
+ const label=await translated(page,'analysis.tab.export'),menu=page.getByRole('menu',{name:label,exact:true})
+ if(!await menu.isVisible())await workspace(page).locator('header').getByRole('button',{name:label,exact:true}).click()
+ return menu
+}
+export async function analysisExportItem(page:Page,key:string,parameters:TranslationParameters={}){return(await openAnalysisExport(page)).getByRole('menuitem',{name:await translated(page,key,parameters),exact:true})}
+export async function exportAnalysis(page:Page,key:string,parameters:TranslationParameters={}){await(await analysisExportItem(page,key,parameters)).click()}
 export const chartPanel=(page:Page)=>workspace(page).locator('.charts-panel')
 // El botón manual cubre revisión nueva/archivo grande; en automático se usa el del formulario.
 export const chartGenerate=(page:Page)=>chartPanel(page).locator('.manual>button,.more-options form button[type=submit]').first()

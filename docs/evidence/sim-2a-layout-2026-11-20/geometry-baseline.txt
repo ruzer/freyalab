@@ -1,0 +1,82 @@
+
+Running 4 tests using 1 worker
+
+(node:64122) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-review.spec.ts:56:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 (19.9s)
+(node:64185) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [csv] › tests/e2e/chart-review.spec.ts:82:1 › Revisión108 · tabla, total, marcas y eje conservan el formato numérico al cambiar campo e idioma (10.8s)
+  ✘  3 [csv] › tests/e2e/chart-review.spec.ts:104:31 › Revisión108 final · Total completo dentro del área visible a1280×720 (5.0s)
+(node:64225) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  4 [csv] › tests/e2e/chart-review.spec.ts:104:31 › Revisión108 final · Total completo dentro del área visible a800×720 (5.1s)
+
+
+  1) [csv] › tests/e2e/chart-review.spec.ts:56:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 
+
+    Error: expect(locator).toBeInViewport() failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true })
+    Expected: in viewport
+    Received: viewport ratio 0.554108738899231
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeInViewport" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true }) with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true })
+        33 × locator resolved to <section aria-label="Filtros" class="zone svelte-hqvgw9 wide">…</section>
+           - unexpected value "viewport ratio 0.554108738899231"
+
+
+      65 |  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})
+      66 |  await test.info().attach('an1b-fields-layout',{body:JSON.stringify(await fields.evaluate(root=>Object.fromEntries([':scope','.field-header','input','.field-list','.organize','.zone-content','.zones',...Array.from({length:4},(_,i)=>'.zone:nth-child('+(i+1)+')')].map(selector=>{const node=root.querySelector(selector)??root,box=node.getBoundingClientRect();return[selector,{y:box.y,height:box.height,bottom:box.bottom,scroll:node.scrollHeight,client:node.clientHeight}]})))),contentType:'application/json'})
+    > 67 |  for(const zone of ['Filas','Columnas','Valores','Filtros'])await expect(fields.getByRole('region',{name:zone,exact:true})).toBeInViewport({ratio:1})
+         |                                                                                                                             ^
+      68 | })
+      69 |
+      70 | test('Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario',async()=>{
+        at [worktrees de pruebas]/sim2a-secciones/tests/e2e/chart-review.spec.ts:67:125
+
+    Error Context: ../sim2a-ci-layout-evidence/baseline-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2a-ci-layout-evidence/baseline-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2a-ci-layout-evidence/baseline-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/chart-review.spec.ts:104:31 › Revisión108 final · Total completo dentro del área visible a1280×720 
+
+    Error: light: borde inferior de Total
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 612.09375
+    Received:    612.5
+
+      114 |  }
+      115 |  await writeFile(test.info().outputPath('total-geometry.json'),JSON.stringify(measurements,null,2))
+    > 116 |  for(const {theme,row,visible} of measurements){expect(row.top,`${theme}: borde superior de Total`).toBeGreaterThanOrEqual(visible.top);expect(row.bottom,`${theme}: borde inferior de Total`).toBeLessThanOrEqual(visible.bottom)}
+          |                                                                                                                                                                                                ^
+      117 |  await expect(panel().locator('.pivot-pages')).toBeInViewport({ratio:1})
+      118 |  await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText('1,146,383')
+      119 |  expect(await readFile(file,'utf8')).toBe(original)
+        at [worktrees de pruebas]/sim2a-secciones/tests/e2e/chart-review.spec.ts:116:192
+
+    Error Context: ../sim2a-ci-layout-evidence/baseline-results/chart-review-Revisión108-f-27508--del-área-visible-a1280×720-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2a-ci-layout-evidence/baseline-results/chart-review-Revisión108-f-27508--del-área-visible-a1280×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2a-ci-layout-evidence/baseline-results/chart-review-Revisión108-f-27508--del-área-visible-a1280×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/chart-review.spec.ts:56:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 
+    [csv] › tests/e2e/chart-review.spec.ts:104:31 › Revisión108 final · Total completo dentro del área visible a1280×720 
+  2 passed (41.5s)

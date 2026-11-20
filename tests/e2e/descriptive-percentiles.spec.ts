@@ -4,7 +4,7 @@ import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,readFile,rm,truncate,stat} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
-import {showPanel,showTable} from './panel'
+import {showPanel,showTable,exportAnalysis} from './panel'
 import {formatNumber} from '../../src/shared/i18n'
 let app:ElectronApplication,page:Page,folder:string
 const fields=['Varianza poblacional (n)','Varianza muestral (n−1)','P10 (percentil 10)','P25 (percentil 25)','P75 (percentil 75)','P90 (percentil 90)']
@@ -23,7 +23,7 @@ async function explore(panel:Locator){await panel.getByRole('button',{name:'Expl
 async function formatted(value:number|null){return value===null?'—':page.evaluate(value=>value.toLocaleString(undefined,{maximumSignificantDigits:12}),value)}
 async function profileValues(panel:Locator,values:(number|null)[]){const details=panel.locator('dl[aria-label="Varianza y percentiles"]');for(let i=0;i<fields.length;i++)await expect(details.getByText(fields[i],{exact:true}).locator('..').locator('dd')).toHaveText(await formatted(values[i]))}
 async function tableValues(panel:Locator,values:number[]){const headings=await panel.getByRole('columnheader').allTextContents();for(let i=0;i<fields.length;i++){const column=headings.indexOf(fields[i]);expect(column).toBeGreaterThan(0);const cell=panel.locator('tbody tr').first().locator('th,td').nth(column);await expect(cell).toHaveText(formatNumber(values[i],{maximumFractionDigits:2},'es'));await expect(cell).toHaveAttribute('title',/\S/);expect(Number(await cell.getAttribute('title'))).toBeCloseTo(values[i],12)}}
-async function report(panel:Locator,title:string,detailed=false){await panel.getByRole('button',{name:detailed?'Abrir informe detallado':'Abrir informe Markdown',exact:true}).click();await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')?.text).toContain(title);return(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')!}
+async function report(panel:Locator,title:string,detailed=false){await exportAnalysis(page,detailed?'describe.detailedReport':'describe.report');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')?.text).toContain(title);return(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')!}
 
 test('percentiles: perfil filtrado, ayuda por teclado e informe preservan valores y procedencia',async()=>{
  const source='\uFEFFID,Grupo,Valor\r\n'+[2,4,4,4,5,5,7,9].map((value,i)=>`${String(i).padStart(5,'0')},visible,${value}`).join('\r\n')+'\r\n00008,oculto,100\r\n9007199254740993,oculto,9007199254740993\r\n00010,oculto,\r\n00011,oculto,"  "\r\n00012,oculto\r\n'

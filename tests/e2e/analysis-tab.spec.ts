@@ -13,7 +13,7 @@ const tablist=()=>page.getByRole('tablist',{name:'Documentos abiertos',exact:tru
 const tab=(name='datos.csv')=>tablist().getByRole('tab',{name:'Análisis de '+name,exact:true})
 const analysis=()=>page.locator('.analysis-workspace:not([hidden])')
 const button=(name:string)=>analysis().getByRole('button',{name,exact:true})
-const section=(name:string)=>analysis().getByRole('group',{name:'Secciones de análisis',exact:true}).getByRole('button',{name,exact:true})
+const section=(name:string)=>analysis().getByRole('tablist',{name:'Secciones de análisis',exact:true}).getByRole('tab',{name,exact:true})
 
 async function launch(language='es'){
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
@@ -70,7 +70,7 @@ test('AN-1a abre una pestaña única, enfoca su sección y solo calcula por peti
  expect(await calls()).toEqual(['save'])
  await openAnalysis()
  await expect(tab()).toHaveAttribute('aria-selected','true')
- await expect(analysis().getByRole('heading',{name:'Información',exact:true})).toBeFocused()
+ await expect(analysis().locator('header h2')).toBeFocused()
  await expect(analysis().getByRole('region',{name:'Vista general de columnas',exact:true}).getByRole('status')).toHaveText(t('info.complete'))
  expect((await tablist().getByRole('tab').allTextContents()).map(value=>value.trim())).toEqual(['datos.csv','Análisis · datos.csv'])
  await section('Estadísticas').click();await expect(button('Calcular')).toBeVisible()
@@ -98,7 +98,7 @@ test('AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta
  await suggestion.click();await panel.getByRole('button',{name:'Añadir a… Valor',exact:true}).click();await panel.getByRole('menuitem',{name:'Añadir a Valores (recomendado)',exact:true}).click();await panel.getByLabel('Resumir Valor por',{exact:true}).selectOption('sum');await expect(panel.locator('.pivot-result tfoot')).toContainText('110')
  await panel.getByLabel('Resumir Valor por',{exact:true}).selectOption('average')
  await expect(panel.locator('.pivot-result tfoot')).toContainText('36.666')
- await expect(analysis().locator('header').getByText('Exportar resultados del análisis',{exact:true})).toBeVisible()
+ await expect(analysis().locator('header').getByRole('button',{name:'Exportar',exact:true})).toBeVisible()
  await panel.locator('.more-options>summary').click();await panel.getByText('Configuraciones guardadas',{exact:true}).click()
  await panel.getByLabel('Nombre de configuración del gráfico').fill('Mi gráfico')
  await panel.getByRole('button',{name:'Guardar configuración',exact:true}).click()
@@ -193,12 +193,12 @@ test('AN-1a paleta y pestañas con teclado, Escape conserva la pestaña y captur
  await runApplicationMenu(app,'edit.commandPalette')
  const search=page.getByRole('searchbox',{name:'Buscar comando CSV',exact:true})
  await search.fill('describe');await search.press('Enter')
- await expect(analysis().getByRole('heading',{name:'Estadísticas',exact:true})).toBeFocused()
+ await expect(analysis().locator('header h2')).toBeFocused()
  await tab().focus();await page.keyboard.press('ArrowLeft')
  const csv=tablist().getByRole('tab',{name:'datos.csv',exact:true})
  await expect(csv).toBeFocused();await page.keyboard.press('ArrowRight');await expect(tab()).toBeFocused()
  await section('SQL').focus();await page.keyboard.press('Enter')
- await expect(analysis().getByRole('heading',{name:'SQL',exact:true})).toBeFocused()
+ await expect(section('SQL')).toBeFocused()
  await page.keyboard.press('Escape');await expect(tab()).toBeVisible()
  await button('Ir al CSV').focus();await page.keyboard.press('Enter');await expect(csv).toHaveAttribute('aria-selected','true');await expect(csv).toBeFocused()
  if(process.env.FREYALAB_AN1_EVIDENCE!=='1')return

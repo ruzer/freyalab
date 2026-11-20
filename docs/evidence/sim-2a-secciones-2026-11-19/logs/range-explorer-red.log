@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:5835) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/analysis-sections.spec.ts:225:1 › SIM-2a: explorar una columna después de elegir un rango conserva habilitado su informe contextual (16.2s)
+
+
+  1) [csv] › tests/e2e/analysis-sections.spec.ts:225:1 › SIM-2a: explorar una columna después de elegir un rango conserva habilitado su informe contextual 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByRole('menu', { name: 'Exportar', exact: true }).getByRole('menuitem', { name: 'Informe (Markdown)', exact: true })
+    Expected: "false"
+    Received: "true"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('menu', { name: 'Exportar', exact: true }).getByRole('menuitem', { name: 'Informe (Markdown)', exact: true }) with timeout 15000ms
+      - waiting for getByRole('menu', { name: 'Exportar', exact: true }).getByRole('menuitem', { name: 'Informe (Markdown)', exact: true })
+        34 × locator resolved to <button type="button" tabindex="-1" role="menuitem" aria-disabled="true" class="svelte-iqt1nb" aria-describedby="control-reason-context" title="Esta acción necesita otro contexto. Revisa su descripción y la selección actual.">Informe (Markdown)</button>
+           - unexpected value "true"
+
+
+      233 |  const explorer=workspace().getByRole('region',{name:'Exploración de columna',exact:true})
+      234 |  await explorer.getByLabel('Columna para explorar',{exact:true}).selectOption('2');await explore()
+    > 235 |  await openExport();await expect(menu().getByRole('menuitem',{name:'Informe (Markdown)',exact:true})).toHaveAttribute('aria-disabled','false')
+          |                                                                                                       ^
+      236 |  await page.keyboard.press('Escape')
+      237 |  const output=await report('Informe (Markdown)','Perfil de columna'),income=records.filter(row=>row[2]!=='').map(row=>Number(row[2]))
+      238 |  expect(output).toContain('Columna 3:');expect(output).toContain('| Filas | 240 |');expect(output).toContain('| Numéricos utilizables | 239 |')
+        at tests/e2e/analysis-sections.spec.ts:235:103
+
+    Error Context: test-results/analysis-sections-SIM-2a-e-4d921-itado-su-informe-contextual-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-sections-SIM-2a-e-4d921-itado-su-informe-contextual-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-sections-SIM-2a-e-4d921-itado-su-informe-contextual-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/analysis-sections.spec.ts:225:1 › SIM-2a: explorar una columna después de elegir un rango conserva habilitado su informe contextual 
