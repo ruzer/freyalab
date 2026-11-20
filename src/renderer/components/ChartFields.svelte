@@ -95,5 +95,6 @@
  @media(max-height:650px){.field-list{flex-basis:180px}}
  @media(max-width:899px){.chart-fields{display:block;overflow:auto;border-left:0;max-height:50vh;border-bottom:1px solid var(--border)}.field-list{height:180px;max-height:180px}.field-header{position:sticky;top:0;background:var(--bg);z-index:1}}
  button,input,select{appearance:none;border-color:var(--muted)}
+ .chart-fields :global(button),.chart-fields :global(select),.chart-fields :global(input){appearance:none}
  .field-badge:not(.amount){border-color:var(--muted)}
 </style>
