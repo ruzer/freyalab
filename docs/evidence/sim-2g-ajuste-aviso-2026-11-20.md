@@ -31,3 +31,11 @@ Mientras existe el aviso, Información y la barra lateral disponen de menos altu
 Esta evidencia acredita el ajuste local y su matriz, **no una CI nueva verde**, una suite integral nueva ni otras plataformas. Los fallos de foco nativo E1 y sus sondas pertenecen al trabajo de estabilidad separado.
 
 Cierre local sobre el mismo CSS: `npm run check` aprobó con 0 errores y 0 avisos; `npm test` aprobó 3.107 casos con 2 omisiones existentes; `npm run build` terminó con salida 0. Se ejecutaron en paralelo: 17.721 s, 24.347 s y 4.337 s de proceso, respectivamente. No son una medición de rendimiento del producto. No se borró ninguna prueba: se añadieron mediciones a los dos casos de aviso ya existentes.
+
+## Suite integral local posterior
+
+Sobre `fe311c79f352668f511b5dea2276baaddcea7378`, `npm run test:e2e -- --reporter=list,json` terminó con salida 0: **834 aprobadas, 7 omisiones existentes, 0 fallos y 0 reintentos**, de 841 identidades. Playwright: 1898.022 s; proceso, incluido build: 1901.145 s. [Resultado saneado y huellas](sim-2g-ajuste-aviso-2026-11-20/integral-local.json).
+
+Las siete omisiones exigen el Pandoc externo del ayudante, que no se proporcionó en esta ejecución: un caso de commands y seis de academic-word. SEG-S2e se omitió antes de alcanzar su fallo esperado. No se modifica ninguna condición de omisión. E1 y los casos H13 de fin de línea sí se ejecutaron y pasaron. La sesión estaba desbloqueada antes y después; no se monitorizó continuamente.
+
+La CI de `b2bcc465` concluyó con fallo real en macOS, `charts.spec.ts:121`, en ambos intentos: un ayudante esperaba 15 s antes de alcanzar la espera de 90 s existente en el caso. Las exportaciones no se alcanzaron allí. La suite local no reemplaza esa evidencia ni acredita una nueva CI verde del CSS. No se relanzó la corrida a ciegas, no se fusionó ni se instaló ninguna aplicación.
