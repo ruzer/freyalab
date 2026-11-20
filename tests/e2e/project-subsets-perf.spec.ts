@@ -193,13 +193,20 @@ test('PRJ-03 1 GB: exportar muestra de diez mil con semilla 7 conserva orden, da
   await expect(recipeRow.getByText(t('subset.analysis.limit'),{exact:true})).toBeVisible()
   const exportButton=recipeRow.getByRole('button',{name:t('project.export.action'),exact:true});await expect(exportButton).toBeEnabled()
   // Solo observa el evento público; la UI genera y envía su propio requestId.
-  await page.evaluate(()=>{
-   const state={progress:undefined as (RecipeOperationProgress&{requestId:string})|undefined,requestIds:[] as string[],unsubscribe:()=>{}}
-   state.unsubscribe=window.freya.onEvent(event=>{if(event.type==='project-recipe-progress'&&event.recipeProgress){state.progress=event.recipeProgress;if(!state.requestIds.includes(event.recipeProgress.requestId))state.requestIds.push(event.recipeProgress.requestId)}})
+  await page.evaluate(recipeId=>{
+   let registered!:()=>void
+   const state={progress:undefined as (RecipeOperationProgress&{requestId:string})|undefined,requestIds:[] as string[],registered:new Promise<void>(resolve=>{registered=resolve}),unsubscribe:()=>{}}
+   state.unsubscribe=window.freya.onEvent(event=>{
+    if(event.type==='project-recipe-progress'&&event.recipeProgress){state.progress=event.recipeProgress;if(!state.requestIds.includes(event.recipeProgress.requestId))state.requestIds.push(event.recipeProgress.requestId)}
+    if(event.type==='project'&&event.projectResults?.some(result=>result.recipeId===recipeId))registered()
+   })
    Reflect.set(window,'p3SampleProgress',state)
-  })
+  },recipeId)
   await startMemory();const started=performance.now()
-  await exportButton.press('Enter');await expect(resultRow).toBeVisible()
+  await exportButton.press('Enter')
+  // La operación de 1 GB termina con el registro público, no con el plazo visual de una fila.
+  await page.evaluate(()=>Reflect.get(window,'p3SampleProgress').registered)
+  await expect(resultRow).toBeVisible()
   const response=await page.evaluate(async recipe=>{
    const state=await window.freya.projectState(),probe=Reflect.get(window,'p3SampleProgress')
    probe.unsubscribe();Reflect.deleteProperty(window,'p3SampleProgress')
