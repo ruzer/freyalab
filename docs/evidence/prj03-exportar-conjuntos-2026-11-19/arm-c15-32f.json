@@ -1,0 +1,30 @@
+{
+  "criterion": "PRJ-03 C15",
+  "kind": "end-to-end, separate from export measurement",
+  "handoff": {
+    "from": "Añadir como fuente",
+    "to": "Información completa",
+    "durationMs": 697.8863750000019
+  },
+  "source": {
+    "bytes": 1000000008,
+    "sha256": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540",
+    "sha256After": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540"
+  },
+  "result": {
+    "id": "5b0b6a24-75a6-4eba-bae8-15152a7fdb71",
+    "bytes": 10000008,
+    "sha256": "eeac7c2e8c861bf11dcbb1accbebafaf13b2119017db0c19d080ae22ef9deb3e",
+    "sha256After": "eeac7c2e8c861bf11dcbb1accbebafaf13b2119017db0c19d080ae22ef9deb3e",
+    "provenanceUnchanged": true
+  },
+  "registeredSourceId": "4eec0be2-8d35-4863-ae68-35ae3d1e8218",
+  "analysis": {
+    "rows": 10000,
+    "columns": [
+      "ID",
+      "Nota"
+    ],
+    "informationComplete": true
+  }
+}

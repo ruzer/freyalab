@@ -1,0 +1,1065 @@
+{
+  "recordedAt": "2026-11-20T06:06:18.051194+00:00",
+  "heads": {
+    "product": "62bf3d81a2915b33821088da7cf50dd56ad27d2a",
+    "benchmark": "32f531b61809e89be3cf12001bccd252717e5237",
+    "feature": "c2579806407c92a4413727f77b60f167a318386f",
+    "consumers": "07c15b452beba2e2e2b970c4a2d9692359e7946b",
+    "availability": "968430fd38c7c7b18b533f4f66124e68fc365dee",
+    "final": "fb8b260912341f026502272eb275c46c45fab61d"
+  },
+  "sourceTrees": {
+    "product": "ec12107e61373bea9556e5540f8f966690037508",
+    "benchmark": "ec12107e61373bea9556e5540f8f966690037508",
+    "feature": "ec12107e61373bea9556e5540f8f966690037508",
+    "consumers": "ec12107e61373bea9556e5540f8f966690037508",
+    "availability": "ec12107e61373bea9556e5540f8f966690037508",
+    "final": "ec12107e61373bea9556e5540f8f966690037508"
+  },
+  "productUnchangedAcrossPhases": true,
+  "sourceFilesChangedByDocumentWriter": 0,
+  "focusedC3C16": {
+    "head": "c2579806407c92a4413727f77b60f167a318386f",
+    "passed": 3,
+    "skipped": 0,
+    "retries": 0,
+    "flaky": 0,
+    "processSeconds": 4.353,
+    "cases": [
+      {
+        "title": "PRJ-03 C3: Nota antes de ID conserva el ausente y muestra la misma advertencia en resultado y origen",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1238
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03 C16: fuente changed bloquea Exportar en panel y menú sin cambiar el proyecto",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1205
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03 C16: fuente missing bloquea Exportar en panel y menú sin cambiar el proyecto",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1184
+          }
+        ]
+      }
+    ]
+  },
+  "interruptedBeforeFreshBuild": {
+    "head": "c2579806407c92a4413727f77b60f167a318386f",
+    "bundleBuild": "32f531b",
+    "exitCode": 130,
+    "processSeconds": 368.854,
+    "reportStats": {
+      "startTime": "2026-11-20T05:14:25.257Z",
+      "duration": 368481.183,
+      "expected": 195,
+      "skipped": 607,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "counts": {
+      "ordinaryPassed": 194,
+      "expectedFailures": 1,
+      "unexpected": 1,
+      "interrupted": 1,
+      "notRun": 606
+    },
+    "unexpected": [
+      {
+        "title": "APP-02: Acerca de muestra versión real, copia sólo diagnóstico y lee licencias del paquete",
+        "file": "commands.spec.ts",
+        "project": "shell",
+        "expectedStatus": "passed",
+        "status": "unexpected",
+        "results": [
+          {
+            "status": "failed",
+            "retry": 0,
+            "durationMs": 15840
+          }
+        ],
+        "errorExcerpt": "Error: expect(locator).toHaveText(expected) failed\n\nLocator:  getByRole('dialog').locator('[data-info=\"build\"]')\nExpected: \"c257980\"\nReceived: \"32f531b\"\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toHaveText\" getByRole('dialog').locator('[data-info=\"build\"]') with timeout 15000ms\n  - waiting for getByRole('dialog').locator('[data-info=\"build\"]')\n    34 × locator resolved to <dd data-info=\"build\" class=\"svelte-z0kzj9\">32f531b</dd>\n       - unexpected value \"32f531b\""
+      }
+    ],
+    "interrupted": [
+      {
+        "title": "P1: una URL con espacio se pega normalmente en vez de convertirse en enlace",
+        "file": "markdown-paste.spec.ts",
+        "project": "md",
+        "expectedStatus": "passed",
+        "status": "skipped",
+        "results": [
+          {
+            "status": "interrupted",
+            "retry": 0,
+            "durationMs": 2039
+          }
+        ]
+      }
+    ],
+    "notACompletedSuite": true
+  },
+  "freshFull": {
+    "head": "c2579806407c92a4413727f77b60f167a318386f",
+    "bundleBuild": "c257980",
+    "exitCode": 1,
+    "processSeconds": 1788.047,
+    "reportStats": {
+      "startTime": "2026-11-20T05:23:34.798Z",
+      "duration": 1787680.6909999999,
+      "expected": 799,
+      "skipped": 0,
+      "unexpected": 4,
+      "flaky": 0
+    },
+    "identities": 803,
+    "ordinaryPassed": 798,
+    "expectedFailureCount": 1,
+    "unexpectedCount": 4,
+    "skipped": 0,
+    "retries": 0,
+    "flaky": 0,
+    "expectedFailures": [
+      {
+        "title": "SEG-S2a · estilos y metadatos XML imposibles conservan el documento",
+        "file": "academic-word.spec.ts",
+        "project": "md",
+        "expectedStatus": "failed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "failed",
+            "retry": 0,
+            "durationMs": 960
+          }
+        ],
+        "annotations": [
+          {
+            "type": "fail",
+            "description": "SEG-S2e diferido por el propietario: custom-style todavía produce XML inválido; no se omite la prueba.",
+            "location": {
+              "file": "tests/e2e/academic-word.spec.ts",
+              "line": 126,
+              "column": 10
+            }
+          }
+        ]
+      }
+    ],
+    "expectedFailureTracking": "SEG-S2e; legacy title starts SEG-S2a; no XML payload copied",
+    "unexpected": [
+      {
+        "title": "PRJ-01c C9: las quince acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo",
+        "file": "project-tree.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "unexpected",
+        "results": [
+          {
+            "status": "failed",
+            "retry": 0,
+            "durationMs": 15959
+          }
+        ],
+        "errorExcerpt": "Error: expect(locator).toHaveText(expected) failed\n\nLocator: getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem')\nTimeout: 15000ms\n- Expected  - 0\n+ Received  + 1\n\n  Array [\n    \"Abrir\",\n    \"Analizar\",\n+   \"Exportar…\",\n    \"Nuevo conjunto a partir de este…\",\n    \"Renombrar\","
+      },
+      {
+        "title": "PRJ-01c C2/C3/C6: cuatro aperturas del menú, un punto de tabulación y navegación del árbol",
+        "file": "project-tree.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "unexpected",
+        "results": [
+          {
+            "status": "failed",
+            "retry": 0,
+            "durationMs": 15972
+          }
+        ],
+        "errorExcerpt": "Error: expect(locator).toHaveText(expected) failed\n\nLocator: getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem')\nTimeout: 15000ms\n- Expected  - 0\n+ Received  + 1\n\n  Array [\n    \"Abrir\",\n    \"Analizar\",\n+   \"Exportar…\",\n    \"Nuevo conjunto a partir de este…\",\n    \"Renombrar\","
+      },
+      {
+        "title": "PRJ-01c C12: reposo, menú y fuente modificada en dos temas y tamaños [es]",
+        "file": "project-tree.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "unexpected",
+        "results": [
+          {
+            "status": "failed",
+            "retry": 0,
+            "durationMs": 16288
+          }
+        ],
+        "errorExcerpt": "Error: expect(locator).toHaveText(expected) failed\n\nLocator: getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem')\nTimeout: 15000ms\n- Expected  - 0\n+ Received  + 1\n\n  Array [\n    \"Abrir\",\n    \"Analizar\",\n+   \"Exportar…\",\n    \"Nuevo conjunto a partir de este…\",\n    \"Renombrar\","
+      },
+      {
+        "title": "PRJ-01c C12: reposo, menú y fuente modificada en dos temas y tamaños [en-XA]",
+        "file": "project-tree.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "unexpected",
+        "results": [
+          {
+            "status": "failed",
+            "retry": 0,
+            "durationMs": 16304
+          }
+        ],
+        "errorExcerpt": "Error: expect(locator).toHaveText(expected) failed\n\nLocator: getByRole('tabpanel', { name: '[Pröjëct~~~]', exact: true }).getByRole('menu').getByRole('menuitem')\nTimeout: 15000ms\n- Expected  - 0\n+ Received  + 1\n\n  Array [\n    \"[Öpën~~]\",\n    \"[Ánályzë~~~]\",\n+   \"[Ëxpört…~~~]\",\n    \"[Nëw sübsët fröm thïs…~~~~~~~]\",\n    \"[Rënámë~~]\","
+      }
+    ],
+    "allFeatureCases": [
+      {
+        "title": "PRJ-03: el menú exporta todas las filas, registra procedencia y abre el resultado editable",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1155
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [es]",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1234
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [en]",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1335
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [en-XA]",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1245
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03: cambios sin guardar del conjunto bloquean exportar sin cambiar la receta ni el archivo",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1177
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03: un archivo exportado cambia o falta aunque nunca se haya abierto",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1381
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03: editar y guardar un resultado conserva su advertencia y su huella histórica",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1541
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03: añadir como fuente reutiliza el registro y quitar olvida solo la procedencia",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1238
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03: una segunda exportación conserva ambas instantáneas y rechaza reemplazar la primera",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1203
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03: un proyecto futuro conserva las recetas v1 pero bloquea exportar con su motivo",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 934
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03: la paleta encuentra el conjunto por exportar, extraer, guardar como archivo, export, extract y csv",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1389
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03 frontend: doble Enter en Registrar de nuevo envía una petición y conserva el éxito",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1117
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03: los ids de proyecto v1 válidos sin UUID conservan exportación, apertura y alta como fuente",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1220
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03 C3: Nota antes de ID conserva el ausente y muestra la misma advertencia en resultado y origen",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1152
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03 C16: fuente changed bloquea Exportar en panel y menú sin cambiar el proyecto",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1161
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03 C16: fuente missing bloquea Exportar en panel y menú sin cambiar el proyecto",
+        "file": "project-exports.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1145
+          }
+        ]
+      }
+    ],
+    "allGigabyteCases": [
+      {
+        "title": "PRJ-02a 1 GB: primeras dos filas leen solo un prefijo y no afirman identidad completa",
+        "file": "project-subsets-perf.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1473
+          }
+        ]
+      },
+      {
+        "title": "PRJ-02a 1 GB: depósito de diez mil, cien ejemplos y fuente completa verificada",
+        "file": "project-subsets-perf.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 19707
+          }
+        ]
+      },
+      {
+        "title": "PRJ-02a 1 GB: cancelar a mitad conserva cobertura parcial y no crea archivos",
+        "file": "project-subsets-perf.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 10447
+          }
+        ]
+      },
+      {
+        "title": "PRJ-02b 1 GB: una muestra no permite saltar el límite analítico de la raíz",
+        "file": "project-subsets-perf.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 1013
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03 1 GB: exportar ID mayor que 500000 conserva medio millón de registros y sus bytes",
+        "file": "project-subsets-perf.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 22729
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03 1 GB: exportar muestra de diez mil con semilla 7 conserva orden, datos y procedencia",
+        "file": "project-subsets-perf.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 32605
+          }
+        ]
+      },
+      {
+        "title": "PRJ-03 1 GB: cancelar una exportación a mitad no deja archivo, temporal ni resultado",
+        "file": "project-subsets-perf.spec.ts",
+        "project": "csv",
+        "expectedStatus": "passed",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 11002
+          }
+        ]
+      }
+    ],
+    "green": false
+  },
+  "consumerFollowups": {
+    "first": {
+      "head": "07c15b452beba2e2e2b970c4a2d9692359e7946b",
+      "exitCode": 1,
+      "processSeconds": 50.025,
+      "passed": 25,
+      "failed": 1,
+      "retries": 0,
+      "flaky": 0,
+      "failedCases": [
+        {
+          "title": "PRJ-01c C9: las acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo",
+          "file": "project-tree.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "unexpected",
+          "results": [
+            {
+              "status": "failed",
+              "retry": 0,
+              "durationMs": 15989
+            }
+          ],
+          "errorExcerpt": "Error: expect(locator).toHaveAttribute(expected) failed\n\nLocator:  getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem', { name: 'Exportar…', exact: true })\nExpected: \"false\"\nReceived: \"\"\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toHaveAttribute\" getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem', { name: 'Exportar…', exact: true }) with timeout 15000ms\n  - waiting for getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem', { name: 'Exportar…', exact: true })\n    34 × locator resolved to <button type=\"button\" role=\"menuitem\" class=\"project-menu-item svelte-1qb62jv\">Exportar…</button>\n       - unexpected value \"null\""
+        }
+      ]
+    },
+    "attributeCorrection": {
+      "head": "968430fd38c7c7b18b533f4f66124e68fc365dee",
+      "exitCode": 1,
+      "processSeconds": 17.058,
+      "passed": 0,
+      "failed": 1,
+      "retries": 0,
+      "flaky": 0,
+      "cases": [
+        {
+          "title": "PRJ-01c C9: las acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo",
+          "file": "project-tree.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "unexpected",
+          "results": [
+            {
+              "status": "failed",
+              "retry": 0,
+              "durationMs": 16348
+            }
+          ],
+          "errorExcerpt": "Error: expect(locator).toBeFocused() failed\n\nLocator:  getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem', { name: 'Exportar…', exact: true })\nExpected: focused\nReceived: inactive\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toBeFocused\" getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem', { name: 'Exportar…', exact: true }) with timeout 15000ms\n  - waiting for getByRole('tabpanel', { name: 'Proyecto', exact: true }).getByRole('menu').getByRole('menuitem', { name: 'Exportar…', exact: true })\n    34 × locator resolved to <button type=\"button\" role=\"menuitem\" class=\"project-menu-item svelte-1qb62jv\">Exportar…</button>\n       - unexpected value \"inactive\""
+        }
+      ]
+    },
+    "keyboardCorrection": {
+      "head": "fb8b260912341f026502272eb275c46c45fab61d",
+      "buildSeconds": 1.927,
+      "exitCode": 0,
+      "processSeconds": 1.743,
+      "passed": 1,
+      "retries": 0,
+      "flaky": 0,
+      "cases": [
+        {
+          "title": "PRJ-01c C9: las acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo",
+          "file": "project-tree.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1057
+            }
+          ]
+        }
+      ]
+    },
+    "union": {
+      "uniqueIdentities": 26,
+      "composition": "25 ordinary passed in 07c plus C9 passed in fb8b, not a single green 26-test run",
+      "singleRun26Green": false,
+      "fullSuiteRerunAfterCorrections": false,
+      "cases": [
+        {
+          "title": "PRJ-03: el menú exporta todas las filas, registra procedencia y abre el resultado editable",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1490
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [es]",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1232
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [en]",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1282
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [en-XA]",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1284
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: cambios sin guardar del conjunto bloquean exportar sin cambiar la receta ni el archivo",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1167
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: un archivo exportado cambia o falta aunque nunca se haya abierto",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1360
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: editar y guardar un resultado conserva su advertencia y su huella histórica",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1518
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: añadir como fuente reutiliza el registro y quitar olvida solo la procedencia",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1233
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: una segunda exportación conserva ambas instantáneas y rechaza reemplazar la primera",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1171
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: un proyecto futuro conserva las recetas v1 pero bloquea exportar con su motivo",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 912
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: la paleta encuentra el conjunto por exportar, extraer, guardar como archivo, export, extract y csv",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1315
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03 frontend: doble Enter en Registrar de nuevo envía una petición y conserva el éxito",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1140
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03: los ids de proyecto v1 válidos sin UUID conservan exportación, apertura y alta como fuente",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1187
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03 C3: Nota antes de ID conserva el ausente y muestra la misma advertencia en resultado y origen",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1143
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03 C16: fuente changed bloquea Exportar en panel y menú sin cambiar el proyecto",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1129
+            }
+          ]
+        },
+        {
+          "title": "PRJ-03 C16: fuente missing bloquea Exportar en panel y menú sin cambiar el proyecto",
+          "file": "project-exports.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1152
+            }
+          ]
+        },
+        {
+          "title": "PRJ-01c C1: en reposo solo hay dos acciones, una protección y ningún estado normal repetido",
+          "file": "project-tree.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 977
+            }
+          ]
+        },
+        {
+          "title": "PRJ-01c C7: rechazar la sobrescritura externa conserva el borrador del nombre en su fila",
+          "file": "project-tree.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1007
+            }
+          ]
+        },
+        {
+          "title": "PRJ-01c C5: un fallo del explorador se anuncia junto a la fuente",
+          "file": "project-tree.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 922
+            }
+          ]
+        },
+        {
+          "title": "PRJ-01c C2/C3/C6: cuatro aperturas del menú, un punto de tabulación y navegación del árbol",
+          "file": "project-tree.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1395
+            }
+          ]
+        },
+        {
+          "title": "PRJ-01c C7: renombrar guarda con Intro, cancela con Escape o al salir y explica los duplicados",
+          "file": "project-tree.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1507
+            }
+          ]
+        },
+        {
+          "title": "PRJ-01c C11: nombres largos y menús caben con 240 y 420 píxeles de barra lateral",
+          "file": "project-tree.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1119
+            }
+          ]
+        },
+        {
+          "title": "PRJ-01c C12: reposo, menú y fuente modificada en dos temas y tamaños [es]",
+          "file": "project-tree.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2445
+            }
+          ]
+        },
+        {
+          "title": "PRJ-01c C12: reposo, menú y fuente modificada en dos temas y tamaños [en-XA]",
+          "file": "project-tree.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2520
+            }
+          ]
+        },
+        {
+          "title": "PRJ-01c C5: el progreso y Cancelar pertenecen a la fuente y liberan la operación",
+          "file": "project-tree.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1327
+            }
+          ]
+        },
+        {
+          "title": "PRJ-01c C9: las acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo",
+          "file": "project-tree.spec.ts",
+          "project": "csv",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "results": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1057
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "testMigration": {
+    "file": "tests/e2e/project-tree.spec.ts",
+    "actionAdded": "Exportar… after Analizar",
+    "cases": [
+      "C9",
+      "C2/C3/C6",
+      "C12 es",
+      "C12 en-XA"
+    ],
+    "singleTitleRename": {
+      "before": "PRJ-01c C9: las quince acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo",
+      "after": "PRJ-01c C9: las acciones siguen alcanzables en su menú y los bloqueos no pierden el motivo"
+    },
+    "actionsOrDataAssertionsRemoved": 0,
+    "keyboard": "Home focuses Abrir; page.keyboard ArrowDown focuses Analizar; another ArrowDown focuses Exportar",
+    "attributeOracle": "toBeEnabled, since aria-disabled is omitted when enabled"
+  },
+  "pending": {
+    "exactFinalHeadThreeOSCI": true,
+    "intelFullWithoutRetry1": true,
+    "intelOneGigabyte": true,
+    "temporaryIntelAuthorization": "explicitly approved: one workflow_dispatch trigger line and subsequent removal only; eligibility/execution not yet tested",
+    "intelIsolation": "root prefers independent probe branch with identical product and tests; do not mutate P3 head while CI qualifies it",
+    "intelRejection": "stop and consult; no main/candidate workflow modification or other fallback authorized",
+    "manualScreenReader": "not verified",
+    "installerManual": "not verified"
+  },
+  "rawPrivateEvidenceSHA256": {
+    "completion-corrected-focused-report.json": "7728b408082262d2488c06a6433850e8de0b188bff7a96cbdf8305a647f5894f",
+    "completion-corrected-full-report.json": "a152a3488e982ad1e0a644b015522a65f04ff16df374e6a94bb7bac8443b54e5",
+    "integration-fresh-full-report.json": "af98ca836adac1f9ba91515a5440d03261800400323f4af9086632e6a9d5b42f",
+    "menu-consumers-report.json": "14289ddf2dffdd6378c4726908a80299f4d40e763a382c0d1cff8908d832f7ab",
+    "menu-availability-report.json": "f15dc0b6895aad1df166ea474c5d56d291935d99f3728f9325bf4d616008ac79",
+    "menu-keyboard-report.json": "d78a408b7ba7d248a3c36163d0555709b6b2bec199ec7df09d345a3c292a6398",
+    "completion-corrected-execution.json": "5ccdc3edd1246d5840b6f158307753ed37405fa19bdc2b01611765e2e591fb18",
+    "completion-execution.json": "20e0d7f3fc30ab101771d9beeb53722fa1d2112a1d9b5128915dc05c4d4a6d1e",
+    "integration-fresh-full-execution.json": "58e3f507ffa172e53980df87d4f0f42e2f2669c31df4cb43317ec640e66af40f",
+    "integration-fresh-build.json": "21fd919e5303c1e0a8b98275038aca1bb9786fa127a97891789a2d7de748230f",
+    "menu-consumers-execution.json": "3458a8ee9fbc888e817c2515b9e2917a52b7a299886aa076708d3cab708a7a67",
+    "menu-availability-execution.json": "d060c0176e3eec04f110d978a70e89801e688fda885233bdb5e4ed227e68bae7",
+    "menu-keyboard-execution.json": "76a8fd3d47eb57114079f68105d30bb6bffa53af957e03f4ac5f95e282e58d9c",
+    "completion-focused-oracle-correction.json": "4ccfe791edb0bae8bfe3170c848effaf83f5aad9ebaa1e3739bc10518a236253",
+    "completion-focused.log": "7f5eb8bb26d4aeebb1be6c553dd0eb8d69cfbb6acedac25ba7d6505d3d9974d8",
+    "completion-corrected-focused.log": "5f3cba4ea11c882d47bf32e401f03f46f5e042ba3b6dc3e1b8b84f8a5dadf2d9",
+    "menu-consumers-gui.log": "41501f143b8c82e3d74c3578666138f103eb790afeb5592606c4cad768455622",
+    "menu-availability-gui.log": "df7cd63cd47d38ac2efe40895fcd6d4cc2838d9dd3a122dd6061eadd77a4ef82",
+    "menu-keyboard-gui.log": "6ce2e9c3eda33d7d8b417ef66e04bfa77a59f7c6db2f6df826eda8476e83d2d9"
+  }
+}
