@@ -5,7 +5,7 @@ import {t} from '../../src/shared/i18n'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
 import {closeElectron} from './close-electron'
-import {openAnalysis,showTable,openCsvCommands} from './panel'
+import {openAnalysis,showTable,openCsvCommands,exportAnalysis} from './panel'
 
 let app:ElectronApplication,page:Page,folder:string,path:string
 const source='Producto,Precio,Cantidad,Alta,Mixta\na,10,1,2026-01-02,1\nb,20,2,2026-03-04,x\na,30,3,2026-02-01,1\nc,40,4,2026-01-15,\na,,,2026-02-20,\na,50,,2026-01-30,\n'
@@ -165,7 +165,7 @@ test('AN-2 describe conserva el ámbito filtrado, el informe y las columnas marc
  await openAnalysis(page,'Estadísticas');const panel=page.getByRole('region',{name:'Resumen estadístico',exact:true})
  await panel.getByLabel('Alcance de las estadísticas',{exact:true}).selectOption('view');await panel.getByRole('button',{name:'Calcular',exact:true}).click()
  await expect(panel.locator('tbody tr').nth(0).locator('td')).toHaveText(['3','2','2']);await expect(panel.locator('tbody tr').nth(1).locator('td')).toHaveText(['30','2','1'])
- await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();const report=(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')!
+ await exportAnalysis(page,'describe.report');const report=(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')!
  expect(report.text).toContain('"Vista filtrada"');expect(report.text).toContain('"search": "a"');expect(report.text).not.toContain('Rango de la vista');expect(report.text).toContain('| Desviación estándar (std) | 20 | 1.4142135623730951 | 0 |')
  await page.getByRole('tab',{name:'Análisis de datos.csv',exact:true}).click();await showTable(page)
  await page.getByLabel('Buscar en tabla',{exact:true}).fill('b');await expect(page.locator('footer')).toContainText('1 de 6 filas');await openAnalysis(page,'Estadísticas')
@@ -209,7 +209,7 @@ test('AN-2 revisión: una muestra conserva su ámbito en selector, caption e inf
  for(const [value,label] of [['all','Todos los registros de la muestra'],['view','Vista filtrada de la muestra']]){
   await scope.selectOption(value);await panel.getByRole('button',{name:'Calcular',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Resumen calculado.')
   expect.soft(await panel.locator('caption').textContent()).toContain(label);expect.soft(await panel.locator('caption').textContent()).not.toContain('Documento completo')
-  await expect(panel.locator('tbody tr').first().locator('td')).toHaveText('200');await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click()
+  await expect(panel.locator('tbody tr').first().locator('td')).toHaveText('200');await exportAnalysis(page,'describe.report')
   const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
   expect.soft(report).toContain('MUESTRA LIMITADA');expect.soft(report).toContain(JSON.stringify(label));expect.soft(report).not.toContain('Documento completo')
   await page.getByRole('tab',{name:'Análisis de muestra.csv',exact:true}).click()
@@ -222,7 +222,7 @@ test('AN-2 revisión: std de un valor y top/freq de fecha se presentan vacíos',
  const panel=page.getByRole('region',{name:'Resumen estadístico',exact:true});await panel.getByRole('checkbox',{name:'Incluir texto y fechas',exact:true}).check();await panel.getByRole('button',{name:'Calcular',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Resumen calculado.');await expect(panel.locator('tbody tr')).toHaveCount(11)
  expect.soft(await panel.locator('tbody tr').nth(0).locator('td').allTextContents()).toEqual(['1','1','0'])
  for(const row of [2,3,5])expect.soft(await panel.locator('tbody tr').nth(row).locator('td').allTextContents()).toEqual(['','',''])
- await panel.getByRole('button',{name:'Abrir informe Markdown',exact:true}).click();const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
+ await exportAnalysis(page,'describe.report');const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
  expect.soft(report).toContain('| Desviación estándar (std) |  |  |  |');expect.soft(report).toContain('| Más frecuente (top) |  |  |  |');expect.soft(report).not.toContain('—');expect(await readFile(file,'utf8')).toBe(text)
 })
 
@@ -242,7 +242,7 @@ for(const language of ['es','en','en-XA'] as const)test(`Información: distintos
  await detail.locator('summary').focus();await detail.locator('summary').press('Enter')
  await expect(detail.locator('p').first()).toHaveText(tr('info.distinctExplanation'))
  await expect(detail.locator('p').nth(1)).toHaveText(tr('info.repetitions',{count:'3'}))
- await panel.getByRole('button',{name:tr('info.report'),exact:true}).click()
+ await exportAnalysis(page,'info.report')
  await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)?.text).toContain(tr('info.report.unique'))
  const report=(await page.evaluate(()=>window.freya.documents())).filter(doc=>doc.kind==='markdown').at(-1)!.text!
  expect(report).toContain(tr('info.report.unique'));expect(report).toContain(tr('info.report.repetitions'))

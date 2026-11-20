@@ -2,6 +2,7 @@
  import {t,formatNumber} from '../lib/i18n.svelte'
  import {csvAnalysisSample} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
+ import type {AnalysisExportAction} from '../lib/analysis-export'
  import Icon from './Icon.svelte'
  import {onDestroy,onMount,tick,untrack} from 'svelte'
  import {STATISTICS_FIELDS,NUMERIC_DETAIL_FIELDS,statisticsReport,type ReportContext,type StatisticsRow} from '../lib/statistics-report'
@@ -17,7 +18,7 @@
  let exploring=$state(false),overviewing=$state(false),advancedOpen=$state(false),explorationColumn=$state(0),explorationScope=$state<'all'|'view'>('all')
  $effect(()=>{if(inspection)advancedOpen=true})
  $effect(()=>{if(entry){untrack(()=>describeView?.cancelPending());scope=entry.scope;exploring=false;overviewing=false;advancedOpen=true}})
- let describeView:CsvDescribe,describeBusy=$state(false)
+ let describeView=$state<CsvDescribe>(),explorer=$state<CsvColumnAnalysis>(),describeBusy=$state(false)
  let scope=$state('all'),busy=$state(false),results=$state<StatisticsRow[]>([]),numericDetails=$state(false)
  let message=$state('statistics.idle'),progressRows=$state(0),revision=$state(-1),total=$state(0),analyzedScope=$state(''),heading:HTMLHeadingElement
  let reportContext=$state<ReportContext|null>(null),reporting=$state(false)
@@ -56,12 +57,16 @@
   finally{if(ticket===request){active=undefined;busy=false}}
  }
  async function report(){if(!reportContext||busy||reporting||doc.revision!==revision)return;const text=statisticsReport($state.snapshot(reportContext),$state.snapshot(results));reporting=true;try{await onreport(text)}catch(error){onerror(String(error))}finally{reporting=false}}
+ export function exportActions():AnalysisExportAction[]{
+  const current=exploring?explorer:describeView
+  return[...(!overviewing&&(exploring||!usingRange)?current?.exportActions():undefined)??[{label:t('describe.report'),disabledReason:'context' as const,run:()=>{}}],{label:t('describe.detailedReport'),disabledReason:exploring||overviewing?'context':busy||reporting?'busy':!reportContext?'result':doc.revision!==revision?'refresh':null,run:report}]
+ }
  function number(value:number|null){return value===null?'—':formatNumber(value,{maximumFractionDigits:2})}
 </script>
 <svelte:window onkeydown={event=>{if(!embedded&&event.key==='Escape'&&event.target instanceof HTMLElement&&event.target.closest('.statistics-panel')){event.preventDefault();event.stopPropagation();onclose()}}}/>
 <section class="statistics-panel" aria-label={t('describe.workspace')}>
  <div class="statistics-heading"><h3 id={titleId} tabindex="-1" bind:this={heading}>{t('statistics.heading')}</h3>{#if !embedded}<button title={t('statistics.close')} aria-label={t('statistics.close')} onclick={onclose}><Icon name="x" size={14}/></button>{/if}</div>
- <div class="describe-host" hidden={usingRange||exploring||overviewing}><CsvDescribe bind:this={describeView} bind:busy={describeBusy} blocked={busy} shown={!usingRange&&!exploring&&!overviewing} {doc} {columns} {query} {queryValid} {viewMeta} {onerror} {onreport}/></div>
+ <div class="describe-host" hidden={usingRange||exploring||overviewing}><CsvDescribe bind:this={describeView} bind:busy={describeBusy} externalExports={embedded} blocked={busy} shown={!usingRange&&!exploring&&!overviewing} {doc} {columns} {query} {queryValid} {viewMeta} {onerror} {onreport}/></div>
  <details class="advanced-statistics" bind:open={advancedOpen}><summary>{t('describe.advanced')}</summary>
  <section class="legacy-statistics" aria-labelledby={titleId}>
  {#if !exploring&&!overviewing}
@@ -71,7 +76,7 @@
   <button aria-busy={busy} {...controlHint(busy||describeBusy?'busy':usingRange&&(!range||!queryValid)?'selection':null)} class="btn-tint" type="submit" disabled={busy||describeBusy||usingRange&&(!range||!queryValid)}>{#if busy}<span class="button-spinner" aria-hidden="true"></span>{/if}<span class:busy-label={busy} data-loading={t('ui.button.calculating')}>{t('statistics.analyze')}</span></button>
   {#if busy}<button class="btn-ghost" type="button" onclick={cancel}>{t('statistics.cancel')}</button><progress aria-label={t('statistics.progressLabel')} value={results.length} max={total}></progress>{/if}
   <span role="status" aria-live="polite" class:sr-only={['statistics.idle','statistics.scopeChanged','statistics.complete'].includes(message)}>{t(message,{rows:formatNumber(progressRows)})}{busy?' '+t('statistics.columnsDone',{done:formatNumber(results.length),total:formatNumber(total)}):''}</span>
-  <button {...controlHint(busy||reporting?'busy':!reportContext?'result':doc.revision!==revision?'refresh':null)} type="button" disabled={!reportContext||busy||reporting||doc.revision!==revision} onclick={report}>{t('describe.detailedReport')}</button>
+  {#if !embedded}<button {...controlHint(busy||reporting?'busy':!reportContext?'result':doc.revision!==revision?'refresh':null)} type="button" disabled={!reportContext||busy||reporting||doc.revision!==revision} onclick={report}>{t('describe.detailedReport')}</button>{/if}
  </form>
  <label><input type="checkbox" bind:checked={numericDetails}/>{t('statistics.numericDetails')}</label>
  {#if numericDetails}<p>{t('statistics.numericHelp')}</p>{/if}
@@ -81,7 +86,7 @@
   <tbody>{#each results as result (result.index)}<tr><th scope="row">{result.index<0?'':`${result.index+1}. `}{result.name}</th>{#each fields as [key]}<td title={result[key]===null?'':String(result[key])}>{number(result[key])}</td>{/each}</tr>{/each}</tbody>
  </table>{:else}<p>{t('statistics.rangeEmpty')}</p>{/if}</div>{/if}
  {/if}
- {#if !overviewing}<details bind:open={exploring}><summary>{t(exploring?'statistics.back':'statistics.explore')}</summary>{#if exploring}<CsvColumnAnalysis {doc} {query} {queryValid} {viewMeta} {onerror} {onreport} bind:column={explorationColumn} bind:scope={explorationScope}/>{/if}</details>{/if}
+ {#if !overviewing}<details bind:open={exploring}><summary>{t(exploring?'statistics.back':'statistics.explore')}</summary>{#if exploring}<CsvColumnAnalysis bind:this={explorer} externalExports={embedded} {doc} {query} {queryValid} {viewMeta} {onerror} {onreport} bind:column={explorationColumn} bind:scope={explorationScope}/>{/if}</details>{/if}
  {#if !embedded&&!exploring}<details bind:open={overviewing}><summary>{t(overviewing?'statistics.back':'statistics.overview')}</summary>{#if overviewing}<CsvColumnsOverview {doc} {columns} {query} {queryValid} {viewMeta} {onerror} {onreport} {onempty} oninspect={inspectColumn}/>{/if}</details>{/if}
  {#if !exploring&&!overviewing}<details><summary>{t('statistics.how')}</summary>{#if revision>=0}<p>{t('describe.revision',{revision})}</p>{/if}<p class="statistics-note">{t('statistics.note')}</p></details>{/if}
  </section></details>

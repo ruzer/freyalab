@@ -1,0 +1,276 @@
+
+> freyalab@0.1.0-alpha.4 test
+> vitest run --reporter=default --reporter=json --outputFile=[ruta externa]
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 [ruta externa]
+
+AC-00 P4 real: darwin, {"available":true,"path":"/opt/homebrew/Cellar/pandoc/3.12.1/bin/pandoc","version":"3.12.1","license":"GPL-2.0-or-later"}
+ ✓ tests/table-ordering.test.ts (13 tests) 2439ms
+   ✓ recupera tablas irregulares contando celdas reales, no una matriz densa inexistente 315ms
+   ✓ reordena 40 MiB de valores sin duplicarlos en el historial; deshacer reproduce los bytes originales 1773ms
+ ✓ tests/document-assets.test.ts (41 tests) 2891ms
+   ✓ F05: Guardar como copia el activo y la nueva raíz lo resuelve, sin cambiar los hashes del original 379ms
+ ✓ tests/document-csv-view.test.ts (38 tests) 3016ms
+ ✓ tests/ci-int.test.ts (4 tests) 3499ms
+   ✓ Intel conserva las identidades de desarrollo en dos partes y prueba el paquete en paralelo 3497ms
+ ✓ tests/chart-trend.test.ts (15 tests) 1218ms
+   ✓ compara las 300 000 filas con el oráculo completo aunque solo se dibujen 2 000 512ms
+ ✓ tests/large-search-parity-mixed.test.ts (17 tests) 1503ms
+   ✓ utf16le: al editar una celda conserva BOM y CR/LF entrecomillados y toma el fin externo de una cabecera larga 360ms
+ ✓ tests/column-analysis.test.ts (31 tests) 1563ms
+   ✓ clasifica un CSV de 150 000 valores distintos sin ampliar el límite de frecuencias 549ms
+ ✓ tests/chart-suggest-sql.test.ts (73 tests) 1415ms
+ ✓ tests/table-empty.test.ts (31 tests) 5260ms
+   ✓ cancela preview de fillEmpty después de cien mil filas, con progreso e historial intactos 771ms
+   ✓ cancela apply de fillEmpty después de cien mil filas, con progreso e historial intactos 621ms
+   ✓ cancela preview de fillPrevious después de cien mil filas, con progreso e historial intactos 385ms
+   ✓ cancela apply de fillPrevious después de cien mil filas, con progreso e historial intactos 393ms
+   ✓ cancela preview de deleteRowsWhere después de cien mil filas, con progreso e historial intactos 319ms
+   ✓ cancela apply de deleteRowsWhere después de cien mil filas, con progreso e historial intactos 319ms
+   ✓ elimina más de cien mil filas en grupos y restaura con un solo deshacer, también desde recuperación 1101ms
+   ✓ no materializa campos si el resultado supera dos millones de celdas 597ms
+ ✓ tests/large-view.test.ts (19 tests) 5710ms
+   ✓ utf8/false: diferencial de más de 200 búsquedas entre editable, hilo grande y analizador estricto 753ms
+   ✓ utf8/true: diferencial de más de 200 búsquedas entre editable, hilo grande y analizador estricto 685ms
+   ✓ utf16le/true: diferencial de más de 200 búsquedas entre editable, hilo grande y analizador estricto 804ms
+   ✓ win1252/false: diferencial de más de 200 búsquedas entre editable, hilo grande y analizador estricto 794ms
+   ✓ utf8: paridad de 330 consultas de filtros por operador y grupos de 2 a 20 condiciones 749ms
+   ✓ utf16le: paridad de 330 consultas de filtros por operador y grupos de 2 a 20 condiciones 656ms
+   ✓ cancelar o cerrar un documento no cancela la búsqueda de otro; reinterpretar elimina la vista antigua 358ms
+ ✓ tests/bibliography.test.ts (59 tests) 1927ms
+   ✓ B1 · bytes, codificación, JSON y snapshot (13)
+     ✓ localiza un cierre inválido en 10 MiB con parseos acotados, sin escanear cada prefijo 904ms
+ ✓ tests/sql-source.test.ts (10 tests) 6199ms
+   ✓ lee íntegra una fuente de un millón por cuatro columnas que el editor abre como archivo grande 5991ms
+ ✓ tests/table-structure.test.ts (10 tests) 788ms
+   ✓ elimina y restaura muchos grupos de filas sin splices cuadráticos ni expansión excesiva de argumentos 470ms
+stdout | tests/document-tags.test.ts > FL-MD-009 C/D · ocho lecturas compartidas por Documents > findFiles y listTags comparten ocho handles/lecturas y el cupo no se cede antes de cerrar
+lecturas-compartidas {"reads":8,"maxReads":8,"handles":8,"maxHandles":8,"waiting":8}
+
+ ✓ tests/settings.test.ts (46 tests) 1498ms
+stdout | tests/document-tags.test.ts > FL-MD-009 C/D · ocho lecturas compartidas por Documents > cancelar el inventario esperando cupo no abre sus archivos ni cancela la búsqueda y deja los slots reutilizables
+cancelación-esperando-cupo {"opened":20,"closed":20,"maxReads":8,"maxHandles":8,"handles":0,"waiting":0}
+
+ ✓ tests/table-selection-statistics.test.ts (9 tests) 797ms
+ ✓ tests/document-tags.test.ts (55 tests) 6673ms
+   ✓ FL-MD-009 C · búsqueda por etiquetas (24)
+     ✓ no lee más de 5.000 archivos Markdown 1320ms
+   ✓ FL-MD-009 D · inventario de etiquetas (21)
+     ✓ comparte el presupuesto de 5.000 archivos y devuelve recuentos parciales explícitos 1688ms
+     ✓ los archivos vacíos también consumen el presupuesto de 5.000 documentos 1527ms
+ ✓ tests/document-encoding.test.ts (18 tests) 1741ms
+ ✓ tests/chart-summary.test.ts (16 tests) 738ms
+ ✓ tests/projects.test.ts (10 tests) 2157ms
+   ✓ PRJ-02a · persistencia pública de conjuntos (10)
+     ✓ no multiplica por cada conjunto el esquema completo que ya publica la fuente 1062ms
+ ✓ tests/table-engine.test.ts (32 tests) 749ms
+ ✓ tests/project-sources.test.ts (9 tests) 565ms
+ ✓ tests/calculated-column-sql.test.ts (28 tests) 863ms
+ ✓ tests/operations.test.ts (22 tests) 474ms
+ ✓ tests/describe-engine.test.ts (2 tests) 480ms
+   ✓ dos operaciones por columna conservan las descriptivas numéricas y el rechazo exacto de frecuencias de alta cardinalidad 447ms
+ ✓ tests/large-table.test.ts (24 tests) 378ms
+ ✓ tests/table-range-cancellation.test.ts (7 tests) 890ms
+   ✓ cancela las siete operaciones de rango durante vista previa y aplicación sin cambiar datos, revisión o historial 521ms
+ ✓ tests/project-show-ipc.test.ts (12 tests) 783ms
+   ✓ PRJ-01c · project:show por el IPC público (12)
+     ✓ revela sólo el manifiesto del proyecto activo y no devuelve una ruta ni modifica sus bytes 495ms
+ ✓ tests/chart-presets.test.ts (8 tests) 438ms
+ ✓ tests/settings-actions.test.ts (11 tests) 414ms
+ ✓ tests/pandoc-report.test.ts (65 tests) 760ms
+ ✓ tests/graphic-export.test.ts (14 tests) 247ms
+ ✓ tests/recipe-operation.test.ts (30 tests) 405ms
+ ✓ tests/document-opening.test.ts (6 tests) 414ms
+ ✓ tests/files-windows-rename.test.ts (12 tests) 789ms
+ ✓ tests/e2e-groups.test.ts (13 tests) 455ms
+   ✓ FL-TST-001 · partición E2E sin pérdida de casos (13)
+     ✓ reserva @perf en archivos y títulos/describe existentes sin rechazar la anotación 445ms
+ ✓ tests/i18n-pending.test.ts (7 tests) 394ms
+   ✓ conserva la fotografía inicial y comprueba los archivos actuales, sin ampliar pendientes 384ms
+ ✓ tests/application-document-close.test.ts (9 tests) 712ms
+ ✓ tests/large-view-order.test.ts (8 tests) 648ms
+AC-00 HTTP: Pandoc sin soporte HTTP; eficacia del sandbox HTTP pendiente de otro binario
+ ✓ tests/application-close-preload.test.ts (15 tests) 556ms
+ ✓ tests/project.test.ts (10 tests) 962ms
+   ✓ PRJ-01a · manifiesto y proyectos recientes (10)
+     ✓ conserva hasta diez recientes y solo permite abrir rutas registradas 399ms
+ ✓ tests/diagram-concurrency.test.ts (3 tests) 256ms
+ ✓ tests/large-search-bom-data.test.ts (6 tests) 612ms
+ ✓ tests/ci-areas.test.ts (50 tests) 294ms
+ ✓ tests/markdown-commands.test.ts (173 tests) 442ms
+ ✓ tests/document-bibliography.test.ts (7 tests) 424ms
+ ✓ tests/application-recents.test.ts (15 tests) 188ms
+ ✓ tests/sql-report.test.ts (5 tests) 54ms
+ ✓ tests/docx-warnings.test.ts (4 tests) 362ms
+ ✓ tests/operations-search.test.ts (6 tests) 142ms
+ ✓ tests/table-range.test.ts (6 tests) 186ms
+ ✓ tests/pandoc-real.test.ts (9 tests) 9589ms
+   ✓ AC-00 · P4 con Pandoc real (9)
+     ✓ Probar Pandoc produce un DOCX y conserva el texto UTF-8 1914ms
+     ✓ citeproc usa los cinco estilos aprobados con CSL JSON en DOCX y HTML 1064ms
+     ✓ hallazgo 1: el YAML no incorpora una bibliografía externa, ni con encabezados largos o YAML intermedio 2412ms
+     ✓ hallazgo 2: raw OpenXML produce campos en el control, pero ninguno en la conversión protegida 934ms
+     ✓ hallazgos 3/4: no incrusta imágenes por ruta, pero admite la imagen data ya autorizada 844ms
+     ✓ un documento no carga filtros nombrados en el YAML 967ms
+     ✓ un servidor local verificado recibe cero peticiones de la conversión protegida 938ms
+ ✓ tests/ci-windows-package.test.ts (9 tests) 228ms
+ ✓ tests/report-metadata.test.ts (20 tests) 212ms
+ ✓ tests/diagram-diagnostics.test.ts (53 tests) 108ms
+ ✓ tests/remark-details-context.test.ts (14 tests) 419ms
+ ✓ tests/ci-arm-package.test.ts (6 tests) 142ms
+ ✓ tests/diagram-validation-cache.test.ts (7 tests) 411ms
+   ✓ A0 R2 · validación acotada por tema y fuente (7)
+     ✓ valida una sola vez un bloque sin cambios durante pausas consecutivas 388ms
+ ✓ tests/render.test.ts (65 tests) 393ms
+ ✓ tests/describe-readable.test.ts (3 tests) 71ms
+ ✓ tests/calculated-column-table.test.ts (5 tests) 264ms
+ ✓ tests/csv-text-model.test.ts (11 tests) 53ms
+ ✓ tests/updates.test.ts (39 tests) 10276ms
+   ✓ APP-04 · versiones y frontera de confianza (29)
+     ✓ U4/U9 · el máximo de 10 segundos también cubre una respuesta que no termina 10003ms
+stderr | tests/test-timeout-policy.test.ts > la configuración real aplica el mismo límite a pruebas y hooks
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ ✓ tests/subset-analysis-documents.test.ts (10 tests) 51ms
+ ✓ tests/test-timeout-policy.test.ts (2 tests) 89ms
+ ✓ tests/large-search-records.test.ts (4 tests) 41ms
+ ✓ tests/application-closing-encoding.test.ts (3 tests) 214ms
+ ✓ tests/recipe-analysis.test.ts (15 tests) 248ms
+ ✓ tests/document-transactions.test.ts (2 tests) 171ms
+ ✓ tests/large-search-locale.test.ts (4 tests) 96ms
+ ✓ tests/markdown-format-selection.test.ts (24 tests) 144ms
+ ✓ tests/csv-view-store.test.ts (6 tests) 157ms
+ ✓ tests/calculated-csv-save.test.ts (8 tests) 240ms
+ ✓ tests/export.test.ts (10 tests) 289ms
+ ✓ tests/citations.test.ts (25 tests) 191ms
+ ✓ tests/docx-metadata-limits.test.ts (3 tests) 117ms
+ ✓ tests/academic-numbering.test.ts (30 tests) 154ms
+ ✓ tests/project-subsets.test.ts (11 tests) 126ms
+ ✓ tests/markdown-paste.test.ts (45 tests) 55ms
+ ✓ tests/csv-text-codec.test.ts (57 tests) 107ms
+ ✓ tests/remark-details.test.ts (12 tests) 57ms
+ ✓ tests/subset-analysis-coordinator.test.ts (19 tests) 114ms
+ ✓ tests/files.test.ts (5 tests) 132ms
+ ✓ tests/column-overview-report.test.ts (8 tests) 200ms
+ ✓ tests/statistics-report.test.ts (10 tests) 202ms
+ ✓ tests/chart-suggest.test.ts (82 tests) 58ms
+ ✓ tests/invoke-error.test.ts (7 tests) 203ms
+ ✓ tests/text-stats.test.ts (69 tests) 68ms
+ ✓ tests/subset-i18n.test.ts (20 tests) 19ms
+ ✓ tests/large-fields-parity.test.ts (5 tests) 105ms
+ ✓ tests/chart-fields.test.ts (34 tests) 23ms
+ ✓ tests/application-close-recovery.test.ts (1 test) 109ms
+ ✓ tests/outline.test.ts (59 tests) 29ms
+ ✓ tests/table-query-fold.test.ts (5 tests) 35ms
+ ✓ tests/app-info-source.test.ts (1 test) 39ms
+ ✓ tests/report-pdf.test.ts (5 tests) 83ms
+ ✓ tests/report-markdown.test.ts (22 tests) 83ms
+ ✓ tests/app-info.test.ts (15 tests) 52ms
+ ✓ tests/report-reference.test.ts (10 tests) 37ms
+ ✓ tests/document-images.test.ts (1 test) 63ms
+ ✓ tests/chart-top.test.ts (14 tests) 39ms
+stderr | tests/i18n.test.ts > I18N-01 · catálogos y traducción > no interpreta claves heredadas del prototipo como mensajes
+Missing translation: toString
+Missing translation: __proto__
+
+ ✓ tests/application-window-close.test.ts (12 tests) 62ms
+ ✓ tests/analytics-append.test.ts (9 tests) 60ms
+ ✓ tests/chart-result.test.ts (10 tests) 34ms
+ ✓ tests/i18n.test.ts (36 tests) 119ms
+ ✓ tests/large-search-scanner.test.ts (3 tests) 33ms
+ ✓ tests/recipe-identity.test.ts (1 test) 115ms
+ ✓ tests/markdown-task-render.test.ts (29 tests) 321ms
+ ✓ tests/job-queue.test.ts (12 tests) 54ms
+ ✓ tests/chart-presentation.test.ts (20 tests) 87ms
+ ✓ tests/charts.test.ts (10 tests) 28ms
+ ✓ tests/markdown-session-multicursor.test.ts (20 tests) 19ms
+ ✓ tests/ui-tokens.test.ts (48 tests) 22ms
+ ✓ tests/markdown-tasks.test.ts (51 tests) 21ms
+ ✓ tests/menu-native-edit.test.ts (17 tests) 5ms
+ ✓ tests/release-main-ci.test.ts (9 tests) 32ms
+ ✓ tests/calculated-csv-bytes.test.ts (14 tests) 21ms
+ ✓ tests/project-recipes.test.ts (10 tests) 14ms
+ ✓ tests/pandoc.test.ts (24 tests) 90ms
+ ✓ tests/settings-client.test.ts (11 tests) 9ms
+ ✓ tests/application-state.test.ts (13 tests) 6ms
+ ✓ tests/subset-analysis-engine.test.ts (13 tests) 21ms
+ ✓ tests/application-shortcuts.test.ts (2 tests) 18ms
+ ✓ tests/application-preload.test.ts (6 tests) 23ms
+ ✓ tests/describe-summary.test.ts (10 tests) 17ms
+ ✓ tests/subset-coverage.test.ts (10 tests) 17ms
+ ✓ tests/application-editing.test.ts (67 tests) 18ms
+ ✓ tests/subset-summary.test.ts (15 tests) 13ms
+ ✓ tests/diagram-errors.test.ts (38 tests) 7ms
+ ✓ tests/citation-completion.test.ts (9 tests) 9ms
+ ✓ tests/markdown-folding.test.ts (7 tests) 13ms
+ ✓ tests/sql-clarity.test.ts (8 tests) 15ms
+ ✓ tests/virtual-scroll.test.ts (9 tests) 6ms
+ ✓ tests/project-preload.test.ts (2 tests) 12ms
+ ✓ tests/i18n-audit.test.ts (13 tests) 31ms
+ ✓ tests/editor-editing.test.ts (16 tests) 20ms
+ ✓ tests/application-close.test.ts (20 tests) 37ms
+ ✓ tests/menu-pandoc.test.ts (16 tests) 8ms
+ ✓ tests/word-style-evidence.test.ts (1 test) 5ms
+ ✓ tests/front-matter.test.ts (67 tests) 9ms
+ ✓ tests/application-menu.test.ts (32 tests) 61ms
+ ✓ tests/editor-status.test.ts (5 tests) 7ms
+ ✓ tests/updates-preload.test.ts (1 test) 9ms
+ ✓ tests/application-closing.test.ts (17 tests) 30ms
+ ✓ tests/view-state-wait.test.ts (5 tests) 7ms
+ ✓ tests/settings-preload.test.ts (8 tests) 8ms
+ ✓ tests/chart-pivot.test.ts (4 tests) 3ms
+ ✓ tests/diagram-marks.test.ts (5 tests) 4ms
+ ✓ tests/sql-progress.test.ts (5 tests) 34ms
+ ✓ tests/electron-trace.test.ts (8 tests) 4ms
+ ✓ tests/csv-open-error.test.ts (14 tests) 3ms
+ ✓ tests/large-view-schema.test.ts (1 test) 7ms
+ ✓ tests/chart-language-f2b.test.ts (4 tests) 13ms
+ ✓ tests/csv-column-colors.test.ts (6 tests) 26ms
+stderr | tests/e2e-close-electron.test.ts > termina el proceso de prueba si Electron no confirma el cierre
+[e2e] Cierre de Electron incompleto. Terminando el proceso de prueba 6708.
+
+ ✓ tests/e2e-close-electron.test.ts (1 test) 5ms
+ ✓ tests/chart-equivalence.test.ts (67 tests) 7ms
+ ✓ tests/asset-changes.test.ts (12 tests) 5ms
+ ✓ tests/describe-table.test.ts (7 tests) 7ms
+ ✓ tests/workspace-tabs.test.ts (4 tests) 5ms
+ ✓ tests/descriptive-statistics.test.ts (6 tests) 4ms
+ ✓ tests/csv-analysis-view.test.ts (19 tests) 3ms
+ ✓ tests/language.test.ts (11 tests) 3ms
+ ✓ tests/export-markup.test.ts (3 tests) 6ms
+ ✓ tests/calculation-help.test.ts (5 tests) 5ms
+ ✓ tests/icons.test.ts (2 tests) 4ms
+ ✓ tests/text-edit-error.test.ts (12 tests) 3ms
+ ✓ tests/large-matches.test.ts (3 tests) 4ms
+ ✓ tests/analysis-measure.test.ts (2 tests) 3ms
+ ✓ tests/package-smoke.test.ts (2 tests | 1 skipped) 2ms
+ ↓ tests/files-windows-rename-native.test.ts (1 test | 1 skipped)
+ ✓ tests/large-search-runtime.test.ts (12 tests) 18481ms
+   ✓ 1 rangos reales, lote 1: Unicode y separación parcial conservan todas las filas en orden 1811ms
+   ✓ 1 rangos reales, lote 3: Unicode y separación parcial conservan todas las filas en orden 3096ms
+   ✓ 1 rangos reales, lote 2000: Unicode y separación parcial conservan todas las filas en orden 1347ms
+   ✓ 2 rangos reales, lote 1: Unicode y separación parcial conservan todas las filas en orden 3188ms
+   ✓ 2 rangos reales, lote 3: Unicode y separación parcial conservan todas las filas en orden 3567ms
+   ✓ 2 rangos reales, lote 2000: Unicode y separación parcial conservan todas las filas en orden 662ms
+   ✓ 4 rangos reales, lote 1: Unicode y separación parcial conservan todas las filas en orden 976ms
+   ✓ 4 rangos reales, lote 3: Unicode y separación parcial conservan todas las filas en orden 846ms
+   ✓ 4 rangos reales, lote 2000: Unicode y separación parcial conservan todas las filas en orden 672ms
+   ✓ 8 rangos reales, lote 1: Unicode y separación parcial conservan todas las filas en orden 789ms
+   ✓ 8 rangos reales, lote 3: Unicode y separación parcial conservan todas las filas en orden 745ms
+   ✓ 8 rangos reales, lote 2000: Unicode y separación parcial conservan todas las filas en orden 632ms
+
+ Test Files  169 passed | 1 skipped (170)
+      Tests  3008 passed | 2 skipped (3010)
+   Start at  19:46:36
+   Duration  18.70s (tests 85%, import 13%, transform 1%)
+
+    Isolate  170 workers spawned · ~87ms startup each (spawn + environment, per file)
+             at least ~1.25s faster with isolate: false — reuses workers across files instead of one per file
+
+JSON report written to [evidencia]/non-gui/unit-full-attempt03-final-range-report.json

@@ -1,0 +1,335 @@
+{
+  "baseHead": "d5de7907ccf6af135340c2cfd5c85510ea49dab8",
+  "sourceHashes": {
+    "src/renderer/components/AnalysisWorkspace.svelte": "d23c442d835865f78f0234ceda5e57fd2b2200e33ffeaf69d5a5d7a2c127d5dc",
+    "src/renderer/components/CsvCharts.svelte": "5d988cf6c3753e4c57d00806637cba5375584fe8f66e0028122598391b5eaf1f"
+  },
+  "tests": [
+    {
+      "title": "SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro secciones",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "SIM-2a: exportaciones sin resultado siguen enfocables, explican el motivo y no calculan al abrir ni activar",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "SIM-2a: informes de columnas, resumen y detalle conservan sus datos y precisión desde Exportar",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "SIM-2a: el informe contextual conserva Perfil, Frecuencias paginadas, Distribución y Correlación",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "SIM-2a: informe SQL reúne todas las páginas y conserva identificadores y revisión",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "SIM-2a: pestañas grandes conservan el motivo y las flechas omiten Información y Estadísticas [grande]",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "SIM-2a: explorar una columna después de elegir un rango conserva habilitado su informe contextual",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "Revisión108 · motivo con línea propia y sin solapes a1280×720",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "Revisión108 · seis campos y acciones fijas visibles a1280×720",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "Revisión108 · tabla, total, marcas y eje conservan el formato numérico al cambiar campo e idioma",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "Revisión108 final · Total completo dentro del área visible a1280×720",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "Revisión108 final · Total completo dentro del área visible a800×720",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    },
+    {
+      "title": "Revisión108 final · el aviso explica el campo de orden y los empates de Suma y Cuenta en es/en",
+      "project": "csv",
+      "status": "passed",
+      "retry": 0
+    }
+  ],
+  "stats": {
+    "startTime": "2026-11-20T05:08:00.736Z",
+    "duration": 75232.877,
+    "expected": 17,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "fields": {
+    ":scope": {
+      "y": 108.5,
+      "height": 580.5,
+      "bottom": 689,
+      "scroll": 581,
+      "client": 581
+    },
+    ".field-header": {
+      "y": 116.5,
+      "height": 29.5,
+      "bottom": 146,
+      "scroll": 30,
+      "client": 30
+    },
+    "input": {
+      "y": 150,
+      "height": 29.5,
+      "bottom": 179.5,
+      "scroll": 28,
+      "client": 28
+    },
+    ".field-list": {
+      "y": 184.5,
+      "height": 256,
+      "bottom": 440.5,
+      "scroll": 324,
+      "client": 256
+    },
+    ".organize": {
+      "y": 444.5,
+      "height": 21,
+      "bottom": 465.5,
+      "scroll": 21,
+      "client": 21
+    },
+    ".zone-content": {
+      "y": 469.5,
+      "height": 211.5,
+      "bottom": 681,
+      "scroll": 212,
+      "client": 212
+    },
+    ".zones": {
+      "y": 469.5,
+      "height": 199.296875,
+      "bottom": 668.796875,
+      "scroll": 199,
+      "client": 199
+    },
+    ".zone:nth-child(1)": {
+      "y": 469.5,
+      "height": 61,
+      "bottom": 530.5,
+      "scroll": 59,
+      "client": 59
+    },
+    ".zone:nth-child(2)": {
+      "y": 469.5,
+      "height": 61,
+      "bottom": 530.5,
+      "scroll": 59,
+      "client": 59
+    },
+    ".zone:nth-child(3)": {
+      "y": 536.5,
+      "height": 81.8984375,
+      "bottom": 618.3984375,
+      "scroll": 80,
+      "client": 80
+    },
+    ".zone:nth-child(4)": {
+      "y": 624.3984375,
+      "height": 44.3984375,
+      "bottom": 668.796875,
+      "scroll": 42,
+      "client": 42
+    }
+  },
+  "total": {
+    "800x720": [
+      {
+        "theme": "light",
+        "row": {
+          "top": 588,
+          "bottom": 613.5,
+          "height": 25.5
+        },
+        "visible": {
+          "top": 495.59375,
+          "bottom": 614.59375
+        }
+      },
+      {
+        "theme": "dark",
+        "row": {
+          "top": 588,
+          "bottom": 613.5,
+          "height": 25.5
+        },
+        "visible": {
+          "top": 495.59375,
+          "bottom": 614.59375
+        }
+      }
+    ],
+    "1280x720": [
+      {
+        "theme": "light",
+        "row": {
+          "top": 586,
+          "bottom": 611.5,
+          "height": 25.5
+        },
+        "visible": {
+          "top": 476.5,
+          "bottom": 612.5
+        }
+      },
+      {
+        "theme": "dark",
+        "row": {
+          "top": 586,
+          "bottom": 611.5,
+          "height": 25.5
+        },
+        "visible": {
+          "top": 476.5,
+          "bottom": 612.5
+        }
+      }
+    ]
+  },
+  "screenshots": [
+    {
+      "file": "after-en-XA-dark-1280x720-charts.png",
+      "bytes": 156444,
+      "sha256": "175a4961bf7e523dbb2373a34c3593b5bbd70b8cdcf2c8fc6b6596a021cc0826"
+    },
+    {
+      "file": "after-en-XA-dark-1280x720-info.png",
+      "bytes": 132849,
+      "sha256": "1b658bfa94c17aa0559f5d5aaedfb1616bea9f97b73113bce0aa6a7d45f0f2e3"
+    },
+    {
+      "file": "after-en-XA-dark-1440x900-charts.png",
+      "bytes": 163575,
+      "sha256": "7e6b4d484400119d40849c680d9f1a1b403649963b73191ac09b16abf203c0c3"
+    },
+    {
+      "file": "after-en-XA-dark-1440x900-info.png",
+      "bytes": 143056,
+      "sha256": "6b345c1b1bec64428018e864620e5419683ddcef78c9dccdbccfe9d126a2e451"
+    },
+    {
+      "file": "after-en-XA-light-1280x720-charts.png",
+      "bytes": 156436,
+      "sha256": "c2006f493f8aed5e8dd6be18527586e20a8ed452d3a8bf25da84d67ff2f54dac"
+    },
+    {
+      "file": "after-en-XA-light-1280x720-info.png",
+      "bytes": 134753,
+      "sha256": "ff78d3108ec4f4fbd900e10d87745cf10044b44b15463c7b1def73f3c2e5a8ed"
+    },
+    {
+      "file": "after-en-XA-light-1440x900-charts.png",
+      "bytes": 163423,
+      "sha256": "05394bdff0d186c8e9a77a85259411ec82f9a609393363d3c9e290e66e0ad09f"
+    },
+    {
+      "file": "after-en-XA-light-1440x900-info.png",
+      "bytes": 145025,
+      "sha256": "a6b06920fbac8aef2843c7ccb5e5adb53d34bb0c0e374bd313c3a01b6b29e5a7"
+    },
+    {
+      "file": "after-es-dark-1280x720-charts.png",
+      "bytes": 136702,
+      "sha256": "5c4b85f6670f53e013cdcbc8333905d627f610e050aab2fa53bed7c21aa1ca81"
+    },
+    {
+      "file": "after-es-dark-1280x720-info.png",
+      "bytes": 115786,
+      "sha256": "ea679e3ca947e5743358a5b1837504bc7c341809d09c6871f3273e7d08dc9f2e"
+    },
+    {
+      "file": "after-es-dark-1440x900-charts.png",
+      "bytes": 142265,
+      "sha256": "406bfa0972738ec629c76fda961410c68adbad10bb9a5d9305161ad1272b04e0"
+    },
+    {
+      "file": "after-es-dark-1440x900-info.png",
+      "bytes": 124924,
+      "sha256": "56a1aee1a3829d911d8d9138147d4f811fcc9a3c0cf2a4d247f1a5fbb08615e1"
+    },
+    {
+      "file": "after-es-light-1280x720-charts.png",
+      "bytes": 136560,
+      "sha256": "94fd9614258c982d17d220568990f14f894fdf959be3667e6ae68328e4bb3615"
+    },
+    {
+      "file": "after-es-light-1280x720-info.png",
+      "bytes": 116932,
+      "sha256": "56a2c7e94f2c3cab22abd3f38da65763c9ccffc1b113dc8d87ff3cc277601033"
+    },
+    {
+      "file": "after-es-light-1440x900-charts.png",
+      "bytes": 141913,
+      "sha256": "4ccb5abf55481db30fb7316c9d1608b7de8025172a8e40a6c54c6ab7dc1434d3"
+    },
+    {
+      "file": "after-es-light-1440x900-info.png",
+      "bytes": 126175,
+      "sha256": "aeaaf713d7d259a647f18d69aa5f41b3a8cc3fd14559d63c6679e93e917cb70d"
+    }
+  ],
+  "scope": "CSS only; scripts, markup, tests, assertions, timeouts, retries, engines and CI unchanged."
+}
