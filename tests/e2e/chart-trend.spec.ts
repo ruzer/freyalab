@@ -7,7 +7,7 @@ import {linearRegression,linearRegressionLine,rSquared} from 'simple-statistics'
 import {t,type Language} from '../../src/shared/i18n'
 import type {SqlRequest,GraphicExportRequest} from '../../src/shared/types'
 import {closeElectron} from './close-electron'
-import {openAnalysis,chartPanel,chartGenerate,analysisResultExport,showTable,menuItem,exportAnalysis} from './panel'
+import {openAnalysis,chartPanel,chartGenerate,analysisResultExport,showTable,menuItem,exportAnalysis,chartAssign,chartType,openChartSettings,waitChartResult} from './panel'
 
 let app:ElectronApplication,page:Page,folder:string
 const five='X,Y\n1,2\n2,4\n3,5\n4,4\n5,5\n'
@@ -27,16 +27,11 @@ async function open(content:string|Uint8Array=five,name='trend.csv'){
 }
 async function configure(language:Language='es'){
  await openAnalysis(page,'Gráficos')
- await panel().locator('.more-options>summary').click()
- await panel().getByLabel(t('charts.ui.typeLabel',{},language),{exact:true}).selectOption('scatter')
- await panel().getByLabel(t('charts.ui.xLabel',{},language),{exact:true}).selectOption('0')
- await panel().getByLabel(t('charts.ui.yLabel',{},language),{exact:true}).selectOption('1')
+ await chartAssign(page,'X','rows');await chartAssign(page,'Y','values');await chartType(page,'scatter');await openChartSettings(page)
  return panel().getByRole('checkbox',{name:t('charts.trend.option',{},language),exact:true})
 }
-async function generate(language:Language='es'){
- await chartGenerate(page).click()
- await expect(trend()).toContainText(t('charts.trend.cause',{},language),{timeout:30000})
-}
+async function result(language:Language='es'){await expect(trend()).toContainText(t('charts.trend.cause',{},language),{timeout:30000})}
+async function generate(language:Language='es'){await chartGenerate(page).click();await result(language)}
 async function spy(hold=false){
  await app.evaluate(({ipcMain},hold)=>{
   type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
@@ -59,8 +54,8 @@ test('TEN-1 cinco pares: petición, teclado, exportaciones completas y preset',a
  await spy();const {path}=await open(),checkbox=await configure()
  await expect(checkbox).not.toBeChecked();expect(await queries()).toEqual([])
  await checkbox.focus();await page.keyboard.press('Space');await expect(checkbox).toBeChecked()
- expect(await queries()).toEqual([])
- await generate()
+ // Elegir Tendencia es ahora el disparador automático real; se conserva una única consulta observada.
+ await result()
  await expect(trend()).toContainText('y = 0.6·x + 2.2');await expect(trend()).toContainText('R² = 0.6 · r = 0.7746 · 5 puntos')
  await expect(trend()).toHaveAttribute('title',/0\.774596669241483/);await expect(trend()).toHaveAttribute('aria-live','polite')
  expect(await queries()).toHaveLength(1)
@@ -98,7 +93,7 @@ test('TEN-1 degenerados explican la ausencia y conservan marcada la opción',asy
   ['two','X,Y\n1,3\n2,5\n','Hacen falta al menos 3 puntos'],
   ['zero','X,Y\na,b\nc,d\n','Hacen falta al menos 3 puntos'],
  ] as const){
-  await open(content,name+'.csv');const checkbox=await configure();await checkbox.check();await generate()
+  await open(content,name+'.csv');const checkbox=await configure();await checkbox.check();await result()
   await expect(trend()).toContainText(message);await expect(checkbox).toBeChecked()
   expect(await panel().locator('.plot svg text').filter({hasText:/^Tendencia$/}).count()).toBe(name==='constant-y'?1:0)
   await expect(panel().getByText('Series visibles · controles de teclado',{exact:true})).toHaveCount(name==='constant-y'?1:0)
@@ -107,7 +102,7 @@ test('TEN-1 degenerados explican la ausencia y conservan marcada la opción',asy
 })
 
 test('TEN-1 ocultar Tendencia en la leyenda persiste después de ampliar y cambiar tema',async()=>{
- await open();const checkbox=await configure();await checkbox.check();await generate()
+ await open();const checkbox=await configure();await checkbox.check();await result()
  const line=panel().locator('.plot svg path[stroke-dasharray][fill="none"]'),legend=panel().locator('.plot svg text').filter({hasText:/^Tendencia$/})
  await expect(line).toHaveCount(1);await legend.click()
  await panel().getByRole('button',{name:t('charts.ui.zoomIn'),exact:true}).click();await page.getByLabel('Tema',{exact:true}).selectOption('dark')
@@ -116,7 +111,7 @@ test('TEN-1 ocultar Tendencia en la leyenda persiste después de ampliar y cambi
 })
 
 test('TEN-1 controla la misma visibilidad de Tendencia con el teclado existente',async()=>{
- await spy();await open();const checkbox=await configure();await checkbox.check();await generate()
+ await spy();await open();const checkbox=await configure();await checkbox.check();await result()
  await panel().getByText('Series visibles · controles de teclado',{exact:true}).click()
  const visibility=panel().getByRole('checkbox',{name:'Tendencia',exact:true}),line=panel().locator('.plot svg path[stroke-dasharray][fill="none"]')
  await expect(visibility).toBeChecked();await visibility.focus();await page.keyboard.press('Space')
@@ -132,22 +127,22 @@ test('TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por 
  const content='X,Y,Grupo\n1,2,A\n2,4,A\n3,5,A\n4,4,A\n5,5,A\n1,8,B\n2,6,B\n3,4,B\n4,2,B\n5,0,B\n'
  await open(content);await menuItem(page,'Filtrar','Filtros por columna');await page.getByLabel('Filtrar Grupo',{exact:true}).fill('A')
  await expect(page.getByRole('grid')).toHaveAttribute('aria-rowcount','6')
- const checkbox=await configure();await panel().getByLabel('Alcance del gráfico',{exact:true}).selectOption('filtered');await checkbox.check();await generate()
+ const checkbox=await configure();await panel().getByLabel('Alcance del gráfico',{exact:true}).selectOption('filtered');await checkbox.check();await result()
  await expect(trend()).toContainText('5 puntos');await expect(trend()).toContainText('y = 0.6·x + 2.2');await expect(trend()).toContainText('Vista filtrada actual')
  await expect(trend()).toContainText('Fuente: documento en memoria');await expect(trend()).not.toContainText('Calculada sobre')
  await panel().getByLabel('Alcance del gráfico',{exact:true}).selectOption('all')
- await panel().getByRole('button',{name:'Filtros del gráfico',exact:true}).click()
+ await chartAssign(page,'Grupo','filters')
  const filter=panel().getByRole('region',{name:'Filtros del gráfico',exact:true})
- await filter.getByRole('button',{name:'Añadir condición',exact:true}).click();await filter.getByLabel('Columna de condición 1',{exact:true}).selectOption('2');await filter.getByLabel('Operador de condición 1',{exact:true}).selectOption('equals');await filter.getByLabel('Valor de condición 1',{exact:true}).fill('B')
- await filter.getByRole('button',{name:'Aplicar filtros del gráfico',exact:true}).click();await generate()
+ await filter.getByLabel('Columna de condición 1',{exact:true}).selectOption('2');await filter.getByLabel('Operador de condición 1',{exact:true}).selectOption('equals');await filter.getByLabel('Valor de condición 1',{exact:true}).fill('B')
+ await filter.getByRole('button',{name:'Aplicar filtros del gráfico',exact:true}).click();await result()
  await expect(trend()).toContainText('5 puntos');await expect(trend()).toContainText('A más X, menos Y.')
- await expect(panel().getByRole('button',{name:'Filtros del gráfico',exact:true})).toContainText('(1)')
- await panel().getByLabel('Series del gráfico',{exact:true}).selectOption('2');await expect(checkbox).toBeDisabled();await expect(checkbox).toHaveAccessibleDescription('La tendencia se calcula sin “Separar por” en esta versión')
- await chartGenerate(page).click();await expect(panel().locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await expect(trend()).toHaveCount(0)
+ await expect(panel().locator('.result-status')).toHaveAttribute('title',/Filtros del gráfico: 1 \(Y\)/)
+ await chartAssign(page,'Grupo','columns');await expect(checkbox).toBeDisabled();await expect(checkbox).toHaveAccessibleDescription('La tendencia se calcula sin “Separar por” en esta versión')
+ await waitChartResult(page);await expect(trend()).toHaveCount(0)
 })
 
 test('TEN-1 cancelar descarta la respuesta tardía y editar exige actualizar la revisión',async()=>{
- await spy(true);const {path}=await open(),checkbox=await configure();await checkbox.check();await chartGenerate(page).click()
+ await spy(true);const {path}=await open(),checkbox=await configure();await checkbox.check()
  await expect.poll(()=>app.evaluate(()=>typeof Reflect.get(globalThis,'trendRelease'))).toBe('function')
  await panel().getByRole('button',{name:'Cancelar gráfico',exact:true}).click();await expect(panel().locator('.chart-result>.result-announcement')).toContainText('cancelado')
  await app.evaluate(()=>Reflect.get(globalThis,'trendRelease')());await expect(trend()).toHaveCount(0);await expect(panel().locator('.plot svg path')).toHaveCount(0)
@@ -175,8 +170,8 @@ test('TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor
 
 for(const language of ['es','en-XA'] as const)test(`TEN-1 capturas, teclado y bloque legible en ${language}`,async()=>{
  if(language!=='es'){await closeElectron(app);await launch(language)}
- await open();const checkbox=await configure(language);await checkbox.focus();await page.keyboard.press('Space');await generate(language)
- await panel().locator('.more-options>summary').click()
+ await open();const checkbox=await configure(language);await checkbox.focus();await page.keyboard.press('Space');await result(language)
+ const settings=await openChartSettings(page);await settings.locator(':scope>summary').click()
  for(const theme of ['light','dark']){
   await page.getByLabel('Tema',{exact:true}).selectOption(theme)
   await expect(trend()).toBeInViewport({ratio:1});await expect(panel().locator('.plot-scroll')).toBeInViewport({ratio:1})

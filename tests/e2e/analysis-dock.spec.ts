@@ -4,7 +4,7 @@ import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
-import {showPanel} from './panel'
+import {showPanel,chartAssignColumn} from './panel'
 import {runApplicationMenu} from './application-menu'
 
 let app:ElectronApplication,page:Page,folder:string
@@ -48,14 +48,14 @@ test('las secciones de la pestaña de análisis se alcanzan y activan con teclad
 
 test('cambiar de sección conserva la configuración del gráfico y el borrador SQL',async()=>{
  await showPanel(page,'Gráficos')
- await page.locator('.charts-panel .more-options>summary').click()
- const x=page.getByRole('combobox',{name:'Columna X del gráfico'})
- await x.selectOption({label:'Ciudad'});await expect(x).toHaveValue(/1/)
- const chosen=await x.inputValue()
+ await chartAssignColumn(page,1,'rows')
+ const row=page.getByRole('region',{name:'Filas',exact:true}).locator('.chip-name')
+ await expect(row).toHaveText('Ciudad')
+ const chosen=await row.innerText()
  await showPanel(page,'Análisis')
  const editor=page.getByRole('textbox',{name:'Consulta SQL',exact:true})
  await editor.click();await page.keyboard.press(process.platform==='darwin'?'Meta+a':'Control+a');await page.keyboard.type('SELECT 42 AS respuesta')
- await showPanel(page,'Gráficos');await expect(x).toHaveValue(chosen)
+ await showPanel(page,'Gráficos');await expect(row).toHaveText(chosen)
  await showPanel(page,'Análisis');await expect(editor).toContainText('SELECT 42 AS respuesta')
 })
 

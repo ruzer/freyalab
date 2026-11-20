@@ -1,4 +1,4 @@
-import {openCsvCommands,showTable,openAnalysis,showPanel,exportAnalysis} from './panel'
+import {openCsvCommands,showTable,openAnalysis,showPanel,exportAnalysis,openChartSettings} from './panel'
 import {expect,test,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {createHash} from 'node:crypto'
@@ -187,7 +187,7 @@ test('el análisis distingue una fuente completa protegida de una muestra, inclu
  await charts.getByRole('button',{name:/^Crear:/}).click()
  await expect(charts.locator('.pivot-result')).toBeVisible()
  await expect(charts).not.toContainText('Análisis de muestra')
- await charts.locator('.more-options>summary').click()
+ await openChartSettings(page)
  await expect(charts.getByLabel('Alcance del gráfico').locator('option[value="filtered"]')).toHaveJSProperty('disabled',false)
  await workspace.getByRole('tab',{name:'SQL',exact:true}).click()
  await expect(workspace.getByRole('region',{name:'Análisis SQL y asistentes',exact:true})).toContainText('documento en memoria')
