@@ -15,7 +15,6 @@ on:
       - 'docs/evidence/**/*.pdf'
       - 'docs/evidence/**/*.docx'
   pull_request:
-  workflow_dispatch:
   schedule:
     - cron: '23 7 * * *' # 01:23 en Ciudad de México (UTC−6).
 permissions:
