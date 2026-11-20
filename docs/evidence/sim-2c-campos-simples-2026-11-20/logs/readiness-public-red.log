@@ -1,0 +1,36 @@
+
+Running 1 test using 1 worker
+
+(node:23045) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-field-readiness.spec.ts:10:1 › SIM-2c: antes de recibir la primera página real los campos esperan; después Enter usa el perfil numérico (1.3s)
+
+
+  1) [csv] › tests/e2e/chart-field-readiness.spec.ts:10:1 › SIM-2c: antes de recibir la primera página real los campos esperan; después Enter usa el perfil numérico 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "true"
+    Received: "false"
+
+      59 |   const after={main:await state(),zones:await zones(),announcement:await panel.locator('.analysis-announcement').textContent()}
+      60 |   await test.info().attach('primera-pagina-real-campos-pendientes',{body:JSON.stringify({before,after},null,2),contentType:'application/json'})
+    > 61 |   expect(before.moreDisabled).toBe('true');expect(after.main.delivered).toBe(0)
+         |                               ^
+      62 |   expect(after.zones).toEqual(before.zones);expect(after.announcement).toBe('Espera a que termine la operación.')
+      63 |   await expect(panel.getByRole('menu')).toHaveCount(0)
+      64 |   await release();await expect.poll(async()=>(await state()).delivered).toBeGreaterThan(0)
+        at <checkout>/tests/e2e/chart-field-readiness.spec.ts:61:31
+
+    Error Context: ../sim2c-campos-simples-evidence/readiness-public-red-results/chart-field-readiness-SIM--3e662-nter-usa-el-perfil-numérico-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/readiness-public-red-results/chart-field-readiness-SIM--3e662-nter-usa-el-perfil-numérico-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/readiness-public-red-results/chart-field-readiness-SIM--3e662-nter-usa-el-perfil-numérico-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-field-readiness.spec.ts:10:1 › SIM-2c: antes de recibir la primera página real los campos esperan; después Enter usa el perfil numérico 

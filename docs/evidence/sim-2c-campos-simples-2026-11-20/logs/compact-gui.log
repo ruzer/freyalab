@@ -1,0 +1,64 @@
+
+Running 10 tests using 1 worker
+
+(node:32601) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/10] [shell] › tests/e2e/ui-u0.spec.ts:165:45 › U0.1: campos legibles y orden a 1280 × 720 (es)
+[2/10] [shell] › tests/e2e/ui-u0.spec.ts:165:45 › U0.1: campos legibles y orden a 1280 × 720 (en-XA)
+(node:32625) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/10] [csv] › tests/e2e/chart-field-readiness.spec.ts:10:1 › SIM-2c: antes de recibir la primera página real los campos esperan; después Enter usa el perfil numérico
+[4/10] [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720
+  1) [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 
+
+    Error: expect(locator).toBeInViewport() failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true })
+    Expected: in viewport
+    Received: viewport ratio 0.7680802345275879
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeInViewport" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true }) with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true })
+        33 × locator resolved to <section aria-label="Filtros" class="zone svelte-hqvgw9 wide">…</section>
+           - unexpected value "viewport ratio 0.7680802345275879"
+
+
+      64 |  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})
+      65 |  await test.info().attach('an1b-fields-layout',{body:JSON.stringify(await fields.evaluate(root=>Object.fromEntries([':scope','.field-header','input','.field-list','.organize','.zone-content','.zones',...Array.from({length:4},(_,i)=>'.zone:nth-child('+(i+1)+')')].map(selector=>{const node=root.querySelector(selector)??root,box=node.getBoundingClientRect();return[selector,{y:box.y,height:box.height,bottom:box.bottom,scroll:node.scrollHeight,client:node.clientHeight}]})))),contentType:'application/json'})
+    > 66 |  for(const zone of ['Filas','Columnas','Valores','Filtros'])await expect(fields.getByRole('region',{name:zone,exact:true})).toBeInViewport({ratio:1})
+         |                                                                                                                             ^
+      67 | })
+      68 |
+      69 | test('Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario',async()=>{
+        at <checkout>/tests/e2e/chart-review.spec.ts:66:125
+
+    Error Context: ../sim2c-campos-simples-evidence/compact-gui-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/compact-gui-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/compact-gui-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:32655) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[5/10] [csv] › tests/e2e/chart-simple-fields.spec.ts:88:1 › SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista
+[6/10] [csv] › tests/e2e/chart-simple-fields.spec.ts:110:1 › SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV
+[7/10] [csv] › tests/e2e/chart-simple-fields.spec.ts:131:1 › SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos
+[8/10] [csv] › tests/e2e/chart-simple-fields.spec.ts:141:1 › SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular
+[9/10] [csv] › tests/e2e/chart-simple-fields.spec.ts:155:1 › SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables
+[10/10] [csv] › tests/e2e/chart-simple-fields.spec.ts:179:1 › SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas
+  1 failed
+    [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 
+  9 passed (50.4s)

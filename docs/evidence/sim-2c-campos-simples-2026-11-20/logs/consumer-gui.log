@@ -1,0 +1,721 @@
+
+Running 147 tests using 1 worker
+
+(node:27719) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/147] [shell] › tests/e2e/project-source.spec.ts:65:1 › registra un CSV con teclado, bloquea edición directa y deja guardar una copia exacta
+[2/147] [shell] › tests/e2e/project-source.spec.ts:97:1 › avisa cuando la fuente cambia y conserva la huella previa al volver a registrarla
+[3/147] [shell] › tests/e2e/project-source.spec.ts:114:1 › busca por huella dentro del proyecto y solo reenlaza tras confirmar
+[4/147] [shell] › tests/e2e/project-source.spec.ts:134:1 › el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado
+[5/147] [shell] › tests/e2e/project-source.spec.ts:206:1 › una muestra conserva su alcance al protegerla y al cerrar el proyecto
+[6/147] [shell] › tests/e2e/project-source.spec.ts:232:45 › diálogo y fuente protegida en colores claro y oscuro [es]
+[7/147] [shell] › tests/e2e/project-source.spec.ts:232:45 › diálogo y fuente protegida en colores claro y oscuro [en-XA]
+[8/147] [shell] › tests/e2e/ui-u0.spec.ts:48:1 › U0: capturas de estados existentes y tipografía base sin modificar archivos
+[9/147] [shell] › tests/e2e/ui-u0.spec.ts:65:1 › U0: un primario Guardar/Exportar/Abrir con cajas y nombres estables en ambos temas
+[10/147] [shell] › tests/e2e/ui-u0.spec.ts:82:1 › U0: los botones deshabilitados visibles explican su motivo con title y descripción accesible
+[11/147] [shell] › tests/e2e/ui-u0.spec.ts:90:1 › U0: contraste real, foco por teclado, pulsación y movimiento reducido
+[12/147] [shell] › tests/e2e/ui-u0.spec.ts:109:1 › U0: idiomas en-XA y en conservan nombres, motivos y cajas de la barra
+[13/147] [shell] › tests/e2e/ui-u0.spec.ts:125:1 › U0: solo lectura conserva sus restricciones y Abrir como acción disponible @perf
+[14/147] [shell] › tests/e2e/ui-u0.spec.ts:131:1 › U0: Más opciones sigue visible con resumen paginado y controles de 13 px
+[15/147] [shell] › tests/e2e/ui-u0.spec.ts:143:1 › U0: la ayuda del gráfico se despliega debajo de su control y permite cerrarla
+[16/147] [shell] › tests/e2e/ui-u0.spec.ts:150:1 › U0: Calculando cabe en el botón real con en-XA, inglés y español
+[17/147] [shell] › tests/e2e/ui-u0.spec.ts:164:45 › U0.1: campos legibles y orden a 1280 × 720 (es)
+  1) [shell] › tests/e2e/ui-u0.spec.ts:164:45 › U0.1: campos legibles y orden a 1280 × 720 (es) ────
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.field-entry[title="Cliente"] button')
+        - locator resolved to <button type="button" tabindex="-1" aria-haspopup="menu" aria-disabled="false" aria-expanded="false" title="Más acciones de Cliente" class="field-more svelte-hqvgw9" aria-label="Más acciones de Cliente">…</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is not visible
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is not visible
+        - retrying click action
+          - waiting 100ms
+        58 × waiting for element to be visible, enabled and stable
+           - element is not visible
+         - retrying click action
+           - waiting 500ms
+
+
+      214 |  await expect(page.locator('.pivot-result')).toBeVisible()
+      215 |  if(locale==='es')for(const [field,zone] of [['Cliente','Filas'],['Ventas','Valores']]){
+    > 216 |   await page.locator(`.field-entry[title="${field}"] button`).click()
+          |                                                               ^
+      217 |   await page.getByRole('menuitem',{name:new RegExp(`^Añadir a ${zone}(?: |$)`)}).click()
+      218 |  }
+      219 |  if(locale==='es')await chartPanel(page).getByLabel('Resumir Ventas por',{exact:true}).selectOption('sum')
+        at <checkout>/tests/e2e/ui-u0.spec.ts:216:63
+
+    Error Context: ../sim2c-campos-simples-evidence/consumer-gui-results/ui-u0-U0-1-campos-legibles-y-orden-a-1280-×-720-es--shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/consumer-gui-results/ui-u0-U0-1-campos-legibles-y-orden-a-1280-×-720-es--shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/consumer-gui-results/ui-u0-U0-1-campos-legibles-y-orden-a-1280-×-720-es--shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:27963) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[18/147] [shell] › tests/e2e/ui-u0.spec.ts:164:45 › U0.1: campos legibles y orden a 1280 × 720 (en-XA)
+  2) [shell] › tests/e2e/ui-u0.spec.ts:164:45 › U0.1: campos legibles y orden a 1280 × 720 (en-XA) ─
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1009
+    Received:    1242.734375
+
+      240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)
+      241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)
+    > 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+          |                                ^
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+      244 |     expect.soft(box.hit).toBe(true)
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:242:32
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+    > 244 |     expect.soft(box.hit).toBe(true)
+          |                          ^
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+      246 |    }
+      247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:244:26
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1009
+    Received:    1242.734375
+
+      240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)
+      241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)
+    > 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+          |                                ^
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+      244 |     expect.soft(box.hit).toBe(true)
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:242:32
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+    > 244 |     expect.soft(box.hit).toBe(true)
+          |                          ^
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+      246 |    }
+      247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:244:26
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1009
+    Received:    1242.734375
+
+      240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)
+      241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)
+    > 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+          |                                ^
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+      244 |     expect.soft(box.hit).toBe(true)
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:242:32
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+    > 244 |     expect.soft(box.hit).toBe(true)
+          |                          ^
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+      246 |    }
+      247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:244:26
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1009
+    Received:    1242.734375
+
+      240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)
+      241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)
+    > 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+          |                                ^
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+      244 |     expect.soft(box.hit).toBe(true)
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:242:32
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+    > 244 |     expect.soft(box.hit).toBe(true)
+          |                          ^
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+      246 |    }
+      247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:244:26
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1009
+    Received:    1242.734375
+
+      240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)
+      241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)
+    > 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+          |                                ^
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+      244 |     expect.soft(box.hit).toBe(true)
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:242:32
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+    > 244 |     expect.soft(box.hit).toBe(true)
+          |                          ^
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+      246 |    }
+      247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:244:26
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1009
+    Received:    1242.734375
+
+      240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)
+      241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)
+    > 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+          |                                ^
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+      244 |     expect.soft(box.hit).toBe(true)
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:242:32
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+    > 244 |     expect.soft(box.hit).toBe(true)
+          |                          ^
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+      246 |    }
+      247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:244:26
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1009
+    Received:    1242.734375
+
+      240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)
+      241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)
+    > 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+          |                                ^
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+      244 |     expect.soft(box.hit).toBe(true)
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:242:32
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+    > 244 |     expect.soft(box.hit).toBe(true)
+          |                          ^
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+      246 |    }
+      247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:244:26
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1009
+    Received:    1242.734375
+
+      240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)
+      241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)
+    > 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+          |                                ^
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+      244 |     expect.soft(box.hit).toBe(true)
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:242:32
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
+      243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+    > 244 |     expect.soft(box.hit).toBe(true)
+          |                          ^
+      245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+      246 |    }
+      247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
+        at <checkout>/tests/e2e/ui-u0.spec.ts:244:26
+
+    Error Context: ../sim2c-campos-simples-evidence/consumer-gui-results/ui-u0-U0-1-campos-legibles-y-orden-a-1280-×-720-en-XA--shell/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/consumer-gui-results/ui-u0-U0-1-campos-legibles-y-orden-a-1280-×-720-en-XA--shell/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/consumer-gui-results/ui-u0-U0-1-campos-legibles-y-orden-a-1280-×-720-en-XA--shell/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:27983) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[19/147] [csv] › tests/e2e/analysis-dock.spec.ts:25:1 › las secciones de la pestaña de análisis se alcanzan y activan con teclado
+[20/147] [csv] › tests/e2e/analysis-dock.spec.ts:49:1 › cambiar de sección conserva la configuración del gráfico y el borrador SQL
+[21/147] [csv] › tests/e2e/analysis-dock.spec.ts:62:1 › las secciones visitadas se conservan y cerrar análisis las desmonta y devuelve el foco al CSV
+[22/147] [csv] › tests/e2e/analysis-sections.spec.ts:85:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin
+[23/147] [csv] › tests/e2e/analysis-sections.spec.ts:117:1 › SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro secciones
+[24/147] [csv] › tests/e2e/analysis-sections.spec.ts:134:1 › SIM-2a: exportaciones sin resultado siguen enfocables, explican el motivo y no calculan al abrir ni activar
+[25/147] [csv] › tests/e2e/analysis-sections.spec.ts:149:1 › SIM-2a: informes de columnas, resumen y detalle conservan sus datos y precisión desde Exportar
+[26/147] [csv] › tests/e2e/analysis-sections.spec.ts:165:1 › SIM-2a: el informe contextual conserva Perfil, Frecuencias paginadas, Distribución y Correlación
+[27/147] [csv] › tests/e2e/analysis-sections.spec.ts:183:1 › SIM-2a: informe SQL reúne todas las páginas y conserva identificadores y revisión
+[28/147] [csv] › tests/e2e/analysis-sections.spec.ts:193:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales
+[29/147] [csv] › tests/e2e/analysis-sections.spec.ts:220:1 › SIM-2a: pestañas grandes conservan el motivo y las flechas omiten Información y Estadísticas [grande]
+[30/147] [csv] › tests/e2e/analysis-sections.spec.ts:229:1 › SIM-2a: explorar una columna después de elegir un rango conserva habilitado su informe contextual
+[31/147] [csv] › tests/e2e/analysis-tab.spec.ts:64:1 › AN-1a abre una pestaña única, enfoca su sección y solo calcula por petición
+[32/147] [csv] › tests/e2e/analysis-tab.spec.ts:92:1 › AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta la configuración
+  3) [csv] › tests/e2e/analysis-tab.spec.ts:92:1 › AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta la configuración 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('button', { name: 'Añadir a… Valor', exact: true })
+
+
+       97 |  await expect(suggestion).toBeEnabled();expect(await calls()).toContain('analyzeColumn');expect(await calls()).not.toContain('sqlRun')
+       98 |  await expect(panel.locator('.pivot-result')).toHaveCount(0)
+    >  99 |  await suggestion.click();await panel.getByRole('button',{name:'Añadir a… Valor',exact:true}).click();await panel.getByRole('menuitem',{name:'Añadir a Valores (recomendado)',exact:true}).click();await panel.getByLabel('Resumir Valor por',{exact:true}).selectOption('sum');await expect(panel.locator('.pivot-result tfoot')).toContainText('110')
+          |                                                                                               ^
+      100 |  await panel.getByLabel('Resumir Valor por',{exact:true}).selectOption('average')
+      101 |  await expect(panel.locator('.pivot-result tfoot')).toContainText('36.666')
+      102 |  await expect(analysis().locator('header').getByRole('button',{name:'Exportar',exact:true})).toBeVisible()
+        at <checkout>/tests/e2e/analysis-tab.spec.ts:99:95
+
+    Error Context: ../sim2c-campos-simples-evidence/consumer-gui-results/analysis-tab-AN-1a-gráfico-bc883--y-exporta-la-configuración-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/consumer-gui-results/analysis-tab-AN-1a-gráfico-bc883--y-exporta-la-configuración-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/consumer-gui-results/analysis-tab-AN-1a-gráfico-bc883--y-exporta-la-configuración-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:28353) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[33/147] [csv] › tests/e2e/analysis-tab.spec.ts:117:1 › AN-1a reutiliza filtros, columnas y rango de la tabla e invalida los resultados al editar
+[34/147] [csv] › tests/e2e/analysis-tab.spec.ts:153:1 › AN-1a cancelar análisis no modifica el CSV y cerrar un CSV solo elimina su propio análisis
+[35/147] [csv] › tests/e2e/analysis-tab.spec.ts:175:1 › AN-1a archivo grande abre análisis manual y conserva SQL
+[36/147] [csv] › tests/e2e/analysis-tab.spec.ts:192:1 › AN-1a paleta y pestañas con teclado, Escape conserva la pestaña y capturas de idiomas
+[37/147] [csv] › tests/e2e/analysis-tab.spec.ts:220:1 › AN-1b ignora la disposición antigua del panel al abrir un perfil existente
+[38/147] [csv] › tests/e2e/chart-clarity.spec.ts:94:1 › SIM-2b: lápiz, Intro, Escape y vacío conservan el resultado sin recalcular al cambiar el título
+[39/147] [csv] › tests/e2e/chart-clarity.spec.ts:121:1 › SIM-2b: título propio sobrevive campos y preset y acompaña SVG, PNG, JSON y contexto CSV con ceros y hash exactos
+[40/147] [csv] › tests/e2e/chart-clarity.spec.ts:146:1 › SIM-2b: Ajustes empieza cerrado al final de Campos y conserva controles únicos y los detalles de tabla, consulta y filtros
+[41/147] [csv] › tests/e2e/chart-clarity.spec.ts:191:1 › SIM-2b: manual sin perfil conserva medida, ejes y agrupación explícitos sin nuevos barridos ni conversión de ID
+  4) [csv] › tests/e2e/chart-clarity.spec.ts:191:1 › SIM-2b: manual sin perfil conserva medida, ejes y agrupación explícitos sin nuevos barridos ni conversión de ID 
+
+    Error: expect(locator).toHaveAccessibleName(expected) failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^ID$/ }) }).locator('.field-badge')
+    Expected: "Texto"
+    Received: "Texto (sin número reconocido)"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAccessibleName" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^ID$/ }) }).locator('.field-badge') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^ID$/ }) }).locator('.field-badge')
+        33 × locator resolved to <span role="img" class="field-badge svelte-hqvgw9" title="Texto (sin número reconocido)" aria-label="Texto (sin número reconocido)">…</span>
+           - unexpected value "Texto (sin número reconocido)"
+
+
+      192 |  const {records}=await open('manual.csv',rows(3001)),before=(await calls()).filter(operation=>operation==='analyzeColumn')
+      193 |  await openAnalysis(page,'Gráficos');await assign('Ciudad','Filas');await assign('Ingreso','Valores')
+    > 194 |  await expect(panel().locator('.field-entry').filter({has:page.locator('.field-name').filter({hasText:/^ID$/})}).locator('.field-badge')).toHaveAccessibleName('Texto')
+          |                                                                                                                                           ^
+      195 |  await expect(panel().getByLabel('Resumir Ingreso por',{exact:true})).toHaveValue('count')
+      196 |  await expect(panel().getByLabel('Resumir Ingreso por',{exact:true}).locator('option[value=sum]')).toBeDisabled()
+      197 |  await expand(settings());for(const label of ['Columna X del gráfico','Columna Y del gráfico','Tipo de medida del gráfico','Agrupación temporal del gráfico'])await expect(settings().getByLabel(label,{exact:true})).toHaveCount(1)
+        at <checkout>/tests/e2e/chart-clarity.spec.ts:194:139
+
+    Error Context: ../sim2c-campos-simples-evidence/consumer-gui-results/chart-clarity-SIM-2b-manua-25ae1-arridos-ni-conversión-de-ID-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/consumer-gui-results/chart-clarity-SIM-2b-manua-25ae1-arridos-ni-conversión-de-ID-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/consumer-gui-results/chart-clarity-SIM-2b-manua-25ae1-arridos-ni-conversión-de-ID-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:28531) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[42/147] [csv] › tests/e2e/chart-clarity.spec.ts:237:1 › SIM-2b: cinco ciudades que caben conservan etiquetas rectas en SVG de pantalla y exportación
+[43/147] [csv] › tests/e2e/chart-clarity.spec.ts:240:1 › SIM-2b: treinta nombres de 25 caracteres giran 25 grados en Caja sin cambiar el ranking existente
+[44/147] [csv] › tests/e2e/chart-compatibility-controls.spec.ts:63:1 › SIM-2b compatibilidad: Ajustes conserva Texto/Número explícito con perfil identificador y valores excluidos
+[45/147] [csv] › tests/e2e/chart-compatibility-controls.spec.ts:81:1 › SIM-2b compatibilidad: Ajustes conserva Mes/Año con perfil mixto y descarta la fecha inválida sin cambiar datos
+[46/147] [csv] › tests/e2e/chart-field-loading.spec.ts:12:1 › los 200 campos publican sus tipos juntos, sin una clasificación provisional durante la lectura
+  5) [csv] › tests/e2e/chart-field-loading.spec.ts:12:1 › los 200 campos publican sus tipos juntos, sin una clasificación provisional durante la lectura 
+
+    Error: expect(locator).toHaveAccessibleName(expected) failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('listitem').filter({ has: getByText('Código «México»', { exact: true }) }).locator('.field-badge')
+    Expected: "Texto"
+    Received: "Texto (sin número reconocido)"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAccessibleName" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('listitem').filter({ has: getByText('Código «México»', { exact: true }) }).locator('.field-badge') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('listitem').filter({ has: getByText('Código «México»', { exact: true }) }).locator('.field-badge')
+        33 × locator resolved to <span role="img" class="field-badge svelte-hqvgw9" title="Texto (sin número reconocido)" aria-label="Texto (sin número reconocido)">…</span>
+           - unexpected value "Texto (sin número reconocido)"
+
+
+      52 |  await expect(badge('Campo 199')).toHaveAccessibleName('Número')
+      53 |  await expect(badge('Fecha')).toHaveAccessibleName('Fecha')
+    > 54 |  await expect(badge('Código «México»')).toHaveAccessibleName('Texto')
+         |                                         ^
+      55 |  await expect(badge('Grupo')).toHaveAccessibleName('Categoría')
+      56 |  for(const name of ['Descuento','Importe']){
+      57 |   await expect(badge(name)).toHaveAccessibleName('Categoría')
+        at <checkout>/tests/e2e/chart-field-loading.spec.ts:54:41
+
+    Error Context: ../sim2c-campos-simples-evidence/consumer-gui-results/chart-field-loading-los-20-f3791-visional-durante-la-lectura-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/consumer-gui-results/chart-field-loading-los-20-f3791-visional-durante-la-lectura-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/consumer-gui-results/chart-field-loading-los-20-f3791-visional-durante-la-lectura-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:28640) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[47/147] [csv] › tests/e2e/chart-field-readiness.spec.ts:10:1 › SIM-2c: antes de recibir la primera página real los campos esperan; después Enter usa el perfil numérico
+[48/147] [csv] › tests/e2e/chart-fields.spec.ts:24:1 › F2b: herramientas con nombre, ayuda inmediata al foco y controles sin pintura nativa
+[49/147] [csv] › tests/e2e/chart-fields.spec.ts:37:1 › F2b: sugerencia inicial y dos acciones cambian qué se grafica sin Más opciones
+[50/147] [csv] › tests/e2e/chart-fields.spec.ts:54:1 › F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones
+[51/147] [csv] › tests/e2e/chart-fields.spec.ts:72:1 › F2b: cada Resumir por coincide con datos independientes y porcentajes solo aditivos
+[52/147] [csv] › tests/e2e/chart-fields.spec.ts:84:1 › F2b: texto no se suma, mapa solo cuenta y símbolos no se convierten
+[53/147] [csv] › tests/e2e/chart-fields.spec.ts:95:1 › F2b: 842 grupos conservan truncado y tabla paginada; Otros solo sobre resultados completos aditivos
+[54/147] [csv] › tests/e2e/chart-fields.spec.ts:106:1 › F2b: filtros reutilizados, exportación y datos originales intactos
+  6) [csv] › tests/e2e/chart-fields.spec.ts:106:1 › F2b: filtros reutilizados, exportación y datos originales intactos 
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('button', { name: 'Más acciones de Región', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeFocused" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('button', { name: 'Más acciones de Región', exact: true }) with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('button', { name: 'Más acciones de Región', exact: true })
+        33 × locator resolved to <button type="button" tabindex="-1" aria-haspopup="menu" aria-disabled="false" aria-expanded="false" title="Más acciones de Región" class="field-more svelte-hqvgw9" aria-label="Más acciones de Región">…</button>
+           - unexpected value "inactive"
+
+
+      110 |  const filters=panel.getByRole('region',{name:'Filtros del gráfico',exact:true});await filters.getByLabel('Operador de condición 1',{exact:true}).selectOption('equals');await filters.getByLabel('Valor de condición 1',{exact:true}).fill('Norte');await filters.getByRole('button',{name:'Aplicar filtros del gráfico',exact:true}).click()
+      111 |  await expect(panel.locator('.pivot-result tfoot')).toContainText('2,000');await expect(panel.getByRole('region',{name:'Filtros',exact:true})).toContainText('Región')
+    > 112 |  await expect(panel.getByRole('button',{name:'Más acciones de Región',exact:true})).toBeFocused()
+          |                                                                                     ^
+      113 |  await exportAnalysis(page,'charts.ui.exportImage',{format:'SVG'});await expect.poll(async()=>{try{return await readFile(join(folder,'exports','ventas.svg'),'utf8')}catch{return''}}).toContain('<svg')
+      114 |  await exportAnalysis(page,'charts.ui.exportImage',{format:'PNG'});await expect.poll(async()=>{try{return (await readFile(join(folder,'exports','ventas.png'))).subarray(1,4).toString()}catch{return''}}).toBe('PNG')
+      115 |  await exportAnalysis(page,'charts.ui.exportImage',{format:'PDF'});await expect.poll(async()=>{try{return (await readFile(join(folder,'exports','ventas.pdf'))).subarray(0,4).toString()}catch{return''}}).toBe('%PDF')
+        at <checkout>/tests/e2e/chart-fields.spec.ts:112:85
+
+    Error Context: ../sim2c-campos-simples-evidence/consumer-gui-results/chart-fields-F2b-filtros-r-bf45d-y-datos-originales-intactos-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/consumer-gui-results/chart-fields-F2b-filtros-r-bf45d-y-datos-originales-intactos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/consumer-gui-results/chart-fields-F2b-filtros-r-bf45d-y-datos-originales-intactos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:28850) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[55/147] [csv] › tests/e2e/chart-fields.spec.ts:118:1 › F2b: estrecho conserva foco al editar campos, inglés natural y resultado completo
+[56/147] [csv] › tests/e2e/chart-fields.spec.ts:127:1 › F2b: actualizar una celda no sustituye el resumen elegido ni guarda el CSV
+[57/147] [csv] › tests/e2e/chart-fields.spec.ts:133:1 › F2b: 200 campos, nombres Unicode, idioma seudolocalizado y tamaños accesibles
+[58/147] [csv] › tests/e2e/chart-fields.spec.ts:145:1 › F2b: en-XA real, tema oscuro y ventana estrecha no recortan el resultado
+[59/147] [csv] › tests/e2e/chart-fields.spec.ts:153:1 › F2b: contraste de textos y controles medido contra sus fondos reales en ambos temas
+[60/147] [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10
+[61/147] [csv] › tests/e2e/chart-review.spec.ts:46:1 › Revisión108 · motivo con línea propia y sin solapes a1280×720
+[62/147] [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720
+  7) [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 6
+    Received:    5
+
+      56 |  const fields=panel().getByRole('complementary');await fields.locator('.field-list').evaluate(node=>node.scrollTop=0)
+      57 |  const visible=await fields.locator('.field-list').evaluate(node=>{const area=node.getBoundingClientRect();return[...node.querySelectorAll('.field-entry')].filter(row=>{const r=row.getBoundingClientRect();return r.top>=area.top&&r.bottom<=area.bottom}).length})
+    > 58 |  expect(visible).toBeGreaterThanOrEqual(6)
+         |                  ^
+      59 |  await writeFile(test.info().outputPath('fields-visible.json'),JSON.stringify({visible}))
+      60 |  await expect(fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true})).toBeInViewport({ratio:1})
+      61 |  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})
+        at <checkout>/tests/e2e/chart-review.spec.ts:58:18
+
+    Error Context: ../sim2c-campos-simples-evidence/consumer-gui-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/consumer-gui-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/consumer-gui-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:28978) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[63/147] [csv] › tests/e2e/chart-review.spec.ts:69:1 › Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario
+[64/147] [csv] › tests/e2e/chart-review.spec.ts:81:1 › Revisión108 · tabla, total, marcas y eje conservan el formato numérico al cambiar campo e idioma
+[65/147] [csv] › tests/e2e/chart-review.spec.ts:103:31 › Revisión108 final · Total completo dentro del área visible a1280×720
+[66/147] [csv] › tests/e2e/chart-review.spec.ts:103:31 › Revisión108 final · Total completo dentro del área visible a800×720
+[67/147] [csv] › tests/e2e/chart-review.spec.ts:121:1 › Revisión108 final · el aviso explica el campo de orden y los empates de Suma y Cuenta en es/en
+[68/147] [csv] › tests/e2e/chart-sensible-suggestions.spec.ts:50:1 › SIM-1d: abrir no analiza y Crear propone contar Ciudad sin elegir un número
+[69/147] [csv] › tests/e2e/chart-sensible-suggestions.spec.ts:65:1 › SIM-1d: Ciudad e Ingreso usan Promedio independiente y permiten Suma explícita
+[70/147] [csv] › tests/e2e/chart-sensible-suggestions.spec.ts:85:1 › SIM-1d: Ingreso antes de Ciudad propone Promedio y cambiar Filas conserva Suma explícita
+[71/147] [csv] › tests/e2e/chart-simple-fields.spec.ts:88:1 › SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista
+[72/147] [csv] › tests/e2e/chart-simple-fields.spec.ts:110:1 › SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV
+[73/147] [csv] › tests/e2e/chart-simple-fields.spec.ts:131:1 › SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos
+[74/147] [csv] › tests/e2e/chart-simple-fields.spec.ts:141:1 › SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular
+[75/147] [csv] › tests/e2e/chart-simple-fields.spec.ts:155:1 › SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables
+[76/147] [csv] › tests/e2e/chart-simple-fields.spec.ts:179:1 › SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas
+[77/147] [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › scatter sin fechas carga la fuente una vez y conserva observaciones y totales nulos
+[78/147] [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › line sin fechas carga la fuente una vez y conserva observaciones y totales nulos
+[79/147] [csv] › tests/e2e/chart-trend.spec.ts:68:1 › TEN-1 cinco pares: petición, teclado, exportaciones completas y preset
+[80/147] [csv] › tests/e2e/chart-trend.spec.ts:104:1 › TEN-1 degenerados explican la ausencia y conservan marcada la opción
+[81/147] [csv] › tests/e2e/chart-trend.spec.ts:119:1 › TEN-1 ocultar Tendencia en la leyenda persiste después de ampliar y cambiar tema
+[82/147] [csv] › tests/e2e/chart-trend.spec.ts:128:1 › TEN-1 controla la misma visibilidad de Tendencia con el teclado existente
+[83/147] [csv] › tests/e2e/chart-trend.spec.ts:141:1 › TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia
+[84/147] [csv] › tests/e2e/chart-trend.spec.ts:159:1 › TEN-1 cancelar descarta la respuesta tardía y editar exige actualizar la revisión
+[85/147] [csv] › tests/e2e/chart-trend.spec.ts:171:1 › TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra
+[86/147] [csv] › tests/e2e/chart-trend.spec.ts:186:47 › TEN-1 capturas, teclado y bloque legible en es
+[87/147] [csv] › tests/e2e/chart-trend.spec.ts:186:47 › TEN-1 capturas, teclado y bloque legible en en-XA
+[88/147] [csv] › tests/e2e/charts.spec.ts:22:1 › seis gráficos calculan sobre datos completos, con cuartiles, huecos y categorías exactas
+[89/147] [csv] › tests/e2e/charts.spec.ts:66:2 › gráficos visuales: SVG de histogram
+[90/147] [csv] › tests/e2e/charts.spec.ts:66:2 › gráficos visuales: SVG de bar
+[91/147] [csv] › tests/e2e/charts.spec.ts:66:2 › gráficos visuales: SVG de line
+[92/147] [csv] › tests/e2e/charts.spec.ts:66:2 › gráficos visuales: SVG de scatter
+[93/147] [csv] › tests/e2e/charts.spec.ts:66:2 › gráficos visuales: SVG de heatmap
+[94/147] [csv] › tests/e2e/charts.spec.ts:66:2 › gráficos visuales: SVG de box
+[95/147] [csv] › tests/e2e/charts.spec.ts:69:1 › gráficos visuales: temas y tabla accesible
+[96/147] [csv] › tests/e2e/charts.spec.ts:76:1 › gráficos visuales: exportación SVG, PNG y PDF
+[97/147] [csv] › tests/e2e/charts.spec.ts:84:1 › gráficos visuales: invalidación tras editar, teclado y archivo intacto
+[98/147] [csv] › tests/e2e/charts.spec.ts:90:1 › gráficos distinguen vacío, constante, límite de puntos y etiquetas no ejecutables
+[99/147] [csv] › tests/e2e/charts.spec.ts:108:1 › histograma agrega un millón de filas completo aunque la tabla sea de solo lectura @perf
+[100/147] [csv] › tests/e2e/charts.spec.ts:121:1 › gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial @perf
+[101/147] [csv] › tests/e2e/charts.spec.ts:142:1 › exportar un gráfico rechaza destinos de documentos abiertos y revisiones obsoletas
+[102/147] [csv] › tests/e2e/charts.spec.ts:149:1 › constructor explícito: oráculos numéricos e identificadores sin mutaciones
+[103/147] [csv] › tests/e2e/charts.spec.ts:159:1 › constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones
+[104/147] [csv] › tests/e2e/charts.spec.ts:180:1 › vista filtrada usa todas las coincidencias con filtros combinados, fechas y revisión actual
+[105/147] [csv] › tests/e2e/charts.spec.ts:192:1 › ayuda y selección de valores impiden cálculos incompatibles y explican columnas sin números
+[106/147] [csv] › tests/e2e/charts.spec.ts:204:1 › series por categoría: siete cálculos por combinación, líneas y puntos con valores exactos
+[107/147] [csv] › tests/e2e/charts.spec.ts:215:1 › series visuales: leyenda y teclado sincronizados, filtros, exportación y límite comprensible
+  8) [csv] › tests/e2e/charts.spec.ts:215:1 › series visuales: leyenda y teclado sincronizados, filtros, exportación y límite comprensible 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('group', { name: 'Formas de visualizar', exact: true }).getByRole('button', { name: /^Histograma(?: ?\(recomendado\))?$/ })
+        - locator resolved to <button type="button" aria-pressed="false" aria-disabled="true" class="svelte-1wo6u31" aria-describedby="c1-histogram" title="Necesita un campo numérico en Valores">…</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is not enabled
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is not enabled
+        - retrying click action
+          - waiting 100ms
+        58 × waiting for element to be visible, enabled and stable
+           - element is not enabled
+         - retrying click action
+           - waiting 500ms
+
+
+       at panel.ts:130
+
+      128 | }
+      129 | export async function chartType(page:Page,kind:ChartKind){
+    > 130 |  await(await chartTypeButton(page,kind)).click()
+          |                                          ^
+      131 | }
+      132 | export async function chartAggregate(page:Page,field:string){
+      133 |  await openChartFields(page);return chartPanel(page).getByLabel(await translated(page,'charts.fields.aggregate',{field}),{exact:true})
+        at chartType (<checkout>/tests/e2e/panel.ts:130:42)
+        at <checkout>/tests/e2e/charts.spec.ts:226:2
+
+    Error Context: ../sim2c-campos-simples-evidence/consumer-gui-results/charts-series-visuales-ley-886e8-ación-y-límite-comprensible-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/consumer-gui-results/charts-series-visuales-ley-886e8-ación-y-límite-comprensible-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/consumer-gui-results/charts-series-visuales-ley-886e8-ación-y-límite-comprensible-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:30314) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[108/147] [csv] › tests/e2e/charts.spec.ts:232:1 › series: 3 000 y 100 000 registros conservan sumas por combinación y respuesta de la interfaz
+[109/147] [csv] › tests/e2e/charts.spec.ts:251:1 › fechas: día, mes y año contrastan cálculos, fechas inválidas y huecos por serie sin alterar el CSV
+[110/147] [csv] › tests/e2e/charts.spec.ts:263:1 › calendario temporal acotado: extremos 0001–9999 y fechas ausentes no generan resultados masivos
+[111/147] [csv] › tests/e2e/charts.spec.ts:272:1 › constructor temporal: clics, series, filtros, errores y exportación con nombres y alcance claros
+[112/147] [csv] › tests/e2e/charts.spec.ts:293:1 › filtros propios: editor reutilizado, borradores, Escape, alcance y exportación sin cambiar la tabla
+  9) [csv] › tests/e2e/charts.spec.ts:293:1 › filtros propios: editor reutilizado, borradores, Escape, alcance y exportación sin cambiar la tabla 
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.field-entry').filter({ has: getByTitle('Grupo', { exact: true }) }).getByRole('button')
+    Expected: focused
+    Received: inactive
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeFocused" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.field-entry').filter({ has: getByTitle('Grupo', { exact: true }) }).getByRole('button') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.field-entry').filter({ has: getByTitle('Grupo', { exact: true }) }).getByRole('button')
+        34 × locator resolved to <button type="button" tabindex="-1" aria-haspopup="menu" aria-disabled="false" aria-expanded="false" title="Más acciones de Grupo" class="field-more svelte-hqvgw9" aria-label="Más acciones de Grupo">…</button>
+           - unexpected value "inactive"
+
+
+      296 |  await tableEditor.getByRole('button',{name:'Aplicar consulta',exact:true}).click();await expect(page.getByRole('grid',{name:'Tabla de datos',includeHidden:true})).toHaveAttribute('aria-rowcount','10')
+      297 |  await showPanel(page,'Gráficos');await showTable(page);await menuItem(page,'Filtrar','Consulta avanzada');const tableHeadingId=await tableEditor.getByRole('heading',{level:3}).getAttribute('id');await showPanel(page,'Gráficos');const panel=chartPanel(page),filterEditor=panel.getByRole('region',{name:'Filtros del gráfico',exact:true})
+    > 298 |  let filterReturn=await openFilters();await expect(filterEditor.getByRole('button',{name:'Añadir orden',exact:true})).toHaveCount(0);expect(await filterEditor.getByRole('heading',{level:3}).getAttribute('id')).not.toBe(tableHeadingId);await filterEditor.getByLabel('Valor de condición 1',{exact:true}).fill('borrador');await filterEditor.getByLabel('Valor de condición 1',{exact:true}).press('Escape');await expect(filterEditor).toHaveCount(0);await expect(panel).toBeVisible();await expect(filterReturn).toBeFocused();await showTable(page);await expect(tableEditor).toBeVisible();await tableEditor.getByRole('button',{name:'Cerrar consulta avanzada',exact:true}).click();await showPanel(page,'Gráficos')
+          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^
+      299 |  filterReturn=await openFilters();await expect(filterEditor.getByLabel('Valor de condición 1',{exact:true})).toHaveValue('');await expect(panel.getByRole('region',{name:'Filtros',exact:true}).locator('.chip')).toHaveCount(0);await filterEditor.getByLabel('Combinar condiciones').selectOption('any')
+      300 |  for(const [i,column,op,value] of [[1,'3','equals','U'],[2,'2','greater','50']] as const){if(i>1)await filterEditor.getByRole('button',{name:'Añadir condición',exact:true}).click();await filterEditor.getByLabel(`Columna de condición ${i}`,{exact:true}).selectOption(column);await filterEditor.getByLabel(`Operador de condición ${i}`,{exact:true}).selectOption(op);await filterEditor.getByLabel(`Valor de condición ${i}`,{exact:true}).fill(value)}
+      301 |  await filterEditor.getByRole('button',{name:'Aplicar filtros del gráfico',exact:true}).click();await expect(filterReturn).toBeFocused();await y(Number('2'));await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await aggregate().selectOption('sum');await finishChart();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await chartDetails(panel);await expect(panel.locator('.chart-info .scope').first()).toContainText('Documento completo · Filtros del gráfico: 2 (O)');await panel.locator('.chart-info>summary').click();await chartDetails(panel);await expect(panel.locator('.chart-info .scope').first()).toContainText('6 filas');await panel.locator('.chart-info>summary').click();await openChartData(page);await expect(panel.locator('.chart-info .table-scroll tbody tr')).toHaveText(['B5.0','C5.0','A104.0'])
+        at <checkout>/tests/e2e/charts.spec.ts:298:506
+
+    Error Context: ../sim2c-campos-simples-evidence/consumer-gui-results/charts-filtros-propios-edi-350ce-tación-sin-cambiar-la-tabla-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/consumer-gui-results/charts-filtros-propios-edi-350ce-tación-sin-cambiar-la-tabla-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/consumer-gui-results/charts-filtros-propios-edi-350ce-tación-sin-cambiar-la-tabla-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:30460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[113/147] [csv] › tests/e2e/charts.spec.ts:310:1 › filtros de análisis: grupos O independientes, fechas y límites de IPC conservan resultados y fuente
+[114/147] [csv] › tests/e2e/charts.spec.ts:320:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV
+[115/147] [csv] › tests/e2e/charts.spec.ts:333:1 › configuraciones: columnas incompatibles y duplicadas, IPC inválido y biblioteca dañada preservados
+[116/147] [csv] › tests/e2e/charts.spec.ts:344:1 › resultados exportados: interfaz, agregados completos, CSV y contexto, informe y fórmulas preservan el original
+[117/147] [csv] › tests/e2e/charts.spec.ts:356:1 › resultados exportados: filtros independientes, fechas, límite de diez mil, nulos e IPC válido
+[118/147] [csv] › tests/e2e/charts.spec.ts:365:1 › resultados exportados: muestra lee la fuente completa sin permitir guardar el CSV parcial @perf
+[119/147] [csv] › tests/e2e/charts.spec.ts:398:1 › resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales
+[120/147] [csv] › tests/e2e/csv-summary.spec.ts:21:1 › AN-1b: pestaña de análisis crea gráfico y resumen a petición, con opciones plegadas y fuente intacta @package-smoke
+[121/147] [csv] › tests/e2e/csv-summary.spec.ts:42:1 › F2a: suma por serie, total real, porcentajes y seis tipos alcanzables con teclado
+[122/147] [csv] › tests/e2e/csv-summary.spec.ts:52:1 › F2a: cuatro capturas reales, resultado y límites visibles en ambos temas sin desplazar
+[123/147] [csv] › tests/e2e/csv-summary.spec.ts:75:1 › F2a: estados vacío, error numérico, truncado y ventana estrecha con captura
+[124/147] [csv] › tests/e2e/csv-summary.spec.ts:91:1 › F2a: cargando con cancelar y reintento explícito en 100.000 filas, sin escribir el original
+[125/147] [csv] › tests/e2e/csv-summary.spec.ts:107:1 › F2a: idioma inglés, foco, anuncios y ventana de 800 px
+[126/147] [csv] › tests/e2e/csv-summary.spec.ts:122:1 › F2a: en-XA real no recorta el resultado ni desborda los controles
+[127/147] [csv] › tests/e2e/csv-summary.spec.ts:131:1 › F2a: filtros del gráfico se pueden operar en inglés sin cambiar la tabla
+[128/147] [csv] › tests/e2e/csv-summary.spec.ts:139:1 › F2a: elegir Líneas aplica la agrupación mensual sugerida para fechas ISO
+[129/147] [csv] › tests/e2e/csv-summary.spec.ts:146:1 › F2a: pocas filas con celdas grandes conservan vista previa manual y límites explicados
+[130/147] [csv] › tests/e2e/csv-summary.spec.ts:154:1 › F2a: cambiar desde una celda en edición confirma el borrador sin guardar el archivo
+[131/147] [csv] › tests/e2e/csv-summary.spec.ts:160:1 › F2a: las herramientas de tabla siguen completas dentro de ambos anchos
+[132/147] [csv] › tests/e2e/csv-summary.spec.ts:168:1 › AN-1b: desde Texto con cambios, Cancelar conserva el borrador y descartar abre análisis sin escribir
+[133/147] [csv] › tests/e2e/csv-summary.spec.ts:179:1 › F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor
+[134/147] [csv] › tests/e2e/csv-summary.spec.ts:208:1 › F2a: alternar Tabla y Resumen es presentación, sin reinterpretar el CSV por IPC
+[135/147] [csv] › tests/e2e/project-subset-analysis.spec.ts:51:1 › PRJ-02b: analizar usa las tres filas y columnas del conjunto, sin abrir ni modificar la fuente
+[136/147] [csv] › tests/e2e/project-subset-analysis.spec.ts:68:1 › PRJ-02b: Gráficos identifica el conjunto completo y conserva su cobertura
+[137/147] [csv] › tests/e2e/project-subset-analysis.spec.ts:77:1 › PRJ-02b: SQL conserva valores y ausentes del conjunto sin afirmar que incluye cambios pendientes
+[138/147] [csv] › tests/e2e/project-subset-analysis.spec.ts:92:1 › PRJ-02b: reabrir una versión futura del mismo proyecto libera sus pestañas analíticas
+[139/147] [csv] › tests/e2e/project-subset-analysis.spec.ts:110:1 › PRJ-02b: el análisis usa más de cien filas, no la vista previa del conjunto
+[140/147] [csv] › tests/e2e/project-subset-analysis.spec.ts:123:1 › PRJ-02b: una muestra se guarda y otro conjunto la ordena por edad sin cambiar las filas elegidas
+[141/147] [csv] › tests/e2e/project-subset-analysis.spec.ts:159:1 › PRJ-02b: el histograma de Edad representa 34, 52 y 61 y las estadísticas coinciden
+[142/147] [csv] › tests/e2e/project-subset-analysis.spec.ts:169:47 › PRJ-02b: teclado y capturas de análisis y cadena de tres niveles [es]
+[143/147] [csv] › tests/e2e/project-subset-analysis.spec.ts:169:47 › PRJ-02b: teclado y capturas de análisis y cadena de tres niveles [en-XA]
+[144/147] [csv] › tests/e2e/project-subset-analysis.spec.ts:224:1 › PRJ-02b: cancelar la preparación no publica un análisis parcial ni escribe el proyecto
+[145/147] [csv] › tests/e2e/project-subset-analysis.spec.ts:238:37 › PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual
+[146/147] [csv] › tests/e2e/project-subset-analysis.spec.ts:238:37 › PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual
+[147/147] [csv] › tests/e2e/project-subset-analysis.spec.ts:271:1 › PRJ-02b: dos reaperturas superpuestas liberan el snapshot una vez y publican el último proyecto
+  9 failed
+    [shell] › tests/e2e/ui-u0.spec.ts:164:45 › U0.1: campos legibles y orden a 1280 × 720 (es) ─────
+    [shell] › tests/e2e/ui-u0.spec.ts:164:45 › U0.1: campos legibles y orden a 1280 × 720 (en-XA) ──
+    [csv] › tests/e2e/analysis-tab.spec.ts:92:1 › AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta la configuración 
+    [csv] › tests/e2e/chart-clarity.spec.ts:191:1 › SIM-2b: manual sin perfil conserva medida, ejes y agrupación explícitos sin nuevos barridos ni conversión de ID 
+    [csv] › tests/e2e/chart-field-loading.spec.ts:12:1 › los 200 campos publican sus tipos juntos, sin una clasificación provisional durante la lectura 
+    [csv] › tests/e2e/chart-fields.spec.ts:106:1 › F2b: filtros reutilizados, exportación y datos originales intactos 
+    [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 
+    [csv] › tests/e2e/charts.spec.ts:215:1 › series visuales: leyenda y teclado sincronizados, filtros, exportación y límite comprensible 
+    [csv] › tests/e2e/charts.spec.ts:293:1 › filtros propios: editor reutilizado, borradores, Escape, alcance y exportación sin cambiar la tabla 
+  138 passed (12.2m)

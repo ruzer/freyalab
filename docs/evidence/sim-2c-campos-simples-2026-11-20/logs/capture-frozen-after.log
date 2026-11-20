@@ -1,0 +1,84 @@
+
+Running 2 tests using 1 worker
+
+(node:33389) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › after: lista, resultado y menú usado [es] (18.6s)
+(node:33432) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › after: lista, resultado y menú usado [en-XA] (18.5s)
+
+
+  1) [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › after: lista, resultado y menú usado [es] 
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true, includeHidden: true }).locator('[data-chart-field="1"]')
+    Expected: focused
+    Received: inactive
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeFocused" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true, includeHidden: true }).locator('[data-chart-field="1"]') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true, includeHidden: true }).locator('[data-chart-field="1"]')
+        33 × locator resolved to <div tabindex="0" role="listitem" title="Ingreso" data-chart-field="1" class="field-entry svelte-hqvgw9 used">…</div>
+           - unexpected value "inactive"
+
+
+      83 |    await expect(menu.getByRole('menuitem',{name:recommended,exact:true})).toBeVisible()
+      84 |    if(phase==='after')await expect(menu.getByRole('menuitem',{name:tr('charts.fields.remove',{field:'Ingreso',zone:tr('charts.fields.values')}),exact:true})).toBeVisible()
+    > 85 |    await capture('menu-usado',width,height,theme);await menu.press('Escape');await expect(menu).toHaveCount(0);await expect(phase==='before'?trigger:entry).toBeFocused()
+         |                                                                                                                                                             ^
+      86 |    await expect(panel.locator('.pivot-result tbody tr')).toHaveText(means.map(([city,value])=>city+value))
+      87 |   }
+      88 |   async function exportFile(key:string,name:string){await helper.exportAnalysis(page,key);if(key==='analysis.export.csv')await helper.analysisResultExport(page).getByRole('button',{name:tr('charts.ui.export'),exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText(name);return readFile(join(folder,'exports',name))}
+        at <checkout>-evidence/probe/field-captures.spec.ts:85:157
+
+    Error Context: ../sim2c-campos-simples-evidence/probe/results/field-captures-after-lista-resultado-y-menú-usado-es--evidence/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/probe/results/field-captures-after-lista-resultado-y-menú-usado-es--evidence/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/probe/results/field-captures-after-lista-resultado-y-menú-usado-es--evidence/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › after: lista, resultado y menú usado [en-XA] 
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: '[Fïëlds ánd zönës~~~~~]', exact: true, includeHidden: true }).locator('[data-chart-field="1"]')
+    Expected: focused
+    Received: inactive
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeFocused" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: '[Fïëlds ánd zönës~~~~~]', exact: true, includeHidden: true }).locator('[data-chart-field="1"]') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: '[Fïëlds ánd zönës~~~~~]', exact: true, includeHidden: true }).locator('[data-chart-field="1"]')
+        34 × locator resolved to <div tabindex="0" role="listitem" title="Ingreso" data-chart-field="1" class="field-entry svelte-hqvgw9 used">…</div>
+           - unexpected value "inactive"
+
+
+      83 |    await expect(menu.getByRole('menuitem',{name:recommended,exact:true})).toBeVisible()
+      84 |    if(phase==='after')await expect(menu.getByRole('menuitem',{name:tr('charts.fields.remove',{field:'Ingreso',zone:tr('charts.fields.values')}),exact:true})).toBeVisible()
+    > 85 |    await capture('menu-usado',width,height,theme);await menu.press('Escape');await expect(menu).toHaveCount(0);await expect(phase==='before'?trigger:entry).toBeFocused()
+         |                                                                                                                                                             ^
+      86 |    await expect(panel.locator('.pivot-result tbody tr')).toHaveText(means.map(([city,value])=>city+value))
+      87 |   }
+      88 |   async function exportFile(key:string,name:string){await helper.exportAnalysis(page,key);if(key==='analysis.export.csv')await helper.analysisResultExport(page).getByRole('button',{name:tr('charts.ui.export'),exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText(name);return readFile(join(folder,'exports',name))}
+        at <checkout>-evidence/probe/field-captures.spec.ts:85:157
+
+    Error Context: ../sim2c-campos-simples-evidence/probe/results/field-captures-after-lista-resultado-y-menú-usado-en-XA--evidence/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/probe/results/field-captures-after-lista-resultado-y-menú-usado-en-XA--evidence/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/probe/results/field-captures-after-lista-resultado-y-menú-usado-en-XA--evidence/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › after: lista, resultado y menú usado [es] 
+    [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › after: lista, resultado y menú usado [en-XA] 

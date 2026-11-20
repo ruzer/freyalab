@@ -1,0 +1,84 @@
+
+Running 2 tests using 1 worker
+
+(node:33262) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › after: lista, resultado y menú usado [es] (47ms)
+(node:33263) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › after: lista, resultado y menú usado [en-XA] (43ms)
+
+
+  1) [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › after: lista, resultado y menú usado [es] 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Object {
+    -   "src/renderer/components/ChartFields.svelte": "6c0572d32f1836c7e2517e7ef1722a23eb5af8c0c9edc01affa9ebce65e747d0",
+    +   "src/renderer/components/ChartFields.svelte": "dac1a0fddc0d28d0d4ed177669e941379376bfb67b46782da55c595c8c4679f5",
+        "src/renderer/components/CsvCharts.svelte": "7c22c50c03fbdab76341ddb75b9e9f479a567c02f8f1198ab991d127891da6a8",
+        "src/shared/chart-fields.ts": "be1847fff99a73a670953254cb48af4a889e1d1abc06d21d8deb534ebf3303fc",
+        "src/shared/i18n/en.json": "a9fb8787cdd4de5c65e43b2ba81425d562a9fd3563a2bf8d9d0025503a0f1287",
+        "src/shared/i18n/es.json": "ea6777ed93b9675237ce4125e092cee4dea3516fdb3319a399b1ab44ecaa64df",
+      }
+
+      34 |  const tr=(key:string,parameters:Record<string,string|number>={})=>(phase==='before'?beforeText:afterText)(key,parameters,language)
+      35 |  const data=await fixture();expect(data.headers).toEqual(['Ciudad','Ingreso','Fecha','ID','Grupo','Edad']);expect(data.records).toHaveLength(50);expect(data.records[0][3]).toBe('000001');expect(data.sourceCSVsha256).toBe(preparation.sourceCSVsha256)
+    > 36 |  const sourceBefore=await sources(),buildBefore=await build();expect(Object.keys(expectedSource).sort()).toEqual([...sourceFiles].sort());expect(sourceBefore).toEqual(expectedSource)
+         |                                                                                                                                                                ^
+      37 |  const folder=await mkdtemp(join(tmpdir(),'freya-sim2c-captures-')),path=join(folder,'encuesta.csv'),destination=join(evidence,phase!),errors:string[]=[],screenshots:Record<string,string>={}
+      38 |  await mkdir(join(folder,'exports'));await mkdir(destination,{recursive:true});await writeFile(path,data.content)
+      39 |  const {ELECTRON_RUN_AS_NODE:_,...environment}=process.env
+        at <checkout>-evidence/probe/field-captures.spec.ts:36:160
+
+    Error Context: ../sim2c-campos-simples-evidence/probe/results/field-captures-after-lista-resultado-y-menú-usado-es--evidence/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/probe/results/field-captures-after-lista-resultado-y-menú-usado-es--evidence/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/probe/results/field-captures-after-lista-resultado-y-menú-usado-es--evidence/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › after: lista, resultado y menú usado [en-XA] 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Object {
+    -   "src/renderer/components/ChartFields.svelte": "6c0572d32f1836c7e2517e7ef1722a23eb5af8c0c9edc01affa9ebce65e747d0",
+    +   "src/renderer/components/ChartFields.svelte": "dac1a0fddc0d28d0d4ed177669e941379376bfb67b46782da55c595c8c4679f5",
+        "src/renderer/components/CsvCharts.svelte": "7c22c50c03fbdab76341ddb75b9e9f479a567c02f8f1198ab991d127891da6a8",
+        "src/shared/chart-fields.ts": "be1847fff99a73a670953254cb48af4a889e1d1abc06d21d8deb534ebf3303fc",
+        "src/shared/i18n/en.json": "a9fb8787cdd4de5c65e43b2ba81425d562a9fd3563a2bf8d9d0025503a0f1287",
+        "src/shared/i18n/es.json": "ea6777ed93b9675237ce4125e092cee4dea3516fdb3319a399b1ab44ecaa64df",
+      }
+
+      34 |  const tr=(key:string,parameters:Record<string,string|number>={})=>(phase==='before'?beforeText:afterText)(key,parameters,language)
+      35 |  const data=await fixture();expect(data.headers).toEqual(['Ciudad','Ingreso','Fecha','ID','Grupo','Edad']);expect(data.records).toHaveLength(50);expect(data.records[0][3]).toBe('000001');expect(data.sourceCSVsha256).toBe(preparation.sourceCSVsha256)
+    > 36 |  const sourceBefore=await sources(),buildBefore=await build();expect(Object.keys(expectedSource).sort()).toEqual([...sourceFiles].sort());expect(sourceBefore).toEqual(expectedSource)
+         |                                                                                                                                                                ^
+      37 |  const folder=await mkdtemp(join(tmpdir(),'freya-sim2c-captures-')),path=join(folder,'encuesta.csv'),destination=join(evidence,phase!),errors:string[]=[],screenshots:Record<string,string>={}
+      38 |  await mkdir(join(folder,'exports'));await mkdir(destination,{recursive:true});await writeFile(path,data.content)
+      39 |  const {ELECTRON_RUN_AS_NODE:_,...environment}=process.env
+        at <checkout>-evidence/probe/field-captures.spec.ts:36:160
+
+    Error Context: ../sim2c-campos-simples-evidence/probe/results/field-captures-after-lista-resultado-y-menú-usado-en-XA--evidence/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/probe/results/field-captures-after-lista-resultado-y-menú-usado-en-XA--evidence/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/probe/results/field-captures-after-lista-resultado-y-menú-usado-en-XA--evidence/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › after: lista, resultado y menú usado [es] 
+    [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › after: lista, resultado y menú usado [en-XA] 
