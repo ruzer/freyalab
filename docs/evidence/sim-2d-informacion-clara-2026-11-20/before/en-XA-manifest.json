@@ -1,0 +1,13 @@
+{
+  "phase": "before",
+  "language": "en-XA",
+  "head": "4e3289fee36702935c3be9de4eecf420f16225d4",
+  "fixtureSHA256": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a",
+  "mainEntrySHA256": "1f611e62345a551d8f0098aa90f450619e30c185aaae3eb09d91f78bcf175db1",
+  "captures": [
+    "before-en-XA-light-1440x900-info.png",
+    "before-en-XA-dark-1440x900-info.png",
+    "before-en-XA-light-1280x720-info.png",
+    "before-en-XA-dark-1280x720-info.png"
+  ]
+}

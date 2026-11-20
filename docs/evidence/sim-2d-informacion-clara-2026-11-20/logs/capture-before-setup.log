@@ -1,0 +1,60 @@
+
+Running 2 tests using 1 worker
+
+  ✘  1 [evidence] › sim2d-informacion-clara-evidence/probe/information-captures.spec.ts:15:47 › before Información [es] (845ms)
+  ✘  2 [evidence] › sim2d-informacion-clara-evidence/probe/information-captures.spec.ts:15:47 › before Información [en-XA] (847ms)
+
+
+  1) [evidence] › sim2d-informacion-clara-evidence/probe/information-captures.spec.ts:15:47 › before Información [es] 
+
+    TypeError: panel.getByRole is not a function
+
+      21 |   const page=await app.firstWindow();page.on('pageerror',error=>errors.push(error.message));await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900});await page.emulateMedia({reducedMotion:'reduce'})
+      22 |   const[doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);expect(doc.rowCount).toBe(4);await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible();await openAnalysis(page,'Información')
+    > 23 |   const panel=analysisRegion(page,t('info.title',{},language));await expect(panel.getByRole('button',{name:t('info.refresh',{},language),exact:true})).toBeEnabled();await expect(panel.locator('tbody tr')).toHaveCount(6)
+         |                                                                                   ^
+      24 |   for(const[width,height]of[[1440,900],[1280,720]])for(const theme of['light','dark']){
+      25 |    await page.setViewportSize({width,height});await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect(page.locator('html')).toHaveAttribute('lang',language);await expect(page.locator('html')).toHaveClass(theme==='dark'?/dark/:/^(?!.*\bdark\b)/)
+      26 |    await expect(panel.locator('tbody tr')).toHaveCount(6);await page.mouse.move(0,0);const name=phase+'-'+language+'-'+theme+'-'+width+'x'+height+'-info.png';await page.screenshot({path:join(destination,name),animations:'disabled'});captures.push(name)
+        at <checkout>-evidence/probe/information-captures.spec.ts:23:83
+
+    Error Context: sim2d-informacion-clara-evidence/probe/results/information-captures-before-Información-es--evidence/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    sim2d-informacion-clara-evidence/probe/results/information-captures-before-Información-es--evidence/trace.zip
+    Usage:
+
+        npx playwright show-trace sim2d-informacion-clara-evidence/probe/results/information-captures-before-Información-es--evidence/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [evidence] › sim2d-informacion-clara-evidence/probe/information-captures.spec.ts:15:47 › before Información [en-XA] 
+
+    TypeError: panel.getByRole is not a function
+
+      21 |   const page=await app.firstWindow();page.on('pageerror',error=>errors.push(error.message));await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900});await page.emulateMedia({reducedMotion:'reduce'})
+      22 |   const[doc]=await page.evaluate(path=>window.freya.openPaths([path]),path);expect(doc.rowCount).toBe(4);await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible();await openAnalysis(page,'Información')
+    > 23 |   const panel=analysisRegion(page,t('info.title',{},language));await expect(panel.getByRole('button',{name:t('info.refresh',{},language),exact:true})).toBeEnabled();await expect(panel.locator('tbody tr')).toHaveCount(6)
+         |                                                                                   ^
+      24 |   for(const[width,height]of[[1440,900],[1280,720]])for(const theme of['light','dark']){
+      25 |    await page.setViewportSize({width,height});await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect(page.locator('html')).toHaveAttribute('lang',language);await expect(page.locator('html')).toHaveClass(theme==='dark'?/dark/:/^(?!.*\bdark\b)/)
+      26 |    await expect(panel.locator('tbody tr')).toHaveCount(6);await page.mouse.move(0,0);const name=phase+'-'+language+'-'+theme+'-'+width+'x'+height+'-info.png';await page.screenshot({path:join(destination,name),animations:'disabled'});captures.push(name)
+        at <checkout>-evidence/probe/information-captures.spec.ts:23:83
+
+    Error Context: sim2d-informacion-clara-evidence/probe/results/information-captures-before-Información-en-XA--evidence/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    sim2d-informacion-clara-evidence/probe/results/information-captures-before-Información-en-XA--evidence/trace.zip
+    Usage:
+
+        npx playwright show-trace sim2d-informacion-clara-evidence/probe/results/information-captures-before-Información-en-XA--evidence/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [evidence] › sim2d-informacion-clara-evidence/probe/information-captures.spec.ts:15:47 › before Información [es] 
+    [evidence] › sim2d-informacion-clara-evidence/probe/information-captures.spec.ts:15:47 › before Información [en-XA] 
+(node:11009) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:11019) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

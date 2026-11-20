@@ -29,7 +29,6 @@
   "src/renderer/components/ChartPresets.svelte",
   "src/renderer/components/CsvCharts.svelte",
   "src/renderer/components/CsvColumnAnalysis.svelte",
-  "src/renderer/components/CsvColumnsOverview.svelte",
   "src/renderer/components/CsvCommands.svelte",
   "src/renderer/components/CsvExtract.svelte",
   "src/renderer/components/CsvQueryTools.svelte",

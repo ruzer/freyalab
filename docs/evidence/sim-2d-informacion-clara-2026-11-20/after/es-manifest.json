@@ -1,0 +1,13 @@
+{
+  "phase": "after",
+  "language": "es",
+  "head": "beaf15fed13225399a67119a74ddd770ff4004a6",
+  "fixtureSHA256": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a",
+  "mainEntrySHA256": "0e29d75d235cc91148a6eb144ae51df5da7a52f4c64e576df008728f6bd30936",
+  "captures": [
+    "after-es-light-1440x900-info.png",
+    "after-es-dark-1440x900-info.png",
+    "after-es-light-1280x720-info.png",
+    "after-es-dark-1280x720-info.png"
+  ]
+}
