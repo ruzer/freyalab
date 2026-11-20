@@ -1,3 +1,4 @@
+import {t} from '../../src/shared/i18n'
 import {test,expect,_electron as electron,type ElectronApplication} from '@playwright/test'
 import electronPath from 'electron'
 import {mkdtemp,readFile,rm,writeFile} from 'node:fs/promises'
@@ -48,14 +49,14 @@ test('los 200 campos publican sus tipos juntos, sin una clasificación provision
  const fields=chartPanel(page).getByRole('complementary',{name:'Campos y zonas',exact:true})
  await expect(fields.getByRole('listitem')).toHaveCount(200)
  const badge=(name:string)=>fields.getByRole('listitem').filter({has:page.getByText(name,{exact:true})}).locator('.field-badge')
- await expect(badge('Ventas')).toHaveText('Número')
- await expect(badge('Campo 199')).toHaveText('Número')
- await expect(badge('Fecha')).toHaveText('Fecha')
- await expect(badge('Código «México»')).toHaveText('Texto')
- await expect(badge('Grupo')).toHaveText('Categoría')
+ await expect(badge('Ventas')).toHaveAccessibleName('Número')
+ await expect(badge('Campo 199')).toHaveAccessibleName('Número')
+ await expect(badge('Fecha')).toHaveAccessibleName('Fecha')
+ await expect(badge('Código «México»')).toHaveAccessibleName(t('charts.fields.text'))
+ await expect(badge('Grupo')).toHaveAccessibleName('Categoría')
  for(const name of ['Descuento','Importe']){
-  await expect(badge(name)).toHaveText('Categoría')
-  await expect(badge(name)).toHaveAttribute('title','Parece un monto o un porcentaje')
+  await expect(badge(name)).toHaveAccessibleName('Categoría')
+  await expect(fields.getByRole('listitem').filter({has:page.getByText(name,{exact:true})}).locator('.field-amount')).toHaveAttribute('title','Parece un monto o un porcentaje')
  }
  await expect(fields.locator('.field-badge[title="Número"]')).toHaveCount(195)
  await expect(fields.getByText('Leyendo los tipos de campo…',{exact:true})).toHaveCount(0)

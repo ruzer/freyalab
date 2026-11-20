@@ -1,0 +1,3028 @@
+{
+  "task": "SIM-2c",
+  "status": "Local qualification byphases only:147138/9,closure1716/1,compact109/1,finalfit1/1;48capturePNG completed. CI finalhead pending; no147or10finalgreen claimed.",
+  "reference_provenance": "Root-supplied phase references, not live main/release qualification. Current consumer/capture preparation source2039; root plans one choose/closeMenu await correction and will supply final refs at capture runtime.",
+  "refs": {
+    "story_base": "eb64dd43b22bc3fb4fd3caec7fd4f5d95105c874",
+    "initial_candidate": "0a53b16",
+    "guard_batch": "d026",
+    "menu_focus": "2dbe",
+    "consumer_in_progress": "2039f23e5dc289a69b8d8035c22f7f6a9aaf5eae",
+    "focus_source_fix": "77e8b6b",
+    "consumer_harness_patches": [
+      "46f579e",
+      "fb29308"
+    ],
+    "final_candidate_root_provided": "9732f15eb9aadf5f27531b5cf159234172896abd",
+    "remove_row_padding": "410e9c89b598a4a3278f79a753527747bc3b9f5b",
+    "list244": "f9639b1",
+    "geometry_diagnostic": "37d4a01",
+    "list250_hint0": "deb9797",
+    "captured_before": "00074b4764f03004246521a9d8de7887a37885e6",
+    "captured_after": "deb9797ea1c27b3ed64d1b852a23a531e240eb9d"
+  },
+  "reports": {
+    "initial_red": {
+      "stats": {
+        "startTime": "2026-11-20T06:01:17.891Z",
+        "duration": 100877.117,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 5,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 79,
+          "title": "SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 1479,
+          "errors": [
+            "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 14\n\n  78 |\n  79 | test('SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista',async()=>{\n> 80 |  expect(await fieldTabStops()).toBe(1)\n     |                                ^\n  81 |  for(const badge of await fields().locator('.field-badge').all()){\n  82 |   expect((await badge.textContent())?.trim()).toBe('')\n  83 |   const name=await badge.getAttribute('title');expect(name).toBeTruthy()\n    at <checkout>/tests/e2e/chart-simple-fields.spec.ts:80:32"
+          ]
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 101,
+          "title": "SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 16205,
+          "errors": [
+            "Error: expect(locator).toHaveText(expected) failed\n\nLocator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name')\nExpected: \"Ingreso\"\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toHaveText\" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name') with timeout 15000ms\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name')\n\n\n  100 |\n  101 | test('SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV',async()=>{\n> 102 |  await field('Ingreso').click();await expect(zone('Valores').locator('.chip-name')).toHaveText('Ingreso')\n      |                                                                                     ^\n  103 |  await expect(menu()).toHaveCount(0)\n  104 |  await field('Ciudad').click();await ready();await expect(title()).toHaveText('Promedio de Ingreso por Ciudad')\n  105 |  await expect(zone('Filas').locator('.chip-name')).toHaveText('Ciudad');await expect(zone('Valores').getByRole('combobox')).toHaveValue('average')\n    at <checkout>/tests/e2e/chart-simple-fields.spec.ts:102:85"
+          ]
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 122,
+          "title": "SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 16061,
+          "errors": [
+            "Error: expect(locator).toHaveText(expected) failed\n\nLocator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name')\nExpected: \"Ingreso\"\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toHaveText\" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name') with timeout 15000ms\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name')\n\n\n  122 | test('SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos',async()=>{\n  123 |  await field('Ingreso').focus();await field('Ingreso').press('Enter')\n> 124 |  await expect(zone('Valores').locator('.chip-name')).toHaveText('Ingreso')\n      |                                                      ^\n  125 |  await expect(panel().locator('.analysis-announcement')).toHaveText('Ingreso añadido a Valores');await expect(menu()).toHaveCount(0)\n  126 |  await field('Ciudad').focus();await field('Ciudad').press('Space');await ready()\n  127 |  await expect(zone('Filas').locator('.chip-name')).toHaveText('Ciudad')\n    at <checkout>/tests/e2e/chart-simple-fields.spec.ts:124:54"
+          ]
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 132,
+          "title": "SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 30988,
+          "errors": [
+            "TimeoutError: locator.press: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('menu').getByRole('menuitem', { name: /^Añadir a Filas(?: [(]recomendado[)])?$/ })\n\n\n  65 |  // Setup compatible con B y C: solo abre el menú real del campo sin usar.\n  66 |  await field(name).getByRole('button',{name:new RegExp('^(?:(?:Añadir|Mover) a… '+name+'|Más acciones de '+name+')$')}).press('Enter')\n> 67 |  await menu().getByRole('menuitem',{name:new RegExp('^Añadir a '+destination+'(?: [(]recomendado[)])?$')}).press('Enter')\n     |                                                                                                            ^\n  68 | }\n  69 | async function ready(){\n  70 |  await expect(panel().locator('.pivot-result')).toBeVisible()\n    at assign (<checkout>/tests/e2e/chart-simple-fields.spec.ts:67:108)\n    at meanCity (<checkout>/tests/e2e/chart-simple-fields.spec.ts:74:27)\n    at <checkout>/tests/e2e/chart-simple-fields.spec.ts:133:2"
+          ]
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 146,
+          "title": "SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 34640,
+          "errors": [
+            "TimeoutError: locator.evaluate: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^\\s*(?:✓\\s*)?Edad\\s*$/ }) }).getByRole('button', { name: 'Más acciones de Edad', exact: true })\n\n\n  150 |  const entry=field('Edad'),more=entry.getByRole('button',{name:'Más acciones de Edad',exact:true})\n  151 |  await page.mouse.move(0,0);await fields().getByRole('searchbox').focus()\n> 152 |  expect(await more.evaluate(node=>{const style=getComputedStyle(node);return style.visibility==='hidden'||style.opacity==='0'||style.display==='none'})).toBe(true)\n      |                    ^\n  153 |  await entry.hover();await expect(more).toBeVisible();await more.press('Enter');await expect(menu()).toBeVisible()\n  154 |  const unavailable=menu().getByRole('menuitem',{name:/^Añadir a Valores/}),reason=/^El mapa de calor solo cuenta filas[.]?$/\n  155 |  await expect(unavailable).toHaveAttribute('aria-disabled','true');await expect(unavailable).not.toHaveAttribute('disabled')\n    at <checkout>/tests/e2e/chart-simple-fields.spec.ts:152:20"
+          ]
+        }
+      ],
+      "top_level_errors": []
+    },
+    "actionable_red": {
+      "stats": {
+        "startTime": "2026-11-20T06:23:55.303Z",
+        "duration": 37473.036,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 2,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 140,
+          "title": "SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 18624,
+          "errors": [
+            "Error: expect(locator).toBeVisible() failed\n\nLocator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('menu')\nExpected: visible\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toBeVisible\" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('menu') with timeout 15000ms\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('menu')\n\n\n  141 |  await meanCity();await barrier();const before=await calls(),table=await panel().locator('.pivot-result').innerText()\n  142 |  await page.clock.install()\n> 143 |  await field('Ingreso').click();await expect(menu()).toBeVisible()\n      |                                                      ^\n  144 |  await expect(menu().getByRole('menuitem',{name:/^Mover a /}).first()).toBeVisible()\n  145 |  await expect(menu().getByRole('menuitem',{name:/^Quitar(?: Ingreso(?: de Valores)?)?$/})).toBeVisible()\n  146 |  await expect(zone('Valores').locator('.chip-name')).toHaveText('Ingreso')\n    at <checkout>/tests/e2e/chart-simple-fields.spec.ts:143:54"
+          ]
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 178,
+          "title": "SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 18086,
+          "errors": [
+            "Error: expect(locator).toHaveAttribute(expected) failed\n\nLocator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-types').getByRole('button', { name: /\\bLíneas\\b/ })\nExpected: \"true\"\nReceived: \"\"\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toHaveAttribute\" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-types').getByRole('button', { name: /\\bLíneas\\b/ }) with timeout 15000ms\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-types').getByRole('button', { name: /\\bLíneas\\b/ })\n    34 × locator resolved to <button aria-pressed=\"false\" class=\"svelte-1wo6u31\">…</button>\n       - unexpected value \"null\"\n\n\n  195 |   if(entry.available)await expect(control).toBeEnabled()\n  196 |   else{\n> 197 |    await expect(control).toHaveAttribute('aria-disabled','true');await expect(control).not.toHaveAttribute('disabled')\n      |                          ^\n  198 |    await expect(control).toHaveAttribute('title',entry.reason);await expect(control).toHaveAttribute('aria-describedby',/\\S+/)\n  199 |    await expect(control).toHaveAccessibleDescription(entry.reason)\n  200 |   }\n    at <checkout>/tests/e2e/chart-simple-fields.spec.ts:197:26"
+          ]
+        }
+      ],
+      "top_level_errors": []
+    },
+    "first_candidate_six": {
+      "stats": {
+        "startTime": "2026-11-20T07:05:26.050Z",
+        "duration": 115903.14,
+        "expected": 2,
+        "skipped": 0,
+        "unexpected": 4,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 83,
+          "title": "SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1079,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 105,
+          "title": "SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4671,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 126,
+          "title": "SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 15958,
+          "errors": [
+            "Error: expect(locator).toHaveText(expected) failed\n\nLocator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name')\nExpected: \"Ingreso\"\nTimeout: 15000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toHaveText\" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name') with timeout 15000ms\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name')\n\n\n  126 | test('SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos',async()=>{\n  127 |  await field('Ingreso').focus();await field('Ingreso').press('Enter')\n> 128 |  await expect(zone('Valores').locator('.chip-name')).toHaveText('Ingreso')\n      |                                                      ^\n  129 |  await expect(panel().locator('.analysis-announcement')).toHaveText('Ingreso añadido a Valores');await expect(menu()).toHaveCount(0)\n  130 |  await field('Ciudad').focus();await field('Ciudad').press('Space');await ready()\n  131 |  await expect(zone('Filas').locator('.chip-name')).toHaveText('Ciudad')\n    at <checkout>/tests/e2e/chart-simple-fields.spec.ts:128:54"
+          ]
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 136,
+          "title": "SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 30954,
+          "errors": [
+            "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^\\s*(?:✓\\s*)?Ciudad\\s*$/ }) }).getByRole('button', { name: /^(?:(?:Añadir|Mover) a… Ciudad|Más acciones de Ciudad)$/ })\n\n\n  65 |  // Setup compatible con B y C: solo abre el menú real del campo sin usar.\n  66 |  const trigger=field(name).getByRole('button',{name:new RegExp('^(?:(?:Añadir|Mover) a… '+name+'|Más acciones de '+name+')$')})\n> 67 |  await trigger.click()\n     |                ^\n  68 |  await expect(menu()).toBeVisible()\n  69 |  // Dos nombres exactos construidos por ChartFields: base y base + sufijo del catálogo.\n  70 |  const label=t('charts.fields.destination',{zone:destination}),recommended=label+' '+t('charts.fields.recommended')\n    at assign (<checkout>/tests/e2e/chart-simple-fields.spec.ts:67:16)\n    at meanCity (<checkout>/tests/e2e/chart-simple-fields.spec.ts:78:33)\n    at <checkout>/tests/e2e/chart-simple-fields.spec.ts:137:8"
+          ]
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 150,
+          "title": "SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 30994,
+          "errors": [
+            "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^\\s*(?:✓\\s*)?Ciudad\\s*$/ }) }).getByRole('button', { name: /^(?:(?:Añadir|Mover) a… Ciudad|Más acciones de Ciudad)$/ })\n\n\n  65 |  // Setup compatible con B y C: solo abre el menú real del campo sin usar.\n  66 |  const trigger=field(name).getByRole('button',{name:new RegExp('^(?:(?:Añadir|Mover) a… '+name+'|Más acciones de '+name+')$')})\n> 67 |  await trigger.click()\n     |                ^\n  68 |  await expect(menu()).toBeVisible()\n  69 |  // Dos nombres exactos construidos por ChartFields: base y base + sufijo del catálogo.\n  70 |  const label=t('charts.fields.destination',{zone:destination}),recommended=label+' '+t('charts.fields.recommended')\n    at assign (<checkout>/tests/e2e/chart-simple-fields.spec.ts:67:16)\n    at meanCity (<checkout>/tests/e2e/chart-simple-fields.spec.ts:78:33)\n    at <checkout>/tests/e2e/chart-simple-fields.spec.ts:151:8"
+          ]
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 174,
+          "title": "SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 30961,
+          "errors": [
+            "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^\\s*(?:✓\\s*)?Ciudad\\s*$/ }) }).getByRole('button', { name: /^(?:(?:Añadir|Mover) a… Ciudad|Más acciones de Ciudad)$/ })\n\n\n  65 |  // Setup compatible con B y C: solo abre el menú real del campo sin usar.\n  66 |  const trigger=field(name).getByRole('button',{name:new RegExp('^(?:(?:Añadir|Mover) a… '+name+'|Más acciones de '+name+')$')})\n> 67 |  await trigger.click()\n     |                ^\n  68 |  await expect(menu()).toBeVisible()\n  69 |  // Dos nombres exactos construidos por ChartFields: base y base + sufijo del catálogo.\n  70 |  const label=t('charts.fields.destination',{zone:destination}),recommended=label+' '+t('charts.fields.recommended')\n    at assign (<checkout>/tests/e2e/chart-simple-fields.spec.ts:67:16)\n    at <checkout>/tests/e2e/chart-simple-fields.spec.ts:177:8"
+          ]
+        }
+      ],
+      "top_level_errors": []
+    },
+    "keyboard_observation": {
+      "stats": {
+        "startTime": "2026-11-20T07:10:55.669Z",
+        "duration": 3268.722,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 143,
+          "title": "SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2885,
+          "errors": []
+        }
+      ],
+      "top_level_errors": []
+    },
+    "readiness_public_red": {
+      "stats": {
+        "startTime": "2026-11-20T07:37:29.737Z",
+        "duration": 1648.402,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "chart-field-readiness.spec.ts",
+          "line": 10,
+          "title": "SIM-2c: antes de recibir la primera página real los campos esperan; después Enter usa el perfil numérico",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 1290,
+          "errors": [
+            "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: \"true\"\nReceived: \"false\"\n\n  59 |   const after={main:await state(),zones:await zones(),announcement:await panel.locator('.analysis-announcement').textContent()}\n  60 |   await test.info().attach('primera-pagina-real-campos-pendientes',{body:JSON.stringify({before,after},null,2),contentType:'application/json'})\n> 61 |   expect(before.moreDisabled).toBe('true');expect(after.main.delivered).toBe(0)\n     |                               ^\n  62 |   expect(after.zones).toEqual(before.zones);expect(after.announcement).toBe('Espera a que termine la operación.')\n  63 |   await expect(panel.getByRole('menu')).toHaveCount(0)\n  64 |   await release();await expect.poll(async()=>(await state()).delivered).toBeGreaterThan(0)\n    at <checkout>/tests/e2e/chart-field-readiness.spec.ts:61:31"
+          ]
+        }
+      ],
+      "top_level_errors": []
+    },
+    "guard_batch": {
+      "stats": {
+        "startTime": "2026-11-20T07:47:05.580Z",
+        "duration": 51244.573,
+        "expected": 6,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "chart-field-readiness.spec.ts",
+          "line": 10,
+          "title": "SIM-2c: antes de recibir la primera página real los campos esperan; después Enter usa el perfil numérico",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1629,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 88,
+          "title": "SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 985,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 110,
+          "title": "SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4596,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 131,
+          "title": "SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2751,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 141,
+          "title": "SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2991,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 155,
+          "title": "SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 34634,
+          "errors": [
+            "TimeoutError: locator.evaluate: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^\\s*(?:✓\\s*)?Edad\\s*$/ }) }).getByRole('button', { name: 'Más acciones de Edad', exact: true })\n\n\n  159 |  const entry=field('Edad'),more=entry.getByRole('button',{name:'Más acciones de Edad',exact:true})\n  160 |  await page.mouse.move(0,0);await fields().getByRole('searchbox').focus()\n> 161 |  expect(await more.evaluate(node=>{const style=getComputedStyle(node);return style.visibility==='hidden'||style.opacity==='0'||style.display==='none'})).toBe(true)\n      |                    ^\n  162 |  await entry.hover();await expect(more).toBeVisible();await more.press('Enter');await expect(menu()).toBeVisible()\n  163 |  const unavailable=menu().getByRole('menuitem',{name:/^Añadir a Valores/}),reason=/^El mapa de calor solo cuenta filas[.]?$/\n  164 |  await expect(unavailable).toHaveAttribute('aria-disabled','true');await expect(unavailable).not.toHaveAttribute('disabled')\n    at <checkout>/tests/e2e/chart-simple-fields.spec.ts:161:20"
+          ]
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 179,
+          "title": "SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3006,
+          "errors": []
+        }
+      ],
+      "top_level_errors": []
+    },
+    "menu_focus": {
+      "stats": {
+        "startTime": "2026-11-20T07:51:16.587Z",
+        "duration": 5259.309,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 155,
+          "title": "SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4888,
+          "errors": []
+        }
+      ],
+      "top_level_errors": []
+    },
+    "consumer_batch": {
+      "stats": {
+        "startTime": "2026-11-20T08:06:14.780Z",
+        "duration": 729648.4639999999,
+        "expected": 138,
+        "skipped": 0,
+        "unexpected": 9,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "project-source.spec.ts",
+          "line": 65,
+          "title": "registra un CSV con teclado, bloquea edición directa y deja guardar una copia exacta",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1475,
+          "errors": []
+        },
+        {
+          "file": "project-source.spec.ts",
+          "line": 97,
+          "title": "avisa cuando la fuente cambia y conserva la huella previa al volver a registrarla",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1254,
+          "errors": []
+        },
+        {
+          "file": "project-source.spec.ts",
+          "line": 114,
+          "title": "busca por huella dentro del proyecto y solo reenlaza tras confirmar",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 918,
+          "errors": []
+        },
+        {
+          "file": "project-source.spec.ts",
+          "line": 134,
+          "title": "el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4863,
+          "errors": []
+        },
+        {
+          "file": "project-source.spec.ts",
+          "line": 206,
+          "title": "una muestra conserva su alcance al protegerla y al cerrar el proyecto",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1585,
+          "errors": []
+        },
+        {
+          "file": "project-source.spec.ts",
+          "line": 232,
+          "title": "diálogo y fuente protegida en colores claro y oscuro [es]",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 887,
+          "errors": []
+        },
+        {
+          "file": "project-source.spec.ts",
+          "line": 232,
+          "title": "diálogo y fuente protegida en colores claro y oscuro [en-XA]",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 922,
+          "errors": []
+        },
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 48,
+          "title": "U0: capturas de estados existentes y tipografía base sin modificar archivos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5809,
+          "errors": []
+        },
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 65,
+          "title": "U0: un primario Guardar/Exportar/Abrir con cajas y nombres estables en ambos temas",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1539,
+          "errors": []
+        },
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 82,
+          "title": "U0: los botones deshabilitados visibles explican su motivo con title y descripción accesible",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 701,
+          "errors": []
+        },
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 90,
+          "title": "U0: contraste real, foco por teclado, pulsación y movimiento reducido",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 895,
+          "errors": []
+        },
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 109,
+          "title": "U0: idiomas en-XA y en conservan nombres, motivos y cajas de la barra",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 994,
+          "errors": []
+        },
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 125,
+          "title": "U0: solo lectura conserva sus restricciones y Abrir como acción disponible",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 786,
+          "errors": []
+        },
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 131,
+          "title": "U0: Más opciones sigue visible con resumen paginado y controles de 13 px",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2963,
+          "errors": []
+        },
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 143,
+          "title": "U0: la ayuda del gráfico se despliega debajo de su control y permite cerrarla",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2789,
+          "errors": []
+        },
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 150,
+          "title": "U0: Calculando cabe en el botón real con en-XA, inglés y español",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 834,
+          "errors": []
+        },
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 164,
+          "title": "U0.1: campos legibles y orden a 1280 × 720 (es)",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 33275,
+          "errors": [
+            "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.field-entry[title=\"Cliente\"] button')\n    - locator resolved to <button type=\"button\" tabindex=\"-1\" aria-haspopup=\"menu\" aria-disabled=\"false\" aria-expanded=\"false\" title=\"Más acciones de Cliente\" class=\"field-more svelte-hqvgw9\" aria-label=\"Más acciones de Cliente\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    58 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n\n\n  214 |  await expect(page.locator('.pivot-result')).toBeVisible()\n  215 |  if(locale==='es')for(const [field,zone] of [['Cliente','Filas'],['Ventas','Valores']]){\n> 216 |   await page.locator(`.field-entry[title=\"${field}\"] button`).click()\n      |                                                               ^\n  217 |   await page.getByRole('menuitem',{name:new RegExp(`^Añadir a ${zone}(?: |$)`)}).click()\n  218 |  }\n  219 |  if(locale==='es')await chartPanel(page).getByLabel('Resumir Ventas por',{exact:true}).selectOption('sum')\n    at <checkout>/tests/e2e/ui-u0.spec.ts:216:63"
+          ]
+        },
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 164,
+          "title": "U0.1: campos legibles y orden a 1280 × 720 (en-XA)",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 3095,
+          "errors": [
+            "Error: expect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 1009\nReceived:    1242.734375\n\n  240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)\n  241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)\n> 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n      |                                ^\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n  244 |     expect.soft(box.hit).toBe(true)\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:242:32",
+            "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: true\nReceived: false\n\n  242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n> 244 |     expect.soft(box.hit).toBe(true)\n      |                          ^\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n  246 |    }\n  247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:244:26",
+            "Error: expect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 1009\nReceived:    1242.734375\n\n  240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)\n  241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)\n> 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n      |                                ^\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n  244 |     expect.soft(box.hit).toBe(true)\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:242:32",
+            "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: true\nReceived: false\n\n  242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n> 244 |     expect.soft(box.hit).toBe(true)\n      |                          ^\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n  246 |    }\n  247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:244:26",
+            "Error: expect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 1009\nReceived:    1242.734375\n\n  240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)\n  241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)\n> 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n      |                                ^\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n  244 |     expect.soft(box.hit).toBe(true)\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:242:32",
+            "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: true\nReceived: false\n\n  242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n> 244 |     expect.soft(box.hit).toBe(true)\n      |                          ^\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n  246 |    }\n  247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:244:26",
+            "Error: expect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 1009\nReceived:    1242.734375\n\n  240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)\n  241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)\n> 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n      |                                ^\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n  244 |     expect.soft(box.hit).toBe(true)\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:242:32",
+            "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: true\nReceived: false\n\n  242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n> 244 |     expect.soft(box.hit).toBe(true)\n      |                          ^\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n  246 |    }\n  247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:244:26",
+            "Error: expect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 1009\nReceived:    1242.734375\n\n  240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)\n  241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)\n> 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n      |                                ^\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n  244 |     expect.soft(box.hit).toBe(true)\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:242:32",
+            "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: true\nReceived: false\n\n  242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n> 244 |     expect.soft(box.hit).toBe(true)\n      |                          ^\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n  246 |    }\n  247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:244:26",
+            "Error: expect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 1009\nReceived:    1242.734375\n\n  240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)\n  241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)\n> 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n      |                                ^\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n  244 |     expect.soft(box.hit).toBe(true)\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:242:32",
+            "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: true\nReceived: false\n\n  242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n> 244 |     expect.soft(box.hit).toBe(true)\n      |                          ^\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n  246 |    }\n  247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:244:26",
+            "Error: expect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 1009\nReceived:    1242.734375\n\n  240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)\n  241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)\n> 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n      |                                ^\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n  244 |     expect.soft(box.hit).toBe(true)\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:242:32",
+            "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: true\nReceived: false\n\n  242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n> 244 |     expect.soft(box.hit).toBe(true)\n      |                          ^\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n  246 |    }\n  247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:244:26",
+            "Error: expect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 1009\nReceived:    1242.734375\n\n  240 |     expect.soft(box.nameWidth).toBeGreaterThan(0)\n  241 |     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)\n> 242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n      |                                ^\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n  244 |     expect.soft(box.hit).toBe(true)\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:242:32",
+            "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: true\nReceived: false\n\n  242 |     expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)\n  243 |     expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)\n> 244 |     expect.soft(box.hit).toBe(true)\n      |                          ^\n  245 |     if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)\n  246 |    }\n  247 |    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)\n    at <checkout>/tests/e2e/ui-u0.spec.ts:244:26"
+          ]
+        },
+        {
+          "file": "analysis-dock.spec.ts",
+          "line": 25,
+          "title": "las secciones de la pestaña de análisis se alcanzan y activan con teclado",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1206,
+          "errors": []
+        },
+        {
+          "file": "analysis-dock.spec.ts",
+          "line": 49,
+          "title": "cambiar de sección conserva la configuración del gráfico y el borrador SQL",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1165,
+          "errors": []
+        },
+        {
+          "file": "analysis-dock.spec.ts",
+          "line": 62,
+          "title": "las secciones visitadas se conservan y cerrar análisis las desmonta y devuelve el foco al CSV",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 977,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 85,
+          "title": "SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1187,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 117,
+          "title": "SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro secciones",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1178,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 134,
+          "title": "SIM-2a: exportaciones sin resultado siguen enfocables, explican el motivo y no calculan al abrir ni activar",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1036,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 149,
+          "title": "SIM-2a: informes de columnas, resumen y detalle conservan sus datos y precisión desde Exportar",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1546,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 165,
+          "title": "SIM-2a: el informe contextual conserva Perfil, Frecuencias paginadas, Distribución y Correlación",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2102,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 183,
+          "title": "SIM-2a: informe SQL reúne todas las páginas y conserva identificadores y revisión",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1971,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 193,
+          "title": "SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6213,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 220,
+          "title": "SIM-2a: pestañas grandes conservan el motivo y las flechas omiten Información y Estadísticas [grande]",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 801,
+          "errors": []
+        },
+        {
+          "file": "analysis-sections.spec.ts",
+          "line": 229,
+          "title": "SIM-2a: explorar una columna después de elegir un rango conserva habilitado su informe contextual",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1253,
+          "errors": []
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 64,
+          "title": "AN-1a abre una pestaña única, enfoca su sección y solo calcula por petición",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1291,
+          "errors": []
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 92,
+          "title": "AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta la configuración",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 30878,
+          "errors": [
+            "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('button', { name: 'Añadir a… Valor', exact: true })\n\n\n   97 |  await expect(suggestion).toBeEnabled();expect(await calls()).toContain('analyzeColumn');expect(await calls()).not.toContain('sqlRun')\n   98 |  await expect(panel.locator('.pivot-result')).toHaveCount(0)\n>  99 |  await suggestion.click();await panel.getByRole('button',{name:'Añadir a… Valor',exact:true}).click();await panel.getByRole('menuitem',{name:'Añadir a Valores (recomendado)',exact:true}).click();await panel.getByLabel('Resumir Valor por',{exact:true}).selectOption('sum');await expect(panel.locator('.pivot-result tfoot')).toContainText('110')\n      |                                                                                               ^\n  100 |  await panel.getByLabel('Resumir Valor por',{exact:true}).selectOption('average')\n  101 |  await expect(panel.locator('.pivot-result tfoot')).toContainText('36.666')\n  102 |  await expect(analysis().locator('header').getByRole('button',{name:'Exportar',exact:true})).toBeVisible()\n    at <checkout>/tests/e2e/analysis-tab.spec.ts:99:95"
+          ]
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 117,
+          "title": "AN-1a reutiliza filtros, columnas y rango de la tabla e invalida los resultados al editar",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1382,
+          "errors": []
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 153,
+          "title": "AN-1a cancelar análisis no modifica el CSV y cerrar un CSV solo elimina su propio análisis",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1446,
+          "errors": []
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 175,
+          "title": "AN-1a archivo grande abre análisis manual y conserva SQL",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3048,
+          "errors": []
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 192,
+          "title": "AN-1a paleta y pestañas con teclado, Escape conserva la pestaña y capturas de idiomas",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 795,
+          "errors": []
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 220,
+          "title": "AN-1b ignora la disposición antigua del panel al abrir un perfil existente",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1192,
+          "errors": []
+        },
+        {
+          "file": "chart-clarity.spec.ts",
+          "line": 94,
+          "title": "SIM-2b: lápiz, Intro, Escape y vacío conservan el resultado sin recalcular al cambiar el título",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3015,
+          "errors": []
+        },
+        {
+          "file": "chart-clarity.spec.ts",
+          "line": 121,
+          "title": "SIM-2b: título propio sobrevive campos y preset y acompaña SVG, PNG, JSON y contexto CSV con ceros y hash exactos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 10872,
+          "errors": []
+        },
+        {
+          "file": "chart-clarity.spec.ts",
+          "line": 146,
+          "title": "SIM-2b: Ajustes empieza cerrado al final de Campos y conserva controles únicos y los detalles de tabla, consulta y filtros",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 15230,
+          "errors": []
+        },
+        {
+          "file": "chart-clarity.spec.ts",
+          "line": 191,
+          "title": "SIM-2b: manual sin perfil conserva medida, ejes y agrupación explícitos sin nuevos barridos ni conversión de ID",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 16001,
+          "errors": [
+            "Error: expect(locator).toHaveAccessibleName(expected) failed\n\nLocator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^ID$/ }) }).locator('.field-badge')\nExpected: \"Texto\"\nReceived: \"Texto (sin número reconocido)\"\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toHaveAccessibleName\" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^ID$/ }) }).locator('.field-badge') with timeout 15000ms\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^ID$/ }) }).locator('.field-badge')\n    33 × locator resolved to <span role=\"img\" class=\"field-badge svelte-hqvgw9\" title=\"Texto (sin número reconocido)\" aria-label=\"Texto (sin número reconocido)\">…</span>\n       - unexpected value \"Texto (sin número reconocido)\"\n\n\n  192 |  const {records}=await open('manual.csv',rows(3001)),before=(await calls()).filter(operation=>operation==='analyzeColumn')\n  193 |  await openAnalysis(page,'Gráficos');await assign('Ciudad','Filas');await assign('Ingreso','Valores')\n> 194 |  await expect(panel().locator('.field-entry').filter({has:page.locator('.field-name').filter({hasText:/^ID$/})}).locator('.field-badge')).toHaveAccessibleName('Texto')\n      |                                                                                                                                           ^\n  195 |  await expect(panel().getByLabel('Resumir Ingreso por',{exact:true})).toHaveValue('count')\n  196 |  await expect(panel().getByLabel('Resumir Ingreso por',{exact:true}).locator('option[value=sum]')).toBeDisabled()\n  197 |  await expand(settings());for(const label of ['Columna X del gráfico','Columna Y del gráfico','Tipo de medida del gráfico','Agrupación temporal del gráfico'])await expect(settings().getByLabel(label,{exact:true})).toHaveCount(1)\n    at <checkout>/tests/e2e/chart-clarity.spec.ts:194:139"
+          ]
+        },
+        {
+          "file": "chart-clarity.spec.ts",
+          "line": 237,
+          "title": "SIM-2b: cinco ciudades que caben conservan etiquetas rectas en SVG de pantalla y exportación",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2962,
+          "errors": []
+        },
+        {
+          "file": "chart-clarity.spec.ts",
+          "line": 240,
+          "title": "SIM-2b: treinta nombres de 25 caracteres giran 25 grados en Caja sin cambiar el ranking existente",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2992,
+          "errors": []
+        },
+        {
+          "file": "chart-compatibility-controls.spec.ts",
+          "line": 63,
+          "title": "SIM-2b compatibilidad: Ajustes conserva Texto/Número explícito con perfil identificador y valores excluidos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6595,
+          "errors": []
+        },
+        {
+          "file": "chart-compatibility-controls.spec.ts",
+          "line": 81,
+          "title": "SIM-2b compatibilidad: Ajustes conserva Mes/Año con perfil mixto y descarta la fecha inválida sin cambiar datos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 8401,
+          "errors": []
+        },
+        {
+          "file": "chart-field-loading.spec.ts",
+          "line": 12,
+          "title": "los 200 campos publican sus tipos juntos, sin una clasificación provisional durante la lectura",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 16088,
+          "errors": [
+            "Error: expect(locator).toHaveAccessibleName(expected) failed\n\nLocator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('listitem').filter({ has: getByText('Código «México»', { exact: true }) }).locator('.field-badge')\nExpected: \"Texto\"\nReceived: \"Texto (sin número reconocido)\"\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toHaveAccessibleName\" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('listitem').filter({ has: getByText('Código «México»', { exact: true }) }).locator('.field-badge') with timeout 15000ms\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('listitem').filter({ has: getByText('Código «México»', { exact: true }) }).locator('.field-badge')\n    33 × locator resolved to <span role=\"img\" class=\"field-badge svelte-hqvgw9\" title=\"Texto (sin número reconocido)\" aria-label=\"Texto (sin número reconocido)\">…</span>\n       - unexpected value \"Texto (sin número reconocido)\"\n\n\n  52 |  await expect(badge('Campo 199')).toHaveAccessibleName('Número')\n  53 |  await expect(badge('Fecha')).toHaveAccessibleName('Fecha')\n> 54 |  await expect(badge('Código «México»')).toHaveAccessibleName('Texto')\n     |                                         ^\n  55 |  await expect(badge('Grupo')).toHaveAccessibleName('Categoría')\n  56 |  for(const name of ['Descuento','Importe']){\n  57 |   await expect(badge(name)).toHaveAccessibleName('Categoría')\n    at <checkout>/tests/e2e/chart-field-loading.spec.ts:54:41"
+          ]
+        },
+        {
+          "file": "chart-field-readiness.spec.ts",
+          "line": 10,
+          "title": "SIM-2c: antes de recibir la primera página real los campos esperan; después Enter usa el perfil numérico",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1297,
+          "errors": []
+        },
+        {
+          "file": "chart-fields.spec.ts",
+          "line": 24,
+          "title": "F2b: herramientas con nombre, ayuda inmediata al foco y controles sin pintura nativa",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2920,
+          "errors": []
+        },
+        {
+          "file": "chart-fields.spec.ts",
+          "line": 37,
+          "title": "F2b: sugerencia inicial y dos acciones cambian qué se grafica sin Más opciones",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6866,
+          "errors": []
+        },
+        {
+          "file": "chart-fields.spec.ts",
+          "line": 54,
+          "title": "F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6886,
+          "errors": []
+        },
+        {
+          "file": "chart-fields.spec.ts",
+          "line": 72,
+          "title": "F2b: cada Resumir por coincide con datos independientes y porcentajes solo aditivos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 16001,
+          "errors": []
+        },
+        {
+          "file": "chart-fields.spec.ts",
+          "line": 84,
+          "title": "F2b: texto no se suma, mapa solo cuenta y símbolos no se convierten",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3086,
+          "errors": []
+        },
+        {
+          "file": "chart-fields.spec.ts",
+          "line": 95,
+          "title": "F2b: 842 grupos conservan truncado y tabla paginada; Otros solo sobre resultados completos aditivos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 7392,
+          "errors": []
+        },
+        {
+          "file": "chart-fields.spec.ts",
+          "line": 106,
+          "title": "F2b: filtros reutilizados, exportación y datos originales intactos",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 19823,
+          "errors": [
+            "Error: expect(locator).toBeFocused() failed\n\nLocator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('button', { name: 'Más acciones de Región', exact: true })\nExpected: focused\nReceived: inactive\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toBeFocused\" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('button', { name: 'Más acciones de Región', exact: true }) with timeout 15000ms\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('button', { name: 'Más acciones de Región', exact: true })\n    33 × locator resolved to <button type=\"button\" tabindex=\"-1\" aria-haspopup=\"menu\" aria-disabled=\"false\" aria-expanded=\"false\" title=\"Más acciones de Región\" class=\"field-more svelte-hqvgw9\" aria-label=\"Más acciones de Región\">…</button>\n       - unexpected value \"inactive\"\n\n\n  110 |  const filters=panel.getByRole('region',{name:'Filtros del gráfico',exact:true});await filters.getByLabel('Operador de condición 1',{exact:true}).selectOption('equals');await filters.getByLabel('Valor de condición 1',{exact:true}).fill('Norte');await filters.getByRole('button',{name:'Aplicar filtros del gráfico',exact:true}).click()\n  111 |  await expect(panel.locator('.pivot-result tfoot')).toContainText('2,000');await expect(panel.getByRole('region',{name:'Filtros',exact:true})).toContainText('Región')\n> 112 |  await expect(panel.getByRole('button',{name:'Más acciones de Región',exact:true})).toBeFocused()\n      |                                                                                     ^\n  113 |  await exportAnalysis(page,'charts.ui.exportImage',{format:'SVG'});await expect.poll(async()=>{try{return await readFile(join(folder,'exports','ventas.svg'),'utf8')}catch{return''}}).toContain('<svg')\n  114 |  await exportAnalysis(page,'charts.ui.exportImage',{format:'PNG'});await expect.poll(async()=>{try{return (await readFile(join(folder,'exports','ventas.png'))).subarray(1,4).toString()}catch{return''}}).toBe('PNG')\n  115 |  await exportAnalysis(page,'charts.ui.exportImage',{format:'PDF'});await expect.poll(async()=>{try{return (await readFile(join(folder,'exports','ventas.pdf'))).subarray(0,4).toString()}catch{return''}}).toBe('%PDF')\n    at <checkout>/tests/e2e/chart-fields.spec.ts:112:85"
+          ]
+        },
+        {
+          "file": "chart-fields.spec.ts",
+          "line": 118,
+          "title": "F2b: estrecho conserva foco al editar campos, inglés natural y resultado completo",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4921,
+          "errors": []
+        },
+        {
+          "file": "chart-fields.spec.ts",
+          "line": 127,
+          "title": "F2b: actualizar una celda no sustituye el resumen elegido ni guarda el CSV",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6248,
+          "errors": []
+        },
+        {
+          "file": "chart-fields.spec.ts",
+          "line": 133,
+          "title": "F2b: 200 campos, nombres Unicode, idioma seudolocalizado y tamaños accesibles",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3460,
+          "errors": []
+        },
+        {
+          "file": "chart-fields.spec.ts",
+          "line": 145,
+          "title": "F2b: en-XA real, tema oscuro y ventana estrecha no recortan el resultado",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3965,
+          "errors": []
+        },
+        {
+          "file": "chart-fields.spec.ts",
+          "line": 153,
+          "title": "F2b: contraste de textos y controles medido contra sus fondos reales en ambos temas",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2826,
+          "errors": []
+        },
+        {
+          "file": "chart-review.spec.ts",
+          "line": 30,
+          "title": "Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5122,
+          "errors": []
+        },
+        {
+          "file": "chart-review.spec.ts",
+          "line": 46,
+          "title": "Revisión108 · motivo con línea propia y sin solapes a1280×720",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4815,
+          "errors": []
+        },
+        {
+          "file": "chart-review.spec.ts",
+          "line": 55,
+          "title": "Revisión108 · seis campos y acciones fijas visibles a1280×720",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 4826,
+          "errors": [
+            "Error: expect(received).toBeGreaterThanOrEqual(expected)\n\nExpected: >= 6\nReceived:    5\n\n  56 |  const fields=panel().getByRole('complementary');await fields.locator('.field-list').evaluate(node=>node.scrollTop=0)\n  57 |  const visible=await fields.locator('.field-list').evaluate(node=>{const area=node.getBoundingClientRect();return[...node.querySelectorAll('.field-entry')].filter(row=>{const r=row.getBoundingClientRect();return r.top>=area.top&&r.bottom<=area.bottom}).length})\n> 58 |  expect(visible).toBeGreaterThanOrEqual(6)\n     |                  ^\n  59 |  await writeFile(test.info().outputPath('fields-visible.json'),JSON.stringify({visible}))\n  60 |  await expect(fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true})).toBeInViewport({ratio:1})\n  61 |  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})\n    at <checkout>/tests/e2e/chart-review.spec.ts:58:18"
+          ]
+        },
+        {
+          "file": "chart-review.spec.ts",
+          "line": 69,
+          "title": "Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5076,
+          "errors": []
+        },
+        {
+          "file": "chart-review.spec.ts",
+          "line": 81,
+          "title": "Revisión108 · tabla, total, marcas y eje conservan el formato numérico al cambiar campo e idioma",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 10910,
+          "errors": []
+        },
+        {
+          "file": "chart-review.spec.ts",
+          "line": 103,
+          "title": "Revisión108 final · Total completo dentro del área visible a1280×720",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4976,
+          "errors": []
+        },
+        {
+          "file": "chart-review.spec.ts",
+          "line": 103,
+          "title": "Revisión108 final · Total completo dentro del área visible a800×720",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5003,
+          "errors": []
+        },
+        {
+          "file": "chart-review.spec.ts",
+          "line": 121,
+          "title": "Revisión108 final · el aviso explica el campo de orden y los empates de Suma y Cuenta en es/en",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 14378,
+          "errors": []
+        },
+        {
+          "file": "chart-sensible-suggestions.spec.ts",
+          "line": 50,
+          "title": "SIM-1d: abrir no analiza y Crear propone contar Ciudad sin elegir un número",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2806,
+          "errors": []
+        },
+        {
+          "file": "chart-sensible-suggestions.spec.ts",
+          "line": 65,
+          "title": "SIM-1d: Ciudad e Ingreso usan Promedio independiente y permiten Suma explícita",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4846,
+          "errors": []
+        },
+        {
+          "file": "chart-sensible-suggestions.spec.ts",
+          "line": 85,
+          "title": "SIM-1d: Ingreso antes de Ciudad propone Promedio y cambiar Filas conserva Suma explícita",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5027,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 88,
+          "title": "SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 975,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 110,
+          "title": "SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4602,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 131,
+          "title": "SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2800,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 141,
+          "title": "SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3017,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 155,
+          "title": "SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4812,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 179,
+          "title": "SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3044,
+          "errors": []
+        },
+        {
+          "file": "chart-single-load.spec.ts",
+          "line": 15,
+          "title": "scatter sin fechas carga la fuente una vez y conserva observaciones y totales nulos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4431,
+          "errors": []
+        },
+        {
+          "file": "chart-single-load.spec.ts",
+          "line": 15,
+          "title": "line sin fechas carga la fuente una vez y conserva observaciones y totales nulos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4437,
+          "errors": []
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "line": 68,
+          "title": "TEN-1 cinco pares: petición, teclado, exportaciones completas y preset",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5524,
+          "errors": []
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "line": 104,
+          "title": "TEN-1 degenerados explican la ausencia y conservan marcada la opción",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 7746,
+          "errors": []
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "line": 119,
+          "title": "TEN-1 ocultar Tendencia en la leyenda persiste después de ampliar y cambiar tema",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2548,
+          "errors": []
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "line": 128,
+          "title": "TEN-1 controla la misma visibilidad de Tendencia con el teclado existente",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2611,
+          "errors": []
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "line": 141,
+          "title": "TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5665,
+          "errors": []
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "line": 159,
+          "title": "TEN-1 cancelar descarta la respuesta tardía y editar exige actualizar la revisión",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4851,
+          "errors": []
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "line": 171,
+          "title": "TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 13674,
+          "errors": []
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "line": 186,
+          "title": "TEN-1 capturas, teclado y bloque legible en es",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2834,
+          "errors": []
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "line": 186,
+          "title": "TEN-1 capturas, teclado y bloque legible en en-XA",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3139,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 22,
+          "title": "seis gráficos calculan sobre datos completos, con cuartiles, huecos y categorías exactas",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4073,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 66,
+          "title": "gráficos visuales: SVG de histogram",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2811,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 66,
+          "title": "gráficos visuales: SVG de bar",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2791,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 66,
+          "title": "gráficos visuales: SVG de line",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2334,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 66,
+          "title": "gráficos visuales: SVG de scatter",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2312,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 66,
+          "title": "gráficos visuales: SVG de heatmap",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2813,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 66,
+          "title": "gráficos visuales: SVG de box",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2834,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 69,
+          "title": "gráficos visuales: temas y tabla accesible",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3151,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 76,
+          "title": "gráficos visuales: exportación SVG, PNG y PDF",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3547,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 84,
+          "title": "gráficos visuales: invalidación tras editar, teclado y archivo intacto",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4386,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 90,
+          "title": "gráficos distinguen vacío, constante, límite de puntos y etiquetas no ejecutables",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 9860,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 108,
+          "title": "histograma agrega un millón de filas completo aunque la tabla sea de solo lectura",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5500,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 121,
+          "title": "gráficos de un CSV mayor de 50 MiB se exportan como imágenes sin habilitar el CSV parcial",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 9359,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 142,
+          "title": "exportar un gráfico rechaza destinos de documentos abiertos y revisiones obsoletas",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 712,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 149,
+          "title": "constructor explícito: oráculos numéricos e identificadores sin mutaciones",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5621,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 159,
+          "title": "constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 11495,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 180,
+          "title": "vista filtrada usa todas las coincidencias con filtros combinados, fechas y revisión actual",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1810,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 192,
+          "title": "ayuda y selección de valores impiden cálculos incompatibles y explican columnas sin números",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6604,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 204,
+          "title": "series por categoría: siete cálculos por combinación, líneas y puntos con valores exactos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6254,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 215,
+          "title": "series visuales: leyenda y teclado sincronizados, filtros, exportación y límite comprensible",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 38488,
+          "errors": [
+            "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('group', { name: 'Formas de visualizar', exact: true }).getByRole('button', { name: /^Histograma(?: ?\\(recomendado\\))?$/ })\n    - locator resolved to <button type=\"button\" aria-pressed=\"false\" aria-disabled=\"true\" class=\"svelte-1wo6u31\" aria-describedby=\"c1-histogram\" title=\"Necesita un campo numérico en Valores\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not enabled\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not enabled\n    - retrying click action\n      - waiting 100ms\n    58 × waiting for element to be visible, enabled and stable\n       - element is not enabled\n     - retrying click action\n       - waiting 500ms\n\n\n   at panel.ts:130\n\n  128 | }\n  129 | export async function chartType(page:Page,kind:ChartKind){\n> 130 |  await(await chartTypeButton(page,kind)).click()\n      |                                          ^\n  131 | }\n  132 | export async function chartAggregate(page:Page,field:string){\n  133 |  await openChartFields(page);return chartPanel(page).getByLabel(await translated(page,'charts.fields.aggregate',{field}),{exact:true})\n    at chartType (<checkout>/tests/e2e/panel.ts:130:42)\n    at <checkout>/tests/e2e/charts.spec.ts:226:2"
+          ]
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 232,
+          "title": "series: 3 000 y 100 000 registros conservan sumas por combinación y respuesta de la interfaz",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2400,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 251,
+          "title": "fechas: día, mes y año contrastan cálculos, fechas inválidas y huecos por serie sin alterar el CSV",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6831,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 263,
+          "title": "calendario temporal acotado: extremos 0001–9999 y fechas ausentes no generan resultados masivos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3350,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 272,
+          "title": "constructor temporal: clics, series, filtros, errores y exportación con nombres y alcance claros",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 9678,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 293,
+          "title": "filtros propios: editor reutilizado, borradores, Escape, alcance y exportación sin cambiar la tabla",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 16479,
+          "errors": [
+            "Error: expect(locator).toBeFocused() failed\n\nLocator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.field-entry').filter({ has: getByTitle('Grupo', { exact: true }) }).getByRole('button')\nExpected: focused\nReceived: inactive\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toBeFocused\" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.field-entry').filter({ has: getByTitle('Grupo', { exact: true }) }).getByRole('button') with timeout 15000ms\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.field-entry').filter({ has: getByTitle('Grupo', { exact: true }) }).getByRole('button')\n    34 × locator resolved to <button type=\"button\" tabindex=\"-1\" aria-haspopup=\"menu\" aria-disabled=\"false\" aria-expanded=\"false\" title=\"Más acciones de Grupo\" class=\"field-more svelte-hqvgw9\" aria-label=\"Más acciones de Grupo\">…</button>\n       - unexpected value \"inactive\"\n\n\n  296 |  await tableEditor.getByRole('button',{name:'Aplicar consulta',exact:true}).click();await expect(page.getByRole('grid',{name:'Tabla de datos',includeHidden:true})).toHaveAttribute('aria-rowcount','10')\n  297 |  await showPanel(page,'Gráficos');await showTable(page);await menuItem(page,'Filtrar','Consulta avanzada');const tableHeadingId=await tableEditor.getByRole('heading',{level:3}).getAttribute('id');await showPanel(page,'Gráficos');const panel=chartPanel(page),filterEditor=panel.getByRole('region',{name:'Filtros del gráfico',exact:true})\n> 298 |  let filterReturn=await openFilters();await expect(filterEditor.getByRole('button',{name:'Añadir orden',exact:true})).toHaveCount(0);expect(await filterEditor.getByRole('heading',{level:3}).getAttribute('id')).not.toBe(tableHeadingId);await filterEditor.getByLabel('Valor de condición 1',{exact:true}).fill('borrador');await filterEditor.getByLabel('Valor de condición 1',{exact:true}).press('Escape');await expect(filterEditor).toHaveCount(0);await expect(panel).toBeVisible();await expect(filterReturn).toBeFocused();await showTable(page);await expect(tableEditor).toBeVisible();await tableEditor.getByRole('button',{name:'Cerrar consulta avanzada',exact:true}).click();await showPanel(page,'Gráficos')\n      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^\n  299 |  filterReturn=await openFilters();await expect(filterEditor.getByLabel('Valor de condición 1',{exact:true})).toHaveValue('');await expect(panel.getByRole('region',{name:'Filtros',exact:true}).locator('.chip')).toHaveCount(0);await filterEditor.getByLabel('Combinar condiciones').selectOption('any')\n  300 |  for(const [i,column,op,value] of [[1,'3','equals','U'],[2,'2','greater','50']] as const){if(i>1)await filterEditor.getByRole('button',{name:'Añadir condición',exact:true}).click();await filterEditor.getByLabel(`Columna de condición ${i}`,{exact:true}).selectOption(column);await filterEditor.getByLabel(`Operador de condición ${i}`,{exact:true}).selectOption(op);await filterEditor.getByLabel(`Valor de condición ${i}`,{exact:true}).fill(value)}\n  301 |  await filterEditor.getByRole('button',{name:'Aplicar filtros del gráfico',exact:true}).click();await expect(filterReturn).toBeFocused();await y(Number('2'));await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await aggregate().selectOption('sum');await finishChart();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado',{timeout:30000});await chartDetails(panel);await expect(panel.locator('.chart-info .scope').first()).toContainText('Documento completo · Filtros del gráfico: 2 (O)');await panel.locator('.chart-info>summary').click();await chartDetails(panel);await expect(panel.locator('.chart-info .scope').first()).toContainText('6 filas');await panel.locator('.chart-info>summary').click();await openChartData(page);await expect(panel.locator('.chart-info .table-scroll tbody tr')).toHaveText(['B5.0','C5.0','A104.0'])\n    at <checkout>/tests/e2e/charts.spec.ts:298:506"
+          ]
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 310,
+          "title": "filtros de análisis: grupos O independientes, fechas y límites de IPC conservan resultados y fuente",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1297,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 320,
+          "title": "configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6762,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 333,
+          "title": "configuraciones: columnas incompatibles y duplicadas, IPC inválido y biblioteca dañada preservados",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1382,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 344,
+          "title": "resultados exportados: interfaz, agregados completos, CSV y contexto, informe y fórmulas preservan el original",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6871,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 356,
+          "title": "resultados exportados: filtros independientes, fechas, límite de diez mil, nulos e IPC válido",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1991,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 365,
+          "title": "resultados exportados: muestra lee la fuente completa sin permitir guardar el CSV parcial",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5427,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 398,
+          "title": "resultados exportados: cancelación por teclado durante lectura real permite reintentar sin archivos parciales",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4286,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 21,
+          "title": "AN-1b: pestaña de análisis crea gráfico y resumen a petición, con opciones plegadas y fuente intacta",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2796,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 42,
+          "title": "F2a: suma por serie, total real, porcentajes y seis tipos alcanzables con teclado",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4721,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 52,
+          "title": "F2a: cuatro capturas reales, resultado y límites visibles en ambos temas sin desplazar",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5233,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 75,
+          "title": "F2a: estados vacío, error numérico, truncado y ventana estrecha con captura",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6711,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 91,
+          "title": "F2a: cargando con cancelar y reintento explícito en 100.000 filas, sin escribir el original",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2984,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 107,
+          "title": "F2a: idioma inglés, foco, anuncios y ventana de 800 px",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4907,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 122,
+          "title": "F2a: en-XA real no recorta el resultado ni desborda los controles",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3556,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 131,
+          "title": "F2a: filtros del gráfico se pueden operar en inglés sin cambiar la tabla",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6736,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 139,
+          "title": "F2a: elegir Líneas aplica la agrupación mensual sugerida para fechas ISO",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6631,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 146,
+          "title": "F2a: pocas filas con celdas grandes conservan vista previa manual y límites explicados",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2413,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 154,
+          "title": "F2a: cambiar desde una celda en edición confirma el borrador sin guardar el archivo",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2928,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 160,
+          "title": "F2a: las herramientas de tabla siguen completas dentro de ambos anchos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 701,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 168,
+          "title": "AN-1b: desde Texto con cambios, Cancelar conserva el borrador y descartar abre análisis sin escribir",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3204,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 179,
+          "title": "F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 8378,
+          "errors": []
+        },
+        {
+          "file": "csv-summary.spec.ts",
+          "line": 208,
+          "title": "F2a: alternar Tabla y Resumen es presentación, sin reinterpretar el CSV por IPC",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2770,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 51,
+          "title": "PRJ-02b: analizar usa las tres filas y columnas del conjunto, sin abrir ni modificar la fuente",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 983,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 68,
+          "title": "PRJ-02b: Gráficos identifica el conjunto completo y conserva su cobertura",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1019,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 77,
+          "title": "PRJ-02b: SQL conserva valores y ausentes del conjunto sin afirmar que incluye cambios pendientes",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1860,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 92,
+          "title": "PRJ-02b: reabrir una versión futura del mismo proyecto libera sus pestañas analíticas",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1014,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 110,
+          "title": "PRJ-02b: el análisis usa más de cien filas, no la vista previa del conjunto",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 979,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 123,
+          "title": "PRJ-02b: una muestra se guarda y otro conjunto la ordena por edad sin cambiar las filas elegidas",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1009,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 159,
+          "title": "PRJ-02b: el histograma de Edad representa 34, 52 y 61 y las estadísticas coinciden",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4989,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 169,
+          "title": "PRJ-02b: teclado y capturas de análisis y cadena de tres niveles [es]",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6472,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 169,
+          "title": "PRJ-02b: teclado y capturas de análisis y cadena de tres niveles [en-XA]",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6518,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 224,
+          "title": "PRJ-02b: cancelar la preparación no publica un análisis parcial ni escribe el proyecto",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1047,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 238,
+          "title": "PRJ-02b: Analizar ejecuta los cambios guardados del conjunto y su nombre actual",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1049,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 238,
+          "title": "PRJ-02b: Analizar ejecuta los cambios guardados de una base y su nombre actual",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1112,
+          "errors": []
+        },
+        {
+          "file": "project-subset-analysis.spec.ts",
+          "line": 271,
+          "title": "PRJ-02b: dos reaperturas superpuestas liberan el snapshot una vez y publican el último proyecto",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1313,
+          "errors": []
+        }
+      ],
+      "top_level_errors": []
+    },
+    "closure17": {
+      "stats": {
+        "startTime": "2026-11-20T08:22:41.288Z",
+        "duration": 77130.49900000001,
+        "expected": 16,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 165,
+          "title": "U0.1: campos legibles y orden a 1280 × 720 (es)",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5924,
+          "errors": []
+        },
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 165,
+          "title": "U0.1: campos legibles y orden a 1280 × 720 (en-XA)",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3268,
+          "errors": []
+        },
+        {
+          "file": "analysis-tab.spec.ts",
+          "line": 92,
+          "title": "AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta la configuración",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5731,
+          "errors": []
+        },
+        {
+          "file": "chart-clarity.spec.ts",
+          "line": 192,
+          "title": "SIM-2b: manual sin perfil conserva medida, ejes y agrupación explícitos sin nuevos barridos ni conversión de ID",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6002,
+          "errors": []
+        },
+        {
+          "file": "chart-field-loading.spec.ts",
+          "line": 13,
+          "title": "los 200 campos publican sus tipos juntos, sin una clasificación provisional durante la lectura",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1136,
+          "errors": []
+        },
+        {
+          "file": "chart-field-readiness.spec.ts",
+          "line": 10,
+          "title": "SIM-2c: antes de recibir la primera página real los campos esperan; después Enter usa el perfil numérico",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1267,
+          "errors": []
+        },
+        {
+          "file": "chart-fields.spec.ts",
+          "line": 106,
+          "title": "F2b: filtros reutilizados, exportación y datos originales intactos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5894,
+          "errors": []
+        },
+        {
+          "file": "chart-review.spec.ts",
+          "line": 55,
+          "title": "Revisión108 · seis campos y acciones fijas visibles a1280×720",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 4824,
+          "errors": [
+            "Error: expect(received).toBeGreaterThanOrEqual(expected)\n\nExpected: >= 6\nReceived:    5\n\n  56 |  const fields=panel().getByRole('complementary');await fields.locator('.field-list').evaluate(node=>node.scrollTop=0)\n  57 |  const visible=await fields.locator('.field-list').evaluate(node=>{const area=node.getBoundingClientRect();return[...node.querySelectorAll('.field-entry')].filter(row=>{const r=row.getBoundingClientRect();return r.top>=area.top&&r.bottom<=area.bottom}).length})\n> 58 |  expect(visible).toBeGreaterThanOrEqual(6)\n     |                  ^\n  59 |  await writeFile(test.info().outputPath('fields-visible.json'),JSON.stringify({visible}))\n  60 |  await expect(fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true})).toBeInViewport({ratio:1})\n  61 |  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})\n    at <checkout>/tests/e2e/chart-review.spec.ts:58:18"
+          ]
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 88,
+          "title": "SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 969,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 110,
+          "title": "SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4547,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 131,
+          "title": "SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2758,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 141,
+          "title": "SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2944,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 155,
+          "title": "SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4779,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 179,
+          "title": "SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3035,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 215,
+          "title": "series visuales: leyenda y teclado sincronizados, filtros, exportación y límite comprensible",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 10492,
+          "errors": []
+        },
+        {
+          "file": "charts.spec.ts",
+          "line": 293,
+          "title": "filtros propios: editor reutilizado, borradores, Escape, alcance y exportación sin cambiar la tabla",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 8085,
+          "errors": []
+        },
+        {
+          "file": "sql-progress-states.spec.ts",
+          "line": 99,
+          "title": "el gráfico muestra la misma fase visible y anunciada antes de dibujar datos reales",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4317,
+          "errors": []
+        }
+      ],
+      "top_level_errors": []
+    },
+    "compact10": {
+      "stats": {
+        "startTime": "2026-11-20T08:26:58.239Z",
+        "duration": 50436.326,
+        "expected": 9,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 165,
+          "title": "U0.1: campos legibles y orden a 1280 × 720 (es)",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 6158,
+          "errors": []
+        },
+        {
+          "file": "ui-u0.spec.ts",
+          "line": 165,
+          "title": "U0.1: campos legibles y orden a 1280 × 720 (en-XA)",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 3344,
+          "errors": []
+        },
+        {
+          "file": "chart-field-readiness.spec.ts",
+          "line": 10,
+          "title": "SIM-2c: antes de recibir la primera página real los campos esperan; después Enter usa el perfil numérico",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 1283,
+          "errors": []
+        },
+        {
+          "file": "chart-review.spec.ts",
+          "line": 55,
+          "title": "Revisión108 · seis campos y acciones fijas visibles a1280×720",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 19893,
+          "errors": [
+            "Error: expect(locator).toBeInViewport() failed\n\nLocator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true })\nExpected: in viewport\nReceived: viewport ratio 0.7680802345275879\nTimeout:  15000ms\n\nCall log:\n  - Expect \"toBeInViewport\" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true }) with timeout 15000ms\n  - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true })\n    33 × locator resolved to <section aria-label=\"Filtros\" class=\"zone svelte-hqvgw9 wide\">…</section>\n       - unexpected value \"viewport ratio 0.7680802345275879\"\n\n\n  64 |  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})\n  65 |  await test.info().attach('an1b-fields-layout',{body:JSON.stringify(await fields.evaluate(root=>Object.fromEntries([':scope','.field-header','input','.field-list','.organize','.zone-content','.zones',...Array.from({length:4},(_,i)=>'.zone:nth-child('+(i+1)+')')].map(selector=>{const node=root.querySelector(selector)??root,box=node.getBoundingClientRect();return[selector,{y:box.y,height:box.height,bottom:box.bottom,scroll:node.scrollHeight,client:node.clientHeight}]})))),contentType:'application/json'})\n> 66 |  for(const zone of ['Filas','Columnas','Valores','Filtros'])await expect(fields.getByRole('region',{name:zone,exact:true})).toBeInViewport({ratio:1})\n     |                                                                                                                             ^\n  67 | })\n  68 |\n  69 | test('Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario',async()=>{\n    at <checkout>/tests/e2e/chart-review.spec.ts:66:125"
+          ]
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 88,
+          "title": "SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 953,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 110,
+          "title": "SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4464,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 131,
+          "title": "SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2736,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 141,
+          "title": "SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2966,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 155,
+          "title": "SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 4828,
+          "errors": []
+        },
+        {
+          "file": "chart-simple-fields.spec.ts",
+          "line": 179,
+          "title": "SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 2978,
+          "errors": []
+        }
+      ],
+      "top_level_errors": []
+    },
+    "fit_list244": {
+      "stats": {
+        "startTime": "2026-11-20T08:29:01.482Z",
+        "duration": 5195.956,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "chart-review.spec.ts",
+          "line": 55,
+          "title": "Revisión108 · seis campos y acciones fijas visibles a1280×720",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 4881,
+          "errors": [
+            "Error: expect(received).toBeGreaterThanOrEqual(expected)\n\nExpected: >= 6\nReceived:    5\n\n  56 |  const fields=panel().getByRole('complementary');await fields.locator('.field-list').evaluate(node=>node.scrollTop=0)\n  57 |  const visible=await fields.locator('.field-list').evaluate(node=>{const area=node.getBoundingClientRect();return[...node.querySelectorAll('.field-entry')].filter(row=>{const r=row.getBoundingClientRect();return r.top>=area.top&&r.bottom<=area.bottom}).length})\n> 58 |  expect(visible).toBeGreaterThanOrEqual(6)\n     |                  ^\n  59 |  await writeFile(test.info().outputPath('fields-visible.json'),JSON.stringify({visible}))\n  60 |  await expect(fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true})).toBeInViewport({ratio:1})\n  61 |  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})\n    at <checkout>/tests/e2e/chart-review.spec.ts:58:18"
+          ]
+        }
+      ],
+      "top_level_errors": []
+    },
+    "fit_diagnostic": {
+      "stats": {
+        "startTime": "2026-11-20T08:30:03.658Z",
+        "duration": 5213.981,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "chart-review.spec.ts",
+          "line": 55,
+          "title": "Revisión108 · seis campos y acciones fijas visibles a1280×720",
+          "status": "failed",
+          "retry": 0,
+          "duration_ms": 4854,
+          "errors": [
+            "Error: expect(received).toBeGreaterThanOrEqual(expected)\n\nExpected: >= 6\nReceived:    5\n\n  57 |  const visible=await fields.locator('.field-list').evaluate(node=>{const area=node.getBoundingClientRect();return[...node.querySelectorAll('.field-entry')].filter(row=>{const r=row.getBoundingClientRect();return r.top>=area.top&&r.bottom<=area.bottom}).length})\n  58 |  await writeFile(test.info().outputPath('fields-before.json'),JSON.stringify(await fields.evaluate(root=>[...root.querySelectorAll('.field-list,.field-list h4,.field-entry,.field-hint,.zone-content,.zones')].map(node=>{const r=node.getBoundingClientRect(),s=getComputedStyle(node);return{kind:node.className,text:node.textContent?.slice(0,50),top:r.top,bottom:r.bottom,height:r.height,lineHeight:s.lineHeight,padding:s.padding,margin:s.margin}})),null,2))\n> 59 |  expect(visible).toBeGreaterThanOrEqual(6)\n     |                  ^\n  60 |  await writeFile(test.info().outputPath('fields-visible.json'),JSON.stringify({visible}))\n  61 |  await expect(fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true})).toBeInViewport({ratio:1})\n  62 |  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})\n    at <checkout>/tests/e2e/chart-review.spec.ts:59:18"
+          ]
+        }
+      ],
+      "top_level_errors": []
+    },
+    "fit_list250_hint0": {
+      "stats": {
+        "startTime": "2026-11-20T08:31:21.038Z",
+        "duration": 5532.037,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "chart-review.spec.ts",
+          "line": 55,
+          "title": "Revisión108 · seis campos y acciones fijas visibles a1280×720",
+          "status": "passed",
+          "retry": 0,
+          "duration_ms": 5245,
+          "errors": []
+        }
+      ],
+      "top_level_errors": []
+    }
+  },
+  "seven_unique_passed_titles": [
+    "SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas",
+    "SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos",
+    "SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables",
+    "SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular",
+    "SIM-2c: antes de recibir la primera página real los campos esperan; después Enter usa el perfil numérico",
+    "SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV",
+    "SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista"
+  ],
+  "seven_by_union_not_a_single_batch": true,
+  "reported_wall_seconds": {
+    "actionable_red": 37.846,
+    "first_candidate_six": 116.189,
+    "keyboard_observation": 3.553,
+    "readiness_public_red": 1.95
+  },
+  "consumer_prechecks": {
+    "phase": "before pending final menu await correction",
+    "execution": [
+      {
+        "label": "consumer-check",
+        "exit": 0,
+        "seconds": 9.027
+      },
+      {
+        "label": "consumer-unit",
+        "exit": 0,
+        "seconds": 17.74
+      },
+      {
+        "label": "consumer-build",
+        "exit": 0,
+        "seconds": 1.848
+      },
+      {
+        "label": "consumer-gui",
+        "exit": 1,
+        "seconds": 729.932
+      }
+    ],
+    "unit_from_log": {
+      "passed": 3039,
+      "skipped": 2,
+      "files_passed": 170,
+      "files_skipped": 1,
+      "seconds": 17.44
+    },
+    "GUI": {
+      "head": "2039f23e5dc289a69b8d8035c22f7f6a9aaf5eae",
+      "scheduled": 147,
+      "status": "completed with9failures; notgreen",
+      "passed": 138,
+      "failed": 9,
+      "skipped": 0,
+      "flaky": 0,
+      "wall_seconds_reported_by_root": 729.932,
+      "playwright_seconds": 729.6484639999999,
+      "new_seven_C_all_passed": true
+    }
+  },
+  "capture_probe": {
+    "status": "completed byroot;48PNG copied byte-identical",
+    "expected_per_phase": 24,
+    "expected_total": 48,
+    "runtime_ref_parameters": [
+      "SIM2C_PHASE",
+      "SIM2C_APP_DIR",
+      "SIM2C_EXPECTED_REF",
+      "SIM2C_SOURCE_MANIFEST"
+    ],
+    "fixed_final_HEAD": false,
+    "sourceCSVsha256": "1ca1f0084d88b564e5922040333ba25ed8def9fb590d221bb6ce3ea98344c574",
+    "sourceRows": 50,
+    "sourceColumns": 6,
+    "resultGroups": 5,
+    "states": [
+      "lista",
+      "resultado",
+      "menu-usado"
+    ],
+    "languages": [
+      "es",
+      "en-XA"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "windows": [
+      [
+        1440,
+        900
+      ],
+      [
+        1280,
+        720
+      ]
+    ],
+    "probeSHA256": {
+      "fixture.ts": "d981499cc11de9ea45cbbc0a551a7226f01af3eb805c0b62781f02b47c1262af",
+      "field-captures.spec.ts": "151de40ee85ffe7be6dd9b79060412d2f5cc6dd83618ecca154f477bd7cabbb0",
+      "playwright.config.ts": "b48c958464fc5ec0d7043eaca87322816ec31033488f18d58ef2223c5c63a7e1"
+    },
+    "actual_total": 48,
+    "actual_per_phase": 24,
+    "actual_per_language": 12,
+    "matrices": {
+      "before": {
+        "PNG_count": 24,
+        "files": [
+          {
+            "name": "before-es-light-1440x900-lista.png",
+            "sha256": "11eb0f1d26f145d75d9f7cef19015767346ac57a7627fe75a2f4a686c453666e",
+            "bytes": 118811,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "before-es-dark-1440x900-lista.png",
+            "sha256": "9fd0f287b5355cb7af5439bb9c4fa203a3477457346f7f817d82f0f3525404b0",
+            "bytes": 118536,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "before-es-light-1280x720-lista.png",
+            "sha256": "5485c4b368e5d24c0d610593192a278492f4762c3786b2c19fce01d8146e1b2d",
+            "bytes": 115290,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "before-es-dark-1280x720-lista.png",
+            "sha256": "6d7e0b621068754e1d2475576d66ea9325c59d1ed7d955d14e62f33111c70304",
+            "bytes": 115079,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "before-es-light-1440x900-resultado.png",
+            "sha256": "ce6f409d49d520e00c4a10f199e8cb1670d7b03cf24637dbb75b0acfcfe66e11",
+            "bytes": 144590,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "before-es-light-1440x900-menu-usado.png",
+            "sha256": "686791751b7baeda91c30bf231673e853af46980089ba86e5f4f988303e780e3",
+            "bytes": 144396,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "before-es-dark-1440x900-resultado.png",
+            "sha256": "d1ba5d09b7f8c3553ba0fc1c84c1f53e2478d888b5b2accef4a56973bd5fb8d1",
+            "bytes": 144804,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "before-es-dark-1440x900-menu-usado.png",
+            "sha256": "75ac4fc9ab71766bb6194674240d07578d50208bff7d6a6f17ec4eb7aed29be4",
+            "bytes": 143444,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "before-es-light-1280x720-resultado.png",
+            "sha256": "1606e0f183c6d9280941399e00f91a4f71737faedcfcc96c1d7aaf277441e640",
+            "bytes": 137509,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "before-es-light-1280x720-menu-usado.png",
+            "sha256": "f67aa679137e28626036611eedb81be2d64d59f00eb3a62cf0605a8d72fdd6cb",
+            "bytes": 137261,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "before-es-dark-1280x720-resultado.png",
+            "sha256": "14e11488ce3a26107ec99b2624df13881524686e51e6f91fa77c75f55b16b45d",
+            "bytes": 137821,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "before-es-dark-1280x720-menu-usado.png",
+            "sha256": "79112622e068a539380a46a65f4fa8f40ca9fb6ae92f8c6abb7b3abf51dba0b8",
+            "bytes": 136689,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "before-en-XA-light-1440x900-lista.png",
+            "sha256": "7e0d8213f1dd82a78f4f2bc1db242ff0dc5dade654b6919c72dfd6eca8b074f9",
+            "bytes": 138741,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "before-en-XA-dark-1440x900-lista.png",
+            "sha256": "5502e4e05d36c4bd973ff28236a330e3d2a1123e31603471524a84daf11d4fbf",
+            "bytes": 138573,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "before-en-XA-light-1280x720-lista.png",
+            "sha256": "611e660deb8eb6f0e94ce1e0029e7c300fe6918d216a9dd9b436e8ce76423d93",
+            "bytes": 133713,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "before-en-XA-dark-1280x720-lista.png",
+            "sha256": "d4c233183031c8c20dbd3c2702c81d78c5abb260cd93039b4c9a8137615ca6d5",
+            "bytes": 133702,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "before-en-XA-light-1440x900-resultado.png",
+            "sha256": "dfc6ee4703441e99d7146bc5ce300bf503f9be0f02082ea5291ad4830eb6e8a7",
+            "bytes": 165999,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "before-en-XA-light-1440x900-menu-usado.png",
+            "sha256": "c619549884a29deabfe5acb289b1c67bc1a089d9a9c18e469dc6d3dbe86693f1",
+            "bytes": 164181,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "before-en-XA-dark-1440x900-resultado.png",
+            "sha256": "dc2b9c81f5055956745bee35d65325f8e57b3a7c0fc3ada8886ccd7da90be5e5",
+            "bytes": 166489,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "before-en-XA-dark-1440x900-menu-usado.png",
+            "sha256": "c600e0246306f8d1d06290794f95b7a3bb4ef5336f755f7bffb10c783bb6752c",
+            "bytes": 163875,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "before-en-XA-light-1280x720-resultado.png",
+            "sha256": "2b7ea3b1362bfa1814084b047bdc9233cf55751e25dc7d98dada8fb4f32a246a",
+            "bytes": 156932,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "before-en-XA-light-1280x720-menu-usado.png",
+            "sha256": "b80f0a9cf42e91acd6f090e18728b17cf9fcb6d0d2208939decb7bc6abc30f3f",
+            "bytes": 155417,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "before-en-XA-dark-1280x720-resultado.png",
+            "sha256": "590fad470fccd68739a31f4eb8009aafd64fb7116ad3fc4af845b3b03dd65bf8",
+            "bytes": 157179,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "before-en-XA-dark-1280x720-menu-usado.png",
+            "sha256": "ae87a1241dc1a291975ce398b510c5ca34cf763c43f84aa973313f398e4c1844",
+            "bytes": 154830,
+            "width": 1280,
+            "height": 720
+          }
+        ],
+        "languages": [
+          {
+            "language": "es",
+            "manifest": {
+              "phase": "before",
+              "language": "es",
+              "appDir": "<recovery>/sim2b-grafico-claro",
+              "rootProvidedHead": "00074b4764f03004246521a9d8de7887a37885e6",
+              "headVerifiedByProbe": false,
+              "sourceSHA256": {
+                "src/renderer/components/ChartFields.svelte": "245a3a848d10989449509c0631c934eb8da8529eef743109ebb8e6acab7a64ec",
+                "src/renderer/components/CsvCharts.svelte": "f6e6ae572f4ddfaf2726dfa127ca3c0bf5578eda41f3eae70781545bcbf3928b",
+                "src/shared/chart-fields.ts": "a92dbe1acdae222938ea4076a767e69e4fc9ad73ac9404671f9ed5abb0ce7251",
+                "src/shared/i18n/es.json": "2e110656a918998dc98631ce75327718c39d9c12b937aab33e1b4c6bfec1794c",
+                "src/shared/i18n/en.json": "ead1e84cd4c24161ca8d2841f5c57d1caafa5adb6e1bcba1261b8223bf59be68"
+              },
+              "buildSHA256": {
+                "out/main/index.js": "fb95ad1b75919c52679c0e454c1a8aa2d7eecd259f33b9841eb730dd66a185cd",
+                "out/renderer/assets/index-CldqXYnk.css": "5448bc4aaea8c199b7bc24b6aa1b4ce247171f79b775d647d44be7e8db8fed3c",
+                "out/renderer/assets/index-DVu88Cu4.js": "4fb67b5236a40fef68f5353fe7feb4475535c613776184e27e8a657d31ff2132"
+              },
+              "helperSHA256": "c3a16b3eb4bb775bddcfc0c4b50256997de1cf3bb79806e16e55d48686bb4c85",
+              "fixtureSpecSHA256": "655c7b36ecb9890cf443e0209a1f4f524b0c697045fceff50f4ae116bfda305f",
+              "sourceCSVsha256": "1ca1f0084d88b564e5922040333ba25ed8def9fb590d221bb6ce3ea98344c574",
+              "sourceRows": 50,
+              "sourceColumns": 6,
+              "resultRows": [
+                [
+                  "Oaxaca",
+                  "122.5"
+                ],
+                [
+                  "Mérida",
+                  "123.5"
+                ],
+                [
+                  "Puebla",
+                  "124.5"
+                ],
+                [
+                  "Toluca",
+                  "125.5"
+                ],
+                [
+                  "Colima",
+                  "126.5"
+                ]
+              ],
+              "exportCSVsha256": "4f102e7ef3076a3b0962aa7492e0267676b74afe955efad302ad98d2883c11b2",
+              "screenshots": {
+                "before-es-light-1440x900-lista.png": "11eb0f1d26f145d75d9f7cef19015767346ac57a7627fe75a2f4a686c453666e",
+                "before-es-dark-1440x900-lista.png": "9fd0f287b5355cb7af5439bb9c4fa203a3477457346f7f817d82f0f3525404b0",
+                "before-es-light-1280x720-lista.png": "5485c4b368e5d24c0d610593192a278492f4762c3786b2c19fce01d8146e1b2d",
+                "before-es-dark-1280x720-lista.png": "6d7e0b621068754e1d2475576d66ea9325c59d1ed7d955d14e62f33111c70304",
+                "before-es-light-1440x900-resultado.png": "ce6f409d49d520e00c4a10f199e8cb1670d7b03cf24637dbb75b0acfcfe66e11",
+                "before-es-light-1440x900-menu-usado.png": "686791751b7baeda91c30bf231673e853af46980089ba86e5f4f988303e780e3",
+                "before-es-dark-1440x900-resultado.png": "d1ba5d09b7f8c3553ba0fc1c84c1f53e2478d888b5b2accef4a56973bd5fb8d1",
+                "before-es-dark-1440x900-menu-usado.png": "75ac4fc9ab71766bb6194674240d07578d50208bff7d6a6f17ec4eb7aed29be4",
+                "before-es-light-1280x720-resultado.png": "1606e0f183c6d9280941399e00f91a4f71737faedcfcc96c1d7aaf277441e640",
+                "before-es-light-1280x720-menu-usado.png": "f67aa679137e28626036611eedb81be2d64d59f00eb3a62cf0605a8d72fdd6cb",
+                "before-es-dark-1280x720-resultado.png": "14e11488ce3a26107ec99b2624df13881524686e51e6f91fa77c75f55b16b45d",
+                "before-es-dark-1280x720-menu-usado.png": "79112622e068a539380a46a65f4fa8f40ca9fb6ae92f8c6abb7b3abf51dba0b8"
+              }
+            },
+            "source_manifest_sha256": "a2e799f4e2b1080cf5ad967121c7ed4790c17d09f123963c3fcab7595745d8d3",
+            "public_manifest_sha256": "ed3cc0539acccf12e24d1d5c0d83f38ff64e1f4870c6ded677547ed75cb9a186"
+          },
+          {
+            "language": "en-XA",
+            "manifest": {
+              "phase": "before",
+              "language": "en-XA",
+              "appDir": "<recovery>/sim2b-grafico-claro",
+              "rootProvidedHead": "00074b4764f03004246521a9d8de7887a37885e6",
+              "headVerifiedByProbe": false,
+              "sourceSHA256": {
+                "src/renderer/components/ChartFields.svelte": "245a3a848d10989449509c0631c934eb8da8529eef743109ebb8e6acab7a64ec",
+                "src/renderer/components/CsvCharts.svelte": "f6e6ae572f4ddfaf2726dfa127ca3c0bf5578eda41f3eae70781545bcbf3928b",
+                "src/shared/chart-fields.ts": "a92dbe1acdae222938ea4076a767e69e4fc9ad73ac9404671f9ed5abb0ce7251",
+                "src/shared/i18n/es.json": "2e110656a918998dc98631ce75327718c39d9c12b937aab33e1b4c6bfec1794c",
+                "src/shared/i18n/en.json": "ead1e84cd4c24161ca8d2841f5c57d1caafa5adb6e1bcba1261b8223bf59be68"
+              },
+              "buildSHA256": {
+                "out/main/index.js": "fb95ad1b75919c52679c0e454c1a8aa2d7eecd259f33b9841eb730dd66a185cd",
+                "out/renderer/assets/index-CldqXYnk.css": "5448bc4aaea8c199b7bc24b6aa1b4ce247171f79b775d647d44be7e8db8fed3c",
+                "out/renderer/assets/index-DVu88Cu4.js": "4fb67b5236a40fef68f5353fe7feb4475535c613776184e27e8a657d31ff2132"
+              },
+              "helperSHA256": "c3a16b3eb4bb775bddcfc0c4b50256997de1cf3bb79806e16e55d48686bb4c85",
+              "fixtureSpecSHA256": "655c7b36ecb9890cf443e0209a1f4f524b0c697045fceff50f4ae116bfda305f",
+              "sourceCSVsha256": "1ca1f0084d88b564e5922040333ba25ed8def9fb590d221bb6ce3ea98344c574",
+              "sourceRows": 50,
+              "sourceColumns": 6,
+              "resultRows": [
+                [
+                  "Oaxaca",
+                  "122.5"
+                ],
+                [
+                  "Mérida",
+                  "123.5"
+                ],
+                [
+                  "Puebla",
+                  "124.5"
+                ],
+                [
+                  "Toluca",
+                  "125.5"
+                ],
+                [
+                  "Colima",
+                  "126.5"
+                ]
+              ],
+              "exportCSVsha256": "6cfae2329cc63183840514fb3291e9fb9aa1e66b81cab8c4fc8694359b9cd47c",
+              "screenshots": {
+                "before-en-XA-light-1440x900-lista.png": "7e0d8213f1dd82a78f4f2bc1db242ff0dc5dade654b6919c72dfd6eca8b074f9",
+                "before-en-XA-dark-1440x900-lista.png": "5502e4e05d36c4bd973ff28236a330e3d2a1123e31603471524a84daf11d4fbf",
+                "before-en-XA-light-1280x720-lista.png": "611e660deb8eb6f0e94ce1e0029e7c300fe6918d216a9dd9b436e8ce76423d93",
+                "before-en-XA-dark-1280x720-lista.png": "d4c233183031c8c20dbd3c2702c81d78c5abb260cd93039b4c9a8137615ca6d5",
+                "before-en-XA-light-1440x900-resultado.png": "dfc6ee4703441e99d7146bc5ce300bf503f9be0f02082ea5291ad4830eb6e8a7",
+                "before-en-XA-light-1440x900-menu-usado.png": "c619549884a29deabfe5acb289b1c67bc1a089d9a9c18e469dc6d3dbe86693f1",
+                "before-en-XA-dark-1440x900-resultado.png": "dc2b9c81f5055956745bee35d65325f8e57b3a7c0fc3ada8886ccd7da90be5e5",
+                "before-en-XA-dark-1440x900-menu-usado.png": "c600e0246306f8d1d06290794f95b7a3bb4ef5336f755f7bffb10c783bb6752c",
+                "before-en-XA-light-1280x720-resultado.png": "2b7ea3b1362bfa1814084b047bdc9233cf55751e25dc7d98dada8fb4f32a246a",
+                "before-en-XA-light-1280x720-menu-usado.png": "b80f0a9cf42e91acd6f090e18728b17cf9fcb6d0d2208939decb7bc6abc30f3f",
+                "before-en-XA-dark-1280x720-resultado.png": "590fad470fccd68739a31f4eb8009aafd64fb7116ad3fc4af845b3b03dd65bf8",
+                "before-en-XA-dark-1280x720-menu-usado.png": "ae87a1241dc1a291975ce398b510c5ca34cf763c43f84aa973313f398e4c1844"
+              }
+            },
+            "source_manifest_sha256": "75f18c9e4bc1534cf1bd06a14d86114bb5b02cf3ceac83f7585ce7bce15688df",
+            "public_manifest_sha256": "8bf1c051e3b49c159f5f6cbfc318c8afc8771855deaec3cca0b4dc100f52f88e"
+          }
+        ]
+      },
+      "after": {
+        "PNG_count": 24,
+        "files": [
+          {
+            "name": "after-es-light-1440x900-lista.png",
+            "sha256": "7b14624419532a43e2984d0b2aa080de53f0544b0d6593d7ebcbcf4da4bb5c43",
+            "bytes": 104894,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "after-es-dark-1440x900-lista.png",
+            "sha256": "d6b5a496f6f30da0a4fbd761e2921301fb174b9de77c47e81dabe94ffe9833dd",
+            "bytes": 104634,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "after-es-light-1280x720-lista.png",
+            "sha256": "2aa3df7d8a9bc094bae8e146f8c4148a5aa400a8abe734fa839de4361b831d26",
+            "bytes": 101146,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "after-es-dark-1280x720-lista.png",
+            "sha256": "9ed2e6fc04478273ec09daf5be70254d50f44d2dd1a8b6b716bb3160436b3304",
+            "bytes": 101088,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "after-es-light-1440x900-resultado.png",
+            "sha256": "8086abfe651c4d47b08548e6deeacc4d041215a7665d169fb35aef9853305a1c",
+            "bytes": 135339,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "after-es-light-1440x900-menu-usado.png",
+            "sha256": "7b8cb97eb0d7cce575fdf91c8daa1e72c695208ccdb2473a75ec738270503783",
+            "bytes": 138595,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "after-es-dark-1440x900-resultado.png",
+            "sha256": "4a2a515bdd344999dcb50371d2e64cd7ad0d5214764315a9924607abf077dd0a",
+            "bytes": 135490,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "after-es-dark-1440x900-menu-usado.png",
+            "sha256": "e5e6c42b0483eca9e6d840d223b765beb2ba6133445d73dbb844b7038b5d0a1b",
+            "bytes": 137814,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "after-es-light-1280x720-resultado.png",
+            "sha256": "775b4556534524d09309e444ad92936f9c929c0a2f1f45b85dcdf911bd364a49",
+            "bytes": 128609,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "after-es-light-1280x720-menu-usado.png",
+            "sha256": "f0fd490c43934675cf942c6ac80907921f16428ef63a875b6c9b0ae91b8e960d",
+            "bytes": 131815,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "after-es-dark-1280x720-resultado.png",
+            "sha256": "c4f82f6d212b4342483326784ba8b8277bb65738ee69c43814c3a8c0a3bbbce3",
+            "bytes": 128377,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "after-es-dark-1280x720-menu-usado.png",
+            "sha256": "fef32497a13ec9c5eb38c211741916107228f07516d2b4111b3e945765f83e56",
+            "bytes": 130750,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "after-en-XA-light-1440x900-lista.png",
+            "sha256": "b95b2ffeac7ed37a80c4e288a807d2bf2f9108c89f353ab32951c8dc07096b2c",
+            "bytes": 121268,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "after-en-XA-dark-1440x900-lista.png",
+            "sha256": "fd2144886209631b09f9be0ba412a9c32fe191daaf4f8602f693a13fa33e3c88",
+            "bytes": 120745,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "after-en-XA-light-1280x720-lista.png",
+            "sha256": "8cc138bd4d53a8b5eda1800d3d1278a9382eb5d8a9273782a309893fb9810140",
+            "bytes": 116008,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "after-en-XA-dark-1280x720-lista.png",
+            "sha256": "5966226718989dcf3c9516e654177d6ede7b82ad3fa7ed0beae11c86e299f65a",
+            "bytes": 115806,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "after-en-XA-light-1440x900-resultado.png",
+            "sha256": "be70e30ef74995f76effe4ec38f90997291d04b1306f24f64e3b7ec61048e491",
+            "bytes": 154881,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "after-en-XA-light-1440x900-menu-usado.png",
+            "sha256": "90032be9f06708522ec19b0cc2a845e28f0e28a095ff5abbd9b14be544e7c0c0",
+            "bytes": 157563,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "after-en-XA-dark-1440x900-resultado.png",
+            "sha256": "249532860d76c3920e5df85dbdc7b4446eba8cf337796889fb9558a21118cac1",
+            "bytes": 154504,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "after-en-XA-dark-1440x900-menu-usado.png",
+            "sha256": "af697d3ba9c06d1a27006165f63b47c3ca65af5dd8ddc617fae7f92db472994d",
+            "bytes": 156182,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "name": "after-en-XA-light-1280x720-resultado.png",
+            "sha256": "477a392f0df321448a4e1ba2efd3a5686866a80e9e2646776d6c852642244cfa",
+            "bytes": 145792,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "after-en-XA-light-1280x720-menu-usado.png",
+            "sha256": "a283f0fa20c294afe4316987078dd92095f1976d07484b55382548a9a104da68",
+            "bytes": 148994,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "after-en-XA-dark-1280x720-resultado.png",
+            "sha256": "0791b05518dd473dd8b03112761f5f577ed4e79ec72db196d0b98bf665281afc",
+            "bytes": 145277,
+            "width": 1280,
+            "height": 720
+          },
+          {
+            "name": "after-en-XA-dark-1280x720-menu-usado.png",
+            "sha256": "6fe82b74ed87a32c22afb7d6952d7f5b3321bbf878a712f73f89dbc8eca0392d",
+            "bytes": 147559,
+            "width": 1280,
+            "height": 720
+          }
+        ],
+        "languages": [
+          {
+            "language": "es",
+            "manifest": {
+              "phase": "after",
+              "language": "es",
+              "appDir": "<checkout>",
+              "rootProvidedHead": "deb9797ea1c27b3ed64d1b852a23a531e240eb9d",
+              "headVerifiedByProbe": false,
+              "sourceSHA256": {
+                "src/renderer/components/ChartFields.svelte": "dac1a0fddc0d28d0d4ed177669e941379376bfb67b46782da55c595c8c4679f5",
+                "src/renderer/components/CsvCharts.svelte": "7c22c50c03fbdab76341ddb75b9e9f479a567c02f8f1198ab991d127891da6a8",
+                "src/shared/chart-fields.ts": "be1847fff99a73a670953254cb48af4a889e1d1abc06d21d8deb534ebf3303fc",
+                "src/shared/i18n/es.json": "ea6777ed93b9675237ce4125e092cee4dea3516fdb3319a399b1ab44ecaa64df",
+                "src/shared/i18n/en.json": "a9fb8787cdd4de5c65e43b2ba81425d562a9fd3563a2bf8d9d0025503a0f1287"
+              },
+              "buildSHA256": {
+                "out/main/index.js": "e01af3318fcabcdfa9b14f7e19e439d62987372dc4b31eedbff3a5f94a880286",
+                "out/renderer/assets/index-BqOaLCd4.js": "a93b45cffe524a0963e47dd2bcb5aca51d4b573295f90b7f523d6dfed1efd914",
+                "out/renderer/assets/index-CUkKeaYE.css": "104b7a87d1e00e5db96f3668ac7ddd8583bded719c17d93fff37fa15368ff72a"
+              },
+              "helperSHA256": "2a82b87e22b968aad48666baf30e88702e1d702d8f50423600844068606ab047",
+              "fixtureSpecSHA256": "655c7b36ecb9890cf443e0209a1f4f524b0c697045fceff50f4ae116bfda305f",
+              "sourceCSVsha256": "1ca1f0084d88b564e5922040333ba25ed8def9fb590d221bb6ce3ea98344c574",
+              "sourceRows": 50,
+              "sourceColumns": 6,
+              "resultRows": [
+                [
+                  "Oaxaca",
+                  "122.5"
+                ],
+                [
+                  "Mérida",
+                  "123.5"
+                ],
+                [
+                  "Puebla",
+                  "124.5"
+                ],
+                [
+                  "Toluca",
+                  "125.5"
+                ],
+                [
+                  "Colima",
+                  "126.5"
+                ]
+              ],
+              "exportCSVsha256": "4f102e7ef3076a3b0962aa7492e0267676b74afe955efad302ad98d2883c11b2",
+              "screenshots": {
+                "after-es-light-1440x900-lista.png": "7b14624419532a43e2984d0b2aa080de53f0544b0d6593d7ebcbcf4da4bb5c43",
+                "after-es-dark-1440x900-lista.png": "d6b5a496f6f30da0a4fbd761e2921301fb174b9de77c47e81dabe94ffe9833dd",
+                "after-es-light-1280x720-lista.png": "2aa3df7d8a9bc094bae8e146f8c4148a5aa400a8abe734fa839de4361b831d26",
+                "after-es-dark-1280x720-lista.png": "9ed2e6fc04478273ec09daf5be70254d50f44d2dd1a8b6b716bb3160436b3304",
+                "after-es-light-1440x900-resultado.png": "8086abfe651c4d47b08548e6deeacc4d041215a7665d169fb35aef9853305a1c",
+                "after-es-light-1440x900-menu-usado.png": "7b8cb97eb0d7cce575fdf91c8daa1e72c695208ccdb2473a75ec738270503783",
+                "after-es-dark-1440x900-resultado.png": "4a2a515bdd344999dcb50371d2e64cd7ad0d5214764315a9924607abf077dd0a",
+                "after-es-dark-1440x900-menu-usado.png": "e5e6c42b0483eca9e6d840d223b765beb2ba6133445d73dbb844b7038b5d0a1b",
+                "after-es-light-1280x720-resultado.png": "775b4556534524d09309e444ad92936f9c929c0a2f1f45b85dcdf911bd364a49",
+                "after-es-light-1280x720-menu-usado.png": "f0fd490c43934675cf942c6ac80907921f16428ef63a875b6c9b0ae91b8e960d",
+                "after-es-dark-1280x720-resultado.png": "c4f82f6d212b4342483326784ba8b8277bb65738ee69c43814c3a8c0a3bbbce3",
+                "after-es-dark-1280x720-menu-usado.png": "fef32497a13ec9c5eb38c211741916107228f07516d2b4111b3e945765f83e56"
+              }
+            },
+            "source_manifest_sha256": "e0d0dd87f27d6ebd4d65177a5838b4d110ba24427d0e0e9a996474a8af8308db",
+            "public_manifest_sha256": "02c827794da79c637bf36f95490e83e090af308208967bd2b9c047cdc54b3647"
+          },
+          {
+            "language": "en-XA",
+            "manifest": {
+              "phase": "after",
+              "language": "en-XA",
+              "appDir": "<checkout>",
+              "rootProvidedHead": "deb9797ea1c27b3ed64d1b852a23a531e240eb9d",
+              "headVerifiedByProbe": false,
+              "sourceSHA256": {
+                "src/renderer/components/ChartFields.svelte": "dac1a0fddc0d28d0d4ed177669e941379376bfb67b46782da55c595c8c4679f5",
+                "src/renderer/components/CsvCharts.svelte": "7c22c50c03fbdab76341ddb75b9e9f479a567c02f8f1198ab991d127891da6a8",
+                "src/shared/chart-fields.ts": "be1847fff99a73a670953254cb48af4a889e1d1abc06d21d8deb534ebf3303fc",
+                "src/shared/i18n/es.json": "ea6777ed93b9675237ce4125e092cee4dea3516fdb3319a399b1ab44ecaa64df",
+                "src/shared/i18n/en.json": "a9fb8787cdd4de5c65e43b2ba81425d562a9fd3563a2bf8d9d0025503a0f1287"
+              },
+              "buildSHA256": {
+                "out/main/index.js": "e01af3318fcabcdfa9b14f7e19e439d62987372dc4b31eedbff3a5f94a880286",
+                "out/renderer/assets/index-BqOaLCd4.js": "a93b45cffe524a0963e47dd2bcb5aca51d4b573295f90b7f523d6dfed1efd914",
+                "out/renderer/assets/index-CUkKeaYE.css": "104b7a87d1e00e5db96f3668ac7ddd8583bded719c17d93fff37fa15368ff72a"
+              },
+              "helperSHA256": "2a82b87e22b968aad48666baf30e88702e1d702d8f50423600844068606ab047",
+              "fixtureSpecSHA256": "655c7b36ecb9890cf443e0209a1f4f524b0c697045fceff50f4ae116bfda305f",
+              "sourceCSVsha256": "1ca1f0084d88b564e5922040333ba25ed8def9fb590d221bb6ce3ea98344c574",
+              "sourceRows": 50,
+              "sourceColumns": 6,
+              "resultRows": [
+                [
+                  "Oaxaca",
+                  "122.5"
+                ],
+                [
+                  "Mérida",
+                  "123.5"
+                ],
+                [
+                  "Puebla",
+                  "124.5"
+                ],
+                [
+                  "Toluca",
+                  "125.5"
+                ],
+                [
+                  "Colima",
+                  "126.5"
+                ]
+              ],
+              "exportCSVsha256": "6cfae2329cc63183840514fb3291e9fb9aa1e66b81cab8c4fc8694359b9cd47c",
+              "screenshots": {
+                "after-en-XA-light-1440x900-lista.png": "b95b2ffeac7ed37a80c4e288a807d2bf2f9108c89f353ab32951c8dc07096b2c",
+                "after-en-XA-dark-1440x900-lista.png": "fd2144886209631b09f9be0ba412a9c32fe191daaf4f8602f693a13fa33e3c88",
+                "after-en-XA-light-1280x720-lista.png": "8cc138bd4d53a8b5eda1800d3d1278a9382eb5d8a9273782a309893fb9810140",
+                "after-en-XA-dark-1280x720-lista.png": "5966226718989dcf3c9516e654177d6ede7b82ad3fa7ed0beae11c86e299f65a",
+                "after-en-XA-light-1440x900-resultado.png": "be70e30ef74995f76effe4ec38f90997291d04b1306f24f64e3b7ec61048e491",
+                "after-en-XA-light-1440x900-menu-usado.png": "90032be9f06708522ec19b0cc2a845e28f0e28a095ff5abbd9b14be544e7c0c0",
+                "after-en-XA-dark-1440x900-resultado.png": "249532860d76c3920e5df85dbdc7b4446eba8cf337796889fb9558a21118cac1",
+                "after-en-XA-dark-1440x900-menu-usado.png": "af697d3ba9c06d1a27006165f63b47c3ca65af5dd8ddc617fae7f92db472994d",
+                "after-en-XA-light-1280x720-resultado.png": "477a392f0df321448a4e1ba2efd3a5686866a80e9e2646776d6c852642244cfa",
+                "after-en-XA-light-1280x720-menu-usado.png": "a283f0fa20c294afe4316987078dd92095f1976d07484b55382548a9a104da68",
+                "after-en-XA-dark-1280x720-resultado.png": "0791b05518dd473dd8b03112761f5f577ed4e79ec72db196d0b98bf665281afc",
+                "after-en-XA-dark-1280x720-menu-usado.png": "6fe82b74ed87a32c22afb7d6952d7f5b3321bbf878a712f73f89dbc8eca0392d"
+              }
+            },
+            "source_manifest_sha256": "039f849489365c0995989b4d97dfedeb22bfc3b28984172445b15701e5708915",
+            "public_manifest_sha256": "d7abb203c9a83c82388233981285ac5006d6f32bda0bd13b42dea5e35c7415d6"
+          }
+        ]
+      }
+    },
+    "phase_execution": {
+      "before": {
+        "passed": 2,
+        "wall_seconds_reported_by_root": 12.638,
+        "log": "logs/capture-corrected-before.log",
+        "probe_version_limit": "Qualified before final private focus-driver delta. The before branch already expected trigger focus; root did not repeat this successful phase."
+      },
+      "after": {
+        "passed": 2,
+        "Playwright_duration_from_list_log": "12.1s",
+        "external_wall_seconds": null,
+        "log": "logs/capture-focus-corrected-after.log",
+        "note": "No JSON report or external duration was supplied;12.1s is the rounded list reporter display."
+      }
+    },
+    "setup_history": [
+      {
+        "phase": "before initial",
+        "failed": 2,
+        "wall_seconds_reported_by_root": 13.117,
+        "reason": "Private counter expected24perlanguage; actual12. Data, real exports andhashes had passed before this last assertion. Only count changedto12.",
+        "product_failure": false
+      },
+      {
+        "phase": "after source guard",
+        "failed": 2,
+        "wall_seconds_reported_by_root": 1.212,
+        "reason": "Expected source manifest still contained410e ChartFields hash while frozen deb source differed. Guard failed before Electron launch. Cause of stale contents not established; root created unique verified after-source-deb9797.json.",
+        "product_failure": false
+      },
+      {
+        "phase": "after focus",
+        "failed": 2,
+        "reason": "Private probe opened from More but incorrectly expected row focus. Root kept focus assertion on actual trigger andusedpage.keyboard Escape. No Csource changed.",
+        "product_failure": false
+      }
+    ],
+    "metadata_notes": "Commit refs are supplied byroot, not verified byprobeGit. Original private manifests are hashed; public copies sanitize app paths. Source/build hashes are checked beforeandafter each capture test.",
+    "equivalence": "Original CSV, allfive means andexported CSV bytes/hash match before/after for each language; data source50x6 differs from public6case240x7 andC7fixture4x6."
+  },
+  "public_fixtures": {
+    "six_cases": "240rows7columns: literal analysis-sections fixture; large ID stays text",
+    "guard_case": "analysis-auto-info.csv,4rows6columns; retain only delivery after real page engine result, then release",
+    "capture_fixture_is_separate_from_functional_fixtures": true
+  },
+  "fingerprints": {
+    "src/renderer/components/ChartFields.svelte": "dac1a0fddc0d28d0d4ed177669e941379376bfb67b46782da55c595c8c4679f5",
+    "src/renderer/components/CsvCharts.svelte": "7c22c50c03fbdab76341ddb75b9e9f479a567c02f8f1198ab991d127891da6a8",
+    "src/shared/chart-fields.ts": "be1847fff99a73a670953254cb48af4a889e1d1abc06d21d8deb534ebf3303fc",
+    "tests/e2e/chart-simple-fields.spec.ts": "84cd229181a72df884e63e050de8bb40efa0d685f103eb9b041784c5b01ed547",
+    "tests/e2e/chart-field-readiness.spec.ts": "de9be3064763846848f5d282897d9e702379b706503418d11ad8a5983303b1e5",
+    "tests/fixtures/analysis-auto-info.csv": "18b9271c08cd81d3fb80c18fda6c41d152a6a13dddf6c77134327fc9c0eb9a8a"
+  },
+  "fingerprint_phase": "Observed working source after root supplied deb9797 measured geometry fix; not transferred to previous unit/147/17 runs.",
+  "logs": {
+    "red-red.log": {
+      "source_sha256": "16f4b5b4fb4c0174b76e6c6407c71cafeca54d49fbe5fbc7459a15376be64af0",
+      "sanitized_sha256": "e1c15f1a750265f6df1accba69238bd2ae915ac6b44be6e8177ed9d861d8ca1b",
+      "bytes": 14223
+    },
+    "actionable-red.log": {
+      "source_sha256": "db441dffdb3f8fb23859b4e64b3a3167eb6f8700ae67b7e37377c7d45caacce2",
+      "sanitized_sha256": "94e112cbc5908a075a839930bd006b10e4dba47808dc84d393e9bff550f025a0",
+      "bytes": 18203
+    },
+    "green2.log": {
+      "source_sha256": "af74d8695f50df8033e180dd7b6e94e9a9cb52f89b2e4a0b393fe5a58b327c2d",
+      "sanitized_sha256": "437780d9d5addec855bb58455009b30dec9856b9c59a8b1e107a4cbf189b7502",
+      "bytes": 12006
+    },
+    "keyboard-observation.log": {
+      "source_sha256": "3b6a595453079715dcbd314d83f56b73212c022b68ffe5e627dfc87cc693199b",
+      "sanitized_sha256": "3b6a595453079715dcbd314d83f56b73212c022b68ffe5e627dfc87cc693199b",
+      "bytes": 373
+    },
+    "readiness-public-red.log": {
+      "source_sha256": "20e10843a7896dc794d1810979f96fc602cb496358bccfee01dc0688e7277e6c",
+      "sanitized_sha256": "e64eca28fe469be7767fe88140a488d75136986e95a1e8a6ac755dc9ef7d00ae",
+      "bytes": 2640
+    },
+    "guard-check.log": {
+      "source_sha256": "bece963948eaf1b40cbd970cf4da4c37c9b786eebc3363eac49149fdabc2b4f3",
+      "sanitized_sha256": "d5a290e1b46b1e67c76c242ffd539e8b094fcd9ba47e13a7ddf0322137dba0c5",
+      "bytes": 233
+    },
+    "guard-build.log": {
+      "source_sha256": "3aecf56ed775c5562c449033dea714735b4391908e83585163fdb16d26b23c10",
+      "sanitized_sha256": "91174f166656abf87b6c91aa2e49e369da40e843f48f06c0051a74cff4a49c57",
+      "bytes": 22691
+    },
+    "guard-green.log": {
+      "source_sha256": "b66b4d3a37913cb7649a8653e98aade93bf486821a54bdd174f718b7e9c0ed5c",
+      "sanitized_sha256": "262640c25e80abc21609e38e41bc3aef9f6c763912d07505525ed8de022f6ac1",
+      "bytes": 4174
+    },
+    "menu-focused.log": {
+      "source_sha256": "fcdffee94efcb7d7d363931cfd76b49e978aac33fcca9be2523ccbc015f450e0",
+      "sanitized_sha256": "773a0a5b88a3ee56f50b23de4ba8df3802add5234210794f9a5ffbd5c284b7c9",
+      "bytes": 9332
+    },
+    "consumer-check.log": {
+      "source_sha256": "bece963948eaf1b40cbd970cf4da4c37c9b786eebc3363eac49149fdabc2b4f3",
+      "sanitized_sha256": "d5a290e1b46b1e67c76c242ffd539e8b094fcd9ba47e13a7ddf0322137dba0c5",
+      "bytes": 233
+    },
+    "consumer-unit.log": {
+      "source_sha256": "c075ee4dcf08b1ea5b54a05024b0f6a9caae772c9c8463d835fd34c6c1b927c8",
+      "sanitized_sha256": "8919adea6f124733146a0cf136a1a82904193417d83e7fad514b723212074cde",
+      "bytes": 1022
+    },
+    "consumer-build.log": {
+      "source_sha256": "f5c153386acf752af2ab9229b6aabb880c67248b217a01c2f76478f6f70f6f9f",
+      "sanitized_sha256": "91a45d573c184c139439d9058b272b54cfac3cb945792d9f7161ba8fd445e6a1",
+      "bytes": 22691
+    },
+    "consumer-gui.log": {
+      "source_sha256": "2c5589935f03f9ae13937c701d75e5e2e01c4b1ce772fb2b1b43ff7d73b0ae30",
+      "sanitized_sha256": "b44e05e3953a0b0921c4c0fe9abaf4519d4608306679415ec3b3aeeb3cfc4922",
+      "bytes": 61118
+    },
+    "closure-gui.log": {
+      "source_sha256": "02f62abb1384441856b60c73197be0c71dbb1475334731aa3b318e7b7218a04c",
+      "sanitized_sha256": "4a53cf3e4021f2cbe8070272fd7a2b2be9d9c65d86846321c17ecea3debcc7d0",
+      "bytes": 5292
+    },
+    "compact-gui.log": {
+      "source_sha256": "b10517e26513d4e7f20e3dac5e43581fa200dac3fe1d04d5ef5ed2a640b3feb7",
+      "sanitized_sha256": "e16fc71944083eb3c19997df9103d49a396d32b9b633971f950b36c49345a988",
+      "bytes": 5241
+    },
+    "fit-gui.log": {
+      "source_sha256": "9fb0d9b3a41271aba08400405a1d3b0ca5e5e4a3848b4fb78a1e71be8b930c7f",
+      "sanitized_sha256": "ce92b468d94fac2aaf6603831b03a18171f999c6efb5ba2c2eb07cdacac59b7a",
+      "bytes": 2530
+    },
+    "fit-observe.log": {
+      "source_sha256": "234de7a48e44ef18e1c6b95aceb894111f8867e3fa332f640d2e231d927464ef",
+      "sanitized_sha256": "01bcbb369d3a3d85d20951ae700b82ec7b8b8903bd00e461c8b66baf7e597397",
+      "bytes": 2880
+    },
+    "fit2-gui.log": {
+      "source_sha256": "ff214bf92da5648fbb526c4b1ae252960ddc8e0ae17a87be8578961a94829497",
+      "sanitized_sha256": "ff214bf92da5648fbb526c4b1ae252960ddc8e0ae17a87be8578961a94829497",
+      "bytes": 337
+    },
+    "fit2-build.log": {
+      "source_sha256": "47e498d195b5cea59009fbe5179efebcc9eac6c3779daff49720769ca4470273",
+      "sanitized_sha256": "3e6fdf66e319f875bfb4e39a3ae4e40579c8c5ac8f349d64f1de80cc03528a1b",
+      "bytes": 22691
+    },
+    "geometry-before_fit.json": {
+      "source_sha256": "b296b1a749f73d985e9b3d09060bac71b6de3ff24d18496dbbcaf3ce2fbe7da0",
+      "sanitized_sha256": "b296b1a749f73d985e9b3d09060bac71b6de3ff24d18496dbbcaf3ce2fbe7da0",
+      "bytes": 3489
+    },
+    "geometry-after_fit.json": {
+      "source_sha256": "67f4c7543382216def3321a920a4fd269dad986a572a57b6a5669e759d32b448",
+      "sanitized_sha256": "67f4c7543382216def3321a920a4fd269dad986a572a57b6a5669e759d32b448",
+      "bytes": 3481
+    },
+    "capture-final-before.log": {
+      "source_sha256": "982ba8baf1351ef2f7bddffe2d956e1b8852ef1a57c2f6ae4cfe20e93bec98d1",
+      "sanitized_sha256": "f6a99ae99f1ae861a0e5ac132fb0f43f272e12e73cc31362195bae4f0e1049fc",
+      "bytes": 7412
+    },
+    "capture-corrected-before.log": {
+      "source_sha256": "2b5ec035cf2713a7487c51f3fd35f2a91d1e1f26681f328e5b2e709b5d552289",
+      "sanitized_sha256": "2b5ec035cf2713a7487c51f3fd35f2a91d1e1f26681f328e5b2e709b5d552289",
+      "bytes": 514
+    },
+    "capture-corrected-after.log": {
+      "source_sha256": "6fe8ccbd4f6c7d17241bc4f75d50d355bf693d2f11f38320eeb3a78fe9d60357",
+      "sanitized_sha256": "4e8ccf27801d32e4c062709830cd585f2d213d6f7ef25e13e667d21ca971e4ac",
+      "bytes": 7208
+    },
+    "capture-frozen-after.log": {
+      "source_sha256": "e55535ab5f40fe8b764b0f180314ac6e057115f2b0dd6539f6f3d4e49b1e4a82",
+      "sanitized_sha256": "ac295ae54f04ce5b5bbb021bbf1996287355256432ee3fa5444cfaed4dc9845e",
+      "bytes": 7566
+    },
+    "capture-focus-corrected-after.log": {
+      "source_sha256": "1c0398aad0ebf843efe2da66a54bedaab3fdda5129d800e48367af6f48d778af",
+      "sanitized_sha256": "1c0398aad0ebf843efe2da66a54bedaab3fdda5129d800e48367af6f48d778af",
+      "bytes": 512
+    }
+  },
+  "limits": [
+    "No cause is inferred for historical Enter failure from the isolated pass",
+    "Setup/driver failures are retained and not relabeled functional absence",
+    "C7 source-pending guard has its own real RED; no invented page/profile/SQL response",
+    "Profiles and numeric eligibility only govern chart-type buttons, not Generate or legacy manual/preset pipeline",
+    "No SQL/motor/calculation/persistence/IPC/dependency/timeout/retry change claimed",
+    "FinalheadCI andcross-platform/package checks remainpending; focusedfits andcaptures are kept separate fromprior147and17"
+  ],
+  "root_failure_triage": {
+    "product_focus": [
+      "chart-fields.spec.ts:106",
+      "charts.spec.ts:293"
+    ],
+    "product_change": "77e8b6b awaits asynchronous closeMenu before choosing/dispatching. Final qualification pending.",
+    "other_seven": "Consumer navigation/labels/legacy-series setup was adapted; chart-review55 remained a real product geometry regression and was fixed only after reproducing both six-field andFilters clipping failures.",
+    "final_candidate": "deb9797, root supplied; no final platformCI qualification yet",
+    "pending_focus_selection": "Closure17ran16PASS1FAIL; final geometry case passed separately. No full17rerun is inferred."
+  },
+  "geometry_phases": {
+    "original_criterion": "Six fields visible andFilters zone fully in viewport; no assertion weakened.",
+    "closure17": {
+      "head": "9732f15eb9aadf5f27531b5cf159234172896abd",
+      "passed": 16,
+      "failed": 1,
+      "wall_seconds_reported_by_root": 77.405,
+      "remaining": "chart-review55 sees5 ofrequired6; both earlier product focus cases now passed"
+    },
+    "remove_padding": {
+      "head": "410e9c89b598a4a3278f79a753527747bc3b9f5b",
+      "change": "Remove2px vertical field padding added byC",
+      "compact10_passed": 9,
+      "failed": 1,
+      "wall_seconds": 50.709,
+      "failure": "Six fields now pass; Filters clipped10.296875px, ratio0.768"
+    },
+    "list244": {
+      "head": "f9639b1",
+      "change": "field-list flex-basis256→244",
+      "failure": "Filters now pass, but only5 ofrequired6 fields visible"
+    },
+    "diagnostic": {
+      "test_head": "37d4a01",
+      "source_head": "f9639b1",
+      "test_only": "Passive fields-before.json attachment, assertions unchanged",
+      "measured_sixth_bottom_minus_list_top": 249.5,
+      "zones_bottom_at244": 679.296875,
+      "aside_bottom": 681,
+      "hint_bottom_margin": 6
+    },
+    "final_fit": {
+      "head": "deb9797",
+      "change": "list250 andhint margin0; same total vertical allocation,249.5fitsinside250",
+      "report": "reports.fit_list250_hint0",
+      "build_wall_seconds": 2.276,
+      "GUI_wall_seconds": 5.809,
+      "qualification": "Only the same focused geometry case; not147or17rerun. Final48captures completed separately."
+    }
+  }
+}

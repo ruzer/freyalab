@@ -1,4 +1,5 @@
-import {chartPanel,openAnalysis,showPanel,showTable,createSuggestedChart,openChartFields} from './panel'
+import {t,type Language} from '../../src/shared/i18n'
+import {chartPanel,openAnalysis,showPanel,showTable,createSuggestedChart,openChartFields,chartAssign} from './panel'
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
 import { closeElectron } from './close-electron'
 import {traceElectronFailure} from './electron-trace'
@@ -212,10 +213,7 @@ for(const locale of ['es','en-XA'] as const)test(`U0.1: campos legibles y orden 
  await open(wide)
  await openAnalysis(page,'Gráficos');await createSuggestedChart(page)
  await expect(page.locator('.pivot-result')).toBeVisible()
- if(locale==='es')for(const [field,zone] of [['Cliente','Filas'],['Ventas','Valores']]){
-  await page.locator(`.field-entry[title="${field}"] button`).click()
-  await page.getByRole('menuitem',{name:new RegExp(`^Añadir a ${zone}(?: |$)`)}).click()
- }
+ if(locale==='es')for(const [field,zone] of [['Cliente','rows'],['Ventas','values']] as const)await chartAssign(page,field,zone)
  if(locale==='es')await chartPanel(page).getByLabel('Resumir Ventas por',{exact:true}).selectOption('sum')
  const entries=page.locator('.field-list .field-entry')
  await expect(entries).toHaveCount(4)
@@ -230,19 +228,28 @@ for(const locale of ['es','en-XA'] as const)test(`U0.1: campos legibles y orden 
   for(const value of ['light','dark']){
    await page.locator('.sidebar-bottom select').selectOption(value)
    await capture(`campos-${language}`,value)
-   const boxes=await entries.evaluateAll(rows=>rows.map(row=>{
-    const badge=row.querySelector('.field-badge')!,button=row.querySelector('button')!,name=row.querySelector('.field-name')!
-    const b=button.getBoundingClientRect(),r=row.getBoundingClientRect(),label=badge.getBoundingClientRect(),title=name.getBoundingClientRect()
-    return {top:b.top,bottom:b.bottom,left:b.left,right:b.right,rowRight:r.right,badgeLeft:label.left,badgeRight:label.right,clipped:badge.scrollWidth>badge.clientWidth,nameWidth:title.width,nameRight:title.right,hit:document.elementFromPoint(b.x+b.width/2,b.y+b.height/2)===button}
-   }))
-   for(const [index,box] of boxes.entries()){
+   let previousBottom:number|undefined
+   for(const [index,entry] of (await entries.all()).entries()){
+    // C muestra Más acciones al enfocar la fila; se conserva el hit test de ese control real.
+    await entry.scrollIntoViewIfNeeded();await entry.focus()
+    const fieldName=await entry.locator('.field-name').getAttribute('title')
+    await expect(entry.getByRole('button',{name:t('charts.fields.more',{field:fieldName!},language as Language),exact:true})).toBeVisible()
+    await expect(entry.locator('.field-badge svg')).toBeVisible()
+    const box=await entry.evaluate(row=>{
+     const badge=row.querySelector('.field-badge')!,button=row.querySelector('button')!,name=row.querySelector('.field-name')!
+     const b=button.getBoundingClientRect(),r=row.getBoundingClientRect(),label=badge.getBoundingClientRect(),title=name.getBoundingClientRect()
+     const buttonHit=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2),rowHit=document.elementFromPoint(title.x+Math.min(12,title.width/2),title.y+title.height/2)
+     return {top:(row as HTMLElement).offsetTop+b.top-r.top,bottom:(row as HTMLElement).offsetTop+b.bottom-r.top,left:b.left,right:b.right,rowRight:r.right,badgeLeft:label.left,badgeRight:label.right,clipped:badge.scrollWidth>badge.clientWidth,nameWidth:title.width,nameLeft:title.left,nameRight:title.right,hit:buttonHit!==null&&button.contains(buttonHit),rowHit:rowHit!==null&&row.contains(rowHit)&&!button.contains(rowHit)}
+    })
     expect.soft(box.clipped,`${language}/${value} badge ${index}`).toBe(false)
     expect.soft(box.nameWidth).toBeGreaterThan(0)
     expect.soft(box.right).toBeLessThanOrEqual(box.rowRight+.5)
-    expect.soft(box.nameRight).toBeLessThanOrEqual(box.badgeLeft)
-    expect.soft(box.badgeRight).toBeLessThanOrEqual(box.left)
+    expect.soft(box.badgeRight).toBeLessThanOrEqual(box.nameLeft)
+    expect.soft(box.nameRight).toBeLessThanOrEqual(box.left)
     expect.soft(box.hit).toBe(true)
-    if(index)expect.soft(box.top-boxes[index-1].bottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+    expect.soft(box.rowHit).toBe(true)
+    if(previousBottom!==undefined)expect.soft(box.top-previousBottom,`${language}/${value} row gap ${index}`).toBeGreaterThanOrEqual(4)
+    previousBottom=box.bottom
    }
    await expect(header().locator('button.btn-primary:enabled')).toHaveCount(1)
   }

@@ -1,0 +1,61 @@
+{
+  "phase": "after",
+  "language": "es",
+  "appDir": "<checkout>",
+  "rootProvidedHead": "deb9797ea1c27b3ed64d1b852a23a531e240eb9d",
+  "headVerifiedByProbe": false,
+  "sourceSHA256": {
+    "src/renderer/components/ChartFields.svelte": "dac1a0fddc0d28d0d4ed177669e941379376bfb67b46782da55c595c8c4679f5",
+    "src/renderer/components/CsvCharts.svelte": "7c22c50c03fbdab76341ddb75b9e9f479a567c02f8f1198ab991d127891da6a8",
+    "src/shared/chart-fields.ts": "be1847fff99a73a670953254cb48af4a889e1d1abc06d21d8deb534ebf3303fc",
+    "src/shared/i18n/es.json": "ea6777ed93b9675237ce4125e092cee4dea3516fdb3319a399b1ab44ecaa64df",
+    "src/shared/i18n/en.json": "a9fb8787cdd4de5c65e43b2ba81425d562a9fd3563a2bf8d9d0025503a0f1287"
+  },
+  "buildSHA256": {
+    "out/main/index.js": "e01af3318fcabcdfa9b14f7e19e439d62987372dc4b31eedbff3a5f94a880286",
+    "out/renderer/assets/index-BqOaLCd4.js": "a93b45cffe524a0963e47dd2bcb5aca51d4b573295f90b7f523d6dfed1efd914",
+    "out/renderer/assets/index-CUkKeaYE.css": "104b7a87d1e00e5db96f3668ac7ddd8583bded719c17d93fff37fa15368ff72a"
+  },
+  "helperSHA256": "2a82b87e22b968aad48666baf30e88702e1d702d8f50423600844068606ab047",
+  "fixtureSpecSHA256": "655c7b36ecb9890cf443e0209a1f4f524b0c697045fceff50f4ae116bfda305f",
+  "sourceCSVsha256": "1ca1f0084d88b564e5922040333ba25ed8def9fb590d221bb6ce3ea98344c574",
+  "sourceRows": 50,
+  "sourceColumns": 6,
+  "resultRows": [
+    [
+      "Oaxaca",
+      "122.5"
+    ],
+    [
+      "Mérida",
+      "123.5"
+    ],
+    [
+      "Puebla",
+      "124.5"
+    ],
+    [
+      "Toluca",
+      "125.5"
+    ],
+    [
+      "Colima",
+      "126.5"
+    ]
+  ],
+  "exportCSVsha256": "4f102e7ef3076a3b0962aa7492e0267676b74afe955efad302ad98d2883c11b2",
+  "screenshots": {
+    "after-es-light-1440x900-lista.png": "7b14624419532a43e2984d0b2aa080de53f0544b0d6593d7ebcbcf4da4bb5c43",
+    "after-es-dark-1440x900-lista.png": "d6b5a496f6f30da0a4fbd761e2921301fb174b9de77c47e81dabe94ffe9833dd",
+    "after-es-light-1280x720-lista.png": "2aa3df7d8a9bc094bae8e146f8c4148a5aa400a8abe734fa839de4361b831d26",
+    "after-es-dark-1280x720-lista.png": "9ed2e6fc04478273ec09daf5be70254d50f44d2dd1a8b6b716bb3160436b3304",
+    "after-es-light-1440x900-resultado.png": "8086abfe651c4d47b08548e6deeacc4d041215a7665d169fb35aef9853305a1c",
+    "after-es-light-1440x900-menu-usado.png": "7b8cb97eb0d7cce575fdf91c8daa1e72c695208ccdb2473a75ec738270503783",
+    "after-es-dark-1440x900-resultado.png": "4a2a515bdd344999dcb50371d2e64cd7ad0d5214764315a9924607abf077dd0a",
+    "after-es-dark-1440x900-menu-usado.png": "e5e6c42b0483eca9e6d840d223b765beb2ba6133445d73dbb844b7038b5d0a1b",
+    "after-es-light-1280x720-resultado.png": "775b4556534524d09309e444ad92936f9c929c0a2f1f45b85dcdf911bd364a49",
+    "after-es-light-1280x720-menu-usado.png": "f0fd490c43934675cf942c6ac80907921f16428ef63a875b6c9b0ae91b8e960d",
+    "after-es-dark-1280x720-resultado.png": "c4f82f6d212b4342483326784ba8b8277bb65738ee69c43814c3a8c0a3bbbce3",
+    "after-es-dark-1280x720-menu-usado.png": "fef32497a13ec9c5eb38c211741916107228f07516d2b4111b3e945765f83e56"
+  }
+}

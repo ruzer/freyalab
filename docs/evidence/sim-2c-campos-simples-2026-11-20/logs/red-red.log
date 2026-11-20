@@ -1,0 +1,172 @@
+
+Running 5 tests using 1 worker
+
+(node:2533) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/chart-simple-fields.spec.ts:79:1 › SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista (1.5s)
+(node:2545) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/chart-simple-fields.spec.ts:101:1 › SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV (16.2s)
+(node:2611) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [csv] › tests/e2e/chart-simple-fields.spec.ts:122:1 › SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos (16.1s)
+(node:2639) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  4 [csv] › tests/e2e/chart-simple-fields.spec.ts:132:1 › SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular (31.0s)
+(node:2824) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  5 [csv] › tests/e2e/chart-simple-fields.spec.ts:146:1 › SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables (34.6s)
+
+
+  1) [csv] › tests/e2e/chart-simple-fields.spec.ts:79:1 › SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 14
+
+      78 |
+      79 | test('SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista',async()=>{
+    > 80 |  expect(await fieldTabStops()).toBe(1)
+         |                                ^
+      81 |  for(const badge of await fields().locator('.field-badge').all()){
+      82 |   expect((await badge.textContent())?.trim()).toBe('')
+      83 |   const name=await badge.getAttribute('title');expect(name).toBeTruthy()
+        at <checkout>/tests/e2e/chart-simple-fields.spec.ts:80:32
+
+    Error Context: ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-c6597-rvan-el-teclado-de-la-lista-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-c6597-rvan-el-teclado-de-la-lista-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-c6597-rvan-el-teclado-de-la-lista-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/chart-simple-fields.spec.ts:101:1 › SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name')
+    Expected: "Ingreso"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name')
+
+
+      100 |
+      101 | test('SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV',async()=>{
+    > 102 |  await field('Ingreso').click();await expect(zone('Valores').locator('.chip-name')).toHaveText('Ingreso')
+          |                                                                                     ^
+      103 |  await expect(menu()).toHaveCount(0)
+      104 |  await field('Ciudad').click();await ready();await expect(title()).toHaveText('Promedio de Ingreso por Ciudad')
+      105 |  await expect(zone('Filas').locator('.chip-name')).toHaveText('Ciudad');await expect(zone('Valores').getByRole('combobox')).toHaveValue('average')
+        at <checkout>/tests/e2e/chart-simple-fields.spec.ts:102:85
+
+    Error Context: ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-ad77c-exactos-en-tabla-JSON-y-CSV-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-ad77c-exactos-en-tabla-JSON-y-CSV-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-ad77c-exactos-en-tabla-JSON-y-CSV-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/chart-simple-fields.spec.ts:122:1 › SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name')
+    Expected: "Ingreso"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name')
+
+
+      122 | test('SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos',async()=>{
+      123 |  await field('Ingreso').focus();await field('Ingreso').press('Enter')
+    > 124 |  await expect(zone('Valores').locator('.chip-name')).toHaveText('Ingreso')
+          |                                                      ^
+      125 |  await expect(panel().locator('.analysis-announcement')).toHaveText('Ingreso añadido a Valores');await expect(menu()).toHaveCount(0)
+      126 |  await field('Ciudad').focus();await field('Ciudad').press('Space');await ready()
+      127 |  await expect(zone('Filas').locator('.chip-name')).toHaveText('Ciudad')
+        at <checkout>/tests/e2e/chart-simple-fields.spec.ts:124:54
+
+    Error Context: ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-03c99-anuncian-sin-abrir-destinos-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-03c99-anuncian-sin-abrir-destinos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-03c99-anuncian-sin-abrir-destinos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [csv] › tests/e2e/chart-simple-fields.spec.ts:132:1 › SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular 
+
+    TimeoutError: locator.press: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('menu').getByRole('menuitem', { name: /^Añadir a Filas(?: [(]recomendado[)])?$/ })
+
+
+      65 |  // Setup compatible con B y C: solo abre el menú real del campo sin usar.
+      66 |  await field(name).getByRole('button',{name:new RegExp('^(?:(?:Añadir|Mover) a… '+name+'|Más acciones de '+name+')$')}).press('Enter')
+    > 67 |  await menu().getByRole('menuitem',{name:new RegExp('^Añadir a '+destination+'(?: [(]recomendado[)])?$')}).press('Enter')
+         |                                                                                                            ^
+      68 | }
+      69 | async function ready(){
+      70 |  await expect(panel().locator('.pivot-result')).toBeVisible()
+        at assign (<checkout>/tests/e2e/chart-simple-fields.spec.ts:67:108)
+        at meanCity (<checkout>/tests/e2e/chart-simple-fields.spec.ts:74:27)
+        at <checkout>/tests/e2e/chart-simple-fields.spec.ts:133:2
+
+    Error Context: ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-549f7--sin-eliminar-ni-recalcular-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-549f7--sin-eliminar-ni-recalcular-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-549f7--sin-eliminar-ni-recalcular-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [csv] › tests/e2e/chart-simple-fields.spec.ts:146:1 › SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables 
+
+    TimeoutError: locator.evaluate: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^\s*(?:✓\s*)?Edad\s*$/ }) }).getByRole('button', { name: 'Más acciones de Edad', exact: true })
+
+
+      150 |  const entry=field('Edad'),more=entry.getByRole('button',{name:'Más acciones de Edad',exact:true})
+      151 |  await page.mouse.move(0,0);await fields().getByRole('searchbox').focus()
+    > 152 |  expect(await more.evaluate(node=>{const style=getComputedStyle(node);return style.visibility==='hidden'||style.opacity==='0'||style.display==='none'})).toBe(true)
+          |                    ^
+      153 |  await entry.hover();await expect(more).toBeVisible();await more.press('Enter');await expect(menu()).toBeVisible()
+      154 |  const unavailable=menu().getByRole('menuitem',{name:/^Añadir a Valores/}),reason=/^El mapa de calor solo cuenta filas[.]?$/
+      155 |  await expect(unavailable).toHaveAttribute('aria-disabled','true');await expect(unavailable).not.toHaveAttribute('disabled')
+        at <checkout>/tests/e2e/chart-simple-fields.spec.ts:152:20
+
+    Error Context: ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-9a6f7-nos-desactivados-enfocables-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-9a6f7-nos-desactivados-enfocables-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/red-results/chart-simple-fields-SIM-2c-9a6f7-nos-desactivados-enfocables-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5 failed
+    [csv] › tests/e2e/chart-simple-fields.spec.ts:79:1 › SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista 
+    [csv] › tests/e2e/chart-simple-fields.spec.ts:101:1 › SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV 
+    [csv] › tests/e2e/chart-simple-fields.spec.ts:122:1 › SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos 
+    [csv] › tests/e2e/chart-simple-fields.spec.ts:132:1 › SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular 
+    [csv] › tests/e2e/chart-simple-fields.spec.ts:146:1 › SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables 

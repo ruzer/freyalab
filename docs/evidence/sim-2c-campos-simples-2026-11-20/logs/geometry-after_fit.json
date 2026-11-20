@@ -1,0 +1,162 @@
+[
+  {
+    "kind": "field-list svelte-hqvgw9",
+    "text": "Categoría       Descuento  Parece un monto o un po",
+    "top": 184.5,
+    "bottom": 434.5,
+    "height": 250,
+    "lineHeight": "19.5px",
+    "padding": "0px",
+    "margin": "5px 0px 0px"
+  },
+  {
+    "kind": "svelte-hqvgw9",
+    "text": "Categoría",
+    "top": 189.5,
+    "bottom": 203.5,
+    "height": 14,
+    "lineHeight": "14px",
+    "padding": "0px",
+    "margin": "5px 0px 2px"
+  },
+  {
+    "kind": "field-entry svelte-hqvgw9",
+    "text": "      Descuento  Parece un monto o un porcentaje ⋯",
+    "top": 205.5,
+    "bottom": 240,
+    "height": 34.5,
+    "lineHeight": "19.5px",
+    "padding": "0px",
+    "margin": "0px"
+  },
+  {
+    "kind": "field-entry svelte-hqvgw9",
+    "text": "      Canal ⋯",
+    "top": 244,
+    "bottom": 272,
+    "height": 28,
+    "lineHeight": "19.5px",
+    "padding": "0px",
+    "margin": "4px 0px 0px"
+  },
+  {
+    "kind": "field-entry svelte-hqvgw9",
+    "text": "      Estado ⋯",
+    "top": 276,
+    "bottom": 304,
+    "height": 28,
+    "lineHeight": "19.5px",
+    "padding": "0px",
+    "margin": "4px 0px 0px"
+  },
+  {
+    "kind": "svelte-hqvgw9",
+    "text": "Número",
+    "top": 309,
+    "bottom": 323,
+    "height": 14,
+    "lineHeight": "14px",
+    "padding": "0px",
+    "margin": "5px 0px 2px"
+  },
+  {
+    "kind": "field-entry svelte-hqvgw9 used",
+    "text": "    ✓Ventas ⋯",
+    "top": 325,
+    "bottom": 353,
+    "height": 28,
+    "lineHeight": "19.5px",
+    "padding": "0px",
+    "margin": "0px"
+  },
+  {
+    "kind": "field-entry svelte-hqvgw9",
+    "text": "    Coste ⋯",
+    "top": 357,
+    "bottom": 385,
+    "height": 28,
+    "lineHeight": "19.5px",
+    "padding": "0px",
+    "margin": "4px 0px 0px"
+  },
+  {
+    "kind": "svelte-hqvgw9",
+    "text": "Fecha",
+    "top": 390,
+    "bottom": 404,
+    "height": 14,
+    "lineHeight": "14px",
+    "padding": "0px",
+    "margin": "5px 0px 2px"
+  },
+  {
+    "kind": "field-entry svelte-hqvgw9",
+    "text": "   Fecha ⋯",
+    "top": 406,
+    "bottom": 434,
+    "height": 28,
+    "lineHeight": "19.5px",
+    "padding": "0px",
+    "margin": "0px"
+  },
+  {
+    "kind": "svelte-hqvgw9",
+    "text": "Texto (sin número reconocido)",
+    "top": 439,
+    "bottom": 453,
+    "height": 14,
+    "lineHeight": "14px",
+    "padding": "0px",
+    "margin": "5px 0px 2px"
+  },
+  {
+    "kind": "field-entry svelte-hqvgw9 used",
+    "text": "     ✓Cliente ⋯",
+    "top": 455,
+    "bottom": 483,
+    "height": 28,
+    "lineHeight": "19.5px",
+    "padding": "0px",
+    "margin": "0px"
+  },
+  {
+    "kind": "field-entry svelte-hqvgw9",
+    "text": "     Notas ⋯",
+    "top": 487,
+    "bottom": 515,
+    "height": 28,
+    "lineHeight": "19.5px",
+    "padding": "0px",
+    "margin": "4px 0px 0px"
+  },
+  {
+    "kind": "zone-content svelte-hqvgw9",
+    "text": "Haz clic en un campo para añadirlo Filas Cliente  ",
+    "top": 463.5,
+    "bottom": 681,
+    "height": 217.5,
+    "lineHeight": "19.5px",
+    "padding": "0px",
+    "margin": "0px"
+  },
+  {
+    "kind": "field-hint svelte-hqvgw9",
+    "text": "Haz clic en un campo para añadirlo",
+    "top": 463.5,
+    "bottom": 480,
+    "height": 16.5,
+    "lineHeight": "16.5px",
+    "padding": "0px",
+    "margin": "0px"
+  },
+  {
+    "kind": "zones svelte-hqvgw9",
+    "text": "Filas Cliente  × Columnas VacíaValores Ventas Cuen",
+    "top": 480,
+    "bottom": 679.296875,
+    "height": 199.296875,
+    "lineHeight": "19.5px",
+    "padding": "0px",
+    "margin": "0px"
+  }
+]

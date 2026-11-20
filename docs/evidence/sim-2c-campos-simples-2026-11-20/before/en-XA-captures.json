@@ -1,0 +1,61 @@
+{
+  "phase": "before",
+  "language": "en-XA",
+  "appDir": "<recovery>/sim2b-grafico-claro",
+  "rootProvidedHead": "00074b4764f03004246521a9d8de7887a37885e6",
+  "headVerifiedByProbe": false,
+  "sourceSHA256": {
+    "src/renderer/components/ChartFields.svelte": "245a3a848d10989449509c0631c934eb8da8529eef743109ebb8e6acab7a64ec",
+    "src/renderer/components/CsvCharts.svelte": "f6e6ae572f4ddfaf2726dfa127ca3c0bf5578eda41f3eae70781545bcbf3928b",
+    "src/shared/chart-fields.ts": "a92dbe1acdae222938ea4076a767e69e4fc9ad73ac9404671f9ed5abb0ce7251",
+    "src/shared/i18n/es.json": "2e110656a918998dc98631ce75327718c39d9c12b937aab33e1b4c6bfec1794c",
+    "src/shared/i18n/en.json": "ead1e84cd4c24161ca8d2841f5c57d1caafa5adb6e1bcba1261b8223bf59be68"
+  },
+  "buildSHA256": {
+    "out/main/index.js": "fb95ad1b75919c52679c0e454c1a8aa2d7eecd259f33b9841eb730dd66a185cd",
+    "out/renderer/assets/index-CldqXYnk.css": "5448bc4aaea8c199b7bc24b6aa1b4ce247171f79b775d647d44be7e8db8fed3c",
+    "out/renderer/assets/index-DVu88Cu4.js": "4fb67b5236a40fef68f5353fe7feb4475535c613776184e27e8a657d31ff2132"
+  },
+  "helperSHA256": "c3a16b3eb4bb775bddcfc0c4b50256997de1cf3bb79806e16e55d48686bb4c85",
+  "fixtureSpecSHA256": "655c7b36ecb9890cf443e0209a1f4f524b0c697045fceff50f4ae116bfda305f",
+  "sourceCSVsha256": "1ca1f0084d88b564e5922040333ba25ed8def9fb590d221bb6ce3ea98344c574",
+  "sourceRows": 50,
+  "sourceColumns": 6,
+  "resultRows": [
+    [
+      "Oaxaca",
+      "122.5"
+    ],
+    [
+      "Mérida",
+      "123.5"
+    ],
+    [
+      "Puebla",
+      "124.5"
+    ],
+    [
+      "Toluca",
+      "125.5"
+    ],
+    [
+      "Colima",
+      "126.5"
+    ]
+  ],
+  "exportCSVsha256": "6cfae2329cc63183840514fb3291e9fb9aa1e66b81cab8c4fc8694359b9cd47c",
+  "screenshots": {
+    "before-en-XA-light-1440x900-lista.png": "7e0d8213f1dd82a78f4f2bc1db242ff0dc5dade654b6919c72dfd6eca8b074f9",
+    "before-en-XA-dark-1440x900-lista.png": "5502e4e05d36c4bd973ff28236a330e3d2a1123e31603471524a84daf11d4fbf",
+    "before-en-XA-light-1280x720-lista.png": "611e660deb8eb6f0e94ce1e0029e7c300fe6918d216a9dd9b436e8ce76423d93",
+    "before-en-XA-dark-1280x720-lista.png": "d4c233183031c8c20dbd3c2702c81d78c5abb260cd93039b4c9a8137615ca6d5",
+    "before-en-XA-light-1440x900-resultado.png": "dfc6ee4703441e99d7146bc5ce300bf503f9be0f02082ea5291ad4830eb6e8a7",
+    "before-en-XA-light-1440x900-menu-usado.png": "c619549884a29deabfe5acb289b1c67bc1a089d9a9c18e469dc6d3dbe86693f1",
+    "before-en-XA-dark-1440x900-resultado.png": "dc2b9c81f5055956745bee35d65325f8e57b3a7c0fc3ada8886ccd7da90be5e5",
+    "before-en-XA-dark-1440x900-menu-usado.png": "c600e0246306f8d1d06290794f95b7a3bb4ef5336f755f7bffb10c783bb6752c",
+    "before-en-XA-light-1280x720-resultado.png": "2b7ea3b1362bfa1814084b047bdc9233cf55751e25dc7d98dada8fb4f32a246a",
+    "before-en-XA-light-1280x720-menu-usado.png": "b80f0a9cf42e91acd6f090e18728b17cf9fcb6d0d2208939decb7bc6abc30f3f",
+    "before-en-XA-dark-1280x720-resultado.png": "590fad470fccd68739a31f4eb8009aafd64fb7116ad3fc4af845b3b03dd65bf8",
+    "before-en-XA-dark-1280x720-menu-usado.png": "ae87a1241dc1a291975ce398b510c5ca34cf763c43f84aa973313f398e4c1844"
+  }
+}
