@@ -1,0 +1,1186 @@
+{
+  "state": "G compound focused qualification and documentary evidence complete; full App composition, CI and publication SHA pending.",
+  "refs": {
+    "beforeProduct": "c2579806407c92a4413727f77b60f167a318386f",
+    "beforeCheckpoint": "f321dc0c4bb6739b03593f23ecc37976a3665b92",
+    "hardenedRedTests": "e8c0a643958cd8a353b82191f55d79ea05c00346",
+    "product": "82f3782b252621d022093dc1f074766b13c2458c",
+    "secondGreenTests": "b3c491a199e4efb86328b8a9f5d3257126781131",
+    "clockGreenTests": "fc86f9e7bb8fff3ce21ee9a50dede925e0b02176",
+    "cleanTests": "081a8bd0870f4e755cb6cce2e0b02c6ebf9e3014",
+    "compound": "281450f0dbf9384ced37f6893854a55b130765cb",
+    "integratedP3": "59d9077c327811952e55379c0a0f3f040080476f",
+    "integratedMain": "8a002af72fd015db8457c67974ac10dbf37c0b1a"
+  },
+  "publicationSHA": null,
+  "sourceSnapshot": [
+    {
+      "path": "src/renderer/App.svelte",
+      "sha256": "9d28a5541921ccb6af7eeb2bf1546d1bb90d2b956e5c1fb8ad8aaede54c2d28b",
+      "gitBlob": "76a5127e403991f9ad5dd349ec5a6f0c1f6ae39a"
+    },
+    {
+      "path": "src/renderer/lib/icons.ts",
+      "sha256": "581e0b83bd41ab653ae2390913d8a7eb2023d5b16dc77d3eb9c628c23366c792",
+      "gitBlob": "c90796f265302f8e1142ebe0d1ec6a5704821d2a"
+    },
+    {
+      "path": "src/renderer/style.css",
+      "sha256": "ee3d319903cef5603cb74de31fa6f379f135c9a6a941c2ed984762d47326ac5b",
+      "gitBlob": "2d859c5d16aea1969a1b29fee3322994f073cd92"
+    },
+    {
+      "path": "src/shared/i18n/es.json",
+      "sha256": "6d16bbc977fa33554413e57d08b327ffd1abd2b7f8b2ccc18ba5550ae1068019",
+      "gitBlob": "d2fc6a96316a4fca277acf98024d22bc8910669c"
+    },
+    {
+      "path": "src/shared/i18n/en.json",
+      "sha256": "14ccb5ec786ab672651c6833f753c6632d17c5d7becaaab620c6629b2b83f3f2",
+      "gitBlob": "305f0820060a61dd97bc74cd2d6640cef80ccba9"
+    }
+  ],
+  "productSourceTree": "d7037a0312880d78f93bb75e0ddcabd9b47af79a",
+  "sourceDiff82fToFc86": "",
+  "workingSourceDiff": "",
+  "cleanSpec": {
+    "path": "tests/e2e/single-event-notices.spec.ts",
+    "sha256": "3ed5c4301d087acbb006096481a91bfa229b3d88c546d8829c80081381ffa7d4",
+    "runtimeQualification": "1/1 passed in root clean-focused run on 081a8bd; no clean seven-case batch claimed.",
+    "observerRemoved": true,
+    "clockEarlyAndSaveTranslatedPreserved": true,
+    "otherActionsDataAndAssertionsByteIdenticalToUninstrumentedSource": true
+  },
+  "existingConsumer": {
+    "path": "tests/e2e/icons.spec.ts",
+    "onlyChange": ".toast.info→.toast.success",
+    "textSvgAndDiskBytesOraclesPreserved": true
+  },
+  "newPublicCases": 5,
+  "deletedTests": 0,
+  "notify": {
+    "existingCallersExplicitlyTyped": 18,
+    "errorDelegationAdded": 1,
+    "totalTypedCalls": 19,
+    "timersMs": {
+      "ordinary": 3500,
+      "error": 7000
+    },
+    "doesNotWriteStatus": true
+  },
+  "iconInfo": {
+    "sourceURL": "https://github.com/lucide-icons/lucide/blob/main/icons/info.svg",
+    "gitBlob": "2a46eac2b55a1ead226035d1efa8721f6f08bd17",
+    "sourceRef": "main, mutableURLwithfixedblobidentity",
+    "notClaimedTag": "1.61.0",
+    "newDependency": false
+  },
+  "stages": [
+    {
+      "stage": "hardened-red",
+      "reportSHA256": "65a60e5ef4c25365f9c18304c2a9d5749a403e6235f2ccc40cf453cef9d9f4f1",
+      "reportName": "hardened-red-report.json",
+      "reportStats": {
+        "startTime": "2026-11-20T06:17:19.844Z",
+        "duration": 58268.563,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 5,
+        "flaky": 0
+      },
+      "processSecondsReportedByRoot": 58.559,
+      "uniqueIdentities": 5,
+      "identities": [
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie [es]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [es]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie [en-XA]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [en-XA]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: éxito, información y error conservan iconos, teclado y duraciones sin copiarse al pie"
+        }
+      ],
+      "attempts": [
+        {
+          "status": "failed",
+          "retry": 0,
+          "durationMs": 2347
+        },
+        {
+          "status": "failed",
+          "retry": 0,
+          "durationMs": 17580
+        },
+        {
+          "status": "failed",
+          "retry": 0,
+          "durationMs": 2545
+        },
+        {
+          "status": "failed",
+          "retry": 0,
+          "durationMs": 17598
+        },
+        {
+          "status": "failed",
+          "retry": 0,
+          "durationMs": 16529
+        }
+      ],
+      "interpretation": "5 capability failures after correctingabsenceandfooteroracles"
+    },
+    {
+      "stage": "candidate1",
+      "reportSHA256": "db5cd1ac6d0c13ff6d7b8f71a277ee4f54cc0c0ce9157493d44a109a7c3f3237",
+      "reportName": "green-report.json",
+      "reportStats": {
+        "startTime": "2026-11-20T06:26:09.494Z",
+        "duration": 61159.4,
+        "expected": 4,
+        "skipped": 0,
+        "unexpected": 3,
+        "flaky": 0
+      },
+      "processSecondsReportedByRoot": 61.467,
+      "uniqueIdentities": 7,
+      "identities": [
+        {
+          "project": "shell",
+          "file": "tests/e2e/icons.spec.ts",
+          "title": "iconos: la bienvenida, un CSV y un Markdown no usan glifos ni exponen los SVG"
+        },
+        {
+          "project": "shell",
+          "file": "tests/e2e/icons.spec.ts",
+          "title": "iconos: los avisos distinguen éxito y error con icono y texto, y Exportar deshabilitado no es azul"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie [es]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [es]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie [en-XA]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [en-XA]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: éxito, información y error conservan iconos, teclado y duraciones sin copiarse al pie"
+        }
+      ],
+      "attempts": [
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 1306
+        },
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 1199
+        },
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 2552
+        },
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 2624
+        },
+        {
+          "status": "failed",
+          "retry": 0,
+          "durationMs": 17620
+        },
+        {
+          "status": "failed",
+          "retry": 0,
+          "durationMs": 17745
+        },
+        {
+          "status": "failed",
+          "retry": 0,
+          "durationMs": 16700
+        }
+      ],
+      "interpretation": "4pass3fail;2Save-labelsetupissues,1TableOnly; no allgreenclaim"
+    },
+    {
+      "stage": "passive-observation",
+      "reportSHA256": "fa1d484c95ffda644476d84226f5b2f2cebcfa91f26575c5cd180172c9735bd2",
+      "reportName": "mode-observation-report.json",
+      "reportStats": {
+        "startTime": "2026-11-20T06:48:34.644Z",
+        "duration": 2230.5750000000003,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "processSecondsReportedByRoot": 2.517,
+      "uniqueIdentities": 1,
+      "identities": [
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: éxito, información y error conservan iconos, teclado y duraciones sin copiarse al pie"
+        }
+      ],
+      "attempts": [
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 1857
+        }
+      ],
+      "interpretation": "1pass; nonreproduction, not aresolution"
+    },
+    {
+      "stage": "candidate2",
+      "reportSHA256": "6a14bf606bf2dd727c7ba15348776f2f946abcf89441f8074da1d63e5736e8a4",
+      "reportName": "green2-report.json",
+      "reportStats": {
+        "startTime": "2026-11-20T06:52:16.146Z",
+        "duration": 29591.921,
+        "expected": 6,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "processSecondsReportedByRoot": 29.9,
+      "uniqueIdentities": 7,
+      "identities": [
+        {
+          "project": "shell",
+          "file": "tests/e2e/icons.spec.ts",
+          "title": "iconos: la bienvenida, un CSV y un Markdown no usan glifos ni exponen los SVG"
+        },
+        {
+          "project": "shell",
+          "file": "tests/e2e/icons.spec.ts",
+          "title": "iconos: los avisos distinguen éxito y error con icono y texto, y Exportar deshabilitado no es azul"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie [es]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [es]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie [en-XA]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [en-XA]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: éxito, información y error conservan iconos, teclado y duraciones sin copiarse al pie"
+        }
+      ],
+      "attempts": [
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 992
+        },
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 1143
+        },
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 2470
+        },
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 2594
+        },
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 2494
+        },
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 2519
+        },
+        {
+          "status": "failed",
+          "retry": 0,
+          "durationMs": 16714
+        }
+      ],
+      "interpretation": "6pass1TableOnly observedafterText"
+    },
+    {
+      "stage": "clock-focused",
+      "reportSHA256": "fd52ce0eabee1b20c93c6be7edf8010aa1f2afa3e8e1902376b6705afcc49e1d",
+      "reportName": "clock-green-report.json",
+      "reportStats": {
+        "startTime": "2026-11-20T07:07:24.160Z",
+        "duration": 2039.5829999999999,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "processSecondsReportedByRoot": 2.313,
+      "uniqueIdentities": 1,
+      "identities": [
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: éxito, información y error conservan iconos, teclado y duraciones sin copiarse al pie"
+        }
+      ],
+      "attempts": [
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 1656
+        }
+      ],
+      "interpretation": "1passwithsameearlyclock, observerpresent"
+    },
+    {
+      "stage": "clock-full7",
+      "reportSHA256": "3d985afd669f9e47e3d0c4ad54e39b7fa5bc5580d9987e69f06875e86a497d01",
+      "reportName": "green3-report.json",
+      "reportStats": {
+        "startTime": "2026-11-20T07:07:26.492Z",
+        "duration": 14516.646,
+        "expected": 7,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "processSecondsReportedByRoot": 14.809,
+      "uniqueIdentities": 7,
+      "identities": [
+        {
+          "project": "shell",
+          "file": "tests/e2e/icons.spec.ts",
+          "title": "iconos: la bienvenida, un CSV y un Markdown no usan glifos ni exponen los SVG"
+        },
+        {
+          "project": "shell",
+          "file": "tests/e2e/icons.spec.ts",
+          "title": "iconos: los avisos distinguen éxito y error con icono y texto, y Exportar deshabilitado no es azul"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie [es]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [es]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie [en-XA]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [en-XA]"
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: éxito, información y error conservan iconos, teclado y duraciones sin copiarse al pie"
+        }
+      ],
+      "attempts": [
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 952
+        },
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 1143
+        },
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 2426
+        },
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 2596
+        },
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 2418
+        },
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 2544
+        },
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 1838
+        }
+      ],
+      "interpretation": "5new+2existingicons,7pass;observerpresent"
+    },
+    {
+      "stage": "clean-focused",
+      "sourceRef": "82f3782b252621d022093dc1f074766b13c2458c",
+      "testsRef": "081a8bd0870f4e755cb6cce2e0b02c6ebf9e3014",
+      "reportSHA256": "6d5d219a1fa44e0fff3cf4e7f2beb6d903d9956b356feef9a5e4ea7515cb5d57",
+      "reportName": "clean-green-report.json",
+      "reportStats": {
+        "startTime": "2026-11-20T07:26:02.245Z",
+        "duration": 2402.0350000000003,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "processSecondsReportedByRoot": 2.688,
+      "uniqueIdentities": 1,
+      "identities": [
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: éxito, información y error conservan iconos, teclado y duraciones sin copiarse al pie"
+        }
+      ],
+      "attempts": [
+        {
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 2043
+        }
+      ],
+      "interpretation": "Fifth new case passed after removing temporary observer; not a clean seven-case batch."
+    },
+    {
+      "stage": "compound-focused32",
+      "compoundRef": "281450f0dbf9384ced37f6893854a55b130765cb",
+      "reportName": "integration-gui-report.json",
+      "reportSHA256": "5409a034fb09012b014e9c77a895c5a064bce7dcd3f8ad83f9d0ab6232009b7e",
+      "reportStats": {
+        "startTime": "2026-11-20T08:04:21.080Z",
+        "duration": 48707.055,
+        "expected": 32,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "processSecondsReportedByRoot": 48.993,
+      "uniqueIdentities": 32,
+      "fileCounts": {
+        "tests/e2e/icons.spec.ts": 2,
+        "tests/e2e/analysis-sections.spec.ts": 9,
+        "tests/e2e/project-exports.spec.ts": 16,
+        "tests/e2e/single-event-notices.spec.ts": 5
+      },
+      "identities": [
+        {
+          "project": "shell",
+          "file": "tests/e2e/icons.spec.ts",
+          "title": "iconos: la bienvenida, un CSV y un Markdown no usan glifos ni exponen los SVG",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1223
+            }
+          ]
+        },
+        {
+          "project": "shell",
+          "file": "tests/e2e/icons.spec.ts",
+          "title": "iconos: los avisos distinguen éxito y error con icono y texto, y Exportar deshabilitado no es azul",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1015
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1213
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro secciones",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1198
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: exportaciones sin resultado siguen enfocables, explican el motivo y no calculan al abrir ni activar",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1053
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: informes de columnas, resumen y detalle conservan sus datos y precisión desde Exportar",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1553
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: el informe contextual conserva Perfil, Frecuencias paginadas, Distribución y Correlación",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2115
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: informe SQL reúne todas las páginas y conserva identificadores y revisión",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1969
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 6137
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: pestañas grandes conservan el motivo y las flechas omiten Información y Estadísticas [grande]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 800
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: explorar una columna después de elegir un rango conserva habilitado su informe contextual",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1222
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: el menú exporta todas las filas, registra procedencia y abre el resultado editable",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1026
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [es]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1078
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [en]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1135
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [en-XA]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1204
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: cambios sin guardar del conjunto bloquean exportar sin cambiar la receta ni el archivo",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1045
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: un archivo exportado cambia o falta aunque nunca se haya abierto",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1228
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: editar y guardar un resultado conserva su advertencia y su huella histórica",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1396
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: añadir como fuente reutiliza el registro y quitar olvida solo la procedencia",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1103
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: una segunda exportación conserva ambas instantáneas y rechaza reemplazar la primera",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1068
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: un proyecto futuro conserva las recetas v1 pero bloquea exportar con su motivo",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 812
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: la paleta encuentra el conjunto por exportar, extraer, guardar como archivo, export, extract y csv",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1153
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03 frontend: doble Enter en Registrar de nuevo envía una petición y conserva el éxito",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1001
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: los ids de proyecto v1 válidos sin UUID conservan exportación, apertura y alta como fuente",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1020
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03 C3: Nota antes de ID conserva el ausente y muestra la misma advertencia en resultado y origen",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1027
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03 C16: fuente changed bloquea Exportar en panel y menú sin cambiar el proyecto",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1044
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03 C16: fuente missing bloquea Exportar en panel y menú sin cambiar el proyecto",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1019
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie [es]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2296
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [es]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2418
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie [en-XA]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2336
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [en-XA]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2436
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: éxito, información y error conservan iconos, teclado y duraciones sin copiarse al pie",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1628
+            }
+          ]
+        }
+      ],
+      "interpretation": "5 clean G + 2 icons + 16 PRJ03 + 9 A in one focused batch; no full-suite claim."
+    }
+  ],
+  "localChecks": {
+    "sourceRef": "82f3782b252621d022093dc1f074766b13c2458c",
+    "check": {
+      "errors": 0,
+      "warnings": 0,
+      "processSecondsReportedByRoot": 9.87
+    },
+    "unit": {
+      "passed": 3065,
+      "skipped": 2,
+      "filesPassed": 173,
+      "filesSkipped": 1,
+      "vitestSeconds": 17.82
+    },
+    "build": {
+      "exitCode": 0,
+      "processSecondsReportedByRoot": 2.153
+    },
+    "cleanBuild": {
+      "testsRef": "081a8bd0870f4e755cb6cce2e0b02c6ebf9e3014",
+      "sourceRef": "82f3782b252621d022093dc1f074766b13c2458c",
+      "exitCode": 0,
+      "processSecondsReportedByRoot": 2.183,
+      "logSHA256": "9be1de1e8564ad0b76072027fbfd01e1a2e5168bc06cbe77a997e1448534f77a"
+    }
+  },
+  "TableOnly": {
+    "observed": true,
+    "green2Operation": "page",
+    "requestId": 5,
+    "textBeginMs": 1449.222625,
+    "textEndMs": 1472.394167,
+    "latePageBeginMs": 1499.885542,
+    "latePageEndMs": 1500.135542,
+    "error": "Error: Disponible en modo Tabla.",
+    "lateAfterTextResponseMs": 27.491375,
+    "pendingPageAtTextRequest": false,
+    "generationExplanation": "onDestroyincrementandlateloadconsistent; timerstackunobserved",
+    "harnessFinding": "clockwasinstalledafteredit; Playwright1.64.1fakeclearTimerdoesnotcancelnativepre-clockIDs. Mixedclocksprobable. Onlysameclockinstall/pausemovedbeforeedit.",
+    "productFixClaim": false,
+    "historicalCauseClaim": false,
+    "beforeGSourceComparison": "CsvTable/mainindex/documents staticdiff0; no runtimebaselinecontrolyet",
+    "baselineRuntimeControl": "pending",
+    "noNewWaitsSleepsOrArtificialQueries": true
+  },
+  "captures": {
+    "status": "32 PNG generated by root, copied byte-identically, SHA256 and PNG dimensions verified; visual inspection not asserted by this archival check.",
+    "beforePNG": 16,
+    "afterPNG": 16,
+    "totalPNG": 32,
+    "publicManifest": "captures.json",
+    "publicManifestSHA256": "60e1ddba4799ab12c5fac90bd272813daa187c1572317a590a46ff513b5551d1",
+    "matrix": {
+      "views": [
+        "table-external-visible",
+        "analysis-front"
+      ],
+      "languages": [
+        "es",
+        "en-XA"
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "sizes": [
+        [
+          1440,
+          900
+        ],
+        [
+          1280,
+          720
+        ]
+      ]
+    },
+    "privateCaptureProbeIsNotNewPublicTests": true,
+    "beforeCases": 4,
+    "afterCases": 4,
+    "beforeProcessSecondsReportedByRoot": 11.222,
+    "afterProcessSecondsReportedByRoot": 10.966,
+    "scope": "The 32 PNG remain isolated before/after on f321/82f; not recaptures of compound 281450f with main A."
+  },
+  "pending": [
+    "fullAppCompositionE2ESuite",
+    "CIAndPackageOnFuturePublishedSHA",
+    "publicationSHA",
+    "rootVisualInspectionIfNotAlreadyPerformed"
+  ],
+  "rawArtifactsPreservedPrivately": [
+    {
+      "name": "check.log",
+      "sha256": "faf5168fc5c2a70b0142dbdbdd7ae2f6f309781e621dd7ee0c01862a2e2f9a25"
+    },
+    {
+      "name": "build.log",
+      "sha256": "e5ce80fdbbf14a78639ecf106e3b3594c5877d273a11f39dc8af8f220dffca3b"
+    },
+    {
+      "name": "full-unit.log",
+      "sha256": "cd44408019eeaa4664e2e3fc88e72433d26bc83a1f2ed9e15541d7454acfb260"
+    },
+    {
+      "name": "hardened-red.log",
+      "sha256": "e7935a55b2a456e148d1302e21892cc59361a4643516ea871c52d22a043a7bb3"
+    },
+    {
+      "name": "hardened-red-report.json",
+      "sha256": "65a60e5ef4c25365f9c18304c2a9d5749a403e6235f2ccc40cf453cef9d9f4f1"
+    },
+    {
+      "name": "green.log",
+      "sha256": "c9b40c079fc0a34526c3b2f50838f87044517b1ab522ce7a5bcc186c531a0e22"
+    },
+    {
+      "name": "green-report.json",
+      "sha256": "db5cd1ac6d0c13ff6d7b8f71a277ee4f54cc0c0ce9157493d44a109a7c3f3237"
+    },
+    {
+      "name": "mode-observation.log",
+      "sha256": "4d7b699b133f054c5eaad51abb2691b3c21f07fde31ec9e183265bab241d2761"
+    },
+    {
+      "name": "mode-observation-report.json",
+      "sha256": "fa1d484c95ffda644476d84226f5b2f2cebcfa91f26575c5cd180172c9735bd2"
+    },
+    {
+      "name": "green2.log",
+      "sha256": "92828f14b3fdf34567ab08c9f1df1bfa7f0f292cec068ad2fb1644568176c307"
+    },
+    {
+      "name": "green2-report.json",
+      "sha256": "6a14bf606bf2dd727c7ba15348776f2f946abcf89441f8074da1d63e5736e8a4"
+    },
+    {
+      "name": "green3.log",
+      "sha256": "cebde3339590b815b73339f9a9486dd86e22d43864f9edb3f3c3da9f2d72a4c2"
+    },
+    {
+      "name": "green3-report.json",
+      "sha256": "3d985afd669f9e47e3d0c4ad54e39b7fa5bc5580d9987e69f06875e86a497d01"
+    },
+    {
+      "name": "clock-green.log",
+      "sha256": "ccf89e86c51c8b9405e21c54f6adb9b89c68a59932efec556c162f3f468ba1e3"
+    },
+    {
+      "name": "clock-green-report.json",
+      "sha256": "fd52ce0eabee1b20c93c6be7edf8010aa1f2afa3e8e1902376b6705afcc49e1d"
+    },
+    {
+      "name": "green2-notice-mode-ipc.json",
+      "sha256": "8e66b35ddd400b55f1ac7131926f314bfe995db0296458e6baa08cbccab6a5c1"
+    },
+    {
+      "name": "notice-mode-ipc.json",
+      "sha256": "4f37e6357a3b7d697a7112aac6bec06bfdf6c2a51f2deaf05de4dfa9ce1ac204"
+    },
+    {
+      "name": "clock-early-instrumented-spec.ts",
+      "sha256": "ef06ee46b8726634dfec3cfd0d8b020a22d26f14bb95e06207d5321e8cf98be2"
+    },
+    {
+      "name": "observer-removal-proof.json",
+      "sha256": "f8fe2b99479c35c53c3ab148079a240185ea4337c66ab7907315eed041b0353d"
+    },
+    {
+      "name": "clean-build.log",
+      "sha256": "9be1de1e8564ad0b76072027fbfd01e1a2e5168bc06cbe77a997e1448534f77a"
+    },
+    {
+      "name": "clean-green.log",
+      "sha256": "17e5f257d5bca472c91ad167f8d6ac156f0a2fc20f8c9c840693f2c2a0630822"
+    },
+    {
+      "name": "clean-green-report.json",
+      "sha256": "6d5d219a1fa44e0fff3cf4e7f2beb6d903d9956b356feef9a5e4ea7515cb5d57"
+    },
+    {
+      "name": "capture-before-build.log",
+      "sha256": "c9af2da142d2d6ad3f97342fc5cbe5fcb720d186d4b36f291455910765e38858"
+    },
+    {
+      "name": "capture-before.log",
+      "sha256": "ee02542748bed794972bf6eb4d2cc9649617710d967b899a4b9a1ce5b227eb4f"
+    },
+    {
+      "name": "capture-after.log",
+      "sha256": "2b8775b9a11f39afc852fcbeca5b299dd8b8dff377e89ef73c96555c524c2277"
+    },
+    {
+      "name": "capture-probe/report-before.json",
+      "sha256": "3fa8cf2e6dfde78ae8320f7bfbae3fa3dd16ab2c3462f0cb11c008d5eaf9add8"
+    },
+    {
+      "name": "capture-probe/report-after.json",
+      "sha256": "ecd3e4f449e6ffa80ec95f64061163534395f45302760544cb8ca4bf5eae48dc"
+    },
+    {
+      "name": "integration-execution.json",
+      "sha256": "2bea5d910f752f05edd71551069fb23acc33cd814551943de33dedc668548c47"
+    },
+    {
+      "name": "integration-check.log",
+      "sha256": "faf5168fc5c2a70b0142dbdbdd7ae2f6f309781e621dd7ee0c01862a2e2f9a25"
+    },
+    {
+      "name": "integration-unit.log",
+      "sha256": "bd8c5fceffcd1436c451bc11cb185c9dc7f1762f31324d46e2c1dd7e2b3ad900"
+    },
+    {
+      "name": "integration-build.log",
+      "sha256": "87e39739447dc54c7cdd364f80e1daa42851a8952d3cbad285902e81027cef03"
+    },
+    {
+      "name": "integration-gui.log",
+      "sha256": "b618ad6eae8388904f96340d1f3f7f0e6efc3301ed69cd19a645207e8b0ac721"
+    },
+    {
+      "name": "integration-gui-report.json",
+      "sha256": "5409a034fb09012b014e9c77a895c5a064bce7dcd3f8ad83f9d0ab6232009b7e"
+    }
+  ],
+  "sourceDiff82fToClean": "",
+  "integration": {
+    "compoundRef": "281450f0dbf9384ced37f6893854a55b130765cb",
+    "P3NormalMerge": "08b88f9d6dd5a0d23233a9080304e8b8795d98a8",
+    "mainNormalMerge": "1720da96fedeb2926bc380f06c30f05c0c5dc108",
+    "catalogResolutionCommit": "281450f0dbf9384ced37f6893854a55b130765cb",
+    "catalogConflict": "Mechanical EOF conflict; preserve P3/G and A keys. Both catalogs contain 1794 unique keys.",
+    "catalogUniqueKeys": 1794,
+    "AppIconsStyleGitBlobsIdenticalToIsolatedG": true,
+    "sourceChangesFromIsolatedG": "Main A analysis components/helper and catalog combination; existing G App/icons/style remain identical.",
+    "fullAppComposition": "pending; 32 focused tests are not a full suite."
+  },
+  "workingSourceDiffPhase": "Historical isolated 081a8bd snapshot, before normal prerequisite/main merges.",
+  "compoundChecks": {
+    "compoundRef": "281450f0dbf9384ced37f6893854a55b130765cb",
+    "check": {
+      "errors": 0,
+      "warnings": 0,
+      "processSeconds": 9.16
+    },
+    "unit": {
+      "passed": 3065,
+      "skipped": 2,
+      "filesPassed": 173,
+      "filesSkipped": 1,
+      "vitestSeconds": 16.62,
+      "processSeconds": 16.962,
+      "pandocReal": "3.12.1; HTTP effectiveness not verified by this binary."
+    },
+    "build": {
+      "exitCode": 0,
+      "processSeconds": 1.881
+    },
+    "focusedGui": {
+      "passed": 32,
+      "skipped": 0,
+      "retries": 0,
+      "flaky": 0,
+      "reportSeconds": 48.707055,
+      "processSeconds": 48.993
+    }
+  }
+}
