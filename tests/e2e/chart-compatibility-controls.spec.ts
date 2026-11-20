@@ -66,7 +66,7 @@ test('SIM-2b compatibilidad: Ajustes conserva Texto/Número explícito con perfi
  expect((await profiles()).find(profile=>profile.column===2)).toMatchObject({kind:'identifier',numeric:8,excluded:1,identifierZeros:1,unsafeIntegers:1})
  const scanned=(await profiles()).length,settings=await openChartSettings(page),measure=settings.getByLabel('Tipo de medida del gráfico',{exact:true})
  await expect(measure).toBeVisible();await expect(panel().getByLabel('Tipo de medida del gráfico',{exact:true})).toHaveCount(1)
- await expect(measure).toHaveValue('text');await expect(measure.locator('option')).toHaveText(['Texto','Número'])
+ await expect(measure).toHaveValue('text');await expect(measure.locator('option')).toHaveText(['Nombres o códigos','Números para resumir'])
  const aggregate=panel().getByLabel('Resumir Y por',{exact:true})
  await expect(aggregate.locator('option[value=sum]')).toBeDisabled()
  await measure.selectOption('number');await expect(aggregate.locator('option[value=sum]')).toBeEnabled();await aggregate.selectOption('sum')
