@@ -39,7 +39,7 @@
  }
  function destinations(column:number){const recommended=recommendedZone(columns.find(field=>field.column===column)!,options);return[recommended,...(['rows','columns','values','filters'] as const).filter(zone=>zone!==recommended)]}
  function unavailable(zone:string){return disabled?'charts.fields.busy':zone==='values'&&options.kind==='heatmap'?'charts.fields.heatCount':zone==='filters'&&where.conditions.length>=20?'charts.fields.filterLimit':null}
- function choose(zone:ChartZone|'filters',column:number){const reason=unavailable(zone);if(reason){onannounce(t(reason));return}void closeMenu(true);if(zone==='filters')onfilter(column);else onadd(zone,column)}
+ async function choose(zone:ChartZone|'filters',column:number){const reason=unavailable(zone);if(reason){onannounce(t(reason));return}await closeMenu(true);if(zone==='filters')onfilter(column);else onadd(zone,column)}
  const placements=(column:number)=>(['rows','columns','values'] as const).filter(zone=>zones[zone]===column)
  function remove(zone:ChartZone|'filters',column:number){if(disabled){onannounce(t('charts.fields.busy'));return}void closeMenu(true);if(zone==='filters')onremovefilter(column);else onremove(zone)}
  function rowKey(event:KeyboardEvent,column:number){
