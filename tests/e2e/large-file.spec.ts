@@ -63,7 +63,7 @@ test('lo que aún no existe en archivos grandes está deshabilitado y el documen
  await page.keyboard.press('Escape');await expect(menu).toHaveCount(0)
  await cell(2).dblclick();await expect(page.getByLabel('Editar celda',{exact:true})).toHaveCount(0)
  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click();await expect(page.getByRole('alert')).toHaveCount(0) // sin error por pedir estadísticas
- const analysis=await openAnalysis(page,'Gráficos');await expect(analysis.getByRole('button',{name:'Estadísticas',exact:true})).toBeDisabled();await expect(analysis.getByRole('button',{name:'Estadísticas',exact:true})).toHaveAccessibleDescription('Las estadísticas llegan en una fase posterior para archivos grandes.')
+ const analysis=await openAnalysis(page,'Gráficos');await expect(analysis.getByRole('tab',{name:'Estadísticas',exact:true})).toBeDisabled();await expect(analysis.getByRole('tab',{name:'Estadísticas',exact:true})).toHaveAccessibleDescription('Las estadísticas llegan en una fase posterior para archivos grandes.')
  expect(await readFile(path,'utf8')).toBe(before);expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)).toMatchObject({dirty:false,revision:0})
 })
 

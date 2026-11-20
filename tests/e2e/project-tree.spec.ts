@@ -4,21 +4,43 @@ import {copyFile,mkdtemp,mkdir,readFile,rm,writeFile} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {closeElectron} from './close-electron'
+import {traceElectronFailure} from './electron-trace'
 import {t,type Language} from '../../src/shared/i18n'
 import {openProjectMenu,openProjectRowMenu,chooseProjectAction} from './project-panel'
 
 let app:ElectronApplication,page:Page,root:string,folder:string,source:string,original:Buffer,pageErrors:string[]=[],locale:Language='es'
+let finishC5=async()=>{}
 const tr=(key:string)=>t(key,{},locale)
 const projectPanel=()=>page.getByRole('tabpanel',{name:tr('project.tab'),exact:true})
 const row=(name:string)=>projectPanel().getByRole('treeitem',{name,exact:true})
 
 test.beforeEach(async({},info)=>{
+ finishC5=async()=>{}
  locale=info.title.endsWith('[en-XA]')?'en-XA':'es'
  root=await mkdtemp(join(tmpdir(),'freya-project-tree-'));folder=join(root,'Censo');await mkdir(folder)
  source=join(folder,'prj02-censo.csv');await copyFile(resolve('tests/fixtures/prj02-censo.csv'),source);original=await readFile(source)
  const {ELECTRON_RUN_AS_NODE:_,...environment}=process.env
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...environment as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:locale,FREYALAB_USER_DATA:join(root,'profile'),FREYALAB_TEST_FOLDER:folder,FREYALAB_TEST_PROJECT_SOURCE_PATH:source}})
  page=await app.firstWindow();pageErrors=[];page.on('pageerror',error=>pageErrors.push(error.message));await page.waitForFunction(()=>!!window.freya)
+ if(info.title==='PRJ-01c C5: el progreso y Cancelar pertenecen a la fuente y liberan la operación'){
+  const child=app.process(),output:Buffer[]=[]
+  const stdout=(chunk:Buffer)=>output.push(Buffer.from('[stdout] '),chunk),stderr=(chunk:Buffer)=>output.push(Buffer.from('[stderr] '),chunk)
+  child.stdout?.on('data',stdout);child.stderr?.on('data',stderr)
+  const stop=await traceElectronFailure(app.context(),info)
+  finishC5=async()=>{try{await stop();await info.attach('c5-main-output',{body:Buffer.concat(output),contentType:'text/plain'})}finally{child.stdout?.off('data',stdout);child.stderr?.off('data',stderr)}}
+  await app.evaluate(({ipcMain})=>{
+   const handlers=Reflect.get(ipcMain,'_invokeHandlers') as Map<string,(...args:unknown[])=>unknown>,original=handlers.get('freya')
+   if(!original)throw new Error('C5: no se encontró el handler freya para observarlo')
+   handlers.set('freya',function(this:unknown,...args:unknown[]){
+    const operation=args[1]
+    if(operation!=='project:reregisterSource'&&operation!=='project:cancelSource')return original.apply(this,args)
+    const started=performance.now(),log=(phase:string)=>console.info('[C5-IPC]',JSON.stringify({operation,phase,wallMs:Date.now(),elapsedMs:performance.now()-started}))
+    log('start')
+    try{const result=original.apply(this,args);void Promise.resolve(result).then(()=>log('end'),()=>log('error'));return result}
+    catch(error){log('error');throw error}
+   })
+  })
+ }
  await page.setViewportSize({width:1440,height:900})
  await page.getByRole('button',{name:tr('project.create'),exact:true}).press('Enter')
  const create=page.getByRole('dialog',{name:tr('project.new'),exact:true})
@@ -38,7 +60,7 @@ test.beforeEach(async({},info)=>{
  await expect(projectPanel().getByText('Identificador y nota',{exact:true})).toBeVisible()
  await page.getByRole('tab',{name:tr('project.tab'),exact:true}).focus();await page.mouse.move(1400,880)
 })
-test.afterEach(async()=>{try{expect(pageErrors).toEqual([]);expect((await readFile(source)).equals(original)).toBe(true)}finally{try{await closeElectron(app)}finally{await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:200})}}})
+test.afterEach(async()=>{try{expect(pageErrors).toEqual([]);expect((await readFile(source)).equals(original)).toBe(true)}finally{try{await finishC5()}finally{try{await closeElectron(app)}finally{await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:200})}}}})
 
 test('PRJ-01c C1: en reposo solo hay dos acciones, una protección y ningún estado normal repetido',async()=>{
  await page.screenshot({animations:'disabled',path:test.info().outputPath('project-tree-reposo.png')})

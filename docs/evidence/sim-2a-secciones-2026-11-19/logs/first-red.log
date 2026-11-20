@@ -1,0 +1,286 @@
+
+Running 8 tests using 1 worker
+
+(node:50746) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/analysis-sections.spec.ts:87:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin (16.5s)
+(node:50866) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/analysis-sections.spec.ts:113:1 › SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro secciones (16.0s)
+(node:50916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [csv] › tests/e2e/analysis-sections.spec.ts:130:1 › SIM-2a: exportaciones sin resultado siguen enfocables, explican el motivo y no calculan al abrir ni activar (31.0s)
+(node:51106) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  4 [csv] › tests/e2e/analysis-sections.spec.ts:145:1 › SIM-2a: informes de columnas, resumen y detalle conservan sus datos y precisión desde Exportar (31.1s)
+(node:51164) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  5 [csv] › tests/e2e/analysis-sections.spec.ts:161:1 › SIM-2a: el informe contextual conserva Perfil, Frecuencias paginadas, Distribución y Correlación (31.2s)
+(node:51218) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  6 [csv] › tests/e2e/analysis-sections.spec.ts:179:1 › SIM-2a: informe SQL reúne todas las páginas y conserva identificadores y revisión (32.1s)
+(node:51272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  7 [csv] › tests/e2e/analysis-sections.spec.ts:189:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales (33.1s)
+(node:51333) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  8 [csv] › tests/e2e/analysis-sections.spec.ts:216:1 › SIM-2a: pestañas grandes conservan el motivo y las flechas omiten Información y Estadísticas [grande] (15.9s)
+
+
+  1) [csv] › tests/e2e/analysis-sections.spec.ts:87:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').getByRole('tablist', { name: 'Secciones de análisis', exact: true }).getByRole('tab')
+    Timeout: 15000ms
+    - Expected  - 6
+    + Received  + 1
+
+    - Array [
+    -   "Información",
+    -   "Estadísticas",
+    -   "Gráficos",
+    -   "SQL",
+    - ]
+    + Array []
+
+    Call log:
+      - Expect "toHaveText" locator('.analysis-workspace:not([hidden])').getByRole('tablist', { name: 'Secciones de análisis', exact: true }).getByRole('tab') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').getByRole('tablist', { name: 'Secciones de análisis', exact: true }).getByRole('tab')
+        34 × locator resolved to 0 elements
+
+
+      87 | test('SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin',async()=>{
+      88 |  await openAnalysis()
+    > 89 |  const tabs=sections().getByRole('tab');await expect(tabs).toHaveText([...sectionNames])
+         |                                                            ^
+      90 |  await expect(sections().locator('[tabindex="0"]')).toHaveCount(1)
+      91 |  const panelIds:string[]=[]
+      92 |  for(const name of sectionNames){
+        at tests/e2e/analysis-sections.spec.ts:89:60
+
+    Error Context: test-results/analysis-sections-SIM-2a-p-336f9-ón-con-flechas-Inicio-y-Fin-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-sections-SIM-2a-p-336f9-ón-con-flechas-Inicio-y-Fin-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-sections-SIM-2a-p-336f9-ón-con-flechas-Inicio-y-Fin-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/analysis-sections.spec.ts:113:1 › SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro secciones 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('header h2')
+    Expected: "Datos de encuesta.csv · 240 filas · El archivo no se modifica"
+    Received: "Información"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" locator('.analysis-workspace:not([hidden])').locator('header h2') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('header h2')
+        34 × locator resolved to <h2 tabindex="-1" class="svelte-iqt1nb">Información</h2>
+           - unexpected value "Información"
+
+
+      113 | test('SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro secciones',async()=>{
+      114 |  await openAnalysis()
+    > 115 |  await expect(workspace().locator('header h2')).toHaveText('Datos de encuesta.csv · 240 filas · El archivo no se modifica')
+          |                                                 ^
+      116 |  await expect(workspace().locator('header h2')).toBeFocused()
+      117 |  const boxes:{x:number;y:number;width:number;height:number}[]=[]
+      118 |  const labels:Record<Section,string[]>={Información:['Informe de columnas (Markdown)'],Estadísticas:['Informe (Markdown)','Informe detallado'],Gráficos:['Imagen PNG','Imagen SVG','Imagen PDF','Datos JSON','Datos CSV…','Datos Markdown'],SQL:['Informe (Markdown)']}
+        at tests/e2e/analysis-sections.spec.ts:115:49
+
+    Error Context: test-results/analysis-sections-SIM-2a-o-0fadf-era-en-las-cuatro-secciones-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-sections-SIM-2a-o-0fadf-era-en-las-cuatro-secciones-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-sections-SIM-2a-o-0fadf-era-en-las-cuatro-secciones-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/analysis-sections.spec.ts:130:1 › SIM-2a: exportaciones sin resultado siguen enfocables, explican el motivo y no calculan al abrir ni activar 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('header').getByRole('button', { name: 'Exportar', exact: true })
+
+
+      66 |  await workspace().locator('.analysis-sections').getByText(name,{exact:true}).click()
+      67 | }
+    > 68 | async function openExport(){await exportButton().click();await expect(menu()).toBeVisible();return menu()}
+         |                                                  ^
+      69 | async function reopenAnalysis(){await page.locator('.tabs').getByRole('tab',{name:'Análisis de encuesta.csv',exact:true}).click();await expect(workspace()).toBeVisible()}
+      70 | async function report(name:string,title:string){
+      71 |  const before=(await page.evaluate(()=>window.freya.documents())).filter(value=>value.kind==='markdown').map(value=>value.id)
+        at openExport (tests/e2e/analysis-sections.spec.ts:68:50)
+        at tests/e2e/analysis-sections.spec.ts:133:8
+
+    Error Context: test-results/analysis-sections-SIM-2a-e-bd26d-alculan-al-abrir-ni-activar-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-sections-SIM-2a-e-bd26d-alculan-al-abrir-ni-activar-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-sections-SIM-2a-e-bd26d-alculan-al-abrir-ni-activar-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [csv] › tests/e2e/analysis-sections.spec.ts:145:1 › SIM-2a: informes de columnas, resumen y detalle conservan sus datos y precisión desde Exportar 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('header').getByRole('button', { name: 'Exportar', exact: true })
+
+
+      66 |  await workspace().locator('.analysis-sections').getByText(name,{exact:true}).click()
+      67 | }
+    > 68 | async function openExport(){await exportButton().click();await expect(menu()).toBeVisible();return menu()}
+         |                                                  ^
+      69 | async function reopenAnalysis(){await page.locator('.tabs').getByRole('tab',{name:'Análisis de encuesta.csv',exact:true}).click();await expect(workspace()).toBeVisible()}
+      70 | async function report(name:string,title:string){
+      71 |  const before=(await page.evaluate(()=>window.freya.documents())).filter(value=>value.kind==='markdown').map(value=>value.id)
+        at openExport (tests/e2e/analysis-sections.spec.ts:68:50)
+        at report (tests/e2e/analysis-sections.spec.ts:72:15)
+        at tests/e2e/analysis-sections.spec.ts:147:20
+
+    Error Context: test-results/analysis-sections-SIM-2a-i-a5e1f--y-precisión-desde-Exportar-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-sections-SIM-2a-i-a5e1f--y-precisión-desde-Exportar-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-sections-SIM-2a-i-a5e1f--y-precisión-desde-Exportar-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [csv] › tests/e2e/analysis-sections.spec.ts:161:1 › SIM-2a: el informe contextual conserva Perfil, Frecuencias paginadas, Distribución y Correlación 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('header').getByRole('button', { name: 'Exportar', exact: true })
+
+
+      66 |  await workspace().locator('.analysis-sections').getByText(name,{exact:true}).click()
+      67 | }
+    > 68 | async function openExport(){await exportButton().click();await expect(menu()).toBeVisible();return menu()}
+         |                                                  ^
+      69 | async function reopenAnalysis(){await page.locator('.tabs').getByRole('tab',{name:'Análisis de encuesta.csv',exact:true}).click();await expect(workspace()).toBeVisible()}
+      70 | async function report(name:string,title:string){
+      71 |  const before=(await page.evaluate(()=>window.freya.documents())).filter(value=>value.kind==='markdown').map(value=>value.id)
+        at openExport (tests/e2e/analysis-sections.spec.ts:68:50)
+        at report (tests/e2e/analysis-sections.spec.ts:72:15)
+        at tests/e2e/analysis-sections.spec.ts:166:16
+
+    Error Context: test-results/analysis-sections-SIM-2a-e-2b0bc--Distribución-y-Correlación-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-sections-SIM-2a-e-2b0bc--Distribución-y-Correlación-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-sections-SIM-2a-e-2b0bc--Distribución-y-Correlación-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [csv] › tests/e2e/analysis-sections.spec.ts:179:1 › SIM-2a: informe SQL reúne todas las páginas y conserva identificadores y revisión 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('header').getByRole('button', { name: 'Exportar', exact: true })
+
+
+      66 |  await workspace().locator('.analysis-sections').getByText(name,{exact:true}).click()
+      67 | }
+    > 68 | async function openExport(){await exportButton().click();await expect(menu()).toBeVisible();return menu()}
+         |                                                  ^
+      69 | async function reopenAnalysis(){await page.locator('.tabs').getByRole('tab',{name:'Análisis de encuesta.csv',exact:true}).click();await expect(workspace()).toBeVisible()}
+      70 | async function report(name:string,title:string){
+      71 |  const before=(await page.evaluate(()=>window.freya.documents())).filter(value=>value.kind==='markdown').map(value=>value.id)
+        at openExport (tests/e2e/analysis-sections.spec.ts:68:50)
+        at report (tests/e2e/analysis-sections.spec.ts:72:15)
+        at tests/e2e/analysis-sections.spec.ts:184:15
+
+    Error Context: test-results/analysis-sections-SIM-2a-i-ad0a5--identificadores-y-revisión-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-sections-SIM-2a-i-ad0a5--identificadores-y-revisión-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-sections-SIM-2a-i-ad0a5--identificadores-y-revisión-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [csv] › tests/e2e/analysis-sections.spec.ts:189:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('header').getByRole('button', { name: 'Exportar', exact: true })
+
+
+      66 |  await workspace().locator('.analysis-sections').getByText(name,{exact:true}).click()
+      67 | }
+    > 68 | async function openExport(){await exportButton().click();await expect(menu()).toBeVisible();return menu()}
+         |                                                  ^
+      69 | async function reopenAnalysis(){await page.locator('.tabs').getByRole('tab',{name:'Análisis de encuesta.csv',exact:true}).click();await expect(workspace()).toBeVisible()}
+      70 | async function report(name:string,title:string){
+      71 |  const before=(await page.evaluate(()=>window.freya.documents())).filter(value=>value.kind==='markdown').map(value=>value.id)
+        at openExport (tests/e2e/analysis-sections.spec.ts:68:50)
+        at tests/e2e/analysis-sections.spec.ts:193:15
+
+    Error Context: test-results/analysis-sections-SIM-2a-e-4069b-s-con-los-handlers-actuales-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-sections-SIM-2a-e-4069b-s-con-los-handlers-actuales-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-sections-SIM-2a-e-4069b-s-con-los-handlers-actuales-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [csv] › tests/e2e/analysis-sections.spec.ts:216:1 › SIM-2a: pestañas grandes conservan el motivo y las flechas omiten Información y Estadísticas [grande] 
+
+    Error: expect(locator).toBeDisabled() failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').getByRole('tablist', { name: 'Secciones de análisis', exact: true }).getByRole('tab', { name: 'Información', exact: true })
+    Expected: disabled
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeDisabled" locator('.analysis-workspace:not([hidden])').getByRole('tablist', { name: 'Secciones de análisis', exact: true }).getByRole('tab', { name: 'Información', exact: true }) with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').getByRole('tablist', { name: 'Secciones de análisis', exact: true }).getByRole('tab', { name: 'Información', exact: true })
+
+
+      217 |  expect(doc.large).toBe(true);await openAnalysis()
+      218 |  const info=sections().getByRole('tab',{name:'Información',exact:true}),statistics=sections().getByRole('tab',{name:'Estadísticas',exact:true}),charts=sections().getByRole('tab',{name:'Gráficos',exact:true}),sql=sections().getByRole('tab',{name:'SQL',exact:true})
+    > 219 |  for(const tab of [info,statistics]){await expect(tab).toBeDisabled();await expect(tab).toHaveAccessibleDescription(t('analysis.tab.large'))}
+          |                                                        ^
+      220 |  await charts.focus();await page.keyboard.press('ArrowLeft');await expect(sql).toBeFocused();await expect(sql).toHaveAttribute('aria-selected','true')
+      221 |  await page.keyboard.press('Home');await expect(charts).toBeFocused();await expect(charts).toHaveAttribute('aria-selected','true')
+      222 |  await page.keyboard.press('End');await expect(sql).toBeFocused();await expect(sections().locator('[tabindex="0"]')).toHaveCount(1)
+        at tests/e2e/analysis-sections.spec.ts:219:56
+
+    Error Context: test-results/analysis-sections-SIM-2a-p-81068-ción-y-Estadísticas-grande--csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-sections-SIM-2a-p-81068-ción-y-Estadísticas-grande--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-sections-SIM-2a-p-81068-ción-y-Estadísticas-grande--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8 failed
+    [csv] › tests/e2e/analysis-sections.spec.ts:87:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin 
+    [csv] › tests/e2e/analysis-sections.spec.ts:113:1 › SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro secciones 
+    [csv] › tests/e2e/analysis-sections.spec.ts:130:1 › SIM-2a: exportaciones sin resultado siguen enfocables, explican el motivo y no calculan al abrir ni activar 
+    [csv] › tests/e2e/analysis-sections.spec.ts:145:1 › SIM-2a: informes de columnas, resumen y detalle conservan sus datos y precisión desde Exportar 
+    [csv] › tests/e2e/analysis-sections.spec.ts:161:1 › SIM-2a: el informe contextual conserva Perfil, Frecuencias paginadas, Distribución y Correlación 
+    [csv] › tests/e2e/analysis-sections.spec.ts:179:1 › SIM-2a: informe SQL reúne todas las páginas y conserva identificadores y revisión 
+    [csv] › tests/e2e/analysis-sections.spec.ts:189:1 › SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales 
+    [csv] › tests/e2e/analysis-sections.spec.ts:216:1 › SIM-2a: pestañas grandes conservan el motivo y las flechas omiten Información y Estadísticas [grande] 

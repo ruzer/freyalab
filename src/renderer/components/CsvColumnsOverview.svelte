@@ -2,11 +2,12 @@
  import {t,formatNumber,plural} from '../lib/i18n.svelte'
  import {csvAnalysisSample,csvAnalysisQueryReady,csvAnalysisQueryKey as viewKey,type CsvEmptyIntent} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
+ import type {AnalysisExportAction} from '../lib/analysis-export'
  import {onDestroy,untrack} from 'svelte'
  import {columnSummary} from '../../shared/column-profile'
  import {columnOverviewReport,type ReportContext} from '../lib/statistics-report'
  import type {DocumentInfo,TableQuery,ColumnOverviewRow,TableViewMeta} from '../../shared/types'
- let {doc,columns,query,queryValid,viewMeta,requested,external=false,onerror,onreport,oninspect,onempty}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;requested?:boolean;external?:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;oninspect:(column:number,scope:'all'|'view')=>void;onempty:(intent:CsvEmptyIntent)=>void}=$props()
+ let {doc,columns,query,queryValid,viewMeta,requested,external=false,externalExports=false,onerror,onreport,oninspect,onempty}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;requested?:boolean;external?:boolean;externalExports?:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;oninspect:(column:number,scope:'all'|'view')=>void;onempty:(intent:CsvEmptyIntent)=>void}=$props()
  let scope=$state<'all'|'view'>('all'),selection=$state('all'),busy=$state(false),reporting=$state(false),results=$state<ColumnOverviewRow[]>([])
  let message=$state('info.idle'),errorMessage=$state(''),total=$state(0),rowCount=$state(0),search=$state(''),offset=$state(0),context=$state<ReportContext|null>(null)
  let serial=0,active:{id:string;requestId:string}|null=null,timer:ReturnType<typeof setTimeout>|undefined
@@ -74,6 +75,7 @@
   finally{if(ticket===serial){clearTimeout(timer);active=null;busy=false}}
  }
  async function report(){if(!context||busy||reporting||doc.revision!==context.revision)return;reporting=true;try{await onreport(columnOverviewReport($state.snapshot(context),$state.snapshot(results)))}catch(error){onerror(String(error))}finally{reporting=false}}
+ export function exportActions():AnalysisExportAction[]{return[{label:t('info.report'),disabledReason:busy||reporting?'busy':!context||!results.length?'result':doc.revision!==context.revision?'refresh':null,run:report}]}
  const number=(value:number)=>formatNumber(value)
  function fileSize(bytes:number|undefined){if(bytes===undefined)return t('info.size.unknown');const unit=bytes<1024?'B':bytes<1024*1024?'KiB':'MiB',divisor=unit==='B'?1:unit==='KiB'?1024:1024*1024;return formatNumber(bytes/divisor,{maximumFractionDigits:1})+' '+unit}
  const delimiterNames:Record<string,string>={',':'comma',';':'semicolon','\t':'tab','|':'pipe'}
@@ -84,7 +86,7 @@
   <label>{t('info.rows')} <select aria-label={t('info.scopeLabel')} bind:value={scope} disabled={busy}><option value="all">{sample===undefined?t('analysis.scope.pending'):sample?t('info.scope.sample'):t('info.scope.all')}</option><option value="view">{sample?t('info.scope.sampleView'):t('info.scope.view')}</option></select></label>
   <button aria-busy={busy} {...controlHint(busy?'busy':!scopeReady?'scope':null)} type="submit" disabled={busy||!scopeReady}>{#if busy}<span class="button-spinner" aria-hidden="true"></span>{/if}<span class:busy-label={busy} data-loading={t('ui.button.calculating')}>{t(hadResult?'info.refresh':'info.calculate')}</span></button>
   {#if busy}<button class="btn-ghost" type="button" onclick={()=>{cancel();message='info.cancelled'}}>{t('info.cancel')}</button><progress aria-label={t('info.progressLabel')} value={results.length} max={total}></progress>{/if}
-  {#if context&&results.length&&!busy&&doc.revision===context.revision}<button {...controlHint(busy||reporting?'busy':!context?'result':doc.revision!==context.revision?'refresh':null)} type="button" disabled={!context||busy||reporting||doc.revision!==context.revision} onclick={report}>{t('info.report')}</button>{/if}
+  {#if !externalExports&&context&&results.length&&!busy&&doc.revision===context.revision}<button {...controlHint(busy||reporting?'busy':!context?'result':doc.revision!==context.revision?'refresh':null)} type="button" disabled={!context||busy||reporting||doc.revision!==context.revision} onclick={report}>{t('info.report')}</button>{/if}
  </form>
  <p role="status">{t(message,{done:message==='info.partial'?results.length-failed:results.length+1,total,failed})+(errorMessage?' '+errorMessage:'')}</p>
  {#if sample===true}<p class="notice">{t('info.sampleWarning')}</p>{/if}

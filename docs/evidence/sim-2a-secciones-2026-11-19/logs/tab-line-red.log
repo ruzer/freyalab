@@ -1,0 +1,62 @@
+
+Running 1 test using 1 worker
+
+(node:11172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/analysis-sections.spec.ts:87:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin (15.2s)
+
+
+  1) [csv] › tests/e2e/analysis-sections.spec.ts:87:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 4
+    + Received  + 4
+
+      Array [
+        Object {
+    -     "line": "rgb(37, 99, 235)",
+    +     "line": "rgb(123, 130, 145)",
+          "selected": true,
+        },
+        Object {
+    -     "line": "rgba(0, 0, 0, 0)",
+    +     "line": "rgb(123, 130, 145)",
+          "selected": false,
+        },
+        Object {
+    -     "line": "rgba(0, 0, 0, 0)",
+    +     "line": "rgb(123, 130, 145)",
+          "selected": false,
+        },
+        Object {
+    -     "line": "rgba(0, 0, 0, 0)",
+    +     "line": "rgb(123, 130, 145)",
+          "selected": false,
+        },
+      ]
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      107 |   await expect.poll(()=>page.locator('html').evaluate(element=>element.classList.contains('dark'))).toBe(theme==='dark')
+      108 |   const accent=await page.getByRole('tab',{name:'Archivos',exact:true}).evaluate(element=>getComputedStyle(element).borderBottomColor)
+    > 109 |   await expect.poll(()=>tabs.evaluateAll(tabs=>tabs.map(tab=>({selected:tab.getAttribute('aria-selected')==='true',line:getComputedStyle(tab).borderBottomColor})))).toEqual(sectionNames.map(name=>({selected:name==='Información',line:name==='Información'?accent:'rgba(0, 0, 0, 0)'})))
+          |                                                                                                                                                                      ^
+      110 |  }
+      111 |  await page.keyboard.press('Tab');expect(await sections().evaluate(element=>element.contains(document.activeElement))).toBe(false)
+      112 |  await page.keyboard.press('Shift+Tab');await expect(info).toBeFocused()
+        at tests/e2e/analysis-sections.spec.ts:109:166
+
+    Error Context: test-results/analysis-sections-SIM-2a-p-336f9-ón-con-flechas-Inicio-y-Fin-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-sections-SIM-2a-p-336f9-ón-con-flechas-Inicio-y-Fin-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-sections-SIM-2a-p-336f9-ón-con-flechas-Inicio-y-Fin-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/analysis-sections.spec.ts:87:1 › SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin 

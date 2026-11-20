@@ -68,7 +68,7 @@ test('PRJ-02b: Gráficos identifica el conjunto completo y conserva su cobertura
  await registeredSubset()
  await chooseProjectAction(await openProjectRowMenu(subsetRow('Oaxaca, adultos'),locale),'analysis.tab.open',locale)
  const workspace=page.locator('.analysis-workspace:not([hidden])')
- await workspace.getByRole('button',{name:tr('analysis.tab.section.charts'),exact:true}).press('Enter')
+ await workspace.getByRole('tab',{name:tr('analysis.tab.section.charts'),exact:true}).press('Enter')
  await expect(workspace.locator('.result-status')).toHaveAttribute('title','Conjunto completo')
  await expect(workspace.locator('.subset-chart-coverage')).toContainText('3 de 7 registros')
 })
@@ -77,7 +77,7 @@ test('PRJ-02b: SQL conserva valores y ausentes del conjunto sin afirmar que incl
  await registeredSubset()
  await chooseProjectAction(await openProjectRowMenu(subsetRow('Oaxaca, adultos'),locale),'analysis.tab.open',locale)
  const workspace=page.locator('.analysis-workspace:not([hidden])')
- await workspace.getByRole('button',{name:tr('analysis.tab.section.sql'),exact:true}).press('Enter')
+ await workspace.getByRole('tab',{name:tr('analysis.tab.section.sql'),exact:true}).press('Enter')
  await expect(workspace.locator('.sql-panel > p').first()).not.toContainText('incluidos los cambios pendientes')
  await workspace.getByRole('textbox',{name:'Consulta SQL',exact:true}).fill('SELECT "ID", "Edad", "Nota" FROM datos ORDER BY CAST("Edad" AS INTEGER)')
  await workspace.getByRole('button',{name:'Ejecutar consulta',exact:true}).press('Enter')
@@ -138,7 +138,7 @@ test('PRJ-02b: una muestra se guarda y otro conjunto la ordena por edad sin camb
 
 async function ageHistogram(){
  const workspace=page.locator('.analysis-workspace:not([hidden])')
- await workspace.getByRole('button',{name:tr('analysis.tab.section.charts'),exact:true}).press('Enter')
+ await workspace.getByRole('tab',{name:tr('analysis.tab.section.charts'),exact:true}).press('Enter')
  const create=workspace.locator('.empty-result button');await expect(create).toBeEnabled();await create.press('Enter')
  await expect.poll(()=>workspace.locator('.more-options .table-scroll tbody tr').count()).toBeGreaterThan(0)
  await workspace.getByRole('button',{name:tr('charts.kind.histogram'),exact:true}).press('Enter')

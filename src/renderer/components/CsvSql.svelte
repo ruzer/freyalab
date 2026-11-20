@@ -3,6 +3,7 @@
  import {t,plural,formatNumber,type TranslationParameters} from '../lib/i18n.svelte'
  import {csvAnalysisSample} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
+ import type {AnalysisExportAction} from '../lib/analysis-export'
  import Icon from './Icon.svelte'
  import {onMount,onDestroy} from 'svelte'
  import Editor from './Editor.svelte'
@@ -46,6 +47,7 @@
   }catch(error){if(active===id){status('sql.ui.reportError',{detail:String(error).replace(/^.*Error: /,'')});onerror(messageText)}}
   finally{if(active===id){busy=false;reporting=false}}
  }
+ export function exportActions():AnalysisExportAction[]{return[{label:t('sql.ui.report'),disabledReason:busy?'busy':!result?'result':null,run:report}]}
  function prepare(){try{sql=assistedSQL(doc.headers??[],other?.headers??[],assist)}catch(error){onerror((error as Error).message)}}
  function insertColumn(name:string){if(!busy)editor?.insertText(quoteIdentifier(name))}
  function executeShortcut(event:KeyboardEvent){
@@ -85,7 +87,7 @@
  <div class="sql-editor"><Editor bind:this={editor} text={sql} label={t('sql.ui.query')} kind="sql" readonly={busy} onchange={value=>sql=value}/></div>
  <div class="actions"><button aria-busy={busy} {...controlHint(busy?'busy':!sql.trim()?'query':missing?'fileReady':tooWide?'columnLimit':null)} class="btn-primary" disabled={busy||!sql.trim()||missing||tooWide} onclick={()=>void run()}>{#if busy}<span class="button-spinner" aria-hidden="true"></span>{/if}<span class:busy-label={busy} data-loading={t('ui.button.calculating')}>{t('sql.ui.run')}</span></button>{#if busy}<button onclick={()=>{cancel();status('sql.ui.cancelled')}}>{t(reporting?'sql.ui.cancelReport':'sql.ui.cancelQuery')}</button><progress aria-label={t('sql.ui.running')}></progress><span>{plural('sql.ui.transferred',transferred)}</span>{/if}<span>{t(navigator.platform.startsWith('Mac')?'sql.ui.shortcutMac':'sql.ui.shortcutOther')}</span></div>
  <p class="sql-status" class:sr-only={!messageText} role="status" aria-live="polite" aria-atomic="true">{messageText}</p>
- {#if result}<button {...controlHint(busy?'busy':null)} disabled={busy} onclick={report}>{t('sql.ui.report')}</button><p class="scope">{plural('sql.ui.resultRows',result.returnedRows)}</p>
+ {#if result}{#if !embedded}<button {...controlHint(busy?'busy':null)} disabled={busy} onclick={report}>{t('sql.ui.report')}</button>{/if}<p class="scope">{plural('sql.ui.resultRows',result.returnedRows)}</p>
   <details class="sql-result-details"><summary>{t('sql.ui.resultDetails')}</summary><p>{t('sql.ui.engineVersion',{version:result.version})} · {result.sources.map(source=>t(source.fromDisk?'sql.ui.sourceDisk':'sql.ui.sourceMemory',{name:source.name,rows:formatNumber(source.rows),revision:source.revision})).join(' · ')}</p></details>
   {#if result.limited}<p class="warning">{t('sql.ui.partial')}</p>{/if}
   <div class="sql-results" role="region" aria-label={t('sql.ui.result')}><table><thead><tr>{#each result.columns as column}<th title={column.type}>{column.name}<small>{column.type}</small></th>{/each}</tr></thead><tbody>{#each result.rows as row}<tr>{#each row as value}<td class:missing={value===null}>{value===null?t('sql.ui.null'):value}</td>{/each}</tr>{/each}</tbody></table></div>

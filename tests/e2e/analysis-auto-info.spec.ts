@@ -4,13 +4,13 @@ import {mkdtemp,readFile,rm,writeFile} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {closeElectron} from './close-electron'
-import {openAnalysis,requestAnalysis,selectAnalysis,showTable} from './panel'
+import {openAnalysis,requestAnalysis,selectAnalysis,showTable,analysisExportItem} from './panel'
 
 type Call={operation:string;id:string;column?:number;requestId?:string}
 let app:ElectronApplication,page:Page,folder:string,fixture:Buffer,errors:string[],files:Map<string,Buffer>
 const workspace=()=>page.locator('.analysis-workspace:not([hidden])')
 const information=(id:string)=>page.locator('[id='+JSON.stringify('workspace-panel-analysis:'+id)+']').getByRole('region',{name:'Vista general de columnas',exact:true,includeHidden:true})
-const report=(id:string)=>information(id).getByRole('button',{name:'Abrir informe de columnas Markdown',exact:true,includeHidden:true})
+const report=()=>analysisExportItem(page,'info.report')
 const calls=()=>app.evaluate(()=>Reflect.get(globalThis,'autoInfoProbe').calls as Call[])
 const columns=async(id:string)=>(await calls()).filter(call=>call.operation==='analyzeColumn'&&call.id===id).map(call=>call.column)
 const finished=async(id:string)=>{await expect(information(id).getByRole('status')).toHaveText('Exploración de columnas completa.');await expect(information(id).getByRole('button',{name:'Actualizar información',exact:true})).toBeEnabled()}
@@ -108,12 +108,12 @@ test('SIM-1c: cancelar no reintenta y el traspaso a Gráficos no inicia un gráf
 
 test('SIM-1c: informe solo con resultado, paginación solo si hace falta y límite sin modificar la fuente',async()=>{
  await probe(true);const {doc}=await open();await requestAnalysis(page)
- await expect(report(doc.id)).toHaveCount(0);await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'autoInfoProbe').held)).toBe(true);await release();await finished(doc.id);await expect(report(doc.id)).toBeEnabled();await expect(information(doc.id).locator('.pagination')).toHaveCount(0)
+ await expect(await report()).toHaveAttribute('aria-disabled','true');await page.keyboard.press('Escape');await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'autoInfoProbe').held)).toBe(true);await release();await finished(doc.id);await expect(await report()).toHaveAttribute('aria-disabled','false');await page.keyboard.press('Escape');await expect(information(doc.id).locator('.pagination')).toHaveCount(0)
  await showTable(page);const headers=Array.from({length:62},(_,index)=>'Campo '+(index+1)),text=[headers.join(','),headers.map((_,index)=>String(index)).join(','),headers.map((_,index)=>String(index+1)).join(',')].join('\n')+'\n',wide=await open('ancha.csv',text)
  await requestAnalysis(page);await finished(wide.doc.id);const panel=information(wide.doc.id);await expect(panel.locator('tbody tr')).toHaveCount(50);await expect(panel.locator('.pagination')).toContainText('1–50 de 62');await panel.getByRole('button',{name:'Columnas siguientes',exact:true}).click();await expect(panel.locator('tbody tr')).toHaveCount(12);await expect(panel.locator('tbody tr').first().getByRole('rowheader')).toHaveText('Campo 51')
  await panel.getByRole('searchbox',{name:'Buscar nombres de columnas',exact:true}).fill('Campo 62');await expect(panel.locator('tbody tr')).toHaveCount(1);await expect(panel.locator('.pagination')).toHaveCount(0)
- await report(wide.doc.id).click();await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(value=>value.kind==='markdown')?.text).toContain('Columnas solicitadas: 62. Analizadas: 62. No disponibles: 0.')
- const capped=await open('limite.csv',Array.from({length:2001},(_,index)=>'C'+index).join(',')+'\n1\n');await requestAnalysis(page);await expect(information(capped.doc.id).getByRole('status')).toContainText('hasta 2 000 columnas');await expect(report(capped.doc.id)).toHaveCount(0);expect(await columns(capped.doc.id)).toEqual([])
+ await(await report()).click();await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(value=>value.kind==='markdown')?.text).toContain('Columnas solicitadas: 62. Analizadas: 62. No disponibles: 0.')
+ const capped=await open('limite.csv',Array.from({length:2001},(_,index)=>'C'+index).join(',')+'\n1\n');await requestAnalysis(page);await expect(information(capped.doc.id).getByRole('status')).toContainText('hasta 2 000 columnas');await expect(await report()).toHaveAttribute('aria-disabled','true');await page.keyboard.press('Escape');expect(await columns(capped.doc.id)).toEqual([])
  await showTable(page);await openAnalysis(page,'Información');await barrier(capped.doc.id);expect(await columns(capped.doc.id)).toEqual([]);await expect(information(capped.doc.id).getByRole('status')).toContainText('hasta 2 000 columnas')
 })
 
