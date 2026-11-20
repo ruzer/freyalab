@@ -1,0 +1,92 @@
+# SIM-2g · Un aviso por evento · Evidencia
+
+Estado documental de la calificación aislada, 2026-11-20. Producto G en `82f3782b252621d022093dc1f074766b13c2458c`, sobre P3 `c257980`. La tanda de siete casos de `fc86f9e7bb8fff3ce21ee9a50dede925e0b02176` conserva ese producto e incluía el observador temporal. Tras retirarlo, el quinto caso pasó en `081a8bd0870f4e755cb6cce2e0b02c6ebf9e3014`; spec limpio SHA256 `3ed5c4301d087acbb006096481a91bfa229b3d88c546d8829c80081381ffa7d4`. Las 32 capturas antes/después están archivadas. La integración normal con main y la cabecera A, sus consumidores, la suite completa de App, el SHA de publicación y su CI siguen pendientes.
+
+## Cambio y límites
+
+Los 18 callers existentes de `notify` reciben tipo explícito. Guardado, copia y exportación completados usan éxito, salvo los resultados con advertencias; información y advertencia tienen su icono correspondiente. `error()` conserva la limpieza de su mensaje, el cierre de apertura y el rechazo duplicado del diálogo CSV; delega en el mismo `notify` con tipo error. Hay 19 llamadas tipadas contando esa delegación nueva. Los plazos permanecen en 3500 ms y 7000 ms para error. `notify` ya no escribe en el pie.
+
+El cambio externo usa el documento activo, la pestaña de análisis y la marca de subconjunto para decidir si su franja documental está visible. Tabla conserva una franja externa más la protección existente, sin toast. Si su franja no está a la vista, se anuncia un warning con nombre de archivo. El estado persistente de invalidez de Análisis se mantiene. Se conserva el registro/hash histórico de la fuente, sus bytes originales analizados y su protección; el archivo sintético se modifica realmente fuera de la aplicación, sin fabricar el evento externo ni la respuesta IPC.
+
+El icono `info` es una constante de la [fuente oficial de Lucide](https://github.com/lucide-icons/lucide/blob/main/icons/info.svg), blob `2a46eac2b55a1ead226035d1efa8721f6f08bd17`. La URL usa `main`, no se afirma haber obtenido ese SVG del tag 1.61.0. Se conservan las licencias y el componente `Icon` existentes; no se añade dependencia.
+
+G modifica App, registro de iconos, colores de aviso y tres claves es/en, con en-XA generado. App sigue en pendientes de traducción. El único consumidor previo adaptado cambia `.toast.info` a `.toast.success` para un guardado: mismo texto, dos SVG y bytes en disco. No se borra ninguna prueba ni se cambian backend, motor CSV, motor/registro de PRJ-03, esquemas, IPC, configuración de CI, plazos o retries.
+
+## Rojo y verde reales
+
+Los cinco casos nuevos cubren Tabla protegida en es/en-XA, Análisis delante en es/en-XA y éxito/información/error con teclado, duración y pie. Se reutilizan los dos casos existentes de iconos. El rechazo de reinterpretación dirty se solicita con el mismo intento sintético de frontera de SIM-1f: el control permanece desactivado y no se atribuye ese intento a una acción posible del usuario; se comprueban su mensaje real y la conservación de los datos.
+
+| Corrida de raíz | Resultado | Tiempo del reporte / proceso | Lectura |
+| --- | --- | --- | --- |
+| Baseline P3 anterior a G; spec endurecido conservado en `e8c0a643958cd8a353b82191f55d79ea05c00346` | 5 fallos, 0 retries | 58,269 s / 58,559 s | Tabla mostró un toast cuando debía haber cero; Análisis recibió info en lugar de warning; guardar recibió info en lugar de success. |
+| Primer candidato, producto `82f3782` | 4 aprobados, 3 fallos, 0 retries | 61,159 s / 61,467 s | Dos casos en-XA llegaron hasta un selector «Guardar» sin traducir; el quinto llegó al rechazo TableOnly durante el paso a Texto. |
+| Observación pasiva, mismo producto | 1 aprobado, 0 retries | 2,231 s / 2,517 s | No reprodujo TableOnly; una página solapó el cambio de vista y terminó bien. No demostró una resolución. |
+| Segunda tanda, `b3c491a199e4efb86328b8a9f5d3257126781131`, mismo producto | 6 aprobados, 1 fallo, 0 retries | 29,592 s / 29,9 s | El IPC real identificó una página tardía después de completar Texto. |
+| Reloj instalado antes de editar, `fc86f9e` | 1 aprobado, 0 retries | 2,040 s / 2,313 s | Preparación temporal corregida, sin cambio de producto. |
+| Cinco casos nuevos + dos de iconos, `fc86f9e` | 7/7 aprobados, 0 retries y 0 omisiones | 14,517 s / 14,809 s | Una sola tanda sobre el producto `82f3782`; todavía incluía el observador temporal. |
+| Quinto caso limpio, `081a8bd`, sin observador | 1/1 aprobado, 0 retries y 0 omisiones | 2,402 s / 2,688 s | El caso conserva el verde sin wrapper IPC. No es una tanda limpia de siete casos. |
+
+Antes del rojo endurecido se corrigieron dos errores del harness: una espera de ausencia dejaba expirar el toast y el pie se capturaba con `innerText` pero se comparaba con `textContent`, que incluía controles ocultos. El reloj pausado antes de la escritura real y la comparación consistente del pie permitieron demostrar el duplicado transitorio. El selector en-XA se corrigió usando `toolbar.save`, conservando la aserción de desactivado.
+
+## TableOnly: observación separada de G
+
+El segundo intento registró `csvView(text)` de 1449,222625 a 1472,394167 ms. La última página previa había terminado antes de pedir Texto. Una nueva `page`, requestId 5, empezó a 1499,885542 ms —27,491375 ms después de la respuesta de Texto— y recibió «Disponible en modo Tabla.». No se observó un bucle ni un error de clasificación de `notify`.
+
+La secuencia es compatible con el contador que incrementa `onDestroy` y un `load` tardío. El reloj se instalaba después de editar; la implementación instalada de Playwright 1.64.1 no cancela mediante su `clearTimeout` los identificadores de timers nativos anteriores. Esto respalda una mezcla de relojes en la preparación; no se capturó una pila del timer que permita afirmar su origen con certeza total. Se movió la misma instalación/pausa del reloj a después de las dos filas iniciales y antes de editar, sin añadir espera de quiescencia, consulta, sleep o demora.
+
+El observador solo delegaba el IPC real y registraba tiempos/errores; no retenía ni alteraba respuestas. Sus fuentes y logs permanecen privados. Se retiró íntegro del spec después del verde de siete casos: el proof comprueba que las demás acciones, datos y aserciones son iguales. Los archivos relevantes de CSV/main son idénticos al baseline anterior a G por comparación estática; **el control runtime anterior a G de esta carrera no se ejecutó**. No se afirma haber arreglado una carrera del producto ni una causa histórica.
+
+## Comprobaciones del producto
+
+| Comprobación de raíz | Resultado sobre producto `82f3782` |
+| --- | --- |
+| Tipos | 0 errores, 0 advertencias; 9,87 s de proceso |
+| Unitarias completas | 3065 aprobadas, 2 omitidas; 173 archivos aprobados y 1 omitido; 17,82 s en Vitest |
+| Build inicial | Exit 0; 2,153 s de proceso |
+| Build del spec limpio `081a8bd`, mismo producto | Exit 0; 2,183 s de proceso |
+| Suite completa de App con las demás partes integradas | Pendiente |
+| CI y paquete del futuro SHA publicado | Pendientes; no se transfieren resultados de otro head |
+
+Comandos relativos al repositorio utilizados por raíz:
+
+```sh
+npm run check
+npm test
+npm run build
+npx playwright test tests/e2e/single-event-notices.spec.ts --project=csv --workers=1 --retries=0
+npx playwright test tests/e2e/single-event-notices.spec.ts tests/e2e/icons.spec.ts --workers=1 --retries=0
+```
+
+## Capturas antes y después
+
+Raíz ejecutó cuatro casos privados por fase: **4/4 antes** en 10,917 s de reporte / 11,222 s de proceso y **4/4 después** en 10,689 s / 10,966 s, sin retries ni omisiones. Cada caso produjo cuatro imágenes. Los 32 PNG se copiaron con SHA256, tamaño de archivo y dimensiones idénticos a sus ocho manifiestos privados; no se afirma aquí una inspección visual adicional. El probe privado no suma nuevas pruebas públicas ni convierte las fases en una tanda pública de quince casos.
+
+El montaje usa registro, modificación y watcher reales, con una instancia nueva por vista. Conserva el hash histórico del registro y los recuentos/bytes originales de la tabla abierta. Pausa el reloj renderer después de estar lista y avanza 40 ms por imagen para ajustar viewport/virtualizador, 160 ms por caso; main y su watcher siguen reales. No fabrica eventos ni resultados. En el baseline, Tabla/Análisis muestran el toast info anterior y su copia al pie; el candidato comprueba ausencia de toast en Tabla y warning con nombre en Análisis.
+
+| Fase | Producto y árbol de fuente | Matriz | PNG |
+| --- | --- | --- | --- |
+| Antes | P3 `c257980`, checkpoint `f321dc0`; árbol `ec12107e61373bea9556e5540f8f966690037508` | Tabla / Análisis × es / en-XA × claro / oscuro × 1440×900 / 1280×720 | 16 |
+| Después | G `82f3782`; árbol `d7037a0312880d78f93bb75e0ddcabd9b47af79a` | La misma matriz | 16 |
+
+Estas matrices aíslan G sobre P3; todavía no incorporan la composición de main con A. Raíz realizará el merge normal y calificará sus consumidores antes de publicar. No se transfiere la CI de PRJ-03 ni de otro head a G.
+
+| Vista | Idioma | Tema | Tamaño | Antes | Después |
+| --- | --- | --- | --- | --- | --- |
+| Tabla | es | Claro | 1440×900 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-table-es-light-1440x900.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-table-es-light-1440x900.png) |
+| Tabla | es | Claro | 1280×720 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-table-es-light-1280x720.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-table-es-light-1280x720.png) |
+| Tabla | es | Oscuro | 1440×900 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-table-es-dark-1440x900.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-table-es-dark-1440x900.png) |
+| Tabla | es | Oscuro | 1280×720 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-table-es-dark-1280x720.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-table-es-dark-1280x720.png) |
+| Tabla | en-XA | Claro | 1440×900 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-table-en-XA-light-1440x900.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-table-en-XA-light-1440x900.png) |
+| Tabla | en-XA | Claro | 1280×720 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-table-en-XA-light-1280x720.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-table-en-XA-light-1280x720.png) |
+| Tabla | en-XA | Oscuro | 1440×900 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-table-en-XA-dark-1440x900.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-table-en-XA-dark-1440x900.png) |
+| Tabla | en-XA | Oscuro | 1280×720 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-table-en-XA-dark-1280x720.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-table-en-XA-dark-1280x720.png) |
+| Análisis | es | Claro | 1440×900 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-analysis-es-light-1440x900.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-analysis-es-light-1440x900.png) |
+| Análisis | es | Claro | 1280×720 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-analysis-es-light-1280x720.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-analysis-es-light-1280x720.png) |
+| Análisis | es | Oscuro | 1440×900 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-analysis-es-dark-1440x900.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-analysis-es-dark-1440x900.png) |
+| Análisis | es | Oscuro | 1280×720 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-analysis-es-dark-1280x720.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-analysis-es-dark-1280x720.png) |
+| Análisis | en-XA | Claro | 1440×900 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-analysis-en-XA-light-1440x900.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-analysis-en-XA-light-1440x900.png) |
+| Análisis | en-XA | Claro | 1280×720 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-analysis-en-XA-light-1280x720.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-analysis-en-XA-light-1280x720.png) |
+| Análisis | en-XA | Oscuro | 1440×900 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-analysis-en-XA-dark-1440x900.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-analysis-en-XA-dark-1440x900.png) |
+| Análisis | en-XA | Oscuro | 1280×720 | [PNG](sim-2g-avisos-unicos-2026-11-20/before/before-analysis-en-XA-dark-1280x720.png) | [PNG](sim-2g-avisos-unicos-2026-11-20/after/after-analysis-en-XA-dark-1280x720.png) |
+
+Los [hashes, identidades y resultados acotados](sim-2g-avisos-unicos-2026-11-20/proof.json) y el [manifiesto de capturas](sim-2g-avisos-unicos-2026-11-20/captures.json) permiten comprobar esta evidencia sin publicar rutas locales, perfiles o logs brutos. No se declara la entrega publicada ni la CI aprobada.

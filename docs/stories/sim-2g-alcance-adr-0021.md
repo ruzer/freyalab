@@ -34,6 +34,6 @@ El consumidor deliberadamente afectado es `icons.spec.ts`, que hoy llama `.toast
 6. **¿Pegamento mínimo?** Separar aviso transitorio de estado, clasificar los callers y reutilizar la franja cuando ya está visible. El watcher y la interpretación del documento quedan intactos.
 7. **¿Valor del código propio?** Decir una vez qué pasó, con el icono adecuado y sin promesas falsas sobre fuentes protegidas. Reescribir el guardado, las fuentes o el sistema de eventos no aporta valor a G.
 
-## Estado de preparación
+## Estado inicial de preparación (primer checkpoint documental)
 
-Solo alcance, inventario y nuevas pruebas sin ejecutar. Producto y consumidores anteriores intactos. Raíz es la única ejecutora GUI y debe conservar el rojo real y las capturas de base antes de autorizar la implementación. Sin build, tipos, unitarias, E2E, benchmarks, commits ni publicación en esta preparación. La calificación posterior pertenece al SHA final real; se conserva la evidencia separada de PRJ-03 y de las otras partes SIM-2.
+En ese checkpoint solo había alcance, inventario y nuevas pruebas sin ejecutar; el producto y los consumidores anteriores seguían intactos. Raíz es la única ejecutora GUI. La implementación y sus resultados posteriores se registran en la [evidencia de G](../evidence/sim-2g-avisos-unicos-2026-11-20.md); capturas, suite integral y CI del SHA de publicación siguen pendientes. La calificación pertenece al SHA real y conserva su separación de PRJ-03 y de las otras partes SIM-2.
