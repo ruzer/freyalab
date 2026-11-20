@@ -1,5 +1,5 @@
 {
-  "state": "Isolated G documentary evidence complete; main integration, composed App E2E, publication SHA and CI pending.",
+  "state": "G compound focused qualification and documentary evidence complete; full App composition, CI and publication SHA pending.",
   "refs": {
     "beforeProduct": "c2579806407c92a4413727f77b60f167a318386f",
     "beforeCheckpoint": "f321dc0c4bb6739b03593f23ecc37976a3665b92",
@@ -7,7 +7,10 @@
     "product": "82f3782b252621d022093dc1f074766b13c2458c",
     "secondGreenTests": "b3c491a199e4efb86328b8a9f5d3257126781131",
     "clockGreenTests": "fc86f9e7bb8fff3ce21ee9a50dede925e0b02176",
-    "cleanTests": "081a8bd0870f4e755cb6cce2e0b02c6ebf9e3014"
+    "cleanTests": "081a8bd0870f4e755cb6cce2e0b02c6ebf9e3014",
+    "compound": "281450f0dbf9384ced37f6893854a55b130765cb",
+    "integratedP3": "59d9077c327811952e55379c0a0f3f040080476f",
+    "integratedMain": "8a002af72fd015db8457c67974ac10dbf37c0b1a"
   },
   "publicationSHA": null,
   "sourceSnapshot": [
@@ -504,6 +507,415 @@
         }
       ],
       "interpretation": "Fifth new case passed after removing temporary observer; not a clean seven-case batch."
+    },
+    {
+      "stage": "compound-focused32",
+      "compoundRef": "281450f0dbf9384ced37f6893854a55b130765cb",
+      "reportName": "integration-gui-report.json",
+      "reportSHA256": "5409a034fb09012b014e9c77a895c5a064bce7dcd3f8ad83f9d0ab6232009b7e",
+      "reportStats": {
+        "startTime": "2026-11-20T08:04:21.080Z",
+        "duration": 48707.055,
+        "expected": 32,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "processSecondsReportedByRoot": 48.993,
+      "uniqueIdentities": 32,
+      "fileCounts": {
+        "tests/e2e/icons.spec.ts": 2,
+        "tests/e2e/analysis-sections.spec.ts": 9,
+        "tests/e2e/project-exports.spec.ts": 16,
+        "tests/e2e/single-event-notices.spec.ts": 5
+      },
+      "identities": [
+        {
+          "project": "shell",
+          "file": "tests/e2e/icons.spec.ts",
+          "title": "iconos: la bienvenida, un CSV y un Markdown no usan glifos ni exponen los SVG",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1223
+            }
+          ]
+        },
+        {
+          "project": "shell",
+          "file": "tests/e2e/icons.spec.ts",
+          "title": "iconos: los avisos distinguen éxito y error con icono y texto, y Exportar deshabilitado no es azul",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1015
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: pestañas APG tienen relaciones propias y un único punto de tabulación con flechas, Inicio y Fin",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1213
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro secciones",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1198
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: exportaciones sin resultado siguen enfocables, explican el motivo y no calculan al abrir ni activar",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1053
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: informes de columnas, resumen y detalle conservan sus datos y precisión desde Exportar",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1553
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: el informe contextual conserva Perfil, Frecuencias paginadas, Distribución y Correlación",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2115
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: informe SQL reúne todas las páginas y conserva identificadores y revisión",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1969
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: el menú exporta datos exactos, opciones CSV e imágenes reales con los handlers actuales",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 6137
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: pestañas grandes conservan el motivo y las flechas omiten Información y Estadísticas [grande]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 800
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/analysis-sections.spec.ts",
+          "title": "SIM-2a: explorar una columna después de elegir un rango conserva habilitado su informe contextual",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1222
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: el menú exporta todas las filas, registra procedencia y abre el resultado editable",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1026
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [es]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1078
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [en]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1135
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: panel, cobertura histórica y procedencia accesible [en-XA]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1204
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: cambios sin guardar del conjunto bloquean exportar sin cambiar la receta ni el archivo",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1045
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: un archivo exportado cambia o falta aunque nunca se haya abierto",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1228
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: editar y guardar un resultado conserva su advertencia y su huella histórica",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1396
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: añadir como fuente reutiliza el registro y quitar olvida solo la procedencia",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1103
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: una segunda exportación conserva ambas instantáneas y rechaza reemplazar la primera",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1068
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: un proyecto futuro conserva las recetas v1 pero bloquea exportar con su motivo",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 812
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: la paleta encuentra el conjunto por exportar, extraer, guardar como archivo, export, extract y csv",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1153
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03 frontend: doble Enter en Registrar de nuevo envía una petición y conserva el éxito",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1001
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03: los ids de proyecto v1 válidos sin UUID conservan exportación, apertura y alta como fuente",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1020
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03 C3: Nota antes de ID conserva el ausente y muestra la misma advertencia en resultado y origen",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1027
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03 C16: fuente changed bloquea Exportar en panel y menú sin cambiar el proyecto",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1044
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/project-exports.spec.ts",
+          "title": "PRJ-03 C16: fuente missing bloquea Exportar en panel y menú sin cambiar el proyecto",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1019
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie [es]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2296
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [es]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2418
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie [en-XA]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2336
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [en-XA]",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2436
+            }
+          ]
+        },
+        {
+          "project": "csv",
+          "file": "tests/e2e/single-event-notices.spec.ts",
+          "title": "SIM-2g: éxito, información y error conservan iconos, teclado y duraciones sin copiarse al pie",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1628
+            }
+          ]
+        }
+      ],
+      "interpretation": "5 clean G + 2 icons + 16 PRJ03 + 9 A in one focused batch; no full-suite claim."
     }
   ],
   "localChecks": {
@@ -586,12 +998,11 @@
     "beforeCases": 4,
     "afterCases": 4,
     "beforeProcessSecondsReportedByRoot": 11.222,
-    "afterProcessSecondsReportedByRoot": 10.966
+    "afterProcessSecondsReportedByRoot": 10.966,
+    "scope": "The 32 PNG remain isolated before/after on f321/82f; not recaptures of compound 281450f with main A."
   },
   "pending": [
-    "normalMainAndP3IntegrationByRoot",
     "fullAppCompositionE2ESuite",
-    "consumerQualificationOnIntegratedComposition",
     "CIAndPackageOnFuturePublishedSHA",
     "publicationSHA",
     "rootVisualInspectionIfNotAlreadyPerformed"
@@ -704,13 +1115,72 @@
     {
       "name": "capture-probe/report-after.json",
       "sha256": "ecd3e4f449e6ffa80ec95f64061163534395f45302760544cb8ca4bf5eae48dc"
+    },
+    {
+      "name": "integration-execution.json",
+      "sha256": "2bea5d910f752f05edd71551069fb23acc33cd814551943de33dedc668548c47"
+    },
+    {
+      "name": "integration-check.log",
+      "sha256": "faf5168fc5c2a70b0142dbdbdd7ae2f6f309781e621dd7ee0c01862a2e2f9a25"
+    },
+    {
+      "name": "integration-unit.log",
+      "sha256": "bd8c5fceffcd1436c451bc11cb185c9dc7f1762f31324d46e2c1dd7e2b3ad900"
+    },
+    {
+      "name": "integration-build.log",
+      "sha256": "87e39739447dc54c7cdd364f80e1daa42851a8952d3cbad285902e81027cef03"
+    },
+    {
+      "name": "integration-gui.log",
+      "sha256": "b618ad6eae8388904f96340d1f3f7f0e6efc3301ed69cd19a645207e8b0ac721"
+    },
+    {
+      "name": "integration-gui-report.json",
+      "sha256": "5409a034fb09012b014e9c77a895c5a064bce7dcd3f8ad83f9d0ab6232009b7e"
     }
   ],
   "sourceDiff82fToClean": "",
   "integration": {
-    "base": "P3 c2579806407c92a4413727f77b60f167a318386f, pre-G checkpoint f321dc0c4bb6739b03593f23ecc37976a3665b92",
-    "isolatedProduct": "82f3782b252621d022093dc1f074766b13c2458c",
-    "mainAndAnalysisAIntegration": "pending normal merge by root; these isolated results do not qualify that future composition",
-    "consumerCorrections": "pending root verification on integrated composition"
+    "compoundRef": "281450f0dbf9384ced37f6893854a55b130765cb",
+    "P3NormalMerge": "08b88f9d6dd5a0d23233a9080304e8b8795d98a8",
+    "mainNormalMerge": "1720da96fedeb2926bc380f06c30f05c0c5dc108",
+    "catalogResolutionCommit": "281450f0dbf9384ced37f6893854a55b130765cb",
+    "catalogConflict": "Mechanical EOF conflict; preserve P3/G and A keys. Both catalogs contain 1794 unique keys.",
+    "catalogUniqueKeys": 1794,
+    "AppIconsStyleGitBlobsIdenticalToIsolatedG": true,
+    "sourceChangesFromIsolatedG": "Main A analysis components/helper and catalog combination; existing G App/icons/style remain identical.",
+    "fullAppComposition": "pending; 32 focused tests are not a full suite."
+  },
+  "workingSourceDiffPhase": "Historical isolated 081a8bd snapshot, before normal prerequisite/main merges.",
+  "compoundChecks": {
+    "compoundRef": "281450f0dbf9384ced37f6893854a55b130765cb",
+    "check": {
+      "errors": 0,
+      "warnings": 0,
+      "processSeconds": 9.16
+    },
+    "unit": {
+      "passed": 3065,
+      "skipped": 2,
+      "filesPassed": 173,
+      "filesSkipped": 1,
+      "vitestSeconds": 16.62,
+      "processSeconds": 16.962,
+      "pandocReal": "3.12.1; HTTP effectiveness not verified by this binary."
+    },
+    "build": {
+      "exitCode": 0,
+      "processSeconds": 1.881
+    },
+    "focusedGui": {
+      "passed": 32,
+      "skipped": 0,
+      "retries": 0,
+      "flaky": 0,
+      "reportSeconds": 48.707055,
+      "processSeconds": 48.993
+    }
   }
 }

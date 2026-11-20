@@ -1,6 +1,6 @@
 # SIM-2g · Un aviso por evento · Evidencia
 
-Estado documental de la calificación aislada, 2026-11-20. Producto G en `82f3782b252621d022093dc1f074766b13c2458c`, sobre P3 `c257980`. La tanda de siete casos de `fc86f9e7bb8fff3ce21ee9a50dede925e0b02176` conserva ese producto e incluía el observador temporal. Tras retirarlo, el quinto caso pasó en `081a8bd0870f4e755cb6cce2e0b02c6ebf9e3014`; spec limpio SHA256 `3ed5c4301d087acbb006096481a91bfa229b3d88c546d8829c80081381ffa7d4`. Las 32 capturas antes/después están archivadas. La integración normal con main y la cabecera A, sus consumidores, la suite completa de App, el SHA de publicación y su CI siguen pendientes.
+Estado documental, 2026-11-20. Producto G aislado en `82f3782b252621d022093dc1f074766b13c2458c`, sobre P3 `c257980`; las fases anteriores se conservan abajo. La composición `281450f0dbf9384ced37f6893854a55b130765cb` incorpora mediante merges normales PRJ-03 `59d9077` y main `8a002af` con A: tipos, unitarias, build y 32 casos enfocados aprobados. El spec limpio conserva SHA256 `3ed5c4301d087acbb006096481a91bfa229b3d88c546d8829c80081381ffa7d4`. Las 32 capturas son las fases aisladas antes/después de G. Suite completa de App, SHA de publicación, CI y paquete de ese futuro head siguen pendientes.
 
 ## Cambio y límites
 
@@ -25,6 +25,7 @@ Los cinco casos nuevos cubren Tabla protegida en es/en-XA, Análisis delante en 
 | Reloj instalado antes de editar, `fc86f9e` | 1 aprobado, 0 retries | 2,040 s / 2,313 s | Preparación temporal corregida, sin cambio de producto. |
 | Cinco casos nuevos + dos de iconos, `fc86f9e` | 7/7 aprobados, 0 retries y 0 omisiones | 14,517 s / 14,809 s | Una sola tanda sobre el producto `82f3782`; todavía incluía el observador temporal. |
 | Quinto caso limpio, `081a8bd`, sin observador | 1/1 aprobado, 0 retries y 0 omisiones | 2,402 s / 2,688 s | El caso conserva el verde sin wrapper IPC. No es una tanda limpia de siete casos. |
+| Composición con PRJ-03/main, `281450f` | 32/32 aprobados, 0 retries y 0 omisiones | 48,707 s / 48,993 s | 5 casos G limpios + 2 iconos + 16 PRJ-03 + 9 A, en una tanda enfocada. No es la suite completa. |
 
 Antes del rojo endurecido se corrigieron dos errores del harness: una espera de ausencia dejaba expirar el toast y el pie se capturaba con `innerText` pero se comparaba con `textContent`, que incluía controles ocultos. El reloj pausado antes de la escritura real y la comparación consistente del pie permitieron demostrar el duplicado transitorio. El selector en-XA se corrigió usando `toolbar.save`, conservando la aserción de desactivado.
 
@@ -47,6 +48,20 @@ El observador solo delegaba el IPC real y registraba tiempos/errores; no retení
 | Suite completa de App con las demás partes integradas | Pendiente |
 | CI y paquete del futuro SHA publicado | Pendientes; no se transfieren resultados de otro head |
 
+## Integración normal y calificación de la composición
+
+Raíz incorporó PRJ-03 `59d9077` y main `8a002af` mediante merges normales, sin reescribir los heads individuales. El conflicto de los catálogos fue mecánico al final del archivo: se conservaron ambas entregas, con 1794 claves únicas en es/en. La observación C5 de main y los menús Exportar de PRJ-03 se conservan. App, iconos y style siguen idénticos al producto G `82f3782`; los componentes de análisis y su helper de A entran desde main.
+
+| Comprobación de raíz sobre `281450f` | Resultado |
+| --- | --- |
+| Tipos | 0 errores, 0 advertencias; 9,16 s de proceso |
+| Unitarias completas | 3065 aprobadas + 2 omitidas; 173 archivos aprobados + 1 omitido; 16,62 s de Vitest / 16,962 s de proceso; Pandoc real 3.12.1 |
+| Build | Exit 0; 1,881 s de proceso |
+| Tanda enfocada | 32/32, reporte 48,707 s / proceso 48,993 s; sin retries, flaky u omisiones |
+| Suite completa de App y CI del futuro SHA publicado | Pendientes |
+
+La tanda enfocada ya usa el spec G sin observador; los siete casos de G/iconos están incluidos en esa composición de 32. No se atribuyen estos resultados a un SHA de publicación todavía inexistente. El binario local de Pandoc no prueba eficacia HTTP.
+
 Comandos relativos al repositorio utilizados por raíz:
 
 ```sh
@@ -68,7 +83,7 @@ El montaje usa registro, modificación y watcher reales, con una instancia nueva
 | Antes | P3 `c257980`, checkpoint `f321dc0`; árbol `ec12107e61373bea9556e5540f8f966690037508` | Tabla / Análisis × es / en-XA × claro / oscuro × 1440×900 / 1280×720 | 16 |
 | Después | G `82f3782`; árbol `d7037a0312880d78f93bb75e0ddcabd9b47af79a` | La misma matriz | 16 |
 
-Estas matrices aíslan G sobre P3; todavía no incorporan la composición de main con A. Raíz realizará el merge normal y calificará sus consumidores antes de publicar. No se transfiere la CI de PRJ-03 ni de otro head a G.
+Estas matrices aíslan G sobre P3 y se conservan como esas fases históricas; no son recapturas de la composición `281450f` con main/A, cuya calificación enfocada se documenta por separado. No se transfiere la CI de PRJ-03 ni de otro head a G.
 
 | Vista | Idioma | Tema | Tamaño | Antes | Después |
 | --- | --- | --- | --- | --- | --- |
