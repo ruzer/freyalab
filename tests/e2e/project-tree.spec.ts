@@ -70,7 +70,7 @@ test('PRJ-01c C9: las acciones siguen alcanzables en su menú y los bloqueos no 
  await row('Adultos').press('Shift+F10');menu=projectPanel().getByRole('menu')
  await expect(menu.getByRole('menuitem')).toHaveText(['Abrir','Analizar','Exportar…','Nuevo conjunto a partir de este…','Renombrar','Eliminar'])
  const exportItem=menu.getByRole('menuitem',{name:'Exportar…',exact:true})
- await expect(exportItem).toHaveAttribute('aria-disabled','false')
+ await expect(exportItem).toBeEnabled()
  await menu.press('Home');await menu.press('ArrowDown');await menu.press('ArrowDown');await expect(exportItem).toBeFocused()
  const remove=menu.getByRole('menuitem',{name:'Eliminar',exact:true})
  await expect(remove).toHaveAttribute('aria-disabled','true');await expect(remove).toHaveAccessibleDescription(/Muestra estable/)
