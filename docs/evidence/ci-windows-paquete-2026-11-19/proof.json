@@ -1,0 +1,115 @@
+{
+  "base_main": "9a4aa5d4809968c6a05971d9cc9dc7eff0122f2c",
+  "docs_first_commit": "dce20ed3ba1e2069a6cad6744d4c960ec78e6458",
+  "approval": {
+    "date": "2026-11-19",
+    "owner_quote": "Autorizar el reparto en otro PR",
+    "scope": "Separate Windows package through exactly two matrix lines; no deadline/worker/retry/assertion change; publishing held for root review."
+  },
+  "workflow": {
+    "changed_lines": [
+      75,
+      78
+    ],
+    "source_sha256": "91c49ef9fcf5fc7be719902fbd1d06006fc6be103fce201905074027ade352b8",
+    "candidate_sha256": "027aa18375723dbea82504c7a5385642e74eaf127f7369cc1236158eb2f5f28d",
+    "approved_private_patch_sha256": "d1b233c455a5c6e885299eada9058b33076403ad872ff296b67d020028600a5f",
+    "candidate_matches_authorized_private_proposal": true,
+    "matrix_counts": {
+      "PR_package_before": 4,
+      "PR_package_after": 5,
+      "main_before": 8,
+      "main_after": 9
+    },
+    "Windows_minutes_each_job_before_and_after": 60,
+    "all_other_workflow_lines_identical": true
+  },
+  "new_test": {
+    "file": "tests/ci-windows-package.test.ts",
+    "sha256": "164f420a5b540cfc4d634e499aa555462fe1d37741c4c5b21d13aea2397a5717",
+    "count": 9,
+    "red_primary_oracles_unchanged": true,
+    "Gate_guard": "Read literal acceptance cases and require exit1 fallthrough; actual GitHub aggregate execution pending."
+  },
+  "checks": {
+    "red": {
+      "failed": 2,
+      "passed": 7,
+      "vitest_seconds": 0.136,
+      "exit_code": 1,
+      "workflow_sha256": "91c49ef9fcf5fc7be719902fbd1d06006fc6be103fce201905074027ade352b8"
+    },
+    "focused_CI_final": {
+      "passed": 78,
+      "files": 5,
+      "vitest_seconds": 2.82,
+      "exit_code": 0
+    },
+    "types": {
+      "errors": 0,
+      "warnings": 0,
+      "exit_code": 0,
+      "process_seconds": 9.550589874997968
+    },
+    "unit_full_qualified": {
+      "passed": 3008,
+      "skipped": 2,
+      "files_passed": 169,
+      "files_skipped": 1,
+      "files_total": 170,
+      "vitest_seconds": 16.66,
+      "exit_code": 0,
+      "process_seconds": 16.96894062499632,
+      "pandoc_real": "3.12.1",
+      "Windows_native_not_qualified_locally": true
+    },
+    "build": {
+      "exit_code": 0,
+      "process_seconds": 1.8947331249946728
+    }
+  },
+  "environment_attempt": {
+    "initial_full_unit_failed": "listen EPERM 127.0.0.1 in local HTTP fixtures; 26 failed cases and Pandoc suite startup failure. Original log retained privately.",
+    "qualified_rerun": "Same command and unchanged sources/tests, with localhost binding permitted. No test retry or deadline configured.",
+    "Pandoc_HTTP_limit": "Installed Pandoc real binary has no HTTP support; HTTP sandbox efficacy remains unqualified."
+  },
+  "observations": {
+    "main614": {
+      "run": 44612844417,
+      "job": 135873674588,
+      "conclusion": "cancelled",
+      "duration": "60:16",
+      "annotation": "The job has exceeded the maximum execution time of 1h0m0s",
+      "packaged_partial_passed": 91,
+      "packaged_partial_skipped": 1,
+      "packaged_complete": false
+    },
+    "PR196": {
+      "run": 44518404831,
+      "job": 135540526098,
+      "head": "08e91d80fefd931e5dc017c92832b0b3bdc21202",
+      "conclusion": "success",
+      "duration": "57:58",
+      "packaged_passed": 114,
+      "packaged_skipped": 1
+    }
+  },
+  "unchanged": [
+    "existing test files/assertions",
+    "src",
+    "dependencies/lockfile",
+    "candidate workflow",
+    "steps and conditions",
+    "timeouts/workers/retries",
+    "schedule/Intel/non-Windows matrix rows",
+    "PR without package",
+    "Gate aggregate dependency and case script"
+  ],
+  "limits": [
+    "No local GUI/E2E or packaged application execution; build is not package qualification.",
+    "No proposed GitHub CI run or Windows native result for this candidate yet.",
+    "Matrix/conditions evaluated using existing limited workflow helper; real Actions execution still required.",
+    "Additional Windows job repeats setup and explicit build, increasing possible total compute cost; no measured queue/speed benefit.",
+    "No fetch after the one authorized main9a fetch, no push/PR/rerun/merge/release."
+  ]
+}
