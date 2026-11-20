@@ -53,6 +53,10 @@ test.beforeEach(async()=>{
  await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible()
  await openAnalysis(page,'Gráficos');await expect(entries()).toHaveCount(7)
  await expect(fields().getByText(t('charts.fields.loading'),{exact:true})).toHaveCount(0)
+ // La ausencia del aviso también ocurre antes de la primera página: el icono numérico prueba los perfiles publicados.
+ await expect(field('Ingreso').locator('.field-badge')).toHaveAttribute('title',t('charts.fields.number'))
+ await expect(fields().locator('.field-list')).toHaveAttribute('aria-busy','false')
+
 })
 test.afterEach(async()=>{
  try{
@@ -63,7 +67,8 @@ test.afterEach(async()=>{
 
 async function assign(name:string,destination:'Filas'|'Columnas'|'Valores'){
  // Setup compatible con B y C: solo abre el menú real del campo sin usar.
- const trigger=field(name).getByRole('button',{name:new RegExp('^(?:(?:Añadir|Mover) a… '+name+'|Más acciones de '+name+')$')})
+ const entry=field(name);await entry.hover()
+ const trigger=entry.getByRole('button',{name:new RegExp('^(?:(?:Añadir|Mover) a… '+name+'|Más acciones de '+name+')$')})
  await trigger.click()
  await expect(menu()).toBeVisible()
  // Dos nombres exactos construidos por ChartFields: base y base + sufijo del catálogo.
