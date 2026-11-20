@@ -1,0 +1,62 @@
+
+Running 17 tests using 1 worker
+
+(node:32087) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/17] [shell] › tests/e2e/ui-u0.spec.ts:165:45 › U0.1: campos legibles y orden a 1280 × 720 (es)
+[2/17] [shell] › tests/e2e/ui-u0.spec.ts:165:45 › U0.1: campos legibles y orden a 1280 × 720 (en-XA)
+(node:32119) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/17] [csv] › tests/e2e/analysis-tab.spec.ts:92:1 › AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta la configuración
+[4/17] [csv] › tests/e2e/chart-clarity.spec.ts:192:1 › SIM-2b: manual sin perfil conserva medida, ejes y agrupación explícitos sin nuevos barridos ni conversión de ID
+[5/17] [csv] › tests/e2e/chart-field-loading.spec.ts:13:1 › los 200 campos publican sus tipos juntos, sin una clasificación provisional durante la lectura
+[6/17] [csv] › tests/e2e/chart-field-readiness.spec.ts:10:1 › SIM-2c: antes de recibir la primera página real los campos esperan; después Enter usa el perfil numérico
+[7/17] [csv] › tests/e2e/chart-fields.spec.ts:106:1 › F2b: filtros reutilizados, exportación y datos originales intactos
+[8/17] [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720
+  1) [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 6
+    Received:    5
+
+      56 |  const fields=panel().getByRole('complementary');await fields.locator('.field-list').evaluate(node=>node.scrollTop=0)
+      57 |  const visible=await fields.locator('.field-list').evaluate(node=>{const area=node.getBoundingClientRect();return[...node.querySelectorAll('.field-entry')].filter(row=>{const r=row.getBoundingClientRect();return r.top>=area.top&&r.bottom<=area.bottom}).length})
+    > 58 |  expect(visible).toBeGreaterThanOrEqual(6)
+         |                  ^
+      59 |  await writeFile(test.info().outputPath('fields-visible.json'),JSON.stringify({visible}))
+      60 |  await expect(fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true})).toBeInViewport({ratio:1})
+      61 |  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})
+        at <checkout>/tests/e2e/chart-review.spec.ts:58:18
+
+    Error Context: ../sim2c-campos-simples-evidence/closure-gui-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/closure-gui-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/closure-gui-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:32216) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[9/17] [csv] › tests/e2e/chart-simple-fields.spec.ts:88:1 › SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista
+[10/17] [csv] › tests/e2e/chart-simple-fields.spec.ts:110:1 › SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV
+[11/17] [csv] › tests/e2e/chart-simple-fields.spec.ts:131:1 › SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos
+[12/17] [csv] › tests/e2e/chart-simple-fields.spec.ts:141:1 › SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular
+[13/17] [csv] › tests/e2e/chart-simple-fields.spec.ts:155:1 › SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables
+[14/17] [csv] › tests/e2e/chart-simple-fields.spec.ts:179:1 › SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas
+[15/17] [csv] › tests/e2e/charts.spec.ts:215:1 › series visuales: leyenda y teclado sincronizados, filtros, exportación y límite comprensible
+[16/17] [csv] › tests/e2e/charts.spec.ts:293:1 › filtros propios: editor reutilizado, borradores, Escape, alcance y exportación sin cambiar la tabla
+[17/17] [csv] › tests/e2e/sql-progress-states.spec.ts:99:1 › el gráfico muestra la misma fase visible y anunciada antes de dibujar datos reales
+  1 failed
+    [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 
+  16 passed (1.3m)

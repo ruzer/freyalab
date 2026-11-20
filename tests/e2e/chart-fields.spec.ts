@@ -1,4 +1,4 @@
-import {chartPanel,chartSuggestion,openAnalysis,showTable,createSuggestedChart,chartGenerate,analyzeButton,exportAnalysis} from './panel'
+import {chartPanel,chartSuggestion,openAnalysis,showTable,createSuggestedChart,chartGenerate,analyzeButton,exportAnalysis,chartAssign,chartType,chartTypeButton} from './panel'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import { closeElectron } from './close-electron'
 import electronPath from 'electron'
@@ -9,8 +9,7 @@ import {join,resolve} from 'node:path'
 let app:ElectronApplication,page:Page,folder:string,path:string
 async function sumVentas(){
  const panel=chartPanel(page),language=(await page.locator('html').getAttribute('lang')??'es') as Language
- await panel.locator('.field-entry[title="Ventas"] button').click()
- await panel.getByRole('menuitem').filter({hasText:t('charts.fields.destination',{zone:t('charts.fields.values',{},language)},language)}).click()
+ await chartAssign(page,'Ventas','values')
  await panel.getByLabel(t('charts.fields.aggregate',{field:'Ventas'},language),{exact:true}).selectOption('sum')
 }
 const original='Región,Canal,Ventas,Fecha,Descuento\nNorte,Web,1200,2026-01-01,10%\nNorte,Tienda,800,2026-01-15,10%\nCentro,Web,1600,2026-02-01,10%\nCentro,Tienda,900,2026-02-15,10%\nSur,Web,900,2026-03-01,10%\nSur,Tienda,600,2026-03-15,10%\nOeste,Web,700,2026-04-01,10%\nOeste,Tienda,500,2026-04-15,10%\n'
@@ -45,8 +44,7 @@ test('F2b: sugerencia inicial y dos acciones cambian qué se grafica sin Más op
  await expect(panel.locator('.pivot-result tfoot')).toContainText('8')
  await sumVentas();await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
  const fields=panel.getByRole('complementary',{name:'Campos y zonas',exact:true})
- await fields.getByRole('button',{name:'Añadir a… Fecha',exact:true}).click()
- await panel.getByRole('menuitem',{name:'Añadir a Filas (recomendado)',exact:true}).click()
+ await chartAssign(page,'Fecha','rows')
  await expect(panel.locator('.chart-types button[aria-pressed=true]')).toContainText('Líneas')
  await expect(panel.locator('.pivot-result tbody tr')).toHaveCount(4)
  await expect(panel.locator('.pivot-result tbody tr').first()).toContainText('2026-01')
@@ -58,11 +56,11 @@ test('F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones
  const panel=chartPanel(page),fields=panel.getByRole('complementary',{name:'Campos y zonas',exact:true}),live=panel.locator('.chart-result>.analysis-announcement')
  await expect(panel.locator('.pivot-result')).toBeVisible()
  const search=fields.getByRole('searchbox');await search.focus();await page.keyboard.type('region');await expect(fields.getByRole('listitem')).toHaveCount(1);await expect(live).toHaveText('1 campos')
- await search.fill('');await page.keyboard.press('Tab');await expect(fields.getByRole('listitem').first()).toBeFocused()
+ await search.fill('');await fields.getByRole('listitem').first().focus();await search.focus();await page.keyboard.press('Tab');await expect(fields.getByRole('listitem').first()).toBeFocused()
  await page.keyboard.press('Enter');await expect(panel.getByRole('menuitem').first()).toBeFocused();await page.keyboard.press('End');await page.keyboard.press('Home');await page.keyboard.press('Escape')
- await expect(fields.getByRole('button',{name:'Mover a… Región',exact:true})).toBeFocused()
- const channel=fields.getByRole('button',{name:'Añadir a… Canal',exact:true});await channel.focus();await page.keyboard.press('Enter');await page.keyboard.press('Enter')
- await expect(fields.getByRole('region',{name:'Columnas',exact:true})).toContainText('Canal');await expect(fields.getByRole('button',{name:'Mover a… Canal',exact:true})).toBeFocused()
+ await expect(fields.getByRole('listitem').filter({has:page.getByTitle('Región',{exact:true})})).toBeFocused()
+ await fields.getByRole('listitem').filter({has:page.getByTitle('Canal',{exact:true})}).focus();const channel=fields.getByRole('button',{name:'Más acciones de Canal',exact:true});await channel.focus();await page.keyboard.press('Enter');await page.keyboard.press('Enter')
+ await expect(fields.getByRole('region',{name:'Columnas',exact:true})).toContainText('Canal');await expect(channel).toBeFocused()
  await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
  await fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true}).focus();await page.keyboard.press('Enter');await expect(fields.getByRole('region',{name:'Filas',exact:true})).toContainText('Canal');await expect(live).toHaveText('Filas y columnas intercambiadas')
  await fields.getByRole('button',{name:'Limpiar todo',exact:true}).focus();await page.keyboard.press('Enter');await expect(live).toHaveText('Análisis limpiado');await expect(chartSuggestion(page)).toBeVisible()
@@ -70,6 +68,32 @@ test('F2b: teclado, búsqueda sin acentos, foco del menú y anuncios de acciones
  await expect(panel.locator('.suggestion')).toHaveText('Elige un campo para empezar.')
  await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-empty.png')});await chartSuggestion(page).focus();await page.keyboard.press('Enter');await sumVentas();await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
  expect(await readFile(path,'utf8')).toBe(original)
+})
+for(const action of ['Escape','Enter'] as const)test('SIM-2c: restaura el invocador oculto al cerrar con '+action,async()=>{
+ await sumVentas()
+ const panel=chartPanel(page),fields=panel.getByRole('complementary',{name:'Campos y zonas',exact:true})
+ const row=fields.getByRole('listitem').filter({has:page.getByTitle('Canal',{exact:true})}),more=fields.getByRole('button',{name:'Más acciones de Canal',exact:true,includeHidden:true})
+ await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200')
+ await expect(fields.getByRole('region',{name:'Columnas',exact:true})).not.toContainText('Canal')
+ await row.focus();await more.focus();await page.keyboard.press('Enter');await expect(panel.getByRole('menuitem').first()).toBeFocused()
+ await page.mouse.move(0,0);await expect(more).toHaveCSS('visibility','hidden')
+ await page.keyboard.press(action)
+ await expect(more).toBeFocused()
+ await expect(more).toHaveCSS('visibility','visible')
+ if(action==='Enter')await expect(fields.getByRole('region',{name:'Columnas',exact:true})).toContainText('Canal')
+ else await expect(fields.getByRole('region',{name:'Columnas',exact:true})).not.toContainText('Canal')
+ await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200');expect(await readFile(path,'utf8')).toBe(original)
+})
+test('SIM-2c: cancelar filtros devuelve el foco a Más de un campo todavía sin usar',async()=>{
+ await sumVentas()
+ const panel=chartPanel(page),fields=panel.getByRole('complementary',{name:'Campos y zonas',exact:true})
+ const row=fields.getByRole('listitem').filter({has:page.getByTitle('Canal',{exact:true})}),more=fields.getByRole('button',{name:'Más acciones de Canal',exact:true,includeHidden:true})
+ await row.focus();await more.focus();await page.keyboard.press('Enter');await page.mouse.move(0,0)
+ const addFilter=panel.getByRole('menuitem',{name:'Añadir a Filtros',exact:true});await addFilter.focus();await page.keyboard.press('Enter')
+ const filters=panel.getByRole('region',{name:'Filtros del gráfico',exact:true});await expect(filters).toBeVisible();await expect(more).toHaveCSS('visibility','hidden')
+ await filters.getByRole('button',{name:'Cancelar',exact:true}).press('Enter');await expect(filters).toHaveCount(0)
+ await expect(more).toBeFocused();await expect(more).toHaveCSS('visibility','visible')
+ await expect(fields.getByRole('region',{name:'Filtros',exact:true})).not.toContainText('Canal');await expect(panel.locator('.pivot-result tfoot')).toContainText('7,200');expect(await readFile(path,'utf8')).toBe(original)
 })
 test('F2b: cada Resumir por coincide con datos independientes y porcentajes solo aditivos',async()=>{
  await sumVentas()
@@ -80,18 +104,18 @@ test('F2b: cada Resumir por coincide con datos independientes y porcentajes solo
   await expect(panel.locator('.pivot-result thead')).toContainText(aggregate==='count'||aggregate==='sum'?'% del total':'Región')
   if(!['sum','count'].includes(aggregate)){await expect(panel.locator('.pivot-result thead')).not.toContainText('% del total');await expect(panel.locator('.pivot-result tfoot')).toContainText('Total (recalculado)')}
  }
- await panel.locator('.chart-types').getByRole('button',{name:'Histograma',exact:true}).click();await expect(panel.locator('.pivot-result')).toBeVisible();await expect(panel.locator('.chart-types button[aria-pressed=true]')).toHaveText('Histograma')
+ await chartType(page,'histogram');await expect(panel.locator('.pivot-result')).toBeVisible();await expect(await chartTypeButton(page,'histogram')).toHaveAttribute('aria-pressed','true')
  expect(await readFile(path,'utf8')).toBe(original)
 })
 test('F2b: texto no se suma, mapa solo cuenta y símbolos no se convierten',async()=>{
  await sumVentas()
  const panel=chartPanel(page);await expect(panel.locator('.pivot-result')).toBeVisible()
- await panel.getByRole('button',{name:'Añadir a… Descuento',exact:true}).click();await panel.getByRole('menuitem',{name:'Añadir a Valores',exact:true}).click()
+ await chartAssign(page,'Descuento','values')
  const aggregate=panel.getByLabel('Resumir Descuento por',{exact:true});await expect(aggregate).toHaveValue('count');await expect(aggregate.locator('option[value=sum]')).toBeDisabled();await expect(aggregate.locator('option[value=distinct]')).toBeEnabled()
  await panel.getByRole('button',{name:'Usar como número…',exact:true}).first().click();await expect(panel.getByRole('region',{name:'Usar como número…',exact:true})).toContainText('Todavía no se pueden convertir símbolos como $ o %. El archivo no cambia.');await panel.getByRole('button',{name:'Cerrar',exact:true}).click()
- await panel.locator('.chart-types').getByRole('button',{name:'Mapa de calor',exact:true}).click();const heat=panel.getByLabel('Resumir Filas del archivo por',{exact:true});await expect(heat).toHaveValue('count');for(const operation of ['sum','distinct','average','min','max','median'])await expect(heat.locator(`option[value=${operation}]`)).toBeDisabled()
+ await chartType(page,'heatmap');const heat=panel.getByLabel('Resumir Filas del archivo por',{exact:true});await expect(heat).toHaveValue('count');for(const operation of ['sum','distinct','average','min','max','median'])await expect(heat.locator(`option[value=${operation}]`)).toBeDisabled()
  await expect(panel.getByText('El mapa de calor solo cuenta filas',{exact:true})).toBeVisible();expect(await readFile(path,'utf8')).toBe(original)
- await panel.getByRole('listitem').filter({hasText:'Ventas'}).dblclick();await expect(panel.locator('.chart-types button[aria-pressed=true]')).toHaveText('Mapa de calor')
+ await panel.getByRole('listitem').filter({hasText:'Ventas'}).click();await expect(await chartTypeButton(page,'heatmap')).toHaveAttribute('aria-pressed','true')
  await panel.getByRole('button',{name:'Limpiar todo',exact:true}).click();await expect(panel.getByRole('region',{name:'Valores',exact:true}).getByRole('combobox')).toHaveCount(0)
 })
 test('F2b: 842 grupos conservan truncado y tabla paginada; Otros solo sobre resultados completos aditivos',async()=>{
@@ -108,10 +132,10 @@ test('F2b: 842 grupos conservan truncado y tabla paginada; Otros solo sobre resu
 test('F2b: filtros reutilizados, exportación y datos originales intactos',async()=>{
  await sumVentas()
  const panel=chartPanel(page);await expect(panel.locator('.pivot-result')).toBeVisible()
- await panel.getByRole('button',{name:'Mover a… Región',exact:true}).click();await panel.getByRole('menuitem',{name:'Añadir a Filtros',exact:true}).click()
+ await chartAssign(page,'Región','filters')
  const filters=panel.getByRole('region',{name:'Filtros del gráfico',exact:true});await filters.getByLabel('Operador de condición 1',{exact:true}).selectOption('equals');await filters.getByLabel('Valor de condición 1',{exact:true}).fill('Norte');await filters.getByRole('button',{name:'Aplicar filtros del gráfico',exact:true}).click()
  await expect(panel.locator('.pivot-result tfoot')).toContainText('2,000');await expect(panel.getByRole('region',{name:'Filtros',exact:true})).toContainText('Región')
- await expect(panel.getByRole('button',{name:'Mover a… Región',exact:true})).toBeFocused()
+ await expect(panel.getByRole('button',{name:'Más acciones de Región',exact:true})).toBeFocused()
  await exportAnalysis(page,'charts.ui.exportImage',{format:'SVG'});await expect.poll(async()=>{try{return await readFile(join(folder,'exports','ventas.svg'),'utf8')}catch{return''}}).toContain('<svg')
  await exportAnalysis(page,'charts.ui.exportImage',{format:'PNG'});await expect.poll(async()=>{try{return (await readFile(join(folder,'exports','ventas.png'))).subarray(1,4).toString()}catch{return''}}).toBe('PNG')
  await exportAnalysis(page,'charts.ui.exportImage',{format:'PDF'});await expect.poll(async()=>{try{return (await readFile(join(folder,'exports','ventas.pdf'))).subarray(0,4).toString()}catch{return''}}).toBe('%PDF')
@@ -121,7 +145,7 @@ test('F2b: estrecho conserva foco al editar campos, inglés natural y resultado 
  await sumVentas()
  const panel=chartPanel(page);await expect(panel.locator('.pivot-result')).toBeVisible();await page.setViewportSize({width:800,height:720})
  await expect(panel.getByRole('complementary')).toBeHidden();await panel.getByRole('button',{name:'Campos y zonas',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.getByRole('complementary')).toBeVisible()
- await panel.getByRole('button',{name:'Añadir a… Fecha',exact:true}).focus();await page.keyboard.press('Enter');await page.keyboard.press('Enter');await expect(panel.locator('.chart-types button[aria-pressed=true]')).toHaveText('Líneas');await expect(panel.locator('.pivot-result')).toBeVisible();await expect(panel.getByRole('button',{name:'Mover a… Fecha',exact:true})).toBeFocused()
+ await panel.getByRole('listitem').filter({has:page.getByTitle('Fecha',{exact:true})}).focus();await panel.getByRole('button',{name:'Más acciones de Fecha',exact:true}).focus();await page.keyboard.press('Enter');await page.keyboard.press('Enter');await expect(await chartTypeButton(page,'line')).toHaveAttribute('aria-pressed','true');await expect(panel.locator('.pivot-result')).toBeVisible();await expect(panel.getByRole('button',{name:'Más acciones de Fecha',exact:true})).toBeFocused()
  await panel.getByRole('button',{name:'Campos y zonas',exact:true}).click();await expect(panel.getByRole('complementary')).toBeHidden();await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-narrow.png')})
  await page.evaluate(()=>window.freya.setLanguage('en'));await expect(panel.getByRole('button',{name:'Fields and zones',exact:true})).toBeVisible();await expect(panel.getByLabel('Chart configuration',{exact:true})).toContainText('Ventas');await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-en.png')})
  const result=await panel.locator('.pivot-result').boundingBox();expect(result!.y+result!.height).toBeLessThanOrEqual(720)

@@ -1,0 +1,37 @@
+
+Running 1 test using 1 worker
+
+(node:32891) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720
+  1) [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 6
+    Received:    5
+
+      57 |  const visible=await fields.locator('.field-list').evaluate(node=>{const area=node.getBoundingClientRect();return[...node.querySelectorAll('.field-entry')].filter(row=>{const r=row.getBoundingClientRect();return r.top>=area.top&&r.bottom<=area.bottom}).length})
+      58 |  await writeFile(test.info().outputPath('fields-before.json'),JSON.stringify(await fields.evaluate(root=>[...root.querySelectorAll('.field-list,.field-list h4,.field-entry,.field-hint,.zone-content,.zones')].map(node=>{const r=node.getBoundingClientRect(),s=getComputedStyle(node);return{kind:node.className,text:node.textContent?.slice(0,50),top:r.top,bottom:r.bottom,height:r.height,lineHeight:s.lineHeight,padding:s.padding,margin:s.margin}})),null,2))
+    > 59 |  expect(visible).toBeGreaterThanOrEqual(6)
+         |                  ^
+      60 |  await writeFile(test.info().outputPath('fields-visible.json'),JSON.stringify({visible}))
+      61 |  await expect(fields.getByRole('button',{name:'Intercambiar filas y columnas',exact:true})).toBeInViewport({ratio:1})
+      62 |  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})
+        at <checkout>/tests/e2e/chart-review.spec.ts:59:18
+
+    Error Context: ../sim2c-campos-simples-evidence/fit-observe-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/fit-observe-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/fit-observe-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [csv] › tests/e2e/chart-review.spec.ts:55:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 

@@ -1,0 +1,45 @@
+
+Running 7 tests using 1 worker
+
+(node:23635) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/chart-field-readiness.spec.ts:10:1 › SIM-2c: antes de recibir la primera página real los campos esperan; después Enter usa el perfil numérico (1.6s)
+  ✓  2 [csv] › tests/e2e/chart-simple-fields.spec.ts:88:1 › SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista (985ms)
+  ✓  3 [csv] › tests/e2e/chart-simple-fields.spec.ts:110:1 › SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV (4.6s)
+  ✓  4 [csv] › tests/e2e/chart-simple-fields.spec.ts:131:1 › SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos (2.8s)
+  ✓  5 [csv] › tests/e2e/chart-simple-fields.spec.ts:141:1 › SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular (3.0s)
+  ✘  6 [csv] › tests/e2e/chart-simple-fields.spec.ts:155:1 › SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables (34.6s)
+(node:23707) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  7 [csv] › tests/e2e/chart-simple-fields.spec.ts:179:1 › SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas (3.0s)
+
+
+  1) [csv] › tests/e2e/chart-simple-fields.spec.ts:155:1 › SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables 
+
+    TimeoutError: locator.evaluate: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^\s*(?:✓\s*)?Edad\s*$/ }) }).getByRole('button', { name: 'Más acciones de Edad', exact: true })
+
+
+      159 |  const entry=field('Edad'),more=entry.getByRole('button',{name:'Más acciones de Edad',exact:true})
+      160 |  await page.mouse.move(0,0);await fields().getByRole('searchbox').focus()
+    > 161 |  expect(await more.evaluate(node=>{const style=getComputedStyle(node);return style.visibility==='hidden'||style.opacity==='0'||style.display==='none'})).toBe(true)
+          |                    ^
+      162 |  await entry.hover();await expect(more).toBeVisible();await more.press('Enter');await expect(menu()).toBeVisible()
+      163 |  const unavailable=menu().getByRole('menuitem',{name:/^Añadir a Valores/}),reason=/^El mapa de calor solo cuenta filas[.]?$/
+      164 |  await expect(unavailable).toHaveAttribute('aria-disabled','true');await expect(unavailable).not.toHaveAttribute('disabled')
+        at <checkout>/tests/e2e/chart-simple-fields.spec.ts:161:20
+
+    Error Context: ../sim2c-campos-simples-evidence/guard-green-results/chart-simple-fields-SIM-2c-9a6f7-nos-desactivados-enfocables-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/guard-green-results/chart-simple-fields-SIM-2c-9a6f7-nos-desactivados-enfocables-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/guard-green-results/chart-simple-fields-SIM-2c-9a6f7-nos-desactivados-enfocables-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-simple-fields.spec.ts:155:1 › SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables 
+  6 passed (51.2s)

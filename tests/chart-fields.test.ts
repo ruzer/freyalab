@@ -1,5 +1,5 @@
 import {it,expect} from 'vitest'
-import {addToZone,removeFromZone,swapZones,zoneFields,recommendedZone,initialChart,fieldGroup} from '../src/shared/chart-fields'
+import {addToZone,removeFromZone,swapZones,zoneFields,recommendedZone,initialChart,fieldGroup,projectChartKind,chartKindUnavailable} from '../src/shared/chart-fields'
 import {chartSQL,type ChartOptions} from '../src/shared/charts'
 import type {ChartColumn} from '../src/shared/chart-suggest'
 const columns:ChartColumn[]=['Región','Canal','Ventas','Fecha','ID'].map((name,column)=>({name,column,profile:{kind:(['category','category','number','date','identifier'] as const)[column],dates:0,invalidDates:0,unsafeIntegers:0,identifierZeros:0,headerHint:false,distinctNonEmpty:3}}))
@@ -125,4 +125,49 @@ it.each(['sum','average','median'] as const)('SIM-1d: cambiar Filas o Columnas c
 it.each([{row:0,aggregate:'average'},{row:3,aggregate:'sum'}] as const)('SIM-1d: reemplazar Valores en Filas $row conserva el reinicio de cálculo con $aggregate',({row,aggregate})=>{
  const more=[...columns,{...columns[2],column:5,name:'Unidades'}]
  expect(addToZone({...chosen,x:row,aggregate:'max'},'values',5,more)).toMatchObject({x:row,y:5,aggregate,measureType:'number'})
+})
+it('SIM-2c: Ciudad y Edad ofrecen cuatro tipos; Líneas y Dispersión requieren los perfiles compatibles',()=>{
+ const fields:ChartColumn[]=[{...columns[0],name:'Ciudad',profile:{...columns[0].profile!,kind:'text'}},{...columns[2],column:1,name:'Edad'}]
+ const headers=fields.map(field=>field.name),options:ChartOptions={...chosen,y:1,aggregate:'average'}
+ const kinds=['bar','line','scatter','histogram','heatmap','box'] as const
+ expect(kinds.map(kind=>chartKindUnavailable(headers,options,kind,fields,options))).toEqual([
+  null,'charts.kind.unavailable.line','charts.kind.unavailable.scatter',null,null,null
+ ])
+ // La nueva elegibilidad es del botón: el motor manual sigue construyendo los seis SQL.
+ for(const kind of kinds)expect(()=>chartSQL(headers,projectChartKind(options,kind,fields,options))).not.toThrow()
+})
+it('SIM-2c: sin perfiles se conserva el fallback manual y se rechaza una selección estructuralmente vacía',()=>{
+ const fields=columns.map(({column,name})=>({column,name})),headers=fields.map(field=>field.name)
+ for(const kind of ['line','scatter'] as const){
+  expect(chartKindUnavailable(headers,chosen,kind,fields,null)).toBeNull()
+  expect(()=>chartSQL(headers,projectChartKind(chosen,kind,fields,null))).not.toThrow()
+  expect(chartKindUnavailable(headers,{...chosen,y:-2},kind,fields,null)).toBe('charts.kind.unavailable.'+kind)
+ }
+})
+it('SIM-2c: un identificador conocido no se convierte en eje numérico al consultar los tipos',()=>{
+ const before=structuredClone(columns),options={...chosen,x:4},headers=columns.map(field=>field.name)
+ expect(chartKindUnavailable(headers,options,'bar',columns,null)).toBeNull()
+ for(const kind of ['line','scatter'] as const)expect(chartKindUnavailable(headers,options,kind,columns,null)).toBe('charts.kind.unavailable.'+kind)
+ expect(columns).toEqual(before)
+ expect(options).toEqual({...chosen,x:4})
+ expect(recommendedZone(columns[4],empty)).toBe('rows')
+})
+it('SIM-2c: proyectar Líneas conserva título, orden y medida, sin mutar la selección de fecha',()=>{
+ const options=Object.freeze({...chosen,x:3,bins:7,descending:true,title:'Informe propio',trend:true}),before={...options}
+ const result=projectChartKind(options,'line',columns,{...options,kind:'line',time:'month'})
+ expect(options).toEqual(before);expect(result).not.toBe(options)
+ expect(result).toMatchObject({title:'Informe propio',descending:true,bins:7,x:3,y:2,aggregate:'sum',measureType:'number',trend:true})
+ const sql=chartSQL(columns.map(field=>field.name),result)
+ expect(sql).toContain("date_trunc('month',dx)");expect(sql).toContain('SUM(ny)')
+})
+it('SIM-2c: proyectar Dispersión conserva observaciones y tendencia sin agregar ni mutar el origen',()=>{
+ const fields=[...columns,{...columns[2],column:5,name:'Unidades'}]
+ const options=Object.freeze({...chosen,x:2,y:5,time:'month' as const,title:'Relación propia',trend:true,descending:true}),before={...options}
+ const result=projectChartKind(options,'scatter',fields,null)
+ expect(options).toEqual(before);expect(result).not.toBe(options)
+ expect(result).toMatchObject({x:2,y:5,title:'Relación propia',trend:true,descending:true})
+ const sql=chartSQL(fields.map(field=>field.name),result)
+ expect(sql).toContain('regr_count(ny,nx) AS trend_n')
+ expect(sql).toContain('nx IS NOT NULL AND ny IS NOT NULL')
+ expect(sql).not.toContain('GROUP BY');expect(sql).not.toContain('SUM(ny)');expect(sql).not.toContain('AVG(ny)')
 })

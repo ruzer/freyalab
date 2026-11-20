@@ -1,0 +1,141 @@
+
+Running 6 tests using 1 worker
+
+  ✓  1 [csv] › tests/e2e/chart-simple-fields.spec.ts:83:1 › SIM-2c: siete filas con iconos, una pista y un tabstop itinerante conservan el teclado de la lista (1.1s)
+  ✓  2 [csv] › tests/e2e/chart-simple-fields.spec.ts:105:1 › SIM-2c: clic Ingreso y Ciudad propone promedio y conserva datos exactos en tabla JSON y CSV (4.7s)
+  ✘  3 [csv] › tests/e2e/chart-simple-fields.spec.ts:126:1 › SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos (16.0s)
+  ✘  4 [csv] › tests/e2e/chart-simple-fields.spec.ts:136:1 › SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular (31.0s)
+  ✘  5 [csv] › tests/e2e/chart-simple-fields.spec.ts:150:1 › SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables (31.0s)
+  ✘  6 [csv] › tests/e2e/chart-simple-fields.spec.ts:174:1 › SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas (31.0s)
+
+
+  1) [csv] › tests/e2e/chart-simple-fields.spec.ts:126:1 › SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name')
+    Expected: "Ingreso"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).getByRole('region', { name: 'Valores', exact: true }).locator('.chip-name')
+
+
+      126 | test('SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos',async()=>{
+      127 |  await field('Ingreso').focus();await field('Ingreso').press('Enter')
+    > 128 |  await expect(zone('Valores').locator('.chip-name')).toHaveText('Ingreso')
+          |                                                      ^
+      129 |  await expect(panel().locator('.analysis-announcement')).toHaveText('Ingreso añadido a Valores');await expect(menu()).toHaveCount(0)
+      130 |  await field('Ciudad').focus();await field('Ciudad').press('Space');await ready()
+      131 |  await expect(zone('Filas').locator('.chip-name')).toHaveText('Ciudad')
+        at <checkout>/tests/e2e/chart-simple-fields.spec.ts:128:54
+
+    Error Context: ../sim2c-campos-simples-evidence/green2-results/chart-simple-fields-SIM-2c-03c99-anuncian-sin-abrir-destinos-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/green2-results/chart-simple-fields-SIM-2c-03c99-anuncian-sin-abrir-destinos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/green2-results/chart-simple-fields-SIM-2c-03c99-anuncian-sin-abrir-destinos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/chart-simple-fields.spec.ts:136:1 › SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^\s*(?:✓\s*)?Ciudad\s*$/ }) }).getByRole('button', { name: /^(?:(?:Añadir|Mover) a… Ciudad|Más acciones de Ciudad)$/ })
+
+
+      65 |  // Setup compatible con B y C: solo abre el menú real del campo sin usar.
+      66 |  const trigger=field(name).getByRole('button',{name:new RegExp('^(?:(?:Añadir|Mover) a… '+name+'|Más acciones de '+name+')$')})
+    > 67 |  await trigger.click()
+         |                ^
+      68 |  await expect(menu()).toBeVisible()
+      69 |  // Dos nombres exactos construidos por ChartFields: base y base + sufijo del catálogo.
+      70 |  const label=t('charts.fields.destination',{zone:destination}),recommended=label+' '+t('charts.fields.recommended')
+        at assign (<checkout>/tests/e2e/chart-simple-fields.spec.ts:67:16)
+        at meanCity (<checkout>/tests/e2e/chart-simple-fields.spec.ts:78:33)
+        at <checkout>/tests/e2e/chart-simple-fields.spec.ts:137:8
+
+    Error Context: ../sim2c-campos-simples-evidence/green2-results/chart-simple-fields-SIM-2c-549f7--sin-eliminar-ni-recalcular-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/green2-results/chart-simple-fields-SIM-2c-549f7--sin-eliminar-ni-recalcular-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/green2-results/chart-simple-fields-SIM-2c-549f7--sin-eliminar-ni-recalcular-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/chart-simple-fields.spec.ts:150:1 › SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^\s*(?:✓\s*)?Ciudad\s*$/ }) }).getByRole('button', { name: /^(?:(?:Añadir|Mover) a… Ciudad|Más acciones de Ciudad)$/ })
+
+
+      65 |  // Setup compatible con B y C: solo abre el menú real del campo sin usar.
+      66 |  const trigger=field(name).getByRole('button',{name:new RegExp('^(?:(?:Añadir|Mover) a… '+name+'|Más acciones de '+name+')$')})
+    > 67 |  await trigger.click()
+         |                ^
+      68 |  await expect(menu()).toBeVisible()
+      69 |  // Dos nombres exactos construidos por ChartFields: base y base + sufijo del catálogo.
+      70 |  const label=t('charts.fields.destination',{zone:destination}),recommended=label+' '+t('charts.fields.recommended')
+        at assign (<checkout>/tests/e2e/chart-simple-fields.spec.ts:67:16)
+        at meanCity (<checkout>/tests/e2e/chart-simple-fields.spec.ts:78:33)
+        at <checkout>/tests/e2e/chart-simple-fields.spec.ts:151:8
+
+    Error Context: ../sim2c-campos-simples-evidence/green2-results/chart-simple-fields-SIM-2c-9a6f7-nos-desactivados-enfocables-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/green2-results/chart-simple-fields-SIM-2c-9a6f7-nos-desactivados-enfocables-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/green2-results/chart-simple-fields-SIM-2c-9a6f7-nos-desactivados-enfocables-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [csv] › tests/e2e/chart-simple-fields.spec.ts:174:1 › SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary', { name: 'Campos y zonas', exact: true }).locator('.field-entry').filter({ has: locator('.field-name').filter({ hasText: /^\s*(?:✓\s*)?Ciudad\s*$/ }) }).getByRole('button', { name: /^(?:(?:Añadir|Mover) a… Ciudad|Más acciones de Ciudad)$/ })
+
+
+      65 |  // Setup compatible con B y C: solo abre el menú real del campo sin usar.
+      66 |  const trigger=field(name).getByRole('button',{name:new RegExp('^(?:(?:Añadir|Mover) a… '+name+'|Más acciones de '+name+')$')})
+    > 67 |  await trigger.click()
+         |                ^
+      68 |  await expect(menu()).toBeVisible()
+      69 |  // Dos nombres exactos construidos por ChartFields: base y base + sufijo del catálogo.
+      70 |  const label=t('charts.fields.destination',{zone:destination}),recommended=label+' '+t('charts.fields.recommended')
+        at assign (<checkout>/tests/e2e/chart-simple-fields.spec.ts:67:16)
+        at <checkout>/tests/e2e/chart-simple-fields.spec.ts:177:8
+
+    Error Context: ../sim2c-campos-simples-evidence/green2-results/chart-simple-fields-SIM-2c-0be8d-ricos-sin-activar-consultas-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/green2-results/chart-simple-fields-SIM-2c-0be8d-ricos-sin-activar-consultas-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/green2-results/chart-simple-fields-SIM-2c-0be8d-ricos-sin-activar-consultas-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    [csv] › tests/e2e/chart-simple-fields.spec.ts:126:1 › SIM-2c: Intro y Espacio añaden a la zona recomendada y anuncian sin abrir destinos 
+    [csv] › tests/e2e/chart-simple-fields.spec.ts:136:1 › SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular 
+    [csv] › tests/e2e/chart-simple-fields.spec.ts:150:1 › SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables 
+    [csv] › tests/e2e/chart-simple-fields.spec.ts:174:1 › SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas 
+  2 passed (1.9m)
+(node:14541) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14643) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14722) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14755) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

@@ -1,0 +1,305 @@
+
+Running 1 test using 1 worker
+
+(node:23890) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/chart-simple-fields.spec.ts:155:1 › SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables (4.9s)
+
+  1 passed (5.3s)
+{
+  "config": {
+    "argv": [
+      "<home>/.local/share/mise/installs/node/24.22.1/bin/node",
+      "<checkout>/node_modules/@playwright/test/cli.js",
+      "test",
+      "tests/e2e/chart-simple-fields.spec.ts",
+      "--project=csv",
+      "--grep",
+      "Más acciones sigue",
+      "--workers=1",
+      "--retries=0",
+      "--reporter=list,json",
+      "--output=../sim2c-campos-simples-evidence/menu-focused-results"
+    ],
+    "configFile": "<checkout>/playwright.config.ts",
+    "rootDir": "<checkout>/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "<checkout>-evidence/menu-focused-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "shell",
+        "name": "shell",
+        "testDir": "<checkout>/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/menu-alignment.spec.ts",
+          "**/app.spec.ts",
+          "**/icons.spec.ts",
+          "**/ui.spec.ts",
+          "**/ui-u0.spec.ts",
+          "**/i18n.spec.ts",
+          "**/commands.spec.ts",
+          "**/application-close.spec.ts",
+          "**/updates.spec.ts",
+          "**/bootstrap-documents.spec.ts",
+          "**/project.spec.ts",
+          "**/project-source.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "<checkout>-evidence/menu-focused-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "md",
+        "name": "md",
+        "testDir": "<checkout>/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/markdown-render.spec.ts",
+          "**/markdown-toolbar.spec.ts",
+          "**/markdown-editing.spec.ts",
+          "**/editor-status.spec.ts",
+          "**/markdown-selection.spec.ts",
+          "**/markdown-editing-performance.spec.ts",
+          "**/mermaid-errors.spec.ts",
+          "**/mermaid-export-theme.spec.ts",
+          "**/mermaid-fit.spec.ts",
+          "**/mermaid-diagnostics.spec.ts",
+          "**/mermaid-expanded.spec.ts",
+          "**/missing-resources.spec.ts",
+          "**/preview-edit.spec.ts",
+          "**/preview-progressive.spec.ts",
+          "**/text-stats.spec.ts",
+          "**/text-encoding.spec.ts",
+          "**/markdown-paste.spec.ts",
+          "**/markdown-date.spec.ts",
+          "**/markdown-tasks.spec.ts",
+          "**/markdown-sidebar.spec.ts",
+          "**/outline.spec.ts",
+          "**/markdown-tags.spec.ts",
+          "**/markdown-assets.spec.ts",
+          "**/academic-report.spec.ts",
+          "**/academic-citations.spec.ts",
+          "**/academic-word.spec.ts",
+          "**/pandoc-export.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "<checkout>-evidence/menu-focused-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "csv",
+        "name": "csv",
+        "testDir": "<checkout>/tests/e2e",
+        "testIgnore": [
+          "**/menu-alignment.spec.ts",
+          "**/app.spec.ts",
+          "**/icons.spec.ts",
+          "**/ui.spec.ts",
+          "**/ui-u0.spec.ts",
+          "**/i18n.spec.ts",
+          "**/commands.spec.ts",
+          "**/application-close.spec.ts",
+          "**/updates.spec.ts",
+          "**/bootstrap-documents.spec.ts",
+          "**/project.spec.ts",
+          "**/project-source.spec.ts",
+          "**/markdown-render.spec.ts",
+          "**/markdown-toolbar.spec.ts",
+          "**/markdown-editing.spec.ts",
+          "**/editor-status.spec.ts",
+          "**/markdown-selection.spec.ts",
+          "**/markdown-editing-performance.spec.ts",
+          "**/mermaid-errors.spec.ts",
+          "**/mermaid-export-theme.spec.ts",
+          "**/mermaid-fit.spec.ts",
+          "**/mermaid-diagnostics.spec.ts",
+          "**/mermaid-expanded.spec.ts",
+          "**/missing-resources.spec.ts",
+          "**/preview-edit.spec.ts",
+          "**/preview-progressive.spec.ts",
+          "**/text-stats.spec.ts",
+          "**/text-encoding.spec.ts",
+          "**/markdown-paste.spec.ts",
+          "**/markdown-date.spec.ts",
+          "**/markdown-tasks.spec.ts",
+          "**/markdown-sidebar.spec.ts",
+          "**/outline.spec.ts",
+          "**/markdown-tags.spec.ts",
+          "**/markdown-assets.spec.ts",
+          "**/academic-report.spec.ts",
+          "**/academic-citations.spec.ts",
+          "**/academic-word.spec.ts",
+          "**/pandoc-export.spec.ts"
+        ],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "<checkout>-evidence/menu-focused-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "csv",
+        "testDir": "<checkout>/tests/e2e",
+        "snapshotDir": "<checkout>/tests/e2e",
+        "testIgnore": [
+          "**/menu-alignment.spec.ts",
+          "**/app.spec.ts",
+          "**/icons.spec.ts",
+          "**/ui.spec.ts",
+          "**/ui-u0.spec.ts",
+          "**/i18n.spec.ts",
+          "**/commands.spec.ts",
+          "**/application-close.spec.ts",
+          "**/updates.spec.ts",
+          "**/bootstrap-documents.spec.ts",
+          "**/project.spec.ts",
+          "**/project-source.spec.ts",
+          "**/markdown-render.spec.ts",
+          "**/markdown-toolbar.spec.ts",
+          "**/markdown-editing.spec.ts",
+          "**/editor-status.spec.ts",
+          "**/markdown-selection.spec.ts",
+          "**/markdown-editing-performance.spec.ts",
+          "**/mermaid-errors.spec.ts",
+          "**/mermaid-export-theme.spec.ts",
+          "**/mermaid-fit.spec.ts",
+          "**/mermaid-diagnostics.spec.ts",
+          "**/mermaid-expanded.spec.ts",
+          "**/missing-resources.spec.ts",
+          "**/preview-edit.spec.ts",
+          "**/preview-progressive.spec.ts",
+          "**/text-stats.spec.ts",
+          "**/text-encoding.spec.ts",
+          "**/markdown-paste.spec.ts",
+          "**/markdown-date.spec.ts",
+          "**/markdown-tasks.spec.ts",
+          "**/markdown-sidebar.spec.ts",
+          "**/outline.spec.ts",
+          "**/markdown-tags.spec.ts",
+          "**/markdown-assets.spec.ts",
+          "**/academic-report.spec.ts",
+          "**/academic-citations.spec.ts",
+          "**/academic-word.spec.ts",
+          "**/pandoc-export.spec.ts"
+        ],
+        "testMatch": "**/*.spec.ts",
+        "timeout": 90000,
+        "use": {
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "csv"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "chart-simple-fields.spec.ts",
+      "file": "chart-simple-fields.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "SIM-2c: Más acciones sigue hover y foco y el menú de casa conserva destinos desactivados enfocables",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "csv",
+              "projectName": "csv",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4888,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-20T07:51:16.930Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "83c096dc0668c0542b5a-6b4891e89a6a2a89aedd",
+          "file": "chart-simple-fields.spec.ts",
+          "line": 155,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-20T07:51:16.587Z",
+    "duration": 5259.309,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

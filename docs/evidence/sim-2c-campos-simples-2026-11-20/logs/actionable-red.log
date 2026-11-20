@@ -1,0 +1,94 @@
+
+Running 2 tests using 1 worker
+
+SIM-2c assign trigger diagnostic {"stage":"before native click","field":"Ciudad","destination":"Filas","panelMenus":0,"pageMenus":0,"pageMenuDOM":0,"trigger":{"outerHTML":"<button aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"Añadir a… Ciudad\" class=\"svelte-hqvgw9\">Añadir a…</button>","ariaExpanded":"false","disabled":false},"entry":"<div class=\"field-entry svelte-hqvgw9\" role=\"listitem\" tabindex=\"0\" title=\"Ciudad\"><span class=\"field-name svelte-hqvgw9\" title=\"Ciudad\"><!---->Ciudad</span> <span class=\"field-badge svelte-hqvgw9\" title=\"Categoría\">Categoría</span> <button aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"Añadir a… Ciudad\" class=\"svelte-hqvgw9\">Añadir a…</button></div>","focused":{"tag":"H2","id":"","role":null,"outerHTML":"<h2 tabindex=\"-1\" class=\"svelte-iqt1nb\">Datos de encuesta.csv · 240 filas · El archivo no se modifica</h2>","truncated":false}}
+SIM-2c assign trigger diagnostic {"stage":"after native click, before menu expectation","field":"Ciudad","destination":"Filas","panelMenus":1,"pageMenus":1,"pageMenuDOM":1,"trigger":{"outerHTML":"<button aria-haspopup=\"menu\" aria-expanded=\"true\" aria-label=\"Añadir a… Ciudad\" class=\"svelte-hqvgw9\">Añadir a…</button>","ariaExpanded":"true","disabled":false},"entry":"<div class=\"field-entry svelte-hqvgw9\" role=\"listitem\" tabindex=\"0\" title=\"Ciudad\"><span class=\"field-name svelte-hqvgw9\" title=\"Ciudad\"><!---->Ciudad</span> <span class=\"field-badge svelte-hqvgw9\" title=\"Categoría\">Categoría</span> <button aria-haspopup=\"menu\" aria-expanded=\"true\" aria-label=\"Añadir a… Ciudad\" class=\"svelte-hqvgw9\">Añadir a…</button></div>","focused":{"tag":"BUTTON","id":"","role":"menuitem","outerHTML":"<button role=\"menuitem\" tabindex=\"-1\" class=\"svelte-hqvgw9\">Añadir a Filas (recomendado)<!----></button>","truncated":false}}
+SIM-2c assign menu diagnostic {"field":"Ciudad","destination":"Filas","ariaSnapshot":"- menu \"Añadir a…\":\n  - menuitem \"Añadir a Filas (recomendado)\"\n  - menuitem \"Añadir a Columnas\"\n  - menuitem \"Añadir a Valores\"\n  - menuitem \"Añadir a Filtros\"","allTextContents":["Añadir a Filas (recomendado)Añadir a ColumnasAñadir a ValoresAñadir a Filtros"],"menuitemTexts":["Añadir a Filas (recomendado)","Añadir a Columnas","Añadir a Valores","Añadir a Filtros"],"buttons":[{"tag":"BUTTON","role":"menuitem","text":"Añadir a Filas (recomendado)","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null},{"tag":"BUTTON","role":"menuitem","text":"Añadir a Columnas","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null},{"tag":"BUTTON","role":"menuitem","text":"Añadir a Valores","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null},{"tag":"BUTTON","role":"menuitem","text":"Añadir a Filtros","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null}]}
+SIM-2c assign trigger diagnostic {"stage":"before native click","field":"Ingreso","destination":"Valores","panelMenus":0,"pageMenus":0,"pageMenuDOM":0,"trigger":{"outerHTML":"<button aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"Añadir a… Ingreso\" class=\"svelte-hqvgw9\">Añadir a…</button>","ariaExpanded":"false","disabled":false},"entry":"<div class=\"field-entry svelte-hqvgw9\" role=\"listitem\" tabindex=\"0\" title=\"Ingreso\"><span class=\"field-name svelte-hqvgw9\" title=\"Ingreso\"><!---->Ingreso</span> <span class=\"field-badge svelte-hqvgw9\" title=\"Número\">Número</span> <button aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"Añadir a… Ingreso\" class=\"svelte-hqvgw9\">Añadir a…</button></div>","focused":{"tag":"BUTTON","id":"","role":null,"outerHTML":"<button aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"Mover a… Ciudad\" class=\"svelte-hqvgw9\">Mover a…</button>","truncated":false}}
+SIM-2c assign trigger diagnostic {"stage":"after native click, before menu expectation","field":"Ingreso","destination":"Valores","panelMenus":1,"pageMenus":1,"pageMenuDOM":1,"trigger":{"outerHTML":"<button aria-haspopup=\"menu\" aria-expanded=\"true\" aria-label=\"Añadir a… Ingreso\" class=\"svelte-hqvgw9\">Añadir a…</button>","ariaExpanded":"true","disabled":false},"entry":"<div class=\"field-entry svelte-hqvgw9\" role=\"listitem\" tabindex=\"0\" title=\"Ingreso\"><span class=\"field-name svelte-hqvgw9\" title=\"Ingreso\"><!---->Ingreso</span> <span class=\"field-badge svelte-hqvgw9\" title=\"Número\">Número</span> <button aria-haspopup=\"menu\" aria-expanded=\"true\" aria-label=\"Añadir a… Ingreso\" class=\"svelte-hqvgw9\">Añadir a…</button></div>","focused":{"tag":"BUTTON","id":"","role":"menuitem","outerHTML":"<button role=\"menuitem\" tabindex=\"-1\" class=\"svelte-hqvgw9\">Añadir a Valores (recomendado)<!----></button>","truncated":false}}
+SIM-2c assign menu diagnostic {"field":"Ingreso","destination":"Valores","ariaSnapshot":"- menu \"Añadir a…\":\n  - menuitem \"Añadir a Valores (recomendado)\"\n  - menuitem \"Añadir a Filas\"\n  - menuitem \"Añadir a Columnas\"\n  - menuitem \"Añadir a Filtros\"","allTextContents":["Añadir a Valores (recomendado)Añadir a FilasAñadir a ColumnasAñadir a Filtros"],"menuitemTexts":["Añadir a Valores (recomendado)","Añadir a Filas","Añadir a Columnas","Añadir a Filtros"],"buttons":[{"tag":"BUTTON","role":"menuitem","text":"Añadir a Valores (recomendado)","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null},{"tag":"BUTTON","role":"menuitem","text":"Añadir a Filas","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null},{"tag":"BUTTON","role":"menuitem","text":"Añadir a Columnas","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null},{"tag":"BUTTON","role":"menuitem","text":"Añadir a Filtros","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null}]}
+  ✘  1 [csv] › tests/e2e/chart-simple-fields.spec.ts:140:1 › SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular (18.6s)
+SIM-2c assign trigger diagnostic {"stage":"before native click","field":"Ciudad","destination":"Filas","panelMenus":0,"pageMenus":0,"pageMenuDOM":0,"trigger":{"outerHTML":"<button aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"Añadir a… Ciudad\" class=\"svelte-hqvgw9\">Añadir a…</button>","ariaExpanded":"false","disabled":false},"entry":"<div class=\"field-entry svelte-hqvgw9\" role=\"listitem\" tabindex=\"0\" title=\"Ciudad\"><span class=\"field-name svelte-hqvgw9\" title=\"Ciudad\"><!---->Ciudad</span> <span class=\"field-badge svelte-hqvgw9\" title=\"Categoría\">Categoría</span> <button aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"Añadir a… Ciudad\" class=\"svelte-hqvgw9\">Añadir a…</button></div>","focused":{"tag":"H2","id":"","role":null,"outerHTML":"<h2 tabindex=\"-1\" class=\"svelte-iqt1nb\">Datos de encuesta.csv · 240 filas · El archivo no se modifica</h2>","truncated":false}}
+SIM-2c assign trigger diagnostic {"stage":"after native click, before menu expectation","field":"Ciudad","destination":"Filas","panelMenus":1,"pageMenus":1,"pageMenuDOM":1,"trigger":{"outerHTML":"<button aria-haspopup=\"menu\" aria-expanded=\"true\" aria-label=\"Añadir a… Ciudad\" class=\"svelte-hqvgw9\">Añadir a…</button>","ariaExpanded":"true","disabled":false},"entry":"<div class=\"field-entry svelte-hqvgw9\" role=\"listitem\" tabindex=\"0\" title=\"Ciudad\"><span class=\"field-name svelte-hqvgw9\" title=\"Ciudad\"><!---->Ciudad</span> <span class=\"field-badge svelte-hqvgw9\" title=\"Categoría\">Categoría</span> <button aria-haspopup=\"menu\" aria-expanded=\"true\" aria-label=\"Añadir a… Ciudad\" class=\"svelte-hqvgw9\">Añadir a…</button></div>","focused":{"tag":"BUTTON","id":"","role":"menuitem","outerHTML":"<button role=\"menuitem\" tabindex=\"-1\" class=\"svelte-hqvgw9\">Añadir a Filas (recomendado)<!----></button>","truncated":false}}
+SIM-2c assign menu diagnostic {"field":"Ciudad","destination":"Filas","ariaSnapshot":"- menu \"Añadir a…\":\n  - menuitem \"Añadir a Filas (recomendado)\"\n  - menuitem \"Añadir a Columnas\"\n  - menuitem \"Añadir a Valores\"\n  - menuitem \"Añadir a Filtros\"","allTextContents":["Añadir a Filas (recomendado)Añadir a ColumnasAñadir a ValoresAñadir a Filtros"],"menuitemTexts":["Añadir a Filas (recomendado)","Añadir a Columnas","Añadir a Valores","Añadir a Filtros"],"buttons":[{"tag":"BUTTON","role":"menuitem","text":"Añadir a Filas (recomendado)","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null},{"tag":"BUTTON","role":"menuitem","text":"Añadir a Columnas","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null},{"tag":"BUTTON","role":"menuitem","text":"Añadir a Valores","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null},{"tag":"BUTTON","role":"menuitem","text":"Añadir a Filtros","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null}]}
+SIM-2c assign trigger diagnostic {"stage":"before native click","field":"Edad","destination":"Valores","panelMenus":0,"pageMenus":0,"pageMenuDOM":0,"trigger":{"outerHTML":"<button aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"Añadir a… Edad\" class=\"svelte-hqvgw9\">Añadir a…</button>","ariaExpanded":"false","disabled":false},"entry":"<div class=\"field-entry svelte-hqvgw9\" role=\"listitem\" tabindex=\"0\" title=\"Edad\"><span class=\"field-name svelte-hqvgw9\" title=\"Edad\"><!---->Edad</span> <span class=\"field-badge svelte-hqvgw9\" title=\"Número\">Número</span> <button aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"Añadir a… Edad\" class=\"svelte-hqvgw9\">Añadir a…</button></div>","focused":{"tag":"BUTTON","id":"","role":null,"outerHTML":"<button aria-haspopup=\"menu\" aria-expanded=\"false\" aria-label=\"Mover a… Ciudad\" class=\"svelte-hqvgw9\">Mover a…</button>","truncated":false}}
+SIM-2c assign trigger diagnostic {"stage":"after native click, before menu expectation","field":"Edad","destination":"Valores","panelMenus":1,"pageMenus":1,"pageMenuDOM":1,"trigger":{"outerHTML":"<button aria-haspopup=\"menu\" aria-expanded=\"true\" aria-label=\"Añadir a… Edad\" class=\"svelte-hqvgw9\">Añadir a…</button>","ariaExpanded":"true","disabled":false},"entry":"<div class=\"field-entry svelte-hqvgw9\" role=\"listitem\" tabindex=\"0\" title=\"Edad\"><span class=\"field-name svelte-hqvgw9\" title=\"Edad\"><!---->Edad</span> <span class=\"field-badge svelte-hqvgw9\" title=\"Número\">Número</span> <button aria-haspopup=\"menu\" aria-expanded=\"true\" aria-label=\"Añadir a… Edad\" class=\"svelte-hqvgw9\">Añadir a…</button></div>","focused":{"tag":"BUTTON","id":"","role":"menuitem","outerHTML":"<button role=\"menuitem\" tabindex=\"-1\" class=\"svelte-hqvgw9\">Añadir a Valores (recomendado)<!----></button>","truncated":false}}
+SIM-2c assign menu diagnostic {"field":"Edad","destination":"Valores","ariaSnapshot":"- menu \"Añadir a…\":\n  - menuitem \"Añadir a Valores (recomendado)\"\n  - menuitem \"Añadir a Filas\"\n  - menuitem \"Añadir a Columnas\"\n  - menuitem \"Añadir a Filtros\"","allTextContents":["Añadir a Valores (recomendado)Añadir a FilasAñadir a ColumnasAñadir a Filtros"],"menuitemTexts":["Añadir a Valores (recomendado)","Añadir a Filas","Añadir a Columnas","Añadir a Filtros"],"buttons":[{"tag":"BUTTON","role":"menuitem","text":"Añadir a Valores (recomendado)","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null},{"tag":"BUTTON","role":"menuitem","text":"Añadir a Filas","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null},{"tag":"BUTTON","role":"menuitem","text":"Añadir a Columnas","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null},{"tag":"BUTTON","role":"menuitem","text":"Añadir a Filtros","ariaLabel":null,"ariaDisabled":null,"disabled":false,"tabindex":"-1","title":null,"ariaDescribedBy":null}]}
+  ✘  2 [csv] › tests/e2e/chart-simple-fields.spec.ts:178:1 › SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas (18.1s)
+
+
+  1) [csv] › tests/e2e/chart-simple-fields.spec.ts:140:1 › SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('menu')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('menu') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('menu')
+
+
+      141 |  await meanCity();await barrier();const before=await calls(),table=await panel().locator('.pivot-result').innerText()
+      142 |  await page.clock.install()
+    > 143 |  await field('Ingreso').click();await expect(menu()).toBeVisible()
+          |                                                      ^
+      144 |  await expect(menu().getByRole('menuitem',{name:/^Mover a /}).first()).toBeVisible()
+      145 |  await expect(menu().getByRole('menuitem',{name:/^Quitar(?: Ingreso(?: de Valores)?)?$/})).toBeVisible()
+      146 |  await expect(zone('Valores').locator('.chip-name')).toHaveText('Ingreso')
+        at <checkout>/tests/e2e/chart-simple-fields.spec.ts:143:54
+
+    Error Context: ../sim2c-campos-simples-evidence/actionable-red-results/chart-simple-fields-SIM-2c-549f7--sin-eliminar-ni-recalcular-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/actionable-red-results/chart-simple-fields-SIM-2c-549f7--sin-eliminar-ni-recalcular-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/actionable-red-results/chart-simple-fields-SIM-2c-549f7--sin-eliminar-ni-recalcular-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/chart-simple-fields.spec.ts:178:1 › SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-types').getByRole('button', { name: /\bLíneas\b/ })
+    Expected: "true"
+    Received: ""
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAttribute" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-types').getByRole('button', { name: /\bLíneas\b/ }) with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-types').getByRole('button', { name: /\bLíneas\b/ })
+        34 × locator resolved to <button aria-pressed="false" class="svelte-1wo6u31">…</button>
+           - unexpected value "null"
+
+
+      195 |   if(entry.available)await expect(control).toBeEnabled()
+      196 |   else{
+    > 197 |    await expect(control).toHaveAttribute('aria-disabled','true');await expect(control).not.toHaveAttribute('disabled')
+          |                          ^
+      198 |    await expect(control).toHaveAttribute('title',entry.reason);await expect(control).toHaveAttribute('aria-describedby',/\S+/)
+      199 |    await expect(control).toHaveAccessibleDescription(entry.reason)
+      200 |   }
+        at <checkout>/tests/e2e/chart-simple-fields.spec.ts:197:26
+
+    Error Context: ../sim2c-campos-simples-evidence/actionable-red-results/chart-simple-fields-SIM-2c-0be8d-ricos-sin-activar-consultas-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/actionable-red-results/chart-simple-fields-SIM-2c-0be8d-ricos-sin-activar-consultas-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/actionable-red-results/chart-simple-fields-SIM-2c-0be8d-ricos-sin-activar-consultas-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/chart-simple-fields.spec.ts:140:1 › SIM-2c: activar un campo usado abre Mover y Quitar sin eliminar ni recalcular 
+    [csv] › tests/e2e/chart-simple-fields.spec.ts:178:1 › SIM-2c: Ciudad y Edad fijan seis tipos, Barras recomendado y bloqueos numéricos sin activar consultas 
+(node:7474) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7567) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

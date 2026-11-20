@@ -1,0 +1,94 @@
+# SIM-2c · Campos más simples · Evidencia provisional
+
+Las filas reutilizan la recomendación y las zonas actuales mediante clic, Intro o Espacio. Un campo usado abre Mover/Quitar; Más acciones usa ContextMenu, motivos enfocables y retorno de foco. Los tipos aparecen como iconos accesibles, la lista conserva un tabstop itinerante y una pista precede las zonas. La disponibilidad por perfil afecta solo a los botones de tipo; Generar y los presets/manuales mantienen su pipeline anterior. [Alcance y siete ADR](../stories/sim-2c-alcance-adr-0021.md) · [Manifest por fases](sim-2c-campos-simples-2026-11-20/proof.json).
+
+**Estado provisional:** la tanda de 147 terminó con **138 aprobadas y nueve fallos**, sin omisiones, flaky ni reintentos. Las siete nuevas C pasaron dentro de esa tanda; el conjunto completo no está verde. El cierre de 17 tuvo 16 aprobadas y una regresión real de geometría. Tras conservar sus intentos fallidos, el caso enfocado de seis campos y cuatro zonas pasó sobre deb9797. Las 48 capturas corregidas están completas; CI del head final sigue pendiente. No se acredita `main`, otras plataformas, paquete, instalador o publicación.
+
+## Rojo y siete casos por fases
+
+Se conserva el rojo concreto que autorizó implementar: C4 alcanzó el promedio y no abrió el menú al activar el campo usado; C6 alcanzó Ciudad+Edad y Líneas no tenía el estado no disponible esperado. Ambos fallaron sin reintentos: 37,473 s Playwright / 37,846 s de proceso externo. [Log actionable-red](sim-2c-campos-simples-2026-11-20/logs/actionable-red.log). El [log inicial](sim-2c-campos-simples-2026-11-20/logs/red-red.log) mantiene los intentos anteriores; los fallos de preparación no se convierten en evidencia de función ausente.
+
+La primera tanda del candidato de seis casos, sobre 0a53b16, tuvo **2 aprobadas y 4 fallidas**, 115,903 s Playwright / 116,189 s de proceso externo. Lista/iconos y datos/exportación pasaron; Intro falló y tres recorridos quedaron en acceso a Más acciones. Se conserva [green2, incluido su resultado fallido](sim-2c-campos-simples-2026-11-20/logs/green2.log). Una observación aislada de Intro pasó después —3,269 s Playwright / 3,553 s externos— con destino DIV y guarda desactivada. Esa repetición [no demuestra la causa del fallo anterior](sim-2c-campos-simples-2026-11-20/logs/keyboard-observation.log).
+
+La séptima prueba permanente retiene únicamente la entrega de una primera página **ya calculada por el motor real**, usando `analysis-auto-info.csv`, cuatro filas y seis columnas. Antes de liberarla, el alcance sigue desconocido y todavía no hay perfiles; después se exige la interpretación numérica existente y la activación correcta. Su rojo público sobre 0a53b16 llegó al oráculo: Más acciones anunciaba `aria-disabled=false` cuando debía esperar. Duró 1,648 s Playwright / 1,950 s externos, sin reintentos. [Rojo C7](sim-2c-campos-simples-2026-11-20/logs/readiness-public-red.log).
+
+La guarda añade el alcance desconocido a la indisponibilidad ya existente, conserva las filas enfocables y publica `aria-busy` en la lista. La ausencia de «Leyendo los tipos de campo…» por sí sola no prueba que haya llegado la primera página. Se reutilizan metadata y perfiles; no se fabrica una respuesta ni se añade un detector o barrido.
+
+El cierre inicial de los siete fue **por unión de 6+1**, no una tanda de siete verdes: el reporte de guarda d026 contiene seis aprobadas y un fallo del localizador de Más acciones oculto, en 51,245 s Playwright. El quinto caso pasó aislado en 2dbe, 5,259 s Playwright, después de usar `includeHidden` para inspeccionar el control oculto y el driver de tecla Menu. Se conservan los oráculos de teclado, foco, motivos, datos y ausencia de recálculo. [Tanda de guarda, con su fallo](sim-2c-campos-simples-2026-11-20/logs/guard-green.log) · [Quinto enfocado](sim-2c-campos-simples-2026-11-20/logs/menu-focused.log).
+
+## Integración y 147 consumidores
+
+La preparación de consumidores sobre 2039f23 registró:
+
+| Comprobación | Resultado real |
+| --- | --- |
+| Check | 0 errores/0 avisos; 9,027 s externos |
+| Unitarias completas | 3039 aprobadas + 2 omisiones existentes; 170 archivos aprobados + 1 omitido; 17,44 s del log / 17,740 s externos |
+| Build | correcto; 1,848 s externos |
+| GUI seleccionada | 138 aprobadas / 9 fallidas de 147; 0 omitidas/flaky, sin reintentos; 729,648 s Playwright / 729,932 s externos |
+
+[Check](sim-2c-campos-simples-2026-11-20/logs/consumer-check.log) · [Unitarias](sim-2c-campos-simples-2026-11-20/logs/consumer-unit.log) · [Build](sim-2c-campos-simples-2026-11-20/logs/consumer-build.log) · [GUI completa de esta selección, incluidos los nueve fallos](sim-2c-campos-simples-2026-11-20/logs/consumer-gui.log).
+
+Dentro de esa tanda pasaron los seis casos de `chart-simple-fields` y el de `chart-field-readiness`. Se conservan la fixture de 240 filas/siete columnas, ID grande como texto, medias independientes, JSON/CSV/contexto y hash; la prueba de primera página usa su fixture distinta de cuatro filas/seis columnas. No se borran casos ni datos para obtener ese resultado.
+
+Dos fallos de foco —`chart-fields.spec.ts:106` y `charts.spec.ts:293`— corresponden a la coordinación de `choose` y `closeMenu`: el commit 77e8b6b espera el cierre/restauración de foco antes de despachar la elección. Las adaptaciones de consumidores están en 46f579e y fb29308. El cierre posterior sobre 9732f15 ejecutó 17 casos —nueve fallos anteriores, siete nuevas C y un progreso SQL—: **16 aprobadas y una fallida**, 77,130 s Playwright / 77,405 s externos. Los dos fallos de foco pasaron; `chart-review:55` mostró solo cinco de los seis campos exigidos. Ese fallo de geometría es de producto, no un selector obsoleto. [Cierre de 17](sim-2c-campos-simples-2026-11-20/logs/closure-gui.log).
+
+No se transfiere la ejecución de unitarias o de 147 al candidato posterior. Se conservan los informes, originales, consultas, precisión, cancelación, guardado, límites y errores del motor. La elegibilidad aprobada para botones no se extiende al pipeline manual/preset ni a Generar. Tampoco se atribuye a esta guarda la causa de fallos históricos de B que no tengan reproducción propia.
+
+## Geometría: seis campos y cuatro zonas sin rebajar el criterio
+
+| Fuente y ajuste | Resultado real |
+| --- | --- |
+| 9732f15 | El cierre de 17 detectó cinco campos visibles donde se exigían seis. |
+| 410e9c8, quitar el padding vertical de 2 px añadido por C | Seis campos pasó; la tanda compacta terminó **9 aprobadas / 1 fallida**, 50,436 s Playwright / 50,709 s externos. Filtros quedó recortado 10,296875 px, con ratio 0,768. |
+| f9639b1, lista de 256→244 px | Filtros pasó; volvió a fallar el criterio de seis campos, al verse cinco. Un caso, 5,196 s Playwright, sin reintentos. |
+| 37d4a01, observación pasiva | Añade `fields-before.json` sin cambiar aserciones. El sexto campo necesitaba 249,5 px desde el inicio de la lista; Filtros terminaba en 679,296875 frente al límite 681. |
+| deb9797, lista a 250 px y margen inferior de la pista a 0 | Reserva el mismo espacio total que 244+6. El caso de seis campos y cuatro zonas pasó **1/1**, 5,532 s Playwright / 5,809 s externos; build 2,276 s externos. |
+
+[Compacta con recorte real](sim-2c-campos-simples-2026-11-20/logs/compact-gui.log) · [Lista 244 con fallo de seis campos](sim-2c-campos-simples-2026-11-20/logs/fit-gui.log) · [Medición anterior](sim-2c-campos-simples-2026-11-20/logs/geometry-before_fit.json) · [Verde del ajuste medido](sim-2c-campos-simples-2026-11-20/logs/fit2-gui.log) · [Medición final](sim-2c-campos-simples-2026-11-20/logs/geometry-after_fit.json).
+
+Se conservan el requisito de seis campos, las cuatro zonas, sus criterios de viewport y todos los datos. El verde enfocado final no se convierte en una tanda final de diez, 17 o 147 aprobadas.
+
+## Capturas completas por fases
+
+Hay **48 PNG**, 24 antes B00074b4 y 24 después Cdeb9797: lista, resultado y menú de Ingreso usado × es/en-XA × claro/oscuro × 1440×900/1280×720. Se copiaron byte por byte; el manifest comprueba SHA y dimensiones de cada imagen y conserva los cuatro manifests de idioma sanitizados. Ambas fases usan exactamente el mismo CSV de 50 filas/seis columnas, SHA `1ca1f0084d88b564e5922040333ba25ed8def9fb590d221bb6ce3ea98344c574`, con cinco promedios independientes. JSON, filas y SHA del CSV exportado coinciden antes/después por idioma. Esta fixture de capturas no sustituye los 240×7 de los seis casos ni los 4×6 de C7.
+
+Antes pasó **2/2**, 12,638 s de proceso externo. Después pasó **2/2**; su log muestra **12,1 s Playwright redondeados**, sin reporte JSON ni tiempo externo del que se pueda dar otra cifra. [Antes corregido](sim-2c-campos-simples-2026-11-20/logs/capture-corrected-before.log) · [Después corregido](sim-2c-campos-simples-2026-11-20/logs/capture-focus-corrected-after.log). La referencia final y los hashes se proporcionaron al ejecutar; el probe comprueba fuentes/build y conserva que la referencia fue suministrada por raíz, no verificada mediante Git por el probe.
+
+| Idioma · tema · ventana | Antes B00074b4 | Después Cdeb9797 |
+| --- | --- | --- |
+| es · claro · 1440×900 | [lista](sim-2c-campos-simples-2026-11-20/before/before-es-light-1440x900-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/before/before-es-light-1440x900-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/before/before-es-light-1440x900-menu-usado.png) | [lista](sim-2c-campos-simples-2026-11-20/after/after-es-light-1440x900-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/after/after-es-light-1440x900-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/after/after-es-light-1440x900-menu-usado.png) |
+| es · claro · 1280×720 | [lista](sim-2c-campos-simples-2026-11-20/before/before-es-light-1280x720-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/before/before-es-light-1280x720-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/before/before-es-light-1280x720-menu-usado.png) | [lista](sim-2c-campos-simples-2026-11-20/after/after-es-light-1280x720-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/after/after-es-light-1280x720-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/after/after-es-light-1280x720-menu-usado.png) |
+| es · oscuro · 1440×900 | [lista](sim-2c-campos-simples-2026-11-20/before/before-es-dark-1440x900-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/before/before-es-dark-1440x900-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/before/before-es-dark-1440x900-menu-usado.png) | [lista](sim-2c-campos-simples-2026-11-20/after/after-es-dark-1440x900-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/after/after-es-dark-1440x900-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/after/after-es-dark-1440x900-menu-usado.png) |
+| es · oscuro · 1280×720 | [lista](sim-2c-campos-simples-2026-11-20/before/before-es-dark-1280x720-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/before/before-es-dark-1280x720-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/before/before-es-dark-1280x720-menu-usado.png) | [lista](sim-2c-campos-simples-2026-11-20/after/after-es-dark-1280x720-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/after/after-es-dark-1280x720-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/after/after-es-dark-1280x720-menu-usado.png) |
+| en-XA · claro · 1440×900 | [lista](sim-2c-campos-simples-2026-11-20/before/before-en-XA-light-1440x900-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/before/before-en-XA-light-1440x900-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/before/before-en-XA-light-1440x900-menu-usado.png) | [lista](sim-2c-campos-simples-2026-11-20/after/after-en-XA-light-1440x900-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/after/after-en-XA-light-1440x900-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/after/after-en-XA-light-1440x900-menu-usado.png) |
+| en-XA · claro · 1280×720 | [lista](sim-2c-campos-simples-2026-11-20/before/before-en-XA-light-1280x720-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/before/before-en-XA-light-1280x720-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/before/before-en-XA-light-1280x720-menu-usado.png) | [lista](sim-2c-campos-simples-2026-11-20/after/after-en-XA-light-1280x720-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/after/after-en-XA-light-1280x720-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/after/after-en-XA-light-1280x720-menu-usado.png) |
+| en-XA · oscuro · 1440×900 | [lista](sim-2c-campos-simples-2026-11-20/before/before-en-XA-dark-1440x900-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/before/before-en-XA-dark-1440x900-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/before/before-en-XA-dark-1440x900-menu-usado.png) | [lista](sim-2c-campos-simples-2026-11-20/after/after-en-XA-dark-1440x900-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/after/after-en-XA-dark-1440x900-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/after/after-en-XA-dark-1440x900-menu-usado.png) |
+| en-XA · oscuro · 1280×720 | [lista](sim-2c-campos-simples-2026-11-20/before/before-en-XA-dark-1280x720-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/before/before-en-XA-dark-1280x720-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/before/before-en-XA-dark-1280x720-menu-usado.png) | [lista](sim-2c-campos-simples-2026-11-20/after/after-en-XA-dark-1280x720-lista.png) · [resultado](sim-2c-campos-simples-2026-11-20/after/after-en-XA-dark-1280x720-resultado.png) · [menú](sim-2c-campos-simples-2026-11-20/after/after-en-XA-dark-1280x720-menu-usado.png) |
+
+Se conservan tres fallos de preparación específicos, separados de los fallos de producto:
+
+- El primer antes falló dos veces por el contador privado: exigía 24 PNG por idioma y había 12, después de comprobar datos, exportaciones y hashes. Se cambió solo a 12; 12×2 idiomas son 24 por fase. [Log conservado, 13,117 s externos](sim-2c-campos-simples-2026-11-20/logs/capture-final-before.log).
+- El primer después encontró un manifest esperado con el hash anterior de ChartFields frente a la fuente deb congelada. La guarda detuvo ambos casos **antes de iniciar Electron**, en 1,212 s externos. No está demostrada la causa del contenido antiguo. Raíz creó un manifest único verificado para deb. [Guarda de fuente](sim-2c-campos-simples-2026-11-20/logs/capture-corrected-after.log).
+- El siguiente después abrió desde Más acciones y el probe esperaba equivocadamente foco en la fila. Se conservó la aserción de foco sobre el invocador real y se usó el driver `page.keyboard` para Escape; no cambió C. [Log de ese oráculo privado](sim-2c-campos-simples-2026-11-20/logs/capture-frozen-after.log). El antes exitoso ya esperaba ese trigger; se conserva sin repetirlo aunque las dos líneas privadas posteriores cambien.
+
+El resultado final local se documenta por fases: 147 con 138/9, cierre de 17 con 16/1, compacta de diez con 9/1 y ajuste final enfocado 1/1. Los nueve fallos quedan resueltos mediante sus comprobaciones posteriores y el reparto medido de espacio; no se inventa una tanda final de 147 o diez verdes. CI del head final y las comprobaciones por plataforma/paquete siguen pendientes.
+
+Los logs públicos sustituyen rutas privadas y códigos de color, manteniendo fallos, cifras y avisos. El manifest distingue los SHA originales y sanitizados. No hay datos, perfiles o IPC inventados, nuevos plazos/retries, cambios al CSV o motor, ni publicación de una versión de la app.
+
+## Corrección de retorno del foco tras la primera CI
+
+El [head 6c1d445](https://github.com/ruzer/freyalab/actions/runs/44706661610) falló en Ubuntu y macOS: los dos casos anteriores de teclado/ventana estrecha sí añadían Canal y Fecha y obtenían el resultado esperado, pero «Más acciones» quedaba sin foco en ambos intentos. La prueba de navegación horizontal de Información en macOS también necesitó un reintento; esa observación es independiente y su causa no está demostrada.
+
+Se reprodujo la pérdida de foco localmente, sin sleeps, mocks ni cambios de plazos: con Canal todavía sin usar, se enfoca su fila y su botón Más, se abre el menú real y se mueve el puntero fuera. La prueba comprueba primero `visibility:hidden` real del invocador. Escape y Enter fallaron después en el mismo `toBeFocused()` que la CI. El botón se intenta enfocar tras quitar el menú, cuando ya no tiene hover/focus-within y aún no es un campo usado. Restaurar primero la fila hace visible su botón; después se enfoca el invocador original, conservado antes del `tick`.
+
+| Fase local | Resultado | Tiempo de proceso |
+| --- | --- | --- |
+| Producto 6c1d445, dos regresiones nuevas | Escape y Enter fallan en el foco; 0 reintentos | 36,955 s |
+| Solo corregido el cierre del menú | Escape y Enter pasan; cancelar Filtros desde un campo no usado falla por el mismo invocador oculto; 0 reintentos | 24,566 s |
+| `937237afaf4a5001d3db372098965fa02d3d57e0`, archivo completo `chart-fields.spec.ts` | 15/15, 0 reintentos, 0 omisiones | 82,538 s |
+| Mismo commit, `chart-simple-fields.spec.ts` | 6/6, 0 reintentos, 0 omisiones; otra ejecución | 20,015 s |
+
+El retorno de Filtros aplica la misma restauración fila→invocador. Se mantienen los datos (total 7.200), las zonas, los bytes originales, la cancelación sin aplicar y todas las aserciones previas. Se añaden tres casos; no se borra ninguno. La corrección toca únicamente dos funciones de foco y los casos nuevos: no cambia SQL, perfiles, acciones, CSV, límites, esperas, reintentos ni CI.
+
+Tipos: 0 errores/0 avisos (8,895 s). Unitarias completas y build se ejecutaron en el mismo commit; sus resultados exactos y huellas de los logs permanecen en el [proof de foco](sim-2c-campos-simples-2026-11-20/focus-proof.json). Los logs/trazas nuevos se conservan privados; no se publican rutas locales ni perfiles. Una CI nueva del head documental publicado sigue pendiente; no se transfiere el resultado anterior ni se presenta el reintento AN-2 como corregido.

@@ -1,0 +1,68 @@
+
+Running 2 tests using 1 worker
+
+(node:33065) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › before: lista, resultado y menú usado [es] (6.0s)
+(node:33078) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › before: lista, resultado y menú usado [en-XA] (5.9s)
+
+
+  1) [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › before: lista, resultado y menú usado [es] 
+
+    Error: expect(received).toHaveLength(expected)
+
+    Expected length: 24
+    Received length: 12
+    Received array:  ["before-es-light-1440x900-lista.png", "before-es-dark-1440x900-lista.png", "before-es-light-1280x720-lista.png", "before-es-dark-1280x720-lista.png", "before-es-light-1440x900-resultado.png", "before-es-light-1440x900-menu-usado.png", "before-es-dark-1440x900-resultado.png", "before-es-dark-1440x900-menu-usado.png", "before-es-light-1280x720-resultado.png", "before-es-light-1280x720-menu-usado.png", …]
+
+      91 |   expect(parse(csv)).toEqual([json.columns.map((column:{index:number;label:string})=>`${column.index+1}. ${column.label}`),...means]);expect(context.csv.sha256).toBe(sha(csv))
+      92 |   expect(await readFile(path,'utf8')).toBe(data.content);expect(errors).toEqual([]);expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toMatchObject({dirty:false,revision:doc.revision,rowCount:50,headers:data.headers})
+    > 93 |   expect(await sources()).toEqual(sourceBefore);expect(await build()).toEqual(buildBefore);expect(Object.keys(screenshots)).toHaveLength(24)
+         |                                                                                                                             ^
+      94 |   const manifestPath=join(destination,language+'-captures.json');await writeFile(manifestPath+'.tmp',JSON.stringify({phase,language,appDir,rootProvidedHead:expectedRef,headVerifiedByProbe:false,sourceSHA256:sourceBefore,buildSHA256:buildBefore,helperSHA256:sha(await readFile(fileURLToPath(new URL(phase==='before'?'../../sim2b-grafico-claro/tests/e2e/panel.ts':'../../sim2c-campos-simples/tests/e2e/panel.ts',import.meta.url)))),fixtureSpecSHA256:data.fixtureSpecSHA256,sourceCSVsha256:data.sourceCSVsha256,sourceRows:50,sourceColumns:6,resultRows:means,exportCSVsha256:sha(csv),screenshots},null,2)+'\n');await rename(manifestPath+'.tmp',manifestPath)
+      95 |  }finally{try{await close(app)}finally{await rm(folder,{recursive:true,force:true})}}
+      96 | })
+        at <checkout>-evidence/probe/field-captures.spec.ts:93:125
+
+    Error Context: ../sim2c-campos-simples-evidence/probe/results/field-captures-before-lista-resultado-y-menú-usado-es--evidence/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/probe/results/field-captures-before-lista-resultado-y-menú-usado-es--evidence/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/probe/results/field-captures-before-lista-resultado-y-menú-usado-es--evidence/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › before: lista, resultado y menú usado [en-XA] 
+
+    Error: expect(received).toHaveLength(expected)
+
+    Expected length: 24
+    Received length: 12
+    Received array:  ["before-en-XA-light-1440x900-lista.png", "before-en-XA-dark-1440x900-lista.png", "before-en-XA-light-1280x720-lista.png", "before-en-XA-dark-1280x720-lista.png", "before-en-XA-light-1440x900-resultado.png", "before-en-XA-light-1440x900-menu-usado.png", "before-en-XA-dark-1440x900-resultado.png", "before-en-XA-dark-1440x900-menu-usado.png", "before-en-XA-light-1280x720-resultado.png", "before-en-XA-light-1280x720-menu-usado.png", …]
+
+      91 |   expect(parse(csv)).toEqual([json.columns.map((column:{index:number;label:string})=>`${column.index+1}. ${column.label}`),...means]);expect(context.csv.sha256).toBe(sha(csv))
+      92 |   expect(await readFile(path,'utf8')).toBe(data.content);expect(errors).toEqual([]);expect((await page.evaluate(()=>window.freya.documents())).find(value=>value.id===doc.id)).toMatchObject({dirty:false,revision:doc.revision,rowCount:50,headers:data.headers})
+    > 93 |   expect(await sources()).toEqual(sourceBefore);expect(await build()).toEqual(buildBefore);expect(Object.keys(screenshots)).toHaveLength(24)
+         |                                                                                                                             ^
+      94 |   const manifestPath=join(destination,language+'-captures.json');await writeFile(manifestPath+'.tmp',JSON.stringify({phase,language,appDir,rootProvidedHead:expectedRef,headVerifiedByProbe:false,sourceSHA256:sourceBefore,buildSHA256:buildBefore,helperSHA256:sha(await readFile(fileURLToPath(new URL(phase==='before'?'../../sim2b-grafico-claro/tests/e2e/panel.ts':'../../sim2c-campos-simples/tests/e2e/panel.ts',import.meta.url)))),fixtureSpecSHA256:data.fixtureSpecSHA256,sourceCSVsha256:data.sourceCSVsha256,sourceRows:50,sourceColumns:6,resultRows:means,exportCSVsha256:sha(csv),screenshots},null,2)+'\n');await rename(manifestPath+'.tmp',manifestPath)
+      95 |  }finally{try{await close(app)}finally{await rm(folder,{recursive:true,force:true})}}
+      96 | })
+        at <checkout>-evidence/probe/field-captures.spec.ts:93:125
+
+    Error Context: ../sim2c-campos-simples-evidence/probe/results/field-captures-before-lista-resultado-y-menú-usado-en-XA--evidence/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim2c-campos-simples-evidence/probe/results/field-captures-before-lista-resultado-y-menú-usado-en-XA--evidence/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim2c-campos-simples-evidence/probe/results/field-captures-before-lista-resultado-y-menú-usado-en-XA--evidence/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › before: lista, resultado y menú usado [es] 
+    [evidence] › ../sim2c-campos-simples-evidence/probe/field-captures.spec.ts:33:47 › before: lista, resultado y menú usado [en-XA] 

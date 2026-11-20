@@ -14,7 +14,7 @@
  import {chartTimeGroups,chartLabels,chartSQL,chartTotalSQL,chartData,chartLimit,type ChartOptions,type ChartData} from '../../shared/charts'
  import ChartPresets from './ChartPresets.svelte'
  import ChartFields from './ChartFields.svelte'
- import {initialChart,addToZone,removeFromZone,swapZones,zoneFields,type ChartZone} from '../../shared/chart-fields'
+ import {initialChart,addToZone,removeFromZone,swapZones,zoneFields,projectChartKind,chartKindUnavailable,type ChartZone} from '../../shared/chart-fields'
  import {chartView,type ChartView,type ChartConfiguration} from '../../shared/chart-presets'
  import CsvQueryTools from './CsvQueryTools.svelte'
  import {describeConditions} from '../../shared/table-conditions'
@@ -70,8 +70,10 @@
  const suggestedTitle=$derived(startingSuggestion?chartLabels(columns.map(column=>column.name),startingSuggestion).summary:'')
  const reason=$derived(chosenTypeSignature===signature&&options.kind!==suggestion.options?.kind&&suggestion.options?t('charts.fields.selectedType',{type:t('charts.kind.'+options.kind),suggested:t('charts.kind.'+suggestion.options.kind)}):t(suggestion.reason.key,{...suggestion.reason.parameters,measure:t('charts.measure.'+options.aggregate),period:t('charts.period.'+(options.time==='none'?'month':options.time??'month'))}))
  const typeIcons={bar:'chart-column',line:'chart-line',scatter:'chart-scatter',histogram:'chart-histogram',heatmap:'chart-heatmap',box:'chart-box'} as const
+ const typeReasonId=$props.id()
+ const typeReason=(kind:ChartOptions['kind'])=>exporting?'ui.reason.busy':chartKindUnavailable(doc.headers??[],options,kind,columns,suggestion.options)
  async function cancelChart(){cancelledSignature=signature;cancelFields();cancel();message='charts.ui.cancelled';await tick();element?.closest('section')?.querySelector<HTMLButtonElement>('.chart-types button[aria-pressed="true"]')?.focus()}
- function chooseKind(kind:ChartOptions['kind'],userChoice=false){if(kind==='heatmap'){options.y=options.series!==undefined&&options.series>=0?options.series:options.y;options.aggregate='count';options.measureType='text'}options.kind=kind;if(kind==='histogram'||kind==='scatter')options.aggregate='count';if(kind==='box')options.aggregate='median';if(!['bar','line','scatter'].includes(kind))options.series=-1;if(!['bar','line'].includes(kind))options.time='none';if(kind==='line'&&options.time==='none'&&suggestion.options?.kind==='line')options.time=suggestion.options.time??'none';if(kind==='histogram'&&options.y<0&&profiles.some(item=>item.column===options.x&&item.profile?.kind==='number'))options.y=options.x;chosenTypeSignature=userChoice?signature:null}
+ function chooseKind(kind:ChartOptions['kind'],userChoice=false){options=projectChartKind($state.snapshot(options),kind,columns,suggestion.options);chosenTypeSignature=userChoice?signature:null}
  const valueLabel=(value:string|null)=>value===null?t('charts.plot.missing'):value===''?t('charts.plot.empty'):value
  function displayNumber(value:string|null){getUILanguage();return value===null?'—':formatChartNumber(Number(value))}
  // shortcut: auto hasta 3.000 filas, 1 MiB y 200.000 celdas; ampliar tras medir más equipos (experiments/analytics-f2a).
@@ -198,7 +200,7 @@
  function startSuggestion(){const first=startingSuggestion;if(first){started=true;stale=false;options={...first,...options.title?{title:options.title}:{}};announcement=t('charts.fields.ready',{n:0})}}
  function changeAggregate(aggregate:ChartOptions['aggregate']){if(options.kind==='heatmap')return;if(!aggregated){options.kind='bar';options.time='none'}options.aggregate=aggregate;announcement=t('charts.fields.changed',{operation:t('charts.aggregate.'+aggregate)})}
  function openFilters(column?:number){filterReturn=document.activeElement as HTMLElement;pendingFilter=column;showFilters=true}
- async function closeFilters(){showFilters=false;pendingFilter=undefined;await tick();if(filterReturn?.isConnected)filterReturn.focus();else focusFields();filterReturn=null}
+ async function closeFilters(){showFilters=false;pendingFilter=undefined;await tick();if(filterReturn?.isConnected){filterReturn.closest<HTMLElement>('[data-chart-field]')?.focus();filterReturn.focus()}else focusFields();filterReturn=null}
  function focusFields(){element?.closest('section')?.querySelector<HTMLInputElement>('.chart-fields input[type=search]')?.focus()}
  async function clearFilters(){where={conditions:[],filterMode:'all'};showFilters=false;await tick();focusFields()}
  async function beginTitle(){titleDraft=options.title??'';titleError='';editingTitle=true;await tick();titleInput?.focus()}
@@ -262,7 +264,7 @@
 <svelte:window onkeydown={event=>{if(event.key==='Escape'&&event.target instanceof HTMLElement&&event.target.closest('.charts-panel')&&!event.target.closest('.query-tools')){event.preventDefault();if(conversion!==null)void closeConversion();else if(window.innerWidth<900&&fieldsOpen){fieldsOpen=false;tick().then(()=>element?.closest('section')?.querySelector<HTMLButtonElement>('.fields-toggle')?.focus())}else onclose()}}}/>
 <section class="charts-panel" class:fields-open={fieldsOpen} aria-label={t('charts.ui.region')}>
  <button class="fields-toggle" aria-expanded={fieldsOpen} onclick={()=>fieldsOpen=!fieldsOpen}>{t('charts.fields.panel')}</button>
- <ChartFields {columns} {options} {where} {samples} disabled={exporting||fieldsLoading} loading={fieldsLoading} onadd={addField} onremove={removeField} onaggregate={changeAggregate} settings={chartSettings} onswap={()=>{options=swapZones($state.snapshot(options));announcement=t('charts.fields.swapped')}} onclear={clearFields} onfilter={openFilters} onremovefilter={column=>{where={...where,conditions:where.conditions.filter(rule=>rule.column!==column)};announcement=t('charts.fields.removed',{field:columnLabel(column),zone:t('charts.fields.filters')})}} onannounce={announce} onconvert={openConversion}/>
+ <ChartFields {columns} {options} {where} {samples} disabled={exporting||fieldsLoading||sample===undefined} loading={fieldsLoading} onadd={addField} onremove={removeField} onaggregate={changeAggregate} settings={chartSettings} onswap={()=>{options=swapZones($state.snapshot(options));announcement=t('charts.fields.swapped')}} onclear={clearFields} onfilter={openFilters} onremovefilter={column=>{where={...where,conditions:where.conditions.filter(rule=>rule.column!==column)};announcement=t('charts.fields.removed',{field:columnLabel(column),zone:t('charts.fields.filters')})}} onannounce={announce} onconvert={openConversion}/>
  <div class="chart-result">
  {#if data}{@render resultExport()}{/if}
  <div class="chart-intro">
@@ -294,7 +296,7 @@
  {#if busy||fieldsLoading}<div class="progress"><button onclick={()=>void cancelChart()}>{t('charts.ui.cancel')}</button><progress aria-label={t('charts.ui.progress')}></progress></div>{/if}
  {#if unavailable}<p role="alert">{t('charts.ui.unavailable')}</p>{/if}
  {#if tooWide}<p role="alert">{t('charts.ui.tooWide')}</p>{/if}
- <div class="chart-types" role="group" aria-label={t('charts.ui.chooseType')}>{#each Object.keys(typeIcons) as kind}<button {...controlHint(exporting?'busy':null)} aria-pressed={options.kind===kind} disabled={exporting} onclick={()=>chooseKind(kind as ChartOptions['kind'],true)}><Icon name={typeIcons[kind as keyof typeof typeIcons]} size={14}/>{kind==='box'?t('charts.ui.boxButton'):t('charts.kind.'+kind)}</button>{/each}</div>
+ <div class="chart-types" role="group" aria-label={t('charts.ui.chooseType')}>{#each Object.keys(typeIcons) as kind}{@const type=kind as ChartOptions['kind']}{@const unavailable=typeReason(type)}<button type="button" aria-pressed={options.kind===type} aria-disabled={!!unavailable} title={unavailable?t(unavailable):undefined} aria-describedby={unavailable?typeReasonId+'-'+type:undefined} onclick={()=>{if(!typeReason(type))chooseKind(type,true)}}><Icon name={typeIcons[type]} size={14}/>{type==='box'?t('charts.ui.boxButton'):t('charts.kind.'+type)}{#if suggestion.options?.kind===type}<span class="recommended-type">{t('charts.fields.recommended')}</span>{/if}</button>{#if unavailable}<span id={typeReasonId+'-'+type} class="sr-only">{t(unavailable)}</span>{/if}{/each}</div>
  {#if options.kind==='scatter'}<div class="trend-option"><label><input type="checkbox" bind:checked={options.trend} disabled={exporting||fieldsLoading||(options.series??-1)>=0} aria-describedby={(options.series??-1)>=0?'trend-series-'+doc.id:undefined}/>{t('charts.trend.option')}</label>{#if (options.series??-1)>=0}<span id={'trend-series-'+doc.id}>{t('charts.trend.series')}</span>{/if}</div>{/if}
  <p class="suggestion" title={reason}>{reason}</p>
  {#if !busy&&!fieldsLoading&&(!sql||data&&!data.rows.length)}<div class="empty-result"><p>{t('charts.ui.chooseField')}</p><button disabled={onDemand&&!startingSuggestion} onclick={startSuggestion}>{onDemand?t('analysis.tab.createChart',{chart:suggestedTitle}):t('charts.fields.start')}</button></div>{/if}
@@ -336,4 +338,5 @@
  @media(max-height:760px){.chart-result{padding:6px 10px}.chart-types{gap:3px}.chart-types button{font-size:var(--font-meta);padding:3px}.pivot-result{max-height:220px}.chart-info summary{padding:4px}.suggestion{margin:3px 0}.pivot-pages{padding-top:2px}}
  @media(max-width:899px){.charts-panel{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"toggle" "result"}.fields-toggle{grid-area:toggle;display:block;justify-self:start;margin:5px 10px;min-height:28px}.charts-panel :global(.chart-fields){display:none}.charts-panel.fields-open{grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"toggle" "fields" "result"}.charts-panel.fields-open :global(.chart-fields){display:block}.chart-result{padding:4px 10px}.suggestion{white-space:nowrap;max-height:18px}}
  button,input,select{appearance:none;border-color:var(--muted)}
+ .chart-types button[aria-disabled="true"]{opacity:.5;cursor:default}.recommended-type{font-size:10px;font-weight:400}
 </style>

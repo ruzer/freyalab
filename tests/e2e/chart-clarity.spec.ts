@@ -1,3 +1,4 @@
+import {t} from '../../src/shared/i18n'
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
 import electronPath from 'electron'
 import {createHash} from 'node:crypto'
@@ -7,7 +8,7 @@ import {join,resolve} from 'node:path'
 import {parse} from 'csv-parse/sync'
 import type {DocumentInfo,GraphicExportRequest,SqlRequest} from '../../src/shared/types'
 import {closeElectron} from './close-electron'
-import {openAnalysis,chartPanel,exportAnalysis,analysisResultExport,showTable,menuItem} from './panel'
+import {openAnalysis,chartPanel,exportAnalysis,analysisResultExport,showTable,menuItem,chartAssign,chartType,chartTypeButton} from './panel'
 
 let app:ElectronApplication,page:Page,folder:string,errors:string[]
 let originals:Map<string,{content:string;doc:DocumentInfo}>
@@ -67,9 +68,7 @@ async function open(name='encuesta.csv',records=rows()){
  await expect(page.getByRole('grid',{name:'Tabla de datos',exact:true})).toBeVisible();return{doc,records}
 }
 async function assign(field:string,zone:'Filas'|'Columnas'|'Valores'|'Filtros'){
- // B conserva Añadir y su menú actual; el clic simple de C no se adelanta.
- await panel().locator('.field-list').getByRole('button',{name:new RegExp(`^(Añadir|Mover) a… ${field}$`)}).click()
- await page.getByRole('menuitem',{name:new RegExp(`^Añadir a ${zone}(?: [(]recomendado[)])?$`)}).click()
+ await chartAssign(page,field,({Filas:'rows',Columnas:'columns',Valores:'values',Filtros:'filters'} as const)[zone])
 }
 async function ready(){await expect(panel().locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await expect(panel().locator('.plot svg')).toBeVisible()}
 async function meanCity(){
@@ -158,7 +157,7 @@ test('SIM-2b: Ajustes empieza cerrado al final de Campos y conserva controles ú
  await expand(settings().locator('.presets'));for(const name of ['Guardar configuración','Aplicar configuración','Eliminar configuración elegida','Actualizar biblioteca']){await expect(settings().getByRole('button',{name,exact:true})).toHaveCount(1);await expect(panel().getByRole('button',{name,exact:true})).toHaveCount(1)}
  await expect(panel().getByLabel('Agrupación temporal del gráfico',{exact:true})).toHaveCount(0);await expect(panel().getByLabel('Intervalos del gráfico',{exact:true})).toHaveCount(0)
  await expect(panel().getByLabel('Resumir Ingreso por',{exact:true})).toHaveCount(1)
- for(const name of ['Barras','Líneas','Dispersión','Histograma','Mapa de calor','Caja'])await expect(panel().getByRole('group',{name:'Formas de visualizar',exact:true}).getByRole('button',{name,exact:true})).toHaveCount(1)
+ for(const kind of ['bar','line','scatter','histogram','heatmap','box'] as const)await expect(await chartTypeButton(page,kind)).toHaveCount(1)
  await assign('Grupo','Columnas');await ready();await settings().getByText('Series visibles · controles de teclado',{exact:true}).click()
  for(const name of ['Norte','Sur']){await expect(settings().getByRole('checkbox',{name,exact:true})).toHaveCount(1);await expect(panel().getByRole('checkbox',{name,exact:true})).toHaveCount(1)}
  await panel().getByRole('button',{name:'Quitar Grupo de Columnas',exact:true}).click()
@@ -166,12 +165,12 @@ test('SIM-2b: Ajustes empieza cerrado al final de Campos y conserva controles ú
  await expect(panel().getByRole('combobox').filter({has:page.locator('option[value=month]')})).toHaveCount(1)
  await expect(settings().getByLabel('Agrupación temporal del gráfico',{exact:true}).locator('option[value=none]')).toBeEnabled()
  await expect(panel().getByLabel('Agrupación temporal del gráfico',{exact:true})).toHaveCount(1);await expect(panel().getByLabel('Intervalos del gráfico',{exact:true})).toHaveCount(0)
- await panel().getByRole('button',{name:'Histograma',exact:true}).click();await expect(settings().getByLabel('Intervalos del gráfico',{exact:true})).toBeVisible()
+ await chartType(page,'histogram');await expect(settings().getByLabel('Intervalos del gráfico',{exact:true})).toBeVisible()
  await expect(panel().getByLabel('Intervalos del gráfico',{exact:true})).toHaveCount(1);await expect(panel().getByLabel('Agrupación temporal del gráfico',{exact:true})).toHaveCount(0)
- await assign('Edad','Filas');await panel().getByRole('button',{name:'Dispersión',exact:true}).click()
+ await assign('Edad','Filas');await chartType(page,'scatter')
  await expect(panel().getByRole('checkbox',{name:'Línea de tendencia',exact:true})).toBeVisible();await expect(settings().getByRole('checkbox',{name:'Línea de tendencia',exact:true})).toHaveCount(0)
- for(const name of ['Dispersión','Líneas','Mapa de calor','Caja']){
-  await panel().getByRole('button',{name,exact:true}).click()
+ for(const kind of ['scatter','line','heatmap','box'] as const){
+  await chartType(page,kind)
   await expect(panel().getByLabel('Agrupación temporal del gráfico',{exact:true})).toHaveCount(0);await expect(panel().getByLabel('Intervalos del gráfico',{exact:true})).toHaveCount(0)
  }
  await assign('Ciudad','Filas');await assign('Ingreso','Valores');await panel().getByLabel('Resumir Ingreso por',{exact:true}).selectOption('average');await ready()
@@ -193,7 +192,7 @@ test('SIM-2b: Ajustes empieza cerrado al final de Campos y conserva controles ú
 test('SIM-2b: manual sin perfil conserva medida, ejes y agrupación explícitos sin nuevos barridos ni conversión de ID',async()=>{
  const {records}=await open('manual.csv',rows(3001)),before=(await calls()).filter(operation=>operation==='analyzeColumn')
  await openAnalysis(page,'Gráficos');await assign('Ciudad','Filas');await assign('Ingreso','Valores')
- await expect(panel().locator('.field-entry').filter({has:page.locator('.field-name').filter({hasText:/^ID$/})}).locator('.field-badge')).toHaveText('Texto')
+ await expect(panel().locator('.field-entry').filter({has:page.locator('.field-name').filter({hasText:/^ID$/})}).locator('.field-badge')).toHaveAccessibleName(t('charts.fields.text'))
  await expect(panel().getByLabel('Resumir Ingreso por',{exact:true})).toHaveValue('count')
  await expect(panel().getByLabel('Resumir Ingreso por',{exact:true}).locator('option[value=sum]')).toBeDisabled()
  await expand(settings());for(const label of ['Columna X del gráfico','Columna Y del gráfico','Tipo de medida del gráfico','Agrupación temporal del gráfico'])await expect(settings().getByLabel(label,{exact:true})).toHaveCount(1)
@@ -242,7 +241,7 @@ test('SIM-2b: cinco ciudades que caben conservan etiquetas rectas en SVG de pant
 test('SIM-2b: treinta nombres de 25 caracteres giran 25 grados en Caja sin cambiar el ranking existente',async()=>{
  const names=Array.from({length:30},(_,index)=>`Ciudad ${String(index+1).padStart(2,'0')} del Valle Verde`)
  expect(names.every(name=>name.length===25)).toBe(true);await open('treinta.csv',rows(60,names))
- await openAnalysis(page,'Gráficos');await assign('Ciudad','Filas');await assign('Ingreso','Valores');await panel().getByRole('button',{name:'Caja',exact:true}).click();await ready()
+ await openAnalysis(page,'Gráficos');await assign('Ciudad','Filas');await assign('Ingreso','Valores');await chartType(page,'box');await ready()
  await panel().getByLabel('Grupos por página',{exact:true}).selectOption('50');await expect(panel().locator('.pivot-result tbody tr')).toHaveCount(30)
  await expect(panel().locator('.top-notice')).toHaveCount(0);await expectRotation(names,25,'treinta.svg')
 })

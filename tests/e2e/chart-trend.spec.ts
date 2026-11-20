@@ -5,9 +5,9 @@ import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {linearRegression,linearRegressionLine,rSquared} from 'simple-statistics'
 import {t,type Language} from '../../src/shared/i18n'
-import type {SqlRequest,GraphicExportRequest} from '../../src/shared/types'
+import type {SqlRequest,GraphicExportRequest,DocumentInfo} from '../../src/shared/types'
 import {closeElectron} from './close-electron'
-import {openAnalysis,chartPanel,chartGenerate,analysisResultExport,showTable,menuItem,exportAnalysis,chartAssign,chartType,openChartSettings,waitChartResult} from './panel'
+import {openAnalysis,chartPanel,chartGenerate,analysisResultExport,showTable,menuItem,exportAnalysis,chartAssign,chartType,openChartSettings,waitChartResult,chartTypeButton,applyLegacyChartPreset} from './panel'
 
 let app:ElectronApplication,page:Page,folder:string
 const five='X,Y\n1,2\n2,4\n3,5\n4,4\n5,5\n'
@@ -25,11 +25,15 @@ async function open(content:string|Uint8Array=five,name='trend.csv'){
  await expect(page.getByRole('tab',{name:doc.name,exact:true})).toHaveAttribute('aria-selected','true')
  return{doc,path}
 }
-async function configure(language:Language='es'){
+async function configure(language:Language='es',legacy?:DocumentInfo){
  await openAnalysis(page,'Gráficos')
- await chartAssign(page,'X','rows');await chartAssign(page,'Y','values');await chartType(page,'scatter');await openChartSettings(page)
+ if(legacy){
+  // Los ejes textuales del caso cero son una configuración legada; el botón actual permanece bloqueado.
+  await applyLegacyChartPreset(page,legacy,{headers:legacy.headers!,options:{kind:'scatter',x:0,y:1,bins:10,aggregate:'count',descending:false,measureType:'text',series:-1,time:'none'},where:{conditions:[],filterMode:'all'}},'Legado: tendencia sin pares numéricos')
+ }else{await chartAssign(page,'X','rows');await chartAssign(page,'Y','values');await chartType(page,'scatter')}
+ await openChartSettings(page)
  for(const [zone,field] of [['rows','X'],['values','Y']] as const)await expect(panel().getByRole('region',{name:t('charts.fields.'+zone,{},language),exact:true}).locator('.chip-name')).toHaveText(field)
- await expect(panel().locator('.chart-types button[aria-pressed=true]')).toHaveText(t('charts.kind.scatter',{},language))
+ await expect(await chartTypeButton(page,'scatter')).toHaveAttribute('aria-pressed','true')
  const query=panel().locator('.chart-info pre').filter({hasText:/^WITH raw/}),checkbox=panel().getByRole('checkbox',{name:t('charts.trend.option',{},language),exact:true})
  await expect(query).toContainText('"X" AS x, "Y" AS y');await expect(query).not.toContainText('regr_slope')
  await expect(checkbox).not.toBeChecked();await expect(trend()).toHaveCount(0)
@@ -104,7 +108,7 @@ test('TEN-1 degenerados explican la ausencia y conservan marcada la opción',asy
   ['two','X,Y\n1,3\n2,5\n','Hacen falta al menos 3 puntos'],
   ['zero','X,Y\na,b\nc,d\n','Hacen falta al menos 3 puntos'],
  ] as const){
-  await open(content,name+'.csv');const checkbox=await configure();await checkbox.check();await result()
+  const {doc}=await open(content,name+'.csv');const checkbox=await configure('es',name==='zero'?doc:undefined);await checkbox.check();await result()
   await expect(trend()).toContainText(message);await expect(checkbox).toBeChecked()
   expect(await panel().locator('.plot svg text').filter({hasText:/^Tendencia$/}).count()).toBe(name==='constant-y'?1:0)
   await expect(panel().getByText('Series visibles · controles de teclado',{exact:true})).toHaveCount(name==='constant-y'?1:0)
