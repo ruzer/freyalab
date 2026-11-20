@@ -263,3 +263,26 @@ test('PRJ-03 frontend: doble Enter en Registrar de nuevo envía una petición y 
   await app.evaluate(()=>{Reflect.get(globalThis,'prj03RegisterProbe')?.cleanup();Reflect.deleteProperty(globalThis,'prj03RegisterProbe')})
  }
 })
+
+
+test('PRJ-03: los ids de proyecto v1 válidos sin UUID conservan exportación, apertura y alta como fuente',async()=>{
+ const file=join(folder,'proyecto.freyalab'),manifest=JSON.parse(await readFile(file,'utf8'))
+ await page.evaluate(async()=>{const state=await window.freya.projectState();await window.freya.projectClose(state.project!.id)})
+ manifest.id='gb-project';manifest.sources[0].id='gb-source';manifest.recipes[0].id='oaxaca-adultos';manifest.recipes[0].sourceId='gb-source'
+ await writeFile(file,JSON.stringify(manifest));await page.evaluate(path=>window.freya.openPaths([path]),file)
+ const state=await page.evaluate(()=>window.freya.projectState())
+ expect(state.project).toMatchObject({id:'gb-project',readonly:false});expect(state.recipes[0]).toMatchObject({id:'oaxaca-adultos',executable:true});expect(state.sources[0]).toMatchObject({id:'gb-source',status:'verified'})
+ const outcome=await page.evaluate(()=>window.freya.projectRecipeExport('gb-project','oaxaca-adultos',crypto.randomUUID()))
+ expect(outcome?.status).toBe('registered');if(outcome?.status!=='registered')throw new Error('No se registró el resultado del proyecto válido')
+ await expect(resultRow()).toBeVisible()
+ const reopened=await page.evaluate(async result=>window.freya.projectOpenResult('gb-project',result),outcome.result.id)
+ expect(reopened).toMatchObject({kind:'csv',readonly:false,rowCount:3})
+ await page.evaluate(async result=>{
+  const draft=await window.freya.projectResultSource('gb-project',result)
+  await window.freya.projectRegisterSource('gb-project',draft.id,{encoding:'utf8',delimiter:',',header:true},crypto.randomUUID())
+ },outcome.result.id)
+ expect((await page.evaluate(()=>window.freya.projectState())).sources).toHaveLength(2)
+ const originalSource=await page.evaluate(()=>window.freya.projectOpenSource('gb-source'));expect(originalSource.projectSource).toBe('protected')
+ await page.evaluate(()=>window.freya.projectReregisterSource('gb-project','gb-source',crypto.randomUUID()))
+ expect(await readFile(source)).toEqual(original)
+})
