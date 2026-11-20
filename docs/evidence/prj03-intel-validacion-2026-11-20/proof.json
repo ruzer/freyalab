@@ -1,0 +1,522 @@
+{
+  "formatVersion": 1,
+  "state": "Historical ARM/Intel phases and local Node-assert green preserved; ad203 macOS CI failures observed separately with unknown cause; final CI/new Intel pending.",
+  "refs": {
+    "armRecorded": "32f531b61809e89be3cf12001bccd252717e5237",
+    "intelProbe": "46926de6cc33ae9ce96e4c60f028b2c2ca757c8d",
+    "ordinaryCIPriorHead": "59d9077c327811952e55379c0a0f3f040080476f",
+    "newIntegratedP3": "ad203455f48a12f9eb84749cb1e5bb7146b5dd48",
+    "assertionCandidate": "71729359b7cae29955671e9d1dec5ce6048b0c03",
+    "triggerRemoved": "44f5a5c2ec83084245ccc2a223513c443d9aba02",
+    "nodeAssertLocalGreen": "b074450084636f0a2fb5c6258776357a9f79c9ad"
+  },
+  "sourceTrees": {
+    "arm32f": "ec12107e61373bea9556e5540f8f966690037508",
+    "intel469": "ec12107e61373bea9556e5540f8f966690037508",
+    "integratedAd203": "de7d36640263989a154bf22645735965f798db0c",
+    "candidate717": "de7d36640263989a154bf22645735965f798db0c",
+    "nodeAssertLocalGreenB074": "de7d36640263989a154bf22645735965f798db0c"
+  },
+  "intelRun": {
+    "id": 44686573913,
+    "url": "https://github.com/ruzer/freyalab/actions/runs/44686573913",
+    "verifyParts": {
+      "success": 8,
+      "failure": 1
+    },
+    "gate": "skipped",
+    "csvJobId": 136122209515,
+    "fast": {
+      "identities": 386,
+      "ordinaryPassed": 386,
+      "skipped": 0,
+      "retryAttempts": 0,
+      "reporterMinutes": 45.1
+    },
+    "perfSolo": {
+      "identities": 66,
+      "ordinaryPassed": 64,
+      "flaky": 1,
+      "failed": 1,
+      "skipped": 0,
+      "attempts": 68,
+      "retryAttempts": 2,
+      "reporterMinutes": 17.7
+    },
+    "oneGB": {
+      "ordinaryPassed": 6,
+      "failed": 1,
+      "skipped": 0
+    }
+  },
+  "artifact": {
+    "id": 14613105083,
+    "bytes": 33929767,
+    "sha256": "e47f1ce72e2c1512cc8e052debd1c8d9ce3f2e9ac5f7f908ceb04417370cf259"
+  },
+  "rawTerminalLogSHA256": "d03306c0b27c41c5e054acb8ac0123ae293a845966b5352a2c1438cfd1f7dfb5",
+  "sourceFixture": {
+    "bytes": 1000000008,
+    "records": 1000000,
+    "sha256BeforeAndAfter": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540",
+    "prewarmedByFixtureHash": true,
+    "integrityChecksOutsideReportedDuration": true,
+    "memorySampleIntervalMs": 50
+  },
+  "ARMOriginalReports": [
+    {
+      "name": "arm-filter-32f.json",
+      "publicPath": "docs/evidence/prj03-exportar-conjuntos-2026-11-19/arm-filter-32f.json",
+      "sha256": "9d99e7c304dd54788bdb8110906ed73e579b09320eb6100fd96299d8f9b68ce2",
+      "ref": "32f531b61809e89be3cf12001bccd252717e5237",
+      "sourceModified": false,
+      "architecture": "arm64",
+      "source": {
+        "bytes": 1000000008,
+        "records": 1000000,
+        "lineBytes": 1000,
+        "sha256": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540",
+        "sha256After": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540"
+      },
+      "durationMs": 20347.447792,
+      "memory": {
+        "sampleIntervalMs": 50,
+        "peakAppSumWorkingSetKiB": 852512,
+        "csvPeakObservedWorkingSetKiB": 277648
+      },
+      "output": {
+        "path": "02_datasets/P3 mitad.csv",
+        "bytes": 500000008,
+        "sha256": "aa807009d987bc4d22f9a97d892edc5a43d6fe4cb38cd86574b5d6dbd863e81f",
+        "expectedSha256": "aa807009d987bc4d22f9a97d892edc5a43d6fe4cb38cd86574b5d6dbd863e81f"
+      }
+    },
+    {
+      "name": "arm-random-32f.json",
+      "publicPath": "docs/evidence/prj03-exportar-conjuntos-2026-11-19/arm-random-32f.json",
+      "sha256": "fcf44b0daf6e30b9b06d3aa2420d0b186b13f7e664b81bb3b5e0aeaa107edf56",
+      "ref": "32f531b61809e89be3cf12001bccd252717e5237",
+      "sourceModified": false,
+      "architecture": "arm64",
+      "source": {
+        "bytes": 1000000008,
+        "records": 1000000,
+        "lineBytes": 1000,
+        "sha256": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540",
+        "sha256After": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540"
+      },
+      "durationMs": 18545.526416999997,
+      "memory": {
+        "sampleIntervalMs": 50,
+        "peakAppSumWorkingSetKiB": 1349600,
+        "csvPeakObservedWorkingSetKiB": 763616
+      },
+      "output": {
+        "path": "02_datasets/P3 muestra.csv",
+        "bytes": 10000008,
+        "sha256": "eeac7c2e8c861bf11dcbb1accbebafaf13b2119017db0c19d080ae22ef9deb3e",
+        "records": 10000,
+        "uniqueIds": 10000,
+        "minId": 319,
+        "maxId": 999964,
+        "idsSha256": "98ee27799175df070e557f448ec51f9b5f5a5df163ad1075e987498e560641e5"
+      }
+    },
+    {
+      "name": "arm-cancel-32f.json",
+      "publicPath": "docs/evidence/prj03-exportar-conjuntos-2026-11-19/arm-cancel-32f.json",
+      "sha256": "5d3467bffec88d5d256b1a3132055c9539620d65aa489434daae191201f565aa",
+      "ref": "32f531b61809e89be3cf12001bccd252717e5237",
+      "sourceModified": false,
+      "architecture": "arm64",
+      "source": {
+        "bytes": 1000000008,
+        "records": 1000000,
+        "lineBytes": 1000,
+        "sha256": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540",
+        "sha256After": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540"
+      },
+      "durationMs": 9492.571334,
+      "memory": {
+        "sampleIntervalMs": 50,
+        "peakAppSumWorkingSetKiB": 1185904,
+        "csvPeakObservedWorkingSetKiB": 636864
+      },
+      "output": {
+        "exists": false,
+        "bytes": 0,
+        "sha256": null
+      }
+    }
+  ],
+  "IntelMeasuredReports": [
+    {
+      "name": "prj03-export-filter.json",
+      "artifactEntry": "test-results-solo/project-subsets-perf-PRJ-0-5f323-ón-de-registros-y-sus-bytes-csv/prj03-export-filter.json",
+      "sha256": "59f2994e8701f49fc7217354612d4e2a9187827e6ae3cc7df6892fd8d761da82",
+      "ref": "46926de6cc33ae9ce96e4c60f028b2c2ca757c8d",
+      "sourceModified": false,
+      "architecture": "x64",
+      "source": {
+        "bytes": 1000000008,
+        "records": 1000000,
+        "lineBytes": 1000,
+        "sha256": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540",
+        "sha256After": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540"
+      },
+      "durationMs": 56914.35767699999,
+      "memory": {
+        "sampleIntervalMs": 50,
+        "peakAppSumWorkingSetKiB": 621860,
+        "csvPeakObservedWorkingSetKiB": 234012
+      },
+      "output": {
+        "path": "02_datasets/P3 mitad.csv",
+        "bytes": 500000008,
+        "sha256": "aa807009d987bc4d22f9a97d892edc5a43d6fe4cb38cd86574b5d6dbd863e81f",
+        "expectedSha256": "aa807009d987bc4d22f9a97d892edc5a43d6fe4cb38cd86574b5d6dbd863e81f"
+      },
+      "result": null,
+      "coverage": {
+        "matched": 500000,
+        "scanned": 1000000,
+        "kind": "filtered",
+        "total": 1000000,
+        "complete": true
+      },
+      "manifestResults": null
+    },
+    {
+      "name": "prj03-export-cancel.json",
+      "artifactEntry": "test-results-solo/project-subsets-perf-PRJ-0-628b3-chivo-temporal-ni-resultado-csv/prj03-export-cancel.json",
+      "sha256": "a527058295f7043f2f34660722064c0d14c905b8289341303a752a01b97d9209",
+      "ref": "46926de6cc33ae9ce96e4c60f028b2c2ca757c8d",
+      "sourceModified": false,
+      "architecture": "x64",
+      "source": {
+        "bytes": 1000000008,
+        "records": 1000000,
+        "lineBytes": 1000,
+        "sha256": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540",
+        "sha256After": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540"
+      },
+      "durationMs": 31759.41729,
+      "memory": {
+        "sampleIntervalMs": 50,
+        "peakAppSumWorkingSetKiB": 981600,
+        "csvPeakObservedWorkingSetKiB": 607412
+      },
+      "output": {
+        "exists": false,
+        "bytes": 0,
+        "sha256": null
+      },
+      "result": {
+        "outcome": {
+          "status": "cancelled"
+        },
+        "requested": true,
+        "progressAtCancel": {
+          "requestId": "eb717728-bdc7-4d9e-a0ea-d223e7ba96d5",
+          "bytesRead": 503316480,
+          "scanned": 498000,
+          "totalBytes": 1000000008
+        }
+      },
+      "coverage": null,
+      "manifestResults": []
+    }
+  ],
+  "IntelRandom": {
+    "benchmarkJSONPresent": false,
+    "C15JSONPresent": false,
+    "C15Reached": false,
+    "testTimeoutMs": 90000,
+    "attempts": [
+      {
+        "artifactPath": "test-results-solo/project-subsets-perf-PRJ-0-73307-a-orden-datos-y-procedencia-csv/trace.zip",
+        "sha256": "1227884b76528ec2be82dceb29e8c83e79f357ff78a705a24dc0997fd2d49ef4",
+        "attempt": 0,
+        "exportWaitCallId": "nvjt@2006",
+        "exportWait208Ms": 47042.506,
+        "exportWaitResolvedWithoutError": true,
+        "rowChecks": 30000,
+        "allRowChecksPassed": true,
+        "loopStartMs": 704752.181,
+        "loopEndMs": 751685.011,
+        "loopElapsedMs": 46932.83,
+        "afterHooksStartMs": 751704.886,
+        "C15Reached": false,
+        "randomMetricJSONPresent": false
+      },
+      {
+        "artifactPath": "test-results-solo/project-subsets-perf-PRJ-0-73307-a-orden-datos-y-procedencia-csv-retry1/trace.zip",
+        "sha256": "a26fba907a204bda905b8b2b24d535af4548aab0cc0af4d27985b4bd8bc5a390",
+        "attempt": 1,
+        "exportWaitCallId": "cflz@127",
+        "exportWait208Ms": 63150.41,
+        "exportWaitResolvedWithoutError": true,
+        "rowChecks": 30000,
+        "allRowChecksPassed": true,
+        "loopStartMs": 833645.431,
+        "loopEndMs": 882106.751,
+        "loopElapsedMs": 48461.32,
+        "afterHooksStartMs": 882124.712,
+        "C15Reached": false,
+        "randomMetricJSONPresent": false
+      }
+    ],
+    "firstAPIFailureLine": 229,
+    "finallyFailureLine": 260,
+    "interpretation": "Export awaited normally, all 30000 row checks passed, 46.933/48.461 seconds spent in row matcher loop before timeout; no controlled Node-assert green yet."
+  },
+  "UI428": {
+    "oracleLine": 450,
+    "expectedClipboard": "00077\t00077\n00077\t00077\n",
+    "receivedClipboard": "00077\t00077\n",
+    "retry1Passed": true,
+    "browserDOMTracePresent": false,
+    "errorContextHasPageSnapshot": false,
+    "cause": "undetermined",
+    "productOrTestFixApplied": false,
+    "traceSHA256": "7e8beb8a565f7d35eb02458b142926f1666d490b79fc0779155e3fd56deca6c8",
+    "errorContextSHA256": "3b97998de57ed122b29263e6048eb38694f96ce2cf902551e5c8f758cf4ff119"
+  },
+  "assertionOnlyChange": {
+    "file": "tests/e2e/project-subsets-perf.spec.ts",
+    "beforeSHA256": "f2ab347be4cc7f7eff2f98171f21045b3d0a0f67c00c5255f8056f68f850ba5b",
+    "afterSHA256": "04200856f34da1abdcf86498b3d7b61d0867f1efd71bd000db3d36c53c0a4ec8",
+    "import": "node:assert strict",
+    "loopCheckCount": 3,
+    "every10000RowsStillChecked": true,
+    "allOtherBytesIdentical": true,
+    "hashOutputAndC15OraclesUnchanged": true,
+    "otherLoopsAndTimeoutsUnchanged": true,
+    "productSourceDiffFromAd203": "",
+    "green": "Local ARM1/1 on b074450; Intel candidate still pending.",
+    "qualifiedTestSHA256": "cb06cf361e8a7cf36696b4cfcf8f6fc306e7747ef2a2c94ec84c2c66327d1aca"
+  },
+  "triggerRemoval": {
+    "reportedByRoot": true,
+    "treeDiffAgainst59d9077": "empty, verified and pushed by root",
+    "auditorChangedCI": false
+  },
+  "newCI": {
+    "runId": 44700465178,
+    "url": "https://github.com/ruzer/freyalab/actions/runs/44700465178",
+    "head": "ad203455f48a12f9eb84749cb1e5bb7146b5dd48",
+    "stateAtPreparation": "in progress as reported by root; no green transferred from59 orIntel469",
+    "macOSJob": {
+      "id": 136167390372,
+      "url": "https://github.com/ruzer/freyalab/actions/runs/44700465178/job/136167390372",
+      "head": "ad203455f48a12f9eb84749cb1e5bb7146b5dd48",
+      "checkoutMergeRef": "6c9ad8455e9b1cf1b118627a365209d38f41b1c0",
+      "base": "8a002af72fd015db8457c67974ac10dbf37c0b1a",
+      "conclusion": "failure",
+      "overallRunConclusion": "Not claimed; archive captured run in progress.",
+      "fast": {
+        "ordinaryPassed": 220,
+        "failed": 4,
+        "explicitSkipped": 7,
+        "notRun": 515,
+        "retryAttempts": 4,
+        "workers": 2,
+        "reportMilliseconds": 945612.23
+      },
+      "perfSolo": {
+        "passed": 0,
+        "failedLaunches": 3,
+        "notRun": 63,
+        "retryAttempts": 3,
+        "workers": 1,
+        "reportMilliseconds": 365468.668
+      },
+      "oneGBReached": false,
+      "firstFailure": {
+        "case": "markdown-toolbar.spec.ts:137:1",
+        "action": "button Negrita click at151:27",
+        "deadlineMs": 30000,
+        "observed": "button resolved visible/enabled/stable; click did not complete; no root cause proven"
+      },
+      "followingFailures": {
+        "beforeEachTimeoutMs": 90000,
+        "electronLaunchTimeoutMs": 60000,
+        "cause": "unknown; no causal chain established"
+      },
+      "artifact": {
+        "id": 14613448110,
+        "bytes": 13980913,
+        "sha256": "ff43ebf4a50cbd44857c14962dcc1ad14ebeb96d2cad433284593d7dee901ff8"
+      },
+      "rawEvidenceSHA256": {
+        "summary.json": "839bf2b9cf9f550fb85837e1d4639ee2394498a812e1d4a011021756b0476992",
+        "job-136167390372-macos-primary.log": "5418c937ea5464257ce200e4a35f1a1236bd64648bb4e0969318bde6f381f5d5",
+        "report-fast.json": "54d8c1d21cc35ee7d6351008346f948cbf75301c4c9f7095538787a8f7189a37",
+        "report-solo.json": "f16ee16a53c73afde7684995cdca4c84618ecaf15a66d7020febb94b14229f64",
+        "macos-case-attempts.json": "151728d367f15b598ecc5c7cecf1a1795dce1d82a5e58ce80e0710290e21b6fe"
+      },
+      "limits": [
+        "Four fast failures remain observed; 515 not-run cases are not passed or voluntary skips.",
+        "Perf stopped on three S4 Electron-launch failures; random1GB and its row loop were not reached.",
+        "Not attributed to infrastructure, Node-assert change, focus or a resolved product defect.",
+        "No raw browser-debug environment or log payload copied into the public proof."
+      ]
+    }
+  },
+  "pending": [
+    "Final CI of the eventual published head",
+    "New Intel random benchmark JSON and complete C15 on the qualified assertion implementation"
+  ],
+  "auditActions": "Two documentation files updated only; no tests/GUI/source/Git/CI writes or reruns by preparer.",
+  "ARMNodeAssertLocalGreen": {
+    "ref": "b074450084636f0a2fb5c6258776357a9f79c9ad",
+    "architecture": "arm64",
+    "sourceModified": false,
+    "sourceTree": "de7d36640263989a154bf22645735965f798db0c",
+    "testSHA256": "cb06cf361e8a7cf36696b4cfcf8f6fc306e7747ef2a2c94ec84c2c66327d1aca",
+    "commentOnlyAfter717": "diff --git a/tests/e2e/project-subsets-perf.spec.ts b/tests/e2e/project-subsets-perf.spec.ts\nindex c44d419..3412c27 100644\n--- a/tests/e2e/project-subsets-perf.spec.ts\n+++ b/tests/e2e/project-subsets-perf.spec.ts\n@@ -219,6 +219,7 @@ test('PRJ-03 1 GB: exportar muestra de diez mil con semilla 7 conserva orden, da\n   expect(info.size).toBe(10_000_008);expect(lines.pop()).toBe('');expect(lines.shift()).toBe('ID,Nota');expect(lines).toHaveLength(10_000)\n   const ids=lines.map(line=>Number(line.slice(0,7)))\n   expect(new Set(ids).size).toBe(10_000);expect(ids).toEqual([...ids].sort((a,b)=>a-b))\n+  // Conserva los tres oráculos por fila sin generar 30.000 eventos de traza.\n   for(const [index,line] of lines.entries()){assert.ok(ids[index]>=1);assert.ok(ids[index]<=records);assert.equal(line,`${String(ids[index]).padStart(7,'0')},${payload}`)}\n   expect(result).toMatchObject({path:'02_datasets/'+name+'.csv',bytes:10_000_008,sha256:outputSha,provenance:{sourceSha256:source.sha256,coverage:{kind:'sample',matched:10_000,scanned:records,total:records,complete:true},fidelity:{level:'bytes'}}})\n   expect(result.provenance.coverage.samplingStages).toEqual([{step:0,method:'random',requestedRows:10_000,seed:7,eligible:records,selected:10_000}])",
+    "check": {
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 0,
+      "processSeconds": 9.029
+    },
+    "unit": {
+      "exitCode": 0,
+      "passed": 3065,
+      "skipped": 2,
+      "filesPassed": 173,
+      "filesSkipped": 1,
+      "vitestSeconds": 17.01,
+      "processSeconds": 17.352,
+      "realPandoc": "3.12.1; HTTP effectiveness not established by that binary"
+    },
+    "build": {
+      "exitCode": 0,
+      "processSeconds": 1.875
+    },
+    "focusedRandom": {
+      "passed": 1,
+      "skipped": 0,
+      "retries": 0,
+      "flaky": 0,
+      "reportMilliseconds": 23391.019,
+      "processSeconds": 23.664,
+      "caseDurationMilliseconds": 21417,
+      "reportSHA256": "68ec45dacc62e4726c06ffbc8dd3f14c439ecd988b156151deed138e37bb64f4"
+    },
+    "exportMeasurement": {
+      "name": "prj03-export-random.json",
+      "sha256": "5548e6191682aa287bf28b20c328589179ab193b8e5fe90ea377631b8f4b4e78",
+      "recordedAt": "2026-11-20T08:41:00.020Z",
+      "durationMs": 18165.31125,
+      "source": {
+        "bytes": 1000000008,
+        "records": 1000000,
+        "lineBytes": 1000,
+        "sha256": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540",
+        "sha256After": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540"
+      },
+      "output": {
+        "path": "02_datasets/P3 muestra.csv",
+        "bytes": 10000008,
+        "sha256": "eeac7c2e8c861bf11dcbb1accbebafaf13b2119017db0c19d080ae22ef9deb3e",
+        "records": 10000,
+        "uniqueIds": 10000,
+        "minId": 319,
+        "maxId": 999964,
+        "idsSha256": "98ee27799175df070e557f448ec51f9b5f5a5df163ad1075e987498e560641e5"
+      },
+      "coverage": {
+        "matched": 10000,
+        "scanned": 1000000,
+        "samplingStages": [
+          {
+            "step": 0,
+            "method": "random",
+            "requestedRows": 10000,
+            "seed": 7,
+            "eligible": 1000000,
+            "selected": 10000
+          }
+        ],
+        "kind": "sample",
+        "total": 1000000,
+        "complete": true,
+        "sampling": {
+          "method": "random",
+          "rows": 10000,
+          "seed": 7
+        }
+      },
+      "memory": {
+        "sampleIntervalMs": 50,
+        "samples": 356,
+        "csvPeakObservedWorkingSetKiB": 763664,
+        "peakUtilitySumWorkingSetKiB": 812480,
+        "peakAppSumWorkingSetKiB": 1335712
+      },
+      "prewarmedByFixtureHash": true,
+      "integrityChecksOutsideReportedDuration": true
+    },
+    "C15": {
+      "name": "prj03-export-random-c15.json",
+      "sha256": "67bac55f616871729fbfc93d6a344369de8e748fb1fc4f8e055805def737581d",
+      "handoff": {
+        "from": "Añadir como fuente",
+        "to": "Información completa",
+        "durationMs": 650.000333
+      },
+      "source": {
+        "bytes": 1000000008,
+        "sha256": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540",
+        "sha256After": "ad5e0f81fd1c132ed1347c7e717b14286aa7594294a9cd99df5d0bee756b4540"
+      },
+      "output": {
+        "bytes": 10000008,
+        "sha256": "eeac7c2e8c861bf11dcbb1accbebafaf13b2119017db0c19d080ae22ef9deb3e",
+        "sha256After": "eeac7c2e8c861bf11dcbb1accbebafaf13b2119017db0c19d080ae22ef9deb3e",
+        "provenanceUnchanged": true
+      },
+      "analysis": {
+        "rows": 10000,
+        "columns": [
+          "ID",
+          "Nota"
+        ],
+        "informationComplete": true
+      }
+    },
+    "rawEvidenceSHA256": {
+      "oracle-execution.json": "b600ab187f13802a4921f86d4bf5a918864fdf6b669710b5a4186b7d28327fe1",
+      "oracle-check.log": "e0185610889ba4965405cb2210bdf9e992fc0ab727f33ec2abefb54ceab5d86f",
+      "oracle-unit.log": "4e799d36880c7dce5dc7ffb6f42cce8a44b8ae31d097ab5c38e63e1aa5f5f804",
+      "oracle-build.log": "674068a56f30e8f982580d82c4351ab2f43d6fbcb80bd9c09ee137c69be5200c",
+      "oracle-random.log": "a8e94e81635dc4ac18c6fb6c6cfcc13d2af3b3805441b1fbbd7743fa9d4070eb"
+    },
+    "limits": [
+      "Single existing test qualified locally on ARM; no Intel retry outcome transferred.",
+      "Historical ARM32f and Intel469 measurements remain unchanged and distinct.",
+      "No new Intel random benchmark JSON or C15 result exists yet."
+    ]
+  },
+  "macOSLocalNonReproduction": {
+    "ref": "b074450084636f0a2fb5c6258776357a9f79c9ad",
+    "architecture": "arm64",
+    "workers": 2,
+    "fileCounts": {
+      "markdown-toolbar.spec.ts": 24,
+      "mermaid-errors.spec.ts": 17
+    },
+    "passed": 41,
+    "skipped": 0,
+    "retries": 0,
+    "flaky": 0,
+    "reportMilliseconds": 32067.411,
+    "rawReportSHA256": "ed494c4d0626c71120829842f20cf20961211d083d5744fdff185371cdd767f5",
+    "rawLogSHA256": "fbbea65c442a583c85f093da50845d3c6dae9e8bed3cae1cb144847969f55eee",
+    "privateBrowserDebugUsed": true,
+    "rawDebugOrEnvironmentPublished": false,
+    "interpretation": "One local41-case pass; not a fix or causal explanation of remote macOS failure, and no transfer of zero retries to CI."
+  }
+}
