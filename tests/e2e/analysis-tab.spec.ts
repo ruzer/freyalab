@@ -6,6 +6,7 @@ import {join,resolve} from 'node:path'
 import {t} from '../../src/shared/i18n'
 import {runApplicationMenu} from './application-menu'
 import {closeElectron} from './close-electron'
+import {openChartSettings} from './panel'
 
 let app:ElectronApplication,page:Page,folder:string
 const source='Grupo,Valor\nA,10\nA,20\nB,80\n'
@@ -99,7 +100,7 @@ test('AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta
  await panel.getByLabel('Resumir Valor por',{exact:true}).selectOption('average')
  await expect(panel.locator('.pivot-result tfoot')).toContainText('36.666')
  await expect(analysis().locator('header').getByRole('button',{name:'Exportar',exact:true})).toBeVisible()
- await panel.locator('.more-options>summary').click();await panel.getByText('Configuraciones guardadas',{exact:true}).click()
+ await openChartSettings(page);await panel.getByText('Configuraciones guardadas',{exact:true}).click()
  await panel.getByLabel('Nombre de configuración del gráfico').fill('Mi gráfico')
  await panel.getByRole('button',{name:'Guardar configuración',exact:true}).click()
  await expect(panel.locator('option').filter({hasText:'Mi gráfico'})).toHaveCount(1)
@@ -109,7 +110,7 @@ test('AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta
  await page.evaluate(path=>window.freya.openPaths([path]),path)
  await openAnalysis();await section('Gráficos').click()
  const reopened=analysis().locator('.charts-panel')
- await reopened.locator('.more-options>summary').click();await reopened.getByText('Configuraciones guardadas',{exact:true}).click()
+ await openChartSettings(page);await reopened.getByText('Configuraciones guardadas',{exact:true}).click()
  await expect(reopened.locator('option').filter({hasText:'Mi gráfico'})).toHaveCount(1)
 })
 

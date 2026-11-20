@@ -1,4 +1,4 @@
-import {chartPanel,openAnalysis,selectAnalysis,showPanel,showTable,requestAnalysis,requestAnalysisTab,createSuggestedChart,analyzeButton} from './panel'
+import {chartPanel,openAnalysis,selectAnalysis,showPanel,showTable,requestAnalysis,requestAnalysisTab,createSuggestedChart,analyzeButton,chartAssign,chartAssignColumn,chartAggregate,chartType,openChartFields,openChartSettings,openChartDetails,waitChartResult,applyLegacyChartPreset} from './panel'
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
 import { closeElectron } from './close-electron'
 import electronPath from 'electron'
@@ -26,8 +26,8 @@ test('AN-1b: pestaña de análisis crea gráfico y resumen a petición, con opci
  const panel=chartPanel(page)
  await expect(panel.locator('.plot svg path').first()).toBeAttached()
  await expect(panel.getByRole('table',{name:/Resumen/})).toBeVisible()
- await expect(panel.getByText('Más opciones',{exact:true})).toBeVisible()
- await expect(panel.getByLabel('Tipo de gráfico',{exact:true})).toBeHidden()
+ await expect(panel.locator('.chart-settings>summary')).toBeVisible();await expect(panel.locator('.chart-settings')).not.toHaveAttribute('open')
+ await expect(panel.getByLabel('Tipo de gráfico',{exact:true})).toHaveCount(0)
  const plot=await panel.locator('.plot-scroll').boundingBox(),table=await panel.locator('.pivot-result').boundingBox()
  expect(plot!.height).toBeGreaterThan(160);expect(table!.y+table!.height).toBeLessThanOrEqual(720)
  await expect(page.getByRole('button',{name:'Volver a la tabla',exact:true})).toHaveCount(0)
@@ -37,7 +37,7 @@ test('AN-1b: pestaña de análisis crea gráfico y resumen a petición, con opci
 })
 
 async function summary(){await showPanel(page,'Gráficos');const panel=chartPanel(page);await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');return panel}
-async function configureSum(){const panel=await summary();await panel.locator('.more-options>summary').click();await panel.getByLabel('Columna Y del gráfico').selectOption('2');await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum');await panel.getByLabel('Series del gráfico').selectOption('1');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await panel.locator('.more-options>summary').click();return panel}
+async function configureSum(){const panel=await summary();await chartAssignColumn(page,2,'values');await (await chartAggregate(page,'Ventas')).selectOption('sum');await chartAssignColumn(page,1,'columns');await waitChartResult(page);return panel}
 
 test('F2a: suma por serie, total real, porcentajes y seis tipos alcanzables con teclado',async()=>{
  const panel=await configureSum(),table=panel.locator('.pivot-result table')
@@ -69,7 +69,7 @@ test('F2a: cuatro capturas reales, resultado y límites visibles en ambos temas 
   await test.info().attach(`marks-${theme}-${width}`,{body:JSON.stringify(marks,null,2),contentType:'application/json'})
   await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath(`after-${theme}-${width}x${height}.png`)})
  }
- await panel.locator('.more-options>summary').click();await expect(panel.getByText('Ver consulta',{exact:true})).toBeVisible()
+ await openChartDetails(page);await expect(panel.getByText('Ver consulta',{exact:true})).toBeVisible()
 })
 
 test('F2a: estados vacío, error numérico, truncado y ventana estrecha con captura',async()=>{
@@ -78,7 +78,8 @@ test('F2a: estados vacío, error numérico, truncado y ventana estrecha con capt
  await openAnalysis(page,'Gráficos')
  await expect(page.getByText('Elige qué quieres ver: coloca un campo en Filas y un número en Valores.',{exact:true})).toBeVisible();await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-empty.png')})
  await showTable(page,'ventas.csv');panel=await summary()
- await panel.locator('.more-options>summary').click();await panel.getByLabel('Columna Y del gráfico').selectOption('3');await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum')
+ // Compatibilidad de un preset válido anterior: la UI actual no ofrece sumar porcentajes perfilados como texto.
+ await applyLegacyChartPreset(page,doc,{headers:doc.headers!,options:{kind:'bar',x:0,y:3,bins:10,aggregate:'sum',descending:false,measureType:'number',series:-1,time:'none'},where:{conditions:[],filterMode:'all'}},'Porcentaje legado')
  await expect(panel.locator('.result-announcement')).toContainText('No se pudo calcular el resultado. El archivo no se modificó.');expect(await page.locator('body').innerText()).not.toContain('No hay valores numéricos utilizables');await panel.locator('.chart-info>summary').click();await expect(panel.locator('.info-content')).toContainText('No hay valores numéricos utilizables');await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-error.png')});await page.getByRole('button',{name:'Cerrar aviso',exact:true}).click()
  const many=join(folder,'grupos.csv');await writeFile(many,'Grupo,Valor\n'+Array.from({length:150},(_,i)=>`G${i},${i}`).join('\n')+'\n');await page.evaluate(file=>window.freya.openPaths([file]),many)
  panel=await summary();await expect(panel.locator('.truncated')).toContainText('Se muestran los primeros 100 de 150 grupos');await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-truncated.png')})
@@ -109,7 +110,8 @@ test('F2a: idioma inglés, foco, anuncios y ventana de 800 px',async()=>{
  await expect(page.locator('.analysis-sections').getByRole('tab',{name:'Charts',exact:true})).toHaveAttribute('aria-selected','true')
  await expect(panel.getByLabel('Chart configuration',{exact:true})).toHaveText('Sum of Ventas by Región · split by Canal')
  await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Result updated');await expect(panel.locator('.chart-result>.result-announcement')).toHaveAttribute('aria-live','polite')
- await panel.locator('.more-options>summary').focus();await page.keyboard.press('Enter');await expect(panel.getByLabel('Chart X column')).toBeVisible();await panel.locator('.more-options>summary').focus();await page.keyboard.press('Enter')
+ const fields=await openChartFields(page),settings=fields.locator('.chart-settings'),settingsSummary=settings.locator(':scope > summary')
+ await settingsSummary.focus();await page.keyboard.press('Enter');await expect(panel.getByLabel('Chart scope')).toBeVisible();await expect(settingsSummary).toBeFocused();await page.keyboard.press('Enter');await expect(settings).not.toHaveAttribute('open')
  await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-en.png')})
  await page.evaluate(()=>window.freya.setLanguage('es'))
  await page.setViewportSize({width:800,height:720});const box=await panel.locator('.pivot-result').boundingBox();expect(box!.y+box!.height).toBeLessThanOrEqual(720)
@@ -127,15 +129,16 @@ test('F2a: en-XA real no recorta el resultado ni desborda los controles',async()
 })
 
 test('F2a: filtros del gráfico se pueden operar en inglés sin cambiar la tabla',async()=>{
- const panel=await configureSum();await page.evaluate(()=>window.freya.setLanguage('en'));await panel.locator('.more-options>summary').click();await panel.getByRole('button',{name:'Chart filters',exact:true}).click()
- const filters=panel.getByRole('region',{name:'Chart filters',exact:true});await expect(filters).toBeVisible();await filters.getByRole('button',{name:'Add condition',exact:true}).click()
+ const panel=await configureSum();await page.evaluate(()=>window.freya.setLanguage('en'));await chartAssign(page,'Región','filters')
+ const filters=panel.getByRole('region',{name:'Chart filters',exact:true});await expect(filters).toBeVisible();await expect(filters.getByLabel('Condition value 1',{exact:true})).toHaveValue('');await expect(panel.getByRole('region',{name:'Filters',exact:true}).locator('.chip')).toHaveCount(0)
+ await filters.getByRole('button',{name:'Remove condition 1',exact:true}).click();await filters.getByRole('button',{name:'Add condition',exact:true}).click()
  await filters.getByLabel('Condition column 1',{exact:true}).selectOption('0');await filters.getByLabel('Condition operator 1',{exact:true}).selectOption('equals');await filters.getByLabel('Condition value 1',{exact:true}).fill('Norte');await filters.getByRole('button',{name:'Apply chart filters',exact:true}).click()
  await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Result updated');await expect(panel.locator('.pivot-result tfoot')).toContainText('2,000');expect(await readFile(path,'utf8')).toBe(original)
 })
 
 test('F2a: elegir Líneas aplica la agrupación mensual sugerida para fechas ISO',async()=>{
  const file=join(folder,'fechas.csv');await writeFile(file,'Fecha,Ventas\n2026-01-01,10\n2026-01-15,20\n2026-02-01,30\n');await page.evaluate(file=>window.freya.openPaths([file]),file)
- const panel=await summary();await panel.locator('.more-options>summary').click();await panel.getByLabel('Columna Y del gráfico').selectOption('1');await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await panel.locator('.more-options>summary').click()
+ const panel=await summary();await chartAssignColumn(page,1,'values');await (await chartAggregate(page,'Ventas')).selectOption('sum');await chartType(page,'bar');const settings=await openChartSettings(page);await settings.getByLabel('Agrupación temporal del gráfico',{exact:true}).selectOption('none');await waitChartResult(page);await settings.locator(':scope > summary').click()
  await panel.locator('.chart-types').getByRole('button',{name:'Líneas',exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await expect(panel.locator('.pivot-result tbody tr')).toHaveCount(2)
  await expect(panel.locator('.pivot-result tbody tr').first()).toContainText('2026-01');await expect(panel.locator('.pivot-result tfoot')).toContainText('60')
 })
@@ -175,9 +178,9 @@ test('AN-1b: desde Texto con cambios, Cancelar conserva el borrador y descartar 
 
 test('F2a: series sin depender del color y cifras legibles sobre las celdas del mapa de calor',async()=>{
  const file=join(folder,'series.csv');await writeFile(file,'Paso,Valor,Serie\n0,10,A\n1,20,A\n0,15,B\n1,25,B\n0,10,A\n');await page.evaluate(file=>window.freya.openPaths([file]),file)
- const panel=await summary();await panel.locator('.more-options>summary').click();await panel.getByLabel('Columna X del gráfico').selectOption('0');await panel.getByLabel('Columna Y del gráfico').selectOption('1');await panel.getByLabel('Tipo de medida del gráfico').selectOption('number');await panel.getByLabel('Resumen del gráfico').selectOption('sum');await panel.getByLabel('Series del gráfico').selectOption('2');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await panel.locator('.more-options>summary').click()
+ const panel=await summary();await chartAssignColumn(page,0,'rows');await chartAssignColumn(page,1,'values');await (await chartAggregate(page,'Valor')).selectOption('sum');await chartAssignColumn(page,2,'columns');await waitChartResult(page)
  await panel.locator('.chart-types').getByRole('button',{name:'Líneas',exact:true}).click();await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await expect(panel.locator('.plot svg [stroke-dasharray]').first()).toBeAttached();await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-line-patterns.png')})
- await panel.locator('.chart-types').getByRole('button',{name:'Mapa de calor',exact:true}).click();await panel.locator('.more-options>summary').click();await panel.getByLabel('Columna Y del gráfico').selectOption('2');await expect(panel.locator('.chart-result>.result-announcement')).toContainText('Resultado actualizado');await panel.locator('.more-options>summary').click()
+ await panel.locator('.chart-types').getByRole('button',{name:'Mapa de calor',exact:true}).click();await chartAssignColumn(page,2,'columns');await waitChartResult(page)
  const readHeatmap=()=>panel.locator('.plot').evaluate(root=>{
    const shapes=[...root.querySelectorAll('svg path,svg rect')].map(node=>({fill:getComputedStyle(node).fill,box:node.getBoundingClientRect()}))
    const cells=[...root.querySelectorAll('svg text')].flatMap(node=>{

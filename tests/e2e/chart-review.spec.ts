@@ -1,4 +1,4 @@
-import {chartPanel,openAnalysis,createSuggestedChart} from './panel'
+import {chartPanel,openAnalysis,createSuggestedChart,openChartSettings} from './panel'
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import { closeElectron } from './close-electron'
 import electronPath from 'electron'
@@ -133,8 +133,7 @@ test('Revisión108 final · el aviso explica el campo de orden y los empates de 
    await expect(panel().locator('.pivot-result tbody th')).toHaveText([...labels])
    await expect(panel().locator('.pivot-result tfoot th')).toHaveText(language==='es'?'Total de los 842 grupos':'Total for all 842 groups')
   }
-  const options=panel().locator('.more-options')
-  await options.locator(':scope > summary').click()
+  const options=await openChartSettings(page)
   const order=options.getByRole('combobox',{name:language==='es'?'Orden del gráfico':'Chart order',exact:true})
   await aggregate.selectOption('sum')
   await order.selectOption({index:1})

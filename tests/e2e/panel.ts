@@ -2,6 +2,9 @@ import {runApplicationMenu} from './application-menu'
 import {expect,type Page,type ElectronApplication} from '@playwright/test'
 import {t} from '../../src/shared/i18n'
 import type {Language,TranslationParameters} from '../../src/shared/i18n'
+import type {ChartKind} from '../../src/shared/charts'
+import type {ChartConfiguration} from '../../src/shared/chart-presets'
+import type {DocumentInfo} from '../../src/shared/types'
 const sections={'Información':'info','Gráficos':'charts','Estadísticas':'statistics','Análisis':'sql','SQL':'sql'} as const
 const workspace=(page:Page)=>page.locator('.analysis-workspace:not([hidden])')
 async function translated(page:Page,key:string,parameters:TranslationParameters={}){return t(key,parameters,(await page.locator('html').getAttribute('lang')??'es') as Language)}
@@ -76,8 +79,67 @@ export async function openAnalysisExport(page:Page){
 export async function analysisExportItem(page:Page,key:string,parameters:TranslationParameters={}){return(await openAnalysisExport(page)).getByRole('menuitem',{name:await translated(page,key,parameters),exact:true})}
 export async function exportAnalysis(page:Page,key:string,parameters:TranslationParameters={}){await(await analysisExportItem(page,key,parameters)).click()}
 export const chartPanel=(page:Page)=>workspace(page).locator('.charts-panel')
-// El botón manual cubre revisión nueva/archivo grande; en automático se usa el del formulario.
-export const chartGenerate=(page:Page)=>chartPanel(page).locator('.manual>button,.more-options form button[type=submit]').first()
+// Solo el botón real: manual, revisión cambiada o reintento de una cancelación.
+export const chartGenerate=(page:Page)=>chartPanel(page).locator('.manual>button')
+export async function openChartFields(page:Page){
+ const panel=chartPanel(page),fields=panel.getByRole('complementary',{name:await translated(page,'charts.fields.panel'),exact:true,includeHidden:true})
+ await expect(panel).toBeVisible();await expect(fields).toBeAttached()
+ if(!await fields.isVisible())await panel.getByRole('button',{name:await translated(page,'charts.fields.panel'),exact:true}).click()
+ await expect(fields).toBeVisible();return fields
+}
+export async function openChartSettings(page:Page){
+ const fields=await openChartFields(page),settings=fields.locator('.chart-settings')
+ if(await settings.getAttribute('open')===null)await settings.locator(':scope>summary').click()
+ return settings
+}
+export async function openChartDetails(page:Page){
+ const info=chartPanel(page).locator('.chart-info')
+ if(await info.getAttribute('open')===null)await info.locator(':scope>summary').click()
+ return info
+}
+export async function openChartData(page:Page){
+ const info=await openChartDetails(page),table=info.locator('details').filter({has:page.locator(':scope>summary').filter({hasText:await translated(page,'charts.ui.table')})})
+ if(await table.getAttribute('open')===null)await table.locator(':scope>summary').click()
+ return table
+}
+export async function chartAssign(page:Page,field:string,zone:'rows'|'columns'|'values'|'filters'){
+ const fields=await openChartFields(page),entry=fields.locator('.field-entry').filter({has:page.getByTitle(field,{exact:true})})
+ await entry.getByRole('button').click()
+ const destination=await translated(page,'charts.fields.destination',{zone:await translated(page,'charts.fields.'+zone)}),recommended=await translated(page,'charts.fields.recommended')
+ const escaped=(value:string)=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')
+ await page.getByRole('menuitem',{name:new RegExp('^'+escaped(destination)+'(?: '+escaped(recommended)+')?$')}).click()
+}
+export async function chartSource(page:Page){
+ const id=(await page.locator('.tabs[role=tablist]').getByRole('tab',{selected:true}).getAttribute('id'))?.replace('workspace-tab-analysis:','')
+ const doc=(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.id===id)
+ if(!doc?.headers)throw new Error('No hay una fuente CSV en la pestaña de análisis activa')
+ return doc
+}
+export async function chartAssignColumn(page:Page,column:number,zone:'rows'|'columns'|'values'|'filters'){
+ const {headers}=await chartSource(page),name=headers![column]||await translated(page,'charts.fields.emptyHeader',{n:column+1})
+ await chartAssign(page,headers!.filter(value=>value===headers![column]).length>1?`${column+1}. ${name}`:name,zone)
+}
+export async function chartType(page:Page,kind:ChartKind){
+ await chartPanel(page).getByRole('group',{name:await translated(page,'charts.ui.chooseType'),exact:true}).getByRole('button',{name:await translated(page,kind==='box'?'charts.ui.boxButton':'charts.kind.'+kind),exact:true}).click()
+}
+export async function chartAggregate(page:Page,field:string){
+ await openChartFields(page);return chartPanel(page).getByLabel(await translated(page,'charts.fields.aggregate',{field}),{exact:true})
+}
+export async function waitChartResult(page:Page){
+ const message=await translated(page,'charts.fields.ready',{n:'__COUNT__'}),escaped=(value:string)=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')
+ await expect(chartPanel(page).locator('.chart-result>.result-announcement')).toHaveText(new RegExp('^'+message.split('__COUNT__').map(escaped).join('.*')+'$'))
+}
+// Compatibilidad: configuración persistida válida que la UI simplificada no construye hoy.
+// El puente estricto guarda el preset real; Aplicar sigue siendo una acción de la interfaz.
+export async function applyLegacyChartPreset(page:Page,doc:DocumentInfo,configuration:ChartConfiguration,name:string){
+ const preset=await page.evaluate(({id,name,configuration})=>window.freya.saveChartPreset(id,{name,configuration}),{id:doc.id,name,configuration})
+ const settings=await openChartSettings(page),library=settings.locator('.presets')
+ if(await library.getAttribute('open')===null)await library.locator(':scope>summary').click()
+ await library.getByRole('button',{name:await translated(page,'charts.presets.refresh'),exact:true}).click()
+ await library.getByLabel(await translated(page,'charts.presets.choice'),{exact:true}).selectOption(preset.id)
+ await library.getByRole('button',{name:await translated(page,'charts.presets.apply'),exact:true}).click()
+ return preset
+}
 export const chartSuggestion=(page:Page)=>chartPanel(page).locator('.empty-result button')
 export async function createSuggestedChart(page:Page){
  const panel=chartPanel(page)

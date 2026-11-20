@@ -1,4 +1,4 @@
-import {chartPanel,openAnalysis,showPanel,showTable,createSuggestedChart} from './panel'
+import {chartPanel,openAnalysis,showPanel,showTable,createSuggestedChart,openChartFields} from './panel'
 import {test,expect,_electron as electron,type ElectronApplication,type Page,type Locator} from '@playwright/test'
 import { closeElectron } from './close-electron'
 import {traceElectronFailure} from './electron-trace'
@@ -132,8 +132,11 @@ test('U0: Más opciones sigue visible con resumen paginado y controles de 13 px'
  await open(csv);await openAnalysis(page,'Gráficos');await createSuggestedChart(page);await expect(page.locator('.pivot-result')).toBeVisible()
  for(const width of [1280,1440,800]){
   await page.setViewportSize({width,height:width===1440?900:720})
-  const summary=page.locator('.more-options>summary');await test.info().attach('an1b-layout-'+width,{body:JSON.stringify(await page.locator('.analysis-workspace').evaluate(root=>Object.fromEntries([':scope','header','.analysis-sections','h2','.charts-panel','.chart-result','.chart-intro','.result-status','.truncated','.chart-types','.suggestion','.plot-scroll','.pivot-result','.more-options'].map(selector=>{const node=root.querySelector(selector)??root,box=node.getBoundingClientRect();return[selector,{y:box.y,height:box.height,bottom:box.bottom,scroll:node.scrollHeight,client:node.clientHeight}]})))),contentType:'application/json'});await expect(summary).toBeInViewport({ratio:1})
-  await summary.focus();await page.keyboard.press('Enter');await expect(page.locator('.more-options')).toHaveAttribute('open','');await page.keyboard.press('Enter')
+  const fields=await openChartFields(page),settings=fields.locator('.chart-settings'),summary=settings.locator(':scope > summary');await summary.scrollIntoViewIfNeeded();await test.info().attach('an1b-layout-'+width,{body:JSON.stringify(await page.locator('.analysis-workspace').evaluate(root=>Object.fromEntries([':scope','header','.analysis-sections','h2','.charts-panel','.chart-result','.chart-intro','.result-status','.truncated','.chart-types','.suggestion','.plot-scroll','.pivot-result','.chart-fields','.chart-settings'].map(selector=>{const node=root.querySelector(selector)??root,box=node.getBoundingClientRect();return[selector,{y:box.y,height:box.height,bottom:box.bottom,scroll:node.scrollHeight,client:node.clientHeight}]})))),contentType:'application/json'});await expect(summary).toBeInViewport({ratio:1})
+  await summary.focus();await page.keyboard.press('Enter');await expect(settings).toHaveAttribute('open','');await expect(summary).toBeFocused()
+  const controls=await settings.locator('select,input,button').evaluateAll(nodes=>nodes.filter(node=>node.getClientRects().length>0).map(node=>({label:node.getAttribute('aria-label')||node.textContent,font:parseFloat(getComputedStyle(node).fontSize)})))
+  expect(controls.length).toBeGreaterThan(0);for(const control of controls)expect(control.font,control.label??'').toBeGreaterThanOrEqual(13)
+  await summary.focus();await page.keyboard.press('Enter');await expect(settings).not.toHaveAttribute('open');await expect(summary).toBeFocused()
  }
 })
 

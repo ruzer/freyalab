@@ -56,7 +56,7 @@
  const rowProfile=$derived(profiles.find(field=>field.column===options.x)?.profile)
  const valueProfile=$derived(profiles.find(field=>field.column===options.y)?.profile)
  const manualAxes=$derived(!fieldsLoading&&(!profiles.length||options.x>=0&&!rowProfile||options.y>=0&&!valueProfile))
- const groupDates=$derived(['bar','line'].includes(options.kind)&&(rowProfile?.kind==='date'||manualAxes&&!rowProfile))
+ const groupDates=$derived(['bar','line'].includes(options.kind)&&((rowProfile?.dates??0)>0||manualAxes&&!rowProfile||!!options.time&&options.time!=='none'))
  const pivot=$derived(data?chartPivot(data,options,totals):null)
  const resultOrder=$derived.by(()=>{
   const direction=t(options.kind!=='heatmap'&&options.descending?'charts.fields.descending':'charts.fields.ascending')
@@ -232,7 +232,7 @@
   {/if}
    {#if groupDates}<label>{t('charts.ui.groupDates')} <select aria-label={t('charts.ui.groupDatesLabel')} bind:value={options.time}>{#each Object.entries(chartTimeGroups) as [unit,title]}<option value={unit}>{t('charts.time.'+unit)}</option>{/each}</select></label>{/if}
    {#if options.kind==='histogram'}<label>{t('charts.ui.bins')} <input aria-label={t('charts.ui.binsLabel')} type="number" min="1" max="30" bind:value={options.bins}/></label>{/if}
-  {#if manualAxes&&aggregated}
+  {#if aggregated}
     <label>{t('charts.ui.measure')} <select aria-label={t('charts.ui.measureLabel')} bind:value={options.measureType} onchange={event=>{if(event.currentTarget.value==='text'&&!['count','distinct'].includes(options.aggregate))options.aggregate='count'}}><option value="text">{t('charts.ui.text')}</option><option value="number">{t('charts.ui.number')}</option></select></label>
   {/if}
    {#if ['bar','line','scatter'].includes(options.kind)}<label>{t('charts.ui.order')} <select aria-label={t('charts.ui.orderLabel')} bind:value={options.descending}><option value={false}>{temporal?t('charts.ui.oldest'):options.kind==='bar'?(options.series!==undefined&&options.series>=0?t('charts.ui.az'):t('charts.ui.lowFirst')):t('charts.ui.lowX')}</option><option value={true}>{temporal?t('charts.ui.newest'):options.kind==='bar'?(options.series!==undefined&&options.series>=0?t('charts.ui.za'):t('charts.ui.highFirst')):t('charts.ui.highX')}</option></select></label>{/if}
