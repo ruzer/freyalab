@@ -41,3 +41,7 @@ En ese checkpoint solo había alcance, inventario y nuevas pruebas sin ejecutar;
 ## Actualización de composición
 
 El alcance G se conserva. La preparación final reúne #202 → #203 → #204 → #205 y G mediante merges normales, con base comparativa sin G `7d1be5f5c26c0b9b96a6e6dcda8be4c01eb9356f` y producto integrado `3d2511f7d08d36bad103e1a4cfc314c4270795f1`. No se añaden capacidades a las siete respuestas anteriores. Los cierres enfocados, los 32 PNG aislados y los 16 de composición están ligados a sus fases en la evidencia; la suite integral y la CI del head de publicación no se dan por aprobadas en este checkpoint. Ninguna prueba se elimina.
+
+## Consumidores de guardado encontrados al cerrar
+
+Además de icons.spec, el cierre integral encontró dos selectores del pie en text-encoding.spec (cuatro identidades). Se actualizan a .toast.success con el mismo mensaje y todos los datos, carrera, codificación, firma y bytes intactos. No se cambia producto ni se borra una prueba. Las siete respuestas del ADR siguen iguales. El estado de E1 local bajo sesión bloqueada queda documentado sin cambiar el test ni su aserción.

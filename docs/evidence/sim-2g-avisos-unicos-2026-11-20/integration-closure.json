@@ -1,0 +1,71 @@
+{
+  "formatVersion": 1,
+  "productUnchangedByConsumerFix": true,
+  "sourceCheckpoint": "91f6c5b50f6719222931ccba8f02efdf2f2363d5",
+  "consumerFix": "55447f591e158837924a31b6f0d4a97d54db1d01",
+  "completeRun": {
+    "stats": {
+      "startTime": "2026-11-20T09:52:36.177Z",
+      "duration": 1893405.1060000001,
+      "expected": 835,
+      "skipped": 0,
+      "unexpected": 6,
+      "flaky": 0
+    },
+    "processSeconds": 1895.697216375018,
+    "actualOrdinaryPasses": 834,
+    "expectedSEG_S2eFailure": 1,
+    "unexpectedNativeFocus": 2,
+    "unexpectedRetiredFooterConsumers": 4,
+    "reportSHA256": "529269c728effee68ac930295db24653f1787011294ee40f00aad5dbfb8e0bb4"
+  },
+  "mainControl": {
+    "head": "8a002af72fd015db8457c67974ac10dbf37c0b1a",
+    "stats": {
+      "startTime": "2026-11-20T10:24:34.036Z",
+      "duration": 33293.865,
+      "expected": 0,
+      "skipped": 0,
+      "unexpected": 2,
+      "flaky": 0
+    },
+    "processSeconds": 33.906748916982906,
+    "sessionReportedLockedBeforeAndAfter": true,
+    "sameTwoFocusFailures": "document.hasFocus() remained true at unchanged15s oracle",
+    "testAndEditorByteIdentical": true,
+    "causeNotProvenWithoutUnlockedControl": true,
+    "reportSHA256": "f7f74e7f72d0b7663982e5ebf603e5af18850f16ed6045205805863e00889678"
+  },
+  "consumerGreen": {
+    "stats": {
+      "startTime": "2026-11-20T10:25:09.866Z",
+      "duration": 4294.9580000000005,
+      "expected": 4,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "processSeconds": 4.799753291998059,
+    "reportSHA256": "e84c308de86b5a2ba64fdf51963fefea443a8ea55aba0079980ab1bb1e8498cd",
+    "onlyChange": "Two status() locators replaced with .toast.success; identical messages, data/race/bytes/dirty-state oracles."
+  },
+  "testCount": {
+    "before": 841,
+    "after": 841,
+    "deleted": 0,
+    "skippedAdded": 0
+  },
+  "unchanged": [
+    "src",
+    "package.json",
+    "package-lock.json",
+    "timeouts",
+    "retries",
+    "workflow",
+    "case titles",
+    "data assertions"
+  ],
+  "fullFinalGreenNotClaimed": true,
+  "CI": "pending new frozen head",
+  "newRawPublicLogs": 0
+}

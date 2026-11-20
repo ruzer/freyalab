@@ -1199,5 +1199,17 @@
     "captureCount": 16,
     "fullQualification": "pending publication head",
     "manualInstallerValidation": "not run"
+  },
+  "integrationClosure": "integration-closure.json",
+  "additionalConsumer": {
+    "path": "tests/e2e/text-encoding.spec.ts",
+    "lines": [
+      84,
+      112
+    ],
+    "onlyChange": "status() to .toast.success at two saved-message assertions",
+    "identities": 4,
+    "dataRaceEncodingDirtyAndBytesAssertionsPreserved": true,
+    "deletedTests": 0
   }
 }
