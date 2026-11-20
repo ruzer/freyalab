@@ -151,3 +151,7 @@ body:has(dialog[open],.modal-backdrop) .toolbar button:is(.primary,.btn-primary)
 
 /* SIM-1g · La alineación de ContextMenu se comparte con los demás menús. */
 :is(.dropdown,.range-context,[role="menu"]) :is(button,[role="menuitem"]),.dropdown-label{justify-content:flex-start;text-align:left}
+
+/* SIM-2g · El aviso deja sitio a la ayuda de Información y el pie sigue al fondo. */
+.app-shell:has(.analysis-workspace:not([hidden]) .info-section:not([hidden]))>.toast{position:static;transform:none;align-self:center;flex-shrink:0;margin:8px 12px;order:1}
+.app-shell:has(.analysis-workspace:not([hidden]) .info-section:not([hidden])):has(>.toast)>.statusbar{order:2}

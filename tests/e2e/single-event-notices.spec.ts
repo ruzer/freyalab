@@ -19,6 +19,14 @@ const digest=(bytes:Buffer)=>createHash('sha256').update(bytes).digest('hex')
 const tr=(key:string,parameters:TranslationParameters={})=>t(key,parameters,language)
 const toast=()=>page.locator('.toast:not(.close-notice)')
 const footer=()=>page.locator('footer.statusbar')
+async function noticeOverlapsHelp(){
+ return page.evaluate(()=>{
+  const notice=document.querySelector('.toast:not(.close-notice)')!,help=document.querySelector('.analysis-workspace:not([hidden]) .columns-overview>details>summary')!
+  const range=document.createRange();range.selectNodeContents(help)
+  const box=notice.getBoundingClientRect()
+  return [...range.getClientRects()].some(text=>text.left<box.right&&text.right>box.left&&text.top<box.bottom&&text.bottom>box.top)
+ })
+}
 const projectPanel=()=>page.getByRole('tabpanel',{name:tr('project.tab'),exact:true})
 const manifest=async()=>JSON.parse(await readFile(join(folder,'proyecto.freyalab'),'utf8')) as ProjectManifest
 
@@ -89,6 +97,18 @@ for(const locale of ['es','en-XA'] as const){
   else{await expect(toast()).toContainText('chángëd öütsïdë FrëyáLáb.');await expect(toast()).not.toContainText('cambió fuera')}
   await expect(toast()).not.toContainText('Al guardar se comprobarán');await expect(toast()).not.toContainText(/when saving|ön sávïng|whën sávïng/i);await expect.poll(()=>footer().innerText()).toBe(before)
   await expect(page.locator('.document-workspace .external-banner')).toHaveCount(1);await expect(page.locator('.document-workspace .external-banner')).not.toBeVisible();await expect(page.locator('.tabs[role=tablist]').getByRole('tab',{selected:true})).toHaveAttribute('id',selected!)
+  await page.emulateMedia({reducedMotion:'reduce'})
+  const layouts=[]
+  for(const size of [{width:1440,height:900},{width:1280,height:720}])for(const theme of ['light','dark']){
+   await page.setViewportSize(size);await page.getByRole('combobox',{name:'Tema',exact:true}).selectOption(theme)
+   await expect.poll(()=>page.locator('html').evaluate(node=>node.classList.contains('dark'))).toBe(theme==='dark')
+   await expect(workspace.locator('.columns-overview>details>summary')).toBeVisible();await page.evaluate(()=>document.fonts.ready)
+   const overlap=await noticeOverlapsHelp(),name=locale+'-'+theme+'-'+size.width+'x'+size.height
+   layouts.push({name,overlap});await page.screenshot({path:test.info().outputPath('notice-help-'+name+'.png'),animations:'disabled'})
+   expect.soft(overlap,name+': el aviso no debe tapar el texto de ayuda').toBe(false)
+   await expect.poll(()=>footer().evaluate(node=>Math.abs(node.getBoundingClientRect().bottom-innerHeight))).toBeLessThanOrEqual(1)
+  }
+  await writeFile(test.info().outputPath('notice-help-layouts.json'),JSON.stringify(layouts,null,2))
   await toast().getByRole('button',{name:'Cerrar aviso',exact:true}).press('Enter');await expect(toast()).toHaveCount(0);await unchangedRegistration(record)
  })
 }
