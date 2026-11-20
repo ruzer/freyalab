@@ -6,7 +6,7 @@ import {join,resolve} from 'node:path'
 import {chartSQL,chartData,type ChartOptions} from '../../src/shared/charts'
 import {chartPivot} from '../../src/shared/chart-pivot'
 import type {SqlRequest} from '../../src/shared/types'
-import {openAnalysis,chartPanel,chartSuggestion,chartGenerate,exportAnalysis} from './panel'
+import {openAnalysis,chartPanel,chartSuggestion,chartAssign,chartType,openChartDetails,waitChartResult,exportAnalysis} from './panel'
 import {closeElectron} from './close-electron'
 
 let app:ElectronApplication|undefined,folder:string|undefined
@@ -33,11 +33,10 @@ for(const kind of ['scatter','line'] as const)test(`${kind} sin fechas carga la 
 
  await openAnalysis(page,'Gráficos');await expect(chartSuggestion(page)).toBeEnabled()
  const panel=chartPanel(page)
- await panel.locator('.more-options>summary').click()
- await panel.getByLabel('Tipo de gráfico',{exact:true}).selectOption(kind)
- await panel.getByLabel('Columna X del gráfico',{exact:true}).selectOption('0')
- await panel.getByLabel('Columna Y del gráfico',{exact:true}).selectOption('1')
- if(kind==='line')await expect(panel.getByLabel('Agrupación temporal del gráfico',{exact:true})).toHaveValue('none')
+ await chartAssign(page,'X','rows');await chartAssign(page,'Y','values')
+ // La última elección de tipo inicia la única carga observada; no existe un submit automático.
+ await chartType(page,kind==='scatter'?'line':'scatter');await waitChartResult(page)
+ await page.evaluate(()=>window.freya.documents())
  await app.evaluate(({ipcMain})=>{
   type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
   const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')!
@@ -48,14 +47,15 @@ for(const kind of ['scatter','line'] as const)test(`${kind} sin fechas carga la 
    return original(event,...args)
   })
  })
- await chartGenerate(page).click()
+ await chartType(page,kind);await waitChartResult(page)
+ if(kind==='line')await expect(panel.getByLabel('Agrupación temporal del gráfico',{exact:true})).toHaveCount(0) // time:none sigue contrastado en SQL exacta.
  await expect(panel.locator('.pivot-result')).toBeVisible()
  const actualPivot=await panel.locator('.pivot-result tbody tr').evaluateAll(rows=>rows.map(row=>[...row.querySelectorAll('th,td')].map(cell=>cell.textContent)))
  expect(actualPivot).toEqual(pivot.rows.map(row=>[row.label,...row.values.map(value=>value===null?'—':String(Number(value)))]))
  expect(await panel.locator('.pivot-result tfoot td').allTextContents()).toEqual(pivot.totalValues.map(value=>value===null?'—':String(Number(value))))
  await expect(panel.locator('.pivot-result thead')).not.toContainText('% del total')
 
- const accessible=panel.locator('.more-options details').filter({has:page.locator('summary').filter({hasText:'Datos del gráfico: tabla accesible'})})
+ const accessible=(await openChartDetails(page)).locator('details').filter({has:page.locator(':scope>summary').filter({hasText:'Datos del gráfico: tabla accesible'})})
  await accessible.locator('summary').click()
  const actualRows=await accessible.locator('tbody tr').evaluateAll(rows=>rows.map(row=>[...row.querySelectorAll('td')].map(cell=>cell.textContent)))
  expect(actualRows).toEqual(data.rows.map(row=>row.map(value=>value===null?'—':value)))

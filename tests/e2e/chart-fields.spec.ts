@@ -112,7 +112,7 @@ test('F2b: filtros reutilizados, exportación y datos originales intactos',async
  const filters=panel.getByRole('region',{name:'Filtros del gráfico',exact:true});await filters.getByLabel('Operador de condición 1',{exact:true}).selectOption('equals');await filters.getByLabel('Valor de condición 1',{exact:true}).fill('Norte');await filters.getByRole('button',{name:'Aplicar filtros del gráfico',exact:true}).click()
  await expect(panel.locator('.pivot-result tfoot')).toContainText('2,000');await expect(panel.getByRole('region',{name:'Filtros',exact:true})).toContainText('Región')
  await expect(panel.getByRole('button',{name:'Mover a… Región',exact:true})).toBeFocused()
- await panel.locator('.more-options>summary').click();await exportAnalysis(page,'charts.ui.exportImage',{format:'SVG'});await expect.poll(async()=>{try{return await readFile(join(folder,'exports','ventas.svg'),'utf8')}catch{return''}}).toContain('<svg')
+ await exportAnalysis(page,'charts.ui.exportImage',{format:'SVG'});await expect.poll(async()=>{try{return await readFile(join(folder,'exports','ventas.svg'),'utf8')}catch{return''}}).toContain('<svg')
  await exportAnalysis(page,'charts.ui.exportImage',{format:'PNG'});await expect.poll(async()=>{try{return (await readFile(join(folder,'exports','ventas.png'))).subarray(1,4).toString()}catch{return''}}).toBe('PNG')
  await exportAnalysis(page,'charts.ui.exportImage',{format:'PDF'});await expect.poll(async()=>{try{return (await readFile(join(folder,'exports','ventas.pdf'))).subarray(0,4).toString()}catch{return''}}).toBe('%PDF')
  expect(await readFile(path,'utf8')).toBe(original);expect((await page.evaluate(()=>window.freya.documents()))[0].dirty).toBe(false)
@@ -141,7 +141,7 @@ test('F2b: 200 campos, nombres Unicode, idioma seudolocalizado y tamaños accesi
  const search=panel.getByRole('searchbox');await search.fill('credito');await expect(panel.getByRole('listitem')).toHaveCount(1);await expect(panel.getByRole('listitem')).toContainText('Crédito «México» "ñ"')
  await page.mouse.move(0,0);await page.screenshot({path:test.info().outputPath('state-200-fields.png')})
  await page.evaluate(()=>window.freya.setLanguage('en'));await expect(panel.getByRole('searchbox',{name:'Search fields…',exact:true})).toBeVisible();await search.fill('');await expect(panel.getByRole('listitem')).toHaveCount(200)
- const controls=await panel.locator('.chart-fields button,.chart-fields select,.chart-types button').evaluateAll(nodes=>nodes.filter(node=>!node.hasAttribute('disabled')).map(node=>{const rect=node.getBoundingClientRect();return{label:node.getAttribute('aria-label')||node.textContent,width:rect.width,height:rect.height}}));for(const box of controls){expect(box.width,box.label??'').toBeGreaterThanOrEqual(24);expect(box.height,box.label??'').toBeGreaterThanOrEqual(24)}
+ const controls=await panel.locator('.chart-fields button,.chart-fields select,.chart-types button').evaluateAll(nodes=>nodes.filter(node=>!node.hasAttribute('disabled')&&node.checkVisibility()).map(node=>{const rect=node.getBoundingClientRect();return{label:node.getAttribute('aria-label')||node.textContent,width:rect.width,height:rect.height}}));expect(controls.length).toBeGreaterThan(0);for(const box of controls){expect(box.width,box.label??'').toBeGreaterThanOrEqual(24);expect(box.height,box.label??'').toBeGreaterThanOrEqual(24)}
  expect(await readFile(file,'utf8')).toBe(content)
 })
 test('F2b: en-XA real, tema oscuro y ventana estrecha no recortan el resultado',async()=>{

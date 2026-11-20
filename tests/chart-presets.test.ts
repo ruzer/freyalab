@@ -73,3 +73,30 @@ it('conserva presets anteriores sin tendencia y guarda su opción booleana sin a
  await expect(library.save({name:'Inválida',configuration:{...next,options:{...next.options,trend:'true'}}},configuration.headers)).rejects.toThrow()
  expect(await library.list()).toEqual([old,saved])
 })
+
+it('SIM-2b: recorta el título propio y conserva presets anteriores sin título en la misma biblioteca',async()=>{
+ const {path,library}=await fixture(),old=await library.save({name:'Anterior',configuration},configuration.headers)
+ const titled={...configuration,options:{...configuration.options,title:'  Ingreso medio por ciudad, 2026  '}}
+ const saved=await library.save({name:'Con título',configuration:titled},configuration.headers)
+ expect(saved.configuration.options).toMatchObject({title:'Ingreso medio por ciudad, 2026'})
+ expect(old.configuration.options).not.toHaveProperty('title')
+ expect(await new ChartPresets(path).list()).toEqual([old,saved]);expect(JSON.parse(await readFile(path,'utf8')).version).toBe(1)
+})
+
+it('SIM-2b: acepta títulos recortados de uno y 120 caracteres',async()=>{
+ const {library}=await fixture()
+ for(const title of ['Ñ','á'.repeat(120)]){
+  const saved=await library.save({name:String(title.length),configuration:{...configuration,options:{...configuration.options,title:' '+title+' '}}},configuration.headers)
+  expect(saved.configuration.options).toMatchObject({title})
+ }
+})
+
+it('SIM-2b: rechaza títulos vacíos, excesivos, de otro tipo y claves ajenas sin escribir la biblioteca',async()=>{
+ const {path,library}=await fixture(),saved=await library.save({name:'Anterior',configuration},configuration.headers),before=await readFile(path,'utf8')
+ for(const title of ['', ' \t ', 'a'.repeat(121),42,null,{},['Texto']]){
+  await expect(library.save({name:'No guardar',configuration:{...configuration,options:{...configuration.options,title}}},configuration.headers)).rejects.toThrow()
+  expect(await readFile(path,'utf8')).toBe(before);expect(await library.list()).toEqual([saved])
+ }
+ await expect(library.save({name:'Ajena',configuration:{...configuration,options:{...configuration.options,otherTitle:'Texto'}}},configuration.headers)).rejects.toThrow()
+ expect(await readFile(path,'utf8')).toBe(before)
+})

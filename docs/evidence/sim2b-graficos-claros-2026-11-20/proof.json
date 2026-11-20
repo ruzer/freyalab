@@ -1,0 +1,1181 @@
+{
+  "createdAt": "2026-11-20T08:11:16.041836+00:00",
+  "state": "cierre local enfocado aprobado; listo para PR completo en borrador; CI pendiente",
+  "productSourceCaptureHead": "e7598ed64820116e1a348e592778891f879a9e6e",
+  "finalQualificationTarget": "00074b4764f03004246521a9d8de7887a37885e6",
+  "finalQualificationState": "Cierre local sobre 00074 aprobado; el SHA que se publique, incluidos documentos, requiere su CI propia.",
+  "captureRuns": [
+    {
+      "phase": "before",
+      "language": "es",
+      "head": "4e3289fee36702935c3be9de4eecf420f16225d4",
+      "mainArtifactSHA": "1f611e62345a551d8f0098aa90f450619e30c185aaae3eb09d91f78bcf175db1",
+      "fixtureSHA": "655c7b36ecb9890cf443e0209a1f4f524b0c697045fceff50f4ae116bfda305f",
+      "sourceCSVsha256": "1ca1f0084d88b564e5922040333ba25ed8def9fb590d221bb6ce3ea98344c574",
+      "svgTitle": "automatic"
+    },
+    {
+      "phase": "before",
+      "language": "en-XA",
+      "head": "4e3289fee36702935c3be9de4eecf420f16225d4",
+      "mainArtifactSHA": "1f611e62345a551d8f0098aa90f450619e30c185aaae3eb09d91f78bcf175db1",
+      "fixtureSHA": "655c7b36ecb9890cf443e0209a1f4f524b0c697045fceff50f4ae116bfda305f",
+      "sourceCSVsha256": "1ca1f0084d88b564e5922040333ba25ed8def9fb590d221bb6ce3ea98344c574",
+      "svgTitle": "automatic"
+    },
+    {
+      "phase": "after",
+      "language": "es",
+      "head": "e7598ed64820116e1a348e592778891f879a9e6e",
+      "mainArtifactSHA": "59d2429443ec6cec2902b8ba37e59dbb9a0eef5e29fc29aeb183da3ef0d75d20",
+      "fixtureSHA": "655c7b36ecb9890cf443e0209a1f4f524b0c697045fceff50f4ae116bfda305f",
+      "sourceCSVsha256": "1ca1f0084d88b564e5922040333ba25ed8def9fb590d221bb6ce3ea98344c574",
+      "svgTitle": "Ingreso medio por ciudad, 2026"
+    },
+    {
+      "phase": "after",
+      "language": "en-XA",
+      "head": "e7598ed64820116e1a348e592778891f879a9e6e",
+      "mainArtifactSHA": "59d2429443ec6cec2902b8ba37e59dbb9a0eef5e29fc29aeb183da3ef0d75d20",
+      "fixtureSHA": "655c7b36ecb9890cf443e0209a1f4f524b0c697045fceff50f4ae116bfda305f",
+      "sourceCSVsha256": "1ca1f0084d88b564e5922040333ba25ed8def9fb590d221bb6ce3ea98344c574",
+      "svgTitle": "Ingreso medio por ciudad, 2026"
+    }
+  ],
+  "images": [
+    {
+      "file": "before/es-light-1440x900-resultado.png",
+      "phase": "before",
+      "language": "es",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "resultado",
+      "bytes": 145000,
+      "sha256": "93af82b43baad027f6d5dfe8ca186990ddd9a7ae820fe0148279f2b08dacc9f6"
+    },
+    {
+      "file": "before/es-light-1440x900-ajustes.png",
+      "phase": "before",
+      "language": "es",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "ajustes",
+      "bytes": 188200,
+      "sha256": "a29537878a17b5a967aaae972053c494431ea3eb81cd90d3d5441ff24712c0af"
+    },
+    {
+      "file": "before/es-light-1440x900-detalles.png",
+      "phase": "before",
+      "language": "es",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "detalles",
+      "bytes": 233511,
+      "sha256": "5eab9c9ab1b76d07a9635b5fbd434cb3d0f5fbba9df8a9910e2811dd72f8670c"
+    },
+    {
+      "file": "before/es-dark-1440x900-resultado.png",
+      "phase": "before",
+      "language": "es",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "resultado",
+      "bytes": 145206,
+      "sha256": "215a53575501e1ce7290fcf491c39975cabf3d201fa16b657c60348789d0f186"
+    },
+    {
+      "file": "before/es-dark-1440x900-ajustes.png",
+      "phase": "before",
+      "language": "es",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "ajustes",
+      "bytes": 193043,
+      "sha256": "264d94709995ed102f58f411f3f7a0679c3d5d4033348ccb0d09dea89d11e039"
+    },
+    {
+      "file": "before/es-dark-1440x900-detalles.png",
+      "phase": "before",
+      "language": "es",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "detalles",
+      "bytes": 243545,
+      "sha256": "de206d8255f02764102576b2b7e744f735c9cf3a2436a6d7b9a0157963232054"
+    },
+    {
+      "file": "before/es-light-1280x720-resultado.png",
+      "phase": "before",
+      "language": "es",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "resultado",
+      "bytes": 140089,
+      "sha256": "1b5eb4464760941b20e7eb1fd7ed4174b55efa8984c63105bdbecb78dbc07844"
+    },
+    {
+      "file": "before/es-light-1280x720-ajustes.png",
+      "phase": "before",
+      "language": "es",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "ajustes",
+      "bytes": 164102,
+      "sha256": "f668db40985f880742b48b98a56a1f96545e694e94503f007ca816a1ed1f6ca4"
+    },
+    {
+      "file": "before/es-light-1280x720-detalles.png",
+      "phase": "before",
+      "language": "es",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "detalles",
+      "bytes": 200928,
+      "sha256": "cc70bc01587b602d97c99c84dfd9cef930e583a5ea4090418b079d319a84df41"
+    },
+    {
+      "file": "before/es-dark-1280x720-resultado.png",
+      "phase": "before",
+      "language": "es",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "resultado",
+      "bytes": 140149,
+      "sha256": "5d88476faa44cf1311ed8a77a5674ad014c483e59b30621ba1bd859530bf98b0"
+    },
+    {
+      "file": "before/es-dark-1280x720-ajustes.png",
+      "phase": "before",
+      "language": "es",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "ajustes",
+      "bytes": 163627,
+      "sha256": "712bdb22910063bd2e9c9ed1b9de2734126b9532f3b08ac54ace9cf9070274f8"
+    },
+    {
+      "file": "before/es-dark-1280x720-detalles.png",
+      "phase": "before",
+      "language": "es",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "detalles",
+      "bytes": 200701,
+      "sha256": "8cd1f17183dba6dab0631ec4c6bcaddec60311d69daa72ed9f67ab280cd860cf"
+    },
+    {
+      "file": "before/en-XA-light-1440x900-resultado.png",
+      "phase": "before",
+      "language": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "resultado",
+      "bytes": 166718,
+      "sha256": "169b26ea93babb308d6d1154b3fcf1f5bfe627bfce10eb2ceec636cff9ec4f44"
+    },
+    {
+      "file": "before/en-XA-light-1440x900-ajustes.png",
+      "phase": "before",
+      "language": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "ajustes",
+      "bytes": 209993,
+      "sha256": "1f4982ff2cbf864a2678a4074dc2219480698f719e012d400c1be22d2e1a43ed"
+    },
+    {
+      "file": "before/en-XA-light-1440x900-detalles.png",
+      "phase": "before",
+      "language": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "detalles",
+      "bytes": 251415,
+      "sha256": "287277344e2741ae221a691038e9d96b9fbe189958c5464eb14b6ff79b019780"
+    },
+    {
+      "file": "before/en-XA-dark-1440x900-resultado.png",
+      "phase": "before",
+      "language": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "resultado",
+      "bytes": 167310,
+      "sha256": "aa7c7116abedec85ddd8c43caefb4d27c4851facd4fed2ad94187354cc6493a1"
+    },
+    {
+      "file": "before/en-XA-dark-1440x900-ajustes.png",
+      "phase": "before",
+      "language": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "ajustes",
+      "bytes": 216931,
+      "sha256": "55b4f519da970e86a2cb65960fb9f40d4f82aaa75aa4d45cb2621f387002b5b4"
+    },
+    {
+      "file": "before/en-XA-dark-1440x900-detalles.png",
+      "phase": "before",
+      "language": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "detalles",
+      "bytes": 265764,
+      "sha256": "bafb459bca514f393e5eefc3061617e5d883b2e9017dcd05b32edb737834e3eb"
+    },
+    {
+      "file": "before/en-XA-light-1280x720-resultado.png",
+      "phase": "before",
+      "language": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "resultado",
+      "bytes": 160259,
+      "sha256": "37abc5cc0cd242efe50df336a53a16bd4dd7c26be59f15dab248ae92b362549f"
+    },
+    {
+      "file": "before/en-XA-light-1280x720-ajustes.png",
+      "phase": "before",
+      "language": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "ajustes",
+      "bytes": 177151,
+      "sha256": "7b9d5efb49220fd942ca9fae4c7e42800a4ded50c5a367245ea70c102363c213"
+    },
+    {
+      "file": "before/en-XA-light-1280x720-detalles.png",
+      "phase": "before",
+      "language": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "detalles",
+      "bytes": 212284,
+      "sha256": "686b8afd010135a8bffa4d42b5cb629794a8426d27c409aa3f8a64543c2ffc9c"
+    },
+    {
+      "file": "before/en-XA-dark-1280x720-resultado.png",
+      "phase": "before",
+      "language": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "resultado",
+      "bytes": 160194,
+      "sha256": "2e2b64f8dc5bb03578e492978934840195b2ad5ca753c47d0de299131782ea52"
+    },
+    {
+      "file": "before/en-XA-dark-1280x720-ajustes.png",
+      "phase": "before",
+      "language": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "ajustes",
+      "bytes": 176593,
+      "sha256": "23b070b272e2603acba1a2b0625334eefcbbcc37a6556597b1f877b656617423"
+    },
+    {
+      "file": "before/en-XA-dark-1280x720-detalles.png",
+      "phase": "before",
+      "language": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "detalles",
+      "bytes": 211831,
+      "sha256": "ea290a968ebce6bce9ca23ad740825bd499be25d41712b43547e1257a4368ec5"
+    },
+    {
+      "file": "after/es-light-1440x900-resultado.png",
+      "phase": "after",
+      "language": "es",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "resultado",
+      "bytes": 144824,
+      "sha256": "70e97d1f9769174b8222fd74c53420751928df61c677b5690ec094d05c6032ca"
+    },
+    {
+      "file": "after/es-light-1440x900-ajustes.png",
+      "phase": "after",
+      "language": "es",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "ajustes",
+      "bytes": 154198,
+      "sha256": "e2e96fe406f6e65c2da8bf3d303133f7f935543aa1c01338d985f98e0df49a65"
+    },
+    {
+      "file": "after/es-light-1440x900-detalles.png",
+      "phase": "after",
+      "language": "es",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "detalles",
+      "bytes": 195960,
+      "sha256": "975294684b89d4fb588df6462a803bbf9e0c15c6f2e44f3d4c8be18a040f0181"
+    },
+    {
+      "file": "after/es-dark-1440x900-resultado.png",
+      "phase": "after",
+      "language": "es",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "resultado",
+      "bytes": 144803,
+      "sha256": "77372c2f06b6cf9faf66d51237a9e7b2d1d4e914f3a51cacaccc5772ad9a2542"
+    },
+    {
+      "file": "after/es-dark-1440x900-ajustes.png",
+      "phase": "after",
+      "language": "es",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "ajustes",
+      "bytes": 154309,
+      "sha256": "7f3dd07323bc4b3c3aa4743f683e5ba51ecbb6f9fe3b0c03ded6b1e3aadbc2cf"
+    },
+    {
+      "file": "after/es-dark-1440x900-detalles.png",
+      "phase": "after",
+      "language": "es",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "detalles",
+      "bytes": 194493,
+      "sha256": "68209d778ff2afab7f066c25ceb52d6c09cae96d0b3b3ac686e162d18a3916c7"
+    },
+    {
+      "file": "after/es-light-1280x720-resultado.png",
+      "phase": "after",
+      "language": "es",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "resultado",
+      "bytes": 138012,
+      "sha256": "fa58be3cd2acd899a3344479ee063da113c282757714b13caddbe4f44382e557"
+    },
+    {
+      "file": "after/es-light-1280x720-ajustes.png",
+      "phase": "after",
+      "language": "es",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "ajustes",
+      "bytes": 138021,
+      "sha256": "1ea18771d6410b077ff5bb1e5777a9a7c326c7b04df14c7e08dad7a63b1992bd"
+    },
+    {
+      "file": "after/es-light-1280x720-detalles.png",
+      "phase": "after",
+      "language": "es",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "detalles",
+      "bytes": 175475,
+      "sha256": "2943e68eafdee3d8e1fde796d72ebc1d61cab9d9064ae0acf938024c1dea7e98"
+    },
+    {
+      "file": "after/es-dark-1280x720-resultado.png",
+      "phase": "after",
+      "language": "es",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "resultado",
+      "bytes": 137977,
+      "sha256": "74a9a89c7b9d9c16a28465d390aec3b5a80ac1e9730c5f0d9a99a94731f967fa"
+    },
+    {
+      "file": "after/es-dark-1280x720-ajustes.png",
+      "phase": "after",
+      "language": "es",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "ajustes",
+      "bytes": 137929,
+      "sha256": "9b10b0560c661817afcebfaac941b19593202822e43a05737f695223a1751334"
+    },
+    {
+      "file": "after/es-dark-1280x720-detalles.png",
+      "phase": "after",
+      "language": "es",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "detalles",
+      "bytes": 174686,
+      "sha256": "08fe53743b01a781f8b04bada5d9c318c6bc2d803247dd562efd2d4cf766a76c"
+    },
+    {
+      "file": "after/en-XA-light-1440x900-resultado.png",
+      "phase": "after",
+      "language": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "resultado",
+      "bytes": 165422,
+      "sha256": "153da0b47e2196210343c2640195c6d9e9a9f6f03d156ffc2b039a0f1107b6d4"
+    },
+    {
+      "file": "after/en-XA-light-1440x900-ajustes.png",
+      "phase": "after",
+      "language": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "ajustes",
+      "bytes": 177951,
+      "sha256": "a23b80d1d31bca2eab93d6e7abd69d3470c57513e38da3df69e38bf3b1b9a6b2"
+    },
+    {
+      "file": "after/en-XA-light-1440x900-detalles.png",
+      "phase": "after",
+      "language": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "detalles",
+      "bytes": 217335,
+      "sha256": "173f48952308900ad430a1ceb27b9730f60cd2dcbe8f57932e1f52490d4be883"
+    },
+    {
+      "file": "after/en-XA-dark-1440x900-resultado.png",
+      "phase": "after",
+      "language": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "resultado",
+      "bytes": 165791,
+      "sha256": "8eb55fbbfc3affc16ca7ddd12fa55818ce5aa30a01fe86bf1dc8be098a374dc0"
+    },
+    {
+      "file": "after/en-XA-dark-1440x900-ajustes.png",
+      "phase": "after",
+      "language": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "ajustes",
+      "bytes": 178444,
+      "sha256": "2fd96be70bb7f0d86c1b1f77a34235187e1174489fbb9555b51c8e6dfcb9a406"
+    },
+    {
+      "file": "after/en-XA-dark-1440x900-detalles.png",
+      "phase": "after",
+      "language": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "detalles",
+      "bytes": 216997,
+      "sha256": "f14b791fe64651565fe45abff145523db336c6475cc9767c11519085ec311f13"
+    },
+    {
+      "file": "after/en-XA-light-1280x720-resultado.png",
+      "phase": "after",
+      "language": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "resultado",
+      "bytes": 156334,
+      "sha256": "7852947b9fc1ad442bd8aa92b4b45d9faeefb17ea9be78a93593e56d05c15c31"
+    },
+    {
+      "file": "after/en-XA-light-1280x720-ajustes.png",
+      "phase": "after",
+      "language": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "ajustes",
+      "bytes": 156320,
+      "sha256": "beb3798de09bb95c619d1185ac445c2d8a0dfd11aea2df6327c9f14063f536a4"
+    },
+    {
+      "file": "after/en-XA-light-1280x720-detalles.png",
+      "phase": "after",
+      "language": "en-XA",
+      "theme": "light",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "detalles",
+      "bytes": 195379,
+      "sha256": "4ad6f5eda246b8c7befe7f6b94c5787505852057ef8e193d89651814ab86a0d0"
+    },
+    {
+      "file": "after/en-XA-dark-1280x720-resultado.png",
+      "phase": "after",
+      "language": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "resultado",
+      "bytes": 156371,
+      "sha256": "95e8fa464ca0cdd129c2b75a647feb8c19c6815606941bc61792732b2136443a"
+    },
+    {
+      "file": "after/en-XA-dark-1280x720-ajustes.png",
+      "phase": "after",
+      "language": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "ajustes",
+      "bytes": 156436,
+      "sha256": "ec865cd4a34e82e58c788e6c045b62be939881efe9d209e3e40014f7d24e840e"
+    },
+    {
+      "file": "after/en-XA-dark-1280x720-detalles.png",
+      "phase": "after",
+      "language": "en-XA",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": "detalles",
+      "bytes": 194991,
+      "sha256": "82ab298948ce578fcbfab5fa0ed6235b69124227ce76c044f06e8353ab5ff5ee"
+    }
+  ],
+  "counts": {
+    "beforePNG": 24,
+    "afterPNG": 24,
+    "totalPNG": 48,
+    "languages": [
+      "es",
+      "en-XA"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "viewports": [
+      [
+        1440,
+        900
+      ],
+      [
+        1280,
+        720
+      ]
+    ],
+    "states": [
+      "resultado",
+      "ajustes",
+      "detalles"
+    ]
+  },
+  "sourceCSVsha256": "1ca1f0084d88b564e5922040333ba25ed8def9fb590d221bb6ce3ea98344c574",
+  "reports": [
+    {
+      "original": "title-pure-red-report.json",
+      "originalSHA256": "3903eaa0d5ea7a478c96602fa4ebe975d8489db8b6b135d583f12fc3fd8a15fd",
+      "stats": {
+        "numPassedTests": 48,
+        "numFailedTests": 5,
+        "numPendingTests": 0,
+        "numTotalTests": 53,
+        "success": false
+      }
+    },
+    {
+      "original": "title-pure-green-attempt02-report.json",
+      "originalSHA256": "952c93c06bed2480fb8353c338d6238bbabe7e218e1fc8ce688ed01948879c78",
+      "stats": {
+        "numPassedTests": 53,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTotalTests": 53,
+        "success": true
+      }
+    },
+    {
+      "original": "rotation-red-report.json",
+      "originalSHA256": "3577a74d335fb0a0a88a60e1e705f54b89f434e3b5581c9ec78b24564739c6c4",
+      "stats": {
+        "numPassedTests": 4,
+        "numFailedTests": 7,
+        "numPendingTests": 0,
+        "numTotalTests": 11,
+        "success": false
+      }
+    },
+    {
+      "original": "rotation-green-report.json",
+      "originalSHA256": "fe0bdefdc83cc47c3f7620eb41163239cab6ea08601326bd5c4f61523d642695",
+      "stats": {
+        "numPassedTests": 36,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTotalTests": 36,
+        "success": true
+      }
+    },
+    {
+      "original": "ui-red-report.json",
+      "originalSHA256": "de341cf9c982e7aa834f8b90acd6d2b57911af73e50b25791239a0df5169927b",
+      "stats": {
+        "startTime": "2026-11-20T05:05:19.641Z",
+        "duration": 92539.101,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 5,
+        "flaky": 0
+      }
+    },
+    {
+      "original": "ui-qualification-report.json",
+      "originalSHA256": "0225b88c5194bdb542c4fd20d8552251b0c643c642d712a54befebe4a7b35b5b",
+      "stats": {
+        "startTime": "2026-11-20T05:21:59.867Z",
+        "duration": 41562.056,
+        "expected": 6,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "original": "compatibility-red-report.json",
+      "originalSHA256": "3281692a7abe0a7eea67b2539f9e99219bef414c1781f250beacf912961b3ff7",
+      "stats": {
+        "startTime": "2026-11-20T06:29:50.024Z",
+        "duration": 62892.382000000005,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 2,
+        "flaky": 0
+      }
+    },
+    {
+      "original": "compatibility-red2-report.json",
+      "originalSHA256": "fc2ccaf4a402abb9c8d4c9db1230eb872bc70d8d6aef070ab93bf0cec969723c",
+      "stats": {
+        "startTime": "2026-11-20T06:47:57.249Z",
+        "duration": 37103.095,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 2,
+        "flaky": 0
+      }
+    },
+    {
+      "original": "core-green-report.json",
+      "originalSHA256": "1b34d84da14b9c984b0bbc6d13ad8c7e34ebc31ddcd3435545494da755292ab7",
+      "stats": {
+        "startTime": "2026-11-20T07:01:13.568Z",
+        "duration": 68510.806,
+        "expected": 7,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "original": "compatibility-green-report.json",
+      "originalSHA256": "220f9325f9ce980c98a4cf6331821865cc671dbb6f48cb8a56519fed3c346246",
+      "stats": {
+        "startTime": "2026-11-20T07:05:07.065Z",
+        "duration": 7056.191,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "original": "consumers-report.json",
+      "originalSHA256": "a6b3f7974e5ab7214e7fc9a79fb4cd803ca07f347cadd4d60ee9b732a41da6ab",
+      "stats": {
+        "startTime": "2026-11-20T07:10:59.283Z",
+        "duration": 554308.448,
+        "expected": 114,
+        "skipped": 0,
+        "unexpected": 5,
+        "flaky": 0
+      }
+    },
+    {
+      "original": "consumers-focus-report.json",
+      "originalSHA256": "b56b5dc7c381932c2c41c268374dcf2c8fc1e193dfc5cf8c56cda8cb772958a2",
+      "stats": {
+        "startTime": "2026-11-20T07:37:41.494Z",
+        "duration": 26151.201,
+        "expected": 4,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "original": "trend-ready-green-report.json",
+      "originalSHA256": "0ab43ac8ad02bb8ecea9f9b9ca67cb201804212d6a2caee7eb5f208d8f218856",
+      "stats": {
+        "startTime": "2026-11-20T07:53:52.990Z",
+        "duration": 97294.697,
+        "expected": 8,
+        "skipped": 0,
+        "unexpected": 2,
+        "flaky": 0
+      }
+    },
+    {
+      "original": "closure-gui-report.json",
+      "originalSHA256": "6512f3b4915ffe5a4f3a1c0b943cc127b0add7198c69dfa80ed2576aa4a58c54",
+      "head": "00074b4764f03004246521a9d8de7887a37885e6",
+      "stats": {
+        "startTime": "2026-11-20T08:19:59.634Z",
+        "duration": 113132.534,
+        "expected": 18,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    }
+  ],
+  "historicalUnit": {
+    "passed": 3034,
+    "skipped": 2,
+    "filesPassed": 170,
+    "filesSkipped": 1,
+    "filesTotal": 171,
+    "vitestSeconds": 17.23,
+    "pandocReal": "3.12.1",
+    "logSHA256": "f706617be0978f06a0b5f0ad03aeff18097edcd9155ac9144de7045149ca1241",
+    "headInLog": null,
+    "limit": "El log carece de SHA; no acredita por sí solo el target final."
+  },
+  "limits": [
+    "18 aprobadas corresponden a 6B+2compatibilidad+9TEN+1constructor temporal; no una repetición integral de119 consumidores",
+    "Los119 consumidores iniciales114/5 y cuatro correcciones enfocadas son fases distintas conservadas",
+    "El sondeo posterior no demuestra la causa histórica del resultado AllX; el cierre valida las precondiciones y la conducta actual",
+    "CI final por SHA, Windows/Linux/Intel, paquete, instalación y lectores externos no acreditados por el verde local",
+    "La galería HTML es un índice de48PNG; no una exportación HTML del producto",
+    "Exportaciones SVG/PNG/JSON/CSV/contexto verificadas en pruebas; no se reconstruyen archivos originales independientes no archivados"
+  ],
+  "updatedAt": "2026-11-20T08:25:04.052203+00:00",
+  "finalClosure": {
+    "head": "00074b4764f03004246521a9d8de7887a37885e6",
+    "productSourceEquivalent": "e7598ed64820116e1a348e592778891f879a9e6e",
+    "executionOriginalSHA256": "5ff67f28044dd6c18b90717f76f7dbf7d2d204cdbc478f83b221c24257e7268b",
+    "executions": [
+      {
+        "label": "closure-check",
+        "head": "00074b4764f03004246521a9d8de7887a37885e6",
+        "exit": 0,
+        "seconds": 9.08
+      },
+      {
+        "label": "closure-unit",
+        "head": "00074b4764f03004246521a9d8de7887a37885e6",
+        "exit": 0,
+        "seconds": 17.712
+      },
+      {
+        "label": "closure-build",
+        "head": "00074b4764f03004246521a9d8de7887a37885e6",
+        "exit": 0,
+        "seconds": 1.84
+      },
+      {
+        "label": "closure-gui",
+        "head": "00074b4764f03004246521a9d8de7887a37885e6",
+        "exit": 0,
+        "seconds": 113.431
+      }
+    ],
+    "check": {
+      "errors": 0,
+      "warnings": 0,
+      "processSeconds": 9.08,
+      "logSHA256": "cc193722cfd2a4b36380aa59f8e45f21d8cdf0a330eb1d7c2b0bed0b645ec4a6"
+    },
+    "unit": {
+      "passed": 3034,
+      "skipped": 2,
+      "filesPassed": 170,
+      "filesSkipped": 1,
+      "filesTotal": 171,
+      "vitestSeconds": 17.36,
+      "processSeconds": 17.712,
+      "realPandoc": "3.12.1",
+      "logSHA256": "e37ed98a53ce6eca9e319f5a94c98e8ef3859a836297c71be10826f9a43175ea"
+    },
+    "build": {
+      "processSeconds": 1.84,
+      "logSHA256": "30fc512a84a112310fce2fcf7e1284f52626898e6ddc9ecbbc9612abaa70f931"
+    },
+    "gui": {
+      "stats": {
+        "startTime": "2026-11-20T08:19:59.634Z",
+        "duration": 113132.534,
+        "expected": 18,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "playwrightSeconds": 113.13253399999999,
+      "processSeconds": 113.431,
+      "retries": 0,
+      "flaky": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "file": "chart-clarity.spec.ts",
+          "title": "SIM-2b: lápiz, Intro, Escape y vacío conservan el resultado sin recalcular al cambiar el título",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-clarity.spec.ts",
+          "title": "SIM-2b: título propio sobrevive campos y preset y acompaña SVG, PNG, JSON y contexto CSV con ceros y hash exactos",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-clarity.spec.ts",
+          "title": "SIM-2b: Ajustes empieza cerrado al final de Campos y conserva controles únicos y los detalles de tabla, consulta y filtros",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-clarity.spec.ts",
+          "title": "SIM-2b: manual sin perfil conserva medida, ejes y agrupación explícitos sin nuevos barridos ni conversión de ID",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-clarity.spec.ts",
+          "title": "SIM-2b: cinco ciudades que caben conservan etiquetas rectas en SVG de pantalla y exportación",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-clarity.spec.ts",
+          "title": "SIM-2b: treinta nombres de 25 caracteres giran 25 grados en Caja sin cambiar el ranking existente",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-compatibility-controls.spec.ts",
+          "title": "SIM-2b compatibilidad: Ajustes conserva Texto/Número explícito con perfil identificador y valores excluidos",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-compatibility-controls.spec.ts",
+          "title": "SIM-2b compatibilidad: Ajustes conserva Mes/Año con perfil mixto y descarta la fecha inválida sin cambiar datos",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "title": "TEN-1 cinco pares: petición, teclado, exportaciones completas y preset",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "title": "TEN-1 degenerados explican la ausencia y conservan marcada la opción",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "title": "TEN-1 ocultar Tendencia en la leyenda persiste después de ampliar y cambiar tema",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "title": "TEN-1 controla la misma visibilidad de Tendencia con el teclado existente",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "title": "TEN-1 filtros de gráfico y vista usan el mismo subconjunto y Separar por bloquea la tendencia",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "title": "TEN-1 cancelar descarta la respuesta tardía y editar exige actualizar la revisión",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "title": "TEN-1 300 000 filas: oráculo completo y procedencia real cuando el editor solo muestra una muestra",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "title": "TEN-1 capturas, teclado y bloque legible en es",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "chart-trend.spec.ts",
+          "title": "TEN-1 capturas, teclado y bloque legible en en-XA",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "file": "charts.spec.ts",
+          "title": "constructor temporal: clics, series, filtros, errores y exportación con nombres y alcance claros",
+          "project": "csv",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        }
+      ],
+      "composition": {
+        "chart-clarity.spec.ts": 6,
+        "chart-compatibility-controls.spec.ts": 2,
+        "chart-trend.spec.ts": 9,
+        "charts.spec.ts": 1
+      },
+      "reportSHA256": "6512f3b4915ffe5a4f3a1c0b943cc127b0add7198c69dfa80ed2576aa4a58c54",
+      "logSHA256": "25d472f2be7c4fdaeb2b6b0d5a44c7ac72277bc4bb7566eeaf2e5cc86cc24db7"
+    }
+  }
+}
