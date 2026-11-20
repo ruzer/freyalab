@@ -75,3 +75,20 @@ Se conservan tres fallos de preparación específicos, separados de los fallos d
 El resultado final local se documenta por fases: 147 con 138/9, cierre de 17 con 16/1, compacta de diez con 9/1 y ajuste final enfocado 1/1. Los nueve fallos quedan resueltos mediante sus comprobaciones posteriores y el reparto medido de espacio; no se inventa una tanda final de 147 o diez verdes. CI del head final y las comprobaciones por plataforma/paquete siguen pendientes.
 
 Los logs públicos sustituyen rutas privadas y códigos de color, manteniendo fallos, cifras y avisos. El manifest distingue los SHA originales y sanitizados. No hay datos, perfiles o IPC inventados, nuevos plazos/retries, cambios al CSV o motor, ni publicación de una versión de la app.
+
+## Corrección de retorno del foco tras la primera CI
+
+El [head 6c1d445](https://github.com/ruzer/freyalab/actions/runs/44706661610) falló en Ubuntu y macOS: los dos casos anteriores de teclado/ventana estrecha sí añadían Canal y Fecha y obtenían el resultado esperado, pero «Más acciones» quedaba sin foco en ambos intentos. La prueba de navegación horizontal de Información en macOS también necesitó un reintento; esa observación es independiente y su causa no está demostrada.
+
+Se reprodujo la pérdida de foco localmente, sin sleeps, mocks ni cambios de plazos: con Canal todavía sin usar, se enfoca su fila y su botón Más, se abre el menú real y se mueve el puntero fuera. La prueba comprueba primero `visibility:hidden` real del invocador. Escape y Enter fallaron después en el mismo `toBeFocused()` que la CI. El botón se intenta enfocar tras quitar el menú, cuando ya no tiene hover/focus-within y aún no es un campo usado. Restaurar primero la fila hace visible su botón; después se enfoca el invocador original, conservado antes del `tick`.
+
+| Fase local | Resultado | Tiempo de proceso |
+| --- | --- | --- |
+| Producto 6c1d445, dos regresiones nuevas | Escape y Enter fallan en el foco; 0 reintentos | 36,955 s |
+| Solo corregido el cierre del menú | Escape y Enter pasan; cancelar Filtros desde un campo no usado falla por el mismo invocador oculto; 0 reintentos | 24,566 s |
+| `937237afaf4a5001d3db372098965fa02d3d57e0`, archivo completo `chart-fields.spec.ts` | 15/15, 0 reintentos, 0 omisiones | 82,538 s |
+| Mismo commit, `chart-simple-fields.spec.ts` | 6/6, 0 reintentos, 0 omisiones; otra ejecución | 20,015 s |
+
+El retorno de Filtros aplica la misma restauración fila→invocador. Se mantienen los datos (total 7.200), las zonas, los bytes originales, la cancelación sin aplicar y todas las aserciones previas. Se añaden tres casos; no se borra ninguno. La corrección toca únicamente dos funciones de foco y los casos nuevos: no cambia SQL, perfiles, acciones, CSV, límites, esperas, reintentos ni CI.
+
+Tipos: 0 errores/0 avisos (8,895 s). Unitarias completas y build se ejecutaron en el mismo commit; sus resultados exactos y huellas de los logs permanecen en el [proof de foco](sim-2c-campos-simples-2026-11-20/focus-proof.json). Los logs/trazas nuevos se conservan privados; no se publican rutas locales ni perfiles. Una CI nueva del head documental publicado sigue pendiente; no se transfiere el resultado anterior ni se presenta el reintento AN-2 como corregido.

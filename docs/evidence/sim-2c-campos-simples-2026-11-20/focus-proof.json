@@ -1,0 +1,78 @@
+{
+  "formatVersion": 1,
+  "baseline": "6c1d4451b030dd6a39977e0a45774ba46b7f5305",
+  "fix": "937237afaf4a5001d3db372098965fa02d3d57e0",
+  "realBrowserPrecondition": "Unused Canal field; focus row and More, open real menu, focus menu item, move pointer outside; actual computed visibility is hidden. No timers/mocks/sleeps.",
+  "red": [
+    {
+      "cases": [
+        "Escape",
+        "Enter"
+      ],
+      "result": "2 failures at focus oracle, 0 retries",
+      "processSeconds": 36.95461950000026,
+      "message": "Expected focused; received inactive; unchanged 15000ms expect timeout",
+      "logSHA256": "2a10cc72b3fb1241141e0523c591b06bce2ac38910670eba9c2fb380abe8eff2"
+    },
+    {
+      "phase": "first menu fix only",
+      "cases": {
+        "Escape": "passed",
+        "Enter": "passed",
+        "cancel filter without applying": "failed at focus oracle"
+      },
+      "processSeconds": 24.5662541250058,
+      "retries": 0,
+      "logSHA256": "51e48fdb8bb23aecb49f7ca01cbc495e8de3b71d100acd4319779e5dfb5ff4ad"
+    }
+  ],
+  "changes": [
+    "Restore focus to the enclosing field row, then the original invoking element, after tick; capture the invoker before tick.",
+    "Apply same restoration in closeFilters for an unused field."
+  ],
+  "newTests": 3,
+  "deletedTests": 0,
+  "timeoutsChanged": false,
+  "dataAssertionsPreserved": [
+    "Total 7,200",
+    "Original CSV bytes",
+    "No Canal in Columns after Escape",
+    "Canal in Columns after Enter",
+    "No Canal filter after Cancel"
+  ],
+  "localGreen": {
+    "head": "937237afaf4a5001d3db372098965fa02d3d57e0",
+    "cases": 15,
+    "passed": 15,
+    "retries": 0,
+    "skipped": 0,
+    "processSeconds": 82.53763091699511,
+    "reporter": "list and HTML; no JSON file generated in this phase",
+    "logSHA256": "b948a2acb31e16179fb5a890dfcbeda68e6d892c5253ee02205040f488e2e6a2",
+    "check": {
+      "errors": 0,
+      "warnings": 0,
+      "processSeconds": 8.895499874997768
+    },
+    "unitSummary": "Test Files  170 passed | 1 skipped (171)\n      Tests  3039 passed | 2 skipped (3041)\n   Start at  03:44:59\n   Duration  17.72s (tests 85%, import 11%, transform 4%)",
+    "build": {
+      "exitCode": 0,
+      "processSeconds": 1.8751118749933084
+    }
+  },
+  "CI": "pending new head; baseline CIUbuntu and macOSfailed2focuscases in bothattempts; AN2 Mac scroll flaky separate",
+  "simpleFieldsGreen": {
+    "head": "937237afaf4a5001d3db372098965fa02d3d57e0",
+    "stats": {
+      "startTime": "2026-11-20T09:47:09.185Z",
+      "duration": 19521.441,
+      "expected": 6,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "processSeconds": 20.01500087499153,
+    "reportSHA256": "82eacaa8cd3c6ee93a981422efdd53ffb01851b93061cc07358fbb51ab02ccd0",
+    "interpretation": "Separate six-case run; not a seven-case or combined21case report."
+  }
+}
