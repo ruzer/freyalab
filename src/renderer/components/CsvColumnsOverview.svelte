@@ -115,7 +115,7 @@
      </details>{:else}{number(0)}{/if}</td>
      <td><details class="distinct-detail"><summary class="cell-summary" aria-label={number(entry.result.profile.distinctNonEmpty)+' · '+t('info.distinctHelp',{name:entry.name})}>{number(entry.result.profile.distinctNonEmpty)}<Icon name="chevron-down" size={12}/></summary><p>{t('info.distinctExplanation')}</p><p>{t('info.repetitions',{count:number(entry.result.extraDuplicates)})}</p></details></td>
     {:else}<td>{t('info.unavailable')}</td><td colspan="3" class="unavailable">{entry.error}</td>{/if}
-    <td><button class="inspect" {...controlHint(busy?'busy':null)} type="button" disabled={busy} aria-label={t('info.inspect',{index:entry.column+1})} onclick={()=>oninspect(entry.column,scope)}>{t('info.detail')}<Icon name="chevron-right" size={12}/></button></td>
+    <td><button class="inspect btn-ghost" {...controlHint(busy?'busy':null)} type="button" disabled={busy} aria-label={t('info.inspect',{index:entry.column+1})} onclick={()=>oninspect(entry.column,scope)}>{t('info.detail')}<Icon name="chevron-right" size={12}/></button></td>
    </tr>{/each}</tbody>
   </table></div>
   {#if visible.length>50}<div class="pagination"><button {...controlHint(offset===0?'firstPage':null)} disabled={offset===0} onclick={()=>offset=Math.max(0,offset-50)}>{t('info.previous')}</button><span>{visible.length?offset+1:0}–{Math.min(offset+50,visible.length)} {t('info.of')} {number(visible.length)} {t('info.visibleColumns')}</span><button {...controlHint(offset+50>=visible.length?'lastPage':null)} disabled={offset+50>=visible.length} onclick={()=>offset+=50}>{t('info.next')}</button></div>{/if}

@@ -110,6 +110,7 @@ test('SIM-2d: detalles con chevron posterior, acciones y Explorar conservan tecl
  await distinct.focus();await distinct.press('Enter');await expect(rows.nth(5).locator('.distinct-detail')).toHaveAttribute('open','');await expect(rows.nth(5).locator('.distinct-detail p').nth(1)).toHaveText(tr('info.repetitions',{count:'1'}))
  const inspect=rows.nth(5).getByRole('button',{name:tr('info.inspect',{index:6}),exact:true});await expect(inspect).toHaveText(/^Explorar\s*›?$/)
  expect(await inspect.evaluate(element=>['borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth'].map(key=>parseFloat(Reflect.get(getComputedStyle(element),key))))).toEqual([0,0,0,0])
+ await expect(inspect).toHaveCSS('box-shadow','none')
  await inspect.focus();await inspect.press('Enter');const detail=page.getByRole('region',{name:'Exploración de columna',exact:true});await expect(detail.getByLabel('Columna para explorar',{exact:true})).toHaveValue('5');await expect(detail.getByLabel('Filas para explorar',{exact:true})).toHaveValue('all');await expect(page.locator('.analysis-workspace:not([hidden]) header h2')).toBeFocused()
  await detail.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(detail.getByRole('status')).toHaveText('Exploración completa.')
 })
