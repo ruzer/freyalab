@@ -1,3 +1,4 @@
+import {chartAssignColumn,openChartSettings,openChartDetails,openChartData,waitChartResult} from './panel'
 import {expect,test,_electron as electron,type ElectronApplication,type Page} from '@playwright/test'
 import electronPath from 'electron'
 import {copyFile,mkdtemp,mkdir,readFile,rm,writeFile} from 'node:fs/promises'
@@ -140,18 +141,17 @@ async function ageHistogram(){
  const workspace=page.locator('.analysis-workspace:not([hidden])')
  await workspace.getByRole('tab',{name:tr('analysis.tab.section.charts'),exact:true}).press('Enter')
  const create=workspace.locator('.empty-result button');await expect(create).toBeEnabled();await create.press('Enter')
- await expect.poll(()=>workspace.locator('.more-options .table-scroll tbody tr').count()).toBeGreaterThan(0)
+ const initial=await openChartData(page);await expect.poll(()=>initial.locator('tbody tr').count()).toBeGreaterThan(0)
+ await (await openChartDetails(page)).locator(':scope > summary').press('Enter')
+ await chartAssignColumn(page,1,'values')
  await workspace.getByRole('button',{name:tr('charts.kind.histogram'),exact:true}).press('Enter')
- const more=workspace.locator('.more-options')
- await more.locator(':scope > summary').press('Enter')
- await more.getByLabel(tr('charts.ui.yLabel'),{exact:true}).selectOption('1')
- await more.getByRole('spinbutton',{name:tr('charts.ui.binsLabel'),exact:true}).fill('3')
- const generate=workspace.getByRole('button',{name:tr('charts.ui.generate'),exact:true})
- await expect(generate).toBeEnabled();await generate.press('Enter')
- await more.getByText(tr('charts.ui.table'),{exact:true}).press('Enter')
- const rows=more.locator('.table-scroll tbody tr');await expect(rows).toHaveCount(3)
+ const settings=await openChartSettings(page)
+ await settings.getByRole('spinbutton',{name:tr('charts.ui.binsLabel'),exact:true}).fill('3')
+ await waitChartResult(page)
+ await settings.locator(':scope > summary').press('Enter')
+ const table=await openChartData(page),rows=table.locator('tbody tr');await expect(rows).toHaveCount(3)
  expect(await rows.evaluateAll(rows=>rows.map(row=>Array.from(row.querySelectorAll('td'),cell=>Number(cell.textContent))))).toEqual([[34,1,43],[43,0,52],[52,2,61]])
- await more.locator(':scope > summary').press('Enter')
+ await (await openChartDetails(page)).locator(':scope > summary').press('Enter')
  await expect(workspace.locator('.plot svg')).toBeVisible()
  return workspace
 }

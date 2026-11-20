@@ -2,7 +2,7 @@ import {it,expect} from 'vitest'
 import {chartSQL,chartData,type ChartOptions} from '../src/shared/charts'
 import {chartOption,chartSeries} from '../src/renderer/chart-option'
 const options:ChartOptions={kind:'histogram',x:0,y:1,bins:2,aggregate:'count',descending:false,measureType:'number'}
-const colors={text:'#222',background:'#fff',accent:'#2671df'}
+const colors={width:900,text:'#222',background:'#fff',accent:'#2671df'}
 it('cita encabezados hostiles, valida opciones y limita los resultados después de agregar',()=>{
  const sql=chartSQL(['x";DELETE','Y'],options)
  expect(sql).toContain('"x"";DELETE" AS x');expect(sql).toContain('LIMIT 101');expect(sql).toContain('GROUP BY bins.i')
