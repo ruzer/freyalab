@@ -67,14 +67,88 @@ test('quitar espacios y minúsculas: acceso desde Limpiar y solo tocan esa colum
  const {doc}=await open()
  await columnButton('Ciudad').click();await cleanAction('Quitar espacios…')
  let dialog=page.getByRole('dialog',{name:'Quitar espacios en la columna «Ciudad»',exact:true});await expect(dialog.getByRole('status')).toContainText('2 de 5 celdas cambiarán.')
+ // Controla la ventana real de 150 ms; no mide latencia ni sustituye respuestas.
+ await page.clock.install({time:0});await page.clock.pauseAt(1)
+ try{
+  await app.evaluate(({ipcMain},target)=>{
+   type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
+   const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')!
+   let release!:()=>void;const response=new Promise<void>(resolve=>{release=resolve})
+   const barrier={armed:false,selected:false,release,restore:()=>handlers.set('freya',original)}
+   Reflect.set(globalThis,'columnReloadBarrier',barrier)
+   handlers.set('freya',async(event,...args)=>{
+    const hold=barrier.armed&&!barrier.selected&&args[0]==='page'&&args[1]===target&&(args[2] as {limit?:number})?.limit===200
+    if(hold)barrier.selected=true
+    const result=await original(event,...args)
+    if(hold)await response
+    return result
+   })
+  },doc.id)
  await dialog.getByRole('button',{name:'Aplicar cambio',exact:true}).click();await expect(dialog).toHaveCount(0)
  expect(await cities()).toEqual(['oaxaca de juárez','GUADALAJARA','mérida','Cd. de México','PUEBLA'])
- await columnButton('Ciudad').click();await cleanAction('Minúsculas…')
+ await expect(cell(1,'Ciudad')).toHaveText('oaxaca de juárez');await expect(cell(3,'Ciudad')).toHaveText('mérida')
+ await columnButton('Ciudad').click();await menu().getByRole('menuitem',{name:'Limpiar',exact:true}).click()
+ const lower=page.getByRole('menu').last().getByRole('menuitem',{name:'Minúsculas…',exact:true})
+ await expect(lower).toHaveAttribute('aria-disabled','false')
+ await app.evaluate(()=>{Reflect.get(globalThis,'columnReloadBarrier').armed=true})
+ const box=await lower.boundingBox();expect(box).not.toBeNull()
+ try{
+  await page.mouse.move(box!.x+box!.width/2,box!.y+box!.height/2);await page.mouse.down()
+  await page.clock.runFor(150);await page.mouse.up()
+ }finally{await app.evaluate(()=>Reflect.get(globalThis,'columnReloadBarrier').release())}
  dialog=page.getByRole('dialog',{name:'Minúsculas en la columna «Ciudad»',exact:true});await expect(dialog.getByRole('status')).toContainText('3 de 5 celdas cambiarán.')
  await dialog.getByRole('button',{name:'Aplicar cambio',exact:true}).click()
  expect(await cities()).toEqual(['oaxaca de juárez','guadalajara','mérida','cd. de méxico','puebla'])
  expect(await page.evaluate(async()=>{const [doc]=await window.freya.documents();return(await window.freya.tablePage(doc.id,{offset:0,limit:5,requestId:992})).rows.map(row=>row.cells[0]+'|'+row.cells[2])})).toEqual(['00123|10','00124|20','00125|30','00126|40','00127|50'])
  expect((await state(doc.id))?.dirty).toBe(true)
+ }finally{
+  await app.evaluate(()=>{const barrier=Reflect.get(globalThis,'columnReloadBarrier');barrier?.release();barrier?.restore();Reflect.deleteProperty(globalThis,'columnReloadBarrier')})
+  await page.clock.resume()
+ }
+})
+
+test('una búsqueda cambiada durante la edición y otra posterior conservan la consulta vigente',async()=>{
+ const {doc,path}=await open(),search=page.getByLabel('Buscar en tabla',{exact:true}),grid=page.getByRole('grid',{name:'Tabla de datos',exact:true})
+ await expect(cell(1,'Ciudad')).toHaveText(' oaxaca de juárez ')
+ await page.clock.install({time:0});await page.clock.pauseAt(1)
+ try{
+  await app.evaluate(({ipcMain},target)=>{
+   type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
+   const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')!
+   let release!:()=>void;const response=new Promise<void>(resolve=>{release=resolve})
+   const barrier={held:false,edit:null as unknown,edits:[] as unknown[],pages:[] as unknown[],release,restore:()=>handlers.set('freya',original)}
+   Reflect.set(globalThis,'columnQueryEditBarrier',barrier)
+   handlers.set('freya',async(event,...args)=>{
+    const result=await original(event,...args)
+    if(args[0]==='page'&&args[1]===target&&(args[2] as {limit?:number})?.limit===200){const page=result as {revision:number;matched:number};barrier.pages.push({query:args[2],revision:page.revision,matched:page.matched})}
+    if(args[0]==='edit'&&args[1]===target){const edit={documentId:args[1],change:args[2],revision:(result as {revision:number}).revision};barrier.edits.push(edit);if(!barrier.held){barrier.edit=edit;barrier.held=true;await response}}
+    return result
+   })
+  },doc.id)
+  await cell(1,'Ciudad').dblclick();const editor=page.getByRole('textbox',{name:'Editar celda',exact:true})
+  await editor.fill('Oaxaca editada');await editor.press('Enter')
+  await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'columnQueryEditBarrier').held)).toBe(true)
+  const held=await app.evaluate(()=>Reflect.get(globalThis,'columnQueryEditBarrier').edit)
+  expect(held).toMatchObject({documentId:doc.id,change:{type:'cell',column:1,value:'Oaxaca editada'},revision:doc.revision+1})
+  await expect(search).toBeEnabled();await search.fill('GUADALAJARA');await expect(search).toHaveValue('GUADALAJARA')
+  await test.info().attach('held-real-edit-and-query',{body:JSON.stringify({edit:held,editorVisible:await editor.isVisible(),search:await search.inputValue(),searchEnabled:await search.isEnabled()}),contentType:'application/json'})
+  await app.evaluate(()=>Reflect.get(globalThis,'columnQueryEditBarrier').release())
+  // Sin avanzar el reloj: la lectura explícita debe usar la búsqueda escrita durante la edición.
+  await expect(grid).toHaveAttribute('aria-rowcount','2');await expect(cell(1,'Ciudad')).toHaveText('GUADALAJARA')
+  // Un cambio posterior conserva su propia recarga programada; no se cancela desde load().
+  await search.fill('mérida');await page.clock.runFor(150)
+  await expect(grid).toHaveAttribute('aria-rowcount','2');await expect(cell(1,'Ciudad')).toHaveText('mérida  ')
+  expect(await app.evaluate(()=>Reflect.get(globalThis,'columnQueryEditBarrier').edits)).toEqual([held])
+  expect(await cities()).toEqual(['Oaxaca editada','GUADALAJARA','mérida  ','Cd. de México','PUEBLA'])
+  expect(await page.evaluate(async()=>{const [doc]=await window.freya.documents();return(await window.freya.tablePage(doc.id,{offset:0,limit:5,requestId:992})).rows.map(row=>row.cells[0]+'|'+row.cells[2])})).toEqual(['00123|10','00124|20','00125|30','00126|40','00127|50'])
+  expect((await state(doc.id))?.dirty).toBe(true);expect(await readFile(path,'utf8')).toBe(source)
+ }finally{
+  try{try{
+   const operations=await app.evaluate(()=>{const b=Reflect.get(globalThis,'columnQueryEditBarrier');return b?{held:b.held,edit:b.edit,edits:b.edits,pages:b.pages}:null})
+   await test.info().attach('query-after-real-edit',{body:JSON.stringify({operations,search:await search.inputValue()}),contentType:'application/json'})
+  }finally{await app.evaluate(()=>{const barrier=Reflect.get(globalThis,'columnQueryEditBarrier');barrier?.release();barrier?.restore();Reflect.deleteProperty(globalThis,'columnQueryEditBarrier')})}}
+  finally{await page.clock.resume()}
+ }
 })
 
 test('con una búsqueda activa solo cambian las filas visibles y el diálogo avisa de las ocultas', async()=>{
