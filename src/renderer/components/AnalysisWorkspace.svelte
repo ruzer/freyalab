@@ -92,13 +92,18 @@
  .header-actions,.header-actions button,.analysis-sections{display:flex;align-items:center;gap:6px}
  .header-actions{flex-shrink:0}
  .analysis-sections{padding:0;gap:4px}
- :global(:root .app-shell) .analysis-sections button{border:0;border-radius:4px 4px 0 0;border-bottom:2px solid transparent;background:transparent;padding:7px 9px;font-size:11px}
- :global(:root .app-shell) .analysis-sections button[aria-selected=true]{border-bottom-color:var(--accent);background:var(--hover);font-weight:600}
+ :global(:root .app-shell) .analysis-sections button{border:0;border-radius:4px 4px 0 0;border-bottom:2px solid transparent;background:transparent;padding:7px 9px;font-size:var(--font-ui);font-weight:600}
+ :global(:root .app-shell) .analysis-sections button[aria-selected=true]{border-bottom-color:var(--accent);background:var(--hover)}
  h2{margin:0;padding:0;font-size:var(--font-ui);line-height:1.5;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:400}
  .analysis-section{flex:1;min-height:0;min-width:0;overflow:auto}
  .charts-section{display:flex;flex-direction:column}.info-section{padding-inline:16px}
  .subset-analysis-coverage{padding:4px 12px;font-size:12px;color:var(--muted);flex-shrink:0}.subset-analysis-coverage p{margin:0;line-height:1.5;overflow-wrap:anywhere}
  .analysis-warning{margin:0;padding:8px 16px;background:var(--hover)}
+ @media(min-width:900px){
+  header{flex-direction:row;align-items:center;gap:12px}
+  .analysis-heading{flex:1;min-width:0}
+  .analysis-sections{flex-shrink:0}
+ }
  /* La cabecera de la pestaña deja espacio al gráfico y al pie de la tabla paginada. */
  .charts-section :global(.pivot-result){flex-shrink:1;min-height:100px}
  .charts-section :global(.chart-info summary){margin-block:0}

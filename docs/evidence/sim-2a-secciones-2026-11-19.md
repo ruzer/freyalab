@@ -104,3 +104,28 @@ Encuesta sintética de 240 filas × 7 columnas, reutilizada de los consumidores 
 CI de la continuación de código: pendiente de raíz y del SHA exacto que se publique. Esta evidencia local no acredita paquete, instalador, otras plataformas ni una ejecución E2E completa. El PR documental #198 no se presenta como implementación.
 
 Los JSON/logs públicos retiran rutas del equipo, perfiles temporales y parámetros sensibles de URL. Los PNG contienen únicamente la encuesta sintética; sus hashes permiten compararlos con los originales observados.
+
+
+## Corrección de espacio tras la primera CI (20 de noviembre)
+
+La CI del head `d5de7907ccf6af135340c2cfd5c85510ea49dab8` descubrió dos regresiones reales en Ubuntu. En los dos intentos, Filtros era visible solo al 55,44 %: su contenedor terminaba en 681 px y las zonas en 700,78125 px. Total sobresalía 0,40625 px en ambos temas. Los seis campos y las dos acciones fijas ya pasaban. Windows también terminó en rojo; su detalle y la conclusión final de macOS todavía no se incluyen aquí. No se atribuyen esos recortes al motor ni a infraestructura.
+
+Rojo local antes del cambio: `chart-review.spec.ts --grep 'seis campos|Total'`, un worker y cero retries: 2 aprobadas y 2 fallidas en 41,786 s. Ninguna aserción cambió. La cabecera de dos filas restaba unos 32 px a las zonas. Desde 900 px ahora usa una fila, con el mismo orden del DOM/teclado: origen, acciones y pestañas. En ventanas estrechas mantiene dos filas. El pie pegado reserva el píxel de su borde inferior. El primer candidato arregló ambos recortes pero desplazó Exportar 1,0234375 px al cambiar sección: 16/17. El candidato final reserva el ancho mediante peso 600 uniforme en las pestañas, a 13 px y sin reducir padding; la activa mantiene fondo y subrayado. No se amplió ninguna tolerancia.
+
+| Comprobación final | Resultado real |
+|---|---|
+| `npm run check` | 0 errores y 0 advertencias; 11,331 s de proceso |
+| `npm run build` | Exit0; 3,027 s |
+| `playwright test tests/e2e/chart-review.spec.ts tests/e2e/analysis-sections.spec.ts --project=csv --workers=1 --retries=0` | 17/17, cero retries/omisiones; 75,631 s |
+| Sonda de capturas existente, es/en-XA | 2/2; 16 PNG nuevos; 9,018 s |
+
+Las zonas ahora terminan en 668,796875 px dentro de los 681 disponibles. Total a 1280×720 termina en 611,5 px frente a 612,5 visibles; a 800×720, 613,5 frente a 614,59375, igual en claro y oscuro. La caja de Exportar conserva ±1 px en las cuatro secciones. Pasan los nueve casos de A y los ocho anteriores de revisión de gráficos, conservados íntegramente.
+
+[Proof con geometría y hashes](sim-2a-layout-2026-11-20/proof.json) · [Rojo](sim-2a-layout-2026-11-20/geometry-baseline.txt) · [Primer candidato 16/17](sim-2a-layout-2026-11-20/candidate-gui.txt) · [Verde](sim-2a-layout-2026-11-20/final-gui.txt). Las capturas anteriores se conservan; estas muestran la disposición corregida:
+
+| Tamaño | Español claro | Español oscuro | en-XA claro | en-XA oscuro |
+|---|---|---|---|---|
+| 1440x900 | [Gráficos](sim-2a-layout-2026-11-20/after-es-light-1440x900-charts.png) / [Información](sim-2a-layout-2026-11-20/after-es-light-1440x900-info.png) | [Gráficos](sim-2a-layout-2026-11-20/after-es-dark-1440x900-charts.png) / [Información](sim-2a-layout-2026-11-20/after-es-dark-1440x900-info.png) | [Gráficos](sim-2a-layout-2026-11-20/after-en-XA-light-1440x900-charts.png) / [Información](sim-2a-layout-2026-11-20/after-en-XA-light-1440x900-info.png) | [Gráficos](sim-2a-layout-2026-11-20/after-en-XA-dark-1440x900-charts.png) / [Información](sim-2a-layout-2026-11-20/after-en-XA-dark-1440x900-info.png) |
+| 1280x720 | [Gráficos](sim-2a-layout-2026-11-20/after-es-light-1280x720-charts.png) / [Información](sim-2a-layout-2026-11-20/after-es-light-1280x720-info.png) | [Gráficos](sim-2a-layout-2026-11-20/after-es-dark-1280x720-charts.png) / [Información](sim-2a-layout-2026-11-20/after-es-dark-1280x720-info.png) | [Gráficos](sim-2a-layout-2026-11-20/after-en-XA-light-1280x720-charts.png) / [Información](sim-2a-layout-2026-11-20/after-en-XA-light-1280x720-info.png) | [Gráficos](sim-2a-layout-2026-11-20/after-en-XA-dark-1280x720-charts.png) / [Información](sim-2a-layout-2026-11-20/after-en-XA-dark-1280x720-info.png) |
+
+El ajuste CSS no volvió a ejecutar unitarias ni la suite completa local; la evidencia anterior conserva sus fases. CI del nuevo head pendiente: el verde anterior o de este Mac no acredita otra plataforma. Tests, markup, scripts de componentes, motor, guardado, dependencias, plazos, retries y workflows no cambian.
