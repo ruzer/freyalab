@@ -29,7 +29,10 @@
   if(disabled){onannounce(t('charts.fields.busy'));return}
   trigger=origin;const box=origin.getBoundingClientRect();menuPosition={x:box.left,y:box.bottom+4};menu=column
  }
- async function closeMenu(restore:boolean){menu=null;if(restore){await tick();if(trigger?.isConnected)trigger.focus()}}
+ async function closeMenu(restore:boolean){
+  const origin=trigger;menu=null
+  if(restore){await tick();if(origin?.isConnected){origin.closest<HTMLElement>('[data-chart-field]')?.focus();origin.focus()}}
+ }
  async function focusField(column:number){focused=column;await tick();list?.querySelector<HTMLElement>('[data-chart-field="'+column+'"]')?.focus()}
  function activate(column:number,origin:HTMLElement){
   focused=column;trigger=origin

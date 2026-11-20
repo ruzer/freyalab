@@ -200,7 +200,7 @@
  function startSuggestion(){const first=startingSuggestion;if(first){started=true;stale=false;options={...first,...options.title?{title:options.title}:{}};announcement=t('charts.fields.ready',{n:0})}}
  function changeAggregate(aggregate:ChartOptions['aggregate']){if(options.kind==='heatmap')return;if(!aggregated){options.kind='bar';options.time='none'}options.aggregate=aggregate;announcement=t('charts.fields.changed',{operation:t('charts.aggregate.'+aggregate)})}
  function openFilters(column?:number){filterReturn=document.activeElement as HTMLElement;pendingFilter=column;showFilters=true}
- async function closeFilters(){showFilters=false;pendingFilter=undefined;await tick();if(filterReturn?.isConnected)filterReturn.focus();else focusFields();filterReturn=null}
+ async function closeFilters(){showFilters=false;pendingFilter=undefined;await tick();if(filterReturn?.isConnected){filterReturn.closest<HTMLElement>('[data-chart-field]')?.focus();filterReturn.focus()}else focusFields();filterReturn=null}
  function focusFields(){element?.closest('section')?.querySelector<HTMLInputElement>('.chart-fields input[type=search]')?.focus()}
  async function clearFilters(){where={conditions:[],filterMode:'all'};showFilters=false;await tick();focusFields()}
  async function beginTitle(){titleDraft=options.title??'';titleError='';editingTitle=true;await tick();titleInput?.focus()}
