@@ -1734,7 +1734,6 @@
  "statistics.field.percentile75": "P75 (75th percentile)",
  "statistics.field.percentile90": "P90 (90th percentile)",
  "describe.pandasMetric": "pandas: {metric}",
-<<<<<<< HEAD
  "project.recipe.error.results": "Cannot delete: it has {n} exported files. Remove them from the project first.",
  "project.export.dialog": "Export subset",
  "project.export.fallbackName": "subset",
@@ -1789,11 +1788,9 @@
  "project.export.normalized.missingMany": "{n} missing fields were written empty because they come before other fields",
  "app.external.changed": "{name} changed outside FreyaLab.",
  "app.external.changedUnknown": "A file changed outside FreyaLab.",
- "app.external.banner": "This file changed outside FreyaLab."
-=======
+ "app.external.banner": "This file changed outside FreyaLab.",
  "analysis.export.json": "JSON data",
  "analysis.export.csv": "CSV data…",
  "analysis.export.markdown": "Markdown data",
  "analysis.export.explorationHelp": "Open the current view as an editable document; frequencies include only the loaded page"
->>>>>>> origin/main
 }

@@ -1734,7 +1734,6 @@
  "statistics.field.percentile75": "P75 (percentil 75)",
  "statistics.field.percentile90": "P90 (percentil 90)",
  "describe.pandasMetric": "pandas: {metric}",
-<<<<<<< HEAD
  "project.recipe.error.results": "No se puede eliminar: tiene {n} archivos exportados. Quítalos del proyecto antes.",
  "project.export.dialog": "Exportar conjunto",
  "project.export.fallbackName": "conjunto",
@@ -1789,11 +1788,9 @@
  "project.export.normalized.missingMany": "{n} campos ausentes se escribieron vacíos porque van antes de otros campos",
  "app.external.changed": "{name} cambió fuera de FreyaLab.",
  "app.external.changedUnknown": "Un archivo cambió fuera de FreyaLab.",
- "app.external.banner": "Este archivo cambió fuera de FreyaLab."
-=======
+ "app.external.banner": "Este archivo cambió fuera de FreyaLab.",
  "analysis.export.json": "Datos JSON",
  "analysis.export.csv": "Datos CSV…",
  "analysis.export.markdown": "Datos Markdown",
  "analysis.export.explorationHelp": "Abrir como documento editable la vista actual; en frecuencias incluye solo la página cargada"
->>>>>>> origin/main
 }
