@@ -104,7 +104,9 @@ for(const locale of ['es','en-XA'] as const){
    await expect.poll(()=>page.locator('html').evaluate(node=>node.classList.contains('dark'))).toBe(theme==='dark')
    await expect(workspace.locator('.columns-overview>details>summary')).toBeVisible();await page.evaluate(()=>document.fonts.ready)
    const overlap=await noticeOverlapsHelp(),name=locale+'-'+theme+'-'+size.width+'x'+size.height
-   layouts.push({name,overlap});await page.screenshot({path:test.info().outputPath('notice-help-'+name+'.png'),animations:'disabled'})
+   layouts.push({name,overlap})
+   // Las capturas son evidencia; los oráculos geométricos siempre se ejecutan.
+   if(process.env.FREYALAB_SIM2G_EVIDENCE==='1')await page.screenshot({path:test.info().outputPath('notice-help-'+name+'.png'),animations:'disabled'})
    expect.soft(overlap,name+': el aviso no debe tapar el texto de ayuda').toBe(false)
    await expect.poll(()=>footer().evaluate(node=>Math.abs(node.getBoundingClientRect().bottom-innerHeight))).toBeLessThanOrEqual(1)
   }
