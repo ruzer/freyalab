@@ -39,3 +39,20 @@ Sobre `fe311c79f352668f511b5dea2276baaddcea7378`, `npm run test:e2e -- --reporte
 Las siete omisiones exigen el Pandoc externo del ayudante, que no se proporcionó en esta ejecución: un caso de commands y seis de academic-word. SEG-S2e se omitió antes de alcanzar su fallo esperado. No se modifica ninguna condición de omisión. E1 y los casos H13 de fin de línea sí se ejecutaron y pasaron. La sesión estaba desbloqueada antes y después; no se monitorizó continuamente.
 
 La CI de `b2bcc465` concluyó con fallo real en macOS, `charts.spec.ts:121`, en ambos intentos: un ayudante esperaba 15 s antes de alcanzar la espera de 90 s existente en el caso. Las exportaciones no se alcanzaron allí. La suite local no reemplaza esa evidencia ni acredita una nueva CI verde del CSS. No se relanzó la corrida a ciegas, no se fusionó ni se instaló ninguna aplicación.
+
+## Capturas de evidencia bajo petición · 21-nov
+
+Al verificar la actualización con main, el grupo de avisos aprobó 4/5 casos sin reintentos. El caso en-XA se detuvo en la segunda captura (oscuro, 1440×900), tras los 30 s del controlador de screenshots. Las fuentes ya estaban listas y la medición anterior no mostraba solape; la traza no permite identificar una causa única del compositor o del protocolo. No se amplía ningún plazo ni se declara resuelto ese atasco interno.
+
+Las imágenes de este bucle no son oráculos: ninguna aserción lee sus bytes. Por ello solo su generación pasa a `FREYALAB_SIM2G_EVIDENCE=1`, siguiendo la convención de los demás E2E. Los ocho tamaños/temas/idiomas, mediciones DOMRange, pie y JSON siguen siempre activos. También se conservan teclado, mensajes, tiempos del aviso y los oráculos finales de hash/datos por caso de idioma. No se borra ni añade ninguna identidad de prueba, no se cambia la aplicación y no se introducen skips. Las capturas antes/después ya publicadas se reutilizan con los mismos bytes y con producción idéntica.
+
+Base `b2a50100d6f2c8e57f5e4bc4d2966e6071f41820`; commit de prueba `ab7dc27d6d79df85176e97b7642d97693e3ece20`. [Resultados saneados y huellas](sim-2g-ajuste-aviso-2026-11-20/capturas-a-peticion.json).
+
+| Fase | Resultado | Playwright / proceso |
+|---|---|---|
+| Antes, capturas en cada pasada | 4 aprobadas, 1 fallo al capturar; 0 reintentos | 45.722 / 46.566 s |
+| Después, modo normal sin PNG opcionales | 5/5 aprobadas; 8/8 vistas sin solape; 0 reintentos | 13.114 / 13.741 s |
+
+`npm run check`: 0 errores/avisos; `npm test`: 3.107 aprobadas y 2 omisiones existentes; `npm run build`: salida 0. Se ejecutaron en paralelo (20.518 / 25.500 / 4.234 s de proceso). El E2E real fue `npx playwright test tests/e2e/single-event-notices.spec.ts --workers=1 --retries=0 --reporter=list,json`. Ambos registros de sesión, antes y después, mostraron pantalla desbloqueada; no acreditan vigilancia continua del foco.
+
+Para solicitar las imágenes se conserva `FREYALAB_SIM2G_EVIDENCE=1` con ese mismo comando; no se repitió aquí ese modo, que aún puede encontrar el límite de captura observado. Los PNG no se sustituyen por imágenes artificiales. El candidato se preparó en otro worktree mientras la CI calificaba b2a; necesita su propia CI y no hereda el verde de la base.
