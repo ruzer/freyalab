@@ -1,0 +1,619 @@
+{
+  "schemaVersion": 1,
+  "subject": "E1: control local de selección y foco real",
+  "status": "Control local completado, sin cambios de producto E1",
+  "platform": "macOS local; no validación nativa de Windows",
+  "heads": {
+    "mainControl": "43913e2d846659100d932e9a676d8f6bb00d97c0",
+    "historicalMainControl": "8a002af72fd015db8457c67974ac10dbf37c0b1a"
+  },
+  "sourceIdentity": [
+    {
+      "file": "tests/e2e/markdown-selection.spec.ts",
+      "sha256": "30a84b2df1aedbc1aeb84937b939dffe19d4dcddbb35824629e24a06c836c389",
+      "sameBytesAtMain439AndMain8a": true
+    },
+    {
+      "file": "src/renderer/components/Editor.svelte",
+      "sha256": "8b43bc84f1cedbeb7e41166a01a7dff413d42487cffd988ed6b82ef800dbbd47",
+      "sameBytesAtMain439AndMain8a": true
+    }
+  ],
+  "build": {
+    "sha": "43913e2d846659100d932e9a676d8f6bb00d97c0",
+    "exitCode": 0,
+    "durationSeconds": 2.5863131250080187
+  },
+  "phases": [
+    {
+      "phase": "original",
+      "head": "43913e2d846659100d932e9a676d8f6bb00d97c0",
+      "exitCode": 0,
+      "reportDurationMs": 8988.481,
+      "processSeconds": 9.359704250004143,
+      "ordinaryPassed": 3,
+      "unexpected": 0,
+      "flaky": 0,
+      "skipped": 0,
+      "retryAttempts": 0,
+      "cases": [
+        {
+          "title": "light: doble clic, arrastre, teclado, ventana sin foco y colores forzados",
+          "project": "md",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2730
+            }
+          ]
+        },
+        {
+          "title": "dark: doble clic, arrastre, teclado, ventana sin foco y colores forzados",
+          "project": "md",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2177
+            }
+          ]
+        },
+        {
+          "title": "Mermaid, CSV Texto y vista previa conservan selección visible en ambos temas",
+          "project": "md",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 3669
+            }
+          ]
+        }
+      ],
+      "inputs": [
+        {
+          "file": "main-439-original-report.json",
+          "bytes": 18531,
+          "sha256": "950f0a5e1f0d8ddf6c7bb876d69dd8c6c2aa907d9364ab4c2157e283c86a7624",
+          "rawPublished": false
+        },
+        {
+          "file": "main-439-original-execution.json",
+          "bytes": 323,
+          "sha256": "b9b78b5b5617f7ea01d93257fae4899a8c9729d48622d2c83d5e2fa70b2f6d18",
+          "rawPublished": false
+        },
+        {
+          "file": "main-439-original.log",
+          "bytes": 764,
+          "sha256": "8d922a13e81bfa71afff37a578e06ce08ebe6d05cc9ae24def9bfc9b516bc320",
+          "rawPublished": false
+        }
+      ]
+    },
+    {
+      "phase": "native",
+      "head": "43913e2d846659100d932e9a676d8f6bb00d97c0",
+      "exitCode": 0,
+      "reportDurationMs": 5014.113,
+      "processSeconds": 5.486769334005658,
+      "ordinaryPassed": 2,
+      "unexpected": 0,
+      "flaky": 0,
+      "skipped": 0,
+      "retryAttempts": 0,
+      "cases": [
+        {
+          "title": "light: doble clic, arrastre, teclado, ventana sin foco y colores forzados",
+          "project": "md",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2536
+            }
+          ]
+        },
+        {
+          "title": "dark: doble clic, arrastre, teclado, ventana sin foco y colores forzados",
+          "project": "md",
+          "expectedStatus": "passed",
+          "status": "expected",
+          "attempts": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2135
+            }
+          ]
+        }
+      ],
+      "inputs": [
+        {
+          "file": "main-439-native-report.json",
+          "bytes": 11831,
+          "sha256": "8513e7b59d0e1d6e14a7588982f454a5aa0b24a503bbaf15ba0759055bcf017a",
+          "rawPublished": false
+        },
+        {
+          "file": "main-439-native-execution.json",
+          "bytes": 531,
+          "sha256": "ccb661341a08d9a7e05a60956913be3415b74384843035f1afb3c33d1848ad2d",
+          "rawPublished": false
+        },
+        {
+          "file": "main-439-native.log",
+          "bytes": 633,
+          "sha256": "208846cd5419310296b4a3fd69d57c10c3af2b6225a99d2bab0abe2ef4344225",
+          "rawPublished": false
+        }
+      ]
+    }
+  ],
+  "nativeSession": {
+    "before": {
+      "at": "2026-11-20T17:29:11.029914+00:00",
+      "lockedFlags": [
+        false
+      ],
+      "onConsoleFlags": [
+        true
+      ]
+    },
+    "after": {
+      "at": "2026-11-20T17:29:16.540586+00:00",
+      "lockedFlags": [
+        false
+      ],
+      "onConsoleFlags": [
+        true
+      ]
+    },
+    "scope": "Estas lecturas válidas pertenecen al control native; no se atribuyen al original."
+  },
+  "focus": [
+    {
+      "theme": "light",
+      "cdpFocusEmulationBeforeObservation": false,
+      "before": {
+        "value": {
+          "windows": [
+            {
+              "id": 1,
+              "focused": true,
+              "visible": true
+            }
+          ],
+          "dom": {
+            "hasFocus": true,
+            "visibility": "visible",
+            "activeTag": "DIV"
+          }
+        },
+        "decodedBytes": 117,
+        "decodedSHA256": "bd5b20d240320875e1e37908b05ad870f45d8dc37e36cef6f9a4459b306d48df"
+      },
+      "afterOriginalAuxiliaryWindowAction": {
+        "value": {
+          "windows": [
+            {
+              "id": 2,
+              "focused": true,
+              "visible": true
+            },
+            {
+              "id": 1,
+              "focused": false,
+              "visible": true
+            }
+          ],
+          "dom": {
+            "hasFocus": false,
+            "visibility": "visible",
+            "activeTag": "DIV"
+          }
+        },
+        "decodedBytes": 158,
+        "decodedSHA256": "ce2bdb7362171002ed33cc1be75090ce201473eb8f4fd05292f08a56deb8a015"
+      }
+    },
+    {
+      "theme": "dark",
+      "cdpFocusEmulationBeforeObservation": false,
+      "before": {
+        "value": {
+          "windows": [
+            {
+              "id": 1,
+              "focused": true,
+              "visible": true
+            }
+          ],
+          "dom": {
+            "hasFocus": true,
+            "visibility": "visible",
+            "activeTag": "DIV"
+          }
+        },
+        "decodedBytes": 117,
+        "decodedSHA256": "bd5b20d240320875e1e37908b05ad870f45d8dc37e36cef6f9a4459b306d48df"
+      },
+      "afterOriginalAuxiliaryWindowAction": {
+        "value": {
+          "windows": [
+            {
+              "id": 2,
+              "focused": true,
+              "visible": true
+            },
+            {
+              "id": 1,
+              "focused": false,
+              "visible": true
+            }
+          ],
+          "dom": {
+            "hasFocus": false,
+            "visibility": "visible",
+            "activeTag": "DIV"
+          }
+        },
+        "decodedBytes": 158,
+        "decodedSHA256": "ce2bdb7362171002ed33cc1be75090ce201473eb8f4fd05292f08a56deb8a015"
+      }
+    }
+  ],
+  "contrast": {
+    "light": {
+      "samples": [
+        {
+          "state": "double",
+          "foreground": [
+            37,
+            37,
+            43
+          ],
+          "background": [
+            203,
+            216,
+            246
+          ],
+          "ratio": 10.660784522405597
+        },
+        {
+          "state": "drag",
+          "foreground": [
+            37,
+            37,
+            43
+          ],
+          "background": [
+            203,
+            216,
+            246
+          ],
+          "ratio": 10.660784522405597
+        },
+        {
+          "state": "keyboard",
+          "foreground": [
+            37,
+            37,
+            43
+          ],
+          "background": [
+            203,
+            216,
+            246
+          ],
+          "ratio": 10.660784522405597
+        },
+        {
+          "state": "inactive",
+          "foreground": [
+            37,
+            37,
+            43
+          ],
+          "background": [
+            215,
+            218,
+            227
+          ],
+          "ratio": 10.90369540120518
+        },
+        {
+          "state": "forced-colors",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            54,
+            51,
+            107
+          ],
+          "ratio": 11.396370730597118
+        }
+      ],
+      "input": {
+        "file": "contraste-91790cd8c630d78389b8a0f5366cf95748ee258c.json",
+        "bytes": 906,
+        "sha256": "5d9bae765ecc4f4650d89cbc994bfef2e6f166d9159f3a2a9611e2b6c9555586",
+        "rawPublished": false
+      },
+      "focusedPNGIdenticalToKeyboardSelection": true
+    },
+    "dark": {
+      "samples": [
+        {
+          "state": "double",
+          "foreground": [
+            232,
+            232,
+            237
+          ],
+          "background": [
+            45,
+            63,
+            91
+          ],
+          "ratio": 8.713156171874003
+        },
+        {
+          "state": "drag",
+          "foreground": [
+            232,
+            232,
+            237
+          ],
+          "background": [
+            45,
+            63,
+            91
+          ],
+          "ratio": 8.713156171874003
+        },
+        {
+          "state": "keyboard",
+          "foreground": [
+            232,
+            232,
+            237
+          ],
+          "background": [
+            45,
+            63,
+            91
+          ],
+          "ratio": 8.713156171874003
+        },
+        {
+          "state": "inactive",
+          "foreground": [
+            232,
+            232,
+            237
+          ],
+          "background": [
+            58,
+            61,
+            73
+          ],
+          "ratio": 8.847794175463797
+        },
+        {
+          "state": "forced-colors",
+          "foreground": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            91,
+            54,
+            136
+          ],
+          "ratio": 9.020577078092774
+        }
+      ],
+      "input": {
+        "file": "contraste-f8707d6e393d8323a7265dc43f9bbd90b60c045e.json",
+        "bytes": 902,
+        "sha256": "54c0aae0ca5926a120c96ebf055ee8c76583840c7d3f400a5e245ab6b52e66af",
+        "rawPublished": false
+      },
+      "focusedPNGIdenticalToKeyboardSelection": true
+    }
+  },
+  "images": [
+    {
+      "file": "images/e1-light-before.png",
+      "theme": "light",
+      "state": "before",
+      "phase": "native",
+      "width": 39,
+      "height": 20,
+      "bytes": 689,
+      "sha256": "06ac84230d51c284f4562f7319e23a5c0c2db231345dbf285d71ce2025ad442c",
+      "copiedByteIdentical": true,
+      "sourceFile": "native-focused-main-439-light-keyboard-sin-seleccion.png",
+      "sourceSHA256": "06ac84230d51c284f4562f7319e23a5c0c2db231345dbf285d71ce2025ad442c"
+    },
+    {
+      "file": "images/e1-light-focused.png",
+      "theme": "light",
+      "state": "focused",
+      "phase": "native",
+      "width": 39,
+      "height": 20,
+      "bytes": 760,
+      "sha256": "7d874a39ba1d72333d6271a82f1aab1dc363f8494585872c5de3aca13bc53d65",
+      "copiedByteIdentical": true,
+      "sourceFile": "native-focused-main-439-light-focused.png",
+      "sourceSHA256": "7d874a39ba1d72333d6271a82f1aab1dc363f8494585872c5de3aca13bc53d65"
+    },
+    {
+      "file": "images/e1-light-inactive.png",
+      "theme": "light",
+      "state": "inactive",
+      "phase": "native",
+      "width": 39,
+      "height": 20,
+      "bytes": 757,
+      "sha256": "ac954565b3f7ed6e2d95d925ad9c06150a21af4cf13f76f0b332e45b7da123d5",
+      "copiedByteIdentical": true,
+      "sourceFile": "native-focused-main-439-light-inactive.png",
+      "sourceSHA256": "ac954565b3f7ed6e2d95d925ad9c06150a21af4cf13f76f0b332e45b7da123d5"
+    },
+    {
+      "file": "images/e1-light-forced-colors.png",
+      "theme": "light",
+      "state": "forced-colors",
+      "phase": "native",
+      "width": 39,
+      "height": 20,
+      "bytes": 751,
+      "sha256": "f98ecb2902c7683b6e4139d2bc05e17131c7eea502ebaad0672aaa7ba6cb28a8",
+      "copiedByteIdentical": true,
+      "sourceFile": "native-focused-main-439-light-forced-colors.png",
+      "sourceSHA256": "f98ecb2902c7683b6e4139d2bc05e17131c7eea502ebaad0672aaa7ba6cb28a8"
+    },
+    {
+      "file": "images/e1-dark-before.png",
+      "theme": "dark",
+      "state": "before",
+      "phase": "native",
+      "width": 39,
+      "height": 20,
+      "bytes": 686,
+      "sha256": "ad823af911cbfe6cd9a65ae600e014d016ccd58690abb80d88e94739141300ed",
+      "copiedByteIdentical": true,
+      "sourceFile": "native-focused-main-439-dark-keyboard-sin-seleccion.png",
+      "sourceSHA256": "ad823af911cbfe6cd9a65ae600e014d016ccd58690abb80d88e94739141300ed"
+    },
+    {
+      "file": "images/e1-dark-focused.png",
+      "theme": "dark",
+      "state": "focused",
+      "phase": "native",
+      "width": 39,
+      "height": 20,
+      "bytes": 751,
+      "sha256": "715304988d4155e735c83d0f8116a5fd8b89f27e86f046a3c5a8cb1bde1d3d82",
+      "copiedByteIdentical": true,
+      "sourceFile": "native-focused-main-439-dark-focused.png",
+      "sourceSHA256": "715304988d4155e735c83d0f8116a5fd8b89f27e86f046a3c5a8cb1bde1d3d82"
+    },
+    {
+      "file": "images/e1-dark-inactive.png",
+      "theme": "dark",
+      "state": "inactive",
+      "phase": "native",
+      "width": 39,
+      "height": 20,
+      "bytes": 765,
+      "sha256": "eb9473b0b33b6e571cb9a3b3a524d40e7298caeb5c224c6f30df670c7a27afb0",
+      "copiedByteIdentical": true,
+      "sourceFile": "native-focused-main-439-dark-inactive.png",
+      "sourceSHA256": "eb9473b0b33b6e571cb9a3b3a524d40e7298caeb5c224c6f30df670c7a27afb0"
+    },
+    {
+      "file": "images/e1-dark-forced-colors.png",
+      "theme": "dark",
+      "state": "forced-colors",
+      "phase": "native",
+      "width": 39,
+      "height": 20,
+      "bytes": 749,
+      "sha256": "088f772526bce32ea3ff6939ff062aa468b418212ed765085618e7950f0d198c",
+      "copiedByteIdentical": true,
+      "sourceFile": "native-focused-main-439-dark-forced-colors.png",
+      "sourceSHA256": "088f772526bce32ea3ff6939ff062aa468b418212ed765085618e7950f0d198c"
+    }
+  ],
+  "instrumentation": {
+    "kind": "Copia privada del spec original con lecturas de BrowserWindow/DOM y dos precondiciones de foco",
+    "originalLineSequencePreserved": true,
+    "onlyInsertedLines": true,
+    "newFocusOrActivationActions": 0,
+    "originalSpecSHA256": "30a84b2df1aedbc1aeb84937b939dffe19d4dcddbb35824629e24a06c836c389",
+    "privateProbeSHA256": "97c4131f35a3f3ca92abcb9e4108956546427d2fc63fc10f493d2c32c2c15e81",
+    "privatePatchSHA256": "d0cd745b9bd8c7b71f2d72b22c2d66c7db3189a0c4c478b29cb47e1fb61fde44",
+    "note": "La ventana auxiliar, su activación y la desactivación de emulación CDP ya son acciones originales; no se añadieron acciones de foco."
+  },
+  "historicalContext": {
+    "head": "8a002af72fd015db8457c67974ac10dbf37c0b1a",
+    "exitCode": 1,
+    "processSeconds": 33.906748916982906,
+    "cases": [
+      {
+        "title": "light: doble clic, arrastre, teclado, ventana sin foco y colores forzados",
+        "status": "failed",
+        "retry": 0
+      },
+      {
+        "title": "dark: doble clic, arrastre, teclado, ventana sin foco y colores forzados",
+        "status": "failed",
+        "retry": 0
+      }
+    ],
+    "failedOracle": {
+      "source": "tests/e2e/markdown-selection.spec.ts:127",
+      "expectedDOMHasFocus": false,
+      "receivedDOMHasFocus": true
+    },
+    "sessionLockedBefore": true,
+    "sessionLockedAfter": true,
+    "inputs": [
+      {
+        "file": "baseline-and-consumer-execution.json",
+        "bytes": 2713,
+        "sha256": "ef8dbc9c1c1c57212e3cbb9ae882012c5dc7dcee0f65b093caeaf43ada807ed9",
+        "rawPublished": false
+      },
+      {
+        "file": "baseline-e1-report.json",
+        "bytes": 21034,
+        "sha256": "f7f74e7f72d0b7663982e5ebf603e5af18850f16ed6045205805863e00889678",
+        "rawPublished": false
+      }
+    ],
+    "conclusion": "La sesión bloqueada es contexto observado. No demuestra una causa histórica única ni un defecto de selección."
+  },
+  "commands": {
+    "original": "npx playwright test tests/e2e/markdown-selection.spec.ts --workers=1 --retries=0 --trace=on --reporter=list,json",
+    "native": "Copia privada de los dos casos light/dark con el mismo flujo y lecturas pasivas; no es un test nuevo del repositorio."
+  },
+  "limits": [
+    "Las fases original (3 casos) y native (2 casos coincidentes) se informan por separado; no son cinco identidades nuevas.",
+    "Las ocho imágenes son recortes representativos del fixture sintético; no una matriz completa de aplicación o plataformas.",
+    "Los contrastes son los RGB y ratios recogidos por el test; no una auditoría completa de accesibilidad.",
+    "No se cambió Editor ni el spec original; no hay arreglo de producto E1.",
+    "No se transfiere este control macOS a Windows, a CI ni a fallos históricos no observados."
+  ],
+  "additionalPrivateInputDigests": [
+    {
+      "file": "main-439-build.json",
+      "bytes": 175,
+      "sha256": "9a2daf533c3f711aa5740c17fe88e1f1e598ec1cfa2e76631262849ab40e405e",
+      "rawPublished": false
+    },
+    {
+      "file": "main-439-build.log",
+      "bytes": 22811,
+      "sha256": "7a5732313d24b7d62b8bff11b8031b3b7164bbb1ffe00c6102f83aecef427c5a",
+      "rawPublished": false
+    }
+  ]
+}

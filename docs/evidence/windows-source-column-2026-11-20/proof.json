@@ -1,0 +1,439 @@
+{
+  "schema": 1,
+  "scope": "Source-dialog readiness and CSV edit reload coalescing only. Staged evidence; publication/integration remains root-owned.",
+  "finalHead": "92b7d13808e4ac0a1bff057a93faec02e347a4c0",
+  "baselineProduct": "43913e2d846659100d932e9a676d8f6bb00d97c0",
+  "historicalReference": {
+    "run": 44719848991,
+    "head": "8e321d3b2435b2e5f3a8c548c24990db4ecc5a72",
+    "job": 136232926655,
+    "tests": [
+      "project-source.spec.ts:65, missing Delimitador expected ;",
+      "column-menu.spec.ts:66, missing Lower preview status3of5"
+    ],
+    "limit": "Matching failure signatures and real-operation local reproductions; original Windows traces have no DOM/main IPC, so the exact historical interleaving is not established.",
+    "artifactIntegrityLimit": "Only relevant entries were recovered and individually validated; the intentionally interrupted outer artifact digest was not verified. Raw traces/logs remain private."
+  },
+  "changes": [
+    {
+      "path": "tests/e2e/project-source.spec.ts",
+      "beforeSha256": "2ac1f2e68d55290c5b6d03ab0eada6a1037dcc9b1ec2c1d3dacbeddbb14dabd0",
+      "afterSha256": "a932212343d30718dc15fec0a32f5bc4c0a5e3eea9fa9ad48e5ad2f92ee4fa57",
+      "change": "One count0 wait at the end of create(), after the real Create Enter. Inverting this line restores the entire original file byte-for-byte."
+    },
+    {
+      "path": "src/renderer/components/CsvTable.svelte",
+      "beforeSha256": "766b4c34d9bcb9f567b00c53649d4ed6c23fd3ebd938bd7ff8554c7ea410e5f5",
+      "afterSha256": "12b5bd1c0eb7b698402d608f7390b7391ad3523f667b58469412f015203da652",
+      "change": "Only editNow awaits tick and clears its scheduled revision timer immediately before the existing explicit load(pageOffset). Inverting that block restores the archived baseline file byte-for-byte; load, stats, guards/catch and other routes retained."
+    },
+    {
+      "path": "tests/e2e/column-menu.spec.ts",
+      "beforeSha256": "082f932bb1a2a65e18adca02ce5f72215d581205b5e2ff05d3a12dd99aa16329",
+      "afterSha256": "73401a599bbb68e3308cc59aa04277901295871b643cd4d184b3352fadce63cd",
+      "change": "Existing Trim/Lower case gains deterministic real-response barrier; original target oracle lines retained verbatim. Two query tests added by es/en-XA loop. Removing new loop and restoring only modified target body restores entire original file byte-for-byte."
+    }
+  ],
+  "preservation": {
+    "removedCases": 0,
+    "newQueryRuntimeCases": 2,
+    "locales": [
+      "es",
+      "en-XA"
+    ],
+    "existingLowerOracleLinesVerbatim": true,
+    "projectWholeFileInverseExact": true,
+    "productWholeFileInverseExact": true,
+    "columnWholeFileInverseExact": true,
+    "timeoutsRetriesPolicy": "No timeout/retry increases in these changes. Renderer clock advances existing150ms deterministically; real main replies are delegated, never fabricated."
+  },
+  "fixtures": [
+    {
+      "source": "Literal in tests/e2e/project-source.spec.ts",
+      "classification": "Synthetic public test input",
+      "bytes": 22,
+      "sha256": "e25ef43b976338633ef5778e1e445435128962884dc9e8a1203d0563f369c078",
+      "utf8": "ID;ID;\r\n001;México;\r\n"
+    },
+    {
+      "source": "Literal source in tests/e2e/column-menu.spec.ts",
+      "classification": "Synthetic public test input",
+      "dataRows": 5,
+      "columns": 3,
+      "bytes": 130,
+      "sha256": "3af6129545599cfca545b0ad4a4f825bfab93f7831d1a0e96b03c607f78b5b1f",
+      "utf8": "Folio,Ciudad,Importe\n00123, oaxaca de juárez ,10\n00124,GUADALAJARA,20\n00125,mérida  ,30\n00126,Cd. de México,40\n00127,PUEBLA,50\n"
+    }
+  ],
+  "localPhases": {
+    "sourcePrivateReproduction": {
+      "red": {
+        "playwrightSeconds": 16.566825,
+        "processSeconds": 16.86560720897978,
+        "retry": 0
+      },
+      "control": {
+        "playwrightSeconds": 1.698092,
+        "processSeconds": 2.0418599160038866,
+        "retry": 0
+      },
+      "result": "Real post-create reply hold demonstrates open modal with mounted project panel,0pickSource. Dialog-close wait control uses same Add Enter,1pickSource/1register and original target oracles.",
+      "source": "source-executed-review.json SHA2f9ebe98466cf0db05eda83dacb789893babda9f843b7625bc721e75a5258502"
+    },
+    "sourceOriginalSpecGreen": {
+      "report": "project-source-green-report.json",
+      "stats": {
+        "duration": 13674.493999999999,
+        "expected": 7,
+        "unexpected": 0,
+        "skipped": 0,
+        "flaky": 0
+      },
+      "processSeconds": 14.198638999980176,
+      "scope": "Original7/7 with final helper wait, before CsvTable product change; this phase is not a final-head shell rerun."
+    },
+    "lowerPublicRed": {
+      "report": "column-public-red-report.json",
+      "stats": {
+        "duration": 17247.809,
+        "expected": 0,
+        "unexpected": 1,
+        "skipped": 0,
+        "flaky": 0
+      },
+      "processSeconds": 17.738607500010403,
+      "scope": "Same existing case/oracles; baseline product439. Missing exact Lower status3of5;0retry."
+    },
+    "lowerPublicGreen": {
+      "report": "column-public-green-report.json",
+      "stats": {
+        "duration": 1610.703,
+        "expected": 1,
+        "unexpected": 0,
+        "skipped": 0,
+        "flaky": 0
+      },
+      "processSeconds": 1.9005935000022873,
+      "scope": "Same test after local editNow coalescing;0retry."
+    },
+    "lowerAndQueriesGreen": {
+      "report": "column-query-locales-report.json",
+      "stats": {
+        "duration": 4605.596,
+        "expected": 3,
+        "unexpected": 0,
+        "skipped": 0,
+        "flaky": 0
+      },
+      "processSeconds": 4.888111417007167,
+      "cases": [
+        {
+          "title": "quitar espacios y minúsculas: acceso desde Limpiar y solo tocan esa columna",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 1469
+        },
+        {
+          "title": "una búsqueda cambiada durante la edición y otra posterior conservan la consulta vigente (es)",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 1372
+        },
+        {
+          "title": "una búsqueda cambiada durante la edición y otra posterior conservan la consulta vigente (en-XA)",
+          "project": "csv",
+          "status": "passed",
+          "retry": 0,
+          "durationMs": 1333
+        }
+      ],
+      "scope": "Existing Lower plus new es/en-XA query controls. Real cell edit reply held; search before release and later150ms query both honored. Exact whole data/Folio/Importe/dirty/original bytes retained; no fixed page-count oracle."
+    },
+    "finalChecks": {
+      "head": "92b7d13808e4ac0a1bff057a93faec02e347a4c0",
+      "parallel": true,
+      "results": [
+        {
+          "name": "check",
+          "exitCode": 0,
+          "durationSeconds": 14.154563334013801
+        },
+        {
+          "name": "unit",
+          "exitCode": 0,
+          "durationSeconds": 21.006728250009473
+        },
+        {
+          "name": "build",
+          "exitCode": 0,
+          "durationSeconds": 3.8644306669884827
+        }
+      ],
+      "svelteErrors": 0,
+      "svelteWarnings": 0,
+      "unit": {
+        "total": 3098,
+        "passed": 3096,
+        "skipped": 2,
+        "failed": 0,
+        "success": true
+      },
+      "sourceSummarySha256": "9597083eb518a34afb50eefcbc9e4f8123c92929415d53e82fccaf70f640d45e",
+      "scope": "check/full unit/build only; independent native fastCSV phase below."
+    },
+    "fastCsv": {
+      "status": "PASS",
+      "head": "92b7d13808e4ac0a1bff057a93faec02e347a4c0",
+      "ordinaryPassed": 421,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "retryAttempts": 0,
+      "playwrightMs": 1060227.2159999998,
+      "processSeconds": 1060.51497608301,
+      "scope": "Local CSV fast only; does not replace shell/serial/package or Windows CI",
+      "reportSha256": "421c2b195b36474aa7c158cc771561a620cee597b738946392a71fa57e2cf9b0",
+      "executionSha256": "a52e61bb195dd5d240d34e9c8bcab382d0ebc14ed7b6b89274af544392ddd8d7"
+    }
+  },
+  "reportFingerprints": [
+    {
+      "file": "column-public-red-report.json",
+      "sha256": "a2ee5d3fe1c98df13db13b6fb1af0a129e6576277b9b59cb37bf95f77da397db",
+      "bytes": 19904
+    },
+    {
+      "file": "column-public-green-report.json",
+      "sha256": "ec6252616e973debc919cd7a54cbdc9c12936a0141efb527ab61109644c08a58",
+      "bytes": 13522
+    },
+    {
+      "file": "column-query-locales-report.json",
+      "sha256": "3b4b59512f7d30dc99ad4ea44847f126509181abb5c5635fee6205d135263706",
+      "bytes": 18817
+    },
+    {
+      "file": "project-source-green-report.json",
+      "sha256": "dd437b940ac66dcabbc1844cf829e6fd3e18940ecb35b38b37797f8653d1debe",
+      "bytes": 19957
+    }
+  ],
+  "captures": [
+    {
+      "file": "captures/query-es-dark-1280x720.png",
+      "sha256": "7b8bc3a29bec806fa0026111565da1358e1e44ca4288e33771203f15418977b9",
+      "bytes": 54689,
+      "dimensions": [
+        1280,
+        720
+      ],
+      "locale": "es",
+      "theme": "dark",
+      "copiedByteIdentically": true,
+      "pngChunkTypes": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ],
+      "pngAllChunkCRCValid": true,
+      "textMetadataChunks": false,
+      "visualInspection": "Inspected individually. Search mérida, one visible row, Folio00125/Importe30 and dirty marker. No personal paths/document content observed; synthetic CSV only.",
+      "state": "Final filtered query; these are after-state images, not before/after pairs."
+    },
+    {
+      "file": "captures/query-es-dark-1440x900.png",
+      "sha256": "56ca1efd50eb3b7a711bdecb77562ec3a663d354e269b5650ef62b890756fc22",
+      "bytes": 57844,
+      "dimensions": [
+        1440,
+        900
+      ],
+      "locale": "es",
+      "theme": "dark",
+      "copiedByteIdentically": true,
+      "pngChunkTypes": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ],
+      "pngAllChunkCRCValid": true,
+      "textMetadataChunks": false,
+      "visualInspection": "Inspected individually. Search mérida, one visible row, Folio00125/Importe30 and dirty marker. No personal paths/document content observed; synthetic CSV only.",
+      "state": "Final filtered query; these are after-state images, not before/after pairs."
+    },
+    {
+      "file": "captures/query-es-light-1280x720.png",
+      "sha256": "ce65442dc83acfb8641ccee15d8f8764918deb9028e7a6d35f30436fcbff93f6",
+      "bytes": 55033,
+      "dimensions": [
+        1280,
+        720
+      ],
+      "locale": "es",
+      "theme": "light",
+      "copiedByteIdentically": true,
+      "pngChunkTypes": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ],
+      "pngAllChunkCRCValid": true,
+      "textMetadataChunks": false,
+      "visualInspection": "Inspected individually. Search mérida, one visible row, Folio00125/Importe30 and dirty marker. No personal paths/document content observed; synthetic CSV only.",
+      "state": "Final filtered query; these are after-state images, not before/after pairs."
+    },
+    {
+      "file": "captures/query-es-light-1440x900.png",
+      "sha256": "a81295c55fc1cccb18221cca965909320d739d9adcb3266b35acc672f227c754",
+      "bytes": 58165,
+      "dimensions": [
+        1440,
+        900
+      ],
+      "locale": "es",
+      "theme": "light",
+      "copiedByteIdentically": true,
+      "pngChunkTypes": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ],
+      "pngAllChunkCRCValid": true,
+      "textMetadataChunks": false,
+      "visualInspection": "Inspected individually. Search mérida, one visible row, Folio00125/Importe30 and dirty marker. No personal paths/document content observed; synthetic CSV only.",
+      "state": "Final filtered query; these are after-state images, not before/after pairs."
+    },
+    {
+      "file": "captures/query-en-XA-dark-1280x720.png",
+      "sha256": "5a241c2c2461ced67db8abc5531c02e7b45afd687be5f88af3ea22fe73ae01ee",
+      "bytes": 57518,
+      "dimensions": [
+        1280,
+        720
+      ],
+      "locale": "en-XA",
+      "theme": "dark",
+      "copiedByteIdentically": true,
+      "pngChunkTypes": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ],
+      "pngAllChunkCRCValid": true,
+      "textMetadataChunks": false,
+      "visualInspection": "Inspected individually. Search mérida, one visible row, Folio00125/Importe30 and dirty marker. No personal paths/document content observed; synthetic CSV only.",
+      "state": "Final filtered query; these are after-state images, not before/after pairs."
+    },
+    {
+      "file": "captures/query-en-XA-dark-1440x900.png",
+      "sha256": "01bbe1c4126cf850cf34e562d317091352fc7edf6953ffa7a67bf59127b3f78d",
+      "bytes": 61542,
+      "dimensions": [
+        1440,
+        900
+      ],
+      "locale": "en-XA",
+      "theme": "dark",
+      "copiedByteIdentically": true,
+      "pngChunkTypes": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ],
+      "pngAllChunkCRCValid": true,
+      "textMetadataChunks": false,
+      "visualInspection": "Inspected individually. Search mérida, one visible row, Folio00125/Importe30 and dirty marker. No personal paths/document content observed; synthetic CSV only.",
+      "state": "Final filtered query; these are after-state images, not before/after pairs."
+    },
+    {
+      "file": "captures/query-en-XA-light-1280x720.png",
+      "sha256": "86defd156e7cd8bddbd0f346e819d0402eaa2ed30b3a15640b44066771dfb984",
+      "bytes": 57667,
+      "dimensions": [
+        1280,
+        720
+      ],
+      "locale": "en-XA",
+      "theme": "light",
+      "copiedByteIdentically": true,
+      "pngChunkTypes": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ],
+      "pngAllChunkCRCValid": true,
+      "textMetadataChunks": false,
+      "visualInspection": "Inspected individually. Search mérida, one visible row, Folio00125/Importe30 and dirty marker. No personal paths/document content observed; synthetic CSV only.",
+      "state": "Final filtered query; these are after-state images, not before/after pairs."
+    },
+    {
+      "file": "captures/query-en-XA-light-1440x900.png",
+      "sha256": "544b60690ef7f9d1c4e165e1a09b021cfe9c3ae56b51b9eca0d08f37bd4f6c6d",
+      "bytes": 61700,
+      "dimensions": [
+        1440,
+        900
+      ],
+      "locale": "en-XA",
+      "theme": "light",
+      "copiedByteIdentically": true,
+      "pngChunkTypes": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ],
+      "pngAllChunkCRCValid": true,
+      "textMetadataChunks": false,
+      "visualInspection": "Inspected individually. Search mérida, one visible row, Folio00125/Importe30 and dirty marker. No personal paths/document content observed; synthetic CSV only.",
+      "state": "Final filtered query; these are after-state images, not before/after pairs."
+    }
+  ],
+  "captureMatrix": {
+    "count": 8,
+    "locales": [
+      "es",
+      "en-XA"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "viewports": [
+      [
+        1440,
+        900
+      ],
+      [
+        1280,
+        720
+      ]
+    ],
+    "state": "After second real search mérida; after-state only",
+    "visualReview": "All8 inspected individually; original synthetic data unchanged by theme/viewport; narrowed toolbar responds at1280. No personal paths or real user data visible. This is not exhaustive visual regression or before/after comparison."
+  },
+  "publicationPrivacy": {
+    "rawReportsOrLogsCopied": false,
+    "rawTracesCopied": false,
+    "text": "Proof is an explicit allowlist projection of numeric results, relative repository paths, synthetic fixture literals and hashes; no raw config/env/attachments copied.",
+    "png": "Copied byte-identically; all PNG CRCs valid. See per-file chunk inventory. Visual inspection supports synthetic provenance, not an absolute secrecy guarantee.",
+    "limitations": "No claim of universal privacy/security from regex or hashes; screenshots cover only shown state."
+  },
+  "limits": [
+    "No Windows run of final92 is established here.",
+    "CI#206 results for b2bcc465 do not qualify92b7d138.",
+    "Historical exact Windows internal cause remains unproven; deterministic local mechanism is demonstrated.",
+    "No complete shell/CSV/E2E/package/CI pass inferred from these focused phases.",
+    "Source7/7 was before product CsvTable change; phases are not silently transferred.",
+    "Raw private logs/traces and attempted setup failures are not published in this stage."
+  ]
+}
