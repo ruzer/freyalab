@@ -1,0 +1,115 @@
+{
+  "base": "43913e2d846659100d932e9a676d8f6bb00d97c0",
+  "codeHead": "06ab3da230db02a38df71d7246843eb5e5053e26",
+  "platform": "macOS Apple silicon",
+  "node": "24.22.1",
+  "scope": "Tests only: two equivalent manual clicks and one comment; existing data/assertions/90-second waits/120-second test budget unchanged.",
+  "exactReverseChangeMatchesBase": true,
+  "productionSourceTreeUnchanged": true,
+  "ciFailure": {
+    "run": 44782501446,
+    "head": "b2bcc465207a43d3654709ff43525edb256f3cef",
+    "job": 136448770201,
+    "conclusion": "failure",
+    "artifactsSha256": "3c27a4d233a2b5adab39a8b5ae763fcee5ac82fe87d2095cb286c8b4d0362e2b",
+    "artifactBytes": 42546632,
+    "firstWaitSeconds": 15.199534,
+    "retryWaitSeconds": 15.057919,
+    "firstLastStatus": "Ejecutando la consulta",
+    "retryLastStatus": "Cargando los datos",
+    "limits": "Traces have test actions and error context, not engine request identifiers or CPU measurements; repeated phases do not prove a restart."
+  },
+  "phases": [
+    {
+      "phase": "red",
+      "expected": 0,
+      "unexpected": 1,
+      "skipped": 0,
+      "flaky": 0,
+      "retries": 0,
+      "playwrightSeconds": 18.083212,
+      "processSeconds": 18.821327042009216,
+      "exit": 1,
+      "publicTestSha256": "26fa299bd5aa27045a2e02a4ba4d91f594e1b62f836195fc80fe0a3a4d36d1bc",
+      "reportSha256": "b7f91ab9013bba7cf9020e92705791e20ec1544d485f4b46a352e7468124dece",
+      "realResponseDelay": [
+        {
+          "configuredDelayMs": 17000,
+          "selectedAtMs": 4221.946417,
+          "releasedAtMs": 0,
+          "heldForMs": null
+        }
+      ]
+    },
+    {
+      "phase": "green",
+      "expected": 1,
+      "unexpected": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "retries": 0,
+      "playwrightSeconds": 27.301299000000004,
+      "processSeconds": 27.781851500010816,
+      "exit": 0,
+      "publicTestSha256": "f9eef918c203831782fea6f8ecfbb8e552a98075a40a46914751bef2d7a44ab4",
+      "reportSha256": "6b768c065e68ea511bc71c3df16322ec2ae45bb3f0e917ea6bcec59bc4cba36d",
+      "realResponseDelay": [
+        {
+          "configuredDelayMs": 17000,
+          "selectedAtMs": 3822.417334,
+          "releasedAtMs": 20823.29375,
+          "heldForMs": 17000.876416
+        }
+      ]
+    },
+    {
+      "phase": "original-repeat3",
+      "expected": 3,
+      "unexpected": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "retries": 0,
+      "playwrightSeconds": 30.164158,
+      "processSeconds": 30.725420707982266,
+      "exit": 0,
+      "publicTestSha256": "f9eef918c203831782fea6f8ecfbb8e552a98075a40a46914751bef2d7a44ab4",
+      "reportSha256": "dcbb857c6f73eb1bfd2badd4d21e860303e7e964429b52a69af7784420aa79c1",
+      "realResponseDelay": []
+    }
+  ],
+  "checks": [
+    {
+      "command": "npm run check",
+      "exit": 0,
+      "seconds": 13.623122541001067
+    },
+    {
+      "command": "npm run test",
+      "exit": 0,
+      "seconds": 20.121599415986566
+    },
+    {
+      "command": "npm run build",
+      "exit": 0,
+      "seconds": 3.556504459003918
+    }
+  ],
+  "unitPassed": 3096,
+  "unitSkippedExisting": 2,
+  "deletedTests": 0,
+  "newTestIdentities": 0,
+  "workflowOrDeadlineChanges": false,
+  "image": {
+    "file": "histograma-exportado.png",
+    "sha256": "905592ccf659b76b4e968211f1fa564e1b01dff6aefbeaf485c7b796a5a02a45",
+    "bytes": 84216,
+    "source": "First uninstrumented repetition; exact exported PNG, visually reviewed synthetic histogram."
+  },
+  "notVerified": [
+    "New-head CI remains pending.",
+    "No claim about engine subphase timings or the duration it would need on the failed runner.",
+    "No native Windows/Linux run locally.",
+    "The independent fast-flaky CSV Text Undo is not fixed here.",
+    "No new interface/theme/locale screenshot matrix: no production UI changes."
+  ]
+}
