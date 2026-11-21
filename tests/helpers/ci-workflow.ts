@@ -9,7 +9,7 @@ export const workflow=readFileSync(new URL('../../.github/workflows/ci.yml',impo
 // cuya evaluación coincide aquí con Actions. No es un intérprete general de YAML/Actions.
 export function expression<T>(source:string,context:Context):T{
  const code=source.trim().replace(/^\$\{\{\s*/,'').replace(/\s*\}\}$/,'')
- return runInNewContext(code,{fromJSON:JSON.parse,cancelled:()=>false,always:()=>true,...context},{timeout:1_000}) as T
+ return runInNewContext(code,{fromJSON:JSON.parse,success:()=>true,cancelled:()=>false,always:()=>true,...context},{timeout:1_000}) as T
 }
 
 export function matrix(event:string,pack=false):MatrixJob[]{

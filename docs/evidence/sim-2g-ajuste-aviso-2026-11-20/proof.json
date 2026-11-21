@@ -1,0 +1,475 @@
+{
+  "schemaVersion": 1,
+  "scope": "Local CSS presentation evidence; no CI qualification of this CSS change",
+  "baseHead": "b2bcc465207a43d3654709ff43525edb256f3cef",
+  "source": {
+    "path": "src/renderer/style.css",
+    "baseSHA256": "ee3d319903cef5603cb74de31fa6f379f135c9a6a941c2ed984762d47326ac5b",
+    "candidateSHA256": "8657ea3537aae526747f4f92c64ad3ea08243f78046cc97e1792acbabeb8f8bc",
+    "appendedRules": 2,
+    "appendedText": "/* SIM-2g · El aviso deja sitio a la ayuda de Información y el pie sigue al fondo. */\n.app-shell:has(.analysis-workspace:not([hidden]) .info-section:not([hidden]))>.toast{position:static;transform:none;align-self:center;flex-shrink:0;margin:8px 12px;order:1}\n.app-shell:has(.analysis-workspace:not([hidden]) .info-section:not([hidden])):has(>.toast)>.statusbar{order:2}"
+  },
+  "executions": {
+    "initialGeometryRed": {
+      "exitCode": 1,
+      "processSeconds": 6.540655416989466,
+      "playwrightMs": 6177.279,
+      "expected": 1,
+      "unexpected": 1,
+      "flaky": 0,
+      "skipped": 0,
+      "retries": 0,
+      "cases": [
+        {
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [es]",
+          "status": "expected",
+          "attempts": [
+            {
+              "retry": 0,
+              "status": "passed",
+              "durationMs": 2897
+            }
+          ]
+        },
+        {
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [en-XA]",
+          "status": "unexpected",
+          "attempts": [
+            {
+              "retry": 0,
+              "status": "failed",
+              "durationMs": 2767
+            }
+          ]
+        }
+      ],
+      "reportSHA256": "dbdc0a1d7dbf11499037bd6db336a5cf88462c46890f1c6b004898564cd4ecc5",
+      "executionSHA256": "811445eab0fc7a8d6d5afe56fa10d59044f1f419f6f42d291949ec0ecdca20a9"
+    },
+    "matrixRed": {
+      "exitCode": 1,
+      "processSeconds": 7.604686624981696,
+      "playwrightMs": 7169.823,
+      "expected": 1,
+      "unexpected": 1,
+      "flaky": 0,
+      "skipped": 0,
+      "retries": 0,
+      "cases": [
+        {
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [es]",
+          "status": "expected",
+          "attempts": [
+            {
+              "retry": 0,
+              "status": "passed",
+              "durationMs": 3521
+            }
+          ]
+        },
+        {
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [en-XA]",
+          "status": "unexpected",
+          "attempts": [
+            {
+              "retry": 0,
+              "status": "failed",
+              "durationMs": 3122
+            }
+          ]
+        }
+      ],
+      "reportSHA256": "ac37cafabef438d10aa86340211b316c9655ed54c77462b80ea6065cfdc045af",
+      "executionSHA256": "fc402839a7f8feb0516fd03e4fdd046807ec9a1f88b5af5e7de8e18ea7c7d63e"
+    },
+    "allNoticesGreen": {
+      "exitCode": 0,
+      "processSeconds": 14.22470891600824,
+      "playwrightMs": 13885.399000000001,
+      "expected": 5,
+      "unexpected": 0,
+      "flaky": 0,
+      "skipped": 0,
+      "retries": 0,
+      "cases": [
+        {
+          "title": "SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie [es]",
+          "status": "expected",
+          "attempts": [
+            {
+              "retry": 0,
+              "status": "passed",
+              "durationMs": 2859
+            }
+          ]
+        },
+        {
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [es]",
+          "status": "expected",
+          "attempts": [
+            {
+              "retry": 0,
+              "status": "passed",
+              "durationMs": 3006
+            }
+          ]
+        },
+        {
+          "title": "SIM-2g: fuente protegida en Tabla muestra una franja externa sin toast ni copia al pie [en-XA]",
+          "status": "expected",
+          "attempts": [
+            {
+              "retry": 0,
+              "status": "passed",
+              "durationMs": 2488
+            }
+          ]
+        },
+        {
+          "title": "SIM-2g: Análisis delante recibe un warning con nombre sin prometer guardar [en-XA]",
+          "status": "expected",
+          "attempts": [
+            {
+              "retry": 0,
+              "status": "passed",
+              "durationMs": 3146
+            }
+          ]
+        },
+        {
+          "title": "SIM-2g: éxito, información y error conservan iconos, teclado y duraciones sin copiarse al pie",
+          "status": "expected",
+          "attempts": [
+            {
+              "retry": 0,
+              "status": "passed",
+              "durationMs": 2032
+            }
+          ]
+        }
+      ],
+      "reportSHA256": "38a9bf00af3fee5a154d95f32151a39777eb06a1553a49b714d9666fade9001b",
+      "executionSHA256": "91c0bee5d2200fe4f296177e4f3e3dccf5f949485499f93ae18f143bcec2822e"
+    }
+  },
+  "builds": {
+    "red": {
+      "exitCode": 0,
+      "processSeconds": 2.482167375012068
+    },
+    "green": {
+      "exitCode": 0,
+      "processSeconds": 2.2991410420218017
+    }
+  },
+  "matrix": {
+    "locales": [
+      "es",
+      "en-XA"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "viewports": [
+      [
+        1280,
+        720
+      ],
+      [
+        1440,
+        900
+      ]
+    ],
+    "beforeCases": 8,
+    "beforeOverlaps": 2,
+    "beforeOverlapCases": [
+      "en-XA-light-1280x720",
+      "en-XA-dark-1280x720"
+    ],
+    "afterCases": 8,
+    "afterOverlaps": 0,
+    "footerBottomAssertion": "abs(statusbar.bottom - innerHeight) <= 1px; asserted for all8after layouts, exact rectangles not archived"
+  },
+  "screenshots": [
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "overlap": true,
+      "image": "before/notice-help-en-XA-dark-1280x720.png",
+      "sha256": "b83529adc39aec7afa1190be57742bc57337319cc25791e39c03ab228954bf90",
+      "bytes": 111948,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "overlap": false,
+      "image": "before/notice-help-en-XA-dark-1440x900.png",
+      "sha256": "35a43358d08c8166c012cb2b8f7da68d7724a2ef3922dc600c65bb661878d962",
+      "bytes": 117108,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "overlap": true,
+      "image": "before/notice-help-en-XA-light-1280x720.png",
+      "sha256": "b38a2e9a4ba5860ca48792316aea1e46fc5a0cb6911caabd4228f797451e61d7",
+      "bytes": 113512,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "overlap": false,
+      "image": "before/notice-help-en-XA-light-1440x900.png",
+      "sha256": "833a55db2e530d6c153ddb4dc8580dedb3f44ef1a267f9e9ee7a655f1509b7b7",
+      "bytes": 118723,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "overlap": false,
+      "image": "before/notice-help-es-dark-1280x720.png",
+      "sha256": "c4181a441bbc23706d23beed68e4da706fa1321bd1910ad45599a44278c3bf26",
+      "bytes": 95600,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "overlap": false,
+      "image": "before/notice-help-es-dark-1440x900.png",
+      "sha256": "d59ecb2ed050d6b45d5d2f9b1f44b1062b4fba71d6f9348bf57f74e1abbb46cd",
+      "bytes": 98461,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "overlap": false,
+      "image": "before/notice-help-es-light-1280x720.png",
+      "sha256": "6f56a4f41ea70eaa633b8c579f34a3c1b8daed796c1fee2f7532f60b1e46629f",
+      "bytes": 97505,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "overlap": false,
+      "image": "before/notice-help-es-light-1440x900.png",
+      "sha256": "8feeb2eee24ceab008c0b785ded3e1c2e56e57a5d7bde12d4e4bd326f00e4e40",
+      "bytes": 100351,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "overlap": false,
+      "image": "after/notice-help-en-XA-dark-1280x720.png",
+      "sha256": "c64d426aabfe59242e36c3065ddefb9966cc939f6028863d5540c3f7420a8e56",
+      "bytes": 111859,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "overlap": false,
+      "image": "after/notice-help-en-XA-dark-1440x900.png",
+      "sha256": "64a4d6bbe286159ec1b3c8ae07ba29c71fe69c0b65f1bdb092808e63700a87fc",
+      "bytes": 116896,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "overlap": false,
+      "image": "after/notice-help-en-XA-light-1280x720.png",
+      "sha256": "b654f6c6c49bb8342b19fb063d413c99783d8c152e8335a32d5d9cd68e807530",
+      "bytes": 113275,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "overlap": false,
+      "image": "after/notice-help-en-XA-light-1440x900.png",
+      "sha256": "56139805ec20734dc8be8c750a1edd0c6b456249aae663f75572a0103a160495",
+      "bytes": 118322,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "overlap": false,
+      "image": "after/notice-help-es-dark-1280x720.png",
+      "sha256": "c7981b8049533df81c950a1c4bb908e8c75700f498a7a79e0939f743df2b3778",
+      "bytes": 95548,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "overlap": false,
+      "image": "after/notice-help-es-dark-1440x900.png",
+      "sha256": "5f7bb82a2137d3d2be4502efce72a3ee7491b8eda216abc8258887261c59d7b9",
+      "bytes": 98492,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "overlap": false,
+      "image": "after/notice-help-es-light-1280x720.png",
+      "sha256": "a8dc46e9f91fd1109883ed1882356b7fa3ad12924776e620c322e5ae6144e655",
+      "bytes": 97047,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "overlap": false,
+      "image": "after/notice-help-es-light-1440x900.png",
+      "sha256": "b2c38bad40f955af1d5704c5ba63cd543510777a16b1357da7fd37775856bdb9",
+      "bytes": 100050,
+      "pngMetadataKeys": [
+        "icc_profile"
+      ],
+      "visualReview": "Seen in before/after contact sheet; original dimensions and bytes verified"
+    }
+  ],
+  "visualReview": {
+    "method": "All16original views inspected through4before/after contact sheets",
+    "findings": [
+      "Original en-XA1280 notice covers the help tail in both themes",
+      "After: help, notice close control and bottom statusbar visible; no notice overlays information rows",
+      "One transient toast remains separate from existing contextual external-change text",
+      "Sidebar and Information workspace shorten while transient notice occupies layout flow"
+    ],
+    "privacy": "Synthetic Censo/encuesta.csv data only; no personal paths, emails or credentials seen; PNG metadata inspected without sensitive text chunks"
+  },
+  "limits": [
+    "Local verification only; no Windows/Linux or CI green claimed for this CSS",
+    "One visible Info notice temporarily consumes vertical space for its existing lifetime; sidebar shortens",
+    "CSS selector releases reserved space when toast disappears; closing is exercised, but no dedicated post-dismissal geometry measurement archived",
+    "No new layout design, timer, retries or timeouts introduced",
+    "Native-focus E1 probe and unrelated stability work are separate"
+  ],
+  "finalChecks": {
+    "parallel": true,
+    "check": {
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 0,
+      "processSeconds": 17.721230667026248
+    },
+    "unit": {
+      "exitCode": 0,
+      "passed": 3107,
+      "existingSkipped": 2,
+      "failed": 0,
+      "processSeconds": 24.34656062501017
+    },
+    "build": {
+      "exitCode": 0,
+      "processSeconds": 4.337280292005744
+    },
+    "newE2EIdentities": 0,
+    "deletedTests": 0
+  }
+}
