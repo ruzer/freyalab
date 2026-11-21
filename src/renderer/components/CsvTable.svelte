@@ -460,7 +460,9 @@
  function update(updated:DocumentInfo){if(updated.headers?.length!==doc.headers?.length){filters={};sort=undefined;conditions=[];order=[];showQuery=false;selectedColumns=[]}onchange(updated)}
  let pendingEdit:Promise<string|null>|null=null
  function edit(change:TableEdit|CalculateColumnEdit){const task=editNow(change);pendingEdit=task;void task.finally(()=>{if(pendingEdit===task)pendingEdit=null}).catch(()=>{});return task}
- async function editNow(change:TableEdit|CalculateColumnEdit){if(locked)return 'La vista no permite editar.';try{update(await window.freya.tableEdit(doc.id,$state.snapshot(change)));editing=null;await load(pageOffset);await stats();return null}catch(error){const message=String(error).replace(/^.*Error: /,'');if(!('operation'in change&&['calculate','fillEmpty','fillPrevious','deleteRowsWhere'].includes(change.operation)))onerror(message);return message}}
+ async function editNow(change:TableEdit|CalculateColumnEdit){if(locked)return 'La vista no permite editar.';try{update(await window.freya.tableEdit(doc.id,$state.snapshot(change)));editing=null;
+  // La revisión agenda otra carga; la lectura explícita siguiente ya la sustituye.
+  await tick();clearTimeout(reloadTimer);await load(pageOffset);await stats();return null}catch(error){const message=String(error).replace(/^.*Error: /,'');if(!('operation'in change&&['calculate','fillEmpty','fillPrevious','deleteRowsWhere'].includes(change.operation)))onerror(message);return message}}
  async function stats(){if(large||!selectedRows.length){selectionStats=null;return}try{selectionStats=await window.freya.stats(doc.id,$state.snapshot(selectedRows),selectedColumns.length?$state.snapshot(selectedColumns):(doc.headers??[]).map((_,i)=>i))}catch(error){onerror(String(error))}}
  function selectRow(id:string,add:boolean){selection=null;context=null;selectedRows=add?(selectedRows.includes(id)?selectedRows.filter(x=>x!==id):[...selectedRows,id]):[id];void stats()}
  function selectColumn(index:number,replace=false){selection=null;context=null;selectedColumns=replace?[index]:selectedColumns.includes(index)?selectedColumns.filter(x=>x!==index):[...selectedColumns,index];void stats()}
