@@ -57,3 +57,33 @@ test('SIM-3a: Filtrar no ofrece la casilla global y la consulta avanzada conserv
  await open();await page.getByLabel('Filtrar',{exact:true}).click();await expect(page.getByRole('checkbox',{name:'Orden numérico',exact:true})).toHaveCount(0)
  await page.keyboard.press('Escape');await menuItem(page,'Filtrar','Consulta avanzada');const tools=page.getByRole('region',{name:'Consulta avanzada',exact:true});await tools.getByRole('button',{name:'Añadir orden',exact:true}).click();await expect(tools.getByLabel('Orden numérico 1',{exact:true})).toBeVisible()
 })
+
+async function holdNextProfile(){await app.evaluate(({ipcMain})=>{
+ type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
+ const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')!,state={waiting:false,release:()=>{}}
+ Reflect.set(globalThis,'sim3ProfileHold',state)
+ handlers.set('freya',async(event,...args)=>{if(args[0]!=='analyzeColumn')return original(event,...args);handlers.set('freya',original);const result=await original(event,...args);state.waiting=true;await new Promise<void>(resolve=>state.release=resolve);return result})
+})}
+async function releaseProfile(){await app.evaluate(()=>Reflect.get(globalThis,'sim3ProfileHold').release())}
+
+test('SIM-3a: una respuesta de perfil anterior a una edición no impone un orden obsoleto',async()=>{
+ const {doc,path,source}=await open();await holdNextProfile()
+ try{
+  await page.getByRole('button',{name:'Edad',exact:true}).click();await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'sim3ProfileHold').waiting)).toBe(true)
+  const cell=page.getByRole('gridcell',{name:'Fila 1, Edad',exact:true});await cell.dblclick();const input=cell.locator('input');await input.fill('001');await input.press('Enter');await expect(cell).toHaveText('001')
+  await releaseProfile();await expect(page.getByRole('button',{name:'Edad',exact:true})).toHaveAttribute('aria-busy','false')
+  expect((await values('Edad')).slice(0,3)).toEqual(['001','18','9']);expect(await readFile(path,'utf8')).toBe(source)
+  expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)?.dirty).toBe(true)
+  await page.getByRole('button',{name:'Edad',exact:true}).click();await expect.poll(profileCalls).toHaveLength(2)
+  await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'sim3SortRequests').pages.filter((entry:unknown[])=>!!(entry[1] as {sort?:unknown}).sort).at(-1)?.[1]?.sort?.numeric)).toBe(false)
+ }finally{await releaseProfile()}
+})
+
+test('SIM-3a: dos órdenes seguidos conservan ambas intenciones y los desempates',async()=>{
+ const {path,source}=await open();await holdNextProfile()
+ try{
+  const header=page.getByRole('button',{name:'Edad',exact:true});await header.click();await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'sim3ProfileHold').waiting)).toBe(true)
+  await header.click();await releaseProfile();await expect.poll(()=>values('Edad')).toEqual(desc);await expect.poll(profileCalls).toHaveLength(2)
+  expect(await readFile(path,'utf8')).toBe(source)
+ }finally{await releaseProfile()}
+})
