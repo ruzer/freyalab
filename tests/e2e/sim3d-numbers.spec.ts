@@ -163,7 +163,7 @@ for(const locale of ['es','en-XA'] as const){
   await expect(resultDetails).toContainText('datos.csv');await expect(resultDetails).toContainText('13')
   expect.soft(await resultDetails.innerText()).not.toMatch(revisionWord)
   await showTable(page);await open(trendSource,'tendencia.csv');await openAnalysis(page,'Gráficos')
-  await chartAssign(page,'X','rows');await chartAssign(page,'Y','values');await chartType(page,'scatter');await openChartSettings(page)
+  await chartAssign(page,'X','rows',true);await chartAssign(page,'Y','values',true);await chartType(page,'scatter');await openChartSettings(page)
   await chartPanel(page).getByRole('checkbox',{name:tr('charts.trend.option'),exact:true}).check()
   try{await waitChartResult(page)}catch(error){
    const observed=await page.evaluate(()=>({focus:document.hasFocus(),visibility:document.visibilityState,active:document.activeElement?.tagName,chartStatus:Array.from(document.querySelectorAll('.analysis-workspace:not([hidden]) .charts-panel [role=status],.analysis-workspace:not([hidden]) .charts-panel .result-announcement')).map(node=>node.textContent),sqlStatus:Array.from(document.querySelectorAll('.analysis-workspace:not([hidden]) .sql-panel [role=status]')).map(node=>node.textContent)}))

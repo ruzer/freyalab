@@ -165,7 +165,7 @@ async function explorer(column:number){
 }
 const profileValue=(panel:Locator,name:string)=>panel.locator('dl[aria-label="Perfil de columna"]>div').filter({has:page.getByText(name,{exact:true})}).locator('dd')
 async function averageChart(){
- await openAnalysis(page,'Gráficos');await chartAssign(page,'Grupo','rows');await chartAssign(page,'Valor','values');await chartType(page,'bar')
+ await openAnalysis(page,'Gráficos');await chartAssign(page,'Grupo','rows',true);await chartAssign(page,'Valor','values',true);await chartType(page,'bar')
  await(await chartAggregate(page,'Valor')).selectOption('average');await waitChartResult(page)
  await expect(chartPanel(page).locator('.pivot-result tbody tr')).toHaveCount(2)
  return chartPanel(page).locator('.pivot-result tbody tr').filter({has:page.getByRole('rowheader',{name:'A',exact:true})}).locator('td').first()

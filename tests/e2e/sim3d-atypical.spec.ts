@@ -78,7 +78,7 @@ async function nativeCopy(){
 
 test('SIM-3d Caja: atípico fraccional muestra dos decimales y copia exacto sin cambiar el identificador (es)',{tag:'@solo'},async()=>{
  await preserveClipboard();await openAnalysis(page,'Gráficos')
- await chartAssign(page,'Grupo','rows');await chartAssign(page,'Valor','values');await chartType(page,'box');await waitChartResult(page)
+ await chartAssign(page,'Grupo','rows',true);await chartAssign(page,'Valor','values',true);await chartType(page,'box');await waitChartResult(page)
  const data=await openChartData(page)
  await expect(data.getByRole('columnheader',{name:t('charts.head.atypical'),exact:true})).toBeVisible()
  await expect(data.locator('tbody tr')).toHaveCount(1)
