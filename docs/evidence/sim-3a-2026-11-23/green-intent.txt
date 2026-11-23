@@ -1,0 +1,18 @@
+
+Running 10 tests using 1 worker
+
+(node:42333) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/10] [csv] › tests/e2e/sim3a-evidence.spec.ts:100:45 › SIM-3a evidencia: idioma, ayuda y orden por teclado conservan el fixture (es)
+[2/10] [csv] › tests/e2e/sim3a-evidence.spec.ts:100:45 › SIM-3a evidencia: idioma, ayuda y orden por teclado conservan el fixture (en-XA)
+[3/10] [csv] › tests/e2e/sim3a-sorting.spec.ts:29:1 › SIM-3a: encabezado ordena 9, 18 y 100 como números, con vacíos al final y sin modificar el CSV
+[4/10] [csv] › tests/e2e/sim3a-sorting.spec.ts:35:1 › SIM-3a: abrir no perfila y cada petición de orden solo consulta la columna elegida
+[5/10] [csv] › tests/e2e/sim3a-sorting.spec.ts:44:1 › SIM-3a: códigos con ceros iniciales y anchos distintos mantienen el orden textual
+[6/10] [csv] › tests/e2e/sim3a-sorting.spec.ts:50:1 › SIM-3a: el menú de columna y Filas y columnas usan el mismo orden automático
+[7/10] [csv] › tests/e2e/sim3a-sorting.spec.ts:56:1 › SIM-3a: Filtrar no ofrece la casilla global y la consulta avanzada conserva el orden numérico explícito
+[8/10] [csv] › tests/e2e/sim3a-sorting.spec.ts:69:1 › SIM-3a: una respuesta de perfil anterior a una edición no impone un orden obsoleto
+[9/10] [csv] › tests/e2e/sim3a-sorting.spec.ts:82:1 › SIM-3a: dos órdenes seguidos conservan ambas intenciones y los desempates
+[10/10] [csv] › tests/e2e/sim3a-sorting.spec.ts:91:1 › SIM-3a: una consulta avanzada posterior conserva su orden al llegar un perfil anterior
+  10 passed (28.7s)

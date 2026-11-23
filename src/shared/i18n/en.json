@@ -1846,5 +1846,10 @@
  "csv.status.selectedRows.other": "{count} rows selected",
  "csv.status.columns.one": "{count} column",
  "csv.status.columns.other": "{count} columns",
- "csv.status.markedScope": "{rows} × {columns} · no headers"
+ "csv.status.markedScope": "{rows} × {columns} · no headers",
+ "csv.sort.help": "Sorts by the data type. Numbers use their value; codes stay as text. The file does not change.",
+ "csv.sort.preparing": "Preparing the order for “{column}”…",
+ "csv.sort.completeNumber": "“{column}” was sorted as numbers.",
+ "csv.sort.completeText": "“{column}” was sorted as text.",
+ "csv.sort.error": "We could not sort “{column}”. Try again."
 }

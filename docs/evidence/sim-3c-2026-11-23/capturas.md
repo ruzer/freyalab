@@ -1,6 +1,6 @@
 # Capturas SIM-3c
 
-Antes: construcción real de main f227. Después: implementación de esta rama. Mismos fixtures, acciones, idioma, tema y tamaño. La sonda anterior es observación, no prueba de cumplimiento de la corrección.
+Antes: construcción real de main f227. Después: implementación integrada con main 582d4b78; capturas posteriores regeneradas con los 30 casos integrados. Mismos fixtures, acciones, idioma, tema y tamaño. La sonda anterior es observación, no prueba de cumplimiento de la corrección.
 
 | Variante y estado | Main anterior | SIM-3c |
 | --- | --- | --- |

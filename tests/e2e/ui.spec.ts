@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import {parse as parseCSV} from 'csv-parse/sync'
 import {stringify as stringifyCSV} from 'csv-stringify/sync'
-import {analyzeButton,closeAnalysis,menuItem,numericOrder,openAnalysis,showPanel,showTable,exportAnalysis} from './panel'
+import {analyzeButton,closeAnalysis,menuItem,openAnalysis,showPanel,showTable,exportAnalysis} from './panel'
 let app:ElectronApplication,page:Page,directory:string
 
 test.beforeEach(async()=>{
@@ -339,7 +339,6 @@ test('exportación CSV: completo y filtrado conservan columnas; selección limit
  const [doc]=await page.evaluate(async path=>window.freya.openPaths([path]),path)
  await page.getByLabel('Buscar en tabla',{exact:true}).fill('Grupo')
  await expect(page.locator('footer')).toContainText('2 de 3 filas')
- await numericOrder(page)
  await page.getByRole('button',{name:'Valor',exact:true}).click()
  await expect(page.getByRole('gridcell',{name:'Fila 1, Código',exact:true})).toHaveText('00002')
  await page.getByRole('gridcell',{name:'Fila 1, Nombre',exact:true}).dblclick()

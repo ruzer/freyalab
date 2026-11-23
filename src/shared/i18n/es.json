@@ -1846,5 +1846,10 @@
  "csv.status.selectedRows.other": "{count} filas seleccionadas",
  "csv.status.columns.one": "{count} columna",
  "csv.status.columns.other": "{count} columnas",
- "csv.status.markedScope": "{rows} × {columns} · sin encabezados"
+ "csv.status.markedScope": "{rows} × {columns} · sin encabezados",
+ "csv.sort.help": "Ordena según el tipo de los datos. Los números van por su valor; los códigos se conservan como texto. El archivo no cambia.",
+ "csv.sort.preparing": "Preparando el orden de «{column}»…",
+ "csv.sort.completeNumber": "«{column}» se ordenó como número.",
+ "csv.sort.completeText": "«{column}» se ordenó como texto.",
+ "csv.sort.error": "No pudimos ordenar «{column}». Vuelve a intentarlo."
 }

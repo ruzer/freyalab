@@ -1,0 +1,185 @@
+
+Running 5 tests using 1 worker
+
+(node:15842) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/sim3a-sorting.spec.ts:29:1 › SIM-3a: encabezado ordena 9, 18 y 100 como números, con vacíos al final y sin modificar el CSV (16.8s)
+(node:16016) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/sim3a-sorting.spec.ts:35:1 › SIM-3a: abrir no perfila y cada petición de orden solo consulta la columna elegida (16.3s)
+(node:16200) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [csv] › tests/e2e/sim3a-sorting.spec.ts:44:1 › SIM-3a: códigos con ceros iniciales y anchos distintos mantienen el orden textual (1.6s)
+  ✘  4 [csv] › tests/e2e/sim3a-sorting.spec.ts:50:1 › SIM-3a: el menú de columna y Filas y columnas usan el mismo orden automático (15.1s)
+(node:16420) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  5 [csv] › tests/e2e/sim3a-sorting.spec.ts:56:1 › SIM-3a: Filtrar no ofrece la casilla global y la consulta avanzada conserva el orden numérico explícito (16.2s)
+
+
+  1) [csv] › tests/e2e/sim3a-sorting.spec.ts:29:1 › SIM-3a: encabezado ordena 9, 18 y 100 como números, con vacíos al final y sin modificar el CSV 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 4
+    + Received  + 4
+
+      Array [
+    -   "9",
+    +   "",
+    +   "100",
+    +   "100",
+        "18",
+        "18",
+        "20",
+        "25",
+        "35",
+        "40",
+        "55",
+        "70",
+    -   "100",
+    -   "100",
+    -   "",
+    +   "9",
+      ]
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      28 |
+      29 | test('SIM-3a: encabezado ordena 9, 18 y 100 como números, con vacíos al final y sin modificar el CSV',async()=>{
+    > 30 |  const {doc,path,source}=await open();await page.getByRole('button',{name:'Edad',exact:true}).click();await expect.poll(()=>values('Edad')).toEqual(asc)
+         |                                                                                                                                             ^
+      31 |  await page.getByRole('button',{name:'Edad',exact:true}).click();await expect.poll(()=>values('Edad')).toEqual(desc)
+      32 |  expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)?.dirty).toBe(false);expect(await readFile(path,'utf8')).toBe(source)
+      33 | })
+        at $WORKTREE/tests/e2e/sim3a-sorting.spec.ts:30:141
+
+    Error Context: ../sim3a-evidence/red-results/sim3a-sorting-SIM-3a-encab-ab035-inal-y-sin-modificar-el-CSV-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3a-evidence/red-results/sim3a-sorting-SIM-3a-encab-ab035-inal-y-sin-modificar-el-CSV-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3a-evidence/red-results/sim3a-sorting-SIM-3a-encab-ab035-inal-y-sin-modificar-el-CSV-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/sim3a-sorting.spec.ts:35:1 › SIM-3a: abrir no perfila y cada petición de orden solo consulta la columna elegida 
+
+    Error: expect(received).toHaveLength(expected)
+
+    Expected length: 1
+    Received length: 0
+    Received array:  []
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      35 | test('SIM-3a: abrir no perfila y cada petición de orden solo consulta la columna elegida',async()=>{
+      36 |  const {doc,path,source}=await open();expect(await profileCalls()).toEqual([])
+    > 37 |  await page.getByRole('button',{name:'Edad',exact:true}).click();await expect.poll(profileCalls).toHaveLength(1)
+         |                                                                                                  ^
+      38 |  expect((await profileCalls())[0]).toEqual([doc.id,expect.objectContaining({column:2,revision:doc.revision,profileOnly:true})]);expect((await profileCalls())[0][1]).not.toHaveProperty('query')
+      39 |  await expect.poll(()=>values('Edad')).toEqual(asc)
+      40 |  await page.getByRole('button',{name:'Carrera',exact:true}).click();await expect.poll(profileCalls).toHaveLength(2);expect((await profileCalls())[1][1].column).toBe(1)
+        at $WORKTREE/tests/e2e/sim3a-sorting.spec.ts:37:98
+
+    Error Context: ../sim3a-evidence/red-results/sim3a-sorting-SIM-3a-abrir-1b79c-consulta-la-columna-elegida-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3a-evidence/red-results/sim3a-sorting-SIM-3a-abrir-1b79c-consulta-la-columna-elegida-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3a-evidence/red-results/sim3a-sorting-SIM-3a-abrir-1b79c-consulta-la-columna-elegida-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/sim3a-sorting.spec.ts:50:1 › SIM-3a: el menú de columna y Filas y columnas usan el mismo orden automático 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 4
+    + Received  + 4
+
+      Array [
+    -   "9",
+    +   "",
+    +   "100",
+    +   "100",
+        "18",
+        "18",
+        "20",
+        "25",
+        "35",
+        "40",
+        "55",
+        "70",
+    -   "100",
+    -   "100",
+    -   "",
+    +   "9",
+      ]
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      49 |
+      50 | test('SIM-3a: el menú de columna y Filas y columnas usan el mismo orden automático',async()=>{
+    > 51 |  const {path,source}=await open();await page.getByRole('button',{name:'Acciones de la columna Edad',exact:true}).click();const menu=page.getByRole('menu',{name:'Acciones de columnas',exact:true});await menu.getByRole('menuitem',{name:'Ordenar de menor a mayor',exact:true}).click();await expect.poll(()=>values('Edad')).toEqual(asc)
+         |                                                                                                                                                                                                                                                                                                                                 ^
+      52 |  await page.getByLabel('Seleccionar columna Edad',{exact:true}).check();await menuItem(page,'Filas y columnas','Ordenar columna descendente (vista)');await expect.poll(()=>values('Edad')).toEqual(desc)
+      53 |  expect(await readFile(path,'utf8')).toBe(source)
+      54 | })
+        at $WORKTREE/tests/e2e/sim3a-sorting.spec.ts:51:321
+
+    Error Context: ../sim3a-evidence/red-results/sim3a-sorting-SIM-3a-el-me-d766d-n-el-mismo-orden-automático-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3a-evidence/red-results/sim3a-sorting-SIM-3a-el-me-d766d-n-el-mismo-orden-automático-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3a-evidence/red-results/sim3a-sorting-SIM-3a-el-me-d766d-n-el-mismo-orden-automático-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [csv] › tests/e2e/sim3a-sorting.spec.ts:56:1 › SIM-3a: Filtrar no ofrece la casilla global y la consulta avanzada conserva el orden numérico explícito 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByRole('checkbox', { name: 'Orden numérico', exact: true })
+    Expected: 0
+    Received: 1
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveCount" getByRole('checkbox', { name: 'Orden numérico', exact: true }) with timeout 15000ms
+      - waiting for getByRole('checkbox', { name: 'Orden numérico', exact: true })
+        34 × locator resolved to 1 element
+           - unexpected value "1"
+
+
+      55 |
+      56 | test('SIM-3a: Filtrar no ofrece la casilla global y la consulta avanzada conserva el orden numérico explícito',async()=>{
+    > 57 |  await open();await page.getByLabel('Filtrar',{exact:true}).click();await expect(page.getByRole('checkbox',{name:'Orden numérico',exact:true})).toHaveCount(0)
+         |                                                                                                                                                 ^
+      58 |  await page.keyboard.press('Escape');await menuItem(page,'Filtrar','Consulta avanzada');const tools=page.getByRole('region',{name:'Consulta avanzada',exact:true});await tools.getByRole('button',{name:'Añadir orden',exact:true}).click();await expect(tools.getByLabel('Orden numérico 1',{exact:true})).toBeVisible()
+      59 | })
+      60 |
+        at $WORKTREE/tests/e2e/sim3a-sorting.spec.ts:57:145
+
+    Error Context: ../sim3a-evidence/red-results/sim3a-sorting-SIM-3a-Filtr-c15e0-el-orden-numérico-explícito-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3a-evidence/red-results/sim3a-sorting-SIM-3a-Filtr-c15e0-el-orden-numérico-explícito-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3a-evidence/red-results/sim3a-sorting-SIM-3a-Filtr-c15e0-el-orden-numérico-explícito-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    [csv] › tests/e2e/sim3a-sorting.spec.ts:29:1 › SIM-3a: encabezado ordena 9, 18 y 100 como números, con vacíos al final y sin modificar el CSV 
+    [csv] › tests/e2e/sim3a-sorting.spec.ts:35:1 › SIM-3a: abrir no perfila y cada petición de orden solo consulta la columna elegida 
+    [csv] › tests/e2e/sim3a-sorting.spec.ts:50:1 › SIM-3a: el menú de columna y Filas y columnas usan el mismo orden automático 
+    [csv] › tests/e2e/sim3a-sorting.spec.ts:56:1 › SIM-3a: Filtrar no ofrece la casilla global y la consulta avanzada conserva el orden numérico explícito 
+  1 passed (1.1m)

@@ -4,7 +4,7 @@ import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,mkdir,rm,truncate,stat} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
-import {numericOrder,showPanel,showTable} from './panel'
+import {showPanel,showTable} from './panel'
 let app:ElectronApplication,page:Page,folder:string
 const source='ID,Grupo,X,Y\r\n00123,A,2,10\r\n9007199254740993,B,100,1000\r\n00007,A,4,20\r\n00008,A,6,30\r\n'
 test.beforeEach(async()=>{folder=await mkdtemp(join(tmpdir(),'freya-selection-stats-e2e-'));await mkdir(join(folder,'exports'));const {ELECTRON_RUN_AS_NODE:_,...env}=process.env;app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')},timeout:60000});page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900})})
@@ -15,7 +15,7 @@ async function analyze(panel:ReturnType<Page['getByRole']>){await panel.getByRol
 async function cells(panel:ReturnType<Page['getByRole']>,index=0){return panel.locator('tbody tr').nth(index).locator('th,td').allTextContents()}
 
 test('estadísticas del rango: vista ordenada/filtrada, resumen conjunto y por columnas con datos intactos',async()=>{
- const {path}=await open(),before=await page.evaluate(()=>window.freya.documents());await page.getByLabel('Buscar en tabla',{exact:true}).fill('A');await expect(page.locator('footer')).toContainText('3 de 4 filas');await numericOrder(page);const sort=page.locator('.sort-button').filter({hasText:/^X(?:\s|$)/});await sort.click();await expect(page.getByRole('gridcell',{name:'Fila 1, X',exact:true})).toHaveText('2');await sort.click();await expect(page.getByRole('gridcell',{name:'Fila 1, X',exact:true})).toHaveText('6')
+ const {path}=await open(),before=await page.evaluate(()=>window.freya.documents());await page.getByLabel('Buscar en tabla',{exact:true}).fill('A');await expect(page.locator('footer')).toContainText('3 de 4 filas');const sort=page.locator('.sort-button').filter({hasText:/^X(?:\s|$)/});await sort.click();await expect(page.getByRole('gridcell',{name:'Fila 1, X',exact:true})).toHaveText('2');await sort.click();await expect(page.getByRole('gridcell',{name:'Fila 1, X',exact:true})).toHaveText('6')
  await page.getByRole('gridcell',{name:'Fila 1, X',exact:true}).click();await page.keyboard.press('Shift+ArrowRight');await page.keyboard.press('Shift+ArrowDown');const stats=await panel('range');await analyze(stats)
  expect((await cells(stats)).slice(0,10)).toEqual(['Celdas del rango','4','0','4','4','60','15','4','30','13']);await expect(stats.locator('caption')).toContainText('filas 1–2, columnas 3–4');await expect(stats.getByRole('columnheader',{name:'Desv. poblacional (n)',exact:true})).toBeAttached()
  await stats.getByLabel('Columnas para estadísticas',{exact:true}).selectOption('rangeColumns');await analyze(stats);expect((await cells(stats)).slice(0,10)).toEqual(['3. X','2','0','2','2','10','5','4','6','5']);expect((await cells(stats,1)).slice(0,10)).toEqual(['4. Y','2','0','2','2','50','25','20','30','25']);expect((await cells(stats)).slice(12)).toEqual(['0','0','0'])

@@ -178,10 +178,3 @@ export async function menuItem(page:Page,menu:'Filtrar'|'Limpiar'|'Filas y colum
  await page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true}).getByLabel(menu,{exact:true}).click()
  await page.getByRole('button',{name:item,exact:true}).click()
 }
-// Marca «Orden numérico» (está dentro del menú Filtrar) y cierra el menú.
-export async function numericOrder(page:Page){
- const bar=page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true})
- await bar.getByLabel('Filtrar',{exact:true}).click()
- await page.getByLabel('Orden numérico',{exact:true}).check()
- await page.keyboard.press('Escape')
-}

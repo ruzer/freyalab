@@ -1,0 +1,72 @@
+
+Running 2 tests using 1 worker
+
+(node:18028) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/sim3a-sorting.spec.ts:69:1 › SIM-3a: una respuesta de perfil anterior a una edición no impone un orden obsoleto (16.9s)
+(node:18212) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/sim3a-sorting.spec.ts:82:1 › SIM-3a: dos órdenes seguidos conservan ambas intenciones y los desempates (16.0s)
+
+
+  1) [csv] › tests/e2e/sim3a-sorting.spec.ts:69:1 › SIM-3a: una respuesta de perfil anterior a una edición no impone un orden obsoleto 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      70 |  const {doc,path,source}=await open();await holdNextProfile()
+      71 |  try{
+    > 72 |   await page.getByRole('button',{name:'Edad',exact:true}).click();await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'sim3ProfileHold').waiting)).toBe(true)
+         |                                                                                                                                                              ^
+      73 |   const cell=page.getByRole('gridcell',{name:'Fila 1, Edad',exact:true});await cell.dblclick();const input=cell.locator('input');await input.fill('001');await input.press('Enter');await expect(cell).toHaveText('001')
+      74 |   await releaseProfile();await expect(page.getByRole('button',{name:'Edad',exact:true})).toHaveAttribute('aria-busy','false')
+      75 |   expect((await values('Edad')).slice(0,3)).toEqual(['001','18','9']);expect(await readFile(path,'utf8')).toBe(source)
+        at $WORKTREE/tests/e2e/sim3a-sorting.spec.ts:72:158
+
+    Error Context: ../sim3a-evidence/red-async-results/sim3a-sorting-SIM-3a-una-r-6bc5a-no-impone-un-orden-obsoleto-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3a-evidence/red-async-results/sim3a-sorting-SIM-3a-una-r-6bc5a-no-impone-un-orden-obsoleto-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3a-evidence/red-async-results/sim3a-sorting-SIM-3a-una-r-6bc5a-no-impone-un-orden-obsoleto-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/sim3a-sorting.spec.ts:82:1 › SIM-3a: dos órdenes seguidos conservan ambas intenciones y los desempates 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      83 |  const {path,source}=await open();await holdNextProfile()
+      84 |  try{
+    > 85 |   const header=page.getByRole('button',{name:'Edad',exact:true});await header.click();await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'sim3ProfileHold').waiting)).toBe(true)
+         |                                                                                                                                                                                  ^
+      86 |   await header.click();await releaseProfile();await expect.poll(()=>values('Edad')).toEqual(desc);await expect.poll(profileCalls).toHaveLength(2)
+      87 |   expect(await readFile(path,'utf8')).toBe(source)
+      88 |  }finally{await releaseProfile()}
+        at $WORKTREE/tests/e2e/sim3a-sorting.spec.ts:85:178
+
+    Error Context: ../sim3a-evidence/red-async-results/sim3a-sorting-SIM-3a-dos-ó-c4965-ntenciones-y-los-desempates-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3a-evidence/red-async-results/sim3a-sorting-SIM-3a-dos-ó-c4965-ntenciones-y-los-desempates-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3a-evidence/red-async-results/sim3a-sorting-SIM-3a-dos-ó-c4965-ntenciones-y-los-desempates-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/sim3a-sorting.spec.ts:69:1 › SIM-3a: una respuesta de perfil anterior a una edición no impone un orden obsoleto 
+    [csv] › tests/e2e/sim3a-sorting.spec.ts:82:1 › SIM-3a: dos órdenes seguidos conservan ambas intenciones y los desempates 
