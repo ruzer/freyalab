@@ -5,17 +5,30 @@ import {t} from '../../src/shared/i18n'
 import {join,resolve} from 'node:path'
 import {tmpdir} from 'node:os'
 import {closeElectron} from './close-electron'
+import {traceElectronFailure} from './electron-trace'
 import {openAnalysis,showTable,openCsvCommands,exportAnalysis} from './panel'
 
 let app:ElectronApplication,page:Page,folder:string,path:string
+let stopTrace:(()=>Promise<void>)|undefined
+let scrollEvidence:string|undefined
 const source='Producto,Precio,Cantidad,Alta,Mixta\na,10,1,2026-01-02,1\nb,20,2,2026-03-04,x\na,30,3,2026-02-01,1\nc,40,4,2026-01-15,\na,,,2026-02-20,\na,50,,2026-01-30,\n'
 test.beforeEach(async()=>{
+ stopTrace=undefined
+ scrollEvidence=undefined
  folder=await mkdtemp(join(tmpdir(),'freya-describe-ui-'));path=join(folder,'datos.csv');await writeFile(path,source)
  const {ELECTRON_RUN_AS_NODE:_,...env}=process.env
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:test.info().title.match(/\((es|en|en-XA)\)$/)?.[1]??'es',FREYALAB_USER_DATA:join(folder,'profile')},timeout:60000})
  page=await app.firstWindow();await page.waitForFunction(()=>!!window.freya);await page.setViewportSize({width:1440,height:900});await page.evaluate(path=>window.freya.openPaths([path]),path)
 })
-test.afterEach(async()=>{await closeElectron(app);await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})})
+test.afterEach(async({},info)=>{
+ try{
+  if(stopTrace&&info.status!==info.expectedStatus&&scrollEvidence){
+   await info.attach('describe-scroll-state',{body:scrollEvidence,contentType:'application/json'})
+    .catch(()=>{info.annotations.push({type:'scroll-state',description:'No se pudo adjuntar el estado del desplazamiento.'})})
+  }
+  await stopTrace?.()
+ }finally{await closeElectron(app);await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})}
+})
 async function spy(hold?:'profile'|'stats'){
  await app.evaluate(({ipcMain},hold)=>{
   type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
@@ -175,11 +188,18 @@ test('AN-2 describe conserva el ámbito filtrado, el informe y las columnas marc
 })
 
 for(const language of ['es','en-XA'] as const)test(`AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (${language})`,async()=>{
+ stopTrace=await traceElectronFailure(page.context(),test.info())
  const tr=(key:string)=>t(key,{},language),wide=join(folder,'cien.csv'),text=Array.from({length:100},(_,i)=>'Campo '+i).join(',')+'\n'+Array.from({length:250},(_,row)=>Array.from({length:100},(_,col)=>String(row+col)).join(',')).join('\n')+'\n'
  await writeFile(wide,text);await page.evaluate(path=>window.freya.openPaths([path]),wide);await openAnalysis(page,'Estadísticas');const panel=page.getByRole('region',{name:tr('describe.title'),exact:true}),button=panel.getByRole('button',{name:tr('describe.calculate'),exact:true})
  await expect(button).toBeEnabled();await button.focus();await button.press('Enter');await expect(panel.getByRole('status')).toHaveText(tr('describe.complete'));await expect(panel.locator('thead th')).toHaveCount(101);await expect(panel.locator('tbody tr')).toHaveCount(8)
  await expect(panel.getByRole('columnheader',{name:/Campo 0/})).toHaveAttribute('scope','col');await expect(panel.getByRole('rowheader',{name:/std/})).toHaveAttribute('scope','row');await expect(panel.getByRole('rowheader',{name:/std/})).toHaveAccessibleName(tr('describe.metric.std')+' · '+t('describe.pandasMetric',{metric:'std'},language)+' · '+tr('describe.help.std'))
- const scroller=panel.getByRole('region',{name:tr('describe.results'),exact:true});await scroller.focus();await scroller.press('ArrowRight');await expect.poll(()=>scroller.evaluate(node=>node.scrollLeft)).toBeGreaterThan(0)
+ const scroller=panel.getByRole('region',{name:tr('describe.results'),exact:true});await scroller.focus();await expect(scroller).toBeFocused()
+ // El cálculo completo no garantiza que la distribución horizontal esté lista para la tecla nativa.
+ await expect.poll(()=>scroller.evaluate(node=>node.scrollWidth>node.clientWidth)).toBe(true);await expect(scroller).toBeInViewport()
+ await scroller.press('ArrowRight');await expect.poll(async()=>{
+  const state=await scroller.evaluate(node=>({scrollLeft:node.scrollLeft,scrollWidth:node.scrollWidth,clientWidth:node.clientWidth,active:document.activeElement===node,hasFocus:document.hasFocus(),visibility:document.visibilityState,overflow:getComputedStyle(node).overflow,direction:getComputedStyle(node).direction}))
+  scrollEvidence=JSON.stringify(state);return state.scrollLeft
+ }).toBeGreaterThan(0)
  const sticky=await panel.locator('tbody th').first().boundingBox(),box=await scroller.boundingBox();expect(Math.abs(sticky!.x-box!.x)).toBeLessThan(2);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
  for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await expect.poll(()=>page.locator('html').evaluate(node=>node.classList.contains('dark'))).toBe(theme==='dark');await scroller.evaluate(node=>node.scrollLeft=0);await page.mouse.move(0,0);await page.screenshot({animations:'disabled',path:test.info().outputPath(`an2-describe-100-${language}-${theme}-1440x900.png`)})}
  await page.emulateMedia({forcedColors:'active'});await button.focus();await expect(button).toBeFocused();await expect(panel.getByRole('table')).toBeVisible();await page.emulateMedia({forcedColors:'none'})
