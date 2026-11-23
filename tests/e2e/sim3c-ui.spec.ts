@@ -60,14 +60,14 @@ for(const [width,height]of [[1440,900],[1280,720]] as const)for(const kind of ['
 
 test('SIM-3c: una celda, una fila y una columna usan singular sin cambiar datos',async()=>{
  const first=page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})
- await first.click();await expect(footer()).toContainText(/\b1 celda\b/)
- await page.getByRole('gridcell',{name:'Fila 1, Carrera',exact:true}).click({modifiers:['Shift']});await expect(footer()).toContainText(/\b2 celdas\b/)
- await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click();await expect(footer()).toContainText(/\b1 fila seleccionada\b/)
- await page.getByRole('button',{name:'Seleccionar fila 2',exact:true}).click({modifiers:[process.platform==='darwin'?'Meta':'Control']});await expect(footer()).toContainText(/\b2 filas seleccionadas\b/)
+ await first.click();await expect(footer().locator('.csv-status > span[role="status"]')).toContainText(/1 celda$/)
+ await page.getByRole('gridcell',{name:'Fila 1, Carrera',exact:true}).click({modifiers:['Shift']});await expect(footer().locator('.csv-status > span[role="status"]')).toContainText(/2 celdas$/)
+ await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click();await expect(footer().locator('.csv-status > span').filter({hasText:'seleccionad'})).toHaveText('1 fila seleccionada')
+ await page.getByRole('button',{name:'Seleccionar fila 2',exact:true}).click({modifiers:[process.platform==='darwin'?'Meta':'Control']});await expect(footer().locator('.csv-status > span').filter({hasText:'seleccionad'})).toHaveText('2 filas seleccionadas')
  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click();await page.getByLabel('Seleccionar columna Carrera',{exact:true}).check()
  await page.getByLabel('Limpiar',{exact:true}).click();await expect(page.locator('.dropdown-note')).toContainText('1 fila × 1 columna')
  await page.keyboard.press('Escape')
- await page.evaluate(path=>window.freya.openPaths([path]),join(files,'una.csv'));await expect(page.getByRole('tab',{name:'una.csv',exact:true})).toHaveAttribute('aria-selected','true');await expect(footer()).toContainText(/\b1 de 1 fila\b/)
+ await page.evaluate(path=>window.freya.openPaths([path]),join(files,'una.csv'));await expect(page.getByRole('tab',{name:'una.csv',exact:true})).toHaveAttribute('aria-selected','true');await expect(footer().locator(':scope > span.truncate')).toHaveText('1 de 1 fila')
 })
 
 test('SIM-3c: la barra pertenece al documento activo y vuelve al CSV sin perder el recuento',async()=>{

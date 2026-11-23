@@ -160,7 +160,7 @@ test('operaciones CSV: alcance explícito, fila filtrada, ceros iniciales, desha
  await page.getByLabel('Seleccionar columna Nombre',{exact:true}).check()
  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click()
  await page.getByLabel('Limpiar',{exact:true}).click()
- await expect(page.locator('.dropdown-note')).toContainText('1 filas × 1 columnas')
+ await expect(page.locator('.dropdown-note')).toContainText('1 fila × 1 columna')
  await page.getByRole('button',{name:'Quitar espacios al inicio y final',exact:true}).click()
  await expect(page.getByRole('gridcell',{name:'Fila 1, Nombre',exact:true})).toHaveText('Árbol')
  await page.getByRole('button',{name:'Deshacer',exact:true}).click()

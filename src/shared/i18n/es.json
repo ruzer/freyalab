@@ -1837,5 +1837,14 @@
  "context.reveal.unavailable": "No pude mostrar ese archivo. Elige un elemento de la carpeta abierta en Archivos.",
  "context.open": "Abrir",
  "context.close": "Cerrar",
- "context.text.menu": "Edición de texto"
+ "context.text.menu": "Edición de texto",
+ "csv.status.rows.one": "{matched} de {count} fila",
+ "csv.status.rows.other": "{matched} de {count} filas",
+ "csv.status.cells.one": "{count} celda",
+ "csv.status.cells.other": "{count} celdas",
+ "csv.status.selectedRows.one": "{count} fila seleccionada",
+ "csv.status.selectedRows.other": "{count} filas seleccionadas",
+ "csv.status.columns.one": "{count} columna",
+ "csv.status.columns.other": "{count} columnas",
+ "csv.status.markedScope": "{rows} × {columns} · sin encabezados"
 }

@@ -23,7 +23,7 @@
  import {parse} from 'csv-parse/browser/esm/sync'
  import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit,TableEmptyEdit,LargeViewState,LargeViewQuery} from '../../shared/types'
  import type {CalculateColumnEdit} from '../../shared/calculated-column'
- let {doc,externalChange=false,onanalysis,analysisHidden=false,onchange,onerror,onstatus,viewControls,project=null,sourceInfo,recipes=[],onexportsubset,commandTitle=(_id:string,label:string)=>label,commandShortcut=(_id:string)=>''}:{doc:DocumentInfo;externalChange?:boolean;onanalysis:(section?:AnalysisSection,statistics?:AnalysisStatistics)=>void;analysisHidden?:boolean;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;viewControls?:Snippet;project?:ProjectInfo|null;sourceInfo?:ProjectSourceView;recipes?:ProjectRecipeView[];onexportsubset?:(recipe:ProjectRecipeView)=>void;commandTitle?:(id:string,label:string)=>string;commandShortcut?:(id:string)=>string}=$props()
+ let {doc,externalChange=false,onanalysis,analysisHidden=false,onchange,onerror,onstatus,viewControls,project=null,sourceInfo,recipes=[],onexportsubset,commandTitle=(_id:string,label:string)=>label,commandShortcut=(_id:string)=>''}:{doc:DocumentInfo;externalChange?:boolean;onanalysis:(section?:AnalysisSection,statistics?:AnalysisStatistics)=>void;analysisHidden?:boolean;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string,documentId:string)=>void;viewControls?:Snippet;project?:ProjectInfo|null;sourceInfo?:ProjectSourceView;recipes?:ProjectRecipeView[];onexportsubset?:(recipe:ProjectRecipeView)=>void;commandTitle?:(id:string,label:string)=>string;commandShortcut?:(id:string)=>string}=$props()
  let showExtract=$state(false),extractButton=$state<HTMLButtonElement>()
  let subset=$state<SubsetIntent|null>(null),subsetPanel=$state<SubsetPanel>(),subsetButton=$state<HTMLButtonElement>(),subsetContext=''
  $effect(()=>{
@@ -254,7 +254,8 @@
  function closeContext(){const kind=context?.kind;cleanMenu=false;context=null;if(kind==='range'&&selection)focusCell(selection.end.row,selection.end.column,true);else if(contextReturn?.isConnected)contextReturn.focus();else commandsButton?.focus()}
  async function rangeAction(action:string){
   context=null;pendingCell=null;if(!cellRange||locked||busy)return
-  try{if(action==='copy'){await window.freya.tableCopy(doc.id,{scope:'selection',range:$state.snapshot(cellRange)},'tsv');onstatus('Rango copiado');return}
+  const id=doc.id
+  try{if(action==='copy'){await window.freya.tableCopy(id,{scope:'selection',range:$state.snapshot(cellRange)},'tsv');onstatus('Rango copiado',id);return}
    if(action==='paste'){preparePaste(await window.freya.tablePaste(doc.id,$state.snapshot(cellRange)));return}
    rangeDialog={edit:{type:'range',range:$state.snapshot(cellRange),operation:(action==='cut'?'clear':action) as TableRangeEdit['operation'],value:'',find:''},cut:action==='cut'}
   }catch(error){onerror(action==='paste'?'No se pudo leer el portapapeles. Usa Ctrl/⌘ + V sobre la tabla.':String(error))}
@@ -343,7 +344,7 @@
   if(previous?.requestId===next.requestId&&(next.elapsedMs<previous.elapsedMs||previous.status!=='running'&&next.status==='running'))return
   largeView=next
   if(previous?.requestId!==next.requestId||previous.status!==next.status)viewAnnouncement=next.status==='running'?'Buscando en el archivo completo.':describeView(next)
-  onstatus(`${describeView(next)} · archivo grande · búsqueda`)
+  onstatus(`${describeView(next)} · archivo grande · búsqueda`,doc.id)
   if(next.status==='invalidated')page={...page,rows:[],matched:0}
  }
  function resetViewPosition(){selectedRows=[];selectionStats=null;selection=null;context=null;rangeDialog=null;pendingCell=null;dragging=false;scrollElement?.scrollTo({top:0})}
@@ -362,7 +363,7 @@
    if(result.requestId!==requestId||doc.id!==id||doc.revision!==revision||large&&q.viewId!==activeViewId)return
    queryError='';pageOffset=offset;page=result;pageQuery=q
    if(result.view){if(result.view.status!=='running'||result.view.status!==largeView?.status)receiveView(result.view)}
-   else onstatus(`${result.matched.toLocaleString()} de ${result.total.toLocaleString()} filas${result.large?' · archivo grande':result.sample?' · muestra':''}`)
+   else onstatus(plural('csv.status.rows',result.total,{matched:formatNumber(result.matched)})+(result.large?' · archivo grande':result.sample?' · muestra':''),id)
   }catch(error){if(q.requestId===requestId){queryError=String(error).replace(/^.*Error: /,'');onerror(queryError);if(large&&q.viewId){const next=await window.freya.tableViewState(id).catch(()=>null);if(q.requestId===requestId&&next?.requestId===q.viewId)receiveView(next)}}}finally{if(q.requestId===requestId)busy=false}
  }
  $effect(()=>{
@@ -478,9 +479,9 @@
  function applyQuery(next:TableFilter[],sorts:TableSort[],mode:'all'|'any'){if(large){void startView({search:largeView?.query.search,conditions:next,filterMode:mode},true);return}conditions=next;order=sorts;filterMode=mode;sort=undefined;showQuery=false;queryButton?.focus()}
 
  function setFilter(column:number,value:string){filters={...filters,[column]:value}}
- async function copyMarkdown(){try{await window.freya.tableCopy(doc.id,{scope:cellRange||selectedRows.length?'selection':'filtered',range:cellRange?$state.snapshot(cellRange):undefined,rowIds:$state.snapshot(selectedRows),columns:selectedColumns.length?$state.snapshot(selectedColumns):undefined,query:query()},'markdown');onstatus('Tabla Markdown copiada')}catch(error){onerror(String(error))}}
+ async function copyMarkdown(){const id=doc.id;try{await window.freya.tableCopy(id,{scope:cellRange||selectedRows.length?'selection':'filtered',range:cellRange?$state.snapshot(cellRange):undefined,rowIds:$state.snapshot(selectedRows),columns:selectedColumns.length?$state.snapshot(selectedColumns):undefined,query:query()},'markdown');onstatus('Tabla Markdown copiada',id)}catch(error){onerror(String(error))}}
  async function paste(event:ClipboardEvent,rowId:string,column:number){if(locked)return;const value=event.clipboardData?.getData('text/plain');if(value===undefined)return;if((event.target as HTMLElement).tagName==='INPUT'&&!value.includes('\t')&&!value.includes('\n'))return;event.preventDefault();if(cellRange&&(event.target as HTMLElement).tagName!=='INPUT'){preparePaste(value);return}try{const lines=parse(value,{delimiter:'\t',relax_column_count:true,skip_empty_lines:false}) as string[][];await edit({type:'paste',rowId,column,values:lines,view:{query:pageQuery,revision:page.revision}})}catch(error){onerror(String(error))}}
- async function copyCells(){try{await window.freya.tableCopy(doc.id,{scope:'selection',rowIds:$state.snapshot(selectedRows),columns:selectedColumns.length?$state.snapshot(selectedColumns):undefined},'tsv');onstatus('Selección copiada')}catch(error){onerror(String(error))}}
+ async function copyCells(){const id=doc.id;try{await window.freya.tableCopy(id,{scope:'selection',rowIds:$state.snapshot(selectedRows),columns:selectedColumns.length?$state.snapshot(selectedColumns):undefined},'tsv');onstatus('Selección copiada',id)}catch(error){onerror(String(error))}}
  async function options(change:{encoding?:Encoding;delimiter?:string;header?:boolean}){if(interpreting)return;interpreting=true;editing=null;editingHeader=null;try{
   onchange(await window.freya.tableOptions(doc.id,change));await tick()
   // La revisión ya programó esa recarga; la lectura inmediata la sustituye.
@@ -604,7 +605,7 @@
    <hr/>
    <span class="dropdown-label">Limpiar filas marcadas</span>
    {#each ['rows-trim','rows-upper','rows-lower'] as id}{@render item(id)}{/each}
-   <span class="dropdown-note">{selectedRows.length?`${selectedRows.length} filas × ${selectedColumns.length||doc.headers?.length||0} columnas · sin encabezados`:'Marca filas por su número (Ctrl/⌘ o Mayús añade más) y, si quieres limitarlo, columnas.'}</span>
+   <span class="dropdown-note">{selectedRows.length?t('csv.status.markedScope',{rows:plural('filas',selectedRows.length),columns:plural('csv.status.columns',selectedColumns.length||doc.headers?.length||0)}):'Marca filas por su número (Ctrl/⌘ o Mayús añade más) y, si quieres limitarlo, columnas.'}</span>
    {@render item('transformations')}
   </div></details>
   <details class="insert-menu"><summary data-tooltip={t('charts.toolbar.structure')} aria-label={t('charts.toolbar.structure')} aria-disabled={large} class:disabled={large} title={large?'La edición llega en una fase posterior (archivos grandes)':undefined} onclick={event=>{if(large)event.preventDefault()}}><Icon name="table" size={14}/><span class="tool-text adapt-label" class:hidden-label={hiddenToolbarLabels>2}>{t('charts.toolbar.structure')}</span><Icon name="chevron-down" size={12}/></summary><div class="dropdown">
@@ -676,7 +677,7 @@
  <!-- Se mueve a la barra de estado de la ventana: así hay una sola barra inferior y la tabla conserva el alto. -->
  {#if !analysisHidden}<div class="csv-status" use:portal={'#document-status'}>
   {#if busy&&!large}<span role="status">Procesando…</span>{/if}
-  {#if cellRange}<span role="status">Rango: filas {cellRange.top+1}–{cellRange.bottom+1}, columnas {cellRange.left+1}–{cellRange.right+1} · {((cellRange.bottom-cellRange.top+1)*(cellRange.right-cellRange.left+1)).toLocaleString()} celdas</span><details class="insert-menu"><summary aria-label="Acciones del rango">Rango <Icon name="chevron-down" size={12}/></summary><div class="dropdown">{@render rangeButtons()}</div></details>{:else if selectedRows.length}<span>{selectedRows.length} filas seleccionadas</span>{/if}
+  {#if cellRange}<span role="status">Rango: filas {cellRange.top+1}–{cellRange.bottom+1}, columnas {cellRange.left+1}–{cellRange.right+1} · {plural('csv.status.cells',(cellRange.bottom-cellRange.top+1)*(cellRange.right-cellRange.left+1))}</span><details class="insert-menu"><summary aria-label="Acciones del rango">Rango <Icon name="chevron-down" size={12}/></summary><div class="dropdown">{@render rangeButtons()}</div></details>{:else if selectedRows.length}<span>{plural('csv.status.selectedRows',selectedRows.length)}</span>{/if}
   {#if selectionStats}<span>Vacíos: {selectionStats.empty} · Únicos: {selectionStats.unique}</span>{#if selectionStats.numeric}<span class="truncate">Suma: {selectionStats.sum?.toLocaleString()} · Media: {selectionStats.average?.toLocaleString()} · Mín: {selectionStats.min?.toLocaleString()} · Máx: {selectionStats.max?.toLocaleString()}</span>{/if}{/if}
   <details class="insert-menu file-format"><summary aria-label={`${t('project.source.format')}: ${formatSummary}`}><span>{formatSummary}</span><Icon name="chevron-down" size={12}/></summary><div class="dropdown" role="group" aria-label={t('project.source.format')}>
    <span class="dropdown-label">{t('project.source.format')}</span>

@@ -13,3 +13,6 @@
  </button>
  {#if entry.directory&&expanded[entry.path]}<Tree entries={expanded[entry.path]} {open} {onerror} {oncsvcontext} depth={depth+1} {filter}/>{/if}
 {/each}
+<style>
+ .tree-item>.tree-symbol{flex-shrink:0}
+</style>
