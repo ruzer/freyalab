@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:96245) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/structural-context.spec.ts:40:1 › menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar (17.2s)
+
+
+  1) [csv] › tests/e2e/structural-context.spec.ts:40:1 › menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  getByRole('menu', { name: 'Acciones de filas', exact: true }).locator('.column-menu-title')
+    Expected: "Fila 1"
+    Received: "Fila 3"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" getByRole('menu', { name: 'Acciones de filas', exact: true }).locator('.column-menu-title') with timeout 15000ms
+      - waiting for getByRole('menu', { name: 'Acciones de filas', exact: true }).locator('.column-menu-title')
+        34 × locator resolved to <span role="presentation" class="dropdown-label column-menu-title">Fila 3</span>
+           - unexpected value "Fila 3"
+
+
+      40 | test('menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar',async()=>{
+      41 |  const source='ID,Grupo,N\r\n00123,v,30\r\n9007199254740993,h,10\r\n00003,v,20\r\n',{path}=await open(source);await page.getByLabel('Buscar en tabla',{exact:true}).fill('v');await expect(page.locator('footer')).toContainText('2 de 3 filas');await numericOrder(page);let panel=await columnMenu('N');await panel.getByRole('menuitem',{name:'Ordenar de menor a mayor',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00003')
+    > 42 |  panel=await rowMenu(1);await expect(panel.locator('.column-menu-title')).toHaveText('Fila 1');await panel.getByRole('menuitem',{name:'Insertar arriba',exact:true}).click();await expect(page.locator('footer')).toContainText('2 de 4 filas');expect(await rows()).toEqual([['00123','v','30'],['9007199254740993','h','10'],['','',''],['00003','v','20']]);expect(await readFile(path,'utf8')).toBe(source);await undo();await expect(page.locator('footer')).toContainText('2 de 3 filas')
+         |                                                                           ^
+      43 |  panel=await rowMenu(1,true);await panel.getByRole('menuitem',{name:'Insertar abajo',exact:true}).click();await expect(page.locator('footer')).toContainText('2 de 4 filas');expect((await rows()).at(-1)).toEqual(['','','']);await undo();await expect(page.locator('footer')).toContainText('2 de 3 filas');await page.getByRole('button',{name:/Quitar filtros y orden/}).click();await expect(page.locator('footer')).toContainText('3 de 3 filas')
+      44 |  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click();await page.getByRole('button',{name:'Seleccionar fila 3',exact:true}).click({modifiers:[process.platform==='darwin'?'Meta':'Control']});panel=await rowMenu(1);await expect(panel).toContainText('2 filas');await expect(panel.getByRole('menuitem',{name:'Insertar arriba',exact:true})).toBeDisabled();await panel.getByRole('menuitem',{name:'Duplicar filas',exact:true}).click();await expect(page.locator('footer')).toContainText('5 de 5 filas');expect((await rows()).map(row=>row[0])).toEqual(['00123','00123','9007199254740993','00003','00003']);await undo();await expect(page.locator('footer')).toContainText('3 de 3 filas');expect(await readFile(path,'utf8')).toBe(source)
+      45 | })
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/structural-context.spec.ts:42:75
+
+    Error Context: ../sim1h-evidence/red-row-label-results/structural-context-menú-de-0494a-arcas-múltiples-al-duplicar-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/red-row-label-results/structural-context-menú-de-0494a-arcas-múltiples-al-duplicar-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/red-row-label-results/structural-context-menú-de-0494a-arcas-múltiples-al-duplicar-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/structural-context.spec.ts:40:1 › menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar 

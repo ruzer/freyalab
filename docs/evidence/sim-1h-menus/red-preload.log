@@ -1,0 +1,325 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <recovery>/sim1h-menus-contextuales
+
+ ❯ tests/context-preload.test.ts (33 tests | 33 failed) 35ms
+   ❯ SIM-1h · concesión contextual privada y síncrona (33)
+     × expone contextEdit sin una API genérica, nonce o concesión pública 17ms
+     × una llamada libre a edit.cut no envía IPC 1ms
+     × una llamada libre a edit.copy no envía IPC 1ms
+     × una llamada libre a edit.paste no envía IPC 1ms
+     × una llamada libre a edit.pastePlain no envía IPC 1ms
+     × una llamada libre a edit.selectAll no envía IPC 1ms
+     × un clic real simulado permite una sola tupla cerrada para edit.cut 1ms
+     × un clic real simulado permite una sola tupla cerrada para edit.copy 0ms
+     × un clic real simulado permite una sola tupla cerrada para edit.paste 0ms
+     × un clic real simulado permite una sola tupla cerrada para edit.pastePlain 0ms
+     × un clic real simulado permite una sola tupla cerrada para edit.selectAll 0ms
+     × un clic en un descendiente del botón usa el botón marcado 0ms
+     × un clic sintético no despacha el evento ni abre una concesión 2ms
+     × un evento freya-context-edit sintético por sí solo tampoco autoriza IPC 1ms
+     × el marcador "edit.undo" no abre una concesión 0ms
+     × el marcador "edit.redo" no abre una concesión 0ms
+     × el marcador "file.save" no abre una concesión 0ms
+     × el marcador "constructor" no abre una concesión 0ms
+     × el marcador "__proto__" no abre una concesión 0ms
+     × el marcador "executeJavaScript" no abre una concesión 0ms
+     × el marcador "" no abre una concesión 0ms
+     × un div con el marcador no autoriza el puente 0ms
+     × un botón que no es menuitem no autoriza el puente 0ms
+     × un menuitem sin marcador no autoriza el puente 0ms
+     × caduca al salir del callback aunque la operación se guarde para más tarde 0ms
+     × una microtarea no prolonga la concesión síncrona 0ms
+     × un ID distinto del fijado por el botón no puede aprovechar el clic 0ms
+     × cambiar el dataset durante el callback no cambia el ID ya fijado 0ms
+     × el segundo uso dentro del mismo callback no vuelve a invocar 0ms
+     × consume antes de invocar aunque la llamada reentre y falle 0ms
+     × una promesa IPC pendiente no mantiene abierta la concesión 0ms
+     × finally revoca la concesión si el dispatch DOM falla 2ms
+     × la solicitud contextual continúa por onCommand y su delegado nativo de un solo uso 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 33 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > expone contextEdit sin una API genérica, nonce o concesión pública
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ tests/context-preload.test.ts:63:27
+     61| describe('SIM-1h · concesión contextual privada y síncrona',()=>{
+     62|  it('expone contextEdit sin una API genérica, nonce o concesión públic…
+     63|   expect(api.contextEdit).toBeTypeOf('function')
+       |                           ^
+     64|   for(const key of ['invoke','nativeEdit','clipboard','readClipboard',…
+     65|  })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > una llamada libre a edit.cut no envía IPC
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > una llamada libre a edit.copy no envía IPC
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > una llamada libre a edit.paste no envía IPC
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > una llamada libre a edit.pastePlain no envía IPC
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > una llamada libre a edit.selectAll no envía IPC
+AssertionError: El puente debe publicar la operación acotada contextEdit: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ request tests/context-preload.test.ts:44:85
+     42| }
+     43| function request(id:string,current=state()){
+     44|  expect(api.contextEdit,'El puente debe publicar la operación acotada …
+       |                                                                                     ^
+     45|  const result=api.contextEdit(id,current)
+     46|  expect(result,'La operación siempre devuelve Promise<void>, incluso s…
+ ❯ tests/context-preload.test.ts:67:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > un clic real simulado permite una sola tupla cerrada para edit.cut
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > un clic real simulado permite una sola tupla cerrada para edit.copy
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > un clic real simulado permite una sola tupla cerrada para edit.paste
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > un clic real simulado permite una sola tupla cerrada para edit.pastePlain
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > un clic real simulado permite una sola tupla cerrada para edit.selectAll
+AssertionError: El preload debe instalar la concesión sobre clic en fase de captura: expected undefined to be defined
+ ❯ clickListener tests/context-preload.test.ts:38:93
+     36| function clickListener(){
+     37|  const registration=mocked.addEventListener.mock.calls.find(([name])=>…
+     38|  expect(registration,'El preload debe instalar la concesión sobre clic…
+       |                                                                                             ^
+     39|  const options=registration![2]
+     40|  expect(options===true||options?.capture===true).toBe(true)
+ ❯ activate tests/context-preload.test.ts:49:115
+ ❯ tests/context-preload.test.ts:77:15
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > un clic en un descendiente del botón usa el botón marcado
+AssertionError: El preload debe instalar la concesión sobre clic en fase de captura: expected undefined to be defined
+ ❯ clickListener tests/context-preload.test.ts:38:93
+     36| function clickListener(){
+     37|  const registration=mocked.addEventListener.mock.calls.find(([name])=>…
+     38|  expect(registration,'El preload debe instalar la concesión sobre clic…
+       |                                                                                             ^
+     39|  const options=registration![2]
+     40|  expect(options===true||options?.capture===true).toBe(true)
+ ❯ activate tests/context-preload.test.ts:49:115
+ ❯ tests/context-preload.test.ts:88:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > un clic sintético no despacha el evento ni abre una concesión
+AssertionError: El preload debe instalar la concesión sobre clic en fase de captura: expected undefined to be defined
+ ❯ clickListener tests/context-preload.test.ts:38:93
+     36| function clickListener(){
+     37|  const registration=mocked.addEventListener.mock.calls.find(([name])=>…
+     38|  expect(registration,'El preload debe instalar la concesión sobre clic…
+       |                                                                                             ^
+     39|  const options=registration![2]
+     40|  expect(options===true||options?.capture===true).toBe(true)
+ ❯ activate tests/context-preload.test.ts:49:115
+ ❯ tests/context-preload.test.ts:93:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > un evento freya-context-edit sintético por sí solo tampoco autoriza IPC
+AssertionError: El puente debe publicar la operación acotada contextEdit: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ request tests/context-preload.test.ts:44:85
+     42| }
+     43| function request(id:string,current=state()){
+     44|  expect(api.contextEdit,'El puente debe publicar la operación acotada …
+       |                                                                                     ^
+     45|  const result=api.contextEdit(id,current)
+     46|  expect(result,'La operación siempre devuelve Promise<void>, incluso s…
+ ❯ ButtonMock.button.relay tests/context-preload.test.ts:98:91
+ ❯ ButtonMock.<anonymous> tests/context-preload.test.ts:20:43
+ ❯ tests/context-preload.test.ts:99:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > el marcador "edit.undo" no abre una concesión
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > el marcador "edit.redo" no abre una concesión
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > el marcador "file.save" no abre una concesión
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > el marcador "constructor" no abre una concesión
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > el marcador "__proto__" no abre una concesión
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > el marcador "executeJavaScript" no abre una concesión
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > el marcador "" no abre una concesión
+AssertionError: El preload debe instalar la concesión sobre clic en fase de captura: expected undefined to be defined
+ ❯ clickListener tests/context-preload.test.ts:38:93
+     36| function clickListener(){
+     37|  const registration=mocked.addEventListener.mock.calls.find(([name])=>…
+     38|  expect(registration,'El preload debe instalar la concesión sobre clic…
+       |                                                                                             ^
+     39|  const options=registration![2]
+     40|  expect(options===true||options?.capture===true).toBe(true)
+ ❯ activate tests/context-preload.test.ts:49:115
+ ❯ tests/context-preload.test.ts:104:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > un div con el marcador no autoriza el puente
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > un botón que no es menuitem no autoriza el puente
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > un menuitem sin marcador no autoriza el puente
+AssertionError: El preload debe instalar la concesión sobre clic en fase de captura: expected undefined to be defined
+ ❯ clickListener tests/context-preload.test.ts:38:93
+     36| function clickListener(){
+     37|  const registration=mocked.addEventListener.mock.calls.find(([name])=>…
+     38|  expect(registration,'El preload debe instalar la concesión sobre clic…
+       |                                                                                             ^
+     39|  const options=registration![2]
+     40|  expect(options===true||options?.capture===true).toBe(true)
+ ❯ tests/context-preload.test.ts:113:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > caduca al salir del callback aunque la operación se guarde para más tarde
+AssertionError: El preload debe instalar la concesión sobre clic en fase de captura: expected undefined to be defined
+ ❯ clickListener tests/context-preload.test.ts:38:93
+     36| function clickListener(){
+     37|  const registration=mocked.addEventListener.mock.calls.find(([name])=>…
+     38|  expect(registration,'El preload debe instalar la concesión sobre clic…
+       |                                                                                             ^
+     39|  const options=registration![2]
+     40|  expect(options===true||options?.capture===true).toBe(true)
+ ❯ activate tests/context-preload.test.ts:49:115
+ ❯ tests/context-preload.test.ts:120:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > una microtarea no prolonga la concesión síncrona
+AssertionError: El preload debe instalar la concesión sobre clic en fase de captura: expected undefined to be defined
+ ❯ clickListener tests/context-preload.test.ts:38:93
+     36| function clickListener(){
+     37|  const registration=mocked.addEventListener.mock.calls.find(([name])=>…
+     38|  expect(registration,'El preload debe instalar la concesión sobre clic…
+       |                                                                                             ^
+     39|  const options=registration![2]
+     40|  expect(options===true||options?.capture===true).toBe(true)
+ ❯ activate tests/context-preload.test.ts:49:115
+ ❯ tests/context-preload.test.ts:126:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > un ID distinto del fijado por el botón no puede aprovechar el clic
+AssertionError: El preload debe instalar la concesión sobre clic en fase de captura: expected undefined to be defined
+ ❯ clickListener tests/context-preload.test.ts:38:93
+     36| function clickListener(){
+     37|  const registration=mocked.addEventListener.mock.calls.find(([name])=>…
+     38|  expect(registration,'El preload debe instalar la concesión sobre clic…
+       |                                                                                             ^
+     39|  const options=registration![2]
+     40|  expect(options===true||options?.capture===true).toBe(true)
+ ❯ activate tests/context-preload.test.ts:49:115
+ ❯ tests/context-preload.test.ts:132:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > cambiar el dataset durante el callback no cambia el ID ya fijado
+AssertionError: El preload debe instalar la concesión sobre clic en fase de captura: expected undefined to be defined
+ ❯ clickListener tests/context-preload.test.ts:38:93
+     36| function clickListener(){
+     37|  const registration=mocked.addEventListener.mock.calls.find(([name])=>…
+     38|  expect(registration,'El preload debe instalar la concesión sobre clic…
+       |                                                                                             ^
+     39|  const options=registration![2]
+     40|  expect(options===true||options?.capture===true).toBe(true)
+ ❯ activate tests/context-preload.test.ts:49:115
+ ❯ tests/context-preload.test.ts:138:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > el segundo uso dentro del mismo callback no vuelve a invocar
+AssertionError: El preload debe instalar la concesión sobre clic en fase de captura: expected undefined to be defined
+ ❯ clickListener tests/context-preload.test.ts:38:93
+     36| function clickListener(){
+     37|  const registration=mocked.addEventListener.mock.calls.find(([name])=>…
+     38|  expect(registration,'El preload debe instalar la concesión sobre clic…
+       |                                                                                             ^
+     39|  const options=registration![2]
+     40|  expect(options===true||options?.capture===true).toBe(true)
+ ❯ activate tests/context-preload.test.ts:49:115
+ ❯ tests/context-preload.test.ts:143:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > consume antes de invocar aunque la llamada reentre y falle
+AssertionError: El preload debe instalar la concesión sobre clic en fase de captura: expected undefined to be defined
+ ❯ clickListener tests/context-preload.test.ts:38:93
+     36| function clickListener(){
+     37|  const registration=mocked.addEventListener.mock.calls.find(([name])=>…
+     38|  expect(registration,'El preload debe instalar la concesión sobre clic…
+       |                                                                                             ^
+     39|  const options=registration![2]
+     40|  expect(options===true||options?.capture===true).toBe(true)
+ ❯ activate tests/context-preload.test.ts:49:115
+ ❯ tests/context-preload.test.ts:151:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > una promesa IPC pendiente no mantiene abierta la concesión
+AssertionError: El preload debe instalar la concesión sobre clic en fase de captura: expected undefined to be defined
+ ❯ clickListener tests/context-preload.test.ts:38:93
+     36| function clickListener(){
+     37|  const registration=mocked.addEventListener.mock.calls.find(([name])=>…
+     38|  expect(registration,'El preload debe instalar la concesión sobre clic…
+       |                                                                                             ^
+     39|  const options=registration![2]
+     40|  expect(options===true||options?.capture===true).toBe(true)
+ ❯ activate tests/context-preload.test.ts:49:115
+ ❯ tests/context-preload.test.ts:160:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > finally revoca la concesión si el dispatch DOM falla
+AssertionError: expected AssertionError: El preload debe instalar … { …(4) } to be Error: Dispatch DOM controlado // Object.is equality
+
+- Expected
++ Received
+
+- Error {
+-   "message": "Dispatch DOM controlado",
++ AssertionError {
++   "message": "El preload debe instalar la concesión sobre clic en fase de captura: expected undefined to be defined",
++   "actual": undefined,
++   "expected": undefined,
++   "showDiff": false,
++   "operator": "strictEqual",
+  }
+
+ ❯ tests/context-preload.test.ts:167:51
+    165|   const button=new ButtonMock(),failure=new Error('Dispatch DOM contro…
+    166|   button.dispatchEvent.mockImplementationOnce(()=>{throw failure})
+    167|   try{activate(button)}catch(error){expect(error).toBe(failure)}
+       |                                                   ^
+    168|   await expect(request('edit.copy')).resolves.toBeUndefined();expect(m…
+    169|  })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/33]⎯
+
+ FAIL  tests/context-preload.test.ts > SIM-1h · concesión contextual privada y síncrona > la solicitud contextual continúa por onCommand y su delegado nativo de un solo uso
+AssertionError: El preload debe instalar la concesión sobre clic en fase de captura: expected undefined to be defined
+ ❯ clickListener tests/context-preload.test.ts:38:93
+     36| function clickListener(){
+     37|  const registration=mocked.addEventListener.mock.calls.find(([name])=>…
+     38|  expect(registration,'El preload debe instalar la concesión sobre clic…
+       |                                                                                             ^
+     39|  const options=registration![2]
+     40|  expect(options===true||options?.capture===true).toBe(true)
+ ❯ activate tests/context-preload.test.ts:49:115
+ ❯ tests/context-preload.test.ts:179:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/33]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  33 failed (33)
+   Start at  01:01:33
+   Duration  237ms (tests 46%, transform 39%, import 12%, worker 3%)
+

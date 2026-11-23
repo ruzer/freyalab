@@ -1,0 +1,49 @@
+
+Running 1 test using 1 worker
+
+(node:87703) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/context-menus.spec.ts:114:1 › SIM-1h solo el menú contextual bloquea copiar sin selección; lectura bloquea mutaciones (17.3s)
+
+
+  1) [csv] › tests/e2e/context-menus.spec.ts:114:1 › SIM-1h solo el menú contextual bloquea copiar sin selección; lectura bloquea mutaciones 
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  locator('.cm-content')
+    Expected: focused
+    Received: inactive
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeFocused" locator('.cm-content') with timeout 15000ms
+      - waiting for locator('.cm-content')
+        34 × locator resolved to <div translate="no" role="textbox" autocorrect="off" spellcheck="false" autocapitalize="off" aria-readonly="true" aria-multiline="true" contenteditable="false" writingsuggestions="false" aria-label="Editor de texto" class="cm-content cm-lineWrapping">…</div>
+           - unexpected value "inactive"
+
+
+      119 |  await expect.poll(()=>app.evaluate(({Menu})=>Menu.getApplicationMenu()?.getMenuItemById('edit.copy')?.enabled)).toBe(true)
+      120 |  const path=join(files,'lectura.txt'),bytes=Buffer.from('Hola\n','utf16le');await writeFile(path,bytes);await page.evaluate(path=>window.freya.openPaths([path]),path)
+    > 121 |  editor=page.locator('.cm-content');await expect(editor).toHaveAttribute('contenteditable','false');await editor.focus();await expect(editor).toBeFocused();await editor.press('Shift+F10')
+          |                                                                                                                                               ^
+      122 |  await expect(rootMenu().getByRole('menuitem',{name:'Cortar',exact:true})).toBeDisabled();await expect(rootMenu().getByRole('menuitem',{name:'Pegar',exact:true})).toBeDisabled();expect(await readFile(path)).toEqual(bytes)
+      123 | })
+      124 |
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/context-menus.spec.ts:121:143
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim1h-evidence/red-readonly-focus-results/context-menus-SIM-1h-solo--4279c--lectura-bloquea-mutaciones-csv/attachments/electron-context-f364e0aae06e838ebad79861c582b77ecf5939b1.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim1h-evidence/red-readonly-focus-results/context-menus-SIM-1h-solo--4279c--lectura-bloquea-mutaciones-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/red-readonly-focus-results/context-menus-SIM-1h-solo--4279c--lectura-bloquea-mutaciones-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/red-readonly-focus-results/context-menus-SIM-1h-solo--4279c--lectura-bloquea-mutaciones-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/context-menus.spec.ts:114:1 › SIM-1h solo el menú contextual bloquea copiar sin selección; lectura bloquea mutaciones 

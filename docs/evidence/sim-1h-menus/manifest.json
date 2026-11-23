@@ -1,0 +1,2168 @@
+{
+  "beforeSource": "6e70d54995a8975ce234cd1a759a46b3d72d385e",
+  "afterSource": "23b58e7ed953f9cf74dac93e0e558cbc7d41ffe8",
+  "images": [
+    {
+      "phase": "before",
+      "file": "sim1h-before-cell-en-XA-dark-1280x720.png",
+      "bytes": 86057,
+      "sha256": "6c4f22cf8fd98d98906969c99fbfa60dafbdf82edd0d93b13e3782ea3adbf20d"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-files-en-XA-dark-1280x720.png",
+      "bytes": 69516,
+      "sha256": "865b1bb3a4f78aafe1f3f551c36fc29f42da71b36b1e72e8b4302d049c8cb200"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-markdown-en-XA-dark-1280x720.png",
+      "bytes": 64584,
+      "sha256": "a63734b6712f937679c0a84092b01a9a4dc08e7abcfb3b665392d232ff469bcd"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-row-en-XA-dark-1280x720.png",
+      "bytes": 92292,
+      "sha256": "7af89010c294cac0cf3673e38ed69c79e98939d49e0ed68838a29e063c94cf31"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-tab-en-XA-dark-1280x720.png",
+      "bytes": 64230,
+      "sha256": "005c246ace716f95aae0e0f5b3ed891029154e69b952a0493bfbc323cd4a2295"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-cell-en-XA-dark-1440x900.png",
+      "bytes": 92051,
+      "sha256": "68cdd1789d9dd811317739407bd3be02a14f67dbb1f23522b3eee0861a4a90a0"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-files-en-XA-dark-1440x900.png",
+      "bytes": 73946,
+      "sha256": "214a41d0547b5d8a3c23f08e0414c451593929e76a2b194e392b10eabb910d62"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-markdown-en-XA-dark-1440x900.png",
+      "bytes": 68700,
+      "sha256": "4e72222ecd8aab464b2445470ac68f55fb99c71bccdbc0bb058d3e24138d57f1"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-row-en-XA-dark-1440x900.png",
+      "bytes": 98462,
+      "sha256": "24664f58b4fbc8b2c1efc03f64bacdf0756467b4734edfb471a1254975da9224"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-tab-en-XA-dark-1440x900.png",
+      "bytes": 68257,
+      "sha256": "bf5ff3abd5305c137cdf96c31f46dbdd2b0e3baab73c017719a140ad7deec9fb"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-cell-es-dark-1280x720.png",
+      "bytes": 83623,
+      "sha256": "842128c54b354f3f2def1763875d303de18c409462ccaba8f20a44f45b56edec"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-files-es-dark-1280x720.png",
+      "bytes": 64999,
+      "sha256": "8e2d156b90e875c6a3db9bff99a61582b55552fff503284d6f94c0a4abd442ba"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-markdown-es-dark-1280x720.png",
+      "bytes": 60923,
+      "sha256": "23136db134c7efdade3d630000cd3d86aee491599d51998bee2b6b9c71891443"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-row-es-dark-1280x720.png",
+      "bytes": 90230,
+      "sha256": "ae89a88db4ae89a4bc484ad27c13a1dd707ac099a5b099e7c5b06043cc95afce"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-tab-es-dark-1280x720.png",
+      "bytes": 60563,
+      "sha256": "73fc5f2e9b7827616c5631bc2e8b6ecf1b04f08a7b1a37613cd4388b77752d3d"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-cell-en-XA-light-1440x900.png",
+      "bytes": 92792,
+      "sha256": "fc8f0aa46b59812246cf7578e1e95ffdc5f2d726fda53f03cbc043215b79bc31"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-files-en-XA-light-1440x900.png",
+      "bytes": 75181,
+      "sha256": "74f1f633b512ca6657cacac6ca597b1d78dbbe5798571d94c5e02545a0795692"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-markdown-en-XA-light-1440x900.png",
+      "bytes": 68783,
+      "sha256": "cc0c4e8dbb2a0a5ed50bb9e5f814211d1062579e7ffd77ab3ec3d186cef618a7"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-row-en-XA-light-1440x900.png",
+      "bytes": 99135,
+      "sha256": "6aea20ac86c433b0ff0efaca02d4abefd7cce9346a5b9b43c1fd70e58cc38557"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-tab-en-XA-light-1440x900.png",
+      "bytes": 68309,
+      "sha256": "2d69e27e33cdfa56ab38e0ef279914a58743dcdc59fe8d47721d234e46db5f5c"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-cell-en-XA-light-1280x720.png",
+      "bytes": 86744,
+      "sha256": "21fab5f70d1016bfa658095b868f2a9267634c016f97f3adcee552fff1ed2d9f"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-files-en-XA-light-1280x720.png",
+      "bytes": 70725,
+      "sha256": "3835786639be0738486b9362ef8465c2cc419d47fa6c9b6041a395557db0cce2"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-markdown-en-XA-light-1280x720.png",
+      "bytes": 64705,
+      "sha256": "e9cf3bd4cf0c4a1a7ee55ac2bd492a57d516e2f3d110fddb74f39bbca514d13a"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-row-en-XA-light-1280x720.png",
+      "bytes": 92820,
+      "sha256": "66484d53a477ba20815915e1e27564ac96165f637362ac899ed1bf5230a6c9f8"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-tab-en-XA-light-1280x720.png",
+      "bytes": 64309,
+      "sha256": "6ba5e69ca665ee2a62475346d0dead719f9998eca6a2e8c1354302832e80ad7d"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-cell-es-light-1280x720.png",
+      "bytes": 84263,
+      "sha256": "bd97494e06d57c3f87553047f95f5b4e60bb237b16b505a42dcc18520068182d"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-files-es-light-1280x720.png",
+      "bytes": 66353,
+      "sha256": "eb89d03a019195a376b9ae5b1b41b1d2977e1817a7b83deabae72f227cdabc61"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-markdown-es-light-1280x720.png",
+      "bytes": 61216,
+      "sha256": "b03e347e8caa760df880f728ec4d4daef7e5dc2bea88cce3980d07302cf15ee1"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-row-es-light-1280x720.png",
+      "bytes": 90591,
+      "sha256": "c8ba6bbf2f3dac3034a5a05a2610ff68ec8a84979a65c8d914897ea3f94c31bf"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-tab-es-light-1280x720.png",
+      "bytes": 60871,
+      "sha256": "d46e652f59121fb9be949c053863cb36eb21dee04abce3acda92567411cc8cde"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-cell-es-dark-1440x900.png",
+      "bytes": 86688,
+      "sha256": "0fd8e373a91e9f46d33766b0ddeb28de6015bd64949ca670fe9a656eea31de0e"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-files-es-dark-1440x900.png",
+      "bytes": 67564,
+      "sha256": "6e828cf7c75aa198d0c2a656886117924a7b3c46f05771030b64dfd2015986ba"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-markdown-es-dark-1440x900.png",
+      "bytes": 63337,
+      "sha256": "9245208e9823c97ac872969f1b5e2b838e91c1d6e89fb45f4de759533b906d41"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-row-es-dark-1440x900.png",
+      "bytes": 93420,
+      "sha256": "269d1d2d84f053006df7b851dc4546b7080c4750cb3d73cc1128e1a7106314c8"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-tab-es-dark-1440x900.png",
+      "bytes": 62826,
+      "sha256": "d147b5a6d9dea3bb126cb23d1ddd7a5ebfc85261363d24149990cfb7717c517e"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-cell-es-light-1440x900.png",
+      "bytes": 87470,
+      "sha256": "19ea58c45ba5289eb35a70ea178f1db9e8c2ea1e8aa1f1ff7455ada0619121cf"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-files-es-light-1440x900.png",
+      "bytes": 69049,
+      "sha256": "11cc086bd60abffaba985dd12bfcbedfa79269ff8bc1606600b9e9f5b5ba9929"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-markdown-es-light-1440x900.png",
+      "bytes": 63647,
+      "sha256": "e2fa755687b310ad84054943df5c7813446163d7e2be29e0119f89aee82b015c"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-row-es-light-1440x900.png",
+      "bytes": 93932,
+      "sha256": "fc3ef0931d425c15667f1a67c210e094df3155323458a0979e706a0bdc4c2ebd"
+    },
+    {
+      "phase": "before",
+      "file": "sim1h-before-tab-es-light-1440x900.png",
+      "bytes": 63158,
+      "sha256": "2663dbe99dc3dfc639c18841642117017333e1da4d06eb57a12281c1db20a9d7"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-cell-en-XA-light-1280x720.png",
+      "bytes": 77325,
+      "sha256": "aee389cc286ce1ab63925549441ded4693ed266f1f2422f11c21f1cf629ef19a"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-files-en-XA-light-1280x720.png",
+      "bytes": 73877,
+      "sha256": "d3dd553d5ed829beff7ceeb5bf0f6fcaa009fe76cb26af3f4774d5305b5c2e98"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-markdown-en-XA-light-1280x720.png",
+      "bytes": 79569,
+      "sha256": "cabd999039f32690ac572cb0e420c79c458f883149ac10b96bf1ebe19833acfd"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-row-en-XA-light-1280x720.png",
+      "bytes": 74724,
+      "sha256": "977ec1c400a67e6d97575108f0709d0bb138d25df4c96df5d9ea38cb7284c45f"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-tab-en-XA-light-1280x720.png",
+      "bytes": 67545,
+      "sha256": "521413b96ea6d5b5cee0db7ca079263b25a44f2ba2d5dc585918e7ab14bd4213"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-cell-en-XA-dark-1280x720.png",
+      "bytes": 76263,
+      "sha256": "94e72a2d4acbed27fa76f299ff6822566757890116548d1329d043b2ec4fe73a"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-files-en-XA-dark-1280x720.png",
+      "bytes": 72780,
+      "sha256": "fb05f1fe7ae2f2940c055367c058972ed8990c29c2e0b241e75d24c2ac0156a6"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-markdown-en-XA-dark-1280x720.png",
+      "bytes": 78072,
+      "sha256": "e8467bd50311cdbe37f994f2ed0a25c893885bee4c3694631c44c58dd6fa63a7"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-row-en-XA-dark-1280x720.png",
+      "bytes": 73717,
+      "sha256": "2887f9a4661612ab700bab87a133488583bc826e3e788ab3d57da6587503173e"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-tab-en-XA-dark-1280x720.png",
+      "bytes": 66729,
+      "sha256": "993d347755ed645e22540a5c38c3a2ff0859ebeac92abcd42edba8e9f2a8a458"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-cell-es-light-1280x720.png",
+      "bytes": 73324,
+      "sha256": "bb2d1cb92b91d3d16553de5aa277512a17d334c7bcbdc438f2d6451c8cd69bcc"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-files-es-light-1280x720.png",
+      "bytes": 69746,
+      "sha256": "6519d5b233fccf738c21d028a6210c25323a0a64db97116632c7d97e0565f203"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-markdown-es-light-1280x720.png",
+      "bytes": 75103,
+      "sha256": "802b576d956c9aab1c4f0f0f9ea471525b79a53f6af95e375d6de9e272ed4479"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-row-es-light-1280x720.png",
+      "bytes": 68666,
+      "sha256": "121ababab608e0b377954cf56cd44e4b59bf3db696015c9bd9343db040575a02"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-tab-es-light-1280x720.png",
+      "bytes": 63934,
+      "sha256": "a1108a007f0b07b75ca799f8b31076c227d97fbd51b7e2812a334496634922d1"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-cell-es-light-1440x900.png",
+      "bytes": 76304,
+      "sha256": "49d53cdaa8a3c8384583e9076a6131eadd879235491a1fdc70d9fc1a0944d3a2"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-files-es-light-1440x900.png",
+      "bytes": 72775,
+      "sha256": "00f755f446db0b5fe3ef14954c0ba552e787c90c2e53a906470722a9c1407aa1"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-markdown-es-light-1440x900.png",
+      "bytes": 78107,
+      "sha256": "728bc5eaaa087d5684dff5e684ac633891103c665a90aba08b350c9f4b8e33e5"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-row-es-light-1440x900.png",
+      "bytes": 71365,
+      "sha256": "ce3e59ad0707418c0518678ec5b2387fda4adc1b1a0b1f2402de5b1066ba993e"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-tab-es-light-1440x900.png",
+      "bytes": 66263,
+      "sha256": "a333971aff51e206266148f27042bb5ec97617285957cdc32c468cbccd5b5a54"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-cell-en-XA-dark-1440x900.png",
+      "bytes": 82187,
+      "sha256": "8819aba11965c8cc39d1b6a319e0bd6557ca4942ecad2620a1b409ce1904db16"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-files-en-XA-dark-1440x900.png",
+      "bytes": 77300,
+      "sha256": "bc77dcddd1c0c32ffecaba6b0cdeb095c152e84481daeda0d80a79c6b4ec2056"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-markdown-en-XA-dark-1440x900.png",
+      "bytes": 82530,
+      "sha256": "46c5b3e0d516272aba0915f9cceb6a14d8e4eb6af5a9ee01a65a2c2382ade7ef"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-row-en-XA-dark-1440x900.png",
+      "bytes": 79692,
+      "sha256": "8d2371f5b8778df01763f9338ecf3c81c31ab06b54f334cbdf11a57770849035"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-tab-en-XA-dark-1440x900.png",
+      "bytes": 71068,
+      "sha256": "64508b7e0a0b1d2e1296deeee4994d519899574e19b3654fe4f52f0e21746bd0"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-cell-es-dark-1440x900.png",
+      "bytes": 75197,
+      "sha256": "a9c0041570438aad3cd9c71a1f69a18141c5506b25456ea87f9cbddf1195b76e"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-files-es-dark-1440x900.png",
+      "bytes": 71505,
+      "sha256": "d15074497d3d00477bc58d36aec0058613ff99baf8128897d80ea71e0b4c818a"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-markdown-es-dark-1440x900.png",
+      "bytes": 76437,
+      "sha256": "0486c028ac7684a3ca4e265469a362c8ca0d58c85e6232152e0b0fe286d505bb"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-row-es-dark-1440x900.png",
+      "bytes": 70502,
+      "sha256": "db828180772d801654953f3cb9e60d17c0a22469a00065c832c96db896269bd3"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-tab-es-dark-1440x900.png",
+      "bytes": 65371,
+      "sha256": "6ee5c89f50b1a854d520dda14fae921a192a5c81994ba4c27ef621fab57d653f"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-cell-es-dark-1280x720.png",
+      "bytes": 72290,
+      "sha256": "c5bcb44234e703050debe6b60334404a63d15bfffdb2aabb5e8e06494a872b24"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-files-es-dark-1280x720.png",
+      "bytes": 68553,
+      "sha256": "4fa68f0dbe1e63583fb7514dd01a861b10db3d0432730a1d777050ec299771c3"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-markdown-es-dark-1280x720.png",
+      "bytes": 73463,
+      "sha256": "ab0b28ca890ce2063e266213de99de25da44edb482cdcf35d724536af2136caa"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-row-es-dark-1280x720.png",
+      "bytes": 67854,
+      "sha256": "2103bb2cae244a8dca90a5c322ac746cb10d711df12adc0c9c6ece42ad0f7549"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-tab-es-dark-1280x720.png",
+      "bytes": 62886,
+      "sha256": "1e5a64cfedcbb2aafbc0d9389053623d6ea8c974ba81ace8930b163db352611f"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-cell-en-XA-light-1440x900.png",
+      "bytes": 83291,
+      "sha256": "0329ee8e5a4d96bffed721f95257e70a48197840dfb3d071fc71fadf36177425"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-files-en-XA-light-1440x900.png",
+      "bytes": 78391,
+      "sha256": "a078e93cf88337260c1a48c2ae55ad9fafd7d2749b12b8c7263522dad24fbd2f"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-markdown-en-XA-light-1440x900.png",
+      "bytes": 83999,
+      "sha256": "f057bae660697776349c0f42569a4c2c68bd8e3070f36bcff6d2851b09d47a9c"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-row-en-XA-light-1440x900.png",
+      "bytes": 80704,
+      "sha256": "4572a39d3116e91de2e8cbbb4ac6c6b0694dfe8da93fc685a65e931040c47a46"
+    },
+    {
+      "phase": "after",
+      "file": "sim1h-after-tab-en-XA-light-1440x900.png",
+      "bytes": 71952,
+      "sha256": "d529b2d28e173c6bc1eab4da301988a4940b2393209d3d298de85db929cc6e34"
+    }
+  ],
+  "geometry": [
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 380.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 405,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": null,
+      "height": null,
+      "family": "markdown",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": null,
+      "height": null,
+      "family": "tab",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 79,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 412.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        49,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 380.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 405,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": null,
+      "height": null,
+      "family": "markdown",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": null,
+      "height": null,
+      "family": "tab",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 79,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 412.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        49,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 380.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 405,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "dark",
+      "width": null,
+      "height": null,
+      "family": "markdown",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "dark",
+      "width": null,
+      "height": null,
+      "family": "tab",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 79,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 393.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 380.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 405,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": null,
+      "height": null,
+      "family": "markdown",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": null,
+      "height": null,
+      "family": "tab",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 79,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 412.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        49,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 380.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 405,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": null,
+      "height": null,
+      "family": "markdown",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": null,
+      "height": null,
+      "family": "tab",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 79,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 412.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        49,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 380.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 405,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "light",
+      "width": null,
+      "height": null,
+      "family": "markdown",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "light",
+      "width": null,
+      "height": null,
+      "family": "tab",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 79,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 393.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 380.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 405,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "dark",
+      "width": null,
+      "height": null,
+      "family": "markdown",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "dark",
+      "width": null,
+      "height": null,
+      "family": "tab",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 79,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 393.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 380.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 405,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "light",
+      "width": null,
+      "height": null,
+      "family": "markdown",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "light",
+      "width": null,
+      "height": null,
+      "family": "tab",
+      "menuPresent": false,
+      "rowHeights": [],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 79,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        33.5,
+        33.5
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "before",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 393.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 292.234375,
+      "height": 393.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 264.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 204.5,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 171,
+      "family": "markdown",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 105.5,
+      "family": "tab",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 135.5,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 292.234375,
+      "height": 393.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 264.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 204.5,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 171,
+      "family": "markdown",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 105.5,
+      "family": "tab",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 135.5,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 393.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 264.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 204.5,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 171,
+      "family": "markdown",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 105.5,
+      "family": "tab",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 135.5,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 393.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 264.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 204.5,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 171,
+      "family": "markdown",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 105.5,
+      "family": "tab",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "light",
+      "width": 260,
+      "height": 135.5,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 292.234375,
+      "height": 393.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 264.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 204.5,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 171,
+      "family": "markdown",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 105.5,
+      "family": "tab",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 260,
+      "height": 135.5,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 393.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 264.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 204.5,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 171,
+      "family": "markdown",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 105.5,
+      "family": "tab",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 135.5,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 393.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 264.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 204.5,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 171,
+      "family": "markdown",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 105.5,
+      "family": "tab",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "es",
+      "theme": "dark",
+      "width": 260,
+      "height": 135.5,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 292.234375,
+      "height": 393.5,
+      "family": "column",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 264.5,
+      "family": "cell",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 204.5,
+      "family": "row",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 171,
+      "family": "markdown",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 105.5,
+      "family": "tab",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30
+      ],
+      "clippedItems": 0
+    },
+    {
+      "phase": "after",
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 260,
+      "height": 135.5,
+      "family": "files",
+      "menuPresent": true,
+      "rowHeights": [
+        30,
+        30,
+        30
+      ],
+      "clippedItems": 0
+    }
+  ]
+}

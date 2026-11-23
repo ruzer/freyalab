@@ -26,6 +26,12 @@ Las órdenes internas `app.prepareClose` y `app.closeAborted` usan el canal de c
 
 Las confirmaciones de todos los documentos preceden a su disposición. Durante esa fase se impiden nuevas mutaciones en la cola de Documents; no se espera un motor SQL de lectura. Las aperturas nuevas del sistema se difieren, sin ampliar la autorización de rutas recibidas del renderer. Estas medidas no prometen una transacción del sistema de archivos ni rollback de un recurso ya liberado ante un fallo excepcional.
 
+## Menús contextuales
+
+`application:contextEdit` admite únicamente `edit.cut`, `edit.copy`, `edit.paste`, `edit.pastePlain` y `edit.selectAll`, con el estado de interfaz validado. El preload concede un solo envío durante el despacho síncrono de un clic real sobre la acción correspondiente; los clics sintéticos, el envío tardío y la reutilización no reciben permiso. Main vuelve a comprobar la disponibilidad y usa el mismo comando, nonce privado, `routeApplicationEdit` y `MenuNativeEdits` que Edición. No se expone una lectura de portapapeles ni un delegado reutilizable. Cortar/Copiar sin selección se desactivan en el contexto; Edición conserva su regla anterior. La lectura bloquea las mutaciones en ambos caminos.
+
+`documentShow` recibe un id de documento registrado; Main obtiene su ubicación y rechaza documentos sin ruta o cerrados. `fileShow` solo revela destinos canónicos contenidos en la carpeta que está abierta actualmente en Archivos y vuelve a comprobar esa raíz después de validar el destino. No bastan permisos de carpetas anteriores ni de otros documentos abiertos; los enlaces que salen de la raíz se rechazan. Ambas operaciones conservan la validación de argumentos, emisor y frame, y llaman a `shell.showItemInFolder`, sin ejecutar el contenido del archivo.
+
 
 ## Exportaciones de conjuntos
 

@@ -1,0 +1,49 @@
+
+Running 1 test using 1 worker
+
+(node:94089) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/context-menus.spec.ts:117:1 › SIM-1h la vista previa permite seleccionar sin ofrecer mutaciones (17.0s)
+
+
+  1) [csv] › tests/e2e/context-menus.spec.ts:117:1 › SIM-1h la vista previa permite seleccionar sin ofrecer mutaciones 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByRole('menu')
+    Expected: 0
+    Received: 1
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveCount" getByRole('menu') with timeout 15000ms
+      - waiting for getByRole('menu')
+        34 × locator resolved to 1 element
+           - unexpected value "1"
+
+
+      116 |
+      117 | test('SIM-1h la vista previa permite seleccionar sin ofrecer mutaciones',async()=>{
+    > 118 |  await page.evaluate(path=>window.freya.openPaths([path]),markdown);const editor=page.locator('.cm-content');await editor.focus();await editor.press('Shift+F10');await expect(rootMenu()).toBeVisible();await runApplicationMenu(app,'view.mode.preview');await expect(page.getByRole('menu')).toHaveCount(0)
+          |                                                                                                                                                                                                                                                                                                 ^
+      119 |  const preview=page.getByRole('document',{name:'Vista previa del documento',exact:true});await expect(preview.locator('article')).toContainText('Hola mundo');await preview.focus();await preview.press('Shift+F10')
+      120 |  await expect(rootMenu()).toBeVisible();await expect(rootMenu().getByRole('menuitem',{name:'Cortar',exact:true})).toBeDisabled();await expect(rootMenu().getByRole('menuitem',{name:'Pegar',exact:true})).toBeDisabled();await expect(rootMenu().getByRole('menuitem',{name:'Pegar sin formato',exact:true})).toHaveCount(0)
+      121 |  await rootMenu().getByRole('menuitem',{name:'Seleccionar todo',exact:true}).press('Enter');await expect.poll(()=>page.evaluate(()=>window.getSelection()?.toString())).toContain('Hola mundo');expect(await readFile(markdown,'utf8')).toBe('Hola mundo\n')
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/context-menus.spec.ts:118:289
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim1h-evidence/red-text-owner-results/context-menus-SIM-1h-la-vi-d4ea8-onar-sin-ofrecer-mutaciones-csv/attachments/electron-context-1c9c5a5022864dccdb18dd8bddbe183f8aec7517.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim1h-evidence/red-text-owner-results/context-menus-SIM-1h-la-vi-d4ea8-onar-sin-ofrecer-mutaciones-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/red-text-owner-results/context-menus-SIM-1h-la-vi-d4ea8-onar-sin-ofrecer-mutaciones-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/red-text-owner-results/context-menus-SIM-1h-la-vi-d4ea8-onar-sin-ofrecer-mutaciones-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/context-menus.spec.ts:117:1 › SIM-1h la vista previa permite seleccionar sin ofrecer mutaciones 
