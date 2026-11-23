@@ -20,7 +20,7 @@ test.beforeEach(async({},info)=>{
  await expect(page.getByRole('gridcell',{name:'Fila 1, Folio',exact:true})).toBeVisible()
 })
 test.afterEach(async()=>{
- try{await stopTrace?.();expect(await readFile(csv,'utf8')).toBe(source)}
+ try{await stopTrace?.();await app.evaluate(async({clipboard})=>{const saved=Reflect.get(globalThis,'contextClipboard') as import('electron').ClipboardItem[]|undefined;if(saved){if(saved.length)await clipboard.write(saved);else clipboard.clear();Reflect.deleteProperty(globalThis,'contextClipboard')}});expect(await readFile(csv,'utf8')).toBe(source)}
  finally{try{await closeElectron(app)}finally{await rm(folder,{recursive:true,force:true,maxRetries:5,retryDelay:200})}}
 })
 async function structure(menu:Locator){
@@ -67,4 +67,36 @@ test('SIM-1h Archivos admite otros formatos y carpetas',async()=>{
  await page.keyboard.press('Escape');await expect(file).toBeFocused()
  const dir=page.locator('.tree-scroll').getByRole('button',{name:'Carpeta',exact:true});await dir.press('Shift+F10');menu=rootMenu();await expect(menu).toBeVisible()
  expect(await structure(menu)).toEqual(['Carpeta','Mostrar en la carpeta']);await page.keyboard.press('Escape');await expect(dir).toBeFocused()
+})
+
+
+test('SIM-1h edición contextual conserva selección, historial y campos de diálogo',{tag:'@solo'},async()=>{
+ // Los formatos originales permanecen solo en memoria de main, nunca en la traza.
+ await app.evaluate(async({clipboard,ClipboardItem})=>{
+  const items=(await clipboard.read()).filter(item=>item.types.length)
+  const saved=await Promise.all(items.map(async item=>new ClipboardItem(Object.fromEntries(await Promise.all(item.types.map(async type=>[type,await item.getType(type)]))))))
+  if(saved.length)await clipboard.write(saved)
+  Reflect.set(globalThis,'contextClipboard',saved);clipboard.writeText('SIM1h sintético')
+ })
+ const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),markdown)
+ const editor=page.locator('.cm-content');await editor.focus();await editor.press('ControlOrMeta+Home');for(let i=0;i<5;i++)await editor.press('ArrowRight');await editor.press('Shift+End');await editor.press('Shift+F10')
+ await rootMenu().getByRole('menuitem',{name:'Copiar',exact:true}).click();await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toBe('mundo')
+ await editor.press('ControlOrMeta+End');await editor.press('Shift+F10');await rootMenu().getByRole('menuitem',{name:'Pegar',exact:true}).click()
+ await expect.poll(()=>page.evaluate(id=>window.freya.documents().then(docs=>docs.find(doc=>doc.id===id)?.text),doc.id)).toBe('Hola mundo\nmundo')
+ await editor.press('ControlOrMeta+z');await expect.poll(()=>page.evaluate(id=>window.freya.documents().then(docs=>docs.find(doc=>doc.id===id)?.text),doc.id)).toBe('Hola mundo\n')
+ await page.getByRole('tab',{name:'encuesta.csv',exact:true}).click();await page.getByRole('gridcell',{name:'Fila 1, Importe',exact:true}).click({button:'right'});await rootMenu().getByRole('menuitem',{name:'Rellenar…',exact:true}).click()
+ const dialog=page.getByRole('dialog'),field=dialog.getByRole('textbox',{name:'Valor del rango',exact:true});await field.fill('Texto de diálogo');await field.press('ControlOrMeta+a');await field.press('Shift+F10')
+ const menu=rootMenu();await expect(menu).toBeVisible();await menu.getByRole('menuitem',{name:'Copiar',exact:true}).click();await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toBe('Texto de diálogo')
+ await expect(dialog).toBeVisible();expect(await readFile(markdown,'utf8')).toBe('Hola mundo\n')
+})
+
+test('SIM-1h solo el menú contextual bloquea copiar sin selección; lectura bloquea mutaciones',async()=>{
+ await page.evaluate(path=>window.freya.openPaths([path]),markdown)
+ let editor=page.locator('.cm-content');await editor.focus();await editor.press('ControlOrMeta+Home')
+ await expect.poll(()=>app.evaluate(({Menu})=>Menu.getApplicationMenu()?.getMenuItemById('edit.copy')?.enabled)).toBe(true)
+ await editor.press('Shift+F10');await expect(rootMenu().getByRole('menuitem',{name:'Copiar',exact:true})).toBeDisabled();await expect(rootMenu().getByRole('menuitem',{name:'Cortar',exact:true})).toBeDisabled();await page.keyboard.press('Escape')
+ await expect.poll(()=>app.evaluate(({Menu})=>Menu.getApplicationMenu()?.getMenuItemById('edit.copy')?.enabled)).toBe(true)
+ const path=join(files,'lectura.txt'),bytes=Buffer.from('Hola\n','utf16le');await writeFile(path,bytes);await page.evaluate(path=>window.freya.openPaths([path]),path)
+ editor=page.locator('.cm-content');await expect(editor).toHaveAttribute('contenteditable','false');await editor.focus();await editor.press('Shift+F10')
+ await expect(rootMenu().getByRole('menuitem',{name:'Cortar',exact:true})).toBeDisabled();await expect(rootMenu().getByRole('menuitem',{name:'Pegar',exact:true})).toBeDisabled();expect(await readFile(path)).toEqual(bytes)
 })
