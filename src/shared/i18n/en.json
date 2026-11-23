@@ -1837,5 +1837,10 @@
  "context.reveal.unavailable": "I could not show that file. Choose an item in the folder currently open in Files.",
  "context.open": "Open",
  "context.close": "Close",
- "context.text.menu": "Text editing"
+ "context.text.menu": "Text editing",
+ "csv.sort.help": "Sorts by the data type. Numbers use their value; codes stay as text. The file does not change.",
+ "csv.sort.preparing": "Preparing the order for “{column}”…",
+ "csv.sort.completeNumber": "“{column}” was sorted as numbers.",
+ "csv.sort.completeText": "“{column}” was sorted as text.",
+ "csv.sort.error": "We could not sort “{column}”. Try again."
 }
