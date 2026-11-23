@@ -111,6 +111,26 @@ test('SIM-1h la búsqueda de CodeMirror no ofrece pegar Markdown sin formato',as
  await expect(rootMenu()).toBeVisible();expect(await structure(rootMenu())).toEqual(['Cortar','Copiar','Pegar','|','Seleccionar todo'])
 })
 
+test('SIM-1h el menú de texto conserva el encabezado en edición',async()=>{
+ await page.getByRole('button',{name:'Editar encabezado 2',exact:true}).click()
+ const input=page.getByRole('textbox',{name:'Nombre del encabezado',exact:true});await input.fill('Importe revisado');await input.press('ControlOrMeta+a');await input.press('Shift+F10')
+ await expect(rootMenu()).toBeVisible();await expect(input).toHaveValue('Importe revisado');await page.keyboard.press('Escape');await expect(input).toBeFocused()
+ await page.getByRole('tab',{name:'encuesta.csv',exact:true}).click();await expect(input).toHaveCount(0);await expect(page.getByRole('columnheader').nth(1)).toContainText('Importe revisado')
+})
+
+test('SIM-1h el menú dentro del diálogo no deja nodos ni cierra el diálogo con Escape o Tab',async()=>{
+ const cell=page.getByRole('gridcell',{name:'Fila 1, Importe',exact:true})
+ for(let i=0;i<2;i++){
+  await cell.click({button:'right'});await rootMenu().getByRole('menuitem',{name:'Rellenar…',exact:true}).click()
+  const dialog=page.getByRole('dialog'),field=dialog.getByRole('textbox',{name:'Valor del rango',exact:true});await field.fill('Borrador');await field.press('ControlOrMeta+a');await field.press('Shift+F10')
+  await expect(rootMenu()).toBeVisible();expect(await rootMenu().evaluate(node=>!!node.closest('dialog[open]'))).toBe(true)
+  await page.keyboard.press('Escape');await expect(page.getByRole('menu')).toHaveCount(0);await expect(dialog).toBeVisible();await expect(field).toBeFocused()
+  await field.press('Shift+F10');await expect(rootMenu()).toBeVisible();await page.keyboard.press('Tab');await expect(page.getByRole('menu')).toHaveCount(0);await expect(dialog).toBeVisible()
+  await field.focus();await field.press('Shift+F10');await expect(rootMenu()).toBeVisible();await dialog.getByRole('button',{name:'Cancelar',exact:true}).click()
+  await expect(page.getByRole('menu')).toHaveCount(0);await expect(dialog).toHaveCount(0)
+ }
+})
+
 test('SIM-1h solo el menú contextual bloquea copiar sin selección; lectura bloquea mutaciones',async()=>{
  await page.evaluate(path=>window.freya.openPaths([path]),markdown)
  let editor=page.locator('.cm-content');await editor.focus();await editor.press('ControlOrMeta+Home')
