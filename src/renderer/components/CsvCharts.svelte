@@ -1,4 +1,6 @@
 <script lang="ts">
+ import AnalysisNumber from './AnalysisNumber.svelte'
+ import type {AnalysisNumberMode} from '../../shared/analysis-number-format'
  import {subsetCoverage} from '../lib/subset-coverage'
  import {csvAnalysisSample} from '../lib/csv-analysis-view'
  import {analysisMeasure} from '../lib/analysis-measure'
@@ -20,11 +22,11 @@
  import {describeConditions} from '../../shared/table-conditions'
  import {chartPivot,chartTop} from '../../shared/chart-pivot'
  import {suggest,type ChartColumn} from '../../shared/chart-suggest'
- import {chartOption,chartSeries,formatChartNumber} from '../chart-option'
+ import {chartOption,chartSeries} from '../chart-option'
  import {chartTrendText,chartTrendLine} from '../../shared/chart-trend'
  import type {DocumentInfo,SqlResult,TableQuery,TableConditionGroup,TableViewMeta} from '../../shared/types'
  use([BarChart,LineChart,ScatterChart,HeatmapChart,BoxplotChart,GridComponent,TooltipComponent,VisualMapComponent,AriaComponent,TitleComponent,LegendComponent,SVGRenderer])
- let {doc,query,queryValid,viewMeta,visible=true,onDemand=false,onclose,onerror}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;visible?:boolean;onDemand?:boolean;onclose:()=>void;onerror:(message:string)=>void}=$props()
+ let {doc,query,queryValid,viewMeta,visible=true,onDemand=false,onclose,onerror,numberMode=2}:{doc:DocumentInfo;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;visible?:boolean;onDemand?:boolean;onclose:()=>void;onerror:(message:string)=>void;numberMode?:AnalysisNumberMode}=$props()
  let scope=$state<'all'|'filtered'|'saved'>('all'),savedView=$state<ChartView>()
  let where=$state<TableConditionGroup>({conditions:[],filterMode:'all'}),showFilters=$state(false)
  const subsetCoverageText=$derived(doc.analysisSubset?subsetCoverage(doc.analysisSubset.coverage,doc.analysisSubset.steps,getUILanguage(),doc.analysisSubset.stepOwners):undefined)
@@ -75,7 +77,7 @@
  async function cancelChart(){cancelledSignature=signature;cancelFields();cancel();message='charts.ui.cancelled';await tick();element?.closest('section')?.querySelector<HTMLButtonElement>('.chart-types button[aria-pressed="true"]')?.focus()}
  function chooseKind(kind:ChartOptions['kind'],userChoice=false){options=projectChartKind($state.snapshot(options),kind,columns,suggestion.options);chosenTypeSignature=userChoice?signature:null}
  const valueLabel=(value:string|null)=>value===null?t('charts.plot.missing'):value===''?t('charts.plot.empty'):value
- function displayNumber(value:string|null){getUILanguage();return value===null?'—':formatChartNumber(Number(value))}
+ function tableNumeric(name:string){return ['value','upper','q1','q3','low','high','outliers','count','fila'].includes(name)||name==='x'&&!temporal&&['line','scatter','histogram'].includes(options.kind)}
  // shortcut: auto hasta 3.000 filas, 1 MiB y 200.000 celdas; ampliar tras medir más equipos (experiments/analytics-f2a).
  // La instantánea no es un archivo; su raíz verificada acota el tamaño para los mismos límites automáticos.
  const sourceBytes=$derived(doc.byteLength??doc.analysisSubset?.coverage.bytesRead)
@@ -217,6 +219,7 @@
   return[...(['png','svg','pdf'] as const).map(format=>({label:t('charts.ui.exportImage',{format:format.toUpperCase()}),disabledReason,run:()=>exportChart(format)})),{label:t('analysis.export.json'),disabledReason,separator:true,run:()=>exportResults('json')},{label:t('analysis.export.csv'),disabledReason,run:()=>{csvExportOpen=true;resultFormat='csv';void tick().then(()=>element?.closest('section')?.querySelector<HTMLInputElement>('.result-export-options input')?.focus())}},{label:t('analysis.export.markdown'),disabledReason,run:()=>exportResults('md')}]
  }
 </script>
+{#snippet chartNumber(value:string|null)}{#if value===null}—{:else}<AnalysisNumber value={Number(value)} mode={numberMode}/>{/if}{/snippet}
 {#snippet resultExport()}
   {#if csvExportOpen||exportJob}<div class="result-export-options">
    <p>{t('charts.ui.exportHelp')}</p>
@@ -257,7 +260,7 @@
 
  {#if data}
   {#if sample===true}<p>{t('charts.ui.sampleExport')}</p>{/if}
-  <details><summary>{t('charts.ui.table')}</summary><div class="table-scroll"><table><caption>{t('charts.ui.caption',{kind:t('charts.kind.'+options.kind)})}</caption><thead><tr>{#each data.columns as name}<th scope="col">{t('charts.head.'+name)}</th>{/each}</tr></thead><tbody>{#each data.rows.slice(tablePage*50,(tablePage+1)*50) as row}<tr>{#each row as value}<td>{value===null?'—':value===''?t('charts.plot.empty'):value}</td>{/each}</tr>{/each}</tbody></table></div><div class="actions"><button {...controlHint(tablePage===0?'firstPage':null)} disabled={tablePage===0} onclick={()=>tablePage--}>{t('charts.ui.previous')}</button><span>{t('charts.ui.page',{page:tablePage+1,total:Math.max(1,Math.ceil(data.rows.length/50))})}</span><button {...controlHint((tablePage+1)*50>=data.rows.length?'lastPage':null)} disabled={(tablePage+1)*50>=data.rows.length} onclick={()=>tablePage++}>{t('charts.ui.next')}</button></div></details>
+  <details><summary>{t('charts.ui.table')}</summary><div class="table-scroll"><table><caption>{t('charts.ui.caption',{kind:t('charts.kind.'+options.kind)})}</caption><thead><tr>{#each data.columns as name}<th scope="col">{t('charts.head.'+name)}</th>{/each}</tr></thead><tbody>{#each data.rows.slice(tablePage*50,(tablePage+1)*50) as row}<tr>{#each row as value,index}<td>{#if value===null}—{:else if value===''}{t('charts.plot.empty')}{:else if tableNumeric(data.columns[index])}<AnalysisNumber value={Number(value)} mode={numberMode}/>{:else}{value}{/if}</td>{/each}</tr>{/each}</tbody></table></div><div class="actions"><button {...controlHint(tablePage===0?'firstPage':null)} disabled={tablePage===0} onclick={()=>tablePage--}>{t('charts.ui.previous')}</button><span>{t('charts.ui.page',{page:tablePage+1,total:Math.max(1,Math.ceil(data.rows.length/50))})}</span><button {...controlHint((tablePage+1)*50>=data.rows.length?'lastPage':null)} disabled={(tablePage+1)*50>=data.rows.length} onclick={()=>tablePage++}>{t('charts.ui.next')}</button></div></details>
  {/if}
  <details><summary>{t('charts.ui.viewQuery')}</summary><p>{t('charts.ui.precisionHelp')}</p><pre>{sql}</pre></details>
 {/snippet}
@@ -314,8 +317,8 @@
  <section class="pivot-result" aria-label={t('charts.ui.pivot')}>
   <div class="pivot-heading"><strong>{t('charts.ui.pivot')}</strong><span>{t('charts.ui.groupsShown',{shown:Math.min(pivotSize,pivot.rows.length-pivotPage*pivotSize),total:pivot.rows.length})}</span></div>
   <div class="pivot-scroll"><table aria-label={t('charts.ui.pivot')}><thead><tr><th scope="col">{axes.x}</th>{#if pivot.columns.length}{#each pivot.columns as column}<th scope="col">{valueLabel(column)}</th>{/each}<th scope="col">{t('charts.ui.total')}</th>{:else}<th scope="col">{axes.y}</th>{/if}{#if pivot.additive}<th scope="col">{t('charts.ui.percentTotal')}</th>{/if}</tr></thead>
-   <tbody>{#each pivot.rows.slice(pivotPage*pivotSize,(pivotPage+1)*pivotSize) as row}<tr><th scope="row">{valueLabel(row.label)}</th>{#each row.values as value}<td>{displayNumber(value)}</td>{/each}{#if pivot.columns.length}<td>{displayNumber(row.total)}</td>{/if}{#if pivot.additive}<td>{row.percent===null?'—':formatNumber(row.percent/100,{style:'percent',maximumSignificantDigits:3})}</td>{/if}</tr>{/each}</tbody>
-   <tfoot><tr><th scope="row">{t(pivot.additive?data.limited?'charts.fields.totalGroups':'charts.ui.total':'charts.fields.recalculated',{n:formatNumber(data.points)})}</th>{#each pivot.totalValues as value}<td>{displayNumber(value)}</td>{/each}{#if pivot.columns.length}<td>{displayNumber(pivot.grandTotal)}</td>{/if}{#if pivot.additive}<td>{pivot.grandTotal===null||Number(pivot.grandTotal)===0?'—':formatNumber(1,{style:'percent',maximumSignificantDigits:3})}</td>{/if}</tr></tfoot></table></div>
+   <tbody>{#each pivot.rows.slice(pivotPage*pivotSize,(pivotPage+1)*pivotSize) as row}<tr><th scope="row">{valueLabel(row.label)}</th>{#each row.values as value}<td>{@render chartNumber(value)}</td>{/each}{#if pivot.columns.length}<td>{@render chartNumber(row.total)}</td>{/if}{#if pivot.additive}<td>{#if row.percent===null}—{:else}<AnalysisNumber value={row.percent} mode={numberMode} unit=" %"/>{/if}</td>{/if}</tr>{/each}</tbody>
+   <tfoot><tr><th scope="row">{t(pivot.additive?data.limited?'charts.fields.totalGroups':'charts.ui.total':'charts.fields.recalculated',{n:formatNumber(data.points)})}</th>{#each pivot.totalValues as value}<td>{@render chartNumber(value)}</td>{/each}{#if pivot.columns.length}<td>{@render chartNumber(pivot.grandTotal)}</td>{/if}{#if pivot.additive}<td>{#if pivot.grandTotal===null||Number(pivot.grandTotal)===0}—{:else}<AnalysisNumber value={100} mode={numberMode} unit=" %"/>{/if}</td>{/if}</tr></tfoot></table></div>
   {#if pivot.rows.length>5}<div class="pivot-pages"><label>{t('charts.fields.pageSize')} <select aria-label={t('charts.fields.pageSize')} bind:value={pivotSize} onchange={()=>pivotPage=0}>{#each [5,10,25,50] as size}<option value={size}>{size}</option>{/each}</select></label><button {...controlHint(!pivotPage?'firstPage':null)} disabled={!pivotPage} onclick={()=>pivotPage--}>{t('charts.ui.previous')}</button><span>{t('charts.ui.page',{page:pivotPage+1,total:Math.ceil(pivot.rows.length/pivotSize)})}</span><button {...controlHint((pivotPage+1)*pivotSize>=pivot.rows.length?'lastPage':null)} disabled={(pivotPage+1)*pivotSize>=pivot.rows.length} onclick={()=>pivotPage++}>{t('charts.ui.next')}</button></div>{/if}
  </section>
  {/if}

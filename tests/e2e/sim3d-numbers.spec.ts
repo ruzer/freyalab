@@ -83,7 +83,7 @@ test('SIM-3d cifras y title conservan resultados completos en Perfil, Frecuencia
  const panel=await explorer(),mean=panel.locator('dl[aria-label="Perfil de columna"]>div').filter({has:page.getByText('Media',{exact:true})}).locator('dd')
  await expect(mean).toBeVisible()
  expect.soft(await mean.innerText()).toBe('15.56')
- expect.soft(await mean.getAttribute('title')).toBe('Valor exacto: '+String(140/9))
+ expect.soft(await mean.getAttribute('title')).toBe('Valor exacto: 15.5555555555556')
  for(const node of await panel.locator('dd:visible').all()){
   const value=await node.innerText();expect.soft(value.replaceAll(',','')).not.toMatch(/\.\d{3}/)
   if(value!=='—')expect.soft(await node.getAttribute('title')).toMatch(/^Valor exacto: /)
@@ -92,13 +92,13 @@ test('SIM-3d cifras y title conservan resultados completos en Perfil, Frecuencia
  const frequency=panel.locator('tbody tr').filter({has:page.locator('pre').filter({hasText:/^"4"$/})})
  await expect(frequency).toBeVisible();await expect(frequency.locator('td').nth(1)).toHaveText('3')
  expect.soft(await frequency.locator('td').nth(2).innerText()).toBe('23.08 %')
- expect.soft(await frequency.locator('td').nth(2).getAttribute('title')).toBe('Valor exacto: '+String(3/13*100))
+ expect.soft(await frequency.locator('td').nth(2).getAttribute('title')).toBe('Valor exacto: 23.0769230769231 %')
  await panel.locator('.views button').nth(2).click()
  await panel.getByRole('spinbutton').fill('3');await explore(panel)
  const bins=panel.locator('tbody tr');await expect(bins).toHaveCount(3)
  await expect(bins.locator('td:last-child')).toHaveText(['8','0','1'])
  expect.soft(await bins.first().locator('td').nth(1).innerText()).toBe('34.67')
- expect.soft(await bins.first().locator('td').nth(1).getAttribute('title')).toBe('Valor exacto: '+String(2+(100-2)/3))
+ expect.soft(await bins.first().locator('td').nth(1).getAttribute('title')).toBe('Valor exacto: 34.6666666666667')
  const rows=await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:20,requestId:1}),doc.id)
  expect(rows.rows[0].cells).toEqual(['00000','visible','2'])
  expect(rows.rows[9].cells).toEqual(['9007199254740993','oculto','9007199254740993'])
@@ -164,7 +164,12 @@ for(const locale of ['es','en-XA'] as const){
   expect.soft(await resultDetails.innerText()).not.toMatch(revisionWord)
   await showTable(page);await open(trendSource,'tendencia.csv');await openAnalysis(page,'Gráficos')
   await chartAssign(page,'X','rows');await chartAssign(page,'Y','values');await chartType(page,'scatter');await openChartSettings(page)
-  await chartPanel(page).getByRole('checkbox',{name:tr('charts.trend.option'),exact:true}).check();await waitChartResult(page)
+  await chartPanel(page).getByRole('checkbox',{name:tr('charts.trend.option'),exact:true}).check()
+  try{await waitChartResult(page)}catch(error){
+   const observed=await page.evaluate(()=>({focus:document.hasFocus(),visibility:document.visibilityState,active:document.activeElement?.tagName,chartStatus:Array.from(document.querySelectorAll('.analysis-workspace:not([hidden]) .charts-panel [role=status],.analysis-workspace:not([hidden]) .charts-panel .result-announcement')).map(node=>node.textContent),sqlStatus:Array.from(document.querySelectorAll('.analysis-workspace:not([hidden]) .sql-panel [role=status]')).map(node=>node.textContent)}))
+   await test.info().attach('sim3d-memory-chart-failure',{body:Buffer.from(JSON.stringify({stage:'after real COUNT13 then trend generation',observed,limit:'One terminal observation, not timing, focus or product-cause proof.'})),contentType:'application/json'})
+   throw error
+  }
   const trend=chartPanel(page).locator('.trend-result');await expect(trend).toBeVisible()
   const memory=trend.locator(':scope>p').filter({hasText:/memoria|mëmöry/i});await expect(memory).toHaveCount(1)
   expect.soft(await memory.innerText()).not.toMatch(revisionWord)
@@ -208,14 +213,12 @@ test('SIM-3d control: Copiar por teclado alcanza el portapapeles real en Anális
  expect(await nativeCopy()).toBe('Media')
 })
 
-test('SIM-3d copia completa conserva cifra y porcentaje; parcial, varias e identificador copian visible (es)',{tag:'@solo'},async()=>{
+test('SIM-3d copia completa para selecciones parciales y múltiples; conserva porcentaje e identificador (es)',{tag:'@solo'},async()=>{
  await preserveClipboard();await open();const panel=await explorer()
- const notice='Cifras redondeadas a 2 decimales. Al copiar un valor completo se copia exacto.'
- expect.soft(await panel.getByText(notice,{exact:true}).count()).toBe(1)
  const mean=panel.locator('dl[aria-label="Perfil de columna"]>div').filter({has:page.getByText('Media',{exact:true})}).locator('dd')
  const median=panel.locator('dl[aria-label="Perfil de columna"]>div').filter({has:page.getByText('Mediana',{exact:true})}).locator('dd')
  const visibleMean=await mean.innerText(),visibleMedian=await median.innerText()
- await selectText(mean);expect.soft(await nativeCopy()).toBe(String(140/9))
+ await selectText(mean);expect.soft(await nativeCopy()).toBe('15.5555555555556')
  await mean.click()
  const wholeText=await mean.evaluate(node=>{
   const text=document.createTreeWalker(node,NodeFilter.SHOW_TEXT).nextNode()
@@ -223,8 +226,8 @@ test('SIM-3d copia completa conserva cifra y porcentaje; parcial, varias e ident
   const range=document.createRange();range.setStart(text,0);range.setEnd(text,text.textContent?.length??0)
   const selection=window.getSelection();selection?.removeAllRanges();selection?.addRange(range);return selection?.toString()??''
  })
- expect(wholeText).toBe(visibleMean);expect.soft(await nativeCopy()).toBe(String(140/9))
- const partial=await selectText(mean,true);expect(partial).toBe(visibleMean.slice(0,2));expect(await nativeCopy()).toBe(partial)
+ expect(wholeText).toBe(visibleMean);expect.soft(await nativeCopy()).toBe('15.5555555555556')
+ const partial=await selectText(mean,true);expect(partial).toBe(visibleMean.slice(0,2));expect.soft(await nativeCopy()).toBe('15.5555555555556')
  await mean.click()
  const visibleMultiple=await panel.evaluate(node=>{
   const values=Array.from(node.querySelectorAll('dl[aria-label="Perfil de columna"]>div'))
@@ -234,10 +237,22 @@ test('SIM-3d copia completa conserva cifra y porcentaje; parcial, varias e ident
   const selection=window.getSelection();selection?.removeAllRanges();selection?.addRange(range);return selection?.toString()??''
  })
  expect(visibleMultiple).toContain(visibleMean);expect(visibleMultiple).toContain(visibleMedian)
- expect(await nativeCopy()).toBe(visibleMultiple)
+ expect.soft(await nativeCopy()).toBe(visibleMultiple.replace(visibleMean,'15.5555555555556'))
  await panel.locator('.views button').nth(1).click()
  const frequency=panel.locator('tbody tr').filter({has:page.locator('pre').filter({hasText:/^"4"$/})})
- await selectText(frequency.locator('td').nth(2));expect.soft(await nativeCopy()).toBe(String(3/13*100)+' %')
+ const percentVisible=await frequency.locator('td').nth(2).innerText()
+ await selectText(frequency.locator('td').nth(2));expect.soft(await nativeCopy()).toBe('23.0769230769231 %')
+ await selectText(frequency.locator('td').nth(2),true);expect.soft(await nativeCopy()).toBe('23.0769230769231 %')
+ await frequency.click()
+ const selectedRow=await frequency.evaluate(node=>{
+  const walker=document.createTreeWalker(node,NodeFilter.SHOW_TEXT),nodes:Node[]=[]
+  while(walker.nextNode())if(walker.currentNode.textContent?.length)nodes.push(walker.currentNode)
+  const selection=window.getSelection();selection?.setBaseAndExtent(nodes.at(-1)!,nodes.at(-1)!.textContent!.length,nodes[0],0)
+  return{anchor:selection?.anchorNode?.textContent,anchorOffset:selection?.anchorOffset,focus:selection?.focusNode?.textContent,focusOffset:selection?.focusOffset,text:selection?.toString(),rangeCount:selection?.rangeCount}
+ })
+ expect(selectedRow.text).toContain('\t')
+ expect.soft(await nativeCopy()).toBe(selectedRow.text!.replace(percentVisible,'23.0769230769231 %'))
+ expect(await page.evaluate(()=>{const selection=window.getSelection();return{anchor:selection?.anchorNode?.textContent,anchorOffset:selection?.anchorOffset,focus:selection?.focusNode?.textContent,focusOffset:selection?.focusOffset,text:selection?.toString(),rangeCount:selection?.rangeCount}})).toEqual(selectedRow)
  await panel.locator('form select').first().selectOption('0');await explore(panel)
  const identifier=panel.locator('pre').filter({hasText:/^"00000"$/})
  const visibleIdentifier=await selectText(identifier);expect(visibleIdentifier).toBe('"00000"');expect(await nativeCopy()).toBe(visibleIdentifier)

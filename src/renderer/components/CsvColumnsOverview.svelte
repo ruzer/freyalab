@@ -1,5 +1,7 @@
 <script lang="ts">
- import {t,formatNumber,plural} from '../lib/i18n.svelte'
+ import AnalysisNumber from './AnalysisNumber.svelte'
+ import {formatAnalysisNumber,type AnalysisNumberMode} from '../../shared/analysis-number-format'
+ import {t,formatNumber,plural,getUILanguage} from '../lib/i18n.svelte'
  import {csvAnalysisSample,csvAnalysisQueryReady,csvAnalysisQueryKey as viewKey,type CsvEmptyIntent} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
  import Icon from './Icon.svelte'
@@ -8,7 +10,7 @@
  import {columnSummary} from '../../shared/column-profile'
  import {columnOverviewReport,type ReportContext} from '../lib/statistics-report'
  import type {DocumentInfo,TableQuery,ColumnOverviewRow,TableViewMeta} from '../../shared/types'
- let {doc,columns,query,queryValid,viewMeta,requested,external=false,externalExports=false,onerror,onreport,oninspect,onempty}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;requested?:boolean;external?:boolean;externalExports?:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;oninspect:(column:number,scope:'all'|'view')=>void;onempty:(intent:CsvEmptyIntent)=>void}=$props()
+ let {doc,columns,query,queryValid,viewMeta,requested,external=false,externalExports=false,onerror,onreport,oninspect,onempty,numberMode=2}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;requested?:boolean;external?:boolean;externalExports?:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;oninspect:(column:number,scope:'all'|'view')=>void;onempty:(intent:CsvEmptyIntent)=>void;numberMode?:AnalysisNumberMode}=$props()
  let scope=$state<'all'|'view'>('all'),selection=$state('all'),busy=$state(false),reporting=$state(false),results=$state<ColumnOverviewRow[]>([])
  let message=$state('info.idle'),errorMessage=$state(''),total=$state(0),rowCount=$state(0),search=$state(''),offset=$state(0),context=$state<ReportContext|null>(null)
  let serial=0,active:{id:string;requestId:string}|null=null,timer:ReturnType<typeof setTimeout>|undefined
@@ -21,7 +23,7 @@
  const visible=$derived(results.filter(row=>`${row.column+1}. ${row.name}`.toLocaleLowerCase().includes(search.toLocaleLowerCase())))
  const failed=$derived(results.filter(row=>'error'in row).length)
  const emptyReason=$derived(doc.projectSource==='protected'?t('empty.protected'):doc.projectSource==='closed'?t('ui.reason.projectClosed'):doc.large?t('empty.large'):doc.readonly?t('empty.readonly'):external?t('empty.error.disk'):'')
- const emptyCount=(empty:number,cells:number)=>empty?t('empty.countPercent',{count:formatNumber(empty),percent:formatNumber(cells?empty/cells*100:0,{maximumFractionDigits:0})}):formatNumber(0)
+ const emptyDescription=(empty:number,cells:number)=>empty?t('empty.countPercent',{count:formatNumber(empty),percent:formatAnalysisNumber(cells?empty/cells*100:0,numberMode,getUILanguage())}):formatNumber(0)
  const kinds=['number','date','identifier','category','text','mixed','empty'] as const
  const typeCounts=$derived(results.reduce((counts,entry)=>{if('result'in entry){const kind=entry.result.profile.kind;counts[kind]=(counts[kind]??0)+1}return counts},{} as Partial<Record<typeof kinds[number],number>>))
  function cancel(){serial++;clearTimeout(timer);if(active)void window.freya.cancelAnalysis(active.id,active.requestId).catch(()=>{});active=null;busy=false;results=[];context=null;offset=0;errorMessage=''}
@@ -77,10 +79,11 @@
  }
  async function report(){if(!context||busy||reporting||doc.revision!==context.revision)return;reporting=true;try{await onreport(columnOverviewReport($state.snapshot(context),$state.snapshot(results)))}catch(error){onerror(String(error))}finally{reporting=false}}
  export function exportActions():AnalysisExportAction[]{return[{label:t('info.report'),disabledReason:busy||reporting?'busy':!context||!results.length?'result':doc.revision!==context.revision?'refresh':null,run:report}]}
- const number=(value:number)=>formatNumber(value)
- function fileSize(bytes:number|undefined){if(bytes===undefined)return t('info.size.unknown');const unit=bytes<1024?'B':bytes<1024*1024?'KiB':'MiB',divisor=unit==='B'?1:unit==='KiB'?1024:1024*1024;return formatNumber(bytes/divisor,{maximumFractionDigits:1})+' '+unit}
+ const number=(value:number)=>formatAnalysisNumber(value,numberMode,getUILanguage())
+ function fileSize(bytes:number|undefined){if(bytes===undefined)return null;const unit=bytes<1024?'B':bytes<1024*1024?'KiB':'MiB',divisor=unit==='B'?1:unit==='KiB'?1024:1024*1024;return{value:bytes/divisor,unit:' '+unit}}
  const delimiterNames:Record<string,string>={',':'comma',';':'semicolon','\t':'tab','|':'pipe'}
 </script>
+{#snippet numeric(value:number,unit='')}<AnalysisNumber {value} mode={numberMode} {unit}/>{/snippet}
 <section class="columns-overview" aria-label={t('info.title')}>
  <form onsubmit={event=>{event.preventDefault();void explore()}}>
   <label>{t('info.columns')} <select aria-label={t('info.columnsLabel')} bind:value={selection} disabled={busy}><option value="all">{t('info.columns.all')}</option><option value="selected" disabled={!columns.length}>{t('info.columns.selected')}</option></select></label>
@@ -91,8 +94,8 @@
  </form>
  <p role="status" class:sr-only={!busy&&!message.startsWith('info.error')&&message!=='info.partial'}>{t(message,{done:message==='info.partial'?results.length-failed:results.length+1,total,failed})+(errorMessage?' '+errorMessage:'')}</p>
  {#if sample===true}<p class="notice">{t('info.sampleWarning')}</p>{/if}
- {#if results.length}
-  <p class="file-summary">{plural('info.count.rows',rowCount)} × {plural('info.count.columns',total)} · <span title={t('info.fileSize')}>{fileSize(doc.byteLength)}</span> · {t('csvText.encoding.'+doc.encoding)} · {delimiterNames[doc.delimiter??',']?t('project.source.'+delimiterNames[doc.delimiter??',']):t('info.delimiter',{value:doc.delimiter??','})} · {t(doc.hasHeader===false?'info.noHeader':'info.withHeader')}{context?.sample?' · '+t('info.sample'):''}</p>
+ {#if results.length}{@const size=fileSize(doc.byteLength)}
+  <p class="file-summary">{plural('info.count.rows',rowCount)} × {plural('info.count.columns',total)} · <span title={t('info.fileSize')}>{#if size}{@render numeric(size.value,size.unit)}{:else}{t('info.size.unknown')}{/if}</span> · {t('csvText.encoding.'+doc.encoding)} · {delimiterNames[doc.delimiter??',']?t('project.source.'+delimiterNames[doc.delimiter??',']):t('info.delimiter',{value:doc.delimiter??','})} · {t(doc.hasHeader===false?'info.noHeader':'info.withHeader')}{context?.sample?' · '+t('info.sample'):''}</p>
   <div class="type-chips" aria-label={t('info.types')}>{#each kinds as kind}{#if typeCounts[kind]}<span>{plural('info.kind.'+kind,typeCounts[kind]!)}</span>{/if}{/each}</div>
   {#if sample||scope==='view'||selection==='selected'||failed}<p class="scope">{context?.scope??t(sample?scope==='view'?'info.scope.sampleView':'info.scope.sample':scope==='view'?'info.scope.view':'info.scope.all')} · {t('info.scopeSummary',{rows:number(rowCount),done:results.length,total})}{busy?' · '+t('info.provisional'):''}{failed?' · '+t('info.partialCoverage'):''}</p>{/if}
   {#if results.length>20}<label>{t('info.search')} <input aria-label={t('info.searchLabel')} bind:value={search} type="search" placeholder={t('info.searchPlaceholder')}/></label>{/if}
@@ -101,19 +104,19 @@
    <caption>{t('info.caption')}</caption>
    <thead><tr>{#each ['#','column','type','content','empty','unique','detail'] as title}<th scope="col">{title==='#'?'#':t('info.header.'+title)}</th>{/each}</tr></thead>
    <tbody>{#each visible.slice(offset,offset+50) as entry(entry.column)}<tr>
-    <td>{entry.column+1}</td><th scope="row">{entry.name||t('describe.column',{index:entry.column+1})}</th>
+    <td>{@render numeric(entry.column+1)}</td><th scope="row">{entry.name||t('describe.column',{index:entry.column+1})}</th>
     {#if 'result'in entry}{@const summary=columnSummary(entry.result)}
      <td><details class="type-explanation"><summary class="cell-summary">{t('info.type.'+entry.result.profile.kind)}<Icon name="chevron-down" size={12}/></summary><p>{summary.reason}</p></details></td>
-     <td class="non-empty">{number(entry.result.cells-entry.result.empty)}</td>
-     <td>{#if entry.result.empty}<details class="quality-breakdown"><summary class="cell-summary" aria-label={emptyCount(entry.result.empty,entry.result.cells)+' · '+t('info.emptyHelp',{name:entry.name})}>{emptyCount(entry.result.empty,entry.result.cells)}<Icon name="chevron-down" size={12}/></summary><dl>{#each [['missing',entry.result.missing],['exact',entry.result.empty-entry.result.missing-entry.result.whitespace],['spaces',entry.result.whitespace]] as [kind,value]}<div><dt>{t('info.empty.'+kind)}</dt><dd>{number(Number(value))}</dd></div>{/each}</dl>
+     <td class="non-empty">{@render numeric(entry.result.cells-entry.result.empty)}</td>
+     <td>{#if entry.result.empty}<details class="quality-breakdown"><summary class="cell-summary" aria-label={emptyDescription(entry.result.empty,entry.result.cells)+' · '+t('info.emptyHelp',{name:entry.name})}>{@render numeric(entry.result.empty)} · {@render numeric(entry.result.cells?entry.result.empty/entry.result.cells*100:0,' %')}<Icon name="chevron-down" size={12}/></summary><dl>{#each [['missing',entry.result.missing],['exact',entry.result.empty-entry.result.missing-entry.result.whitespace],['spaces',entry.result.whitespace]] as [kind,value]}<div><dt>{t('info.empty.'+kind)}</dt><dd>{@render numeric(Number(value))}</dd></div>{/each}</dl>
       <p>{t('empty.pandas')}</p><p>{t('empty.scope')}</p>
       <div class="empty-actions">
        <button type="button" disabled={busy} onclick={()=>onempty({action:'view',column:entry.column,revision:entry.result.revision})}>{t('empty.view')}</button>
        <button type="button" disabled={busy||!!emptyReason} title={emptyReason||undefined} aria-describedby={emptyReason?'empty-reason-'+doc.id+'-'+entry.column:undefined} onclick={()=>onempty({action:'fill',column:entry.column,revision:entry.result.revision})}>{t('empty.fill')}</button>
        <button type="button" disabled={busy||!!emptyReason} title={emptyReason||undefined} aria-describedby={emptyReason?'empty-reason-'+doc.id+'-'+entry.column:undefined} onclick={()=>onempty({action:'delete',column:entry.column,revision:entry.result.revision})}>{t('empty.delete')}</button>
       </div>{#if emptyReason}<p id={'empty-reason-'+doc.id+'-'+entry.column}>{emptyReason}</p>{/if}
-     </details>{:else}{number(0)}{/if}</td>
-     <td><details class="distinct-detail"><summary class="cell-summary" aria-label={number(entry.result.profile.distinctNonEmpty)+' · '+t('info.distinctHelp',{name:entry.name})}>{number(entry.result.profile.distinctNonEmpty)}<Icon name="chevron-down" size={12}/></summary><p>{t('info.distinctExplanation')}</p><p>{t('info.repetitions',{count:number(entry.result.extraDuplicates)})}</p></details></td>
+     </details>{:else}{@render numeric(0)}{/if}</td>
+     <td><details class="distinct-detail"><summary class="cell-summary" aria-label={number(entry.result.profile.distinctNonEmpty)+' · '+t('info.distinctHelp',{name:entry.name})}>{@render numeric(entry.result.profile.distinctNonEmpty)}<Icon name="chevron-down" size={12}/></summary><p>{t('info.distinctExplanation')}</p><p>{t('info.repetitions',{count:number(entry.result.extraDuplicates)})}</p></details></td>
     {:else}<td>{t('info.unavailable')}</td><td colspan="3" class="unavailable">{entry.error}</td>{/if}
     <td><button class="inspect btn-ghost" {...controlHint(busy?'busy':null)} type="button" disabled={busy} aria-label={t('info.inspect',{index:entry.column+1})} onclick={()=>oninspect(entry.column,scope)}>{t('info.detail')}<Icon name="chevron-right" size={12}/></button></td>
    </tr>{/each}</tbody>

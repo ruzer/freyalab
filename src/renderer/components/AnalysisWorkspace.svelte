@@ -1,5 +1,7 @@
 <script lang="ts">
  import {tick,untrack} from 'svelte'
+ import {copyAnalysisNumbers} from '../lib/analysis-copy'
+ import type {AnalysisNumberMode} from '../../shared/analysis-number-format'
  import CsvStatistics from './CsvStatistics.svelte'
  import CsvColumnsOverview from './CsvColumnsOverview.svelte'
  import CsvSql from './CsvSql.svelte'
@@ -12,7 +14,14 @@
  import type {AnalysisSection,AnalysisTab} from '../lib/workspace-tabs'
  import {csvAnalysisSample,type CsvAnalysisView,type CsvEmptyIntent} from '../lib/csv-analysis-view'
  import type {DocumentInfo} from '../../shared/types'
- let {tab,doc,shown,view,external,onsection,onreturn,onerror,onreport,onempty}:{tab:AnalysisTab;doc:DocumentInfo;shown:boolean;view:CsvAnalysisView;external:boolean;onsection:(section:AnalysisSection)=>void;onreturn:()=>void;onerror:(message:string)=>void;onreport:(text:string)=>Promise<void>;onempty:(intent:CsvEmptyIntent)=>void}=$props()
+ let {tab,doc,shown,view,external,onsection,onreturn,onerror,onreport,onempty,numberMode=2,numberModeReadonly=false,onnumbermodechange}:{tab:AnalysisTab;doc:DocumentInfo;shown:boolean;view:CsvAnalysisView;external:boolean;onsection:(section:AnalysisSection)=>void;onreturn:()=>void;onerror:(message:string)=>void;onreport:(text:string)=>Promise<void>;onempty:(intent:CsvEmptyIntent)=>void;numberMode?:AnalysisNumberMode;numberModeReadonly?:boolean;onnumbermodechange?:(mode:AnalysisNumberMode)=>Promise<void>}=$props()
+ let changingNumberMode=$state(false)
+ async function changeNumberMode(select:HTMLSelectElement){
+  if(numberModeReadonly||changingNumberMode||!onnumbermodechange)return
+  changingNumberMode=true
+  try{await onnumbermodechange(select.value==='all'?'all':2)}catch(error){onerror(String(error))}
+  finally{changingNumberMode=false;await tick();if(select.isConnected)select.value=String(numberMode)}
+ }
  const subset=$derived(doc.analysisSubset)
  const coverage=$derived(subset?subsetCoverage(subset.coverage,subset.steps,getUILanguage(),subset.stepOwners):undefined)
  const sections:AnalysisSection[]=['info','statistics','charts','sql']
@@ -48,11 +57,12 @@
  function runExport(action:AnalysisExportAction){if(action.disabledReason)return;closeExport(true);void action.run()}
 </script>
 
-<div class="analysis-workspace" role="tabpanel" id={'workspace-panel-'+tab.id} aria-labelledby={'workspace-tab-'+tab.id} hidden={!shown}>
+<div use:copyAnalysisNumbers class="analysis-workspace" role="tabpanel" id={'workspace-panel-'+tab.id} aria-labelledby={'workspace-tab-'+tab.id} hidden={!shown}>
  <header>
   <div class="analysis-heading"><h2 tabindex="-1" bind:this={heading}>{subset?plural('subset.analysis.source',doc.rowCount??0,{name:subset.name,rows:formatNumber(doc.rowCount??0)}):t('analysis.tab.source',{name:doc.name,rows:formatNumber(doc.rowCount??0)})}</h2>
    <div class="header-actions"><button bind:this={exportButton} type="button" aria-haspopup="menu" aria-expanded={!!exportMenu} onclick={openExport}>{t('analysis.tab.export')}<Icon name="chevron-down" size={14}/></button><button type="button" onclick={onreturn}><Icon name="table" size={14}/>{t(subset?'subset.analysis.return':'analysis.tab.return')}</button></div>
   </div>
+  {#if section!=='sql'}<div class="number-format"><label>{t('analysis.decimals.label')} <select aria-label={t('analysis.decimals.label')} title={t('analysis.decimals.precisionHelp')} aria-describedby={'analysis-number-help-'+tab.id} value={String(numberMode)} disabled={numberModeReadonly||changingNumberMode||!onnumbermodechange} onchange={event=>void changeNumberMode(event.currentTarget)}><option value="2">2</option><option value="all">{t('analysis.decimals.all')}</option></select></label><small id={'analysis-number-help-'+tab.id}>{t('analysis.decimals.help')}</small></div>{/if}
    <div bind:this={sectionList} class="analysis-sections" role="tablist" aria-label={t('analysis.tab.sections')}>
     {#each sections as item (item)}
      <button type="button" role="tab" id={'analysis-section-'+tab.id+'-'+item} aria-controls={'analysis-panel-'+tab.id+'-'+item} aria-selected={item===section} tabindex={item===section?0:-1} aria-disabled={unavailable(item)} disabled={unavailable(item)} title={unavailable(item)?t('analysis.tab.large'):undefined} aria-describedby={unavailable(item)?'analysis-large-'+tab.id:undefined} onkeydown={sectionKey} onclick={()=>onsection(item)}>{t('analysis.tab.section.'+item)}</button>
@@ -72,11 +82,11 @@
  {#each sections as item (item)}
    <div class="analysis-section" role="tabpanel" id={'analysis-panel-'+tab.id+'-'+item} aria-labelledby={'analysis-section-'+tab.id+'-'+item} class:charts-section={item==='charts'} class:info-section={item==='info'} hidden={doc.csvView==='text'||item!==section}>
     {#if mounted.includes(item)&&!unavailable(item)&&(item==='info'||doc.csvView!=='text')}
-     {#if item==='info'}<CsvColumnsOverview bind:this={information} externalExports {doc} {...view} requested={doc.csvView!=='text'&&section==='info'} {external} {onerror} {onreport} {onempty} oninspect={inspect}/>
-     {:else if item==='statistics'}<CsvStatistics bind:this={statistics} {doc} {...view} embedded autofocus={false} {inspection} entry={tab.statistics} {onerror} {onreport} {onempty} onclose={onreturn}/>
+     {#if item==='info'}<CsvColumnsOverview bind:this={information} {numberMode} externalExports {doc} {...view} requested={doc.csvView!=='text'&&section==='info'} {external} {onerror} {onreport} {onempty} oninspect={inspect}/>
+     {:else if item==='statistics'}<CsvStatistics bind:this={statistics} {numberMode} {doc} {...view} embedded autofocus={false} {inspection} entry={tab.statistics} {onerror} {onreport} {onempty} onclose={onreturn}/>
      {:else if item==='sql'}<CsvSql bind:this={sql} {doc} viewMeta={view.viewMeta} embedded {onerror} {onreport} onclose={onreturn}/>
      {:else}{#await import('./CsvCharts.svelte')}<p role="status">{t('charts.ui.prepare')}</p>{:then module}
-      {#key JSON.stringify(doc.headers)}<module.default bind:this={charts} {doc} query={view.query} queryValid={view.queryValid} viewMeta={view.viewMeta} visible={shown&&section==='charts'} onDemand {onerror} onclose={()=>heading?.focus()}/>{/key}
+      {#key JSON.stringify(doc.headers)}<module.default bind:this={charts} {numberMode} {doc} query={view.query} queryValid={view.queryValid} viewMeta={view.viewMeta} visible={shown&&section==='charts'} onDemand {onerror} onclose={()=>heading?.focus()}/>{/key}
      {:catch}<p role="alert">{t('charts.ui.loadError')}</p>{/await}{/if}
     {/if}
    </div>
@@ -91,6 +101,7 @@
  header button{min-height:24px;padding:2px 6px}
  .header-actions,.header-actions button,.analysis-sections{display:flex;align-items:center;gap:6px}
  .header-actions{flex-shrink:0}
+ .number-format,.number-format label{display:flex;align-items:center;gap:6px}.number-format{flex-wrap:wrap;padding:4px 0}.number-format select{font:inherit;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:var(--radius-control);padding:2px 4px}.number-format small{color:var(--muted)}
  .analysis-sections{padding:0;gap:4px}
  :global(:root .app-shell) .analysis-sections button{border:0;border-radius:4px 4px 0 0;border-bottom:2px solid transparent;background:transparent;padding:7px 9px;font-size:var(--font-ui);font-weight:600}
  :global(:root .app-shell) .analysis-sections button[aria-selected=true]{border-bottom-color:var(--accent);background:var(--hover)}
