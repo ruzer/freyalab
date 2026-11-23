@@ -5,6 +5,8 @@ import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {closeElectron} from './close-electron'
 import {traceElectronFailure} from './electron-trace'
+import {openAnalysis} from './panel'
+import {runApplicationMenu} from './application-menu'
 
 let app:ElectronApplication,page:Page,folder:string,files:string,csv:string,markdown:string,stopTrace:()=>Promise<void>
 const source='Folio,Importe,Ciudad\r\n00123,12.50,Oaxaca\r\n9007199254740993,40,Mérida\r\n'
@@ -83,14 +85,40 @@ test('SIM-1h edición contextual conserva selección, historial y campos de diá
  await preserveClipboard()
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),markdown)
  const editor=page.locator('.cm-content');await editor.focus();await editor.press('ControlOrMeta+Home');for(let i=0;i<5;i++)await editor.press('ArrowRight');await editor.press('Shift+End');await editor.press('Shift+F10')
- await rootMenu().getByRole('menuitem',{name:'Copiar',exact:true}).click();await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toBe('mundo')
- await editor.press('ControlOrMeta+End');await editor.press('Shift+F10');await rootMenu().getByRole('menuitem',{name:'Pegar',exact:true}).click()
+ await rootMenu().getByRole('menuitem',{name:'Copiar',exact:true}).press('Enter');await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toBe('mundo')
+ await editor.press('ControlOrMeta+End');await editor.press('Shift+F10');await rootMenu().getByRole('menuitem',{name:'Pegar',exact:true}).press('Space')
  await expect.poll(()=>page.evaluate(id=>window.freya.documents().then(docs=>docs.find(doc=>doc.id===id)?.text),doc.id)).toBe('Hola mundo\nmundo')
+ await editor.press('ControlOrMeta+z');await expect.poll(()=>page.evaluate(id=>window.freya.documents().then(docs=>docs.find(doc=>doc.id===id)?.text),doc.id)).toBe('Hola mundo\n')
+ await editor.press('ControlOrMeta+Home');for(let i=0;i<4;i++)await editor.press('Shift+ArrowRight');await editor.press('Shift+F10');await rootMenu().getByRole('menuitem',{name:'Cortar',exact:true}).press('Enter')
+ await expect.poll(()=>page.evaluate(id=>window.freya.documents().then(docs=>docs.find(doc=>doc.id===id)?.text),doc.id)).toBe(' mundo\n');await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toBe('Hola')
+ await editor.press('ControlOrMeta+z');await expect.poll(()=>page.evaluate(id=>window.freya.documents().then(docs=>docs.find(doc=>doc.id===id)?.text),doc.id)).toBe('Hola mundo\n')
+ await app.evaluate(({clipboard})=>clipboard.writeText('https://example.invalid/'));await editor.press('ControlOrMeta+Home');for(let i=0;i<5;i++)await editor.press('ArrowRight');await editor.press('Shift+End');await editor.press('Shift+F10');await rootMenu().getByRole('menuitem',{name:'Pegar sin formato',exact:true}).press('Enter')
+ await expect.poll(()=>page.evaluate(id=>window.freya.documents().then(docs=>docs.find(doc=>doc.id===id)?.text),doc.id)).toBe('Hola https://example.invalid/\n')
  await editor.press('ControlOrMeta+z');await expect.poll(()=>page.evaluate(id=>window.freya.documents().then(docs=>docs.find(doc=>doc.id===id)?.text),doc.id)).toBe('Hola mundo\n')
  await page.getByRole('tab',{name:'encuesta.csv',exact:true}).click();await page.getByRole('gridcell',{name:'Fila 1, Importe',exact:true}).click({button:'right'});await rootMenu().getByRole('menuitem',{name:'Rellenar…',exact:true}).click()
  const dialog=page.getByRole('dialog'),field=dialog.getByRole('textbox',{name:'Valor del rango',exact:true});await field.fill('Texto de diálogo');await field.press('ControlOrMeta+a');await field.press('Shift+F10')
  const menu=rootMenu();await expect(menu).toBeVisible();await menu.getByRole('menuitem',{name:'Copiar',exact:true}).click();await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toBe('Texto de diálogo')
  await expect(dialog).toBeVisible();expect(await readFile(markdown,'utf8')).toBe('Hola mundo\n')
+})
+
+test('SIM-1h texto simple, Mermaid, CSV Texto y SQL comparten edición contextual',async()=>{
+ const expected=['Cortar','Copiar','Pegar','|','Seleccionar todo']
+ for(const [name,text] of [['nota.txt','Texto sencillo\n'],['diagrama.mmd','flowchart LR\nA --> B\n']]){
+  const path=join(files,name);await writeFile(path,text);await page.evaluate(path=>window.freya.openPaths([path]),path)
+  const editor=page.locator('.cm-content:visible');await expect(editor).toHaveText(text.trim(),{useInnerText:true});await editor.focus();await editor.press('Shift+F10');await expect(rootMenu()).toBeVisible();expect(await structure(rootMenu())).toEqual(expected);await page.keyboard.press('Escape');await expect(editor).toBeFocused();expect(await readFile(path,'utf8')).toBe(text)
+ }
+ await page.getByRole('tab',{name:'encuesta.csv',exact:true}).click();await page.getByRole('group',{name:'Vista del CSV',exact:true}).getByRole('button',{name:'Texto',exact:true}).click()
+ const csvEditor=page.getByRole('textbox',{name:'Editor CSV como texto',exact:true});await expect(csvEditor).toBeVisible();await csvEditor.focus();await csvEditor.press('Shift+F10');expect(await structure(rootMenu())).toEqual(expected);await page.keyboard.press('Escape');await expect(csvEditor).toBeFocused()
+ await page.getByRole('group',{name:'Vista del CSV',exact:true}).getByRole('button',{name:'Tabla',exact:true}).click();await openAnalysis(page,'SQL')
+ const sql=page.getByRole('textbox',{name:'Consulta SQL',exact:true});await expect(sql).toBeVisible();await sql.focus();await sql.press('Shift+F10');expect(await structure(rootMenu())).toEqual(expected);await page.keyboard.press('Escape');await expect(sql).toBeFocused()
+ expect((await page.evaluate(()=>window.freya.documents())).every(doc=>!doc.dirty)).toBe(true)
+})
+
+test('SIM-1h la vista previa permite seleccionar sin ofrecer mutaciones',async()=>{
+ await page.evaluate(path=>window.freya.openPaths([path]),markdown);const editor=page.locator('.cm-content');await editor.focus();await editor.press('Shift+F10');await expect(rootMenu()).toBeVisible();await runApplicationMenu(app,'view.mode.preview');await expect(page.getByRole('menu')).toHaveCount(0)
+ const preview=page.getByRole('document',{name:'Vista previa del documento',exact:true});await expect(preview.locator('article')).toContainText('Hola mundo');await preview.focus();await preview.press('Shift+F10')
+ await expect(rootMenu()).toBeVisible();await expect(rootMenu().getByRole('menuitem',{name:'Cortar',exact:true})).toBeDisabled();await expect(rootMenu().getByRole('menuitem',{name:'Pegar',exact:true})).toBeDisabled();await expect(rootMenu().getByRole('menuitem',{name:'Pegar sin formato',exact:true})).toHaveCount(0)
+ await rootMenu().getByRole('menuitem',{name:'Seleccionar todo',exact:true}).press('Enter');await expect.poll(()=>page.evaluate(()=>window.getSelection()?.toString())).toContain('Hola mundo');expect(await readFile(markdown,'utf8')).toBe('Hola mundo\n')
 })
 
 test('SIM-1h el menú de texto conserva el borrador de la celda y su selección',{tag:'@solo'},async()=>{
