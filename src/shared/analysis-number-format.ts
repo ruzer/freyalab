@@ -14,7 +14,9 @@ export function formatAnalysisNumber(value:number,mode:AnalysisNumberMode=2,lang
 }
 
 export function formatAnalysisFullNumber(value:number,unit=''):string{
- const number=Number(value.toPrecision(15))
+ const precision=value.toPrecision(15),number=Number(precision)
+ // Rounding a finite boundary to 15 figures can exceed Number.MAX_VALUE.
+ if(Number.isFinite(value)&&!Number.isFinite(number))return precision+unit
  return String(Object.is(number,-0)?0:number)+unit
 }
 
