@@ -1,0 +1,48 @@
+
+Running 7 tests using 1 worker
+
+(node:21431) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/sim3a-sorting.spec.ts:29:1 › SIM-3a: encabezado ordena 9, 18 y 100 como números, con vacíos al final y sin modificar el CSV (2.9s)
+  ✓  2 [csv] › tests/e2e/sim3a-sorting.spec.ts:35:1 › SIM-3a: abrir no perfila y cada petición de orden solo consulta la columna elegida (1.7s)
+  ✓  3 [csv] › tests/e2e/sim3a-sorting.spec.ts:44:1 › SIM-3a: códigos con ceros iniciales y anchos distintos mantienen el orden textual (1.5s)
+  ✘  4 [csv] › tests/e2e/sim3a-sorting.spec.ts:50:1 › SIM-3a: el menú de columna y Filas y columnas usan el mismo orden automático (31.7s)
+(node:21731) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  5 [csv] › tests/e2e/sim3a-sorting.spec.ts:56:1 › SIM-3a: Filtrar no ofrece la casilla global y la consulta avanzada conserva el orden numérico explícito (1.4s)
+  ✓  6 [csv] › tests/e2e/sim3a-sorting.spec.ts:69:1 › SIM-3a: una respuesta de perfil anterior a una edición no impone un orden obsoleto (1.6s)
+  ✓  7 [csv] › tests/e2e/sim3a-sorting.spec.ts:82:1 › SIM-3a: dos órdenes seguidos conservan ambas intenciones y los desempates (1.5s)
+
+
+  1) [csv] › tests/e2e/sim3a-sorting.spec.ts:50:1 › SIM-3a: el menú de columna y Filas y columnas usan el mismo orden automático 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Ordenar columna descendente (vista)', exact: true })
+
+
+       at panel.ts:179
+
+      177 | export async function menuItem(page:Page,menu:'Filtrar'|'Limpiar'|'Filas y columnas',item:string){
+      178 |  await page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true}).getByLabel(menu,{exact:true}).click()
+    > 179 |  await page.getByRole('button',{name:item,exact:true}).click()
+          |                                                        ^
+      180 | }
+      181 | // Marca «Orden numérico» (está dentro del menú Filtrar) y cierra el menú.
+      182 | export async function numericOrder(page:Page){
+        at menuItem ($WORKTREE/tests/e2e/panel.ts:179:56)
+        at $WORKTREE/tests/e2e/sim3a-sorting.spec.ts:52:73
+
+    Error Context: ../sim3a-evidence/green-results/sim3a-sorting-SIM-3a-el-me-d766d-n-el-mismo-orden-automático-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3a-evidence/green-results/sim3a-sorting-SIM-3a-el-me-d766d-n-el-mismo-orden-automático-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3a-evidence/green-results/sim3a-sorting-SIM-3a-el-me-d766d-n-el-mismo-orden-automático-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/sim3a-sorting.spec.ts:50:1 › SIM-3a: el menú de columna y Filas y columnas usan el mismo orden automático 
+  6 passed (43.2s)

@@ -93,7 +93,9 @@
  const viewActive=$derived(large?!!largeView&&largeView.status!=='invalidated':filterCount>0||activeOrder.length>0),gotoTotal=$derived(large?(doc.rowCount??page.total):page.matched)
  let selectedRows=$state<string[]>([]),selectedColumns=$state<number[]>(initialView?.columns??[]),selectionStats=$state<TableStats|null>(null)
  let searchInput=$state<HTMLInputElement>(),replaceInput=$state<HTMLInputElement>()
- let replaceFind=$state(''),replaceWith=$state(''),header=$state(true),numeric=$state(false)
+ let replaceFind=$state(''),replaceWith=$state(''),header=$state(true)
+ let sortQueue:Promise<void>=Promise.resolve(),sortMounted=true,sortViewVersion=0,sortProfileRequest:{id:string;requestId:string}|undefined
+ let sortingColumn=$state<number|null>(null)
  let scrollElement=$state<HTMLDivElement>(),pageOffset=$state(0),requestId=0
  let editing=$state<{rowId:string;column:number;value:string}|null>(null),editingHeader=$state<{index:number;value:string}|null>(null)
  type Cell={row:number;column:number}
@@ -168,7 +170,7 @@
   {id:'extract',label:'Extraer filas a un archivo nuevo…',detail:'Filtra por condiciones y columnas el archivo grande y crea un archivo nuevo; el original no se modifica',disabled:!large,run:()=>withSubsetClosed(()=>{showQuery=false;showExtract=!showExtract})},
   ...project?[{id:'saveSubset',label:t('subset.saveAs'),detail:t('subset.saveAsHint'),keywords:'conjunto subconjunto muestra muestreo semilla subset sample dataset receta',disabled:!!subsetReason,disabledReason:subsetReason,run:()=>openSubset()},{id:'newSubset',label:t('subset.new'),detail:t('subset.newHint'),keywords:'conjunto subconjunto muestra muestreo semilla subset sample dataset receta',disabled:!!subsetReason,disabledReason:subsetReason,run:()=>openSubset({blank:true})}]:[],
   ...exportSubsetCommands,
-  {id:'clearQuery',label:large?'Quitar búsqueda y filtros':'Quitar filtros y orden',detail:'Restaura la vista de todas las filas; no cambia el documento',disabled:large?!largeView:!search&&!Object.values(filters).some(Boolean)&&!sort&&!order.length&&!conditions.length,run:()=>{if(large)return clearView();search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}},
+  {id:'clearQuery',label:large?'Quitar búsqueda y filtros':'Quitar filtros y orden',detail:'Restaura la vista de todas las filas; no cambia el documento',disabled:large?!largeView:!search&&!Object.values(filters).some(Boolean)&&!sort&&!order.length&&!conditions.length,run:()=>{if(large)return clearView();sortViewVersion++;search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}},
   {id:'sql',label:'Análisis SQL y asistentes',detail:'Mostrar u ocultar agrupaciones, tablas dinámicas (pivot) y cruces de archivos con DuckDB',disabled:false,run:()=>analyze('sql')},
   {id:'statistics',label:'Estadísticas y exploración',detail:large?'Las estadísticas llegan en una fase posterior':'Mostrar u ocultar perfiles, frecuencias, valores faltantes, duplicados y correlación',disabled:large,run:()=>analyze('statistics')},
   {id:'charts',label:'Gráficos',detail:'Mostrar u ocultar histogramas, barras, líneas, dispersión, mapas de calor y cajas',disabled:false,run:()=>analyze('charts')},
@@ -185,8 +187,8 @@
   {id:'insertRowAfter',label:'Insertar fila abajo',detail:'Después de una única fila marcada, en el orden del documento',disabled:locked||selectedRows.length!==1,run:()=>edit({type:'insertRow',afterId:selectedRows[0]})},
   {id:'insertColumnBefore',label:'Insertar columna a la izquierda',detail:'Antes de una única columna marcada',disabled:locked||selectedColumns.length!==1,run:()=>edit({type:'insertColumn',index:selectedColumns[0],name:`Columna ${(doc.headers?.length??0)+1}`})},
   {id:'insertColumnAfter',label:'Insertar columna a la derecha',detail:'Después de una única columna marcada',disabled:locked||selectedColumns.length!==1,run:()=>edit({type:'insertColumn',index:selectedColumns[0]+1,name:`Columna ${(doc.headers?.length??0)+1}`})},
-  {id:'sortAscending',label:'Ordenar columna ascendente (vista)',detail:numeric?'Orden numérico exacto; no cambia el orden del archivo':'Orden textual; no cambia el orden del archivo',disabled:large||interpreting||selectedColumns.length!==1,run:()=>sortBy(selectedColumns[0],false,false)},
-  {id:'sortDescending',label:'Ordenar columna descendente (vista)',detail:numeric?'Orden numérico exacto; no cambia el orden del archivo':'Orden textual; no cambia el orden del archivo',disabled:large||interpreting||selectedColumns.length!==1,run:()=>sortBy(selectedColumns[0],false,true)},
+  {id:'sortAscending',label:t('csv.columnMenu.sortAscending'),detail:t('csv.sort.help'),disabled:large||interpreting||selectedColumns.length!==1,run:()=>sortBy(selectedColumns[0],false,false)},
+  {id:'sortDescending',label:t('csv.columnMenu.sortDescending'),detail:t('csv.sort.help'),disabled:large||interpreting||selectedColumns.length!==1,run:()=>sortBy(selectedColumns[0],false,true)},
   {id:'insertColumn',label:'Añadir columna',detail:'Al final del documento',disabled:locked,run:()=>edit({type:'insertColumn',index:doc.headers?.length??0,name:`Columna ${(doc.headers?.length??0)+1}`})},
   {id:'duplicateRows',label:'Duplicar filas seleccionadas',detail:'Necesita filas marcadas por su número; conserva las originales',disabled:locked||!selectedRows.length,run:()=>edit({type:'duplicateRows',ids:selectedRows})},
   {id:'duplicateColumn',label:'Duplicar columna seleccionada',detail:'Necesita una columna marcada; restablece filtros y orden al cambiar columnas',disabled:locked||selectedColumns.length!==1,run:()=>edit({type:'duplicateColumn',index:selectedColumns[0]})},
@@ -400,7 +402,7 @@
   return()=>{alive=false;clearInterval(timer)}
  })
  $effect(()=>{const items=$rowsVirtual.getVirtualItems(),first=items[0]?.index??0,last=items.at(-1)?.index??0;if(items.length&&!busy&&(!large||viewReady&&(!largeView||hasViewPage(largeView)))&&(first<pageOffset||last>=pageOffset+page.rows.length))untrack(()=>void load(Math.floor(first/100)*100))})
- onDestroy(()=>{requestId++;viewGeneration++}) // Switching tabs preserves the backend job; closing the document releases it there.
+ onDestroy(()=>{requestId++;viewGeneration++;sortMounted=false;if(sortProfileRequest)void window.freya.cancelAnalysis(sortProfileRequest.id,sortProfileRequest.requestId).catch(()=>{})}) // Switching tabs preserves the backend job; closing the document releases it there.
  async function startView(nextQuery:LargeViewQuery={search:search||undefined,conditions:$state.snapshot(largeView?.query.conditions),filterMode:largeView?.query.filterMode},fromFilters=false){
   if(!large||!viewReady||changingView||interpreting)return false
   if(!nextQuery.search&&!nextQuery.conditions?.length){const cleared=await clearView();if(cleared)showQuery=false;return cleared}
@@ -474,8 +476,29 @@
  async function stats(){if(large||!selectedRows.length){selectionStats=null;return}try{selectionStats=await window.freya.stats(doc.id,$state.snapshot(selectedRows),selectedColumns.length?$state.snapshot(selectedColumns):(doc.headers??[]).map((_,i)=>i))}catch(error){onerror(String(error))}}
  function selectRow(id:string,add:boolean){selection=null;context=null;selectedRows=add?(selectedRows.includes(id)?selectedRows.filter(x=>x!==id):[...selectedRows,id]):[id];void stats()}
  function selectColumn(index:number,replace=false){selection=null;context=null;selectedColumns=replace?[index]:selectedColumns.includes(index)?selectedColumns.filter(x=>x!==index):[...selectedColumns,index];void stats()}
- function sortBy(column:number,append=false,descending?:boolean){if(large)return;const current=activeOrder.find(item=>item.column===column),next={column,descending:descending??(current?!current.descending:false),numeric};if(append){order=current?activeOrder.map(item=>item.column===column?next:item):[...activeOrder,next];sort=undefined}else{sort=next;order=[]}}
- function applyQuery(next:TableFilter[],sorts:TableSort[],mode:'all'|'any'){if(large){void startView({search:largeView?.query.search,conditions:next,filterMode:mode},true);return}conditions=next;order=sorts;filterMode=mode;sort=undefined;showQuery=false;queryButton?.focus()}
+ function sortBy(column:number,append=false,descending?:boolean){
+  if(large)return
+  const id=doc.id,revision=doc.revision,name=menuColumnLabel(column),viewVersion=sortViewVersion
+  // El motor perfila una columna a la vez; la cola conserva dos clics o un orden añadido con Mayús.
+  sortQueue=sortQueue.then(async()=>{
+   if(!sortMounted||doc.id!==id||doc.revision!==revision||viewVersion!==sortViewVersion)return
+   const requestId=crypto.randomUUID(),preparing=t('csv.sort.preparing',{column:name})
+   sortProfileRequest={id,requestId};sortingColumn=column;announcement=preparing
+   try{
+    const {profile}=await window.freya.analyzeColumn(id,{column,revision,requestId,frequencyOffset:0,duplicatesOnly:false,bins:1,profileOnly:true})
+    if(!sortMounted||doc.id!==id||doc.revision!==revision||viewVersion!==sortViewVersion)return
+    const current=activeOrder.find(item=>item.column===column),next={column,descending:descending??(current?!current.descending:false),numeric:profile.kind==='number'}
+    if(append){order=current?activeOrder.map(item=>item.column===column?next:item):[...activeOrder,next];sort=undefined}else{sort=next;order=[]}
+    announcement=t(next.numeric?'csv.sort.completeNumber':'csv.sort.completeText',{column:name})
+   }catch{if(sortMounted&&doc.id===id&&doc.revision===revision&&viewVersion===sortViewVersion)onerror(t('csv.sort.error',{column:name}))}
+   finally{
+    if(sortMounted){sortingColumn=null;if(announcement===preparing)announcement=''}
+    if(sortProfileRequest?.requestId===requestId)sortProfileRequest=undefined
+   }
+  })
+  return sortQueue
+ }
+ function applyQuery(next:TableFilter[],sorts:TableSort[],mode:'all'|'any'){if(large){void startView({search:largeView?.query.search,conditions:next,filterMode:mode},true);return}sortViewVersion++;conditions=next;order=sorts;filterMode=mode;sort=undefined;showQuery=false;queryButton?.focus()}
 
  function setFilter(column:number,value:string){filters={...filters,[column]:value}}
  async function copyMarkdown(){try{await window.freya.tableCopy(doc.id,{scope:cellRange||selectedRows.length?'selection':'filtered',range:cellRange?$state.snapshot(cellRange):undefined,rowIds:$state.snapshot(selectedRows),columns:selectedColumns.length?$state.snapshot(selectedColumns):undefined,query:query()},'markdown');onstatus('Tabla Markdown copiada')}catch(error){onerror(String(error))}}
@@ -592,7 +615,6 @@
   <details class="insert-menu"><summary bind:this={queryButton} class:active={showFilters||showQuery||viewActive} class="keep-label" data-tooltip={t('charts.toolbar.filter')} aria-label={t('charts.toolbar.filter')} aria-expanded={large?showQuery:undefined} aria-disabled={large&&(!viewReady||changingView)} class:disabled={large&&(!viewReady||changingView)} title={large?'Filtrar el archivo completo al pulsar Aplicar':undefined} onclick={event=>{if(large){event.preventDefault();if(showQuery)showQuery=false;else void openLargeFilters()}}}><Icon name="funnel" size={14}/><span class="tool-text adapt-label" class:hidden-label={hiddenToolbarLabels>0}>{t('charts.toolbar.filter')}</span><Icon name="chevron-down" size={12}/></summary><div class="dropdown">
    <button aria-pressed={showFilters} title={commands.find(command=>command.id==='filters')?.detail} onclick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');void runCommand('filters')}}>Filtros por columna</button>
    {@render item('query')}
-   <label class="menu-check"><input type="checkbox" bind:checked={numeric} onchange={()=>{if(sort)sort={...sort,numeric}}}/>Orden numérico</label>
    {#if viewActive}{@render item('clearQuery')}{/if}
   </div></details>
   {#if viewActive}<button {...controlHint(large&&changingView?'busy':null, (large?'Quitar búsqueda y filtros':'Quitar filtros y orden'))} class="filter-chip" disabled={large&&changingView} aria-label={large?'Búsqueda activa. Quitar búsqueda y filtros':filterCount?`${filterCount} ${filterCount===1?'filtro activo':'filtros activos'}. Quitar filtros y orden`:'Orden activo. Quitar filtros y orden'}  onclick={()=>void runCommand('clearQuery')}>{filterCount?`${filterCount} ${filterCount===1?'filtro':'filtros'}`:'Orden'} <Icon name="x" size={12}/></button>{/if}
@@ -612,6 +634,7 @@
    {#each ['insertRow','insertRowBefore','insertRowAfter','duplicateRows','deleteRows'] as id}{@render item(id)}{/each}
    <span class="dropdown-label">Columnas</span>
    {#each ['insertColumn','insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn'] as id}{@render item(id)}{/each}
+   {#each ['sortAscending','sortDescending'] as id}{@render item(id)}{/each}
    {#if !large}
     <button disabled={!!calculationDisabled} aria-describedby={calculationDisabled?'calculate-disabled':undefined} onclick={openToolbarCalculation}>{t('calculate.action')}</button>
     {#if calculationDisabled}<span class="dropdown-note" id="calculate-disabled">{calculationDisabled}</span>{/if}
@@ -652,7 +675,7 @@
     <div class="row-number corner">#</div>
     {#each $columnsVirtual.getVirtualItems() as col (col.key)}
      <div class="column-header" role="columnheader" tabindex="-1" oncontextmenu={event=>structuralContext(event,'columns',col.index)} onkeydown={event=>structuralKey(event,'columns',col.index)} aria-sort={activeOrder.find(item=>item.column===col.index)?.descending===true?'descending':activeOrder.some(item=>item.column===col.index)?'ascending':'none'} style:left={`${col.start}px`} style:width={`${col.size}px`}>
-      {#if editingHeader?.index===col.index}<input class="column-filter" aria-label="Nombre del encabezado" bind:value={editingHeader.value} use:focus onblur={async event=>{if(event.relatedTarget instanceof Element&&event.relatedTarget.matches('[data-application-edit]'))return;const draft=editingHeader;if(!draft)return;const name=draft.value;if(!await edit({type:'header',index:col.index,name})&&editingHeader===draft&&draft.value===name)editingHeader=null}} onkeydown={event=>{if(event.key==='Enter')event.currentTarget.blur();else if(event.key==='Escape')editingHeader=null}}/>{:else}<div class="column-title"><input class="column-select" type="checkbox" aria-label={`Seleccionar columna ${doc.headers?.[col.index]}`} checked={selectedColumns.includes(col.index)} onchange={()=>selectColumn(col.index)}/><button {...controlHint(large?'largeUnsupported':null, (large?'Ordenar llega con L5c (archivos grandes)':'Ordenar columna'))} class="sort-button btn-ghost"  disabled={large} onclick={event=>sortBy(col.index,event.shiftKey)}>{doc.headers?.[col.index]||`Columna ${col.index+1}`} {#if activeOrder.some(item=>item.column===col.index)}<Icon name={activeOrder.find(item=>item.column===col.index)?.descending?'arrow-down':'arrow-up'} size={12}/>{/if}</button><button {...controlHint(!locked?null:doc.readonly?readonlyReason:interpreting?'busy':'parameters', "Editar encabezado")} class="header-edit"  aria-label={`Editar encabezado ${col.index+1}`} disabled={locked} onclick={()=>editingHeader={index:col.index,value:doc.headers?.[col.index]??''}}><Icon name="pencil" size={12}/></button><button class="header-menu" aria-label={t('csv.columnMenu.open',{column:menuColumnLabel(col.index)})} aria-haspopup="menu" aria-expanded={context?.kind==='columns'&&menuColumn===col.index} title={t('csv.columnMenu.openHint')} onclick={event=>columnMenu(event,col.index)}><Icon name="chevron-down" size={12}/></button></div>{/if}
+      {#if editingHeader?.index===col.index}<input class="column-filter" aria-label="Nombre del encabezado" bind:value={editingHeader.value} use:focus onblur={async event=>{if(event.relatedTarget instanceof Element&&event.relatedTarget.matches('[data-application-edit]'))return;const draft=editingHeader;if(!draft)return;const name=draft.value;if(!await edit({type:'header',index:col.index,name})&&editingHeader===draft&&draft.value===name)editingHeader=null}} onkeydown={event=>{if(event.key==='Enter')event.currentTarget.blur();else if(event.key==='Escape')editingHeader=null}}/>{:else}<div class="column-title"><input class="column-select" type="checkbox" aria-label={`Seleccionar columna ${doc.headers?.[col.index]}`} checked={selectedColumns.includes(col.index)} onchange={()=>selectColumn(col.index)}/><button {...controlHint(large?'largeUnsupported':null, (large?'Ordenar llega con L5c (archivos grandes)':t('csv.sort.help')))} class="sort-button btn-ghost" aria-busy={sortingColumn===col.index} disabled={large} onclick={event=>sortBy(col.index,event.shiftKey)}>{doc.headers?.[col.index]||`Columna ${col.index+1}`} {#if activeOrder.some(item=>item.column===col.index)}<Icon name={activeOrder.find(item=>item.column===col.index)?.descending?'arrow-down':'arrow-up'} size={12}/>{/if}</button><button {...controlHint(!locked?null:doc.readonly?readonlyReason:interpreting?'busy':'parameters', "Editar encabezado")} class="header-edit"  aria-label={`Editar encabezado ${col.index+1}`} disabled={locked} onclick={()=>editingHeader={index:col.index,value:doc.headers?.[col.index]??''}}><Icon name="pencil" size={12}/></button><button class="header-menu" aria-label={t('csv.columnMenu.open',{column:menuColumnLabel(col.index)})} aria-haspopup="menu" aria-expanded={context?.kind==='columns'&&menuColumn===col.index} title={t('csv.columnMenu.openHint')} onclick={event=>columnMenu(event,col.index)}><Icon name="chevron-down" size={12}/></button></div>{/if}
       {#if showFilters}<input class="column-filter" data-column-filter={col.index} aria-label={`Filtrar ${doc.headers?.[col.index]}`} placeholder="Contiene…" value={filters[col.index]??''} oninput={e=>setFilter(col.index,e.currentTarget.value)}/>{/if}
      </div>
     {/each}

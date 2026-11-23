@@ -49,7 +49,7 @@ test('las cinco acciones principales se ven a la vez y lo demás está en menús
  // Lo secundario ya no ocupa sitio en la barra.
  for(const name of ['Consulta avanzada','Estadísticas','Gráficos','Análisis','Comandos','Orden numérico'])await expect(bar.getByRole('button',{name,exact:true})).toHaveCount(0)
  const menus:Record<string,string[]>={
-  'Filtrar':['Filtros por columna','Consulta avanzada','Orden numérico'],
+  'Filtrar':['Filtros por columna','Consulta avanzada'],
   'Limpiar':['Transformar documento…','Quitar espacios al inicio y final','Convertir a mayúsculas','Convertir a minúsculas'],
   'Filas y columnas':['Añadir fila','Insertar fila arriba','Insertar fila abajo','Añadir columna','Duplicar filas seleccionadas','Duplicar columna seleccionada','Eliminar filas seleccionadas','Eliminar columna seleccionada']
  }

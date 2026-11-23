@@ -1837,5 +1837,10 @@
  "context.reveal.unavailable": "No pude mostrar ese archivo. Elige un elemento de la carpeta abierta en Archivos.",
  "context.open": "Abrir",
  "context.close": "Cerrar",
- "context.text.menu": "Edición de texto"
+ "context.text.menu": "Edición de texto",
+ "csv.sort.help": "Ordena según el tipo de los datos. Los números van por su valor; los códigos se conservan como texto. El archivo no cambia.",
+ "csv.sort.preparing": "Preparando el orden de «{column}»…",
+ "csv.sort.completeNumber": "«{column}» se ordenó como número.",
+ "csv.sort.completeText": "«{column}» se ordenó como texto.",
+ "csv.sort.error": "No pudimos ordenar «{column}». Vuelve a intentarlo."
 }

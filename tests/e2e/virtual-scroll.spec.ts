@@ -4,7 +4,7 @@ import electronPath from 'electron'
 import {mkdtemp,mkdir,writeFile,rm} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
-import {numericOrder} from './panel'
+import {menuItem} from './panel'
 
 // Un millón de filas y una columna (unos 7 MB): por debajo de los límites de edición, pero con una altura de 32 000 040 px que un elemento de Chromium no admite.
 const ROWS=1_000_000,CHROMIUM_MAX=16_777_214
@@ -80,7 +80,13 @@ test('con un filtro o un orden la tabla sigue siendo correcta',{tag:'@perf'},asy
  await expect(page.locator('footer')).toContainText(`${expected.toLocaleString()} de ${ROWS.toLocaleString()} filas`,{timeout:30000})
  await page.getByLabel('Buscar en tabla',{exact:true}).fill('')
  await expect(page.locator('footer')).toContainText(`${ROWS.toLocaleString()} de ${ROWS.toLocaleString()} filas`,{timeout:30000})
- await numericOrder(page);await page.locator('.sort-button').filter({hasText:/^Id/}).click();await page.locator('.sort-button').filter({hasText:/^Id/}).click() // descendente
+ await menuItem(page,'Filtrar','Consulta avanzada')
+ const tools=page.getByRole('region',{name:'Consulta avanzada',exact:true})
+ await tools.getByRole('button',{name:'Añadir orden',exact:true}).click()
+ await tools.getByLabel('Columna de orden 1',{exact:true}).selectOption('0')
+ await tools.getByLabel('Dirección de orden 1',{exact:true}).selectOption('true')
+ await tools.getByLabel('Orden numérico 1',{exact:true}).check()
+ await tools.getByRole('button',{name:'Aplicar consulta',exact:true}).click()
  await expect.poll(async()=>page.locator('[role=gridcell][data-row="0"][data-column="0"]').innerText(),{timeout:30000}).toBe(String(ROWS))
  await scrollTo(1);await expect.poll(async()=>(await visible()).at(-1)?.n).toBe(ROWS)
  await expect(page.locator('[role=gridcell][data-column="0"]').last()).toHaveText('1')

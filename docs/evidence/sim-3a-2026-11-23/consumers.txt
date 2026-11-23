@@ -1,0 +1,58 @@
+
+Running 46 tests using 1 worker
+
+(node:26500) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/46] [shell] › tests/e2e/ui.spec.ts:23:1 › interfaz: crear, editar, visualizar, guardar y exportar Markdown en ambos temas
+[2/46] [shell] › tests/e2e/ui.spec.ts:52:1 › interfaz CSV: buscar, editar una fila filtrada, deshacer y guardar
+[3/46] [shell] › tests/e2e/ui.spec.ts:78:1 › interfaz Mermaid: renderizar y exportar SVG válido
+[4/46] [shell] › tests/e2e/ui.spec.ts:95:1 › formato Markdown: negritas y cursivas sin ocultar el explorador
+[5/46] [shell] › tests/e2e/ui.spec.ts:114:1 › barra Markdown: insertar sin sintaxis, conservar selección, deshacer y ver ejemplos
+[6/46] [shell] › tests/e2e/ui.spec.ts:152:1 › operaciones CSV: alcance explícito, fila filtrada, ceros iniciales, deshacer y guardar
+[7/46] [shell] › tests/e2e/ui.spec.ts:186:1 › operaciones CSV: duplicar filas y columnas conserva valores y permite deshacer estructura
+[8/46] [shell] › tests/e2e/ui.spec.ts:207:1 › estadísticas CSV: columnas, alcance completo, datos pendientes, temas y teclado
+[9/46] [shell] › tests/e2e/ui.spec.ts:250:1 › estadísticas CSV: cancelar descarta respuestas tardías y permite volver a analizar
+[10/46] [shell] › tests/e2e/ui.spec.ts:270:1 › estadísticas CSV: muestra rotulada e IPC inválido rechazado @perf
+[11/46] [shell] › tests/e2e/ui.spec.ts:284:1 › estadísticas CSV: límite explícito y encabezados duplicados por índice
+[12/46] [shell] › tests/e2e/ui.spec.ts:301:1 › CSV: pegar sigue filtros y orden, conserva filas ocultas y se deshace en un paso
+[13/46] [shell] › tests/e2e/ui.spec.ts:335:1 › exportación CSV: completo y filtrado conservan columnas; selección limita explícitamente
+[14/46] [shell] › tests/e2e/ui.spec.ts:366:1 › consulta CSV: formulario, orden múltiple exacto, exportación y pegado por vista
+[15/46] [shell] › tests/e2e/ui.spec.ts:402:1 › consulta CSV: condiciones O, errores visibles, limpiar y ordenar con Mayús
+[16/46] [shell] › tests/e2e/ui.spec.ts:427:1 › rangos CSV: selección por teclado, vista previa, filas ocultas, deshacer y exportar @solo
+[17/46] [shell] › tests/e2e/ui.spec.ts:456:1 › rangos CSV: arrastrar, contexto por teclado, cortar y pegar con revisión previa @solo
+[18/46] [shell] › tests/e2e/ui.spec.ts:472:1 › rangos CSV: teclado atraviesa páginas virtuales y una revisión nueva invalida la selección @solo
+[19/46] [shell] › tests/e2e/ui.spec.ts:484:1 › rangos CSV: si falla el portapapeles, cortar no vacía ni modifica el documento @solo
+[20/46] [shell] › tests/e2e/ui.spec.ts:494:1 › rangos CSV: arrastre desplaza el borde y conserva el rango al cargar otra página @solo
+[21/46] [shell] › tests/e2e/ui.spec.ts:509:1 › exploración CSV: perfil, frecuencias, distribución y Pearson conservan datos y alcance
+[22/46] [shell] › tests/e2e/ui.spec.ts:540:1 › exploración CSV: paginación, cancelación, muestra e IPC inválido @perf
+[23/46] [shell] › tests/e2e/ui.spec.ts:559:1 › perfil CSV: tipos probables, calidad y teclado sin modificar los datos
+(node:27485) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[24/46] [csv] › tests/e2e/compact-toolbar.spec.ts:34:1 › una sola fila de herramientas deja la tabla a 110 px del borde superior o menos
+[25/46] [csv] › tests/e2e/compact-toolbar.spec.ts:45:1 › las cinco acciones principales se ven a la vez y lo demás está en menús con su nombre de siempre
+[26/46] [csv] › tests/e2e/compact-toolbar.spec.ts:65:1 › la codificación, el separador, el encabezado y los recuentos viven en la barra de estado
+[27/46] [csv] › tests/e2e/compact-toolbar.spec.ts:78:1 › Analizar abre una pestaña a petición y permite volver a la tabla con el foco en su pestaña
+[28/46] [csv] › tests/e2e/compact-toolbar.spec.ts:95:1 › un filtro activo queda a la vista como etiqueta y se quita con un clic
+[29/46] [csv] › tests/e2e/selection-statistics.spec.ts:17:1 › estadísticas del rango: vista ordenada/filtrada, resumen conjunto y por columnas con datos intactos
+[30/46] [csv] › tests/e2e/selection-statistics.spec.ts:33:1 › estadísticas del rango: cancelar interrumpe y reintentar conserva la selección al paginar
+[31/46] [csv] › tests/e2e/selection-statistics.spec.ts:41:1 › estadísticas del rango: muestra limitada, campos nuevos y validación IPC sin atribuir totales globales @perf
+[32/46] [csv] › tests/e2e/selection-statistics.spec.ts:47:1 › estadísticas del rango: resumen de más de cien columnas sin expandir el límite del panel por columna
+[33/46] [csv] › tests/e2e/structural-context.spec.ts:19:1 › la lectura de filas recupera una consulta sustituida por una recarga
+[34/46] [csv] › tests/e2e/structural-context.spec.ts:40:1 › menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar
+[35/46] [csv] › tests/e2e/structural-context.spec.ts:47:1 › menú de columnas: teclado, insertar a ambos lados, conservar valores y respetar selección múltiple
+[36/46] [csv] › tests/e2e/structural-context.spec.ts:57:1 › menús estructurales: muestras bloquean cambios y conservan orden de vista, temas y foco @perf
+[37/46] [csv] › tests/e2e/structural-context.spec.ts:63:1 › menú estructural: restaura foco si desaparece el origen y rechaza inserciones ambiguas por IPC
+[38/46] [csv] › tests/e2e/virtual-scroll.spec.ts:32:1 › se llega a la última fila de un millón de filas sin un elemento más alto que el límite de Chromium @perf
+[39/46] [csv] › tests/e2e/virtual-scroll.spec.ts:40:1 › Ctrl/⌘ + Fin lleva el foco a la última fila y la deja a la vista @perf
+[40/46] [csv] › tests/e2e/virtual-scroll.spec.ts:49:1 › a mitad del recorrido las filas son contiguas, están separadas 32 px y la posición es proporcional @perf
+[41/46] [csv] › tests/e2e/virtual-scroll.spec.ts:57:1 › la selección sigue en su fila al alejarse y volver @perf
+[42/46] [csv] › tests/e2e/virtual-scroll.spec.ts:67:1 › una muesca de la rueda mueve las filas que dice la rueda, no miles @perf
+[43/46] [csv] › tests/e2e/virtual-scroll.spec.ts:77:1 › con un filtro o un orden la tabla sigue siendo correcta @perf
+[44/46] [csv] › tests/e2e/virtual-scroll.spec.ts:95:1 › recorrer el archivo entero deja ver todas las filas en orden y sin huecos @perf
+[45/46] [csv] › tests/e2e/virtual-scroll.spec.ts:107:1 › al cambiar el alto de la ventana con la barra escalada la última fila sigue alcanzable @perf
+[46/46] [csv] › tests/e2e/virtual-scroll.spec.ts:114:1 › al agrandar la ventana estando al final la última fila se queda a la vista sin volver a desplazar @perf
+  46 passed (1.7m)
