@@ -68,7 +68,9 @@ test('quitar espacios y minúsculas: acceso desde Limpiar y solo tocan esa colum
  await columnButton('Ciudad').click();await cleanAction('Quitar espacios…')
  let dialog=page.getByRole('dialog',{name:'Quitar espacios en la columna «Ciudad»',exact:true});await expect(dialog.getByRole('status')).toContainText('2 de 5 celdas cambiarán.')
  // Controla la ventana real de 150 ms; no mide latencia ni sustituye respuestas.
- await page.clock.install({time:0});await page.clock.pauseAt(1)
+ // Fija la hora antes de pausar: no depende de llegar a 1 ms entre llamadas.
+ // Quita después la hora fija para que runFor avance también Date.
+ await page.clock.setFixedTime(0);await page.clock.pauseAt(0);await page.clock.setSystemTime(0)
  try{
   await app.evaluate(({ipcMain},target)=>{
    type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
@@ -110,7 +112,9 @@ test('quitar espacios y minúsculas: acceso desde Limpiar y solo tocan esa colum
 for(const locale of ['es','en-XA'])test('una búsqueda cambiada durante la edición y otra posterior conservan la consulta vigente ('+locale+')',async()=>{
  const {doc,path}=await open(),search=page.getByLabel('Buscar en tabla',{exact:true}),grid=page.getByRole('grid',{name:'Tabla de datos',exact:true})
  await expect(cell(1,'Ciudad')).toHaveText(' oaxaca de juárez ')
- await page.clock.install({time:0});await page.clock.pauseAt(1)
+ // Fija la hora antes de pausar: no depende de llegar a 1 ms entre llamadas.
+ // Quita después la hora fija para que runFor avance también Date.
+ await page.clock.setFixedTime(0);await page.clock.pauseAt(0);await page.clock.setSystemTime(0)
  try{
   await app.evaluate(({ipcMain},target)=>{
    type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
