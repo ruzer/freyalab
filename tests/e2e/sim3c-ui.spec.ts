@@ -7,6 +7,7 @@ import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
 import {closeElectron} from './close-electron'
 import {traceElectronFailure} from './electron-trace'
+import {openAnalysis} from './panel'
 
 let app:ElectronApplication,page:Page,folder:string,files:string,csv:string,stopTrace:(()=>Promise<void>)|undefined
 const source='ID,Carrera\r\n00123,Ingeniería\r\n9007199254740993, psicologia \r\n'
@@ -76,12 +77,33 @@ test('SIM-3c: la barra pertenece al documento activo y vuelve al CSV sin perder 
  // Abrir un archivo publica su propio estado; el defecto está al volver a una pestaña existente.
  for(const name of names){
   await page.getByRole('tab',{name,exact:true}).click();await expect(page.getByRole('tab',{name,exact:true})).toHaveAttribute('aria-selected','true')
-  console.log('SIM3C_FOOTER '+JSON.stringify({document:name,...await footer().evaluate(node=>({textContent:node.textContent,innerText:node.innerText,children:Array.from(node.children).map(child=>({tag:child.tagName,class:child.className,text:child.textContent}))}))}))
   // textContent del footer concatena hijos: «filasContando…» no tiene límite de palabra.
   await expect(footer().locator(':scope > span.truncate')).not.toContainText('filas')
   await expect(footer().locator('.csv-status')).toHaveCount(0)
   await page.getByRole('tab',{name:'datos.csv',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00123');await expect(footer()).toContainText('2 de 2 filas')
  }
+})
+
+test('SIM-3c: volver de Análisis conserva el recuento del CSV',async()=>{
+ await openAnalysis(page,'Información')
+ await expect(page.locator('.analysis-workspace:not([hidden])')).toBeVisible()
+ await expect(footer().locator(':scope > span.truncate')).not.toContainText('filas')
+ await page.getByRole('tab',{name:'datos.csv',exact:true}).click()
+ await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00123')
+ await expect(footer().locator(':scope > span.truncate')).toHaveText('2 de 2 filas')
+})
+
+test('SIM-3c: volver de Texto a Tabla recupera el recuento del CSV',async()=>{
+ const modes=page.getByRole('group',{name:'Vista del CSV',exact:true})
+ await modes.getByRole('button',{name:'Texto',exact:true}).click()
+ await expect(modes.getByRole('button',{name:'Texto',exact:true})).toHaveAttribute('aria-pressed','true')
+ await expect(page.locator('.cm-content')).toContainText('00123,Ingeniería')
+ await expect(footer().locator(':scope > span.truncate')).not.toContainText('filas')
+ await expect(footer().locator('.csv-status')).toHaveCount(0)
+ await modes.getByRole('button',{name:'Tabla',exact:true}).click()
+ await expect(modes.getByRole('button',{name:'Tabla',exact:true})).toHaveAttribute('aria-pressed','true')
+ await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00123')
+ await expect(footer().locator(':scope > span.truncate')).toHaveText('2 de 2 filas')
 })
 
 test('SIM-3c: una respuesta real del CSV anterior no publica estado en Markdown',async()=>{
