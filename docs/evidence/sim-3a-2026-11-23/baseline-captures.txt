@@ -1,0 +1,10 @@
+
+Running 2 tests using 1 worker
+
+(node:32685) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/2] [csv] › tests/e2e/sim3a-evidence.spec.ts:100:45 › SIM-3a evidencia: idioma, ayuda y orden por teclado conservan el fixture (es)
+[2/2] [csv] › tests/e2e/sim3a-evidence.spec.ts:100:45 › SIM-3a evidencia: idioma, ayuda y orden por teclado conservan el fixture (en-XA)
+  2 passed (17.5s)
