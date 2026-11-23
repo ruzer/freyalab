@@ -41,7 +41,7 @@ for(const language of ['es','en','en-XA'] as Language[])test(`SIM-2e estadístic
   await expect(header).toHaveAttribute('scope','row');await expect(header.locator('abbr')).toHaveAttribute('title',help)
  }
  await expect(panel.locator('tbody tr').nth(2).locator('td')).toHaveText(['15.81','1.29'])
- await expect(panel.locator('tbody tr').nth(2).locator('td').first()).toHaveAttribute('title','15.811388300841896')
+ await expect(panel.locator('tbody tr').nth(2).locator('td').first()).toHaveAttribute('title',t('columnAnalysis.exactValue',{value:'15.8113883008419'},language))
  await expect(panel.locator('tbody tr').nth(1).locator('td')).toHaveText(['30','2.5'])
  await expect(panel.locator('caption')).toHaveText(tr('describe.scope.all'))
  expect(await panel.getByRole('status').evaluate(element=>element.getBoundingClientRect().height)).toBeLessThanOrEqual(1)

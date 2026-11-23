@@ -201,7 +201,7 @@ test('SIM-2b: manual sin perfil conserva medida, ejes y agrupación explícitos 
  const generate=panel().getByRole('button',{name:'Generar gráfico',exact:true});await expect(generate).toHaveCount(1);await generate.click();await ready()
  const total=records.reduce((sum,row)=>sum+Number(row[1]),0);await expect(panel().locator('.pivot-result tfoot td').first()).toHaveText(total.toLocaleString('es-MX'))
  await settings().getByLabel('Columna X del gráfico',{exact:true}).selectOption('2');await settings().getByLabel('Agrupación temporal del gráfico',{exact:true}).selectOption('month');await generate.click();await ready()
- await expect(panel().locator('.pivot-result tbody tr')).toHaveText([`2026-01${total.toLocaleString('es-MX')}100%`])
+ await expect(panel().locator('.pivot-result tbody tr')).toHaveText([`2026-01${total.toLocaleString('es-MX')}100 %`])
  await settings().getByLabel('Agrupación temporal del gráfico',{exact:true}).selectOption('none');await generate.click();await ready();await expect(panel().locator('.pivot-result tbody tr')).toHaveCount(5)
  const json=JSON.parse((await exportFile('analysis.export.json','manual.analisis.json')).toString('utf8'))
  expect(json.metadata.configuration.options).toMatchObject({x:2,y:1,measureType:'number',aggregate:'sum',time:'none'})
