@@ -25,7 +25,7 @@
  function resetSection(){
   const values=defaultSettings()
   if(section==='general')void save({idioma:values.idioma})
-  else if(section==='appearance')void save({tema:values.tema,barraLateral:values.barraLateral,markdown:values.markdown,editor:values.editor,division:values.division})
+  else if(section==='appearance')void save({tema:values.tema,decimalesAnalisis:values.decimalesAnalisis,barraLateral:values.barraLateral,markdown:values.markdown,editor:values.editor,division:values.division})
   else if(section==='updates')void save({actualizaciones:values.actualizaciones})
   else if(section==='advanced')void save({avanzado:values.avanzado})
  }
