@@ -187,8 +187,8 @@
   {id:'insertRowAfter',label:'Insertar fila abajo',detail:'Después de una única fila marcada, en el orden del documento',disabled:locked||selectedRows.length!==1,run:()=>edit({type:'insertRow',afterId:selectedRows[0]})},
   {id:'insertColumnBefore',label:'Insertar columna a la izquierda',detail:'Antes de una única columna marcada',disabled:locked||selectedColumns.length!==1,run:()=>edit({type:'insertColumn',index:selectedColumns[0],name:`Columna ${(doc.headers?.length??0)+1}`})},
   {id:'insertColumnAfter',label:'Insertar columna a la derecha',detail:'Después de una única columna marcada',disabled:locked||selectedColumns.length!==1,run:()=>edit({type:'insertColumn',index:selectedColumns[0]+1,name:`Columna ${(doc.headers?.length??0)+1}`})},
-  {id:'sortAscending',label:'Ordenar columna ascendente (vista)',detail:t('csv.sort.help'),disabled:large||interpreting||selectedColumns.length!==1,run:()=>sortBy(selectedColumns[0],false,false)},
-  {id:'sortDescending',label:'Ordenar columna descendente (vista)',detail:t('csv.sort.help'),disabled:large||interpreting||selectedColumns.length!==1,run:()=>sortBy(selectedColumns[0],false,true)},
+  {id:'sortAscending',label:t('csv.columnMenu.sortAscending'),detail:t('csv.sort.help'),disabled:large||interpreting||selectedColumns.length!==1,run:()=>sortBy(selectedColumns[0],false,false)},
+  {id:'sortDescending',label:t('csv.columnMenu.sortDescending'),detail:t('csv.sort.help'),disabled:large||interpreting||selectedColumns.length!==1,run:()=>sortBy(selectedColumns[0],false,true)},
   {id:'insertColumn',label:'Añadir columna',detail:'Al final del documento',disabled:locked,run:()=>edit({type:'insertColumn',index:doc.headers?.length??0,name:`Columna ${(doc.headers?.length??0)+1}`})},
   {id:'duplicateRows',label:'Duplicar filas seleccionadas',detail:'Necesita filas marcadas por su número; conserva las originales',disabled:locked||!selectedRows.length,run:()=>edit({type:'duplicateRows',ids:selectedRows})},
   {id:'duplicateColumn',label:'Duplicar columna seleccionada',detail:'Necesita una columna marcada; restablece filtros y orden al cambiar columnas',disabled:locked||selectedColumns.length!==1,run:()=>edit({type:'duplicateColumn',index:selectedColumns[0]})},
@@ -634,6 +634,7 @@
    {#each ['insertRow','insertRowBefore','insertRowAfter','duplicateRows','deleteRows'] as id}{@render item(id)}{/each}
    <span class="dropdown-label">Columnas</span>
    {#each ['insertColumn','insertColumnBefore','insertColumnAfter','duplicateColumn','deleteColumn'] as id}{@render item(id)}{/each}
+   {#each ['sortAscending','sortDescending'] as id}{@render item(id)}{/each}
    {#if !large}
     <button disabled={!!calculationDisabled} aria-describedby={calculationDisabled?'calculate-disabled':undefined} onclick={openToolbarCalculation}>{t('calculate.action')}</button>
     {#if calculationDisabled}<span class="dropdown-note" id="calculate-disabled">{calculationDisabled}</span>{/if}

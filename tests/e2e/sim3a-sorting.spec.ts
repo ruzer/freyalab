@@ -49,7 +49,7 @@ test('SIM-3a: códigos con ceros iniciales y anchos distintos mantienen el orden
 
 test('SIM-3a: el menú de columna y Filas y columnas usan el mismo orden automático',async()=>{
  const {path,source}=await open();await page.getByRole('button',{name:'Acciones de la columna Edad',exact:true}).click();const menu=page.getByRole('menu',{name:'Acciones de columnas',exact:true});await menu.getByRole('menuitem',{name:'Ordenar de menor a mayor',exact:true}).click();await expect.poll(()=>values('Edad')).toEqual(asc)
- await page.getByLabel('Seleccionar columna Edad',{exact:true}).check();await menuItem(page,'Filas y columnas','Ordenar columna descendente (vista)');await expect.poll(()=>values('Edad')).toEqual(desc)
+ await page.getByLabel('Seleccionar columna Edad',{exact:true}).check();await menuItem(page,'Filas y columnas','Ordenar de mayor a menor');await expect.poll(()=>values('Edad')).toEqual(desc)
  expect(await readFile(path,'utf8')).toBe(source)
 })
 

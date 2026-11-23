@@ -4,7 +4,7 @@ import electronPath from 'electron'
 import {mkdtemp,writeFile,readFile,rm,truncate,stat} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import {join,resolve} from 'node:path'
-import {menuItem,numericOrder} from './panel'
+import {menuItem} from './panel'
 import {readTableRows} from './csv-rows'
 let app:ElectronApplication,page:Page,folder:string
 const menu=(kind:'filas'|'columnas')=>page.getByRole('menu',{name:'Acciones de '+kind,exact:true})
@@ -38,7 +38,7 @@ test('la lectura de filas recupera una consulta sustituida por una recarga',asyn
 })
 
 test('menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar',async()=>{
- const source='ID,Grupo,N\r\n00123,v,30\r\n9007199254740993,h,10\r\n00003,v,20\r\n',{path}=await open(source);await page.getByLabel('Buscar en tabla',{exact:true}).fill('v');await expect(page.locator('footer')).toContainText('2 de 3 filas');await numericOrder(page);let panel=await columnMenu('N');await panel.getByRole('menuitem',{name:'Ordenar de menor a mayor',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00003')
+ const source='ID,Grupo,N\r\n00123,v,30\r\n9007199254740993,h,10\r\n00003,v,20\r\n',{path}=await open(source);await page.getByLabel('Buscar en tabla',{exact:true}).fill('v');await expect(page.locator('footer')).toContainText('2 de 3 filas');let panel=await columnMenu('N');await panel.getByRole('menuitem',{name:'Ordenar de menor a mayor',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00003')
  panel=await rowMenu(1);await expect(panel.locator('.column-menu-title')).toHaveText('Fila 1');await panel.getByRole('menuitem',{name:'Insertar arriba',exact:true}).click();await expect(page.locator('footer')).toContainText('2 de 4 filas');expect(await rows()).toEqual([['00123','v','30'],['9007199254740993','h','10'],['','',''],['00003','v','20']]);expect(await readFile(path,'utf8')).toBe(source);await undo();await expect(page.locator('footer')).toContainText('2 de 3 filas')
  panel=await rowMenu(1,true);await panel.getByRole('menuitem',{name:'Insertar abajo',exact:true}).click();await expect(page.locator('footer')).toContainText('2 de 4 filas');expect((await rows()).at(-1)).toEqual(['','','']);await undo();await expect(page.locator('footer')).toContainText('2 de 3 filas');await page.getByRole('button',{name:/Quitar filtros y orden/}).click();await expect(page.locator('footer')).toContainText('3 de 3 filas')
  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click();await page.getByRole('button',{name:'Seleccionar fila 3',exact:true}).click({modifiers:[process.platform==='darwin'?'Meta':'Control']});panel=await rowMenu(1);await expect(panel).toContainText('2 filas');await expect(panel.getByRole('menuitem',{name:'Insertar arriba',exact:true})).toBeDisabled();await panel.getByRole('menuitem',{name:'Duplicar filas',exact:true}).click();await expect(page.locator('footer')).toContainText('5 de 5 filas');expect((await rows()).map(row=>row[0])).toEqual(['00123','00123','9007199254740993','00003','00003']);await undo();await expect(page.locator('footer')).toContainText('3 de 3 filas');expect(await readFile(path,'utf8')).toBe(source)

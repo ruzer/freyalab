@@ -4,7 +4,7 @@ Base: `main@f227eba6d428f332fb80d61c4bb4acf70c54f2d9`, que incluye SIM-1h (#209)
 
 ## «Hoy» comprobado antes del cambio
 
-`CsvTable.svelte` conserva `numeric=false`, la casilla global en Filtrar y un único `sortBy` para encabezado, menú de columna y Filas y columnas. El perfil existente de Información clasifica números, identificadores con ceros iniciales, encabezados de identificador y enteros inseguros en `table-analysis.ts`. `profileOnly:true` reutiliza esa regla sin construir frecuencias ni calcular estadísticas. No se inicia al abrir el CSV.
+`CsvTable.svelte` conserva `numeric=false`, la casilla global en Filtrar y un único `sortBy` para encabezado, menú de columna y comandos de paleta. La historia suponía esas acciones en Filas y columnas, pero ese menú ya no las expone: se reutilizan allí los mismos comandos para cumplir la ruta solicitada, sin una nueva lógica de orden. El perfil existente de Información clasifica números, identificadores con ceros iniciales, encabezados de identificador y enteros inseguros en `table-analysis.ts`. `profileOnly:true` reutiliza esa regla sin construir frecuencias ni calcular estadísticas. No se inicia al abrir el CSV.
 
 ## Cambio mínimo completo
 
