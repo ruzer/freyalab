@@ -84,6 +84,37 @@ test('SIM-3c: la barra pertenece al documento activo y vuelve al CSV sin perder 
  }
 })
 
+test('SIM-3c: una respuesta real del CSV anterior no publica estado en Markdown',async()=>{
+ await page.evaluate(path=>window.freya.openPaths([path]),join(files,'apuntes.md'))
+ await page.getByRole('tab',{name:'datos.csv',exact:true}).click();await expect(footer()).toContainText('2 de 2 filas')
+ const id=await page.evaluate(async()=>(await window.freya.documents()).find(doc=>doc.name==='datos.csv')!.id)
+ await app.evaluate(({ipcMain},id)=>{
+  type Handler=(event:Electron.IpcMainInvokeEvent,...args:unknown[])=>Promise<unknown>
+  const handlers=(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,Handler>})._invokeHandlers,original=handlers.get('freya')!
+  let release!:()=>void
+  const gate=new Promise<void>(done=>{release=done}),state={held:false,returned:false,release,original}
+  Reflect.set(globalThis,'sim3cHeldPage',state)
+  handlers.set('freya',async(event,...args)=>{
+   const result=await original(event,...args)
+   if(args[0]==='page'&&args[1]===id&&(args[2] as {search?:string})?.search==='00123'&&!state.held){state.held=true;await gate;state.returned=true}
+   return result
+  })
+ },id)
+ try{
+  await page.getByLabel('Buscar en tabla',{exact:true}).fill('00123')
+  await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'sim3cHeldPage').held)).toBe(true)
+  await page.getByRole('tab',{name:'apuntes.md',exact:true}).click();await expect(page.getByRole('tab',{name:'apuntes.md',exact:true})).toHaveAttribute('aria-selected','true')
+  await expect(footer().locator(':scope > span.truncate')).not.toContainText('filas')
+  await app.evaluate(()=>Reflect.get(globalThis,'sim3cHeldPage').release())
+  await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'sim3cHeldPage').returned)).toBe(true)
+  await page.evaluate(()=>window.freya.documents())
+  await expect(footer().locator(':scope > span.truncate')).toHaveText('apuntes.md')
+  await expect(footer().locator('.csv-status')).toHaveCount(0)
+ }finally{
+  await app.evaluate(({ipcMain})=>{const state=Reflect.get(globalThis,'sim3cHeldPage');state.release();(ipcMain as Electron.IpcMain&{_invokeHandlers:Map<string,unknown>})._invokeHandlers.set('freya',state.original);Reflect.deleteProperty(globalThis,'sim3cHeldPage')})
+ }
+})
+
 test('SIM-3c: los nombres del mismo nivel del explorador empiezan en la misma x',async()=>{
  await page.locator('.toolbar-left').getByRole('button',{name:'Abrir carpeta',exact:true}).click()
  const tree=page.locator('.tree-scroll');await expect(tree.getByRole('button',{name:'Carpeta',exact:true})).toBeVisible();await tree.getByRole('button',{name:'Carpeta',exact:true}).click()
