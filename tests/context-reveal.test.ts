@@ -80,3 +80,31 @@ describe('SIM-1h · revelar solo objetos autorizados por main',()=>{
   await expect(handler({sender:native.contents,senderFrame:{}},operation,'/AJENO')).rejects.toThrow('Origen no autorizado.');expect(native.reveal).not.toHaveBeenCalled()
  })
 })
+
+describe('SIM-1h · edición contextual por la ruta nativa existente',()=>{
+ const current=()=>({activeId:null,mode:'edit',focus:'field',locked:false,canEdit:true,hasSelection:true})
+ const commands=()=>native.contents.send.mock.calls.filter(([channel])=>channel==='freya:command').map(([,command])=>command as {id:string;nonce?:string})
+ it.each(['edit.cut','edit.copy','edit.paste','edit.pastePlain','edit.selectAll'])('emite solo %s con su concesión nativa, sin devolver texto',async id=>{
+  expect(await invoke('application:contextEdit',id,current())).toBeUndefined()
+  expect(commands()).toEqual([{id,nonce:expect.stringMatching(/^[0-9a-f-]{36}$/i)}])
+ })
+ it.each(['edit.undo','edit.redo','file.open','edit.commandPalette','executeJavaScript','constructor'])('rechaza el id ajeno %s',async id=>{
+  await expect(invoke('application:contextEdit',id,current())).rejects.toThrow('Datos de operación no válidos.');expect(commands()).toEqual([])
+ })
+ it.each(['edit.cut','edit.paste','edit.pastePlain'])('solo lectura no emite %s',async id=>{
+  await invoke('application:contextEdit',id,{...current(),canEdit:false});expect(commands()).toEqual([])
+ })
+ it.each(['edit.cut','edit.copy'])('la regla contextual de selección vacía bloquea %s sin cambiar Edición',async id=>{
+  await invoke('application:contextEdit',id,{...current(),hasSelection:false});expect(commands()).toEqual([])
+ })
+ it('permite seleccionar todo aunque todavía no haya selección y bloquea grilla/ningún dueño',async()=>{
+  await invoke('application:contextEdit','edit.selectAll',{...current(),hasSelection:false});expect(commands()).toHaveLength(1);native.contents.send.mockClear()
+  for(const focus of ['none','grid'])await invoke('application:contextEdit','edit.copy',{...current(),focus})
+  expect(commands()).toEqual([])
+ })
+ it('valida estado, tupla y origen antes de emitir',async()=>{
+  for(const args of [[],['edit.copy'],['edit.copy',{}],['edit.copy',{...current(),otro:true}],['edit.copy',current(),'extra']])await expect(invoke('application:contextEdit',...args)).rejects.toThrow('Datos de operación no válidos.')
+  await expect(handler({sender:{},senderFrame:native.contents.mainFrame},'application:contextEdit','edit.copy',current())).rejects.toThrow('Origen no autorizado.')
+  expect(commands()).toEqual([])
+ })
+})
