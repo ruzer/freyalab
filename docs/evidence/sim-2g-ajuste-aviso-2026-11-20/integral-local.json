@@ -1,0 +1,74 @@
+{
+  "codeHead": "fe311c79f352668f511b5dea2276baaddcea7378",
+  "command": "npm run test:e2e -- --reporter=list,json",
+  "platform": "macOS Apple silicon",
+  "node": "24.22.1",
+  "outcome": "passed_with_existing_external_dependency_skips",
+  "exit": 0,
+  "identities": 841,
+  "passed": 834,
+  "skipped": 7,
+  "unexpected": 0,
+  "flaky": 0,
+  "retries": 0,
+  "playwrightSeconds": 1898.022073,
+  "processSeconds": 1901.1446192090225,
+  "startedUtc": "2026-11-20T18:48:47Z",
+  "finishedUtc": "2026-11-20T19:20:28Z",
+  "consoleBefore": {
+    "locked": [
+      "No"
+    ],
+    "on_console": [
+      "Yes"
+    ]
+  },
+  "consoleAfter": {
+    "locked": [
+      "No"
+    ],
+    "on_console": [
+      "Yes"
+    ]
+  },
+  "cssSha256": "8657ea3537aae526747f4f92c64ad3ea08243f78046cc97e1792acbabeb8f8bc",
+  "reportSha256": "875be0205eeb9e51843eb02252911975887dcc6646023c8c73019c4db28c1f61",
+  "rawLogSha256": "2d5b05b9345003607762c1be94c4ccfad6c8971f56804fc41758f05f31cd00b7",
+  "skippedReason": "Pandoc externo no aportado mediante FREYALAB_PANDOC_TEST_PATH; un caso de commands y seis de academic-word. SEG-S2e no llegó a su fallo esperado. No se añadieron skips.",
+  "skippedCases": [
+    {
+      "file": "commands.spec.ts",
+      "title": "APP-01 M4: Word se descubre al iniciar y el menú exporta un DOCX real sin abrir la barra"
+    },
+    {
+      "file": "academic-word.spec.ts",
+      "title": "AC-04 D1/D2 · reporte real en DOCX, HTML y PDF con fuentes, índices, figuras y páginas"
+    },
+    {
+      "file": "academic-word.spec.ts",
+      "title": "SEG-S2a · metadatos XML imposibles conservan el documento"
+    },
+    {
+      "file": "academic-word.spec.ts",
+      "title": "SEG-S2a · estilos y metadatos XML imposibles conservan el documento"
+    },
+    {
+      "file": "academic-word.spec.ts",
+      "title": "SEG-S2a · sustitutos sueltos de custom-style se exportan como U+FFFD sin alterar el original"
+    },
+    {
+      "file": "academic-word.spec.ts",
+      "title": "SEG-S2b · límites nombran el campo en español e inglés sin DOCX parcial ni pérdida de texto"
+    },
+    {
+      "file": "academic-word.spec.ts",
+      "title": "SEG-S2d · Pandoc real avisa del TeX degradado y el control limpio conserva el resultado habitual"
+    }
+  ],
+  "limits": [
+    "No acredita CI del CSS, Windows ni Linux nativos.",
+    "Los metadatos de sesión son observaciones antes y después, no vigilancia continua.",
+    "No acredita exportaciones Word/Pandoc de los siete casos omitidos.",
+    "La CI b2bcc465 falló en macOS en charts.spec.ts:121, antes de exportar; este verde local no la sustituye."
+  ]
+}

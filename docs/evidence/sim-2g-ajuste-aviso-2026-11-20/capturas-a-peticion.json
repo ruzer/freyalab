@@ -1,0 +1,126 @@
+{
+  "base": "b2a50100d6f2c8e57f5e4bc4d2966e6071f41820",
+  "testCommit": "ab7dc27d6d79df85176e97b7642d97693e3ece20",
+  "testSha256": "7e42da6528b7be70bbbd0be78164388a67a2e216ce01f3093d054e9e75bac60e",
+  "productionSourceTreeUnchanged": true,
+  "productionSourceTree": "2b5523d212543bdb39ef6bce4bd1e97b28d3f385",
+  "scope": "Only optional evidence PNG generation; all geometry/keyboard/severity/lifetime/data/title/footer assertions stay byte-identical. No timeout/retry/config changes.",
+  "red": {
+    "passed": 4,
+    "unexpected": 1,
+    "skipped": 0,
+    "flaky": 0,
+    "retries": 0,
+    "playwrightSeconds": 45.721616999999995,
+    "processSeconds": 46.566305415995885,
+    "reportSha256": "22f8c01f70aeed3639d2e1f7daca06a7791f596402343222f9f85d181e22904d",
+    "failure": "page.screenshot timed out after 30 seconds on second en-XA view: dark 1440x900; fonts ready and pre-capture overlap=false observed. No unique compositor/protocol cause proven."
+  },
+  "green": {
+    "passed": 5,
+    "unexpected": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "retries": 0,
+    "playwrightSeconds": 13.114303,
+    "processSeconds": 13.740634582994971,
+    "reportSha256": "f5b4288a16a5264a5cc457d781f649807128ab4b849786889e476107b33dbae2",
+    "views": 8,
+    "overlaps": 0,
+    "optionalEvidencePngs": 0,
+    "geometry": [
+      {
+        "file": "results/single-event-notices-SIM-2-eb807-re-sin-prometer-guardar-es--csv/notice-help-layouts.json",
+        "views": [
+          {
+            "name": "es-light-1440x900",
+            "overlap": false
+          },
+          {
+            "name": "es-dark-1440x900",
+            "overlap": false
+          },
+          {
+            "name": "es-light-1280x720",
+            "overlap": false
+          },
+          {
+            "name": "es-dark-1280x720",
+            "overlap": false
+          }
+        ]
+      },
+      {
+        "file": "results/single-event-notices-SIM-2-8e647-sin-prometer-guardar-en-XA--csv/notice-help-layouts.json",
+        "views": [
+          {
+            "name": "en-XA-light-1440x900",
+            "overlap": false
+          },
+          {
+            "name": "en-XA-dark-1440x900",
+            "overlap": false
+          },
+          {
+            "name": "en-XA-light-1280x720",
+            "overlap": false
+          },
+          {
+            "name": "en-XA-dark-1280x720",
+            "overlap": false
+          }
+        ]
+      }
+    ],
+    "dataChecksScope": "Final source/manifest/hash/readonly assertions run once per locale after its four views, not eight independent data checks."
+  },
+  "localChecks": [
+    {
+      "command": "npm run check",
+      "exit": 0,
+      "seconds": 20.517528249998577
+    },
+    {
+      "command": "npm run test",
+      "exit": 0,
+      "seconds": 25.500193290994503
+    },
+    {
+      "command": "npm run build",
+      "exit": 0,
+      "seconds": 4.233888541988563
+    }
+  ],
+  "unitPassed": 3107,
+  "unitSkippedExisting": 2,
+  "consoleBefore": {
+    "locked": [
+      "No"
+    ],
+    "on_console": [
+      "Yes"
+    ]
+  },
+  "consoleAfter": {
+    "locked": [
+      "No"
+    ],
+    "on_console": [
+      "Yes"
+    ]
+  },
+  "newOrDeletedTestIdentities": 0,
+  "evidenceMode": {
+    "flag": "FREYALAB_SIM2G_EVIDENCE",
+    "value": "1",
+    "default": "PNG generation omitted; all assertions and geometry JSON always execute",
+    "explicitModeRetested": false,
+    "limits": "Explicit generation retains the original 30-second operation and unresolved driver/compositor limit. Original committed images reused because production is unchanged."
+  },
+  "notVerified": [
+    "No candidate CI qualification yet.",
+    "No unique cause for original screenshot driver stall.",
+    "No fresh explicit-mode screenshot matrix, native Windows or Linux run.",
+    "No new full local suite; unchanged production evidence reused."
+  ]
+}

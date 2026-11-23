@@ -49,5 +49,5 @@ test('iconos: los avisos distinguen éxito y error con icono y texto, y Exportar
  await expect(page.getByRole('document').getByRole('heading',{name:'A',exact:true})).toBeVisible()
  await page.locator('.cm-content').click();await page.keyboard.press('ControlOrMeta+a');await page.keyboard.insertText('# A\n\nCambio que guardar.\n')
  await page.getByRole('button',{name:'Guardar',exact:true}).click()
- const toast=page.locator('.toast.info');await expect(toast).toContainText('Archivo guardado');await expect(toast.locator('svg.icon')).toHaveCount(2);expect(await readFile(file,'utf8')).toBe('# A\n\nCambio que guardar.\n')
+ const toast=page.locator('.toast.success');await expect(toast).toContainText('Archivo guardado');await expect(toast.locator('svg.icon')).toHaveCount(2);expect(await readFile(file,'utf8')).toBe('# A\n\nCambio que guardar.\n')
 })
