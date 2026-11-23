@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { FreyaAPI, AppEvent } from '../shared/types'
-import {closePrepareCommand,closeAbortCommand,type ApplicationCommand} from '../shared/application'
+import {closePrepareCommand,closeAbortCommand,contextEditCommands,type ContextEditCommand,type ApplicationCommand} from '../shared/application'
 import {invocationMessage} from './invoke-error'
 const invoke=async(operation:string,...args:unknown[])=>{try{return await ipcRenderer.invoke('freya',operation,...args)}catch(error){throw new Error(invocationMessage(error))}}
 // El atajo requiere una pulsación real; el puente no ofrece lectura del portapapeles.
@@ -10,7 +10,18 @@ window.addEventListener('keydown',event=>{
  window.dispatchEvent(new Event('freya-paste-plain'))
  ipcRenderer.send('freya:paste-plain')
 },true)
+// El permiso solo existe durante la activación real de ese botón; no atraviesa una microtarea.
+let contextEdit:ContextEditCommand|undefined
+window.addEventListener('click',event=>{
+ if(!event.isTrusted||!(event.target instanceof Element))return
+ const item=event.target.closest('button[role="menuitem"][data-application-edit]'),id=item?.getAttribute('data-application-edit')
+ if(!item||!contextEditCommands.some(command=>command===id))return
+ event.preventDefault();event.stopImmediatePropagation()
+ contextEdit=id as ContextEditCommand
+ try{item.dispatchEvent(new Event('freya-context-edit',{bubbles:true}))}finally{contextEdit=undefined}
+},true)
 const api:FreyaAPI={
+ contextEdit(id,state){if(!contextEdit||contextEdit!==id)return Promise.resolve();contextEdit=undefined;return invoke('application:contextEdit',id,state)},
  setApplicationState:state=>invoke('application:state',state),applicationShortcuts:()=>invoke('application:shortcuts'),
  onCommand(callback){
   const listener=(_:unknown,event:ApplicationCommand&{nonce?:string})=>{

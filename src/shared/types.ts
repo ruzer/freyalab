@@ -5,7 +5,7 @@ import type {RecipeOperationResult,RecipeOperationProgress,RecipeAnalysisContext
 import type {ChartConfiguration,ChartPreset} from './chart-presets'
 import type {LanguagePreference,LanguageState} from './i18n'
 import type {ApplicationInfo} from './app-info'
-import type {ApplicationUiState,ApplicationCommand,ApplicationShortcuts,ApplicationCloseHandlers} from './application'
+import type {ApplicationUiState,ApplicationCommand,ApplicationShortcuts,ApplicationCloseHandlers,ContextEditCommand} from './application'
 import type {LegacySettings,SettingsPatch,SettingsState} from './settings'
 import type {UpdateResult} from './updates'
 import type {ExtractOrigin,OperationRequest,OperationOutcome} from './operations'
@@ -77,6 +77,7 @@ export interface RecoveryEntry { id:string; name:string; savedAt:string }
 export interface AppEvent { type:'project'|'project-source-progress'|'project-recipe-progress'|'opened'|'changed'|'external'|'error'|'analysis'|'language'|'csv-open-error'|'settings'|'recents'|'updates'|'close-status';update?:UpdateResult;project?:ProjectInfo|null;projectRecents?:ProjectRecent[];projectSources?:ProjectSourceView[];projectRecipes?:ProjectRecipeView[];projectResults?:ProjectResultView[];recipeProgress?:(RecipeOperationProgress&{requestId:string});sourceProgress?:{requestId:string;bytes:number;total:number};closingKind?:'error'|'notice';csvOpenError?:CsvOpenError;settings?:SettingsState;language?:LanguageState;progress?:SqlProgress; document?:DocumentInfo; id?:string; message?:string }
 export interface FreyaAPI {
  setApplicationState(state:ApplicationUiState):Promise<void>;applicationShortcuts():Promise<ApplicationShortcuts>;
+ contextEdit(id:ContextEditCommand,state:ApplicationUiState):Promise<void>;
  onCommand(callback:(command:ApplicationCommand,delegate:()=>void)=>void):()=>void;
  onPrepareClose(handlers:ApplicationCloseHandlers):()=>void;
  appInfo():Promise<ApplicationInfo>;copyAppInfo():Promise<void>;thirdPartyNotices():Promise<string>;

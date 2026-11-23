@@ -14,3 +14,6 @@ export function formatApplicationShortcut(accelerator:string,platform:string):st
 export const closePrepareCommand='app.prepareClose' as const
 export const closeAbortCommand='app.closeAborted' as const
 export interface ApplicationCloseHandlers {prepare:()=>Promise<boolean>;aborted:()=>void}
+
+export const contextEditCommands=['edit.cut','edit.copy','edit.paste','edit.pastePlain','edit.selectAll'] as const
+export type ContextEditCommand=typeof contextEditCommands[number]

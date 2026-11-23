@@ -29,7 +29,7 @@ import {MenuNativeEdits,nativeEditArguments} from './menu-native-edit'
 import {removeMissingRecent} from './application-recents'
 import {WindowClosePreparation,closePreparedArguments} from './application-close'
 import {ApplicationWindowClose} from './application-window-close'
-import type {ApplicationUiState} from '../shared/application'
+import {contextEditCommands,type ApplicationUiState} from '../shared/application'
 import {detectPandoc,testPandoc} from './pandoc'
 import {MenuPandocAvailability} from './menu-pandoc'
 import {citationStyleIds} from '../shared/bibliography'
@@ -206,10 +206,20 @@ function changedSettings(state:SettingsState,explicitLanguage=false):SettingsSta
  refreshApplicationMenu()
  return state
 }
+function setApplicationState(state:ApplicationUiState){
+ menuState={...state,locked:closingWindow||state.locked,activeId:state.activeId&&docs.records.has(state.activeId)?state.activeId:null};refreshApplicationMenu()
+}
 async function handle(operation:string,args:unknown[]){
  const [a,b,c,d]=args
  switch(operation){
- case'application:state':{const [state]=z.tuple([applicationUiStateSchema]).parse(args);menuState={...state,locked:closingWindow||state.locked,activeId:state.activeId&&docs.records.has(state.activeId)?state.activeId:null};refreshApplicationMenu();return}
+ case'application:state':{const [state]=z.tuple([applicationUiStateSchema]).parse(args);setApplicationState(state);return}
+ case'application:contextEdit':{
+  const[id,state]=z.tuple([z.enum(contextEditCommands),applicationUiStateSchema]).parse(args)
+  if(state.focus==='none'||state.focus==='grid'||(id==='edit.cut'||id==='edit.copy')&&state.hasSelection!==true)return
+  setApplicationState(state)
+  if(!applicationShortcutHelp(applicationContext()).some(command=>command.id===id&&command.enabled))return
+  await dispatchApplicationCommand(id);return
+ }
  case'application:shortcuts':z.tuple([]).parse(args);return{platform:process.platform,commands:applicationShortcutHelp(applicationContext())}
  case'language':return languageState()
  case'appInfo':z.tuple([]).parse(args);return applicationInfo()
