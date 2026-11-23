@@ -118,6 +118,6 @@ test('SIM-1h solo el menú contextual bloquea copiar sin selección; lectura blo
  await editor.press('Shift+F10');await expect(rootMenu().getByRole('menuitem',{name:'Copiar',exact:true})).toBeDisabled();await expect(rootMenu().getByRole('menuitem',{name:'Cortar',exact:true})).toBeDisabled();await page.keyboard.press('Escape')
  await expect.poll(()=>app.evaluate(({Menu})=>Menu.getApplicationMenu()?.getMenuItemById('edit.copy')?.enabled)).toBe(true)
  const path=join(files,'lectura.txt'),bytes=Buffer.from('Hola\n','utf16le');await writeFile(path,bytes);await page.evaluate(path=>window.freya.openPaths([path]),path)
- editor=page.locator('.cm-content');await expect(editor).toHaveAttribute('contenteditable','false');await editor.focus();await editor.press('Shift+F10')
+ editor=page.locator('.cm-content');await expect(editor).toHaveAttribute('contenteditable','false');await editor.focus();await expect(editor).toBeFocused();await editor.press('Shift+F10')
  await expect(rootMenu().getByRole('menuitem',{name:'Cortar',exact:true})).toBeDisabled();await expect(rootMenu().getByRole('menuitem',{name:'Pegar',exact:true})).toBeDisabled();expect(await readFile(path)).toEqual(bytes)
 })
