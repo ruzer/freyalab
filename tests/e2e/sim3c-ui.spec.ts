@@ -76,7 +76,9 @@ test('SIM-3c: la barra pertenece al documento activo y vuelve al CSV sin perder 
  // Abrir un archivo publica su propio estado; el defecto está al volver a una pestaña existente.
  for(const name of names){
   await page.getByRole('tab',{name,exact:true}).click();await expect(page.getByRole('tab',{name,exact:true})).toHaveAttribute('aria-selected','true')
-  await expect(footer()).not.toContainText(/\bfilas\b/)
+  console.log('SIM3C_FOOTER '+JSON.stringify({document:name,...await footer().evaluate(node=>({textContent:node.textContent,innerText:node.innerText,children:Array.from(node.children).map(child=>({tag:child.tagName,class:child.className,text:child.textContent}))}))}))
+  // textContent del footer concatena hijos: «filasContando…» no tiene límite de palabra.
+  await expect(footer().locator(':scope > span.truncate')).not.toContainText('filas')
   await expect(footer().locator('.csv-status')).toHaveCount(0)
   await page.getByRole('tab',{name:'datos.csv',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00123');await expect(footer()).toContainText('2 de 2 filas')
  }
