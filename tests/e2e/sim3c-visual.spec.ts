@@ -34,7 +34,7 @@ test.afterEach(async()=>{
  try{for(const[name,text]of fixture)expect(await readFile(join(files,name),'utf8')).toBe(text);expect(pageErrors).toEqual([]);expect((await page.evaluate(()=>window.freya.documents())).every(doc=>!doc.dirty)).toBe(true)}
  finally{try{await stopTrace?.()}finally{try{await closeElectron(app)}finally{if(root)await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:200})}}}
 })
-async function capture(state:string){await page.screenshot({animations:'disabled',path:test.info().outputPath(`sim3c-${variant.locale}-${variant.theme}-${variant.width}x${variant.height}-${state}.png`)})}
+async function capture(state:string){await page.mouse.move(0,0);await page.screenshot({animations:'disabled',path:test.info().outputPath(`sim3c-${variant.locale}-${variant.theme}-${variant.width}x${variant.height}-${state}.png`)})}
 async function actionsReachable(menu:Locator){
  await expect.poll(()=>menu.locator('button,select').evaluateAll(nodes=>nodes.length>0&&nodes.every(node=>{
   const r=node.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)

@@ -1,0 +1,16 @@
+
+Running 8 tests using 1 worker
+
+(node:45990) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/8] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: es light 1440×900
+[2/8] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: es light 1280×720
+[3/8] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: es dark 1440×900
+[4/8] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: es dark 1280×720
+[5/8] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: en-XA light 1440×900
+[6/8] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: en-XA light 1280×720
+[7/8] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: en-XA dark 1440×900
+[8/8] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: en-XA dark 1280×720
+  8 passed (19.9s)

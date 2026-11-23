@@ -1,0 +1,50 @@
+
+Running 1 test using 1 worker
+
+(node:30807) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/sim3c-ui.spec.ts:87:1 › SIM-3c: una respuesta real del CSV anterior no publica estado en Markdown
+  1) [csv] › tests/e2e/sim3c-ui.spec.ts:87:1 › SIM-3c: una respuesta real del CSV anterior no publica estado en Markdown 
+
+    Error: expect(locator).not.toContainText(expected) failed
+
+    Locator: locator('footer.statusbar').locator(':scope > span.truncate')
+    Expected substring: not "filas"
+    Received string: "2 de 2 filas"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "not toContainText" locator('footer.statusbar').locator(':scope > span.truncate') with timeout 15000ms
+      - waiting for locator('footer.statusbar').locator(':scope > span.truncate')
+        34 × locator resolved to <span class="truncate">2 de 2 filas</span>
+           - unexpected value "2 de 2 filas"
+
+
+      105 |   await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'sim3cHeldPage').held)).toBe(true)
+      106 |   await page.getByRole('tab',{name:'apuntes.md',exact:true}).click();await expect(page.getByRole('tab',{name:'apuntes.md',exact:true})).toHaveAttribute('aria-selected','true')
+    > 107 |   await expect(footer().locator(':scope > span.truncate')).not.toContainText('filas')
+          |                                                                ^
+      108 |   await app.evaluate(()=>Reflect.get(globalThis,'sim3cHeldPage').release())
+      109 |   await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'sim3cHeldPage').returned)).toBe(true)
+      110 |   await page.evaluate(()=>window.freya.documents())
+        at $WORKTREE/tests/e2e/sim3c-ui.spec.ts:107:64
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    test-results/sim3c-ui-SIM-3c-una-respue-fbb1b--publica-estado-en-Markdown-csv/attachments/electron-context-e90226a84e0745621492855d7098112c6f4e5327.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/sim3c-ui-SIM-3c-una-respue-fbb1b--publica-estado-en-Markdown-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3c-ui-SIM-3c-una-respue-fbb1b--publica-estado-en-Markdown-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3c-ui-SIM-3c-una-respue-fbb1b--publica-estado-en-Markdown-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [csv] › tests/e2e/sim3c-ui.spec.ts:87:1 › SIM-3c: una respuesta real del CSV anterior no publica estado en Markdown 
