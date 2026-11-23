@@ -31,6 +31,14 @@ async function structure(menu:Locator){
  }))
 }
 const rootMenu=()=>page.getByRole('menu').first()
+async function preserveClipboard(){
+ await app.evaluate(async({clipboard,ClipboardItem})=>{
+  const items=(await clipboard.read()).filter(item=>item.types.length)
+  const saved=await Promise.all(items.map(async item=>new ClipboardItem(Object.fromEntries(await Promise.all(item.types.map(async type=>[type,await item.getType(type)]))))))
+  if(saved.length)await clipboard.write(saved)
+  Reflect.set(globalThis,'contextClipboard',saved);clipboard.writeText('SIM1h sintético')
+ })
+}
 
 test('SIM-1h celda conserva título, grupos, altura y teclado comunes',async()=>{
  const cell=page.getByRole('gridcell',{name:'Fila 1, Importe',exact:true})
@@ -72,12 +80,7 @@ test('SIM-1h Archivos admite otros formatos y carpetas',async()=>{
 
 test('SIM-1h edición contextual conserva selección, historial y campos de diálogo',{tag:'@solo'},async()=>{
  // Los formatos originales permanecen solo en memoria de main, nunca en la traza.
- await app.evaluate(async({clipboard,ClipboardItem})=>{
-  const items=(await clipboard.read()).filter(item=>item.types.length)
-  const saved=await Promise.all(items.map(async item=>new ClipboardItem(Object.fromEntries(await Promise.all(item.types.map(async type=>[type,await item.getType(type)]))))))
-  if(saved.length)await clipboard.write(saved)
-  Reflect.set(globalThis,'contextClipboard',saved);clipboard.writeText('SIM1h sintético')
- })
+ await preserveClipboard()
  const [doc]=await page.evaluate(path=>window.freya.openPaths([path]),markdown)
  const editor=page.locator('.cm-content');await editor.focus();await editor.press('ControlOrMeta+Home');for(let i=0;i<5;i++)await editor.press('ArrowRight');await editor.press('Shift+End');await editor.press('Shift+F10')
  await rootMenu().getByRole('menuitem',{name:'Copiar',exact:true}).click();await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toBe('mundo')
@@ -88,6 +91,24 @@ test('SIM-1h edición contextual conserva selección, historial y campos de diá
  const dialog=page.getByRole('dialog'),field=dialog.getByRole('textbox',{name:'Valor del rango',exact:true});await field.fill('Texto de diálogo');await field.press('ControlOrMeta+a');await field.press('Shift+F10')
  const menu=rootMenu();await expect(menu).toBeVisible();await menu.getByRole('menuitem',{name:'Copiar',exact:true}).click();await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toBe('Texto de diálogo')
  await expect(dialog).toBeVisible();expect(await readFile(markdown,'utf8')).toBe('Hola mundo\n')
+})
+
+test('SIM-1h el menú de texto conserva el borrador de la celda y su selección',{tag:'@solo'},async()=>{
+ await preserveClipboard()
+ const cell=page.getByRole('gridcell',{name:'Fila 1, Importe',exact:true});await cell.dblclick()
+ const input=page.getByRole('textbox',{name:'Editar celda',exact:true});await input.fill('123.45');await input.press('ControlOrMeta+a');await input.press('Shift+F10')
+ await expect(rootMenu()).toBeVisible();await expect(input).toHaveValue('123.45')
+ await rootMenu().getByRole('menuitem',{name:'Copiar',exact:true}).click();await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toBe('123.45')
+ await expect(input).toBeFocused();await input.press('Shift+F10');await page.keyboard.press('Escape');await expect(input).toBeFocused()
+ await page.getByRole('tab',{name:'encuesta.csv',exact:true}).click()
+ await expect(cell).toHaveText('123.45');await expect(input).toHaveCount(0)
+})
+
+test('SIM-1h la búsqueda de CodeMirror no ofrece pegar Markdown sin formato',async()=>{
+ await page.evaluate(path=>window.freya.openPaths([path]),markdown)
+ const editor=page.locator('.cm-content');await editor.focus();await editor.press('ControlOrMeta+f')
+ const search=page.locator('.cm-search input[name="search"]');await expect(search).toBeVisible();await search.press('Shift+F10')
+ await expect(rootMenu()).toBeVisible();expect(await structure(rootMenu())).toEqual(['Cortar','Copiar','Pegar','|','Seleccionar todo'])
 })
 
 test('SIM-1h solo el menú contextual bloquea copiar sin selección; lectura bloquea mutaciones',async()=>{
