@@ -94,7 +94,7 @@
  let selectedRows=$state<string[]>([]),selectedColumns=$state<number[]>(initialView?.columns??[]),selectionStats=$state<TableStats|null>(null)
  let searchInput=$state<HTMLInputElement>(),replaceInput=$state<HTMLInputElement>()
  let replaceFind=$state(''),replaceWith=$state(''),header=$state(true)
- let sortQueue:Promise<void>=Promise.resolve(),sortMounted=true,sortProfileRequest:{id:string;requestId:string}|undefined
+ let sortQueue:Promise<void>=Promise.resolve(),sortMounted=true,sortViewVersion=0,sortProfileRequest:{id:string;requestId:string}|undefined
  let sortingColumn=$state<number|null>(null)
  let scrollElement=$state<HTMLDivElement>(),pageOffset=$state(0),requestId=0
  let editing=$state<{rowId:string;column:number;value:string}|null>(null),editingHeader=$state<{index:number;value:string}|null>(null)
@@ -170,7 +170,7 @@
   {id:'extract',label:'Extraer filas a un archivo nuevo…',detail:'Filtra por condiciones y columnas el archivo grande y crea un archivo nuevo; el original no se modifica',disabled:!large,run:()=>withSubsetClosed(()=>{showQuery=false;showExtract=!showExtract})},
   ...project?[{id:'saveSubset',label:t('subset.saveAs'),detail:t('subset.saveAsHint'),keywords:'conjunto subconjunto muestra muestreo semilla subset sample dataset receta',disabled:!!subsetReason,disabledReason:subsetReason,run:()=>openSubset()},{id:'newSubset',label:t('subset.new'),detail:t('subset.newHint'),keywords:'conjunto subconjunto muestra muestreo semilla subset sample dataset receta',disabled:!!subsetReason,disabledReason:subsetReason,run:()=>openSubset({blank:true})}]:[],
   ...exportSubsetCommands,
-  {id:'clearQuery',label:large?'Quitar búsqueda y filtros':'Quitar filtros y orden',detail:'Restaura la vista de todas las filas; no cambia el documento',disabled:large?!largeView:!search&&!Object.values(filters).some(Boolean)&&!sort&&!order.length&&!conditions.length,run:()=>{if(large)return clearView();search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}},
+  {id:'clearQuery',label:large?'Quitar búsqueda y filtros':'Quitar filtros y orden',detail:'Restaura la vista de todas las filas; no cambia el documento',disabled:large?!largeView:!search&&!Object.values(filters).some(Boolean)&&!sort&&!order.length&&!conditions.length,run:()=>{if(large)return clearView();sortViewVersion++;search='';filters={};sort=undefined;conditions=[];order=[];showQuery=false}},
   {id:'sql',label:'Análisis SQL y asistentes',detail:'Mostrar u ocultar agrupaciones, tablas dinámicas (pivot) y cruces de archivos con DuckDB',disabled:false,run:()=>analyze('sql')},
   {id:'statistics',label:'Estadísticas y exploración',detail:large?'Las estadísticas llegan en una fase posterior':'Mostrar u ocultar perfiles, frecuencias, valores faltantes, duplicados y correlación',disabled:large,run:()=>analyze('statistics')},
   {id:'charts',label:'Gráficos',detail:'Mostrar u ocultar histogramas, barras, líneas, dispersión, mapas de calor y cajas',disabled:false,run:()=>analyze('charts')},
@@ -478,19 +478,19 @@
  function selectColumn(index:number,replace=false){selection=null;context=null;selectedColumns=replace?[index]:selectedColumns.includes(index)?selectedColumns.filter(x=>x!==index):[...selectedColumns,index];void stats()}
  function sortBy(column:number,append=false,descending?:boolean){
   if(large)return
-  const id=doc.id,revision=doc.revision,name=menuColumnLabel(column)
+  const id=doc.id,revision=doc.revision,name=menuColumnLabel(column),viewVersion=sortViewVersion
   // El motor perfila una columna a la vez; la cola conserva dos clics o un orden añadido con Mayús.
   sortQueue=sortQueue.then(async()=>{
-   if(!sortMounted||doc.id!==id||doc.revision!==revision)return
+   if(!sortMounted||doc.id!==id||doc.revision!==revision||viewVersion!==sortViewVersion)return
    const requestId=crypto.randomUUID(),preparing=t('csv.sort.preparing',{column:name})
    sortProfileRequest={id,requestId};sortingColumn=column;announcement=preparing
    try{
     const {profile}=await window.freya.analyzeColumn(id,{column,revision,requestId,frequencyOffset:0,duplicatesOnly:false,bins:1,profileOnly:true})
-    if(!sortMounted||doc.id!==id||doc.revision!==revision)return
+    if(!sortMounted||doc.id!==id||doc.revision!==revision||viewVersion!==sortViewVersion)return
     const current=activeOrder.find(item=>item.column===column),next={column,descending:descending??(current?!current.descending:false),numeric:profile.kind==='number'}
     if(append){order=current?activeOrder.map(item=>item.column===column?next:item):[...activeOrder,next];sort=undefined}else{sort=next;order=[]}
     announcement=t(next.numeric?'csv.sort.completeNumber':'csv.sort.completeText',{column:name})
-   }catch{if(sortMounted&&doc.id===id&&doc.revision===revision)onerror(t('csv.sort.error',{column:name}))}
+   }catch{if(sortMounted&&doc.id===id&&doc.revision===revision&&viewVersion===sortViewVersion)onerror(t('csv.sort.error',{column:name}))}
    finally{
     if(sortMounted){sortingColumn=null;if(announcement===preparing)announcement=''}
     if(sortProfileRequest?.requestId===requestId)sortProfileRequest=undefined
@@ -498,7 +498,7 @@
   })
   return sortQueue
  }
- function applyQuery(next:TableFilter[],sorts:TableSort[],mode:'all'|'any'){if(large){void startView({search:largeView?.query.search,conditions:next,filterMode:mode},true);return}conditions=next;order=sorts;filterMode=mode;sort=undefined;showQuery=false;queryButton?.focus()}
+ function applyQuery(next:TableFilter[],sorts:TableSort[],mode:'all'|'any'){if(large){void startView({search:largeView?.query.search,conditions:next,filterMode:mode},true);return}sortViewVersion++;conditions=next;order=sorts;filterMode=mode;sort=undefined;showQuery=false;queryButton?.focus()}
 
  function setFilter(column:number,value:string){filters={...filters,[column]:value}}
  async function copyMarkdown(){try{await window.freya.tableCopy(doc.id,{scope:cellRange||selectedRows.length?'selection':'filtered',range:cellRange?$state.snapshot(cellRange):undefined,rowIds:$state.snapshot(selectedRows),columns:selectedColumns.length?$state.snapshot(selectedColumns):undefined,query:query()},'markdown');onstatus('Tabla Markdown copiada')}catch(error){onerror(String(error))}}
