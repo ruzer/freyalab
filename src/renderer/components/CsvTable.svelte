@@ -4,7 +4,7 @@
  import type {AnalysisSection,AnalysisStatistics} from '../lib/workspace-tabs'
  import Icon from './Icon.svelte'
  import ContextMenu from './ContextMenu.svelte'
- import {t} from '../lib/i18n.svelte'
+ import {t,plural,formatNumber} from '../lib/i18n.svelte'
  import {createTable,tableFeatures} from '@tanstack/svelte-table'
  import {createVirtualizer,observeElementOffset} from '@tanstack/svelte-virtual'
  import {scrollScale,scrollHeight,toLogical,toPhysical,rowTop} from '../lib/virtual-scroll'
@@ -23,7 +23,7 @@
  import {parse} from 'csv-parse/browser/esm/sync'
  import type {DocumentInfo,TablePage,TableQuery,TableEdit,TableExport,TableStats,Encoding,TableFilter,TableSort,TableRange,TableRangeEdit,TableEmptyEdit,LargeViewState,LargeViewQuery} from '../../shared/types'
  import type {CalculateColumnEdit} from '../../shared/calculated-column'
- let {doc,externalChange=false,onanalysis,analysisHidden=false,onchange,onerror,onstatus,viewControls,project=null,sourceInfo,recipes=[],onexportsubset,commandTitle=(_id:string,label:string)=>label}:{doc:DocumentInfo;externalChange?:boolean;onanalysis:(section?:AnalysisSection,statistics?:AnalysisStatistics)=>void;analysisHidden?:boolean;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;viewControls?:Snippet;project?:ProjectInfo|null;sourceInfo?:ProjectSourceView;recipes?:ProjectRecipeView[];onexportsubset?:(recipe:ProjectRecipeView)=>void;commandTitle?:(id:string,label:string)=>string}=$props()
+ let {doc,externalChange=false,onanalysis,analysisHidden=false,onchange,onerror,onstatus,viewControls,project=null,sourceInfo,recipes=[],onexportsubset,commandTitle=(_id:string,label:string)=>label,commandShortcut=(_id:string)=>''}:{doc:DocumentInfo;externalChange?:boolean;onanalysis:(section?:AnalysisSection,statistics?:AnalysisStatistics)=>void;analysisHidden?:boolean;onchange:(doc:DocumentInfo)=>void;onerror:(message:string)=>void;onstatus:(status:string)=>void;viewControls?:Snippet;project?:ProjectInfo|null;sourceInfo?:ProjectSourceView;recipes?:ProjectRecipeView[];onexportsubset?:(recipe:ProjectRecipeView)=>void;commandTitle?:(id:string,label:string)=>string;commandShortcut?:(id:string)=>string}=$props()
  let showExtract=$state(false),extractButton=$state<HTMLButtonElement>()
  let subset=$state<SubsetIntent|null>(null),subsetPanel=$state<SubsetPanel>(),subsetButton=$state<HTMLButtonElement>(),subsetContext=''
  $effect(()=>{
@@ -100,7 +100,7 @@
  const initialRange=untrack(()=>initialView?.range?.revision===doc.revision?initialView.range:null)
  let selection=$state<{anchor:Cell;end:Cell;query:TableQuery;revision:number}|null>(initialRange?{anchor:{row:initialRange.top,column:initialRange.left},end:{row:initialRange.bottom,column:initialRange.right},query:initialRange.query,revision:initialRange.revision}:null),dragging=$state(false),pendingCell=$state<Cell|null>(null)
  let rangeDialog=$state<{edit:TableRangeEdit;cut?:boolean;documentScope?:boolean;column?:{name:string;rows:number;hidden:number;title:string}}|null>(null),context=$state<{x:number;y:number;kind:'range'|'rows'|'columns';column?:number;headerColumn?:number}|null>(null)
- let contextMenu=$state<HTMLDivElement>(),contextReturn:HTMLElement|null=null
+ let contextReturn:HTMLElement|null=null
  let cleanMenu=$state(false),columnCleanButton=$state<HTMLButtonElement>()
  const menuColumn=$derived(context?.kind==='columns'?context.column??context.headerColumn:undefined)
  const menuColumnLabel=(index:number)=>doc.headers?.[index]||t('csv.columnMenu.unnamed',{position:index+1})
@@ -201,7 +201,7 @@
   {id:'describe',label:t('describe.command'),detail:large?t('analysis.tab.large'):t('describe.commandHelp',{command:'describe'}),disabled:large,run:()=>analyze('statistics')},
   {id:'openAnalysis',label:t('analysis.tab.command'),detail:t('analysis.tab.search'),disabled:false,run:()=>analyze()}
  ])
- const contextCommands=$derived((context?.kind==='rows'?[...(large&&viewActive?['viewDocument']:[]),'insertRowBefore','insertRowAfter','duplicateRows','deleteRows','rows-trim','rows-upper','rows-lower','transformations','copyMarkdown','undo','redo']:[]).map(id=>commands.find(command=>command.id===id)!))
+
  const rangeCommands=$derived([...rangeActions.map(([action])=>commands.find(command=>command.id===action)!),commands.find(command=>command.id==='rangeStatistics')!])
  function openCommands(){if(showTransform||rangeDialog)return;commandReturn=document.activeElement instanceof HTMLElement?document.activeElement:null;pendingCell=null;context=null;dragging=false;showCommands=true}
  async function closeCommands(){showCommands=false;await tick();if(commandReturn?.isConnected)commandReturn.focus();else commandsButton?.focus()}
@@ -238,9 +238,13 @@
   openContext(rect.left,rect.bottom+4,'columns',origin,index)
  }
  function structuralKey(event:KeyboardEvent,kind:'rows'|'columns',item:string|number){if(event.key==='ContextMenu'||event.key==='F10'&&event.shiftKey)structuralContext(event,kind,item)}
- // Una acción enfocada que se deshabilita durante la carga puede devolver el foco al documento.
- $effect(()=>{void busy;void contextCommands;const menu=contextMenu;if(context&&menu&&(!menu.contains(document.activeElement)||document.activeElement?.matches(':disabled')))(menu.querySelector<HTMLButtonElement>('button:not(:disabled)')??menu).focus()})
  $effect(()=>{if(!context)cleanMenu=false})
+ const contextTitle=$derived(context?.kind==='rows'
+  ?selectedRows.length===1?t('csv.context.row',{row:formatNumber(Number(selectedRows[0]))}):plural('csv.context.rows',selectedRows.length)
+  :cellRange?cellRange.top===cellRange.bottom&&cellRange.left===cellRange.right
+   ?t('csv.context.cell',{column:menuColumnLabel(cellRange.left),row:formatNumber(cellRange.top+1)})
+   :t(`csv.context.range.${cellRange.top===cellRange.bottom?'one':'other'}.${cellRange.left===cellRange.right?'one':'other'}`,{rows:formatNumber(cellRange.bottom-cellRange.top+1),columns:formatNumber(cellRange.right-cellRange.left+1)}) : '')
+ function contextLabel(id:string){return id==='duplicateRows'||id==='deleteRows'?plural('csv.context.'+id,selectedRows.length):t('csv.context.'+id)}
  function closeColumnContext(restoreFocus:boolean){if(restoreFocus)closeContext();else context=null}
  function closeCleanMenu(restoreFocus:boolean,all=false){if(all){context=null;return}cleanMenu=false;if(restoreFocus)columnCleanButton?.focus()}
  function closeContext(){const kind=context?.kind;cleanMenu=false;context=null;if(kind==='range'&&selection)focusCell(selection.end.row,selection.end.column,true);else if(contextReturn?.isConnected)contextReturn.focus();else commandsButton?.focus()}
@@ -293,7 +297,7 @@
   if(command&&event.key.toLowerCase()==='a'&&page.matched){event.preventDefault();selectAllCells();return}
   const row=Number(target.closest<HTMLElement>('.csv-cell')?.dataset.row),column=Number(target.closest<HTMLElement>('.csv-cell')?.dataset.column)
   if(!Number.isInteger(row)||!Number.isInteger(column))return
-  if(event.key==='ContextMenu'||event.key==='F10'&&event.shiftKey){event.preventDefault();if(!inside(row,column))selectCell(row,column);const rect=target.getBoundingClientRect();openContext(rect.left,rect.bottom);return}
+  if(event.key==='ContextMenu'||event.key==='F10'&&event.shiftKey){event.preventDefault();event.stopPropagation();if(!inside(row,column))selectCell(row,column);const rect=target.getBoundingClientRect();openContext(rect.left,rect.bottom);return}
   if(['ArrowDown','ArrowUp','ArrowLeft','ArrowRight','Home','End','PageDown','PageUp'].includes(event.key)){event.preventDefault();let nextRow=row,nextColumn=column;if(event.key==='ArrowDown')nextRow++;if(event.key==='ArrowUp')nextRow--;if(event.key==='ArrowRight')nextColumn++;if(event.key==='ArrowLeft')nextColumn--;if(event.key==='PageDown')nextRow+=Math.max(1,Math.floor((scrollElement?.clientHeight??320)/32)-1);if(event.key==='PageUp')nextRow-=Math.max(1,Math.floor((scrollElement?.clientHeight??320)/32)-1);if(event.key==='Home'){nextColumn=0;if(command)nextRow=0}if(event.key==='End'){nextColumn=(doc.headers?.length??1)-1;if(command)nextRow=page.matched-1}focusCell(nextRow,nextColumn,event.shiftKey);return}
   if((event.key==='Delete'||event.key==='Backspace')&&cellRange){event.preventDefault();void rangeAction('clear')}
   if(event.key==='Enter'&&command&&cellRange){event.preventDefault();void rangeAction('fill')}
@@ -521,6 +525,14 @@
  <button {...(command.disabledReason?{title:command.disabledReason,'aria-describedby':'csv-context-reason-'+command.id}:controlHint(!command.disabled?null:doc.readonly?readonlyReason:busy||interpreting?'busy':'context',command.detail))} role="menuitem" tabindex="-1" aria-disabled={command.disabled} class:column-menu-danger={id==='deleteColumn'} onclick={()=>void runCommand(id)}>{t('csv.columnMenu.'+id)}</button>
  {#if command.disabledReason}<span class="sr-only" id={'csv-context-reason-'+command.id}>{command.disabledReason}</span>{/if}
 {/snippet}
+{#snippet contextMenuItem(id:string,shortcut='')}
+ {@const command=commands.find(command=>command.id===id)!}
+ <button {...(command.disabledReason?{title:command.disabledReason,'aria-describedby':'csv-context-reason-'+id}:controlHint(!command.disabled?null:doc.readonly?readonlyReason:busy||interpreting?'busy':'context',command.detail))} role="menuitem" tabindex="-1" aria-disabled={command.disabled} class:column-menu-danger={id==='deleteRows'} onclick={()=>void runCommand(id)}><span>{contextLabel(id)}</span>{#if shortcut}<kbd aria-hidden="true">{shortcut}</kbd>{/if}</button>
+ {#if command.disabledReason}<span class="sr-only" id={'csv-context-reason-'+id}>{command.disabledReason}</span>{/if}
+{/snippet}
+{#snippet contextClean()}
+ <button bind:this={columnCleanButton} role="menuitem" tabindex="-1" aria-haspopup="menu" aria-expanded={cleanMenu} onclick={()=>cleanMenu=!cleanMenu} onkeydown={event=>{if(event.key==='ArrowRight'){event.preventDefault();event.stopPropagation();cleanMenu=true}}}>{t('csv.columnMenu.clean')}<Icon name="chevron-right" size={12}/></button>
+{/snippet}
 {#if context?.kind==='columns'&&menuColumn!==undefined}
  <ContextMenu x={context.x} y={context.y} label={t('csv.columnMenu.label')} onclose={closeColumnContext}>
   <div class="column-menu-items">
@@ -541,11 +553,33 @@
    {/if}
   </div>
  </ContextMenu>
-{:else if context}<div bind:this={contextMenu} class="range-context" role="menu" aria-label={context.kind==='rows'?'Acciones de filas':'Acciones del rango'} tabindex="-1" style:left={`${context.x}px`} style:top={`${context.y}px`} onkeydown={event=>{const buttons=Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')),index=buttons.indexOf(document.activeElement as HTMLButtonElement);if(event.key==='Escape'){event.preventDefault();closeContext()}else if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();buttons[event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(event.key==='ArrowDown'?1:buttons.length-1))%buttons.length]?.focus()}else if(event.key==='Tab')context=null}}>
- {#if context.kind==='range'}{@render rangeButtons(true)}
- {:else}<span class="dropdown-label" role="presentation">{selectedRows.length} filas · {selectedColumns.length?`${selectedColumns.length} columnas`:'todas las columnas'}</span>{#each contextCommands as command}<button {...(command.disabledReason?{title:command.disabledReason,'aria-describedby':'csv-context-reason-'+command.id}:controlHint(!command.disabled?null:doc.readonly?readonlyReason:busy||interpreting?'busy':'context',command.detail))} role="menuitem" disabled={command.disabled} onclick={()=>void runCommand(command.id)}>{command.label}</button>{#if command.disabledReason}<span class="sr-only" id={'csv-context-reason-'+command.id}>{command.disabledReason}</span>{/if}{/each}
- {/if}
-</div>{/if}
+{:else if context}
+ <ContextMenu x={context.x} y={context.y} label={t(context.kind==='rows'?'csv.context.rowMenu':'csv.context.rangeMenu')} onclose={closeColumnContext}>
+  <div class="column-menu-items">
+   <span class="dropdown-label column-menu-title" role="presentation">{contextTitle}</span>
+   {#if context.kind==='range'}
+    {#each ['cut','copy','paste'] as id}{@render contextMenuItem(id,commandShortcut('edit.'+id))}{/each}
+    <div class="column-menu-separator" role="separator"></div>
+    {#each ['fill','clear'] as id}{@render contextMenuItem(id)}{/each}
+    {@render contextClean()}
+    <div class="column-menu-separator" role="separator"></div>
+    {@render contextMenuItem('rangeStatistics')}
+   {:else}
+    {#if large&&viewActive}{@render contextMenuItem('viewDocument')}<div class="column-menu-separator" role="separator"></div>{/if}
+    {#each ['insertRowBefore','insertRowAfter','duplicateRows'] as id}{@render contextMenuItem(id)}{/each}
+    <div class="column-menu-separator" role="separator"></div>
+    {@render contextClean()}
+    <div class="column-menu-separator" role="separator"></div>
+    {@render contextMenuItem('deleteRows')}
+   {/if}
+   {#if cleanMenu&&columnCleanButton}
+    <ContextMenu x={context.x} y={context.y} parentItem={columnCleanButton} label={t('csv.columnMenu.cleanLabel',{column:contextTitle})} onclose={closeCleanMenu}>
+     <div class="column-menu-items">{#each context.kind==='range'?['trim','upper','lower','replace']:['rows-trim','rows-upper','rows-lower'] as id}{@render contextMenuItem(id)}{/each}</div>
+    </ContextMenu>
+   {/if}
+  </div>
+ </ContextMenu>
+{/if}
 <div class="csv-workspace">
  <div bind:this={toolbar} bind:clientWidth={toolbarWidth} class="csv-toolbar" class:compact={bodyWidth>0&&bodyWidth<(viewControls?1280:1000)} role="toolbar" aria-label="Herramientas de la tabla">
   {@render viewControls?.()}
@@ -626,7 +660,7 @@
      {#each $columnsVirtual.getVirtualItems() as col (col.key)}
       {@const value=row.cells[col.index]??''}
       {@const matches=!!appliedSearch&&value.toLocaleLowerCase().includes(appliedSearch)}
-      <div class="csv-cell" class:range-selected={inside(virtualRow.index,col.index)} aria-selected={inside(virtualRow.index,col.index)} data-row={virtualRow.index} data-column={col.index} onpointerdown={event=>beginSelection(event,virtualRow.index,col.index)} onpointerenter={()=>{if(dragging&&selection)selection={...selection,end:{row:virtualRow.index,column:col.index}}}} oncontextmenu={event=>{event.preventDefault();if(!inside(virtualRow.index,col.index))selectCell(virtualRow.index,col.index);openContext(event.clientX,event.clientY)}} class:column-selected={selectedColumns.includes(col.index)} role="gridcell" aria-colindex={col.index+2} tabindex="0" aria-label={`Fila ${large?row.id:virtualRow.index+1}, ${doc.headers?.[col.index]}`} style:left={`${col.start}px`} style:width={`${col.size}px`} ondblclick={()=>{if(!locked)editing={rowId:row.id,column:col.index,value:row.cells[col.index]??''}}} onkeydown={event=>{if(!locked&&!event.metaKey&&!event.ctrlKey&&(event.key==='Enter'||event.key==='F2')){event.preventDefault();editing={rowId:row.id,column:col.index,value:row.cells[col.index]??''}}}} onpaste={event=>void paste(event,row.id,col.index)}>
+      <div class="csv-cell" class:range-selected={inside(virtualRow.index,col.index)} aria-selected={inside(virtualRow.index,col.index)} data-row={virtualRow.index} data-column={col.index} onpointerdown={event=>beginSelection(event,virtualRow.index,col.index)} onpointerenter={()=>{if(dragging&&selection)selection={...selection,end:{row:virtualRow.index,column:col.index}}}} oncontextmenu={event=>{if((event.target as HTMLElement).closest('input,textarea'))return;event.preventDefault();event.stopPropagation();if(!inside(virtualRow.index,col.index))selectCell(virtualRow.index,col.index);openContext(event.clientX,event.clientY)}} class:column-selected={selectedColumns.includes(col.index)} role="gridcell" aria-colindex={col.index+2} tabindex="0" aria-label={`Fila ${large?row.id:virtualRow.index+1}, ${doc.headers?.[col.index]}`} style:left={`${col.start}px`} style:width={`${col.size}px`} ondblclick={()=>{if(!locked)editing={rowId:row.id,column:col.index,value:row.cells[col.index]??''}}} onkeydown={event=>{if(!locked&&!event.metaKey&&!event.ctrlKey&&(event.key==='Enter'||event.key==='F2')){event.preventDefault();editing={rowId:row.id,column:col.index,value:row.cells[col.index]??''}}}} onpaste={event=>void paste(event,row.id,col.index)}>
        {#if editing?.rowId===row.id&&editing?.column===col.index}<input class="cell-input" aria-label="Editar celda" bind:value={editing.value} use:focus onblur={()=>{if(editing)void edit({type:'cell',rowId:row.id,column:col.index,value:editing.value})}} onkeydown={event=>{if(event.key==='Enter'&&editing){event.preventDefault();event.currentTarget.blur()}else if(event.key==='Escape'){editing=null}}}/>{:else}<span title={value}>{#if matches}<mark>{value}</mark>{:else}{value}{/if}</span>{/if}
       </div>
      {/each}
@@ -660,14 +694,6 @@
 </script>
 
 <style>
- .column-menu-items{display:flex;flex-direction:column;min-width:0}
- .column-menu-items button{padding:5px 7px;white-space:normal;overflow-wrap:anywhere}
- .column-menu-title{text-transform:none;letter-spacing:normal;overflow-wrap:anywhere}
- .column-menu-items button[aria-haspopup="menu"]{display:flex;align-items:center;gap:8px}
- .column-menu-items button[aria-haspopup="menu"] :global(svg){margin-left:auto;flex:none}
- .column-menu-separator{border-top:1px solid var(--border);margin:4px 2px}
- .column-menu-items .column-menu-danger{color:var(--danger)}
- @media(forced-colors:active){.column-menu-items .column-menu-danger{color:CanvasText}}
  .csv-toolbar summary.disabled{opacity:.45;cursor:not-allowed}.large-search-help{margin:0;padding:4px 12px;font-size:var(--font-meta);color:var(--muted);border-bottom:1px solid var(--border)}.large-search-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 12px;border-bottom:1px solid var(--border);font-size:11px;background:var(--panel)}.large-search-status p{margin:0;line-height:1.5}.large-search-status button{font-size:11px;padding:3px 7px}.large-search-status progress{width:110px}.large-search-scope{flex-basis:100%;color:var(--muted)}
  .large-csv-help{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
  .csv-toolbar [data-tooltip]{position:relative;appearance:none;min-width:24px;min-height:24px}.csv-toolbar [data-tooltip]:hover::after,.csv-toolbar [data-tooltip]:focus::after{content:attr(data-tooltip);position:absolute;right:0;top:calc(100% + 7px);max-width:300px;padding:6px 9px;border-radius:var(--radius-control);background:var(--text);color:var(--panel);font-size:11px;white-space:normal;z-index:90;pointer-events:none;min-width:max-content}.csv-toolbar [data-tooltip]:focus-visible{outline:2px solid var(--accent)}

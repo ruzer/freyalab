@@ -25,6 +25,14 @@
  {@render children()}
 </div>
 <style>
+ .range-context :global(.column-menu-items){display:flex;flex-direction:column;min-width:0}
+ .range-context :global([role="menuitem"]){display:flex;align-items:center;gap:8px;min-height:30px;padding:5px 7px;line-height:20px;white-space:normal;overflow-wrap:anywhere}
+ .range-context :global(kbd){margin-left:auto;flex:none;color:var(--muted);font:inherit;white-space:nowrap}
+ .range-context :global(.column-menu-title){text-transform:none;letter-spacing:normal;overflow-wrap:anywhere}
+ .range-context :global([role="menuitem"][aria-haspopup="menu"] svg){margin-left:auto;flex:none}
+ .range-context :global(.column-menu-separator){border-top:1px solid var(--border);margin:4px 2px}
+ .range-context :global(.column-menu-danger){color:var(--danger)}
+ @media(forced-colors:active){.range-context :global(.column-menu-danger){color:CanvasText}}
  /* Lo no disponible se ve como desactivado aunque siga siendo enfocable. */
  .range-context :global([role="menuitem"][aria-disabled="true"]){opacity:.45;cursor:default}
  .range-context :global([role="menuitem"][aria-disabled="true"]:hover){background:transparent}
