@@ -5,6 +5,11 @@ import type {ChartData,ChartOptions} from '../shared/charts'
 import {chartLabels} from '../shared/charts'
 import {chartTrendLine,chartTrendText} from '../shared/chart-trend'
 export const formatChartNumber=(value:number)=>formatNumber(value,{maximumSignificantDigits:12})
+export function chartOutlierValues(value:string|null):number[]{
+ const values=JSON.parse(value??'[]') as unknown
+ if(!Array.isArray(values)||values.length>20||values.some(n=>typeof n!=='number'||!Number.isFinite(n)))throw new Error('Atípicos no válidos.')
+ return values
+}
 const number=(v:string|null)=>{if(v===null)return null;const n=Number(v);if(!Number.isFinite(n))throw new Error('Un resultado numérico no se puede representar.');return n}
 const label=(value:string|null)=>value===null?t('charts.plot.missing'):value===''?t('charts.plot.empty'):value
 const short=(value:unknown)=>String(value).replace(/[{}]/g,'').slice(0,28)
@@ -55,6 +60,6 @@ export function chartOption(data:ChartData,options:ChartOptions,colors:{text:str
   return{...common,grid:{left:85,right:40,top:compact?15:65,bottom:compact?100:120},xAxis:categoryAxis(categories(xs)),yAxis:{...yName,type:'category',data:categories(ys),axisLabel:labels,axisLine},visualMap:{formatter:value=>value===null||value===undefined?'—':formatChartNumber(Number(value)),min:Math.min(0,...values),max:Math.max(1,...values),textStyle:{color:colors.text},calculable:false,orient:'horizontal',left:'center',bottom:0,inRange:{color:['#dfe8f7','#3b82f6']}},series:[{type:'heatmap',data:rows.map(r=>[xs.indexOf(r[0]),ys.indexOf(r[2]),number(r[1])]),label:{show:rows.length<=50,color:'#000000',formatter:markNumber}}]}
  }
  const outliers:number[][]=[]
- rows.forEach((row,index)=>{const values=JSON.parse(row[8]??'[]') as unknown;if(!Array.isArray(values)||values.length>20||values.some(n=>typeof n!=='number'||!Number.isFinite(n)))throw new Error('Atípicos no válidos.');for(const n of values)outliers.push([index,n])})
+ rows.forEach((row,index)=>{for(const n of chartOutlierValues(row[8]))outliers.push([index,n])})
  return{...common,series:[{type:'boxplot',data:rows.map(r=>[number(r[4])!,number(r[2])!,number(r[1])!,number(r[3])!,number(r[5])!])},{name:t('charts.plot.outliers'),type:'scatter',symbolSize:6,data:outliers}]}
 }

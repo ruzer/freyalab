@@ -22,7 +22,7 @@
  import {describeConditions} from '../../shared/table-conditions'
  import {chartPivot,chartTop} from '../../shared/chart-pivot'
  import {suggest,type ChartColumn} from '../../shared/chart-suggest'
- import {chartOption,chartSeries} from '../chart-option'
+ import {chartOption,chartSeries,chartOutlierValues} from '../chart-option'
  import {chartTrendText,chartTrendLine} from '../../shared/chart-trend'
  import type {DocumentInfo,SqlResult,TableQuery,TableConditionGroup,TableViewMeta} from '../../shared/types'
  use([BarChart,LineChart,ScatterChart,HeatmapChart,BoxplotChart,GridComponent,TooltipComponent,VisualMapComponent,AriaComponent,TitleComponent,LegendComponent,SVGRenderer])
@@ -260,7 +260,7 @@
 
  {#if data}
   {#if sample===true}<p>{t('charts.ui.sampleExport')}</p>{/if}
-  <details><summary>{t('charts.ui.table')}</summary><div class="table-scroll"><table><caption>{t('charts.ui.caption',{kind:t('charts.kind.'+options.kind)})}</caption><thead><tr>{#each data.columns as name}<th scope="col">{t('charts.head.'+name)}</th>{/each}</tr></thead><tbody>{#each data.rows.slice(tablePage*50,(tablePage+1)*50) as row}<tr>{#each row as value,index}<td>{#if value===null}—{:else if value===''}{t('charts.plot.empty')}{:else if tableNumeric(data.columns[index])}<AnalysisNumber value={Number(value)} mode={numberMode}/>{:else}{value}{/if}</td>{/each}</tr>{/each}</tbody></table></div><div class="actions"><button {...controlHint(tablePage===0?'firstPage':null)} disabled={tablePage===0} onclick={()=>tablePage--}>{t('charts.ui.previous')}</button><span>{t('charts.ui.page',{page:tablePage+1,total:Math.max(1,Math.ceil(data.rows.length/50))})}</span><button {...controlHint((tablePage+1)*50>=data.rows.length?'lastPage':null)} disabled={(tablePage+1)*50>=data.rows.length} onclick={()=>tablePage++}>{t('charts.ui.next')}</button></div></details>
+  <details><summary>{t('charts.ui.table')}</summary><div class="table-scroll"><table><caption>{t('charts.ui.caption',{kind:t('charts.kind.'+options.kind)})}</caption><thead><tr>{#each data.columns as name}<th scope="col">{t('charts.head.'+name)}</th>{/each}</tr></thead><tbody>{#each data.rows.slice(tablePage*50,(tablePage+1)*50) as row}<tr>{#each row as value,index}<td>{#if value===null}—{:else if value===''}{t('charts.plot.empty')}{:else if options.kind==='box'&&data.columns[index]==='atypical'}[{#each chartOutlierValues(value) as outlier,outlierIndex}{outlierIndex?', ':''}<AnalysisNumber value={outlier} mode={numberMode}/>{/each}]{:else if tableNumeric(data.columns[index])}<AnalysisNumber value={Number(value)} mode={numberMode}/>{:else}{value}{/if}</td>{/each}</tr>{/each}</tbody></table></div><div class="actions"><button {...controlHint(tablePage===0?'firstPage':null)} disabled={tablePage===0} onclick={()=>tablePage--}>{t('charts.ui.previous')}</button><span>{t('charts.ui.page',{page:tablePage+1,total:Math.max(1,Math.ceil(data.rows.length/50))})}</span><button {...controlHint((tablePage+1)*50>=data.rows.length?'lastPage':null)} disabled={(tablePage+1)*50>=data.rows.length} onclick={()=>tablePage++}>{t('charts.ui.next')}</button></div></details>
  {/if}
  <details><summary>{t('charts.ui.viewQuery')}</summary><p>{t('charts.ui.precisionHelp')}</p><pre>{sql}</pre></details>
 {/snippet}
