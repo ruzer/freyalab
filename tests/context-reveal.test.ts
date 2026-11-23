@@ -26,7 +26,7 @@ const active=async()=>((await invoke('project:state')) as {project:ProjectInfo|n
 const create=async()=>{await invoke('project:pickFolder');await invoke('project:create','Censo',false);return(await active())!}
 beforeEach(async()=>{
  vi.resetModules();vi.clearAllMocks();native.holdPath='';native.release=undefined;native.entered=undefined
- root=await mkdtemp(join(tmpdir(),'freya-context-reveal-'));native.profile=join(root,'perfil');native.folder=join(root,'proyecto');await mkdir(native.folder)
+ root=await mkdtemp(join(tmpdir(),'freya-context-reveal-'));native.profile=join(root,'perfil');native.folder=join(root,'proyecto');await mkdir(native.folder);await mkdir(native.profile)
  vi.stubEnv('FREYALAB_TEST','1');vi.stubEnv('FREYALAB_TEST_OPEN','[]');vi.stubEnv('FREYALAB_USER_DATA',native.profile)
  await import('../src/main/index');await native.ready()
  handler=native.handle.mock.calls.find(([channel])=>channel==='freya')![1] as Handler
@@ -60,6 +60,35 @@ describe('SIM-1h · revelar solo objetos autorizados por main',()=>{
  it('cambiar de carpeta revoca la anterior aunque siga en docs.roots',async()=>{
   const a=join(root,'A'),b=join(root,'B');await mkdir(a);await mkdir(b);const path=join(a,'dato.txt');await writeFile(path,'Conservar')
   await chooseFolder(a);await chooseFolder(b);await expect(invoke('fileShow',path)).rejects.toThrow();expect(native.reveal).not.toHaveBeenCalled()
+ })
+ it('realinea Archivos con A al reabrir el mismo proyecto convertido a solo lectura',async()=>{
+  const before=await create(),a=before.path,b=join(root,'B');await mkdir(b)
+  const fileA=join(a,'a.txt'),fileB=join(b,'b.txt'),manifest=join(a,'proyecto.freyalab')
+  await writeFile(fileA,'A\n');await writeFile(fileB,'B\n');await chooseFolder(b)
+  const future=JSON.stringify({...JSON.parse(await readFile(manifest,'utf8')),version:2,unknown:{preserve:true}})+'\n'
+  await writeFile(manifest,future);await invoke('project:openRecent',a)
+  expect(await active()).toMatchObject({id:before.id,path:a,version:2,readonly:true})
+  native.reveal.mockClear()
+  const resultA=await invoke('fileShow',fileA).then(()=>null,(error:unknown)=>error)
+  const resultB=await invoke('fileShow',fileB).then(()=>null,(error:unknown)=>error)
+  expect(resultA).toBeNull();expect(resultB).toBeInstanceOf(Error)
+  expect(native.reveal.mock.calls).toEqual([[await realpath(fileA)]])
+  expect(await readFile(manifest,'utf8')).toBe(future)
+  expect(await readFile(fileA,'utf8')).toBe('A\n');expect(await readFile(fileB,'utf8')).toBe('B\n')
+ })
+ it('conserva B al reabrir A con la misma identidad, versión y lectura',async()=>{
+  const before=await create(),a=before.path,b=join(root,'B');await mkdir(b)
+  const fileA=join(a,'a.txt'),fileB=join(b,'b.txt'),manifest=join(a,'proyecto.freyalab')
+  await writeFile(fileA,'A\n');await writeFile(fileB,'B\n');const bytes=await readFile(manifest)
+  await chooseFolder(b);await invoke('project:openRecent',a)
+  expect(await active()).toMatchObject({id:before.id,path:a,version:before.version,readonly:before.readonly})
+  native.reveal.mockClear()
+  const resultA=await invoke('fileShow',fileA).then(()=>null,(error:unknown)=>error)
+  const resultB=await invoke('fileShow',fileB).then(()=>null,(error:unknown)=>error)
+  expect(resultA).toBeInstanceOf(Error);expect(resultB).toBeNull()
+  expect(native.reveal.mock.calls).toEqual([[await realpath(fileB)]])
+  expect(await readFile(manifest)).toEqual(bytes)
+  expect(await readFile(fileA,'utf8')).toBe('A\n');expect(await readFile(fileB,'utf8')).toBe('B\n')
  })
  it('rechaza prefijos parecidos, traversal, un enlace que sale y destinos inexistentes',async()=>{
   const folder=join(root,'datos'),other=join(root,'datos-ajenos');await mkdir(folder);await mkdir(other);const external=join(other,'dato.txt');await writeFile(external,'Conservar')
