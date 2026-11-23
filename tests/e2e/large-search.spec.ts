@@ -65,8 +65,9 @@ test('sin coincidencias permite ir a una fila original; vacío y Escape quitan l
 
 test('ver en el documento completo desde la fila y el atajo conserva número y foco',async()=>{
  await open();await find('Cliente 2300');await expect(cell(2300)).toHaveText('002300')
+ await cell(2300).click({button:'right'});await expect(page.getByRole('menu',{name:'Acciones del rango',exact:true}).locator('.column-menu-title')).toHaveText('id · fila 2,300');await page.keyboard.press('Escape')
  await page.getByRole('button',{name:'Seleccionar fila 2300',exact:true}).click({button:'right'})
- const menu=page.getByRole('menu',{name:'Acciones de filas',exact:true});await menu.getByRole('menuitem',{name:'Ver en el documento completo',exact:true}).click()
+ const menu=page.getByRole('menu',{name:'Acciones de filas',exact:true});await expect(menu.locator('.column-menu-title')).toHaveText('Fila 2,300');await menu.getByRole('menuitem',{name:'Ver en el documento completo',exact:true}).click()
  await expect(statePanel()).toHaveCount(0);await expect(cell(2300)).toBeFocused();await expect(grid()).toHaveAttribute('aria-rowcount','3001')
  await find('Cliente 2300');await expect(grid()).toHaveAttribute('aria-rowcount','2');await cell(2300).focus();await page.keyboard.press('ControlOrMeta+Shift+G')
  await expect(statePanel()).toHaveCount(0);await expect(cell(2300)).toBeFocused();await expect(grid()).toHaveAttribute('aria-rowcount','3001')
