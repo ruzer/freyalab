@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [main, codex/prj03-lf-sonda-intel]
+    branches: [main]
     paths-ignore:
       - '*.md'
       - 'docs/*.md'
