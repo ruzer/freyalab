@@ -38,6 +38,10 @@ describe('SIM-3d · precisión de presentación y copia',()=>{
   expect(formatAnalysisFullNumber(3/13*100,' %')).toBe('23.0769230769231 %')
   expect(formatAnalysisFullNumber(11.6666666667,' %')).toBe('11.6666666667 %')
  })
+ it('no convierte un resultado finito extremo en Infinity al redondear la copia',()=>{
+  expect(formatAnalysisFullNumber(Number.MAX_VALUE)).toBe('1.79769313486232e+308')
+  expect(formatAnalysisFullNumber(-Number.MAX_VALUE,' %')).toBe('-1.79769313486232e+308 %')
+ })
  it('copia varios números completos y conserva literalmente los separadores nativos recibidos',()=>{
   expect(copyAnalysisFragments([
    {kind:'text',text:'"4"\t'},
