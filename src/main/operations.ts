@@ -55,7 +55,8 @@ const decoderUtf8=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true})
 function decode(bytes:Buffer,encoding:Encoding){return encoding==='utf8'?decoderUtf8.decode(bytes):iconv.decode(bytes,encoding,{stripBOM:false})}
 const recordNumber=(ordinal:number)=>(ordinal+1).toLocaleString('es')
 function parseRecords(text:string,state:Pick<OperationSourceState,'delimiter'>){
- return parseSync(text,{delimiter:state.delimiter,bom:false,relax_column_count:true,skip_empty_lines:false,record_delimiter:RECORD_DELIMITERS}) as string[][]
+ // Sin CR, solo LF puede delimitar registros; los finales mixtos conservan la ruta completa.
+ return parseSync(text,{delimiter:state.delimiter,bom:false,relax_column_count:true,skip_empty_lines:false,record_delimiter:text.includes('\r')?RECORD_DELIMITERS:'\n'}) as string[][]
 }
 // Valida y separa en campos un lote de registros (bytes exactos). Si el lote falla, se localiza el primer registro culpable para dar su posición.
 export function fieldsOf(raws:Buffer[],first:number,state:Pick<OperationSourceState,'encoding'|'delimiter'>):string[][]{
