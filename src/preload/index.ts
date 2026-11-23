@@ -42,6 +42,7 @@ const api:FreyaAPI={
  language:()=>invoke('language'),setLanguage:preference=>invoke('setLanguage',preference),
  open:()=>invoke('open'),openPaths:paths=>invoke('openPaths',paths),newDocument:kind=>invoke('new',kind),folder:()=>invoke('folder'),tree:path=>invoke('tree',path),findFiles:(root,query)=>invoke('findFiles',root,query),cancelFileSearch:()=>invoke('cancelFileSearch'),listTags:root=>invoke('listTags',root),cancelTagList:()=>invoke('cancelTagList'),
  csvOpen:(path,view)=>invoke('csvOpen',path,view),csvView:(id,view,decision)=>invoke('csvView',id,view,decision),csvViewInfo:path=>invoke('csvViewInfo',path),
+ documentShow:id=>invoke('documentShow',id),fileShow:path=>invoke('fileShow',path),
  update:(id,text)=>invoke('update',id,text),save:(id,as)=>invoke('save',id,as),close:id=>invoke('close',id),reload:id=>invoke('reload',id),documents:()=>invoke('documents'),
  reopenTextEncoding:(id,encoding)=>invoke('reopenTextEncoding',id,encoding),saveTextEncoding:(id,encoding)=>invoke('saveTextEncoding',id,encoding),
  tableCopy:(id,options,format)=>invoke('copyTable',id,options,format),tablePaste:(id,range)=>invoke('pasteTable',id,range),

@@ -1832,5 +1832,9 @@
  "csv.context.deleteRows.other": "Delete rows",
  "csv.context.rows-trim": "Trim spaces",
  "csv.context.rows-upper": "Uppercase",
- "csv.context.rows-lower": "Lowercase"
+ "csv.context.rows-lower": "Lowercase",
+ "context.reveal.unsaved": "This document has no available location to show.",
+ "context.reveal.unavailable": "I could not show that file. Choose an item in the folder currently open in Files.",
+ "context.open": "Open",
+ "context.close": "Close"
 }

@@ -38,6 +38,7 @@
  import {csvAnalysisViews,emptyCsvAnalysisView,type CsvEmptyIntent} from './lib/csv-analysis-view'
  import {workspaceTabs,openAnalysisTab,closeDocumentAnalysis,type AnalysisTab,type AnalysisSection,type AnalysisStatistics,type WorkspaceTab} from './lib/workspace-tabs'
  import CsvFileMenu from './components/CsvFileMenu.svelte'
+ import ContextMenu from './components/ContextMenu.svelte'
  import CsvViewDialog from './components/CsvViewDialog.svelte'
  import CsvOpenError from './components/CsvOpenError.svelte'
  import Tree from './components/Tree.svelte'
@@ -118,7 +119,8 @@
  let csvWrap=$state(false),csvSpaces=$state(false),csvOptions=$state<HTMLDetailsElement>()
  $effect(()=>{activeId;csvText;csvWrap=false;csvSpaces=false})
  function textOption(action:'wrap'|'spaces'|'colors'|'line'){if(action==='wrap')csvWrap=!csvWrap;else if(action==='spaces')csvSpaces=!csvSpaces;else if(action==='colors')remember({editor:{csvColumnColors:!preferencesState.values.editor.csvColumnColors}});if(csvOptions)csvOptions.open=false;if(action==='line')editor?.goToLine();else editor?.focus()}
- let csvFileMenu=$state<{path:string;x:number;y:number;origin:HTMLElement}|null>(null)
+ let csvFileMenu=$state<{path:string;directory:boolean;x:number;y:number;origin:HTMLElement}|null>(null)
+ let tabMenu=$state<{tab:WorkspaceTab;name:string;x:number;y:number;origin:HTMLElement}|null>(null)
  let csvChange=$state<{id:string;name:string;view:CsvView;busy:boolean;message:string;analysis?:{section:AnalysisSection;statistics?:AnalysisStatistics}}|null>(null)
  let textCommands=$state(false)
  async function closeTextCommands(){textCommands=false;await tick();editor?.focus()}
@@ -473,8 +475,13 @@
   try{const doc=await window.freya.csvOpen(issue.path,'text');await finishCsvView(doc);if(csvFailure===issue)csvFailure=null;await tick();if(issue.reportedLine){if(editor?.goToPhysicalLine(issue.reportedLine))notify(t('csvText.error.openedLine',{line:issue.reportedLine}),'info');else{editor?.focus();notify(t('csvText.error.noLine'),'info')}}else editor?.focus()}
   catch(failure){error(failure instanceof Error?failure.message:String(failure))}finally{csvOpening=false}
  }
- function csvContext(event:MouseEvent|KeyboardEvent,path:string){if(!/\.(csv|tsv)$/i.test(path))return;event.preventDefault();const origin=event.currentTarget as HTMLElement,rect=origin.getBoundingClientRect();csvFileMenu={path,origin,x:event instanceof MouseEvent?event.clientX:rect.left,y:event instanceof MouseEvent?event.clientY:rect.bottom}}
+ function csvContext(event:MouseEvent|KeyboardEvent,path:string,directory=false){event.preventDefault();event.stopPropagation();tabMenu=null;const origin=event.currentTarget as HTMLElement,rect=origin.getBoundingClientRect();csvFileMenu={path,directory,origin,x:event instanceof MouseEvent?event.clientX:rect.left,y:event instanceof MouseEvent?event.clientY:rect.bottom}}
  function closeCsvContext(restoreFocus:boolean){const origin=csvFileMenu?.origin;csvFileMenu=null;if(restoreFocus)origin?.focus()}
+ function openTabMenu(event:MouseEvent|KeyboardEvent,tab:WorkspaceTab,name:string){event.preventDefault();event.stopPropagation();csvFileMenu=null;const origin=event.currentTarget as HTMLElement,rect=origin.getBoundingClientRect();tabMenu={tab,name,origin,x:event instanceof MouseEvent?event.clientX:rect.left,y:event instanceof MouseEvent?event.clientY:rect.bottom}}
+ function closeTabMenu(restoreFocus:boolean){const origin=tabMenu?.origin;tabMenu=null;if(restoreFocus){if(origin?.isConnected)origin.focus();else document.querySelector<HTMLElement>('.tabs [role="tab"][aria-selected="true"]')?.focus()}}
+ function closeContextTab(){const tab=tabMenu?.tab;closeTabMenu(true);if(tab)void(tab.type==='analysis'?closeAnalysis(tab):close(tab.id))}
+ function revealContextTab(){const tab=tabMenu?.tab;closeTabMenu(true);if(tab?.type==='document')void action(()=>window.freya.documentShow(tab.id))}
+
  async function openFolder(){await action(async()=>{await settingsReady;const path=await window.freya.folder();if(path){folderPath=path;entries=await window.freya.tree(path);sidebar=true;remember({barraLateral:{visible:true}})}})}
  async function create(kind:Kind){newMenu=false;await action(async()=>{await settingsReady;merge(await window.freya.newDocument(kind),true)})}
  function updateText(id:string,text:string){documents=documents.map(d=>d.id===id?{...d,text,dirty:true}:d);const previous=pending.get(id)??Promise.resolve();const task=previous.catch(()=>{}).then(()=>window.freya.update(id,text)).then(doc=>{const current=documents.find(d=>d.id===id);if(current?.text===text)merge(doc)}).catch(e=>{error(String(e));throw e});pending.set(id,task);void task.then(()=>{if(pending.get(id)===task)pending.delete(id)},()=>{})}
@@ -725,7 +732,7 @@
      {@const doc=documents.find(value=>value.id===(tab.type==='document'?tab.id:tab.source.documentId))}
      {#if doc}
       <div class="tab" class:active={selectedTabId===tab.id}>
-       <button id={'workspace-tab-'+tab.id} role="tab" aria-selected={selectedTabId===tab.id} aria-controls={'workspace-panel-'+tab.id} aria-label={tab.type==='analysis'?t('analysis.tab.label',{name:doc.name}):undefined} tabindex={selectedTabId===tab.id?0:-1} onkeydown={event=>workspaceTabKey(event,index)} onclick={()=>void activateTab(tab)} title={tab.type==='analysis'?t('analysis.tab.title',{name:doc.name}):doc.path??doc.name}>
+       <button id={'workspace-tab-'+tab.id} role="tab" aria-selected={selectedTabId===tab.id} aria-controls={'workspace-panel-'+tab.id} aria-label={tab.type==='analysis'?t('analysis.tab.label',{name:doc.name}):undefined} tabindex={selectedTabId===tab.id?0:-1} oncontextmenu={event=>openTabMenu(event,tab,tab.type==='analysis'?t('analysis.tab.title',{name:doc.name}):doc.name)} onkeydown={event=>{if(event.key==='ContextMenu'||event.key==='F10'&&event.shiftKey)openTabMenu(event,tab,tab.type==='analysis'?t('analysis.tab.title',{name:doc.name}):doc.name);else workspaceTabKey(event,index)}} onclick={()=>void activateTab(tab)} title={tab.type==='analysis'?t('analysis.tab.title',{name:doc.name}):doc.path??doc.name}>
         {#if tab.type==='analysis'}<span class="tab-icon kind-csv"><Icon name="chart-column" size={14}/></span>{t('analysis.tab.title',{name:doc.name})}
         {:else}<span class="tab-icon kind-{doc.kind}"><Icon name={kindIcon[doc.kind]} size={14}/></span>{doc.name}{#if doc.dirty}<span class="dirty-dot">●</span>{/if}{/if}
        </button>
@@ -777,7 +784,18 @@
  {#if projectDialog}<ProjectDialog sourceName={projectCandidate?.name} oncreated={projectCreated} onclose={closeProjectDialog}/>{/if}
  {#if textCommands}<CsvCommands commands={[{id:'openAnalysis',label:t('analysis.tab.command'),detail:t('analysis.tab.search'),disabled:false,run:chooseTextAnalysis}]} context={t('analysis.tab.textView')} onexecute={()=>void chooseTextAnalysis()} onclose={()=>void closeTextCommands()}/>{/if}
  {#if csvChange}<CsvViewDialog name={csvChange.name} busy={csvChange.busy} message={csvChange.message} onchoose={decision=>void resolveCsvChange(decision)}/>{/if}
- {#if csvFileMenu}<CsvFileMenu path={csvFileMenu.path} x={csvFileMenu.x} y={csvFileMenu.y} onopen={(path,view)=>void chooseCsvView(view,path)} onclose={closeCsvContext} onerror={error} onproject={activeProject&&!activeProject.readonly?addProjectSource:undefined}/>{/if}
+ {#if tabMenu}
+  {@const tab=tabMenu.tab}
+  {@const document=tab.type==='document'?documents.find(doc=>doc.id===tab.id):undefined}
+  <ContextMenu x={tabMenu.x} y={tabMenu.y} label={tabMenu.name} onclose={closeTabMenu}>
+   <div class="column-menu-items">
+    <span class="dropdown-label column-menu-title" role="presentation">{tabMenu.name}</span>
+    <button role="menuitem" onclick={closeContextTab}><span>{t('context.close')}</span>{#if commandShortcut('file.close')}<kbd aria-hidden="true">{commandShortcut('file.close')}</kbd>{/if}</button>
+    {#if document?.path}<div class="column-menu-separator" role="separator"></div><button role="menuitem" onclick={revealContextTab}>{t('project.showFolder')}</button>{/if}
+   </div>
+  </ContextMenu>
+ {/if}
+ {#if csvFileMenu}{#key csvFileMenu.path}<CsvFileMenu path={csvFileMenu.path} directory={csvFileMenu.directory} x={csvFileMenu.x} y={csvFileMenu.y} onfileopen={path=>void openPath(path)} onopen={(path,view)=>void chooseCsvView(view,path)} onclose={closeCsvContext} onerror={error} onproject={activeProject&&!activeProject.readonly?addProjectSource:undefined}/>{/key}{/if}
  {#if toast}<div class="toast {toastKind}" role="status"><Icon name={toastKind==='success'?'circle-check':toastKind==='info'?'info':'triangle-alert'} size={16}/><span>{toast}</span><button title={"Cerrar aviso"} onclick={()=>toast=''} aria-label="Cerrar aviso"><Icon name="x" size={14}/></button></div>{/if}
  {#if appDialog==='about'||appDialog==='licenses'}<AboutDialog initialLicenses={appDialog==='licenses'} onupdates={()=>openUpdates()} onclose={()=>appDialog=null}/>{:else if appDialog==='settings'}<SettingsDialog settings={preferencesState} onsave={savePreferences} onreset={resetPreferences} onclearrecents={clearRecentList} onshowdata={()=>window.freya.showDataFolder()} onupdates={()=>openUpdates()} onclose={()=>appDialog=null}/>{:else if appDialog==='shortcuts'}<ShortcutsDialog onclose={()=>appDialog=null}/>{/if}
  {#if updateNotice}<UpdateNotice release={updateNotice.release} onview={()=>openUpdates(updateNotice!)} ondismiss={()=>updateNotice=null}/>{/if}

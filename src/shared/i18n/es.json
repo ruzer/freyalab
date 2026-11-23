@@ -1832,5 +1832,9 @@
  "csv.context.deleteRows.other": "Eliminar filas",
  "csv.context.rows-trim": "Quitar espacios",
  "csv.context.rows-upper": "Mayúsculas",
- "csv.context.rows-lower": "Minúsculas"
+ "csv.context.rows-lower": "Minúsculas",
+ "context.reveal.unsaved": "Este documento no tiene una ubicación disponible para mostrar.",
+ "context.reveal.unavailable": "No pude mostrar ese archivo. Elige un elemento de la carpeta abierta en Archivos.",
+ "context.open": "Abrir",
+ "context.close": "Cerrar"
 }

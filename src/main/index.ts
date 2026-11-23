@@ -1,5 +1,7 @@
 import { app, BrowserWindow, dialog, ipcMain, shell, clipboard, Menu } from 'electron'
 import { fileURLToPath } from 'node:url'
+import {realpath} from 'node:fs/promises'
+import {contained} from './files'
 import { dirname, join, resolve, relative, isAbsolute, extname, basename } from 'node:path'
 import { z } from 'zod'
 import {ProjectStore} from './projects'
@@ -45,7 +47,7 @@ let menuState:ApplicationUiState={activeId:null,mode:'split',focus:'none',locked
 let projects:ProjectStore,projectSources:ProjectSourceRegistry,projectDraftFolder:string|undefined,menuProjectRecents:ProjectRecent[]=[]
 let projectSubsets:ProjectSubsets
 let projectExports:ProjectExports
-let publishedProject:ProjectInfo|null=null,projectPublishGeneration=0
+let publishedProject:ProjectInfo|null=null,projectPublishGeneration=0,filesRoot:string|undefined
 let projectSourceJob:{requestId:string;controller:AbortController}|undefined
 const projectReference=projectSource.shape.id
 const sourceFormat=projectSource.shape.format.pick({encoding:true,delimiter:true,header:true,eol:true}).partial()
@@ -95,6 +97,7 @@ async function publishProject(){
   }
  }
  if(generation!==projectPublishGeneration)return
+ if(project&&(publishedProject?.id!==project.id||publishedProject?.path!==project.path))filesRoot=project.path
  publishedProject=project;menuProjectRecents=recents
  docs.setProjectSources(paths,closing)
  if(project)docs.roots.add(project.path)
@@ -238,7 +241,15 @@ async function handle(operation:string,args:unknown[]){
  case'csvView':{const key=id.parse(a),before=docs.info(key).csvView,document=await docs.setCsvView(key,csvView.parse(b),z.enum(['save','discard']).optional().parse(c));if(before!==document.csvView)analytics.forget(key);return document}
  case'csvViewInfo':{const target=path.parse(a);if(!await docs.allowed(target))throw new Error(t('csvText.openAuthorized'));return docs.csvViewInfo(target)}
  case'new':return docs.create(z.enum(['markdown','text','mermaid','csv']).parse(a) as Kind)
- case'folder':{const folder=await pickFolder();if(folder){docs.roots.add(folder);await openProjectFolder(folder,true)}return folder}
+ case'documentShow':{const[key]=z.tuple([id]).parse(args),target=docs.records.get(key)?.info.path;if(!target)throw new Error(t('context.reveal.unsaved'));shell.showItemInFolder(target);return}
+ case'fileShow':{
+  const[requested]=z.tuple([path]).parse(args),root=filesRoot
+  let target:string
+  try{if(!root)throw new Error();target=await realpath(resolve(requested));if(!await contained(root,target)||filesRoot!==root)throw new Error()}
+  catch{throw new Error(t('context.reveal.unavailable'))}
+  shell.showItemInFolder(target);return
+ }
+ case'folder':{const folder=await pickFolder();if(folder){filesRoot=folder;docs.roots.add(folder);await openProjectFolder(folder,true)}return folder}
  case'project:state':{z.tuple([]).parse(args);const [sources,results]=await Promise.all([projectSources.list(),projectExports.list()]);return{project:projects.active,recents:await projects.recents(),sources,recipes:recipeViews(sources),results}}
  case'project:pickFolder':{z.tuple([]).parse(args);const folder=await pickFolder(true);if(!folder)return null;projectDraftFolder=folder;return{path:folder,name:basename(folder)}}
  case'project:cancelCreate':{z.tuple([]).parse(args);projectDraftFolder=undefined;return}
