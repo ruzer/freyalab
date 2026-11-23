@@ -1836,5 +1836,6 @@
  "context.reveal.unsaved": "Este documento no tiene una ubicación disponible para mostrar.",
  "context.reveal.unavailable": "No pude mostrar ese archivo. Elige un elemento de la carpeta abierta en Archivos.",
  "context.open": "Abrir",
- "context.close": "Cerrar"
+ "context.close": "Cerrar",
+ "context.text.menu": "Edición de texto"
 }

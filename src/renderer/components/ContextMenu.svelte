@@ -1,6 +1,6 @@
 <script lang="ts">
  import {onMount,tick,type Snippet} from 'svelte'
- let{x,y,label,onclose,children,parentItem}:{x:number;y:number;label:string;onclose:(restoreFocus:boolean,all?:boolean)=>void;children:Snippet;parentItem?:HTMLElement}=$props()
+ let{x,y,label,onclose,children,parentItem,container}:{x:number;y:number;label:string;onclose:(restoreFocus:boolean,all?:boolean)=>void;children:Snippet;parentItem?:HTMLElement;container?:HTMLElement}=$props()
  let menu:HTMLDivElement,left=$state(8),top=$state(8),frame=0
  function position(){
   if(!menu)return
@@ -11,7 +11,7 @@
  function reposition(){if(parentItem){cancelAnimationFrame(frame);frame=requestAnimationFrame(position)}else position()}
  function items(){return menu?Array.from(menu.querySelectorAll<HTMLElement>('[role="menuitem"]:not(:disabled)')).filter(item=>item.closest('[role="menu"]')===menu):[]}
  $effect(()=>{x;y;parentItem;reposition()})
- onMount(()=>{const observer=new ResizeObserver(reposition);observer.observe(menu);const parent=parentItem?.closest('[role="menu"]');if(parent)observer.observe(parent);void tick().then(()=>{position();items()[0]?.focus()});return()=>{observer.disconnect();cancelAnimationFrame(frame)}})
+ onMount(()=>{if(container)container.appendChild(menu);const observer=new ResizeObserver(reposition);observer.observe(menu);const parent=parentItem?.closest('[role="menu"]');if(parent)observer.observe(parent);void tick().then(()=>{position();items()[0]?.focus()});return()=>{observer.disconnect();cancelAnimationFrame(frame)}})
  function key(event:KeyboardEvent){
   if(!(event.target instanceof Element)||event.target.closest('[role="menu"]')!==menu)return
   const choices=items(),current=choices.indexOf(document.activeElement as HTMLElement)
@@ -25,6 +25,7 @@
  {@render children()}
 </div>
 <style>
+ .range-context{width:max-content;min-width:min(260px,calc(100vw - 16px));max-width:calc(100vw - 16px)}
  .range-context :global(.column-menu-items){display:flex;flex-direction:column;min-width:0}
  .range-context :global([role="menuitem"]){display:flex;align-items:center;gap:8px;min-height:30px;padding:5px 7px;line-height:20px;white-space:normal;overflow-wrap:anywhere}
  .range-context :global(kbd){margin-left:auto;flex:none;color:var(--muted);font:inherit;white-space:nowrap}

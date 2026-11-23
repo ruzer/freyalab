@@ -1836,5 +1836,6 @@
  "context.reveal.unsaved": "This document has no available location to show.",
  "context.reveal.unavailable": "I could not show that file. Choose an item in the folder currently open in Files.",
  "context.open": "Open",
- "context.close": "Close"
+ "context.close": "Close",
+ "context.text.menu": "Text editing"
 }

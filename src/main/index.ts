@@ -97,7 +97,7 @@ async function publishProject(){
   }
  }
  if(generation!==projectPublishGeneration)return
- if(project&&(publishedProject?.id!==project.id||publishedProject?.path!==project.path))filesRoot=project.path
+ if(project&&(!publishedProject||closing))filesRoot=project.path
  publishedProject=project;menuProjectRecents=recents
  docs.setProjectSources(paths,closing)
  if(project)docs.roots.add(project.path)
