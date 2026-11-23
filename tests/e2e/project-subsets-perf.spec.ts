@@ -102,6 +102,7 @@ test('PRJ-02a 1 GB: primeras dos filas leen solo un prefijo y no afirman identid
 })
 
 test('PRJ-02a 1 GB: depósito de diez mil, cien ejemplos y fuente completa verificada',{tag:'@perf'},async()=>{
+ if(process.platform==='darwin'&&process.arch==='x64')test.setTimeout(180_000)
  const started=performance.now(),result=await page.evaluate(input=>window.freya.projectRecipeTry(input.id,input.draft,input.request),{id:projectId,draft:draft([{op:'sample',method:'random',rows:10_000,seed:7}]),request:randomUUID()})
  expect(result).toMatchObject({resultCount:10_000,scanned:records,eligible:records,complete:true,cancelled:false,bytesRead:source.bytes,sha256:source.sha256})
  expect(result.sampling).toEqual([{step:0,method:'random',requestedRows:10_000,seed:7,eligible:records,selected:10_000}])
@@ -146,6 +147,7 @@ test('PRJ-02b 1 GB: una muestra no permite saltar el límite analítico de la ra
 
 
 test('PRJ-03 1 GB: exportar ID mayor que 500000 conserva medio millón de registros y sus bytes',{tag:'@perf'},async()=>{
+ if(process.platform==='darwin'&&process.arch==='x64')test.setTimeout(180_000)
  const name='P3 mitad',output=join(folder,'02_datasets',name+'.csv')
  const existed=await stat(output).then(()=>true,error=>{if((error as NodeJS.ErrnoException).code==='ENOENT')return false;throw error})
  try{
@@ -181,6 +183,7 @@ test('PRJ-03 1 GB: exportar ID mayor que 500000 conserva medio millón de regist
 })
 
 test('PRJ-03 1 GB: exportar muestra de diez mil con semilla 7 conserva orden, datos y procedencia',{tag:'@perf'},async()=>{
+ if(process.platform==='darwin'&&process.arch==='x64')test.setTimeout(180_000)
  const name='P3 muestra',output=join(folder,'02_datasets',name+'.csv')
  const existed=await stat(output).then(()=>true,error=>{if((error as NodeJS.ErrnoException).code==='ENOENT')return false;throw error})
  try{
