@@ -2,8 +2,8 @@
 
 Público (decisión del propietario, 2026-11-11): análisis de datos para prepa, universidad y maestría, sin complicar.
 - **Recorrido medido** por Claude el 2026-11-17 en la app real (main d17cc81), con una encuesta de 240 filas, a 1440×900.
-- **Entrega:** siete partes independientes, cada una en su propio PR pequeño, en el orden de abajo. No dependen de PRJ-01c ni de PRJ-03.
-- **No cambia** lo que hace cada acción: solo dónde está, cómo se llama y cuántos pasos cuesta.
+- **Entrega:** ocho partes independientes, cada una en su propio PR pequeño, en el orden de abajo. No dependen de PRJ-01c ni de PRJ-03.
+- **No cambia** lo que hace cada acción: solo dónde está, cómo se llama y cuántos pasos cuesta. Única excepción, en SIM-1h: «Mostrar en la carpeta» llega también a los documentos abiertos y a los archivos de «Archivos», con la misma función que ya usa Proyecto.
 
 ## Decisiones
 - **Del propietario (2026-11-17): pulsar «Analizar» cuenta como la petición.** La pestaña de análisis se abre con Información ya calculada.
@@ -29,6 +29,13 @@ Público (decisión del propietario, 2026-11-11): análisis de datos para prepa,
    - «Crear proyecto» solo está al pie de la barra lateral: no aparece en Inicio ni en «Nuevo ▾».
 6. **Barra de estado:** Codificación, Separador y Encabezado están siempre visibles como controles. «Guardado» aparece dos veces, en el botón de arriba y en la barra de estado.
 7. **Menús con el texto centrado:** «Nuevo ▾» y los menús de columna.
+8. **Los demás menús de clic derecho** (medido el 2026-11-18 en main 7bda2e9, después de SIM-1a, SIM-1b y SIM-1g):
+   - **Celda o rango:** 11 opciones sin grupos ni título, todas con «rango» («Copiar rango», «Mayúsculas en el rango…»), también con una sola celda. Incluye «Transformar documento…», y no enseña los atajos ⌘C, ⌘X y ⌘V, que sí funcionan.
+   - **Número de fila:** 11 opciones sin grupos, con el título «1 FILAS · 1 COLUMNAS». «Eliminar filas seleccionadas» queda en medio y sin color de peligro. Incluye «Transformar documento…», «Copiar como Markdown», «Deshacer edición CSV» y «Rehacer edición CSV».
+   - Los dos usan su propio `div.range-context` en `CsvTable.svelte`, no `ContextMenu.svelte`: filas de 34 px frente a 30 px del menú de columna.
+   - **Texto** (editor de texto y Markdown, SQL, búsqueda, campos de diálogos, celda en edición): el clic derecho no muestra nada. No hay Cortar, Copiar ni Pegar con el ratón.
+   - **Pestaña de un documento:** el clic derecho no muestra nada.
+   - **Archivos:** solo los CSV tienen menú («Abrir como tabla», «Abrir como texto» y, con un proyecto abierto, «Añadir al proyecto»). En otros archivos y en carpetas no aparece nada.
 
 ## Partes
 
@@ -132,7 +139,58 @@ Público (decisión del propietario, 2026-11-11): análisis de datos para prepa,
   - Con cambios sin guardar, la casilla no aparece.
   - Desde Inicio y desde «Nuevo ▾» se abre el mismo diálogo.
 
-## Reglas comunes a las siete partes
+### SIM-1h · Todos los menús de clic derecho con la misma forma
+Propuesta del tablero «Menús de clic derecho: hoy y propuesta» del lienzo de diseño, que el propietario pidió escribir el 2026-11-18. Sigue el modelo del menú de columna de SIM-1a, que ya está en `main`.
+
+- **Reglas para todos los menús de clic derecho:**
+  - **Un solo componente:** todos usan `ContextMenu.svelte`. Se quita el `div.range-context` propio de celda, rango y fila en `CsvTable.svelte`. Misma altura de fila que el menú de columna (30 px), mismo teclado (↑ ↓ Inicio Fin, Escape devuelve el foco, Tab cierra) y lo desactivado con su motivo actual (`disabledReason`, `controlHint`).
+  - **Se abren igual:** en los cinco lugares, también en texto y en pestañas, que hoy no tienen menú, el clic derecho, Mayús + F10 y la tecla de menú abren el mismo menú.
+  - **El título nombra el objeto**, con el mismo estilo que «Ingreso» en el menú de columna. Las opciones no lo repiten: «Copiar», no «Copiar rango».
+  - **Mismo orden:** lo más usado arriba, después «Limpiar ▸», después insertar y, al final, lo que borra, en el color de peligro. Un separador entre grupos.
+  - **Atajos a la derecha, en gris,** solo para comandos que tienen atajo en el menú de la app (Edición y Archivo). Se formatean con `formatApplicationShortcut` y la plataforma de `shortcutInfo`, como hace `commandTitle`: «⌘C» en macOS y el formato de Windows y Linux en esos sistemas. Ningún atajo escrito a mano.
+  - **«…» solo si la opción abre un diálogo.** Lo que se aplica al momento va sin puntos.
+  - **Nada repetido de la barra:** «Deshacer», «Rehacer», «Transformar documento…» y «Copiar como Markdown» no van en menús de clic derecho.
+- **Celda o rango:**
+  - Título: con una celda, «<columna> · fila <n>» («Ingreso · fila 3»); con un rango, «<f> filas × <c> columnas», con singular y plural correctos.
+  - «Cortar…» ⌘X · «Copiar» ⌘C · «Pegar…» ⌘V.
+  - «Rellenar…» · «Vaciar…» · «Limpiar ▸», un submenú con «Quitar espacios…», «Mayúsculas…», «Minúsculas…» y «Reemplazar…».
+  - «Estadísticas de la selección».
+  - Sale «Transformar documento…»: está en «Limpiar ▾» de la barra (SIM-1b).
+- **Número de fila:**
+  - Título: «Fila 3» con una fila, «3 filas» con varias. Sin recuento de columnas.
+  - Si hoy aparece «Ver en el documento completo» (vista de un archivo grande), sigue primera, con un separador debajo.
+  - «Insertar arriba» · «Insertar abajo» · «Duplicar fila» («Duplicar filas» con varias).
+  - «Limpiar ▸», un submenú con «Quitar espacios», «Mayúsculas» y «Minúsculas», sin «…» porque se aplican al momento, como hoy.
+  - «Eliminar fila» («Eliminar filas» con varias), en el color de peligro y al final.
+  - Salen «Transformar documento…» y «Copiar como Markdown», que están en «Limpiar ▾» y «Filas y columnas ▾» de la barra, y «Deshacer edición CSV» y «Rehacer edición CSV», que están en la barra superior y en ⌘Z y ⇧⌘Z.
+- **Texto** (editores de texto, Markdown y SQL, búsqueda, campos de diálogos y celda en edición; no la cuadrícula, que tiene el menú de celda o rango):
+  - «Cortar» ⌘X · «Copiar» ⌘C · «Pegar» ⌘V · «Pegar sin formato» ⌥⇧⌘V, este solo en el editor de Markdown.
+  - «Seleccionar todo» ⌘A, tras un separador.
+  - Cada opción ejecuta el mismo comando que su opción del menú «Edición» (`edit.cut`, `edit.copy`, `edit.paste`, `edit.pastePlain` y `edit.selectAll`), por el mismo camino (`routeApplicationEdit` y `MenuNativeEdits`). No se abre otro camino al portapapeles.
+  - Lo no disponible se desactiva con la misma regla que «Edición»: sin selección no se puede cortar ni copiar, y en solo lectura no se puede cortar ni pegar.
+- **Pestaña de un documento:**
+  - Título: el nombre del documento.
+  - «Cerrar», con el atajo de `file.close`. Hace lo mismo que la ✕, incluida la pregunta si hay cambios sin guardar.
+  - «Mostrar en la carpeta», tras un separador. Reutiliza el texto `project.showFolder` y `shell.showItemInFolder`, como Proyecto. El proceso principal toma la ruta de su propio registro a partir del id del documento; la página nunca envía una ruta.
+  - Un documento sin ruta (nuevo, sin guardar) y la pestaña de análisis solo tienen «Cerrar».
+- **Archivos:**
+  - CSV: «Abrir como tabla» · «Abrir como texto» · «Añadir al proyecto», solo con un proyecto abierto, como hoy · separador · «Mostrar en la carpeta».
+  - Otros archivos: «Abrir» · separador · «Mostrar en la carpeta». «Abrir» hace lo mismo que el clic.
+  - Carpetas: «Mostrar en la carpeta».
+  - El título es el nombre del archivo o de la carpeta. El proceso principal solo acepta rutas dentro de la carpeta abierta en «Archivos», con la misma validación que al abrir.
+- **Aceptación:**
+  - Para cada menú, una E2E compara la lista exacta de títulos, opciones y separadores con la de esta historia, en es y en en-XA.
+  - En cada menú, el clic derecho y Mayús + F10 dan la misma lista.
+  - Todas las filas de todos los menús miden lo mismo que las del menú de columna; la prueba lo mide.
+  - Cada una de las 22 acciones de los menús de celda, rango y fila de hoy sigue alcanzable, en el menú nuevo o en el sitio indicado; una prueba recorre la lista.
+  - En el editor de Markdown con una palabra seleccionada, «Copiar» deja esa palabra en el portapapeles (leído desde el proceso principal) y «Pegar» la inserta. En un documento de solo lectura, «Cortar» y «Pegar» están desactivados.
+  - El clic derecho en una celda de la cuadrícula muestra solo el menú de celda o rango, nunca el de texto.
+  - «Cerrar» desde la pestaña, con cambios sin guardar, muestra la misma pregunta que la ✕.
+  - «Mostrar en la carpeta» desde una pestaña y desde «Archivos» llega a `shell.showItemInFolder` con la ruta correcta; la prueba sustituye esa función en el proceso principal. Una prueba unitaria comprueba que una ruta fuera de la carpeta abierta se rechaza.
+  - Los atajos que se ven salen de `formatApplicationShortcut`; una prueba unitaria cubre macOS y Windows.
+  - Capturas de los cinco menús.
+
+## Reglas comunes a todas las partes
 - **Sin dependencias nuevas** (ADR 0021): se reutilizan los menús, diálogos, `controlHint` y textos que ya existen.
 - **Textos** en es, en y en-XA. Las claves que dejen de usarse se quitan.
 - **Prueba en rojo primero.**
@@ -141,16 +199,16 @@ Público (decisión del propietario, 2026-11-11): análisis de datos para prepa,
   - Si una prueba solo comprueba algo que esta historia quita (por ejemplo, «Transformar documento…» dentro del menú de columna o el primer mensaje engañoso de «Analizar»), se borra. No se mantiene viva para conservar el número de pruebas.
   - En el PR se listan las pruebas borradas, cada una con su motivo y con la prueba que cubre ahora ese comportamiento, si lo hay.
 - **Capturas** en claro y oscuro, en es y en en-XA, a 1440×900 y 1280×720, de lo que cambia en cada parte.
-- **Copia** esta historia a `docs/stories/` en el primer PR (SIM-1g).
+- **Copia** esta historia a `docs/stories/` en el primer PR (SIM-1g). El PR de SIM-1h sustituye esa copia por esta versión.
 
 ## Fuera de alcance
 - La pestaña «Proyecto» (PRJ-01c) y la exportación (PRJ-03).
-- Cambiar qué hace cualquier acción, sus confirmaciones o sus límites.
+- Cambiar qué hace cualquier acción, sus confirmaciones o sus límites (salvo la excepción de SIM-1h indicada arriba).
 - Calcular Gráficos, Estadísticas o SQL al abrir el análisis.
-- «Orden numérico» y «Copiar como Markdown» se quedan donde están; no se tocan en esta historia.
+- «Orden numérico» se queda donde está. «Copiar como Markdown» se queda en «Filas y columnas ▾»; SIM-1h solo lo quita del menú de fila.
 
 ## Por confirmar (no es parte de esta historia)
 En la prueba automática, el diálogo «Nuevo proyecto» apareció en la esquina superior izquierda en lugar de centrado. Puede ser un efecto de cambiar el tamaño de ventana con Playwright. El propietario lo comprobará en la app instalada; si se reproduce, se abrirá una tarea aparte.
 
 ## Entrega
-Siete PR en borrador, con base `main`, en este orden: SIM-1g → SIM-1a → SIM-1b → SIM-1f → SIM-1c → SIM-1d → SIM-1e. Cada uno informa SHA, pruebas rojas y verdes, capturas y la CI de las tres plataformas.
+Ocho PR en borrador, con base `main`, en este orden: SIM-1g → SIM-1a → SIM-1b → SIM-1f → SIM-1h → SIM-1c → SIM-1d → SIM-1e. SIM-1h va después de SIM-1f porque los dos tocan `CsvTable.svelte`. Cada uno informa SHA, pruebas rojas y verdes, capturas y la CI de las tres plataformas.
