@@ -216,6 +216,14 @@ test('SIM-3d copia completa conserva cifra y porcentaje; parcial, varias e ident
  const median=panel.locator('dl[aria-label="Perfil de columna"]>div').filter({has:page.getByText('Mediana',{exact:true})}).locator('dd')
  const visibleMean=await mean.innerText(),visibleMedian=await median.innerText()
  await selectText(mean);expect.soft(await nativeCopy()).toBe(String(140/9))
+ await mean.click()
+ const wholeText=await mean.evaluate(node=>{
+  const text=document.createTreeWalker(node,NodeFilter.SHOW_TEXT).nextNode()
+  if(!text)throw new Error('No se alcanzó el texto completo de Media')
+  const range=document.createRange();range.setStart(text,0);range.setEnd(text,text.textContent?.length??0)
+  const selection=window.getSelection();selection?.removeAllRanges();selection?.addRange(range);return selection?.toString()??''
+ })
+ expect(wholeText).toBe(visibleMean);expect.soft(await nativeCopy()).toBe(String(140/9))
  const partial=await selectText(mean,true);expect(partial).toBe(visibleMean.slice(0,2));expect(await nativeCopy()).toBe(partial)
  await mean.click()
  const visibleMultiple=await panel.evaluate(node=>{
