@@ -1,0 +1,117 @@
+
+Running 68 tests using 1 worker
+
+(node:95863) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [shell] › tests/e2e/project-source.spec.ts:135:1 › el análisis distingue una fuente completa protegida de una muestra, incluso con el proyecto cerrado (6.3s)
+  ✓   2 [shell] › tests/e2e/ui.spec.ts:510:1 › exploración CSV: perfil, frecuencias, distribución y Pearson conservan datos y alcance (1.9s)
+  ✓   3 [shell] › tests/e2e/ui.spec.ts:541:1 › exploración CSV: paginación, cancelación, muestra e IPC inválido @perf (1.5s)
+(node:97314) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   4 [csv] › tests/e2e/analysis-describe.spec.ts:49:1 › AN-2 muestra describe por petición con el fixture aprobado y conserva la fuente (1.1s)
+  ✓   5 [csv] › tests/e2e/analysis-describe.spec.ts:81:1 › AN-2 coordina el cálculo avanzado con describe sin lanzar consultas al desplegar (1.1s)
+  ✓   6 [csv] › tests/e2e/analysis-describe.spec.ts:106:1 › AN-2 Información presenta dimensiones, tipos y calidad con distintos sin vacíos (1.2s)
+  ✓   7 [csv] › tests/e2e/analysis-describe.spec.ts:126:1 › AN-2 cancelar conserva la fuente y permite pasar a la vista avanzada sin respuestas tardías (1.0s)
+  ✓   8 [csv] › tests/e2e/analysis-describe.spec.ts:141:1 › AN-2 entrar en el explorador cancela describe pendiente antes de activar el otro análisis (1.1s)
+  ✓   9 [csv] › tests/e2e/analysis-describe.spec.ts:154:1 › AN-2 descarta la respuesta anterior cuando cambia la revisión y recalcula con los valores actuales (1.3s)
+  ✓  10 [csv] › tests/e2e/analysis-describe.spec.ts:169:1 › AN-2 la paleta describe abre estadísticas sin empezar a calcular (945ms)
+  ✓  11 [csv] › tests/e2e/analysis-describe.spec.ts:176:1 › AN-2 describe conserva el ámbito filtrado, el informe y las columnas marcadas (1.8s)
+  ✓  12 [csv] › tests/e2e/analysis-describe.spec.ts:190:47 › AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (es) (3.0s)
+  ✓  13 [csv] › tests/e2e/analysis-describe.spec.ts:190:47 › AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (en-XA) (2.8s)
+  ✓  14 [csv] › tests/e2e/analysis-describe.spec.ts:211:1 › AN-2 ciento veinte columnas se rechazan antes de consultar y conservan el archivo (1.0s)
+  ✓  15 [csv] › tests/e2e/analysis-describe.spec.ts:217:1 › AN-2 la cardinalidad textual no disponible no elimina las estadísticas numéricas exactas (1.4s)
+  ✓  16 [csv] › tests/e2e/analysis-describe.spec.ts:223:1 › AN-2 revisión: una muestra conserva su ámbito en selector, caption e informe (1.6s)
+  ✓  17 [csv] › tests/e2e/analysis-describe.spec.ts:240:1 › AN-2 revisión: std de un valor y top/freq de fecha se presentan vacíos (1.3s)
+  ✓  18 [csv] › tests/e2e/analysis-describe.spec.ts:249:1 › AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes de consultar (1.1s)
+  ✓  19 [csv] › tests/e2e/analysis-describe.spec.ts:256:52 › Información: distintos sin vacíos conserva repeticiones y el archivo (es) (1.2s)
+  ✓  20 [csv] › tests/e2e/analysis-describe.spec.ts:256:52 › Información: distintos sin vacíos conserva repeticiones y el archivo (en) (1.3s)
+  ✓  21 [csv] › tests/e2e/analysis-describe.spec.ts:256:52 › Información: distintos sin vacíos conserva repeticiones y el archivo (en-XA) (1.2s)
+  ✓  22 [csv] › tests/e2e/analysis-tab.spec.ts:92:1 › AN-1a gráficos perfila campos y dibuja solo al elegir; conserva y exporta la configuración (6.0s)
+  ✓  23 [csv] › tests/e2e/analysis-tab.spec.ts:117:1 › AN-1a reutiliza filtros, columnas y rango de la tabla e invalida los resultados al editar (1.6s)
+  ✓  24 [csv] › tests/e2e/chart-clarity.spec.ts:192:1 › SIM-2b: manual sin perfil conserva medida, ejes y agrupación explícitos sin nuevos barridos ni conversión de ID (6.1s)
+  ✓  25 [csv] › tests/e2e/chart-compatibility-controls.spec.ts:63:1 › SIM-2b compatibilidad: Ajustes conserva Texto/Número explícito con perfil identificador y valores excluidos (6.8s)
+  ✓  26 [csv] › tests/e2e/chart-compatibility-controls.spec.ts:81:1 › SIM-2b compatibilidad: Ajustes conserva Mes/Año con perfil mixto y descarta la fecha inválida sin cambiar datos (8.5s)
+  ✓  27 [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (5.3s)
+  ✓  28 [csv] › tests/e2e/chart-review.spec.ts:49:1 › Revisión108 · motivo con línea propia y sin solapes a1280×720 (5.0s)
+  ✘  29 [csv] › tests/e2e/chart-review.spec.ts:58:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 (20.0s)
+(node:98100) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  30 [csv] › tests/e2e/chart-review.spec.ts:73:1 › Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario (5.2s)
+  ✓  31 [csv] › tests/e2e/chart-review.spec.ts:85:1 › Revisión108 · tabla, total, marcas y eje conservan el formato numérico al cambiar campo e idioma (11.0s)
+  ✓  32 [csv] › tests/e2e/chart-review.spec.ts:107:31 › Revisión108 final · Total completo dentro del área visible a1280×720 (5.1s)
+  ✓  33 [csv] › tests/e2e/chart-review.spec.ts:107:31 › Revisión108 final · Total completo dentro del área visible a800×720 (5.2s)
+  ✓  34 [csv] › tests/e2e/chart-review.spec.ts:125:1 › Revisión108 final · el aviso explica el campo de orden y los empates de Suma y Cuenta en es/en (14.4s)
+  ✓  35 [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › scatter sin fechas carga la fuente una vez y conserva observaciones y totales nulos (4.7s)
+  ✓  36 [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › line sin fechas carga la fuente una vez y conserva observaciones y totales nulos (4.7s)
+  ✓  37 [csv] › tests/e2e/charts.spec.ts:69:1 › gráficos visuales: temas y tabla accesible (3.4s)
+  ✓  38 [csv] › tests/e2e/charts.spec.ts:160:1 › constructor explícito: cálculos contrastados, identificadores y alcance filtrado sin mutaciones (11.6s)
+  ✓  39 [csv] › tests/e2e/charts.spec.ts:273:1 › constructor temporal: clics, series, filtros, errores y exportación con nombres y alcance claros (9.7s)
+  ✓  40 [csv] › tests/e2e/charts.spec.ts:294:1 › filtros propios: editor reutilizado, borradores, Escape, alcance y exportación sin cambiar la tabla (8.5s)
+  ✓  41 [csv] › tests/e2e/charts.spec.ts:321:1 › configuraciones: reinicio, ejes y filtros recuperados conservan resultados y CSV (7.2s)
+  ✓  42 [csv] › tests/e2e/csv-summary.spec.ts:42:1 › F2a: suma por serie, total real, porcentajes y seis tipos alcanzables con teclado (4.9s)
+  ✓  43 [csv] › tests/e2e/descriptive-percentiles.spec.ts:39:1 › percentiles: perfil filtrado, ayuda por teclado e informe preservan valores y procedencia (1.6s)
+  ✓  44 [csv] › tests/e2e/descriptive-percentiles.spec.ts:51:1 › percentiles: columnas marcadas, controles progresivos y rango comparten método sin recalcular al mostrar (1.5s)
+  ✓  45 [csv] › tests/e2e/descriptive-percentiles.spec.ts:60:1 › percentiles: vacío, un solo número y muestra limitada no inventan población completa @perf (1.8s)
+  ✓  46 [csv] › tests/e2e/empty-values.spec.ts:32:1 › LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar (1.6s)
+  ✓  47 [csv] › tests/e2e/empty-values.spec.ts:56:1 › LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos (1.1s)
+  ✓  48 [csv] › tests/e2e/empty-values.spec.ts:88:1 › LIM-1 ajustes: Un valor vacío bloquea preparar y rellenar con un motivo accesible (1.3s)
+  ✓  49 [csv] › tests/e2e/empty-values.spec.ts:104:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es) (2.3s)
+  ✓  50 [csv] › tests/e2e/empty-values.spec.ts:104:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (en) (2.0s)
+  ✓  51 [csv] › tests/e2e/empty-values.spec.ts:138:1 › LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva bytes tras guardar (1.5s)
+  ✓  52 [csv] › tests/e2e/empty-values.spec.ts:156:1 › LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo (1.8s)
+  ✓  53 [csv] › tests/e2e/empty-values.spec.ts:175:1 › LIM-1 elimina por cualquiera o todas las columnas marcadas y restaura filas completas (1.6s)
+  ✓  54 [csv] › tests/e2e/empty-values.spec.ts:191:1 › LIM-1 fuente protegida permite ver vacíos y bloquea las mutaciones también por el puente (1.7s)
+  ✓  55 [csv] › tests/e2e/empty-values.spec.ts:225:1 › LIM-1 archivo grande permite el filtro completo y explica que limpiar requiere extraer (1.3s)
+  ✓  56 [csv] › tests/e2e/empty-values.spec.ts:239:1 › LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio (870ms)
+  ✓  57 [csv] › tests/e2e/empty-values.spec.ts:256:1 › LIM-1 Texto sin confirmar conserva el diálogo y Cancelar no pierde el borrador (1.2s)
+  ✓  58 [csv] › tests/e2e/empty-values.spec.ts:270:1 › LIM-1 cancelar descarta una vista previa tardía y deja reintentar sin modificar el CSV (1.2s)
+  ✓  59 [csv] › tests/e2e/empty-values.spec.ts:302:1 › LIM-1 la paleta encuentra isnull, fillna y dropna y conserva la selección múltiple (1.3s)
+  ✓  60 [csv] › tests/e2e/empty-values.spec.ts:318:1 › LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas (1.3s)
+  ✓  61 [csv] › tests/e2e/empty-values.spec.ts:332:1 › LIM-1 una protección recibida con el diálogo abierto invalida su vista previa (1.2s)
+  ✓  62 [csv] › tests/e2e/empty-values.spec.ts:347:1 › LIM-1 rellenar desde Información actúa sobre todo el documento y pide actualizar el análisis (1.6s)
+  ✓  63 [csv] › tests/e2e/empty-values.spec.ts:368:57 › LIM-1 teclado, idiomas y temas (es) (1.8s)
+  ✓  64 [csv] › tests/e2e/empty-values.spec.ts:368:57 › LIM-1 teclado, idiomas y temas (en) (1.8s)
+  ✓  65 [csv] › tests/e2e/empty-values.spec.ts:368:57 › LIM-1 teclado, idiomas y temas (en-XA) (1.8s)
+  ✓  66 [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (es) (1.4s)
+  ✓  67 [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (en) (1.4s)
+  ✓  68 [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (en-XA) (1.4s)
+
+
+  1) [csv] › tests/e2e/chart-review.spec.ts:58:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720
+
+    Error: expect(locator).toBeInViewport() failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true })
+    Expected: in viewport
+    Received: viewport ratio 0.9820517301559448
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeInViewport" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true }) with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').getByRole('complementary').getByRole('region', { name: 'Filtros', exact: true })
+        33 × locator resolved to <section aria-label="Filtros" class="zone svelte-hqvgw9 wide">…</section>
+           - unexpected value "viewport ratio 0.9820517301559448"
+
+
+      68 |  await expect(fields.getByRole('button',{name:'Limpiar todo',exact:true})).toBeInViewport({ratio:1})
+      69 |  await test.info().attach('an1b-fields-layout',{body:JSON.stringify(await fields.evaluate(root=>Object.fromEntries([':scope','.field-header','input','.field-list','.organize','.zone-content','.zones',...Array.from({length:4},(_,i)=>'.zone:nth-child('+(i+1)+')')].map(selector=>{const node=root.querySelector(selector)??root,box=node.getBoundingClientRect();return[selector,{y:box.y,height:box.height,bottom:box.bottom,scroll:node.scrollHeight,client:node.clientHeight}]})))),contentType:'application/json'})
+    > 70 |  for(const zone of ['Filas','Columnas','Valores','Filtros'])await expect(fields.getByRole('region',{name:zone,exact:true})).toBeInViewport({ratio:1})
+         |                                                                                                                             ^
+      71 | })
+      72 |
+      73 | test('Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario',async()=>{
+        at <worktree>/tests/e2e/chart-review.spec.ts:70:125
+
+    Error Context: test-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/chart-review-Revisión108-·-5f6cb-es-fijas-visibles-a1280×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/chart-review.spec.ts:58:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720
+  67 passed (3.9m)

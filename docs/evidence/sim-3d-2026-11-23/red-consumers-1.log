@@ -1,0 +1,534 @@
+
+Running 48 tests using 1 worker
+
+(node:78419) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   1 [csv] › tests/e2e/analysis-describe.spec.ts:49:1 › AN-2 muestra describe por petición con el fixture aprobado y conserva la fuente (16.6s)
+(node:78793) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 [csv] › tests/e2e/analysis-describe.spec.ts:81:1 › AN-2 coordina el cálculo avanzado con describe sin lanzar consultas al desplegar (1.1s)
+  ✓   3 [csv] › tests/e2e/analysis-describe.spec.ts:106:1 › AN-2 Información presenta dimensiones, tipos y calidad con distintos sin vacíos (945ms)
+  ✓   4 [csv] › tests/e2e/analysis-describe.spec.ts:126:1 › AN-2 cancelar conserva la fuente y permite pasar a la vista avanzada sin respuestas tardías (920ms)
+  ✓   5 [csv] › tests/e2e/analysis-describe.spec.ts:141:1 › AN-2 entrar en el explorador cancela describe pendiente antes de activar el otro análisis (980ms)
+  ✓   6 [csv] › tests/e2e/analysis-describe.spec.ts:154:1 › AN-2 descarta la respuesta anterior cuando cambia la revisión y recalcula con los valores actuales (1.2s)
+  ✓   7 [csv] › tests/e2e/analysis-describe.spec.ts:169:1 › AN-2 la paleta describe abre estadísticas sin empezar a calcular (791ms)
+  ✓   8 [csv] › tests/e2e/analysis-describe.spec.ts:176:1 › AN-2 describe conserva el ámbito filtrado, el informe y las columnas marcadas (1.7s)
+  ✓   9 [csv] › tests/e2e/analysis-describe.spec.ts:190:47 › AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (es) (2.7s)
+  ✓  10 [csv] › tests/e2e/analysis-describe.spec.ts:190:47 › AN-2 cien columnas y teclado conservan la tabla accesible sin desbordamiento (en-XA) (2.9s)
+  ✓  11 [csv] › tests/e2e/analysis-describe.spec.ts:211:1 › AN-2 ciento veinte columnas se rechazan antes de consultar y conservan el archivo (912ms)
+  ✓  12 [csv] › tests/e2e/analysis-describe.spec.ts:217:1 › AN-2 la cardinalidad textual no disponible no elimina las estadísticas numéricas exactas (1.4s)
+  ✓  13 [csv] › tests/e2e/analysis-describe.spec.ts:223:1 › AN-2 revisión: una muestra conserva su ámbito en selector, caption e informe (1.5s)
+  ✓  14 [csv] › tests/e2e/analysis-describe.spec.ts:240:1 › AN-2 revisión: std de un valor y top/freq de fecha se presentan vacíos (1.1s)
+  ✓  15 [csv] › tests/e2e/analysis-describe.spec.ts:249:1 › AN-2 revisión: el presupuesto agregado incluye posiciones ausentes antes de consultar (1.0s)
+  ✓  16 [csv] › tests/e2e/analysis-describe.spec.ts:256:52 › Información: distintos sin vacíos conserva repeticiones y el archivo (es) (1.1s)
+  ✓  17 [csv] › tests/e2e/analysis-describe.spec.ts:256:52 › Información: distintos sin vacíos conserva repeticiones y el archivo (en) (1.1s)
+  ✓  18 [csv] › tests/e2e/analysis-describe.spec.ts:256:52 › Información: distintos sin vacíos conserva repeticiones y el archivo (en-XA) (1.1s)
+  ✘  19 [csv] › tests/e2e/chart-compatibility-controls.spec.ts:63:1 › SIM-2b compatibilidad: Ajustes conserva Texto/Número explícito con perfil identificador y valores excluidos (19.8s)
+(node:79384) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  20 [csv] › tests/e2e/chart-compatibility-controls.spec.ts:81:1 › SIM-2b compatibilidad: Ajustes conserva Mes/Año con perfil mixto y descarta la fecha inválida sin cambiar datos (19.9s)
+(node:79585) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  21 [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › scatter sin fechas carga la fuente una vez y conserva observaciones y totales nulos (4.5s)
+(node:79605) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  22 [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › line sin fechas carga la fuente una vez y conserva observaciones y totales nulos (4.4s)
+(node:79658) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  23 [csv] › tests/e2e/descriptive-percentiles.spec.ts:28:1 › percentiles: perfil filtrado, ayuda por teclado e informe preservan valores y procedencia (16.2s)
+(node:79926) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  24 [csv] › tests/e2e/descriptive-percentiles.spec.ts:40:1 › percentiles: columnas marcadas, controles progresivos y rango comparten método sin recalcular al mostrar (1.1s)
+(node:79963) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  25 [csv] › tests/e2e/descriptive-percentiles.spec.ts:49:1 › percentiles: vacío, un solo número y muestra limitada no inventan población completa @perf (1.7s)
+  ✘  26 [csv] › tests/e2e/empty-values.spec.ts:32:1 › LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar (16.0s)
+(node:80159) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  27 [csv] › tests/e2e/empty-values.spec.ts:56:1 › LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos (1.1s)
+  ✓  28 [csv] › tests/e2e/empty-values.spec.ts:88:1 › LIM-1 ajustes: Un valor vacío bloquea preparar y rellenar con un motivo accesible (1.3s)
+  ✓  29 [csv] › tests/e2e/empty-values.spec.ts:104:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es) (2.2s)
+  ✓  30 [csv] › tests/e2e/empty-values.spec.ts:104:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (en) (2.0s)
+  ✓  31 [csv] › tests/e2e/empty-values.spec.ts:138:1 › LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva bytes tras guardar (1.4s)
+  ✓  32 [csv] › tests/e2e/empty-values.spec.ts:156:1 › LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo (1.7s)
+  ✓  33 [csv] › tests/e2e/empty-values.spec.ts:175:1 › LIM-1 elimina por cualquiera o todas las columnas marcadas y restaura filas completas (1.5s)
+  ✓  34 [csv] › tests/e2e/empty-values.spec.ts:191:1 › LIM-1 fuente protegida permite ver vacíos y bloquea las mutaciones también por el puente (1.6s)
+  ✓  35 [csv] › tests/e2e/empty-values.spec.ts:225:1 › LIM-1 archivo grande permite el filtro completo y explica que limpiar requiere extraer (1.2s)
+  ✓  36 [csv] › tests/e2e/empty-values.spec.ts:239:1 › LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio (835ms)
+  ✓  37 [csv] › tests/e2e/empty-values.spec.ts:256:1 › LIM-1 Texto sin confirmar conserva el diálogo y Cancelar no pierde el borrador (1.2s)
+  ✓  38 [csv] › tests/e2e/empty-values.spec.ts:270:1 › LIM-1 cancelar descarta una vista previa tardía y deja reintentar sin modificar el CSV (1.3s)
+  ✓  39 [csv] › tests/e2e/empty-values.spec.ts:302:1 › LIM-1 la paleta encuentra isnull, fillna y dropna y conserva la selección múltiple (1.2s)
+  ✓  40 [csv] › tests/e2e/empty-values.spec.ts:318:1 › LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas (1.3s)
+  ✓  41 [csv] › tests/e2e/empty-values.spec.ts:332:1 › LIM-1 una protección recibida con el diálogo abierto invalida su vista previa (1.1s)
+  ✓  42 [csv] › tests/e2e/empty-values.spec.ts:347:1 › LIM-1 rellenar desde Información actúa sobre todo el documento y pide actualizar el análisis (1.4s)
+  ✓  43 [csv] › tests/e2e/empty-values.spec.ts:368:57 › LIM-1 teclado, idiomas y temas (es) (1.8s)
+  ✓  44 [csv] › tests/e2e/empty-values.spec.ts:368:57 › LIM-1 teclado, idiomas y temas (en) (1.8s)
+  ✓  45 [csv] › tests/e2e/empty-values.spec.ts:368:57 › LIM-1 teclado, idiomas y temas (en-XA) (1.7s)
+  ✘  46 [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (es) (16.4s)
+(node:80800) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  47 [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (en) (16.4s)
+(node:80977) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  48 [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (en-XA) (16.5s)
+
+
+  1) [csv] › tests/e2e/analysis-describe.spec.ts:49:1 › AN-2 muestra describe por petición con el fixture aprobado y conserva la fuente
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByRole('region', { name: 'Resumen estadístico', exact: true }).locator('tbody tr').nth(2).locator('td').first()
+    Expected: "15.811388300841896"
+    Received: "Valor exacto: 15.8113883008419"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('region', { name: 'Resumen estadístico', exact: true }).locator('tbody tr').nth(2).locator('td').first() with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Resumen estadístico', exact: true }).locator('tbody tr').nth(2).locator('td').first()
+        33 × locator resolved to <td class="svelte-vctb4x" title="Valor exacto: 15.8113883008419">…</td>
+           - unexpected value "Valor exacto: 15.8113883008419"
+
+
+      61 |  await expect(panel.locator('tbody tr')).toHaveCount(8)
+      62 |  for(const [index,values] of [['5','4'],['30','2.5'],['15.81','1.29'],['10','1'],['20','1.75'],['30','2.5'],['40','3.25'],['50','4']].entries())await expect(panel.locator('tbody tr').nth(index).locator('td')).toHaveText(values)
+    > 63 |  await expect(panel.locator('tbody tr').nth(2).locator('td').first()).toHaveAttribute('title','15.811388300841896')
+         |                                                                       ^
+      64 |  const numericCalls=await calls()
+      65 |  expect(numericCalls).toHaveLength(7)
+      66 |  for(let column=0;column<5;column++)expect(numericCalls.filter(call=>call.column===column)).toHaveLength(column===1||column===2?2:1)
+        at <worktree>/tests/e2e/analysis-describe.spec.ts:63:71
+
+    Error Context: test-results/analysis-describe-AN-2-mue-73e52-robado-y-conserva-la-fuente-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/analysis-describe-AN-2-mue-73e52-robado-y-conserva-la-fuente-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/analysis-describe-AN-2-mue-73e52-robado-y-conserva-la-fuente-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/chart-compatibility-controls.spec.ts:63:1 › SIM-2b compatibilidad: Ajustes conserva Texto/Número explícito con perfil identificador y valores excluidos
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info').locator('details').filter({ has: locator(':scope>summary').filter({ hasText: 'Datos del gráfico: tabla accesible' }) }).locator('tbody tr')
+    Timeout: 15000ms
+    - Expected  - 3
+    + Received  + 3
+
+      Array [
+    -   "C5.0",
+    -   "B12.0",
+    -   "A110.0",
+    +   "C5",
+    +   "B12",
+    +   "A110",
+      ]
+
+    Call log:
+      - Expect "toHaveText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info').locator('details').filter({ has: locator(':scope>summary').filter({ hasText: 'Datos del gráfico: tabla accesible' }) }).locator('tbody tr') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info').locator('details').filter({ has: locator(':scope>summary').filter({ hasText: 'Datos del gráfico: tabla accesible' }) }).locator('tbody tr')
+        33 × locator resolved to 3 elements
+
+
+      71 |  await expect(aggregate.locator('option[value=sum]')).toBeDisabled()
+      72 |  await measure.selectOption('number');await expect(aggregate.locator('option[value=sum]')).toBeEnabled();await aggregate.selectOption('sum')
+    > 73 |  const data=await openChartData(page);await expect(data.locator('tbody tr')).toHaveText(['C5.0','B12.0','A110.0'])
+         |                                                                              ^
+      74 |  expect(await queries()).toContain(chartSQL(doc.headers!,options))
+      75 |  await measure.selectOption('text');await expect(aggregate).toHaveValue('count');await expect(aggregate.locator('option[value=sum]')).toBeDisabled()
+      76 |  await expect(data.locator('tbody tr')).toHaveText(['C1','B4','A5'])
+        at <worktree>/tests/e2e/chart-compatibility-controls.spec.ts:73:78
+
+    Error Context: test-results/chart-compatibility-contro-a4f62-ficador-y-valores-excluidos-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/chart-compatibility-contro-a4f62-ficador-y-valores-excluidos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/chart-compatibility-contro-a4f62-ficador-y-valores-excluidos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/chart-compatibility-controls.spec.ts:81:1 › SIM-2b compatibilidad: Ajustes conserva Mes/Año con perfil mixto y descarta la fecha inválida sin cambiar datos
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info').locator('details').filter({ has: locator(':scope>summary').filter({ hasText: 'Datos del gráfico: tabla accesible' }) }).locator('tbody tr')
+    Timeout: 15000ms
+    - Expected  - 2
+    + Received  + 2
+
+      Array [
+    -   "2026-0130.0",
+    -   "2026-0330.0",
+    +   "2026-0130",
+    +   "2026-0330",
+      ]
+
+    Call log:
+      - Expect "toHaveText" locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info').locator('details').filter({ has: locator(':scope>summary').filter({ hasText: 'Datos del gráfico: tabla accesible' }) }).locator('tbody tr') with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.charts-panel').locator('.chart-info').locator('details').filter({ has: locator(':scope>summary').filter({ hasText: 'Datos del gráfico: tabla accesible' }) }).locator('tbody tr')
+        34 × locator resolved to 2 elements
+
+
+      88 |  const expected={...options,y:1,time:'month' as const}
+      89 |  await time.selectOption('month');const data=await openChartData(page)
+    > 90 |  await expect(data.locator('tbody tr')).toHaveText(['2026-0130.0','2026-0330.0'])
+         |                                         ^
+      91 |  await expect(panel().locator('.chart-info .scope').first()).toContainText('Fechas no válidas/vacías/ausentes: 1')
+      92 |  expect(await queries()).toContain(chartSQL(doc.headers!,expected))
+      93 |  await time.selectOption('year');await expect(data.locator('tbody tr')).toHaveText(['202660.0'])
+        at <worktree>/tests/e2e/chart-compatibility-controls.spec.ts:90:41
+
+    Error Context: test-results/chart-compatibility-contro-98b87--inválida-sin-cambiar-datos-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/chart-compatibility-contro-98b87--inválida-sin-cambiar-datos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/chart-compatibility-contro-98b87--inválida-sin-cambiar-datos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › scatter sin fechas carga la fuente una vez y conserva observaciones y totales nulos
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 8
+    + Received  + 8
+
+      Array [
+        Array [
+    -     "1.0",
+    -     "2.0",
+    +     "1",
+    +     "2",
+          "1",
+        ],
+        Array [
+    -     "1.0",
+    -     "4.0",
+    +     "1",
+    +     "4",
+          "2",
+        ],
+        Array [
+    -     "2.0",
+    -     "3.0",
+    +     "2",
+    +     "3",
+          "3",
+        ],
+        Array [
+    -     "4.0",
+    -     "0.0",
+    +     "4",
+    +     "0",
+          "5",
+        ],
+      ]
+
+      59 |  await accessible.locator('summary').click()
+      60 |  const actualRows=await accessible.locator('tbody tr').evaluateAll(rows=>rows.map(row=>[...row.querySelectorAll('td')].map(cell=>cell.textContent)))
+    > 61 |  expect(actualRows).toEqual(data.rows.map(row=>row.map(value=>value===null?'—':value)))
+         |                     ^
+      62 |  const loads=await app.evaluate(()=>Reflect.get(globalThis,'singleChartLoads') as {requests:SqlRequest[];cancelled:string[]})
+      63 |  await info.attach('consultas-del-grafico',{body:JSON.stringify(loads,null,2),contentType:'application/json'})
+      64 |  expect(loads.requests[0].sql).toBe(sql)
+        at <worktree>/tests/e2e/chart-single-load.spec.ts:61:21
+
+    Error Context: test-results/chart-single-load-scatter--4b5fd-servaciones-y-totales-nulos-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/chart-single-load-scatter--4b5fd-servaciones-y-totales-nulos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/chart-single-load-scatter--4b5fd-servaciones-y-totales-nulos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › line sin fechas carga la fuente una vez y conserva observaciones y totales nulos
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 9
+    + Received  + 9
+
+      Array [
+        Array [
+    -     "1.0",
+    -     "2.0",
+    +     "1",
+    +     "2",
+          "1",
+        ],
+        Array [
+    -     "1.0",
+    -     "4.0",
+    +     "1",
+    +     "4",
+          "2",
+        ],
+        Array [
+    -     "2.0",
+    -     "3.0",
+    +     "2",
+    +     "3",
+          "3",
+        ],
+        Array [
+    -     "3.0",
+    +     "3",
+          "—",
+          "4",
+        ],
+        Array [
+    -     "4.0",
+    -     "0.0",
+    +     "4",
+    +     "0",
+          "5",
+        ],
+      ]
+
+      59 |  await accessible.locator('summary').click()
+      60 |  const actualRows=await accessible.locator('tbody tr').evaluateAll(rows=>rows.map(row=>[...row.querySelectorAll('td')].map(cell=>cell.textContent)))
+    > 61 |  expect(actualRows).toEqual(data.rows.map(row=>row.map(value=>value===null?'—':value)))
+         |                     ^
+      62 |  const loads=await app.evaluate(()=>Reflect.get(globalThis,'singleChartLoads') as {requests:SqlRequest[];cancelled:string[]})
+      63 |  await info.attach('consultas-del-grafico',{body:JSON.stringify(loads,null,2),contentType:'application/json'})
+      64 |  expect(loads.requests[0].sql).toBe(sql)
+        at <worktree>/tests/e2e/chart-single-load.spec.ts:61:21
+
+    Error Context: test-results/chart-single-load-line-sin-d84ae-servaciones-y-totales-nulos-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/chart-single-load-line-sin-d84ae-servaciones-y-totales-nulos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/chart-single-load-line-sin-d84ae-servaciones-y-totales-nulos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [csv] › tests/e2e/descriptive-percentiles.spec.ts:28:1 › percentiles: perfil filtrado, ayuda por teclado e informe preservan valores y procedencia
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  getByRole('region', { name: 'Exploración de columna', exact: true }).locator('dl[aria-label="Varianza y percentiles"]').getByText('Varianza muestral (n−1)', { exact: true }).locator('..').locator('dd')
+    Expected: "4.57142857143"
+    Received: "4.57"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" getByRole('region', { name: 'Exploración de columna', exact: true }).locator('dl[aria-label="Varianza y percentiles"]').getByText('Varianza muestral (n−1)', { exact: true }).locator('..').locator('dd') with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Exploración de columna', exact: true }).locator('dl[aria-label="Varianza y percentiles"]').getByText('Varianza muestral (n−1)', { exact: true }).locator('..').locator('dd')
+        34 × locator resolved to <dd class="svelte-rmw2lu" title="Valor exacto: 4.57142857142857">…</dd>
+           - unexpected value "4.57"
+
+
+      22 | async function explore(panel:Locator){await panel.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Exploración completa.')}
+      23 | async function formatted(value:number|null){return value===null?'—':page.evaluate(value=>value.toLocaleString(undefined,{maximumSignificantDigits:12}),value)}
+    > 24 | async function profileValues(panel:Locator,values:(number|null)[]){const details=panel.locator('dl[aria-label="Varianza y percentiles"]');for(let i=0;i<fields.length;i++)await expect(details.getByText(fields[i],{exact:true}).locator('..').locator('dd')).toHaveText(await formatted(values[i]))}
+         |                                                                                                                                                                                                                                                               ^
+      25 | async function tableValues(panel:Locator,values:number[]){const headings=await panel.getByRole('columnheader').allTextContents();for(let i=0;i<fields.length;i++){const column=headings.indexOf(fields[i]);expect(column).toBeGreaterThan(0);const cell=panel.locator('tbody tr').first().locator('th,td').nth(column);await expect(cell).toHaveText(formatNumber(values[i],{maximumFractionDigits:2},'es'));await expect(cell).toHaveAttribute('title',/\S/);expect(Number(await cell.getAttribute('title'))).toBeCloseTo(values[i],12)}}
+      26 | async function report(panel:Locator,title:string,detailed=false){await exportAnalysis(page,detailed?'describe.detailedReport':'describe.report');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')?.text).toContain(title);return(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')!}
+      27 |
+        at profileValues (<worktree>/tests/e2e/descriptive-percentiles.spec.ts:24:255)
+        at <worktree>/tests/e2e/descriptive-percentiles.spec.ts:33:221
+
+    Error Context: test-results/descriptive-percentiles-pe-4fc4d-ervan-valores-y-procedencia-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/descriptive-percentiles-pe-4fc4d-ervan-valores-y-procedencia-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/descriptive-percentiles-pe-4fc4d-ervan-valores-y-procedencia-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [csv] › tests/e2e/descriptive-percentiles.spec.ts:40:1 › percentiles: columnas marcadas, controles progresivos y rango comparten método sin recalcular al mostrar
+
+    Error: expect(received).toBeCloseTo(expected, precision)
+
+    Expected: 125
+    Received: NaN
+
+    Expected precision:    12
+    Expected difference: < 0.0000000000005
+    Received difference:   NaN
+
+      23 | async function formatted(value:number|null){return value===null?'—':page.evaluate(value=>value.toLocaleString(undefined,{maximumSignificantDigits:12}),value)}
+      24 | async function profileValues(panel:Locator,values:(number|null)[]){const details=panel.locator('dl[aria-label="Varianza y percentiles"]');for(let i=0;i<fields.length;i++)await expect(details.getByText(fields[i],{exact:true}).locator('..').locator('dd')).toHaveText(await formatted(values[i]))}
+    > 25 | async function tableValues(panel:Locator,values:number[]){const headings=await panel.getByRole('columnheader').allTextContents();for(let i=0;i<fields.length;i++){const column=headings.indexOf(fields[i]);expect(column).toBeGreaterThan(0);const cell=panel.locator('tbody tr').first().locator('th,td').nth(column);await expect(cell).toHaveText(formatNumber(values[i],{maximumFractionDigits:2},'es'));await expect(cell).toHaveAttribute('title',/\S/);expect(Number(await cell.getAttribute('title'))).toBeCloseTo(values[i],12)}}
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ^
+      26 | async function report(panel:Locator,title:string,detailed=false){await exportAnalysis(page,detailed?'describe.detailedReport':'describe.report');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')?.text).toContain(title);return(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')!}
+      27 |
+      28 | test('percentiles: perfil filtrado, ayuda por teclado e informe preservan valores y procedencia',async()=>{
+        at tableValues (<worktree>/tests/e2e/descriptive-percentiles.spec.ts:25:496)
+        at <worktree>/tests/e2e/descriptive-percentiles.spec.ts:43:141
+
+    Error Context: test-results/descriptive-percentiles-pe-1a7de-o-sin-recalcular-al-mostrar-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/descriptive-percentiles-pe-1a7de-o-sin-recalcular-al-mostrar-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/descriptive-percentiles-pe-1a7de-o-sin-recalcular-al-mostrar-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [csv] › tests/e2e/empty-values.spec.ts:32:1 › LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  getByRole('region', { name: 'Vista general de columnas', exact: true }).getByRole('row').filter({ has: getByRole('rowheader', { name: 'Cantidad', exact: true }) }).locator('.quality-breakdown').locator('summary')
+    Expected: "3 · 43 %"
+    Received: "3 · 42.86 %"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" getByRole('region', { name: 'Vista general de columnas', exact: true }).getByRole('row').filter({ has: getByRole('rowheader', { name: 'Cantidad', exact: true }) }).locator('.quality-breakdown').locator('summary') with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Vista general de columnas', exact: true }).getByRole('row').filter({ has: getByRole('rowheader', { name: 'Cantidad', exact: true }) }).locator('.quality-breakdown').locator('summary')
+        33 × locator resolved to <summary class="cell-summary svelte-1alawu2" aria-label="3 · 42.86 % · Desglose de vacíos de Cantidad">…</summary>
+           - unexpected value "3 · 42.86 %"
+
+
+      33 |  const panel=await information(),row=panel.getByRole('row').filter({has:page.getByRole('rowheader',{name:'Cantidad',exact:true})})
+      34 |  const details=row.locator('.quality-breakdown')
+    > 35 |  await expect(details.locator('summary')).toHaveText('3 · 43 %')
+         |                                           ^
+      36 |  await details.locator('summary').click()
+      37 |  await expect(details.locator('dd')).toHaveText(['1','1','1'])
+      38 |  for(const name of ['Ver filas vacías','Rellenar vacíos…','Eliminar filas con vacío…'])await expect(details.getByRole('button',{name,exact:true})).toBeVisible()
+        at <worktree>/tests/e2e/empty-values.spec.ts:35:43
+
+    Error Context: test-results/empty-values-LIM-1-Informa-d208b--y-filtra-vacíos-sin-editar-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/empty-values-LIM-1-Informa-d208b--y-filtra-vacíos-sin-editar-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/empty-values-LIM-1-Informa-d208b--y-filtra-vacíos-sin-editar-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (es) ───────
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByRole('region', { name: 'Resumen estadístico', exact: true }).locator('tbody tr').nth(2).locator('td').first()
+    Expected: "15.811388300841896"
+    Received: "Valor exacto: 15.8113883008419"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('region', { name: 'Resumen estadístico', exact: true }).locator('tbody tr').nth(2).locator('td').first() with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Resumen estadístico', exact: true }).locator('tbody tr').nth(2).locator('td').first()
+        34 × locator resolved to <td class="svelte-vctb4x" title="Valor exacto: 15.8113883008419">…</td>
+           - unexpected value "Valor exacto: 15.8113883008419"
+
+
+      42 |  }
+      43 |  await expect(panel.locator('tbody tr').nth(2).locator('td')).toHaveText(['15.81','1.29'])
+    > 44 |  await expect(panel.locator('tbody tr').nth(2).locator('td').first()).toHaveAttribute('title','15.811388300841896')
+         |                                                                       ^
+      45 |  await expect(panel.locator('tbody tr').nth(1).locator('td')).toHaveText(['30','2.5'])
+      46 |  await expect(panel.locator('caption')).toHaveText(tr('describe.scope.all'))
+      47 |  expect(await panel.getByRole('status').evaluate(element=>element.getBoundingClientRect().height)).toBeLessThanOrEqual(1)
+        at <worktree>/tests/e2e/statistics-readable.spec.ts:44:71
+
+    Error Context: test-results/statistics-readable-SIM-2e-estadísticas-legibles-es--csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/statistics-readable-SIM-2e-estadísticas-legibles-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/statistics-readable-SIM-2e-estadísticas-legibles-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (en) ──────
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByRole('region', { name: 'Statistical summary', exact: true }).locator('tbody tr').nth(2).locator('td').first()
+    Expected: "15.811388300841896"
+    Received: "Exact value: 15.8113883008419"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('region', { name: 'Statistical summary', exact: true }).locator('tbody tr').nth(2).locator('td').first() with timeout 15000ms
+      - waiting for getByRole('region', { name: 'Statistical summary', exact: true }).locator('tbody tr').nth(2).locator('td').first()
+        34 × locator resolved to <td class="svelte-vctb4x" title="Exact value: 15.8113883008419">…</td>
+           - unexpected value "Exact value: 15.8113883008419"
+
+
+      42 |  }
+      43 |  await expect(panel.locator('tbody tr').nth(2).locator('td')).toHaveText(['15.81','1.29'])
+    > 44 |  await expect(panel.locator('tbody tr').nth(2).locator('td').first()).toHaveAttribute('title','15.811388300841896')
+         |                                                                       ^
+      45 |  await expect(panel.locator('tbody tr').nth(1).locator('td')).toHaveText(['30','2.5'])
+      46 |  await expect(panel.locator('caption')).toHaveText(tr('describe.scope.all'))
+      47 |  expect(await panel.getByRole('status').evaluate(element=>element.getBoundingClientRect().height)).toBeLessThanOrEqual(1)
+        at <worktree>/tests/e2e/statistics-readable.spec.ts:44:71
+
+    Error Context: test-results/statistics-readable-SIM-2e-estadísticas-legibles-en--csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/statistics-readable-SIM-2e-estadísticas-legibles-en--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/statistics-readable-SIM-2e-estadísticas-legibles-en--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (en-XA) ───
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByRole('region', { name: '[Státïstïcál sümmáry~~~~~~]', exact: true }).locator('tbody tr').nth(2).locator('td').first()
+    Expected: "15.811388300841896"
+    Received: "[Ëxáct válüë: 15.8113883008419~~~~~~]"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('region', { name: '[Státïstïcál sümmáry~~~~~~]', exact: true }).locator('tbody tr').nth(2).locator('td').first() with timeout 15000ms
+      - waiting for getByRole('region', { name: '[Státïstïcál sümmáry~~~~~~]', exact: true }).locator('tbody tr').nth(2).locator('td').first()
+        34 × locator resolved to <td class="svelte-vctb4x" title="[Ëxáct válüë: 15.8113883008419~~~~~~]">…</td>
+           - unexpected value "[Ëxáct válüë: 15.8113883008419~~~~~~]"
+
+
+      42 |  }
+      43 |  await expect(panel.locator('tbody tr').nth(2).locator('td')).toHaveText(['15.81','1.29'])
+    > 44 |  await expect(panel.locator('tbody tr').nth(2).locator('td').first()).toHaveAttribute('title','15.811388300841896')
+         |                                                                       ^
+      45 |  await expect(panel.locator('tbody tr').nth(1).locator('td')).toHaveText(['30','2.5'])
+      46 |  await expect(panel.locator('caption')).toHaveText(tr('describe.scope.all'))
+      47 |  expect(await panel.getByRole('status').evaluate(element=>element.getBoundingClientRect().height)).toBeLessThanOrEqual(1)
+        at <worktree>/tests/e2e/statistics-readable.spec.ts:44:71
+
+    Error Context: test-results/statistics-readable-SIM-2e-estadísticas-legibles-en-XA--csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/statistics-readable-SIM-2e-estadísticas-legibles-en-XA--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/statistics-readable-SIM-2e-estadísticas-legibles-en-XA--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11 failed
+    [csv] › tests/e2e/analysis-describe.spec.ts:49:1 › AN-2 muestra describe por petición con el fixture aprobado y conserva la fuente
+    [csv] › tests/e2e/chart-compatibility-controls.spec.ts:63:1 › SIM-2b compatibilidad: Ajustes conserva Texto/Número explícito con perfil identificador y valores excluidos
+    [csv] › tests/e2e/chart-compatibility-controls.spec.ts:81:1 › SIM-2b compatibilidad: Ajustes conserva Mes/Año con perfil mixto y descarta la fecha inválida sin cambiar datos
+    [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › scatter sin fechas carga la fuente una vez y conserva observaciones y totales nulos
+    [csv] › tests/e2e/chart-single-load.spec.ts:15:47 › line sin fechas carga la fuente una vez y conserva observaciones y totales nulos
+    [csv] › tests/e2e/descriptive-percentiles.spec.ts:28:1 › percentiles: perfil filtrado, ayuda por teclado e informe preservan valores y procedencia
+    [csv] › tests/e2e/descriptive-percentiles.spec.ts:40:1 › percentiles: columnas marcadas, controles progresivos y rango comparten método sin recalcular al mostrar
+    [csv] › tests/e2e/empty-values.spec.ts:32:1 › LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar
+    [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (es) ────────
+    [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (en) ────────
+    [csv] › tests/e2e/statistics-readable.spec.ts:22:57 › SIM-2e estadísticas legibles (en-XA) ─────
+  37 passed (3.4m)

@@ -1,0 +1,33 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <worktree>
+
+ ❯ tests/analysis-number-format.test.ts (20 tests | 1 failed) 16ms
+   ❯ SIM-3d · precisión de presentación y copia (20)
+     × no convierte un resultado finito extremo en Infinity al redondear la copia 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > no convierte un resultado finito extremo en Infinity al redondear la copia
+AssertionError: expected 'Infinity' to be '1.79769313486232e+308' // Object.is equality
+
+Expected: "1.79769313486232e+308"
+Received: "Infinity"
+
+ ❯ tests/analysis-number-format.test.ts:42:54
+     40|  })
+     41|  it('no convierte un resultado finito extremo en Infinity al redondear…
+     42|   expect(formatAnalysisFullNumber(Number.MAX_VALUE)).toBe('1.797693134…
+       |                                                      ^
+     43|   expect(formatAnalysisFullNumber(-Number.MAX_VALUE,' %')).toBe('-1.79…
+     44|  })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 19 passed (20)
+   Start at  17:11:21
+   Duration  131ms (transform 41%, tests 28%, import 27%, worker 3%)

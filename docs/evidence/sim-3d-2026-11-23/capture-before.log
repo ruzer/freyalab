@@ -1,0 +1,15 @@
+(node:971) Warning: Failed to load the ES module: <worktree>/src/shared/i18n/index.ts. Make sure to set "type": "module" in the nearest package.json file or use the .mjs extension.
+(Use `node --trace-warnings ...` to show where the warning was created)
+SyntaxError: Cannot use 'import.meta' outside a module
+
+   at sim3d-captures.spec.ts:7
+
+   5 | import {tmpdir} from 'node:os'
+   6 | import {createHash} from 'node:crypto'
+>  7 | import {t,type Language} from '../../sim3d-cifras-textos/src/shared/i18n'
+     | ^
+   8 | import {showPanel,showTable} from '../../sim3d-cifras-textos/tests/e2e/panel'
+   9 | import {closeElectron} from '../../sim3d-cifras-textos/tests/e2e/close-electron'
+  10 | const digest=(bytes:Buffer)=>createHash('sha256').update(bytes).digest('hex')
+    at Object.<anonymous> (<recovery>/sim3d-evidence/capture-preparation/sim3d-captures.spec.ts:7:1)
+Error: No tests found

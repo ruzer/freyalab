@@ -1,0 +1,145 @@
+
+Running 3 tests using 1 worker
+
+(node:52174) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/3] [csv] › tests/e2e/sim3d-decimals.spec.ts:90:1 › SIM-3d decimales: selector global accesible con opciones 2 y Todos (es)
+  1) [csv] › tests/e2e/sim3d-decimals.spec.ts:90:1 › SIM-3d decimales: selector global accesible con opciones 2 y Todos (es)
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.analysis-workspace:not([hidden])').getByRole('combobox', { name: 'Decimales', exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.analysis-workspace:not([hidden])').getByRole('combobox', { name: 'Decimales', exact: true }) with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').getByRole('combobox', { name: 'Decimales', exact: true })
+
+
+      90 | test('SIM-3d decimales: selector global accesible con opciones 2 y Todos (es)',async()=>{
+      91 |  await openAnalysis(page,'Información')
+    > 92 |  await expect(decimalSelect()).toBeVisible();await expect(decimalSelect()).toHaveValue('2')
+         |                                ^
+      93 |  await expect(decimalSelect().locator('option')).toHaveText(['2',tr('analysis.decimals.all')])
+      94 | })
+      95 |
+        at <worktree>/tests/e2e/sim3d-decimals.spec.ts:92:32
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-deci-23a32--con-opciones-2-y-Todos-es--csv/attachments/electron-context-b644ea0045f1564d4f5ce393f64ed7dfabd0c2ee.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/sim3d-decimals-SIM-3d-deci-23a32--con-opciones-2-y-Todos-es--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-deci-23a32--con-opciones-2-y-Todos-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3d-decimals-SIM-3d-deci-23a32--con-opciones-2-y-Todos-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:52550) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/3] [csv] › tests/e2e/sim3d-decimals.spec.ts:96:1 › SIM-3d decimales: pequeños no nulos siguen visibles en Estadísticas principal (es)
+  2) [csv] › tests/e2e/sim3d-decimals.spec.ts:96:1 › SIM-3d decimales: pequeños no nulos siguen visibles en Estadísticas principal (es)
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('.analysis-workspace:not([hidden])').locator('.describe-panel').locator('tbody tr').filter({ has: getByText('Media', { exact: true }) }).locator('td').nth(1)
+    Expected: "0.00041"
+    Received: "0"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" locator('.analysis-workspace:not([hidden])').locator('.describe-panel').locator('tbody tr').filter({ has: getByText('Media', { exact: true }) }).locator('td').nth(1) with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden])').locator('.describe-panel').locator('tbody tr').filter({ has: getByText('Media', { exact: true }) }).locator('td').nth(1)
+        34 × locator resolved to <td title="0.0004123" class="svelte-vctb4x">0</td>
+           - unexpected value "0"
+
+
+       96 | test('SIM-3d decimales: pequeños no nulos siguen visibles en Estadísticas principal (es)',async()=>{
+       97 |  await calculateDescribe()
+    >  98 |  await expect(await metric('mean','Pequeño')).toHaveText('0.00041')
+          |                                               ^
+       99 |  await expect(await metric('mean','Entero')).toHaveText('12')
+      100 |  await expect(await metric('mean','Valor')).toHaveText('5.52')
+      101 | })
+        at <worktree>/tests/e2e/sim3d-decimals.spec.ts:98:47
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-deci-3d7ae--Estadísticas-principal-es--csv/attachments/electron-context-66d8404d3d41f348ed75ea6d7eb871fb2dd76823.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/sim3d-decimals-SIM-3d-deci-3d7ae--Estadísticas-principal-es--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-deci-3d7ae--Estadísticas-principal-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3d-decimals-SIM-3d-deci-3d7ae--Estadísticas-principal-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:52699) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/3] [csv] › tests/e2e/sim3d-decimals.spec.ts:103:1 › SIM-3d decimales: copia parcial y múltiple usa 15 cifras en Estadísticas principal (es) @solo
+  3) [csv] › tests/e2e/sim3d-decimals.spec.ts:103:1 › SIM-3d decimales: copia parcial y múltiple usa 15 cifras en Estadísticas principal (es) @solo
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "5.52264150943"
+    Received: "5."
+
+      105 |  const first=await metric('mean','Valor'),last=await metric('mean','Pequeño')
+      106 |  expect(await selectPart(first,2)).toBe('5.')
+    > 107 |  const partialBefore=await selectionState();expect.soft(await nativeCopy()).toBe(precise);expect(await selectionState()).toEqual(partialBefore)
+          |                                                                             ^
+      108 |  await first.click()
+      109 |  const bounds=await describe().evaluate(node=>{
+      110 |   const headers=Array.from(node.querySelectorAll('thead th>span')).map(value=>value.textContent)
+        at <worktree>/tests/e2e/sim3d-decimals.spec.ts:107:77
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "5.52264150943	0.0004123"
+    Received: "5.52	0"
+
+      118 |  expect(bounds.visible.startsWith(bounds.first)).toBe(true);expect(bounds.visible.endsWith(bounds.last)).toBe(true)
+      119 |  const separator=bounds.visible.slice(bounds.first.length,bounds.visible.length-bounds.last.length);expect(separator).toMatch(/^[\t\r\n ]+$/)
+    > 120 |  const multipleBefore=await selectionState();expect.soft(await nativeCopy()).toBe(precise+separator+small);expect(await selectionState()).toEqual(multipleBefore)
+          |                                                                              ^
+      121 |  await expect(last).toBeVisible()
+      122 | })
+      123 |
+        at <worktree>/tests/e2e/sim3d-decimals.spec.ts:120:78
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-deci-641fa--Estadísticas-principal-es--csv/attachments/electron-context-e99fbd3ec60b815caa25f067bfc840875c785062.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/sim3d-decimals-SIM-3d-deci-641fa--Estadísticas-principal-es--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-deci-641fa--Estadísticas-principal-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3d-decimals-SIM-3d-deci-641fa--Estadísticas-principal-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  3 failed
+    [csv] › tests/e2e/sim3d-decimals.spec.ts:90:1 › SIM-3d decimales: selector global accesible con opciones 2 y Todos (es)
+    [csv] › tests/e2e/sim3d-decimals.spec.ts:96:1 › SIM-3d decimales: pequeños no nulos siguen visibles en Estadísticas principal (es)
+    [csv] › tests/e2e/sim3d-decimals.spec.ts:103:1 › SIM-3d decimales: copia parcial y múltiple usa 15 cifras en Estadísticas principal (es) @solo

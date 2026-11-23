@@ -1,0 +1,26 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <worktree>
+
+ ❯ tests/analysis-number-format.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/analysis-number-format.test.ts [ tests/analysis-number-format.test.ts ]
+Error: Cannot find module '../src/shared/analysis-number-format' imported from <worktree>/tests/analysis-number-format.test.ts
+ ❯ tests/analysis-number-format.test.ts:2:1
+      1| import {describe,it,expect} from 'vitest'
+      2| import {formatAnalysisNumber,formatAnalysisFullNumber,copyAnalysisFrag…
+       | ^
+      3|
+      4| // Conventional TDD: the new pure module does not exist yet. Its missi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  16:25:37
+   Duration  104ms (worker 96%, environment 4%)

@@ -1,0 +1,15 @@
+
+Running 8 tests using 1 worker
+
+(node:99887) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/chart-review.spec.ts:30:1 › Revisión108 · truncado conserva cien barras en su orden y un solo aviso sin Top10 (5.6s)
+  ✓  2 [csv] › tests/e2e/chart-review.spec.ts:49:1 › Revisión108 · motivo con línea propia y sin solapes a1280×720 (5.0s)
+  ✓  3 [csv] › tests/e2e/chart-review.spec.ts:58:1 › Revisión108 · seis campos y acciones fijas visibles a1280×720 (5.1s)
+  ✓  4 [csv] › tests/e2e/chart-review.spec.ts:73:1 › Revisión108 · cambiar una zona no atribuye una elección de tipo al usuario (5.3s)
+  ✓  5 [csv] › tests/e2e/chart-review.spec.ts:85:1 › Revisión108 · tabla, total, marcas y eje conservan el formato numérico al cambiar campo e idioma (11.1s)
+  ✓  6 [csv] › tests/e2e/chart-review.spec.ts:107:31 › Revisión108 final · Total completo dentro del área visible a1280×720 (5.2s)
+  ✓  7 [csv] › tests/e2e/chart-review.spec.ts:107:31 › Revisión108 final · Total completo dentro del área visible a800×720 (5.3s)
+  ✓  8 [csv] › tests/e2e/chart-review.spec.ts:125:1 › Revisión108 final · el aviso explica el campo de orden y los empates de Suma y Cuenta en es/en (14.4s)
+
+  8 passed (57.3s)
