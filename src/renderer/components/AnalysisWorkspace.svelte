@@ -101,7 +101,7 @@
  header button{min-height:24px;padding:2px 6px}
  .header-actions,.header-actions button,.analysis-sections{display:flex;align-items:center;gap:6px}
  .header-actions{flex-shrink:0}
- .number-format,.number-format label{display:flex;align-items:center;gap:6px}.number-format{flex-wrap:wrap;padding:4px 0}.number-format select{font:inherit;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:var(--radius-control);padding:2px 4px}.number-format small{color:var(--muted)}
+ .number-format,.number-format label{display:flex;align-items:center;gap:6px}.number-format{flex-wrap:wrap}.number-format select{font:inherit;color:var(--text);background:var(--input);border:1px solid var(--border);border-radius:var(--radius-control);padding:2px 4px}.number-format small{color:var(--muted)}
  .analysis-sections{padding:0;gap:4px}
  :global(:root .app-shell) .analysis-sections button{border:0;border-radius:4px 4px 0 0;border-bottom:2px solid transparent;background:transparent;padding:7px 9px;font-size:var(--font-ui);font-weight:600}
  :global(:root .app-shell) .analysis-sections button[aria-selected=true]{border-bottom-color:var(--accent);background:var(--hover)}
