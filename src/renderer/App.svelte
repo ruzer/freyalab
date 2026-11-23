@@ -1,5 +1,5 @@
 <script lang="ts">
- import {onMount,tick} from 'svelte'
+ import {onMount,tick,untrack} from 'svelte'
  import {controlHint,controlReasons} from './lib/control-hint'
  import {t,plural,formatNumber,setUILanguage,getUILanguage} from './lib/i18n.svelte'
  import {defaultSettings,type Settings,type SettingsPatch,type SettingsState} from '../shared/settings'
@@ -12,7 +12,7 @@
  import {EditorView} from '@codemirror/view'
  import {openSearchPanel} from '@codemirror/search'
  import {applicationEditingState,routeApplicationEdit} from './lib/application-editing'
- import {formatApplicationShortcut,type ApplicationCommand,type ApplicationShortcuts,type ApplicationUiState} from '../shared/application'
+ import {formatApplicationShortcut,contextEditCommands,type ContextEditCommand,type ApplicationCommand,type ApplicationShortcuts,type ApplicationUiState} from '../shared/application'
  import {ApplicationClosing,type ClosingNotice} from './lib/application-closing'
  import {autocompletion} from '@codemirror/autocomplete'
  import {completeCitations} from './lib/citation-completion'
@@ -38,6 +38,7 @@
  import {csvAnalysisViews,emptyCsvAnalysisView,type CsvEmptyIntent} from './lib/csv-analysis-view'
  import {workspaceTabs,openAnalysisTab,closeDocumentAnalysis,type AnalysisTab,type AnalysisSection,type AnalysisStatistics,type WorkspaceTab} from './lib/workspace-tabs'
  import CsvFileMenu from './components/CsvFileMenu.svelte'
+ import ContextMenu from './components/ContextMenu.svelte'
  import CsvViewDialog from './components/CsvViewDialog.svelte'
  import CsvOpenError from './components/CsvOpenError.svelte'
  import Tree from './components/Tree.svelte'
@@ -118,7 +119,11 @@
  let csvWrap=$state(false),csvSpaces=$state(false),csvOptions=$state<HTMLDetailsElement>()
  $effect(()=>{activeId;csvText;csvWrap=false;csvSpaces=false})
  function textOption(action:'wrap'|'spaces'|'colors'|'line'){if(action==='wrap')csvWrap=!csvWrap;else if(action==='spaces')csvSpaces=!csvSpaces;else if(action==='colors')remember({editor:{csvColumnColors:!preferencesState.values.editor.csvColumnColors}});if(csvOptions)csvOptions.open=false;if(action==='line')editor?.goToLine();else editor?.focus()}
- let csvFileMenu=$state<{path:string;x:number;y:number;origin:HTMLElement}|null>(null)
+ let csvFileMenu=$state<{path:string;directory:boolean;x:number;y:number;origin:HTMLElement}|null>(null)
+ let tabMenu=$state<{tab:WorkspaceTab;name:string;x:number;y:number;origin:HTMLElement}|null>(null)
+ type TextMenu={target:HTMLElement;x:number;y:number;state:ApplicationUiState;plain:boolean;ranges:Range[];field?:{start:number;end:number;direction:'forward'|'backward'|'none'}}
+ let textMenu=$state<TextMenu|null>(null)
+
  let csvChange=$state<{id:string;name:string;view:CsvView;busy:boolean;message:string;analysis?:{section:AnalysisSection;statistics?:AnalysisStatistics}}|null>(null)
  let textCommands=$state(false)
  async function closeTextCommands(){textCommands=false;await tick();editor?.focus()}
@@ -473,8 +478,13 @@
   try{const doc=await window.freya.csvOpen(issue.path,'text');await finishCsvView(doc);if(csvFailure===issue)csvFailure=null;await tick();if(issue.reportedLine){if(editor?.goToPhysicalLine(issue.reportedLine))notify(t('csvText.error.openedLine',{line:issue.reportedLine}),'info');else{editor?.focus();notify(t('csvText.error.noLine'),'info')}}else editor?.focus()}
   catch(failure){error(failure instanceof Error?failure.message:String(failure))}finally{csvOpening=false}
  }
- function csvContext(event:MouseEvent|KeyboardEvent,path:string){if(!/\.(csv|tsv)$/i.test(path))return;event.preventDefault();const origin=event.currentTarget as HTMLElement,rect=origin.getBoundingClientRect();csvFileMenu={path,origin,x:event instanceof MouseEvent?event.clientX:rect.left,y:event instanceof MouseEvent?event.clientY:rect.bottom}}
+ function csvContext(event:MouseEvent|KeyboardEvent,path:string,directory=false){event.preventDefault();event.stopPropagation();tabMenu=null;const origin=event.currentTarget as HTMLElement,rect=origin.getBoundingClientRect();csvFileMenu={path,directory,origin,x:event instanceof MouseEvent?event.clientX:rect.left,y:event instanceof MouseEvent?event.clientY:rect.bottom}}
  function closeCsvContext(restoreFocus:boolean){const origin=csvFileMenu?.origin;csvFileMenu=null;if(restoreFocus)origin?.focus()}
+ function openTabMenu(event:MouseEvent|KeyboardEvent,tab:WorkspaceTab,name:string){event.preventDefault();event.stopPropagation();csvFileMenu=null;const origin=event.currentTarget as HTMLElement,rect=origin.getBoundingClientRect();tabMenu={tab,name,origin,x:event instanceof MouseEvent?event.clientX:rect.left,y:event instanceof MouseEvent?event.clientY:rect.bottom}}
+ function closeTabMenu(restoreFocus:boolean){const origin=tabMenu?.origin;tabMenu=null;if(restoreFocus){if(origin?.isConnected)origin.focus();else document.querySelector<HTMLElement>('.tabs [role="tab"][aria-selected="true"]')?.focus()}}
+ function closeContextTab(){const tab=tabMenu?.tab;closeTabMenu(true);if(tab)void(tab.type==='analysis'?closeAnalysis(tab):close(tab.id))}
+ function revealContextTab(){const tab=tabMenu?.tab;closeTabMenu(true);if(tab?.type==='document')void action(()=>window.freya.documentShow(tab.id))}
+
  async function openFolder(){await action(async()=>{await settingsReady;const path=await window.freya.folder();if(path){folderPath=path;entries=await window.freya.tree(path);sidebar=true;remember({barraLateral:{visible:true}})}})}
  async function create(kind:Kind){newMenu=false;await action(async()=>{await settingsReady;merge(await window.freya.newDocument(kind),true)})}
  function updateText(id:string,text:string){documents=documents.map(d=>d.id===id?{...d,text,dirty:true}:d);const previous=pending.get(id)??Promise.resolve();const task=previous.catch(()=>{}).then(()=>window.freya.update(id,text)).then(doc=>{const current=documents.find(d=>d.id===id);if(current?.text===text)merge(doc)}).catch(e=>{error(String(e));throw e});pending.set(id,task);void task.then(()=>{if(pending.get(id)===task)pending.delete(id)},()=>{})}
@@ -561,11 +571,50 @@
  function keydown(event:KeyboardEvent){if(!event.defaultPrevented&&event.key==='Escape'&&csvOptions?.open&&event.target instanceof Node&&csvOptions.contains(event.target)){event.preventDefault();csvOptions.open=false;editor?.focus()}}
  function focusedElement(){return document.activeElement instanceof HTMLElement?document.activeElement:null}
  function previewEditing(target:HTMLElement|null){return active?.kind==='markdown'&&(mode==='preview'||!!target?.closest('.preview'))&&applicationEditingState(target).focus==='none'}
- function applicationState():ApplicationUiState{
-  const target=focusedElement();let capabilities=applicationEditingState(target)
+ function applicationState(target:HTMLElement|null=focusedElement()):ApplicationUiState{
+  let capabilities=applicationEditingState(target)
   if(previewEditing(target)&&active){const state=textSession(active).state;capabilities={focus:'editor',editable:!editingLocked,canUndo:undoDepth(state)>0,canRedo:redoDepth(state)>0,hasSelection:window.getSelection()?.isCollapsed===false}}
   // El visor pertenece a la pestaña; los diálogos de formulario siguen bloqueando el menú.
   return{activeId:active?.id??null,analysis:activeAnalysis?'active':analyses.length?'open':undefined,mode,focus:capabilities.focus,...(active?.kind==='csv'?{csvView:active.csvView??'table'}:{}),inCodeMirror:!!target?.closest('.cm-editor'),locked:applicationClosing||busy||!!assetBusy[activeId],modal:!!appDialog||projectDialog||!!sourceDraft||!!document.querySelector('dialog[open]:not(.diagram-modal)'),canEdit:capabilities.editable??(capabilities.focus==='grid'&&!editingLocked),...(capabilities.canUndo!==undefined?{canUndo:capabilities.canUndo}:{}),...(capabilities.canRedo!==undefined?{canRedo:capabilities.canRedo}:{}),...(capabilities.hasSelection!==undefined?{hasSelection:capabilities.hasSelection}:{})}
+ }
+ function openTextMenu(event:MouseEvent|KeyboardEvent){
+  if(event.defaultPrevented||event instanceof KeyboardEvent&&!(event.key==='ContextMenu'||event.key==='F10'&&event.shiftKey))return
+  const target=event.target instanceof Element?event.target.closest<HTMLElement>('input,textarea,.cm-content,.preview'):null
+  if(!target)return
+  const state=applicationState(target)
+  if(state.focus==='none'||state.focus==='grid')return
+  event.preventDefault();event.stopPropagation();tabMenu=null;csvFileMenu=null
+  const box=target.getBoundingClientRect(),selection=window.getSelection(),field=target instanceof HTMLInputElement||target instanceof HTMLTextAreaElement?target:null
+  textMenu={target,state,x:event instanceof MouseEvent?event.clientX:box.left,y:event instanceof MouseEvent?event.clientY:box.top+Math.min(box.height,24),plain:active?.kind==='markdown'&&!activeAnalysis&&state.focus==='editor'&&!!target.closest('.cm-content'),ranges:selection?Array.from({length:selection.rangeCount},(_,i)=>selection.getRangeAt(i).cloneRange()):[],...field&&typeof field.selectionStart==='number'&&typeof field.selectionEnd==='number'?{field:{start:field.selectionStart,end:field.selectionEnd,direction:field.selectionDirection??'none'}}:{}}
+ }
+ function restoreTextTarget(menu:TextMenu){
+  const target=menu.target
+  if(!target.isConnected||!target.getClientRects().length)return false
+  target.focus({preventScroll:true})
+  if(menu.field&&(target instanceof HTMLInputElement||target instanceof HTMLTextAreaElement))target.setSelectionRange(menu.field.start,menu.field.end,menu.field.direction)
+  else if(menu.ranges.length){const selection=window.getSelection();selection?.removeAllRanges();for(const range of menu.ranges)if(range.startContainer.isConnected&&range.endContainer.isConnected)selection?.addRange(range)}
+  return document.activeElement===target||target.contains(document.activeElement)
+ }
+ function closeTextMenu(restoreFocus:boolean){
+  const menu=textMenu;textMenu=null
+  if(!menu)return
+  if(restoreFocus)restoreTextTarget(menu)
+  else if(menu.target.matches('.cell-input,.column-filter:not([data-column-filter])')&&restoreTextTarget(menu))menu.target.blur()
+ }
+ $effect(()=>{selectedTabId;mode;untrack(()=>closeTextMenu(false))})
+ function textMenuReason(id:ContextEditCommand){
+  if(!textMenu||textMenu.state.locked)return 'busy'
+  const state=textMenu.state,mutation=id!=='edit.copy'&&id!=='edit.selectAll'
+  if(mutation&&(state.canEdit===false||state.focus==='editor'&&!state.inCodeMirror))return 'readonly'
+  if((id==='edit.cut'||id==='edit.copy')&&state.hasSelection!==true)return 'selection'
+  return null
+ }
+ function executeContextEdit(event:Event){
+  const id=event.target instanceof Element?event.target.closest('button[data-application-edit]')?.getAttribute('data-application-edit'):null,menu=textMenu
+  if(!menu||!contextEditCommands.some(command=>command===id)||textMenuReason(id as ContextEditCommand)||!restoreTextTarget(menu))return
+  textMenu=null
+  // El puente consume el gesto síncrono: no intercalar await ni tick aquí.
+  void window.freya.contextEdit(id as ContextEditCommand,applicationState(menu.target)).catch(value=>error(String(value)))
  }
  function refreshShortcuts(){void window.freya.applicationShortcuts().then(value=>shortcutInfo=value).catch(()=>{})}
  function queueApplicationState(){
@@ -575,7 +624,8 @@
    void window.freya.setApplicationState(state).then(()=>{if(refresh)refreshShortcuts()}).catch(value=>error(String(value)))
   })
  }
- function commandTitle(id:string,label:string){const command=shortcutInfo?.commands.find(command=>command.id===id);return command?.accelerator?`${label} · ${formatApplicationShortcut(command.accelerator,shortcutInfo!.platform)}`:label}
+ function commandShortcut(id:string){const command=shortcutInfo?.commands.find(command=>command.id===id);return command?.accelerator?formatApplicationShortcut(command.accelerator,shortcutInfo!.platform):''}
+ function commandTitle(id:string,label:string){const shortcut=commandShortcut(id);return shortcut?`${label} · ${shortcut}`:label}
  function searchFocusedEditor(replace=false){const root=focusedElement()?.closest<HTMLElement>('.cm-editor');if(!root)return false;const view=EditorView.findFromDOM(root);if(!view)return false;openSearchPanel(view);if(replace)view.dom.querySelector<HTMLInputElement>('.cm-search input[name="replace"]')?.focus();return true}
  function applicationCommand(command:ApplicationCommand,delegate:()=>void){
   const id=command.id,target=focusedElement()
@@ -643,7 +693,8 @@
   const mq=matchMedia('(prefers-color-scheme: dark)'),change=()=>systemDark=mq.matches;mq.addEventListener('change',change)
   settingsReady=(async()=>{let storage:Storage|undefined;try{storage=window.localStorage}catch{}applySettings(await loadSettings(window.freya,storage));setUILanguage((await window.freya.language()).language)})()
   void settingsReady.then(()=>{applicationReady=true;queueApplicationState()}).catch(()=>{})
-  const unsubscribeCommand=window.freya.onCommand(applicationCommand)
+  window.addEventListener('freya-context-edit',executeContextEdit)
+ const unsubscribeCommand=window.freya.onCommand(applicationCommand)
   const unsubscribeClose=window.freya.onPrepareClose({prepare:()=>closingFlow.prepare(),aborted:()=>{closingFlow.abort();if(closingNotice?.kind==='progress')closingNotice=null}})
 
   const contextEvents=['focusin','focusout','input','keyup','pointerup','selectionchange'] as const
@@ -662,7 +713,7 @@
    if(generation===projectGeneration)await receiveProject(state.project,state.recents,state.sources,state.recipes,state.results)
   })
   const unsubscribe=window.freya.onEvent(event=>{if(event.type==='project'){projectGeneration++;void action(()=>receiveProject(event.project,event.projectRecents,event.projectSources,event.projectRecipes,event.projectResults))}else if(event.type==='project-recipe-progress'&&event.recipeProgress){const job=projectExportJobs[event.recipeProgress.requestId];if(job?.running)updateProjectExport({...job,progress:event.recipeProgress});if(subsetAnalysisJob?.requestId===event.recipeProgress.requestId)subsetAnalysisJob={...subsetAnalysisJob,...event.recipeProgress}}else if(event.type==='updates'&&event.update?.status==='available'){if(!updatesOpen)updateNotice=event.update}else if(event.type==='language'&&event.language){setUILanguage(event.language.language);refreshShortcuts()}else if(event.type==='recents'){void window.freya.recents().then(value=>recent=value).catch(value=>error(String(value)))}else if(event.type==='settings'&&event.settings)applySettings(event.settings);else if(event.type==='csv-open-error'&&event.csvOpenError)receiveCsvError(event.csvOpenError);else if(event.type==='opened'&&event.document){const document=event.document;void action(async()=>{await settingsReady;merge(document,true)})}else if(event.type==='changed'&&event.document){if(!pending.has(event.document.id))merge(event.document)}else if(event.type==='close-status'&&event.message)closingNotice={kind:event.closingKind??'notice',message:event.message};else if(event.type==='error')error(event.message??'Ocurrió un error');else if(event.type==='analysis'&&event.progress?.requestId.startsWith('open:'))opening={id:event.progress.requestId.slice(5),phase:event.progress.phase};else if(event.type==='external'){if(event.id&&!external.includes(event.id))external=[...external,event.id];const changed=documents.find(doc=>doc.id===event.id),bannerVisible=!!changed&&changed.id===active?.id&&!activeAnalysis&&!changed.analysisSubset;if(!bannerVisible)notify(changed?t('app.external.changed',{name:changed.name}):t('app.external.changedUnknown'),'warning')}})
-  return()=>{applicationReady=false;for(const event of contextEvents)document.removeEventListener(event,queueApplicationState);unsubscribeCommand();unsubscribeClose();closingFlow.abort();mq.removeEventListener('change',change);unsubscribe();clearTimeout(toastTimer)}
+  return()=>{applicationReady=false;window.removeEventListener('freya-context-edit',executeContextEdit);for(const event of contextEvents)document.removeEventListener(event,queueApplicationState);unsubscribeCommand();unsubscribeClose();closingFlow.abort();mq.removeEventListener('change',change);unsubscribe();clearTimeout(toastTimer)}
  })
  $effect(()=>{
   const root=folderPath,query=filterFiles.trim(),token=++fileSearchGeneration
@@ -684,7 +735,7 @@
  $effect(()=>{document.documentElement.lang=getUILanguage()})
  $effect(()=>{active?.id;active?.readonly;activeAnalysis;analyses.length;mode;busy;applicationClosing;assetBusy[activeId];appDialog;updatesOpen;getUILanguage();preferencesState.values.avanzado.herramientasDeDesarrollo;queueApplicationState()})
 </script>
-<svelte:window oncompositionstart={()=>compositionActive=true} oncompositionend={()=>compositionActive=false} onkeydown={keydown} ondragover={event=>event.preventDefault()} ondrop={drop}/>
+<svelte:window oncompositionstart={()=>compositionActive=true} oncompositionend={()=>compositionActive=false} onkeydown={event=>{keydown(event);openTextMenu(event)}} oncontextmenu={openTextMenu} ondragover={event=>event.preventDefault()} ondrop={drop}/>
 <div class="app-shell" class:dark inert={applicationClosing}>
  {#each controlReasons as reason}<span hidden id={"control-reason-"+reason}>{t("ui.reason."+reason)}</span>{/each}
  <header class="toolbar" class:analysis-active={!!activeAnalysis}>
@@ -724,7 +775,7 @@
      {@const doc=documents.find(value=>value.id===(tab.type==='document'?tab.id:tab.source.documentId))}
      {#if doc}
       <div class="tab" class:active={selectedTabId===tab.id}>
-       <button id={'workspace-tab-'+tab.id} role="tab" aria-selected={selectedTabId===tab.id} aria-controls={'workspace-panel-'+tab.id} aria-label={tab.type==='analysis'?t('analysis.tab.label',{name:doc.name}):undefined} tabindex={selectedTabId===tab.id?0:-1} onkeydown={event=>workspaceTabKey(event,index)} onclick={()=>void activateTab(tab)} title={tab.type==='analysis'?t('analysis.tab.title',{name:doc.name}):doc.path??doc.name}>
+       <button id={'workspace-tab-'+tab.id} role="tab" aria-selected={selectedTabId===tab.id} aria-controls={'workspace-panel-'+tab.id} aria-label={tab.type==='analysis'?t('analysis.tab.label',{name:doc.name}):undefined} tabindex={selectedTabId===tab.id?0:-1} oncontextmenu={event=>openTabMenu(event,tab,tab.type==='analysis'?t('analysis.tab.title',{name:doc.name}):doc.name)} onkeydown={event=>{if(event.key==='ContextMenu'||event.key==='F10'&&event.shiftKey)openTabMenu(event,tab,tab.type==='analysis'?t('analysis.tab.title',{name:doc.name}):doc.name);else workspaceTabKey(event,index)}} onclick={()=>void activateTab(tab)} title={tab.type==='analysis'?t('analysis.tab.title',{name:doc.name}):doc.path??doc.name}>
         {#if tab.type==='analysis'}<span class="tab-icon kind-csv"><Icon name="chart-column" size={14}/></span>{t('analysis.tab.title',{name:doc.name})}
         {:else}<span class="tab-icon kind-{doc.kind}"><Icon name={kindIcon[doc.kind]} size={14}/></span>{doc.name}{#if doc.dirty}<span class="dirty-dot">●</span>{/if}{/if}
        </button>
@@ -743,7 +794,7 @@
       {#if csvText}<div class="document-tools csv-text-tools">{@render csvViewControls()}<button class="analyze" title={t('analysis.tab.search')} onclick={()=>void openAnalysis(active!.id)}><Icon name="chart-column" size={14}/>{t('analysis.tab.open')}</button><span class="spacer"></span><details class="insert-menu csv-text-options" bind:this={csvOptions}><summary>{t('csvText.options')}</summary><div class="dropdown"><button class:btn-tint={csvWrap} aria-pressed={csvWrap} onclick={()=>textOption('wrap')}>{t('csvText.wrap')}</button><button class:btn-tint={csvSpaces} aria-pressed={csvSpaces} onclick={()=>textOption('spaces')}>{t('csvText.spaces')}</button><button class:btn-tint={preferencesState.values.editor.csvColumnColors} aria-pressed={preferencesState.values.editor.csvColumnColors} disabled={preferencesState.readonly} onclick={()=>textOption('colors')}>{t('csvText.columnColors')}</button><button onclick={()=>textOption('line')} title={t('csvText.goto.title')}>{t('csvText.goto')}</button></div></details><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> {t('csvText.search')}</button></div>{/if}
       {#if activeProjectResult}<ProjectResultOrigin result={activeProjectResult} dirty={active.dirty}/>{/if}
       {#if csvText}{#if active.warning}<div class="warning-banner" style="color:var(--text)">{active.warning}</div>{/if}<div class="document-panes"><div class="editor-pane" style:width="100%"><div class="pane-caption">{t('csvText.caption')}{#if active.readonly}<span>{t('csvText.readonly')}</span>{/if}</div><Editor bind:this={editor} editing={preferencesState.values.editor} text={active.text??''} readonly={editingLocked} kind="csv-text" label={t('csvText.editorLabel')} wrapLines={csvWrap} showWhitespace={csvSpaces} csvDelimiter={active.delimiter} csvHeader={active.hasHeader!==false} csvColors={preferencesState.values.editor.csvColumnColors} onchange={text=>updateText(active!.id,text)}/></div></div>
-      {:else}<CsvTable bind:this={csv} onexportsubset={recipe=>void exportProjectSubset(recipe)} doc={active} project={activeProject} sourceInfo={projectSources.find(source=>source.documentId===active.id)} recipes={projectRecipes} externalChange={external.includes(active.id)} onanalysis={(section,statistics)=>void openAnalysis(active!.id,section,statistics)} analysisHidden={!!activeAnalysis} {commandTitle} viewControls={csvViewControls} onchange={doc=>merge(doc)} onerror={error} onstatus={value=>status=value}/>{/if}
+      {:else}<CsvTable bind:this={csv} onexportsubset={recipe=>void exportProjectSubset(recipe)} doc={active} project={activeProject} sourceInfo={projectSources.find(source=>source.documentId===active.id)} recipes={projectRecipes} externalChange={external.includes(active.id)} onanalysis={(section,statistics)=>void openAnalysis(active!.id,section,statistics)} analysisHidden={!!activeAnalysis} {commandTitle} {commandShortcut} viewControls={csvViewControls} onchange={doc=>merge(doc)} onerror={error} onstatus={value=>status=value}/>{/if}
      {:else}
       <div class="document-tools" class:markdown-tools={active.kind==='markdown'}><span class="tag subtle">{active.kind==='mermaid'?'DIAGRAMA':active.kind==='text'?'TEXTO':'DOCUMENTO'}</span><div class="mode-switch" role="group" aria-label="Modo de edición"><button class:active={mode==='edit'} onclick={()=>mode='edit'}>Editar</button>{#if active.kind!=='text'}<button class:active={mode==='split'} onclick={()=>mode='split'}>Dividido</button><button class:active={mode==='preview'} onclick={()=>mode='preview'}>Vista previa</button>{/if}</div>{#if active.kind==='markdown'&&mode!=='preview'}<MarkdownToolbar readonly={editingLocked} formatState={markdownState} onformat={(action,language)=>editor?.format(action,language)} onsearch={searchText} onindex={toggleIndex} {indexVisible}/>{:else}<span class="spacer"></span><button class="text-button" onclick={searchText}><Icon name="search" size={14}/> Buscar</button>{#if active.kind==='markdown'}<button class="text-button" class:active={indexVisible} aria-pressed={indexVisible} onclick={toggleIndex}><Icon name="table-of-contents" size={14}/> Índice</button>{/if}{/if}</div>
       {#if active.warning}<div class="warning-banner"><span role={active.encodingPending?'status':undefined}>{active.warning}</span>{#if active.encodingPending} <button type="button" onclick={()=>encodingControl?.open()}>{t('textEncoding.confirm')}</button>{/if}</div>{/if}
@@ -776,7 +827,28 @@
  {#if projectDialog}<ProjectDialog sourceName={projectCandidate?.name} oncreated={projectCreated} onclose={closeProjectDialog}/>{/if}
  {#if textCommands}<CsvCommands commands={[{id:'openAnalysis',label:t('analysis.tab.command'),detail:t('analysis.tab.search'),disabled:false,run:chooseTextAnalysis}]} context={t('analysis.tab.textView')} onexecute={()=>void chooseTextAnalysis()} onclose={()=>void closeTextCommands()}/>{/if}
  {#if csvChange}<CsvViewDialog name={csvChange.name} busy={csvChange.busy} message={csvChange.message} onchoose={decision=>void resolveCsvChange(decision)}/>{/if}
- {#if csvFileMenu}<CsvFileMenu path={csvFileMenu.path} x={csvFileMenu.x} y={csvFileMenu.y} onopen={(path,view)=>void chooseCsvView(view,path)} onclose={closeCsvContext} onerror={error} onproject={activeProject&&!activeProject.readonly?addProjectSource:undefined}/>{/if}
+ {#if textMenu}
+  <ContextMenu x={textMenu.x} y={textMenu.y} label={t('context.text.menu')} container={textMenu.target.closest<HTMLElement>('dialog[open]')??undefined} onclose={closeTextMenu}>
+   <div class="column-menu-items">
+    {#each contextEditCommands.filter(id=>id!=='edit.pastePlain'||textMenu?.plain) as id}
+     {#if id==='edit.selectAll'}<div class="column-menu-separator" role="separator"></div>{/if}
+     <button role="menuitem" data-application-edit={id} disabled={!!textMenuReason(id)} {...controlHint(textMenuReason(id))}><span>{t('menu.'+id)}</span>{#if commandShortcut(id)}<kbd aria-hidden="true">{commandShortcut(id)}</kbd>{/if}</button>
+    {/each}
+   </div>
+  </ContextMenu>
+ {/if}
+ {#if tabMenu}
+  {@const tab=tabMenu.tab}
+  {@const document=tab.type==='document'?documents.find(doc=>doc.id===tab.id):undefined}
+  <ContextMenu x={tabMenu.x} y={tabMenu.y} label={tabMenu.name} onclose={closeTabMenu}>
+   <div class="column-menu-items">
+    <span class="dropdown-label column-menu-title" role="presentation">{tabMenu.name}</span>
+    <button role="menuitem" onclick={closeContextTab}><span>{t('context.close')}</span>{#if commandShortcut('file.close')}<kbd aria-hidden="true">{commandShortcut('file.close')}</kbd>{/if}</button>
+    {#if document?.path}<div class="column-menu-separator" role="separator"></div><button role="menuitem" onclick={revealContextTab}>{t('project.showFolder')}</button>{/if}
+   </div>
+  </ContextMenu>
+ {/if}
+ {#if csvFileMenu}{#key csvFileMenu.path}<CsvFileMenu path={csvFileMenu.path} directory={csvFileMenu.directory} x={csvFileMenu.x} y={csvFileMenu.y} onfileopen={path=>void openPath(path)} onopen={(path,view)=>void chooseCsvView(view,path)} onclose={closeCsvContext} onerror={error} onproject={activeProject&&!activeProject.readonly?addProjectSource:undefined}/>{/key}{/if}
  {#if toast}<div class="toast {toastKind}" role="status"><Icon name={toastKind==='success'?'circle-check':toastKind==='info'?'info':'triangle-alert'} size={16}/><span>{toast}</span><button title={"Cerrar aviso"} onclick={()=>toast=''} aria-label="Cerrar aviso"><Icon name="x" size={14}/></button></div>{/if}
  {#if appDialog==='about'||appDialog==='licenses'}<AboutDialog initialLicenses={appDialog==='licenses'} onupdates={()=>openUpdates()} onclose={()=>appDialog=null}/>{:else if appDialog==='settings'}<SettingsDialog settings={preferencesState} onsave={savePreferences} onreset={resetPreferences} onclearrecents={clearRecentList} onshowdata={()=>window.freya.showDataFolder()} onupdates={()=>openUpdates()} onclose={()=>appDialog=null}/>{:else if appDialog==='shortcuts'}<ShortcutsDialog onclose={()=>appDialog=null}/>{/if}
  {#if updateNotice}<UpdateNotice release={updateNotice.release} onview={()=>openUpdates(updateNotice!)} ondismiss={()=>updateNotice=null}/>{/if}

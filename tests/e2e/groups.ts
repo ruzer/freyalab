@@ -1,4 +1,4 @@
-export const shellFiles=['menu-alignment.spec.ts','app.spec.ts','icons.spec.ts','ui.spec.ts','ui-u0.spec.ts','i18n.spec.ts','commands.spec.ts','application-close.spec.ts','updates.spec.ts','bootstrap-documents.spec.ts','project.spec.ts','project-source.spec.ts'] as const
+export const shellFiles=['context-menus.spec.ts','context-menus-accessibility.spec.ts','context-object-actions.spec.ts','menu-alignment.spec.ts','app.spec.ts','icons.spec.ts','ui.spec.ts','ui-u0.spec.ts','i18n.spec.ts','commands.spec.ts','application-close.spec.ts','updates.spec.ts','bootstrap-documents.spec.ts','project.spec.ts','project-source.spec.ts'] as const
 
 export const mdFiles=[
  'markdown-render.spec.ts',

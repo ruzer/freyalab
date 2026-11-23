@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:96685) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/large-search.spec.ts:66:1 › ver en el documento completo desde la fila y el atajo conserva número y foco (16.8s)
+
+
+  1) [csv] › tests/e2e/large-search.spec.ts:66:1 › ver en el documento completo desde la fila y el atajo conserva número y foco 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  getByRole('menu', { name: 'Acciones del rango', exact: true }).locator('.column-menu-title')
+    Expected: "id · fila 2,300"
+    Received: "id · fila 1"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" getByRole('menu', { name: 'Acciones del rango', exact: true }).locator('.column-menu-title') with timeout 15000ms
+      - waiting for getByRole('menu', { name: 'Acciones del rango', exact: true }).locator('.column-menu-title')
+        34 × locator resolved to <span role="presentation" class="dropdown-label column-menu-title">id · fila 1</span>
+           - unexpected value "id · fila 1"
+
+
+      66 | test('ver en el documento completo desde la fila y el atajo conserva número y foco',async()=>{
+      67 |  await open();await find('Cliente 2300');await expect(cell(2300)).toHaveText('002300')
+    > 68 |  await cell(2300).click({button:'right'});await expect(page.getByRole('menu',{name:'Acciones del rango',exact:true}).locator('.column-menu-title')).toHaveText('id · fila 2,300');await page.keyboard.press('Escape')
+         |                                                                                                                                                     ^
+      69 |  await page.getByRole('button',{name:'Seleccionar fila 2300',exact:true}).click({button:'right'})
+      70 |  const menu=page.getByRole('menu',{name:'Acciones de filas',exact:true});await expect(menu.locator('.column-menu-title')).toHaveText('Fila 2,300');await menu.getByRole('menuitem',{name:'Ver en el documento completo',exact:true}).click()
+      71 |  await expect(statePanel()).toHaveCount(0);await expect(cell(2300)).toBeFocused();await expect(grid()).toHaveAttribute('aria-rowcount','3001')
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/large-search.spec.ts:68:149
+
+    Error Context: ../sim1h-evidence/red-large-cell-label-results/large-search-ver-en-el-doc-5ec0f-tajo-conserva-número-y-foco-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/red-large-cell-label-results/large-search-ver-en-el-doc-5ec0f-tajo-conserva-número-y-foco-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/red-large-cell-label-results/large-search-ver-en-el-doc-5ec0f-tajo-conserva-número-y-foco-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/large-search.spec.ts:66:1 › ver en el documento completo desde la fila y el atajo conserva número y foco 

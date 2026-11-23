@@ -1,0 +1,90 @@
+
+Running 2 tests using 1 worker
+
+(node:85293) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/context-menus.spec.ts:96:1 › SIM-1h el menú de texto conserva el borrador de la celda y su selección @solo (17.2s)
+(node:85474) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/context-menus.spec.ts:107:1 › SIM-1h la búsqueda de CodeMirror no ofrece pegar Markdown sin formato (2.0s)
+
+
+  1) [csv] › tests/e2e/context-menus.spec.ts:96:1 › SIM-1h el menú de texto conserva el borrador de la celda y su selección @solo 
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator: getByRole('textbox', { name: 'Editar celda', exact: true })
+    Expected: "123.45"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveValue" getByRole('textbox', { name: 'Editar celda', exact: true }) with timeout 15000ms
+      - waiting for getByRole('textbox', { name: 'Editar celda', exact: true })
+
+
+       98 |  const cell=page.getByRole('gridcell',{name:'Fila 1, Importe',exact:true});await cell.dblclick()
+       99 |  const input=page.getByRole('textbox',{name:'Editar celda',exact:true});await input.fill('123.45');await input.press('ControlOrMeta+a');await input.press('Shift+F10')
+    > 100 |  await expect(rootMenu()).toBeVisible();await expect(input).toHaveValue('123.45')
+          |                                                             ^
+      101 |  await rootMenu().getByRole('menuitem',{name:'Copiar',exact:true}).click();await expect.poll(()=>app.evaluate(({clipboard})=>clipboard.readText())).toBe('123.45')
+      102 |  await expect(input).toBeFocused();await input.press('Shift+F10');await page.keyboard.press('Escape');await expect(input).toBeFocused()
+      103 |  await page.getByRole('tab',{name:'encuesta.csv',exact:true}).click()
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/context-menus.spec.ts:100:61
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim1h-evidence/red-text-draft-results/context-menus-SIM-1h-el-me-e2ac1--de-la-celda-y-su-selección-csv/attachments/electron-context-618eff4154e659a3bd2bbcea18c6a3338e496f6a.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim1h-evidence/red-text-draft-results/context-menus-SIM-1h-el-me-e2ac1--de-la-celda-y-su-selección-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/red-text-draft-results/context-menus-SIM-1h-el-me-e2ac1--de-la-celda-y-su-selección-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/red-text-draft-results/context-menus-SIM-1h-el-me-e2ac1--de-la-celda-y-su-selección-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/context-menus.spec.ts:107:1 › SIM-1h la búsqueda de CodeMirror no ofrece pegar Markdown sin formato 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 0
+    + Received  + 1
+
+      Array [
+        "Cortar",
+        "Copiar",
+        "Pegar",
+    +   "Pegar sin formato",
+        "|",
+        "Seleccionar todo",
+      ]
+
+      109 |  const editor=page.locator('.cm-content');await editor.focus();await editor.press('ControlOrMeta+f')
+      110 |  const search=page.locator('.cm-search input[name="search"]');await expect(search).toBeVisible();await search.press('Shift+F10')
+    > 111 |  await expect(rootMenu()).toBeVisible();expect(await structure(rootMenu())).toEqual(['Cortar','Copiar','Pegar','|','Seleccionar todo'])
+          |                                                                             ^
+      112 | })
+      113 |
+      114 | test('SIM-1h solo el menú contextual bloquea copiar sin selección; lectura bloquea mutaciones',async()=>{
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/context-menus.spec.ts:111:77
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim1h-evidence/red-text-draft-results/context-menus-SIM-1h-la-bú-f09da--pegar-Markdown-sin-formato-csv/attachments/electron-context-73466fc63229d6a762a5f2c9d5d009e455df9062.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim1h-evidence/red-text-draft-results/context-menus-SIM-1h-la-bú-f09da--pegar-Markdown-sin-formato-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/red-text-draft-results/context-menus-SIM-1h-la-bú-f09da--pegar-Markdown-sin-formato-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/red-text-draft-results/context-menus-SIM-1h-la-bú-f09da--pegar-Markdown-sin-formato-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/context-menus.spec.ts:96:1 › SIM-1h el menú de texto conserva el borrador de la celda y su selección @solo 
+    [csv] › tests/e2e/context-menus.spec.ts:107:1 › SIM-1h la búsqueda de CodeMirror no ofrece pegar Markdown sin formato 

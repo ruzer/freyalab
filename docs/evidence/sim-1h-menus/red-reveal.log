@@ -1,0 +1,63 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <recovery>/sim1h-menus-contextuales
+
+ ❯ tests/context-reveal.test.ts (10 tests | 5 failed) 537ms
+   ❯ SIM-1h · revelar solo objetos autorizados por main (10)
+     × revela la ruta vigente del documento registrado sin cambiar bytes ni devolver rutas 403ms
+     × revela archivos y carpetas solo de la raíz actual, incluso con el bypass de pruebas activo 12ms
+     × rechaza la raíz anterior si cambia mientras se valida la entrada 10ms
+     × documentShow conserva la validación estricta de tupla y origen 13ms
+     × fileShow conserva la validación estricta de tupla y origen 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/context-reveal.test.ts > SIM-1h · revelar solo objetos autorizados por main > revela la ruta vigente del documento registrado sin cambiar bytes ni devolver rutas
+Error: Operación no compatible.
+ ❯ src/main/index.ts:386:558
+
+ ❯ tests/context-reveal.test.ts:41:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/context-reveal.test.ts > SIM-1h · revelar solo objetos autorizados por main > revela archivos y carpetas solo de la raíz actual, incluso con el bypass de pruebas activo
+Error: Operación no compatible.
+ ❯ src/main/index.ts:386:558
+
+ ❯ tests/context-reveal.test.ts:53:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/context-reveal.test.ts > SIM-1h · revelar solo objetos autorizados por main > rechaza la raíz anterior si cambia mientras se valida la entrada
+Error: Operación no compatible.
+ ❯ src/main/index.ts:386:558
+
+ ❯ tests/context-reveal.test.ts:74:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/context-reveal.test.ts > SIM-1h · revelar solo objetos autorizados por main > documentShow conserva la validación estricta de tupla y origen
+ FAIL  tests/context-reveal.test.ts > SIM-1h · revelar solo objetos autorizados por main > fileShow conserva la validación estricta de tupla y origen
+AssertionError: expected [Function] to throw error including 'Datos de operación no válidos.' but got 'Operación no compatible.'
+
+Expected: "Datos de operación no válidos."
+Received: "Operación no compatible."
+
+ ❯ tests/context-reveal.test.ts:78:114
+     76|  })
+     77|  it.each(['documentShow','fileShow'])('%s conserva la validación estri…
+     78|   for(const args of [[],[''],[null],[{path:'/AJENO'}],['/AJENO','extra…
+       |                                                                                                                  ^
+     79|   await expect(handler({sender:{},senderFrame:native.contents.mainFram…
+     80|   await expect(handler({sender:native.contents,senderFrame:{}},operati…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 5 passed (10)
+   Start at  00:54:26
+   Duration  666ms (tests 93%, transform 5%, import 2%)
+

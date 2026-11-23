@@ -465,7 +465,7 @@ test('rangos CSV: arrastrar, contexto por teclado, cortar y pegar con revisión 
  expect(await app.evaluate(({clipboard})=>clipboard.readText())).toBe('001\tuno\n002\tdos\n')
  let rows=await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:910}),doc.id);expect(rows.rows[0].cells).toEqual(['','','x'])
  await page.getByRole('button',{name:'Deshacer',exact:true}).click();await expect(from).toHaveText('001');await from.click()
- await app.evaluate(({clipboard})=>clipboard.writeText('0007\tLínea 1\n0008\tÁrbol'));await from.click({button:'right'});await page.getByRole('menuitem',{name:'Pegar en rango…',exact:true}).click()
+ await app.evaluate(({clipboard})=>clipboard.writeText('0007\tLínea 1\n0008\tÁrbol'));await from.click({button:'right'});await page.getByRole('menu',{name:'Acciones del rango',exact:true}).getByRole('menuitem',{name:'Pegar…',exact:true}).click()
  const paste=page.getByRole('dialog',{name:'Pegar bloque en el rango',exact:true});await expect(paste.getByRole('status')).toContainText('4 de 4');await paste.getByRole('button',{name:'Aplicar cambio'}).click();await expect(paste).not.toBeVisible()
  rows=await page.evaluate(id=>window.freya.tablePage(id,{offset:0,limit:10,requestId:911}),doc.id);expect(rows.rows[0].cells).toEqual(['0007','Línea 1','x']);expect(rows.rows[1].cells).toEqual(['0008','Árbol','y']);expect(rows.rows[2].cells).toEqual(['003','tres','z'])
  const rejected=await page.evaluate(async id=>{try{await window.freya.rangeClipboard(id,{top:-1,bottom:0,left:0,right:0,revision:0,query:{offset:0,limit:10,requestId:912}});return false}catch{return true}},doc.id);expect(rejected).toBe(true)

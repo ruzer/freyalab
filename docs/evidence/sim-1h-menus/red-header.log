@@ -1,0 +1,51 @@
+
+Running 2 tests using 1 worker
+
+(node:88385) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/context-menus.spec.ts:114:1 › SIM-1h el menú de texto conserva el encabezado en edición (17.2s)
+(node:88415) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [csv] › tests/e2e/context-menus.spec.ts:121:1 › SIM-1h el menú dentro del diálogo no deja nodos ni cierra el diálogo con Escape o Tab (2.1s)
+
+
+  1) [csv] › tests/e2e/context-menus.spec.ts:114:1 › SIM-1h el menú de texto conserva el encabezado en edición 
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator: getByRole('textbox', { name: 'Nombre del encabezado', exact: true })
+    Expected: "Importe revisado"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveValue" getByRole('textbox', { name: 'Nombre del encabezado', exact: true }) with timeout 15000ms
+      - waiting for getByRole('textbox', { name: 'Nombre del encabezado', exact: true })
+
+
+      115 |  await page.getByRole('button',{name:'Editar encabezado 2',exact:true}).click()
+      116 |  const input=page.getByRole('textbox',{name:'Nombre del encabezado',exact:true});await input.fill('Importe revisado');await input.press('ControlOrMeta+a');await input.press('Shift+F10')
+    > 117 |  await expect(rootMenu()).toBeVisible();await expect(input).toHaveValue('Importe revisado');await page.keyboard.press('Escape');await expect(input).toBeFocused()
+          |                                                             ^
+      118 |  await page.getByRole('tab',{name:'encuesta.csv',exact:true}).click();await expect(input).toHaveCount(0);await expect(page.getByRole('columnheader').nth(1)).toContainText('Importe revisado')
+      119 | })
+      120 |
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/context-menus.spec.ts:117:61
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim1h-evidence/red-header-results/context-menus-SIM-1h-el-me-36af2-va-el-encabezado-en-edición-csv/attachments/electron-context-6ede086d5a87f2e6019789d6b44c6daf850ee77c.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim1h-evidence/red-header-results/context-menus-SIM-1h-el-me-36af2-va-el-encabezado-en-edición-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/red-header-results/context-menus-SIM-1h-el-me-36af2-va-el-encabezado-en-edición-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/red-header-results/context-menus-SIM-1h-el-me-36af2-va-el-encabezado-en-edición-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/context-menus.spec.ts:114:1 › SIM-1h el menú de texto conserva el encabezado en edición 
+  1 passed (20.0s)

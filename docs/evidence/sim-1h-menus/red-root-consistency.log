@@ -1,0 +1,39 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <recovery>/sim1h-menus-contextuales
+
+ ❯ tests/context-reveal.test.ts (30 tests | 1 failed | 28 skipped) 360ms
+   ❯ SIM-1h · revelar solo objetos autorizados por main (12)
+     × realinea Archivos con A al reabrir el mismo proyecto convertido a solo lectura 315ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/context-reveal.test.ts > SIM-1h · revelar solo objetos autorizados por main > realinea Archivos con A al reabrir el mismo proyecto convertido a solo lectura
+AssertionError: expected Error: No pude mostrar ese archivo. Elige… to be null
+
+- Expected:
+null
+
++ Received:
+Error {
+  "message": "No pude mostrar ese archivo. Elige un elemento de la carpeta abierta en Archivos.",
+}
+
+ ❯ tests/context-reveal.test.ts:74:19
+     72|   const resultA=await invoke('fileShow',fileA).then(()=>null,(error:un…
+     73|   const resultB=await invoke('fileShow',fileB).then(()=>null,(error:un…
+     74|   expect(resultA).toBeNull();expect(resultB).toBeInstanceOf(Error)
+       |                   ^
+     75|   expect(native.reveal.mock.calls).toEqual([[await realpath(fileA)]])
+     76|   expect(await readFile(manifest,'utf8')).toBe(future)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed | 28 skipped (30)
+   Start at  01:52:50
+   Duration  468ms (tests 90%, transform 7%, import 2%, worker 1%)
+

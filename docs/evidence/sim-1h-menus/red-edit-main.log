@@ -1,0 +1,106 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <recovery>/sim1h-menus-contextuales
+
+ ❯ tests/context-reveal.test.ts (28 tests | 18 failed) 745ms
+   ❯ SIM-1h · edición contextual por la ruta nativa existente (18)
+     × emite solo edit.cut con su concesión nativa, sin devolver texto 11ms
+     × emite solo edit.copy con su concesión nativa, sin devolver texto 8ms
+     × emite solo edit.paste con su concesión nativa, sin devolver texto 13ms
+     × emite solo edit.pastePlain con su concesión nativa, sin devolver texto 14ms
+     × emite solo edit.selectAll con su concesión nativa, sin devolver texto 8ms
+     × rechaza el id ajeno edit.undo 10ms
+     × rechaza el id ajeno edit.redo 9ms
+     × rechaza el id ajeno file.open 8ms
+     × rechaza el id ajeno edit.commandPalette 9ms
+     × rechaza el id ajeno executeJavaScript 9ms
+     × rechaza el id ajeno constructor 9ms
+     × solo lectura no emite edit.cut 15ms
+     × solo lectura no emite edit.paste 8ms
+     × solo lectura no emite edit.pastePlain 8ms
+     × la regla contextual de selección vacía bloquea edit.cut sin cambiar Edición 8ms
+     × la regla contextual de selección vacía bloquea edit.copy sin cambiar Edición 8ms
+     × permite seleccionar todo aunque todavía no haya selección y bloquea grilla/ningún dueño 9ms
+     × valida estado, tupla y origen antes de emitir 14ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 18 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > emite solo edit.cut con su concesión nativa, sin devolver texto
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > emite solo edit.copy con su concesión nativa, sin devolver texto
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > emite solo edit.paste con su concesión nativa, sin devolver texto
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > emite solo edit.pastePlain con su concesión nativa, sin devolver texto
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > emite solo edit.selectAll con su concesión nativa, sin devolver texto
+Error: Operación no compatible.
+ ❯ src/main/index.ts:397:558
+
+ ❯ tests/context-reveal.test.ts:88:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/18]⎯
+
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > rechaza el id ajeno edit.undo
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > rechaza el id ajeno edit.redo
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > rechaza el id ajeno file.open
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > rechaza el id ajeno edit.commandPalette
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > rechaza el id ajeno executeJavaScript
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > rechaza el id ajeno constructor
+AssertionError: expected [Function] to throw error including 'Datos de operación no válidos.' but got 'Operación no compatible.'
+
+Expected: "Datos de operación no válidos."
+Received: "Operación no compatible."
+
+ ❯ tests/context-reveal.test.ts:92:63
+     90|  })
+     91|  it.each(['edit.undo','edit.redo','file.open','edit.commandPalette','e…
+     92|   await expect(invoke('application:contextEdit',id,current())).rejects…
+       |                                                               ^
+     93|  })
+     94|  it.each(['edit.cut','edit.paste','edit.pastePlain'])('solo lectura no…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/18]⎯
+
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > solo lectura no emite edit.cut
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > solo lectura no emite edit.paste
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > solo lectura no emite edit.pastePlain
+Error: Operación no compatible.
+ ❯ src/main/index.ts:397:558
+
+ ❯ tests/context-reveal.test.ts:95:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/18]⎯
+
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > la regla contextual de selección vacía bloquea edit.cut sin cambiar Edición
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > la regla contextual de selección vacía bloquea edit.copy sin cambiar Edición
+Error: Operación no compatible.
+ ❯ src/main/index.ts:397:558
+
+ ❯ tests/context-reveal.test.ts:98:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/18]⎯
+
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > permite seleccionar todo aunque todavía no haya selección y bloquea grilla/ningún dueño
+Error: Operación no compatible.
+ ❯ src/main/index.ts:397:558
+
+ ❯ tests/context-reveal.test.ts:101:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/18]⎯
+
+ FAIL  tests/context-reveal.test.ts > SIM-1h · edición contextual por la ruta nativa existente > valida estado, tupla y origen antes de emitir
+AssertionError: expected [Function] to throw error including 'Datos de operación no válidos.' but got 'Operación no compatible.'
+
+Expected: "Datos de operación no válidos."
+Received: "Operación no compatible."
+
+ ❯ tests/context-reveal.test.ts:106:183
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/18]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  18 failed | 10 passed (28)
+   Start at  01:03:20
+   Duration  874ms (tests 95%, transform 4%, import 1%)
+

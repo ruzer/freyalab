@@ -1,0 +1,192 @@
+
+Running 19 tests using 1 worker
+
+(node:89679) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [es/light/1440x900] (4.1s)
+  ✓   2 [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [es/light/1280x720] (3.6s)
+  ✓   3 [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [es/dark/1440x900] (3.3s)
+  ✓   4 [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [es/dark/1280x720] (3.2s)
+  ✘   5 [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [en-XA/light/1440x900] (15.6s)
+(node:89909) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   6 [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [en-XA/light/1280x720] (15.7s)
+(node:90032) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   7 [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [en-XA/dark/1440x900] (15.6s)
+(node:90098) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   8 [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [en-XA/dark/1280x720] (15.7s)
+(node:90199) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [csv] › tests/e2e/context-menus.spec.ts:43:1 › SIM-1h celda conserva título, grupos, altura y teclado comunes (1.6s)
+  ✓  10 [csv] › tests/e2e/context-menus.spec.ts:52:1 › SIM-1h fila conserva estructura, peligro y submenú (1.5s)
+  ✓  11 [csv] › tests/e2e/context-menus.spec.ts:58:1 › SIM-1h texto Markdown tiene edición contextual y no usa el menú de cuadrícula (1.6s)
+  ✓  12 [csv] › tests/e2e/context-menus.spec.ts:66:1 › SIM-1h pestaña de documento muestra cerrar y revelar (1.5s)
+  ✓  13 [csv] › tests/e2e/context-menus.spec.ts:72:1 › SIM-1h Archivos admite otros formatos y carpetas (1.5s)
+  ✓  14 [csv] › tests/e2e/context-menus.spec.ts:81:1 › SIM-1h edición contextual conserva selección, historial y campos de diálogo @solo (2.3s)
+  ✓  15 [csv] › tests/e2e/context-menus.spec.ts:96:1 › SIM-1h el menú de texto conserva el borrador de la celda y su selección @solo (1.7s)
+  ✓  16 [csv] › tests/e2e/context-menus.spec.ts:107:1 › SIM-1h la búsqueda de CodeMirror no ofrece pegar Markdown sin formato (1.6s)
+  ✓  17 [csv] › tests/e2e/context-menus.spec.ts:114:1 › SIM-1h el menú de texto conserva el encabezado en edición (1.5s)
+  ✓  18 [csv] › tests/e2e/context-menus.spec.ts:121:1 › SIM-1h el menú dentro del diálogo no deja nodos ni cierra el diálogo con Escape o Tab (2.0s)
+  ✓  19 [csv] › tests/e2e/context-menus.spec.ts:134:1 › SIM-1h solo el menú contextual bloquea copiar sin selección; lectura bloquea mutaciones (1.6s)
+
+
+  1) [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [en-XA/light/1440x900] 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "row-height:[Cálcülátë cölümn tö thë rïght~~~~~~~~~]",
+    + ]
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      133 |   await column.press('Enter');const columnMenu=page.getByRole('menu',{name:label('csv.columnMenu.label'),exact:true})
+      134 |   await expect(columnMenu).toBeVisible();await expect(directItems(columnMenu).first()).toBeFocused()
+    > 135 |   await expect.poll(async()=>violations(await geometry(columnMenu),30)).toEqual([])
+          |                                                                         ^
+      136 |   const reference=await geometry(columnMenu),referenceHeight=reference.items[0].height;measurements.column=reference
+      137 |   await columnMenu.press('Escape');await expect(column).toBeFocused()
+      138 |
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/context-menus-accessibility.spec.ts:135:73
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-e4a28-etría-en-XA-light-1440x900--csv/attachments/electron-context-2b0f6f5e16172779a79881246e34b3734043634f.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-e4a28-etría-en-XA-light-1440x900--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-e4a28-etría-en-XA-light-1440x900--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-e4a28-etría-en-XA-light-1440x900--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [en-XA/light/1280x720] 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "row-height:[Cálcülátë cölümn tö thë rïght~~~~~~~~~]",
+    + ]
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      133 |   await column.press('Enter');const columnMenu=page.getByRole('menu',{name:label('csv.columnMenu.label'),exact:true})
+      134 |   await expect(columnMenu).toBeVisible();await expect(directItems(columnMenu).first()).toBeFocused()
+    > 135 |   await expect.poll(async()=>violations(await geometry(columnMenu),30)).toEqual([])
+          |                                                                         ^
+      136 |   const reference=await geometry(columnMenu),referenceHeight=reference.items[0].height;measurements.column=reference
+      137 |   await columnMenu.press('Escape');await expect(column).toBeFocused()
+      138 |
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/context-menus-accessibility.spec.ts:135:73
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-0820d-etría-en-XA-light-1280x720--csv/attachments/electron-context-61c90eba894028041ccd633a363b2f5b70a879a9.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-0820d-etría-en-XA-light-1280x720--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-0820d-etría-en-XA-light-1280x720--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-0820d-etría-en-XA-light-1280x720--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [en-XA/dark/1440x900] 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "row-height:[Cálcülátë cölümn tö thë rïght~~~~~~~~~]",
+    + ]
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      133 |   await column.press('Enter');const columnMenu=page.getByRole('menu',{name:label('csv.columnMenu.label'),exact:true})
+      134 |   await expect(columnMenu).toBeVisible();await expect(directItems(columnMenu).first()).toBeFocused()
+    > 135 |   await expect.poll(async()=>violations(await geometry(columnMenu),30)).toEqual([])
+          |                                                                         ^
+      136 |   const reference=await geometry(columnMenu),referenceHeight=reference.items[0].height;measurements.column=reference
+      137 |   await columnMenu.press('Escape');await expect(column).toBeFocused()
+      138 |
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/context-menus-accessibility.spec.ts:135:73
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-8133a-metría-en-XA-dark-1440x900--csv/attachments/electron-context-cd2472feb57b953487e52f6e123abd0b62ef6b50.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-8133a-metría-en-XA-dark-1440x900--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-8133a-metría-en-XA-dark-1440x900--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-8133a-metría-en-XA-dark-1440x900--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [en-XA/dark/1280x720] 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "row-height:[Cálcülátë cölümn tö thë rïght~~~~~~~~~]",
+    + ]
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      133 |   await column.press('Enter');const columnMenu=page.getByRole('menu',{name:label('csv.columnMenu.label'),exact:true})
+      134 |   await expect(columnMenu).toBeVisible();await expect(directItems(columnMenu).first()).toBeFocused()
+    > 135 |   await expect.poll(async()=>violations(await geometry(columnMenu),30)).toEqual([])
+          |                                                                         ^
+      136 |   const reference=await geometry(columnMenu),referenceHeight=reference.items[0].height;measurements.column=reference
+      137 |   await columnMenu.press('Escape');await expect(column).toBeFocused()
+      138 |
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/context-menus-accessibility.spec.ts:135:73
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-17ab5-metría-en-XA-dark-1280x720--csv/attachments/electron-context-1a1813b28f9c47981b469f319255b8ac37a0bb4d.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-17ab5-metría-en-XA-dark-1280x720--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-17ab5-metría-en-XA-dark-1280x720--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/green-keyboard-geometry-results/context-menus-accessibilit-17ab5-metría-en-XA-dark-1280x720--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [en-XA/light/1440x900] 
+    [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [en-XA/light/1280x720] 
+    [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [en-XA/dark/1440x900] 
+    [csv] › tests/e2e/context-menus-accessibility.spec.ts:129:2 › SIM-1h cinco menús: forma, teclado, motivos y geometría [en-XA/dark/1280x720] 
+  15 passed (1.6m)

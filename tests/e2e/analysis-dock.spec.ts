@@ -42,7 +42,7 @@ test('las secciones de la pestaña de análisis se alcanzan y activan con teclad
  await workspace().getByRole('button',{name:'Ir al CSV',exact:true}).click()
  const value=page.getByRole('gridcell',{name:'Fila 1, Valor',exact:true})
  await value.click();await page.keyboard.press('Shift+ArrowDown');await value.click({button:'right'})
- await page.getByRole('menuitem',{name:'Estadísticas del rango',exact:true}).click()
+ await page.getByRole('menu',{name:'Acciones del rango',exact:true}).getByRole('menuitem',{name:'Estadísticas de la selección',exact:true}).click()
  await expect(workspace().getByLabel('Columnas para estadísticas',{exact:true})).toHaveValue('range')
 })
 

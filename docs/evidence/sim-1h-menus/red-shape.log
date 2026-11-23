@@ -1,0 +1,256 @@
+
+Running 5 tests using 1 worker
+
+(node:73981) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/5] [csv] › tests/e2e/context-menus.spec.ts:35:1 › SIM-1h celda conserva título, grupos, altura y teclado comunes
+  1) [csv] › tests/e2e/context-menus.spec.ts:35:1 › SIM-1h celda conserva título, grupos, altura y teclado comunes 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 10
+    + Received  + 11
+
+      Array [
+    -   "Importe · fila 1",
+    -   "Cortar…",
+    -   "Copiar",
+    -   "Pegar…",
+    -   "|",
+    -   "Rellenar…",
+    -   "Vaciar…",
+    -   "Limpiar",
+    -   "|",
+    -   "Estadísticas de la selección",
+    +   "Copiar rango",
+    +   "Cortar rango…",
+    +   "Pegar en rango…",
+    +   "Rellenar rango…",
+    +   "Vaciar rango…",
+    +   "Quitar espacios del rango…",
+    +   "Mayúsculas en el rango…",
+    +   "Minúsculas en el rango…",
+    +   "Reemplazar en el rango…",
+    +   "Transformar documento…",
+    +   "Estadísticas del rango",
+      ]
+
+      36 |  const cell=page.getByRole('gridcell',{name:'Fila 1, Importe',exact:true})
+      37 |  await cell.click({button:'right'});const menu=rootMenu();await expect(menu).toBeVisible()
+    > 38 |  expect(await structure(menu)).toEqual(['Importe · fila 1','Cortar…','Copiar','Pegar…','|','Rellenar…','Vaciar…','Limpiar','|','Estadísticas de la selección'])
+         |                                ^
+      39 |  await page.keyboard.press('Escape');await expect(cell).toBeFocused()
+      40 |  await cell.press('Shift+F10');expect(await structure(rootMenu())).toEqual(['Importe · fila 1','Cortar…','Copiar','Pegar…','|','Rellenar…','Vaciar…','Limpiar','|','Estadísticas de la selección'])
+      41 |  await page.keyboard.press('Escape');await expect(cell).toBeFocused()
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/context-menus.spec.ts:38:32
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-celda-29e26-os-altura-y-teclado-comunes-csv/attachments/electron-context-5322d57e0372c4f68190e21496fbf27dfa078ad9.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-celda-29e26-os-altura-y-teclado-comunes-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-celda-29e26-os-altura-y-teclado-comunes-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-celda-29e26-os-altura-y-teclado-comunes-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:73993) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/5] [csv] › tests/e2e/context-menus.spec.ts:44:1 › SIM-1h fila conserva estructura, peligro y submenú
+  2) [csv] › tests/e2e/context-menus.spec.ts:44:1 › SIM-1h fila conserva estructura, peligro y submenú 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  8
+    + Received  + 11
+
+      Array [
+    -   "Fila 1",
+    -   "Insertar arriba",
+    -   "Insertar abajo",
+    -   "Duplicar fila",
+    -   "|",
+    -   "Limpiar",
+    -   "|",
+    -   "Eliminar fila",
+    +   "Insertar fila arriba",
+    +   "Insertar fila abajo",
+    +   "Duplicar filas seleccionadas",
+    +   "Eliminar filas seleccionadas",
+    +   "Quitar espacios al inicio y final",
+    +   "Convertir a mayúsculas",
+    +   "Convertir a minúsculas",
+    +   "Transformar documento…",
+    +   "Copiar como Markdown",
+    +   "Deshacer edición CSV",
+    +   "Rehacer edición CSV",
+      ]
+
+      44 | test('SIM-1h fila conserva estructura, peligro y submenú',async()=>{
+      45 |  const row=page.getByRole('button',{name:'Seleccionar fila 1',exact:true});await row.click({button:'right'});const menu=rootMenu();await expect(menu).toBeVisible()
+    > 46 |  expect(await structure(menu)).toEqual(['Fila 1','Insertar arriba','Insertar abajo','Duplicar fila','|','Limpiar','|','Eliminar fila'])
+         |                                ^
+      47 |  await page.keyboard.press('Escape');await expect(row).toBeFocused()
+      48 | })
+      49 |
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/context-menus.spec.ts:46:32
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-fila--4eec4-structura-peligro-y-submenú-csv/attachments/electron-context-2d3410069e191c19ebc8d45c344c15ebfba1e538.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-fila--4eec4-structura-peligro-y-submenú-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-fila--4eec4-structura-peligro-y-submenú-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-fila--4eec4-structura-peligro-y-submenú-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:74131) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/5] [csv] › tests/e2e/context-menus.spec.ts:50:1 › SIM-1h texto Markdown tiene edición contextual y no usa el menú de cuadrícula
+  3) [csv] › tests/e2e/context-menus.spec.ts:50:1 › SIM-1h texto Markdown tiene edición contextual y no usa el menú de cuadrícula 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('menu').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('menu').first() with timeout 15000ms
+      - waiting for getByRole('menu').first()
+
+
+      51 |  await page.evaluate(path=>window.freya.openPaths([path]),markdown)
+      52 |  const editor=page.locator('.cm-editor .cm-content');await expect(editor).toHaveText('Hola mundo');await editor.click({button:'right'})
+    > 53 |  const menu=rootMenu();await expect(menu).toBeVisible()
+         |                                           ^
+      54 |  expect(await structure(menu)).toEqual(['Cortar','Copiar','Pegar','Pegar sin formato','|','Seleccionar todo'])
+      55 |  await page.keyboard.press('Escape');await expect(editor).toBeFocused()
+      56 | })
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/context-menus.spec.ts:53:43
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-texto-0b717-o-usa-el-menú-de-cuadrícula-csv/attachments/electron-context-4adddfb52567e6d95ab87bfce679851ac83e1914.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-texto-0b717-o-usa-el-menú-de-cuadrícula-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-texto-0b717-o-usa-el-menú-de-cuadrícula-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-texto-0b717-o-usa-el-menú-de-cuadrícula-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:74276) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[4/5] [csv] › tests/e2e/context-menus.spec.ts:58:1 › SIM-1h pestaña de documento muestra cerrar y revelar
+  4) [csv] › tests/e2e/context-menus.spec.ts:58:1 › SIM-1h pestaña de documento muestra cerrar y revelar 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('menu').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('menu').first() with timeout 15000ms
+      - waiting for getByRole('menu').first()
+
+
+      57 |
+      58 | test('SIM-1h pestaña de documento muestra cerrar y revelar',async()=>{
+    > 59 |  const tab=page.getByRole('tab',{name:'encuesta.csv',exact:true});await tab.click({button:'right'});const menu=rootMenu();await expect(menu).toBeVisible()
+         |                                                                                                                                              ^
+      60 |  expect(await structure(menu)).toEqual(['encuesta.csv','Cerrar','|','Mostrar en la carpeta'])
+      61 |  await page.keyboard.press('Escape');await expect(tab).toBeFocused()
+      62 | })
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/context-menus.spec.ts:59:142
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-pesta-63ab7-to-muestra-cerrar-y-revelar-csv/attachments/electron-context-856f0bf751b6dafae91a18f7cf1b1dfddf919ecd.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-pesta-63ab7-to-muestra-cerrar-y-revelar-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-pesta-63ab7-to-muestra-cerrar-y-revelar-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-pesta-63ab7-to-muestra-cerrar-y-revelar-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:74300) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[5/5] [csv] › tests/e2e/context-menus.spec.ts:64:1 › SIM-1h Archivos admite otros formatos y carpetas
+  5) [csv] › tests/e2e/context-menus.spec.ts:64:1 › SIM-1h Archivos admite otros formatos y carpetas 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('menu').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('menu').first() with timeout 15000ms
+      - waiting for getByRole('menu').first()
+
+
+      63 |
+      64 | test('SIM-1h Archivos admite otros formatos y carpetas',async()=>{
+    > 65 |  const file=page.locator('.tree-scroll').getByRole('button',{name:'apuntes.md',exact:true});await file.click({button:'right'});let menu=rootMenu();await expect(menu).toBeVisible()
+         |                                                                                                                                                                       ^
+      66 |  expect(await structure(menu)).toEqual(['apuntes.md','Abrir','|','Mostrar en la carpeta'])
+      67 |  await page.keyboard.press('Escape');await expect(file).toBeFocused()
+      68 |  const dir=page.locator('.tree-scroll').getByRole('button',{name:'Carpeta',exact:true});await dir.press('Shift+F10');menu=rootMenu();await expect(menu).toBeVisible()
+        at <recovery>/sim1h-menus-contextuales/tests/e2e/context-menus.spec.ts:65:167
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-Archi-00583-e-otros-formatos-y-carpetas-csv/attachments/electron-context-dea53b6aa610057e71e3d3c3606e99fa4c5c9652.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-Archi-00583-e-otros-formatos-y-carpetas-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-Archi-00583-e-otros-formatos-y-carpetas-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim1h-evidence/red-shape-artifacts/context-menus-SIM-1h-Archi-00583-e-otros-formatos-y-carpetas-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  5 failed
+    [csv] › tests/e2e/context-menus.spec.ts:35:1 › SIM-1h celda conserva título, grupos, altura y teclado comunes 
+    [csv] › tests/e2e/context-menus.spec.ts:44:1 › SIM-1h fila conserva estructura, peligro y submenú 
+    [csv] › tests/e2e/context-menus.spec.ts:50:1 › SIM-1h texto Markdown tiene edición contextual y no usa el menú de cuadrícula 
+    [csv] › tests/e2e/context-menus.spec.ts:58:1 › SIM-1h pestaña de documento muestra cerrar y revelar 
+    [csv] › tests/e2e/context-menus.spec.ts:64:1 › SIM-1h Archivos admite otros formatos y carpetas 
