@@ -87,3 +87,28 @@ test('SIM-3a: dos órdenes seguidos conservan ambas intenciones y los desempates
   expect(await readFile(path,'utf8')).toBe(source)
  }finally{await releaseProfile()}
 })
+
+test('SIM-3a: una consulta avanzada posterior conserva su orden al llegar un perfil anterior',async()=>{
+ const {doc,path,source}=await open(),before=(await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)
+ const age=page.getByRole('button',{name:'Edad',exact:true}),id=page.getByRole('button',{name:'ID',exact:true})
+ const idColumn=page.getByRole('columnheader').filter({has:id}),ageColumn=page.getByRole('columnheader').filter({has:age})
+ const expected=['012','011','010','009','008','007','006','005','004','003','002','001']
+ await holdNextProfile()
+ try{
+  await age.click();await expect.poll(()=>app.evaluate(()=>Reflect.get(globalThis,'sim3ProfileHold').waiting)).toBe(true)
+  await menuItem(page,'Filtrar','Consulta avanzada')
+  const tools=page.getByRole('region',{name:'Consulta avanzada',exact:true})
+  await tools.getByRole('button',{name:'Añadir orden',exact:true}).click()
+  await tools.getByLabel('Columna de orden 1',{exact:true}).selectOption('0')
+  await tools.getByLabel('Dirección de orden 1',{exact:true}).selectOption('true')
+  await expect(tools.getByLabel('Orden numérico 1',{exact:true})).not.toBeChecked()
+  await tools.getByRole('button',{name:'Aplicar consulta',exact:true}).click()
+  await expect(idColumn).toHaveAttribute('aria-sort','descending');await expect.poll(()=>values('ID')).toEqual(expected)
+  await releaseProfile();await expect(age).toHaveAttribute('aria-busy','false')
+  // This is renderer order state, so stale rows cannot pass before a scheduled page reload.
+  await expect(idColumn).toHaveAttribute('aria-sort','descending');await expect(ageColumn).toHaveAttribute('aria-sort','none')
+  await expect.poll(()=>values('ID')).toEqual(expected)
+  expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===doc.id)).toEqual(before)
+  expect(await readFile(path,'utf8')).toBe(source)
+ }finally{await releaseProfile()}
+})
