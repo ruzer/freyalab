@@ -1,6 +1,6 @@
 # SIM‑3d · Cifras y textos para estudiantes · Alcance y ADR0021
 
-Rama `codex/sim-3d-cifras-textos`, un único PR en borrador #214, base main. Rigen la [historia SIM‑3](historia-sim3-resultados-correctos-diseno-para-codex.md) y el [anexo posterior de decimales/copia](sim-3d-decimales-copia-decision-2026-11-23.md), que **sustituye** el contrato anterior de copia parcial/múltiple y amplía la presentación a los resultados de Análisis. La historia compartida no se edita.
+Continuación de código en `codex/sim-3d-decimales-continuacion`, base main actualizado `3b5e822c`. #214 fusionó solo la documentación inicial; esta entrega prepara un PR de continuación en borrador. Rigen la [historia SIM‑3](historia-sim3-resultados-correctos-diseno-para-codex.md) y el [anexo posterior de decimales/copia](sim-3d-decimales-copia-decision-2026-11-23.md), que **sustituye** el contrato anterior de copia parcial/múltiple y amplía la presentación a los resultados de Análisis. La historia compartida no se edita.
 
 ## Bloques y orden antes de nueva interfaz
 
@@ -18,7 +18,7 @@ CsvStatistics ya formatea hasta2decimales; CsvDescribe también; Información ti
 
 AnalysisWorkspace mantiene subpaneles montados y ocultos y tiene una cabecera común apropiada para el selector. App conserva el estado canónico de preferencias; main/preload ya aceptan patches/eventos genéricos. El nuevo campo necesita default compatible para settingsv1, pero no en patches parciales de otras opciones. SettingsDialog tiene reset de Apariencia explícito y requiere añadir la misma preferencia.
 
-App es una colisión con3c: se coordina e incorpora main antes del hunk. CsvTable no se toca ahora: los motivos de filas siguen como parche privado hasta3a/3c fusionados y la serie3a→3b→3e. Limpiar▾ ya tiene la razón conocida de B cuando falta una celda, que se conserva sin otra lógica ni aceptar columnas por casilla. El fallback de contexto usa un texto comprensible, no habilita acciones.
+El propietario ya fusionó 3a y 3c. Se incorpora ese main antes de conectar App a la preferencia existente y de completar los motivos de filas de CsvTable. La edición posterior de 3b espera a que el código de esta entrega quede congelado; cada entrega mantiene su propio PR, con la serie 3a→3b→3e. Limpiar▾ ya tiene la razón conocida de B cuando falta una celda, que se conserva sin otra lógica ni aceptar columnas por casilla. El fallback de contexto usa un texto comprensible, no habilita acciones.
 
 El error `empty.error.undoLimit` se produce en emptyPlan antes de commitChange; la unitaria funcional existente de table-empty verifica rechazo de preview y snapshot intacto. Se revalida nativamente antes de afirmar verde actual, sin cambiar presupuesto ni motor. NFC sigue siendo la operación normalize existente. Revisión se quita de las tres etiquetas de memoria, no de requests, cachés, rechazos stale o informes.
 
