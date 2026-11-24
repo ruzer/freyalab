@@ -1819,6 +1819,8 @@
  "analysis.export.csv": "CSV data…",
  "analysis.export.markdown": "Markdown data",
  "analysis.export.explorationHelp": "Open the current view as an editable document; frequencies include only the loaded page",
+ "csv.context.markRows": "Select rows by their row numbers.",
+ "csv.context.markOneRow": "Select exactly one row by its row number.",
  "csv.context.rowMenu": "Row actions",
  "csv.context.rangeMenu": "Range actions",
  "csv.context.row": "Row {row}",

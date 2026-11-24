@@ -14,7 +14,8 @@
  import CsvDescribe from './CsvDescribe.svelte'
  import type {AnalysisStatistics} from '../lib/workspace-tabs'
  import type {DocumentInfo,TableQuery,TableRange,TableViewMeta} from '../../shared/types'
- let {doc,autofocus=true,embedded=false,inspection,entry,columns,range,query,queryValid,viewMeta,onclose,onerror,onreport,onempty,numberMode=2}:{doc:DocumentInfo;autofocus?:boolean;embedded?:boolean;inspection?:{column:number;scope:'all'|'view'};entry?:AnalysisStatistics;columns:number[];range:TableRange|null;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;onempty:(intent:CsvEmptyIntent)=>void;numberMode?:AnalysisNumberMode}=$props()
+ let {doc,autofocus=true,embedded=false,inspection,entry,columns,range,query,queryValid,viewMeta,onclose,onerror,onreport,onempty,numberMode='auto'}:{doc:DocumentInfo;autofocus?:boolean;embedded?:boolean;inspection?:{column:number;scope:'all'|'view'};entry?:AnalysisStatistics;columns:number[];range:TableRange|null;query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;onclose:()=>void;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;onempty:(intent:CsvEmptyIntent)=>void;numberMode?:AnalysisNumberMode}=$props()
+ const countFields=new Set(['cells','empty','unique','numeric','missing','whitespace','excluded'])
  const titleId=$derived(embedded?'analysis-statistics-'+doc.id:'csv-statistics-title')
  $effect(()=>{if(inspection){explorationColumn=inspection.column;explorationScope=inspection.scope;exploring=true}})
  let exploring=$state(false),overviewing=$state(false),advancedOpen=$state(false),explorationColumn=$state(0),explorationScope=$state<'all'|'view'>('all')
@@ -84,7 +85,7 @@
  {#if results.length||usingRange}<div class="statistics-scroll" class:reserved={usingRange} role="region" aria-label={t('statistics.results')}>{#if results.length}<table>
   <caption>{analyzedScope}{results[0]?.sample?' · '+t('statistics.sampleLimited'):''}</caption>
   <thead><tr>{#each [t('statistics.column'),...fields.map(([,label])=>label)] as title}<th scope="col">{title}</th>{/each}</tr></thead>
-  <tbody>{#each results as result (result.index)}<tr><th scope="row">{result.index<0?'':`${result.index+1}. `}{result.name}</th>{#each fields as [key]}<td title={result[key]===null?'':t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(result[key]!)})}>{#if result[key]===null}—{:else}<AnalysisNumber value={result[key]!} mode={numberMode}/>{/if}</td>{/each}</tr>{/each}</tbody>
+  <tbody>{#each results as result (result.index)}<tr><th scope="row">{result.index<0?'':`${result.index+1}. `}{result.name}</th>{#each fields as [key]}<td title={result[key]===null?'':t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(result[key]!)})}>{#if result[key]===null}—{:else}<AnalysisNumber value={result[key]!} mode={numberMode} kind={countFields.has(key)?'count':'number'}/>{/if}</td>{/each}</tr>{/each}</tbody>
  </table>{:else}<p>{t('statistics.rangeEmpty')}</p>{/if}</div>{/if}
  {/if}
  {#if !overviewing}<details bind:open={exploring}><summary>{t(exploring?'statistics.back':'statistics.explore')}</summary>{#if exploring}<CsvColumnAnalysis {numberMode} bind:this={explorer} externalExports={embedded} {doc} {query} {queryValid} {viewMeta} {onerror} {onreport} bind:column={explorationColumn} bind:scope={explorationScope}/>{/if}</details>{/if}

@@ -1,7 +1,7 @@
 <script lang="ts">
  import AnalysisNumber from './AnalysisNumber.svelte'
- import {formatAnalysisNumber,type AnalysisNumberMode} from '../../shared/analysis-number-format'
- import {t,formatNumber,plural,getUILanguage} from '../lib/i18n.svelte'
+ import {formatAnalysisNumber,type AnalysisNumberMode,type AnalysisNumberKind} from '../../shared/analysis-number-format'
+ import {t,plural,getUILanguage} from '../lib/i18n.svelte'
  import {csvAnalysisSample,csvAnalysisQueryReady,csvAnalysisQueryKey as viewKey,type CsvEmptyIntent} from '../lib/csv-analysis-view'
  import {controlHint} from '../lib/control-hint'
  import Icon from './Icon.svelte'
@@ -10,7 +10,7 @@
  import {columnSummary} from '../../shared/column-profile'
  import {columnOverviewReport,type ReportContext} from '../lib/statistics-report'
  import type {DocumentInfo,TableQuery,ColumnOverviewRow,TableViewMeta} from '../../shared/types'
- let {doc,columns,query,queryValid,viewMeta,requested,external=false,externalExports=false,onerror,onreport,oninspect,onempty,numberMode=2}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;requested?:boolean;external?:boolean;externalExports?:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;oninspect:(column:number,scope:'all'|'view')=>void;onempty:(intent:CsvEmptyIntent)=>void;numberMode?:AnalysisNumberMode}=$props()
+ let {doc,columns,query,queryValid,viewMeta,requested,external=false,externalExports=false,onerror,onreport,oninspect,onempty,numberMode='auto'}:{doc:DocumentInfo;columns:number[];query:TableQuery;queryValid:boolean;viewMeta:TableViewMeta;requested?:boolean;external?:boolean;externalExports?:boolean;onerror:(message:string)=>void;onreport:(markdown:string)=>Promise<void>;oninspect:(column:number,scope:'all'|'view')=>void;onempty:(intent:CsvEmptyIntent)=>void;numberMode?:AnalysisNumberMode}=$props()
  let scope=$state<'all'|'view'>('all'),selection=$state('all'),busy=$state(false),reporting=$state(false),results=$state<ColumnOverviewRow[]>([])
  let message=$state('info.idle'),errorMessage=$state(''),total=$state(0),rowCount=$state(0),search=$state(''),offset=$state(0),context=$state<ReportContext|null>(null)
  let serial=0,active:{id:string;requestId:string}|null=null,timer:ReturnType<typeof setTimeout>|undefined
@@ -23,7 +23,7 @@
  const visible=$derived(results.filter(row=>`${row.column+1}. ${row.name}`.toLocaleLowerCase().includes(search.toLocaleLowerCase())))
  const failed=$derived(results.filter(row=>'error'in row).length)
  const emptyReason=$derived(doc.projectSource==='protected'?t('empty.protected'):doc.projectSource==='closed'?t('ui.reason.projectClosed'):doc.large?t('empty.large'):doc.readonly?t('empty.readonly'):external?t('empty.error.disk'):'')
- const emptyDescription=(empty:number,cells:number)=>empty?t('empty.countPercent',{count:formatNumber(empty),percent:formatAnalysisNumber(cells?empty/cells*100:0,numberMode,getUILanguage())}):formatNumber(0)
+ const emptyDescription=(empty:number,cells:number)=>empty?t('empty.countPercent',{count:formatAnalysisNumber(empty,numberMode,getUILanguage(),'count'),percent:formatAnalysisNumber(cells?empty/cells*100:0,numberMode,getUILanguage(),'percent')}):formatAnalysisNumber(0,numberMode,getUILanguage(),'count')
  const kinds=['number','date','identifier','category','text','mixed','empty'] as const
  const typeCounts=$derived(results.reduce((counts,entry)=>{if('result'in entry){const kind=entry.result.profile.kind;counts[kind]=(counts[kind]??0)+1}return counts},{} as Partial<Record<typeof kinds[number],number>>))
  function cancel(){serial++;clearTimeout(timer);if(active)void window.freya.cancelAnalysis(active.id,active.requestId).catch(()=>{});active=null;busy=false;results=[];context=null;offset=0;errorMessage=''}
@@ -79,11 +79,11 @@
  }
  async function report(){if(!context||busy||reporting||doc.revision!==context.revision)return;reporting=true;try{await onreport(columnOverviewReport($state.snapshot(context),$state.snapshot(results)))}catch(error){onerror(String(error))}finally{reporting=false}}
  export function exportActions():AnalysisExportAction[]{return[{label:t('info.report'),disabledReason:busy||reporting?'busy':!context||!results.length?'result':doc.revision!==context.revision?'refresh':null,run:report}]}
- const number=(value:number)=>formatAnalysisNumber(value,numberMode,getUILanguage())
+ const number=(value:number)=>formatAnalysisNumber(value,numberMode,getUILanguage(),'count')
  function fileSize(bytes:number|undefined){if(bytes===undefined)return null;const unit=bytes<1024?'B':bytes<1024*1024?'KiB':'MiB',divisor=unit==='B'?1:unit==='KiB'?1024:1024*1024;return{value:bytes/divisor,unit:' '+unit}}
  const delimiterNames:Record<string,string>={',':'comma',';':'semicolon','\t':'tab','|':'pipe'}
 </script>
-{#snippet numeric(value:number,unit='')}<AnalysisNumber {value} mode={numberMode} {unit}/>{/snippet}
+{#snippet numeric(value:number,unit='',kind:AnalysisNumberKind='count')}<AnalysisNumber {value} mode={numberMode} {unit} {kind}/>{/snippet}
 <section class="columns-overview" aria-label={t('info.title')}>
  <form onsubmit={event=>{event.preventDefault();void explore()}}>
   <label>{t('info.columns')} <select aria-label={t('info.columnsLabel')} bind:value={selection} disabled={busy}><option value="all">{t('info.columns.all')}</option><option value="selected" disabled={!columns.length}>{t('info.columns.selected')}</option></select></label>
@@ -95,7 +95,7 @@
  <p role="status" class:sr-only={!busy&&!message.startsWith('info.error')&&message!=='info.partial'}>{t(message,{done:message==='info.partial'?results.length-failed:results.length+1,total,failed})+(errorMessage?' '+errorMessage:'')}</p>
  {#if sample===true}<p class="notice">{t('info.sampleWarning')}</p>{/if}
  {#if results.length}{@const size=fileSize(doc.byteLength)}
-  <p class="file-summary">{plural('info.count.rows',rowCount)} × {plural('info.count.columns',total)} · <span title={t('info.fileSize')}>{#if size}{@render numeric(size.value,size.unit)}{:else}{t('info.size.unknown')}{/if}</span> · {t('csvText.encoding.'+doc.encoding)} · {delimiterNames[doc.delimiter??',']?t('project.source.'+delimiterNames[doc.delimiter??',']):t('info.delimiter',{value:doc.delimiter??','})} · {t(doc.hasHeader===false?'info.noHeader':'info.withHeader')}{context?.sample?' · '+t('info.sample'):''}</p>
+  <p class="file-summary">{plural('info.count.rows',rowCount)} × {plural('info.count.columns',total)} · <span title={t('info.fileSize')}>{#if size}{@render numeric(size.value,size.unit,size.unit===' B'?'count':'number')}{:else}{t('info.size.unknown')}{/if}</span> · {t('csvText.encoding.'+doc.encoding)} · {delimiterNames[doc.delimiter??',']?t('project.source.'+delimiterNames[doc.delimiter??',']):t('info.delimiter',{value:doc.delimiter??','})} · {t(doc.hasHeader===false?'info.noHeader':'info.withHeader')}{context?.sample?' · '+t('info.sample'):''}</p>
   <div class="type-chips" aria-label={t('info.types')}>{#each kinds as kind}{#if typeCounts[kind]}<span>{plural('info.kind.'+kind,typeCounts[kind]!)}</span>{/if}{/each}</div>
   {#if sample||scope==='view'||selection==='selected'||failed}<p class="scope">{context?.scope??t(sample?scope==='view'?'info.scope.sampleView':'info.scope.sample':scope==='view'?'info.scope.view':'info.scope.all')} · {t('info.scopeSummary',{rows:number(rowCount),done:results.length,total})}{busy?' · '+t('info.provisional'):''}{failed?' · '+t('info.partialCoverage'):''}</p>{/if}
   {#if results.length>20}<label>{t('info.search')} <input aria-label={t('info.searchLabel')} bind:value={search} type="search" placeholder={t('info.searchPlaceholder')}/></label>{/if}
@@ -108,7 +108,7 @@
     {#if 'result'in entry}{@const summary=columnSummary(entry.result)}
      <td><details class="type-explanation"><summary class="cell-summary">{t('info.type.'+entry.result.profile.kind)}<Icon name="chevron-down" size={12}/></summary><p>{summary.reason}</p></details></td>
      <td class="non-empty">{@render numeric(entry.result.cells-entry.result.empty)}</td>
-     <td>{#if entry.result.empty}<details class="quality-breakdown"><summary class="cell-summary" aria-label={emptyDescription(entry.result.empty,entry.result.cells)+' · '+t('info.emptyHelp',{name:entry.name})}>{@render numeric(entry.result.empty)} · {@render numeric(entry.result.cells?entry.result.empty/entry.result.cells*100:0,' %')}<Icon name="chevron-down" size={12}/></summary><dl>{#each [['missing',entry.result.missing],['exact',entry.result.empty-entry.result.missing-entry.result.whitespace],['spaces',entry.result.whitespace]] as [kind,value]}<div><dt>{t('info.empty.'+kind)}</dt><dd>{@render numeric(Number(value))}</dd></div>{/each}</dl>
+     <td>{#if entry.result.empty}<details class="quality-breakdown"><summary class="cell-summary" aria-label={emptyDescription(entry.result.empty,entry.result.cells)+' · '+t('info.emptyHelp',{name:entry.name})}>{@render numeric(entry.result.empty)} · {@render numeric(entry.result.cells?entry.result.empty/entry.result.cells*100:0,' %','percent')}<Icon name="chevron-down" size={12}/></summary><dl>{#each [['missing',entry.result.missing],['exact',entry.result.empty-entry.result.missing-entry.result.whitespace],['spaces',entry.result.whitespace]] as [kind,value]}<div><dt>{t('info.empty.'+kind)}</dt><dd>{@render numeric(Number(value))}</dd></div>{/each}</dl>
       <p>{t('empty.pandas')}</p><p>{t('empty.scope')}</p>
       <div class="empty-actions">
        <button type="button" disabled={busy} onclick={()=>onempty({action:'view',column:entry.column,revision:entry.result.revision})}>{t('empty.view')}</button>
