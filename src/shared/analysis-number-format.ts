@@ -1,23 +1,29 @@
 import {formatNumber,type Language} from './i18n'
 
-export type AnalysisNumberMode=2|'all'
+export type AnalysisNumberMode='auto'|'all'
+export type AnalysisNumberKind='number'|'count'|'coefficient'|'percent'
 export type AnalysisCopyFragment=
  |{kind:'text';text:string}
- |{kind:'number';value:number;unit?:string}
+ |{kind:'number';value:number|string;unit?:string}
 
-export function formatAnalysisNumber(value:number,mode:AnalysisNumberMode=2,language?:Language):string{
+export function formatAnalysisNumber(value:number,mode:AnalysisNumberMode='auto',language?:Language,kind:AnalysisNumberKind='number'):string{
  const number=Object.is(value,-0)?0:value
- const options: Intl.NumberFormatOptions=mode==='all'
-  ?{maximumSignificantDigits:15}
-  :number!==0&&Math.abs(number)<0.01?{maximumSignificantDigits:2}:{maximumFractionDigits:2}
- return formatNumber(number,options,language)
+ if(mode==='all')return formatNumber(number,{maximumSignificantDigits:15},language)
+ let digits=kind==='count'?0:kind==='coefficient'?3:2
+ const options: Intl.NumberFormatOptions=number!==0&&Math.abs(number)<0.01?{maximumSignificantDigits:2}:{maximumFractionDigits:digits}
+ let text=formatNumber(number,options,language)
+ const falseBoundary=()=>number!==0&&(text==='0'||text==='-0')
+  ||kind==='coefficient'&&Math.abs(number)!==1&&(text==='1'||text==='-1')
+  ||kind==='percent'&&number!==100&&text==='100'
+ // Only presentation changes. A finite double needs at most 17 significant digits.
+ while(Number.isFinite(number)&&falseBoundary()&&digits<17){
+  digits++;text=formatNumber(number,{maximumFractionDigits:digits},language)
+ }
+ return falseBoundary()?formatNumber(number,{maximumSignificantDigits:17},language):text
 }
 
-export function formatAnalysisFullNumber(value:number,unit=''):string{
- const precision=value.toPrecision(15),number=Number(precision)
- // Rounding a finite boundary to 15 figures can exceed Number.MAX_VALUE.
- if(Number.isFinite(value)&&!Number.isFinite(number))return precision+unit
- return String(Object.is(number,-0)?0:number)+unit
+export function formatAnalysisFullNumber(value:number|string,unit=''):string{
+ return String(value)+unit
 }
 
 export function copyAnalysisFragments(parts:readonly AnalysisCopyFragment[]):string{

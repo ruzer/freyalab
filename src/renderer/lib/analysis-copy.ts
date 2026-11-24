@@ -23,8 +23,8 @@ export function copyAnalysisSelection(event:ClipboardEvent,root:HTMLElement):voi
  const numbers=Array.from(root.querySelectorAll<HTMLElement>('[data-analysis-value]')).flatMap(node=>{
   if(!node.getClientRects().length||node.closest('[hidden]')||window.getComputedStyle(node).visibility!=='visible'||!original.intersectsNode(node))return[]
   if(!node.dataset.analysisValue)return[]
-  const value=Number(node.dataset.analysisValue)
-  if(!Number.isFinite(value))return[]
+  const value=node.dataset.analysisValue
+  if(!Number.isFinite(Number(value)))return[]
   const walker=document.createTreeWalker(node,NodeFilter.SHOW_TEXT),text:Node[]=[]
   while(walker.nextNode())if(walker.currentNode.textContent?.length)text.push(walker.currentNode)
   if(!text.length)return[]

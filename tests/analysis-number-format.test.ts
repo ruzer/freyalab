@@ -76,6 +76,16 @@ describe('SIM-3d · precisión de presentación y copia',()=>{
   expect(formatAnalysisFullNumber(Number.MIN_VALUE)).toBe('5e-324')
   expect(formatAnalysisFullNumber(-Number.MIN_VALUE)).toBe('-5e-324')
  })
+ it('conserva literalmente la cadena numérica del motor en la salida completa',()=>{
+  expect(formatAnalysisFullNumber('12345678901234567890.12')).toBe('12345678901234567890.12')
+  expect(formatAnalysisFullNumber('5.0',' %')).toBe('5.0 %')
+ })
+ it('conserva cadenas numéricas del motor y separadores en fragmentos sin convertir sus datos',()=>{
+  const parts=[{kind:'text' as const,text:'Resultado\t'},{kind:'number' as const,value:'12345678901234567890.12'},{kind:'text' as const,text:'\t'},{kind:'number' as const,value:'5.0',unit:' %'}]
+  const before=structuredClone(parts)
+  expect(copyAnalysisFragments(parts)).toBe('Resultado\t12345678901234567890.12\t5.0 %')
+  expect(parts).toEqual(before)
+ })
  it('copia varios números completos y conserva literalmente los separadores nativos recibidos',()=>{
   expect(copyAnalysisFragments([
    {kind:'text',text:'"4"\t'},
