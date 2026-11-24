@@ -3,7 +3,7 @@
  import {controlHint} from '../lib/control-hint'
  import {onMount,onDestroy,untrack} from 'svelte'
  import type {TableRangeEdit,TableRangePreview} from '../../shared/types'
- let {id,initial,cut=false,documentScope=false,column,onapply,onclose,onerror}:{id:string;initial:TableRangeEdit;cut?:boolean;documentScope?:boolean;column?:{name:string;rows:number;hidden:number;title:string};onapply:(edit:TableRangeEdit,cancelled:()=>boolean)=>Promise<string|null>;onclose:()=>void;onerror:(text:string)=>void}=$props()
+ let {id,initial,cut=false,documentScope=false,column,onapply,onclose,onerror}:{id:string;initial:TableRangeEdit;cut?:boolean;documentScope?:boolean;column?:{name:string;rows:number;hidden?:number;title:string};onapply:(edit:TableRangeEdit,cancelled:()=>boolean)=>Promise<string|null>;onclose:()=>void;onerror:(text:string)=>void}=$props()
  let edit=$state(untrack(()=>structuredClone($state.snapshot(initial)))),preview=$state<TableRangePreview|null>(null),busy=$state(false),message=$state(''),processed=$state(0),external=$state(false),dialog:HTMLDialogElement
  let active:string|undefined,applying=false,cancelled=false,closing=false
  const labels={fill:'Rellenar rango',clear:'Vaciar rango',trim:'Quitar espacios del rango',upper:'Mayúsculas en el rango',lower:'Minúsculas en el rango',replace:'Reemplazar en el rango',paste:'Pegar bloque en el rango'}
