@@ -7,6 +7,10 @@ La sección SIM-3d de la [historia actualizada](historia-sim3-resultados-correct
 - Más precisión: hasta15cifras significativas; es una presentación, no «todos los dígitos».
 - Copia y ayuda: `String(value)` del resultado del motor, con unidad; no pasan por el redondeo visual. Si una selección parcial toca un número se copia completo. Se conservan texto, IDs, selección inversa y separadores nativos. Es una decisión explícita del propietario, diferente de copiar solo texto visible.
 - Se aplica a Información, Estadísticas principales y Más estadísticas, y a tabla/texto de tendencia de Gráficos. El dibujo usa los datos completos; no se cambian ejes, consultas, exportaciones CSV/JSON ni informes Markdown.
-- No se añaden controles por columna, formatos fijos2/3/4, dependencias, IPC ni otro almacén de preferencias. No se modifica la tabla CSV.
+- No se añaden controles por columna, formatos fijos2/3/4, dependencias ni otro almacén de preferencias. No se modifica la tabla CSV.
 
 Las evidencias antiguas2/Todos permanecen históricas; no acreditan el contrato nuevo. Se requiere rojo→verde y comprobaciones nativas de la nueva preferencia, extremos, copia, informes, exportaciones y persistencia. La guarda de extremos es del modo Automático; Más precisión conserva su tope explícito de15cifras.
+
+## Aclaración posterior: exportaciones estadísticas
+
+El propietario autorizó añadir CSV/JSON a Estadísticas dentro de3d. Se amplía solo la operación segura de exportar resultados; se reutiliza exportResult y se conservan Markdown y las exportaciones de Gráficos. Ver alcance/ADR para validación, muestras y escritura. La afirmación anterior «sin IPC nuevo» se limitaba al formato/copia; esta ampliación añade una petición específica, nunca escritura genérica.
