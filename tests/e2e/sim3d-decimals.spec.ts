@@ -325,6 +325,7 @@ for(const mode of ['auto','all'] as const)test(`SIM-3d exportación: Estadístic
  const column=data.columns.indexOf('Valor');expect(column).toBeGreaterThan(0)
  const row=data.rows.find(row=>row[0]===tr('describe.metric.mean'));expect(row).toBeDefined();expect(row![column]).toBe(Number(precise))
  expect(data.rows.find(row=>row[0]===tr('describe.metric.mean'))![data.columns.indexOf('Pequeño')]).toBe(Number(small))
+ expect(data.rows.find(row=>row[0]===tr('describe.metric.mean'))![data.columns.indexOf('Flotante')]).toBe((0.1+0.2)/2)
  await exportAnalysis(page,'analysis.export.csv')
  const csvPath=join(folder,'exports','precision.analisis.csv'),contextPath=csvPath+'.contexto.json'
  await expect.poll(()=>readFile(contextPath,'utf8').then(JSON.parse).catch(()=>null)).not.toBeNull()
@@ -333,4 +334,27 @@ for(const mode of ['auto','all'] as const)test(`SIM-3d exportación: Estadístic
  expect(csv.slice(1)).toEqual(data.rows.map(row=>row.map(value=>value===null?'':String(value))))
  const context=JSON.parse(await readFile(contextPath,'utf8'));expect(context.rows).toEqual(data.rows)
  await expect(mean).toHaveText(mode==='auto'?'5.52':precise)
+})
+
+test('SIM-3d exportación: Perfil JSON y estadísticas detalladas CSV conservan sus resultados (es)',async()=>{
+ const more=await explorer(2);await expect(profileValue(more,'Media')).toHaveText('5.52')
+ await exportAnalysis(page,'analysis.export.json')
+ const jsonPath=join(folder,'exports','precision.analisis.json')
+ await expect.poll(()=>readFile(jsonPath,'utf8').then(JSON.parse).catch(()=>null)).not.toBeNull()
+ const json=JSON.parse(await readFile(jsonPath,'utf8')) as {rows:(string|number|null)[][];metadata:{kind:string;partial:boolean;scope:string}}
+ expect(json.metadata).toMatchObject({kind:'profile',partial:false});expect(json.metadata.scope).toContain('Valor')
+ expect(json.rows.find(row=>row[0]==='Media')?.[1]).toBe(Number(precise))
+ await more.locator('..').locator(':scope>summary').press('Enter');await expect(more).toHaveCount(0)
+ const advanced=workspace().locator('.advanced-statistics')
+ await advanced.getByRole('button',{name:tr('statistics.analyze'),exact:true}).click()
+ await expect(advanced.getByRole('status')).toHaveText(tr('statistics.complete'))
+ await exportAnalysis(page,'statistics.export.detailedCsv')
+ const csvPath=join(folder,'exports','precision.analisis.csv'),contextPath=csvPath+'.contexto.json'
+ await expect.poll(()=>readFile(contextPath,'utf8').then(JSON.parse).catch(()=>null)).not.toBeNull()
+ const context=JSON.parse(await readFile(contextPath,'utf8')) as {columns:string[];rows:(string|number|null)[][];metadata:{kind:string}}
+ expect(context.metadata.kind).toBe('statistics')
+ const meanIndex=context.columns.indexOf(tr('statistics.field.average'));expect(meanIndex).toBeGreaterThan(0)
+ expect(context.rows.find(row=>row[0]==='Valor')?.[meanIndex]).toBe(Number(precise))
+ const {parse}=await import('csv-parse/sync'),csv=parse(await readFile(csvPath,'utf8')) as string[][]
+ expect(csv.slice(1)).toEqual(context.rows.map(row=>row.map(value=>value===null?'':String(value))))
 })

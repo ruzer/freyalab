@@ -4,6 +4,8 @@ import {tmpdir} from 'node:os'
 import {join} from 'node:path'
 import {createHash,randomUUID} from 'node:crypto'
 import {parse} from 'csv-parse/sync'
+import {t} from '../src/shared/i18n'
+import type {RecipeAnalysisContext} from '../src/shared/recipe-operation'
 import * as files from '../src/main/files'
 const state=vi.hoisted(()=>({folder:'',destination:'',cancelled:false,onDialog:()=>{},table:vi.fn(),saveDialog:vi.fn()}))
 vi.mock('electron',()=>({app:{getPath:()=>state.folder},dialog:{showSaveDialog:async()=>{state.saveDialog();state.onDialog();return{canceled:state.cancelled,filePath:state.destination}}},BrowserWindow:class{static getFocusedWindow(){return undefined}static getAllWindows(){return[]}}}))
@@ -11,7 +13,7 @@ vi.mock('../src/main/table-client',()=>({TableClient:class{call=state.table;stop
 import {Documents} from '../src/main/documents'
 import {query} from '../src/main/query-schema'
 import {exportStatisticsResult} from '../src/main/statistics-result-export'
-import {statisticsResultSchema,serializeStatisticsResult,type StatisticsResultRequest} from '../src/shared/statistics-result'
+import {statisticsResultSchema,statisticsResultWithinBudget,serializeStatisticsResult,type StatisticsResultRequest} from '../src/shared/statistics-result'
 
 const sha=(value:string)=>createHash('sha256').update(value).digest('hex')
 const sourceBytes='ID,N\r\n00123,0.1\r\n9007199254740993,0.2\r\n'
@@ -40,6 +42,26 @@ it('CSV usa String del número, protección explícita de fórmulas y contexto c
  }
 })
 
+it('la protección CSV conserva un número negativo y protege solo el texto con el mismo contenido',()=>{
+ const output=serializeStatisticsResult({...request,format:'csv',table:{columns:['Número','Texto'],rows:[[-0.4,'-0.4']]}},origin,sha)
+ expect(parse(output.content)).toEqual([['Número','Texto'],['-0.4',"'-0.4"]])
+ const context=JSON.parse(output.context!);expect(context.rows).toEqual([[-0.4,'-0.4']]);expect(context.csv.nulls).toBe(t('statistics.export.nulls'))
+})
+
+it('el conjunto conserva origen y cobertura prefijo de main, y el cliente no puede inyectarlos',async()=>{
+ const analysisSubset:RecipeAnalysisContext={projectId:'project',recipeId:'recipe',sourceId:'source',name:'Primeras dos filas',sourceName:'datos-ñ.csv',steps:[{op:'sample',method:'first',rows:2}],stepOwners:['Primeras dos filas'],coverage:{headers:['ID','N'],columns:[{position:1,name:'ID'},{position:2,name:'N'}],scanned:2,eligible:2,resultCount:2,complete:false,cancelled:false,bytesRead:64,sampling:[]}}
+ docs.get(id).info.analysisSubset=analysisSubset
+ expect(statisticsResultSchema(query).safeParse({...request,context:{...request.context,analysisSubset}}).success).toBe(false)
+ for(const format of ['json','csv'] as const){
+  state.destination=join(state.folder,'subset.'+format);await exportStatisticsResult(docs,id,{...request,format})
+  const output=JSON.parse(await readFile(state.destination+(format==='csv'?'.contexto.json':''),'utf8'))
+  expect(output.metadata.analysisSubset).toEqual(analysisSubset);expect(output.metadata.analysisSubset.coverage.complete).toBe(false)
+  expect(output.metadata).toMatchObject({source:'original.csv',revision:3,dirty:true});expect(output.rows).toEqual(request.table.rows)
+  expect(JSON.stringify(output.metadata.analysisSubset)).not.toContain(source);expect(output.metadata.analysisSubset.coverage).not.toHaveProperty('sha256')
+ }
+ expect(await readFile(source,'utf8')).toBe(sourceBytes)
+})
+
 it('valida el contrato limitado: estructura rectangular, finitos, tamaños y ausencia de rutas/contenido arbitrario',()=>{
  const schema=statisticsResultSchema(query)
  expect(schema.parse(request)).toEqual(request)
@@ -52,6 +74,12 @@ it('rechaza el tamaño agregado y el resultado final mayor de 20 MiB antes de ab
  expect(state.saveDialog).not.toHaveBeenCalled();expect(await readFile(source,'utf8')).toBe(sourceBytes)
  const escaped={...request,table:{columns:['N'],rows:Array.from({length:12},()=>['"'.repeat(1024*1024-1)])}}
  await expect(exportStatisticsResult(docs,id,escaped)).rejects.toThrow('Reduce las columnas o las filas');expect(state.saveDialog).not.toHaveBeenCalled()
+})
+
+it('corta una cadena mayor que el presupuesto antes de asignar su copia UTF-8 y rechaza ciclos',()=>{
+ const encode=vi.spyOn(TextEncoder.prototype,'encode')
+ expect(statisticsResultWithinBudget('x'.repeat(20*1024*1024+1))).toBe(false);expect(encode).not.toHaveBeenCalled()
+ const cyclic:unknown[]=[];cyclic.push(cyclic);expect(statisticsResultWithinBudget(cyclic)).toBe(false)
 })
 
 it('guarda JSON o CSV con su contexto sin consultar el motor ni modificar el CSV original',async()=>{
@@ -94,5 +122,12 @@ it('revalida la fuente protegida y revierte solo la pareja propia ante error de 
  state.destination=join(state.folder,'result.csv');const originalWrite=files.atomicWrite
  vi.spyOn(files,'atomicWrite').mockImplementation(async(path,...args)=>{if(path===state.destination)throw new Error('Disco lleno');return originalWrite(path,...args)})
  await expect(exportStatisticsResult(docs,id,{...request,format:'csv'})).rejects.toThrow('Disco lleno')
+ await expect(access(state.destination)).rejects.toThrow();await expect(access(state.destination+'.contexto.json')).rejects.toThrow();expect(await readFile(source,'utf8')).toBe(sourceBytes)
+})
+
+it('un cambio de revisión después de escribir el contexto revierte la pareja antes de entregar CSV',async()=>{
+ state.destination=join(state.folder,'result.csv');const originalWrite=files.atomicWrite
+ vi.spyOn(files,'atomicWrite').mockImplementation(async(path,...args)=>{await originalWrite(path,...args);if(path===state.destination+'.contexto.json')docs.get(id).info.revision++})
+ await expect(exportStatisticsResult(docs,id,{...request,format:'csv'})).rejects.toThrow('Los datos cambiaron')
  await expect(access(state.destination)).rejects.toThrow();await expect(access(state.destination+'.contexto.json')).rejects.toThrow();expect(await readFile(source,'utf8')).toBe(sourceBytes)
 })
