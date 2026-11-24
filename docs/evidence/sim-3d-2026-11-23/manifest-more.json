@@ -1,0 +1,45 @@
+{
+  "sourceHead": "89946d939949917996ebfd306a37ddd417366191",
+  "images": [
+    {
+      "name": "sim3d-decimals-en-XA-dark-1440x900.png",
+      "sha256": "e8b87a8eb4f1d5b397c5da210519ffe0ac0467b04e68c71fabe1e02bdc86b516",
+      "bytes": 117536
+    },
+    {
+      "name": "sim3d-decimals-en-XA-light-1440x900.png",
+      "sha256": "e30e92baabbce69a0d861f60b1a193bcbd97d9070f6bcba92efa3c06e91487ef",
+      "bytes": 116763
+    },
+    {
+      "name": "sim3d-decimals-es-dark-1280x720.png",
+      "sha256": "6b5c789a8b5b4bb0c7f4dd4d9de25ba5ddf51e1ef4f652796ff46f1f6c080aa8",
+      "bytes": 94928
+    },
+    {
+      "name": "sim3d-decimals-es-light-1280x720.png",
+      "sha256": "61fe1fd664e18a345dbadc025fbf5173599f2a22d5185b98468ee3946cbf5d6d",
+      "bytes": 94490
+    },
+    {
+      "name": "sim3d-decimals-es-light-1440x900.png",
+      "sha256": "2b6a0bcd29e8a10ff358e1d95fe3d5a225a14874889cf2c891f95a0847c53a5f",
+      "bytes": 99596
+    },
+    {
+      "name": "sim3d-decimals-es-dark-1440x900.png",
+      "sha256": "f5fa24a6c02e297fa7267928e5cf1ac97bb25e85c15bf8b97359b93079da5505",
+      "bytes": 99899
+    },
+    {
+      "name": "sim3d-decimals-en-XA-dark-1280x720.png",
+      "sha256": "4897be445c403625ad861953ac572777e06ccdfd7d5217b2a8d106ca762f5ba3",
+      "bytes": 112325
+    },
+    {
+      "name": "sim3d-decimals-en-XA-light-1280x720.png",
+      "sha256": "0e39839934f026891072ecec2b7b21d898d72537a5bf4d386078c8d84a5d3500",
+      "bytes": 111266
+    }
+  ]
+}

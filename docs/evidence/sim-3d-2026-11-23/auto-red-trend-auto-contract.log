@@ -1,0 +1,79 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <worktree>
+
+ ❯ tests/chart-trend.test.ts (19 tests | 3 failed) 1181ms
+   × SIM-3d · el texto HTML automático usa tres decimales en coeficientes y unidad de porcentaje 9ms
+   × SIM-3d · Más precisión afecta al texto HTML sin limitar la ayuda ni el informe a quince cifras 6ms
+   × SIM-3d · la tendencia entrega métricas crudas tipadas para marcar números y conservar texto 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/chart-trend.test.ts > SIM-3d · el texto HTML automático usa tres decimales en coeficientes y unidad de porcentaje
+AssertionError: expected 'y = -0.6·x + 5.8\nR² = 0.6 · r = -0.7…' to contain 'r = -0.775'
+
+- Expected
++ Received
+
+- r = -0.775
++ y = -0.6·x + 5.8
++ R² = 0.6 · r = -0.7746 · 5 puntos
++ La recta explica el 60% de la variación de Y. A más X, menos Y.
++ Relación no es causa.
+
+ ❯ tests/chart-trend.test.ts:110:15
+    108|  const trend=analyze().trend!,before=structuredClone(trend)
+    109|  const text=chartTrendText(trend,headers,options,false,'auto').join('\…
+    110|  expect(text).toContain('r = -0.775')
+       |               ^
+    111|  expect(text).toContain('R² = 0.6')
+    112|  expect(text).toContain('60 %')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/chart-trend.test.ts > SIM-3d · Más precisión afecta al texto HTML sin limitar la ayuda ni el informe a quince cifras
+AssertionError: expected 'y = -0.6·x + 5.8\nR² = 0.6 · r = -0.7…' to contain 'r = -0.774596669241483'
+
+- Expected
++ Received
+
+- r = -0.774596669241483
++ y = -0.6·x + 5.8
++ R² = 0.6 · r = -0.7746 · 5 puntos
++ La recta explica el 60% de la variación de Y. A más X, menos Y.
++ Relación no es causa.
+
+ ❯ tests/chart-trend.test.ts:120:15
+    118|  connection.query("INSERT INTO datos VALUES ('1','5'),('2','4'),('3','…
+    119|  const trend=analyze().trend!,text=chartTrendText(trend,headers,option…
+    120|  expect(text).toContain('r = '+String(Number(trend.r!.toPrecision(15))…
+       |               ^
+    121|  const full=chartTrendText(trend,headers,options,true).join('\n')
+    122|  expect(full).toContain('r = '+String(trend.r))
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/chart-trend.test.ts > SIM-3d · la tendencia entrega métricas crudas tipadas para marcar números y conservar texto
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ tests/chart-trend.test.ts:131:20
+    129|  connection.query("INSERT INTO datos VALUES ('1','5'),('2','4'),('3','…
+    130|  const trend=analyze().trend!,fragments=Reflect.get(chartTrend,'chartT…
+    131|  expect(fragments).toBeTypeOf('function')
+       |                    ^
+    132|  const lines=Reflect.apply(fragments,undefined,[trend,headers,options]…
+    133|  expect(lines).toHaveLength(4)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 16 passed (19)
+   Start at  21:07:35
+   Duration  1.46s (tests 86%, import 10%, transform 4%)
+

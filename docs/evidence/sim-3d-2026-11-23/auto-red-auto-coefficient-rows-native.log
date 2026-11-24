@@ -1,0 +1,123 @@
+
+Running 3 tests using 1 worker
+
+(node:21934) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/sim3d-numbers.spec.ts:108:1 › SIM-3d coeficiente: Pearson usa tres decimales en Automático y conserva el valor completo (es) (17.1s)
+(node:22036) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/sim3d-numbers.spec.ts:138:2 › SIM-3d motivos de filas distinguen ninguna marca, varias y una sin cambiar la selección (es) (16.3s)
+(node:22175) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [csv] › tests/e2e/sim3d-numbers.spec.ts:138:2 › SIM-3d motivos de filas distinguen ninguna marca, varias y una sin cambiar la selección (en-XA) (16.3s)
+
+
+  1) [csv] › tests/e2e/sim3d-numbers.spec.ts:108:1 › SIM-3d coeficiente: Pearson usa tres decimales en Automático y conserva el valor completo (es)
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('.analysis-workspace:not([hidden]) .advanced-statistics').locator('.column-explorer').locator('dl[aria-label="Correlación de Pearson"] dd').first()
+    Expected: "0.775"
+    Received: "0.77"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" locator('.analysis-workspace:not([hidden]) .advanced-statistics').locator('.column-explorer').locator('dl[aria-label="Correlación de Pearson"] dd').first() with timeout 15000ms
+      - waiting for locator('.analysis-workspace:not([hidden]) .advanced-statistics').locator('.column-explorer').locator('dl[aria-label="Correlación de Pearson"] dd').first()
+        34 × locator resolved to <dd class="svelte-rmw2lu" title="Valor exacto: 0.774596669241483">…</dd>
+           - unexpected value "0.77"
+
+
+      113 |  const raw=await page.evaluate(async id=>(await window.freya.analyzeColumn(id,{column:0,otherColumn:1,requestId:crypto.randomUUID(),revision:0,frequencyOffset:0,duplicatesOnly:false,bins:10})).correlation!,doc.id)
+      114 |  expect(raw.pairs).toBe(5);expect(raw.omitted).toBe(0);expect(raw.value).toBeCloseTo(Math.sqrt(0.6),14)
+    > 115 |  await expect(correlation).toHaveText('0.775');await expect(correlation).toHaveAttribute('title','Valor completo: '+String(raw.value))
+          |                            ^
+      116 |  const mode=page.locator('.analysis-workspace:not([hidden])').getByRole('combobox',{name:'Decimales',exact:true})
+      117 |  await mode.selectOption('all');await expect(mode).toHaveValue('all');await expect(correlation).toHaveText('0.774596669241483')
+      118 |  await expect(correlation).toHaveAttribute('title','Valor completo: '+String(raw.value))
+        at <worktree>/tests/e2e/sim3d-numbers.spec.ts:115:28
+
+    Error Context: test-results/sim3d-numbers-SIM-3d-coefi-f2e8b-serva-el-valor-completo-es--csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3d-numbers-SIM-3d-coefi-f2e8b-serva-el-valor-completo-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3d-numbers-SIM-3d-coefi-f2e8b-serva-el-valor-completo-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/sim3d-numbers.spec.ts:138:2 › SIM-3d motivos de filas distinguen ninguna marca, varias y una sin cambiar la selección (es)
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByRole('dialog', { name: 'Comandos CSV', exact: true }).locator('.command-list li').filter({ has: getByText('Duplicar filas seleccionadas', { exact: true }).and(locator('strong')) }).getByRole('button')
+    Expected: "Marca filas por su número."
+    Received: "Esta acción no está disponible con la selección actual."
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('dialog', { name: 'Comandos CSV', exact: true }).locator('.command-list li').filter({ has: getByText('Duplicar filas seleccionadas', { exact: true }).and(locator('strong')) }).getByRole('button') with timeout 15000ms
+      - waiting for getByRole('dialog', { name: 'Comandos CSV', exact: true }).locator('.command-list li').filter({ has: getByText('Duplicar filas seleccionadas', { exact: true }).and(locator('strong')) }).getByRole('button')
+        34 × locator resolved to <button disabled class="svelte-ki85c0" aria-describedby="control-reason-context" title="Esta acción no está disponible con la selección actual.">…</button>
+           - unexpected value "Esta acción no está disponible con la selección actual."
+
+
+      145 |   let commands=await openCsvCommands(page,app)
+      146 |   for(const label of rowLabels){
+    > 147 |    const button=command(commands,label);await expect(button).toBeDisabled();await expect(button).toHaveAttribute('title',reason);await expect(button).toHaveAccessibleDescription(reason)
+          |                                                                                                  ^
+      148 |   }
+      149 |   await page.keyboard.press('Escape');await expect(commands).toHaveCount(0)
+      150 |   const toolbar=page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true})
+        at <worktree>/tests/e2e/sim3d-numbers.spec.ts:147:98
+
+    Error Context: test-results/sim3d-numbers-SIM-3d-motiv-b6549-in-cambiar-la-selección-es--csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3d-numbers-SIM-3d-motiv-b6549-in-cambiar-la-selección-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3d-numbers-SIM-3d-motiv-b6549-in-cambiar-la-selección-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/sim3d-numbers.spec.ts:138:2 › SIM-3d motivos de filas distinguen ninguna marca, varias y una sin cambiar la selección (en-XA)
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator: getByRole('dialog', { name: 'Comandos CSV', exact: true }).locator('.command-list li').filter({ has: getByText('Duplicar filas seleccionadas', { exact: true }).and(locator('strong')) }).getByRole('button')
+    Expected pattern: /^\[Sëlëct röws by thëïr röw nümbërs\.~+\]$/
+    Received string:  "[Thïs áctïön ïs nöt áváïláblë wïth thë cürrënt sëlëctïön.~~~~~~~~~~~~~~~~~]"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('dialog', { name: 'Comandos CSV', exact: true }).locator('.command-list li').filter({ has: getByText('Duplicar filas seleccionadas', { exact: true }).and(locator('strong')) }).getByRole('button') with timeout 15000ms
+      - waiting for getByRole('dialog', { name: 'Comandos CSV', exact: true }).locator('.command-list li').filter({ has: getByText('Duplicar filas seleccionadas', { exact: true }).and(locator('strong')) }).getByRole('button')
+        34 × locator resolved to <button disabled class="svelte-ki85c0" aria-describedby="control-reason-context" title="[Thïs áctïön ïs nöt áváïláblë wïth thë cürrënt sëlëctïön.~~~~~~~~~~~~~~~~~]">…</button>
+           - unexpected value "[Thïs áctïön ïs nöt áváïláblë wïth thë cürrënt sëlëctïön.~~~~~~~~~~~~~~~~~]"
+
+
+      145 |   let commands=await openCsvCommands(page,app)
+      146 |   for(const label of rowLabels){
+    > 147 |    const button=command(commands,label);await expect(button).toBeDisabled();await expect(button).toHaveAttribute('title',reason);await expect(button).toHaveAccessibleDescription(reason)
+          |                                                                                                  ^
+      148 |   }
+      149 |   await page.keyboard.press('Escape');await expect(commands).toHaveCount(0)
+      150 |   const toolbar=page.getByRole('toolbar',{name:'Herramientas de la tabla',exact:true})
+        at <worktree>/tests/e2e/sim3d-numbers.spec.ts:147:98
+
+    Error Context: test-results/sim3d-numbers-SIM-3d-motiv-7cc55-cambiar-la-selección-en-XA--csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3d-numbers-SIM-3d-motiv-7cc55-cambiar-la-selección-en-XA--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3d-numbers-SIM-3d-motiv-7cc55-cambiar-la-selección-en-XA--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [csv] › tests/e2e/sim3d-numbers.spec.ts:108:1 › SIM-3d coeficiente: Pearson usa tres decimales en Automático y conserva el valor completo (es)
+    [csv] › tests/e2e/sim3d-numbers.spec.ts:138:2 › SIM-3d motivos de filas distinguen ninguna marca, varias y una sin cambiar la selección (es)
+    [csv] › tests/e2e/sim3d-numbers.spec.ts:138:2 › SIM-3d motivos de filas distinguen ninguna marca, varias y una sin cambiar la selección (en-XA)

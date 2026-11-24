@@ -1,0 +1,379 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <worktree>
+
+ ❯ tests/analysis-number-format.test.ts (42 tests | 21 failed) 38ms
+   ❯ SIM-3d · precisión de presentación y copia (42)
+     × Automático coeficiente: 0.123456 evita un extremo falso y muestra0.123 4ms
+     × Automático coeficiente: -0.123456 evita un extremo falso y muestra-0.123 0ms
+     × Automático coeficiente: 1.23456 evita un extremo falso y muestra1.235 0ms
+     × Automático coeficiente: 0.9999 evita un extremo falso y muestra0.9999 0ms
+     × Automático coeficiente: -0.9999 evita un extremo falso y muestra-0.9999 0ms
+     × Automático coeficiente: 1.0001 evita un extremo falso y muestra1.0001 0ms
+     × Automático coeficiente: -1.0001 evita un extremo falso y muestra-1.0001 0ms
+     × Automático coeficiente: 0.9999999999999999 evita un extremo falso y muestra0.9999999999999999 0ms
+     × Automático coeficiente: -0.9999999999999999 evita un extremo falso y muestra-0.9999999999999999 0ms
+     × Automático coeficiente: 1.0000000000000002 evita un extremo falso y muestra1.0000000000000002 0ms
+     × Automático coeficiente: -1.0000000000000002 evita un extremo falso y muestra-1.0000000000000002 0ms
+     × Automático porcentaje: 99.9999 evita cien falso y muestra99.9999 0ms
+     × Automático porcentaje: 100.0001 evita cien falso y muestra100.0001 0ms
+     × Automático porcentaje: 99.99999999999999 evita cien falso y muestra99.99999999999999 0ms
+     × Automático porcentaje: 100.00000000000001 evita cien falso y muestra100.00000000000001 0ms
+     × usa el formato compartido del idioma y conserva punto decimal 0ms
+     × ayuda/copia conservan String del resultado sin redondear ni agrupar y con unidad 0ms
+     × copia los extremos finitos y subnormales tal como los representa el resultado 0ms
+     × copia varios números completos y conserva literalmente los separadores nativos recibidos 1ms
+     × un fragmento numérico identificado por DOM copia su dato completo, no el recorte visual 0ms
+     × no modifica los fragmentos ni sus valores crudos 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 21 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático coeficiente: 0.123456 evita un extremo falso y muestra0.123
+AssertionError: expected '0.12' to be '0.123' // Object.is equality
+
+Expected: "0.123"
+Received: "0.12"
+
+ ❯ tests/analysis-number-format.test.ts:32:65
+     30|   [1,'1'],[-1,'-1'],
+     31|  ] as const)('Automático coeficiente: %s evita un extremo falso y mues…
+     32|   expect(formatAnalysisNumber(value,'auto','es','coefficient')).toBe(e…
+       |                                                                 ^
+     33|  })
+     34|  it.each([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático coeficiente: -0.123456 evita un extremo falso y muestra-0.123
+AssertionError: expected '-0.12' to be '-0.123' // Object.is equality
+
+Expected: "-0.123"
+Received: "-0.12"
+
+ ❯ tests/analysis-number-format.test.ts:32:65
+     30|   [1,'1'],[-1,'-1'],
+     31|  ] as const)('Automático coeficiente: %s evita un extremo falso y mues…
+     32|   expect(formatAnalysisNumber(value,'auto','es','coefficient')).toBe(e…
+       |                                                                 ^
+     33|  })
+     34|  it.each([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático coeficiente: 1.23456 evita un extremo falso y muestra1.235
+AssertionError: expected '1.23' to be '1.235' // Object.is equality
+
+Expected: "1.235"
+Received: "1.23"
+
+ ❯ tests/analysis-number-format.test.ts:32:65
+     30|   [1,'1'],[-1,'-1'],
+     31|  ] as const)('Automático coeficiente: %s evita un extremo falso y mues…
+     32|   expect(formatAnalysisNumber(value,'auto','es','coefficient')).toBe(e…
+       |                                                                 ^
+     33|  })
+     34|  it.each([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático coeficiente: 0.9999 evita un extremo falso y muestra0.9999
+AssertionError: expected '1' to be '0.9999' // Object.is equality
+
+Expected: "0.9999"
+Received: "1"
+
+ ❯ tests/analysis-number-format.test.ts:32:65
+     30|   [1,'1'],[-1,'-1'],
+     31|  ] as const)('Automático coeficiente: %s evita un extremo falso y mues…
+     32|   expect(formatAnalysisNumber(value,'auto','es','coefficient')).toBe(e…
+       |                                                                 ^
+     33|  })
+     34|  it.each([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático coeficiente: -0.9999 evita un extremo falso y muestra-0.9999
+AssertionError: expected '-1' to be '-0.9999' // Object.is equality
+
+Expected: "-0.9999"
+Received: "-1"
+
+ ❯ tests/analysis-number-format.test.ts:32:65
+     30|   [1,'1'],[-1,'-1'],
+     31|  ] as const)('Automático coeficiente: %s evita un extremo falso y mues…
+     32|   expect(formatAnalysisNumber(value,'auto','es','coefficient')).toBe(e…
+       |                                                                 ^
+     33|  })
+     34|  it.each([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático coeficiente: 1.0001 evita un extremo falso y muestra1.0001
+AssertionError: expected '1' to be '1.0001' // Object.is equality
+
+Expected: "1.0001"
+Received: "1"
+
+ ❯ tests/analysis-number-format.test.ts:32:65
+     30|   [1,'1'],[-1,'-1'],
+     31|  ] as const)('Automático coeficiente: %s evita un extremo falso y mues…
+     32|   expect(formatAnalysisNumber(value,'auto','es','coefficient')).toBe(e…
+       |                                                                 ^
+     33|  })
+     34|  it.each([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático coeficiente: -1.0001 evita un extremo falso y muestra-1.0001
+AssertionError: expected '-1' to be '-1.0001' // Object.is equality
+
+Expected: "-1.0001"
+Received: "-1"
+
+ ❯ tests/analysis-number-format.test.ts:32:65
+     30|   [1,'1'],[-1,'-1'],
+     31|  ] as const)('Automático coeficiente: %s evita un extremo falso y mues…
+     32|   expect(formatAnalysisNumber(value,'auto','es','coefficient')).toBe(e…
+       |                                                                 ^
+     33|  })
+     34|  it.each([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático coeficiente: 0.9999999999999999 evita un extremo falso y muestra0.9999999999999999
+AssertionError: expected '1' to be '0.9999999999999999' // Object.is equality
+
+Expected: "0.9999999999999999"
+Received: "1"
+
+ ❯ tests/analysis-number-format.test.ts:32:65
+     30|   [1,'1'],[-1,'-1'],
+     31|  ] as const)('Automático coeficiente: %s evita un extremo falso y mues…
+     32|   expect(formatAnalysisNumber(value,'auto','es','coefficient')).toBe(e…
+       |                                                                 ^
+     33|  })
+     34|  it.each([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático coeficiente: -0.9999999999999999 evita un extremo falso y muestra-0.9999999999999999
+AssertionError: expected '-1' to be '-0.9999999999999999' // Object.is equality
+
+Expected: "-0.9999999999999999"
+Received: "-1"
+
+ ❯ tests/analysis-number-format.test.ts:32:65
+     30|   [1,'1'],[-1,'-1'],
+     31|  ] as const)('Automático coeficiente: %s evita un extremo falso y mues…
+     32|   expect(formatAnalysisNumber(value,'auto','es','coefficient')).toBe(e…
+       |                                                                 ^
+     33|  })
+     34|  it.each([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático coeficiente: 1.0000000000000002 evita un extremo falso y muestra1.0000000000000002
+AssertionError: expected '1' to be '1.0000000000000002' // Object.is equality
+
+Expected: "1.0000000000000002"
+Received: "1"
+
+ ❯ tests/analysis-number-format.test.ts:32:65
+     30|   [1,'1'],[-1,'-1'],
+     31|  ] as const)('Automático coeficiente: %s evita un extremo falso y mues…
+     32|   expect(formatAnalysisNumber(value,'auto','es','coefficient')).toBe(e…
+       |                                                                 ^
+     33|  })
+     34|  it.each([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático coeficiente: -1.0000000000000002 evita un extremo falso y muestra-1.0000000000000002
+AssertionError: expected '-1' to be '-1.0000000000000002' // Object.is equality
+
+Expected: "-1.0000000000000002"
+Received: "-1"
+
+ ❯ tests/analysis-number-format.test.ts:32:65
+     30|   [1,'1'],[-1,'-1'],
+     31|  ] as const)('Automático coeficiente: %s evita un extremo falso y mues…
+     32|   expect(formatAnalysisNumber(value,'auto','es','coefficient')).toBe(e…
+       |                                                                 ^
+     33|  })
+     34|  it.each([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático porcentaje: 99.9999 evita cien falso y muestra99.9999
+AssertionError: expected '100' to be '99.9999' // Object.is equality
+
+Expected: "99.9999"
+Received: "100"
+
+ ❯ tests/analysis-number-format.test.ts:39:61
+     37|   [100,'100'],[0,'0'],
+     38|  ] as const)('Automático porcentaje: %s evita cien falso y muestra%s',…
+     39|   expect(formatAnalysisNumber(value,'auto','es','percent')).toBe(expec…
+       |                                                             ^
+     40|  })
+     41|  it('las guardas de extremos de Automático no cambian el contrato de M…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático porcentaje: 100.0001 evita cien falso y muestra100.0001
+AssertionError: expected '100' to be '100.0001' // Object.is equality
+
+Expected: "100.0001"
+Received: "100"
+
+ ❯ tests/analysis-number-format.test.ts:39:61
+     37|   [100,'100'],[0,'0'],
+     38|  ] as const)('Automático porcentaje: %s evita cien falso y muestra%s',…
+     39|   expect(formatAnalysisNumber(value,'auto','es','percent')).toBe(expec…
+       |                                                             ^
+     40|  })
+     41|  it('las guardas de extremos de Automático no cambian el contrato de M…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático porcentaje: 99.99999999999999 evita cien falso y muestra99.99999999999999
+AssertionError: expected '100' to be '99.99999999999999' // Object.is equality
+
+Expected: "99.99999999999999"
+Received: "100"
+
+ ❯ tests/analysis-number-format.test.ts:39:61
+     37|   [100,'100'],[0,'0'],
+     38|  ] as const)('Automático porcentaje: %s evita cien falso y muestra%s',…
+     39|   expect(formatAnalysisNumber(value,'auto','es','percent')).toBe(expec…
+       |                                                             ^
+     40|  })
+     41|  it('las guardas de extremos de Automático no cambian el contrato de M…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > Automático porcentaje: 100.00000000000001 evita cien falso y muestra100.00000000000001
+AssertionError: expected '100' to be '100.00000000000001' // Object.is equality
+
+Expected: "100.00000000000001"
+Received: "100"
+
+ ❯ tests/analysis-number-format.test.ts:39:61
+     37|   [100,'100'],[0,'0'],
+     38|  ] as const)('Automático porcentaje: %s evita cien falso y muestra%s',…
+     39|   expect(formatAnalysisNumber(value,'auto','es','percent')).toBe(expec…
+       |                                                             ^
+     40|  })
+     41|  it('las guardas de extremos de Automático no cambian el contrato de M…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > usa el formato compartido del idioma y conserva punto decimal
+AssertionError: expected '-1' to be '-0.9999' // Object.is equality
+
+Expected: "-0.9999"
+Received: "-1"
+
+ ❯ tests/analysis-number-format.test.ts:58:72
+     56|   for(const language of ['es','en','en-XA'] as const){
+     57|    expect(formatAnalysisNumber(1234.567,'auto',language)).toBe('1,234.…
+     58|    expect(formatAnalysisNumber(-0.9999,'auto',language,'coefficient'))…
+       |                                                                        ^
+     59|    expect(formatAnalysisNumber(99.9999,'auto',language,'percent')).toB…
+     60|    expect(formatAnalysisNumber(0.1+0.2,'all',language)).toBe('0.3')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > ayuda/copia conservan String del resultado sin redondear ni agrupar y con unidad
+AssertionError: expected '15.5555555555556' to be '15.555555555555555' // Object.is equality
+
+Expected: "15.555555555555555"
+Received: "15.5555555555556"
+
+ ❯ tests/analysis-number-format.test.ts:64:43
+     62|  })
+     63|  it('ayuda/copia conservan String del resultado sin redondear ni agrup…
+     64|   expect(formatAnalysisFullNumber(140/9)).toBe('15.555555555555555')
+       |                                           ^
+     65|   expect(formatAnalysisFullNumber(0.1+0.2)).toBe('0.30000000000000004')
+     66|   expect(formatAnalysisFullNumber(-0)).toBe('0')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > copia los extremos finitos y subnormales tal como los representa el resultado
+AssertionError: expected '1.79769313486232e+308' to be '1.7976931348623157e+308' // Object.is equality
+
+Expected: "1.7976931348623157e+308"
+Received: "1.79769313486232e+308"
+
+ ❯ tests/analysis-number-format.test.ts:74:54
+     72|  })
+     73|  it('copia los extremos finitos y subnormales tal como los representa …
+     74|   expect(formatAnalysisFullNumber(Number.MAX_VALUE)).toBe('1.797693134…
+       |                                                      ^
+     75|   expect(formatAnalysisFullNumber(-Number.MAX_VALUE,' %')).toBe('-1.79…
+     76|   expect(formatAnalysisFullNumber(Number.MIN_VALUE)).toBe('5e-324')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > copia varios números completos y conserva literalmente los separadores nativos recibidos
+AssertionError: expected '"4"\t3\t23.0769230769231 %\t2\nID:001…' to be '"4"\t3\t23.076923076923077 %\t2\nID:0…' // Object.is equality
+
+- Expected
++ Received
+
+- "4"	3	23.076923076923077 %	2
++ "4"	3	23.0769230769231 %	2
+  ID:00123
+
+
+ ❯ tests/analysis-number-format.test.ts:88:7
+     86|    {kind:'number',value:2},
+     87|    {kind:'text',text:'\nID:00123\n'},
+     88|   ])).toBe('"4"\t3\t23.076923076923077 %\t2\nID:00123\n')
+       |       ^
+     89|  })
+     90|  it('un fragmento numérico identificado por DOM copia su dato completo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > un fragmento numérico identificado por DOM copia su dato completo, no el recorte visual
+AssertionError: expected 'Media: 15.5555555555556;' to be 'Media: 15.555555555555555;' // Object.is equality
+
+Expected: "Media: 15.555555555555555;"
+Received: "Media: 15.5555555555556;"
+
+ ❯ tests/analysis-number-format.test.ts:91:116
+     89|  })
+     90|  it('un fragmento numérico identificado por DOM copia su dato completo…
+     91|   expect(copyAnalysisFragments([{kind:'text',text:'Media: '},{kind:'nu…
+       |                                                                                                                    ^
+     92|  })
+     93|  it('no convierte texto, identificadores, fechas ni cifras sin metadat…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/21]⎯
+
+ FAIL  tests/analysis-number-format.test.ts > SIM-3d · precisión de presentación y copia > no modifica los fragmentos ni sus valores crudos
+AssertionError: expected 'n=0.3' to be 'n=0.30000000000000004' // Object.is equality
+
+Expected: "n=0.30000000000000004"
+Received: "n=0.3"
+
+ ❯ tests/analysis-number-format.test.ts:100:40
+     98|   const parts=[{kind:'text' as const,text:'n='},{kind:'number' as cons…
+     99|   const before=structuredClone(parts)
+    100|   expect(copyAnalysisFragments(parts)).toBe('n=0.30000000000000004')
+       |                                        ^
+    101|   expect(parts).toEqual(before)
+    102|  })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/21]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  21 failed | 21 passed (42)
+   Start at  21:02:57
+   Duration  279ms (transform 55%, tests 28%, import 14%, worker 2%)
+

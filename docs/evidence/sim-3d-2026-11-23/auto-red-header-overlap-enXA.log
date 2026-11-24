@@ -1,0 +1,50 @@
+
+Running 2 tests using 1 worker
+
+(node:17656) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/sim3d-decimals.spec.ts:302:2 › SIM-3d formato: teclado, temas, tamaño 1280×720 y colores forzados (es) (2.5s)
+  ✘  2 [csv] › tests/e2e/sim3d-decimals.spec.ts:302:2 › SIM-3d formato: teclado, temas, tamaño 1280×720 y colores forzados (en-XA) (15.9s)
+
+
+  1) [csv] › tests/e2e/sim3d-decimals.spec.ts:302:2 › SIM-3d formato: teclado, temas, tamaño 1280×720 y colores forzados (en-XA)
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "[Gö tö CSV~~~]",
+    + ]
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      310 |    const header=workspace().locator('header')
+      311 |    await test.info().attach(`header-${locale}-${theme}-${width}`,{body:JSON.stringify(await header.evaluate(root=>[...root.children].map(node=>{const b=node.getBoundingClientRect();return{class:node.className,x:b.x,y:b.y,width:b.width,height:b.height}}))),contentType:'application/json'})
+    > 312 |    await expect.poll(()=>header.evaluate(root=>Array.from(root.querySelectorAll<HTMLElement>('button,select')).filter(node=>node.getClientRects().length&&getComputedStyle(node).visibility==='visible').flatMap(node=>{const r=node.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return hit&&node.contains(hit)?[]:[node.getAttribute('aria-label')||node.textContent?.trim()||node.tagName]}))).toEqual([])
+          |                                                                                                                                                                                                                                                                                                                                                                                                                                          ^
+      313 |    await page.screenshot({animations:'disabled',path:test.info().outputPath(`sim3d-decimals-${locale}-${theme}-${width}x${height}.png`)})
+      314 |   }
+      315 |   await page.emulateMedia({forcedColors:'active',reducedMotion:'reduce'});await decimalSelect().focus();await expect(decimalSelect()).toBeFocused();await expect(decimalSelect()).toBeEnabled();await chooseMode('auto')
+        at <worktree>/tests/e2e/sim3d-decimals.spec.ts:312:426
+
+    attachment #2: electron-context (application/zip) ──────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-form-2dd51-0-y-colores-forzados-en-XA--csv/attachments/electron-context-806233c3cc5df86eaa27b8b706c064d3e36030cd.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/sim3d-decimals-SIM-3d-form-2dd51-0-y-colores-forzados-en-XA--csv/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3d-decimals-SIM-3d-form-2dd51-0-y-colores-forzados-en-XA--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3d-decimals-SIM-3d-form-2dd51-0-y-colores-forzados-en-XA--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/sim3d-decimals.spec.ts:302:2 › SIM-3d formato: teclado, temas, tamaño 1280×720 y colores forzados (en-XA)
+  1 passed (19.0s)

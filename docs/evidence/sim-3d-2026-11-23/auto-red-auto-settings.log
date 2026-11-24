@@ -1,0 +1,144 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <worktree>
+
+ ❯ tests/analysis-decimal-settings.test.ts (13 tests | 6 failed) 66ms
+   ❯ SIM-3d · preferencia persistente de decimales analíticos (13)
+     × DSET-01 · comparte el valor inicial Automático y no crea un archivo al consultar un perfil nuevo 7ms
+     × DSET-02 · lee v1 sin el campo con Automático y conserva todas las preferencias y los bytes originales 6ms
+     × DSET-03 · guarda "auto" y lo conserva al reabrir sin modificar las demás preferencias 2ms
+     × DSET-06 · rechaza 2 sin escribir ni recuperar un perfil válido 2ms
+     × DSET-07 · restablecer sólo esta preferencia a su valor inicial conserva las demás 1ms
+     × DSET-08 · una versión futura sigue en sólo lectura y conserva el original sin copia ni migración 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/analysis-decimal-settings.test.ts > SIM-3d · preferencia persistente de decimales analíticos > DSET-01 · comparte el valor inicial Automático y no crea un archivo al consultar un perfil nuevo
+AssertionError: expected { version: 1, idioma: 'sistema', …(8) } to match object { decimalesAnalisis: 'auto' }
+(20 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "decimalesAnalisis": "auto",
++   "decimalesAnalisis": 2,
+  }
+
+ ❯ tests/analysis-decimal-settings.test.ts:40:29
+     38| describe('SIM-3d · preferencia persistente de decimales analíticos',()…
+     39|  it('DSET-01 · comparte el valor inicial Automático y no crea un archi…
+     40|   expect(defaultSettings()).toMatchObject({decimalesAnalisis:'auto'})
+       |                             ^
+     41|   const state=await store.get()
+     42|   expect(state).toMatchObject({readonly:false,migrationPending:true,va…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/analysis-decimal-settings.test.ts > SIM-3d · preferencia persistente de decimales analíticos > DSET-02 · lee v1 sin el campo con Automático y conserva todas las preferencias y los bytes originales
+AssertionError: expected { version: 1, idioma: 'en', …(8) } to deeply equal { version: 1, idioma: 'en', …(8) }
+
+- Expected
++ Received
+
+@@ -13,11 +13,11 @@
+    "barraLateral": {
+      "ancho": 311.5,
+      "pestana": "outline",
+      "visible": false,
+    },
+-   "decimalesAnalisis": "auto",
++   "decimalesAnalisis": 2,
+    "division": 61.25,
+    "editor": {
+      "csvColumnColors": false,
+      "indent": "tab",
+      "tabIndents": true,
+
+ ❯ tests/analysis-decimal-settings.test.ts:52:24
+     50|   expect(state).toMatchObject({readonly:false,migrationPending:false})
+     51|   expect(state.notice).toBeUndefined()
+     52|   expect(state.values).toEqual({...previous,decimalesAnalisis:'auto'})
+       |                        ^
+     53|   expect(await readFile(path,'utf8')).toBe(content)
+     54|   expect(await readdir(folder)).toEqual(['settings.json'])
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/analysis-decimal-settings.test.ts > SIM-3d · preferencia persistente de decimales analíticos > DSET-03 · guarda "auto" y lo conserva al reabrir sin modificar las demás preferencias
+Error: Los ajustes contienen un valor no válido. Revisa la opción que intentas cambiar.
+ ❯ src/main/settings.ts:47:27
+     45|  set(value:unknown):Promise<SettingsState>{return this.change(async()=…
+     46|   const patch=settingsPatchSchema.safeParse(value)
+     47|   if(!patch.success)throw new Error(t('settings.invalid'))
+       |                           ^
+     48|   const current=await this.read()
+     49|   if(current.readonly)throw new Error(t('settings.readonly'))
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/analysis-decimal-settings.test.ts > SIM-3d · preferencia persistente de decimales analíticos > DSET-06 · rechaza 2 sin escribir ni recuperar un perfil válido
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/analysis-decimal-settings.test.ts:86:75
+     84|  it.each([0,2,4,'2',true])('DSET-06 · rechaza %j sin escribir ni recup…
+     85|   const content=await seed({...previousSettings(),decimalesAnalisis:'a…
+     86|   expect(settingsPatchSchema.safeParse({decimalesAnalisis:mode}).succe…
+       |                                                                           ^
+     87|   await expect(store.set({decimalesAnalisis:mode})).rejects.toThrow(/a…
+     88|   expect(await readFile(path,'utf8')).toBe(content)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  tests/analysis-decimal-settings.test.ts > SIM-3d · preferencia persistente de decimales analíticos > DSET-07 · restablecer sólo esta preferencia a su valor inicial conserva las demás
+AssertionError: expected 2 to be 'auto' // Object.is equality
+
+- Expected:
+"auto"
+
++ Received:
+2
+
+ ❯ tests/analysis-decimal-settings.test.ts:96:19
+     94|   await seed(previous)
+     95|   const initial=(defaultSettings() as unknown as Record<string,unknown…
+     96|   expect(initial).toBe('auto')
+       |                   ^
+     97|   const expected={...previous,decimalesAnalisis:'auto'}
+     98|   expect((await store.set({decimalesAnalisis:initial})).values).toEqua…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  tests/analysis-decimal-settings.test.ts > SIM-3d · preferencia persistente de decimales analíticos > DSET-08 · una versión futura sigue en sólo lectura y conserva el original sin copia ni migración
+AssertionError: expected [Function] to throw error matching /lectura|read.only/i but got 'Los ajustes contienen un valor no vál…'
+
+- Expected:
+/lectura|read.only/i
+
++ Received:
+"Los ajustes contienen un valor no válido. Revisa la opción que intentas cambiar."
+
+ ❯ tests/analysis-decimal-settings.test.ts:110:54
+    108|   expect(await store.migrate({'freya-theme':'dark'})).toMatchObject({r…
+    109|   await expect(store.set({tema:'dark'})).rejects.toThrow(/lectura|read…
+    110|   await expect(store.set({decimalesAnalisis:'auto'})).rejects.toThrow(…
+       |                                                      ^
+    111|   expect(await readFile(path,'utf8')).toBe(content)
+    112|   expect(await readdir(folder)).toEqual(['settings.json'])
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 7 passed (13)
+   Start at  21:03:43
+   Duration  274ms (tests 37%, import 36%, transform 26%, worker 1%)
+

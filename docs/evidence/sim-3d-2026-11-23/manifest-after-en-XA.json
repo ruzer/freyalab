@@ -1,0 +1,142 @@
+{
+  "phase": "after",
+  "language": "en-XA",
+  "sourceHeadReportedByRunner": "89946d939949917996ebfd306a37ddd417366191",
+  "buildEntryFile": "index.js",
+  "buildEntrySHA256": "3dc51956b7cfcfb12766d870f7ced6531ece61fb18ae27abc199da201ec445b7",
+  "buildUnchanged": true,
+  "sourceFiles": [
+    {
+      "name": "precision.csv",
+      "bytes": 37,
+      "sha256": "3decba13016bd6024ad7babb3bdec4d8410ff670f7a4833a290b39e9d5537748"
+    },
+    {
+      "name": "datos.csv",
+      "bytes": 263,
+      "sha256": "2134604359eb3e13880be470a8d19e8a0248578c4ebbbcf8f5eccb50a41ed8f1"
+    }
+  ],
+  "images": [
+    {
+      "path": "after-precision-en-XA-light-1440x900.png",
+      "state": "precision",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 135088,
+      "sha256": "daf25582d55f6e85beda829bf61cc4c6069c53bffa8f43314daa91262afd68d9"
+    },
+    {
+      "path": "after-precision-en-XA-light-1280x720.png",
+      "state": "precision",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 122879,
+      "sha256": "2145d0ca517057643f6af7b12f8f7476206fd9af5bb36d6d670a83ae1057b5af"
+    },
+    {
+      "path": "after-precision-en-XA-dark-1440x900.png",
+      "state": "precision",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 133546,
+      "sha256": "e3ed4d7ec4e89512b42a12408364d0e9a0be53863dfcbe050a58a0079ae28d83"
+    },
+    {
+      "path": "after-precision-en-XA-dark-1280x720.png",
+      "state": "precision",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 121194,
+      "sha256": "c5a21b16edfe077c537b2d95be8d880a6440abccb617bb890f8a6da431585af8"
+    },
+    {
+      "path": "after-frequencies-en-XA-light-1440x900.png",
+      "state": "frequencies",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 118855,
+      "sha256": "8208cd466407ed3136ba62bfde477dff1630dbd2f62f337197289a2ad1ec9439"
+    },
+    {
+      "path": "after-frequencies-en-XA-light-1280x720.png",
+      "state": "frequencies",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 113571,
+      "sha256": "bacd26768e1586df55aa1331b1638a2e72a1b76952bc9e43a27e97b3edc620ef"
+    },
+    {
+      "path": "after-frequencies-en-XA-dark-1440x900.png",
+      "state": "frequencies",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 118599,
+      "sha256": "de1ace599545073c55308d0dd746354f81a79379335e570b477ec499baed1cef"
+    },
+    {
+      "path": "after-frequencies-en-XA-dark-1280x720.png",
+      "state": "frequencies",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 113570,
+      "sha256": "225be9952c123108c7e33aa0e14b7943b46ff7aec240321446c9c0d6f3332686"
+    },
+    {
+      "path": "after-distribution-en-XA-light-1440x900.png",
+      "state": "distribution",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "bytes": 107423,
+      "sha256": "e795996eeabb94b6e0de21fa20126c5c40b20cce887171843cc1a94891d5a91b"
+    },
+    {
+      "path": "after-distribution-en-XA-light-1280x720.png",
+      "state": "distribution",
+      "language": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "bytes": 102944,
+      "sha256": "0b0cdbfe28020f71f50c230c63ff28e2601bc41ff668403a1f00c00ca849df6c"
+    },
+    {
+      "path": "after-distribution-en-XA-dark-1440x900.png",
+      "state": "distribution",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "bytes": 107164,
+      "sha256": "cc62db02c0ee09f1b10949aee6b3d9d2777e828d508aca26e4d453b86c191101"
+    },
+    {
+      "path": "after-distribution-en-XA-dark-1280x720.png",
+      "state": "distribution",
+      "language": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "bytes": 103153,
+      "sha256": "0b091f005fe90544a688660721b55707daf8c0112ce6473cb1d54cfeed6a3382"
+    }
+  ]
+}

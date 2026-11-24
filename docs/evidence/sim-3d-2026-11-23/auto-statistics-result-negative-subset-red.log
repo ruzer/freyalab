@@ -1,0 +1,117 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./tests/helpers/blocking-timeout" without a file extension (vitest.config.ts:2:31). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <worktree>
+
+ ✓ tests/statistics-result-export.test.ts > JSON conserva números crudos, códigos, nulos, vacíos y metadatos de main sin formato visual 4ms
+ ✓ tests/statistics-result-export.test.ts > CSV usa String del número, protección explícita de fórmulas y contexto con valores originales y hash 5ms
+ × tests/statistics-result-export.test.ts > la protección CSV conserva un número negativo y protege solo el texto con el mismo contenido 5ms
+   → expected [ [ 'Número', 'Texto' ], …(1) ] to deeply equal [ [ 'Número', 'Texto' ], …(1) ]
+ × tests/statistics-result-export.test.ts > el conjunto conserva origen y cobertura prefijo de main, y el cliente no puede inyectarlos 21ms
+   → expected undefined to deeply equal { projectId: 'project', …(7) }
+ ✓ tests/statistics-result-export.test.ts > valida el contrato limitado: estructura rectangular, finitos, tamaños y ausencia de rutas/contenido arbitrario 4ms
+ ✓ tests/statistics-result-export.test.ts > rechaza el tamaño agregado y el resultado final mayor de 20 MiB antes de abrir el selector 73ms
+ ✓ tests/statistics-result-export.test.ts > corta una cadena mayor que el presupuesto antes de asignar su copia UTF-8 y rechaza ciclos 1ms
+ ✓ tests/statistics-result-export.test.ts > guarda JSON o CSV con su contexto sin consultar el motor ni modificar el CSV original 35ms
+ ✓ tests/statistics-result-export.test.ts > rechaza revisión antigua, CSV Texto y cierre antes del selector; cancelar no escribe 2ms
+ ✓ tests/statistics-result-export.test.ts > cancelar el selector conserva archivos y estado 1ms
+ ✓ tests/statistics-result-export.test.ts > revalida identidad y revisión después del selector y rechaza fuente protegida cambiada 1ms
+ ✓ tests/statistics-result-export.test.ts > protege fuentes abiertas, enlaces, extensión y el compañero existente 3ms
+ ✓ tests/statistics-result-export.test.ts > revalida la fuente protegida y revierte solo la pareja propia ante error de disco 12ms
+ ✓ tests/statistics-result-export.test.ts > un cambio de revisión después de escribir el contexto revierte la pareja antes de entregar CSV 13ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/statistics-result-export.test.ts > la protección CSV conserva un número negativo y protege solo el texto con el mismo contenido
+AssertionError: expected [ [ 'Número', 'Texto' ], …(1) ] to deeply equal [ [ 'Número', 'Texto' ], …(1) ]
+
+- Expected
++ Received
+
+@@ -2,9 +2,9 @@
+    [
+      "Número",
+      "Texto",
+    ],
+    [
+-     "-0.4",
++     "'-0.4",
+      "'-0.4",
+    ],
+  ]
+
+ ❯ tests/statistics-result-export.test.ts:47:32
+     45| it('la protección CSV conserva un número negativo y protege solo el te…
+     46|  const output=serializeStatisticsResult({...request,format:'csv',table…
+     47|  expect(parse(output.content)).toEqual([['Número','Texto'],['-0.4',"'-…
+       |                                ^
+     48|  const context=JSON.parse(output.context!);expect(context.rows).toEqua…
+     49| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/statistics-result-export.test.ts > el conjunto conserva origen y cobertura prefijo de main, y el cliente no puede inyectarlos
+AssertionError: expected undefined to deeply equal { projectId: 'project', …(7) }
+
+- Expected:
+{
+  "coverage": {
+    "bytesRead": 64,
+    "cancelled": false,
+    "columns": [
+      {
+        "name": "ID",
+        "position": 1,
+      },
+      {
+        "name": "N",
+        "position": 2,
+      },
+    ],
+    "complete": false,
+    "eligible": 2,
+    "headers": [
+      "ID",
+      "N",
+    ],
+    "resultCount": 2,
+    "sampling": [],
+    "scanned": 2,
+  },
+  "name": "Primeras dos filas",
+  "projectId": "project",
+  "recipeId": "recipe",
+  "sourceId": "source",
+  "sourceName": "datos-ñ.csv",
+  "stepOwners": [
+    "Primeras dos filas",
+  ],
+  "steps": [
+    {
+      "method": "first",
+      "op": "sample",
+      "rows": 2,
+    },
+  ],
+}
+
++ Received:
+undefined
+
+ ❯ tests/statistics-result-export.test.ts:58:42
+     56|   state.destination=join(state.folder,'subset.'+format);await exportSt…
+     57|   const output=JSON.parse(await readFile(state.destination+(format==='…
+     58|   expect(output.metadata.analysisSubset).toEqual(analysisSubset);expec…
+       |                                          ^
+     59|   expect(output.metadata).toMatchObject({source:'original.csv',revisio…
+     60|   expect(JSON.stringify(output.metadata.analysisSubset)).not.toContain…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 12 passed (14)
+   Start at  21:34:43
+   Duration  650ms (import 43%, tests 37%, transform 20%)
+
