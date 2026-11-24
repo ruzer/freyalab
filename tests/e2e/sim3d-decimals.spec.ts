@@ -313,3 +313,24 @@ for(const locale of ['es','en-XA'] as const)for(const[width,height]of [[1440,900
   await expect(await metric('mean','Pequeño')).toHaveText('0.00041');await expect(await metric('mean','Entero')).toHaveText('12')
  })
 }
+
+for(const mode of ['auto','all'] as const)test(`SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (${mode}) (es)`,async()=>{
+ await calculateDescribe();await chooseMode(mode)
+ const mean=await metric('mean','Valor');await expect(mean).toHaveText(mode==='auto'?'5.52':precise)
+ await exportAnalysis(page,'analysis.export.json')
+ const jsonPath=join(folder,'exports','precision.analisis.json')
+ await expect.poll(()=>readFile(jsonPath,'utf8').then(JSON.parse).catch(()=>null)).not.toBeNull()
+ const data=JSON.parse(await readFile(jsonPath,'utf8')) as {columns:string[];rows:(string|number|null)[][];metadata:{source:string;revision:number;sample:boolean}}
+ expect(data.metadata).toMatchObject({source:'precision.csv',revision:doc.revision,sample:false})
+ const column=data.columns.indexOf('Valor');expect(column).toBeGreaterThan(0)
+ const row=data.rows.find(row=>row[0]===tr('describe.metric.mean'));expect(row).toBeDefined();expect(row![column]).toBe(Number(precise))
+ expect(data.rows.find(row=>row[0]===tr('describe.metric.mean'))![data.columns.indexOf('Pequeño')]).toBe(Number(small))
+ await exportAnalysis(page,'analysis.export.csv')
+ const csvPath=join(folder,'exports','precision.analisis.csv'),contextPath=csvPath+'.contexto.json'
+ await expect.poll(()=>readFile(contextPath,'utf8').then(JSON.parse).catch(()=>null)).not.toBeNull()
+ const {parse}=await import('csv-parse/sync'),csv=parse(await readFile(csvPath,'utf8')) as string[][]
+ expect(csv[0]).toEqual(data.columns)
+ expect(csv.slice(1)).toEqual(data.rows.map(row=>row.map(value=>value===null?'':String(value))))
+ const context=JSON.parse(await readFile(contextPath,'utf8'));expect(context.rows).toEqual(data.rows)
+ await expect(mean).toHaveText(mode==='auto'?'5.52':precise)
+})
