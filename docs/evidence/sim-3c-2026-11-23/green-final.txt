@@ -1,0 +1,26 @@
+
+Running 18 tests using 1 worker
+
+(node:43160) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/18] [csv] › tests/e2e/sim3c-ui.spec.ts:40:109 › SIM-3c: Nuevo recibe el puntero a 1440×900
+[2/18] [csv] › tests/e2e/sim3c-ui.spec.ts:40:109 › SIM-3c: Exportar recibe el puntero a 1440×900
+[3/18] [csv] › tests/e2e/sim3c-ui.spec.ts:40:109 › SIM-3c: Nuevo recibe el puntero a 1280×720
+[4/18] [csv] › tests/e2e/sim3c-ui.spec.ts:40:109 › SIM-3c: Exportar recibe el puntero a 1280×720
+[5/18] [csv] › tests/e2e/sim3c-ui.spec.ts:61:1 › SIM-3c: una celda, una fila y una columna usan singular sin cambiar datos
+[6/18] [csv] › tests/e2e/sim3c-ui.spec.ts:73:1 › SIM-3c: la barra pertenece al documento activo y vuelve al CSV sin perder el recuento
+[7/18] [csv] › tests/e2e/sim3c-ui.spec.ts:87:1 › SIM-3c: volver de Análisis conserva el recuento del CSV
+[8/18] [csv] › tests/e2e/sim3c-ui.spec.ts:96:1 › SIM-3c: volver de Texto a Tabla recupera el recuento del CSV
+[9/18] [csv] › tests/e2e/sim3c-ui.spec.ts:109:1 › SIM-3c: una respuesta real del CSV anterior no publica estado en Markdown
+[10/18] [csv] › tests/e2e/sim3c-ui.spec.ts:140:1 › SIM-3c: los nombres del mismo nivel del explorador empiezan en la misma x
+[11/18] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: es light 1440×900
+[12/18] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: es light 1280×720
+[13/18] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: es dark 1440×900
+[14/18] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: es dark 1280×720
+[15/18] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: en-XA light 1440×900
+[16/18] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: en-XA light 1280×720
+[17/18] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: en-XA dark 1440×900
+[18/18] [csv] › tests/e2e/sim3c-visual.spec.ts:55:2 › SIM-3c visual: en-XA dark 1280×720
+  18 passed (37.2s)

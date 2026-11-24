@@ -1,0 +1,166 @@
+
+Running 7 tests using 1 worker
+
+(node:18791) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/sim3c-ui.spec.ts:39:109 › SIM-3c: Nuevo recibe el puntero a 1440×900 (17.3s)
+(node:18983) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [csv] › tests/e2e/sim3c-ui.spec.ts:39:109 › SIM-3c: Exportar recibe el puntero a 1440×900 (2.3s)
+  ✘  3 [csv] › tests/e2e/sim3c-ui.spec.ts:39:109 › SIM-3c: Nuevo recibe el puntero a 1280×720 (16.8s)
+(node:19169) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  4 [csv] › tests/e2e/sim3c-ui.spec.ts:39:109 › SIM-3c: Exportar recibe el puntero a 1280×720 (1.6s)
+  ✘  5 [csv] › tests/e2e/sim3c-ui.spec.ts:47:1 › SIM-3c: una celda, una fila y una columna usan singular sin cambiar datos (16.5s)
+(node:19334) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  6 [csv] › tests/e2e/sim3c-ui.spec.ts:59:1 › SIM-3c: la barra pertenece al documento activo y vuelve al CSV sin perder el recuento (2.8s)
+  ✘  7 [csv] › tests/e2e/sim3c-ui.spec.ts:68:1 › SIM-3c: los nombres del mismo nivel del explorador empiezan en la misma x (16.6s)
+
+
+  1) [csv] › tests/e2e/sim3c-ui.spec.ts:39:109 › SIM-3c: Nuevo recibe el puntero a 1440×900 ────────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      34 |   return{name:element.textContent?.trim(),inside:box.width>0&&box.height>0&&box.left>=0&&box.top>=0&&box.right<=innerWidth+.5&&box.bottom<=innerHeight+.5,hit:hit?.closest('button,select')===element,actual:hit?.closest('button,select')?.textContent?.trim()??hit?.tagName}
+      35 |  }))
+    > 36 |  await expect.poll(async()=>{const result=await measure();return result.length>0&&result.every(action=>action.inside&&action.hit)}).toBe(true)
+         |                                                                                                                                     ^
+      37 | }
+      38 |
+      39 | for(const [width,height]of [[1440,900],[1280,720]] as const)for(const kind of ['Nuevo','Exportar'] as const)test(`SIM-3c: ${kind} recibe el puntero a ${width}×${height}`,async()=>{
+        at hitChecks ($WORKTREE/tests/e2e/sim3c-ui.spec.ts:36:133)
+        at $WORKTREE/tests/e2e/sim3c-ui.spec.ts:43:105
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-Nuevo-recibe-el-puntero-a-1440×900-csv/attachments/electron-context-4669e4874dbef15d317509c369eb718dccd44958.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-Nuevo-recibe-el-puntero-a-1440×900-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-Nuevo-recibe-el-puntero-a-1440×900-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-Nuevo-recibe-el-puntero-a-1440×900-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/sim3c-ui.spec.ts:39:109 › SIM-3c: Nuevo recibe el puntero a 1280×720 ────────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      34 |   return{name:element.textContent?.trim(),inside:box.width>0&&box.height>0&&box.left>=0&&box.top>=0&&box.right<=innerWidth+.5&&box.bottom<=innerHeight+.5,hit:hit?.closest('button,select')===element,actual:hit?.closest('button,select')?.textContent?.trim()??hit?.tagName}
+      35 |  }))
+    > 36 |  await expect.poll(async()=>{const result=await measure();return result.length>0&&result.every(action=>action.inside&&action.hit)}).toBe(true)
+         |                                                                                                                                     ^
+      37 | }
+      38 |
+      39 | for(const [width,height]of [[1440,900],[1280,720]] as const)for(const kind of ['Nuevo','Exportar'] as const)test(`SIM-3c: ${kind} recibe el puntero a ${width}×${height}`,async()=>{
+        at hitChecks ($WORKTREE/tests/e2e/sim3c-ui.spec.ts:36:133)
+        at $WORKTREE/tests/e2e/sim3c-ui.spec.ts:43:105
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-Nuevo-recibe-el-puntero-a-1280×720-csv/attachments/electron-context-8a754f9509edd9cd1404cd9d05182552f49dff93.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-Nuevo-recibe-el-puntero-a-1280×720-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-Nuevo-recibe-el-puntero-a-1280×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-Nuevo-recibe-el-puntero-a-1280×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/sim3c-ui.spec.ts:47:1 › SIM-3c: una celda, una fila y una columna usan singular sin cambiar datos 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('footer.statusbar')
+    Expected pattern: /\b1 celda\b/
+    Received string:  "2 de 2 filas Rango: filas 1–1, columnas 1–1 · 1 celdasRango Copiar rangoCortar rango…Pegar en rango…Rellenar rango…Vaciar rango…Quitar espacios del rango…Mayúsculas en el rango…Minúsculas en el rango…Reemplazar en el rango…Transformar documento…Estadísticas del rango  UTF-8 · Coma · Con encabezadoFormato del archivo Codificación UTF-8UTF-16 LEWindows-1252 Separador ComaPunto y comaTabulaciónBarra vertical EncabezadoLocal"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" locator('footer.statusbar') with timeout 15000ms
+      - waiting for locator('footer.statusbar')
+        34 × locator resolved to <footer class="statusbar">…</footer>
+           - unexpected value "2 de 2 filas Rango: filas 1–1, columnas 1–1 · 1 celdasRango Copiar rangoCortar rango…Pegar en rango…Rellenar rango…Vaciar rango…Quitar espacios del rango…Mayúsculas en el rango…Minúsculas en el rango…Reemplazar en el rango…Transformar documento…Estadísticas del rango  UTF-8 · Coma · Con encabezadoFormato del archivo Codificación UTF-8UTF-16 LEWindows-1252 Separador ComaPunto y comaTabulaciónBarra vertical EncabezadoLocal"
+
+
+      47 | test('SIM-3c: una celda, una fila y una columna usan singular sin cambiar datos',async()=>{
+      48 |  const first=page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})
+    > 49 |  await first.click();await expect(footer()).toContainText(/\b1 celda\b/)
+         |                                             ^
+      50 |  await page.getByRole('gridcell',{name:'Fila 1, Carrera',exact:true}).click({modifiers:['Shift']});await expect(footer()).toContainText(/\b2 celdas\b/)
+      51 |  await page.getByRole('button',{name:'Seleccionar fila 1',exact:true}).click();await expect(footer()).toContainText(/\b1 fila seleccionada\b/)
+      52 |  await page.getByRole('button',{name:'Seleccionar fila 2',exact:true}).click({modifiers:[process.platform==='darwin'?'Meta':'Control']});await expect(footer()).toContainText(/\b2 filas seleccionadas\b/)
+        at $WORKTREE/tests/e2e/sim3c-ui.spec.ts:49:45
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-una-celda--9a96e--singular-sin-cambiar-datos-csv/attachments/electron-context-9f7118a38fb3f99d78d61118f0f82542e137ee18.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-una-celda--9a96e--singular-sin-cambiar-datos-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-una-celda--9a96e--singular-sin-cambiar-datos-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-una-celda--9a96e--singular-sin-cambiar-datos-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [csv] › tests/e2e/sim3c-ui.spec.ts:68:1 › SIM-3c: los nombres del mismo nivel del explorador empiezan en la misma x 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      71 |  await expect(tree.getByRole('button',{name:'b.txt',exact:true})).toBeVisible();await page.evaluate(()=>document.fonts.ready)
+      72 |  const measure=()=>tree.locator('button.tree-item').evaluateAll(nodes=>nodes.map(node=>({name:node.querySelector(':scope>.truncate')?.textContent?.trim(),padding:parseFloat(getComputedStyle(node).paddingLeft),x:node.querySelector(':scope>.truncate')!.getBoundingClientRect().left,icons:node.querySelectorAll('svg').length})))
+    > 73 |  await expect.poll(async()=>{const rows=await measure();return [...new Set(rows.map(row=>row.padding))].every(level=>{const names=rows.filter(row=>row.padding===level);return names.length>1&&Math.max(...names.map(row=>row.x))-Math.min(...names.map(row=>row.x))<=.75})}).toBe(true)
+         |                                                                                                                                                                                                                                                                               ^
+      74 |  const positions=await measure()
+      75 |  expect(positions.length).toBeGreaterThan(4);expect(positions.every(item=>item.icons>0)).toBe(true)
+      76 |  const levels=[...new Set(positions.map(item=>item.padding))].sort((a,b)=>a-b);expect(levels).toHaveLength(2)
+        at $WORKTREE/tests/e2e/sim3c-ui.spec.ts:73:271
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-los-nombre-2f66e-ador-empiezan-en-la-misma-x-csv/attachments/electron-context-9a23a7b1e82f7282f399941484bbd88a95bd2749.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-los-nombre-2f66e-ador-empiezan-en-la-misma-x-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-los-nombre-2f66e-ador-empiezan-en-la-misma-x-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3c-evidence/red-results/sim3c-ui-SIM-3c-los-nombre-2f66e-ador-empiezan-en-la-misma-x-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    [csv] › tests/e2e/sim3c-ui.spec.ts:39:109 › SIM-3c: Nuevo recibe el puntero a 1440×900 ─────────
+    [csv] › tests/e2e/sim3c-ui.spec.ts:39:109 › SIM-3c: Nuevo recibe el puntero a 1280×720 ─────────
+    [csv] › tests/e2e/sim3c-ui.spec.ts:47:1 › SIM-3c: una celda, una fila y una columna usan singular sin cambiar datos 
+    [csv] › tests/e2e/sim3c-ui.spec.ts:68:1 › SIM-3c: los nombres del mismo nivel del explorador empiezan en la misma x 
+  3 passed (1.3m)
