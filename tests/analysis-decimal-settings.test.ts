@@ -36,25 +36,25 @@ async function seed(values:Record<string,unknown>):Promise<string>{
 }
 
 describe('SIM-3d · preferencia persistente de decimales analíticos',()=>{
- it('DSET-01 · comparte el valor inicial 2 y no crea un archivo al consultar un perfil nuevo',async()=>{
-  expect(defaultSettings()).toMatchObject({decimalesAnalisis:2})
+ it('DSET-01 · comparte el valor inicial Automático y no crea un archivo al consultar un perfil nuevo',async()=>{
+  expect(defaultSettings()).toMatchObject({decimalesAnalisis:'auto'})
   const state=await store.get()
-  expect(state).toMatchObject({readonly:false,migrationPending:true,values:{decimalesAnalisis:2}})
+  expect(state).toMatchObject({readonly:false,migrationPending:true,values:{decimalesAnalisis:'auto'}})
   expect(state.values).toEqual(defaultSettings())
   expect(await readdir(folder)).toEqual([])
  })
 
- it('DSET-02 · lee v1 sin el campo con 2 y conserva todas las preferencias y los bytes originales',async()=>{
+ it('DSET-02 · lee v1 sin el campo con Automático y conserva todas las preferencias y los bytes originales',async()=>{
   const previous=previousSettings(),content=await seed(previous)
   const state=await store.get()
   expect(state).toMatchObject({readonly:false,migrationPending:false})
   expect(state.notice).toBeUndefined()
-  expect(state.values).toEqual({...previous,decimalesAnalisis:2})
+  expect(state.values).toEqual({...previous,decimalesAnalisis:'auto'})
   expect(await readFile(path,'utf8')).toBe(content)
   expect(await readdir(folder)).toEqual(['settings.json'])
  })
 
- it.each([2,'all'])('DSET-03 · guarda %j y lo conserva al reabrir sin modificar las demás preferencias',async mode=>{
+ it.each(['auto','all'] as const)('DSET-03 · guarda %j y lo conserva al reabrir sin modificar las demás preferencias',async mode=>{
   const previous=previousSettings()
   await seed(previous)
   const expected={...previous,decimalesAnalisis:mode}
@@ -71,7 +71,7 @@ describe('SIM-3d · preferencia persistente de decimales analíticos',()=>{
   expect(patch).not.toHaveProperty('decimalesAnalisis')
  })
 
- it('DSET-05 · cambiar Tema conserva Todos, el resto del perfil y el valor después de reabrir',async()=>{
+ it('DSET-05 · cambiar Tema conserva Más precisión, el resto del perfil y el valor después de reabrir',async()=>{
   const previous={...previousSettings(),decimalesAnalisis:'all'}
   await seed(previous)
   const expected={...previous,tema:'dark'}
@@ -81,7 +81,7 @@ describe('SIM-3d · preferencia persistente de decimales analíticos',()=>{
   expect(await readdir(folder)).toEqual(['settings.json'])
  })
 
- it.each([0,4,'2',true])('DSET-06 · rechaza %j sin escribir ni recuperar un perfil válido',async mode=>{
+ it.each([0,2,4,'2',true])('DSET-06 · rechaza %j sin escribir ni recuperar un perfil válido',async mode=>{
   const content=await seed({...previousSettings(),decimalesAnalisis:'all'})
   expect(settingsPatchSchema.safeParse({decimalesAnalisis:mode}).success).toBe(false)
   await expect(store.set({decimalesAnalisis:mode})).rejects.toThrow(/ajustes|settings/i)
@@ -93,8 +93,8 @@ describe('SIM-3d · preferencia persistente de decimales analíticos',()=>{
   const previous={...previousSettings(),decimalesAnalisis:'all'}
   await seed(previous)
   const initial=(defaultSettings() as unknown as Record<string,unknown>)['decimalesAnalisis']
-  expect(initial).toBe(2)
-  const expected={...previous,decimalesAnalisis:2}
+  expect(initial).toBe('auto')
+  const expected={...previous,decimalesAnalisis:'auto'}
   expect((await store.set({decimalesAnalisis:initial})).values).toEqual(expected)
   expect(await disk()).toEqual(expected)
   expect((await new SettingsStore(path).get()).values).toEqual(expected)
@@ -107,7 +107,7 @@ describe('SIM-3d · preferencia persistente de decimales analíticos',()=>{
   expect(state.notice).toMatch(/versi[oó]n|version/i)
   expect(await store.migrate({'freya-theme':'dark'})).toMatchObject({readonly:true,migrationPending:false})
   await expect(store.set({tema:'dark'})).rejects.toThrow(/lectura|read.only/i)
-  await expect(store.set({decimalesAnalisis:2})).rejects.toThrow(/lectura|read.only/i)
+  await expect(store.set({decimalesAnalisis:'auto'})).rejects.toThrow(/lectura|read.only/i)
   expect(await readFile(path,'utf8')).toBe(content)
   expect(await readdir(folder)).toEqual(['settings.json'])
  })
