@@ -1,5 +1,5 @@
 <script lang="ts">
- import {t} from '../lib/i18n.svelte'
+ import {t,plural,formatNumber} from '../lib/i18n.svelte'
  import {controlHint} from '../lib/control-hint'
  import {onMount,onDestroy,untrack} from 'svelte'
  import type {TableRangeEdit,TableRangePreview} from '../../shared/types'
@@ -7,6 +7,8 @@
  let edit=$state(untrack(()=>structuredClone($state.snapshot(initial)))),preview=$state<TableRangePreview|null>(null),busy=$state(false),message=$state(''),processed=$state(0),external=$state(false),dialog:HTMLDialogElement
  let active:string|undefined,applying=false,cancelled=false,closing=false
  const labels={fill:'Rellenar rango',clear:'Vaciar rango',trim:'Quitar espacios del rango',upper:'Mayúsculas en el rango',lower:'Minúsculas en el rango',replace:'Reemplazar en el rango',paste:'Pegar bloque en el rango'}
+ const columnScope=$derived(column?plural('csv.columnClean.scope'+(column.hidden?column.hidden===1?'HiddenOne':'HiddenOther':''),column.rows,column.hidden?{hidden:formatNumber(column.hidden)}:{}):'')
+ const beforePreview=(value:string)=>column?value.replace(/^\s+|\s+$/gu,spaces=>'·'.repeat([...spaces].length)):value
  function stop(){cancelled=true;const request=active;active=undefined;busy=false;if(request)void window.freya.cancelAnalysis(id,request).catch(()=>{})}
  function invalidate(){stop();preview=null;message='Pulsa Vista previa para revisar estos valores.'}
  function cancelPreparation(){
@@ -30,7 +32,7 @@
 </script>
 <dialog bind:this={dialog} aria-labelledby="range-preview-title" oncancel={event=>{event.preventDefault();close()}}>
  <h3 id="range-preview-title">{documentScope?'Reemplazar en documento':cut?'Cortar rango':column?column.title:labels[edit.operation]}</h3>
- <p>{column?`Alcance: columna «${column.name}» · ${column.rows.toLocaleString()} ${column.rows===1?'fila':'filas'} de la vista actual.${column.hidden?` ${column.hidden.toLocaleString()} ${column.hidden===1?'fila oculta':'filas ocultas'} por búsqueda o filtros no se modifican.`:''} Los encabezados se conservan.`:documentScope?'Documento completo: incluye filas ocultas por búsqueda o filtros y las columnas indicadas en la vista previa. Reemplazo literal que distingue mayúsculas; no cambia encabezados.':'Solo las celdas del rango visible. Los encabezados y las filas ocultas se conservan.'} Un paso de deshacer.</p>
+ <p>{column?columnScope:documentScope?'Documento completo: incluye filas ocultas por búsqueda o filtros y las columnas indicadas en la vista previa. Reemplazo literal que distingue mayúsculas; no cambia encabezados.':'Solo las celdas del rango visible. Los encabezados y las filas ocultas se conservan.'} Un paso de deshacer.</p>
  <form onsubmit={event=>{event.preventDefault();void inspect()}}>
   {#if edit.operation==='replace'}<label>Buscar <input aria-label="Buscar dentro del rango" bind:value={edit.find} oninput={invalidate} required disabled={busy||external}/></label>{/if}
   {#if ['fill','replace'].includes(edit.operation)}<label>{edit.operation==='fill'?'Valor para todas las celdas':'Reemplazar por'}<textarea aria-label="Valor del rango" bind:value={edit.value} oninput={invalidate} disabled={busy||external} rows="3"></textarea></label>{/if}
@@ -38,7 +40,7 @@
  </form>
  <p role="status">{message}</p>
  {#if busy}<div class="progress"><progress aria-label="Preparación del rango"></progress><span>{processed.toLocaleString()} filas revisadas</span><button class="btn-ghost" onclick={cancelPreparation}>Cancelar preparación</button></div>{/if}
- {#if preview?.samples.length}<div class="preview-scroll"><table><caption>Hasta ocho ejemplos; textos abreviados a 256 caracteres.</caption><thead><tr><th>Fila / columna</th><th>Antes</th><th>Después</th></tr></thead><tbody>{#each preview.samples as sample}<tr><th>{sample.row+1} / {sample.column+1}</th><td><pre>{sample.before}</pre></td><td><pre>{sample.after}</pre></td></tr>{/each}</tbody></table></div>{/if}
+ {#if preview?.samples.length}<div class="preview-scroll"><table><caption>Hasta ocho ejemplos; textos abreviados a 256 caracteres.</caption><thead><tr><th>Fila / columna</th><th>Antes</th><th>Después</th></tr></thead><tbody>{#each preview.samples as sample}<tr><th>{sample.row+1} / {sample.column+1}</th><td><pre>{beforePreview(sample.before)}</pre></td><td><pre>{sample.after}</pre></td></tr>{/each}</tbody></table></div>{/if}
  <p>La preparación se puede cancelar. El cambio final se aplica completo y se puede deshacer. Cerrar mientras se aplica solicita cancelación y espera su resultado.</p>
  {#if cut}<p>Aplicar copia el rango al portapapeles y después vacía sus celdas. Si falla la copia o cancelas antes del borrado, los datos se conservan. Una copia al portapapeles ya iniciada puede terminar.</p>{/if}
  <div class="actions"><button aria-busy={busy} {...controlHint(busy?'busy':external?'external':!preview?'preview':!preview.changed?'noChanges':null)} class="primary" disabled={busy||external||!preview?.changed} onclick={()=>void apply()}>{#if busy}<span class="button-spinner" aria-hidden="true"></span>{/if}<span class:busy-label={busy} data-loading={t('ui.button.calculating')}>Aplicar cambio</span></button><button class="btn-ghost" onclick={close}>Cancelar</button></div>
