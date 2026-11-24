@@ -70,24 +70,57 @@ Unitaria o E2E de los plurales.
 E2E: con un Markdown activo, la barra de estado no contiene «filas».
 E2E: en un mismo nivel del árbol, todos los nombres empiezan en la misma x.
 SIM-3d · Cifras y textos para estudiantes
-Cifras
+Cifras Hoy hay tres formatos distintos:
 
-En «Más estadísticas» (Perfil, Frecuencias, Distribución), los números en pantalla usan el mismo formato que la tabla principal: formatNumber(value,{maximumFractionDigits:2}) de CsvStatistics.svelte. Así 5.52264150943 → 5.52 y 11.6666666667 % → 11.67 %.
-El valor exacto sigue en la ayuda (title) y al copiar.
-Se mantiene el punto decimal de hoy; la coma sería otra decisión.
+La tabla principal de Estadísticas redondea con formatNumber(value,{maximumFractionDigits:2}) (CsvStatistics.svelte), pero así 0.0004123 se ve «0» y −0.0004 se ve «−0». Comprobado con ese mismo formato.
+«Más estadísticas» (Perfil, Frecuencias, Correlación) muestra hasta 12 cifras significativas con el idioma del sistema (CsvColumnAnalysis.svelte:32).
+El texto de tendencia de Gráficos usa 4 cifras significativas (chart-trend.ts:16).
+El informe Markdown ya escribe el valor sin redondear, String(value) (statistics-report.ts:16).
+La app muestra Pearson y R²: con 2 decimales para todo, r = 0.996 se vería «1».
+Cambio. Decisión del propietario (2026-11-23), como en Excel: se ve redondeado o con más precisión, a elección, y el número real nunca se pierde. Se revisó qué hacen Excel, Numbers, Power BI, pandas, jamovi, JASP y SPSS: todos calculan con el valor completo y solo redondean en pantalla.
+
+Selector «Decimales: Automático · Más precisión» arriba de los resultados de Análisis.
+Vale para todas las cifras calculadas de la pestaña: Información, Estadísticas (tabla principal y «Más estadísticas») y Gráficos (tabla y texto de tendencia). Es un solo ajuste global, como en jamovi o JASP; nada por columna. Si alguna sección agranda mucho el PR, dímelo.
+La tabla de datos del CSV no cambia: muestra el archivo tal cual.
+Por defecto, «Automático». Se recuerda entre sesiones con el mismo mecanismo de ajustes que el tema.
+Junto al selector, en texto visible: «Al copiar se copia el valor completo.»
+Las opciones de 2, 3 o 4 decimales fijos quedan fuera por ahora. Se añaden si la prueba con estudiantes las pide.
+Con «Automático»:
+conteos, sin decimales: 12;
+promedios, dispersión y porcentajes, hasta 2 decimales: 5.52264150943 → 5.52 y 11.6666666667 % → 11.67 %;
+Pearson y R², hasta 3 decimales: 0.86912 → 0.869;
+si el valor no es 0 y es menor que 0.01 en valor absoluto, 2 cifras significativas: 0.0004123 → 0.00041;
+nunca un extremo que el valor no es: 0 o «−0» en cualquier cifra, 1 y −1 en Pearson y R², 100 % en porcentajes. Si el redondeo da uno de ellos sin serlo, se añaden cifras hasta que deje de parecerlo: r = 0.9996 → 0.9996; 99.996 % → 99.996 %;
+la ayuda de cada número dice «Valor completo: …» con el mismo texto que se copia.
+Con «Más precisión»: hasta 15 cifras significativas, como Excel. Así 0.1 + 0.2 se ve 0.3, no 0.30000000000000004. No se llama «Todos» porque 15 cifras no siempre son todas: 1234567890123456 se vería 1234567890123460.
+Valor completo es el valor del motor sin redondear, String(value), el mismo que ya escribe el informe Markdown. Lo usan la ayuda y la copia.
+El redondeo es solo de pantalla. Cálculos, gráficos, ordenaciones, filtros y exportaciones de datos (CSV y JSON) usan siempre el valor completo, elija lo que elija.
+Copiar: siempre el valor completo, en los dos modos.
+Cada número de la selección se copia con su valor completo y su unidad si la tiene (%).
+Si la selección corta un número, se copia el número entero: un trozo como «5.5» de «5.52» es un número que no está en los resultados.
+El texto que no es número se copia tal cual.
+Vale para un valor suelto y para una selección de varios, incluida una tabla, con la selección de texto normal; no hace falta un modo de celdas.
+Sin botones nuevos por resultado.
+Todas las cifras usan formatNumber, con el punto decimal de la tabla principal; la coma sería otra decisión.
 Textos (es, en y en-XA)
 
-Hoy	Propuesta
-«2. Carrera · Documento completo · 60 filas · revisión 0» (CsvColumnAnalysis.svelte)	«Carrera · documento completo · 60 filas»
-El párrafo «Solo consulta. Vacíos incluye… Cancelar detiene la recogida entre bloques; los cálculos matemáticos en curso terminan antes de descartarse.», en cada subvista	«Solo lectura: tu archivo no cambia.» El detalle pasa a un «Cómo se calcula ▸» plegado.
-«El cambio supera el presupuesto de deshacer de 20 MiB. El documento se conserva.» (empty.error.undoLimit)	«Este cambio es demasiado grande para poder deshacerlo, así que no se aplicó. Tu documento no cambió.» Si de verdad no se aplica; si se aplica, dime qué pasa y lo redacto.
-«Esta acción necesita otro contexto. Revisa su descripción y la selección actual.» (ui.reason.context)	Lo que falta, cuando se sabe: «Haz clic en una celda de la columna que quieres limpiar» (limpiezas de columna de Limpiar ▾), «Marca filas por su número» (acciones de filas). Si no se sabe: «Esta acción no está disponible con la selección actual.»
-«Componer texto Unicode (NFC)» (CsvTransform.svelte)	«Unificar letras con acento (NFC)»
+Hoy → Propuesta
+«2. Carrera · Documento completo · 60 filas · revisión 0» (CsvColumnAnalysis.svelte) → «Carrera · documento completo · 60 filas»
+El párrafo «Solo consulta. Vacíos incluye… Cancelar detiene la recogida entre bloques; los cálculos matemáticos en curso terminan antes de descartarse.», en cada subvista → «Solo lectura: tu archivo no cambia.» El detalle pasa a un «Cómo se calcula ▸» plegado.
+«El cambio supera el presupuesto de deshacer de 20 MiB. El documento se conserva.» (empty.error.undoLimit) → «Este cambio es demasiado grande para poder deshacerlo, así que no se aplicó. Tu documento no cambió.» Si de verdad no se aplica; si se aplica, dime qué pasa y lo redacto.
+«Esta acción necesita otro contexto. Revisa su descripción y la selección actual.» (ui.reason.context) → Lo que falta, cuando se sabe: «Haz clic en una celda de la columna que quieres limpiar» (limpiezas de columna de Limpiar ▾), «Marca filas por su número» (acciones de filas). Si no se sabe: «Esta acción no está disponible con la selección actual.»
+«Componer texto Unicode (NFC)» (CsvTransform.svelte) → «Unificar letras con acento (NFC)»
 Quita también «revisión {n}» donde se muestre al usuario en Gráficos y SQL (charts.trend.memory, sql.ui.memory, sql.ui.sourceMemory): «documento en memoria».
 Si un archivo queda sin textos fuera del catálogo, sácalo de pending-files.json.
 Prueba en rojo
 
-Unitaria del formato: 5.52264150943 → «5.52»; el title conserva el exacto.
+Unitaria del formato:
+con «Automático»: 5.52264150943 → «5.52», 12 → «12», Pearson 0.86912 → «0.869», Pearson 0.9996 → «0.9996», 99.996 % → «99.996 %», 0.0004123 → «0.00041», −0.0004 → «−0.0004», 0 → «0»;
+con «Más precisión»: 0.1 + 0.2 → «0.3»;
+valor completo: 1234567890123456 → «1234567890123456».
+E2E: con «Automático» se ve 5.52 y con «Más precisión», 15 cifras significativas; la elección sigue al reabrir la app; la tabla de datos no cambia.
+E2E: copiar la Media da, en los dos modos, el mismo valor que escribe el informe Markdown; copiar una fila de varios valores con «Automático» da los valores completos; seleccionar «5.5» dentro de «5.52» copia el número entero.
+E2E: con «Automático», la exportación CSV o JSON de Estadísticas contiene los valores completos.
 E2E: Perfil de una columna numérica no contiene más de 2 decimales a la vista ni «revisión».
 E2E de cada texto nuevo en es y en-XA.
 SIM-3e · Filtro sin resultados y exportar lo que se ve
@@ -107,7 +140,7 @@ E2E: «>20» en un filtro de columna numérica muestra el mensaje y la pista; «
 E2E: con un filtro que deja 36 de 60 filas, «Exportar ▾» abre con «Filas filtradas (36)».
 Reglas comunes a las cinco partes
 Una acción dice antes de aplicarse a qué filas llega, y las de un mismo grupo llegan a las mismas.
-En pantalla, como mucho 2 decimales; el valor exacto, en la ayuda y al copiar.
+En pantalla, redondeo automático o más precisión, a elección; cálculos, datos exportados y lo que se copia, siempre con el valor completo.
 Textos para estudiantes: qué pasa y qué hacer, sin términos internos (revisión, bloques, MiB, contexto).
 Cada barra y cada aviso hablan solo del documento activo.
 Una rama y un PR en borrador por parte, con base main. Sin dependencias nuevas (ADR 0021: siete respuestas en un sim-3x-alcance-adr-0021.md). Prueba en rojo primero.
