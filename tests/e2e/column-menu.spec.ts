@@ -164,15 +164,15 @@ for(const locale of ['es','en-XA'])test('una búsqueda cambiada durante la edici
  }
 })
 
-test('con una búsqueda activa solo cambian las filas visibles y el diálogo avisa de las ocultas', async()=>{
+test('con una búsqueda activa se limpia toda la columna y el diálogo avisa de las ocultas', async()=>{
  await open()
  await page.getByLabel('Buscar en tabla',{exact:true}).fill('guadalajara');await expect(page.getByRole('grid',{name:'Tabla de datos'})).toHaveAttribute('aria-rowcount','2')
  await columnButton('Ciudad').click();await cleanAction('Minúsculas…')
  const dialog=page.getByRole('dialog',{name:'Minúsculas en la columna «Ciudad»',exact:true})
- await expect(dialog).toContainText('1 fila de la vista actual');await expect(dialog).toContainText('4 filas ocultas')
- await expect(dialog.getByRole('status')).toContainText('1 de 1 celdas cambiarán.')
+ await expect(dialog).toContainText('Alcance: toda la columna · 5 filas, también las 4 que oculta el filtro.')
+ await expect(dialog.getByRole('status')).toContainText('3 de 5 celdas cambiarán.')
  await dialog.getByRole('button',{name:'Aplicar cambio',exact:true}).click()
- expect(await cities()).toEqual([' oaxaca de juárez ','guadalajara','mérida  ','Cd. de México','PUEBLA']) // las ocultas no se tocan
+ expect(await cities()).toEqual([' oaxaca de juárez ','guadalajara','mérida  ','cd. de méxico','puebla']) // Misma fuente: ahora se incluyen las cuatro filas ocultas.
 })
 
 test('si no hay nada que cambiar la vista previa lo dice y no deja confirmar', async()=>{

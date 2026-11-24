@@ -1,0 +1,568 @@
+{
+  "story": "SIM-3b",
+  "base": "main@3b5e822c",
+  "productCommit": "43d0e96fada124d09d3091c4bb9941781a3be9bd",
+  "finalPrHead": null,
+  "pr": {
+    "base": "main",
+    "status": "Draft publication pending root",
+    "ci": "PENDING exact final head"
+  },
+  "sourceIdentity": [
+    {
+      "path": "src/renderer/components/CsvTable.svelte",
+      "sha256": "a52bd3cc36cadd9b331f40231adc8d4bb86b21160dd9574fa6264828ac4ddd4b"
+    },
+    {
+      "path": "src/renderer/components/CsvRangePreview.svelte",
+      "sha256": "549974ca4d8b550036a485f57f79206e5c062d126d21cd4e89fd1af6f7458994"
+    },
+    {
+      "path": "src/renderer/components/CsvTransform.svelte",
+      "sha256": "bfdeb50ba9e50334085dcc84ed9e182d2dc77d3a4a187fb601090c2595b852bf"
+    },
+    {
+      "path": "src/shared/i18n/es.json",
+      "sha256": "9d2f0d5a68ef56fc0fbc5c6e3298ba7ef4106db2fc3ba02566061db70b1821d5"
+    },
+    {
+      "path": "src/shared/i18n/en.json",
+      "sha256": "1ffc4b7ece285cc4932111c352e296482383d39990f25bcf8764ab779c212c64"
+    }
+  ],
+  "fixture": {
+    "path": "tests/fixtures/sim-3-students.csv",
+    "sha256": "89b3e7535f9381ca3f0126471d0f361e275d9b732a0d75f04aa211137a76d427",
+    "rows": 12,
+    "columns": 4,
+    "filteredVisible": 4,
+    "hidden": 8
+  },
+  "phases": [
+    {
+      "id": "red-initial",
+      "result": "5 failed / 1 passed",
+      "reportedDuration": "55.5 s",
+      "log": "logs/red-initial.log"
+    },
+    {
+      "id": "red-zero-ordered",
+      "result": "2 failed",
+      "log": "logs/red-zero-ordered.log"
+    },
+    {
+      "id": "red-six-scope-locales",
+      "result": "5 failed",
+      "log": "logs/red-six-scope-locales.log"
+    },
+    {
+      "id": "red-pending-hidden-core",
+      "result": "1 failed case, 3 assertions; old H9 retained after H8 query completed",
+      "log": "logs/red-pending-hidden-core.log"
+    },
+    {
+      "id": "candidate-native",
+      "result": "13 passed",
+      "reportedDuration": "21.1 s",
+      "log": "logs/green-candidate-native.log"
+    },
+    {
+      "id": "types",
+      "result": "0 errors / 0 warnings",
+      "log": "logs/check-candidate.log"
+    },
+    {
+      "id": "unit-complete",
+      "result": "3191 passed / 2 skipped; 177 files passed / 1 file skipped",
+      "reportedDuration": "23.69 s",
+      "log": "logs/unit-complete-candidate.log"
+    },
+    {
+      "id": "build",
+      "result": "Completed; bundler phases 57 ms, 7 ms, 1.63 s; not process wall time",
+      "log": "logs/build-candidate.log"
+    },
+    {
+      "id": "consumer-before-adaptation",
+      "result": "56 passed / 2 failed",
+      "reportedDuration": "2.0 min",
+      "log": "logs/consumers-before-adaptation.log"
+    },
+    {
+      "id": "consumer-final",
+      "result": "58 passed in one final batch",
+      "reportedDuration": "1.5 min",
+      "log": "logs/consumers-green.log"
+    }
+  ],
+  "consumerAdaptations": [
+    {
+      "file": "tests/e2e/column-menu.spec.ts",
+      "line": 167,
+      "change": "Visible-only expectation becomes whole-column scope:5 total,4 hidden,3 lowercase changes; same5-value fixture array retained; hidden Cd. de México→cd. de méxico and PUEBLA→puebla now expected.",
+      "retained": "Five output values and visible/hidden distinction; no case removed."
+    },
+    {
+      "file": "tests/e2e/table-toolbar.spec.ts",
+      "line": 121,
+      "change": "Column name is asserted in accessible dialog heading; separate scope says240 rows.",
+      "retained": "Six actions use active Ingreso, header Ciudad selection remains marked, Ingreso header remains unmarked, cancel/focus and document dirty=false checks retained."
+    }
+  ],
+  "consumerBoundaryExamples": [
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "line": 138,
+      "result": "Passed in final consumer batch; short-row/missing-field warning, bytes after save and single undo."
+    },
+    {
+      "file": "tests/e2e/empty-values.spec.ts",
+      "line": 191,
+      "result": "Passed in final consumer batch; protected source mutations blocked through UI and bridge."
+    }
+  ],
+  "captures": [
+    {
+      "file": "before/sim3b-before-column-preview-en-XA-light-1440x900.png",
+      "sha256": "c023eef4b4c229f249093c2bafc7688d436cf02bc0dc983a11b20c833aa76c1f",
+      "bytes": 112597,
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "phase": "before",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "before/sim3b-before-column-preview-en-XA-light-1280x720.png",
+      "sha256": "85b6bda3e79d4f7782bea0fb44d0602eacf7fc2a776601370271cf0c1a72cf96",
+      "bytes": 101547,
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "phase": "before",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "before/sim3b-before-column-preview-en-XA-dark-1440x900.png",
+      "sha256": "9f938fbf0eaa30fea80b037651ce9efe323afacd8175c52361288b11935932b3",
+      "bytes": 108882,
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "phase": "before",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "before/sim3b-before-column-preview-en-XA-dark-1280x720.png",
+      "sha256": "7fdcd64cb6bc26fcc200a8435fb8dedcff0b3296dfd61a7902797640d54afb72",
+      "bytes": 97705,
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "phase": "before",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "before/sim3b-before-column-preview-es-light-1440x900.png",
+      "sha256": "527edb8e22dcf01e6cef1a9a5cdc01376e4598295b875c818bb6ec5e5d728c1d",
+      "bytes": 108442,
+      "locale": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "phase": "before",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "before/sim3b-before-column-preview-es-light-1280x720.png",
+      "sha256": "771ba99a4652d7a7841f474372b67c74e8b3d8c2a4250ea61f7183e27e7a4ca4",
+      "bytes": 98892,
+      "locale": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "phase": "before",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "before/sim3b-before-column-preview-es-dark-1440x900.png",
+      "sha256": "1b57b50dfd654cf84aac224b0b14d8de31dbcfdab7dd85c2f2457fe3b62af022",
+      "bytes": 104516,
+      "locale": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "phase": "before",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "before/sim3b-before-column-preview-es-dark-1280x720.png",
+      "sha256": "489823ec3cf87cdfeee44b7517052ab7edbb7ac8b043cffe039e39cb4de0365b",
+      "bytes": 94697,
+      "locale": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "phase": "before",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "after/sim3b-after-column-preview-en-XA-light-1440x900.png",
+      "sha256": "15d962f7200ba30c59f35747c8a1cf524363dff39c1608cb5cfef83ed4eb72eb",
+      "bytes": 119718,
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "phase": "after",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "after/sim3b-after-column-preview-en-XA-light-1280x720.png",
+      "sha256": "a84a92a4b5df3345c7c5b4e367bfb305214542b93b258cfa4acb05e5d0b03b57",
+      "bytes": 106852,
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "phase": "after",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "after/sim3b-after-column-preview-en-XA-dark-1440x900.png",
+      "sha256": "c964a66ab75b9d816c98f6575709d337f8b5d7393fc87f62596560f12325cf09",
+      "bytes": 116516,
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "phase": "after",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "after/sim3b-after-column-preview-en-XA-dark-1280x720.png",
+      "sha256": "587b981d1b7c75f54a7d4fb1eb117d4e8d46174f462eebd2b4aa81dffebdf8f9",
+      "bytes": 103850,
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "phase": "after",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "after/sim3b-after-column-preview-es-light-1440x900.png",
+      "sha256": "14a631dd2bb964c5778404dcfad2938759cc7046e859cbe70981add5411e2ac1",
+      "bytes": 113916,
+      "locale": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "phase": "after",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "after/sim3b-after-column-preview-es-light-1280x720.png",
+      "sha256": "c20b8716e376352cf0ce8f8b2d7458e1c8da780330141cdb2d3e8914ed697342",
+      "bytes": 103940,
+      "locale": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720,
+      "phase": "after",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "after/sim3b-after-column-preview-es-dark-1440x900.png",
+      "sha256": "f4f7bc483c016a098899a8598b424d45fce56cb7f5931ab7e7dc3a1a3a9bc89e",
+      "bytes": 110347,
+      "locale": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "phase": "after",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    },
+    {
+      "file": "after/sim3b-after-column-preview-es-dark-1280x720.png",
+      "sha256": "86eb42421161a5a25d9624cf71779dcb37bb9c956a8f3ca633a3f1a101ddfa2a",
+      "bytes": 100417,
+      "locale": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720,
+      "phase": "after",
+      "pngChunks": [
+        "IDAT",
+        "IEND",
+        "IHDR",
+        "iCCP"
+      ]
+    }
+  ],
+  "captureManifests": [
+    {
+      "file": "before/sim3b-before-en-XA-captures.json",
+      "sha256": "ee97a97e5d0aefe51949db38e3a749cc135bcb4332d8c196fbcd6e7e047e3ed1",
+      "bytes": 1716,
+      "phase": "before",
+      "locale": "en-XA",
+      "scope": "Alcance: columna «Carrera» · 4 filas de la vista actual. 8 filas ocultas por búsqueda o filtros no se modifican. Los encabezados se conservan. Un paso de deshacer.",
+      "captureCount": 4
+    },
+    {
+      "file": "before/sim3b-before-es-captures.json",
+      "sha256": "8f982cba19b862634933a7b887f9b15ee8602e3ff442860817c407715c779a4e",
+      "bytes": 1688,
+      "phase": "before",
+      "locale": "es",
+      "scope": "Alcance: columna «Carrera» · 4 filas de la vista actual. 8 filas ocultas por búsqueda o filtros no se modifican. Los encabezados se conservan. Un paso de deshacer.",
+      "captureCount": 4
+    },
+    {
+      "file": "after/sim3b-after-en-XA-captures.json",
+      "sha256": "c3d13b1b97351a87b7d036fbb75e22fd25b74ab2ec02e5127c4b962069c3d209",
+      "bytes": 2038,
+      "phase": "after",
+      "locale": "en-XA",
+      "scope": "[Scöpë: thë ëntïrë cölümn · 12 röws, ïnclüdïng thë 8 hïddën by thë fïltër.~~~~~~~~~~~~~~~~~~~~~~~~~~] Un paso de deshacer.",
+      "captureCount": 4
+    },
+    {
+      "file": "after/sim3b-after-es-captures.json",
+      "sha256": "f6eadef36cf2ee68516ca52afbed68eafbed6e681eb8240d832c04fbffc5d8e8",
+      "bytes": 1965,
+      "phase": "after",
+      "locale": "es",
+      "scope": "Alcance: toda la columna · 12 filas, también las 8 que oculta el filtro. Un paso de deshacer.",
+      "captureCount": 4
+    }
+  ],
+  "visualReview": {
+    "method": "Each of 16 existing PNGs viewed individually with local image viewer",
+    "count": 16,
+    "findings": [],
+    "scope": "Privacy, visible cropping and before/after scope/dot consistency; no new GUI execution."
+  },
+  "logs": [
+    {
+      "file": "logs/red-initial.log",
+      "originalFilename": "red-sim3b-native.log",
+      "originalSha256": "6355035b7d6a3e41558b780f2dee429e0d342394948e66c45134225025df7621",
+      "originalBytes": 22544,
+      "sha256": "719e37db162f07806fb993552634f874be25312e9f27f1c72635f63d098368eb",
+      "bytes": 21494,
+      "normalization": "ANSI removed; each line rstrip; EOF rstrip plus one LF; declared path substitutions",
+      "pathSubstitutions": {
+        "<worktree>": 10
+      }
+    },
+    {
+      "file": "logs/red-zero-ordered.log",
+      "originalFilename": "red-zero-ordered.log",
+      "originalSha256": "027ed8eb110184c8ce51a6d6ece9a244154a2c793b83fd6d7006d8af2c50fbff",
+      "originalBytes": 6962,
+      "sha256": "4bbcc830ce02087e70493fd18c16a69784f72591f052cefcbd68a58414bf9ce2",
+      "bytes": 6750,
+      "normalization": "ANSI removed; each line rstrip; EOF rstrip plus one LF; declared path substitutions",
+      "pathSubstitutions": {
+        "<worktree>": 2
+      }
+    },
+    {
+      "file": "logs/red-six-scope-locales.log",
+      "originalFilename": "red-six-scope-locales.log",
+      "originalSha256": "731a054ea9284f31db4b8b99f324156e8ba1750f59b8c9347bc785edaf3428c6",
+      "originalBytes": 19135,
+      "sha256": "3ff3946da2887855905ac3c497a2e12a931960052486e3e88c851c027400eb5d",
+      "bytes": 18189,
+      "normalization": "ANSI removed; each line rstrip; EOF rstrip plus one LF; declared path substitutions",
+      "pathSubstitutions": {
+        "<worktree>": 9
+      }
+    },
+    {
+      "file": "logs/red-pending-hidden-core.log",
+      "originalFilename": "red-pending-hidden-core.log",
+      "originalSha256": "2dee90ba8c993cc156112b9cc1dca318c6e43b786f0592d953be762689b0ff1c",
+      "originalBytes": 5257,
+      "sha256": "dd60d6bef116b8cf30e1801eab43feb65a5683f3fc497db6885459f01400e75a",
+      "bytes": 4943,
+      "normalization": "ANSI removed; each line rstrip; EOF rstrip plus one LF; declared path substitutions",
+      "pathSubstitutions": {
+        "<worktree>": 3
+      }
+    },
+    {
+      "file": "logs/green-candidate-native.log",
+      "originalFilename": "green-candidate-native.log",
+      "originalSha256": "bcf2e2411b1bd45b5e76d7f5f9a52e5c8ec5c53d62b8ac526ed1ba5d92629ab5",
+      "originalBytes": 2557,
+      "sha256": "bcf2e2411b1bd45b5e76d7f5f9a52e5c8ec5c53d62b8ac526ed1ba5d92629ab5",
+      "bytes": 2557,
+      "normalization": "ANSI removed; each line rstrip; EOF rstrip plus one LF; declared path substitutions",
+      "pathSubstitutions": {}
+    },
+    {
+      "file": "logs/check-candidate.log",
+      "originalFilename": "check-candidate.log",
+      "originalSha256": "2847f5780d9fed8acf43a73d3b4873f17c3c3d630070b507e7cfd01726f1a0da",
+      "originalBytes": 337,
+      "sha256": "7f631e59595272f1d944e60c28dee89b491482ed2fbf339768578c36cd1dd3dd",
+      "bytes": 233,
+      "normalization": "ANSI removed; each line rstrip; EOF rstrip plus one LF; declared path substitutions",
+      "pathSubstitutions": {
+        "<worktree>": 1
+      }
+    },
+    {
+      "file": "logs/unit-complete-candidate.log",
+      "originalFilename": "unit-complete-candidate.log",
+      "originalSha256": "83c071d6f52462039e7f9400f03b46dc0eb08d8e5d99e98c7b0f24bb4aa8c48b",
+      "originalBytes": 1126,
+      "sha256": "524f5fe983df8727bd5f5fc0a840f10a6ac48143a056707ff9a2c6d49f6ead4e",
+      "bytes": 991,
+      "normalization": "ANSI removed; each line rstrip; EOF rstrip plus one LF; declared path substitutions",
+      "pathSubstitutions": {
+        "<worktree>": 1,
+        "<pandoc-3.12.1>": 1
+      }
+    },
+    {
+      "file": "logs/build-candidate.log",
+      "originalFilename": "build-candidate.log",
+      "originalSha256": "0183b4d9d98ba0d8c8cc960c0eaa59e0667f595fa84decced659000e5e1c3697",
+      "originalBytes": 22815,
+      "sha256": "5e48b81b1abf3fd74eb0583aae6238c8a618549ada410cc842a6e8c420d5ade6",
+      "bytes": 22693,
+      "normalization": "ANSI removed; each line rstrip; EOF rstrip plus one LF; declared path substitutions",
+      "pathSubstitutions": {
+        "<worktree>": 1
+      }
+    },
+    {
+      "file": "logs/consumers-before-adaptation.log",
+      "originalFilename": "consumers-before-adaptation.log",
+      "originalSha256": "22e3094f995242d0d6cca566676c0cc96a2836344b9a026a8ce2438d8c8f20a0",
+      "originalBytes": 16497,
+      "sha256": "a2fafcd3f45442764b152d9637a67511bbd1022880f4136c862e3f563eac002e",
+      "bytes": 16285,
+      "normalization": "ANSI removed; each line rstrip; EOF rstrip plus one LF; declared path substitutions",
+      "pathSubstitutions": {
+        "<worktree>": 2
+      }
+    },
+    {
+      "file": "logs/consumers-green.log",
+      "originalFilename": "consumers-green.log",
+      "originalSha256": "b26093428ff2384db8f654b03e11720f0901114bca99cef62a448831227163ad",
+      "originalBytes": 9150,
+      "sha256": "b26093428ff2384db8f654b03e11720f0901114bca99cef62a448831227163ad",
+      "bytes": 9150,
+      "normalization": "ANSI removed; each line rstrip; EOF rstrip plus one LF; declared path substitutions",
+      "pathSubstitutions": {}
+    }
+  ],
+  "limits": [
+    "No complete local native/E2E suite claimed for SIM-3b.",
+    "CI and final PR head remain pending; no result transferred from SIM-3d.",
+    "Unit suite includes 2 skips; not all unit cases executed.",
+    "Normalized logs retain original cases/errors/data; only formatting and declared host-path substitutions changed.",
+    "Trim/upper/lower preserve absent fields; existing fill-empty semantics and its short-row warnings are unchanged.",
+    "Only preview Before marks marginal whitespace; actual data and exports retain their existing semantics."
+  ],
+  "testIdentity": [
+    {
+      "path": "tests/e2e/sim3b-column-cleaning.spec.ts",
+      "sha256": "b90015eff3894382c39e9141c2229963a7705f5b693e54329df879b555aa5dba"
+    },
+    {
+      "path": "tests/e2e/column-menu.spec.ts",
+      "sha256": "b988ba93423044740a25e47743a7c86b16785cea678c9a0a70e1471b1e1129ed"
+    },
+    {
+      "path": "tests/e2e/table-toolbar.spec.ts",
+      "sha256": "f34a3d59ed3c686e02a8088b2979191971fd880d2ac415409dd2aaa16c7a35ef"
+    }
+  ],
+  "identityNote": "Product commit frozen by root; current source-file hashes match the applied candidate. Final test/documentary head and CI still pending."
+}

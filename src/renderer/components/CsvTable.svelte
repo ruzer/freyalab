@@ -101,7 +101,7 @@
  type Cell={row:number;column:number}
  const initialRange=untrack(()=>initialView?.range?.revision===doc.revision?initialView.range:null)
  let selection=$state<{anchor:Cell;end:Cell;query:TableQuery;revision:number}|null>(initialRange?{anchor:{row:initialRange.top,column:initialRange.left},end:{row:initialRange.bottom,column:initialRange.right},query:initialRange.query,revision:initialRange.revision}:null),dragging=$state(false),pendingCell=$state<Cell|null>(null)
- let rangeDialog=$state<{edit:TableRangeEdit;cut?:boolean;documentScope?:boolean;column?:{name:string;rows:number;hidden:number;title:string}}|null>(null),context=$state<{x:number;y:number;kind:'range'|'rows'|'columns';column?:number;headerColumn?:number;rowNumber?:number}|null>(null)
+ let rangeDialog=$state<{edit:TableRangeEdit;cut?:boolean;documentScope?:boolean;column?:{name:string;rows:number;hidden?:number;title:string}}|null>(null),context=$state<{x:number;y:number;kind:'range'|'rows'|'columns';column?:number;headerColumn?:number;rowNumber?:number}|null>(null)
  let contextReturn:HTMLElement|null=null
  let cleanMenu=$state(false),columnCleanButton=$state<HTMLButtonElement>()
  const menuColumn=$derived(context?.kind==='columns'?context.column??context.headerColumn:undefined)
@@ -116,14 +116,14 @@
  const emptyLabel=(index:number)=>{const name=doc.headers?.[index]??'';return name&&(doc.headers??[]).filter(header=>header===name).length===1?name:t('empty.columnAt',{position:index+1,name:name||t('empty.unnamed')})}
  const emptyIntent=(action:CsvEmptyIntent['action'],target=emptyTarget,origin=context?contextReturn:commandsButton??null)=>{const column=action==='delete'?target??selectedColumns[0]:target;if(column!==undefined)return openEmpty({action,column,revision:doc.revision},action==='delete'&&target===undefined&&selectedColumns.length>1,origin)}
  const columnLabel=(index:number)=>doc.headers?.[index]||`Columna ${index+1}`
- // La columna entera de la vista actual: el mismo rango que una selección de celdas, así la vista previa y el deshacer son los de siempre.
- const columnRange=(index:number):TableRange=>({top:0,bottom:Math.max(page.matched-1,0),left:index,right:index,query:$state.snapshot(pageQuery),revision:page.revision})
+ // La intención de columna usa todas las filas del documento, sin cambiar la consulta de la vista. Reutiliza la previa y el deshacer del rango.
+ const columnRange=(index:number):TableRange=>({top:0,bottom:Math.max((doc.rowCount??0)-1,0),left:index,right:index,query:{offset:0,limit:200,requestId:0},revision:doc.revision})
  function cleanColumn(operation:'upper'|'lower'|'trim',column=targetColumn,origin?:HTMLElement){
-  if(column===undefined||locked||busy||!page.matched)return
+  if(column===undefined||locked||busy||!doc.rowCount)return
   if(origin)contextReturn=origin
   context=null;pendingCell=null;selection=null
   const titles={upper:'Mayúsculas',lower:'Minúsculas',trim:'Quitar espacios'}
-  rangeDialog={edit:{type:'range',range:columnRange(column),operation,value:'',find:''},column:{name:columnLabel(column),rows:page.matched,hidden:Math.max(page.total-page.matched,0),title:`${titles[operation]} en la columna «${columnLabel(column)}»`}}
+  rangeDialog={edit:{type:'range',range:columnRange(column),operation,value:'',find:''},column:{name:columnLabel(column),rows:doc.rowCount,title:`${titles[operation]} en la columna «${columnLabel(column)}»`}}
  }
  async function filterColumn(){const column=targetColumn;if(column===undefined)return;context=null;if(large){await openLargeFilters(column);return}showFilters=true;get(columnsVirtual).scrollToIndex(column);await tick();document.querySelector<HTMLInputElement>(`[data-column-filter="${column}"]`)?.focus()}
  async function openLargeFilters(column?:number){
@@ -143,10 +143,10 @@
  }
  function columnTextCommand(operation:'upper'|'lower'|'trim',column:number|undefined,fromToolbar=false):CsvCommand{
   const names={upper:'Mayúsculas en la columna…',lower:'Minúsculas en la columna…',trim:'Quitar espacios en la columna…'}
-  return{id:'column-'+operation,label:fromToolbar?toolbarCleanLabel(operation,column):names[operation],detail:t('charts.toolbar.column.'+operation+'Help'),disabled:locked||busy||!page.matched||column===undefined,disabledReason:fromToolbar&&column===undefined&&!locked&&!busy?t('charts.toolbar.columnRequired'):undefined,run:()=>cleanColumn(operation,column,fromToolbar?cleanButton:undefined)}
+  return{id:'column-'+operation,label:fromToolbar?toolbarCleanLabel(operation,column):names[operation],detail:t('charts.toolbar.column.'+operation+'Help'),disabled:locked||busy||!doc.rowCount||column===undefined,disabledReason:fromToolbar&&column===undefined&&!locked&&!busy?t('charts.toolbar.columnRequired'):undefined,run:()=>cleanColumn(operation,column,fromToolbar?cleanButton:undefined)}
  }
  function columnDuplicatesCommand(column:number|undefined,fromToolbar=false):CsvCommand{
-  return{id:'columnDuplicates',label:fromToolbar?toolbarCleanLabel('duplicates',column):'Quitar filas duplicadas de la columna…',detail:t('charts.toolbar.column.duplicatesHelp'),disabled:locked||column===undefined,disabledReason:fromToolbar&&column===undefined&&!locked&&!busy?t('charts.toolbar.columnRequired'):undefined,run:()=>{if(fromToolbar){transformReturn=cleanButton??null;openTransform('deduplicate',column)}else{if(column!==undefined)selectedColumns=[column];openTransform('deduplicate')}}}
+  return{id:'columnDuplicates',label:fromToolbar?toolbarCleanLabel('duplicates',column):'Quitar filas duplicadas de la columna…',detail:t('charts.toolbar.column.duplicatesHelp'),disabled:locked||column===undefined,disabledReason:fromToolbar&&column===undefined&&!locked&&!busy?t('charts.toolbar.columnRequired'):undefined,run:()=>{if(fromToolbar){transformReturn=cleanButton??null;openTransform('deduplicate',column)}else{if(column!==undefined)selectedColumns=[column];openTransform('deduplicate',column)}}}
  }
  const toolbarCleanCommands=$derived([emptyCommand('fill',toolbarColumn,true),emptyCommand('delete',toolbarColumn,true),columnDuplicatesCommand(toolbarColumn,true),...(['trim','upper','lower']as const).map(operation=>columnTextCommand(operation,toolbarColumn,true))])
  const exportKeywords='exportar extraer guardar como archivo export extract csv conjunto subset'
@@ -327,6 +327,8 @@
  // Con la barra escalada, una muesca de la rueda mueve filas reales (no `escala` veces más) y la barra se usa para los saltos grandes.
  function wheelRows(node:HTMLElement){const onwheel=(event:WheelEvent)=>{if(rowScale<=1||event.ctrlKey||Math.abs(event.deltaX)>Math.abs(event.deltaY))return;event.preventDefault();const lines=event.deltaMode===1?32:event.deltaMode===2?node.clientHeight:1,rows=get(rowsVirtual);rows.scrollToOffset((rows.scrollOffset??0)+event.deltaY*lines)};node.addEventListener('wheel',onwheel,{passive:false});return{destroy:()=>node.removeEventListener('wheel',onwheel)}}
  let pageQuery=$state<TableQuery>({offset:0,limit:200,requestId:0})
+ const cleanViewMeta=$derived({matched:page.matched,revision:page.revision,requestId:page.requestId,sample:page.sample,query:pageQuery})
+ const cleanColumnContext=$derived(rangeDialog?.column?{...rangeDialog.column,hidden:rangeDialog.edit.range.revision===doc.revision&&csvAnalysisQueryReady(doc,query(),cleanViewMeta)?Math.max(rangeDialog.column.rows-page.matched,0):undefined}:undefined)
  const appliedSearch=$derived((large?largeView?.query.search??'':pageQuery.search??'').toLocaleLowerCase())
  const activeViewId=$derived(largeView&&largeView.status!=='invalidated'?largeView.requestId:undefined)
  const viewText=$derived(largeView?describeView(largeView):'')
@@ -546,8 +548,8 @@
  {#if calculationDisabled}<span class="dropdown-note" role="presentation" id="context-calculation-disabled">{calculationDisabled}</span>{/if}
 {/snippet}
 {#if showCommands}<CsvCommands {commands} context={doc.projectSource?t('ui.reason.'+readonlyReason):doc.readonly?page.sample?'Muestra de solo lectura: edición y copia tabular bloqueadas.':doc.warning??t('ui.reason.readonly'):interpreting?'Interpretando el archivo; edición bloqueada.':queryError?'Consulta no válida: corrige o quita los filtros antes de editar.':busy?'Cargando página; las acciones del rango esperan.':cellRange?`Rango: filas ${cellRange.top+1}–${cellRange.bottom+1}, columnas ${cellRange.left+1}–${cellRange.right+1}.`:`${selectedRows.length} filas marcadas por número · ${selectedColumns.length} columnas marcadas.`} onexecute={id=>void chooseCommand(id)} onclose={()=>void closeCommands()}/>{/if}
-{#if showTransform}<CsvTransform {doc} initialOperation={transformStart} initialCalculationPosition={calculationPosition} initialEmptyColumn={emptyColumn} initialEmptyMarked={emptyMarked} initialRows={selectedRows} initialRange={cellRange} viewQuery={query()} initialColumns={transformStart==='deduplicate'&&emptyColumn!==undefined?[emptyColumn]:selectedColumns.length?selectedColumns:cellRange?Array.from({length:cellRange.right-cellRange.left+1},(_,i)=>cellRange.left+i):[]} onapply={applyTransform} onclose={closeTransform} {onerror}/>{/if}
-{#if rangeDialog}<CsvRangePreview id={doc.id} initial={rangeDialog.edit} cut={rangeDialog.cut} documentScope={rangeDialog.documentScope} column={rangeDialog.column} onapply={applyRange} onclose={closeRangeDialog} {onerror}/>{/if}
+{#if showTransform}<CsvTransform {doc} initialOperation={transformStart} initialCalculationPosition={calculationPosition} initialEmptyColumn={emptyColumn} initialEmptyMarked={emptyMarked} initialRows={selectedRows} initialRange={cellRange} viewQuery={query()} viewMeta={cleanViewMeta} initialColumns={transformStart==='deduplicate'&&emptyColumn!==undefined?[emptyColumn]:selectedColumns.length?selectedColumns:cellRange?Array.from({length:cellRange.right-cellRange.left+1},(_,i)=>cellRange.left+i):[]} onapply={applyTransform} onclose={closeTransform} {onerror}/>{/if}
+{#if rangeDialog}<CsvRangePreview id={doc.id} initial={rangeDialog.edit} cut={rangeDialog.cut} documentScope={rangeDialog.documentScope} column={cleanColumnContext} onapply={applyRange} onclose={closeRangeDialog} {onerror}/>{/if}
 {#snippet columnMenuItem(id:string)}
  {@const command=commands.find(command=>command.id===id)!}
  <button {...(command.disabledReason?{title:command.disabledReason,'aria-describedby':'csv-context-reason-'+command.id}:controlHint(!command.disabled?null:doc.readonly?readonlyReason:busy||interpreting?'busy':'context',command.detail))} role="menuitem" tabindex="-1" aria-disabled={command.disabled} class:column-menu-danger={id==='deleteColumn'} onclick={()=>void runCommand(id)}>{t('csv.columnMenu.'+id)}</button>

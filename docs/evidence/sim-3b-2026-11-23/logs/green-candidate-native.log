@@ -1,0 +1,20 @@
+
+Running 13 tests using 1 worker
+
+(node:26437) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:78:1 › SIM-3b: la previa de columna incluye las ocultas, marca espacios marginales y cancelar no edita (2.0s)
+  ✓   2 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:90:1 › SIM-3b: quitar espacios desde la cabecera limpia toda la columna, Frecuencias lo confirma y un deshacer restaura (2.0s)
+  ✓   3 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:115:1 › SIM-3b: Mayúsculas desde Limpiar incluye las filas ocultas por búsqueda y conserva espacios, ID y otras columnas (1.4s)
+  ✓   4 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:124:1 › SIM-3b: Minúsculas desde la cabecera incluye las filas ocultas por filtro y conserva espacios, ID y otras columnas (1.6s)
+  ✓   5 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:133:1 › SIM-3b: sin filtro el alcance omite las filas ocultas y cancelar conserva filas, revisión y archivo (1.2s)
+  ✓   6 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:142:1 › SIM-3b: las limpiezas de filas marcadas y de rango mantienen su selección sin alcanzar filas ocultas (1.7s)
+  ✓   7 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:166:1 › SIM-3b: con cero filas visibles la limpieza de columna sigue disponible para las doce y cancelar conserva la vista (1.7s)
+  ✓   8 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:194:12 › SIM-3b: Rellenar vacíos… de una columna explica doce filas y ocho ocultas sin editar al cancelar (1.4s)
+  ✓   9 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:194:12 › SIM-3b: Eliminar filas con vacío… de una columna explica doce filas y ocho ocultas sin editar al cancelar (1.4s)
+  ✓  10 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:194:12 › SIM-3b: Quitar filas duplicadas… de una columna explica doce filas y ocho ocultas sin editar al cancelar (1.4s)
+  ✓  11 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:211:1 › SIM-3b: una consulta pendiente no publica ocultas antiguas y el alcance se actualiza con su respuesta real (1.5s)
+  ✓  12 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:243:45 › SIM-3b idioma y teclado: alcance completo, puntos en Antes y cancelar [es] (1.7s)
+  ✓  13 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:243:45 › SIM-3b idioma y teclado: alcance completo, puntos en Antes y cancelar [en-XA] (1.7s)
+
+  13 passed (21.1s)

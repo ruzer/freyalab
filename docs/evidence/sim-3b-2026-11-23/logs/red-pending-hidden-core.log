@@ -1,0 +1,73 @@
+
+Running 1 test using 1 worker
+
+(node:24406) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:211:1 › SIM-3b: una consulta pendiente no publica ocultas antiguas y el alcance se actualiza con su respuesta real (17.0s)
+
+
+  1) [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:211:1 › SIM-3b: una consulta pendiente no publica ocultas antiguas y el alcance se actualiza con su respuesta real
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Alcance: toda la columna · 12 filas."
+    Received string:    "Alcance: toda la columna · 12 filas, también las 9 que oculta el filtro. Un paso de deshacer."
+
+      227 |   await expect(dialog.getByRole('button',{name:'Aplicar cambio',exact:true})).toBeEnabled()
+      228 |   const scope=dialog.locator(':scope > p').first()
+    > 229 |   expect.soft(await scope.innerText()).toContain('Alcance: toda la columna · 12 filas.')
+          |                                        ^
+      230 |   expect.soft(await scope.innerText()).not.toContain('también las 9')
+      231 |   // Entrega la consulta real: ahora son cuatro visibles y ocho ocultas, no las nueve anteriores.
+      232 |   await page.clock.runFor(150)
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:229:40
+
+    Error: expect(received).not.toContain(expected) // indexOf
+
+    Expected substring: not "también las 9"
+    Received string:        "Alcance: toda la columna · 12 filas, también las 9 que oculta el filtro. Un paso de deshacer."
+
+      228 |   const scope=dialog.locator(':scope > p').first()
+      229 |   expect.soft(await scope.innerText()).toContain('Alcance: toda la columna · 12 filas.')
+    > 230 |   expect.soft(await scope.innerText()).not.toContain('también las 9')
+          |                                            ^
+      231 |   // Entrega la consulta real: ahora son cuatro visibles y ocho ocultas, no las nueve anteriores.
+      232 |   await page.clock.runFor(150)
+      233 |   await expect(page.locator('.csv-cell[data-column="0"]')).toHaveText(['001','002','004','008'])
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:230:44
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('dialog', { name: 'Quitar espacios en la columna «Carrera»', exact: true }).locator(':scope > p').first()
+    Expected substring: "Alcance: toda la columna · 12 filas, también las 8 que oculta el filtro."
+    Received string:    "Alcance: toda la columna · 12 filas, también las 9 que oculta el filtro. Un paso de deshacer."
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "soft toContainText" getByRole('dialog', { name: 'Quitar espacios en la columna «Carrera»', exact: true }).locator(':scope > p').first() with timeout 15000ms
+      - waiting for getByRole('dialog', { name: 'Quitar espacios en la columna «Carrera»', exact: true }).locator(':scope > p').first()
+        34 × locator resolved to <p class="svelte-we3sr3">Alcance: toda la columna · 12 filas, también las …</p>
+           - unexpected value "Alcance: toda la columna · 12 filas, también las 9 que oculta el filtro. Un paso de deshacer."
+
+
+      232 |   await page.clock.runFor(150)
+      233 |   await expect(page.locator('.csv-cell[data-column="0"]')).toHaveText(['001','002','004','008'])
+    > 234 |   await expect.soft(scope).toContainText('Alcance: toda la columna · 12 filas, también las 8 que oculta el filtro.')
+          |                            ^
+      235 |   await unchanged(opened)
+      236 |   await dialog.getByRole('button',{name:'Cancelar',exact:true}).press('Enter');await expect(dialog).toHaveCount(0)
+      237 |   await unchanged(opened)
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:234:28
+
+    Error Context: test-results/sim3b-column-cleaning-SIM--f6c37-aliza-con-su-respuesta-real-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3b-column-cleaning-SIM--f6c37-aliza-con-su-respuesta-real-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3b-column-cleaning-SIM--f6c37-aliza-con-su-respuesta-real-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:211:1 › SIM-3b: una consulta pendiente no publica ocultas antiguas y el alcance se actualiza con su respuesta real

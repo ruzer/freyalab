@@ -118,7 +118,10 @@ test('SIM-1b: las seis limpiezas usan Ingreso activo y no la marca Ciudad ni alt
   if(index===0)await expect(dialog).toHaveAccessibleName('Rellenar vacíos de Ingreso')
   else if(index===1)await expect(dialog.getByRole('combobox',{name:t('empty.where'),exact:true})).toContainText('Ingreso')
   else if(index===2){await expect(dialog.getByRole('combobox',{name:'Transformación CSV',exact:true})).toHaveValue('deduplicate');await expect(dialog.getByLabel('Columnas para transformar',{exact:true})).toHaveValues(['2'])}
-  else await expect(dialog).toContainText('Alcance: columna «Ingreso»')
+  else{
+   await expect(dialog).toHaveAccessibleName(`${['Quitar espacios','Mayúsculas','Minúsculas'][index-3]} en la columna «Ingreso»`)
+   await expect(dialog).toContainText('Alcance: toda la columna · 240 filas.')
+  }
   await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0)
   await expect(page.getByRole('checkbox',{name:'Seleccionar columna Ciudad',exact:true})).toBeChecked()
   await expect(page.getByRole('checkbox',{name:'Seleccionar columna Ingreso',exact:true})).not.toBeChecked()

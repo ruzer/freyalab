@@ -1,0 +1,257 @@
+
+Running 5 tests using 1 worker
+
+(node:22891) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:194:12 › SIM-3b: Rellenar vacíos… de una columna explica doce filas y ocho ocultas sin editar al cancelar (2.1s)
+(node:22918) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:194:12 › SIM-3b: Eliminar filas con vacío… de una columna explica doce filas y ocho ocultas sin editar al cancelar (1.6s)
+(node:22934) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:194:12 › SIM-3b: Quitar filas duplicadas… de una columna explica doce filas y ocho ocultas sin editar al cancelar (1.6s)
+(node:22945) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  4 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:243:45 › SIM-3b idioma y teclado: alcance completo, puntos en Antes y cancelar [es] (1.9s)
+(node:22972) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  5 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:243:45 › SIM-3b idioma y teclado: alcance completo, puntos en Antes y cancelar [en-XA] (1.8s)
+
+
+  1) [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:194:12 › SIM-3b: Rellenar vacíos… de una columna explica doce filas y ocho ocultas sin editar al cancelar
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Alcance: toda la columna · 12 filas, también las 8 que oculta el filtro."
+    Received string:    "Rellenar vacíos de Ciudad·
+    Se aplica a todo el documento, no solo a la vista filtrada. Los encabezados se conservan. Un paso de deshacer; Guardar escribe los cambios.·
+    Rellenar vacíos de Ciudad
+    Rellenar con
+    Un valor
+    El valor anterior
+    Valor
+    Contar las celdas con solo espacios como vacías
+    Vista previa·
+    Escribe un valor para rellenar·
+    Revisa las opciones y pulsa Vista previa. El documento sigue intacto.·
+    Rellenar
+    Cancelar"
+
+      201 |   await expect(dialog.getByLabel('Columnas para transformar',{exact:true})).toHaveValues(['3'])
+      202 |  }
+    > 203 |  expect.soft(await dialog.innerText()).toContain('Alcance: toda la columna · 12 filas, también las 8 que oculta el filtro.')
+          |                                        ^
+      204 |  await unchanged(opened)
+      205 |  await dialog.getByRole('button',{name:close,exact:true}).click();await expect(dialog).toHaveCount(0)
+      206 |  await unchanged(opened)
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:203:40
+
+    Error Context: test-results/sim3b-column-cleaning-SIM--2b9cc-ltas-sin-editar-al-cancelar-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3b-column-cleaning-SIM--2b9cc-ltas-sin-editar-al-cancelar-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3b-column-cleaning-SIM--2b9cc-ltas-sin-editar-al-cancelar-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:194:12 › SIM-3b: Eliminar filas con vacío… de una columna explica doce filas y ocho ocultas sin editar al cancelar
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Alcance: toda la columna · 12 filas, también las 8 que oculta el filtro."
+    Received string:    "Eliminar filas con vacío·
+    Se aplica a todo el documento, no solo a la vista filtrada. Los encabezados se conservan. Un paso de deshacer; Guardar escribe los cambios.·
+    Eliminar filas con vacío
+    Dónde mirar
+    En Ciudad
+    En las columnas marcadas
+    Contar las celdas con solo espacios como vacías
+    Vista previa·
+    Revisa las opciones y pulsa Vista previa. El documento sigue intacto.·
+    Eliminar filas
+    Cancelar"
+
+      201 |   await expect(dialog.getByLabel('Columnas para transformar',{exact:true})).toHaveValues(['3'])
+      202 |  }
+    > 203 |  expect.soft(await dialog.innerText()).toContain('Alcance: toda la columna · 12 filas, también las 8 que oculta el filtro.')
+          |                                        ^
+      204 |  await unchanged(opened)
+      205 |  await dialog.getByRole('button',{name:close,exact:true}).click();await expect(dialog).toHaveCount(0)
+      206 |  await unchanged(opened)
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:203:40
+
+    Error Context: test-results/sim3b-column-cleaning-SIM--2483d-ltas-sin-editar-al-cancelar-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3b-column-cleaning-SIM--2483d-ltas-sin-editar-al-cancelar-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3b-column-cleaning-SIM--2483d-ltas-sin-editar-al-cancelar-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:194:12 › SIM-3b: Quitar filas duplicadas… de una columna explica doce filas y ocho ocultas sin editar al cancelar
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Alcance: toda la columna · 12 filas, también las 8 que oculta el filtro."
+    Received string:    "Transformar documento CSV·
+    Documento completo: incluye filas ocultas por búsqueda o filtros; excluye encabezados salvo que elijas normalizarlos. No usa el rango de filas seleccionado. Un paso de deshacer.·
+    Opciones de transformación
+    Operación
+    Dividir una columna
+    Combinar columnas
+    Eliminar filas duplicadas
+    Componer texto Unicode (NFC)
+    Normalizar encabezados
+    Mover filas
+    Mover columnas
+    Fijar orden de la vista en el documento
+    Columnas
+    1. ID
+    2. Carrera
+    3. Edad
+    4. Ciudad·
+    Ctrl/⌘ y Mayús permiten marcar varias columnas. Dividir necesita una; combinar y mover mantienen el orden relativo original de las columnas marcadas.·
+    Compara el texto exacto de las columnas marcadas y conserva la primera fila en el orden original. Vacío y campo ausente son diferentes. Elimina las filas repetidas completas, incluidas sus otras celdas.·
+    Vista previa·
+    Opciones o datos actualizados. Pulsa Vista previa.·
+    La preparación se puede cancelar; el cambio final se aplica completo y se puede deshacer. Los límites de edición, codificación y recuperación siguen vigentes; presupuesto de deshacer de 20 MiB.·
+    Aplicar transformación
+    Cerrar"
+
+      201 |   await expect(dialog.getByLabel('Columnas para transformar',{exact:true})).toHaveValues(['3'])
+      202 |  }
+    > 203 |  expect.soft(await dialog.innerText()).toContain('Alcance: toda la columna · 12 filas, también las 8 que oculta el filtro.')
+          |                                        ^
+      204 |  await unchanged(opened)
+      205 |  await dialog.getByRole('button',{name:close,exact:true}).click();await expect(dialog).toHaveCount(0)
+      206 |  await unchanged(opened)
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:203:40
+
+    Error Context: test-results/sim3b-column-cleaning-SIM--03c60-ltas-sin-editar-al-cancelar-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3b-column-cleaning-SIM--03c60-ltas-sin-editar-al-cancelar-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3b-column-cleaning-SIM--03c60-ltas-sin-editar-al-cancelar-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:243:45 › SIM-3b idioma y teclado: alcance completo, puntos en Antes y cancelar [es]
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Alcance: toda la columna · 12 filas, también las 8 que oculta el filtro."
+    Received string:    "Alcance: columna «Carrera» · 4 filas de la vista actual. 8 filas ocultas por búsqueda o filtros no se modifican. Los encabezados se conservan. Un paso de deshacer."
+
+      256 |  const dialog=page.getByRole('dialog');await expect(dialog.getByRole('button',{name:'Aplicar cambio',exact:true})).toBeEnabled()
+      257 |  const scope=dialog.locator(':scope > p').first(),expectedScope=plural('csv.columnClean.scopeHiddenOther',12,{hidden:formatNumber(8,undefined,locale)},locale)
+    > 258 |  const observedScope=await scope.innerText();expect.soft(observedScope).toContain(expectedScope)
+          |                                                                         ^
+      259 |  const samples=await dialog.locator('.preview-scroll tbody tr').evaluateAll(rows=>rows.map(row=>Array.from(row.querySelectorAll('th,td'),cell=>cell.textContent)))
+      260 |  expect.soft(samples).toContainEqual(['3 / 2','·INGENIERÍA','INGENIERÍA'])
+      261 |  expect.soft(samples).toContainEqual(['4 / 2','psicologia·','psicologia'])
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:258:73
+
+    Error: expect(received).toContainEqual(expected) // deep equality
+
+    Expected value: ["3 / 2", "·INGENIERÍA", "INGENIERÍA"]
+    Received array: [["2 / 2", " INGENIERÍA", "INGENIERÍA"]]
+
+      258 |  const observedScope=await scope.innerText();expect.soft(observedScope).toContain(expectedScope)
+      259 |  const samples=await dialog.locator('.preview-scroll tbody tr').evaluateAll(rows=>rows.map(row=>Array.from(row.querySelectorAll('th,td'),cell=>cell.textContent)))
+    > 260 |  expect.soft(samples).toContainEqual(['3 / 2','·INGENIERÍA','INGENIERÍA'])
+          |                       ^
+      261 |  expect.soft(samples).toContainEqual(['4 / 2','psicologia·','psicologia'])
+      262 |  await unchanged(opened)
+      263 |  const requestedEvidence=process.env.FREYALAB_SIM3B_EVIDENCE??process.env.EVIDENCE
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:260:23
+
+    Error: expect(received).toContainEqual(expected) // deep equality
+
+    Expected value: ["4 / 2", "psicologia·", "psicologia"]
+    Received array: [["2 / 2", " INGENIERÍA", "INGENIERÍA"]]
+
+      259 |  const samples=await dialog.locator('.preview-scroll tbody tr').evaluateAll(rows=>rows.map(row=>Array.from(row.querySelectorAll('th,td'),cell=>cell.textContent)))
+      260 |  expect.soft(samples).toContainEqual(['3 / 2','·INGENIERÍA','INGENIERÍA'])
+    > 261 |  expect.soft(samples).toContainEqual(['4 / 2','psicologia·','psicologia'])
+          |                       ^
+      262 |  await unchanged(opened)
+      263 |  const requestedEvidence=process.env.FREYALAB_SIM3B_EVIDENCE??process.env.EVIDENCE
+      264 |  const evidence=requestedEvidence==='1'?info.outputPath('evidence'):requestedEvidence
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:261:23
+
+    Error Context: test-results/sim3b-column-cleaning-SIM--68e1d-tos-en-Antes-y-cancelar-es--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3b-column-cleaning-SIM--68e1d-tos-en-Antes-y-cancelar-es--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3b-column-cleaning-SIM--68e1d-tos-en-Antes-y-cancelar-es--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:243:45 › SIM-3b idioma y teclado: alcance completo, puntos en Antes y cancelar [en-XA]
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "[Scöpë: thë ëntïrë cölümn · 12 röws, ïnclüdïng thë 8 hïddën by thë fïltër.~~~~~~~~~~~~~~~~~~~~~~~~~~]"
+    Received string:    "Alcance: columna «Carrera» · 4 filas de la vista actual. 8 filas ocultas por búsqueda o filtros no se modifican. Los encabezados se conservan. Un paso de deshacer."
+
+      256 |  const dialog=page.getByRole('dialog');await expect(dialog.getByRole('button',{name:'Aplicar cambio',exact:true})).toBeEnabled()
+      257 |  const scope=dialog.locator(':scope > p').first(),expectedScope=plural('csv.columnClean.scopeHiddenOther',12,{hidden:formatNumber(8,undefined,locale)},locale)
+    > 258 |  const observedScope=await scope.innerText();expect.soft(observedScope).toContain(expectedScope)
+          |                                                                         ^
+      259 |  const samples=await dialog.locator('.preview-scroll tbody tr').evaluateAll(rows=>rows.map(row=>Array.from(row.querySelectorAll('th,td'),cell=>cell.textContent)))
+      260 |  expect.soft(samples).toContainEqual(['3 / 2','·INGENIERÍA','INGENIERÍA'])
+      261 |  expect.soft(samples).toContainEqual(['4 / 2','psicologia·','psicologia'])
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:258:73
+
+    Error: expect(received).toContainEqual(expected) // deep equality
+
+    Expected value: ["3 / 2", "·INGENIERÍA", "INGENIERÍA"]
+    Received array: [["2 / 2", " INGENIERÍA", "INGENIERÍA"]]
+
+      258 |  const observedScope=await scope.innerText();expect.soft(observedScope).toContain(expectedScope)
+      259 |  const samples=await dialog.locator('.preview-scroll tbody tr').evaluateAll(rows=>rows.map(row=>Array.from(row.querySelectorAll('th,td'),cell=>cell.textContent)))
+    > 260 |  expect.soft(samples).toContainEqual(['3 / 2','·INGENIERÍA','INGENIERÍA'])
+          |                       ^
+      261 |  expect.soft(samples).toContainEqual(['4 / 2','psicologia·','psicologia'])
+      262 |  await unchanged(opened)
+      263 |  const requestedEvidence=process.env.FREYALAB_SIM3B_EVIDENCE??process.env.EVIDENCE
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:260:23
+
+    Error: expect(received).toContainEqual(expected) // deep equality
+
+    Expected value: ["4 / 2", "psicologia·", "psicologia"]
+    Received array: [["2 / 2", " INGENIERÍA", "INGENIERÍA"]]
+
+      259 |  const samples=await dialog.locator('.preview-scroll tbody tr').evaluateAll(rows=>rows.map(row=>Array.from(row.querySelectorAll('th,td'),cell=>cell.textContent)))
+      260 |  expect.soft(samples).toContainEqual(['3 / 2','·INGENIERÍA','INGENIERÍA'])
+    > 261 |  expect.soft(samples).toContainEqual(['4 / 2','psicologia·','psicologia'])
+          |                       ^
+      262 |  await unchanged(opened)
+      263 |  const requestedEvidence=process.env.FREYALAB_SIM3B_EVIDENCE??process.env.EVIDENCE
+      264 |  const evidence=requestedEvidence==='1'?info.outputPath('evidence'):requestedEvidence
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:261:23
+
+    Error Context: test-results/sim3b-column-cleaning-SIM--53927--en-Antes-y-cancelar-en-XA--csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3b-column-cleaning-SIM--53927--en-Antes-y-cancelar-en-XA--csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3b-column-cleaning-SIM--53927--en-Antes-y-cancelar-en-XA--csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5 failed
+    [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:194:12 › SIM-3b: Rellenar vacíos… de una columna explica doce filas y ocho ocultas sin editar al cancelar
+    [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:194:12 › SIM-3b: Eliminar filas con vacío… de una columna explica doce filas y ocho ocultas sin editar al cancelar
+    [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:194:12 › SIM-3b: Quitar filas duplicadas… de una columna explica doce filas y ocho ocultas sin editar al cancelar
+    [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:243:45 › SIM-3b idioma y teclado: alcance completo, puntos en Antes y cancelar [es]
+    [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:243:45 › SIM-3b idioma y teclado: alcance completo, puntos en Antes y cancelar [en-XA]
