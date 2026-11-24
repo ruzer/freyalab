@@ -29,9 +29,10 @@ async function tableValues(panel:Locator,values:number[]){
   const cell=panel.locator('tbody tr').first().locator('th,td').nth(column)
   await expect(cell).toHaveText(formatNumber(values[i],{maximumFractionDigits:2},'es'))
   const number=cell.locator('[data-analysis-value]')
-  expect(Number(await number.getAttribute('data-analysis-value'))).toBeCloseTo(values[i],12)
-  const exact=String(values[i])
-  await expect(cell).toHaveAttribute('title',t('columnAnalysis.exactValue',{value:exact},'es'))
+  const exact=await number.getAttribute('data-analysis-value')
+  expect(Number(exact)).toBeCloseTo(values[i],12)
+  // Full-value help preserves the engine's floating-point residual; the independent numeric oracle stays above.
+  await expect(cell).toHaveAttribute('title',t('columnAnalysis.exactValue',{value:exact!},'es'))
  }
 }
 async function report(panel:Locator,title:string,detailed=false){await exportAnalysis(page,detailed?'describe.detailedReport':'describe.report');await expect.poll(async()=>(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')?.text).toContain(title);return(await page.evaluate(()=>window.freya.documents())).find(doc=>doc.kind==='markdown')!}
