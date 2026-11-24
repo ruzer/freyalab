@@ -4,7 +4,7 @@ import {tmpdir} from 'node:os'
 import {join} from 'node:path'
 import {createHash,randomUUID} from 'node:crypto'
 import {parse} from 'csv-parse/sync'
-import {t} from '../src/shared/i18n'
+import {t,getLanguage,setLanguage} from '../src/shared/i18n'
 import type {RecipeAnalysisContext} from '../src/shared/recipe-operation'
 import * as files from '../src/main/files'
 const state=vi.hoisted(()=>({folder:'',destination:'',cancelled:false,onDialog:()=>{},table:vi.fn(),saveDialog:vi.fn()}))
@@ -130,4 +130,17 @@ it('un cambio de revisión después de escribir el contexto revierte la pareja a
  vi.spyOn(files,'atomicWrite').mockImplementation(async(path,...args)=>{await originalWrite(path,...args);if(path===state.destination+'.contexto.json')docs.get(id).info.revision++})
  await expect(exportStatisticsResult(docs,id,{...request,format:'csv'})).rejects.toThrow('Los datos cambiaron')
  await expect(access(state.destination)).rejects.toThrow();await expect(access(state.destination+'.contexto.json')).rejects.toThrow();expect(await readFile(source,'utf8')).toBe(sourceBytes)
+})
+
+it('los errores de validación son comprensibles en es/en/en-XA sin depender del idioma del detalle',async()=>{
+ const previous=getLanguage()
+ try{
+  for(const language of ['es','en','en-XA'] as const){
+   setLanguage(language)
+   const malformed={...request,table:{columns:['N'],rows:[[1,2]]}}
+   await expect(exportStatisticsResult(docs,id,malformed)).rejects.toThrow(t('statistics.export.error.invalid'))
+   await expect(exportStatisticsResult(docs,id,{...request,table:{columns:['N'],rows:[['x'.repeat(21*1024*1024)]]}})).rejects.toThrow(t('statistics.export.error.tooLarge'))
+  }
+  expect(state.saveDialog).not.toHaveBeenCalled();expect(await readFile(source,'utf8')).toBe(sourceBytes)
+ }finally{setLanguage(previous)}
 })

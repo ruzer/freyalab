@@ -15,7 +15,7 @@ export interface StatisticsResultRequest {
 }
 export interface StatisticsResultSource {name:string;revision:number;dirty:boolean;exportedAt:string;analysisSubset?:RecipeAnalysisContext}
 
-const encoder=new TextEncoder(),sizeIssue='statistics-result-size-limit'
+const encoder=new TextEncoder()
 const field=z.string().max(statisticsResultLimits.fieldBytes).refine(value=>encoder.encode(value).byteLength<=statisticsResultLimits.fieldBytes)
 const cell=z.union([field,z.number().finite(),z.null()])
 
@@ -64,12 +64,12 @@ export function statisticsResultSchema(query:z.ZodType<TableQuery>){
   table:z.strictObject({columns:z.array(field).min(1).max(statisticsResultLimits.columns),rows:z.array(z.array(cell).max(statisticsResultLimits.columns)).max(statisticsResultLimits.rows)}),
   context:z.strictObject({kind:z.enum(['describe','statistics','profile','frequencies','distribution','correlation']),scope:field.min(1),sample:z.boolean(),analyzedAt:z.iso.datetime({offset:true}),query:query.optional(),partial:z.boolean().optional()})
  }).superRefine((request,context)=>{
-  if(request.table.rows.some(row=>row.length!==request.table.columns.length))context.addIssue({code:'custom',path:['table','rows'],message:'statistics-result-width'})
-  if(!statisticsResultWithinBudget(request))context.addIssue({code:'custom',message:sizeIssue})
+  if(request.table.rows.some(row=>row.length!==request.table.columns.length))context.addIssue({code:'custom',path:['table','rows'],message:t('statistics.export.error.invalid')})
+  if(!statisticsResultWithinBudget(request))context.addIssue({code:'custom',message:t('statistics.export.error.tooLarge'),params:{statisticsSize:true}})
  })
 }
 
-export function statisticsResultTooLarge(error:z.ZodError):boolean{return error.issues.some(issue=>issue.message===sizeIssue)}
+export function statisticsResultTooLarge(error:z.ZodError):boolean{return error.issues.some(issue=>issue.code==='custom'&&issue.params?.statisticsSize===true)}
 
 export function serializeStatisticsResult(request:StatisticsResultRequest,source:StatisticsResultSource,sha256:(text:string)=>string):{content:string;context?:string}{
  if(!statisticsResultWithinBudget({request,source}))throw new Error(t('statistics.export.error.tooLarge'))

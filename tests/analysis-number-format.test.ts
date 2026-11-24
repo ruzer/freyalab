@@ -6,7 +6,7 @@ import {formatAnalysisNumber,formatAnalysisFullNumber,copyAnalysisFragments} fro
 describe('SIM-3d · precisión de presentación y copia',()=>{
  it.each([
   [5.52264150943,'5.52'],[12,'12'],[12.1,'12.1'],[0,'0'],
-  [0.0004123,'0.00041'],[-0.0004123,'-0.00041'],[0.009876,'0.0099'],
+  [0.0004123,'0.00041'],[-0.0004,'-0.0004'],[-0.0004123,'-0.00041'],[0.009876,'0.0099'],
  ] as const)('Automático general: %s se presenta como%s', (value,expected)=>{
   expect(formatAnalysisNumber(value,'auto','es')).toBe(expected)
  })
@@ -23,7 +23,7 @@ describe('SIM-3d · precisión de presentación y copia',()=>{
   expect(formatAnalysisNumber(1234567890123456,'auto','es','count')).toBe('1,234,567,890,123,456')
  })
  it.each([
-  [0.123456,'0.123'],[-0.123456,'-0.123'],[1.23456,'1.235'],
+  [0.86912,'0.869'],[0.9996,'0.9996'],[0.123456,'0.123'],[-0.123456,'-0.123'],[1.23456,'1.235'],
   [0.9999,'0.9999'],[-0.9999,'-0.9999'],[1.0001,'1.0001'],[-1.0001,'-1.0001'],
   [0.9999999999999999,'0.9999999999999999'],[-0.9999999999999999,'-0.9999999999999999'],
   [1.0000000000000002,'1.0000000000000002'],[-1.0000000000000002,'-1.0000000000000002'],
@@ -32,7 +32,7 @@ describe('SIM-3d · precisión de presentación y copia',()=>{
   expect(formatAnalysisNumber(value,'auto','es','coefficient')).toBe(expected)
  })
  it.each([
-  [11.6666666667,'11.67'],[99.9999,'99.9999'],[100.0001,'100.0001'],
+  [11.6666666667,'11.67'],[99.996,'99.996'],[99.9999,'99.9999'],[100.0001,'100.0001'],
   [99.99999999999999,'99.99999999999999'],[100.00000000000001,'100.00000000000001'],
   [100,'100'],[0,'0'],
  ] as const)('Automático porcentaje: %s evita cien falso y muestra%s', (value,expected)=>{

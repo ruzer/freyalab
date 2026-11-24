@@ -314,7 +314,7 @@ for(const locale of ['es','en-XA'] as const)for(const[width,height]of [[1440,900
  })
 }
 
-for(const mode of ['auto','all'] as const)test(`SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (${mode}) (es)`,async()=>{
+for(const locale of ['es','en-XA'] as const)for(const mode of ['auto','all'] as const)test(`SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (${mode}) (${locale})`,async()=>{
  await calculateDescribe();await chooseMode(mode)
  const mean=await metric('mean','Valor');await expect(mean).toHaveText(mode==='auto'?'5.52':precise)
  await exportAnalysis(page,'analysis.export.json')
@@ -336,7 +336,7 @@ for(const mode of ['auto','all'] as const)test(`SIM-3d exportación: Estadístic
  await expect(mean).toHaveText(mode==='auto'?'5.52':precise)
 })
 
-test('SIM-3d exportación: Perfil JSON y estadísticas detalladas CSV conservan sus resultados (es)',async()=>{
+for(const locale of ['es','en-XA'] as const)test(`SIM-3d exportación: Perfil JSON y estadísticas detalladas CSV conservan sus resultados (${locale})`,async()=>{
  const more=await explorer(2);await expect(profileValue(more,'Media')).toHaveText('5.52')
  await exportAnalysis(page,'analysis.export.json')
  const jsonPath=join(folder,'exports','precision.analisis.json')
