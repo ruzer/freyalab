@@ -527,7 +527,12 @@ test('exploración CSV: perfil, frecuencias, distribución y Pearson conservan d
  expect(await distribution.locator('tbody tr td:last-child').allTextContents()).toEqual(['1','5','1','1'])
  await explorer.getByRole('button',{name:'Correlación',exact:true}).click();await explorer.getByLabel('Columna para correlación',{exact:true}).selectOption('1')
  await explorer.getByRole('button',{name:'Explorar columna',exact:true}).click();await expect(explorer.getByLabel('Correlación de Pearson')).toContainText('Pares numéricos de la misma fila8')
- await expect(explorer.getByLabel('Correlación de Pearson')).toContainText('Pearson con 2. Doble1')
+ const pearson=explorer.getByLabel('Correlación de Pearson')
+ await expect(pearson.locator('dt').first()).toHaveText('Pearson con 2. Doble')
+ const coefficient=pearson.locator('dd').first(),raw=Number(await coefficient.locator('[data-analysis-value]').getAttribute('data-analysis-value'))
+ expect(raw).toBeCloseTo(1,14)
+ // Automático no redondea el residuo del motor a un extremo que no devolvió.
+ await expect(coefficient).toHaveText(String(raw));await expect(coefficient).toHaveAttribute('title','Valor completo: '+String(raw))
  for(const theme of ['dark','light']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);await page.screenshot({animations:'disabled',path:test.info().outputPath(`csv-exploration-${theme}-1440x900.png`)})}
  await page.setViewportSize({width:1280,height:800});await explorer.getByLabel('Columna para correlación',{exact:true}).focus();await page.screenshot({animations:'disabled',path:test.info().outputPath('csv-exploration-light-1280x800.png')})
  await showTable(page);await page.getByLabel('Buscar en tabla',{exact:true}).fill('00000');await expect(page.locator('footer')).toContainText('1 de 8 filas');await showPanel(page,'Estadísticas')

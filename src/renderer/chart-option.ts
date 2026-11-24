@@ -4,6 +4,7 @@ import {format} from 'echarts/core'
 import type {ChartData,ChartOptions} from '../shared/charts'
 import {chartLabels} from '../shared/charts'
 import {chartTrendLine,chartTrendText} from '../shared/chart-trend'
+import type {AnalysisNumberMode} from '../shared/analysis-number-format'
 export const formatChartNumber=(value:number)=>formatNumber(value,{maximumSignificantDigits:12})
 export function chartOutlierValues(value:string|null):number[]{
  const values=JSON.parse(value??'[]') as unknown
@@ -19,7 +20,7 @@ export function chartSeries(data:ChartData){
  const values=[...new Set(data.rows.map(row=>row[index]))],labels=values.map(value=>short(label(value)))
  return values.map((value,i)=>({value,name:labels.filter(item=>item===labels[i]).length>1?`${i+1}. ${label(value)}`:label(value)}))
 }
-export function chartOption(data:ChartData,options:ChartOptions,colors:{text:string;background:string;accent:string;width:number;dark?:boolean;compact?:boolean},headers:string[]=[],scope='Documento completo',hiddenSeries:string[]=[]):EChartsOption{
+export function chartOption(data:ChartData,options:ChartOptions,colors:{text:string;background:string;accent:string;width:number;dark?:boolean;compact?:boolean;numberMode?:AnalysisNumberMode},headers:string[]=[],scope='Documento completo',hiddenSeries:string[]=[]):EChartsOption{
  const compact=colors.compact??false
  const palette=[colors.accent,...(colors.dark?['#efa657','#a3c66d','#ff8a91','#6fc6de','#65cba8','#fcb07a','#c294ee']:['#a05a00','#367220','#bc3447','#007f99','#00745c','#ac4c00','#8250b5'])]
  const symbols=['circle','rect','triangle','diamond','pin','arrow','roundRect','emptyCircle'] as const
@@ -51,7 +52,7 @@ export function chartOption(data:ChartData,options:ChartOptions,colors:{text:str
  if(options.kind==='histogram')return{...common,xAxis:categoryAxis(rows.map((r,i)=>`[${formatChartNumber(Number(r[0]))}, ${formatChartNumber(Number(r[2]))}${i===rows.length-1?']':')'}`)),series:[{type:'bar',label:direct,barCategoryGap:0,data:rows.map(r=>number(r[1]))}]}
  if(options.kind==='bar')return{...common,series:[{type:'bar',label:direct,data:rows.map(r=>number(r[1]))}]}
  if(options.kind==='line'||options.kind==='scatter'){
-  const trend=options.kind==='scatter'&&options.trend?data.trend:undefined,line=trend?chartTrendLine(trend):[],text=trend?chartTrendText(trend,headers,options,!compact):[],trendName=t('charts.trend.legend')
+  const trend=options.kind==='scatter'&&options.trend?data.trend:undefined,line=trend?chartTrendLine(trend):[],text=trend?chartTrendText(trend,headers,options,!compact,compact?colors.numberMode:undefined):[],trendName=t('charts.trend.legend')
   return{...common,...trend?{title:[...(Array.isArray(common.title)?common.title:common.title?[common.title]:[]),{text:text[0],left:85,right:40,top:compact?0:52,textStyle:{color:colors.text,fontSize:11,overflow:'break',width:450}}],grid:{left:85,right:40,top:compact?45:100,bottom:compact?60:85},aria:{enabled:true,label:{description:[(common.aria as {label:{description:string}}).label.description,...text].join(' ')}}}:{},...line.length?{legend:{data:[trendName],selected:{[trendName]:!hiddenSeries.includes(trendName)},top:compact?20:75,right:40,textStyle:{color:colors.text}}}:{},xAxis:{...xName,type:'value',scale:true,axisLabel:numericLabels,axisLine,splitLine},yAxis:{...yName,type:'value',scale:true,axisLabel:numericLabels,splitLine},series:options.kind==='line'?[{type:'line',label:direct,connectNulls:false,showSymbol:rows.length<100,data:rows.map(r=>[number(r[0]),number(r[1])])}]:[{type:'scatter',symbolSize:7,data:rows.map(r=>[number(r[0]),number(r[1])])},...line.length?[{name:trendName,type:'line' as const,data:line,showSymbol:false,lineStyle:{color:colors.text,type:'dashed' as const},itemStyle:{color:colors.text},z:3}]:[]]}
  }
  if(options.kind==='heatmap'){

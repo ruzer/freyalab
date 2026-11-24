@@ -107,7 +107,7 @@
   const begun=performance.now(),measured=Reflect.get(globalThis,'freyaAnalysisProfile')===true
   const rendered=()=>{chart?.off('rendered',rendered);analysisMeasure('chartRendered',begun);requestAnimationFrame(()=>requestAnimationFrame(()=>analysisMeasure('chartPainted',begun)))}
   try{
-   const css=getComputedStyle(element),prepared=chartOption(plotData!.data,$state.snapshot(options),{text:css.getPropertyValue('--text').trim(),background:css.getPropertyValue('--panel').trim(),accent:css.getPropertyValue('--accent').trim(),width:chart.getWidth(),dark:document.documentElement.classList.contains('dark'),compact},(doc.headers??[]).map((_,column)=>columnLabel(column)),scopeLabel,hiddenSeries)
+   const css=getComputedStyle(element),prepared=chartOption(plotData!.data,$state.snapshot(options),{text:css.getPropertyValue('--text').trim(),background:css.getPropertyValue('--panel').trim(),accent:css.getPropertyValue('--accent').trim(),width:chart.getWidth(),dark:document.documentElement.classList.contains('dark'),compact,numberMode},(doc.headers??[]).map((_,column)=>columnLabel(column)),scopeLabel,hiddenSeries)
    analysisMeasure('chartOptions',begun)
    if(measured)chart.on('rendered',rendered)
    const setting=performance.now();chart.setOption(prepared,{notMerge:true});analysisMeasure('chartSetOption',setting)
