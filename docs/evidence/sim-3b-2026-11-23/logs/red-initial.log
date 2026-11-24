@@ -1,0 +1,434 @@
+
+Running 6 tests using 1 worker
+
+(node:28204) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:75:1 › SIM-3b: la previa de columna incluye las ocultas, marca espacios marginales y cancelar no edita (2.1s)
+(node:28224) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:87:1 › SIM-3b: quitar espacios desde la cabecera limpia toda la columna, Frecuencias lo confirma y un deshacer restaura (15.9s)
+(node:28306) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:105:1 › SIM-3b: Mayúsculas desde Limpiar incluye las filas ocultas por búsqueda y conserva espacios, ID y otras columnas (15.9s)
+(node:28403) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  4 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:114:1 › SIM-3b: Minúsculas desde la cabecera incluye las filas ocultas por filtro y conserva espacios, ID y otras columnas (15.9s)
+(node:28531) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  5 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:123:1 › SIM-3b: sin filtro el alcance omite las filas ocultas y cancelar conserva filas, revisión y archivo (1.4s)
+(node:28544) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  6 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:132:1 › SIM-3b: las limpiezas de filas marcadas y de rango mantienen su selección sin alcanzar filas ocultas (2.4s)
+
+
+  1) [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:75:1 › SIM-3b: la previa de columna incluye las ocultas, marca espacios marginales y cancelar no edita
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Alcance: toda la columna · 12 filas, también las 8 que oculta el filtro."
+    Received string:    "Quitar espacios en la columna «Carrera»·
+    Alcance: columna «Carrera» · 4 filas de la vista actual. 8 filas ocultas por búsqueda o filtros no se modifican. Los encabezados se conservan. Un paso de deshacer.·
+    Vista previa·
+    1 de 4 celdas cambiarán.·
+    Hasta ocho ejemplos; textos abreviados a 256 caracteres.
+    Fila / columna	Antes	Después
+    2 / 2·
+     INGENIERÍA··
+    INGENIERÍA·
+    La preparación se puede cancelar. El cambio final se aplica completo y se puede deshacer. Cerrar mientras se aplica solicita cancelación y espera su resultado.·
+    Aplicar cambio
+    Cancelar"
+
+      75 | test('SIM-3b: la previa de columna incluye las ocultas, marca espacios marginales y cancelar no edita',async()=>{
+      76 |  const opened=await open();await filterCity();const dialog=await columnClean('trim','toolbar')
+    > 77 |  expect.soft(await dialog.innerText()).toContain('Alcance: toda la columna · 12 filas, también las 8 que oculta el filtro.')
+         |                                        ^
+      78 |  expect.soft(await dialog.getByRole('status').innerText()).toContain('6 de 12 celdas cambiarán.')
+      79 |  const samples=await dialog.locator('.preview-scroll tbody tr').evaluateAll(rows=>rows.map(row=>Array.from(row.querySelectorAll('th,td'),cell=>cell.textContent)))
+      80 |  expect.soft(samples).toContainEqual(['3 / 2','·INGENIERÍA','INGENIERÍA'])
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:77:40
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "6 de 12 celdas cambiarán."
+    Received string:    "1 de 4 celdas cambiarán."
+
+      76 |  const opened=await open();await filterCity();const dialog=await columnClean('trim','toolbar')
+      77 |  expect.soft(await dialog.innerText()).toContain('Alcance: toda la columna · 12 filas, también las 8 que oculta el filtro.')
+    > 78 |  expect.soft(await dialog.getByRole('status').innerText()).toContain('6 de 12 celdas cambiarán.')
+         |                                                            ^
+      79 |  const samples=await dialog.locator('.preview-scroll tbody tr').evaluateAll(rows=>rows.map(row=>Array.from(row.querySelectorAll('th,td'),cell=>cell.textContent)))
+      80 |  expect.soft(samples).toContainEqual(['3 / 2','·INGENIERÍA','INGENIERÍA'])
+      81 |  expect.soft(samples).toContainEqual(['4 / 2','psicologia·','psicologia'])
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:78:60
+
+    Error: expect(received).toContainEqual(expected) // deep equality
+
+    Expected value: ["3 / 2", "·INGENIERÍA", "INGENIERÍA"]
+    Received array: [["2 / 2", " INGENIERÍA", "INGENIERÍA"]]
+
+      78 |  expect.soft(await dialog.getByRole('status').innerText()).toContain('6 de 12 celdas cambiarán.')
+      79 |  const samples=await dialog.locator('.preview-scroll tbody tr').evaluateAll(rows=>rows.map(row=>Array.from(row.querySelectorAll('th,td'),cell=>cell.textContent)))
+    > 80 |  expect.soft(samples).toContainEqual(['3 / 2','·INGENIERÍA','INGENIERÍA'])
+         |                       ^
+      81 |  expect.soft(samples).toContainEqual(['4 / 2','psicologia·','psicologia'])
+      82 |  await unchanged(opened)
+      83 |  await dialog.getByRole('button',{name:'Cancelar',exact:true}).click();await expect(dialog).toHaveCount(0)
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:80:23
+
+    Error: expect(received).toContainEqual(expected) // deep equality
+
+    Expected value: ["4 / 2", "psicologia·", "psicologia"]
+    Received array: [["2 / 2", " INGENIERÍA", "INGENIERÍA"]]
+
+      79 |  const samples=await dialog.locator('.preview-scroll tbody tr').evaluateAll(rows=>rows.map(row=>Array.from(row.querySelectorAll('th,td'),cell=>cell.textContent)))
+      80 |  expect.soft(samples).toContainEqual(['3 / 2','·INGENIERÍA','INGENIERÍA'])
+    > 81 |  expect.soft(samples).toContainEqual(['4 / 2','psicologia·','psicologia'])
+         |                       ^
+      82 |  await unchanged(opened)
+      83 |  await dialog.getByRole('button',{name:'Cancelar',exact:true}).click();await expect(dialog).toHaveCount(0)
+      84 |  await unchanged(opened)
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:81:23
+
+    Error Context: test-results/sim3b-column-cleaning-SIM--9f681-ginales-y-cancelar-no-edita-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3b-column-cleaning-SIM--9f681-ginales-y-cancelar-no-edita-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3b-column-cleaning-SIM--9f681-ginales-y-cancelar-no-edita-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:87:1 › SIM-3b: quitar espacios desde la cabecera limpia toda la columna, Frecuencias lo confirma y un deshacer restaura
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 5
+    + Received  + 5
+
+    @@ -17,11 +17,11 @@
+          "9",
+          "Oaxaca",
+        ],
+        Array [
+          "003",
+    -     "psicologia",
+    +     "psicologia ",
+          "18",
+          "",
+        ],
+        Array [
+          "004",
+    @@ -35,17 +35,17 @@
+          "40",
+          "Mérida",
+        ],
+        Array [
+          "006",
+    -     "INGENIERÍA",
+    +     " INGENIERÍA",
+          "70",
+          "",
+        ],
+        Array [
+          "007",
+    -     "psicologia",
+    +     "psicologia ",
+          "55",
+          "Puebla",
+        ],
+        Array [
+          "008",
+    @@ -59,16 +59,16 @@
+          "100",
+          "Mérida",
+        ],
+        Array [
+          "011",
+    -     "INGENIERÍA",
+    +     " INGENIERÍA",
+          "35",
+          "Puebla",
+        ],
+        Array [
+          "012",
+    -     "psicologia",
+    +     "psicologia ",
+          "",
+          "",
+        ],
+      ]
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      88 |  const opened=await open();await filterCity();const dialog=await columnClean('trim','column')
+      89 |  await dialog.getByRole('button',{name:'Aplicar cambio',exact:true}).click();await expect(dialog).toHaveCount(0)
+    > 90 |  await expect.poll(()=>readTableRows(page,100)).toEqual(replaceCareers(opened.original,careers.trim))
+         |                                                 ^
+      91 |  expect((await state(opened.id))?.dirty).toBe(true);expect(await readFile(opened.path,'utf8')).toBe(opened.source)
+      92 |  const explorer=await openColumnExplorer(page)
+      93 |  await explorer.getByLabel('Columna para explorar',{exact:true}).selectOption('1')
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:90:49
+
+    Error Context: test-results/sim3b-column-cleaning-SIM--74abc-irma-y-un-deshacer-restaura-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3b-column-cleaning-SIM--74abc-irma-y-un-deshacer-restaura-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3b-column-cleaning-SIM--74abc-irma-y-un-deshacer-restaura-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:105:1 › SIM-3b: Mayúsculas desde Limpiar incluye las filas ocultas por búsqueda y conserva espacios, ID y otras columnas
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "9 de 12 celdas cambiarán."
+    Received string:    "3 de 4 celdas cambiarán."
+
+      105 | test('SIM-3b: Mayúsculas desde Limpiar incluye las filas ocultas por búsqueda y conserva espacios, ID y otras columnas',async()=>{
+      106 |  const opened=await open();await searchCity();const dialog=await columnClean('upper','toolbar')
+    > 107 |  expect.soft(await dialog.getByRole('status').innerText()).toContain('9 de 12 celdas cambiarán.')
+          |                                                            ^
+      108 |  await dialog.getByRole('button',{name:'Aplicar cambio',exact:true}).click();await expect(dialog).toHaveCount(0)
+      109 |  await expect.poll(()=>readTableRows(page,100)).toEqual(replaceCareers(opened.original,careers.upper))
+      110 |  expect(await readFile(opened.path,'utf8')).toBe(opened.source)
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:107:60
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 6
+    + Received  + 6
+
+    @@ -5,11 +5,11 @@
+          "100",
+          "Oaxaca",
+        ],
+        Array [
+          "010",
+    -     "INGENIERÍA",
+    +     "ingeniería",
+          "18",
+          "Puebla",
+        ],
+        Array [
+          "002",
+    @@ -17,11 +17,11 @@
+          "9",
+          "Oaxaca",
+        ],
+        Array [
+          "003",
+    -     "PSICOLOGIA ",
+    +     "psicologia ",
+          "18",
+          "",
+        ],
+        Array [
+          "004",
+    @@ -29,11 +29,11 @@
+          "25",
+          "Oaxaca",
+        ],
+        Array [
+          "005",
+    -     "INGENIERÍA",
+    +     "ingeniería",
+          "40",
+          "Mérida",
+        ],
+        Array [
+          "006",
+    @@ -41,11 +41,11 @@
+          "70",
+          "",
+        ],
+        Array [
+          "007",
+    -     "PSICOLOGIA ",
+    +     "psicologia ",
+          "55",
+          "Puebla",
+        ],
+        Array [
+          "008",
+    @@ -53,11 +53,11 @@
+          "20",
+          "Oaxaca",
+        ],
+        Array [
+          "009",
+    -     "INGENIERÍA",
+    +     "ingeniería",
+          "100",
+          "Mérida",
+        ],
+        Array [
+          "011",
+    @@ -65,10 +65,10 @@
+          "35",
+          "Puebla",
+        ],
+        Array [
+          "012",
+    -     "PSICOLOGIA ",
+    +     "psicologia ",
+          "",
+          "",
+        ],
+      ]
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      107 |  expect.soft(await dialog.getByRole('status').innerText()).toContain('9 de 12 celdas cambiarán.')
+      108 |  await dialog.getByRole('button',{name:'Aplicar cambio',exact:true}).click();await expect(dialog).toHaveCount(0)
+    > 109 |  await expect.poll(()=>readTableRows(page,100)).toEqual(replaceCareers(opened.original,careers.upper))
+          |                                                 ^
+      110 |  expect(await readFile(opened.path,'utf8')).toBe(opened.source)
+      111 |  await undo(opened)
+      112 | })
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:109:49
+
+    Error Context: test-results/sim3b-column-cleaning-SIM--d0106-spacios-ID-y-otras-columnas-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3b-column-cleaning-SIM--d0106-spacios-ID-y-otras-columnas-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3b-column-cleaning-SIM--d0106-spacios-ID-y-otras-columnas-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:114:1 › SIM-3b: Minúsculas desde la cabecera incluye las filas ocultas por filtro y conserva espacios, ID y otras columnas
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "6 de 12 celdas cambiarán."
+    Received string:    "4 de 4 celdas cambiarán."
+
+      114 | test('SIM-3b: Minúsculas desde la cabecera incluye las filas ocultas por filtro y conserva espacios, ID y otras columnas',async()=>{
+      115 |  const opened=await open();await filterCity();const dialog=await columnClean('lower','column')
+    > 116 |  expect.soft(await dialog.getByRole('status').innerText()).toContain('6 de 12 celdas cambiarán.')
+          |                                                            ^
+      117 |  await dialog.getByRole('button',{name:'Aplicar cambio',exact:true}).click();await expect(dialog).toHaveCount(0)
+      118 |  await expect.poll(()=>readTableRows(page,100)).toEqual(replaceCareers(opened.original,careers.lower))
+      119 |  expect(await readFile(opened.path,'utf8')).toBe(opened.source)
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:116:60
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 2
+    + Received  + 2
+
+    @@ -35,11 +35,11 @@
+          "40",
+          "Mérida",
+        ],
+        Array [
+          "006",
+    -     " ingeniería",
+    +     " INGENIERÍA",
+          "70",
+          "",
+        ],
+        Array [
+          "007",
+    @@ -59,11 +59,11 @@
+          "100",
+          "Mérida",
+        ],
+        Array [
+          "011",
+    -     " ingeniería",
+    +     " INGENIERÍA",
+          "35",
+          "Puebla",
+        ],
+        Array [
+          "012",
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      116 |  expect.soft(await dialog.getByRole('status').innerText()).toContain('6 de 12 celdas cambiarán.')
+      117 |  await dialog.getByRole('button',{name:'Aplicar cambio',exact:true}).click();await expect(dialog).toHaveCount(0)
+    > 118 |  await expect.poll(()=>readTableRows(page,100)).toEqual(replaceCareers(opened.original,careers.lower))
+          |                                                 ^
+      119 |  expect(await readFile(opened.path,'utf8')).toBe(opened.source)
+      120 |  await undo(opened)
+      121 | })
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:118:49
+
+    Error Context: test-results/sim3b-column-cleaning-SIM--447ba-spacios-ID-y-otras-columnas-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3b-column-cleaning-SIM--447ba-spacios-ID-y-otras-columnas-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3b-column-cleaning-SIM--447ba-spacios-ID-y-otras-columnas-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:123:1 › SIM-3b: sin filtro el alcance omite las filas ocultas y cancelar conserva filas, revisión y archivo
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Alcance: toda la columna · 12 filas."
+    Received string:    "Quitar espacios en la columna «Carrera»·
+    Alcance: columna «Carrera» · 12 filas de la vista actual. Los encabezados se conservan. Un paso de deshacer.·
+    Vista previa·
+    6 de 12 celdas cambiarán.·
+    Hasta ocho ejemplos; textos abreviados a 256 caracteres.
+    Fila / columna	Antes	Después
+    3 / 2·
+     INGENIERÍA··
+    INGENIERÍA·
+    4 / 2·
+    psicologia···
+    psicologia·
+    7 / 2·
+     INGENIERÍA··
+    INGENIERÍA·
+    8 / 2·
+    psicologia···
+    psicologia·
+    11 / 2·
+     INGENIERÍA··
+    INGENIERÍA·
+    12 / 2·
+    psicologia···
+    psicologia·
+    La preparación se puede cancelar. El cambio final se aplica completo y se puede deshacer. Cerrar mientras se aplica solicita cancelación y espera su resultado.·
+    Aplicar cambio
+    Cancelar"
+
+      123 | test('SIM-3b: sin filtro el alcance omite las filas ocultas y cancelar conserva filas, revisión y archivo',async()=>{
+      124 |  const opened=await open(),dialog=await columnClean('trim','toolbar'),text=await dialog.innerText()
+    > 125 |  expect.soft(text).toContain('Alcance: toda la columna · 12 filas.')
+          |                    ^
+      126 |  expect.soft(text).not.toContain('que oculta el filtro')
+      127 |  expect.soft(await dialog.getByRole('status').innerText()).toContain('6 de 12 celdas cambiarán.')
+      128 |  await dialog.getByRole('button',{name:'Cancelar',exact:true}).click();await expect(dialog).toHaveCount(0)
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:125:20
+
+    Error Context: test-results/sim3b-column-cleaning-SIM--a74bf-va-filas-revisión-y-archivo-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3b-column-cleaning-SIM--a74bf-va-filas-revisión-y-archivo-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3b-column-cleaning-SIM--a74bf-va-filas-revisión-y-archivo-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5 failed
+    [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:75:1 › SIM-3b: la previa de columna incluye las ocultas, marca espacios marginales y cancelar no edita
+    [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:87:1 › SIM-3b: quitar espacios desde la cabecera limpia toda la columna, Frecuencias lo confirma y un deshacer restaura
+    [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:105:1 › SIM-3b: Mayúsculas desde Limpiar incluye las filas ocultas por búsqueda y conserva espacios, ID y otras columnas
+    [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:114:1 › SIM-3b: Minúsculas desde la cabecera incluye las filas ocultas por filtro y conserva espacios, ID y otras columnas
+    [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:123:1 › SIM-3b: sin filtro el alcance omite las filas ocultas y cancelar conserva filas, revisión y archivo
+  1 passed (55.5s)

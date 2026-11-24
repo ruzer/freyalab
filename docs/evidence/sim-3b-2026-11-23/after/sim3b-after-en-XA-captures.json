@@ -1,0 +1,83 @@
+{
+  "phase": "after",
+  "locale": "en-XA",
+  "fixture": "tests/fixtures/sim-3-students.csv",
+  "fixtureSha256": "89b3e7535f9381ca3f0126471d0f361e275d9b732a0d75f04aa211137a76d427",
+  "rows": 12,
+  "visible": 4,
+  "hidden": 8,
+  "scope": "[Scöpë: thë ëntïrë cölümn · 12 röws, ïnclüdïng thë 8 hïddën by thë fïltër.~~~~~~~~~~~~~~~~~~~~~~~~~~] Un paso de deshacer.",
+  "samples": [
+    [
+      "3 / 2",
+      "·INGENIERÍA",
+      "INGENIERÍA"
+    ],
+    [
+      "4 / 2",
+      "psicologia·",
+      "psicologia"
+    ],
+    [
+      "7 / 2",
+      "·INGENIERÍA",
+      "INGENIERÍA"
+    ],
+    [
+      "8 / 2",
+      "psicologia·",
+      "psicologia"
+    ],
+    [
+      "11 / 2",
+      "·INGENIERÍA",
+      "INGENIERÍA"
+    ],
+    [
+      "12 / 2",
+      "psicologia·",
+      "psicologia"
+    ]
+  ],
+  "cancelledBy": "Escape",
+  "sourceUnchanged": true,
+  "revisionUnchanged": true,
+  "captures": [
+    {
+      "file": "sim3b-after-column-preview-en-XA-light-1440x900.png",
+      "sha256": "15d962f7200ba30c59f35747c8a1cf524363dff39c1608cb5cfef83ed4eb72eb",
+      "bytes": 119718,
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "sim3b-after-column-preview-en-XA-light-1280x720.png",
+      "sha256": "a84a92a4b5df3345c7c5b4e367bfb305214542b93b258cfa4acb05e5d0b03b57",
+      "bytes": 106852,
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "file": "sim3b-after-column-preview-en-XA-dark-1440x900.png",
+      "sha256": "c964a66ab75b9d816c98f6575709d337f8b5d7393fc87f62596560f12325cf09",
+      "bytes": 116516,
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "sim3b-after-column-preview-en-XA-dark-1280x720.png",
+      "sha256": "587b981d1b7c75f54a7d4fb1eb117d4e8d46174f462eebd2b4aa81dffebdf8f9",
+      "bytes": 103850,
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720
+    }
+  ]
+}

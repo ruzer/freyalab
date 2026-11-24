@@ -1,0 +1,131 @@
+
+Running 2 tests using 1 worker
+
+(node:31914) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:87:1 › SIM-3b: quitar espacios desde la cabecera limpia toda la columna, Frecuencias lo confirma y un deshacer restaura (16.5s)
+(node:31965) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:163:1 › SIM-3b: con cero filas visibles la limpieza de columna sigue disponible para las doce y cancelar conserva la vista (16.9s)
+
+
+  1) [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:87:1 › SIM-3b: quitar espacios desde la cabecera limpia toda la columna, Frecuencias lo confirma y un deshacer restaura
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 5
+    + Received  + 5
+
+    @@ -17,11 +17,11 @@
+          "9",
+          "Oaxaca",
+        ],
+        Array [
+          "003",
+    -     "psicologia",
+    +     "psicologia ",
+          "18",
+          "",
+        ],
+        Array [
+          "004",
+    @@ -35,17 +35,17 @@
+          "40",
+          "Mérida",
+        ],
+        Array [
+          "006",
+    -     "INGENIERÍA",
+    +     " INGENIERÍA",
+          "70",
+          "",
+        ],
+        Array [
+          "007",
+    -     "psicologia",
+    +     "psicologia ",
+          "55",
+          "Puebla",
+        ],
+        Array [
+          "008",
+    @@ -59,16 +59,16 @@
+          "100",
+          "Mérida",
+        ],
+        Array [
+          "011",
+    -     "INGENIERÍA",
+    +     " INGENIERÍA",
+          "35",
+          "Puebla",
+        ],
+        Array [
+          "012",
+    -     "psicologia",
+    +     "psicologia ",
+          "",
+          "",
+        ],
+      ]
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      92 |  const dialog=await columnClean('trim','column')
+      93 |  await dialog.getByRole('button',{name:'Aplicar cambio',exact:true}).click();await expect(dialog).toHaveCount(0)
+    > 94 |  await expect.poll(()=>readTableRows(page,100)).toEqual(replaceCareers(opened.original,careers.trim))
+         |                                                 ^
+      95 |  await expect(page.getByRole('textbox',{name:'Filtrar Ciudad',exact:true})).toHaveValue('Oaxaca')
+      96 |  await expect(age).toHaveAttribute('aria-sort','ascending')
+      97 |  await expect(page.getByRole('gridcell',{name:/^Fila \d+, ID$/})).toHaveText(['002','008','004','001'])
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:94:49
+
+    Error Context: test-results/sim3b-column-cleaning-SIM--74abc-irma-y-un-deshacer-restaura-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3b-column-cleaning-SIM--74abc-irma-y-un-deshacer-restaura-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3b-column-cleaning-SIM--74abc-irma-y-un-deshacer-restaura-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:163:1 › SIM-3b: con cero filas visibles la limpieza de columna sigue disponible para las doce y cancelar conserva la vista
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByRole('menu').last().getByRole('menuitem', { name: 'Quitar espacios…', exact: true })
+    Expected: "false"
+    Received: "true"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('menu').last().getByRole('menuitem', { name: 'Quitar espacios…', exact: true }) with timeout 15000ms
+      - waiting for getByRole('menu').last().getByRole('menuitem', { name: 'Quitar espacios…', exact: true })
+        34 × locator resolved to <button tabindex="-1" role="menuitem" aria-disabled="true" class="svelte-auiwhu" aria-describedby="control-reason-context" title="Quitar espacios al inicio y al final en toda la columna de la vista actual · vista previa antes → después, recuento y un paso de deshacer · Esta acción necesita otro contexto. Revisa su descripción y la selección actual.">Quitar espacios…</button>
+           - unexpected value "true"
+
+
+      172 |  await columnButton('Carrera').click();await columnMenu().getByRole('menuitem',{name:'Limpiar',exact:true}).click()
+      173 |  const trim=page.getByRole('menu').last().getByRole('menuitem',{name:'Quitar espacios…',exact:true})
+    > 174 |  await expect(trim).toHaveAttribute('aria-disabled','false');await trim.click()
+          |                     ^
+      175 |  const dialog=page.getByRole('dialog',{name:'Quitar espacios en la columna «Carrera»',exact:true})
+      176 |  await expect(dialog.getByRole('button',{name:'Aplicar cambio',exact:true})).toBeEnabled()
+      177 |  expect(await dialog.innerText()).toContain('Alcance: toda la columna · 12 filas, también las 12 que oculta el filtro.')
+        at <worktree>/tests/e2e/sim3b-column-cleaning.spec.ts:174:21
+
+    Error Context: test-results/sim3b-column-cleaning-SIM--ede12--cancelar-conserva-la-vista-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3b-column-cleaning-SIM--ede12--cancelar-conserva-la-vista-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3b-column-cleaning-SIM--ede12--cancelar-conserva-la-vista-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:87:1 › SIM-3b: quitar espacios desde la cabecera limpia toda la columna, Frecuencias lo confirma y un deshacer restaura
+    [csv] › tests/e2e/sim3b-column-cleaning.spec.ts:163:1 › SIM-3b: con cero filas visibles la limpieza de columna sigue disponible para las doce y cancelar conserva la vista

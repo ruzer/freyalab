@@ -1,0 +1,58 @@
+{
+  "phase": "before",
+  "locale": "en-XA",
+  "fixture": "tests/fixtures/sim-3-students.csv",
+  "fixtureSha256": "89b3e7535f9381ca3f0126471d0f361e275d9b732a0d75f04aa211137a76d427",
+  "rows": 12,
+  "visible": 4,
+  "hidden": 8,
+  "scope": "Alcance: columna «Carrera» · 4 filas de la vista actual. 8 filas ocultas por búsqueda o filtros no se modifican. Los encabezados se conservan. Un paso de deshacer.",
+  "samples": [
+    [
+      "2 / 2",
+      " INGENIERÍA",
+      "INGENIERÍA"
+    ]
+  ],
+  "cancelledBy": "Escape",
+  "sourceUnchanged": true,
+  "revisionUnchanged": true,
+  "captures": [
+    {
+      "file": "sim3b-before-column-preview-en-XA-light-1440x900.png",
+      "sha256": "c023eef4b4c229f249093c2bafc7688d436cf02bc0dc983a11b20c833aa76c1f",
+      "bytes": 112597,
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "sim3b-before-column-preview-en-XA-light-1280x720.png",
+      "sha256": "85b6bda3e79d4f7782bea0fb44d0602eacf7fc2a776601370271cf0c1a72cf96",
+      "bytes": 101547,
+      "locale": "en-XA",
+      "theme": "light",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "file": "sim3b-before-column-preview-en-XA-dark-1440x900.png",
+      "sha256": "9f938fbf0eaa30fea80b037651ce9efe323afacd8175c52361288b11935932b3",
+      "bytes": 108882,
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "sim3b-before-column-preview-en-XA-dark-1280x720.png",
+      "sha256": "7fdcd64cb6bc26fcc200a8435fb8dedcff0b3296dfd61a7902797640d54afb72",
+      "bytes": 97705,
+      "locale": "en-XA",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720
+    }
+  ]
+}

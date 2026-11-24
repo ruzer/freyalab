@@ -1,0 +1,83 @@
+{
+  "phase": "after",
+  "locale": "es",
+  "fixture": "tests/fixtures/sim-3-students.csv",
+  "fixtureSha256": "89b3e7535f9381ca3f0126471d0f361e275d9b732a0d75f04aa211137a76d427",
+  "rows": 12,
+  "visible": 4,
+  "hidden": 8,
+  "scope": "Alcance: toda la columna · 12 filas, también las 8 que oculta el filtro. Un paso de deshacer.",
+  "samples": [
+    [
+      "3 / 2",
+      "·INGENIERÍA",
+      "INGENIERÍA"
+    ],
+    [
+      "4 / 2",
+      "psicologia·",
+      "psicologia"
+    ],
+    [
+      "7 / 2",
+      "·INGENIERÍA",
+      "INGENIERÍA"
+    ],
+    [
+      "8 / 2",
+      "psicologia·",
+      "psicologia"
+    ],
+    [
+      "11 / 2",
+      "·INGENIERÍA",
+      "INGENIERÍA"
+    ],
+    [
+      "12 / 2",
+      "psicologia·",
+      "psicologia"
+    ]
+  ],
+  "cancelledBy": "Escape",
+  "sourceUnchanged": true,
+  "revisionUnchanged": true,
+  "captures": [
+    {
+      "file": "sim3b-after-column-preview-es-light-1440x900.png",
+      "sha256": "14a631dd2bb964c5778404dcfad2938759cc7046e859cbe70981add5411e2ac1",
+      "bytes": 113916,
+      "locale": "es",
+      "theme": "light",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "sim3b-after-column-preview-es-light-1280x720.png",
+      "sha256": "c20b8716e376352cf0ce8f8b2d7458e1c8da780330141cdb2d3e8914ed697342",
+      "bytes": 103940,
+      "locale": "es",
+      "theme": "light",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "file": "sim3b-after-column-preview-es-dark-1440x900.png",
+      "sha256": "f4f7bc483c016a098899a8598b424d45fce56cb7f5931ab7e7dc3a1a3a9bc89e",
+      "bytes": 110347,
+      "locale": "es",
+      "theme": "dark",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "sim3b-after-column-preview-es-dark-1280x720.png",
+      "sha256": "86eb42421161a5a25d9624cf71779dcb37bb9c956a8f3ca633a3f1a101ddfa2a",
+      "bytes": 100417,
+      "locale": "es",
+      "theme": "dark",
+      "width": 1280,
+      "height": 720
+    }
+  ]
+}
