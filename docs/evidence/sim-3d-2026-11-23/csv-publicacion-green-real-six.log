@@ -1,0 +1,13 @@
+
+Running 6 tests using 1 worker
+
+(node:89258) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [csv] › tests/e2e/sim3d-decimals.spec.ts:331:87 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (auto) (es) (1.9s)
+  ✓  2 [csv] › tests/e2e/sim3d-decimals.spec.ts:331:87 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (all) (es) (1.8s)
+  ✓  3 [csv] › tests/e2e/sim3d-decimals.spec.ts:331:87 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (auto) (en-XA) (1.7s)
+  ✓  4 [csv] › tests/e2e/sim3d-decimals.spec.ts:331:87 › SIM-3d exportación: Estadísticas CSV y JSON conservan valores completos (all) (en-XA) (1.8s)
+  ✓  5 [csv] › tests/e2e/sim3d-decimals.spec.ts:353:45 › SIM-3d exportación: Perfil JSON y estadísticas detalladas CSV conservan sus resultados (es) (1.9s)
+  ✓  6 [csv] › tests/e2e/sim3d-decimals.spec.ts:353:45 › SIM-3d exportación: Perfil JSON y estadísticas detalladas CSV conservan sus resultados (en-XA) (1.9s)
+
+  6 passed (11.3s)

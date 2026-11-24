@@ -25,6 +25,17 @@ const workspace=()=>page.locator('.analysis-workspace:not([hidden])')
 const decimalSelect=()=>workspace().getByRole('combobox',{name:language==='es'?'Decimales':tr('analysis.decimals.label'),exact:true})
 const describe=()=>workspace().locator('.describe-panel')
 
+async function waitForCompleteCsv(file:string,columns:string[],rows:(string|number|null)[][]){
+ const {parse}=await import('csv-parse/sync')
+ const expected=[columns,...rows.map(row=>row.map(value=>value===null?'':String(value)))]
+ let csv:string[][]=[]
+ await expect.poll(async()=>{
+  try{csv=parse(await readFile(file,'utf8')) as string[][];return csv}
+  catch(error){if((error as NodeJS.ErrnoException).code==='ENOENT')return null;throw error}
+ }).toEqual(expected)
+ return csv
+}
+
 async function launch(){
  const {ELECTRON_RUN_AS_NODE:_,FREYALAB_TEST_OPEN:__,...env}=process.env
  app=await electron.launch({chromiumSandbox:true,executablePath:process.env.FREYALAB_EXECUTABLE||electronPath as unknown as string,args:process.env.FREYALAB_EXECUTABLE?[]:[resolve('out/main/index.js')],env:{...env as Record<string,string>,FREYALAB_TEST:'1',FREYALAB_LANG:language,FREYALAB_USER_DATA:join(folder,'profile'),FREYALAB_TEST_EXPORT_DIR:join(folder,'exports')}})
@@ -332,7 +343,7 @@ for(const locale of ['es','en-XA'] as const)for(const mode of ['auto','all'] as 
  await exportAnalysis(page,'analysis.export.csv')
  const csvPath=join(folder,'exports','precision.analisis.csv'),contextPath=csvPath+'.contexto.json'
  await expect.poll(()=>readFile(contextPath,'utf8').then(JSON.parse).catch(()=>null)).not.toBeNull()
- const {parse}=await import('csv-parse/sync'),csv=parse(await readFile(csvPath,'utf8')) as string[][]
+ const csv=await waitForCompleteCsv(csvPath,data.columns,data.rows)
  expect(csv[0]).toEqual(data.columns)
  expect(csv.slice(1)).toEqual(data.rows.map(row=>row.map(value=>value===null?'':String(value))))
  const context=JSON.parse(await readFile(contextPath,'utf8'));expect(context.rows).toEqual(data.rows)
@@ -358,6 +369,6 @@ for(const locale of ['es','en-XA'] as const)test(`SIM-3d exportación: Perfil JS
  expect(context.metadata.kind).toBe('statistics')
  const meanIndex=context.columns.indexOf(tr('statistics.field.average'));expect(meanIndex).toBeGreaterThan(0)
  expect(context.rows.find(row=>row[0]==='Valor')?.[meanIndex]).toBe(Number(precise))
- const {parse}=await import('csv-parse/sync'),csv=parse(await readFile(csvPath,'utf8')) as string[][]
+ const csv=await waitForCompleteCsv(csvPath,context.columns,context.rows)
  expect(csv.slice(1)).toEqual(context.rows.map(row=>row.map(value=>value===null?'':String(value))))
 })
