@@ -57,7 +57,7 @@ function command(name:string,values:ReturnType<typeof context>){
 function gatePatterns(){
  const gate=workflow.split('\n  gate:\n')[1]
  if(!gate)throw new Error('Falta Gate.')
- const patterns=gate.match(/case "\$AREAS_RESULT\/\$DOCS_ONLY\/\$VERIFY_RESULT\/\$UBUNTU\/\$WINDOWS_SHELL_MD\/\$WINDOWS_CSV\/\$MACOS" in\n\s+([^\n]+)\) exit 0 ;;/)?.[1]
+ const patterns=gate.match(/case "\$AREAS_RESULT\/\$DOCS_ONLY\/\$VERIFY_RESULT\/\$UBUNTU\/\$WINDOWS_SHELL_MD\/\$WINDOWS_CSV\/\$MACOS_SHELL_MD\/\$MACOS_CSV" in\n\s+([^\n]+)\) exit 0 ;;/)?.[1]
  if(!patterns)throw new Error('Falta la condición de aceptación del Gate real.')
  const fallback=gate.split(/\n\s*esac\n/)[1]
  if(!fallback||!/^\s*exit 1\s*$/m.test(fallback)||/^\s*exit 0\b/m.test(fallback))throw new Error('Gate debe rechazar los estados no aceptados.')
@@ -161,13 +161,13 @@ it('cada confirmación Windows solo la puede producir su propia parte aprobada',
 })
 
 it.each(['failure','cancelled','skipped'])('Gate rechaza Verify %s aunque ambas partes Windows hayan producido passed',result=>{
- expect(gatePatterns()).not.toContain(`success/false/${result}/passed/passed/passed/passed`)
+ expect(gatePatterns()).not.toContain(`success/false/${result}/passed/passed/passed/passed/passed`)
 })
 
 it('Gate exige ambas partes Windows y las otras plataformas; documentación conserva su excepción',()=>{
  const gate=workflow.split('\n  gate:\n')[1]
  expect(gate).toContain('needs: [areas, verify]')
- for(const [name,output] of [['VERIFY_RESULT','result'],['UBUNTU','outputs.ubuntu'],['WINDOWS_SHELL_MD','outputs.windows_shell_md'],['WINDOWS_CSV','outputs.windows_csv'],['MACOS','outputs.macos']]){
+ for(const [name,output] of [['VERIFY_RESULT','result'],['UBUNTU','outputs.ubuntu'],['WINDOWS_SHELL_MD','outputs.windows_shell_md'],['WINDOWS_CSV','outputs.windows_csv'],['MACOS_SHELL_MD','outputs.macos_shell_md'],['MACOS_CSV','outputs.macos_csv']]){
   expect(gate).toContain(`${name}: \${{ needs.verify.${output} }}`)
  }
  const condition=gate.match(/^    if: (.+)$/m)?.[1]
@@ -175,11 +175,11 @@ it('Gate exige ambas partes Windows y las otras plataformas; documentación cons
  expect(expression<boolean>(condition!,{github:{event_name:'pull_request'}})).toBe(true)
  expect(expression<boolean>(condition!,{github:{event_name:'push'}})).toBe(false)
  const accepted=gatePatterns()
- expect(accepted).toEqual(['success/true/skipped////','success/false/success/passed/passed/passed/passed'])
- for(const index of [3,4,5,6])for(const missing of ['','failure','cancelled','skipped']){
-  const values=['success','false','success','passed','passed','passed','passed']
+ expect(accepted).toEqual(['success/true/skipped/////','success/false/success/passed/passed/passed/passed/passed'])
+ for(const index of [3,4,5,6,7])for(const missing of ['','failure','cancelled','skipped']){
+  const values=['success','false','success','passed','passed','passed','passed','passed']
   values[index]=missing
   expect(accepted).not.toContain(values.join('/'))
  }
- expect(accepted).not.toContain('failure/false/success/passed/passed/passed/passed')
+ expect(accepted).not.toContain('failure/false/success/passed/passed/passed/passed/passed')
 })

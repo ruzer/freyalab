@@ -67,16 +67,16 @@ jobs:
       fail-fast: false
       matrix:
         # Windows reparte rápidas por proyecto; shell-md conserva serial y paquete para equilibrar la corrida lenta.
-        # Intel reparte main/nocturna; Ubuntu reparte main; ARM separa el paquete cuando corresponde.
+        # Intel reparte main/nocturna; Ubuntu reparte main; ARM reparte desarrollo y conserva el paquete separado.
         include: >-
           ${{ fromJSON(
             github.event_name == 'schedule' &&
             '[{"os":"macos-15-intel","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15-intel","part":"csv","projects":"--project=csv"},{"os":"macos-15-intel","part":"package","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
             github.event_name == 'pull_request' && needs.areas.outputs.package == 'true' &&
-            '[{"os":"ubuntu-24.04","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15"},{"os":"macos-15","part":"package","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
+            '[{"os":"ubuntu-24.04","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"package","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
             github.event_name == 'pull_request' &&
-            '[{"os":"ubuntu-24.04","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15"}]' ||
-            '[{"os":"ubuntu-24.04","part":"shell-md","projects":"--project=shell --project=md"},{"os":"ubuntu-24.04","part":"csv-package","projects":"--project=csv","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15"},{"os":"macos-15","part":"package","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"},{"os":"macos-15-intel","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15-intel","part":"csv","projects":"--project=csv"},{"os":"macos-15-intel","part":"package","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]'
+            '[{"os":"ubuntu-24.04","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15","part":"csv","projects":"--project=csv"}]' ||
+            '[{"os":"ubuntu-24.04","part":"shell-md","projects":"--project=shell --project=md"},{"os":"ubuntu-24.04","part":"csv-package","projects":"--project=csv","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"package","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"},{"os":"macos-15-intel","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15-intel","part":"csv","projects":"--project=csv"},{"os":"macos-15-intel","part":"package","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]'
           ) }}
     runs-on: ${{ matrix.os }}
     env:
@@ -86,7 +86,8 @@ jobs:
       ubuntu: ${{ github.event_name == 'pull_request' && matrix.os == 'ubuntu-24.04' && job.status == 'success' && 'passed' || '' }}
       windows_shell_md: ${{ github.event_name == 'pull_request' && matrix.os == 'windows-2025' && matrix.part == 'shell-md' && job.status == 'success' && 'passed' || '' }}
       windows_csv: ${{ github.event_name == 'pull_request' && matrix.os == 'windows-2025' && matrix.part == 'csv' && job.status == 'success' && 'passed' || '' }}
-      macos: ${{ github.event_name == 'pull_request' && matrix.os == 'macos-15' && job.status == 'success' && 'passed' || '' }}
+      macos_shell_md: ${{ github.event_name == 'pull_request' && matrix.os == 'macos-15' && matrix.part == 'shell-md' && job.status == 'success' && 'passed' || '' }}
+      macos_csv: ${{ github.event_name == 'pull_request' && matrix.os == 'macos-15' && matrix.part == 'csv' && job.status == 'success' && 'passed' || '' }}
     # Las partes Intel conservan el límite del job anterior. Ubuntu completo (PR) tiene 60 como Windows; sus partes de main, 45.
     timeout-minutes: ${{ matrix.os == 'macos-15-intel' && 90 || matrix.os == 'macos-15' && 75 || ((matrix.os == 'windows-2025' || startsWith(matrix.os, 'macos-') || !matrix.part) && 60 || 45) }}
     steps:
@@ -122,9 +123,10 @@ jobs:
         run: node --test experiments/large-file-editor/tests/overlay.test.mjs
       - run: npm run licenses
         if: matrix.executable
+      # El selector existente también intersecta las partes ARM; se conserva su id.
       - name: Select Windows PR projects
         id: windows_projects
-        if: github.event_name == 'pull_request' && runner.os == 'Windows'
+        if: github.event_name == 'pull_request' && matrix.projects
         env:
           FREYALAB_CI_AREAS: ${{ needs.areas.outputs.plan }}
           FREYALAB_CI_PROJECTS: ${{ matrix.projects }}
@@ -139,11 +141,11 @@ jobs:
           "
       - name: E2E fast (PR areas)
         id: e2e_fast_pr
-        if: github.event_name == 'pull_request' && matrix.part != 'package' && (runner.os != 'Windows' || steps.windows_projects.outputs.fast != '')
+        if: github.event_name == 'pull_request' && matrix.part != 'package' && (!matrix.projects || steps.windows_projects.outputs.fast != '')
         env:
           FREYALAB_CI_AREAS: ${{ needs.areas.outputs.plan }}
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-fast
-        run: ${{ runner.os == 'Linux' && 'xvfb-run -a ' || '' }}npm run ${{ runner.os == 'Windows' && 'test:e2e:fast' || 'test:e2e:area' }} -- ${{ runner.os != 'Windows' && '--phase=fast' || '' }} --workers=${{ env.FREYALAB_E2E_FAST_WORKERS }} --output=test-results-fast ${{ runner.os == 'Windows' && steps.windows_projects.outputs.fast || '' }}
+        run: ${{ runner.os == 'Linux' && 'xvfb-run -a ' || '' }}npm run ${{ matrix.projects && 'test:e2e:fast' || 'test:e2e:area' }} -- ${{ !matrix.projects && '--phase=fast' || '' }} --workers=${{ env.FREYALAB_E2E_FAST_WORKERS }} --output=test-results-fast ${{ matrix.projects && steps.windows_projects.outputs.fast || '' }}
       - name: E2E fast (Linux)
         id: e2e_fast_linux
         if: github.event_name != 'pull_request' && runner.os == 'Linux'
@@ -157,18 +159,18 @@ jobs:
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-fast
         run: npm run test:e2e:fast -- --workers=${{ env.FREYALAB_E2E_FAST_WORKERS }} --output=test-results-fast ${{ matrix.projects }}
       - name: E2E perf and solo (PR areas)
-        if: ${{ !cancelled() && github.event_name == 'pull_request' && matrix.part != 'package' && (runner.os != 'Windows' || matrix.part == 'shell-md') && (steps.e2e_fast_pr.outcome == 'success' || steps.e2e_fast_pr.outcome == 'failure') }}
+        if: ${{ !cancelled() && github.event_name == 'pull_request' && matrix.part != 'package' && (!matrix.projects || matrix.part == 'shell-md') && (steps.e2e_fast_pr.outcome == 'success' || steps.e2e_fast_pr.outcome == 'failure') }}
         env:
           FREYALAB_CI_AREAS: ${{ needs.areas.outputs.plan }}
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo
-        run: ${{ runner.os == 'Linux' && 'xvfb-run -a ' || '' }}npm run ${{ runner.os == 'Windows' && 'test:e2e:perf' || 'test:e2e:area' }} -- ${{ runner.os != 'Windows' && '--phase=serial' || '' }} --workers=1 --output=test-results-solo ${{ runner.os == 'Windows' && steps.windows_projects.outputs.serial || '' }}
+        run: ${{ runner.os == 'Linux' && 'xvfb-run -a ' || '' }}npm run ${{ matrix.projects && 'test:e2e:perf' || 'test:e2e:area' }} -- ${{ !matrix.projects && '--phase=serial' || '' }} --workers=1 --output=test-results-solo ${{ matrix.projects && steps.windows_projects.outputs.serial || '' }}
       - name: E2E perf and solo (Linux)
         if: ${{ !cancelled() && runner.os == 'Linux' && matrix.part != 'shell-md' && (steps.e2e_fast_linux.outcome == 'success' || steps.e2e_fast_linux.outcome == 'failure') }}
         env:
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo
         run: xvfb-run -a npm run test:e2e:perf -- --workers=1 --output=test-results-solo
       - name: E2E perf and solo (macOS and Windows)
-        if: ${{ !cancelled() && runner.os != 'Linux' && ((runner.os == 'Windows' && matrix.part == 'shell-md') || (runner.os != 'Windows' && matrix.part != 'shell-md')) && (steps.e2e_fast_desktop.outcome == 'success' || steps.e2e_fast_desktop.outcome == 'failure') }}
+        if: ${{ !cancelled() && runner.os != 'Linux' && (((runner.os == 'Windows' || matrix.os == 'macos-15') && matrix.part == 'shell-md') || (runner.os != 'Windows' && matrix.os != 'macos-15' && matrix.part != 'shell-md')) && (steps.e2e_fast_desktop.outcome == 'success' || steps.e2e_fast_desktop.outcome == 'failure') }}
         env:
           PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-solo
         run: npm run test:e2e:perf -- --workers=1 --output=test-results-solo
@@ -228,10 +230,11 @@ jobs:
           UBUNTU: ${{ needs.verify.outputs.ubuntu }}
           WINDOWS_SHELL_MD: ${{ needs.verify.outputs.windows_shell_md }}
           WINDOWS_CSV: ${{ needs.verify.outputs.windows_csv }}
-          MACOS: ${{ needs.verify.outputs.macos }}
+          MACOS_SHELL_MD: ${{ needs.verify.outputs.macos_shell_md }}
+          MACOS_CSV: ${{ needs.verify.outputs.macos_csv }}
         run: |
-          case "$AREAS_RESULT/$DOCS_ONLY/$VERIFY_RESULT/$UBUNTU/$WINDOWS_SHELL_MD/$WINDOWS_CSV/$MACOS" in
-            success/true/skipped////|success/false/success/passed/passed/passed/passed) exit 0 ;;
+          case "$AREAS_RESULT/$DOCS_ONLY/$VERIFY_RESULT/$UBUNTU/$WINDOWS_SHELL_MD/$WINDOWS_CSV/$MACOS_SHELL_MD/$MACOS_CSV" in
+            success/true/skipped/////|success/false/success/passed/passed/passed/passed/passed) exit 0 ;;
           esac
-          echo "Gate falló. Áreas: $AREAS_RESULT. Solo documentación: ${DOCS_ONLY:-sin plan}. Matriz: $VERIFY_RESULT. Ubuntu: ${UBUNTU:-sin éxito}. Windows shell/md: ${WINDOWS_SHELL_MD:-sin éxito}. Windows CSV: ${WINDOWS_CSV:-sin éxito}. macOS: ${MACOS:-sin éxito}."
+          echo "Gate falló. Áreas: $AREAS_RESULT. Solo documentación: ${DOCS_ONLY:-sin plan}. Matriz: $VERIFY_RESULT. Ubuntu: ${UBUNTU:-sin éxito}. Windows shell/md: ${WINDOWS_SHELL_MD:-sin éxito}. Windows CSV: ${WINDOWS_CSV:-sin éxito}. macOS shell/md: ${MACOS_SHELL_MD:-sin éxito}. macOS CSV: ${MACOS_CSV:-sin éxito}."
           exit 1

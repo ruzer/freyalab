@@ -1,0 +1,30 @@
+{
+  "all": 908,
+  "shellMdFast": 373,
+  "csvFast": 467,
+  "serial": 68,
+  "union": 908,
+  "missing": [],
+  "extra": [],
+  "duplicates": [],
+  "projectCounts": {
+    "shell": 154,
+    "md": 256,
+    "csv": 498
+  },
+  "qualification": "Listing only, same source test identities. No Electron, build, product or CI execution.",
+  "base": "e1dca57c70f05f05614c08fbe9d39aa60d93cee8",
+  "platform": "darwin-arm64",
+  "node": "24.22.1",
+  "evidenceSha256": {
+    "red.log": "b6a69056e272257214f41363facd0fd52ac79329fdba129d110914852e0fc756",
+    "green.log": "f4eb23a416ff34933fd4130870b7fdaba63bd69e692c1a83719911edb37f1066",
+    "unit-complete.log": "56f4860cd3244c669cd38a9f76eb83dd27d3b2c5e849b4f10131fdbf401e1ace",
+    "check.log": "e1552fb8ee7450a0b6661e910e1cd39aa230798939955e355260a0db602ac120",
+    "build.log": "23b7174cf912ea6a28e59c671337c70c19f96c4a9f33db39c5dad4f26501768f",
+    "listing-all.json": "4fcec39b6fcfb9f6a58824065ab7e27541d213198514c1ceb1da6e1ac04a68d9",
+    "listing-shell-md.json": "d4cfd96d8a9bd6fa8595de246e79918502e9cdf7bb75d70c22d65ebd75a8dc77",
+    "listing-csv.json": "c08adfd9991af74ae680c1c17075b71f21e8d90ca4164c52548a17b0555ed869",
+    "listing-serial.json": "83fe26eea72eb62fc01a9cb2b91ede9bd8a442032dabdd83158bcea0c1c1ac14"
+  }
+}

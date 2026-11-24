@@ -1,0 +1,143 @@
+
+Running 58 tests using 1 worker
+
+(node:41937) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [csv] › tests/e2e/column-menu.spec.ts:31:1 › cada cabecera tiene un menú ▾ visible con ordenar, filtrar, estadísticas y limpieza (1.5s)
+  ✓   2 [csv] › tests/e2e/column-menu.spec.ts:42:1 › el menú se maneja con teclado: Enter lo abre, las flechas recorren y Escape devuelve el foco al botón (1.1s)
+  ✓   3 [csv] › tests/e2e/column-menu.spec.ts:50:1 › mayúsculas en la columna: alcance, vista previa antes → después, recuento, confirmación y un paso de deshacer (1.2s)
+  ✓   4 [csv] › tests/e2e/column-menu.spec.ts:66:1 › quitar espacios y minúsculas: acceso desde Limpiar y solo tocan esa columna (1.5s)
+  ✓   5 [csv] › tests/e2e/column-menu.spec.ts:112:36 › una búsqueda cambiada durante la edición y otra posterior conservan la consulta vigente (es) (1.4s)
+  ✓   6 [csv] › tests/e2e/column-menu.spec.ts:112:36 › una búsqueda cambiada durante la edición y otra posterior conservan la consulta vigente (en-XA) (1.4s)
+  ✘   7 [csv] › tests/e2e/column-menu.spec.ts:167:1 › con una búsqueda activa solo cambian las filas visibles y el diálogo avisa de las ocultas (16.3s)
+(node:42111) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   8 [csv] › tests/e2e/column-menu.spec.ts:178:1 › si no hay nada que cambiar la vista previa lo dice y no deja confirmar (1.3s)
+  ✓   9 [csv] › tests/e2e/column-menu.spec.ts:185:1 › «Filtrar esta columna» muestra los filtros y lleva el foco al de esa columna (1.1s)
+  ✓  10 [csv] › tests/e2e/column-menu.spec.ts:191:1 › «Estadísticas de la columna» abre Análisis con esa columna marcada (1.1s)
+  ✓  11 [csv] › tests/e2e/column-menu.spec.ts:200:1 › «Quitar filas duplicadas de la columna…» abre la transformación con la columna ya elegida y sin cambiar nada (1.3s)
+  ✓  12 [csv] › tests/e2e/column-menu.spec.ts:226:2 › SIM-1a › los cuatro accesos muestran la misma lista y el nombre sin filas, sin alterar el documento (1.2s)
+  ✓  13 [csv] › tests/e2e/column-menu.spec.ts:245:2 › SIM-1a › las veinte acciones siguen alcanzables por su jerarquía y por las cuatro salidas existentes (2.9s)
+  ✓  14 [csv] › tests/e2e/column-menu.spec.ts:267:2 › SIM-1a › el submenú respeta niveles de teclado, retorno de foco, Tab y cierre fuera (1.6s)
+  ✓  15 [csv] › tests/e2e/column-menu.spec.ts:289:2 › SIM-1a › raíz e hijo caben sin scroll a 1280×720 y el hijo cambia de lado según el espacio real (1.2s)
+  ✓  16 [csv] › tests/e2e/column-menu.spec.ts:311:2 › SIM-1a › con marcas múltiples conserva los destinos y motivos distintos de cada entrada (1.8s)
+  ✓  17 [csv] › tests/e2e/column-menu.spec.ts:339:48 › SIM-1a › capturas posteriores y teclado conservan datos en ambos temas y tamaños (es) (1.7s)
+  ✓  18 [csv] › tests/e2e/column-menu.spec.ts:339:48 › SIM-1a › capturas posteriores y teclado conservan datos en ambos temas y tamaños (en-XA) (1.6s)
+  ✓  19 [csv] › tests/e2e/column-menu.spec.ts:371:2 › SIM-1a › colores forzados mantienen hojas, foco y cierre por nivel (es) (1.2s)
+  ✓  20 [csv] › tests/e2e/empty-values.spec.ts:32:1 › LIM-1 Información muestra porcentaje, desglose y filtra vacíos sin editar (1.5s)
+  ✓  21 [csv] › tests/e2e/empty-values.spec.ts:56:1 › LIM-1 el puente prepara solo vacíos, conserva la revisión y rechaza campos ajenos (1.1s)
+  ✓  22 [csv] › tests/e2e/empty-values.spec.ts:88:1 › LIM-1 ajustes: Un valor vacío bloquea preparar y rellenar con un motivo accesible (1.3s)
+  ✓  23 [csv] › tests/e2e/empty-values.spec.ts:104:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (es) (2.2s)
+  ✓  24 [csv] › tests/e2e/empty-values.spec.ts:104:49 › LIM-1 ajustes: vista previa concuerda, omite ceros y separa fila y columna (en) (2.1s)
+  ✓  25 [csv] › tests/e2e/empty-values.spec.ts:138:1 › LIM-1 rellena Mixta, avisa las filas cortas y un solo deshacer conserva bytes tras guardar (1.5s)
+  ✓  26 [csv] › tests/e2e/empty-values.spec.ts:156:1 › LIM-1 Cantidad respeta espacios y el valor anterior usa el orden del archivo (1.9s)
+  ✓  27 [csv] › tests/e2e/empty-values.spec.ts:175:1 › LIM-1 elimina por cualquiera o todas las columnas marcadas y restaura filas completas (1.6s)
+  ✓  28 [csv] › tests/e2e/empty-values.spec.ts:191:1 › LIM-1 fuente protegida permite ver vacíos y bloquea las mutaciones también por el puente (1.7s)
+  ✓  29 [csv] › tests/e2e/empty-values.spec.ts:225:1 › LIM-1 archivo grande permite el filtro completo y explica que limpiar requiere extraer (1.3s)
+  ✓  30 [csv] › tests/e2e/empty-values.spec.ts:239:1 › LIM-1 archivo grande no anuncia un filtro aplicado cuando falla su inicio (923ms)
+  ✓  31 [csv] › tests/e2e/empty-values.spec.ts:256:1 › LIM-1 Texto sin confirmar conserva el diálogo y Cancelar no pierde el borrador (1.3s)
+  ✓  32 [csv] › tests/e2e/empty-values.spec.ts:270:1 › LIM-1 cancelar descarta una vista previa tardía y deja reintentar sin modificar el CSV (1.4s)
+  ✓  33 [csv] › tests/e2e/empty-values.spec.ts:302:1 › LIM-1 la paleta encuentra isnull, fillna y dropna y conserva la selección múltiple (1.3s)
+  ✓  34 [csv] › tests/e2e/empty-values.spec.ts:318:1 › LIM-1 limpiar vacíos funciona en un CSV editable con más de 200 columnas (1.4s)
+  ✓  35 [csv] › tests/e2e/empty-values.spec.ts:332:1 › LIM-1 una protección recibida con el diálogo abierto invalida su vista previa (1.2s)
+  ✓  36 [csv] › tests/e2e/empty-values.spec.ts:347:1 › LIM-1 rellenar desde Información actúa sobre todo el documento y pide actualizar el análisis (1.5s)
+  ✓  37 [csv] › tests/e2e/empty-values.spec.ts:368:57 › LIM-1 teclado, idiomas y temas (es) (2.1s)
+  ✓  38 [csv] › tests/e2e/empty-values.spec.ts:368:57 › LIM-1 teclado, idiomas y temas (en) (1.9s)
+  ✓  39 [csv] › tests/e2e/empty-values.spec.ts:368:57 › LIM-1 teclado, idiomas y temas (en-XA) (2.0s)
+  ✓  40 [csv] › tests/e2e/range-cancellation.spec.ts:15:1 › rangos: los controles cancelan vista previa y aplicación, permiten reintentar y conservan originales (2.0s)
+  ✓  41 [csv] › tests/e2e/range-cancellation.spec.ts:25:1 › rangos: cancelar trabajo iniciado, rechazar edición en cola y validar requestId no cambia datos ni recuperación (1.1s)
+  ✓  42 [csv] › tests/e2e/range-cancellation.spec.ts:38:1 › rangos: cancelar o cerrar durante copiar impide el borrado; espera la respuesta y conserva el portapapeles válido @solo (1.3s)
+  ✓  43 [csv] › tests/e2e/range-cancellation.spec.ts:51:1 › rangos: restaurar el foco una vez permite desplazar la tabla sin recuperarlo después (1.1s)
+  ✓  44 [csv] › tests/e2e/structural-context.spec.ts:19:1 › la lectura de filas recupera una consulta sustituida por una recarga (1.2s)
+  ✓  45 [csv] › tests/e2e/structural-context.spec.ts:40:1 › menú de filas: inserta por identidad bajo filtro/orden y conserva marcas múltiples al duplicar (2.0s)
+  ✓  46 [csv] › tests/e2e/structural-context.spec.ts:47:1 › menú de columnas: teclado, insertar a ambos lados, conservar valores y respetar selección múltiple (1.6s)
+  ✓  47 [csv] › tests/e2e/structural-context.spec.ts:57:1 › menús estructurales: muestras bloquean cambios y conservan orden de vista, temas y foco @perf (1.6s)
+  ✓  48 [csv] › tests/e2e/structural-context.spec.ts:63:1 › menú estructural: restaura foco si desaparece el origen y rechaza inserciones ambiguas por IPC (1.1s)
+  ✓  49 [csv] › tests/e2e/table-toolbar.spec.ts:68:45 › SIM-1b capturas: barra, orden de ocultación y limpiezas [es] (2.1s)
+  ✓  50 [csv] › tests/e2e/table-toolbar.spec.ts:68:45 › SIM-1b capturas: barra, orden de ocultación y limpiezas [en-XA] (2.1s)
+  ✓  51 [csv] › tests/e2e/table-toolbar.spec.ts:101:1 › SIM-1b: sin celda activa las seis limpiezas explican el motivo aunque haya una columna marcada (1.1s)
+  ✘  52 [csv] › tests/e2e/table-toolbar.spec.ts:111:1 › SIM-1b: las seis limpiezas usan Ingreso activo y no la marca Ciudad ni alteran el archivo (16.8s)
+(node:42926) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  53 [csv] › tests/e2e/table-toolbar.spec.ts:129:1 › SIM-1b: una celda activa basta sin marcas de encabezado (1.3s)
+  ✓  54 [csv] › tests/e2e/table-toolbar.spec.ts:138:1 › las referencias de Limpiar conservan el foco independiente de barra y columna (1.4s)
+  ✓  55 [csv] › tests/e2e/table-toolbar.spec.ts:156:12 › SIM-1b: «Quitar espacios al inicio y final» conserva el alcance de filas y columnas marcadas (1.3s)
+  ✓  56 [csv] › tests/e2e/table-toolbar.spec.ts:156:12 › SIM-1b: «Convertir a mayúsculas» conserva el alcance de filas y columnas marcadas (1.2s)
+  ✓  57 [csv] › tests/e2e/table-toolbar.spec.ts:156:12 › SIM-1b: «Convertir a minúsculas» conserva el alcance de filas y columnas marcadas (1.2s)
+  ✓  58 [csv] › tests/e2e/table-toolbar.spec.ts:167:1 › SIM-1b: Ir a la fila conserva su acceso y Buscar acción muestra la tecla real del sistema (1.1s)
+
+
+  1) [csv] › tests/e2e/column-menu.spec.ts:167:1 › con una búsqueda activa solo cambian las filas visibles y el diálogo avisa de las ocultas
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('dialog', { name: 'Minúsculas en la columna «Ciudad»', exact: true })
+    Expected substring: "1 fila de la vista actual"
+    Received string:    "Minúsculas en la columna «Ciudad» Alcance: toda la columna · 5 filas, también las 4 que oculta el filtro. Un paso de deshacer.   Vista previa 3 de 5 celdas cambiarán.  Hasta ocho ejemplos; textos abreviados a 256 caracteres.Fila / columnaAntesDespués2 / 2GUADALAJARAguadalajara4 / 2Cd. de Méxicocd. de méxico5 / 2PUEBLApuebla La preparación se puede cancelar. El cambio final se aplica completo y se puede deshacer. Cerrar mientras se aplica solicita cancelación y espera su resultado.  Aplicar cambioCancelar"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('dialog', { name: 'Minúsculas en la columna «Ciudad»', exact: true }) with timeout 15000ms
+      - waiting for getByRole('dialog', { name: 'Minúsculas en la columna «Ciudad»', exact: true })
+        34 × locator resolved to <dialog open="" class="svelte-we3sr3" aria-labelledby="range-preview-title">…</dialog>
+           - unexpected value "Minúsculas en la columna «Ciudad» Alcance: toda la columna · 5 filas, también las 4 que oculta el filtro. Un paso de deshacer.   Vista previa 3 de 5 celdas cambiarán.  Hasta ocho ejemplos; textos abreviados a 256 caracteres.Fila / columnaAntesDespués2 / 2GUADALAJARAguadalajara4 / 2Cd. de Méxicocd. de méxico5 / 2PUEBLApuebla La preparación se puede cancelar. El cambio final se aplica completo y se puede deshacer. Cerrar mientras se aplica solicita cancelación y espera su resultado.  Aplicar cambioCancelar"
+
+
+      170 |  await columnButton('Ciudad').click();await cleanAction('Minúsculas…')
+      171 |  const dialog=page.getByRole('dialog',{name:'Minúsculas en la columna «Ciudad»',exact:true})
+    > 172 |  await expect(dialog).toContainText('1 fila de la vista actual');await expect(dialog).toContainText('4 filas ocultas')
+          |                       ^
+      173 |  await expect(dialog.getByRole('status')).toContainText('1 de 1 celdas cambiarán.')
+      174 |  await dialog.getByRole('button',{name:'Aplicar cambio',exact:true}).click()
+      175 |  expect(await cities()).toEqual([' oaxaca de juárez ','guadalajara','mérida  ','Cd. de México','PUEBLA']) // las ocultas no se tocan
+        at <worktree>/tests/e2e/column-menu.spec.ts:172:23
+
+    Error Context: test-results/column-menu-con-una-búsque-7d582-iálogo-avisa-de-las-ocultas-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/column-menu-con-una-búsque-7d582-iálogo-avisa-de-las-ocultas-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/column-menu-con-una-búsque-7d582-iálogo-avisa-de-las-ocultas-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/table-toolbar.spec.ts:111:1 › SIM-1b: las seis limpiezas usan Ingreso activo y no la marca Ciudad ni alteran el archivo
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('dialog')
+    Expected substring: "Alcance: columna «Ingreso»"
+    Received string:    "Quitar espacios en la columna «Ingreso» Alcance: toda la columna · 240 filas. Un paso de deshacer.   Vista previa 0 de 240 celdas cambiarán.   La preparación se puede cancelar. El cambio final se aplica completo y se puede deshacer. Cerrar mientras se aplica solicita cancelación y espera su resultado.  Aplicar cambioCancelar"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('dialog') with timeout 15000ms
+      - waiting for getByRole('dialog')
+        34 × locator resolved to <dialog open="" class="svelte-we3sr3" aria-labelledby="range-preview-title">…</dialog>
+           - unexpected value "Quitar espacios en la columna «Ingreso» Alcance: toda la columna · 240 filas. Un paso de deshacer.   Vista previa 0 de 240 celdas cambiarán.   La preparación se puede cancelar. El cambio final se aplica completo y se puede deshacer. Cerrar mientras se aplica solicita cancelación y espera su resultado.  Aplicar cambioCancelar"
+
+
+      119 |   else if(index===1)await expect(dialog.getByRole('combobox',{name:t('empty.where'),exact:true})).toContainText('Ingreso')
+      120 |   else if(index===2){await expect(dialog.getByRole('combobox',{name:'Transformación CSV',exact:true})).toHaveValue('deduplicate');await expect(dialog.getByLabel('Columnas para transformar',{exact:true})).toHaveValues(['2'])}
+    > 121 |   else await expect(dialog).toContainText('Alcance: columna «Ingreso»')
+          |                             ^
+      122 |   await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0)
+      123 |   await expect(page.getByRole('checkbox',{name:'Seleccionar columna Ciudad',exact:true})).toBeChecked()
+      124 |   await expect(page.getByRole('checkbox',{name:'Seleccionar columna Ingreso',exact:true})).not.toBeChecked()
+        at <worktree>/tests/e2e/table-toolbar.spec.ts:121:29
+
+    Error Context: test-results/table-toolbar-SIM-1b-las-s-060c5-iudad-ni-alteran-el-archivo-csv/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/table-toolbar-SIM-1b-las-s-060c5-iudad-ni-alteran-el-archivo-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/table-toolbar-SIM-1b-las-s-060c5-iudad-ni-alteran-el-archivo-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/column-menu.spec.ts:167:1 › con una búsqueda activa solo cambian las filas visibles y el diálogo avisa de las ocultas
+    [csv] › tests/e2e/table-toolbar.spec.ts:111:1 › SIM-1b: las seis limpiezas usan Ingreso activo y no la marca Ciudad ni alteran el archivo
+  56 passed (2.0m)

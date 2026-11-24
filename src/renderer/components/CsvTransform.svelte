@@ -2,13 +2,14 @@
  import {formatNumber,formatList,plural,t} from '../lib/i18n.svelte'
  import {controlHint} from '../lib/control-hint'
  import {onMount,onDestroy,tick,untrack} from 'svelte'
- import type {CalculatedColumnPreview,DocumentInfo,TableTransformEdit,TableTransformPreview,TableEmptyEdit,TableEmptyPreview,TableQuery,TableRange} from '../../shared/types'
+ import type {CalculatedColumnPreview,DocumentInfo,TableTransformEdit,TableTransformPreview,TableEmptyEdit,TableEmptyPreview,TableQuery,TableRange,TableViewMeta} from '../../shared/types'
  import {readCalculationError,type CalculateColumnEdit,type ColumnRead} from '../../shared/calculated-column'
  import {readEmptyError} from '../../shared/empty-values'
+ import {csvAnalysisQueryReady} from '../lib/csv-analysis-view'
  import {sqlColumns} from '../../shared/sql-helpers'
  import CsvCalculationFields from './CsvCalculationFields.svelte'
  type Edit=TableTransformEdit|CalculateColumnEdit|TableEmptyEdit
- let {doc,initialColumns,initialOperation,initialCalculationPosition,initialEmptyColumn,initialEmptyMarked=false,initialRows,initialRange,viewQuery,onapply,onclose,onerror}:{doc:DocumentInfo;initialColumns:number[];initialOperation?:Edit['operation'];initialCalculationPosition?:number;initialEmptyColumn?:number;initialEmptyMarked?:boolean;initialRows:string[];initialRange:TableRange|null;viewQuery:TableQuery;onapply:(edit:Edit)=>Promise<string|null>;onclose:()=>void;onerror:(message:string)=>void}=$props()
+ let {doc,initialColumns,initialOperation,initialCalculationPosition,initialEmptyColumn,initialEmptyMarked=false,initialRows,initialRange,viewQuery,viewMeta,onapply,onclose,onerror}:{doc:DocumentInfo;initialColumns:number[];initialOperation?:Edit['operation'];initialCalculationPosition?:number;initialEmptyColumn?:number;initialEmptyMarked?:boolean;initialRows:string[];initialRange:TableRange|null;viewQuery:TableQuery;viewMeta:TableViewMeta;onapply:(edit:Edit)=>Promise<string|null>;onclose:()=>void;onerror:(message:string)=>void}=$props()
  const calculation=untrack(()=>initialOperation==='calculate')
  const empties=untrack(()=>['fillEmpty','fillPrevious','deleteRowsWhere'].includes(initialOperation??'')),deleting=untrack(()=>initialOperation==='deleteRowsWhere'),emptyTarget=untrack(()=>initialEmptyColumn??initialColumns[0]??0),markedColumns=untrack(()=>[...new Set(initialColumns)])
  const emptyBlockedReason=$derived(!empties?'':doc.projectSource==='protected'?t('empty.protected'):doc.projectSource==='closed'?t('ui.reason.projectClosed'):doc.large?t('empty.large'):doc.readonly?t('empty.readonly'):'')
@@ -27,6 +28,9 @@
  let rowScope=$state(hasSelection?'selection':'range'),from=$state(1),to=$state(1),destination=$state(1)
  const viewKey=$derived(JSON.stringify([viewQuery.search,viewQuery.filters,viewQuery.sort,viewQuery.order,viewQuery.conditions,viewQuery.filterMode]))
  const ordering=$derived(['moveRows','moveColumns','commitOrder'].includes(operation))
+ const columnCleaning=$derived(initialEmptyColumn!==undefined&&(empties?(!deleting||emptyScope==='column'):initialOperation==='deduplicate'&&operation==='deduplicate'&&columns.length===1))
+ const columnRows=$derived(columnCleaning&&doc.rowCount!==undefined?{rows:doc.rowCount,hidden:csvAnalysisQueryReady(doc,viewQuery,viewMeta)?Math.max(doc.rowCount-viewMeta.matched,0):undefined}:null)
+ const columnScope=$derived(columnRows?plural('csv.columnClean.scope'+(columnRows.hidden?columnRows.hidden===1?'HiddenOne':'HiddenOther':''),columnRows.rows,columnRows.hidden?{hidden:formatNumber(columnRows.hidden)}:{}):'')
  let active:string|undefined,applying=false,closeAfterApply=false,cancelRequested=false
  const operations=$derived({split:'Dividir una columna',combine:'Combinar columnas',deduplicate:'Eliminar filas duplicadas',normalize:t('transform.normalize'),headers:'Normalizar encabezados',moveRows:'Mover filas',moveColumns:'Mover columnas',commitOrder:'Fijar orden de la vista en el documento'} as const)
  const selectedSeparator=$derived(separator==='custom'?custom:separator)
@@ -126,7 +130,7 @@
   <div class="actions"><button bind:this={applyButton} class="primary" aria-busy={busy} aria-describedby={blocked?'calculation-failures':undefined} disabled={busy||external||!changes||blocked} onclick={()=>void apply()}>{t('calculate.apply')}</button><button onclick={requestClose}>{t('calculate.close')}</button></div>
  {:else if empties}
   <div class="calculation-content">
-   <p class="notice">{t('empty.scope')}</p>
+   <p class="notice">{#if columnScope}{columnScope}{' '}{/if}{t('empty.scope')}</p>
    <form onsubmit={event=>{event.preventDefault();void inspect()}}>
     <fieldset disabled={busy||external||!!emptyBlockedReason}><legend class="sr-only">{t(deleting?'empty.deleteTitle':'empty.fillTitle',{column:emptyLabel(emptyTarget)})}</legend>
      {#if deleting}
@@ -154,7 +158,7 @@
   </div>
   <div class="actions"><button bind:this={applyButton} class="primary" aria-busy={busy} disabled={busy||external||!!emptyBlockedReason||emptyValueRequired||!changes} title={emptyValueRequired?t('empty.valueRequired'):undefined} aria-describedby={emptyValueRequired?'empty-value-required-'+doc.id:undefined} onclick={()=>void apply()}>{t(deleting?'empty.applyDelete':'empty.applyFill')}</button><button onclick={requestClose}>{t('empty.cancel')}</button></div>
  {:else}
- {#if ordering}<p class="notice"><strong>Cambiar orden del documento:</strong> se conserva el contenido; Guardar persistirá el nuevo orden. Después de aplicar se muestra el documento completo sin filtros ni orden de vista. Un paso de deshacer.</p>{:else}<p class="notice"><strong>Documento completo:</strong> incluye filas ocultas por búsqueda o filtros; excluye encabezados salvo que elijas normalizarlos. No usa el rango de filas seleccionado. Un paso de deshacer.</p>{/if}
+ {#if ordering}<p class="notice"><strong>Cambiar orden del documento:</strong> se conserva el contenido; Guardar persistirá el nuevo orden. Después de aplicar se muestra el documento completo sin filtros ni orden de vista. Un paso de deshacer.</p>{:else}<p class="notice">{#if columnScope}{columnScope}{' '}{/if}<strong>Documento completo:</strong> incluye filas ocultas por búsqueda o filtros; excluye encabezados salvo que elijas normalizarlos. No usa el rango de filas seleccionado. Un paso de deshacer.</p>{/if}
  <form onsubmit={event=>{event.preventDefault();void inspect()}}>
   <fieldset disabled={busy||external}><legend class="sr-only">Opciones de transformación</legend>
    <label>Operación <select aria-label="Transformación CSV" bind:value={operation}>{#each Object.entries(operations) as [value,title]}<option value={value}>{title}</option>{/each}</select></label>
