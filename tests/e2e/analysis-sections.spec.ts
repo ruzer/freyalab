@@ -122,6 +122,11 @@ test('SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro se
  const labels:Record<Section,string[]>={Información:['Informe de columnas (Markdown)'],Estadísticas:['Informe (Markdown)','Datos CSV…','Datos JSON','Informe detallado','Estadísticas detalladas CSV…','Estadísticas detalladas JSON…'],Gráficos:['Imagen PNG','Imagen SVG','Imagen PDF','Datos JSON','Datos CSV…','Datos Markdown'],SQL:['Informe (Markdown)']}
  for(const section of sectionNames){
   await selectSection(section);await expect(exportButton()).toBeVisible();boxes.push((await exportButton().boundingBox())!)
+  const precisionSlot=workspace().locator('.number-format')
+  if(section==='SQL'){
+   await expect(precisionSlot).not.toBeVisible();await expect(precisionSlot).toHaveJSProperty('inert',true)
+   await expect(precisionSlot).toHaveAttribute('aria-hidden','true');await expect(precisionSlot.locator('select')).toBeDisabled()
+  }else await expect(precisionSlot).toBeVisible()
   await expect(workspace().getByText('El archivo no se modifica',{exact:false})).toHaveCount(1)
   await expect(workspace().getByRole('button',{name:/^Abrir informe/})).toHaveCount(0)
   await expect((await openExport()).getByRole('menuitem')).toHaveText(labels[section])
