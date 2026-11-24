@@ -30,7 +30,7 @@ async function tableValues(panel:Locator,values:number[]){
   await expect(cell).toHaveText(formatNumber(values[i],{maximumFractionDigits:2},'es'))
   const number=cell.locator('[data-analysis-value]')
   expect(Number(await number.getAttribute('data-analysis-value'))).toBeCloseTo(values[i],12)
-  const exact=String(Number(values[i].toPrecision(15)))
+  const exact=String(values[i])
   await expect(cell).toHaveAttribute('title',t('columnAnalysis.exactValue',{value:exact},'es'))
  }
 }

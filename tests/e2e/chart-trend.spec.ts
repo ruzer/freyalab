@@ -71,7 +71,13 @@ test('TEN-1 cinco pares: petición, teclado, exportaciones completas y preset',a
  await checkbox.focus();await page.keyboard.press('Space');await expect(checkbox).toBeChecked()
  // Elegir Tendencia es ahora el disparador automático real; se conserva una única consulta observada.
  await result()
- await expect(trend()).toContainText('y = 0.6·x + 2.2');await expect(trend()).toContainText('R² = 0.6 · r = 0.7746 · 5 puntos')
+ await expect(trend()).toContainText('y = 0.6·x + 2.2')
+ // SIM-3d: coeficientes a tres decimales en pantalla; el motor y la ayuda siguen completos.
+ await expect(trend()).toContainText('R² = 0.6 · r = 0.775 · 5 puntos')
+ const correlation=trend().locator('[data-analysis-value]').filter({hasText:'0.775'})
+ const fullCorrelation=await correlation.getAttribute('data-analysis-value')
+ expect(Number(fullCorrelation)).toBeCloseTo(Math.sqrt(.6),12)
+ await expect(correlation).toHaveAttribute('title','Valor completo: '+fullCorrelation)
  await expect(trend()).toHaveAttribute('title',/0\.774596669241483/);await expect(trend()).toHaveAttribute('aria-live','polite')
  expect(await queries()).toHaveLength(1)
  await expect(panel().locator('.plot')).toHaveAttribute('aria-label',/Relación no es causa/)

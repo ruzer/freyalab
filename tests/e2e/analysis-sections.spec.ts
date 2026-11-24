@@ -119,7 +119,7 @@ test('SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro se
  await expect(workspace().locator('header h2')).toHaveText('Datos de encuesta.csv · 240 filas · El archivo no se modifica')
  await expect(workspace().locator('header h2')).toBeFocused()
  const boxes:{x:number;y:number;width:number;height:number}[]=[]
- const labels:Record<Section,string[]>={Información:['Informe de columnas (Markdown)'],Estadísticas:['Informe (Markdown)','Informe detallado'],Gráficos:['Imagen PNG','Imagen SVG','Imagen PDF','Datos JSON','Datos CSV…','Datos Markdown'],SQL:['Informe (Markdown)']}
+ const labels:Record<Section,string[]>={Información:['Informe de columnas (Markdown)'],Estadísticas:['Informe (Markdown)','Datos CSV…','Datos JSON','Informe detallado','Estadísticas detalladas CSV…','Estadísticas detalladas JSON…'],Gráficos:['Imagen PNG','Imagen SVG','Imagen PDF','Datos JSON','Datos CSV…','Datos Markdown'],SQL:['Informe (Markdown)']}
  for(const section of sectionNames){
   await selectSection(section);await expect(exportButton()).toBeVisible();boxes.push((await exportButton().boundingBox())!)
   await expect(workspace().getByText('El archivo no se modifica',{exact:false})).toHaveCount(1)
@@ -134,7 +134,7 @@ test('SIM-2a: origen único y Exportar ocupan la misma cabecera en las cuatro se
 test('SIM-2a: exportaciones sin resultado siguen enfocables, explican el motivo y no calculan al abrir ni activar',async()=>{
  await openAnalysis();await selectSection('Estadísticas')
  const before=await calls(),documents=await page.evaluate(()=>window.freya.documents())
- await openExport();const items=menu().getByRole('menuitem');await expect(items).toHaveCount(2)
+ await openExport();const items=menu().getByRole('menuitem');await expect(items).toHaveCount(6)
  for(const item of await items.all()){
   await item.focus();await expect(item).toBeFocused();await expect(item).toHaveAttribute('aria-disabled','true')
   await expect(item).toHaveAccessibleDescription(t('ui.reason.result'));await item.press('Enter')

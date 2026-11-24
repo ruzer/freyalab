@@ -60,7 +60,7 @@ test('AN-2 muestra describe por petición con el fixture aprobado y conserva la 
  await expect(panel.locator('thead th>small')).toHaveText(['Número','Número'])
  await expect(panel.locator('tbody tr')).toHaveCount(8)
  for(const [index,values] of [['5','4'],['30','2.5'],['15.81','1.29'],['10','1'],['20','1.75'],['30','2.5'],['40','3.25'],['50','4']].entries())await expect(panel.locator('tbody tr').nth(index).locator('td')).toHaveText(values)
- await expect(panel.locator('tbody tr').nth(2).locator('td').first()).toHaveAttribute('title',t('columnAnalysis.exactValue',{value:'15.8113883008419'},'es'))
+ await expect(panel.locator('tbody tr').nth(2).locator('td').first()).toHaveAttribute('title',t('columnAnalysis.exactValue',{value:'15.811388300841896'},'es'))
  const numericCalls=await calls()
  expect(numericCalls).toHaveLength(7)
  for(let column=0;column<5;column++)expect(numericCalls.filter(call=>call.column===column)).toHaveLength(column===1||column===2?2:1)
