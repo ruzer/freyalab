@@ -307,6 +307,9 @@ for(const locale of ['es','en-XA'] as const)for(const[width,height]of [[1440,900
   for(const theme of ['light','dark'] as const){
    await page.evaluate(theme=>window.freya.setSettings({tema:theme}),theme);await expect.poll(()=>page.locator('html').evaluate(node=>node.classList.contains('dark'))).toBe(theme==='dark');await page.evaluate(()=>document.fonts.ready)
    await expect.poll(()=>decimalSelect().evaluate(node=>{const rect=node.getBoundingClientRect();return rect.width>0&&rect.height>0&&rect.left>=0&&rect.right<=innerWidth+.5&&rect.top>=0&&rect.bottom<=innerHeight+.5})).toBe(true)
+   const header=workspace().locator('header')
+   await test.info().attach(`header-${locale}-${theme}-${width}`,{body:JSON.stringify(await header.evaluate(root=>[...root.children].map(node=>{const b=node.getBoundingClientRect();return{class:node.className,x:b.x,y:b.y,width:b.width,height:b.height}}))),contentType:'application/json'})
+   await expect.poll(()=>header.evaluate(root=>Array.from(root.querySelectorAll<HTMLElement>('button,select')).filter(node=>node.getClientRects().length&&getComputedStyle(node).visibility==='visible').flatMap(node=>{const r=node.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return hit&&node.contains(hit)?[]:[node.getAttribute('aria-label')||node.textContent?.trim()||node.tagName]}))).toEqual([])
    await page.screenshot({animations:'disabled',path:test.info().outputPath(`sim3d-decimals-${locale}-${theme}-${width}x${height}.png`)})
   }
   await page.emulateMedia({forcedColors:'active',reducedMotion:'reduce'});await decimalSelect().focus();await expect(decimalSelect()).toBeFocused();await expect(decimalSelect()).toBeEnabled();await chooseMode('auto')
