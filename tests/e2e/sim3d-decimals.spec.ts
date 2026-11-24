@@ -97,10 +97,11 @@ async function nativeCopy(){
  return app.evaluate(({clipboard})=>clipboard.readText())
 }
 
-test('SIM-3d decimales: selector global accesible con opciones 2 y Todos (es)',async()=>{
+test('SIM-3d decimales: selector global accesible con opciones Automático y Más precisión (es)',async()=>{
  await openAnalysis(page,'Información')
- await expect(decimalSelect()).toBeVisible();await expect(decimalSelect()).toHaveValue('2')
- await expect(decimalSelect().locator('option')).toHaveText(['2',tr('analysis.decimals.all')])
+ await expect(decimalSelect()).toBeVisible();await expect(decimalSelect()).toHaveValue('auto')
+ await expect(decimalSelect().locator('option')).toHaveText(['Automático','Más precisión'])
+ await expect(workspace().getByText('Al copiar se copia el valor completo.',{exact:true})).toBeVisible()
 })
 
 test('SIM-3d decimales: pequeños no nulos siguen visibles en Estadísticas principal (es)',async()=>{
@@ -110,10 +111,10 @@ test('SIM-3d decimales: pequeños no nulos siguen visibles en Estadísticas prin
  await expect(await metric('mean','Valor')).toHaveText('5.52')
 })
 
-test('SIM-3d decimales: copia parcial y múltiple usa 15 cifras en Estadísticas principal (es)',{tag:'@solo'},async()=>{
+test('SIM-3d decimales: copia parcial y múltiple usa el valor completo en Estadísticas principal (es)',{tag:'@solo'},async()=>{
  await preserveClipboard();await calculateDescribe()
  const first=await metric('mean','Valor'),last=await metric('mean','Pequeño')
- expect(await selectPart(first,2)).toBe('5.')
+ expect(await selectPart(first,3)).toBe('5.5')
  const partialBefore=await selectionState();expect.soft(await nativeCopy()).toBe(precise);expect(await selectionState()).toEqual(partialBefore)
  await first.click()
  const bounds=await describe().evaluate(node=>{
@@ -131,10 +132,30 @@ test('SIM-3d decimales: copia parcial y múltiple usa 15 cifras en Estadísticas
  await expect(last).toBeVisible()
 })
 
-async function chooseMode(mode:'2'|'all'){
+
+test('SIM-3d formato: copiar Media coincide con el informe Markdown ya generado en ambos modos (es)',{tag:'@solo'},async()=>{
+ await preserveClipboard();await calculateDescribe()
+ await exportAnalysis(page,'describe.report')
+ await expect.poll(()=>page.evaluate(async()=>(await window.freya.documents()).filter(item=>item.kind==='markdown').at(-1)?.text??'')).toContain('| Media (mean) |')
+ const report=(await page.evaluate(()=>window.freya.documents())).filter(item=>item.kind==='markdown').at(-1)!
+ const meanRow=report.text!.split('\n').find(line=>line.startsWith('| Media (mean) |'))!
+ // Valor is the first numeric column in this unchanged source; this is the serialized report, not a formatter oracle.
+ const reportMean=meanRow.split('|')[2].trim();expect(reportMean).toBe(precise)
+ await page.getByRole('tab',{name:'precision.csv',exact:true}).click();await openAnalysis(page,'Estadísticas')
+ for(const mode of ['auto','all'] as const){
+  await chooseMode(mode);const mean=await metric('mean','Valor')
+  await expect(mean).toHaveText(mode==='auto'?'5.52':precise)
+  await expect(mean).toHaveAttribute('title','Valor completo: '+reportMean)
+  expect(await selectPart(mean,3)).toBe('5.5')
+  const before=await selectionState();expect(await nativeCopy()).toBe(reportMean);expect(await selectionState()).toEqual(before)
+ }
+ expect((await page.evaluate(()=>window.freya.documents())).find(item=>item.id===report.id)?.text).toBe(report.text)
+})
+
+async function chooseMode(mode:'auto'|'all'){
  await expect(decimalSelect()).toBeEnabled();await decimalSelect().selectOption(mode)
  await expect(decimalSelect()).toHaveValue(mode)
- await expect.poll(()=>page.evaluate(async()=>(await window.freya.settings()).values.decimalesAnalisis)).toBe(mode==='all'?'all':2)
+ await expect.poll(()=>page.evaluate(async()=>(await window.freya.settings()).values.decimalesAnalisis)).toBe(mode)
 }
 async function spyComputations(){
  await app.evaluate(({ipcMain})=>{
@@ -145,7 +166,7 @@ async function spyComputations(){
  })
 }
 const computationCalls=()=>app.evaluate(()=>[...Reflect.get(globalThis,'sim3dDecimalCompute').calls] as string[])
-async function changePresentation(mode:'2'|'all',verify:()=>Promise<void>){
+async function changePresentation(mode:'auto'|'all',verify:()=>Promise<void>){
  const before=await computationCalls();await chooseMode(mode);await verify();expect(await computationCalls()).toEqual(before)
 }
 async function information(){
@@ -176,18 +197,18 @@ async function settingsAppearance(){
 }
 async function reopenApplication(){await stopTrace?.();stopTrace=undefined;await closeElectron(app);await launch();await open()}
 
-test('SIM-3d formato: 2 y Todos cambian las cuatro superficies montadas sin recalcular (es)',async()=>{
+test('SIM-3d formato: Automático y Más precisión cambian las cuatro superficies montadas sin recalcular (es)',async()=>{
  await spyComputations();const info=await information();await calculateDescribe();const more=await explorer(2),mean=profileValue(more,'Media')
  await expect(mean).toHaveText('5.52');const chartValue=await averageChart()
  await selectAnalysis(page,'Información')
  await changePresentation('all',async()=>{await expect(info.locator('tbody tr')).toHaveCount(6);await expect(info.locator('span[data-analysis-value="4"]').first()).toHaveText('4')})
  await selectAnalysis(page,'Estadísticas');await expect(mean).toHaveText(precise);await expect(await metric('mean','Valor')).toHaveText(precise)
- await changePresentation('2',async()=>{await expect(mean).toHaveText('5.52');await expect(await metric('mean','Pequeño')).toHaveText('0.00041')})
+ await changePresentation('auto',async()=>{await expect(mean).toHaveText('5.52');await expect(await metric('mean','Pequeño')).toHaveText('0.00041')})
  await more.locator('..').locator(':scope>summary').press('Enter');await expect(describe()).toBeVisible()
  await changePresentation('all',async()=>{await expect(await metric('mean','Valor')).toHaveText(precise);await expect(await metric('mean','Pequeño')).toHaveText(small);await expect(await metric('mean','Entero')).toHaveText('12')})
  await selectAnalysis(page,'Gráficos');await expect(chartValue).toHaveText(precise)
- await changePresentation('2',async()=>{await expect(chartValue).toHaveText('5.52')})
- await selectAnalysis(page,'Información');await expect(decimalSelect()).toHaveValue('2');await expect(info.locator('tbody tr')).toHaveCount(6)
+ await changePresentation('auto',async()=>{await expect(chartValue).toHaveText('5.52')})
+ await selectAnalysis(page,'Información');await expect(decimalSelect()).toHaveValue('auto');await expect(info.locator('tbody tr')).toHaveCount(6)
 })
 
 test('SIM-3d formato: copia conserva texto, unidad, identificadores, fila e inversa en ambos modos (es)',{tag:'@solo'},async()=>{
@@ -195,7 +216,7 @@ test('SIM-3d formato: copia conserva texto, unidad, identificadores, fila e inve
  const info=workspace().locator('.columns-overview'),emptyPercent=info.locator('tbody tr').filter({has:page.getByRole('rowheader',{name:'Flotante',exact:true})}).locator('span[data-analysis-unit=" %"]')
  await expect(emptyPercent).toHaveText('50 %');expect(await selectPart(emptyPercent,1)).toBe('5');const percentSelection=await selectionState();expect(await nativeCopy()).toBe('50 %');expect(await selectionState()).toEqual(percentSelection)
  await calculateDescribe()
- for(const mode of ['2','all'] as const){
+ for(const mode of ['auto','all'] as const){
   await chooseMode(mode);const first=await metric('mean','Valor')
   await first.click();await first.evaluate(node=>{const text=document.createTreeWalker(node,NodeFilter.SHOW_TEXT).nextNode()!,selection=window.getSelection()!;selection.setBaseAndExtent(text,2,text,0)})
   const inverse=await selectionState();expect(inverse.anchorOffset).toBe(2);expect(inverse.focusOffset).toBe(0);expect(await nativeCopy()).toBe(precise);expect(await selectionState()).toEqual(inverse)
@@ -209,14 +230,14 @@ test('SIM-3d formato: copia conserva texto, unidad, identificadores, fila e inve
   const expected=parts.visible.replace(parts.first,precise).replace(parts.last,small),before=await selectionState()
   expect(await nativeCopy()).toBe(expected);expect(await selectionState()).toEqual(before)
  }
- const floating=await explorer(5),sum=profileValue(floating,'Suma');await expect(sum).toHaveText('0.3');await selectPart(sum);expect(await nativeCopy()).toBe('0.3')
+ const floating=await explorer(5),sum=profileValue(floating,'Suma');await expect(sum).toHaveText('0.3');await expect(sum).toHaveAttribute('title','Valor completo: '+String(0.1+0.2));await selectPart(sum);expect(await nativeCopy()).toBe(String(0.1+0.2))
  const more=await explorer(0);await more.locator('.views button').nth(1).click()
  const identifier=more.locator('pre').filter({hasText:/^"00123"$/});expect(await selectPart(identifier)).toBe('"00123"');expect(await nativeCopy()).toBe('"00123"')
  await selectAnalysis(page,'SQL');const input=workspace().getByRole('textbox',{name:tr('sql.ui.query'),exact:true});await input.fill('texto 00123 5.52');await input.focus();await input.press('ControlOrMeta+A');expect(await nativeCopy()).toBe('texto 00123 5.52')
 })
 
 test('SIM-3d formato: CSV y JSON exportan los resultados completos sin redondear (es)',async()=>{
- const value=await averageChart();await chooseMode('2');await expect(value).toHaveText('5.52')
+ const value=await averageChart();await chooseMode('auto');await expect(value).toHaveText('5.52')
  await exportAnalysis(page,'analysis.export.json')
  const jsonPath=join(folder,'exports','precision.analisis.json')
  await expect.poll(()=>readFile(jsonPath,'utf8').then(JSON.parse).catch(()=>null)).not.toBeNull()
@@ -237,10 +258,10 @@ test('SIM-3d formato: preferencia global persiste al reabrir y comparte Aparienc
  const dialog=await settingsAppearance();await expect(dialog.getByRole('combobox',{name:'Decimales',exact:true})).toHaveValue('all');await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0)
  await reopenApplication();await openAnalysis(page,'Información');await expect(decimalSelect()).toHaveValue('all');await expect(page.locator('html')).toHaveClass(/dark/)
  const stored=JSON.parse(await readFile(join(folder,'profile','settings.json'),'utf8'));expect(stored.decimalesAnalisis).toBe('all')
- await chooseMode('2');expect((await page.evaluate(()=>window.freya.settings())).values.tema).toBe('dark')
+ await chooseMode('auto');expect((await page.evaluate(()=>window.freya.settings())).values.tema).toBe('dark')
 })
 
-test('SIM-3d decimales: restablecer Apariencia devuelve 2 y conserva otras secciones (es)',async()=>{
+test('SIM-3d decimales: restablecer Apariencia devuelve Automático y conserva otras secciones (es)',async()=>{
  const defaults=defaultSettings()
  const before=await page.evaluate(()=>window.freya.setSettings({
   decimalesAnalisis:'all',tema:'dark',
@@ -255,25 +276,25 @@ test('SIM-3d decimales: restablecer Apariencia devuelve 2 y conserva otras secci
  await dialog.getByRole('tab',{name:'Apariencia',exact:true}).click()
  const decimals=dialog.getByRole('combobox',{name:'Decimales',exact:true})
  await expect(decimals).toHaveValue('all')
- const expected={...before.values,tema:defaults.tema,decimalesAnalisis:2,barraLateral:defaults.barraLateral,markdown:defaults.markdown,editor:defaults.editor,division:defaults.division}
+ const expected={...before.values,tema:defaults.tema,decimalesAnalisis:'auto',barraLateral:defaults.barraLateral,markdown:defaults.markdown,editor:defaults.editor,division:defaults.division}
  await dialog.getByRole('button',{name:'Restablecer esta sección',exact:true}).click()
  await expect.poll(()=>page.evaluate(async()=>(await window.freya.settings()).values)).toEqual(expected)
- await expect(decimals).toHaveValue('2')
+ await expect(decimals).toHaveValue('auto')
  await expect(dialog).toHaveAttribute('aria-busy','false')
  expect(JSON.parse(await readFile(join(folder,'profile','settings.json'),'utf8'))).toEqual(expected)
  await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0)
 })
 
 test('SIM-3d formato: ajustes v1 sin la nueva propiedad conservan las preferencias (es)',async()=>{
- await openAnalysis(page,'Información');await expect(decimalSelect()).toHaveValue('2')
- expect(await page.evaluate(()=>window.freya.settings())).toMatchObject({readonly:false,values:{version:1,decimalesAnalisis:2,tema:'dark',barraLateral:{ancho:311.5}}})
+ await openAnalysis(page,'Información');await expect(decimalSelect()).toHaveValue('auto')
+ expect(await page.evaluate(()=>window.freya.settings())).toMatchObject({readonly:false,values:{version:1,decimalesAnalisis:'auto',tema:'dark',barraLateral:{ancho:311.5}}})
  expect(await readdir(join(folder,'profile'))).not.toContain('settings.json.bak')
 })
 
 test('SIM-3d formato: versión futura deja los controles en solo lectura y conserva sus bytes (es)',async()=>{
- await openAnalysis(page,'Información');await expect(decimalSelect()).toBeVisible();await expect(decimalSelect()).toBeDisabled()
+ await openAnalysis(page,'Información');await expect(decimalSelect()).toBeVisible();await expect(decimalSelect()).toHaveValue('auto');await expect(decimalSelect()).toBeDisabled()
  expect((await page.evaluate(()=>window.freya.settings())).readonly).toBe(true)
- const dialog=await settingsAppearance();await expect(dialog.getByRole('combobox',{name:'Decimales',exact:true})).toBeDisabled();await expect(dialog).toContainText(tr('settings.futureVersion'))
+ const dialog=await settingsAppearance();await expect(dialog.getByRole('combobox',{name:'Decimales',exact:true})).toHaveValue('auto');await expect(dialog.getByRole('combobox',{name:'Decimales',exact:true})).toBeDisabled();await expect(dialog).toContainText(tr('settings.futureVersion'))
  expect(await readFile(join(folder,'profile','settings.json'),'utf8')).toBe(futureSettings);await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0)
 })
 
@@ -288,7 +309,7 @@ for(const locale of ['es','en-XA'] as const)for(const[width,height]of [[1440,900
    await expect.poll(()=>decimalSelect().evaluate(node=>{const rect=node.getBoundingClientRect();return rect.width>0&&rect.height>0&&rect.left>=0&&rect.right<=innerWidth+.5&&rect.top>=0&&rect.bottom<=innerHeight+.5})).toBe(true)
    await page.screenshot({animations:'disabled',path:test.info().outputPath(`sim3d-decimals-${locale}-${theme}-${width}x${height}.png`)})
   }
-  await page.emulateMedia({forcedColors:'active',reducedMotion:'reduce'});await decimalSelect().focus();await expect(decimalSelect()).toBeFocused();await expect(decimalSelect()).toBeEnabled();await chooseMode('2')
+  await page.emulateMedia({forcedColors:'active',reducedMotion:'reduce'});await decimalSelect().focus();await expect(decimalSelect()).toBeFocused();await expect(decimalSelect()).toBeEnabled();await chooseMode('auto')
   await expect(await metric('mean','Pequeño')).toHaveText('0.00041');await expect(await metric('mean','Entero')).toHaveText('12')
  })
 }

@@ -88,7 +88,7 @@ test('SIM-3d Caja: atípico fraccional muestra dos decimales y copia exacto sin 
  await expect(cell('outliers')).toHaveText('1');await expect(cell('count')).toHaveText('5')
  const atypical=cell('atypical')
  await expect.soft(atypical).toHaveText('[100.12]')
- expect.soft(await atypical.locator('[title]').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('title')))).toEqual(['Valor exacto: 100.12345'])
+ expect.soft(await atypical.locator('[title]').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('title')))).toEqual(['Valor completo: 100.12345'])
  expect(await selectOutlierPart(atypical)).toBe('100.')
  const before=await selectionState()
  expect.soft(await nativeCopy()).toBe('100.12345')
