@@ -1,0 +1,56 @@
+
+Running 2 tests using 1 worker
+
+(node:34406) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/2] [csv] › tests/e2e/sim3c-ui.spec.ts:87:1 › SIM-3c: volver de Análisis conserva el recuento del CSV
+  1) [csv] › tests/e2e/sim3c-ui.spec.ts:87:1 › SIM-3c: volver de Análisis conserva el recuento del CSV 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('footer.statusbar').locator(':scope > span.truncate')
+    Expected: "2 de 2 filas"
+    Received: "datos.csv"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveText" locator('footer.statusbar').locator(':scope > span.truncate') with timeout 15000ms
+      - waiting for locator('footer.statusbar').locator(':scope > span.truncate')
+        34 × locator resolved to <span class="truncate">datos.csv</span>
+           - unexpected value "datos.csv"
+
+
+      91 |  await page.getByRole('tab',{name:'datos.csv',exact:true}).click()
+      92 |  await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00123')
+    > 93 |  await expect(footer().locator(':scope > span.truncate')).toHaveText('2 de 2 filas')
+         |                                                           ^
+      94 | })
+      95 |
+      96 | test('SIM-3c: volver de Texto a Tabla recupera el recuento del CSV',async()=>{
+        at $WORKTREE/tests/e2e/sim3c-ui.spec.ts:93:59
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    test-results/sim3c-ui-SIM-3c-volver-de--613b9-onserva-el-recuento-del-CSV-csv/attachments/electron-context-f8f55be008a15f030b2fdc3e9ac5b8dd6af82d26.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/sim3c-ui-SIM-3c-volver-de--613b9-onserva-el-recuento-del-CSV-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3c-ui-SIM-3c-volver-de--613b9-onserva-el-recuento-del-CSV-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3c-ui-SIM-3c-volver-de--613b9-onserva-el-recuento-del-CSV-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:34565) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/2] [csv] › tests/e2e/sim3c-ui.spec.ts:96:1 › SIM-3c: volver de Texto a Tabla recupera el recuento del CSV
+  1 failed
+    [csv] › tests/e2e/sim3c-ui.spec.ts:87:1 › SIM-3c: volver de Análisis conserva el recuento del CSV 
+  1 passed (19.6s)

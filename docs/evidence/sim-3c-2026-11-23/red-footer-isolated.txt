@@ -1,0 +1,53 @@
+
+Running 1 test using 1 worker
+
+(node:28794) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [csv] › tests/e2e/sim3c-ui.spec.ts:72:1 › SIM-3c: la barra pertenece al documento activo y vuelve al CSV sin perder el recuento
+[csv] › tests/e2e/sim3c-ui.spec.ts:72:1 › SIM-3c: la barra pertenece al documento activo y vuelve al CSV sin perder el recuento
+SIM3C_FOOTER {"document":"apuntes.md","textContent":"2 de 2 filasLín 1, Col 1   LFCRLF 2 espacios Markdown Contando… UTF-8 Codificación del documento Reabrir vuelve a leer el archivo con la codificación elegida. El original se conserva hasta que guardes. Codificación elegida UTF-8UTF-16 LEUTF-16 BEWindows-1252Latin-1 (ISO-8859-1) Guardar con esta opción escribe el documento en UTF-8.    Reabrir con codificación… Guardar con codificación… CancelarLocal","innerText":"2 de 2 filas\nLín 1, Col 1\nLF\nCRLF\n2 espacios\nMarkdown\nContando…\nUTF-8\nLocal","children":[{"tag":"SPAN","class":"status-dot","text":""},{"tag":"SPAN","class":"truncate","text":"2 de 2 filas"},{"tag":"SPAN","class":"spacer","text":""},{"tag":"DIV","class":"","text":"Lín 1, Col 1   LFCRLF 2 espacios Markdown "},{"tag":"SPAN","class":"text-stats","text":"Contando…"},{"tag":"SPAN","class":"sr-only","text":""},{"tag":"BUTTON","class":"text-button","text":"UTF-8"},{"tag":"DIALOG","class":"svelte-8hhwcj","text":"Codificación del documento Reabrir vuelve a leer el archivo con la codificación elegida. El original se conserva hasta que guardes. Codificación elegida UTF-8UTF-16 LEUTF-16 BEWindows-1252Latin-1 (ISO-8859-1) Guardar con esta opción escribe el documento en UTF-8.    Reabrir con codificación… Guardar con codificación… Cancelar"},{"tag":"SPAN","class":"","text":"Local"}]}
+
+  1) [csv] › tests/e2e/sim3c-ui.spec.ts:72:1 › SIM-3c: la barra pertenece al documento activo y vuelve al CSV sin perder el recuento 
+
+    Error: expect(locator).not.toContainText(expected) failed
+
+    Locator: locator('footer.statusbar').locator(':scope > span.truncate')
+    Expected substring: not "filas"
+    Received string: "2 de 2 filas"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "not toContainText" locator('footer.statusbar').locator(':scope > span.truncate') with timeout 15000ms
+      - waiting for locator('footer.statusbar').locator(':scope > span.truncate')
+        34 × locator resolved to <span class="truncate">2 de 2 filas</span>
+           - unexpected value "2 de 2 filas"
+
+
+      79 |   console.log('SIM3C_FOOTER '+JSON.stringify({document:name,...await footer().evaluate(node=>({textContent:node.textContent,innerText:node.innerText,children:Array.from(node.children).map(child=>({tag:child.tagName,class:child.className,text:child.textContent}))}))}))
+      80 |   // textContent del footer concatena hijos: «filasContando…» no tiene límite de palabra.
+    > 81 |   await expect(footer().locator(':scope > span.truncate')).not.toContainText('filas')
+         |                                                                ^
+      82 |   await expect(footer().locator('.csv-status')).toHaveCount(0)
+      83 |   await page.getByRole('tab',{name:'datos.csv',exact:true}).click();await expect(page.getByRole('gridcell',{name:'Fila 1, ID',exact:true})).toHaveText('00123');await expect(footer()).toContainText('2 de 2 filas')
+      84 |  }
+        at $WORKTREE/tests/e2e/sim3c-ui.spec.ts:81:64
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    test-results/sim3c-ui-SIM-3c-la-barra-p-32459--CSV-sin-perder-el-recuento-csv/attachments/electron-context-757842cc3f76ac7149fc5d4de9718f3ea57828b0.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/sim3c-ui-SIM-3c-la-barra-p-32459--CSV-sin-perder-el-recuento-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/sim3c-ui-SIM-3c-la-barra-p-32459--CSV-sin-perder-el-recuento-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/sim3c-ui-SIM-3c-la-barra-p-32459--CSV-sin-perder-el-recuento-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [csv] › tests/e2e/sim3c-ui.spec.ts:72:1 › SIM-3c: la barra pertenece al documento activo y vuelve al CSV sin perder el recuento 

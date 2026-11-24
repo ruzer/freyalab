@@ -22,8 +22,8 @@ test('estadísticas del rango: vista ordenada/filtrada, resumen conjunto y por c
  for(const theme of ['light','dark']){await page.getByLabel('Tema',{exact:true}).selectOption(theme);for(const [width,height] of [[1440,900],[1280,800]]){await page.setViewportSize({width,height});await stats.locator('.statistics-scroll').evaluate(element=>element.scrollLeft=element.scrollWidth);await page.screenshot({path:test.info().outputPath(`csv-selection-stats-${theme}-${width}x${height}.png`)})}}
  await page.setViewportSize({width:1440,height:900})
  expect(await page.evaluate(()=>window.freya.documents())).toEqual(before);expect(await page.evaluate(()=>window.freya.recoveries())).toEqual([]);expect(await readFile(path,'utf8')).toBe(source)
- await showTable(page);await page.getByLabel('Buscar en tabla',{exact:true}).fill('B');await showPanel(page,'Estadísticas')
- await expect(stats.locator('tbody tr')).toHaveCount(0);await expect(stats.getByRole('button',{name:'Analizar',exact:true})).toBeDisabled();await expect(page.locator('footer')).toContainText('1 de 4 filas')
+ await showTable(page);await page.getByLabel('Buscar en tabla',{exact:true}).fill('B');await expect(page.locator('footer')).toContainText('1 de 4 filas');await showPanel(page,'Estadísticas')
+ await expect(stats.locator('tbody tr')).toHaveCount(0);await expect(stats.getByRole('button',{name:'Analizar',exact:true})).toBeDisabled()
  await showTable(page);await page.getByRole('gridcell',{name:'Fila 1, X',exact:true}).click();await page.keyboard.press('Shift+ArrowRight');await showPanel(page,'Estadísticas')
  await analyze(stats);expect((await cells(stats)).slice(0,10)).toEqual(['3. X','1','0','1','1','100','100','100','100','100']);expect((await cells(stats,1)).slice(0,10)).toEqual(['4. Y','1','0','1','1','1,000','1,000','1,000','1,000','1,000'])
  const value=page.getByRole('gridcell',{name:'Fila 1, Y',exact:true});await showTable(page);await value.dblclick();await page.getByLabel('Editar celda',{exact:true}).fill('2000');await page.getByLabel('Editar celda',{exact:true}).press('Enter');await showPanel(page,'Estadísticas')

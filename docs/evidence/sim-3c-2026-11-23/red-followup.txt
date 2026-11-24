@@ -1,0 +1,84 @@
+
+Running 3 tests using 1 worker
+
+(node:22543) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [csv] › tests/e2e/sim3c-ui.spec.ts:39:109 › SIM-3c: Exportar recibe el puntero a 1440×900 (16.4s)
+(node:22677) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [csv] › tests/e2e/sim3c-ui.spec.ts:39:109 › SIM-3c: Exportar recibe el puntero a 1280×720 (15.5s)
+(node:22730) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [csv] › tests/e2e/sim3c-ui.spec.ts:72:1 › SIM-3c: la barra pertenece al documento activo y vuelve al CSV sin perder el recuento (2.8s)
+
+
+  1) [csv] › tests/e2e/sim3c-ui.spec.ts:39:109 › SIM-3c: Exportar recibe el puntero a 1440×900 ─────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      53 |    }
+      54 |    return rects.length>0&&rects.every(rect=>dropdown.contains(document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2)))
+    > 55 |   })).toBe(true)
+         |       ^
+      56 |  }
+      57 |  await button.click();await expect(menu).toHaveCount(0)
+      58 | })
+        at $WORKTREE/tests/e2e/sim3c-ui.spec.ts:55:7
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim3c-evidence/red-followup-results/sim3c-ui-SIM-3c-Exportar-recibe-el-puntero-a-1440×900-csv/attachments/electron-context-195241e0b5b34115f32404df889471f3ab0e693a.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim3c-evidence/red-followup-results/sim3c-ui-SIM-3c-Exportar-recibe-el-puntero-a-1440×900-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3c-evidence/red-followup-results/sim3c-ui-SIM-3c-Exportar-recibe-el-puntero-a-1440×900-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3c-evidence/red-followup-results/sim3c-ui-SIM-3c-Exportar-recibe-el-puntero-a-1440×900-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [csv] › tests/e2e/sim3c-ui.spec.ts:39:109 › SIM-3c: Exportar recibe el puntero a 1280×720 ─────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      53 |    }
+      54 |    return rects.length>0&&rects.every(rect=>dropdown.contains(document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2)))
+    > 55 |   })).toBe(true)
+         |       ^
+      56 |  }
+      57 |  await button.click();await expect(menu).toHaveCount(0)
+      58 | })
+        at $WORKTREE/tests/e2e/sim3c-ui.spec.ts:55:7
+
+    attachment #1: electron-context (application/zip) ──────────────────────────────────────────────
+    ../sim3c-evidence/red-followup-results/sim3c-ui-SIM-3c-Exportar-recibe-el-puntero-a-1280×720-csv/attachments/electron-context-779903a8760dcc1dce996598348428a45a27ec0d.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../sim3c-evidence/red-followup-results/sim3c-ui-SIM-3c-Exportar-recibe-el-puntero-a-1280×720-csv/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../sim3c-evidence/red-followup-results/sim3c-ui-SIM-3c-Exportar-recibe-el-puntero-a-1280×720-csv/trace.zip
+    Usage:
+
+        npx playwright show-trace ../sim3c-evidence/red-followup-results/sim3c-ui-SIM-3c-Exportar-recibe-el-puntero-a-1280×720-csv/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [csv] › tests/e2e/sim3c-ui.spec.ts:39:109 › SIM-3c: Exportar recibe el puntero a 1440×900 ──────
+    [csv] › tests/e2e/sim3c-ui.spec.ts:39:109 › SIM-3c: Exportar recibe el puntero a 1280×720 ──────
+  1 passed (35.7s)

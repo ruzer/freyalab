@@ -1,0 +1,8 @@
+
+Running 1 test using 1 worker
+
+(node:42095) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 ../sim3c-evidence/sim3c-before-probe.spec.ts:60:2 › Observación intermediate SIM-3c: es light 1440×900 (2.6s)
+
+  1 passed (3.0s)
