@@ -14,12 +14,12 @@
  import type {AnalysisSection,AnalysisTab} from '../lib/workspace-tabs'
  import {csvAnalysisSample,type CsvAnalysisView,type CsvEmptyIntent} from '../lib/csv-analysis-view'
  import type {DocumentInfo} from '../../shared/types'
- let {tab,doc,shown,view,external,onsection,onreturn,onerror,onreport,onempty,numberMode=2,numberModeReadonly=false,onnumbermodechange}:{tab:AnalysisTab;doc:DocumentInfo;shown:boolean;view:CsvAnalysisView;external:boolean;onsection:(section:AnalysisSection)=>void;onreturn:()=>void;onerror:(message:string)=>void;onreport:(text:string)=>Promise<void>;onempty:(intent:CsvEmptyIntent)=>void;numberMode?:AnalysisNumberMode;numberModeReadonly?:boolean;onnumbermodechange?:(mode:AnalysisNumberMode)=>Promise<void>}=$props()
+ let {tab,doc,shown,view,external,onsection,onreturn,onerror,onreport,onempty,numberMode='auto',numberModeReadonly=false,onnumbermodechange}:{tab:AnalysisTab;doc:DocumentInfo;shown:boolean;view:CsvAnalysisView;external:boolean;onsection:(section:AnalysisSection)=>void;onreturn:()=>void;onerror:(message:string)=>void;onreport:(text:string)=>Promise<void>;onempty:(intent:CsvEmptyIntent)=>void;numberMode?:AnalysisNumberMode;numberModeReadonly?:boolean;onnumbermodechange?:(mode:AnalysisNumberMode)=>Promise<void>}=$props()
  let changingNumberMode=$state(false)
  async function changeNumberMode(select:HTMLSelectElement){
   if(numberModeReadonly||changingNumberMode||!onnumbermodechange)return
   changingNumberMode=true
-  try{await onnumbermodechange(select.value==='all'?'all':2)}catch(error){onerror(String(error))}
+  try{await onnumbermodechange(select.value==='all'?'all':'auto')}catch(error){onerror(String(error))}
   finally{changingNumberMode=false;await tick();if(select.isConnected)select.value=String(numberMode)}
  }
  const subset=$derived(doc.analysisSubset)
@@ -62,7 +62,7 @@
   <div class="analysis-heading"><h2 tabindex="-1" bind:this={heading}>{subset?plural('subset.analysis.source',doc.rowCount??0,{name:subset.name,rows:formatNumber(doc.rowCount??0)}):t('analysis.tab.source',{name:doc.name,rows:formatNumber(doc.rowCount??0)})}</h2>
    <div class="header-actions"><button bind:this={exportButton} type="button" aria-haspopup="menu" aria-expanded={!!exportMenu} onclick={openExport}>{t('analysis.tab.export')}<Icon name="chevron-down" size={14}/></button><button type="button" onclick={onreturn}><Icon name="table" size={14}/>{t(subset?'subset.analysis.return':'analysis.tab.return')}</button></div>
   </div>
-  {#if section!=='sql'}<div class="number-format"><label>{t('analysis.decimals.label')} <select aria-label={t('analysis.decimals.label')} title={t('analysis.decimals.precisionHelp')} aria-describedby={'analysis-number-help-'+tab.id} value={String(numberMode)} disabled={numberModeReadonly||changingNumberMode||!onnumbermodechange} onchange={event=>void changeNumberMode(event.currentTarget)}><option value="2">2</option><option value="all">{t('analysis.decimals.all')}</option></select></label><small id={'analysis-number-help-'+tab.id}>{t('analysis.decimals.help')}</small></div>{/if}
+  {#if section!=='sql'}<div class="number-format"><label>{t('analysis.decimals.label')} <select aria-label={t('analysis.decimals.label')} title={t('analysis.decimals.precisionHelp')} aria-describedby={'analysis-number-help-'+tab.id} value={String(numberMode)} disabled={numberModeReadonly||changingNumberMode||!onnumbermodechange} onchange={event=>void changeNumberMode(event.currentTarget)}><option value="auto">{t('analysis.decimals.auto')}</option><option value="all">{t('analysis.decimals.all')}</option></select></label><small id={'analysis-number-help-'+tab.id}>{t('analysis.decimals.help')}</small></div>{/if}
    <div bind:this={sectionList} class="analysis-sections" role="tablist" aria-label={t('analysis.tab.sections')}>
     {#each sections as item (item)}
      <button type="button" role="tab" id={'analysis-section-'+tab.id+'-'+item} aria-controls={'analysis-panel-'+tab.id+'-'+item} aria-selected={item===section} tabindex={item===section?0:-1} aria-disabled={unavailable(item)} disabled={unavailable(item)} title={unavailable(item)?t('analysis.tab.large'):undefined} aria-describedby={unavailable(item)?'analysis-large-'+tab.id:undefined} onkeydown={sectionKey} onclick={()=>onsection(item)}>{t('analysis.tab.section.'+item)}</button>

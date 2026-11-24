@@ -4,11 +4,11 @@ const sidebar=z.strictObject({visible:z.boolean(),ancho:z.number().min(180).max(
 const markdown=z.strictObject({modoInicial:z.enum(['edit','split','preview'])})
 const editor=z.strictObject({tabIndents:z.boolean(),indent:z.literal([2,4,'tab']),csvColumnColors:z.boolean().default(true)})
 const editorDefaults={tabIndents:false,indent:2,csvColumnColors:true} as const
-const analysisDecimals=z.literal([2,'all'])
+const analysisDecimals=z.enum(['auto','all'])
 const version=z.string().regex(/^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/)
 const updates=z.strictObject({buscarAlIniciar:z.boolean(),ultimaComprobacion:z.iso.datetime().nullable(),versionesOmitidas:z.array(version)})
 const advanced=z.strictObject({herramientasDeDesarrollo:z.boolean()})
-export const settingsSchema=z.strictObject({version:z.literal(1),idioma:z.enum(['sistema','es','en']),tema:z.enum(['system','light','dark']),decimalesAnalisis:analysisDecimals.default(2),barraLateral:sidebar,markdown,editor:editor.default(()=>({...editorDefaults})),division:z.number().min(20).max(80),actualizaciones:updates,avanzado:advanced})
+export const settingsSchema=z.strictObject({version:z.literal(1),idioma:z.enum(['sistema','es','en']),tema:z.enum(['system','light','dark']),decimalesAnalisis:analysisDecimals.default('auto'),barraLateral:sidebar,markdown,editor:editor.default(()=>({...editorDefaults})),division:z.number().min(20).max(80),actualizaciones:updates,avanzado:advanced})
 export const settingsPatchSchema=settingsSchema.omit({version:true}).partial().extend({decimalesAnalisis:analysisDecimals.optional(),barraLateral:sidebar.partial().optional(),markdown:markdown.partial().optional(),editor:editor.partial().extend({csvColumnColors:z.boolean().optional()}).optional(),actualizaciones:updates.partial().optional(),avanzado:advanced.partial().optional()})
 export type Settings=z.infer<typeof settingsSchema>
 export type SettingsPatch=z.infer<typeof settingsPatchSchema>
@@ -19,7 +19,7 @@ export type LegacySettings=z.infer<typeof legacySettingsInputSchema>
 
 // Única tabla de valores iniciales; los demás consumidores reciben copias.
 export function defaultSettings():Settings {
- return{version:1,idioma:'sistema',tema:'system',decimalesAnalisis:2,barraLateral:{visible:true,ancho:240,pestana:'files'},markdown:{modoInicial:'split'},editor:{...editorDefaults},division:50,actualizaciones:{buscarAlIniciar:false,ultimaComprobacion:null,versionesOmitidas:[]},avanzado:{herramientasDeDesarrollo:false}}
+ return{version:1,idioma:'sistema',tema:'system',decimalesAnalisis:'auto',barraLateral:{visible:true,ancho:240,pestana:'files'},markdown:{modoInicial:'split'},editor:{...editorDefaults},division:50,actualizaciones:{buscarAlIniciar:false,ultimaComprobacion:null,versionesOmitidas:[]},avanzado:{herramientasDeDesarrollo:false}}
 }
 export function legacySettings(value:unknown):Settings {
  const result=defaultSettings(),source=value&&typeof value==='object'&&!Array.isArray(value)?value as Record<string,unknown>:{}
