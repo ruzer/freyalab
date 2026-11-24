@@ -5,6 +5,7 @@
  import {t,formatNumber} from '../lib/i18n.svelte'
  import {csvAnalysisSample,csvAnalysisQueryReady,csvAnalysisQueryKey} from '../lib/csv-analysis-view'
  import {describeTable,type DescribeEntry} from '../lib/describe-table'
+ import {describeData} from '../lib/statistics-data'
  import {describeReport,type ReportContext} from '../lib/statistics-report'
  import {controlHint} from '../lib/control-hint'
  import type {AnalysisExportAction} from '../lib/analysis-export'
@@ -69,7 +70,18 @@
   finally{if(current()){active=undefined;busy=false}}
  }
  async function report(){if(!context||busy||reporting||doc.revision!==context.revision)return;reporting=true;try{await onreport(describeReport({...$state.snapshot(context),scope:scopeLabel(analyzedScope,context.sample)},$state.snapshot(entries),includeText))}catch(error){onerror(String(error))}finally{reporting=false}}
- export function exportActions():AnalysisExportAction[]{return[{label:t('describe.report'),disabledReason:busy||reporting?'busy':!context||!matrix.columns.length?'result':doc.revision!==context.revision?'refresh':null,run:report}]}
+ async function exportData(format:'csv'|'json'){
+  if(!context||!matrix.columns.length||busy||reporting||doc.revision!==context.revision)return
+  const captured={...$state.snapshot(context),scope:scopeLabel(analyzedScope,context.sample)}
+  const data=describeData(captured,$state.snapshot(entries),includeText)
+  reporting=true
+  try{await window.freya.exportStatisticsResult(doc.id,{revision:captured.revision,format,protectFormulas:true,...data})}
+  catch(error){onerror(String(error))}finally{reporting=false}
+ }
+ export function exportActions():AnalysisExportAction[]{
+  const disabledReason=busy||reporting?'busy':!context||!matrix.columns.length?'result':doc.revision!==context.revision?'refresh':null
+  return[{label:t('describe.report'),disabledReason,run:report},{label:t('analysis.export.csv'),disabledReason,title:t('statistics.export.csvHelp'),run:()=>exportData('csv')},{label:t('analysis.export.json'),disabledReason,run:()=>exportData('json')}]
+ }
  const full=(value:string|number|null)=>value===null?'':typeof value==='number'?t('columnAnalysis.exactValue',{value:formatAnalysisFullNumber(value)}):value
 </script>
 

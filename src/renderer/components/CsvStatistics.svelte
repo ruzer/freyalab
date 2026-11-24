@@ -8,6 +8,7 @@
  import Icon from './Icon.svelte'
  import {onDestroy,onMount,tick,untrack} from 'svelte'
  import {STATISTICS_FIELDS,NUMERIC_DETAIL_FIELDS,statisticsReport,type ReportContext,type StatisticsRow} from '../lib/statistics-report'
+ import {statisticsData} from '../lib/statistics-data'
  import CsvColumnAnalysis from './CsvColumnAnalysis.svelte'
  import CsvColumnsOverview from './CsvColumnsOverview.svelte'
  import type {CsvEmptyIntent} from '../lib/csv-analysis-view'
@@ -60,9 +61,17 @@
   finally{if(ticket===request){active=undefined;busy=false}}
  }
  async function report(){if(!reportContext||busy||reporting||doc.revision!==revision)return;const text=statisticsReport($state.snapshot(reportContext),$state.snapshot(results));reporting=true;try{await onreport(text)}catch(error){onerror(String(error))}finally{reporting=false}}
+ async function exportData(format:'csv'|'json'){
+  if(exploring||overviewing||!reportContext||!results.length||busy||reporting||doc.revision!==revision)return
+  const captured=$state.snapshot(reportContext),data=statisticsData(captured,$state.snapshot(results))
+  reporting=true
+  try{await window.freya.exportStatisticsResult(doc.id,{revision:captured.revision,format,protectFormulas:true,...data})}
+  catch(error){onerror(String(error))}finally{reporting=false}
+ }
  export function exportActions():AnalysisExportAction[]{
   const current=exploring?explorer:describeView
-  return[...(!overviewing&&(exploring||!usingRange)?current?.exportActions():undefined)??[{label:t('describe.report'),disabledReason:'context' as const,run:()=>{}}],{label:t('describe.detailedReport'),disabledReason:exploring||overviewing?'context':busy||reporting?'busy':!reportContext?'result':doc.revision!==revision?'refresh':null,run:report}]
+  const disabledReason=exploring||overviewing?'context':busy||reporting?'busy':!reportContext||!results.length?'result':doc.revision!==revision?'refresh':null
+  return[...(!overviewing&&(exploring||!usingRange)?current?.exportActions():undefined)??[{label:t('describe.report'),disabledReason:'context' as const,run:()=>{}}],{label:t('describe.detailedReport'),disabledReason,run:report},{label:t(usingRange?'analysis.export.csv':'statistics.export.detailedCsv'),disabledReason,title:t('statistics.export.csvHelp'),run:()=>exportData('csv')},{label:t(usingRange?'analysis.export.json':'statistics.export.detailedJson'),disabledReason,run:()=>exportData('json')}]
  }
 </script>
 <svelte:window onkeydown={event=>{if(!embedded&&event.key==='Escape'&&event.target instanceof HTMLElement&&event.target.closest('.statistics-panel')){event.preventDefault();event.stopPropagation();onclose()}}}/>

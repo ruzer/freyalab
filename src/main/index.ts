@@ -13,6 +13,7 @@ import {projectRecipeDraft} from '../shared/project-recipes'
 import {col,query,conditionGroup} from './query-schema'
 import {ChartPresets,chartConfiguration} from './chart-presets'
 import {exportChartResult} from './chart-result-export'
+import {exportStatisticsResult} from './statistics-result-export'
 import { SqlService,type SqlTiming } from './sql-service'
 import appIcon from '../../build/icon.png?asset'
 import { Documents } from './documents'
@@ -360,6 +361,7 @@ async function handle(operation:string,args:unknown[]){
  case'stats':docs.requireTable(id.parse(a));return docs.table.call('stats',a,rows.nullable().parse(b),z.array(col).max(100000).parse(c),z.object({requestId:z.uuid(),revision:z.number().int().nonnegative(),range:range.optional()}).optional().parse(d))
  case'markdown':docs.requireTable(id.parse(a));return docs.table.call('markdown',a,tableExport.parse(b) as TableExport)
  case'exportChartResult':return exportChartResult(docs,analytics,id.parse(a),z.object({requestId:id,revision:z.number().int().nonnegative(),configuration:chartConfiguration,format:z.enum(['csv','json','md']),protectFormulas:z.boolean()}).strict().parse(b))
+ case'exportStatisticsResult':return exportStatisticsResult(docs,id.parse(a),b)
  case'exportGraphic':return exportGraphic(docs,id.parse(a),z.object({format:z.enum(['svg','png','pdf']),svg:text.min(1),revision:z.number().int().nonnegative()}).strict().parse(b))
  case'export':return exportDocument(docs,id.parse(a),z.object({format:z.enum(['pdf','html','svg','png','csv','tsv','docx']),html:text.optional(),svg:text.optional(),table:tableExport.optional(),revision:z.number().int().nonnegative().optional(),citationStyle:z.enum(citationStyleIds).optional()}).parse(b) as ExportRequest)
  case'locateImage':return docs.locateImage(id.parse(a),z.string().min(1).max(16*1024*1024).parse(b))

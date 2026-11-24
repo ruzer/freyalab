@@ -1869,5 +1869,22 @@
  "csv.sort.preparing": "Preparing the order for “{column}”…",
  "csv.sort.completeNumber": "“{column}” was sorted as numbers.",
  "csv.sort.completeText": "“{column}” was sorted as text.",
- "csv.sort.error": "We could not sort “{column}”. Try again."
+ "csv.sort.error": "We could not sort “{column}”. Try again.",
+ "statistics.export.csvHelp": "Exports full values and protects text formulas. The context JSON preserves original values and missing results.",
+ "statistics.export.detailedCsv": "Detailed statistics CSV…",
+ "statistics.export.detailedJson": "Detailed statistics JSON…",
+ "statistics.export.value": "Value (literal text)",
+ "statistics.export.count": "Count",
+ "statistics.export.percent": "Percentage of rows",
+ "statistics.export.firstRow": "First original row",
+ "statistics.export.lower": "From",
+ "statistics.export.upper": "To",
+ "statistics.export.pairs": "Numeric pairs from the same row",
+ "statistics.export.omitted": "Omitted rows",
+ "statistics.export.error.tooLarge": "This result is too large to export. Reduce the columns or rows in the analysis.",
+ "statistics.export.error.invalid": "This result cannot be exported. Calculate it again.",
+ "statistics.export.error.changed": "The data changed. Calculate the statistics again before exporting.",
+ "statistics.export.pearson": "Pearson",
+ "statistics.export.viewHelp": "Exports the current view; in Frequencies, only the loaded page.",
+ "statistics.export.nulls": "rows distinguishes null from empty text. Formula protection changes only the CSV representation; the context preserves the original."
 }

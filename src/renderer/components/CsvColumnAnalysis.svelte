@@ -6,6 +6,7 @@
  import {controlHint} from '../lib/control-hint'
  import type {AnalysisExportAction} from '../lib/analysis-export'
  import {PROFILE_FIELDS,NUMERIC_DETAIL_FIELDS,NUMERIC_DETAIL_HELP,columnReport,type ColumnReportContext} from '../lib/statistics-report'
+ import {columnAnalysisData} from '../lib/statistics-data'
  import {onDestroy} from 'svelte'
  import {columnSummary} from '../../shared/column-profile'
  import type {DocumentInfo,TableQuery,ColumnAnalysis,ColumnAnalysisRequest,TableViewMeta} from '../../shared/types'
@@ -29,7 +30,18 @@
   finally{if(active===request.requestId){active=null;busy=false}}
  }
  async function report(){if(!result||!reportContext||busy||reporting||doc.revision!==result.revision)return;reporting=true;try{await onreport(columnReport($state.snapshot(reportContext),$state.snapshot(result),page))}catch(error){onerror(String(error))}finally{reporting=false}}
- export function exportActions():AnalysisExportAction[]{return[{label:t('describe.report'),disabledReason:busy||reporting?'busy':page==='correlation'&&!result?.correlation?'correlation':!result||!reportContext?'result':doc.revision!==result.revision?'refresh':null,title:t('analysis.export.explorationHelp'),run:report}]}
+ async function exportData(format:'csv'|'json'){
+  if(!result||!reportContext||busy||reporting||doc.revision!==result.revision||page==='correlation'&&!result.correlation)return
+  const captured=$state.snapshot(reportContext),data=columnAnalysisData(captured,$state.snapshot(result),page)
+  reporting=true
+  try{await window.freya.exportStatisticsResult(doc.id,{revision:result.revision,format,protectFormulas:true,...data})}
+  catch(error){onerror(String(error))}finally{reporting=false}
+ }
+ export function exportActions():AnalysisExportAction[]{
+  const disabledReason=busy||reporting?'busy':page==='correlation'&&!result?.correlation?'correlation':!result||!reportContext?'result':doc.revision!==result.revision?'refresh':null
+  const viewHelp=t('analysis.export.explorationHelp')
+  return[{label:t('describe.report'),disabledReason,title:viewHelp,run:report},{label:t('analysis.export.csv'),disabledReason,title:t('statistics.export.viewHelp')+' '+t('statistics.export.csvHelp'),run:()=>exportData('csv')},{label:t('analysis.export.json'),disabledReason,title:t('statistics.export.viewHelp'),run:()=>exportData('json')}]
+ }
  const summary=$derived(result?columnSummary(result):null)
  const countFields=new Set(['cells','empty','missing','whitespace','unique','duplicateGroups','duplicateRows','extraDuplicates','numeric','excluded','leadingZeros','minLength','maxLength'])
  const number=(value:number|null)=>value===null?'—':formatAnalysisNumber(value,numberMode,getUILanguage(),'count')

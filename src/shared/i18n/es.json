@@ -1869,5 +1869,22 @@
  "csv.sort.preparing": "Preparando el orden de «{column}»…",
  "csv.sort.completeNumber": "«{column}» se ordenó como número.",
  "csv.sort.completeText": "«{column}» se ordenó como texto.",
- "csv.sort.error": "No pudimos ordenar «{column}». Vuelve a intentarlo."
+ "csv.sort.error": "No pudimos ordenar «{column}». Vuelve a intentarlo.",
+ "statistics.export.csvHelp": "Exporta los valores completos; protege las fórmulas textuales. El JSON de contexto conserva los valores originales y los vacíos.",
+ "statistics.export.detailedCsv": "Estadísticas detalladas CSV…",
+ "statistics.export.detailedJson": "Estadísticas detalladas JSON…",
+ "statistics.export.value": "Valor (texto literal)",
+ "statistics.export.count": "Conteo",
+ "statistics.export.percent": "Porcentaje de filas",
+ "statistics.export.firstRow": "Primera fila original",
+ "statistics.export.lower": "Desde",
+ "statistics.export.upper": "Hasta",
+ "statistics.export.pairs": "Pares numéricos de la misma fila",
+ "statistics.export.omitted": "Filas omitidas",
+ "statistics.export.error.tooLarge": "Este resultado es demasiado grande para exportarlo. Reduce las columnas o las filas del análisis.",
+ "statistics.export.error.invalid": "No se puede exportar este resultado. Vuelve a calcularlo.",
+ "statistics.export.error.changed": "Los datos cambiaron. Vuelve a calcular las estadísticas antes de exportar.",
+ "statistics.export.pearson": "Pearson",
+ "statistics.export.viewHelp": "Exporta la vista actual; en Frecuencias, solo la página cargada.",
+ "statistics.export.nulls": "En rows se distinguen null y texto vacío. La protección de fórmulas solo cambia la representación en el CSV; el contexto conserva el original."
 }
