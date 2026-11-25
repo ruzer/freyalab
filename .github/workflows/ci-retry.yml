@@ -1,0 +1,30 @@
+name: CI retry
+# GitHub cancela los trabajos que no consiguen máquina («The job was not acquired by Runner…»); pasa con macOS ARM.
+# Si eso es lo único que falló, se relanza una vez. Un fallo de pruebas o un límite de tiempo no se reintentan.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+permissions:
+  actions: write
+jobs:
+  retry:
+    if: github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Re-run jobs that never got a runner
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN: ${{ github.event.workflow_run.id }}
+        run: |
+          counts=$(gh api "repos/$REPO/actions/runs/$RUN/attempts/1/jobs?per_page=100" --jq '[
+            ([.jobs[]|select(.conclusion=="cancelled" and (.runner_name // "") == "")]|length),
+            ([.jobs[]|select(.name != "Gate" and (.runner_name // "") != "" and (.conclusion=="failure" or .conclusion=="cancelled" or .conclusion=="timed_out"))]|length)
+          ]|@tsv')
+          read -r no_runner other <<< "$counts"
+          echo "Sin máquina: $no_runner. Otros fallos: $other."
+          if [ "$no_runner" -gt 0 ] && [ "$other" -eq 0 ]; then
+            gh run rerun "$RUN" --failed -R "$REPO"
+          fi
