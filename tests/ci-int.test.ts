@@ -40,7 +40,16 @@ it('Intel conserva las identidades de desarrollo en dos partes y prueba el paque
  expect(scheduled?.map(job=>[job.part,job.projects])).toEqual([['shell-md','--project=shell --project=md'],['csv','--project=csv'],['package',undefined]])
  expect(pr).toEqual([])
  expect(matrix('pull_request',false).filter(job=>job.os==='macos-15-intel')).toEqual([])
- expect(push).toEqual(scheduled)
+ expect(push).toEqual([])
+ expect(matrix('workflow_dispatch').filter(job=>job.os==='macos-15-intel')).toEqual(scheduled)
+ expect(matrix('workflow_dispatch')).toEqual(scheduled)
+ expect(matrix('push').filter(job=>job.os.startsWith('macos-'))).toHaveLength(3)
+ expect(workflow).toMatch(/^  workflow_dispatch:/m)
+ const guard=workflow.split('\n  verify:\n')[1]?.match(/^    if: (.+)$/m)?.[1]
+ expect(guard).toBeDefined()
+ for(const ref of ['refs/heads/main','refs/heads/feature']){
+  expect(!!expression(guard!,{github:{event_name:'workflow_dispatch',ref}})).toBe(ref==='refs/heads/main')
+ }
  expect(workflow).toMatch(/run: npm run test:e2e:fast -- [^\n]*\$\{\{ matrix\.projects \}\}/)
  const all=list().sort()
  expect(new Set(all).size).toBe(all.length)
@@ -183,7 +192,7 @@ it('la parte empaquetada construye su app y conserva exactamente los specs del p
  const build=verifySteps().find(step=>step.name==='run: npm run build')
  const packageStep=verifySteps().find(step=>step.name==='Package application directory')
  expect(build).toBeDefined();expect(packageStep).toBeDefined()
- for(const [event,pack] of [['schedule',false],['pull_request',true],['pull_request',false],['push',true]] as const){
+ for(const [event,pack] of [['schedule',false],['workflow_dispatch',false],['pull_request',true],['pull_request',false],['push',true]] as const){
   for(const job of matrix(event,pack)){
    const packaged=!!job.executable&&(event!=='pull_request'||pack)
    const context={github:{event_name:event},matrix:job,runner:{os:job.os.startsWith('windows')?'Windows':job.os.startsWith('macos')?'macOS':'Linux'},
@@ -209,7 +218,7 @@ it('restaura las descargas por sistema, arquitectura y lockfile sin compartir un
  const packageCondition=verifySteps().find(step=>step.name==='Package application directory')?.condition
  expect(cacheCondition).toBeDefined();expect(packageCondition).toBeDefined()
  // El caché se prepara antes de las pruebas; Windows puede empaquetar después de un fallo.
- for(const [event,pack] of [['schedule',false],['pull_request',true],['pull_request',false],['push',true]] as const){
+ for(const [event,pack] of [['schedule',false],['workflow_dispatch',false],['pull_request',true],['pull_request',false],['push',true]] as const){
   for(const job of matrix(event,pack)){
    const context={github:{event_name:event},matrix:job,runner:{os:job.os.startsWith('windows')?'Windows':job.os.startsWith('macos')?'macOS':'Linux'},
     needs:{areas:{outputs:{package:String(pack)}}}}
