@@ -19,7 +19,7 @@ Durante cada bloque ejecuta las unitarias y E2E de los archivos o flujos afectad
 | Archivos compartidos (`App.svelte`, `Editor.svelte`, `style.css`, `src/main/**`, `src/preload/**`, `src/shared/**`, `Icon.svelte`, `Tree.svelte`) | Flujos consumidores afectados; suite completa al cerrar la integración |
 | Render, editor o motor de tablas con efecto en rendimiento | Además los límites afectados; `npm run test:e2e:perf` cuando corresponda |
 
-Al cierre de la rama de integración y de la última tarea del lote: `npm run check`, `npm test` completo, `npm run test:e2e` completo y `npm run build`. La CI de los PR verifica las áreas seleccionadas en Linux, Windows y macOS Apple silicon. Los push a `main` conservan la suite completa en las cuatro plataformas, incluido macOS Intel.
+Al cierre de la rama de integración y de la última tarea del lote: `npm run check`, `npm test` completo, `npm run test:e2e` completo y `npm run build`. La CI de los PR verifica las áreas seleccionadas en Linux, Windows y macOS Apple silicon. Los push a `main` ejecutan la suite completa en esas tres plataformas. macOS Intel ejecuta la misma cobertura cada noche o mediante el lanzamiento manual de CI sobre `main`; no se incluye en los push.
 
 Congela el SHA enviado a CI. Mientras se califica, continúa el código en otra rama y worktree; no cambies el head evaluado ni sus fuentes de medición. Un nuevo SHA o una integración diferente necesita su propia calificación. Registra el resultado de CI en el PR sin crear un commit solo para cambiar su estado en la evidencia.
 
@@ -41,7 +41,9 @@ Ubuntu reparte los PR y `main` en `shell-md` y `csv`. En los PR, cada parte inte
 
 El propietario debe configurar **Gate** como check requerido en la protección de `main`. Gate exige un plan válido y, cuando corresponde Verify, el éxito de las seis partes de desarrollo de las tres plataformas, además del resultado global de la matriz que incluye los paquetes requeridos. La aceptación de CI-1b no modifica la protección.
 
-En los push a `main`, Intel se añade cuando cambian entradas del producto, pruebas o construcción. Cada noche a las 07:23 UTC (01:23 en Ciudad de México) se ejecuta sólo Intel sobre `main`. Intel reparte ese trabajo en tres jobs paralelos. `shell-md` ejecuta tipos, unitarias y rápidas de Shell/Markdown, `csv` ejecuta rápidas de CSV y toda la fase perf/solo, y `package` construye y prueba la aplicación empaquetada. Las ejecuciones de `main` tienen grupos independientes. Un commit nuevo en un PR cancela las corridas anteriores de ese PR.
+Cada noche a las 07:23 UTC (01:23 en Ciudad de México) se ejecuta sólo Intel sobre `main`. También puede lanzarse el workflow CI a mano (`workflow_dispatch`), seleccionando `main`; usa la misma matriz Intel de tres jobs paralelos que la nocturna. `shell-md` ejecuta tipos, unitarias y rápidas de Shell/Markdown, `csv` ejecuta rápidas de CSV y toda la fase perf/solo, y `package` construye y prueba la aplicación empaquetada. Las ejecuciones de `main` tienen grupos independientes. Un commit nuevo en un PR cancela las corridas anteriores de ese PR.
+
+Antes de construir un Release candidate, la puerta exige dos ejecuciones aprobadas sobre el SHA actual exacto de `main`: la última de push para Linux, Windows y macOS Apple silicon, y la última de Intel entre las nocturnas y las manuales. Una ejecución posterior fallida, cancelada o en curso bloquea el candidato aunque exista otra anterior verde. Si falta Intel sobre ese SHA, lanza CI a mano sobre `main` y espera a que terminen sus tres partes. Un verde de otro SHA o de otra rama no acredita ninguna de estas comprobaciones.
 
 Los grupos están en `tests/e2e/groups.ts`. `shell` y `md` enumeran archivos; `csv` contiene los demás. Cada prueba pertenece a un único proyecto en la ejecución completa. Registra los archivos nuevos en su área; un archivo sin registrar cae en `csv` y sigue protegido en CI. Cambiar de grupo no permite borrar ni debilitar aserciones.
 

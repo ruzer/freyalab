@@ -15,6 +15,7 @@ on:
       - 'docs/evidence/**/*.pdf'
       - 'docs/evidence/**/*.docx'
   pull_request:
+  workflow_dispatch:
   schedule:
     - cron: '23 7 * * *' # 01:23 en Ciudad de México (UTC−6).
 permissions:
@@ -61,22 +62,22 @@ jobs:
           NODE
   verify:
     needs: areas
-    if: ${{ !cancelled() && (github.event_name != 'pull_request' || (needs.areas.result == 'success' && needs.areas.outputs.docs_only == 'false')) }}
+    if: ${{ !cancelled() && (github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/main') && (github.event_name != 'pull_request' || (needs.areas.result == 'success' && needs.areas.outputs.docs_only == 'false')) }}
     name: Verify ${{ matrix.os }}${{ matrix.part && format(' ({0})', matrix.part) || '' }}
     strategy:
       fail-fast: false
       matrix:
         # Windows reparte rápidas por proyecto; shell-md conserva serial y paquete para equilibrar la corrida lenta.
-        # Intel reparte main/nocturna; Ubuntu reparte PR/main con serial y paquete en CSV; ARM conserva el paquete separado.
+        # Intel solo en nocturna/manual sobre main; Ubuntu reparte PR/main con serial y paquete en CSV; ARM conserva el paquete separado.
         include: >-
           ${{ fromJSON(
-            github.event_name == 'schedule' &&
+            (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
             '[{"os":"macos-15-intel","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15-intel","part":"csv","projects":"--project=csv"},{"os":"macos-15-intel","part":"package","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
             github.event_name == 'pull_request' && needs.areas.outputs.package == 'true' &&
             '[{"os":"ubuntu-24.04","part":"shell-md","projects":"--project=shell --project=md"},{"os":"ubuntu-24.04","part":"csv-package","projects":"--project=csv","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"package","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"}]' ||
             github.event_name == 'pull_request' &&
             '[{"os":"ubuntu-24.04","part":"shell-md","projects":"--project=shell --project=md"},{"os":"ubuntu-24.04","part":"csv","projects":"--project=csv"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15","part":"csv","projects":"--project=csv"}]' ||
-            '[{"os":"ubuntu-24.04","part":"shell-md","projects":"--project=shell --project=md"},{"os":"ubuntu-24.04","part":"csv-package","projects":"--project=csv","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"package","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"},{"os":"macos-15-intel","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15-intel","part":"csv","projects":"--project=csv"},{"os":"macos-15-intel","part":"package","executable":"release/mac/FreyaLab.app/Contents/MacOS/FreyaLab"}]'
+            '[{"os":"ubuntu-24.04","part":"shell-md","projects":"--project=shell --project=md"},{"os":"ubuntu-24.04","part":"csv-package","projects":"--project=csv","executable":"release/linux-unpacked/freyalab"},{"os":"windows-2025","part":"shell-md","projects":"--project=shell --project=md","executable":"release/win-unpacked/FreyaLab.exe"},{"os":"windows-2025","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"shell-md","projects":"--project=shell --project=md"},{"os":"macos-15","part":"csv","projects":"--project=csv"},{"os":"macos-15","part":"package","executable":"release/mac-arm64/FreyaLab.app/Contents/MacOS/FreyaLab"}]'
           ) }}
     runs-on: ${{ matrix.os }}
     env:
